@@ -78,3 +78,119 @@ def test_submit_crash_issue_swallows_feedback_hub_errors(monkeypatch) -> None:
 
 def test_target_repo_reads_schema() -> None:
     assert isub.target_repo() == "Community-Access/quill"
+
+
+# -- feedback_hub version tolerance (2026-08-13, crash fingerprinting) --------
+#
+# QUILL ships against whatever feedback_hub is installed. 1.1.0 added the
+# `fingerprint` and `version_label` parameters; 1.0.x has neither. The submit
+# path asks the installed signature what it accepts rather than calling and
+# catching TypeError -- a TypeError raised *inside* submit is a real bug, and
+# retrying it silently would hide it.
+
+
+def _fake_hub(monkeypatch, submit_fn) -> list[dict]:
+    """Install a fake feedback_hub whose submit records its kwargs."""
+    calls: list[dict] = []
+
+    def _record(**kwargs):
+        calls.append(kwargs)
+        return submit_fn(**kwargs)
+
+    # functools.wraps would copy submit_fn's signature onto _record, which is
+    # exactly what the capability probe reads -- so the fake's shape is the
+    # shape under test.
+    import functools
+
+    wrapped = functools.wraps(submit_fn)(_record)
+    fake = types.ModuleType("feedback_hub")
+    fake.submit = wrapped  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "feedback_hub", fake)
+    monkeypatch.setattr(isub, "target_repo", lambda: "Community-Access/quill")
+    return calls
+
+
+def test_a_modern_feedback_hub_receives_the_fingerprint(monkeypatch) -> None:
+    def modern(*, fingerprint="", version_label=False, **_kwargs):
+        return "https://github.com/x/y/issues/1", None
+
+    calls = _fake_hub(monkeypatch, modern)
+
+    url, error = isub.submit_crash_issue(
+        summary="s", message="m", app_version="1.0", github_token="tok", fingerprint="abc123"
+    )
+
+    assert error is None
+    assert url
+    assert calls[0]["fingerprint"] == "abc123"
+    assert calls[0]["version_label"] is True
+
+
+def test_an_old_feedback_hub_is_never_passed_the_new_parameters(monkeypatch) -> None:
+    # 1.0.x: no fingerprint, no version_label. Passing either would raise
+    # TypeError and lose the report.
+    def legacy(
+        *,
+        app,
+        github_repo,
+        github_token,
+        summary,
+        message,
+        category,
+        app_version,
+        github_labels,
+        metadata,
+        name="",
+        email="",
+        db_path=None,
+        github_assignee="",
+    ):
+        return "https://github.com/x/y/issues/2", None
+
+    calls = _fake_hub(monkeypatch, legacy)
+
+    url, error = isub.submit_crash_issue(
+        summary="s", message="m", app_version="1.0", github_token="tok", fingerprint="abc123"
+    )
+
+    assert error is None
+    assert url  # the report is still filed -- it simply is not deduplicated
+    assert "fingerprint" not in calls[0]
+    assert "version_label" not in calls[0]
+
+
+def test_an_empty_fingerprint_is_never_sent(monkeypatch) -> None:
+    # Empty means "do not deduplicate". Sending it would let feedback_hub
+    # treat unrelated reports as the same crash.
+    def modern(*, fingerprint="", version_label=False, **_kwargs):
+        return "https://github.com/x/y/issues/3", None
+
+    calls = _fake_hub(monkeypatch, modern)
+
+    isub.submit_crash_issue(
+        summary="s", message="m", app_version="1.0", github_token="tok", fingerprint=""
+    )
+
+    assert "fingerprint" not in calls[0]
+
+
+def test_a_typeerror_from_inside_submit_is_reported_not_retried(monkeypatch) -> None:
+    # The bug the old catch-TypeError-and-retry approach would have hidden.
+    def modern(*, fingerprint="", version_label=False, **_kwargs):
+        raise TypeError("a real bug inside feedback_hub")
+
+    calls = _fake_hub(monkeypatch, modern)
+
+    url, error = isub.submit_crash_issue(
+        summary="s", message="m", app_version="1.0", github_token="tok", fingerprint="abc"
+    )
+
+    assert url is None
+    assert "a real bug inside feedback_hub" in (error or "")
+    assert len(calls) == 1  # reported, not retried
+
+
+def test_an_unreadable_signature_degrades_to_the_old_call(monkeypatch) -> None:
+    # A C-implemented or wrapped submit whose signature cannot be inspected
+    # must still file the report, just without deduplication.
+    assert isub._submit_parameters(object()) == frozenset()

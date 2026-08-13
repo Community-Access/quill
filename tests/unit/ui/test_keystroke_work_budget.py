@@ -130,9 +130,13 @@ def test_only_the_essential_work_is_synchronous() -> None:
     assert "_schedule_deferred_edit_work" in source
 
 
-def test_deferred_work_reads_the_buffer_once() -> None:
+def test_deferred_work_reads_the_buffer_never() -> None:
+    # Round 3: the deferred pass uses document.text -- the exact string the
+    # sync path stored in set_text, which nothing can have changed since (any
+    # change fires EVT_TEXT and restarts the timer). Zero marshals.
     source = inspect.getsource(MainFrame._run_deferred_edit_work)
-    assert source.count("GetValue()") == 1
+    assert "GetValue()" not in source
+    assert "_document_text_for_display()" in source
 
 
 def test_autosave_writes_off_the_ui_thread() -> None:
@@ -362,3 +366,59 @@ def test_title_bar_native_calls_are_skipped_when_unchanged() -> None:
     frame._refresh_title_bar()
     frame._refresh_title_bar()
     assert len(frame.frame.calls) == 1, "an unchanged title must not be re-set"
+
+
+# --------------------------------------------------------------------------- #
+# Round 3: the costs round 2 missed
+# --------------------------------------------------------------------------- #
+
+
+def test_quiet_status_does_not_recompute_the_statusbar_synchronously() -> None:
+    """_set_status_quiet runs per keystroke; its synchronous _refresh_statusbar
+    call quietly undid round 2's removal one line below where round 2 did it."""
+    from quill.ui.main_frame_statusbar import StatusBarMixin
+
+    source = inspect.getsource(StatusBarMixin._set_status_quiet)
+    assert "_schedule_statusbar_refresh()" in source
+    assert "self._refresh_statusbar()" not in source
+
+
+def test_document_stats_are_memoized_by_revision() -> None:
+    frame = MainFrame.__new__(MainFrame)
+    editor = _Editor("alpha beta gamma")
+    frame.editor = editor  # type: ignore[assignment]
+    frame.document = type("D", (), {"text": "alpha beta gamma", "revision": 7})()
+    first = frame._statusbar_document_stats()
+    second = frame._statusbar_document_stats()
+    assert first is second, "same revision must return the cached stats object"
+    frame.document.revision = 8
+    frame.document.text = "alpha beta gamma delta"
+    third = frame._statusbar_document_stats()
+    assert third is not first and third.words == 4
+
+
+def test_spell_hint_inspects_one_word_not_the_rest_of_the_document() -> None:
+    """A clean document was spell-checked caret-to-end per pause, for an answer
+    the caller discarded. The bounded form looks at exactly one word."""
+    from quill.core.spellcheck import misspelling_at
+
+    known = {"alpha", "beta"}
+    text = "alpha xzqj " + "beta " * 10_000
+    # A misspelled word starting exactly at the position is found...
+    hit = misspelling_at(text, 6, known)
+    assert hit is not None and hit.word == "xzqj"
+    # ...a known word starting there answers None without scanning on...
+    assert misspelling_at("alpha xzqj", 0, known) is None
+    # ...and a position mid-word (tail fragment) is not a word start.
+    assert misspelling_at(text, 8, known) is None
+
+
+def test_bounded_and_unbounded_spell_scan_agree_at_the_caret() -> None:
+    from quill.core.spellcheck import misspelling_at, next_misspelling
+
+    known = {"one", "two", "three"}
+    for text in ("one wrng two", "wrng one", "one two wrng", "one  two", ""):
+        for position in range(len(text) + 1):
+            unbounded = next_misspelling(text, position - 1, known)
+            expected = unbounded if unbounded is not None and unbounded.start == position else None
+            assert misspelling_at(text, position, known) == expected, (text, position)

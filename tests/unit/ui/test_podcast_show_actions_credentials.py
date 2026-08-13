@@ -25,7 +25,13 @@ def test_unsubscribe_deletes_stored_credentials_everywhere() -> None:
 
 
 def test_context_menus_offer_feed_credentials() -> None:
-    # The label lives in the shared menu helper; both surfaces attach it.
+    # Three surfaces, three routes to the same prompt. The standalone app's
+    # tree and show_actions.py keep the shared menu helper; the Podcast
+    # Manager's show menu became a Quick-Actions-ordered table in 1.1.0, so
+    # its entry lives in manager_menus.py and calls the dialog's own handler.
     assert "Feed Cre&dentials..." in _read("ui/podcasts/show_actions.py")
-    assert "append_feed_credentials_item(" in _read("ui/podcasts/manager_dialog.py")
     assert "Feed Cre&dentials..." in _read("apps/podcasts.py")
+    menus = _read("ui/podcasts/manager_menus.py")
+    assert "Feed Cre&dentials..." in menus
+    assert "_on_feed_credentials(show)" in menus
+    assert "feed_credentials_prompt(" in _read("ui/podcasts/manager_actions.py")

@@ -201,6 +201,14 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # chord -- it is a read-only report, not a transport control -- but it is
     # registered so it reaches the Command Palette and can be bound.
     "podcasts.player_information": "",
+    # Sound Enhancements: both standalone apps use Ctrl+E, so in full QUILL --
+    # which has both players -- one key follows whatever is playing.
+    "media.sound_enhancements": "Ctrl+E",
+    "radio.sound_enhancements": "",
+    "podcasts.sound_enhancements": "",
+    # My Notes in This Episode: your notes for whatever is playing. Unbound by
+    # default (no free chord), but registered so it can be given one.
+    "podcasts.episode_notes": "",
     "radio.record_toggle": "Ctrl+Shift+Grave, 6",  # Internet Radio (Record Now / Stop Recording)
     "podcasts.skip_forward": "Ctrl+Shift+Grave, 5",  # Podcasts
     "podcasts.skip_back": "Ctrl+Shift+Grave, 4",  # Podcasts

@@ -32,7 +32,16 @@ def test_download_helper_applies_the_same_host_gate() -> None:
 
 
 def test_every_download_site_routes_through_the_helper() -> None:
-    for rel in ("ui/main_frame_podcasts.py", "ui/podcasts/manager_dialog.py"):
+    # The Manager's download actions moved to manager_downloads.py in 1.1.0,
+    # and auto-download to main_frame_podcast_acquisition.py. Every one of
+    # them still has to go through the helper that attaches the same-host
+    # Authorization header -- which is exactly what this checks, so the list
+    # grows with the extraction rather than the rule being narrowed.
+    for rel in (
+        "ui/main_frame_podcasts.py",
+        "ui/podcasts/manager_downloads.py",
+        "ui/main_frame_podcast_acquisition.py",
+    ):
         src = _read(rel)
         assert "enqueue_episode_download(" in src, rel
         assert ".enqueue(" not in src, rel
@@ -57,6 +66,12 @@ def test_chapters_and_transcripts_pass_auth_header() -> None:
 
 def test_every_play_call_site_uses_the_shared_playback_helper() -> None:
     assert "playback_source(show, episode)" in _read("ui/podcasts/show_actions.py")
+    # The 1.1.0 surfaces that start playback (the Winamp transport keys, the
+    # per-show actions) deliberately do NOT call the helper themselves -- they
+    # go through their host's one play method, which does. What matters is
+    # that no site anywhere builds its own source URL, asserted below.
+    for rel in ("ui/podcasts/winamp_mixin.py", "ui/podcasts/manager_actions.py"):
+        assert "episode.downloaded_path or episode.audio_url" not in _read(rel), rel
     for rel in (
         "ui/podcasts/manager_dialog.py",
         "ui/podcasts/manager_phase4.py",

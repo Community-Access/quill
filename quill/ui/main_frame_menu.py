@@ -2581,6 +2581,8 @@ class MenuBuilderMixin:
             id_podcasts_play_pause = wx.NewIdRef()
             id_podcasts_stop = wx.NewIdRef()
             id_podcasts_player_info = wx.NewIdRef()
+            id_podcasts_episode_notes = wx.NewIdRef()
+            id_media_sound_enhance = wx.NewIdRef()
             id_podcasts_pause_downloads = wx.NewIdRef()
             id_podcasts_resume_downloads = wx.NewIdRef()
             media_menu.Append(
@@ -2608,6 +2610,14 @@ class MenuBuilderMixin:
             media_menu.Append(
                 id_podcasts_player_info,
                 self._menu_label(_("Player &Information..."), "podcasts.player_information"),
+            )
+            media_menu.Append(
+                id_podcasts_episode_notes,
+                self._menu_label(_("My &Notes in This Episode..."), "podcasts.episode_notes"),
+            )
+            media_menu.Append(
+                id_media_sound_enhance,
+                self._menu_label(_("Sound &Enhancements..."), "media.sound_enhancements"),
             )
             media_menu.AppendSeparator()
             media_menu.Append(
@@ -2642,6 +2652,16 @@ class MenuBuilderMixin:
                 wx.EVT_MENU,
                 lambda _e: self.podcast_player_information(),
                 id=id_podcasts_player_info,
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.open_podcast_episode_notes(),
+                id=id_podcasts_episode_notes,
+            )
+            self.frame.Bind(
+                wx.EVT_MENU,
+                lambda _e: self.open_media_sound_enhancements(),
+                id=id_media_sound_enhance,
             )
             self.frame.Bind(
                 wx.EVT_MENU,

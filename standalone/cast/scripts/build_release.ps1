@@ -31,7 +31,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "1.0.7"
+$version = "1.1.0"
 
 # -- resolve the toolchain ----------------------------------------------------
 # standalone\cast -> standalone -> the QUILL checkout root.
@@ -103,8 +103,8 @@ New-Item -ItemType Directory -Force $docsDir | Out-Null
 # if a build ever ships without render_docs.ps1 having run).
 Copy-Item (Join-Path $repoRoot "docs\userguide.md") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\userguide.html") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\release-notes-1.0.md") $docsDir -Force
-Copy-Item (Join-Path $repoRoot "docs\release-notes-1.0.html") $docsDir -Force
+Copy-Item (Join-Path $repoRoot "docs\release-notes-1.1.md") $docsDir -Force
+Copy-Item (Join-Path $repoRoot "docs\release-notes-1.1.html") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\prd.md") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "docs\prd.html") $docsDir -Force
 Copy-Item (Join-Path $repoRoot "README.md") (Join-Path $appDir "README-QUILL-Cast.md") -Force

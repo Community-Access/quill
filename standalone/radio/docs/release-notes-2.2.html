@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio 2.2 -- Release Notes</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -372,6 +371,23 @@ move and a “next chapter” that quietly does nothing are worse than not
 offering them at all, because you cannot tell a broken control from a
 stream that has no timeline. Ask for chapters on a video whose uploader
 published none and it says that too.</p>
+<p><strong>Go to Position… (Ctrl+Shift+J)</strong> is the other half of
+having a timeline. Skipping thirty seconds at a time gets you near; this
+gets you exactly where you meant. It opens the same accessible dialog
+the Quill Media Player uses – three labelled Hours / Minutes / Seconds
+spin controls as the primary input, plus a timecode field if you would
+rather type <code>1:23:45</code> – rather than growing a second, lesser
+prompt of its own. Ask for a point past the end and it says so and takes
+you to the end instead of failing.</p>
+<p><strong>And a fix that belongs here.</strong> Rewind / Forward 30
+Seconds always ran the <em>live-stream</em> seek, which moves inside
+mpv’s rolling buffer and reports how far behind the live edge you now
+are. On a finished video there is no live edge, so that number was
+invented – exactly the kind of confident wrong measurement this app
+refuses to make anywhere else. The keys now pick the operation the
+source actually deserves: a video moves along its own timeline and says
+“3 minutes 10 seconds of 18 minutes 40 seconds”; a live stream behaves
+precisely as before.</p>
 <h3 id="add-from-youtube-playlist">Add from YouTube Playlist</h3>
 <p>On the Station menu. Paste a <code>playlist?list=...</code> link –
 already filled in for you if it is on your clipboard – and Quill Radio
@@ -813,6 +829,18 @@ cleanly)</td>
 <td>Back / forward 30 seconds</td>
 </tr>
 <tr>
+<td>R</td>
+<td>Shuffle on / off</td>
+</tr>
+<tr>
+<td>S</td>
+<td>Repeat: off, then all recordings, then this recording</td>
+</tr>
+<tr>
+<td>Ctrl+V</td>
+<td>Stop after the current recording</td>
+</tr>
+<tr>
 <td>T</td>
 <td>Elapsed time, or time remaining – press again to swap</td>
 </tr>
@@ -852,6 +880,37 @@ Editor – and the recordings list <em>is</em> a playlist editor by any
 other name. Volume stays on Ctrl+Up and Ctrl+Down, exactly where it
 already was.</li>
 </ul>
+<h3 id="and-the-last-three-keys-which-needed-a-queue-first">And the last
+three keys, which needed a queue first</h3>
+<p><strong>R</strong>, <strong>S</strong> and <strong>Ctrl+V</strong>
+were held back on purpose. All three – shuffle, repeat,
+stop-after-current – describe a play queue, and the recordings list did
+not have one. Binding them to something that only looked like it worked
+would have been worse than leaving them unbound, because you cannot tell
+a key that does nothing from an app that is broken.</p>
+<p>The list has a queue now, so they are bound.</p>
+<p><strong>Shuffle (R) is a fixed order, not a fresh roll each
+time.</strong> That distinction is the whole feature. “Pick one at
+random on every Next” eventually plays the same recording twice before
+it plays some others at all – and, far worse here, <strong>Z</strong>
+cannot take you back to what you just heard, because nothing recorded
+where you had been. Shuffle instead reorders the whole list once: every
+recording plays exactly once before any repeats, and previous is the
+exact inverse of next.</p>
+<p><strong>Repeat (S)</strong> cycles off, then all recordings, then
+this recording, saying which each time. Repeat-one applies when a
+recording <em>finishes on its own</em> – pressing <strong>B</strong>
+still moves you on, because a Next that refused to move would look
+broken rather than deliberate.</p>
+<p><strong>Stop after current (Ctrl+V)</strong> is a one-shot. It
+outranks repeat, because it is the thing you asked for a moment ago
+rather than a standing preference; it clears itself the instant it
+fires; and it is deliberately <em>not</em> remembered between sessions.
+A stop that survived a restart would halt playback for a reason nobody
+could remember asking for.</p>
+<p>A recording that reaches its end is now followed by whatever the
+queue says is next, rather than simply stopping. Shuffle and repeat are
+remembered; the one-shot is not.</p>
 <p>Seeking needs something with a timeline, which means a finished
 recording on the mpv engine; on a live stream, or with the classic
 Windows Media engine, the seek keys say why they cannot move rather than

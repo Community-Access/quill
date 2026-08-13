@@ -4147,7 +4147,11 @@ class MainFrame(
         """
         wx = self._wx
         from quill.core.feedback_token import effective_github_token
-        from quill.core.issue_submit import build_log_summary, submit_crash_issue
+        from quill.core.issue_submit import (
+            build_log_summary,
+            fingerprint_for_traceback,
+            submit_crash_issue,
+        )
 
         with wx.MessageDialog(
             self.frame,
@@ -4206,15 +4210,25 @@ class MainFrame(
             + evidence_section
             + build_log_summary(logs_path)
         )
+        # Deduplicate on the stitched traceback when there is one. Without a
+        # crash-*.txt this offer is log-only, and a log tail is not a stable
+        # identity -- so it files normally rather than guessing, which is the
+        # right trade: a duplicate issue beats two different crashes silently
+        # merged into one.
+        fingerprint = fingerprint_for_traceback(crash_report or "")
+        metadata: dict[str, object] = {
+            "session": getattr(offer, "session_id", ""),
+            "snapshot": str(getattr(offer, "snapshot", "")),
+        }
+        if fingerprint:
+            metadata["fingerprint"] = fingerprint
         issue_url, error = submit_crash_issue(
             summary="Crash recovery: Quill detected an unclean exit",
             message=body,
             app_version=__version__ or "0.0.0",
             github_token=effective_github_token(),
-            metadata={
-                "session": getattr(offer, "session_id", ""),
-                "snapshot": str(getattr(offer, "snapshot", "")),
-            },
+            metadata=metadata,
+            fingerprint=fingerprint,
         )
         if not issue_url:
             self._set_status(f"Could not file report: {error}")

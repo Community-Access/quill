@@ -1777,7 +1777,7 @@ Everything about what is playing, as text you can review at your own pace: title
 
 ### Winamp Playback Keys (Radio Recordings)
 
-The Recordings window answers to Winamp's classic-skin main-window keys, so the transport muscle memory of a long-time Winamp user works here unchanged. Every key announces what it did. Two deliberate differences from Winamp: Ctrl+T stays What's Playing (the more useful meaning in a radio app), so the elapsed/remaining toggle is on plain T; and Up and Down arrow move through the list rather than changing the volume, which is what Winamp itself does in its Playlist Editor. Seeking needs a finished recording on the mpv engine -- on a live stream the seek keys say why they cannot move rather than doing nothing. Letters typed into a text field are never swallowed. Turn the letter keys off with 'Winamp-style playback keys in the Recordings player' in Preferences; Ctrl+Up and Ctrl+Down are unaffected. Shuffle, repeat, and stop-after-current are not bound: all three need a play queue the recordings list does not have yet.
+The Recordings window answers to Winamp's classic-skin main-window keys, so the transport muscle memory of a long-time Winamp user works here unchanged. Every key announces what it did. Two deliberate differences from Winamp: Ctrl+T stays What's Playing (the more useful meaning in a radio app), so the elapsed/remaining toggle is on plain T; and Up and Down arrow move through the list rather than changing the volume, which is what Winamp itself does in its Playlist Editor. Seeking needs a finished recording on the mpv engine -- on a live stream the seek keys say why they cannot move rather than doing nothing. Letters typed into a text field are never swallowed. Turn the letter keys off with 'Winamp-style playback keys in the Recordings player' in Preferences; Ctrl+Up and Ctrl+Down are unaffected. Shuffle (R), repeat (S) and stop-after-current (Ctrl+V) are now bound: the recordings list has a play queue. Shuffle is a fixed order rather than a fresh roll each time, so every recording plays once before any repeats and Z reliably goes back to what you just heard. Shuffle and repeat are remembered between sessions; stop-after-current is a one-shot that clears when it fires and never survives a restart.
 
 | Key | Action |
 |---|---|
@@ -1791,6 +1791,9 @@ The Recordings window answers to Winamp's classic-skin main-window keys, so the 
 | Right | Forward 5 seconds |
 | Shift+Left | Back 30 seconds |
 | Shift+Right | Forward 30 seconds |
+| R | Shuffle on or off |
+| S | Repeat: off, then all recordings, then this recording |
+| Ctrl+V | Stop after the current recording (a one-shot) |
 | T | Elapsed time, or time remaining; press again to swap |
 | J | Jump to a recording by typing part of its name |
 | Ctrl+J | Jump to a time (90, 1:30, or 1:02:03) |

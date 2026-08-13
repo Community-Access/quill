@@ -251,6 +251,10 @@ def _try_offer_crash_submit(
                     app_version=__version__,
                     github_token=token,
                     metadata=payload.metadata,
+                    # Computed by build_crash_report_payload from the live
+                    # traceback; lets feedback_hub comment on the open issue
+                    # for this crash rather than filing another one.
+                    fingerprint=str(payload.metadata.get("fingerprint", "")),
                 )
             except Exception:  # noqa: BLE001 - report the failure, then fall back
                 _copy_to_clipboard(merged)

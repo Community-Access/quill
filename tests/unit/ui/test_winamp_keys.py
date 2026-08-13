@@ -54,10 +54,25 @@ def test_bare_arrows_up_and_down_stay_list_navigation() -> None:
 
 
 def test_unmapped_keys_pass_through() -> None:
-    for key in ("A", "Q", "M", "P", "R", "S"):
+    for key in ("A", "Q", "M", "P"):
         assert wk.resolve_winamp_action(key) is None
     assert wk.resolve_winamp_action("X", alt=True) is None
     assert wk.resolve_winamp_action("") is None
+
+
+def test_the_three_queue_keys_are_bound_now_that_a_queue_exists() -> None:
+    """R, S and Ctrl+V were deliberately unbound while the recordings player
+    had no queue -- binding them to something that only pretended to work
+    would have been worse. quill.core.radio.play_queue is that queue."""
+    assert wk.resolve_winamp_action("R") == wk.ACTION_SHUFFLE
+    assert wk.resolve_winamp_action("S") == wk.ACTION_REPEAT
+    assert wk.resolve_winamp_action("V", ctrl=True) == wk.ACTION_STOP_AFTER_CURRENT
+
+
+def test_ctrl_v_does_not_disturb_plain_v_or_shift_v() -> None:
+    """Stop and stop-with-fade keep the bottom-row meanings they had."""
+    assert wk.resolve_winamp_action("V") == wk.ACTION_STOP
+    assert wk.resolve_winamp_action("V", shift=True) == wk.ACTION_STOP_FADE
 
 
 def test_every_action_has_a_spoken_label() -> None:

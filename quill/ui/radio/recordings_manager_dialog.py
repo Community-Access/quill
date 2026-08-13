@@ -22,7 +22,6 @@ focus-pause workaround is gone because there is no teardown rebuild to pause.
 from __future__ import annotations
 
 import subprocess
-import sys
 from collections.abc import Callable
 from typing import Any
 
@@ -39,11 +38,12 @@ from quill.core.radio.recordings_index import (
     recordings_dir,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.radio.recordings_queue import RecordingsQueueMixin
 
 _REFRESH_MS = 2000
 
 
-class RecordingsManagerDialog:
+class RecordingsManagerDialog(RecordingsQueueMixin):
     """List, play, stop, reveal, and remove radio recordings."""
 
     def __init__(
@@ -56,6 +56,7 @@ class RecordingsManagerDialog:
         controller: object,
         announce_cb: Callable[[str], None] | None = None,
         history: object | None = None,
+        on_history_changed: Callable[[], None] | None = None,
     ) -> None:
         import wx
 
@@ -65,6 +66,9 @@ class RecordingsManagerDialog:
         self._scheduler = scheduler
         self._controller = controller
         self._history = history
+        #: The host owns where settings live, so persisting the queue
+        #: preferences is its job -- this dialog only says they changed.
+        self._on_history_changed = on_history_changed or (lambda: None)
         self._announce = announce_cb or (lambda _m: None)
         self._entries: list[RecordingEntry] = []
         #: #1344: whether T reads out time remaining rather than time elapsed.
@@ -252,6 +256,7 @@ class RecordingsManagerDialog:
         return True
 
     def _refresh(self, keep_selection: bool = True) -> None:
+        self._advance_queue_if_finished()
         snapshot = list_recordings(
             self._settings,
             active=self._active_recordings(),
@@ -424,6 +429,9 @@ class RecordingsManagerDialog:
             wk.ACTION_FORWARD_5: lambda: self._winamp_seek(5_000),
             wk.ACTION_BACK_30: lambda: self._winamp_seek(-30_000),
             wk.ACTION_FORWARD_30: lambda: self._winamp_seek(30_000),
+            wk.ACTION_SHUFFLE: self._winamp_toggle_shuffle,
+            wk.ACTION_REPEAT: self._winamp_cycle_repeat,
+            wk.ACTION_STOP_AFTER_CURRENT: self._winamp_toggle_stop_after_current,
             wk.ACTION_TOGGLE_TIME: self._winamp_toggle_time,
             wk.ACTION_JUMP_TO_TIME: self._winamp_jump_to_time,
             wk.ACTION_JUMP_TO_FILE: self._winamp_jump_to_file,
@@ -476,31 +484,6 @@ class RecordingsManagerDialog:
         stops cleanly rather than pretending to fade."""
         self._controller.stop()
         self._announce(message)
-        self._on_selection_changed()
-
-    def _winamp_step(self, direction: int) -> None:
-        """B / Z: move to the next or previous finished recording and play it."""
-        rows = self._playable_rows()
-        if not rows:
-            self._announce("There are no finished recordings to play.")
-            return
-        current = self._list.GetFirstSelected()
-        if current in rows:
-            index = rows.index(current) + direction
-        else:
-            index = 0 if direction > 0 else len(rows) - 1
-        if index < 0 or index >= len(rows):
-            self._announce(
-                "This is the last recording." if direction > 0 else "This is the first recording."
-            )
-            return
-        row = rows[index]
-        self._list.Select(row)
-        self._list.Focus(row)
-        entry = self._entries[row]
-        station = RadioStation(name=entry.name, stream_url=str(entry.path))
-        self._controller.play_station(station)
-        self._announce(f"Playing recording {entry.name}")
         self._on_selection_changed()
 
     def _winamp_seek(self, delta_ms: int) -> None:
@@ -615,6 +598,8 @@ class RecordingsManagerDialog:
         else:
             station = RadioStation(name=entry.name, stream_url=str(entry.path))
             self._controller.play_station(station)
+            # Joins the queue, so shuffle/repeat decide what follows it too.
+            self._queue_row = self._list.GetFirstSelected()
             self._announce(f"Playing recording {entry.name}")
         self._on_selection_changed()
 
@@ -653,10 +638,11 @@ class RecordingsManagerDialog:
         entry = self._selected()
         if entry is None or entry.path is None:
             return
-        if sys.platform.startswith("win"):
-            subprocess.Popen(["explorer", "/select,", str(entry.path)])  # noqa: S603,S607
-        else:
-            subprocess.Popen(["open", "-R", str(entry.path)])  # noqa: S603,S607
+        # Shared, tested argv: the split "/select," form this used to pass made
+        # Explorer ignore the switch and open Documents instead.
+        from quill.core.file_manager import reveal_command
+
+        subprocess.Popen(reveal_command(entry.path))  # noqa: S603
         self._announce(f"Showing {entry.name} in the file manager")
 
     def _on_remove(self) -> None:

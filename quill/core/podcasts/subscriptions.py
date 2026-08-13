@@ -18,12 +18,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.podcasts.models import (
+    ExpiredEntry,
     Playlist,
     PodcastEpisode,
     PodcastFolder,
     PodcastSettings,
     PodcastShow,
     QueueItem,
+    now_iso,
 )
 
 _FILE_NAME = "podcasts_library.json"
@@ -54,6 +56,11 @@ class PodcastLibrary:
     #: manual (a curated, ordered episode list). Operations live in
     #: podcasts.playlists.
     playlists: list[Playlist] = field(default_factory=list)
+    #: Recently Expired (1.1.0): episodes Queue Expiration lifted out of the
+    #: Play Queue, restorable for a week. A real stored list, not a derived
+    #: view -- which is why it lives here and not in virtual_views.py.
+    #: Operations live in podcasts.expiration.
+    recently_expired: list[ExpiredEntry] = field(default_factory=list)
 
     def queue_episode(self, show_id: str, episode_guid: str) -> bool:
         """Append an episode to the Play Queue (False when already queued).
@@ -62,7 +69,7 @@ class PodcastLibrary:
         for item in self.queue:
             if item.show_id == show_id and item.episode_guid == episode_guid:
                 return False
-        self.queue.append(QueueItem(show_id=show_id, episode_guid=episode_guid))
+        self.queue.append(QueueItem(show_id=show_id, episode_guid=episode_guid, added_at=now_iso()))
         return True
 
     def find_show(self, show_id: str) -> PodcastShow | None:
@@ -307,6 +314,12 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         playlist = Playlist.from_dict(entry)
         if playlist is not None:
             playlists.append(playlist)
+    recently_expired: list[ExpiredEntry] = []
+    expired_raw = raw.get("recently_expired")
+    for entry in expired_raw if isinstance(expired_raw, list) else []:
+        expired_entry = ExpiredEntry.from_dict(entry)
+        if expired_entry is not None:
+            recently_expired.append(expired_entry)
     return PodcastLibrary(
         shows=shows,
         folders=folders,
@@ -315,6 +328,7 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         inbox_folders=inbox_folders,
         inbox_assignments=inbox_assignments,
         playlists=playlists,
+        recently_expired=recently_expired,
     )
 
 
@@ -338,5 +352,6 @@ def save_library(data_dir: Path, library: PodcastLibrary) -> None:
             ],
             "inbox_assignments": dict(library.inbox_assignments),
             "playlists": [p.to_dict() for p in library.playlists],
+            "recently_expired": [e.to_dict() for e in library.recently_expired],
         },
     )

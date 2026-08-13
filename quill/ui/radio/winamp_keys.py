@@ -20,10 +20,15 @@ by the standalone Media Player and Cast without a second implementation.
   the Playlist Editor, and the recordings list *is* a playlist editor; volume
   keeps Ctrl+Up/Ctrl+Down, which already worked.
 
-Shuffle (``R``), repeat (``S``) and stop-after-current (``Ctrl+V``) are
-deliberately absent: all three describe a play queue, and the recordings player
-does not have one yet. They are listed as follow-up work rather than bound to
-something that would only pretend to work.
+Shuffle (``R``), repeat (``S``) and stop-after-current (``Ctrl+V``) were
+deliberately absent at first, because all three describe a play queue and the
+recordings player did not have one -- binding them to something that only
+pretended to work would have been worse than leaving them unbound. The queue
+now exists (:mod:`quill.core.radio.play_queue`), so they are bound.
+
+A surface without a queue simply resolves those three to actions it has no
+handler for, which does nothing and passes the key through; the map is shared,
+but adopting an action has never been mandatory.
 """
 
 from __future__ import annotations
@@ -43,6 +48,11 @@ ACTION_BACK_5: Final = "back_5"
 ACTION_FORWARD_5: Final = "forward_5"
 ACTION_BACK_30: Final = "back_30"
 ACTION_FORWARD_30: Final = "forward_30"
+
+#: The play queue (item 12): what plays next, and whether to stop.
+ACTION_SHUFFLE: Final = "shuffle"
+ACTION_REPEAT: Final = "repeat"
+ACTION_STOP_AFTER_CURRENT: Final = "stop_after_current"
 
 #: Position, time, and finding your way around the list.
 ACTION_TOGGLE_TIME: Final = "toggle_time"
@@ -67,6 +77,9 @@ _MAP: Final[dict[tuple[str, bool, bool, bool], str]] = {
     ("RIGHT", False, False, False): ACTION_FORWARD_5,
     ("LEFT", False, True, False): ACTION_BACK_30,
     ("RIGHT", False, True, False): ACTION_FORWARD_30,
+    ("R", False, False, False): ACTION_SHUFFLE,
+    ("S", False, False, False): ACTION_REPEAT,
+    ("V", True, False, False): ACTION_STOP_AFTER_CURRENT,
     ("T", False, False, False): ACTION_TOGGLE_TIME,
     ("J", False, False, False): ACTION_JUMP_TO_FILE,
     ("J", True, False, False): ACTION_JUMP_TO_TIME,
@@ -88,6 +101,9 @@ ACTION_LABELS: Final[dict[str, str]] = {
     ACTION_FORWARD_5: "Forward 5 seconds",
     ACTION_BACK_30: "Back 30 seconds",
     ACTION_FORWARD_30: "Forward 30 seconds",
+    ACTION_SHUFFLE: "Shuffle",
+    ACTION_REPEAT: "Repeat",
+    ACTION_STOP_AFTER_CURRENT: "Stop after the current recording",
     ACTION_TOGGLE_TIME: "Elapsed or remaining time",
     ACTION_JUMP_TO_TIME: "Jump to time",
     ACTION_JUMP_TO_FILE: "Jump to file",
@@ -173,6 +189,9 @@ def keymap_rows() -> list[tuple[str, str]]:
         ("Right", ACTION_LABELS[ACTION_FORWARD_5]),
         ("Shift+Left", ACTION_LABELS[ACTION_BACK_30]),
         ("Shift+Right", ACTION_LABELS[ACTION_FORWARD_30]),
+        ("R", ACTION_LABELS[ACTION_SHUFFLE]),
+        ("S", ACTION_LABELS[ACTION_REPEAT]),
+        ("Ctrl+V", ACTION_LABELS[ACTION_STOP_AFTER_CURRENT]),
         ("T", ACTION_LABELS[ACTION_TOGGLE_TIME]),
         ("J", ACTION_LABELS[ACTION_JUMP_TO_FILE]),
         ("Ctrl+J", ACTION_LABELS[ACTION_JUMP_TO_TIME]),

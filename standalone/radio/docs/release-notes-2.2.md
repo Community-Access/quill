@@ -132,6 +132,22 @@ does nothing are worse than not offering them at all, because you cannot tell a
 broken control from a stream that has no timeline. Ask for chapters on a video
 whose uploader published none and it says that too.
 
+**Go to Position... (Ctrl+Shift+J)** is the other half of having a timeline.
+Skipping thirty seconds at a time gets you near; this gets you exactly where you
+meant. It opens the same accessible dialog the Quill Media Player uses -- three
+labelled Hours / Minutes / Seconds spin controls as the primary input, plus a
+timecode field if you would rather type `1:23:45` -- rather than growing a
+second, lesser prompt of its own. Ask for a point past the end and it says so
+and takes you to the end instead of failing.
+
+**And a fix that belongs here.** Rewind / Forward 30 Seconds always ran the
+*live-stream* seek, which moves inside mpv's rolling buffer and reports how far
+behind the live edge you now are. On a finished video there is no live edge, so
+that number was invented -- exactly the kind of confident wrong measurement this
+app refuses to make anywhere else. The keys now pick the operation the source
+actually deserves: a video moves along its own timeline and says "3 minutes 10
+seconds of 18 minutes 40 seconds"; a live stream behaves precisely as before.
+
 ### Add from YouTube Playlist
 
 On the Station menu. Paste a `playlist?list=...` link -- already filled in for
@@ -505,6 +521,9 @@ modifier to reach for:
 | Z | Previous recording |
 | Left / Right | Back / forward 5 seconds |
 | Shift+Left / Shift+Right | Back / forward 30 seconds |
+| R | Shuffle on / off |
+| S | Repeat: off, then all recordings, then this recording |
+| Ctrl+V | Stop after the current recording |
 | T | Elapsed time, or time remaining -- press again to swap |
 | J | Jump to a recording: type any part of its name |
 | Ctrl+J | Jump to a time: type `90`, `1:30`, or `1:02:03` |
@@ -525,6 +544,39 @@ the better answer here rather than an oversight:
   main window but list navigation in the Playlist Editor -- and the recordings
   list *is* a playlist editor by any other name. Volume stays on Ctrl+Up and
   Ctrl+Down, exactly where it already was.
+
+### And the last three keys, which needed a queue first
+
+**R**, **S** and **Ctrl+V** were held back on purpose. All three -- shuffle,
+repeat, stop-after-current -- describe a play queue, and the recordings list did
+not have one. Binding them to something that only looked like it worked would
+have been worse than leaving them unbound, because you cannot tell a key that
+does nothing from an app that is broken.
+
+The list has a queue now, so they are bound.
+
+**Shuffle (R) is a fixed order, not a fresh roll each time.** That distinction
+is the whole feature. "Pick one at random on every Next" eventually plays the
+same recording twice before it plays some others at all -- and, far worse here,
+**Z** cannot take you back to what you just heard, because nothing recorded
+where you had been. Shuffle instead reorders the whole list once: every
+recording plays exactly once before any repeats, and previous is the exact
+inverse of next.
+
+**Repeat (S)** cycles off, then all recordings, then this recording, saying
+which each time. Repeat-one applies when a recording *finishes on its own* --
+pressing **B** still moves you on, because a Next that refused to move would
+look broken rather than deliberate.
+
+**Stop after current (Ctrl+V)** is a one-shot. It outranks repeat, because it is
+the thing you asked for a moment ago rather than a standing preference; it
+clears itself the instant it fires; and it is deliberately *not* remembered
+between sessions. A stop that survived a restart would halt playback for a
+reason nobody could remember asking for.
+
+A recording that reaches its end is now followed by whatever the queue says is
+next, rather than simply stopping. Shuffle and repeat are remembered; the
+one-shot is not.
 
 Seeking needs something with a timeline, which means a finished recording on the
 mpv engine; on a live stream, or with the classic Windows Media engine, the seek

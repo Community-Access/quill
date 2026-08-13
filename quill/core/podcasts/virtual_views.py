@@ -30,13 +30,22 @@ def virtual_view_pairs(
 ) -> list[tuple[PodcastShow, PodcastEpisode]]:
     """``(show, episode)`` pairs for one of :data:`VIRTUAL_VIEWS` -- kept as
     real pairs (not a bare episode list) since these aggregate across shows."""
+    if view_id == "inbox":
+        # Delegated so the Inbox has exactly one definition: notably, an
+        # episode an Inbox cap trimmed out is not in the Inbox any more, and
+        # a second copy of the rule here would have missed that.
+        from quill.core.podcasts.inbox import inbox_pairs
+
+        return inbox_pairs(library)
+    if view_id == "recently_expired":
+        from quill.core.podcasts.expiration import expired_pairs
+
+        return [(show, episode) for show, episode in expired_pairs(library)]  # type: ignore[misc]
     pairs: list[tuple[PodcastShow, PodcastEpisode]] = []
     for show in library.shows:
         for episode in show.episodes:
             if view_id == "new_episodes" and not episode.played:
                 pairs.append((show, episode))
             elif view_id == "continue_listening" and episode.position_ms > 0 and not episode.played:
-                pairs.append((show, episode))
-            elif view_id == "inbox" and show.route_to_inbox and not episode.played:
                 pairs.append((show, episode))
     return pairs

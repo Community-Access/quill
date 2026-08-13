@@ -26,6 +26,7 @@ import wx.adv
 from quill.core.a11y_regions import RegionTracker
 from quill.core.commands import CommandRegistry
 from quill.core.features import FeatureManager
+from quill.core.file_manager import reveal_command
 from quill.core.keymap import DEFAULT_KEYMAP, load_keymap
 from quill.core.safety.feature_lock import load_feature_locks
 from quill.core.settings import load_settings
@@ -1038,7 +1039,7 @@ class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
         result = self._show_modal_dialog(dialog, "Update downloaded")
         dialog.Destroy()
         if result == wx.ID_OPEN:
-            subprocess.Popen(["explorer", "/select,", str(target)])  # noqa: S603,S607
+            subprocess.Popen(reveal_command(target))  # noqa: S603 - shared, tested argv
             return
         if result == wx.ID_OK and applyable:
             self._apply_update_and_restart(release, Path(str(target)))

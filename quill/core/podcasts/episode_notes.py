@@ -117,3 +117,48 @@ def delete_episode_note(note_id: str) -> list[EpisodeNote]:
     notes = [n for n in load_episode_notes() if n.note_id != note_id]
     save_episode_notes(notes)
     return notes
+
+
+def format_timestamp(position_ms: int) -> str:
+    """``m:ss`` (or ``h:mm:ss``) for a position, for written text only.
+
+    Written down it is unambiguous; **spoken** it is not, which is why every
+    announcement in the podcast stack says "3 minutes 10 seconds" instead.
+    This form exists for the clipboard and the notes list, where the reader
+    has the surrounding words to disambiguate it.
+    """
+    total_seconds = max(0, position_ms) // 1000
+    minutes, seconds = divmod(total_seconds, 60)
+    hours, minutes = divmod(minutes, 60)
+    if hours:
+        return f"{hours}:{minutes:02d}:{seconds:02d}"
+    return f"{minutes}:{seconds:02d}"
+
+
+def format_note_for_sharing(
+    note: EpisodeNote,
+    *,
+    show_title: str = "",
+    episode_title: str = "",
+    audio_url: str = "",
+) -> str:
+    """One note as text somebody else can actually use.
+
+    Sharing a bookmark is item 9 applied to a note: the useful thing to hand
+    over is not the note's text alone but *where in what* it points -- so the
+    episode, the show, the timestamp, the note, and the link travel together.
+    Pasted into a message, that reads as a complete thought; the note text on
+    its own reads as a fragment nobody can act on.
+
+    Everything except the note itself is optional, because a note whose show
+    has since been unsubscribed should still copy rather than raise. Absent
+    parts are simply left out instead of appearing as empty labels.
+    """
+    lines: list[str] = []
+    heading = " -- ".join(part for part in (episode_title, show_title) if part.strip())
+    if heading:
+        lines.append(heading)
+    lines.append(f"At {format_timestamp(note.position_ms)}: {note.text}".rstrip())
+    if audio_url.strip():
+        lines.append(audio_url.strip())
+    return "\n".join(lines)

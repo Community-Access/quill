@@ -105,11 +105,16 @@ class TypingPathMixin:
         if editor is None:
             return
         try:
-            text = editor.GetValue()
+            # Liveness probe only -- the editor can be a dead TextCtrl by the
+            # time the timer fires (tab closed, document replaced; #603/#269).
+            editor.GetInsertionPoint()
         except RuntimeError:
-            # The editor can be a dead TextCtrl by the time the timer fires
-            # (tab closed, document replaced) -- same guard as #603/#269.
             return
+        # #1346 round 3: the text itself comes from the document, not another
+        # full marshal out of the control. The sync path stored this exact
+        # string in document.set_text, and nothing can have changed it since --
+        # any change would have fired EVT_TEXT and restarted this timer.
+        text = self._document_text_for_display()
         self._schedule_browse_prewarm(text=text)
         if not self._suspend_persistent_undo:
             self._record_persistent_undo_state(text)

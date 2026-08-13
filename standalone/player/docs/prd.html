@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>prd</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-media-player-product-requirements-document-prd">QUILL
+Media Player — Product Requirements Document (PRD)</h1>
+<p><strong>Product:</strong> QUILL Media Player (in-QUILL feature
+<strong>and</strong> the standalone <code>Quill Media Player</code> app
+— see Section 9.11) <strong>Status:</strong> Approved for phased build —
+Phase 1 (core) shipped; UI phases in progress <strong>Owners:</strong>
+Community Access / BITS <strong>Date:</strong> 2026-08-04
+<strong>Related:</strong> <code>bard.md</code> (BARD 2.0 integration +
+Secrets/Token Manager); the user guide alongside this PRD
+(<code>userguide.md</code>) <strong>Scope:</strong> One rich, accessible
+media and audiobook player inside the QUILL ecosystem — for local files,
+the QUILL library sources, podcasts, and BARD Digital Talking Books (see
+<code>bard.md</code> Part A, Service 3).</p>
+<blockquote>
+<p><strong>Design stance:</strong> This is not a new player built from
+scratch. QUILL already has a mature, shared audio stack (engine layer,
+transport panel, chapter engine, resume store, audiobook library). This
+spec <strong>unifies and elevates</strong> that stack into one
+first-class Media Player, reuses every existing module by name, and adds
+only what is genuinely missing: a multi-band equalizer and DSP chain,
+silence trimming, DAISY audio navigation, unified cross-source library,
+and richer bookmarks. Inspiration for the feature bar is drawn from
+BookPlayer (iOS), adapted to a keyboard-and-screen-reader-first desktop
+experience.</p>
+</blockquote>
+<hr />
+<h2 id="principles">1. Principles</h2>
+<ol type="1">
+<li><strong>Accessibility is the product, not a layer.</strong> Every
+control is keyboard-operable and screen-reader- and braille-announced.
+Nothing is mouse-only. This audience lives in NVDA/JAWS and a braille
+display; a beautiful player they cannot drive is worthless.
+Accessibility is specified first (Section 8), not bolted on.</li>
+<li><strong>Reuse the existing stack.</strong> Playback goes through the
+shared engine in <code>quill/ui/audio/</code>; transport and chapters
+reuse the Audio Studio <code>PlayerPanel</code>; chapters/M4B/ID3 reuse
+<code>quill/core/speech/</code>; resume and per-book state reuse
+<code>quill/core/speech/listening_positions.py</code> and
+<code>quill/core/audio_studio/</code>.</li>
+<li><strong>One player, many sources.</strong> Local files, QUILL
+library downloads, podcasts, and BARD titles all play in the same player
+with the same controls and the same library shelves.</li>
+<li><strong>QUILL UX flavor.</strong> Lives as a
+<code>main_frame_*</code> mixin, opens through
+<code>_show_modal_dialog</code> (GATE-16), obeys the keymap/command
+registry, announces through <code>quill.core.announce</code>, and
+persists via atomic JSON in <code>app_data_dir()</code>.</li>
+<li><strong>Cross-platform, honest about it.</strong> Windows and macOS.
+Rich DSP depends on the libmpv backend; the built-in
+<code>wx.media</code> backend degrades gracefully with an announced
+reason (Section 12).</li>
+<li><strong>Robust and gapless.</strong> Large audiobooks, flaky files,
+and long listening sessions are the normal case — resume, integrity, and
+stability are first-order concerns.</li>
+</ol>
+<hr />
+<h2 id="what-already-exists-the-reuse-map">2. What already exists (the
+reuse map)</h2>
+<p>The player is assembled from these existing modules. New work is
+called out in Section 3.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Reuse</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Playback engine</td>
+<td><code>quill/ui/audio/audio_engine.py</code> —
+<code>AudioEngine</code> protocol, <code>WxMediaEngine</code> (default,
+<code>wx.media</code>), <code>create_engine()</code> /
+<code>preferred_backend()</code></td>
+</tr>
+<tr>
+<td>Rich backend</td>
+<td><code>quill/ui/audio/mpv_engine.py</code> —
+<code>MpvAudioEngine</code> (libmpv, gapless, exact seek,
+<code>scaletempo</code>)</td>
+</tr>
+<tr>
+<td>Transport UI</td>
+<td><code>quill/ui/audio_studio/player_panel.py</code> —
+<code>PlayerPanel</code> (play/pause/stop, prev/next chapter,
+rewind/forward, position slider, volume/mute, speed, “Where am I?”)</td>
+</tr>
+<tr>
+<td>Player host</td>
+<td><code>quill/ui/audio_studio/chapter_workbench.py</code> — ties panel
++ library + resume;
+<code>open_book_in_workbench(frame, path)</code></td>
+</tr>
+<tr>
+<td>Chapters (ID3/M4B)</td>
+<td><code>quill/core/speech/chapters.py</code> (CHAP/CTOC via
+<code>mutagen</code>), <code>quill/core/speech/audiobook.py</code>
+(<code>read_m4b_chapters</code>, ffprobe),
+<code>quill/core/speech/chapter_io.py</code>
+(Audacity/CUE/CSV/Podcasting-2.0 import/export)</td>
+</tr>
+<tr>
+<td>Resume position</td>
+<td><code>quill/core/speech/listening_positions.py</code> (keyed by
+<code>path\|size</code>, capped)</td>
+</tr>
+<tr>
+<td>Per-book prefs</td>
+<td><code>quill/core/audio_studio/book_prefs.py</code> (volume/mute,
+extend for speed/EQ)</td>
+</tr>
+<tr>
+<td>Audiobook library</td>
+<td><code>quill/core/audio_studio/library.py</code> —
+<code>BookEntry</code>, Favorites / In Progress / Recently Played /
+Inbox views</td>
+</tr>
+<tr>
+<td>Play queue</td>
+<td><code>quill/core/audio_studio/play_queue.py</code></td>
+</tr>
+<tr>
+<td>Sleep timer</td>
+<td><code>quill/core/audio_studio/sleep_timer.py</code>
+(<code>SleepTimerWatcher</code>)</td>
+</tr>
+<tr>
+<td>Playlists (M3U/PLS)</td>
+<td><code>quill/core/radio/playlist_import.py</code> /
+<code>playlist_export.py</code> / <code>m3u_catalog.py</code>,
+<code>quill/core/podcasts/playlists.py</code></td>
+</tr>
+<tr>
+<td>Bookmarks / time-points</td>
+<td><code>quill/core/bookmarks.py</code>; Beacon
+<code>Location.media_start_ms</code>, <code>MediaChapter</code>
+(<code>quill/apps/beacon/model.py</code>)</td>
+</tr>
+<tr>
+<td>Background work</td>
+<td><code>quill/stability/task_manager.py</code>
+(<code>TaskManager</code>) + <code>quill/stability/wx_dispatch.py</code>
+(<code>call_ui_safely</code>)</td>
+</tr>
+<tr>
+<td>Announcements</td>
+<td><code>quill/core/announce/</code> (<code>AnnouncementService</code>,
+sinks) + <code>quill/platform/windows/prism_bridge.py</code>
+(<code>AnnouncementEngine</code>)</td>
+</tr>
+<tr>
+<td>Earcons</td>
+<td><code>quill/ui/companion_cues.py</code> (<code>post_cue</code>),
+<code>quill/core/sound_events.py</code>,
+<code>quill/core/speech/earcon.py</code></td>
+</tr>
+<tr>
+<td>Library sources</td>
+<td><code>quill/core/library/</code> (Book model, providers) for
+downloadable audio; BARD via <code>bard.md</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="what-is-genuinely-new">3. What is genuinely new</h2>
+<p>Only these are net-new; everything else is composition of Section
+2.</p>
+<ol type="1">
+<li><strong>DSP chain</strong> — multi-band <strong>equalizer</strong>,
+<strong>volume boost / normalization</strong>, and
+<strong>skip-silence</strong> (libmpv audio filters; Section
+7.4–7.6).</li>
+<li><strong>DAISY audio navigation</strong> — navigate DAISY Digital
+Talking Books by level, heading, and page (no DAISY <em>audio</em>
+player exists today). Required for BARD audio.</li>
+<li><strong>Unified Media Library</strong> — one library surface
+spanning local files, QUILL library downloads, podcasts, and BARD,
+layered over <code>audio_studio/library.py</code>.</li>
+<li><strong>Rich bookmarks</strong> — named, note-bearing time-point
+bookmarks with a navigable list and export, generalizing
+<code>bookmarks.py</code> + Beacon time-points.</li>
+<li><strong>The Media Player shell</strong> — a
+<code>MediaPlayerMixin</code> + a full player window and a persistent
+<strong>mini-player</strong>, plus global media-key handling.</li>
+<li><strong>OS Now Playing integration</strong> — Windows SMTC and macOS
+Now Playing / remote command center (Section 7.13).</li>
+</ol>
+<hr />
+<h2 id="architecture">4. Architecture</h2>
+<pre><code>                 +-------------------------------------------+
+   UI layer      |  MediaPlayerMixin (main_frame_media.py)   |
+                 |  MediaPlayerWindow / MiniPlayer (wx)      |
+                 |  PlayerPanel (reused) + DSP panel (new)   |
+                 +---------------------+---------------------+
+                                       | UI thread only
+                 +---------------------v---------------------+
+   Controller    |  MediaController (quill/core/media/)      |
+                 |  transport, queue, chapters, position,    |
+                 |  bookmarks, sleep, DSP settings           |
+                 +----+-------------------+------------------+
+                      |                   |
+        +-------------v-----+   +---------v-------------------+
+   Engine| AudioEngine proto|   | Domain services (core)      |
+         | WxMediaEngine    |   | chapters / audiobook / DAISY|
+         | MpvAudioEngine   |   | listening_positions /       |
+         | (DSP-capable)    |   | library / play_queue /      |
+         +------------------+   | bookmarks / sleep_timer     |
+                                +-----------------------------+
+        Background: TaskManager + wx_dispatch (probe, scan, download)
+        Announce:   quill.core.announce -&gt; prism_bridge (speech+braille)</code></pre>
+<ul>
+<li><strong><code>quill/core/media/</code> (new, wx-free,
+strict-typed):</strong> the <code>MediaController</code> and the
+DSP/DAISY/bookmark domain logic — pure, unit-testable, in
+<code>mypy</code> scope.</li>
+<li><strong><code>quill/ui/media/</code> (new):</strong> the wx shell —
+player window, mini-player, DSP panel — built on the reused
+<code>PlayerPanel</code>.</li>
+<li>The engine stays behind the existing <code>AudioEngine</code>
+protocol; the controller never imports wx and never touches the OS
+directly.</li>
+</ul>
+<hr />
+<h2 id="sources-and-formats">5. Sources and formats</h2>
+<p><strong>Sources:</strong> local files/folders; QUILL library
+downloads (<code>quill/core/library/</code>); podcasts (Cast); BARD
+Digital Talking Books (<code>bard.md</code>); imported playlists.</p>
+<p><strong>Container/codec support</strong> (via the engine; probe with
+ffprobe/<code>mutagen</code>):</p>
+<ul>
+<li><strong>Audiobook:</strong> M4B, M4A (chaptered), MP3 (ID3
+CHAP/CTOC).</li>
+<li><strong>Audio:</strong> AAC, Ogg/Opus, FLAC, WAV, and other
+libmpv-supported codecs.</li>
+<li><strong>Packaged books:</strong> DAISY 2.02/3 talking books
+(<code>.zip</code>), including BARD titles.</li>
+<li><strong>Playlists:</strong> M3U / M3U8 / PLS import and export.</li>
+<li><strong>Archives:</strong> <code>.zip</code> of audio auto-expanded
+into an ordered playlist (BookPlayer parity).</li>
+</ul>
+<p>Every result/track carries an explicit <strong>format</strong> and
+<strong>source</strong> so the player can announce “M4B audiobook, 11
+hours, 14 chapters” before playback.</p>
+<hr />
+<h2 id="the-mediacontroller-core-api">6. The
+<code>MediaController</code> (core API)</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MediaController:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># lifecycle</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> load(<span class="va">self</span>, item: MediaItem, <span class="op">*</span>, resume: <span class="bu">bool</span> <span class="op">=</span> <span class="va">True</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> play(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> pause(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> toggle(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> stop(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># transport</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> seek_to(<span class="va">self</span>, ms: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> skip(<span class="va">self</span>, delta_ms: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...              <span class="co"># +/- interval</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> smart_rewind(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...                     <span class="co"># elapsed-aware rewind</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> next_chapter(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> prev_chapter(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> go_to_chapter(<span class="va">self</span>, index: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># rate / audio</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> set_speed(<span class="va">self</span>, rate: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...           <span class="co"># 0.5–4.0, pitch-preserving</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> set_volume(<span class="va">self</span>, pct: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> set_boost(<span class="va">self</span>, db: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...             <span class="co"># gain / normalization</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> set_equalizer(<span class="va">self</span>, eq: Equalizer) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> set_skip_silence(<span class="va">self</span>, on: <span class="bu">bool</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># bookmarks / position</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> add_bookmark(<span class="va">self</span>, note: <span class="bu">str</span> <span class="op">=</span> <span class="st">&quot;&quot;</span>) <span class="op">-&gt;</span> Bookmark: ...</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> bookmarks(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[Bookmark]: ...</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> resume_ms(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="bu">int</span>: ...</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># queue</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> queue(<span class="va">self</span>) <span class="op">-&gt;</span> PlayQueue: ...</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> play_next(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    <span class="co"># state / events</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> state(<span class="va">self</span>) <span class="op">-&gt;</span> PlayerState: ...</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> subscribe(<span class="va">self</span>, listener) <span class="op">-&gt;</span> Unsubscribe: ...       <span class="co"># UI updates via events</span></span></code></pre></div>
+<p><code>MediaItem</code> is source-agnostic (<code>local</code> /
+<code>library</code> / <code>podcast</code> / <code>bard</code> /
+<code>daisy</code>) and carries title, source, path-or-url, format,
+chapters, duration, and a resume key. All state changes emit events the
+UI marshals to the main thread with <code>call_ui_safely</code>.</p>
+<hr />
+<h2 id="feature-specification">7. Feature specification</h2>
+<h3 id="transport">7.1 Transport</h3>
+<p>Play/pause (single toggle), stop, and configurable <strong>skip
+intervals</strong> (default −15 s / +30 s; per-book override). Prev/next
+<strong>chapter</strong>, jump to chapter start, jump to book start.
+Position slider that <strong>speaks human time</strong> (“2 hours 14
+minutes of 11 hours”). Media-key and headset-button support (Section
+7.13).</p>
+<h3 id="smart-rewind">7.2 Smart rewind</h3>
+<p>On resume after a pause, automatically rewind a small amount that
+grows with how long you were away (BookPlayer parity) — so you re-enter
+with context. Amount is configurable and can be disabled.</p>
+<h3 id="speed-control">7.3 Speed control</h3>
+<p>Global and <strong>per-book</strong> playback speed, 0.5×–4.0× in
+fine steps (0.05), <strong>pitch preserving</strong> via libmpv
+<code>scaletempo2</code>. On the <code>wx.media</code> fallback, WMP
+rate change is offered at coarser granularity without pitch
+preservation, and the player announces the limitation. Speed is
+remembered per book in <code>book_prefs</code>.</p>
+<h3 id="volume-boost-and-normalization">7.4 Volume, boost, and
+normalization</h3>
+<p>Master volume, mute, and <strong>per-book volume</strong> (reuse
+<code>book_prefs</code>). <strong>Volume boost</strong> and loudness
+<strong>normalization</strong> for quiet recordings via libmpv
+<code>dynaudnorm</code> / <code>loudnorm</code>. Boost is expressed in
+dB with a safe ceiling and clipping guard.</p>
+<h3 id="equalizer-new">7.5 Equalizer (new)</h3>
+<p>A multi-band <strong>graphic EQ</strong> (10 bands, ±12 dB)
+implemented via the libmpv
+<code>anequalizer</code>/<code>equalizer</code> audio filter. Ships
+<strong>presets</strong> (Flat, Speech/Voice, Bass Boost, Treble Boost,
+Night, Podcast) plus user presets. EQ is applied live, stored globally
+and optionally <strong>per-book</strong>. Fully keyboard-operable: each
+band is a labeled slider with value announced in dB; presets are a
+combobox. When the active backend cannot do EQ (<code>wx.media</code>),
+the EQ controls are disabled with an announced, explained reason and a
+one-key offer to enable the mpv backend.</p>
+<h3 id="skip-silence-new">7.6 Skip silence (new)</h3>
+<p>Optional <strong>silence trimming</strong> (BookPlayer “Smart Speed”
+analog) via libmpv <code>silenceremove</code>, shortening long gaps.
+Announced when toggled; off by default.</p>
+<h3 id="chapters-and-markers">7.7 Chapters and markers</h3>
+<p>Read chapters from ID3 <strong>CHAP/CTOC</strong>,
+<strong>M4B</strong> atoms, <strong>Podcasting 2.0</strong> JSON, and
+<strong>DAISY</strong> navigation (Section 7.8) — all via
+<code>quill/core/speech/chapters.py</code>, <code>audiobook.py</code>,
+and <code>chapter_io.py</code>. A navigable <strong>chapter
+list</strong> (arrow to move, Enter to jump) announces title + time;
+entering a new chapter during playback is announced (and optionally
+earconed). Import/export chapters (Audacity labels, CUE, CSV,
+chapters.json).</p>
+<h3 id="daisy-audio-navigation-new">7.8 DAISY audio navigation
+(new)</h3>
+<p>For DAISY talking books (including BARD audio), navigate by
+<strong>level/heading</strong>, <strong>page</strong>, and
+<strong>phrase</strong>, driven by the DAISY navigation control file.
+Exposes the DAISY structure as the player’s chapter/heading tree so the
+same list-and-jump UI works. This is the one net-new engine-adjacent
+component and is required for <code>bard.md</code> Service 3.</p>
+<h3 id="bookmarks-and-notes-newgeneralized">7.9 Bookmarks and notes
+(new/generalized)</h3>
+<p>Named, note-bearing <strong>time-point bookmarks</strong>: add at the
+current position (one key), optional spoken/typed note, a navigable
+<strong>bookmark list</strong> (jump on Enter), rename, delete, and
+<strong>export</strong>. Built over <code>quill/core/bookmarks.py</code>
+and the Beacon time-point model. Auto-bookmark on sleep-timer stop so
+you never lose your place.</p>
+<h3 id="resume-listening-position">7.10 Resume / listening position</h3>
+<p>Every book remembers its exact position via
+<code>listening_positions.py</code> (keyed by <code>path|size</code>),
+restored on load. “Mark as finished” and progress percentage per book
+(reuse library <code>record_play</code>). Optional server-side position
+sync for BARD titles when the API supports it (<code>bard.md</code>
+A.6).</p>
+<h3 id="sleep-timer">7.11 Sleep timer</h3>
+<p>Duration-based or <strong>end-of-chapter</strong> sleep, with a
+<strong>fade-out</strong> and an auto-bookmark at stop. Reuse
+<code>SleepTimerWatcher</code>; host marshals the fire callback via
+<code>wx.CallAfter</code>. Announced countdown at intervals; extendable
+with one key (“still awake?”).</p>
+<h3 id="managed-library-unified-new-surface-over-existing-store">7.12
+Managed library (unified, new surface over existing store)</h3>
+<p>One <strong>Media Library</strong> over
+<code>audio_studio/library.py</code> with pinned views —
+<strong>Favorites</strong>, <strong>In Progress</strong>,
+<strong>Recently Played</strong>, <strong>Inbox</strong> (recent files
+not yet added) — plus <strong>user folders</strong> with automatic
+sequential playback (BookPlayer parity), favorites, mark-finished, and
+search. Sources beyond local files (library downloads, podcasts, BARD)
+appear as first-class entries with their source badge. All list
+navigation is arrow-key + type-ahead; no drag-only operations (reorder
+is combobox-add + Up/Down/Remove per the QUILL list-UI convention).</p>
+<h3 id="os-integration-and-now-playing">7.13 OS integration and Now
+Playing</h3>
+<p>Windows <strong>System Media Transport Controls</strong> (lock
+screen, hardware/media keys, headset buttons) and macOS <strong>Now
+Playing</strong> / remote command center: title, chapter, artwork,
+elapsed/remaining, and play/pause/skip/next-chapter commands. Global
+media hotkeys work even when the player window isn’t focused.</p>
+<h3 id="playlists-and-queue">7.14 Playlists and queue</h3>
+<p>Import/export <strong>M3U/M3U8/PLS</strong>; a persistent
+<strong>play queue</strong> (<code>play_queue.py</code>) with
+reorder/remove; folder = auto-sequential playlist; <code>.zip</code>
+auto-expanded to a queue.</p>
+<h3 id="a-winamp-classic-skin-transport-keys-shipped">7.14a Winamp
+classic-skin transport keys (shipped)</h3>
+<p>The classic main-window letters — <code>Z X C V B</code> for
+previous/play/pause/stop/next, arrows to seek, <code>T</code>
+elapsed-or-remaining, <code>J</code> jump-to-track, <code>Ctrl+J</code>
+go-to-position, <code>L</code> open — resolved through the <strong>one
+shared map</strong> (<code>quill/ui/radio/winamp_keys.py</code>,
+wx-free) that Quill Radio’s Recordings player and QUILL Cast already
+use. The Media Player was the last holdout, and the surface a Winamp
+user is most likely to reach for: an audiobook with a track list is a
+playlist editor with a transport, which is exactly what the classic
+skin’s main window was. Adopting the shared map rather than writing a
+second one is the requirement — the value of muscle memory is that it is
+not relearned per app, so the letters, the seek steps, and the words
+spoken back must be identical across every surface.
+<code>B</code>/<code>Z</code> step the track list, or by chapter for a
+single-file book; <code>Ctrl+J</code> reuses the existing accessible Go
+to Position dialog rather than a second prompt. Letters are never
+claimed while a text field has focus
+(<code>quill/ui/media/winamp_mixin.py</code>).</p>
+<h3 id="gapless-and-crossfade">7.15 Gapless and crossfade</h3>
+<p>Gapless playback across a book’s files (libmpv), with an optional
+short crossfade for music/mixed content. Falls back to sequential load
+on <code>wx.media</code>.</p>
+<h3 id="bard-protected-playback">7.16 BARD protected playback</h3>
+<p>BARD Digital Talking Books play in this same player. Content
+protection is handled per the <strong>sanctioned</strong> mechanism
+agreed with NLS (<code>bard.md</code> A.4/E): any per-title key is
+obtained through the Token Manager / broker, held only in memory for
+playback, and <strong>no decrypted or unprotected copy is ever written
+to disk</strong>. If the sanctioned path is unavailable on a platform,
+the player says so rather than working around it.</p>
+<hr />
+<h2 id="accessibility-specification-first-class">8. Accessibility
+specification (first-class)</h2>
+<p>This section is normative, not aspirational.</p>
+<ul>
+<li><strong>Keyboard model.</strong> Every function has a key. Space =
+play/pause; Left/Right = skip interval; <code>[</code> / <code>]</code>
+= prev/next chapter; <code>,</code> / <code>.</code> = speed down/up;
+<code>B</code> = add bookmark; <code>L</code> = chapter list;
+<code>K</code> = bookmark list; <code>S</code> = sleep timer;
+<code>Where am I?</code> on one key. A discoverable, remappable shortcut
+sheet via the keymap registry
+(<code>quill/core/feature_command_map.py</code>); no chord is required
+for core transport.</li>
+<li><strong>Screen-reader + braille announcements.</strong> All state
+changes route through <code>quill.core.announce</code> →
+<code>prism_bridge.AnnouncementEngine</code> (NVDA/JAWS/Narrator/SAPI
+speech <strong>and</strong> braille). Announced events: load (“M4B, 11
+h, 14 chapters”), play/pause/stop, chapter entry, speed/volume/EQ
+changes (with value), bookmark add/jump, sleep countdown, end of
+book.</li>
+<li><strong>Verbosity levels.</strong> Minimal / Normal / Verbose
+(mirroring Beacon’s <code>Announcer</code>), so power users can silence
+routine chatter while keeping essential cues.</li>
+<li><strong>Earcons.</strong> Distinct non-speech cues
+(<code>post_cue</code> / <code>sound_events</code>) for
+play/pause/bookmark/chapter/end, independently toggleable from
+speech.</li>
+<li><strong>“Where am I?”</strong> One key speaks title, chapter,
+position, remaining, and speed.</li>
+<li><strong>Focus management.</strong> Player window/mini-player open
+through <code>_show_modal_dialog</code> (GATE-16): focus lands on the
+primary control, is tracked, and returns to the editor on close. Lists
+expose correct accessible name/role/value
+(<code>set_accessible_name</code>).</li>
+<li><strong>No mouse-only affordances.</strong> Sliders are
+keyboard-adjustable and announce values; the position bar is
+arrow-seekable; reordering never requires drag.</li>
+<li><strong>Self-voicing option.</strong> Optional built-in speech for
+announcements so the player is usable even without a running screen
+reader (uses the QUILL speech engine).</li>
+<li><strong>Visual accessibility.</strong> Honors QUILL/OS high-contrast
+and dark mode; respects reduced-motion; large hit targets and scalable
+text for low-vision mouse users.</li>
+</ul>
+<hr />
+<h2 id="ux-and-where-it-lives">9. UX and where it lives</h2>
+<ul>
+<li><strong>Entry points.</strong> <code>Tools &gt; Media Player</code>,
+the command palette, and a global hotkey. A
+<code>MediaPlayerMixin</code> in
+<code>quill/ui/main_frame_media.py</code> adds the commands.</li>
+<li><strong>Two surfaces.</strong> A full <strong>Player Window</strong>
+(Section 9.1) with a real menu bar, and a compact configurable
+<strong>Mini-Player</strong> (Section 9.4). Modal child dialogs launched
+from either (Open URL, EQ editor, bookmark note, preferences) go through
+<code>_show_modal_dialog</code> (GATE-16).</li>
+<li><strong>Status bar.</strong> Reuses the audio-studio status-bar
+pattern for at-a-glance state.</li>
+<li><strong>Continuity.</strong> Closing the window keeps audio playing
+via the controller; reopening reattaches. One playback session app-wide
+(no double audio), consistent with the radio single-controller
+lesson.</li>
+</ul>
+<h3 id="the-full-player-window">9.1 The full Player Window</h3>
+<p>The Player Window is a top-level
+<strong><code>wx.Frame</code></strong> (not a modal dialog) following
+the standalone <code>AppShellFrame</code> conventions the audio apps
+already use — so it can carry a menu bar, keep playing when unfocused,
+and host child panels. It implements the MainFrame host protocol
+(<code>_show_modal_dialog</code>, <code>_run_background_task</code>,
+<code>_announce</code>, <code>settings</code>) so every sub-dialog it
+opens still obeys the modal/keyboard contract.</p>
+<p><strong>Layout (top to bottom), each a labeled region a screen reader
+lands on in order:</strong></p>
+<ol type="1">
+<li><strong>Menu bar</strong> (Section 9.2) — the complete command
+surface.</li>
+<li><strong>Now Playing header</strong> — title, author/narrator, source
+badge (Local / Library / Podcast / BARD), and format (“M4B · 11 h 14 m ·
+14 chapters”). A single read-only line a screen reader can review;
+updated live and announced on change.</li>
+<li><strong>Transport row</strong> — the reused
+<code>PlayerPanel</code>: Play/Pause, Stop, Skip back/forward, Prev/Next
+chapter, position slider (arrow-seekable, speaks human time), volume,
+mute, speed. Every control keyboard-operable and value-announced.</li>
+<li><strong>Content notebook</strong> (Tab-navigable pages, each a
+proper accessible tab):
+<ul>
+<li><strong>Chapters</strong> — the chapter/heading list (Enter jumps;
+announces title + time).</li>
+<li><strong>Bookmarks</strong> — named, note-bearing time-points (Enter
+jumps; add/rename/delete).</li>
+<li><strong>Library</strong> — the unified shelves (Favorites / In
+Progress / Recently Played / Inbox / folders) with type-ahead
+search.</li>
+<li><strong>Queue</strong> — the play queue with keyboard reorder
+(Up/Down/Remove).</li>
+<li><strong>Audio</strong> — the DSP panel: equalizer, boost/normalize,
+skip-silence, output device.</li>
+</ul></li>
+<li><strong>Status bar</strong> — state, remaining time, backend in use,
+sleep-timer countdown.</li>
+</ol>
+<p>Tab order is header → transport → notebook → status. Focus opens on
+<strong>Play/Pause</strong>. The window honors QUILL/OS high-contrast,
+dark mode, reduced-motion, and text scaling.</p>
+<h3 id="menu-bar-complete">9.2 Menu bar (complete)</h3>
+<p>Native <code>wx.MenuBar</code> — inherently screen-reader-navigable,
+with mnemonics (<code>Alt</code>) and accelerators. <strong>Every
+accelerator is remappable</strong> through the keymap editor
+(<code>quill/core/feature_command_map.py</code>); the defaults below
+avoid <code>Ctrl+Alt</code> chords (which fight screen readers). Items
+disable with a spoken reason when unavailable (e.g. DAISY navigation on
+a non-DAISY book; EQ on the <code>wx.media</code> fallback).</p>
+<ul>
+<li><strong>File</strong> — Open File… (Ctrl+O) · Open Folder as Book…
+(Ctrl+Shift+O) · Open URL or Stream… · Open from QUILL Library… · Open
+BARD Catalog… · Import Playlist (M3U/PLS)… · Export Playlist… · Recent
+Books ▸ · Add Current to Library · Close Window (Ctrl+W, keeps playing)
+· Exit Player.</li>
+<li><strong>Playback</strong> — Play/Pause (Space) · Stop · Skip Back
+(Left) · Skip Forward (Right) · Previous Chapter (<code>[</code>) · Next
+Chapter (<code>]</code>) · Go to Position… (Ctrl+G) · Go to Percentage…
+· Restart Book · Speed ▸ (Slower <code>,</code> / Faster <code>.</code>
+/ Reset / 0.75×–3.0×) · Smart Rewind (toggle) · A–B Repeat ▸ (Set A /
+Set B / Clear) · Voice Control (toggle) · Sleep Timer ▸ (Off / 5 / 15 /
+30 / 60 min / End of Chapter / Custom…).</li>
+<li><strong>Audio</strong> — Volume Up (Up) · Volume Down (Down) · Mute
+(M) · Volume Boost ▸ (Off / +3 dB / +6 dB / Normalize) · Equalizer… (E)
+· EQ Preset ▸ (Flat / Voice / Bass / Treble / Night / Podcast / your
+presets) · Skip Silence (toggle) · Gapless (toggle) · Crossfade… ·
+Output Device ▸.</li>
+<li><strong>Navigation</strong> — Chapters (L) · Bookmarks (K) · Add
+Bookmark (B) · Add Bookmark with Note… (Shift+B) · Send Bookmark to
+Document (Ctrl+Shift+B) · Search in Audio… · Where Am I? (W) · Read
+Status Bar · Previous Book · Next Book · DAISY Navigation ▸ (By Heading
+/ By Page / By Phrase — enabled only for DAISY titles).</li>
+<li><strong>Library</strong> — Show Library (Ctrl+L) · Favorites · In
+Progress · Recently Played · Inbox · New Folder… · Rename… · Move to
+Folder… · Mark as Finished · Search Library… (Ctrl+F) · Play
+Queue….</li>
+<li><strong>View</strong> — Now Playing (focus view) · Mini-Player ·
+Full Player · Theme ▸ (System / Light / Dark / High Contrast / From
+Cover) · Show Album Art · Show Waveform · Verbosity ▸ (Minimal / Normal
+/ Verbose) · Always on Top.</li>
+<li><strong>Magical</strong> — Magical Mode (master toggle) and its
+sub-options (Section 9.5).</li>
+<li><strong>Tools</strong> — Chapter Editor… · Edit Metadata / Look up
+Book Details… · Convert or Export Audio… · Download for Offline.</li>
+<li><strong>Settings</strong> — Preferences… · Keyboard Shortcuts… ·
+Audio Backend ▸ (Auto / libmpv / wx.media, with current status) · Sound
+Events &amp; Earcons….</li>
+<li><strong>Help</strong> — Player Help &amp; Keyboard Reference ·
+What’s New · About.</li>
+</ul>
+<h3 id="default-keyboard-map-all-remappable">9.3 Default keyboard map
+(all remappable)</h3>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Space</td>
+<td>Play/Pause</td>
+<td><code>[</code> / <code>]</code></td>
+<td>Prev / Next chapter</td>
+</tr>
+<tr>
+<td>Left / Right</td>
+<td>Skip back / forward</td>
+<td><code>,</code> / <code>.</code></td>
+<td>Slower / Faster</td>
+</tr>
+<tr>
+<td>Up / Down</td>
+<td>Volume up / down</td>
+<td>M</td>
+<td>Mute</td>
+</tr>
+<tr>
+<td>B / Shift+B</td>
+<td>Bookmark / with note</td>
+<td>K</td>
+<td>Bookmarks list</td>
+</tr>
+<tr>
+<td>L</td>
+<td>Chapters list</td>
+<td>W</td>
+<td>Where am I?</td>
+</tr>
+<tr>
+<td>E</td>
+<td>Equalizer</td>
+<td>S</td>
+<td>Sleep timer</td>
+</tr>
+<tr>
+<td>Ctrl+L</td>
+<td>Library</td>
+<td>Ctrl+F</td>
+<td>Search library</td>
+</tr>
+<tr>
+<td>Ctrl+O</td>
+<td>Open file</td>
+<td>Ctrl+W</td>
+<td>Close window (keeps playing)</td>
+</tr>
+<tr>
+<td>Ctrl+G</td>
+<td>Go to Position (H:M:S)</td>
+<td>Ctrl+Shift+B</td>
+<td>Send bookmark to document</td>
+</tr>
+</tbody>
+</table>
+<p>Core transport needs <strong>no chord</strong>. The full sheet is
+discoverable under <strong>Help &gt; Keyboard Reference</strong> and
+editable in the keymap editor.</p>
+<h3 id="mini-player-configurable-home-resolves-open-question-4">9.4
+Mini-Player (configurable home — resolves Open Question 4)</h3>
+<p>A compact always-available transport so playback continues while you
+read or write. <strong>Where it lives is a user setting</strong>
+(<code>media_mini_player_home</code>): a <strong>docked panel</strong>,
+a <strong>status-bar strip</strong>, or a <strong>floating always-on-top
+frame</strong> — default docked. It shows title, chapter,
+position/remaining, and Play/Pause/Skip/Chapter controls, announces the
+same events as the full window, and has a one-key <strong>Expand to Full
+Player</strong>.</p>
+<h3 id="magical-mode-opt-in-delight-never-at-accessibilitys-expense">9.5
+Magical Mode (opt-in delight, never at accessibility’s expense)</h3>
+<p>Off by default; one master toggle plus granular sub-toggles under the
+<strong>Magical</strong> menu. The rule for everything here:
+<strong>dual-channel</strong> (anything shown is also spoken/earconed),
+<strong>opt-in</strong>, <strong>Safe-Mode-aware</strong> (AI features
+vanish in Safe Mode), and it never blocks or slows a core control. Magic
+for the ears first, then the eyes.</p>
+<ul>
+<li><strong>Cinematic Now Playing.</strong> A calm, full-window focus
+view. For sighted users: ambient album-art background, a live waveform,
+and a color theme derived from the cover (reduced-motion honored). For
+everyone: a beautifully spoken context line and a quiet “listening”
+ambience that never competes with narration.</li>
+<li><strong>Spoken chapter intros.</strong> Entering a chapter, a warm
+one-line flourish — “Chapter 12, <em>The Return</em>. Two hours ten
+remaining.” — with a soft <strong>chapter chime</strong> from a
+selectable earcon personality (Classic / Warm / Minimal).</li>
+<li><strong>Welcome-back recap.</strong> On resume: Position-only (“Back
+at 6 h 42 m, Chapter 12”), or — AI, opt-in, Safe-Mode-off — a
+one-sentence recap of the last few minutes so you slide back in. Uses
+the QUILL AI stack; you always approve enabling it.</li>
+<li><strong>Chapter summary on demand.</strong> “Summarize this chapter”
+(AI, opt-in) speaks a short synopsis — useful for study or for
+re-finding a passage.</li>
+<li><strong>Ambient soundscape.</strong> Optional low, tasteful
+background beds (Off by default) with selectable packs; auto-ducks under
+speech and narration.</li>
+<li><strong>Gentle sleep.</strong> Sleep timer ends with a soft fade and
+a “goodnight” chime, and drops an auto-bookmark so morning-you never
+loses the place.</li>
+<li><strong>Listening stats &amp; streaks.</strong> Optional, announced
+(not just shown): hours listened, books finished, current streak —
+celebrated with a small earcon, never nagging.</li>
+<li><strong>Time-of-day greeting.</strong> Optional warm greeting on
+open (“Good evening — ready for <em>The Return</em>?”), spoken and
+shown.</li>
+</ul>
+<p>Every magical feature degrades cleanly: with the
+<code>wx.media</code> fallback or in Safe Mode the AI/soundscape pieces
+simply aren’t offered, and the core player is untouched.</p>
+<h3 id="system-tray">9.6 System tray</h3>
+<p>The Player reuses the existing tray plumbing in
+<code>quill/ui/app_shell.py</code>
+(<code>AppShellFrame._ensure_tray_icon</code> /
+<code>handle_app_close</code> / <code>_restore_from_tray</code> /
+<code>_exit_application</code>) that Quill Radio, Cast, and Audio Studio
+already share — no new tray engine. It is a <strong>Windows
+notification-area</strong> feature.</p>
+<ul>
+<li><strong>Icon and tooltip.</strong> A <code>wx.adv.TaskBarIcon</code>
+whose tooltip is the live Now Playing line (“<em>The Return</em> — Ch 12
+— 2 h 10 m left”), updated as state changes so a hover (or a screen
+reader querying the icon) reads current status.</li>
+<li><strong>Left double-click</strong> restores/raises the Player Window
+(<code>_restore_from_tray</code>).</li>
+<li><strong>Right-click popup menu</strong>, built fresh each open,
+mirroring the essentials of the menu bar: Play/Pause · Skip Back/Forward
+· Previous/Next Chapter · Add Bookmark · Sleep Timer ▸ · Where Am I? ·
+Show Player · Show Mini-Player · <strong>Exit Player</strong>.</li>
+<li><strong>Close-to-tray behavior</strong> is a user setting
+(<code>media_close_action</code>: <em>ask</em> / <em>minimize to
+tray</em> / <em>exit</em>), routed through
+<code>AppShellFrame.handle_app_close</code> so the Player shares the
+companion apps’ one close path. A deliberate <strong>Exit</strong> sets
+the exit-requested flag (<code>_exit_application</code>) so it never
+bounces back into the tray (#1193).</li>
+<li><strong>The EVT_CLOSE modal rule.</strong> The confirm dialog is
+<strong>never</strong> shown from inside the <code>EVT_CLOSE</code>
+handler — on wxMSW, with a screen reader’s low-level keyboard hook
+active, <code>ShowModal</code> from that context can hang (the “Alt+F4
+does nothing while playing” class of bug). The confirm is scheduled
+<em>after</em> the close flow, exactly as the shared handler already
+does.</li>
+<li><strong>macOS honesty.</strong> <code>wx.adv.TaskBarIcon</code>
+yields a <strong>Dock tile</strong>, not a menu-bar extra, so there is
+no notification-area tray on macOS; the Player skips it quietly there
+rather than misrepresent it (same choice <code>AppShellFrame</code>
+documents). Close-to-tray degrades to ordinary minimize/close on
+macOS.</li>
+</ul>
+<p><strong>Accessibility posture (important).</strong> The OS
+notification-area icon and its mouse-style popup are a historically weak
+spot for screen-reader users, so the tray is a <strong>convenience,
+never the only route</strong>:</p>
+<ul>
+<li><strong>Global media hotkeys</strong> (Section 7.13) drive
+Play/Pause, skip, and chapter moves even when the Player is minimized to
+the tray — you never need to open the tray menu to control
+playback.</li>
+<li>A <strong>global “Restore Player” hotkey</strong> brings the window
+back without touching the tray.</li>
+<li><strong>State changes are announced</strong> through
+<code>quill.core.announce</code> (speech + braille) while minimized, at
+the chosen verbosity — the spoken cue, not a visual toast, is the
+primary feedback. Optional balloon/toast notifications are off by
+default and never replace the spoken announcement.</li>
+<li>Every tray command exists in the menu bar and the keymap, so nothing
+is reachable <em>only</em> by the tray.</li>
+</ul>
+<h3 id="signature-features-the-quill-only-greatness">9.7 Signature
+features (the QUILL-only greatness)</h3>
+<p>These are the features that make this more than “a competent player”
+— each is accessibility-first and reuses infrastructure QUILL already
+has. All are additive: every one also exists as a plain key/menu item,
+so a feature being off never removes a route.</p>
+<ul>
+<li><strong>Hands-free voice control.</strong> Drive the player by voice
+— “play”, “next chapter”, “skip back thirty”, “bookmark this”, “how much
+is left”, “sleep in twenty”, “go to one twenty-three”. Reuses QUILL’s
+dictation/speech-recognition stack (Vosk / Whisper / the Nemotron
+spike), so it runs <strong>offline</strong> with no cloud. Off by
+default; opt-in with a push-to-talk key (and optional wake word). A
+confirmation earcon marks a recognized command; unrecognized input is
+announced, never guessed. Menu: <strong>Playback &gt; Voice
+Control</strong> (toggle). Voice is purely additive — every command has
+a key too.</li>
+<li><strong>Bookmark → your document or Sticky Note.</strong> Send a
+time-stamped bookmark straight into the open QUILL document or a Sticky
+Note as <code>[1:23:45] your note — Title</code>. This is the
+player-meets-writing bridge no standalone app has; it reuses the Beacon
+capture model. For protected BARD content, only the timestamp and your
+own note travel — never audio. Menu: <strong>Navigation &gt; Send
+Bookmark to Document</strong> (Ctrl+Shift+B).</li>
+<li><strong>Braille status line.</strong> A dedicated Now-Playing /
+chapter / position rendering on the refreshable braille display
+(position in cells, not just speech), via QUILL’s braille infrastructure
+— so deaf-blind users are first-class, not an afterthought.</li>
+<li><strong>Quillin source &amp; command extensibility.</strong> A
+sandboxed contract lets a Quillin register new player
+<strong>Sources</strong> (a library/source provider) and
+<strong>Commands</strong> (menu / palette entries), gated by its
+manifest capabilities. The community can add a source or an action
+without any core change.</li>
+<li><strong>A–B repeat.</strong> Set point A, set point B, and loop the
+segment — ideal for language learning, memorizing a passage, or
+transcription. Announces “Looping 3 minutes 20.” Menu: <strong>Playback
+&gt; A–B Repeat ▸</strong> (Set A / Set B / Clear).</li>
+<li><strong>Command-palette integration.</strong> Every player command
+is fuzzy-searchable in QUILL’s existing palette
+(<code>quill/ui/palette.py</code>).</li>
+<li><strong>Resume last on launch</strong> (opt-in). Reopen straight
+into the last book at its exact position — a one-setting “pick up where
+I left off”.</li>
+<li><strong>Search within audio.</strong> Search chapter/heading titles
+today; search <strong>spoken phrases</strong> once an optional per-book
+Whisper transcript is generated (an opt-in action, consistent with the
+DAISY-audio-only v1 decision). Jumps to the match and announces its
+chapter.</li>
+</ul>
+<h3 id="go-to-position-precise-hms-seek">9.8 Go to Position — precise
+H:M:S seek</h3>
+<p>Menu: <strong>Playback &gt; Go to Position…</strong> (Ctrl+G). An
+accessible seek dialog:</p>
+<ul>
+<li><strong>Three labeled spin fields — Hours / Minutes /
+Seconds</strong> — each announced and arrow-adjustable, seconds/minutes
+wrapping into the next unit; <strong>or</strong> a single
+<strong>Timecode</strong> field that accepts <code>1:23:45</code>,
+<code>83:45</code> (mm:ss), <code>5025</code> (seconds), or
+<code>1h23m45s</code>. Both routes are keyboard-complete.</li>
+<li><strong>Bounds-clamped</strong> to the media duration; an
+out-of-range value is announced and clamped (“beyond the end — clamped
+to 11:14:00”).</li>
+<li>On Enter it seeks and announces the landing point in context:
+“Jumped to 1 hour 23 minutes 45 seconds — Chapter 12, <em>The
+Return</em>.”</li>
+<li>A <strong>Go to Percentage…</strong> variant (0–100%) shares the
+dialog.</li>
+<li>Core: drives <code>MediaController.seek_to(ms)</code>; the
+parse/format helpers (<code>"1:23:45"</code> ↔︎ ms, and the spoken form)
+are <strong>pure, unit-tested</strong> functions, reusing the timestamp
+conventions in <code>quill/core/speech/chapter_io.py</code>
+(<code>format_timestamp</code>).</li>
+</ul>
+<h3 id="rich-status-bar-quill-style-multi-field">9.9 Rich status bar
+(QUILL-style, multi-field)</h3>
+<p>The Player’s status bar mirrors QUILL’s own multi-field status bar
+(<code>quill/ui/main_frame_statusbar.py</code> —
+<code>SetFieldsCount</code> / <code>SetStatusText</code> with a
+per-field announce, plus
+<code>quill/ui/audio_studio/status_bar.py</code>), so the review muscle
+memory is <strong>identical</strong> to the editor. Fields, left to
+right:</p>
+<ol type="1">
+<li><strong>State</strong> — Playing / Paused / Stopped /
+Buffering.</li>
+<li><strong>Position</strong> — “1:23:45 / 11:14:00 (12%)”.</li>
+<li><strong>Chapter</strong> — “Ch 12 of 14 — The Return”.</li>
+<li><strong>Speed</strong> — “1.25×”.</li>
+<li><strong>Sleep</strong> — “Sleep 18:04” or “—”.</li>
+<li><strong>Source &amp; format</strong> — “BARD · DAISY audio” / “Local
+· M4B”.</li>
+<li><strong>Backend</strong> — “libmpv” / “wx.media”.</li>
+</ol>
+<ul>
+<li><strong>Keyboard review, exactly like QUILL’s status bar:</strong> a
+command to <strong>move across the fields</strong> (each announced with
+its label as you land on it — “Chapter: 12 of 14, The Return”) and a
+one-key <strong>read the whole bar</strong>. Nothing here needs the
+mouse.</li>
+<li>Fields update live; changes announce at the chosen
+<strong>verbosity</strong> (Minimal suppresses routine position ticks;
+the fields are still there to review on demand).</li>
+<li>A <strong>braille</strong> rendering of the same fields is available
+on the display (Section 9.7).</li>
+</ul>
+<h3 id="future-optional-captured-not-v1">9.10 Future / optional
+(captured, not v1)</h3>
+<p>Recorded so the spec is complete without bloating v1: reading
+<strong>goals &amp; pace</strong> (“finish by Friday”), <strong>series
+auto-advance</strong>, <strong>per-narrator preferences</strong>
+(auto-apply your usual speed/EQ for a narrator), <strong>AudiobookShelf
+/ Jellyfin / OPDS server</strong> sources (reusing the OPDS client),
+<strong>rate &amp; annotate</strong> finished books, a
+<strong>Do-Not-Disturb focus session</strong> (mute other QUILL
+notifications while listening), and <strong>QuilleBeacon /
+QuilleSync</strong> cross-device position &amp; bookmark sync (ties to
+<code>bard.md</code> A.6).</p>
+<h3 id="standalone-app-quill-media-player">9.11 Standalone app (QUILL
+Media Player)</h3>
+<p>The player also ships as its <strong>own standalone app</strong>,
+exactly like Quill Radio, QUILL Cast, and Audio Studio:
+<code>standalone/player/</code> wrapping
+<code>quill/apps/player.py</code>, built on
+<code>quill/ui/app_shell.py::AppShellFrame</code> — so it gets the menu
+bar (Section 9.2), the system tray (Section 9.6), and the shared
+close-to-tray / single-instance / update-check behavior for free.
+Crucially it runs <strong>the very same</strong>
+<code>MediaController</code> and player UI that QUILL hosts, so every
+feature and fix is shared, never forked.</p>
+<ul>
+<li><strong>One library, one place in every book.</strong> The
+standalone reads and writes the same stores under
+<code>app_data_dir()</code> (library, bookmarks,
+<code>listening_positions.py</code>, <code>media_*</code> settings), so
+a book you start in QUILL continues in the standalone app and vice versa
+— same position, same bookmarks, same preferences.</li>
+<li><strong>Install &amp; launch.</strong> Start-Menu entry and an
+optional desktop icon via the installer; part of the QuillVille
+cross-app launcher (launch, or offer to download-install if absent, via
+<code>core/companion_install.py</code>), with <strong>independent
+per-app updates</strong> off the shared
+<code>Community-Access/quill</code> releases
+(<code>updates.fetch_app_releases</code>).</li>
+<li><strong>Handoff.</strong> “Open in Media Player” from QUILL hands a
+file/book to the standalone (or plays in-app) — one playback session,
+never double audio.</li>
+<li><strong>Build.</strong> A PyInstaller slice like the other apps,
+with <strong>libmpv bundled</strong> so DSP/EQ work out of the box;
+macOS gets the app without the notification-area tray (Dock only), per
+Section 9.6.</li>
+</ul>
+<p>So: yes — one codebase, two front doors (inside QUILL and as
+<strong>QUILL Media Player</strong>), identical behavior and shared
+data.</p>
+<hr />
+<h2 id="settings-configuration-and-persistence">10. Settings,
+configuration, and persistence</h2>
+<p>Everything the player does is configurable, and every option is
+discoverable the QUILL way: each setting is a spec in
+<code>quill/core/settings_specs.py</code> with a label, help text, and
+search keywords, so the whole catalog is <strong>type-to-find</strong>.
+Nothing here is mouse-only.</p>
+<h3 id="the-preferences-dialog">10.1 The Preferences dialog</h3>
+<p><strong>Settings &gt; Preferences…</strong> opens a categorized
+dialog that mirrors QUILL’s own settings UX:</p>
+<ul>
+<li>A <strong>category list</strong> (left) and a <strong>settings
+panel</strong> (right); both fully keyboard- and
+screen-reader-navigable, each control with a real label and help
+text.</li>
+<li>A <strong>search field</strong> at the top filters across
+<em>all</em> categories (QUILL’s searchable settings pattern) — type
+“sleep” or “skip” and only matching settings show, with the category
+announced.</li>
+<li><strong>Apply / OK / Cancel / Restore Defaults</strong> buttons;
+Restore Defaults acts on the current category or all, with
+confirmation.</li>
+<li>A <strong>scope switch</strong> on each setting that supports it:
+<strong>All books</strong> (the default) vs <strong>This book</strong>
+(a per-book override — Section 10.3).</li>
+<li>Changing a setting announces the new value; anything that needs the
+libmpv backend or an AI connection shows a spoken reason when
+unavailable, never a silent no-op.</li>
+</ul>
+<h3 id="settings-catalog-by-category">10.2 Settings catalog (by
+category)</h3>
+<p>Defaults in <strong>bold</strong>. Setting keys are
+<code>media_*</code> in <code>settings_specs.py</code>.</p>
+<p><strong>Playback</strong> - Skip-back interval — 5 / 10 /
+<strong>15</strong> / 30 s / custom. - Skip-forward interval — 15 /
+<strong>30</strong> / 60 s / custom. - Default playback speed —
+0.5×–4.0× (<strong>1.0×</strong>); <strong>Remember speed per
+book</strong> (on). - Smart rewind — <strong>On</strong>; curve/amount
+(how much to rewind vs time away). - On resume — <strong>Restore exact
+position</strong>; Resume last book on launch (<strong>off</strong>). -
+Stop at end of chapter — <strong>off</strong>; Bookmark on pause —
+<strong>off</strong>. - Gapless playback — <strong>On</strong> (libmpv);
+Crossfade — <strong>Off</strong> / 1–12 s.</p>
+<p><strong>Audio &amp; DSP</strong> - Audio backend —
+<strong>Auto</strong> / libmpv / wx.media (shows current + capability).
+- Default EQ preset — <strong>Flat</strong> / Voice / Bass / Treble /
+Night / Podcast / user preset. - EQ scope — <strong>Global</strong> vs
+per-book; 10 bands ±12 dB with named user presets. - Volume boost —
+<strong>Off</strong> / +3 / +6 dB; Loudness normalization —
+<strong>Off</strong>. - Skip silence — <strong>Off</strong>; Output
+device — <strong>System default</strong> / pick. - Startup volume —
+<strong>Last used</strong> vs fixed.</p>
+<p><strong>Chapters &amp; navigation</strong> - Announce chapter on
+entry — <strong>On</strong>; Chapter chime — <strong>On</strong> (pack
+chosen under Announcements &amp; sound). - DAISY default navigation
+level — <strong>Heading</strong> / Page / Phrase. - “Where am I?” detail
+— Brief / <strong>Full</strong> (title, chapter, position, remaining,
+speed).</p>
+<p><strong>Bookmarks</strong> - Auto-bookmark on sleep-timer stop —
+<strong>On</strong>; on pause — <strong>off</strong>. - Default target
+for <em>Send to Document</em> — <strong>Open document</strong> / Sticky
+Note. - Timestamp format — <strong>H:MM:SS</strong>; Bookmark export
+format — Markdown / CSV / text.</p>
+<p><strong>Library</strong> - Default view — <strong>In
+Progress</strong> / Favorites / Recently Played / Inbox / All. -
+Auto-add opened files to Inbox — <strong>On</strong>; Mark-finished
+threshold — <strong>95%</strong> / custom. - Default sort —
+<strong>Recently played</strong> / Title / Author / Added; Series
+auto-advance — <strong>off</strong>.</p>
+<p><strong>Announcements &amp; sound</strong> - Verbosity — Minimal /
+<strong>Normal</strong> / Verbose. - Self-voicing (built-in speech even
+without a screen reader) — <strong>off</strong>. - Announce speed /
+volume / EQ changes — <strong>On</strong>; Position ticks —
+<strong>off</strong>. - Earcon pack — <strong>Classic</strong> / Warm /
+Minimal; per-event earcon toggles (play, pause, bookmark, chapter, end).
+- Braille status line — <strong>On</strong> where a display is present;
+choose which fields appear.</p>
+<p><strong>Voice control</strong> - Enable — <strong>off</strong>;
+Push-to-talk key; Wake word — <strong>off</strong> / phrase. -
+Recognition engine — <strong>Auto</strong> (offline: Vosk / Whisper);
+Confirmation earcon — <strong>On</strong>; Command language.</p>
+<p><strong>Sleep timer</strong> - Default duration — 5 / 15 /
+<strong>30</strong> / 60 min / End of chapter. - Fade-out length —
+<strong>5 s</strong>; “Still awake?” prompt before stop —
+<strong>On</strong>.</p>
+<p><strong>Now Playing &amp; OS integration</strong> - System Media
+Transport Controls / media keys — <strong>On</strong>; Global media
+hotkeys — <strong>On</strong>. - Global “Restore Player” hotkey —
+configurable. - Mini-player home — <strong>Docked</strong> / Status-bar
+strip / Floating (configurable, per 9.4). - Always on top —
+<strong>off</strong>; Show album art — <strong>On</strong>; Show
+waveform — <strong>On</strong>.</p>
+<p><strong>Magical Mode</strong> (all opt-in; AI items vanish in Safe
+Mode — Section 9.5) - Magical Mode master — <strong>off</strong>;
+Cinematic Now Playing; Spoken chapter intros; Welcome-back recap —
+<strong>Off</strong> / Position only / AI recap; Ambient soundscape —
+<strong>Off</strong> / pack; Chapter chime personality; AI chapter
+summary; Listening stats &amp; streaks; Time-of-day greeting.</p>
+<p><strong>Downloads &amp; storage</strong> - Download location; Keep
+offline (Library / BARD titles) — <strong>On</strong>; Resumable
+downloads + integrity check — <strong>On</strong>; Cache size cap; Clear
+cache.</p>
+<p><strong>Appearance</strong> - Theme — <strong>System</strong> / Light
+/ Dark / High Contrast / From Cover. - Text scaling; Reduced motion —
+<strong>Follow OS</strong>; Waveform animation —
+<strong>On</strong>.</p>
+<p><strong>Privacy &amp; network</strong> - Safe Mode disables all
+network sources (local playback still works). - Telemetry —
+<strong>Off</strong> (fixed, not a toggle); Clear listening history;
+Cross-device position sync (QuilleSync) — <strong>off</strong>; BARD
+sign-in / sign-out.</p>
+<p><strong>Keyboard</strong> - Open <strong>Keyboard Shortcuts…</strong>
+(the keymap editor) to remap every command; Import / Export keymap;
+defaults avoid <code>Ctrl+Alt</code> chords.</p>
+<p><strong>Advanced</strong> - Backend override + libmpv path; Log
+verbosity; Per-book overrides manager (10.3); Reset all player settings
+to defaults.</p>
+<h3 id="per-book-overrides-and-scope">10.3 Per-book overrides and
+scope</h3>
+<p>Speed, volume/mute, EQ, and skip-silence can be <strong>remembered
+per book</strong> (extending
+<code>quill/core/audio_studio/book_prefs.py</code>) so a fast talker
+always opens at your preferred speed while everything else keeps the
+global default. Every override-capable setting shows an <strong>All
+books / This book</strong> scope switch; an <strong>Advanced &gt;
+Per-book overrides</strong> manager lists what each book has customized,
+with a one-key <strong>reset to default</strong>.</p>
+<h3 id="persistence">10.4 Persistence</h3>
+<ul>
+<li><strong>Per-book:</strong> position
+(<code>quill/core/speech/listening_positions.py</code>, keyed by
+<code>path|size</code>); volume/mute/speed/EQ
+(<code>book_prefs.py</code>, extended); bookmarks
+(<code>media_bookmarks.json</code>).</li>
+<li><strong>Global:</strong> every <code>media_*</code> setting above,
+declared in <code>settings_specs.py</code> (searchable) and saved via
+<code>quill/core/settings.py</code>.</li>
+<li><strong>Library / queue:</strong> existing
+<code>audio_studio_library.json</code>,
+<code>audio_studio_play_queue.json</code>.</li>
+<li>All writes are <strong>atomic</strong> via
+<code>quill/core/storage.py::write_json_atomic</code>, schema-validated
+where applicable. <strong>No secret is ever written here</strong> — BARD
+credentials live only in the Secrets Manager
+(<code>quill/core/secrets.py</code>).</li>
+</ul>
+<h3 id="import-export-and-reset">10.5 Import / export and reset</h3>
+<ul>
+<li><strong>Export / Import settings</strong> — round-trip the player
+configuration (and, optionally, the keymap and EQ presets) as a portable
+JSON file, so a setup moves between machines.</li>
+<li><strong>Restore Defaults</strong> — per category or all; a per-book
+<strong>reset</strong> clears just that book’s overrides. Nothing
+destructive happens without a confirmation.</li>
+</ul>
+<hr />
+<h2 id="threading">11. Threading</h2>
+<p>Playback, timers, and UI live on the <strong>UI thread</strong>.
+Probing (ffprobe/<code>mutagen</code>), library scans, DAISY parsing,
+downloads, and chapter assembly run on <code>TaskManager</code>; results
+marshal back with <code>call_ui_safely</code> /
+<code>wx.CallAfter</code>. The controller is UI-thread-affine; the core
+domain services it calls are pure and thread-safe.</p>
+<hr />
+<h2 id="backend-capability-and-graceful-degradation">12. Backend
+capability and graceful degradation</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Capability</th>
+<th>libmpv (<code>MpvAudioEngine</code>)</th>
+<th><code>wx.media</code> (<code>WxMediaEngine</code>, default)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core transport, seek, chapters</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Pitch-preserving speed</td>
+<td>Yes (<code>scaletempo2</code>)</td>
+<td>Coarse, no pitch preserve</td>
+</tr>
+<tr>
+<td>Equalizer / boost / normalize</td>
+<td>Yes</td>
+<td>No (controls disabled + announced)</td>
+</tr>
+<tr>
+<td>Skip silence</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Gapless / crossfade</td>
+<td>Yes</td>
+<td>Sequential only</td>
+</tr>
+</tbody>
+</table>
+<p><strong>libmpv is bundled with the default install</strong> (resolves
+Open Question 1), so the rich DSP path — EQ, boost/normalize,
+skip-silence, gapless, pitch-preserving speed — is available out of the
+box and EQ can be on by default. The <code>wx.media</code> column is the
+<strong>fallback</strong> only when libmpv genuinely cannot load (e.g. a
+stripped or blocked environment). The player <strong>detects backend
+capability at load</strong> and, on the fallback, hides or disables
+unsupported controls with a spoken, explained reason. No feature
+silently no-ops.</p>
+<hr />
+<h2 id="security-and-privacy">13. Security and privacy</h2>
+<ul>
+<li>BARD protected content per Section 7.16 and <code>bard.md</code> —
+sanctioned decryption only, keys in memory only, never an unprotected
+copy on disk.</li>
+<li>No telemetry; no network egress except the sources the user chose.
+Any new host (e.g. BARD/broker) is a reviewed egress entry
+(GATE-9).</li>
+<li>Safe Mode disables network sources; local playback still works.</li>
+</ul>
+<hr />
+<h2 id="testing">14. Testing</h2>
+<ul>
+<li><strong>Core (unit, <code>smoke</code>-tagged where
+central):</strong> <code>MediaController</code> transport/state machine
+with a fake engine and fake clock; chapter parsing (ID3/M4B/DAISY/JSON);
+DAISY navigation tree; bookmark add/jump/export; resume round-trip;
+queue ordering; playlist import/export; per-book prefs; EQ/DSP settings
+serialization; skip-silence and boost parameter mapping.</li>
+<li><strong>Backend contract:</strong> the same
+<code>AudioEngine</code>-protocol suite run against a fake engine;
+capability matrix asserted so degradation paths are covered.</li>
+<li><strong>UI (existing patterns):</strong>
+<code>PlayerPanel</code>/workbench tests under
+<code>tests/unit/ui/audio_studio/</code> extended for the new panels;
+accessible-name/role assertions.</li>
+</ul>
+<hr />
+<h2 id="gates-and-budgets">15. Gates and budgets</h2>
+<ul>
+<li>New core modules under <code>quill/core/media/</code> are
+strict-typed and in <code>mypy</code> scope.</li>
+<li>Any new exception inherits <code>CodedError</code> with a unique
+<code>QUILL-MEDIA-*</code> code (GATE-EC).</li>
+<li>Dialogs go through <code>_show_modal_dialog</code> (dialog inventory
+/ button-contract gates).</li>
+<li>New hosts pass the egress audit (GATE-9); module size budgets
+updated as UI grows.</li>
+</ul>
+<hr />
+<h2 id="phased-build-plan">16. Phased build plan</h2>
+<ol type="1">
+<li><strong>Controller + engine capability</strong> —
+<code>MediaController</code>, <code>MediaItem</code>, capability
+detection, events; fake-engine tests. Reuse
+<code>create_engine()</code>.</li>
+<li><strong>Player shell</strong> — <code>MediaPlayerMixin</code>,
+player window (reusing <code>PlayerPanel</code>), mini-player, media
+keys / Now Playing. Wire resume + library.</li>
+<li><strong>DSP</strong> — EQ, boost/normalize, skip-silence on the
+libmpv backend; capability degradation on <code>wx.media</code>.</li>
+<li><strong>Chapters + bookmarks</strong> — unified chapter list from
+all sources; rich bookmarks with notes and export.</li>
+<li><strong>DAISY navigation</strong> — DAISY audio parser + navigation
+tree (unblocks BARD audio).</li>
+<li><strong>Unified library</strong> — cross-source shelves, folders,
+sequential playback, search.</li>
+<li><strong>BARD integration</strong> — protected playback via the
+sanctioned mechanism once the BARD 2.0 contract and Token Manager land
+(<code>bard.md</code>).</li>
+</ol>
+<p>Each phase ends green on <code>ruff</code>, scoped <code>mypy</code>,
+and its targeted tests before the next.</p>
+<hr />
+<h2 id="open-questions">17. Open questions</h2>
+<ol type="1">
+<li><p><strong>libmpv distribution</strong> — bundle
+<code>libmpv-2.dll</code> (and macOS equivalent) with the default
+install so DSP/EQ is available out of the box, or keep it an on-demand
+engine pack? (Affects whether EQ is default-on.)</p>
+<p>Answer: Bundle.</p></li>
+<li><p><strong>DAISY scope</strong> — full DAISY 3 (audio+text sync,
+e.g. read-along highlighting) or audio-navigation-only for v1?</p>
+<p>Answer: Audio only for now.</p></li>
+<li><p><strong>BARD content protection</strong> — pending the sanctioned
+mechanism (<code>bard.md</code> E.9); determines the exact playback path
+on Windows vs macOS.</p></li>
+<li><p><strong>Mini-player home</strong> — dockable panel, status-bar
+strip, or floating frame as the default?</p>
+<p>Answer: Can we make this configurable please?</p></li>
+</ol>
+<h2 id="future-expansion-deferred-beyond-the-first-release">18. Future
+expansion (deferred beyond the first release)</h2>
+<p>These are intentionally deferred; the shipped player is fully usable
+without them.</p>
+<ul>
+<li><strong>Voice control — BUILT, including hands-free.</strong> Drive
+the player by voice (“play”, “next chapter”, “skip back thirty”,
+“bookmark this”, “how much is left”, “go to one twenty-three”, “sleep in
+twenty”). Two entry points:
+<ul>
+<li><strong>Listen for a Command (Ctrl+Shift+L)</strong> — hands-free
+push-to-talk. A <code>wx.ITEM_CHECK</code> toggle: first press starts
+the microphone, second press stops and transcribes. Capture and
+transcription reuse QUILL’s shipping <strong>offline</strong> stack
+(#617) — <code>MicRecorder</code> + <code>VoiceServices</code> on a
+<strong>small Whisper model</strong> (Base/Tiny/Small; short commands
+favour latency over accuracy,
+<code>service.preferred_command_model</code>). The recognized text is
+fed to the same <code>parse_voice_command</code> →
+<code>apply_voice_intent</code> used by the typed path. Accessibility is
+first-class (Desktop A11y spec): a distinct earcon and announcement at
+every state (Listening / Working / result / not-recognized / no-speech /
+mic-unavailable / error), success queued and failures interrupting; the
+audiobook is <strong>ducked</strong> (not paused) while listening;
+actual capture starts a beat after the “Listening” cue so the screen
+reader’s own speech isn’t recorded; a hard time cap closes a
+forgotten-open mic; and the menu item’s check state mirrors the live
+listening state.</li>
+<li><strong>Type a Voice Command (Ctrl+Shift+V)</strong> — the
+say-or-type command bar (keyboard- or OS-dictation-friendly), for when
+speaking aloud isn’t wanted.</li>
+<li>The command grammar and dispatch are pure, engine-free, unit-tested
+modules (<code>quill/core/media/voice.py</code>,
+<code>quill/ui/media/voice_control.py</code>); the capture glue and
+event styling are <code>quill/ui/media/voice_capture.py</code> +
+<code>quill/ui/media/listen_mixin.py</code>. Every voice command also
+has a key, so voice is purely additive.</li>
+<li><strong>Still future:</strong> an always-on hotword (“hey player”)
+so no key press is needed to start listening — QUILL has the wake-word
+groundwork (#663), not yet wired into the player.</li>
+</ul></li>
+<li><strong>Full DAISY 3 read-along</strong> (audio + text sync /
+highlighting) — v1 is audio-navigation only (Open Question 2).
+Multi-file DAISY <em>navigation and playback</em> ships.</li>
+<li><strong>Magical AI recaps</strong> — an AI summary of the last few
+minutes needs a transcript of the audio; the chapter + position
+welcome-back recap ships, the AI recap is a future item.</li>
+<li><strong>Embedded in-QUILL player window.</strong> Today QUILL opens
+the player via <strong>Tools ▸ Media ▸ Media Player</strong>, which
+launches the standalone <strong>Quill Media Player</strong> (one
+codebase, shared library / bookmarks / positions / settings). A future
+option is an <em>embedded</em> player panel inside the QUILL frame; the
+launch integration ships first because it is low-risk and gives the same
+reach without touching QUILL’s core frame.</li>
+<li><strong>Global media settings in QUILL’s Preferences.</strong>
+Because the in-QUILL entry launches the standalone app, the player
+carries its own settings (<code>media_*</code>,
+<code>quill/core/media/config.py</code>); registering them into QUILL’s
+global Preferences dialog is only needed once an embedded window
+lands.</li>
+</ul>
+<h2 id="implementation-notes-deltas-from-this-design">19. Implementation
+notes — deltas from this design</h2>
+<p>Decisions made during the build that refine the design above (this
+section is the source of truth where it differs from earlier prose):</p>
+<ul>
+<li><strong>Chapters render as a tree, not a flat list.</strong> Where
+this document says “chapter list”, the shipped UI is a
+<code>wx.TreeCtrl</code>: a multi-level table of contents (DAISY
+headings, nested sections) keeps its hierarchy, and a flat book shows a
+single level. Enter jumps; for a book split across files, the node loads
+that file and moves there.</li>
+<li><strong>LibriVox is the initial audio-library source.</strong> The
+unified library (Sections 3 / 7.12) ships against the free,
+public-domain <strong>LibriVox</strong> catalog
+(<code>quill/core/media/librivox.py</code>, File ▸ Book Library), with
+per-section multi-track playback. OPDS/AudiobookShelf and other sources
+remain future additions behind the same shape.</li>
+<li><strong>DAISY is single- and multi-file.</strong> A single-audio
+DAISY book seeks within one file; a multi-file book loads the right
+audio and parks at the SMIL offset (audio-navigation only; text+audio
+read-along stays a future item, Section 18).</li>
+<li><strong>In-QUILL entry is launch-based.</strong> QUILL opens the
+player via <strong>Tools ▸ Media ▸ Media Player</strong>, which launches
+the standalone app (shared library / bookmarks / positions). The
+embedded-window design in this PRD is a documented future option
+(Section 18).</li>
+<li><strong>Settings today are menu-driven.</strong> The searchable
+Preferences dialog (Section 10) is on the roadmap; the shipped controls
+live on the Audio page and the Playback / View menus, with the full
+<code>media_*</code> catalogue defaulted in
+<code>quill/core/media/config.py</code>.</li>
+</ul>
+</main>
+</body>
+</html>

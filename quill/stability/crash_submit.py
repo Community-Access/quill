@@ -33,6 +33,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core.crash_fingerprint import from_exception as crash_fingerprint
 from quill.stability.redaction import redact_command_arg, redact_text_for_bundle
 
 # ---------------------------------------------------------------------------
@@ -161,6 +162,13 @@ def build_crash_report_payload(
         "exception_class": exc_type.__name__,
         "exception_value": str(exc_value)[:_MAX_VALUE_CHARS],
     }
+    # The fingerprint is what lets the submit path recognise this crash as one
+    # somebody has already reported and comment on that issue instead of
+    # opening a new one. Included in the metadata so it is visible in the
+    # filed report too -- a maintainer can search the tracker for it.
+    fingerprint = crash_fingerprint(exc_type, exc_value, exc_tb)
+    if fingerprint:
+        metadata["fingerprint"] = fingerprint
     error_code = getattr(exc_value, "code", None)
     if error_code:
         metadata["error_code"] = error_code

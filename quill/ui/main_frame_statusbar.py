@@ -134,9 +134,24 @@ class StatusBarMixin:
             # document.text would happily produce stats for a destroyed tab,
             # but a queued caret event on a dead editor must stay empty.
             editor.GetInsertionPoint()
-            return compute_document_stats(self._document_text_for_display())
         except RuntimeError:
             return None
+        # #1346 round 3: memoized by document revision. Stats are a full pass
+        # over the text; a caret-movement refresh (arrows, clicks) recomputed
+        # them for text that had not changed. The revision bumps on every real
+        # edit, so a hit is always current; documents without a revision (bare
+        # test stubs) simply skip the cache.
+        revision = getattr(getattr(self, "document", None), "revision", None)
+        cached = getattr(self, "_document_stats_cache", None)
+        if revision is not None and cached is not None and cached[0] == revision:
+            return cached[1]
+        try:
+            stats = compute_document_stats(self._document_text_for_display())
+        except RuntimeError:
+            return None
+        if revision is not None:
+            self._document_stats_cache = (revision, stats)
+        return stats
 
     def _document_text_for_display(self) -> str:
         """The document's text for read-only display work, without a marshal.
@@ -914,9 +929,17 @@ class StatusBarMixin:
     def _set_status_quiet(self, message: str) -> None:
         """Update the status bar text WITHOUT speaking it. Used for per-keystroke
         states like "Modified" so the screen reader doesn't repeat it on every
-        character (it already echoes what you type)."""
+        character (it already echoes what you type).
+
+        The repaint is coalesced, not immediate (#1346 round 3): this runs on
+        every keystroke, and the synchronous `_refresh_statusbar()` it used to
+        call was the last full statusbar recompute left on the typing path --
+        quietly undoing round 2's removal one line below where round 2 did it.
+        Every caller is a one-shot status message; a ~90 ms display delay on a
+        cell that is deliberately never spoken is imperceptible.
+        """
         self._status_message = message
-        self._refresh_statusbar()
+        self._schedule_statusbar_refresh()
 
     def _on_statusbar_context_menu(self, event: object) -> None:
         wx = self._wx

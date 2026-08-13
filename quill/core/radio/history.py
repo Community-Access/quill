@@ -14,6 +14,7 @@ from pathlib import Path
 
 from quill.core.audio_enhance import EQ_PRESETS
 from quill.core.radio.models import RadioStation
+from quill.core.radio.play_queue import normalize_repeat_mode
 from quill.core.radio.search_sources import DEFAULT_ENABLED as DEFAULT_SEARCH_SOURCES
 from quill.core.radio.search_sources import normalize as normalize_search_sources
 
@@ -61,6 +62,13 @@ class RadioHistory:
     #: that dialog -- and one checkbox in Preferences turns them off for anyone
     #: who wants the letters back for list typeahead.
     winamp_playback_keys: bool = True
+    #: The recordings play queue (item 12), remembered between sessions
+    #: because both are standing preferences rather than per-session choices.
+    #: Stop-after-current is deliberately NOT here: it is a one-shot the
+    #: listener asks for in the moment, and one that survived a restart would
+    #: stop playback for a reason nobody could remember asking for.
+    recordings_shuffle: bool = False
+    recordings_repeat: str = "off"
     #: Which directories Find Stations searches. A source that is off is never
     #: contacted, so this is a speed/privacy control as well as a tidiness one.
     #: See quill.core.radio.search_sources for the registry.
@@ -240,6 +248,8 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.announce_track_titles = bool(raw.get("announce_track_titles", False))
         history.show_station_details = bool(raw.get("show_station_details", True))
         history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
+        history.recordings_shuffle = bool(raw.get("recordings_shuffle", False))
+        history.recordings_repeat = normalize_repeat_mode(raw.get("recordings_repeat"))
         history.search_sources_enabled = normalize_search_sources(raw.get("search_sources_enabled"))
         history.search_source_facet = str(raw.get("search_source_facet", "") or "")
         history.show_status_bar = bool(raw.get("show_status_bar", True))
@@ -355,6 +365,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "announce_track_titles": history.announce_track_titles,
             "show_station_details": history.show_station_details,
             "winamp_playback_keys": history.winamp_playback_keys,
+            "recordings_shuffle": history.recordings_shuffle,
+            "recordings_repeat": history.recordings_repeat,
             "search_sources_enabled": list(history.search_sources_enabled),
             "search_source_facet": history.search_source_facet,
             "show_status_bar": history.show_status_bar,

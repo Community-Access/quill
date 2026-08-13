@@ -247,6 +247,19 @@ class PlayerPanel(wx.Panel):
         """The current volume (0-100)."""
         return int(self._volume.GetValue())
 
+    def set_volume(self, percent: int) -> int:
+        """Set the volume (0-100) and return what it ended up as.
+
+        Moves the slider and then takes the *same* path a manual drag does,
+        so the mute state, the engine and the on-volume callback all stay in
+        step -- a keyboard volume change that only told the engine would
+        leave the slider lying about the level, and the slider is what
+        :meth:`toggle_mute` restores to.
+        """
+        self._volume.SetValue(max(0, min(100, int(percent))))
+        self._on_volume(None)  # type: ignore[arg-type]
+        return int(self._volume.GetValue())
+
     def duck(self, level_percent: int = 20) -> None:
         """Temporarily lower the *engine* volume for a spoken prompt.
 

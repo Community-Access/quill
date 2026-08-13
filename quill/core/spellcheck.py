@@ -475,6 +475,37 @@ def rank_misspellings_by_frequency(misspellings: list[Misspelling]) -> list[Miss
     )
 
 
+def misspelling_at(text: str, position: int, dictionary: set[str]) -> Misspelling | None:
+    """The misspelled word starting exactly at *position*, or None.
+
+    The bounded form of :func:`next_misspelling` for the as-you-type hint
+    (#1346 round 3). The hint only ever accepts a word beginning at the caret,
+    but ``next_misspelling`` keeps scanning past every correctly-spelled word
+    until it finds *a* misspelling somewhere -- so on a clean document it
+    spell-checked everything from the caret to the end, per pause in typing,
+    to produce an answer the caller then discarded. This inspects exactly one
+    word: the first at or after *position*, rejected without further scanning
+    when it does not start there.
+
+    The scan begins one character early for the same reason
+    :func:`next_misspelling` starts at the cursor itself: a regex scan started
+    mid-word matches a tail fragment. When ``text[position - 1]`` is a word
+    character, the fragment starting there is skipped and the following whole
+    word cannot start at *position* -- exactly the answer the unbounded scan
+    gave for that shape.
+    """
+    for match in _WORD_PATTERN.finditer(text, max(0, position - 1)):
+        if match.start() < position:
+            continue  # tail fragment of a straddling word, or an earlier word
+        if match.start() != position:
+            return None
+        token = match.group(0)
+        if is_known_word(token, dictionary):
+            return None
+        return Misspelling(word=token, start=match.start(), end=match.end())
+    return None
+
+
 def next_misspelling(text: str, cursor: int, dictionary: set[str]) -> Misspelling | None:
     # Start the regex scan at the cursor position itself so the engine matches
     # whole words (a mid-word cursor would otherwise match a tail fragment).

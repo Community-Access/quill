@@ -223,7 +223,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "context with a bounded timeout; supports resumable Range requests "
         "for the per-item pause/resume controls."
     ),
-    "core/podcasts/feed_reader.py::_fetch_feed_bytes": (
+    "core/podcasts/feed_reader.py::_fetch_once": (
         "Single egress site for podcast subscribing/refreshing: fetches one "
         "feed's raw RSS/Atom bytes (feedparser then parses locally, no "
         "further network activity). Reached only by explicit user actions "
@@ -231,8 +231,22 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "manual feed refresh for an already-subscribed show). HTTPS-only "
         "over a verified TLS context with a bounded timeout and response "
         "size. Private-feed Basic-auth credentials come from the OS "
-        "credential store, sent only to that feed's own host. Disabled in "
-        "Safe Mode via feed_reader.refuse_in_safe_mode."
+        "credential store, sent only to that host. Disabled in Safe Mode via "
+        "refuse_in_safe_mode; _fetch_feed_bytes retries transient failures."
+    ),
+    "core/podcasts/opml_import.py::_probe_once": (
+        "Single egress site for the OPML import reachability check: one "
+        "bounded GET per imported feed, reading only the first 2 KB to learn "
+        "whether the feed still answers. Never silent and never automatic -- "
+        "reached only when the user ticks 'Check that each feed is "
+        "reachable' in Import OPML, which states that it makes one request "
+        "per feed, shows live progress, and can be cancelled mid-sweep. "
+        "Concurrency is bounded (8 workers) with a short timeout; a 401/403 "
+        "counts as reachable so a private feed is never reported dead. "
+        "Refused entirely in Safe Mode (validate_feeds returns 'not checked' "
+        "for every feed instead of connecting). Its purpose is the pruning "
+        "report: which subscriptions died, so they can be pruned. probe_feed "
+        "retries transient failures -- one 503 must not prune a live feed."
     ),
     "core/podcasts/chapters.py::_fetch_chapters_bytes": (
         "Single egress site for podcast chapter navigation: fetches one "
@@ -273,12 +287,12 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "verified TLS context with a bounded timeout and response size. "
         "Disabled in Safe Mode via refuse_in_safe_mode."
     ),
-    "core/podcasts/itunes_search.py::_http_json": (
+    "core/podcasts/itunes_search.py::_fetch_once": (
         "Single egress site for Add Podcast's search: iTunes' free, keyless "
         "podcast search API. Reached only by the explicit Search action in "
         "the Add Podcast dialog. HTTPS-only over a verified TLS context with "
-        "a bounded timeout. Disabled in Safe Mode via "
-        "itunes_search.refuse_in_safe_mode."
+        "a bounded timeout. Disabled in Safe Mode via refuse_in_safe_mode; "
+        "_http_json retries transient failures rather than saying 'no results'."
     ),
     "core/radio/link_finder.py::_http_get_text": (
         "Single egress site for 'Find Streams from a Website...': fetches the "

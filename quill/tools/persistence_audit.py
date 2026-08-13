@@ -133,6 +133,17 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/podcasts/subscriptions.py::save_library": "content",
     "core/podcasts/history.py::save_history": "content",
     "core/podcasts/episode_notes.py::save_episode_notes": "content",
+    # Quick Actions (1.1.0): the listener's own ordering of the episode,
+    # podcast, and queue action lists. Content -- it is a preference they
+    # arranged by hand and would notice losing -- but it self-repairs against
+    # the build's known action set on every read, so a file from a newer or
+    # older QUILL Cast can never strand a menu.
+    "core/podcasts/quick_actions.py::save_quick_actions": "content",
+    # Listening statistics (1.1.0): an append-only session log, pruned on
+    # write against a 90-day retention window and hard-capped. Content: it is
+    # a record of what the listener did, exportable as CSV, and losing it
+    # loses history nothing else holds.
+    "core/podcasts/stats.py::save_sessions": "content",
     "core/unlock_codes.py::save": "content",
     "core/speech/listening_positions.py::save_position_ms": "cache",
     "core/speech/synth_cache.py::save_cache": "cache",

@@ -1012,7 +1012,9 @@ class RadioMixin:
     # -- live DVR (mpv engine): rewind / forward / back to live -----------------
 
     def radio_rewind(self) -> None:
-        """Jump back 30 seconds within the live buffer."""
+        """Back 30 seconds -- along the video's timeline, or within the live buffer."""
+        if self._radio_seek_bounded(-1):
+            return
         behind = self._radio_controller.rewind(30)
         if behind is None:
             self._announce(self._radio_dvr_unavailable_message())
@@ -1020,12 +1022,33 @@ class RadioMixin:
         self._announce(f"Rewound 30 seconds. {self._radio_behind_live_phrase(behind)}")
 
     def radio_forward(self) -> None:
-        """Jump forward 30 seconds, back toward the live edge."""
+        """Forward 30 seconds -- along the timeline, or back toward the live edge."""
+        if self._radio_seek_bounded(1):
+            return
         behind = self._radio_controller.forward(30)
         if behind is None:
             self._announce(self._radio_dvr_unavailable_message())
             return
         self._announce(f"Forward 30 seconds. {self._radio_behind_live_phrase(behind)}")
+
+    def _radio_seek_bounded(self, direction: int) -> bool:
+        """Take the seek keys when a finished video is playing. True if taken.
+
+        A live stream's DVR seek moves within mpv's *cache* and reports how
+        far behind the live edge you are; a finished video has a real
+        timeline. Sending a video down the DVR path announced a distance
+        behind a live edge that does not exist -- a fabricated measurement
+        (A-10) on the one source where the honest number was available.
+        """
+        if not self._radio_controller.is_seekable():
+            return False
+        from quill.ui.radio import bounded_playback_ui
+
+        if direction > 0:
+            bounded_playback_ui.skip_forward(self)
+        else:
+            bounded_playback_ui.skip_back(self)
+        return True
 
     def radio_jump_to_live(self) -> None:
         """Return to the live edge of the stream."""
@@ -1591,6 +1614,13 @@ class RadioMixin:
 
     # -- dialogs ------------------------------------------------------------
 
+    def open_media_sound_enhancements(self) -> None:
+        """Ctrl+E: Sound Enhancements for whatever is playing. Wiring only --
+        the rule lives in ui/media/sound_enhancements_route.py."""
+        from quill.ui.media import sound_enhancements_route
+
+        sound_enhancements_route.open_for_whats_playing(self)
+
     def open_sound_enhancements(self) -> None:
         """Playback > Sound Enhancements...: a three-band EQ + a compressor.
         Edits the currently-playing station's own override if it's a
@@ -1785,6 +1815,7 @@ class RadioMixin:
             controller=self._radio_controller,
             announce_cb=self._announce,
             history=self._radio_history,
+            on_history_changed=self._save_radio_history,
         )
         dlg.show()
         self._refresh_statusbar()
@@ -1990,6 +2021,11 @@ class RadioMixin:
                 "radio.sound_enhancements",
                 "Internet Radio: Sound Enhancements...",
                 self.open_sound_enhancements,
+            ),
+            (
+                "media.sound_enhancements",
+                "Media: Sound Enhancements...",
+                self.open_media_sound_enhancements,
             ),
             (
                 "radio.record_toggle",

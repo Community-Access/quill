@@ -279,6 +279,21 @@ hotkeys work even when the player window isn't focused.
 Import/export **M3U/M3U8/PLS**; a persistent **play queue** (`play_queue.py`) with
 reorder/remove; folder = auto-sequential playlist; `.zip` auto-expanded to a queue.
 
+### 7.14a Winamp classic-skin transport keys (shipped)
+The classic main-window letters — `Z X C V B` for previous/play/pause/stop/next,
+arrows to seek, `T` elapsed-or-remaining, `J` jump-to-track, `Ctrl+J` go-to-position,
+`L` open — resolved through the **one shared map**
+(`quill/ui/radio/winamp_keys.py`, wx-free) that Quill Radio's Recordings player and
+QUILL Cast already use. The Media Player was the last holdout, and the surface a
+Winamp user is most likely to reach for: an audiobook with a track list is a playlist
+editor with a transport, which is exactly what the classic skin's main window was.
+Adopting the shared map rather than writing a second one is the requirement — the
+value of muscle memory is that it is not relearned per app, so the letters, the seek
+steps, and the words spoken back must be identical across every surface.
+`B`/`Z` step the track list, or by chapter for a single-file book; `Ctrl+J` reuses the
+existing accessible Go to Position dialog rather than a second prompt. Letters are
+never claimed while a text field has focus (`quill/ui/media/winamp_mixin.py`).
+
 ### 7.15 Gapless and crossfade
 Gapless playback across a book's files (libmpv), with an optional short crossfade for
 music/mixed content. Falls back to sequential load on `wx.media`.

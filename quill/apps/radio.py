@@ -1087,6 +1087,9 @@ class RadioAppFrame(
         playback_menu.Append(slower_id, "Play Slo&wer\tCtrl+Alt+Down")
         playback_menu.Append(normal_id, "&Normal Speed\tCtrl+Alt+0")
         playback_menu.Append(where_id, "Where &Am I?\tCtrl+Shift+P")
+        goto_pos_id = wx.NewIdRef()
+        playback_menu.Append(goto_pos_id, "&Go to Position...\tCtrl+Shift+J")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.go_to_position(self), id=goto_pos_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: _video.speed_up(self), id=faster_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: _video.slow_down(self), id=slower_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: _video.reset_speed(self), id=normal_id)
@@ -1339,6 +1342,7 @@ class RadioAppFrame(
             slower_id,
             normal_id,
             where_id,
+            goto_pos_id,
             yt_update_id,
             spotify_connect_id,
             spotify_browse_id,

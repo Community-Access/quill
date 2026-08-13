@@ -18,6 +18,7 @@ from dataclasses import dataclass
 
 from quill import __version__
 from quill.core.error_codes import CodedError
+from quill.core.net_retry import retry_transient
 
 _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _BASE_URL = "https://itunes.apple.com/search"
@@ -64,16 +65,28 @@ class PodcastSearchResult:
 
 
 def _http_json(url: str) -> object:
-    """One HTTPS GET returning decoded JSON -- the reviewed egress site."""
+    """One HTTPS GET returning decoded JSON -- the reviewed egress site.
+
+    Retried on a transient failure (:mod:`quill.core.net_retry`): the
+    directory is a busy shared service, and a 503 on the first try is a far
+    more common reason for "no results" than the search actually matching
+    nothing. A 404 or a bad address still fails at once.
+    """
     if not url.startswith("https://"):
         raise ITunesSearchError("Refusing a non-HTTPS iTunes Search request.")
     request = urllib.request.Request(
         url, headers={"User-Agent": _USER_AGENT, "Accept": "application/json"}
     )
     context = ssl.create_default_context()
-    try:
+
+    def _fetch_once() -> str:
+        """One attempt. The reviewed egress site; the retry wraps it."""
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
-            payload = resp.read().decode("utf-8")
+            decoded: str = resp.read().decode("utf-8")
+            return decoded
+
+    try:
+        payload = retry_transient(_fetch_once)
     except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
         raise ITunesSearchError(f"Could not reach the podcast directory: {error}") from error
     try:

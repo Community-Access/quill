@@ -25,6 +25,7 @@ LIVE_REFUSAL = "This is a live stream, so there is no timeline to move along."
 NO_CHAPTERS = "This video has no chapters."
 
 CHAPTERS_TITLE = "Chapters"
+GO_TO_POSITION_TITLE = "Go to Position"
 
 #: Skip step for the forward/back commands.
 SKIP_MS = 30_000
@@ -117,6 +118,42 @@ def announce_position(host: Any) -> None:
     if _refuse(host):
         return
     host._announce(describe_position(_controller(host)))
+
+
+def go_to_position(host: Any) -> None:
+    """Jump to an absolute position in a finished video.
+
+    Reuses the Media Player's Go to Position dialog rather than growing a
+    second prompt: it is already built to the desktop accessibility checklist
+    (labelled Hours/Minutes/Seconds spin controls as the primary input, an
+    optional timecode field for power users, OK as the default button) and
+    already clamps with the tested :func:`quill.core.media.clamp_position`.
+
+    Relative skipping gets you somewhere near; this is how you get somewhere
+    exact, which is the other half of what a timeline is for.
+    """
+    if _refuse(host):
+        return
+    from quill.ui.media.go_to_position_dialog import GoToPositionDialog
+
+    controller = _controller(host)
+    dialog = GoToPositionDialog(
+        host.frame,
+        duration_ms=controller.duration_ms(),
+        current_ms=controller.position_ms(),
+        announce=host._announce,
+    )
+    try:
+        import wx
+
+        if host._show_modal_dialog(dialog, GO_TO_POSITION_TITLE) != wx.ID_OK:
+            return
+        target = dialog.get_target_ms()
+        clamped = dialog.clamped_message()
+    finally:
+        dialog.Destroy()
+    controller.seek_to(target)
+    host._announce(clamped or describe_position(controller))
 
 
 # -- speed -------------------------------------------------------------------

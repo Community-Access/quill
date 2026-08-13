@@ -25,6 +25,7 @@ from quill.core.podcasts.filtering import (
 )
 from quill.core.podcasts.models import Playlist, PodcastEpisode, PodcastShow
 from quill.core.podcasts.virtual_views import virtual_view_pairs
+from quill.ui.podcasts.manager_expired import ManagerExpiredMixin
 
 _EPISODE_FILTER_LABELS = (
     "All",
@@ -53,10 +54,23 @@ _PINNED_VIEWS = (
     ("new_episodes", "New Episodes"),
     ("continue_listening", "Continue Listening"),
     ("inbox", "Inbox"),
+    ("recently_expired", "Recently Expired"),
 )
 
+#: How many rows a cross-show view fills at once.
+#:
+#: New Episodes over a 1,300-show library is around 196,000 unplayed
+#: episodes, and inserting 196,000 rows into a wx.ListCtrl one at a time
+#: takes minutes and produces a list nobody can navigate. The newest are what
+#: the view is for; the filters, the sort order, and the show's own node
+#: reach everything else.
+#:
+#: Never a silent truncation: the status line always says how many were
+#: shown out of how many there are, and what to do about it.
+_MAX_CROSS_SHOW_ROWS = 1000
 
-class ManagerPhase4Mixin:
+
+class ManagerPhase4Mixin(ManagerExpiredMixin):
     """Phase 4 wiring; mixed into PodcastManagerDialog."""
 
     # -- filter row -----------------------------------------------------------
@@ -244,6 +258,10 @@ class ManagerPhase4Mixin:
                 if show.is_favorite
                 for episode in show.episodes
             ]
+        if view_id == "recently_expired":
+            from quill.core.podcasts.expiration import expired_pairs
+
+            return list(expired_pairs(self._library))  # type: ignore[arg-type]
         return virtual_view_pairs(self._library, view_id)
 
     def _fill_episodes_from_pairs(
@@ -264,20 +282,41 @@ class ManagerPhase4Mixin:
         pairs = sort_pairs(
             self._library, pairs, view_mode=self._library.settings.episode_list_view_mode
         )
+        total = len(pairs)
+        shown = pairs[:_MAX_CROSS_SHOW_ROWS]
         self._episodes.DeleteAllItems()
         self._current_show = None
-        self._current_episodes = [episode for _show, episode in pairs]
-        self._pair_shows = [show for show, _episode in pairs]
-        for row, (show, episode) in enumerate(pairs):
-            self._episodes.InsertItem(row, f"{episode.title} — {show.title}")
-            self._episodes.SetItem(row, 1, episode.published[:16])
-            minutes, seconds = divmod(episode.duration_seconds, 60)
-            self._episodes.SetItem(
-                row, 2, f"{minutes}:{seconds:02d}" if episode.duration_seconds else ""
+        self._current_episodes = [episode for _show, episode in shown]
+        self._pair_shows = [show for show, _episode in shown]
+        name_first = self._library.settings.announce_show_name_first
+        # Freeze/Thaw around a bulk fill: without it wxMSW repaints and
+        # re-measures per row, which is the difference between a snappy list
+        # and a visible redraw storm at a thousand rows.
+        self._episodes.Freeze()
+        try:
+            for row, (show, episode) in enumerate(shown):
+                label = (
+                    f"{show.title} — {episode.title}"
+                    if name_first
+                    else f"{episode.title} — {show.title}"
+                )
+                self._episodes.InsertItem(row, label)
+                self._episodes.SetItem(row, 1, episode.published[:16])
+                minutes, seconds = divmod(episode.duration_seconds, 60)
+                self._episodes.SetItem(
+                    row, 2, f"{minutes}:{seconds:02d}" if episode.duration_seconds else ""
+                )
+                self._episodes.SetItem(row, 3, self._episode_status_text(episode))
+        finally:
+            self._episodes.Thaw()
+        if total > len(shown):
+            self._status.SetLabel(
+                f"Showing the newest {len(shown)} of {total} episode(s) in {view_label}. "
+                "Narrow it with the Episodes filter, or open one podcast to see all of its own."
             )
-            self._episodes.SetItem(row, 3, self._episode_status_text(episode))
-        self._status.SetLabel(f"{len(pairs)} episode(s) in {view_label}.")
-        if pairs:
+        else:
+            self._status.SetLabel(f"{total} episode(s) in {view_label}.")
+        if shown:
             self._episodes.Select(0)
             self._episodes.Focus(0)
 
@@ -400,61 +439,22 @@ class ManagerPhase4Mixin:
 
     # -- context-menu additions -----------------------------------------------
 
-    def _append_phase4_episode_items(
+    def _append_transcript_items(
         self, menu: object, show: PodcastShow, episode: PodcastEpisode
     ) -> None:
-        wx = self._wx
-        from quill.core.podcasts import queue as queue_ops
+        """Transcript items, appended only when the episode publishes one.
 
-        menu.AppendSeparator()
-        play_next_item = menu.Append(wx.ID_ANY, "Play Ne&xt")
-        menu.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._queue_and_announce(
-                lambda: queue_ops.play_next(self._library, show.id, episode.guid),
-                f"{episode.title} will play next",
-            ),
-            play_next_item,
-        )
-        add_queue_item = menu.Append(wx.ID_ANY, "Add to &Queue")
-        menu.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._queue_and_announce(
-                lambda: queue_ops.add_to_queue(self._library, show.id, episode.guid),
-                f"Added {episode.title} to the Play Queue",
-            ),
-            add_queue_item,
-        )
-        notes_item = menu.Append(wx.ID_ANY, "Episode &Notes...")
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_episode_notes(show, episode), notes_item)
-        if episode.transcript_url:
-            save_tr_item = menu.Append(wx.ID_ANY, "Save &Transcript As...")
-            menu.Bind(wx.EVT_MENU, lambda _e: self._on_save_transcript(show, episode), save_tr_item)
-            open_tr_item = menu.Append(wx.ID_ANY, "Open Transcript in &Editor")
-            menu.Bind(wx.EVT_MENU, lambda _e: self._on_open_transcript(show, episode), open_tr_item)
-        file_inbox_item = menu.Append(wx.ID_ANY, "F&ile to Inbox Folder...")
-        file_inbox_item.Enable(show.route_to_inbox)
-        menu.Bind(
-            wx.EVT_MENU, lambda _e: self._on_file_to_inbox_folder(show, episode), file_inbox_item
-        )
-        playlist_item = menu.Append(wx.ID_ANY, "Add to &Playlist...")
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_add_to_playlist(show, episode), playlist_item)
-        rename_item = menu.Append(wx.ID_ANY, "Rena&me...\tF2")
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_rename_episode(episode), rename_item)
-
-    def _append_phase4_show_items(self, menu: object, show: PodcastShow) -> None:
+        Not Quick Actions: they appear and disappear with the episode's own
+        metadata, and an orderable list whose entries vanish per row is a
+        list whose order means nothing.
+        """
+        if not episode.transcript_url:
+            return
         wx = self._wx
-        favorite_label = "Remove from Fa&vorites" if show.is_favorite else "Add to Fa&vorites"
-        favorite_item = menu.Append(wx.ID_ANY, favorite_label)
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_favorite(show), favorite_item)
-        inbox_label = (
-            "Stop Routing to &Inbox" if show.route_to_inbox else "Route New Episodes to &Inbox"
-        )
-        inbox_item = menu.Append(wx.ID_ANY, inbox_label)
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_route_to_inbox(show), inbox_item)
-        if show.route_to_inbox and show.inbox_default_folder_id:
-            forget_item = menu.Append(wx.ID_ANY, "For&get Remembered Inbox Folder")
-            menu.Bind(wx.EVT_MENU, lambda _e: self._on_forget_inbox_folder(show), forget_item)
+        save_tr_item = menu.Append(wx.ID_ANY, "Save &Transcript As...")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_save_transcript(show, episode), save_tr_item)
+        open_tr_item = menu.Append(wx.ID_ANY, "Open Transcript in &Editor")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_open_transcript(show, episode), open_tr_item)
 
     def _queue_and_announce(self, action: object, message: str) -> None:
         action()
@@ -650,32 +650,10 @@ class ManagerPhase4Mixin:
     # -- episode notes ------------------------------------------------------------
 
     def _on_episode_notes(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        from quill.core.podcasts.episode_notes import (
-            delete_episode_note,
-            load_episode_notes,
-            notes_for_episode,
-        )
-        from quill.ui.podcasts.episode_notes_dialog import EpisodeNotesDialog
+        """Wiring only -- shared with the player's route (item 11)."""
+        from quill.ui.podcasts import episode_notes_commands
 
-        notes = notes_for_episode(load_episode_notes(), show.id, episode.guid)
-        dialog = EpisodeNotesDialog(
-            self.dialog,
-            show_id=show.id,
-            episode_guid=episode.guid,
-            episode_title=episode.title,
-            notes=notes,
-            on_delete=delete_episode_note,
-            announce_cb=self._announce,
-        )
-        jump_ms = dialog.show()
-        if jump_ms is None:
-            return
-        if self._controller.state.episode_guid == episode.guid:
-            self._controller.seek(jump_ms)
-        else:
-            self._play_pair(show, episode)
-            self._controller.seek(jump_ms)
-        self._announce(f"Jumped to note at {jump_ms // 60000}:{(jump_ms // 1000) % 60:02d}")
+        episode_notes_commands.open_for_episode(self, show, episode)
 
     def add_note_for_playing_episode(self, text: str) -> bool:
         """Timestamped note on the playing episode (the mixin/command path)."""

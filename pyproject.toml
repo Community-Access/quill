@@ -119,6 +119,16 @@ mac = ["pyobjc-framework-Cocoa>=12.2.1; sys_platform == 'darwin'"]
 # files the issue via the GitHub API. Ships in every build (this is the only
 # Report a Bug form); on failure QUILL copies the online support-form URL.
 # 1.0.1 fixes the wx sizer-parenting crash that broke the dialog on wx 4.2.5+.
+# 1.1.0 adds crash fingerprinting: a repeat of a crash somebody already
+# reported comments on that issue instead of filing another one.
+#
+# The floor deliberately stays at 1.0.2 until 1.1.0 is on PyPI. This extra is
+# installed by scripts/build_windows_distribution.py, so a floor pointing at an
+# unpublished version would make main un-buildable -- and it would buy nothing,
+# because the call site is version-tolerant by construction:
+# issue_submit._submit_parameters() asks the installed signature what it
+# accepts, so an older feedback-hub simply files duplicates exactly as it
+# always did. Raise this to >=1.1.0 in the same change that publishes it.
 feedback = ["feedback-hub>=1.0.2"]
 # Cross-platform earcon audio via BASS (Un4seen). Enables true mixing so multiple
 # sounds can play simultaneously. Falls back to winsound (Windows) or silence without

@@ -1,6 +1,6 @@
 # QUILL Cast -- Product Requirements
 
-Version 1.0
+Version 1.1
 
 ## 1. Product statement
 
@@ -16,7 +16,13 @@ QUILL Cast is QUILL's podcast environment, shipped as its own small Windows app 
 
 In scope (all reused from upstream):
 
-- Subscriptions: search, feed URL, OPML import/export, ACB Media directory, podcast settings.
+- Subscriptions: search, feed URL, OPML import/export, ACB Media directory, podcast settings, per-podcast settings.
+- **Acquisition policy** (1.1): auto-download the newest N episodes per show on subscribe and on every refresh (0/1/3/5/10/all, per-podcast overridable), plus separate toggles for anything queued or in the Inbox. Always Sync is the same instruction as "all" and the two are kept in step.
+- **Queue Expiration and Recently Expired** (1.1): a per-podcast age limit removes a queued episode that has waited too long, into a Recently Expired list held for seven days and restorable; only the sweep at the end of that window deletes a downloaded file.
+- **Listening statistics** (1.1): an append-only session log with a retention window, summarized by period and by podcast, with CSV export.
+- **Quick Actions** (1.1): a user-ordered action list per content type (episode, podcast, queue item). The first entry is what Enter does; the first nine answer to Ctrl+1..Ctrl+9; the whole list is the context-menu order.
+- **Storage management** (1.1): total and per-podcast download usage, an age limit, a total cap, an Unheard/All filter that announces what it hid, and a manual Free Up Space.
+- **Bulk OPML import** (1.1): planning, deduplication, and an optional concurrent reachability sweep for subscription lists in the thousands, with a report that can write back a pruned copy of the source file.
 - **Private feeds**: username/password (HTTP Basic) authentication for protected feeds -- Patreon-style supporter feeds, premium shows, members-only feeds. Prompted automatically when adding a protected feed URL; managed later via **Feed Credentials...** on the show's context menu. Covers refresh, downloads, streaming, transcripts, and chapters for that show, under the security requirements in §8.
 - **Main-page library tree**: the same pinned views (Favorites, New Episodes, Continue Listening, Inbox) and nested folders the Podcast Manager shows, right on the main window, with a full context menu (Play/Stop, Favorite toggle, Move to Folder, Unsubscribe, New Folder). Enter on a show plays its next unplayed episode directly.
 - **One state-aware transport control** (Play/Pause/Resume) and a **Favorites toggle button** for whatever show is currently playing, mirroring Quill Radio's main-page pattern.
@@ -51,7 +57,10 @@ Out of scope, by decision (D-1, "basic level of functionality"):
 - A-4. Every action announces its outcome through the announcement engine; silent state changes are defects.
 - A-5. Full keyboard operation, including Play Queue reordering; the tray menu is reachable with keyboard alone.
 - A-6. Announcements are delivered by the shared announcement service, not by a per-app path, so a channel added upstream reaches this app automatically. Speech and braille are both required channels; a braille burst is coalesced (first message immediate, newest-wins inside the conflation window) and ERROR-severity messages bypass coalescing entirely and may be held on the display. Braille style, the repeat window, sticky errors, and interrupt severity are shared accessibility settings, edited in QUILL and honored here.
-- A-7. Every Yes/No confirmation whose outcome destroys or discards something defaults to No -- Delete Folder, Delete Playlist, Remove All Episodes, Delete Downloaded Files. Enter must always be the safe answer. Enforced upstream by an automated build check over the shared dialog surfaces.
+- A-7. Every Yes/No confirmation whose outcome destroys or discards something defaults to No -- Delete Folder, Delete Playlist, Remove All Episodes, Delete Downloaded Files, Mark All as Played, Forget Expired Episode, Remove Downloads, Clear Statistics, Delete All Podcast Data. Enter must always be the safe answer. Enforced upstream by an automated build check over the shared dialog surfaces.
+- A-8. **Numbers are spoken as language.** A duration is "3 hours, 47 minutes", never `3:47:00` -- a screen reader reads a clock face as a time of day. A size is "812 MB". Where a report could be a chart, the text is the primary representation and not a caption for a picture of one.
+- A-9. **No silent caps.** Where a list is truncated for performance (a cross-show view, a show's episodes in the main tree), the surface says how many it is showing out of how many there are, and where the rest is. A filtered list always says it is filtered.
+- A-10. **No fabricated measurements.** A statistic that cannot be measured honestly is omitted, not estimated. Time saved by silence trimming is reported only when the trimming path actually reports what it dropped.
 
 ## 5. Packaging requirements
 
@@ -78,7 +87,34 @@ macOS/Linux standalone builds (upstream QUILL covers macOS; the tray-icon patter
 - S-3. OPML export never contains credentials, so an exported subscription list is always safe to share. Deleting a show, or clearing its credentials, deletes the stored secret -- no orphaned entries.
 - S-4. An authentication failure is reported as such ("feed sign-in failed", pointing at Feed Credentials...), never blurred into a generic network error; background refresh never opens modal credential prompts.
 
-## 9. Since 1.0
+## 9. Performance requirements (1.1)
+
+A subscription list exported from another app after a decade of listening is
+routinely more than a thousand feeds. Every requirement here was written
+against a real one (1,307 feeds), refreshed to roughly 196,000 episodes.
+
+- **PF-1. Nothing quadratic on import.** Duplicate detection and folder
+  resolution index once and answer in constant time, so importing N entries
+  into a library of M is O(N + M). Duplicates are matched on a normalized
+  URL, so `http://` and `https://` forms of one feed are one feed.
+- **PF-2. No blocking work in a button handler.** Reading, parsing,
+  planning, and adding an OPML file all happen off the UI thread; the
+  reachability sweep runs afterwards on a bounded pool, reports progress,
+  and can be cancelled without losing what was already imported.
+- **PF-3. Saves must not scale with the library.** A full library write is
+  ~7 seconds and 164 MB at 196,000 episodes, and it is triggered by every
+  position checkpoint. Above a threshold, writes and the main-page tree
+  rebuild coalesce onto a short timer; below it they stay immediate. The
+  shutdown path always forces a final flush.
+- **PF-4. No unbounded list materialization.** Cross-show views fill a
+  bounded number of rows, a show's episodes in the main tree are built on
+  demand when it is expanded, and both say what they are not showing (A-9).
+- **PF-5. Per-refresh work stays proportional to what changed.** Choosing
+  the newest N episodes to auto-download does not sort a show's whole
+  catalog, and a refresh announces one coalesced summary rather than one
+  message per episode.
+
+## 10. Since 1.0
 
 - **Sound Enhancements** (Episode > Sound Enhancements...): a three-band equalizer (Bass/Mid/Treble sliders, -12 to +12 dB), a compressor, and Smart Speed (live silence trimming between words/sentences), applied via an ffmpeg filter graph relayed to the playback engine over a loopback-only local HTTP server -- shared with Quill Radio's own Sound Enhancements. Off by default. A "Quick preset" shortcut sets all three sliders at once. Full seek/scrub-bar support while enhanced (an ffmpeg `-ss` restart is how scrubbing works, since a running relay can't be seeked within; duration comes from an independent `ffprobe` call). Every setting is per-podcast: a shared default plus a per-show override, resolved at play time -- the same mechanism playback speed already used.
 - **Quieter dialogs and a real "up to date" answer**: dialog-transition announcements are now off by default (Preferences), and a manual Check for Updates that finds nothing newer shows a dialog instead of only announcing it.
@@ -96,5 +132,77 @@ macOS/Linux standalone builds (upstream QUILL covers macOS; the tray-icon patter
 - **Quillins app host** and the **Keyboard Shortcuts / Global Hotkeys** managers, both scoped to this app's own command registry.
 - **Spotify (experimental, dark)**: unlock-gated, Premium-only, user-supplied Client ID, WebView2-hosted playback; play-only.
 - **Startup fix**: the library tree no longer asks Windows to expand its hidden root node, which aborted the app before its window appeared. Guarded on the tree style, with a regression test asserting the guard stays adjacent to the call.
+
+## 11. Since 1.0.7 (1.1.0)
+
+**Acquisition, the layer that was missing.** Through 1.0.x QUILL Cast had a
+retention policy and no acquisition policy: it knew what to throw away and
+nothing about what to fetch. Auto-download (0/1/3/5/10/all, per podcast) plus
+Auto-Queue per show plus per-show new-episode announcements mean subscribing
+to a show and pressing play is now one step.
+
+**Sharing and audio export -- the desktop translation.** Earshot answers "share
+this" with a share sheet; the desktop has no equivalent, and importing the
+metaphor would produce a menu item that opens a dialog nobody wants. The
+requirement is a **file** the listener can place and an **address** they can
+paste: **Save Episode Audio As...**, **Copy Podcast Link**, and **Show in File
+Explorer**. All three are Quick Actions entries, never hard-coded menu items,
+so they take the listener's order like everything else on those menus.
+
+The normative rule: **saving copies, it never moves.** QUILL Cast goes on
+managing its own downloaded copy -- retention, the storage cap, resume, and
+Remove Downloaded Copy all still apply to it -- and the saved copy is the
+listener's, outside all of that. Moving the managed file would silently break
+resume and the download's own bookkeeping. An episode that is not yet
+downloaded offers the download and returns, rather than blocking the UI thread
+behind a transfer of unknown length.
+
+**Episode notes reachable from the player.** A timestamped note is made *while
+listening*, so requiring the listener to leave the player, locate the episode
+in the library tree and open a context menu to read notes back was the wrong
+shape. `My Notes in This Episode...` acts on whatever is playing; the Manager's
+per-episode route stays, and both build the list from one implementation so
+their wording cannot drift. **Copy Note** carries the episode, the podcast, the
+timestamp, the note and the audio link together -- a note's own text alone is a
+fragment with no way back to the moment it marks.
+
+**Queue Expiration + Recently Expired.** Per-podcast, off by default, with a
+seven-day restorable hold. The one migration risk in the release -- a queue
+saved before 1.1.0 has no timestamps -- is handled by reading an unstamped
+slot as "added now" rather than "infinitely old".
+
+**Listening statistics.** Time listened, extra content bought by speed,
+episodes finished, per-podcast breakdown, CSV export, 90-day retention. The
+report is a read-only text field you arrow through, and durations are words
+(A-8). Time saved by Smart Speed is omitted rather than estimated (A-10).
+
+**Quick Actions.** Three orderable action lists. The desktop translation of
+Earshot's rotor ordering: a chosen default for Enter, a chosen menu order,
+and Ctrl+1..Ctrl+9 for the top nine.
+
+**Session control.** Stop After This Episode; the continue-after-queue /
+continue-after-group pair (with both off, playback stops at the end of the
+current episode); speed as a real 0.5x-5.0x continuum with Speed Up / Speed
+Down / Reset commands; Mark All as Played; sleep timer "end of this episode"
+and Extend +5.
+
+**Inbox caps and storage management.** Per-podcast Inbox count and age caps
+that trim without deleting and never touch anything played, started, or
+queued; a Downloads screen with usage, an age limit, a total cap, and Free
+Up Space, under the rule that a queued or part-played episode is never
+evicted.
+
+**Bulk OPML import.** Threaded, deduplicating, and reportable at the scale a
+real subscription list actually reaches -- with a pruning export that writes
+the source file back without the feeds that no longer answer (§9).
+
+**Winamp classic transport keys**, shared with Quill Radio's recordings
+player rather than reimplemented: `Z X C V B`, arrows to seek, `J`, `Ctrl+J`,
+`T`, `L`. On by default, one Preferences checkbox to turn off.
+
+**Two correctness fixes found by reading Earshot's own bug history**:
+finishing a mid-queue episode now continues from the slot after it instead of
+jumping back to the queue head, and chapter auto-skip carries a loop guard so
+a seek's own position report cannot re-trigger the skip that caused it.
 
 See `CHANGELOG.md` for the full, versioned history.

@@ -16,17 +16,19 @@ from typing import TYPE_CHECKING
 from quill.core.paths import app_data_dir
 from quill.core.podcasts import feed_auth, retention
 from quill.core.podcasts import history as podcast_history
-from quill.core.podcasts import opml as opml_module
 from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
 from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
 from quill.core.podcasts.subscriptions import (
     PodcastLibrary,
     load_library,
     merge_episodes,
-    save_library,
 )
 from quill.core.sound_events import SoundEvent
 from quill.ui.companion_cues import post_cue
+from quill.ui.main_frame_podcast_acquisition import PodcastAcquisitionMixin
+from quill.ui.main_frame_podcast_dialogs import PodcastDialogsMixin
+from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
+from quill.ui.main_frame_podcast_session import PodcastSessionMixin
 from quill.ui.podcasts.check_monitor import PodcastCheckMonitor
 from quill.ui.podcasts.player_controller import PodcastPlaybackState, PodcastPlayerController
 
@@ -37,8 +39,18 @@ if TYPE_CHECKING:  # Dialog classes are imported lazily at open time (they pull
 _SAFE_MODE_MESSAGE = "Podcasts are disabled in Safe Mode. Restart QUILL normally to use them."
 
 
-class PodcastsMixin:
-    """Adds Podcasts to ``MainFrame``."""
+class PodcastsMixin(
+    PodcastSessionMixin,
+    PodcastAcquisitionMixin,
+    PodcastLibrarySaveMixin,
+    PodcastDialogsMixin,
+):
+    """Adds Podcasts to ``MainFrame``.
+
+    Inherits :class:`~quill.ui.main_frame_podcast_session.PodcastSessionMixin`
+    rather than being listed beside it at every host, so QUILL and QUILL Cast
+    can never end up with the player but not the 1.1.0 session commands.
+    """
 
     # -- setup ----------------------------------------------------------
 
@@ -58,6 +70,7 @@ class PodcastsMixin:
         #: spotify:episode: can play on the Web Playback engine; "" until the
         #: user connects Spotify.
         self._spotify_session = SpotifySession()
+        self._init_podcast_session()
         self._podcast_controller = PodcastPlayerController(
             self.frame,
             on_state_changed=self._on_podcast_state_changed,
@@ -66,6 +79,7 @@ class PodcastsMixin:
             before_play=self._stop_radio_before_podcast,
             on_enhance_error=self._on_podcast_enhance_error,
             spotify_token_provider=self._spotify_session.access_token,
+            on_second_tick=self._podcast_second_tick,
         )
         settings = self._podcast_library.settings
         self._podcast_controller.set_enhancement(
@@ -96,6 +110,12 @@ class PodcastsMixin:
             feature_enabled=lambda: self._feature_enabled("core.podcasts"),
         )
         self._podcast_check_monitor.apply()
+        # Housekeeping runs once at startup: the queue-age migration has to
+        # happen before anything asks how old the queue is, and an expiry that
+        # became due while the app was closed should be applied on the way in,
+        # not on the next refresh. Quiet at launch -- a summary the moment the
+        # window appears would talk over the screen reader announcing it.
+        self.podcast_run_maintenance(announce=False)
 
     def _podcast_download_root(self) -> Path:
         override = self._podcast_library.settings.download_root
@@ -107,15 +127,6 @@ class PodcastsMixin:
         self._wx.CallAfter(
             self._announce,
             f"Download connection dropped; reconnecting (attempt {attempt} of {max_attempts})...",
-        )
-
-    def _save_podcast_library(self) -> None:
-        save_library(app_data_dir(), self._podcast_library)
-        settings = self._podcast_library.settings
-        self._podcast_download_queue.set_reconnect_settings(
-            enabled=settings.reconnect_enabled,
-            max_attempts=settings.reconnect_max_attempts,
-            wait_seconds=settings.reconnect_wait_seconds,
         )
 
     # -- controller callbacks (fire on the UI thread already, per PlayerPanel's
@@ -212,6 +223,10 @@ class PodcastsMixin:
         if episode is None:
             return
         episode.position_ms = max(0, int(ms))
+        # A checkpoint is exactly the moment a listening session ends
+        # (pause / stop / switch / shutdown), which is why the statistics log
+        # is flushed here instead of on the once-a-second poll that feeds it.
+        self._podcast_flush_stats()
         self._save_podcast_library()
 
     def _on_podcast_episode_finished(self, show_id: str, episode_guid: str) -> None:
@@ -223,6 +238,7 @@ class PodcastsMixin:
             return
         episode.played = True
         episode.position_ms = 0
+        self._podcast_flush_stats(completed=True)
         # The end of an episode is a state QUILL Cast changed through in
         # silence: the next episode simply started, or nothing did (#1302).
         # Fired from the player's own once-per-episode finish callback, so it
@@ -233,23 +249,67 @@ class PodcastsMixin:
         self._save_podcast_library()
         if self._podcast_manager_dialog is not None:
             self._podcast_manager_dialog.refresh_tree()
-        self._podcast_play_next_from_queue()
+        # Stop After This Episode is a one-off: it wins over both continue
+        # settings, clears itself here, and never survives a restart.
+        if self._podcast_stop_after_episode:
+            self._podcast_stop_after_episode = False
+            self._announce("Stopped after that episode, as you asked.")
+            return
+        self._podcast_play_next_from_queue(finished_show=show, finished_guid=episode_guid)
 
-    def _podcast_play_next_from_queue(self) -> None:
-        """Auto-advance: when an episode finishes, the Play Queue's next
-        playable slot starts (stale slots self-heal away)."""
-        from quill.core.podcasts.queue import pop_next_playable
+    def _podcast_play_next_from_queue(
+        self,
+        *,
+        finished_show: PodcastShow | None = None,
+        finished_guid: str = "",
+    ) -> None:
+        """Auto-advance, under the two continue settings.
+
+        ``continue_after_queue`` (on) plays the Play Queue's next playable
+        slot; stale slots self-heal away as they are encountered. When the
+        queue is empty, ``continue_after_group`` (off) carries on with the
+        same show's next unplayed episode. With both off, an episode ending is
+        simply the end -- which is the whole point of having the pair.
+        """
+        from quill.core.podcasts.queue import pop_next_after
+        from quill.core.podcasts.sorting import sort_episodes
         from quill.ui.podcasts.show_actions import start_episode_playback
 
-        resolved = pop_next_playable(self._podcast_library)
-        if resolved is None:
-            return
-        next_show, next_episode = resolved
-        self._save_podcast_library()
-        start_episode_playback(
-            self._podcast_controller, self._podcast_library, next_show, next_episode
+        settings = (
+            self._podcast_library.effective_settings(finished_show)
+            if finished_show is not None
+            else self._podcast_library.settings
         )
-        self._announce(f"Up next from the queue: {next_episode.title}")
+        if settings.continue_after_queue:
+            # True order, not the queue head: finishing episode nine must not
+            # throw you back to episode one. See queue.pop_next_after.
+            resolved = pop_next_after(
+                self._podcast_library,
+                finished_show.id if finished_show is not None else "",
+                finished_guid,
+            )
+            if resolved is not None:
+                next_show, next_episode = resolved
+                self._save_podcast_library()
+                start_episode_playback(
+                    self._podcast_controller, self._podcast_library, next_show, next_episode
+                )
+                self._announce(f"Up next from the queue: {next_episode.title}")
+                return
+        if settings.continue_after_group and finished_show is not None:
+            following = next(
+                (
+                    e
+                    for e in sort_episodes(finished_show.episodes, "unplayed_first")
+                    if not e.played
+                ),
+                None,
+            )
+            if following is not None:
+                start_episode_playback(
+                    self._podcast_controller, self._podcast_library, finished_show, following
+                )
+                self._announce(f"Up next from {finished_show.title}: {following.title}")
 
     # -- download queue callbacks (fire on the download worker thread --
     # everything here must be wx.CallAfter-safe) ----------------------------
@@ -460,45 +520,10 @@ class PodcastsMixin:
         dialog.close()
 
     def _podcast_player_info(self):
-        """Gather what the report needs from the controller and the library."""
-        from quill.core.media.player_info import PlayerInfo
-        from quill.core.podcasts.episode_notes import notes_for_episode
+        """The report's values; gathered in ui/podcasts/player_info_source."""
+        from quill.ui.podcasts import player_info_source
 
-        controller = self._podcast_controller
-        state = controller.state
-        show = self._podcast_library.find_show(state.show_id) if state.show_id is not None else None
-        episode = (
-            show.find_episode(state.episode_guid)
-            if show is not None and state.episode_guid is not None
-            else None
-        )
-        downloaded = str(getattr(episode, "downloaded_path", "")) if episode else ""
-        chapters = list(getattr(self, "_podcast_current_chapters", []) or [])
-        position_ms = controller.position_ms()
-        extras: list[str] = []
-        if chapters:
-            source = str(getattr(self, "_podcast_chapters_source", ""))
-            current = sum(1 for c in chapters if c.start_ms <= position_ms)
-            extras.append(
-                f"Chapter: {max(1, current)} of {len(chapters)}"
-                + (f" ({source})" if source else "")
-            )
-        try:
-            note_count = len(notes_for_episode(state.show_id or "", state.episode_guid or ""))
-        except Exception:  # noqa: BLE001 - a missing notes file is simply none
-            note_count = 0
-        return PlayerInfo(
-            title=state.title,
-            collection=getattr(show, "title", ""),
-            position_ms=position_ms,
-            duration_ms=controller.length_ms(),
-            speed=controller.rate,
-            streaming=not downloaded,
-            saved_permanently=bool(downloaded),
-            note_count=note_count,
-            resume_ms=int(getattr(episode, "position_ms", 0) or 0),
-            extras=tuple(extras),
-        )
+        return player_info_source.gather(self)
 
     def podcast_mute_toggle(self) -> None:
         self._podcast_controller.toggle_mute()
@@ -717,94 +742,6 @@ class PodcastsMixin:
         self._podcast_download_queue.resume_all()
         self._announce("Resumed podcast downloads")
 
-    # -- dialogs ------------------------------------------------------------
-
-    def open_podcast_manager(self) -> None:
-        if self._safe_mode:
-            self._show_message_box(
-                _SAFE_MODE_MESSAGE, "Podcasts", self._wx.ICON_INFORMATION | self._wx.OK
-            )
-            return
-        from quill.ui.podcasts.manager_dialog import PodcastManagerDialog
-
-        dialog = PodcastManagerDialog(
-            self.frame,
-            library=self._podcast_library,
-            download_queue=self._podcast_download_queue,
-            controller=self._podcast_controller,
-            download_root=self._podcast_download_root(),
-            safe_mode=self._safe_mode,
-            task_manager=self._task_manager,
-            announce_cb=self._announce,
-            on_library_changed=self._save_podcast_library,
-            on_open_add_podcast=self._podcast_open_add_dialog,
-            on_open_import_opml=self._podcast_open_import_opml,
-            on_export_opml=self._podcast_export_opml,
-            on_refresh_feed=self.refresh_podcast_feed,
-            on_open_settings=self._podcast_open_settings,
-            on_send_show_notes=self._podcast_send_show_notes_to_editor,
-        )
-        self._podcast_manager_dialog = dialog
-        try:
-            dialog.show()
-        finally:
-            self._podcast_manager_dialog = None
-        self._refresh_statusbar()
-
-    def _podcast_send_show_notes_to_editor(self, plain_text: str) -> None:
-        self._power_tools_open_text_in_new_buffer(plain_text, "Opened podcast show notes")
-
-    def _podcast_open_settings(self) -> None:
-        from quill.ui.podcasts.podcast_settings_dialog import PodcastSettingsDialog
-
-        dialog = PodcastSettingsDialog(
-            self.frame, settings=self._podcast_library.settings, announce_cb=self._announce
-        )
-        updated = dialog.show()
-        if updated is None:
-            return
-        self._podcast_library.settings = updated
-        self._save_podcast_library()
-        self._announce("Podcast settings saved")
-
-    def _podcast_open_add_dialog(self) -> None:
-        from quill.ui.podcasts.add_podcast_dialog import AddPodcastDialog
-
-        dialog = AddPodcastDialog(
-            self.frame,
-            library=self._podcast_library,
-            task_manager=self._task_manager,
-            safe_mode=self._safe_mode,
-            announce_cb=self._announce,
-            on_library_changed=self._save_podcast_library,
-        )
-        dialog.show()
-
-    def _podcast_open_import_opml(self) -> None:
-        # AddPodcastDialog already offers Import OPML...; reuse the same
-        # dialog so there is one place that owns the file picker + parsing.
-        self._podcast_open_add_dialog()
-
-    def _podcast_export_opml(self) -> None:
-        wx = self._wx
-        with wx.FileDialog(
-            self.frame,
-            "Export OPML",
-            wildcard="OPML files (*.opml)|*.opml",
-            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-        ) as dialog:  # dialog_button_contract: exempt
-            if dialog.ShowModal() != wx.ID_OK:
-                return
-            path = dialog.GetPath()
-        text = opml_module.export_opml(self._podcast_library)
-        try:
-            with open(path, "w", encoding="utf-8") as handle:
-                handle.write(text)
-        except OSError as error:
-            self._set_status(f"Could not export OPML: {error}")
-            return
-        self._announce("Exported OPML")
-
     # -- feed refresh (Phase 1: manual only; auto-refresh is a Phase 2+ item) --
 
     def refresh_podcast_feed(self, show_id: str) -> None:
@@ -821,7 +758,10 @@ class PodcastsMixin:
             )
 
         def _on_success(_op: str, info: feed_reader.FeedInfo) -> None:
+            known = {episode.guid for episode in show.episodes}
             new_count = merge_episodes(show, info.episodes)
+            fresh = [episode for episode in show.episodes if episode.guid not in known]
+            queued = self._podcast_route_new_episodes(show, fresh)
             self._save_podcast_library()
             if self._podcast_manager_dialog is not None:
                 self._podcast_manager_dialog.refresh_tree()
@@ -830,10 +770,18 @@ class PodcastsMixin:
                 # monitor policy: force=True raises the announcement to WARNING,
                 # which is the severity that cuts across current speech.
                 self._announce(
-                    f"{new_count} new episode(s) for {show.title}",
+                    self._podcast_new_episode_message(show, new_count, queued),
                     force=self._podcast_check_monitor.interrupt_speech,
                 )
-            self._maybe_backfill_always_sync(show)
+                self._podcast_notify_new_episodes(show, fresh)
+            # Always Sync is now one value of the auto-download policy
+            # (effective_auto_download_count == -1), so the single
+            # acquisition pass below covers both -- calling the old backfill
+            # as well would queue the same items twice and say so twice.
+            self._podcast_apply_auto_download(show)
+            # Aging the queue and trimming the Inbox belong right after new
+            # episodes arrive: that is the moment the counts actually change.
+            self.podcast_run_maintenance()
 
         from quill.ui.podcasts.show_actions import announce_if_feed_auth_failure
 
@@ -849,7 +797,14 @@ class PodcastsMixin:
     def _maybe_backfill_always_sync(self, show: object) -> None:
         """Always Sync (Phase 4): a download-mode show with
         always_sync_full_catalog queues a download for every catalog episode
-        it doesn't have on disk yet -- the whole point of the setting."""
+        it doesn't have on disk yet -- the whole point of the setting.
+
+        Superseded in 1.1.0 by :meth:`_podcast_apply_auto_download`, which
+        treats Always Sync as ``auto_download_count == -1`` and therefore
+        covers this case; kept as the explicit on-demand backfill (and
+        because a caller outside the refresh path may still want exactly
+        this and nothing else).
+        """
         settings = self._podcast_library.effective_settings(show)
         if not getattr(settings, "always_sync_full_catalog", False):
             return
@@ -1040,6 +995,16 @@ class PodcastsMixin:
         minutes, seconds = divmod(position // 1000, 60)
         self._announce(f"Note saved at {minutes}:{seconds:02d}")
 
+    def open_podcast_episode_notes(self) -> None:
+        """My Notes in This Episode..., for whatever is playing (item 11).
+
+        Wiring only; shared with the Manager's route in
+        ``ui/podcasts/episode_notes_commands.py`` so both say the same words.
+        """
+        from quill.ui.podcasts import episode_notes_commands
+
+        episode_notes_commands.open_for_playing_episode(self)
+
     # -- command palette registration ----------------------------------------
 
     def _register_podcasts_commands(self) -> None:
@@ -1088,6 +1053,11 @@ class PodcastsMixin:
                 self.subscribe_acb_media_podcasts,
             ),
             ("podcasts.add_note", "Podcasts: Add Episode Note...", self.add_podcast_note),
+            (
+                "podcasts.episode_notes",
+                "Podcasts: My Notes in This Episode...",
+                self.open_podcast_episode_notes,
+            ),
             (
                 "podcasts.find_chapters",
                 "Podcasts: Find Chapters in This Episode...",

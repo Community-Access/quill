@@ -14,7 +14,14 @@ import json
 import logging
 from pathlib import Path
 
+from quill.core import crash_fingerprint as _crash_fingerprint
+
 logger = logging.getLogger(__name__)
+
+#: Re-exported so the crash-recovery caller has one obvious import; the
+#: definition lives in core.crash_fingerprint beside the live-exception
+#: half, so the two can never drift apart.
+fingerprint_for_traceback = _crash_fingerprint.from_traceback_text
 
 _MAX_LOG_CHARS = 6000
 _SCHEMA_PATH = Path(__file__).parent / "schemas" / "feedback.json"
@@ -59,11 +66,19 @@ def submit_crash_issue(
     app_version: str,
     github_token: str,
     metadata: dict | None = None,
+    fingerprint: str = "",
 ) -> tuple[str | None, str | None]:
     """Create a GitHub issue for a crash report. Returns ``(issue_url, error)``.
 
     ``issue_url`` is None on any failure, with a human-readable reason in
     ``error``. Never raises.
+
+    ``fingerprint`` deduplicates: when an open issue already carries it,
+    feedback_hub comments there and returns that issue's URL instead of filing
+    another. The 2026-08-12 triage closed eight issues that were two crashes,
+    several filed within a minute of each other; this is the fix for that.
+    An empty fingerprint simply files normally -- it is never a placeholder
+    that could collapse unrelated reports onto one issue.
     """
     if not github_token:
         return None, "No GitHub token configured"
@@ -74,19 +89,46 @@ def submit_crash_issue(
         from feedback_hub import submit
     except Exception as exc:  # noqa: BLE001 - missing/broken feedback_hub is non-fatal
         return None, f"feedback_hub is not available: {exc}"
+
+    kwargs: dict[str, object] = {
+        "app": "Quill",
+        "github_repo": repo,
+        "github_token": github_token,
+        "summary": summary,
+        "message": message,
+        "category": "Bug Report",
+        "app_version": app_version,
+        "github_labels": ["bug", "needs-triage", "crash"],
+        "metadata": metadata or {},
+    }
+    # feedback_hub < 1.1.0 has neither parameter. Ask its signature what it
+    # accepts rather than calling and catching TypeError: a TypeError raised
+    # *inside* submit is a real bug, and retrying it silently would hide it.
+    accepted = _submit_parameters(submit)
+    if fingerprint and "fingerprint" in accepted:
+        kwargs["fingerprint"] = fingerprint
+    if "version_label" in accepted:
+        kwargs["version_label"] = True
+
     try:
-        result: tuple[str | None, str | None] = submit(
-            app="Quill",
-            github_repo=repo,
-            github_token=github_token,
-            summary=summary,
-            message=message,
-            category="Bug Report",
-            app_version=app_version,
-            github_labels=["bug", "needs-triage", "crash"],
-            metadata=metadata or {},
-        )
+        result: tuple[str | None, str | None] = submit(**kwargs)
     except Exception as exc:  # noqa: BLE001 - submission must never crash the caller
         logger.warning("Crash issue submission failed", exc_info=True)
         return None, str(exc)
     return result
+
+
+def _submit_parameters(submit: object) -> frozenset[str]:
+    """The parameter names the installed ``feedback_hub.submit`` accepts.
+
+    An unreadable signature reads as "accepts nothing optional", which sends
+    the caller down the 1.0.x path -- duplicates get filed, which is exactly
+    what happened before this feature existed. Degrading to the old behaviour
+    is always better than failing to file the report.
+    """
+    import inspect
+
+    try:
+        return frozenset(inspect.signature(submit).parameters)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return frozenset()

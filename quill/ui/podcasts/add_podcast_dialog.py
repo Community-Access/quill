@@ -13,7 +13,6 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.podcasts import feed_reader, itunes_search
-from quill.core.podcasts import opml as opml_module
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
 from quill.ui.dialog_contract import apply_modal_ids
@@ -291,6 +290,17 @@ class AddPodcastDialog:
     # OPML import
 
     def _on_import_opml(self, _event: object) -> None:
+        """Hand a chosen OPML file to the bulk-import flow.
+
+        The whole import runs there, off the UI thread: a real subscription
+        list is thousands of entries, and reading, planning, adding, and
+        optionally checking every feed is not work to do inside a button
+        handler. See ``opml_import_dialog.py``.
+        """
+        from pathlib import Path
+
+        from quill.ui.podcasts.opml_import_dialog import OpmlImportDialog
+
         wx = self._wx
         with wx.FileDialog(
             self.dialog,
@@ -300,18 +310,15 @@ class AddPodcastDialog:
         ) as dialog:  # dialog_button_contract: exempt
             if dialog.ShowModal() != wx.ID_OK:
                 return
-            path = dialog.GetPath()
-        try:
-            with open(path, encoding="utf-8", errors="replace") as handle:
-                text = handle.read()
-        except OSError as error:
-            self._status.SetLabel(f"Could not read that file: {error}")
-            return
-        try:
-            added, skipped = opml_module.import_opml(self._library, text)
-        except opml_module.OpmlError as error:
-            self._status.SetLabel(str(error))
-            return
-        self._on_library_changed()
-        self._status.SetLabel(f"Imported {len(added)} podcast(s); {skipped} already subscribed.")
-        self._announce(self._status.GetLabel())
+            path = Path(dialog.GetPath())
+        importer = OpmlImportDialog(
+            self.dialog,
+            library=self._library,
+            path=path,
+            task_manager=self._task_manager,
+            safe_mode=self._safe_mode,
+            announce_cb=self._announce,
+            on_library_changed=self._on_library_changed,
+        )
+        importer.show()
+        self._status.SetLabel(f"Finished importing {path.name}.")

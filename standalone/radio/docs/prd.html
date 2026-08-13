@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio -- Product Requirements</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -703,19 +702,37 @@ string transform applies here. Decision 2026-08-12: no search branch;
 paste a link or a playlist. If it is revisited, it should be through the
 Data API with the listener’s own client credentials, the shape Spotify
 already uses.</li>
-<li><em>Known next step: a finished video is not a station.</em> Seek, a
-scrub slider, and 0.25-4x speed already exist in
-<code>ui/audio/mpv_engine.py</code> (<code>seek</code> absolute+exact,
-real <code>length_ms</code>, <code>set_rate</code> with scaletempo);
-<code>MpvRadioEngine</code> stubs all three deliberately, because live
-radio has no timeline. Routing a non-live YouTube video to the bounded
-engine is therefore a behaviour the codebase can already perform – the
-obstacle is ordering, not capability: <code>_select_engine()</code> runs
-before <code>_resolve_playback_url()</code>, while live-versus-finished
-is only known after the resolve. Doing it means letting the play path
-choose its engine once the resolve lands, inside the existing
-one-play-token discipline so a late resolve cannot hijack playback the
-listener has moved on from.</li>
+<li><em>A finished video is not a station – delivered.</em> Seek,
+absolute position and 0.25-4x speed live in
+<code>ui/audio/mpv_engine.py</code>; <code>MpvRadioEngine</code> stubbed
+all three because live radio has no timeline. The obstacle was ordering,
+not capability: <code>_select_engine()</code> runs before
+<code>_resolve_playback_url()</code>, while live-versus-finished is only
+known after the resolve. The answer was <strong>not</strong> the engine
+swap first sketched here – rebuilding the play path to choose an engine
+later would have meant restructuring the most sensitive code in the
+radio stack for a capability the engine could simply be <em>told
+about</em>. <code>MpvRadioEngine.set_bounded()</code> instead receives
+the fact immediately after the load
+(<code>_declare_source_shape</code>), inside the existing one-play-token
+discipline, and gates
+<code>seek</code>/<code>length_ms</code>/<code>set_rate</code> on it;
+everything that is not a resolved, finished video is untouched. On top
+of that: the uploader’s chapters,
+<code>Play Faster/Slower/Normal</code>, <code>Where Am I?</code>, and
+<code>Go to Position...</code> (Ctrl+Shift+J), which reuses the Media
+Player’s accessible H/M/S dialog rather than a second prompt.
+<strong>The last gap closed was the transport keys themselves:</strong>
+Rewind/Forward 30 Seconds still ran the live-DVR cache seek for a
+finished video and announced a distance behind a live edge that does not
+exist – a fabricated measurement. <code>_radio_seek_bounded</code> now
+picks the operation the source deserves, which is also what finally
+reaches
+<code>bounded_playback_ui.skip_back</code>/<code>skip_forward</code>
+(written for exactly this, previously with no caller). No scrub
+<em>slider</em> was added: this is a keyboard-and-speech surface, and Go
+to Position plus the skip keys are the accessible form of the same
+capability.</li>
 </ul></li>
 <li><strong>Song History and one volume for every station (2.2.0;
 upstream <code>core/radio/song_history.py</code>,
@@ -1314,6 +1331,33 @@ char-hook on the (modal) Recordings dialog drives the shared
 controller’s volume, so a played-back recording is adjustable like a
 live stream.</li>
 </ul></li>
+<li><strong>A play queue for the Recordings list (2.2.0; upstream
+<code>core/radio/play_queue.py</code>,
+<code>ui/radio/recordings_queue.py</code>).</strong>
+<code>winamp_keys.py</code> deliberately left <code>R</code> (shuffle),
+<code>S</code> (repeat) and <code>Ctrl+V</code> (stop after current)
+unbound, because all three describe a play queue the recordings list did
+not have and a key that only appears to work is worse than one that is
+not offered. <code>PlayQueue</code> is that queue: wx-free,
+strict-typed, and normative on three points. <strong>Shuffle is a fixed
+permutation, regenerated only when the set of rows changes</strong> –
+“random next” would replay items before others had played at all and,
+decisively for this audience, would leave <code>Z</code> unable to
+return to what was just heard; the list also refreshes on a two-second
+timer, so <code>set_rows_if_changed</code> compares as a <em>set</em> to
+stop the order being reshuffled underneath the listener.
+<strong>Repeat-one applies to a natural end, not to Next</strong>, or
+Next reads as broken. <strong>Stop-after-current outranks repeat, clears
+itself when it fires, and is not persisted</strong> – a one-shot
+surviving a restart would halt playback for a reason nobody could
+remember requesting. Shuffle and repeat persist on
+<code>RadioHistory</code> (<code>recordings_shuffle</code>,
+<code>recordings_repeat</code>, normalized on load so a mode from a
+later build cannot strand the queue). Auto-advance is driven from the
+dialog’s existing refresh timer rather than the controller’s single
+<code>on_state_changed</code>, which belongs to the app frame and which
+a modal dialog would have to hand back on every exit path, including the
+exceptional ones.</li>
 <li><strong>Recordings reliability overhaul (2.0.0, upstream
 <code>quill/core/radio/*</code>; R1-R4).</strong> The headline of 2.0.0:
 a reported round of recording bugs closed and the one missing piece

@@ -32,6 +32,7 @@ import feedparser
 
 from quill import __version__
 from quill.core.error_codes import CodedError
+from quill.core.net_retry import retry_transient
 from quill.core.podcasts import feed_auth
 from quill.core.podcasts.models import PodcastEpisode
 
@@ -89,7 +90,17 @@ def _basic_auth_header(username: str, password: str) -> str:
 
 
 def _fetch_feed_bytes(url: str, *, username: str = "", password: str = "") -> bytes:
-    """One HTTPS GET returning raw feed bytes -- the reviewed egress site."""
+    """One HTTPS GET returning raw feed bytes -- the reviewed egress site.
+
+    Retried on a transient failure (:mod:`quill.core.net_retry`): a refresh
+    that fails because a podcast host was briefly overloaded looks exactly
+    like a feed that has stopped publishing, and the listener has no way to
+    tell the two apart. Two retries, a second and then two seconds later.
+
+    A 401/403 is **not** retried -- it is a sign-in problem, and asking three
+    times with the same rejected credentials only delays the prompt that
+    would actually fix it.
+    """
     if not url.startswith("https://"):
         raise FeedReaderError("Only https:// feeds can be subscribed to.")
     headers = {"User-Agent": _USER_AGENT, "Accept": "application/rss+xml, application/xml, */*"}
@@ -102,12 +113,17 @@ def _fetch_feed_bytes(url: str, *, username: str = "", password: str = "") -> by
         headers["Authorization"] = _basic_auth_header(username, password)
     request = urllib.request.Request(url, headers=headers)
     context = ssl.create_default_context()
-    try:
+
+    def _fetch_once() -> bytes:
+        """One attempt. The reviewed egress site; the retry wraps it."""
         with feed_auth.urlopen_auth_safe(
             request, timeout=_TIMEOUT_SECONDS, context=context
         ) as resp:
             payload: bytes = resp.read(_MAX_BYTES)
             return payload
+
+    try:
+        return retry_transient(_fetch_once)
     except urllib.error.HTTPError as error:
         if error.code in (401, 403):
             raise FeedAuthError(

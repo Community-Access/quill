@@ -73,6 +73,12 @@ class PodcastHistory:
     #: of closing the window. Off by default; mirrors Quill Radio's
     #: RadioHistory.alt_f4_to_tray.
     alt_f4_to_tray: bool = False
+    #: Winamp classic-skin transport letters (Z X C V B, arrows to seek, J,
+    #: T, L) in the library and episode lists. On by default -- every letter
+    #: the map claims is otherwise unused on those surfaces, and the muscle
+    #: memory is real for anyone who came through Winamp. Mirrors Quill
+    #: Radio's RadioHistory.winamp_playback_keys, and shares its key map.
+    winamp_playback_keys: bool = True
 
     def record(
         self, show_id: str, episode_guid: str, *, show_title: str, episode_title: str
@@ -114,6 +120,7 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.last_update_check = str(raw.get("last_update_check", ""))
         history.announce_dialog_transitions = bool(raw.get("announce_dialog_transitions", False))
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
+        history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
             played = PlayedEpisode.from_dict(entry)
@@ -135,6 +142,7 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
             "last_update_check": history.last_update_check,
             "announce_dialog_transitions": history.announce_dialog_transitions,
             "alt_f4_to_tray": history.alt_f4_to_tray,
+            "winamp_playback_keys": history.winamp_playback_keys,
             "episodes": [e.to_dict() for e in history.episodes],
         },
     )

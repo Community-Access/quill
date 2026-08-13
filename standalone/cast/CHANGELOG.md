@@ -1,8 +1,89 @@
 # Changelog
 
-All notable changes to QUILL Cast are documented here. See `docs/release-notes-1.0.md` for the fuller narrative version.
+All notable changes to QUILL Cast are documented here. See `docs/release-notes-1.1.md` for the fuller narrative version.
+
+## 1.1.0
+
+### Getting episodes without asking
+
+- **QUILL Cast can now fetch episodes for you.** Until now it knew what to throw away and nothing about what to fetch: an episode landed on your disk because you asked for it, or -- with Always Sync -- because *everything* did. There was no "keep the newest three ready". Podcast Settings now has **Automatically download**, with None, the newest 1, 3, 5, 10, or every episode, and any podcast can set its own from **Settings for This Podcast...**. New episodes arrive downloaded, on subscribe and on every refresh. Two more switches: anything you add to the Play Queue downloads too (on -- something you queued is something you meant to play), and anything routed to the Inbox does not (off -- the Inbox is where episodes wait to be sorted, not a commitment).
+- **Auto-Queue a podcast.** Turn on **Auto-Queue New Episodes** for a show and its new episodes go straight into the Play Queue on refresh, skipping the Inbox entirely. For the two or three shows you always listen to, that is the whole workflow.
+- **Have one podcast announce itself.** **Announce New Episodes**, per show, names the new episodes out loud and in braille when the background check finds them, and shows a tray notification. Deliberately per podcast, and off until asked: being told about every feed is being told about nothing.
+
+### Your queue looks after itself
+
+- **Queue Expiration.** A queued episode you never got to is worse than clutter -- the queue decides what plays next, so a stale item does not merely sit there, it takes a turn. Any podcast can now set **Expire from the queue** (1 day up to a month; never, by default). Daily news show? Two days. Weekly long-form? Two weeks. Or leave it off entirely. There is deliberately no global setting: the right number differs per show, and one number for everything is a number nobody wants.
+- **Recently Expired**, a new pinned view in the Podcast Manager beside New Episodes and the Inbox, holds what expired for seven days. **Restore** puts an episode back at the end of the queue with a fresh clock; **Restore All** takes the lot. Nothing is deleted when an episode expires -- it keeps its downloaded file, its position, and its place in its show. Only the seven-day sweep removes a downloaded copy, and only for something you chose not to restore. Every expiry is announced; a queue that quietly shortened itself is exactly the kind of silent change QUILL Cast does not do.
+- **Upgrading is safe.** A queue saved before this release has no timestamps to age against. QUILL Cast reads an unstamped episode as "added just now", not "added long ago", so the first launch after updating cannot empty your queue.
+
+### Knowing what you listened to
+
+- **Listening Statistics** (Episode menu). Time listened this week, month, year, or all time; how much extra content faster playback bought you; how many episodes you finished; and a breakdown by podcast, most-listened first. It is a read-only text field you arrow through line by line and can copy, the same shape as Player Information -- not a chart with a caption. Durations are read as language ("3 hours, 47 minutes"), never as a clock face, because a screen reader reads `3:47:00` as a time of day. **Export CSV...** saves every session; **Clear Statistics...** deletes the log and nothing else. Ninety days are kept by default.
+- **One number is missing on purpose.** Time saved by Smart Speed is not reported, because the silence-trimming path cannot say how much silence it actually dropped. An invented figure would flatter the feature and mislead you, so the line is simply absent rather than showing a confident zero.
+
+### The menus are yours now
+
+- **Quick Actions...** (Subscriptions menu) puts the actions you actually use where you expect them. Three lists -- episode, podcast, and Play Queue -- each reorderable with Move Up, Move Down, and Make Default. **The first action in each list is what Enter does.** The first nine also answer to **Ctrl+1** through **Ctrl+9** in the episode list, so the ones you use constantly need no menu at all. And the whole list is the order of the right-click menu, so muscle memory holds. Nothing changes until you change it: the shipped order puts Play first for an episode and Play Next Episode first for a show, exactly as before.
+
+### Getting an episode back out
+
+- **Save Episode Audio As...** keeps your own copy of the audio wherever you choose. This is the useful half of "sharing" on a desktop: a share sheet has no equivalent here, but a file you can put somewhere does. It **copies** rather than moves -- QUILL Cast keeps managing its own downloaded copy, so retention, the storage cap, resume and Remove Downloaded Copy all still apply to it, and your saved copy sits outside all of that. An episode you have not downloaded offers to fetch it first rather than freezing behind a progress bar you cannot escape. The suggested filename is "Show - Episode", with anything Windows rejects replaced and the length bounded, so the Save dialog never opens pre-filled with a name the system will refuse.
+- **Copy Podcast Link**, beside the existing Copy Episode Link. The feed address rather than the homepage, because a feed address is the thing another podcast app can actually be given. A local podcast says it has no link instead of silently copying nothing.
+- **Show in File Explorer** opens the folder holding a downloaded episode with the file selected. (It genuinely selects it now -- see Fixed below.)
+- All three are **Quick Actions** entries, not hard-coded menu items, so they can be reordered, made the Enter default, or reached on Ctrl+1 through Ctrl+9 like everything else.
+
+### Deciding what happens next
+
+- **Stop After This Episode** (Episode menu): a one-off that stops instead of auto-advancing, clears itself when it fires, and never survives a restart. QUILL Cast says "Will stop after this episode" when you turn it on.
+- **Two switches for what follows an episode.** Podcast Settings now has "Play the next episode in the Play Queue" (on -- what QUILL Cast has always done) and "When the queue is empty, keep going with the same podcast" (off, new). With both off, playback stops at the end of the episode you started, which is the entire point of having the pair.
+- **Finishing a mid-queue episode no longer throws you back to the top.** Play the ninth thing in your queue, and when it ends the tenth follows -- not the first. It always jumped to the queue head before.
+- **Playback speed is a real range.** 0.5x to 5.0x in tenths, replacing six fixed choices that stopped at 2.0x. **Speed Up** (Ctrl+Shift+Up), **Speed Down** (Ctrl+Shift+Down), and **Reset Speed to Normal** (Ctrl+Shift+0) change it from the keyboard while you listen, and say which speed and whose -- the playing podcast's own, or the shared default when nothing is playing.
+- **Mark All as Played...**, per podcast, always confirmed by name and count. The episodes stay in your library and downloaded files are not deleted; they simply leave the Inbox, because the Inbox is unplayed episodes and these are no longer that.
+- **Sleep timer: "End of this episode"** is now a choice in the timer, and it follows the episode rather than a clock -- seek forward and it moves with you instead of cutting you off early. **Extend 5 Minutes** appears on the timer while it counts down and on the Episode menu, and it also undoes any fade already in progress, because the point of extending is that you are still listening.
+
+### The Inbox and your disk
+
+- **Inbox caps, per podcast.** Keep at most N episodes, and drop episodes older than 6 hours up to 2 weeks. **Trimming never deletes anything**: a trimmed episode leaves the Inbox and stays unplayed in its show's own list. And three kinds of episode are never trimmed at all -- anything you have started, anything in the Play Queue, and anything you filed into an Inbox folder by hand. That distinction is the difference between a helpful cap and losing your place.
+- **Downloads...** (Downloads menu) finally answers "how much disk are my podcasts using". Total size, a per-podcast breakdown largest first, an Unheard/All filter that says how many rows it hid, and **Remove This Podcast's Downloads...** for one show at a time.
+- **Two automatic storage rules**, both off by default: delete downloads older than N days, and a total storage cap in MB. When the cap is exceeded, already-played downloads go oldest first. **A queued or part-played episode is never removed** -- disk pressure is not a reason to throw away the thing you are halfway through. **Free Up Space** applies both on demand and reports the bytes reclaimed.
+- **Run Housekeeping Now** does the whole pass -- expire, sweep, trim, enforce -- and tells you everything it did in one sentence. It also runs automatically after each refresh.
+
+### Importing a real subscription list
+
+- **Import OPML rebuilt for lists in the thousands.** Tested against a 1,307-feed export. Reading, parsing, and adding now happen off the UI thread instead of inside a button handler, so the window never freezes. Duplicate detection matches on a normalized address, so the `http://` and `https://` forms of one feed are correctly one feed -- and a file listing the same show twice imports it once. Two shows that merely share a *title* are both imported and flagged for review, because two shows genuinely can be called "The Daily".
+- **QUILL Cast can now tell you which of your feeds are dead.** Tick "Check that each feed is still reachable" and it checks them concurrently after importing, with live progress you can hear (announced every ten per cent) and a **Stop Checking** button that keeps everything already imported. A feed asking for a sign-in counts as alive, so a private feed is never reported dead.
+- **And then prune the file.** The import report has **Save Pruned OPML...**, which writes your original file back without the feeds that no longer answer -- folders, attributes, and all. Knowing that three hundred feeds are dead is only useful if you can do something about it.
+
+### Winamp keys, the same ones as Quill Radio
+
+- **The classic transport letters work in QUILL Cast.** `X` play, `C` pause, `V` stop, `B` next, `Z` previous; Left/Right seek 5 seconds and Shift+Left/Right seek 30; `T` switches between elapsed and remaining; `J` jumps to an episode by name and `Ctrl+J` to a time; `L` opens what is selected. Exactly the keys Quill Radio's recordings player uses, from the same shared map -- the whole value of muscle memory is that it does not have to be relearned per app. On by default, with one Preferences checkbox to turn the letters off if you would rather use them for list typeahead.
+
+### Chapters you can skip
+
+- **Mark chapters to skip.** In the Chapters dialog for the episode you are playing, **Skip This Chapter** marks the ad break, the sponsor read, or the outro; playback jumps past it and says "Skipping chapter:" and its name. Marks last for the listening session only -- a chapter you skipped in yesterday's episode says nothing about today's. Consecutive marked chapters are stepped over together, and marking everything to the end simply finishes the episode normally, so auto-advance and delete-after-play still fire.
+
+### Speed, size, and not falling over
+
+- **A big library no longer stalls the app.** With a thousand-plus shows fully refreshed, saving the library takes about seven seconds and writes a 164 MB file -- and that save used to run on every pause, every stop, and every episode change. Above a size threshold, saves and the library-tree rebuild now settle onto a short timer instead of running in the middle of your keystroke; below it nothing changes and saves stay immediate. Closing the app always writes everything out first.
+- **Expanding a podcast is no longer the whole library.** A show's episodes are built when you expand it, not for every show up front. That was around 196,000 tree items on a large library, rebuilt on every save.
+- **Long lists say what they are not showing.** A cross-show view (New Episodes, the Inbox) fills the newest thousand rows and the status line says so and what to do about it, instead of trying to list two hundred thousand episodes.
+
+### Also
+
+- **Settings for This Podcast...** collects everything that only makes sense one show at a time -- auto-download, auto-queue, announcements, queue expiry, speed, Inbox caps, download age limit -- with **Follow the Shared Defaults** to drop every override at once. Leaving a field on the shared default stores no override, so changing the global later still reaches that show.
+- **Read the podcast name first**, an accessibility preference for cross-show lists. In a list of two hundred rows from forty shows, whichever name comes first is what you can skim by first letter -- and which one that should be depends entirely on how you look for things.
+- **Start on this view**: choose which part of the library QUILL Cast opens on -- New Episodes, Continue Listening, the Inbox, Favorites, Recently Expired, or the top of the tree.
+- **Group the Play Queue by podcast**, with move-group-to-top/up/down/bottom. Forty items from four shows is a list nobody can hold in their head; four groups is.
+- **Export My Data...** writes your subscriptions, folders, queue, playlists, episode notes, listening statistics, and recently-played list to one readable JSON file. OPML covers subscriptions and nothing else.
+- **Delete All Podcast Data...** starts you over, confirmed twice, with downloaded files as a separate question -- "start over" and "reclaim the disk" are not the same wish.
 
 ## Unreleased
+
+- **Your episode notes are reachable from the player.** A note is something you make *while listening*, so needing to leave the player, find the episode in the library tree and open its context menu to read your notes back was the wrong shape. **My Notes in This Episode...** now acts on whatever is playing, and selecting a note jumps to it.
+- **Copy Note** shares one bookmark as text somebody else can act on: the episode, the podcast, the timestamp, your note, and the audio link together. The note's own words pasted alone are a fragment with no way back to the moment they mark. A note whose podcast you have since unsubscribed from still copies -- the parts that are gone are simply left out.
+- **Fixed: Player Information said "0 notes" for every episode.** The count was gathered by a call with the wrong number of arguments, and the error it raised every single time was swallowed -- so an episode with fifty notes read as having none. A confident wrong number is worse than an absent one.
+- **Fixed: Show in File Explorer opened the wrong folder.** Windows Explorer wants `/select,` and the path as one argument; passed as two it quietly ignores the switch and opens Documents. A window appeared, so it looked like it had worked -- with nothing to tell a screen-reader user otherwise. There is one tested implementation now, shared with QUILL and Quill Radio.
+- **A podcast host having a bad minute no longer looks like a dead feed.** Refreshing a feed, searching the directory, and the OPML reachability sweep retry twice on a transient failure -- a 5xx, a dropped connection, a timeout -- a second and then two seconds later. A 404, an address that does not resolve, and a sign-in failure still fail immediately, because asking again cannot change those answers. It matters most in the reachability sweep, whose verdict is what the import report offers to prune from your OPML file: one busy moment must never be the reason a live subscription gets deleted.
 
 - **Fixed: QUILL Cast would not start at all.** On some builds the app closed before its window ever appeared, so there was nothing to report and nothing to work around. The library tree asks Windows to expand its top level; because the tree deliberately hides its invisible root node (so the first thing you arrow to is a real folder or show, not a meaningless "root"), Windows refused the request and took the app down with it. The request was never needed -- a hidden root's children already *are* the visible top level -- so it is now skipped. A regression test keeps the guard in place.
 - **Announcements now reach a braille display.** Everything QUILL Cast says through your screen reader is also written to your braille display, which the standalone apps never did before -- previously braille users only saw whatever the display happened to be tracking. A burst of different messages no longer flickers past faster than cell one can be read: the first message of a quiet moment is written instantly, and anything arriving in the next fraction of a second settles to the newest instead of each shoving the last aside. Errors are exempt and always write through at once, and can be held on the display instead of flashing by. Braille can send either the same wording as speech or a compact position-first form, and the "identical message repeated" window is adjustable. These are shared accessibility settings, so they are set once in QUILL and apply here.

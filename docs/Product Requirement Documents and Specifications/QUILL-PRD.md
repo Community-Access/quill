@@ -2186,6 +2186,38 @@ upgrades never lose offline speech. Only components QUILL is licensed to redistr
 are hosted this way (whisper.cpp is MIT, Kokoro Apache-2.0); license-unclear engines
 are not re-hosted, and ffmpeg is never re-hosted (it stays user-installed).
 
+**Transient-failure retry, as one policy (`quill/core/net_retry.py`).** A feed
+that answers 503 because its host is briefly overloaded, a connection dropped
+mid-read, and a request that timed out all usually succeed on the second or
+third try seconds later; a 404 and an unresolvable hostname never do, and
+retrying them only makes the failure take longer to report. The module draws
+that line -- **not "did it fail" but "is failing again the likely outcome"** --
+and it is deliberately a short allowlist rather than "anything that is not a
+404": an unrecognized failure is treated as permanent, so a new failure mode
+surfaces at once instead of being silently retried three times. Two retries, a
+second then two seconds apart. Adopted by podcast feed refresh, the podcast
+directory search, and the OPML reachability sweep; the sweep uses a shorter
+schedule, because it runs across thousands of feeds and its verdict is what the
+import report offers to prune out of a listener's subscription list -- **a false
+"dead feed" from one flaky moment is the most expensive wrong answer in the
+podcast stack**. Downloads deliberately do *not* use it: they already have a
+resumable reconnect with a Range header, which is the better answer for a
+partially transferred file. `sleep` is injected, and resolved at call time
+rather than captured as a default argument, so a test that thinks it has
+disabled the waiting actually has.
+
+**Revealing a file in the file manager (`quill/core/file_manager.py`).** Four
+surfaces had grown their own copy of this, and two were wrong the same way:
+Windows Explorer parses `/select,` and the path as a **single** argument, and
+split across two it drops the switch and opens Documents instead. The feature
+appeared to work -- a window opened -- while doing something else entirely,
+which for a screen-reader user comes with no cue at all that the wrong folder
+just appeared. One pure, tested argv builder now serves the editor's Reveal in
+Explorer, the app shell's post-update Open folder, Audio Studio, the radio
+Recordings list, and QUILL Cast's Show in File Explorer. The path is treated as
+text rather than re-parsed through `Path`, because `Path` applies the *running*
+machine's flavour and would mangle a POSIX path on Windows.
+
 **Kokoro voices unbundled (proof of concept).** The ~120 MB Kokoro neural voices are
 no longer shipped in the installer; they download on demand through the same
 `release_assets` path (pinned `kokoro-models.zip` on `assets-v1`, SHA-256-verified) to

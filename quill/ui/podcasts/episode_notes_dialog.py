@@ -1,21 +1,26 @@
 """Podcasts > (selected episode) > My Notes in This Episode... -- browse,
-jump to, and delete this episode's timestamped notes."""
+jump to, copy, and delete this episode's timestamped notes.
+
+Reachable **from the player** as well as from an episode's context menu in the
+Manager (x.md item 11): a note is a thing you make while listening, so needing
+to leave the player, find the episode in a tree and open a context menu to see
+your notes was the wrong shape. ``Podcasts: My Notes in This Episode...`` acts
+on whatever is playing.
+"""
 
 from __future__ import annotations
 
 from collections.abc import Callable
 
-from quill.core.podcasts.episode_notes import EpisodeNote, notes_for_episode
+from quill.core.podcasts.episode_notes import (
+    EpisodeNote,
+    format_note_for_sharing,
+    notes_for_episode,
+)
+from quill.core.podcasts.episode_notes import (
+    format_timestamp as _format_timestamp,
+)
 from quill.ui.dialog_contract import apply_modal_ids
-
-
-def _format_timestamp(position_ms: int) -> str:
-    total_seconds = position_ms // 1000
-    minutes, seconds = divmod(total_seconds, 60)
-    hours, minutes = divmod(minutes, 60)
-    if hours:
-        return f"{hours}:{minutes:02d}:{seconds:02d}"
-    return f"{minutes}:{seconds:02d}"
 
 
 class EpisodeNotesDialog:
@@ -32,12 +37,19 @@ class EpisodeNotesDialog:
         notes: list[EpisodeNote],
         on_delete: Callable[[str], list[EpisodeNote]] | None = None,
         announce_cb: Callable[[str], None] | None = None,
+        show_title: str = "",
+        audio_url: str = "",
     ) -> None:
         import wx
 
         self._wx = wx
         self._show_id = show_id
         self._episode_guid = episode_guid
+        self._episode_title = episode_title
+        #: Only used to build the shareable text; absent is fine (a note whose
+        #: show has since been unsubscribed still copies).
+        self._show_title = show_title
+        self._audio_url = audio_url
         self._notes = list(notes)
         self._on_delete = on_delete
         self._announce = announce_cb or (lambda _m: None)
@@ -59,9 +71,11 @@ class EpisodeNotesDialog:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         jump_btn = wx.Button(self.dialog, wx.ID_OK, "&Jump To Note")
+        copy_btn = wx.Button(self.dialog, label="&Copy Note")
         delete_btn = wx.Button(self.dialog, label="&Delete Note")
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
         btn_row.Add(jump_btn, 0, wx.RIGHT, 6)
+        btn_row.Add(copy_btn, 0, wx.RIGHT, 6)
         btn_row.Add(delete_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
@@ -71,6 +85,7 @@ class EpisodeNotesDialog:
 
         self._list.Bind(wx.EVT_LISTBOX_DCLICK, self._on_jump)
         jump_btn.Bind(wx.EVT_BUTTON, self._on_jump)
+        copy_btn.Bind(wx.EVT_BUTTON, self._on_copy_click)
         delete_btn.Bind(wx.EVT_BUTTON, self._on_delete_click)
 
     def _refresh_list(self) -> None:
@@ -103,6 +118,31 @@ class EpisodeNotesDialog:
         if 0 <= index < len(self._notes):
             self._result = self._notes[index].position_ms
             self.dialog.EndModal(self._wx.ID_OK)
+
+    def _on_copy_click(self, _event: object) -> None:
+        """Copy the selected note as text somebody else can act on.
+
+        The episode, the show, the timestamp, the note and the audio link
+        together -- the note's own text pasted alone is a fragment with no
+        way back to the moment it marks.
+        """
+        wx = self._wx
+        index = self._list.GetSelection()
+        if not (0 <= index < len(self._notes)):
+            self._announce("Select a note to copy.")
+            return
+        text = format_note_for_sharing(
+            self._notes[index],
+            show_title=self._show_title,
+            episode_title=self._episode_title,
+            audio_url=self._audio_url,
+        )
+        if wx.TheClipboard.Open():
+            try:
+                wx.TheClipboard.SetData(wx.TextDataObject(text))
+            finally:
+                wx.TheClipboard.Close()
+        self._announce("Note copied")
 
     def _on_delete_click(self, _event: object) -> None:
         index = self._list.GetSelection()

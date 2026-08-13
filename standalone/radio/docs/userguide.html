@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio User Guide</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -830,9 +829,17 @@ the uploader’s own chapter list, each entry read as a whole sentence
 playing now marked; Enter jumps to it. Previous Chapter restarts the
 current chapter first, then steps back, the way a CD player does.
 <strong>Rewind / Forward 30 Seconds</strong> (Ctrl+Shift+Left /
-Ctrl+Shift+Right) move along the video as well as along live radio’s
-buffer, and <strong>Where Am I?</strong> (Ctrl+Shift+P) speaks your
-position, the length, and the chapter you are in.</li>
+Ctrl+Shift+Right) move along the video’s own timeline – the same keys
+move within live radio’s rolling buffer when a live stream is playing,
+and Quill Radio picks the right one for what you are listening to. On a
+video they say where you landed (“3 minutes 10 seconds of 18 minutes 40
+seconds”); on a live stream they say how far behind live you are.
+<strong>Go to Position…</strong> (Ctrl+Shift+J) jumps straight to an
+exact time, using the same accessible Hours / Minutes / Seconds dialog
+the Quill Media Player uses – three labelled spin controls, plus a
+timecode field if you would rather type <code>1:23:45</code>.
+<strong>Where Am I?</strong> (Ctrl+Shift+P) speaks your position, the
+length, and the chapter you are in.</li>
 <li><strong>Play Faster</strong> (Ctrl+Alt+Up), <strong>Play
 Slower</strong> (Ctrl+Alt+Down), <strong>Normal Speed</strong>
 (Ctrl+Alt+0) – speed for a finished video, stepping through round,
@@ -1379,6 +1386,18 @@ cleanly)</td>
 <td>Back / forward 30 seconds</td>
 </tr>
 <tr>
+<td>R</td>
+<td>Shuffle on / off</td>
+</tr>
+<tr>
+<td>S</td>
+<td>Repeat: off, then all recordings, then this recording</td>
+</tr>
+<tr>
+<td>Ctrl+V</td>
+<td>Stop after the current recording (a one-shot)</td>
+</tr>
+<tr>
 <td>T</td>
 <td>Read out elapsed time, or time remaining – press again to swap</td>
 </tr>
@@ -1422,10 +1441,31 @@ nothing.</p>
 the Recordings player</strong> in Preferences (Ctrl+,) – worth doing if
 you would rather type a letter to jump through the list. Ctrl+Up and
 Ctrl+Down are unaffected either way.</p>
-<p>Shuffle, repeat, and stop-after-current are not here yet: all three
-describe a play queue, which this list does not have. They are on the
-list for a later release rather than bound to a key that would only look
-like it worked.</p>
+<p><strong>Shuffle, repeat, and stop-after-current now work</strong>,
+because the Recordings list has a play queue. They were deliberately
+unbound before: all three describe a queue that did not exist, and a key
+that only looks like it worked is worse than a key that is not
+offered.</p>
+<ul>
+<li><strong>R</strong> turns shuffle on and off. Shuffle here is a
+<strong>fixed order</strong>, not a fresh roll each time you press Next
+– so every recording plays once before any of them repeats, and
+<strong>Z</strong> reliably takes you back to the one you just heard.
+“Pick at random each time” can do neither.</li>
+<li><strong>S</strong> cycles repeat: off, then all recordings, then
+this recording. Repeat-one applies when a recording <em>finishes on its
+own</em>; pressing <strong>B</strong> still moves on, because a Next
+that refused to move would look broken.</li>
+<li><strong>Ctrl+V</strong> stops after the current recording. It is a
+one-shot: it clears itself the moment it fires, and it outranks repeat,
+because it is the thing you asked for just now rather than a standing
+preference. It is deliberately not remembered between sessions – a stop
+that survived a restart would halt playback for a reason nobody could
+remember asking for.</li>
+</ul>
+<p>A recording that reaches its end on its own is now followed by
+whatever the queue says is next. Shuffle and repeat are remembered
+between sessions.</p>
 <h3 id="if-the-internet-hiccups-during-a-recording">If the internet
 hiccups during a recording</h3>
 <p>ffmpeg first rides out short gaps itself (the reconnect settings in
@@ -1841,6 +1881,10 @@ other’s File/Weather menu and tray.</p>
 <tr>
 <td>Chapters (finished video)</td>
 <td>Ctrl+Shift+C</td>
+</tr>
+<tr>
+<td>Go to Position (finished video)</td>
+<td>Ctrl+Shift+J</td>
 </tr>
 <tr>
 <td>Next / previous chapter</td>

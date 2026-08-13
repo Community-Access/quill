@@ -90,6 +90,19 @@ already fixed in code nobody could run yet.
     read only when an abbreviation has actually matched *and* its expansion uses
     `${clipboard}`, which is to say: almost never.
 
+  **A third pass closed the holes in the second.** Round two's own removal was
+  incomplete: the quiet "Modified" status update -- one line below where round
+  two detached the status bar from the title refresh -- still recomputed the
+  whole status bar synchronously on every keystroke. It now repaints in the
+  same coalesced pass as everything else. Three more costs went with it: the
+  typing pause's own second full buffer copy (the deferred work now reads the
+  document's text, which is the identical string, already in memory); the
+  as-you-type spelling hint, which on a *clean* document spell-checked
+  everything from the caret to the end on each pause -- to produce an answer it
+  then discarded -- and now inspects exactly the one word at the caret; and the
+  word-count statistics, which are now remembered per edit rather than
+  recomputed when only the caret moved.
+
   Modelled on the same basis as round one, the synchronous per-keystroke cost
   drops a further ~85-155x (200 KB document: ~22 ms to ~0.3 ms per keystroke;
   1 MB: ~118 ms to ~1.3 ms) -- before counting the removed clipboard
@@ -135,6 +148,71 @@ already fixed in code nobody could run yet.
   elapsed or remaining, J to jump to a recording, Ctrl+J to jump to a time. See
   `docs/CONTROL_REFERENCE.md` for the full map and the two places it knowingly
   differs from Winamp. (`quill/ui/radio/winamp_keys.py`)
+- **...and the last three keys are bound now: the Recordings list has a play
+  queue.** Shuffle (**R**), repeat (**S**) and stop-after-current (**Ctrl+V**)
+  were deliberately left unbound, because all three describe a queue that did
+  not exist and a key that only pretends to work is worse than one that is not
+  offered. Shuffle is a **fixed order**, not a fresh roll each time: every
+  recording plays once before any repeats, and **Z** reliably goes back to what
+  you just heard -- which "random next" can never do. Repeat cycles off, all
+  recordings, this recording, and repeat-one applies when a recording *ends*
+  rather than when you press Next, because a Next that refused to move would
+  look broken. Stop-after-current outranks repeat, clears itself when it fires,
+  and never survives a restart. A recording that finishes on its own is now
+  followed by whatever the queue says is next. Shuffle and repeat are
+  remembered. (`quill/core/radio/play_queue.py`,
+  `quill/ui/radio/recordings_queue.py`)
+- **The Quill Media Player answers to the same Winamp keys.** It was the last
+  holdout, and the one a Winamp user is most likely to reach for -- an
+  audiobook with a track list is a playlist editor with a transport. Same
+  letters, same seek steps, same words spoken back, from the same shared map,
+  so nothing has to be relearned per app. **B** and **Z** step through the
+  book's tracks, or by chapter when the book is a single file; **Ctrl+J**
+  opens the accessible Go to Position dialog it already had rather than a
+  second, lesser prompt. (`quill/ui/media/winamp_mixin.py`)
+- **Sound Enhancements has a key in full QUILL too: Ctrl+E.** Both standalone
+  apps have had it; full QUILL never did, because it has *both* players at
+  once and two commands wanted the same key. It now follows the sound you can
+  actually hear -- a playing (or paused) podcast wins, otherwise radio -- and
+  says which one it opened, because one key with two destinations must never
+  leave you guessing. The two per-player commands also became rebindable: they
+  were registered as commands but missing from the keymap entirely, so the
+  Keyboard Shortcuts editor had nothing to offer.
+  (`quill/ui/media/sound_enhancements_route.py`)
+- **Seeking a finished YouTube video moves along the video, not the live
+  buffer.** Radio's Forward/Back 30 Seconds always ran the live-stream DVR
+  seek, so on a finished video it announced how far you were "behind live" --
+  a live edge that does not exist. It now moves along the real timeline and
+  says "3 minutes 10 seconds of 18 minutes 40 seconds". A live stream is
+  unchanged. **Go to Position...** (Ctrl+Shift+J in Quill Radio) adds the
+  absolute jump, reusing the same accessible Hours/Minutes/Seconds dialog the
+  Media Player uses. (`quill/ui/radio/bounded_playback_ui.py`)
+- **A flaky connection no longer looks like a dead feed.** Feed refresh, the
+  podcast directory search, and the OPML reachability sweep now retry twice --
+  a second, then two seconds later -- on a *transient* failure: a 5xx, a
+  dropped connection, a timeout. A 404, an address that does not resolve, and
+  a sign-in failure still fail at once, because retrying them cannot change
+  the answer. This matters most in the OPML sweep, whose verdict is what the
+  import report offers to prune out of your subscription list: one busy
+  moment's 503 must never be the reason a live subscription gets deleted.
+  (`quill/core/net_retry.py`)
+- **"Show in Explorer" now actually selects the file.** Four places had grown
+  their own copy of the command and two were wrong the same way: Windows
+  Explorer takes `/select,` and the path as *one* argument, and split in two it
+  quietly drops the switch and opens Documents instead. A window opened, so it
+  looked like it worked -- with no visual cue for a screen-reader user that the
+  wrong folder had just appeared. One tested implementation now, used by the
+  editor, the app shell's post-update "Open folder", Audio Studio, the radio
+  Recordings list, and Cast's new Show in File Explorer.
+  (`quill/core/file_manager.py`)
+
+### Fixed in passing
+
+- **Player Information reported "0 notes" for every episode.** The count was
+  gathered by a call with the wrong number of arguments, and the `TypeError`
+  it raised on every single run was swallowed by a broad `except` -- so an
+  episode with fifty notes read as having none. A confident wrong number is
+  worse than an absent one (rule A-10). (`quill/ui/podcasts/player_info_source.py`)
 
 ## 1.0.0
 

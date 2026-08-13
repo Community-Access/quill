@@ -87,7 +87,7 @@ def test_radio_other_keys_always_flow_through() -> None:
 def test_cast_alt_f4_goes_to_tray_when_enabled() -> None:
     frame = _cast_frame(alt_f4_to_tray=True)
     event = _FakeKeyEvent(key_code=wx.WXK_F4, alt=True)
-    PodcastsAppFrame._on_cast_char_hook(frame, event)
+    PodcastsAppFrame._on_main_char_hook(frame, event)
     assert frame.tray_calls == [True]
     assert event.skipped is False
 
@@ -95,6 +95,6 @@ def test_cast_alt_f4_goes_to_tray_when_enabled() -> None:
 def test_cast_alt_f4_flows_through_when_disabled() -> None:
     frame = _cast_frame(alt_f4_to_tray=False)
     event = _FakeKeyEvent(key_code=wx.WXK_F4, alt=True)
-    PodcastsAppFrame._on_cast_char_hook(frame, event)
+    PodcastsAppFrame._on_main_char_hook(frame, event)
     assert frame.tray_calls == []
     assert event.skipped is True

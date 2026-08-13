@@ -35,13 +35,18 @@ class _Host(PodcastsMixin):
             effective_settings=lambda _show: SimpleNamespace(),
         )
         self.spoken: list[tuple[str, str]] = []
+        # 1.1.0: the statistics accumulator and the chapter-skip marks are
+        # part of the mixin's state, initialized by _init_podcast_session in
+        # the real host. This fake only exercises the earcon paths, so it
+        # supplies the two attributes those paths touch on the way past.
+        self._init_podcast_session()
 
     def _announce(self, message: str, *, force: bool = False, sound: str = "") -> None:
         self.spoken.append((message, sound))
 
     def _refresh_statusbar(self) -> None: ...
     def _save_podcast_library(self) -> None: ...
-    def _podcast_play_next_from_queue(self) -> None: ...
+    def _podcast_play_next_from_queue(self, **_kwargs: object) -> None: ...
 
 
 @pytest.fixture

@@ -32,6 +32,7 @@ from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import apply_listbox_activation
 from quill.ui.media.go_to_position_dialog import GoToPositionDialog
 from quill.ui.media.listen_mixin import MediaListenMixin
+from quill.ui.media.winamp_mixin import MediaWinampKeysMixin
 
 _TITLE = "Quill Media Player"
 _VERSION = "1.0.0"
@@ -44,7 +45,7 @@ _OPEN_WILDCARD = (
 )
 
 
-class QuillMediaPlayerFrame(MediaListenMixin, AppShellFrame):
+class QuillMediaPlayerFrame(MediaListenMixin, MediaWinampKeysMixin, AppShellFrame):
     """A standalone, tray-resident media player window."""
 
     _STATUS_LABELS = ("State", "Position", "Chapter", "Sleep", "Backend")
@@ -329,6 +330,9 @@ class QuillMediaPlayerFrame(MediaListenMixin, AppShellFrame):
 
         panel.SetSizer(root)
         self._main_panel = panel
+
+        # Winamp transport keys (item 13); the mixin skips text fields.
+        self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_winamp_char_hook)
 
         # A rich multi-field status bar (State / Position / Chapter / Sleep / Backend),
         # reviewable field-by-field with F6 (the QUILL status-bar pattern).

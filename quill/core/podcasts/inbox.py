@@ -15,6 +15,8 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
+
 from quill.core.podcasts.models import PodcastEpisode, PodcastFolder, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
 
@@ -136,14 +138,18 @@ def forget_remembered_folder(show: PodcastShow) -> None:
 
 def inbox_pairs(library: PodcastLibrary) -> list[tuple[PodcastShow, PodcastEpisode]]:
     """Every episode currently in the Inbox: unplayed episodes of shows
-    marked Route to Inbox."""
+    marked Route to Inbox, minus anything an Inbox cap has trimmed out
+    (which stays unplayed in its show's own list -- see :func:`trim_inbox`)."""
     pairs: list[tuple[PodcastShow, PodcastEpisode]] = []
     for show in library.shows:
         if not show.route_to_inbox:
             continue
         for episode in show.episodes:
-            if not episode.played:
-                pairs.append((show, episode))
+            if episode.played:
+                continue
+            if library.inbox_assignments.get(inbox_key(show.id, episode.guid)) == TRIMMED_MARKER:
+                continue
+            pairs.append((show, episode))
     return pairs
 
 
@@ -157,3 +163,103 @@ def inbox_pairs_in_folder(
         if effective_inbox_folder_id(library, show, episode) == folder_id:
             result.append((show, episode))
     return result
+
+
+# -- Inbox caps (1.1.0) ------------------------------------------------------
+#
+# An Inbox that holds every unplayed episode of every routed show forever is
+# not a triage surface, it is a second library. Two caps -- a count and an
+# age -- keep it to the size a person can actually work through.
+#
+# Trimming is NOT deleting. A trimmed episode leaves the Inbox and stays
+# exactly where it already was: unplayed, in its show's own episode list,
+# with its downloaded file intact. And three kinds of episode are never
+# trimmed at all, which is the difference between a helpful cap and a
+# data-loss bug:
+#
+#   - anything already started (a saved position),
+#   - anything in the Play Queue (you have said you want it),
+#   - anything manually filed into an Inbox folder (you have curated it).
+#
+# The mechanism is one entry in ``library.inbox_assignments``: the same
+# "explicitly out of the Inbox" marker manual unfiling uses, written with a
+# sentinel so a trim can be told apart from a manual placement.
+
+#: Marks an episode the cap removed, so trims can be counted and undone
+#: without touching a manual filing.
+TRIMMED_MARKER = "\x00trimmed"
+
+
+def _episode_moment(episode: PodcastEpisode) -> datetime | None:
+    try:
+        parsed = datetime.fromisoformat((episode.published or "").strip())
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=UTC)
+
+
+def is_trimmed(library: PodcastLibrary, show: PodcastShow, episode: PodcastEpisode) -> bool:
+    """Whether an Inbox cap (rather than the listener) removed this episode."""
+    return library.inbox_assignments.get(inbox_key(show.id, episode.guid)) == TRIMMED_MARKER
+
+
+def inbox_caps(library: PodcastLibrary, show: PodcastShow) -> tuple[int, int]:
+    """``(max episodes, age limit hours)`` in force for *show*; 0 = no cap."""
+    settings = library.effective_settings(show)
+    return (
+        max(0, int(settings.inbox_max_episodes)),
+        max(0, int(settings.inbox_age_limit_hours)),
+    )
+
+
+def trim_inbox(
+    library: PodcastLibrary, *, now: datetime | None = None
+) -> list[tuple[PodcastShow, PodcastEpisode]]:
+    """Apply every show's Inbox caps; returns what left the Inbox.
+
+    Run after a refresh. Exempt episodes (started, queued, or manually filed)
+    are skipped entirely -- they do not even count toward the episode cap,
+    so a queue full of long-form episodes can never push a fresh one out.
+    """
+    moment = now or datetime.now(UTC)
+    queued = {(item.show_id, item.episode_guid) for item in library.queue}
+    trimmed: list[tuple[PodcastShow, PodcastEpisode]] = []
+    for show in library.shows:
+        if not show.route_to_inbox:
+            continue
+        max_episodes, age_hours = inbox_caps(library, show)
+        if max_episodes <= 0 and age_hours <= 0:
+            continue
+        candidates: list[PodcastEpisode] = []
+        for episode in show.episodes:
+            if episode.played or episode.position_ms > 0:
+                continue
+            if (show.id, episode.guid) in queued:
+                continue
+            key = inbox_key(show.id, episode.guid)
+            assigned = library.inbox_assignments.get(key)
+            if assigned is not None and assigned != TRIMMED_MARKER:
+                continue  # manually filed or manually unfiled: the listener's call
+            if assigned == TRIMMED_MARKER:
+                continue  # already out
+            candidates.append(episode)
+        candidates.sort(key=lambda e: (e.published, e.title), reverse=True)
+        cutoff = moment - timedelta(hours=age_hours) if age_hours > 0 else None
+        for index, episode in enumerate(candidates):
+            too_many = max_episodes > 0 and index >= max_episodes
+            stamped = _episode_moment(episode)
+            too_old = cutoff is not None and stamped is not None and stamped < cutoff
+            if not (too_many or too_old):
+                continue
+            library.inbox_assignments[inbox_key(show.id, episode.guid)] = TRIMMED_MARKER
+            trimmed.append((show, episode))
+    return trimmed
+
+
+def untrim_episode(library: PodcastLibrary, show: PodcastShow, episode: PodcastEpisode) -> bool:
+    """Put a cap-trimmed episode back in the Inbox; True when it was trimmed."""
+    key = inbox_key(show.id, episode.guid)
+    if library.inbox_assignments.get(key) != TRIMMED_MARKER:
+        return False
+    del library.inbox_assignments[key]
+    return True

@@ -102,6 +102,42 @@ Shortcuts editor.
 **Where am I?** speaks the title, current chapter, how far in you are, and how
 much remains — a single key whenever you want your bearings.
 
+### Winamp's classic keys
+
+If you came to Windows audio through Winamp, its main-window letter keys are
+almost certainly still in your fingers. They work here, unchanged, on the same
+letters Quill Radio's Recordings player and QUILL Cast already answer to — one
+shared map, so nothing has to be relearned per app.
+
+| Key | Action |
+| --- | --- |
+| X | Play, or resume what is paused |
+| C | Pause / unpause |
+| V | Stop |
+| Shift+V | Stop (Winamp's fade-out; this engine has no fade, so it stops cleanly) |
+| B | Next track |
+| Z | Previous track |
+| Left / Right | Back / forward 5 seconds |
+| Shift+Left / Shift+Right | Back / forward 30 seconds |
+| T | Elapsed time, or time remaining — press again to swap |
+| J | Jump to a track: type any part of its title |
+| Ctrl+J | Go to Position |
+| L | Open File... |
+| Ctrl+Up / Ctrl+Down | Volume up / down |
+
+Two things worth knowing:
+
+- **B and Z step through the book's tracks** when the book is one file per
+  chapter. A book that is a *single* file with chapter marks has no track list,
+  so they step by chapter instead — the same intent against the other shape.
+- **Ctrl+J opens the Go to Position dialog** you already have on Ctrl+G, rather
+  than a second, lesser prompt. It is the accessible one: labelled Hours,
+  Minutes and Seconds spin controls, plus a timecode field for `1:23:45`.
+
+Every key says what it did, and positions are spoken as words ("1 minute 40
+seconds of 58 minutes"), never as a clock face — read aloud, `1:40` is a time of
+day, not a duration. Letters are never swallowed while a text field has focus.
+
 The **position slider** speaks human time as you move it ("2 hours 14 minutes of
 11 hours"), not a meaningless tick number.
 

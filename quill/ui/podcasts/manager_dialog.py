@@ -24,7 +24,7 @@ from quill.core.podcasts.chapter_sources import (
     build_episode_chapters,
     episode_has_possible_chapters,
 )
-from quill.core.podcasts.download_queue import DownloadItem, PodcastDownloadQueue
+from quill.core.podcasts.download_queue import PodcastDownloadQueue
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.sorting import (
     EPISODE_SORT_MODES,
@@ -34,8 +34,11 @@ from quill.core.podcasts.sorting import (
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.podcasts.manager_actions import ManagerActionsMixin
+from quill.ui.podcasts.manager_downloads import ManagerDownloadsMixin
 from quill.ui.podcasts.manager_phase4 import ManagerPhase4Mixin
 from quill.ui.podcasts.player_controller import PodcastPlayerController
+from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
 
 _FOLDER_ROOT_LABEL = "All Podcasts"
 _SPEED_CHOICES = ("0.75x", "1.0x", "1.25x", "1.5x", "1.75x", "2.0x")
@@ -106,7 +109,9 @@ def _shows_episodes(library: PodcastLibrary, folder_id: str) -> list[PodcastEpis
     return episodes
 
 
-class PodcastManagerDialog(ManagerPhase4Mixin):
+class PodcastManagerDialog(
+    ManagerPhase4Mixin, ManagerActionsMixin, ManagerDownloadsMixin, CastWinampKeysMixin
+):
     """Browse/subscribe/download/play podcasts."""
 
     def __init__(
@@ -120,6 +125,8 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         safe_mode: bool,
         task_manager: object = None,
         announce_cb: Callable[[str], None] | None = None,
+        winamp_keys_enabled: Callable[[], bool] | None = None,
+        quick_actions: object = None,
         on_library_changed: Callable[[], None] | None = None,
         on_open_add_podcast: Callable[[], None] | None = None,
         on_open_import_opml: Callable[[], None] | None = None,
@@ -127,6 +134,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         on_refresh_feed: Callable[[str], None] | None = None,
         on_open_settings: Callable[[], None] | None = None,
         on_send_show_notes: Callable[[str], None] | None = None,
+        chapter_skip_state: Callable[[], object] | None = None,
     ) -> None:
         import wx
 
@@ -138,6 +146,16 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._safe_mode = safe_mode
         self._task_manager = task_manager
         self._announce = announce_cb or (lambda _m: None)
+        #: Preferences checkbox, default on -- see CastWinampKeysMixin.
+        self._winamp_keys_enabled_cb = winamp_keys_enabled or (lambda: True)
+        #: The live Quick Actions order, so context menus and the Ctrl+N keys
+        #: reflect what the listener arranged. Falls back to the shipped
+        #: default, which is exactly the pre-1.1.0 menu order.
+        if quick_actions is None:
+            from quill.core.podcasts.quick_actions import QuickActionOrders
+
+            quick_actions = QuickActionOrders()
+        self._quick_actions = quick_actions
         self._on_library_changed = on_library_changed or (lambda: None)
         self._on_open_add_podcast = on_open_add_podcast
         self._on_open_import_opml = on_open_import_opml
@@ -145,6 +163,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._refresh_feed_cb = on_refresh_feed
         self._on_open_settings = on_open_settings
         self._on_send_show_notes = on_send_show_notes
+        self._chapter_skip_state = chapter_skip_state or (lambda: None)
 
         self._current_show: PodcastShow | None = None
         self._current_episodes: list[PodcastEpisode] = []
@@ -304,6 +323,7 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._episodes.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_episode_selected)
         self._episodes.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_episode_activate)
         self._episodes.Bind(wx.EVT_CONTEXT_MENU, lambda _e: self._show_episode_context_menu())
+        self._episodes.Bind(wx.EVT_KEY_DOWN, self._on_episode_key_down)
         add_podcast_btn.Bind(wx.EVT_BUTTON, self._on_add_podcast)
         new_folder_btn.Bind(wx.EVT_BUTTON, self._on_new_folder)
         import_opml_btn.Bind(wx.EVT_BUTTON, self._on_import_opml)
@@ -321,9 +341,40 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._episode_sort_choice.Bind(wx.EVT_CHOICE, self._on_episode_sort_choice)
         self._view_mode_choice.Bind(wx.EVT_CHOICE, self._on_view_mode_choice)
 
+        self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_winamp_char_hook)
+
         self.refresh_tree()
         self._update_now_playing()
         self._sync_speed_choice()
+
+    # -- Winamp classic keys (CastWinampKeysMixin hooks) -------------------
+
+    def _winamp_keys_enabled(self) -> bool:
+        return bool(self._winamp_keys_enabled_cb())
+
+    def _winamp_rows(self) -> list[tuple[object, object]]:
+        """Whatever the episode list is showing, paired with its show."""
+        pair_shows = getattr(self, "_pair_shows", [])
+        rows: list[tuple[object, object]] = []
+        for index, episode in enumerate(self._current_episodes):
+            show = self._current_show
+            if show is None and index < len(pair_shows):
+                show = pair_shows[index]
+            if show is not None:
+                rows.append((show, episode))
+        return rows
+
+    def _winamp_selected_index(self) -> int:
+        return self._episodes.GetFirstSelected()
+
+    def _winamp_select_index(self, index: int) -> None:
+        if 0 <= index < self._episodes.GetItemCount():
+            self._episodes.Select(index)
+            self._episodes.Focus(index)
+            self._episodes.EnsureVisible(index)
+
+    def _winamp_play_pair(self, show: object, episode: object) -> None:
+        self._play_episode(show, episode, resume_ms=episode.position_ms)
 
     # ------------------------------------------------------------------
 
@@ -695,10 +746,10 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         show = self._library.find_show(show_id) if show_id else None
         menu = wx.Menu()
         if show is not None:
-            refresh_item = menu.Append(wx.ID_ANY, "&Refresh Feed")
-            refresh_item.Enable(bool(show.feed_url) and not self._safe_mode)
-            menu.Bind(wx.EVT_MENU, lambda _e: self._on_refresh_feed(show), refresh_item)
+            from quill.ui.podcasts.manager_menus import build_menu
 
+            # Pause Downloads is not a Quick Action: it is a state of the
+            # subscription's *transfers*, not something you do to the show.
             pause_label = (
                 "&Resume Downloads for This Podcast"
                 if show.paused
@@ -710,37 +761,13 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
                 "downloading new episodes for it."
             )
             menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_show_paused(show), pause_item)
-            from quill.ui.podcasts.show_actions import append_feed_credentials_item
-
-            append_feed_credentials_item(
-                menu,
-                wx,
-                parent=self.dialog,
-                library=self._library,
-                show=show,
-                announce=self._announce,
-                on_changed=self._on_library_changed,
-            )
-            self._append_phase4_show_items(menu, show)
-
-            move_item = menu.Append(wx.ID_ANY, "&Move to Folder...")
-            menu.Bind(wx.EVT_MENU, lambda _e, s=show: self._on_move_show_to_folder(s), move_item)
-            rename_show_item = menu.Append(wx.ID_ANY, "Rena&me...\tF2")
-            menu.Bind(wx.EVT_MENU, lambda _e, s=show: self._on_rename_show(s), rename_show_item)
-
+            if show.route_to_inbox and show.inbox_default_folder_id:
+                forget_item = menu.Append(wx.ID_ANY, "For&get Remembered Inbox Folder")
+                menu.Bind(wx.EVT_MENU, lambda _e: self._on_forget_inbox_folder(show), forget_item)
             menu.AppendSeparator()
-            download_all_item = menu.Append(wx.ID_ANY, "Download &All Episodes")
-            menu.Bind(
-                wx.EVT_MENU, lambda _e, s=show: self._on_download_all_episodes(s), download_all_item
-            )
-            remove_all_item = menu.Append(wx.ID_ANY, "&Remove All Episodes...")
-            menu.Bind(
-                wx.EVT_MENU, lambda _e, s=show: self._on_remove_all_episodes(s), remove_all_item
-            )
-
-            menu.AppendSeparator()
-            unsubscribe_item = menu.Append(wx.ID_ANY, "&Unsubscribe")
-            menu.Bind(wx.EVT_MENU, self._on_unsubscribe, unsubscribe_item)
+            build_menu(self, menu, self._resolved_show_actions(show))
+        elif self._selected_virtual_view() == "recently_expired":
+            self._append_recently_expired_items(menu)
         elif self._selected_playlists_root():
             smart_item = menu.Append(wx.ID_ANY, "New &Smart Playlist...")
             menu.Bind(wx.EVT_MENU, lambda _e: self._on_new_smart_playlist(), smart_item)
@@ -778,20 +805,16 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._tree.PopupMenu(menu)
         menu.Destroy()
 
+    def _resolved_show_actions(self, show: PodcastShow) -> list:
+        from quill.ui.podcasts.manager_menus import ordered_actions, show_actions
+
+        return ordered_actions(self, "show", show_actions(self, show))
+
     def _on_refresh_feed(self, show: PodcastShow) -> None:
         if self._refresh_feed_cb is None:
             return
         self._announce(f"Refreshing {show.title}...")
         self._refresh_feed_cb(show.id)
-
-    def _on_toggle_show_paused(self, show: PodcastShow) -> None:
-        show.paused = not show.paused
-        self._on_library_changed()
-        self._announce(
-            f"Paused downloads for {show.title}"
-            if show.paused
-            else f"Resumed downloads for {show.title}"
-        )
 
     # ------------------------------------------------------------------
     # Episodes
@@ -854,6 +877,15 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._chapters_btn.Enable(episode_has_possible_chapters(episode))
 
     def _on_episode_activate(self, _event: object) -> None:
+        """Enter (or double-click) runs the listener's default Quick Action.
+
+        Which is Play unless they changed it -- the shipped order puts Play
+        first precisely so this upgrade changes nothing until asked.
+        """
+        actions = self._resolved_episode_actions()
+        if actions and actions[0].enabled:
+            actions[0].run()
+            return
         self._play_selected()
 
     def _on_chapters_click(self, _event: object) -> None:
@@ -887,17 +919,22 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         if not chapters:
             self._announce("This episode has no chapters.")
             return
+        # Marking chapters to skip is only offered for the episode actually
+        # playing: a mark on something else would either do nothing now or
+        # surprise you later, and neither is worth a button.
+        state = self._controller.state
+        playing_this = state.show_id == show.id and state.episode_guid == episode.guid
         dialog = ChaptersDialog(
             self.dialog,
             episode_title=episode.title,
             chapters=chapters,
             announce_cb=self._announce,
             source_label=str(getattr(chapter_set, "label", "")),
+            skip_state=self._chapter_skip_state() if playing_this else None,
         )
         start_ms = dialog.show()
         if start_ms is None:
             return
-        state = self._controller.state
         if state.show_id == show.id and state.episode_guid == episode.guid:
             self._controller.seek(start_ms)
         else:
@@ -933,67 +970,86 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
         self._update_now_playing()
         self._announce("Stopped")
 
+    def _resolved_episode_actions(self) -> list:
+        """The selected episode's actions, in the listener's Quick Actions
+        order -- the one list behind the context menu, Enter, and Ctrl+N."""
+        from quill.ui.podcasts.manager_menus import episode_actions, ordered_actions
+
+        episode = self._selected_episode()
+        if episode is None:
+            return []
+        show = self._show_for_selected_episode(self._episodes.GetFirstSelected())
+        if show is None:
+            return []
+        return ordered_actions(self, "episode", episode_actions(self, show, episode))
+
     def _show_episode_context_menu(self) -> None:
+        from quill.ui.podcasts.manager_menus import build_menu
+
         episode = self._selected_episode()
         if episode is None:
             return
         wx = self._wx
         menu = wx.Menu()
-
-        play_item = menu.Append(wx.ID_ANY, "&Play/Pause")
+        selected_count = self._episodes.GetSelectedItemCount()
+        if selected_count > 1:
+            self._append_bulk_episode_items(menu, selected_count)
+        # The transport pair and the download-state items are not Quick
+        # Actions: they act on the *player* and the *transfer*, not on the
+        # episode, and reordering them would be reordering something the
+        # listener did not select. They stay pinned above the ordered set.
+        play_item = menu.Append(wx.ID_ANY, "Pla&y/Pause")
         stop_item = menu.Append(wx.ID_ANY, "&Stop")
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_play_pause(None), play_item)
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_stop(None), stop_item)
-        menu.AppendSeparator()
 
-        already_downloaded = bool(episode.downloaded_path)
         queued_item = self._download_queue.get(self._download_item_id(episode))
         in_flight = queued_item is not None and queued_item.status in (
             "queued",
             "downloading",
             "paused",
         )
-
-        download_item = menu.Append(wx.ID_ANY, "&Download Episode")
-        download_item.Enable(not already_downloaded and not in_flight)
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_download(None), download_item)
-
         pause_label = (
-            "&Resume Download"
+            "Resu&me Download"
             if (queued_item is not None and queued_item.status == "paused")
-            else "&Pause Download"
+            else "Pause Do&wnload"
         )
         pause_item = menu.Append(wx.ID_ANY, pause_label)
         pause_item.Enable(in_flight)
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_pause_resume_download(None), pause_item)
 
-        remove_item = menu.Append(wx.ID_ANY, "&Remove Downloaded Copy")
-        remove_item.Enable(already_downloaded)
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_remove_download(None), remove_item)
-
-        menu.AppendSeparator()
-        played_label = "Mark as &Unplayed" if episode.played else "Mark as &Played"
-        played_item = menu.Append(wx.ID_ANY, played_label)
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_played(episode), played_item)
-
-        copy_item = menu.Append(wx.ID_ANY, "&Copy Episode Link")
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_copy_episode_link(episode), copy_item)
-
-        menu.AppendSeparator()
-        notes_item = menu.Append(wx.ID_ANY, "&View Show Notes...")
-        notes_item.Enable(bool(episode.description))
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_view_show_notes(episode), notes_item)
-
         send_notes_item = menu.Append(wx.ID_ANY, "Sen&d Show Notes to Editor")
         send_notes_item.Enable(bool(episode.description) and self._on_send_show_notes is not None)
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_send_show_notes_click(episode), send_notes_item)
 
-        episode_show = self._show_for_selected_episode(self._episodes.GetFirstSelected())
-        if episode_show is not None:
-            self._append_phase4_episode_items(menu, episode_show, episode)
+        show = self._show_for_selected_episode(self._episodes.GetFirstSelected())
+        if show is not None:
+            self._append_transcript_items(menu, show, episode)
+
+        menu.AppendSeparator()
+        build_menu(self, menu, self._resolved_episode_actions())
 
         self._episodes.PopupMenu(menu)
         menu.Destroy()
+
+    def _on_episode_key_down(self, event: object) -> None:
+        """Ctrl+1..Ctrl+9 run the first nine Quick Actions for this episode."""
+        from quill.ui.podcasts.manager_menus import run_direct_key
+
+        wx = self._wx
+        code = event.GetKeyCode()
+        if event.ControlDown() and not event.ShiftDown() and not event.AltDown():
+            if ord("1") <= code <= ord("9"):
+                if run_direct_key(self._resolved_episode_actions(), code - ord("0")):
+                    return
+                self._announce("That Quick Action is not available for this episode.")
+                return
+        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            actions = self._resolved_episode_actions()
+            if actions and actions[0].enabled:
+                actions[0].run()
+                return
+        event.Skip()
 
     def _on_view_show_notes(self, episode: PodcastEpisode) -> None:
         from quill.ui.podcasts.show_notes_dialog import ShowNotesDialog
@@ -1030,105 +1086,32 @@ class PodcastManagerDialog(ManagerPhase4Mixin):
                 wx.TheClipboard.Close()
         self._announce("Copied episode link")
 
-    # ------------------------------------------------------------------
-    # Downloads
+    # -- sharing and export (x.md item 9) ------------------------------
+    # Thin wiring only; the behaviour is in show_actions so the standalone
+    # QUILL Cast panel gets the same wording from the same implementation.
 
-    def _on_download(self, _event: object) -> None:
-        show = self._current_show
-        episode = self._selected_episode()
-        if show is None or episode is None:
-            return
-        from quill.ui.podcasts.show_actions import enqueue_episode_download
+    def _on_copy_show_link(self, show: PodcastShow) -> None:
+        from quill.ui.podcasts.share_actions import copy_show_link
 
-        enqueue_episode_download(
+        copy_show_link(show, announce=self._announce)
+
+    def _on_show_episode_in_explorer(self, episode: PodcastEpisode) -> None:
+        from quill.ui.podcasts.share_actions import reveal_episode_in_file_manager
+
+        reveal_episode_in_file_manager(episode, announce=self._announce)
+
+    def _on_save_episode_audio_as(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        from quill.ui.podcasts.share_actions import save_episode_audio_as
+
+        save_episode_audio_as(
+            self.dialog,
             self._download_queue,
             self._download_root,
             show,
             episode,
-            item_id=self._download_item_id(episode),
+            announce=self._announce,
         )
-        self._announce(f"Downloading {episode.title}")
         self._refresh_selected_episode_row()
-
-    def _on_pause_resume_download(self, _event: object) -> None:
-        episode = self._selected_episode()
-        if episode is None:
-            return
-        item_id = self._download_item_id(episode)
-        item = self._download_queue.get(item_id)
-        if item is None:
-            return
-        if item.status == "paused":
-            self._download_queue.resume_item(item_id)
-            self._announce(f"Resuming download of {episode.title}")
-        else:
-            self._download_queue.pause_item(item_id)
-            self._announce(f"Paused download of {episode.title}")
-        self._refresh_selected_episode_row()
-
-    def _on_remove_download(self, _event: object) -> None:
-        episode = self._selected_episode()
-        if episode is None or not episode.downloaded_path:
-            return
-        path = Path(episode.downloaded_path)
-        if path.exists():
-            path.unlink(missing_ok=True)
-        episode.downloaded_path = ""
-        self._on_library_changed()
-        self._announce(f"Removed downloaded copy of {episode.title}")
-        self._refresh_selected_episode_row()
-
-    def _on_download_all_episodes(self, show: PodcastShow) -> None:
-        from quill.ui.podcasts.show_actions import download_all_episodes
-
-        queued = download_all_episodes(
-            self._download_queue, self._download_root, show, announce=self._announce
-        )
-        if queued and show is self._current_show:
-            self._fill_episodes(show)
-
-    def _on_remove_all_episodes(self, show: PodcastShow) -> None:
-        from quill.ui.podcasts.show_actions import remove_all_episodes_prompt
-
-        removed = remove_all_episodes_prompt(
-            self.dialog, self._download_queue, show, announce=self._announce
-        )
-        if removed:
-            self._on_library_changed()
-            if show is self._current_show:
-                self._fill_episodes(show)
-
-    def on_download_status_changed(self, item: DownloadItem) -> None:
-        """Called (off the UI thread) by the mixin's queue callback."""
-        self._wx.CallAfter(self._refresh_episode_row_for_item, item)
-
-    def on_download_completed(self, item: DownloadItem) -> None:
-        def apply() -> None:
-            for show in self._library.shows:
-                if show.id != item.show_id:
-                    continue
-                episode = show.find_episode(item.episode_guid)
-                if episode is not None:
-                    episode.downloaded_path = str(item.destination)
-            self._on_library_changed()
-            self._refresh_episode_row_for_item(item)
-
-        self._wx.CallAfter(apply)
-
-    def _refresh_episode_row_for_item(self, item: DownloadItem) -> None:
-        for row, episode in enumerate(self._current_episodes):
-            if episode.guid == item.episode_guid:
-                self._episodes.SetItem(row, 3, self._episode_status_text(episode))
-                break
-
-    def _refresh_selected_episode_row(self) -> None:
-        episode = self._selected_episode()
-        if episode is None:
-            return
-        index = self._episodes.GetFirstSelected()
-        if index >= 0:
-            self._episodes.SetItem(index, 3, self._episode_status_text(episode))
-        self._on_episode_selected(None)
 
     # ------------------------------------------------------------------
     # Subscriptions / folders / OPML

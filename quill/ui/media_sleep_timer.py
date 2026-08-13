@@ -7,6 +7,18 @@ restores the volume back to what it was before the fade started -- so the
 next time you press play, it is not still quiet. Radio and Podcasts are
 independent players (nothing stops one when the other starts), so both are
 faded/stopped if both happen to be active.
+
+Two 1.1.0 additions, both podcast-shaped and both degrading cleanly when
+Radio is what is playing:
+
+- **End of episode.** Not a duration at all but a target, so it re-reads the
+  episode's remaining time on every tick: seek forward and the timer moves
+  with you rather than cutting you off early or leaving you in silence. A
+  live radio stream has no end, so this mode simply refuses to start there.
+- **Extend.** A running timer can be pushed back without being restarted,
+  which also undoes any fade already in progress -- the point of extending is
+  that you are still listening, and it would be absurd to leave the volume
+  where the fade had got to.
 """
 
 from __future__ import annotations
@@ -41,10 +53,18 @@ class SleepTimerController:
         self._timer.Bind(wx.EVT_TIMER, self._on_timer_tick)
         self._end_time: float | None = None
         self._fade_start_volumes: dict[str, int] = {}
+        #: "End of episode" mode: the deadline is re-derived from the playing
+        #: episode on every tick instead of being fixed at start time.
+        self._end_of_episode = False
 
     @property
     def is_active(self) -> bool:
         return self._end_time is not None
+
+    @property
+    def is_end_of_episode(self) -> bool:
+        """Whether the running timer tracks the episode rather than a clock."""
+        return self._end_of_episode and self._end_time is not None
 
     @property
     def remaining_seconds(self) -> float:
@@ -58,6 +78,33 @@ class SleepTimerController:
         self._end_time = time.monotonic() + max(0.1, minutes) * 60
         self._timer.Start(_TICK_MS)
 
+    def start_end_of_episode(self) -> bool:
+        """Stop when the playing episode does. False when nothing bounded is
+        playing -- a live radio stream has no end to stop at, and pretending
+        otherwise would be worse than saying so."""
+        remaining = self._episode_remaining_seconds()
+        if remaining is None:
+            return False
+        self.cancel()
+        self._end_of_episode = True
+        self._end_time = time.monotonic() + max(1.0, remaining)
+        self._timer.Start(_TICK_MS)
+        return True
+
+    def extend(self, minutes: float) -> bool:
+        """Push a running timer back by *minutes*; False when none is running.
+
+        Also lifts any fade already applied: extending means you are still
+        listening, so the volume goes straight back to what it was rather
+        than staying wherever the fade had reached.
+        """
+        if self._end_time is None:
+            return False
+        self._restore_volumes()
+        self._end_of_episode = False
+        self._end_time = max(time.monotonic(), self._end_time) + max(0.0, minutes) * 60
+        return True
+
     def cancel(self) -> None:
         """Stop the countdown early and restore any faded volume."""
         if self._end_time is None:
@@ -65,6 +112,7 @@ class SleepTimerController:
         self._timer.Stop()
         self._restore_volumes()
         self._end_time = None
+        self._end_of_episode = False
 
     def shutdown(self) -> None:
         """Called once, from the frame's close path."""
@@ -93,7 +141,27 @@ class SleepTimerController:
             return controller.state.volume_percent  # type: ignore[attr-defined]
         return controller.volume_percent  # type: ignore[attr-defined]
 
+    def _episode_remaining_seconds(self) -> float | None:
+        """How long the playing podcast episode has left, or None when there
+        is no bounded episode playing (nothing loaded, radio, or a source
+        whose length the engine cannot report yet)."""
+        podcast = self._get_podcast_controller()
+        if podcast is None or podcast.state.show_id is None:
+            return None
+        if podcast.state.state not in (PodcastPlayerState.PLAYING, PodcastPlayerState.PAUSED):
+            return None
+        length = podcast.length_ms()
+        if length <= 0:
+            return None
+        return max(0.0, (length - podcast.position_ms()) / 1000.0)
+
     def _on_timer_tick(self, _event: object) -> None:
+        if self._end_of_episode:
+            # Re-derive the deadline: a seek (either way) must move the timer
+            # with the episode, not leave it pointing at the old end.
+            remaining_episode = self._episode_remaining_seconds()
+            if remaining_episode is not None:
+                self._end_time = time.monotonic() + remaining_episode
         remaining = self.remaining_seconds
         if remaining <= 0:
             self._finish()
@@ -116,6 +184,7 @@ class SleepTimerController:
             controller.stop()  # type: ignore[attr-defined]
         self._restore_volumes()
         self._end_time = None
+        self._end_of_episode = False
         self._on_tick(0.0)
 
     def _restore_volumes(self) -> None:

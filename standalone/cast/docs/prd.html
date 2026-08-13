@@ -198,7 +198,7 @@
 <main id="main-content">
 <h1 id="quill-cast--product-requirements">QUILL Cast – Product
 Requirements</h1>
-<p>Version 1.0</p>
+<p>Version 1.1</p>
 <h2 id="1-product-statement">1. Product statement</h2>
 <p>QUILL Cast is QUILL’s podcast environment, shipped as its own small
 Windows app for people who want their shows without loading a full
@@ -226,7 +226,30 @@ visible in all.</li>
 <p>In scope (all reused from upstream):</p>
 <ul>
 <li>Subscriptions: search, feed URL, OPML import/export, ACB Media
-directory, podcast settings.</li>
+directory, podcast settings, per-podcast settings.</li>
+<li><strong>Acquisition policy</strong> (1.1): auto-download the newest
+N episodes per show on subscribe and on every refresh (0/1/3/5/10/all,
+per-podcast overridable), plus separate toggles for anything queued or
+in the Inbox. Always Sync is the same instruction as “all” and the two
+are kept in step.</li>
+<li><strong>Queue Expiration and Recently Expired</strong> (1.1): a
+per-podcast age limit removes a queued episode that has waited too long,
+into a Recently Expired list held for seven days and restorable; only
+the sweep at the end of that window deletes a downloaded file.</li>
+<li><strong>Listening statistics</strong> (1.1): an append-only session
+log with a retention window, summarized by period and by podcast, with
+CSV export.</li>
+<li><strong>Quick Actions</strong> (1.1): a user-ordered action list per
+content type (episode, podcast, queue item). The first entry is what
+Enter does; the first nine answer to Ctrl+1..Ctrl+9; the whole list is
+the context-menu order.</li>
+<li><strong>Storage management</strong> (1.1): total and per-podcast
+download usage, an age limit, a total cap, an Unheard/All filter that
+announces what it hid, and a manual Free Up Space.</li>
+<li><strong>Bulk OPML import</strong> (1.1): planning, deduplication,
+and an optional concurrent reachability sweep for subscription lists in
+the thousands, with a report that can write back a pruned copy of the
+source file.</li>
 <li><strong>Private feeds</strong>: username/password (HTTP Basic)
 authentication for protected feeds – Patreon-style supporter feeds,
 premium shows, members-only feeds. Prompted automatically when adding a
@@ -328,9 +351,23 @@ window, sticky errors, and interrupt severity are shared accessibility
 settings, edited in QUILL and honored here.</li>
 <li>A-7. Every Yes/No confirmation whose outcome destroys or discards
 something defaults to No – Delete Folder, Delete Playlist, Remove All
-Episodes, Delete Downloaded Files. Enter must always be the safe answer.
-Enforced upstream by an automated build check over the shared dialog
-surfaces.</li>
+Episodes, Delete Downloaded Files, Mark All as Played, Forget Expired
+Episode, Remove Downloads, Clear Statistics, Delete All Podcast Data.
+Enter must always be the safe answer. Enforced upstream by an automated
+build check over the shared dialog surfaces.</li>
+<li>A-8. <strong>Numbers are spoken as language.</strong> A duration is
+“3 hours, 47 minutes”, never <code>3:47:00</code> – a screen reader
+reads a clock face as a time of day. A size is “812 MB”. Where a report
+could be a chart, the text is the primary representation and not a
+caption for a picture of one.</li>
+<li>A-9. <strong>No silent caps.</strong> Where a list is truncated for
+performance (a cross-show view, a show’s episodes in the main tree), the
+surface says how many it is showing out of how many there are, and where
+the rest is. A filtered list always says it is filtered.</li>
+<li>A-10. <strong>No fabricated measurements.</strong> A statistic that
+cannot be measured honestly is omitted, not estimated. Time saved by
+silence trimming is reported only when the trimming path actually
+reports what it dropped.</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
@@ -398,7 +435,38 @@ failed”, pointing at Feed Credentials…), never blurred into a generic
 network error; background refresh never opens modal credential
 prompts.</li>
 </ul>
-<h2 id="9-since-10">9. Since 1.0</h2>
+<h2 id="9-performance-requirements-11">9. Performance requirements
+(1.1)</h2>
+<p>A subscription list exported from another app after a decade of
+listening is routinely more than a thousand feeds. Every requirement
+here was written against a real one (1,307 feeds), refreshed to roughly
+196,000 episodes.</p>
+<ul>
+<li><strong>PF-1. Nothing quadratic on import.</strong> Duplicate
+detection and folder resolution index once and answer in constant time,
+so importing N entries into a library of M is O(N + M). Duplicates are
+matched on a normalized URL, so <code>http://</code> and
+<code>https://</code> forms of one feed are one feed.</li>
+<li><strong>PF-2. No blocking work in a button handler.</strong>
+Reading, parsing, planning, and adding an OPML file all happen off the
+UI thread; the reachability sweep runs afterwards on a bounded pool,
+reports progress, and can be cancelled without losing what was already
+imported.</li>
+<li><strong>PF-3. Saves must not scale with the library.</strong> A full
+library write is ~7 seconds and 164 MB at 196,000 episodes, and it is
+triggered by every position checkpoint. Above a threshold, writes and
+the main-page tree rebuild coalesce onto a short timer; below it they
+stay immediate. The shutdown path always forces a final flush.</li>
+<li><strong>PF-4. No unbounded list materialization.</strong> Cross-show
+views fill a bounded number of rows, a show’s episodes in the main tree
+are built on demand when it is expanded, and both say what they are not
+showing (A-9).</li>
+<li><strong>PF-5. Per-refresh work stays proportional to what
+changed.</strong> Choosing the newest N episodes to auto-download does
+not sort a show’s whole catalog, and a refresh announces one coalesced
+summary rather than one message per episode.</li>
+</ul>
+<h2 id="10-since-10">10. Since 1.0</h2>
 <ul>
 <li><p><strong>Sound Enhancements</strong> (Episode &gt; Sound
 Enhancements…): a three-band equalizer (Bass/Mid/Treble sliders, -12 to
@@ -474,6 +542,77 @@ Windows to expand its hidden root node, which aborted the app before its
 window appeared. Guarded on the tree style, with a regression test
 asserting the guard stays adjacent to the call.</p></li>
 </ul>
+<h2 id="11-since-107-110">11. Since 1.0.7 (1.1.0)</h2>
+<p><strong>Acquisition, the layer that was missing.</strong> Through
+1.0.x QUILL Cast had a retention policy and no acquisition policy: it
+knew what to throw away and nothing about what to fetch. Auto-download
+(0/1/3/5/10/all, per podcast) plus Auto-Queue per show plus per-show
+new-episode announcements mean subscribing to a show and pressing play
+is now one step.</p>
+<p><strong>Sharing and audio export – the desktop translation.</strong>
+Earshot answers “share this” with a share sheet; the desktop has no
+equivalent, and importing the metaphor would produce a menu item that
+opens a dialog nobody wants. The requirement is a <strong>file</strong>
+the listener can place and an <strong>address</strong> they can paste:
+<strong>Save Episode Audio As…</strong>, <strong>Copy Podcast
+Link</strong>, and <strong>Show in File Explorer</strong>. All three are
+Quick Actions entries, never hard-coded menu items, so they take the
+listener’s order like everything else on those menus.</p>
+<p>The normative rule: <strong>saving copies, it never moves.</strong>
+QUILL Cast goes on managing its own downloaded copy – retention, the
+storage cap, resume, and Remove Downloaded Copy all still apply to it –
+and the saved copy is the listener’s, outside all of that. Moving the
+managed file would silently break resume and the download’s own
+bookkeeping. An episode that is not yet downloaded offers the download
+and returns, rather than blocking the UI thread behind a transfer of
+unknown length.</p>
+<p><strong>Episode notes reachable from the player.</strong> A
+timestamped note is made <em>while listening</em>, so requiring the
+listener to leave the player, locate the episode in the library tree and
+open a context menu to read notes back was the wrong shape.
+<code>My Notes in This Episode...</code> acts on whatever is playing;
+the Manager’s per-episode route stays, and both build the list from one
+implementation so their wording cannot drift. <strong>Copy Note</strong>
+carries the episode, the podcast, the timestamp, the note and the audio
+link together – a note’s own text alone is a fragment with no way back
+to the moment it marks.</p>
+<p><strong>Queue Expiration + Recently Expired.</strong> Per-podcast,
+off by default, with a seven-day restorable hold. The one migration risk
+in the release – a queue saved before 1.1.0 has no timestamps – is
+handled by reading an unstamped slot as “added now” rather than
+“infinitely old”.</p>
+<p><strong>Listening statistics.</strong> Time listened, extra content
+bought by speed, episodes finished, per-podcast breakdown, CSV export,
+90-day retention. The report is a read-only text field you arrow
+through, and durations are words (A-8). Time saved by Smart Speed is
+omitted rather than estimated (A-10).</p>
+<p><strong>Quick Actions.</strong> Three orderable action lists. The
+desktop translation of Earshot’s rotor ordering: a chosen default for
+Enter, a chosen menu order, and Ctrl+1..Ctrl+9 for the top nine.</p>
+<p><strong>Session control.</strong> Stop After This Episode; the
+continue-after-queue / continue-after-group pair (with both off,
+playback stops at the end of the current episode); speed as a real
+0.5x-5.0x continuum with Speed Up / Speed Down / Reset commands; Mark
+All as Played; sleep timer “end of this episode” and Extend +5.</p>
+<p><strong>Inbox caps and storage management.</strong> Per-podcast Inbox
+count and age caps that trim without deleting and never touch anything
+played, started, or queued; a Downloads screen with usage, an age limit,
+a total cap, and Free Up Space, under the rule that a queued or
+part-played episode is never evicted.</p>
+<p><strong>Bulk OPML import.</strong> Threaded, deduplicating, and
+reportable at the scale a real subscription list actually reaches – with
+a pruning export that writes the source file back without the feeds that
+no longer answer (§9).</p>
+<p><strong>Winamp classic transport keys</strong>, shared with Quill
+Radio’s recordings player rather than reimplemented:
+<code>Z X C V B</code>, arrows to seek, <code>J</code>,
+<code>Ctrl+J</code>, <code>T</code>, <code>L</code>. On by default, one
+Preferences checkbox to turn off.</p>
+<p><strong>Two correctness fixes found by reading Earshot’s own bug
+history</strong>: finishing a mid-queue episode now continues from the
+slot after it instead of jumping back to the queue head, and chapter
+auto-skip carries a loop guard so a seek’s own position report cannot
+re-trigger the skip that caused it.</p>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
 </main>
 </body>

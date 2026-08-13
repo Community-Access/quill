@@ -95,8 +95,14 @@ class PodcastPlayerController:
         before_play: Callable[[], None] | None = None,
         on_enhance_error: Callable[[str], None] | None = None,
         spotify_token_provider: Callable[[], str] | None = None,
+        on_second_tick: Callable[[], None] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
+        #: Fired once a second for the whole life of the controller, riding
+        #: the outro poll that already exists rather than adding a second
+        #: timer. The listening-statistics accumulator hangs off this; it must
+        #: stay cheap (a float add), because it runs on the UI thread.
+        self._on_second_tick = on_second_tick
         #: Runs before every play_episode: the host stops sibling media (the
         #: radio player) here so two streams never play over each other.
         self._before_play = before_play
@@ -523,7 +529,13 @@ class PodcastPlayerController:
     def _on_outro_poll(self, _event: object) -> None:
         """Auto-skip outro: ends the episode auto_skip_outro_ms early, exactly
         as if it had reached its own true end -- see play_episode's
-        auto_skip_outro_ms docstring."""
+        auto_skip_outro_ms docstring. Also the one-second heartbeat the
+        listening-statistics accumulator rides."""
+        if self._on_second_tick is not None:
+            try:
+                self._on_second_tick()
+            except Exception:  # noqa: BLE001 - a stats tick must never stop playback
+                _log.exception("podcast second tick failed")
         if self._outro_fired or self._auto_skip_outro_ms <= 0:
             return
         if self._state.state is not PodcastPlayerState.PLAYING:

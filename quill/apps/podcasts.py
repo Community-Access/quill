@@ -12,6 +12,7 @@ import sys
 
 import wx
 
+from quill.apps.podcasts_menu import APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
@@ -21,10 +22,12 @@ from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
+from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
 
-_TITLE = "QUILL Cast"
-_VERSION = "1.0.7"
-_REPO = "Community-Access/quill"
+# Identity lives with the menu bar that displays it; see podcasts_menu.py.
+_TITLE = APP_TITLE
+_VERSION = APP_VERSION
+_REPO = APP_REPO
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for playback/processing; libmpv is intentionally not used -- wx.media).
 REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
@@ -35,6 +38,8 @@ class PodcastsAppFrame(
     # (which the apps have) win over GlobalHotkeysMixin's send_to_tray-based copy.
     AppShellFrame,
     PodcastsMixin,
+    CastMenuBarMixin,
+    CastWinampKeysMixin,
     MediaSleepTimerMixin,
     AdpMixin,
     UnlockCodesMixin,
@@ -57,6 +62,7 @@ class PodcastsAppFrame(
         self._build_menu_bar()
         self._build_main_panel()
         self._register_podcasts_commands()
+        self._register_podcast_session_commands()
         self._register_media_sleep_timer_commands()
         self._register_adp_commands()
         self._register_unlock_code_commands()
@@ -85,10 +91,10 @@ class PodcastsAppFrame(
         self._reload_global_hotkeys()
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
-        # Alt+F4-to-tray (opt-in preference): intercepted at the char hook,
-        # before Windows turns it into a close, so the window tucks away
-        # with playback running.
-        self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_cast_char_hook)
+        # Alt+F4-to-tray (opt-in preference) is handled inside
+        # _on_main_char_hook, bound with the Winamp keys in _build_main_panel:
+        # two EVT_CHAR_HOOK bindings on one window would fight over which gets
+        # to decide whether a key travels on.
         self._maybe_resume_last_episode()
         # Deferred (CallAfter), not inline: this touches the network, and a
         # launch is not the place to do that before the window is even up.
@@ -125,6 +131,7 @@ class PodcastsAppFrame(
         self._shows_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_library_activated)
         self._shows_tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_library_context_menu)
         self._shows_tree.Bind(wx.EVT_KEY_DOWN, self._on_library_key)
+        self._shows_tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self._on_library_expanding)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         # One transport button, not two static ones: it tracks Play, Pause,
@@ -158,7 +165,82 @@ class PodcastsAppFrame(
         self._main_panel = panel
         self._reload_library_tree()
         self._refresh_transport_controls()
+        # Winamp classic transport letters on the main page, sharing Quill
+        # Radio's key map (quill/ui/radio/winamp_keys.py) so the letters mean
+        # the same thing in both apps.
+        self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_main_char_hook)
+        self._select_default_launch_view()
         self._shows_tree.SetFocus()
+
+    # -- Winamp keys + launch view -----------------------------------------
+
+    def _on_main_char_hook(self, event: wx.KeyEvent) -> None:
+        """Alt+F4-to-tray first, then the Winamp transport letters.
+
+        One hook rather than two: two EVT_CHAR_HOOK bindings on the same
+        window means only one of them decides whether the key travels on, and
+        which one wins is an implementation detail nobody should depend on.
+        """
+        if (
+            event.GetKeyCode() == wx.WXK_F4
+            and event.AltDown()
+            and getattr(self._podcast_history, "alt_f4_to_tray", False)
+        ):
+            self._send_to_tray()
+            return
+        self._on_winamp_char_hook(event)
+
+    def _winamp_keys_enabled(self) -> bool:
+        return bool(getattr(self._podcast_history, "winamp_playback_keys", True))
+
+    def _winamp_controller(self) -> object | None:
+        return self._podcast_controller
+
+    def _winamp_rows(self) -> list[tuple[object, object]]:
+        """The selected show's episodes -- what the tree is showing here."""
+        selected = self._selected_tree_data()
+        show = None
+        if selected is not None and selected[0] == "show":
+            show = self._podcast_library.find_show(selected[1])
+        elif selected is not None and selected[0] == "episode":
+            show_id, _, _guid = selected[1].partition("\x00")
+            show = self._podcast_library.find_show(show_id)
+        if show is None:
+            return []
+        from quill.core.podcasts.sorting import sort_episodes
+
+        return [(show, episode) for episode in sort_episodes(show.episodes, "newest_first")]
+
+    def _winamp_selected_index(self) -> int:
+        selected = self._selected_tree_data()
+        if selected is None or selected[0] != "episode":
+            return -1
+        _show_id, _, guid = selected[1].partition("\x00")
+        for index, (_show, episode) in enumerate(self._winamp_rows()):
+            if episode.guid == guid:
+                return index
+        return -1
+
+    def _winamp_select_index(self, index: int) -> None:
+        rows = self._winamp_rows()
+        if not (0 <= index < len(rows)):
+            return
+        show, episode = rows[index]
+        self._reload_library_tree(keep_key=("episode", f"{show.id}\x00{episode.guid}"))
+
+    def _winamp_play_pair(self, show: object, episode: object) -> None:
+        self._play_episode_object(show, episode)
+
+    def _select_default_launch_view(self) -> None:
+        """Land on the view the listener chose, not always the tree top.
+
+        Somebody whose routine is "open it and see what is new" should not
+        have to arrow there every single time.
+        """
+        view_id = self._podcast_library.settings.default_launch_view
+        if not view_id:
+            return
+        self._reload_library_tree(keep_key=("view", view_id))
 
     # -- library tree (pinned views + folders + shows) ---------------------
 
@@ -206,18 +288,22 @@ class PodcastsAppFrame(
 
         for folder in self._podcast_library.folders:
             folder_item(folder.id)
-        from quill.core.podcasts.sorting import sort_episodes
 
         for show in sort_shows(self._podcast_library.shows, "title_az"):
             count = unheard_count(show)
             label = f"{show.title} ({count})" if count else show.title
             item = tree.AppendItem(folder_item(show.folder_id), label)
             tag(item, ("show", show.id))
-            # #1192: episodes hang under the show so it can be expanded in place;
-            # Enter on a show still plays its next episode.
-            for ep in sort_episodes(show.episodes, "newest_first"):
-                ep_item = tree.AppendItem(item, ep.title)
-                tag(ep_item, ("episode", f"{show.id}\x00{ep.guid}"))
+            # #1192: episodes hang under the show so it can be expanded in
+            # place. They are filled in on demand (EVT_TREE_ITEM_EXPANDING),
+            # not up front: a 1,300-show library with a refreshed catalog is
+            # around 196,000 episodes, and building that many tree items on
+            # every library save froze the window for minutes. A single
+            # placeholder child is enough to make the show expandable, and
+            # expanding one show costs one show's worth of work.
+            if show.episodes:
+                placeholder = tree.AppendItem(item, "Loading episodes...")
+                tag(placeholder, ("placeholder", show.id))
 
         # Expand favorites/views/folders but leave shows COLLAPSED, so the tree
         # is not a wall of episodes -- expand a show to reveal its episodes.
@@ -234,6 +320,47 @@ class PodcastsAppFrame(
             tree.SelectItem(select_item)
         elif first.IsOk():
             tree.SelectItem(first)
+
+    #: How many episodes a single expanded show lists at once. A show with a
+    #: thousand-episode back catalog is a real thing, and a thousand tree
+    #: items is a wall you cannot arrow through; the newest are what anyone
+    #: is looking for, and the Podcast Manager has the filters and sorting
+    #: for the rest. Never a silent cap -- the last node says so.
+    _EPISODES_PER_SHOW_NODE = 200
+
+    def _on_library_expanding(self, event: wx.TreeEvent) -> None:
+        """Fill a show's episodes the first time it is expanded.
+
+        The tree is built with one placeholder child per show so the expander
+        exists without the episodes; this replaces that placeholder with the
+        real thing, once, for the one show being opened.
+        """
+        item = event.GetItem()
+        if not item.IsOk():
+            return
+        tree = self._shows_tree
+        child, _cookie = tree.GetFirstChild(item)
+        if not child.IsOk():
+            return
+        data = tree.GetItemData(child)
+        if not (isinstance(data, tuple) and len(data) == 2 and data[0] == "placeholder"):
+            return  # already filled
+        from quill.core.podcasts.sorting import sort_episodes
+
+        show = self._podcast_library.find_show(data[1])
+        tree.DeleteChildren(item)
+        if show is None:
+            return
+        ordered = sort_episodes(show.episodes, "newest_first")
+        for episode in ordered[: self._EPISODES_PER_SHOW_NODE]:
+            ep_item = tree.AppendItem(item, episode.title)
+            tree.SetItemData(ep_item, ("episode", f"{show.id}\x00{episode.guid}"))
+        hidden = len(ordered) - self._EPISODES_PER_SHOW_NODE
+        if hidden > 0:
+            more = tree.AppendItem(
+                item, f"{hidden} older episode(s) -- open the Podcast Manager to see them"
+            )
+            tree.SetItemData(more, ("more", show.id))
 
     def _selected_tree_data(self) -> tuple[str, str] | None:
         tree = getattr(self, "_shows_tree", None)
@@ -263,6 +390,10 @@ class PodcastsAppFrame(
         if kind == "episode":
             show_id, _, guid = key.partition("\x00")
             self._play_specific_episode(show_id, guid)
+            return
+        if kind == "more":
+            self.open_podcast_manager()
+            self._announce("Opened the Podcast Manager, where the full episode list lives.")
             return
         if kind == "view":
             self.open_podcast_manager()
@@ -584,6 +715,13 @@ class PodcastsAppFrame(
                     "playing, instead of closing the window",
                     history.alt_f4_to_tray,
                 ),
+                PreferenceCheckbox(
+                    "&Winamp playback keys (Z X C V B, arrows to seek)",
+                    "The classic Winamp letter keys in the library and episode "
+                    "lists. Turn off to use those letters for list typeahead "
+                    "instead. The same keys as Quill Radio's recordings player.",
+                    history.winamp_playback_keys,
+                ),
             ],
             announce_cb=self._announce,
         )
@@ -596,6 +734,7 @@ class PodcastsAppFrame(
             history.check_updates_on_startup,
             history.announce_dialog_transitions,
             history.alt_f4_to_tray,
+            history.winamp_playback_keys,
         ) = checkbox_values
         podcast_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()
@@ -639,259 +778,10 @@ class PodcastsAppFrame(
 
     # -- menu bar -------------------------------------------------------------
 
-    def _build_menu_bar(self) -> None:
-        menu_bar = wx.MenuBar()
-
-        subs_menu = wx.Menu()
-        manager_id, add_id, import_id, export_id, settings_id = (
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-        )
-        subs_menu.Append(manager_id, "&Open Podcast Manager...\tCtrl+M")
-        subs_menu.Append(add_id, "&Add Podcast...")
-        subs_menu.Append(import_id, "&Import OPML...")
-        subs_menu.Append(export_id, "&Export OPML...")
-        folder_id = wx.NewIdRef()
-        subs_menu.Append(folder_id, "New &Folder...")
-        local_id, watched_id, acb_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        subs_menu.Append(local_id, "Add &Local Podcast...")
-        subs_menu.Append(watched_id, "Scan &Watched Folders")
-        subs_menu.Append(acb_id, "Subscribe to ACB Media &Podcasts")
-        subs_menu.AppendSeparator()
-        subs_menu.Append(settings_id, "Podcast &Settings...")
-        subs_menu.AppendSeparator()
-        self._resume_menu_item_id = wx.NewIdRef()
-        subs_menu.AppendCheckItem(self._resume_menu_item_id, "Resume Last Episode on Lau&nch")
-        subs_menu.Check(self._resume_menu_item_id, self._podcast_history.resume_on_launch)
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self._toggle_resume_on_launch(), id=self._resume_menu_item_id
-        )
-        prefs_id = wx.NewIdRef()
-        subs_menu.Append(prefs_id, "&Preferences...\tCtrl+,")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_preferences(), id=prefs_id)
-        subs_menu.AppendSeparator()
-        tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
-        subs_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
-        subs_menu.Append(exit_id, "E&xit")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_podcast_manager(), id=manager_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_open_add_dialog(), id=add_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_open_import_opml(), id=import_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_export_opml(), id=export_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._podcast_open_settings(), id=settings_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._new_library_folder(), id=folder_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_local_podcast(), id=local_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.scan_watched_podcast_folders(), id=watched_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.subscribe_acb_media_podcasts(), id=acb_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.frame.Close(), id=exit_id)
-        menu_bar.Append(subs_menu, "&Subscriptions")
-
-        episode_menu = wx.Menu()
-        self._now_playing_item_id = wx.NewIdRef()
-        episode_menu.Append(self._now_playing_item_id, "Podcasts: stopped")
-        episode_menu.Enable(self._now_playing_item_id, False)
-        episode_menu.AppendSeparator()
-        play_id, stop_id, next_id, prev_id = (
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-        )
-        episode_menu.Append(play_id, "&Play/Pause\tCtrl+P")
-        episode_menu.Append(stop_id, "&Stop\tCtrl+.")
-        mute_id = wx.NewIdRef()
-        episode_menu.Append(mute_id, "&Mute/Unmute")
-        vol_up_id, vol_down_id = wx.NewIdRef(), wx.NewIdRef()
-        episode_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
-        episode_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
-        episode_menu.Append(next_id, "&Next Chapter")
-        episode_menu.Append(prev_id, "P&revious Chapter")
-        skip_fwd_id, skip_back_id = wx.NewIdRef(), wx.NewIdRef()
-        episode_menu.Append(skip_fwd_id, "Skip &Forward\tCtrl+Right")
-        episode_menu.Append(skip_back_id, "Skip &Back\tCtrl+Left")
-        note_id = wx.NewIdRef()
-        episode_menu.Append(note_id, "Add Episode &Note...")
-        queue_id = wx.NewIdRef()
-        episode_menu.Append(queue_id, "Play &Queue...")
-        episode_menu.AppendSeparator()
-        self._append_podcast_recent_submenu(episode_menu)
-        episode_menu.AppendSeparator()
-        sleep_id = wx.NewIdRef()
-        episode_menu.Append(sleep_id, "Sleep &Timer...")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
-        episode_menu.AppendSeparator()
-        enhance_id = wx.NewIdRef()
-        episode_menu.Append(enhance_id, "Sound &Enhancements...\tCtrl+E")
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.open_podcast_sound_enhancements(), id=enhance_id
-        )
-        # Where the audio comes out. One key cycles stereo / mono / left ear /
-        # right ear, matching Quill Radio exactly (quill.core.audio.channel_mode)
-        # -- someone listening with one ear, or sharing their ears with a screen
-        # reader, needs this in every app and should not learn it twice.
-        channel_id = wx.NewIdRef()
-        episode_menu.Append(channel_id, "Audio &Output Mode\tCtrl+Shift+M")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_cycle_channel_mode(), id=channel_id)
-        skip_settings_id = wx.NewIdRef()
-        episode_menu.Append(skip_settings_id, "S&kip Settings...")
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.open_podcast_skip_settings(), id=skip_settings_id
-        )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_toggle_play_pause(), id=play_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_stop(), id=stop_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mute_toggle(), id=mute_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_volume_up(), id=vol_up_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_volume_down(), id=vol_down_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_next_chapter(), id=next_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_previous_chapter(), id=prev_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_skip_forward(), id=skip_fwd_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_skip_back(), id=skip_back_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_podcast_note(), id=note_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_play_queue(), id=queue_id)
-        menu_bar.Append(episode_menu, "&Episode")
-
-        downloads_menu = wx.Menu()
-        pause_all_id, resume_all_id = wx.NewIdRef(), wx.NewIdRef()
-        downloads_menu.Append(pause_all_id, "&Pause All Downloads")
-        downloads_menu.Append(resume_all_id, "&Resume All Downloads")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_pause_all_downloads(), id=pause_all_id)
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.podcast_resume_all_downloads(), id=resume_all_id
-        )
-        menu_bar.Append(downloads_menu, "&Downloads")
-
-        # Pre-release top-level Audio Description Project menu. The typed Ask
-        # ADP assistant (future.adp_assistant) is ON by default for testing, so
-        # this is present by default; _build_adp_menu returns None only if a
-        # profile turns it off. The hands-free conversational mode
-        # (future.adp_voice_mode) is the part that stays locked until a signed
-        # unlock code is redeemed (Help > Redeem Unlock Code..., here or in
-        # QUILL -- they share one unlock store). Undocumented until launch.
-        adp_menu = self._build_adp_menu()
-        if adp_menu is not None:
-            menu_bar.Append(adp_menu, "A&udio Description Project")
-
-        menu_bar.Append(self._build_quillins_menu(), "&Quillins")
-
-        help_menu = wx.Menu()
-        palette_id, redeem_id, updates_id, about_id = (
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-        )
-        help_menu.Append(palette_id, self._menu_label("Command &Palette...", "app.command_palette"))
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
-        # The Keyboard Shortcuts editor and the Global Hotkeys manager open the
-        # same already-accessible dialogs QUILL uses (KeymapEditorMixin /
-        # GlobalHotkeysMixin), scoped to this app's own commands.
-        shortcuts_id, hotkeys_id = wx.NewIdRef(), wx.NewIdRef()
-        help_menu.Append(shortcuts_id, "&Keyboard Shortcuts...")
-        help_menu.Append(hotkeys_id, "&Global Hotkeys...")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
-        # Spotify (future.spotify) is experimental: ids always created for
-        # pinning, items shown only while the feature is on and Safe Mode is off.
-        spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
-        if self.features.is_enabled("future.spotify") and not self._safe_mode:
-            help_menu.Append(spotify_connect_id, "Connect to &Spotify...")
-            help_menu.Append(spotify_browse_id, "&Browse Spotify Podcasts...")
-            self.frame.Bind(
-                wx.EVT_MENU, lambda _e: self.open_spotify_connect(), id=spotify_connect_id
-            )
-            self.frame.Bind(
-                wx.EVT_MENU, lambda _e: self.open_spotify_browse(), id=spotify_browse_id
-            )
-        bug_id = wx.NewIdRef()
-        help_menu.Append(bug_id, "Report a &Bug...")
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.report_app_bug(source_app="QUILL Cast", app_version=_VERSION),
-            id=bug_id,
-        )
-        ffmpeg_id = wx.NewIdRef()
-        help_menu.Append(ffmpeg_id, "&Get FFmpeg...")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
-        help_menu.AppendSeparator()
-        guide_id, notes_id, prd_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        help_menu.Append(guide_id, "&User Guide")
-        help_menu.Append(notes_id, "&Release Notes")
-        help_menu.Append(prd_id, "&Product Requirements...")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("userguide"), id=guide_id)
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self._open_podcasts_doc("release-notes-1.0"), id=notes_id
-        )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("prd"), id=prd_id)
-        help_menu.AppendSeparator()
-        help_menu.Append(redeem_id, "Redeem &Unlock Code...")
-        help_menu.Append(updates_id, "Check for Up&dates...")
-        help_menu.AppendSeparator()
-        help_menu.Append(about_id, "&About QUILL Cast")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_redeem_unlock_code_dialog(), id=redeem_id)
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.check_for_app_updates(
-                repo_slug=_REPO, current_version=_VERSION, app_key="cast"
-            ),
-            id=updates_id,
-        )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
-        menu_bar.Append(help_menu, "&Help")
-
-        self.frame.SetMenuBar(menu_bar)
-        # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
-        self._keep_menu_ids(
-            channel_id,
-            spotify_connect_id,
-            spotify_browse_id,
-            manager_id,
-            add_id,
-            import_id,
-            export_id,
-            settings_id,
-            self._resume_menu_item_id,
-            prefs_id,
-            folder_id,
-            local_id,
-            watched_id,
-            acb_id,
-            tray_id,
-            exit_id,
-            self._now_playing_item_id,
-            play_id,
-            stop_id,
-            mute_id,
-            next_id,
-            prev_id,
-            skip_fwd_id,
-            skip_back_id,
-            note_id,
-            queue_id,
-            sleep_id,
-            enhance_id,
-            skip_settings_id,
-            pause_all_id,
-            resume_all_id,
-            palette_id,
-            bug_id,
-            ffmpeg_id,
-            guide_id,
-            notes_id,
-            prd_id,
-            redeem_id,
-            updates_id,
-            about_id,
-            shortcuts_id,
-            hotkeys_id,
-        )
-
     def _open_podcasts_doc(self, stem: str) -> None:
         titles = {
             "userguide": "QUILL Cast User Guide",
-            "release-notes-1.0": "QUILL Cast Release Notes",
+            "release-notes-1.1": "QUILL Cast Release Notes",
             "prd": "QUILL Cast Product Requirements",
         }
         self.open_app_document(
@@ -919,19 +809,6 @@ class PodcastsAppFrame(
     def _send_to_tray(self) -> None:
         self.frame.Hide()
         self._announce("QUILL Cast is still running in the system tray.")
-
-    def _on_cast_char_hook(self, event: wx.KeyEvent) -> None:
-        """Alt+F4 -> system tray when the preference is on (still playing);
-        every other key -- and Alt+F4 with the preference off -- flows
-        through untouched."""
-        if (
-            event.GetKeyCode() == wx.WXK_F4
-            and event.AltDown()
-            and getattr(self._podcast_history, "alt_f4_to_tray", False)
-        ):
-            self._send_to_tray()
-            return
-        event.Skip()
 
     def _show_about(self) -> None:
         self._show_message_box(
@@ -972,9 +849,30 @@ class PodcastsAppFrame(
         # Every library mutation -- folder/favorite actions, the Manager --
         # funnels through this save; refreshing here keeps the main-page
         # tree true without rebuilding it on every unrelated status change.
+        #
+        # The rebuild is not free. Every node's label carries a count, so one
+        # reload walks every episode of every show (measured at 0.14 s over a
+        # 1,300-show library with a refreshed catalog) and then builds 1,300
+        # tree items. A position checkpoint fires this on every pause, stop,
+        # and episode change -- which is exactly the shape of the bug that
+        # made Earshot's inbox badge saturate the main thread and get the app
+        # killed. So on a large library the reload rides the same coalescing
+        # timer as the write, and on a normal one it stays immediate.
         super()._save_podcast_library()
-        if getattr(self, "_shows_tree", None) is not None:
-            self._reload_library_tree()
+        if getattr(self, "_shows_tree", None) is None:
+            return
+        if self._podcast_library_is_large():
+            self._tree_reload_pending = True
+            return
+        self._reload_library_tree()
+
+    def _flush_podcast_library(self) -> None:
+        """Write, and take the deferred tree reload with it."""
+        super()._flush_podcast_library()
+        if getattr(self, "_tree_reload_pending", False):
+            self._tree_reload_pending = False
+            if getattr(self, "_shows_tree", None) is not None:
+                self._reload_library_tree()
 
     # -- lifecycle --------------------------------------------------------------
 
@@ -997,7 +895,10 @@ class PodcastsAppFrame(
         except Exception:  # noqa: BLE001 - Quillin teardown must never block exit
             pass
         try:
-            self._save_podcast_library()
+            # Force the write rather than going through the coalescing path:
+            # this is the last chance, and a pending timer will never fire.
+            self._podcast_flush_stats()
+            self._flush_podcast_library()
         except Exception:  # noqa: BLE001 - a failed save must never block exit
             pass
         for action in (

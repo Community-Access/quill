@@ -13,9 +13,32 @@ writes yet, not a half-built UI. wx-free, strict-typed.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 
 from quill.core.audio.channel_mode import normalize as normalize_channel_mode
 from quill.core.audio_enhance import clamp_eq_gain
+
+#: Playback speed range (1.1.0). The old six-choice dropdown only offered
+#: 0.75x-2.0x; the model always permitted anything, and the engines (mpv and
+#: wx.media alike) hold pitch across this range. Enforced in ``from_dict`` so a
+#: hand-edited or synced settings file can never leave a show unplayably fast.
+SPEED_MIN = 0.5
+SPEED_MAX = 5.0
+
+
+def clamp_speed(value: float) -> float:
+    """Playback speed, held inside :data:`SPEED_MIN`..:data:`SPEED_MAX`."""
+    return max(SPEED_MIN, min(SPEED_MAX, float(value)))
+
+
+def now_iso() -> str:
+    """The current moment as an ISO 8601 UTC timestamp.
+
+    One helper so every timestamp this feature stores (a queue slot's
+    ``added_at``, an expiry, a listening session) is written the same way and
+    compares as a plain string.
+    """
+    return datetime.now(UTC).isoformat()
 
 
 @dataclass(slots=True)
@@ -39,9 +62,21 @@ class QueueItem:
 
     show_id: str
     episode_guid: str
+    #: When this slot entered the queue (ISO 8601 UTC) -- the age Queue
+    #: Expiration measures against ``PodcastSettings.queue_age_limit_days``.
+    #: Additive: a queue written before 1.1.0 has no timestamp at all, and an
+    #: empty value must read as "age unknown", which
+    #: ``expiration.stamp_missing_added_at`` turns into "added just now" on
+    #: first load. Reading it as "infinitely old" would silently empty
+    #: everybody's queue on the first launch after updating.
+    added_at: str = ""
 
     def to_dict(self) -> dict:
-        return {"show_id": self.show_id, "episode_guid": self.episode_guid}
+        return {
+            "show_id": self.show_id,
+            "episode_guid": self.episode_guid,
+            "added_at": self.added_at,
+        }
 
     @classmethod
     def from_dict(cls, data: object) -> QueueItem | None:
@@ -51,7 +86,48 @@ class QueueItem:
         episode_guid = str(data.get("episode_guid", "")).strip()
         if not show_id or not episode_guid:
             return None
-        return cls(show_id=show_id, episode_guid=episode_guid)
+        return cls(
+            show_id=show_id,
+            episode_guid=episode_guid,
+            added_at=str(data.get("added_at", "")).strip(),
+        )
+
+
+@dataclass(slots=True)
+class ExpiredEntry:
+    """One episode Queue Expiration lifted out of the Play Queue (1.1.0).
+
+    Held in ``PodcastLibrary.recently_expired`` for
+    :data:`~quill.core.podcasts.expiration.RECENTLY_EXPIRED_HOLD_DAYS` days so
+    it can be restored, then swept -- at which point (and only then) its
+    downloaded file is deleted. Nothing is ever removed from the library
+    itself: expiring is a queue action, not a delete.
+    """
+
+    show_id: str
+    episode_guid: str
+    expired_at: str = ""
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "show_id": self.show_id,
+            "episode_guid": self.episode_guid,
+            "expired_at": self.expired_at,
+        }
+
+    @classmethod
+    def from_dict(cls, data: object) -> ExpiredEntry | None:
+        if not isinstance(data, dict):
+            return None
+        show_id = str(data.get("show_id", "")).strip()
+        episode_guid = str(data.get("episode_guid", "")).strip()
+        if not show_id or not episode_guid:
+            return None
+        return cls(
+            show_id=show_id,
+            episode_guid=episode_guid,
+            expired_at=str(data.get("expired_at", "")).strip(),
+        )
 
 
 #: PlaylistRules.episode_status.
@@ -225,6 +301,60 @@ class PodcastSettings:
     #: delete-after-play, etc. all still fire).
     auto_skip_intro_seconds: int = 0
     auto_skip_outro_seconds: int = 0
+    #: Auto-download (1.1.0) -- an *acquisition* policy, the counterpart to
+    #: the retention policy above. How many of the newest episodes to fetch
+    #: without being asked, on subscribe and on every refresh: 0 = off
+    #: (download by hand, the behavior through 1.0.x), -1 = every episode the
+    #: feed still offers (what ``always_sync_full_catalog`` has always meant,
+    #: which is why turning that on now also reads as -1 here). Per-show
+    #: overridable, so a daily news show can fetch 1 while a weekly show
+    #: fetches 5.
+    auto_download_count: int = 0
+    #: Also auto-download an episode the moment it is added to the Play Queue
+    #: / routed to the Inbox, regardless of how new it is. Queue on by
+    #: default (something you queued is something you mean to play); Inbox
+    #: off, since the Inbox is a triage surface, not a commitment.
+    auto_download_queued: bool = True
+    auto_download_inbox: bool = False
+    #: Queue Expiration (1.1.0): a queued episode older than this many days
+    #: leaves the Play Queue for Recently Expired. 0 = off, and off is the
+    #: only sensible *global* value -- the useful number differs per show
+    #: (2 days for a daily news show, 2 weeks for weekly long-form), so this
+    #: is set per podcast and the shared default stays off.
+    queue_age_limit_days: int = 0
+    #: Inbox caps (1.1.0): trim the Inbox to at most this many episodes, and
+    #: drop episodes that have sat there longer than this many hours. 0 = no
+    #: limit for either. Trimming never deletes anything: a trimmed episode
+    #: simply leaves the Inbox and stays unplayed in its show's own list, and
+    #: anything played, in progress, or queued is never trimmed at all.
+    inbox_max_episodes: int = 0
+    inbox_age_limit_hours: int = 0
+    #: Storage management (1.1.0). ``download_retention_days``: delete a
+    #: downloaded file older than N days (0 = off). ``storage_cap_mb``: a
+    #: ceiling on total podcast download storage (0 = no cap); when it is
+    #: exceeded, the oldest played downloads are evicted first and a queued or
+    #: in-progress episode is never evicted.
+    download_retention_days: int = 0
+    storage_cap_mb: int = 0
+    #: Playback session (1.1.0). ``continue_after_queue``: when an episode
+    #: finishes, start the Play Queue's next item -- on, because that is what
+    #: auto-advance has always done. ``continue_after_group``: when the queue
+    #: is empty, keep going with the same show's next unplayed episode -- off,
+    #: because it is new behavior and nobody asked for their evening to
+    #: continue on its own. With both off, playback stops at the end of the
+    #: current episode, which is the whole point of having the pair.
+    continue_after_queue: bool = True
+    continue_after_group: bool = False
+    #: How a cross-show row reads (1.1.0). Off: "Episode title -- Podcast".
+    #: On: "Podcast -- Episode title". An accessibility preference, not a
+    #: cosmetic one: in a list of two hundred rows from forty shows, whichever
+    #: comes first is what you can skim by first letter, and which one that
+    #: should be depends entirely on how you look for things.
+    announce_show_name_first: bool = False
+    #: Which node the library tree lands on at launch (1.1.0): a virtual view
+    #: id ("new_episodes", "continue_listening", "inbox", "favorites",
+    #: "recently_expired") or "" for the top of the tree.
+    default_launch_view: str = ""
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -252,6 +382,18 @@ class PodcastSettings:
             "skip_back_seconds": self.skip_back_seconds,
             "auto_skip_intro_seconds": self.auto_skip_intro_seconds,
             "auto_skip_outro_seconds": self.auto_skip_outro_seconds,
+            "auto_download_count": self.auto_download_count,
+            "auto_download_queued": self.auto_download_queued,
+            "auto_download_inbox": self.auto_download_inbox,
+            "queue_age_limit_days": self.queue_age_limit_days,
+            "inbox_max_episodes": self.inbox_max_episodes,
+            "inbox_age_limit_hours": self.inbox_age_limit_hours,
+            "download_retention_days": self.download_retention_days,
+            "storage_cap_mb": self.storage_cap_mb,
+            "continue_after_queue": self.continue_after_queue,
+            "continue_after_group": self.continue_after_group,
+            "announce_show_name_first": self.announce_show_name_first,
+            "default_launch_view": self.default_launch_view,
         }
 
     @classmethod
@@ -263,7 +405,7 @@ class PodcastSettings:
             playback_mode=str(data.get("playback_mode", "download")),
             retention=str(data.get("retention", "keep_all")),
             retention_count=_coerce_int(data.get("retention_count"), 5),
-            speed=_coerce_float(data.get("speed"), 1.0),
+            speed=clamp_speed(_coerce_float(data.get("speed"), 1.0)),
             download_root=str(data.get("download_root", "")),
             delete_files_on_remove=delete_policy
             if delete_policy in ("ask", "always", "never")
@@ -288,7 +430,31 @@ class PodcastSettings:
             skip_back_seconds=max(1, _coerce_int(data.get("skip_back_seconds"), 15)),
             auto_skip_intro_seconds=max(0, _coerce_int(data.get("auto_skip_intro_seconds"), 0)),
             auto_skip_outro_seconds=max(0, _coerce_int(data.get("auto_skip_outro_seconds"), 0)),
+            auto_download_count=max(-1, _coerce_int(data.get("auto_download_count"), 0)),
+            auto_download_queued=bool(data.get("auto_download_queued", True)),
+            auto_download_inbox=bool(data.get("auto_download_inbox", False)),
+            queue_age_limit_days=max(0, _coerce_int(data.get("queue_age_limit_days"), 0)),
+            inbox_max_episodes=max(0, _coerce_int(data.get("inbox_max_episodes"), 0)),
+            inbox_age_limit_hours=max(0, _coerce_int(data.get("inbox_age_limit_hours"), 0)),
+            download_retention_days=max(0, _coerce_int(data.get("download_retention_days"), 0)),
+            storage_cap_mb=max(0, _coerce_int(data.get("storage_cap_mb"), 0)),
+            continue_after_queue=bool(data.get("continue_after_queue", True)),
+            continue_after_group=bool(data.get("continue_after_group", False)),
+            announce_show_name_first=bool(data.get("announce_show_name_first", False)),
+            default_launch_view=str(data.get("default_launch_view", "")),
         )
+
+    @property
+    def effective_auto_download_count(self) -> int:
+        """How many newest episodes auto-download, folding in Always Sync.
+
+        ``always_sync_full_catalog`` predates the auto-download policy and
+        means exactly what ``auto_download_count == -1`` means, so the old
+        checkbox keeps working and the two never disagree.
+        """
+        if self.always_sync_full_catalog:
+            return -1
+        return self.auto_download_count
 
 
 @dataclass(slots=True)
@@ -372,6 +538,16 @@ class PodcastShow:
     watched_folder: str = ""
     route_to_inbox: bool = False  # §9, not yet surfaced in the UI this phase
     inbox_default_folder_id: str | None = None  # §9
+    #: Auto-Queue (1.1.0): a new episode of this show goes straight into the
+    #: Play Queue on refresh, skipping the Inbox even when the show routes
+    #: there -- the "I always listen to this one" switch.
+    auto_queue: bool = False
+    #: Per-show new-episode notification (1.1.0): the background check
+    #: announces this show's new episodes by name (speech, braille, and a
+    #: tray balloon) instead of only counting them in the shared summary.
+    #: Deliberately per show: being told about every feed is being told about
+    #: nothing.
+    notify_new_episodes: bool = False
     settings: PodcastSettings | None = None
     episodes: list[PodcastEpisode] = field(default_factory=list)
 
@@ -396,6 +572,8 @@ class PodcastShow:
             "is_favorite": self.is_favorite,
             "route_to_inbox": self.route_to_inbox,
             "inbox_default_folder_id": self.inbox_default_folder_id,
+            "auto_queue": self.auto_queue,
+            "notify_new_episodes": self.notify_new_episodes,
             "settings": self.settings.to_dict() if self.settings is not None else None,
             "episodes": [e.to_dict() for e in self.episodes],
         }
@@ -433,6 +611,8 @@ class PodcastShow:
             paused=bool(data.get("paused", False)),
             is_favorite=bool(data.get("is_favorite", False)),
             route_to_inbox=bool(data.get("route_to_inbox", False)),
+            auto_queue=bool(data.get("auto_queue", False)),
+            notify_new_episodes=bool(data.get("notify_new_episodes", False)),
             inbox_default_folder_id=(
                 str(inbox_folder_id)
                 if isinstance(inbox_folder_id, str) and inbox_folder_id

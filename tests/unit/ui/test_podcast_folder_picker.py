@@ -66,7 +66,13 @@ def test_manager_move_preserves_tree_position() -> None:
     assert "def _on_move_show_to_folder(" in src
     assert "_neighbor_anchor_for_show(" in src
     assert "_restore_tree_anchor(" in src
-    assert '"&Move to Folder..."' in src
+    # The menu entry itself moved to manager_menus.py in 1.1.0, where the
+    # Quick Actions order is applied; the anchor-preserving handler it calls
+    # stays here. Both halves are asserted so the extraction cannot silently
+    # drop either one.
+    menus = (_UI / "manager_menus.py").read_text(encoding="utf-8")
+    assert '"&Move to Folder..."' in menus
+    assert "_on_move_show_to_folder(show)" in menus
 
 
 def test_picker_offers_rename_and_delete_management() -> None:

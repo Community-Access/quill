@@ -689,8 +689,14 @@ class SpellcheckCommandsMixin:
         cursor = self.editor.GetInsertionPoint()
         if text is None:  # #1346: reuse the typing path's single buffer read.
             text = self.editor.GetValue()
-        item = find_next_misspelling(text, cursor - 1, dictionary)
-        if item is None or item.start != cursor:
+        # #1346 round 3: the bounded check. The unbounded next_misspelling kept
+        # scanning past every correctly-spelled word, so a clean document was
+        # spell-checked from the caret to the end on each pause in typing --
+        # for an answer this caller was about to discard (start != cursor).
+        from quill.core.spellcheck import misspelling_at
+
+        item = misspelling_at(text, cursor, dictionary)
+        if item is None:
             self._last_live_misspelling_feedback = None
             return
         if live_alert_suppressed(text, item.start, item.end):
