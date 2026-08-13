@@ -978,10 +978,63 @@ processing.</p>
 <p><strong>Podcast Leveler</strong> and <strong>Smooth Limiter</strong>
 are untouched: this release’s Auto-Adapt work is specific to Stream
 Polish.</p>
-<p>With thanks to dgl1984, whose OptiLab Core (Apache-2.0) this is
-adapted from. Quill Radio reproduces the shape of its modes as audio
-filters rather than embedding the plugin, so broadcast polish works on
-any machine and previews live as you move a control.</p>
+<p>With thanks to <strong>dgl1984 / Lanes Audio</strong>, whose OptiLab
+Core this is adapted from – <a
+href="https://github.com/dgl1984/optilab">https://github.com/dgl1984/optilab</a>,
+licensed Apache-2.0 with the Commons Clause. Quill Radio reproduces the
+shape of its modes as audio filters rather than embedding the plugin, so
+broadcast polish works on any machine and previews live as you move a
+control.</p>
+<h3 id="and-now-the-real-thing-for-recordings-you-keep">And now the real
+thing, for recordings you keep</h3>
+<p>Reproducing the shape of those modes has one honest limit, and it is
+worth stating plainly. OptiLab eases its lift and pulls back bass
+assistance <em>while</em> its final limiter is working hard. The filter
+chain Quill Radio uses for live listening cannot do that: nothing in it
+can see how hard a later stage is working, so there is no way to react
+to it. Faking the effect would have meant guessing, and a guess dressed
+as a feature is worse than an absence.</p>
+<p>So for <strong>saved recordings</strong>, Quill Radio can now run the
+<em>actual</em> OptiLab engine. Lanes Audio’s processing code is
+included in the build and does the work itself, rather than being
+imitated – which means the feedback loop above simply happens, and what
+you keep is what OptiLab would have produced.</p>
+<p><strong>Live listening is unchanged, and deliberately so.</strong> It
+keeps the built-in chain, because that is what lets every adjustment be
+audible the instant you make it, with no reconnect and no gap. A
+recording has no such constraint: it is processed once, afterwards,
+where taking a moment longer costs nothing.</p>
+<p>The distinction is worth holding onto, because it is the whole
+design:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Built-in chain</th>
+<th>Exact OptiLab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Where it runs</td>
+<td>Everywhere – live, relayed, recorded</td>
+<td>Saved files only</td>
+</tr>
+<tr>
+<td>Hear changes as you make them</td>
+<td>Yes</td>
+<td>No; it is not on the live path</td>
+</tr>
+<tr>
+<td>Limiter feedback loop</td>
+<td>Absent – the chain cannot react to its own limiter</td>
+<td>Present</td>
+</tr>
+</tbody>
+</table>
+<p>It is entirely optional. If your build does not include the OptiLab
+component the option says so, and everything else works exactly as
+before.</p>
 <p><strong>Sound Enhancements answers Ctrl+E.</strong> The three-band
 equalizer – Bass, Mid and Treble, each freely adjustable from -12 to +12
 dB, with Flat, Bass Boost, Voice Clarity, Podcast, Small Speakers and

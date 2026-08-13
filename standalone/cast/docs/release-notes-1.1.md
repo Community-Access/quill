@@ -62,6 +62,27 @@ Until now QUILL Cast could copy an episode's link and nothing else. "Share this"
 
 All three are **Quick Actions** entries rather than hard-coded menu items, so they can be reordered, made the Enter default, or reached on Ctrl+1 through Ctrl+9 exactly like everything else on those menus.
 
+## Your place, kept whatever happens
+
+QUILL Cast has always resumed an episode where you stopped. What it did not do
+was write that place down unless *you* did something -- pause, stop, change
+episode, or quit properly. Every other kind of ending took it with you: a
+crash, a power cut, Task Manager, a forced restart, a machine that went to
+sleep and did not come back. You would return to your last pause, which after
+an hour of uninterrupted listening is an hour ago.
+
+It now saves your position every fifteen seconds while an episode plays, so the
+worst any unclean exit can cost is a sentence. It rides a timer that was
+already running, so nothing about playback got heavier.
+
+Two smaller things came with it. A position in the first ten seconds is no
+longer remembered -- "five seconds in" is the beginning, and being asked
+whether to resume there is a question with no useful answer. And your place is
+now tied to the **audio itself** rather than to where the file sits, so it
+survives moving or renaming a downloaded episode. That last part is
+groundwork: recognising the same recording wherever it lives is what will let
+your place travel between machines later.
+
 ## Your notes, from the player
 
 Episode notes have timestamped the moment and jumped back to it since 1.0. What they lacked was a way in from where you actually make them.

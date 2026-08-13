@@ -4912,6 +4912,59 @@ resolver still checks it), so upgrades never lose offline speech. Only
 components QUILL is licensed to redistribute are hosted this way
 (whisper.cpp is MIT, Kokoro Apache-2.0); license-unclear engines are not
 re-hosted, and ffmpeg is never re-hosted (it stays user-installed).</p>
+<p><strong>Sound Enhancements: two engines, one of them upstream’s own
+(<code>quill/core/optilab.py</code>,
+<code>quill/core/optilab_adapter.py</code>,
+<code>quill/native/optilab/</code>).</strong> The three broadcast-polish
+modes are a faithful adaptation of <strong>OptiLab Core by Lanes Audio /
+dgl1984</strong> (<a href="https://github.com/dgl1984/optilab"
+class="uri">https://github.com/dgl1984/optilab</a>, Apache-2.0
+<strong>with the Commons Clause v1.0</strong>), rebuilt as ffmpeg filter
+chains. That adaptation carries one documented limitation: upstream
+eases its lift and withdraws bass assistance <em>while</em> final
+limiting runs heavy, and an ffmpeg graph is feed-forward – no stage can
+observe how hard a later one is working – so the feedback loop cannot be
+expressed there at all.</p>
+<p>Upstream’s engine is therefore also <strong>vendored unmodified at
+v1.4.0</strong> under <code>quill/native/optilab/upstream/</code> (with
+its LICENSE and NOTICE) and linked into an adapter QUILL owns, used for
+<strong>saved files only</strong>: radio recordings and audio
+conversion, which already shell out to ffmpeg offline.</p>
+<p><strong>Live playback keeps the ffmpeg chain permanently, and this is
+normative.</strong> mpv applies enhancement natively from a filter
+string, and nothing on that path ever holds a PCM sample in Python;
+routing live audio through a subprocess would reintroduce a relay
+everywhere and cost the live preview that path exists to provide. Any
+future proposal to run the native engine live must first say what it
+does about those two properties.</p>
+<p>An adapter <strong>executable</strong> rather than a Python
+extension, because upstream’s <code>native/API.md</code> states its C++
+API is <em>“not a stable C ABI”</em> and asks consumers to <em>“wrap
+this C++ class in a small adapter owned by your project”</em>. QUILL’s
+adapter contains no DSP. Entirely optional: absent adapter -&gt;
+<code>available()</code> is False and every caller uses the chain.
+Upstream’s NOTICE grants royalty-free commercial use of OptiLab Core as
+a tool for producing, processing, broadcasting or streaming audio; the
+Commons Clause withholds the right to sell the Software itself, which
+QUILL does not do.</p>
+<p><strong>Crash fingerprinting
+(<code>quill/core/crash_fingerprint.py</code>, feedback-hub
+&gt;=1.1.0).</strong> A repeat of a crash somebody already reported
+comments on that issue instead of filing a new one. QUILL files crash
+reports from two places holding different things – the excepthook has a
+live exception, the crash-recovery dialog has saved text from a session
+that already ended – and <strong>they must produce the same fingerprint
+for the same crash</strong>, or one crash reported live and later from
+its file lands on two issues and the deduplication has bought nothing.
+Both entry points therefore live in one module, and a test raises a real
+exception and compares the two paths. Two invariants: <strong>an empty
+fingerprint means “do not deduplicate”</strong>, never a real value (a
+hash of nothing would collapse every unparseable report onto one issue),
+and <strong>deduplication can never lose a report</strong> – every
+failure path falls through to creating a new issue. The id ignores line
+numbers (they shift every release, exactly when duplicates arrive
+fastest), the exception message, and absolute paths (which carry
+usernames and frozen-build layout).</p>
 <p><strong>Transient-failure retry, as one policy
 (<code>quill/core/net_retry.py</code>).</strong> A feed that answers 503
 because its host is briefly overloaded, a connection dropped mid-read,
