@@ -58,9 +58,10 @@ already fixed in code nobody could run yet.
   that must be true before the next keystroke stay synchronous (the document
   text, the modified marker, the status line), while previews, spell-check hints,
   word prediction, browse pre-warming, language detection and the contextual
-  menu refresh coalesce behind one short timer that restarts as you type; and the
-  periodic autosave disk write moved off the UI thread, removing a recurring
-  mid-sentence hitch on large files. A build check now asserts the one-read-per-
+  menu refresh move behind a restarting 120 ms timer -- so they run in the gap
+  *after* the character has reached the screen reader, and are skipped entirely
+  while you type faster than that; and the periodic autosave disk write moved off
+  the UI thread, removing a recurring mid-sentence hitch on large files. A build check now asserts the one-read-per-
   keystroke budget, so this cannot quietly creep back.
   (`quill/ui/main_frame_typing.py`, `quill/ui/main_frame_write_safety.py`)
 - **A background result can no longer crash a dialog you have closed (#1353).**

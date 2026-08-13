@@ -20,9 +20,18 @@ Two rules keep it fast, and the budget test in
 2. **Only three things are synchronous** -- ``document.set_text``, the dirty
    marker, and the quiet status line. Everything else (previews, browse
    prewarm, spell hint, prediction popup, contextual menu state, language
-   detection, autosave) waits behind one coalescing timer that restarts on each
-   keystroke. That pattern was already here; it had just never been applied to
-   anything but the browser preview and language detection.
+   detection, autosave) moves behind one restarting timer. That pattern was
+   already here; it had just never been applied to anything but the browser
+   preview and language detection.
+
+   Be precise about what that buys, because it is *not* mostly coalescing. At
+   120 ms the timer only collapses a run of keystrokes when they arrive closer
+   together than that -- above roughly 8 characters per second, which is a
+   100 wpm typist. Below that the deferred work still runs once per keystroke.
+   What changes at every speed is the **order**: it now runs in the gap *after*
+   the character has been handed to the screen reader instead of in front of
+   it. The coalescing is the safety valve on top, and it engages exactly when
+   the typist is fast enough to need it, which is the property worth having.
 """
 
 from __future__ import annotations
@@ -30,8 +39,11 @@ from __future__ import annotations
 
 class TypingPathMixin:
     #: How long after the last keystroke the non-essential edit work runs.
-    #: Long enough to coalesce a burst of typing, short enough that a pause of
-    #: any real length still feels immediate.
+    #: Short enough that a preview or spell hint still feels immediate at any
+    #: ordinary typing speed (it simply runs in the gap between characters);
+    #: long enough that a genuinely fast burst -- above ~8 characters per
+    #: second -- collapses to a single run instead of one per character, which
+    #: is exactly when the UI thread cannot afford one per character.
     _DEFERRED_EDIT_DELAY_MS = 120
 
     def _on_text_changed(self, _event: object) -> None:

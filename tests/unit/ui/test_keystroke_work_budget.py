@@ -144,3 +144,101 @@ def test_autosave_writes_off_the_ui_thread() -> None:
     # Nothing in the worker may touch wx: it runs on a pool thread.
     assert "self.editor" not in worker
     assert "_set_status" not in worker
+
+
+class _CallLater:
+    """A wx.CallLater stand-in that fires only when time is advanced past it."""
+
+    def __init__(self, clock: _Clock, delay_ms: int, target) -> None:
+        self._clock = clock
+        self.due_at = clock.now + delay_ms
+        self.target = target
+        self.stopped = False
+
+    def Stop(self) -> None:  # noqa: N802 - wx casing
+        self.stopped = True
+
+
+class _Clock:
+    def __init__(self) -> None:
+        self.now = 0.0
+        self.pending: list[_CallLater] = []
+
+    def CallLater(self, delay_ms: int, target):  # noqa: N802 - wx casing
+        timer = _CallLater(self, delay_ms, target)
+        self.pending.append(timer)
+        return timer
+
+    def advance(self, ms: float) -> None:
+        """Move time forward, firing any timer that comes due and is not stopped."""
+        target_time = self.now + ms
+        while True:
+            due = [t for t in self.pending if not t.stopped and t.due_at <= target_time]
+            if not due:
+                break
+            timer = min(due, key=lambda t: t.due_at)
+            self.now = timer.due_at
+            self.pending.remove(timer)
+            timer.target()
+        self.now = target_time
+
+
+def _typing_frame() -> tuple[MainFrame, _Clock, list[int]]:
+    frame = MainFrame.__new__(MainFrame)
+    clock = _Clock()
+    runs: list[int] = []
+    frame._wx = clock  # type: ignore[assignment]
+    frame._deferred_edit_timer = None
+    frame._run_deferred_edit_work = lambda: runs.append(1)  # type: ignore[method-assign]
+    return frame, clock, runs
+
+
+def _type_at(wpm: float, characters: int = 100) -> int:
+    """Deferred-work runs while typing *characters* at *wpm*, through the real
+    scheduler (not a model of it)."""
+    frame, clock, runs = _typing_frame()
+    gap_ms = 60_000.0 / (wpm * 5.0)
+    for _ in range(characters):
+        frame._schedule_deferred_edit_work()
+        clock.advance(gap_ms)
+    clock.advance(MainFrame._DEFERRED_EDIT_DELAY_MS)  # the pause after typing stops
+    return len(runs)
+
+
+def test_a_fast_burst_collapses_to_a_single_deferred_run() -> None:
+    # 140 wpm is ~11.7 characters per second, well inside the 120 ms timer, so
+    # every keystroke restarts it and the work happens once, at the end. This is
+    # the case that matters: it is exactly when the UI thread cannot afford to
+    # do the work once per character.
+    assert _type_at(140) == 1
+
+
+def test_ordinary_typing_still_runs_the_work_between_keystrokes() -> None:
+    # Below ~8 characters per second the gap exceeds the timer, so the deferred
+    # work runs once per keystroke -- in the gap *after* the character has been
+    # handed to the screen reader, which is the point, rather than in front of
+    # it. Asserted so the documentation cannot drift into claiming that ordinary
+    # typing is coalesced: it is not, and it does not need to be.
+    assert _type_at(60) == 100
+    assert _type_at(40) == 100
+
+
+def test_each_keystroke_cancels_the_pending_run() -> None:
+    frame, clock, runs = _typing_frame()
+    frame._schedule_deferred_edit_work()
+    first = frame._deferred_edit_timer
+    frame._schedule_deferred_edit_work()
+    assert first.stopped is True, "a second keystroke must cancel the pending run"
+    clock.advance(MainFrame._DEFERRED_EDIT_DELAY_MS)
+    assert runs == [1], "only the surviving timer may fire"
+
+
+def test_without_wx_the_work_runs_inline() -> None:
+    # Headless tests and stub surfaces have no CallLater; the work must still
+    # happen, synchronously, rather than being silently dropped.
+    frame = MainFrame.__new__(MainFrame)
+    runs: list[int] = []
+    frame._wx = object()  # type: ignore[assignment]
+    frame._run_deferred_edit_work = lambda: runs.append(1)  # type: ignore[method-assign]
+    frame._schedule_deferred_edit_work()
+    assert runs == [1]
