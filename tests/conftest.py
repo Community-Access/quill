@@ -53,8 +53,17 @@ def _session_basetemp() -> Path:
     Keying on the process id gives each session its own root. xdist workers are
     unaffected: the controller passes them an explicit basetemp, so this hook
     never runs for them and they keep sharing the controller's tree.
+
+    The root is created here because pytest is not going to: for an explicitly
+    given basetemp it calls ``basetemp.mkdir(mode=0o700)`` with no ``parents``,
+    which succeeded while this returned a path one level under ``$HOME`` and
+    fails with ``FileNotFoundError`` now that it returns a per-session
+    subdirectory. It only ever showed up on a machine where the root did not
+    already exist -- i.e. every fresh CI runner, and never a developer's second
+    run.
     """
     root = Path.home() / ".quill-pytest-tmp"
+    root.mkdir(parents=True, exist_ok=True)
     token = os.environ.get("QUILL_PYTEST_RUN_ID") or f"run-{os.getpid()}"
     _prune_stale_runs(root)
     return root / token
