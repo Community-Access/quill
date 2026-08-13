@@ -31,6 +31,56 @@ SOURCE = "spotify"
 SPOTIFY_URI_PREFIX = "spotify:"
 
 
+#: What a free account can and cannot do, in the listener's words.
+#:
+#: The split is Spotify's, not QUILL's, and it is about *where* audio plays
+#: rather than whether you may listen. The **Web API** (search, your library,
+#: your playlists) is open to any account. Both routes by which another app
+#: could play the audio are Premium-only, in Spotify's own words:
+#:
+#: * Web Playback SDK -- "requires a Spotify Premium subscription (mobile only
+#:   types of premium subscriptions are excluded)".
+#: * Start/Resume Playback (``PUT /me/player/play``) -- "This API only works for
+#:   users who have Spotify Premium."
+#:
+#: So a free listener can absolutely play Spotify music -- in Spotify's own app,
+#: where the ads that fund the free tier live. What no third-party app may do is
+#: stream that audio itself. The notice says so in those terms, because "free
+#: accounts cannot play Spotify" is both false and discouraging.
+FREE_ACCOUNT_NOTICE = (
+    "You are signed in to Spotify with a free account. Searching Spotify and "
+    "browsing your library and playlists work normally here. Playing has to "
+    "happen in the Spotify app itself: Spotify only lets other apps play its "
+    "audio for Premium subscribers, so a track started here will not sound. "
+    "Everything else in Quill Radio is unaffected."
+)
+
+PREMIUM_ACCOUNT_NOTICE = "Signed in to Spotify Premium. Search, browse, and playback are available."
+
+
+def account_product(profile: dict[str, object]) -> str:
+    """The account tier out of a ``GET /me`` profile: "premium", "free", or ""."""
+    value = str(profile.get("product", "")).strip().lower()
+    return value if value in ("premium", "free", "open") else ""
+
+
+def account_can_play(profile: dict[str, object]) -> bool:
+    """Whether this account may play audio through the Web Playback SDK.
+
+    Unknown is treated as *playable*: if Spotify ever stops returning
+    ``product``, or returns a tier this code has not seen, refusing to try would
+    lock out a paying subscriber over a missing field. Letting playback attempt
+    and fail honestly is the safer error.
+    """
+    product = account_product(profile)
+    return product != "free" and product != "open"
+
+
+def describe_account(profile: dict[str, object]) -> str:
+    """The sentence to tell the listener after signing in."""
+    return PREMIUM_ACCOUNT_NOTICE if account_can_play(profile) else FREE_ACCOUNT_NOTICE
+
+
 def is_spotify_uri(value: str) -> bool:
     """True when *value* is a Spotify URI (e.g. an adapted episode's audio_url)."""
     return value.startswith(SPOTIFY_URI_PREFIX)
@@ -218,6 +268,8 @@ def _coerce_int(value: object, default: int) -> int:
 
 
 __all__ = [
+    "FREE_ACCOUNT_NOTICE",
+    "PREMIUM_ACCOUNT_NOTICE",
     "SOURCE",
     "SPOTIFY_URI_PREFIX",
     "SavedItems",
@@ -225,5 +277,8 @@ __all__ = [
     "SpotifyEpisode",
     "SpotifyShow",
     "SpotifyTrack",
+    "account_can_play",
+    "account_product",
+    "describe_account",
     "is_spotify_uri",
 ]

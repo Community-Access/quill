@@ -34,13 +34,19 @@ quill_datas, quill_binaries, quill_hiddenimports = collect_all("quill")
 # quill.tools.signing, so collect it explicitly rather than trusting the
 # tracer -- the wheel's _sodium extension must land in binaries too.
 nacl_datas, nacl_binaries, nacl_hiddenimports = collect_all("nacl")
+# yt-dlp: resolves a YouTube link (station, playlist, chapters) to a playable
+# audio stream. Bundled rather than downloaded on demand -- the wheel is ~3 MB,
+# so making a new user consent to a download before their first YouTube link
+# costs more than the disk does. Collected explicitly because yt-dlp loads its
+# ~940 site extractors through a lazy registry the tracer cannot follow.
+ytdlp_datas, ytdlp_binaries, ytdlp_hiddenimports = collect_all("yt_dlp")
 
 a = Analysis(
     ["launcher.py"],
     pathex=[],
-    binaries=quill_binaries + nacl_binaries,
-    datas=quill_datas + nacl_datas,
-    hiddenimports=quill_hiddenimports + nacl_hiddenimports,
+    binaries=quill_binaries + nacl_binaries + ytdlp_binaries,
+    datas=quill_datas + nacl_datas + ytdlp_datas,
+    hiddenimports=quill_hiddenimports + nacl_hiddenimports + ytdlp_hiddenimports,
     hookspath=[],
     runtime_hooks=[],
     excludes=[

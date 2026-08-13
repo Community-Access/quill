@@ -1,6 +1,174 @@
 # Changelog
 
+## Unreleased
+
+Landed since 1.0.0, not yet released. This is a reliability pass driven entirely
+by what people reported: a full disk that could lose a document, an editor that
+was doing too much work between keystrokes, and three smaller things that were
+already fixed in code nobody could run yet.
+
+### Fixes
+
+- **A full disk can no longer close QUILL with your document unsaved (#1390).**
+  This is the serious one. Choosing **Save** on the close prompt, on a disk with
+  no space left, closed QUILL *without saving*. The cause was an ordering
+  mistake with a real cost: the save path writes a backup copy first, and that
+  backup write was the one thing outside the guard that catches a failed write.
+  So the backup failed, the exception escaped the save entirely -- before the
+  real file was ever touched -- the close path's safety net swallowed it as "the
+  prompt misbehaved, close anyway", and the window went away with the work in
+  it. Four changes, and the shape of the fix is the point:
+  - **A backup can never stop a save.** A backup exists to protect you *from* a
+    bad save; letting it prevent the save inverts its purpose. It now degrades
+    to "Could not write a backup; saving anyway" and the real save proceeds.
+  - **Backups are written the way autosave snapshots are** -- atomically, and
+    always as UTF-8 rather than the document's own encoding. Atomic, so an
+    interrupted backup can never be what you restore; UTF-8, because a document
+    read as ASCII (a BRF braille file, say) used to raise the moment its buffer
+    gained an accented character -- and *that* also aborted the save. Backups
+    written by earlier versions still restore.
+  - **The message says what to do.** "[Errno 28] No space left on device" is
+    true and useless. A full disk now reads "The disk is full. QUILL could not
+    save `notes.md`. Free some space and try again -- your text is still open
+    and unsaved." A read-only file or folder gets its own sentence pointing at
+    Save As.
+  - **A failed save is not consent to close.** The window must always be
+    closable, and it still is -- but the first close after a failed save is
+    cancelled with an explanation, so you can free space or Save As somewhere
+    else. Closing a second time proceeds, so the window can never be trapped
+    open by this. (`quill/ui/main_frame_write_safety.py`, `core/backups.py`)
+- **Autosave says so when it stops working (#1386).** Autosave already survived
+  a full disk without crashing -- but it survived it *silently*, which means
+  your crash-recovery safety net was gone with nothing to tell you. After two
+  failures in a row it now says, once: "Autosave paused -- the disk is full.
+  Your work is not being snapshotted." Once per failure streak, not per attempt,
+  and it goes quiet again the moment autosave succeeds.
+- **Typing is faster, and the screen reader keeps up with it (#1346).** The
+  report was "long pauses between text entry and reporting from either NVDA and
+  JAWS. Sometimes certain keys are not intercepted, such as the space, so that
+  words run together." That is not a screen-reader setting; it is a blocked
+  message pump, and the cause was QUILL's own work per keystroke. Every
+  character typed triggered three or four *complete* copies of the document out
+  of the Windows edit control -- roughly a megabyte of copying per keystroke on
+  a 200 KB file -- plus a full-text comparison and a menu-state refresh, all
+  before the next key could be handled. So the change notification the screen
+  reader waits on arrived late, and keystrokes queued and coalesced, which is
+  exactly what a dropped space is. Three changes: the buffer is now read **once**
+  per keystroke and handed to everything that needs it; only the three things
+  that must be true before the next keystroke stay synchronous (the document
+  text, the modified marker, the status line), while previews, spell-check hints,
+  word prediction, browse pre-warming, language detection and the contextual
+  menu refresh move behind a restarting 120 ms timer -- so they run in the gap
+  *after* the character has reached the screen reader, and are skipped entirely
+  while you type faster than that; and the periodic autosave disk write moved off
+  the UI thread, removing a recurring mid-sentence hitch on large files. A build check now asserts the one-read-per-
+  keystroke budget, so this cannot quietly creep back.
+  (`quill/ui/main_frame_typing.py`, `quill/ui/main_frame_write_safety.py`)
+- **A background result can no longer crash a dialog you have closed (#1353).**
+  Closing the AI Hub while its Ollama probe was still running raised "wrapped
+  C/C++ object of type StaticText has been deleted". The AI Hub was fixed in
+  1.0.0; this release sweeps every other dialog with the same shape -- the
+  translation dialog, the AI spell check, the setup wizard's model check, and
+  the GitHub repository browser all now check the window still exists before
+  touching it, and a build check keeps the list honest.
+- **The Speech Hub cannot be broken by a call-site drift again (#1364).** A
+  required parameter added to the Dictation (Offline) tab was not passed by the
+  Speech Hub for about two and a half weeks, and anyone on a build cut in that
+  window could not open the Speech Hub *at all* -- the tab is built on open, so
+  the whole hub failed. Nothing caught it, because those arguments travel as a
+  dictionary assembled twelve thousand lines away. A test now checks the
+  dictionary against the real constructors.
+- **A folder name with an emoji no longer risks a crash on macOS (#1345).**
+  Creating a notebook from a folder passed the folder's name straight to the
+  native macOS save panel as the suggested filename; a name beginning with an
+  emoji was implicated in a crash inside that panel. Suggested filenames are now
+  cleaned of emoji, control characters, and reserved path characters. Your
+  notebook keeps the name you typed -- only the filename suggestion changes, and
+  you could always edit that anyway.
+
+### Improved
+
+- **The Command Palette says which way every toggle is currently set (#1383).**
+  The palette lists commands by name and has no checkmark column, so "Toggle
+  Soft Wrap" read identically whether soft wrap was on or off -- the one thing
+  you opened the palette to find out. Reported for Internet Radio's **Announce
+  Track Titles** (by two people), but it was never one entry's problem: soft
+  wrap, dark mode, find wrap, the tab control, persistent undo, spell check as
+  you type, word prediction, overwrite mode, extend-selection mode, tab insert
+  mode and abbreviation expansion all now read "(currently On)" or "(currently
+  Off)", refreshed each time the palette opens.
+  (`quill/ui/main_frame_palette_labels.py`)
+- **Winamp's classic playback keys work in the radio Recordings player
+  (#1344).** X play, C pause, V stop, B next, Z previous, arrows to seek, T for
+  elapsed or remaining, J to jump to a recording, Ctrl+J to jump to a time. See
+  `docs/CONTROL_REFERENCE.md` for the full map and the two places it knowingly
+  differs from Winamp. (`quill/ui/radio/winamp_keys.py`)
+
 ## 1.0.0
+
+### New
+
+- **Quill Inkwell -- abbreviation expansion in every application.** A new, free
+  member of the family: the abbreviations QUILL has always expanded inside its
+  own editor now expand in browsers, mail clients, forms, and anywhere else you
+  type. There is exactly one library -- Inkwell and QUILL read and write the same
+  `abbreviations.json`, re-read whenever it changes -- so an abbreviation added
+  in either works in both immediately, with no import, export, or sync. Runs in
+  the system tray; refuses to type in password managers, the Windows sign-in and
+  credential surfaces, and any application you exclude; keeps no clipboard
+  history; and never starts its keyboard hook in Safe Mode. The keystroke buffer
+  it needs to recognise a word is bounded at 64 characters, held in memory only,
+  cleared constantly, and never written anywhere. It expands only where text is
+  actually accepted, recognises AltGr as typing (so European layouts work),
+  restores the abbreviation if you press Backspace right after an expansion,
+  expands on demand mid-word with a system-wide chord, can use the clipboard
+  route for one stubborn application rather than globally, explains rather than
+  silently failing in an administrator window, and re-installs its own keyboard
+  hook periodically so expansion cannot quietly die. (`quill/apps/inkwell.py`,
+  `core/expansion/`, `platform/windows/expansion_hook.py`,
+  `platform/windows/text_target.py`, `platform/windows/text_injector.py`,
+  `standalone/inkwell/`)
+- **Per-abbreviation settings.** Every abbreviation now decides for itself what
+  expands it (a space or punctuation, a space only, punctuation only, or never),
+  what your screen reader says when it fires, whether it plays a sound, whether
+  it adds a trailing space after punctuation, and which category it belongs to.
+  Schema version 2: every field defaults, so an existing library loads unchanged
+  and a v2 library opened by an older build still expands. (`core/abbreviations.py`,
+  `ui/abbreviation_manager_dialog.py`, `ui/main_frame_abbreviations.py`)
+- **Quick Insert (Insert > Quick Insert...).** A type-to-filter picker over every
+  enabled abbreviation, most-used first, so you can use one without remembering
+  its trigger -- and the only way to reach an abbreviation whose trigger mode is
+  "never". Shared with Quill Inkwell. (`ui/quick_insert_dialog.py`)
+- **New Abbreviation from Clipboard (Insert menu).** Copy a block of text
+  anywhere, then save it as an abbreviation with the expansion already filled in.
+- **Fill-in fields in expansions.** `${field:Label}` and
+  `${field:Label=default}` make an abbreviation ask before it finishes -- a name,
+  a date, a reference number -- instead of expanding and leaving you to arrow
+  back through the text hunting for the parts to change. A label used twice is
+  asked once and filled everywhere. The same form appears in the editor, in
+  Quick Insert, and in Quill Inkwell, so a template behaves identically wherever
+  it is used. (`core/expansion/fields.py`, `ui/fill_in_dialog.py`)
+- **More expansion variables:** `${datetime}`, `${day}`, `${month}`, `${year}`,
+  and `${username}`, alongside the existing `${date}`, `${time}`, `${clipboard}`,
+  and `${cursor}`.
+- **Podcast chapters from more than the feed.** Chapters are now found by a
+  cascade of free sources -- the feed's own chapters document, then chapter
+  frames in the downloaded file, then the timestamps published in the episode's
+  show notes -- and the list says which one it came from, so marks read out of
+  show notes are never mistaken for the publisher's own. The Chapters button is
+  offered whenever any of those could exist. (`core/podcasts/chapter_sources.py`)
+- **Player Information (Media menu).** What is playing, as one reviewable,
+  copyable block of text rather than a status spoken once: title, show, position,
+  duration, remaining, progress, speed, streaming versus local, temporary versus
+  kept, notes, resume position, and current chapter. (`core/media/player_info.py`,
+  `ui/media/player_info_dialog.py`)
+- **"In progress" episode filter.** Episodes you have started but not finished,
+  in the podcast manager's filter alongside All, Unplayed, and Played.
+- **Clip assembly.** Rename a clip, correct its text in place, mark several and
+  join them with a chosen separator (space, comma, full stop, vertical bar, new
+  line, or blank line) onto the clipboard, or save any clip as an abbreviation.
+  QUILL still keeps no clipboard history and does not watch the system
+  clipboard. (`core/clip_library.py`, `ui/clip_library_dialog.py`)
 
 ### Release scope
 

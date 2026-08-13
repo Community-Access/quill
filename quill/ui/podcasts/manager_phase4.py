@@ -26,8 +26,22 @@ from quill.core.podcasts.filtering import (
 from quill.core.podcasts.models import Playlist, PodcastEpisode, PodcastShow
 from quill.core.podcasts.virtual_views import virtual_view_pairs
 
-_EPISODE_FILTER_LABELS = ("All", "Unplayed", "Played", "Downloaded", "Not downloaded")
-_EPISODE_FILTER_MODES = ("all", "unplayed", "played", "downloaded", "not_downloaded")
+_EPISODE_FILTER_LABELS = (
+    "All",
+    "Unplayed",
+    "In progress",
+    "Played",
+    "Downloaded",
+    "Not downloaded",
+)
+_EPISODE_FILTER_MODES = (
+    "all",
+    "unplayed",
+    "in_progress",
+    "played",
+    "downloaded",
+    "not_downloaded",
+)
 _SHOW_FILTER_LABELS = ("All shows", "Favorites only", "Has unplayed")
 _SHOW_FILTER_MODES = ("all", "favorites_only", "has_unplayed")
 _BOOST_LABELS = ("Boost off", "1.5x boost", "2x boost", "3x boost")

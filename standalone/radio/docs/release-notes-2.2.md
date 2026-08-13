@@ -60,25 +60,180 @@ Quill Radio User Guide.
 
 ## Two new kinds of station: YouTube and Live365
 
-**YouTube plays and records like any other station.** Paste a YouTube link into
-**Add Custom Station** -- an ordinary video link, a `youtu.be` short link, or a
-channel's live page -- and it becomes a station: it plays through the same
-player, sits in Favorites, records with Record Now, and can be captured by a
-scheduled recording. Quill Radio saves the *page* address, never a stream
-address, and re-finds the audio each time you play or record, so a recording you
-schedule today still works next week. It needs the small `yt-dlp` helper, which
-is never bundled: it installs on demand (about 3 MB) after a one-time consent and
-rights notice shown when you add your first YouTube station -- asked then, not
-while a recording is firing at 3am. Off in Safe Mode. A private, removed,
-region-blocked, or not-yet-live video says so in plain words.
+### YouTube plays and records like any other station
 
-**Paste a Live365 link and it just plays.** The Live365 link you actually have is
-almost never the stream -- it is the station page or the web player, both of them
-web pages that used to save as a station that could never play. Add Custom
-Station now recognizes any Live365 station page, player link, or bare station id
-and rewrites it to that station's real stream address, telling you it did. It is
-a pure text rewrite: no network lookup, nothing sent anywhere, and a link that is
-not Live365 is passed through exactly as you typed it.
+Paste a YouTube link into **Add Custom Station** -- an ordinary video link, a
+`youtu.be` short link, or a channel's live page -- and it becomes a station: it
+plays through the same player, sits in Favorites, records with Record Now, and
+can be captured by a scheduled recording. Quill Radio saves the *page* address,
+never a stream address, and re-finds the audio each time you play or record, so
+a recording you schedule today still works next week. Off in Safe Mode. A
+private, removed, region-blocked, or not-yet-live video says so in plain words.
+
+### It works out of the box
+
+The `yt-dlp` helper that finds the audio behind a link is built into Quill
+Radio, so your first YouTube link simply plays -- no download, no consent
+prompt, nothing to agree to before you have heard anything. It costs about 3 MB
+in the installer, which is a better trade than a dialog standing between you and
+the thing you asked for. The helper is bundled only in the apps that can
+actually use it -- Quill Radio, Audio Studio, and Audio Converter -- so Weather,
+Cast, Social, Beacon, and Inkwell do not carry it.
+
+### Update YouTube Support, for when YouTube changes
+
+**Station > Update YouTube Support...** fetches a newer `yt-dlp` than the one
+your copy of Quill Radio was built with. YouTube changes how it serves audio
+every so often, and when it does the helper needs updating -- so this exists to
+keep you from waiting for the next Quill Radio release to get YouTube working
+again. An update installed this way takes precedence over the built-in copy from
+then on. It tells you which version you ended up with, asks before it reaches the
+network, and is off in Safe Mode. You should not need it otherwise.
+
+### A YouTube station knows what it is playing
+
+Finding the audio behind a link takes one request, and that request answers with
+far more than an audio address. Quill Radio keeps all of it: the video's
+**length**, its **uploader**, its **description**, the **chapters the uploader
+published**, and whether a **caption track** exists. None of it costs an extra
+moment or an extra connection -- it rides the request the app was making anyway.
+
+A live broadcast reports no length at all, which is the honest answer -- it has
+no timeline to sit on.
+
+### A finished video has a timeline, so you can move around it
+
+This is the part a live broadcast can never offer, and it is where a YouTube
+station stops being "radio that happens to come from YouTube" and starts being a
+player. Everything below is on the **Playback** menu and works on any finished
+video:
+
+| Key | What it does |
+| --- | --- |
+| Ctrl+Shift+C | **Chapters...** -- the uploader's own chapter list; Enter jumps to one |
+| Ctrl+Alt+Right | Next chapter |
+| Ctrl+Alt+Left | Previous chapter, or back to the start of this one |
+| Ctrl+Shift+Right | Forward 30 seconds |
+| Ctrl+Shift+Left | Back 30 seconds |
+| Ctrl+Alt+Up | Play faster |
+| Ctrl+Alt+Down | Play slower |
+| Ctrl+Alt+0 | Normal speed |
+| Ctrl+Shift+P | **Where am I?** -- position, length, and the chapter you are in |
+
+The chapter list reads each entry as a whole sentence -- "3. Introducing layers,
+starts at 5 minutes 31 seconds" -- and marks the one playing now. Speed steps
+through round, speakable values (0.25x to 4x) rather than drifting by a
+multiplier, and the speed you choose is remembered for the next video.
+
+**Every one of these says why when it declines.** Point any of them at a live
+stream and you hear "This is a live stream, so there is no timeline to move
+along", not silence. A slider that cannot move and a "next chapter" that quietly
+does nothing are worse than not offering them at all, because you cannot tell a
+broken control from a stream that has no timeline. Ask for chapters on a video
+whose uploader published none and it says that too.
+
+### Add from YouTube Playlist
+
+On the Station menu. Paste a `playlist?list=...` link -- already filled in for
+you if it is on your clipboard -- and Quill Radio lists the videos in the
+uploader's own running order, never re-sorted, because a series is meant to be
+worked through in order.
+
+Each row reads as a whole sentence: "3. Introducing layers, 5 minutes 31
+seconds, 3Blue1Brown". Everything about a video is in the line your screen
+reader speaks, so there are no columns to arrow across. Times are spelled out in
+words on purpose -- "5:31" read aloud is ambiguous unless you already know it is
+a time.
+
+Arrow the list, select what you want with Shift or Ctrl, and choose **Add
+Selected** -- or take the lot with **Add All**. Each becomes an ordinary station
+you can play, favorite, and record. Quill Radio says how many it added and how
+many were already in your favorites, so adding fifty videos never leaves you
+wondering whether the button worked.
+
+The listing itself is deliberately shallow: one request for the whole playlist
+rather than one per video, and no video's audio is fetched until you play it.
+
+The window is headed with the playlist's own name, read from the same request
+that fetched the list, so you always know which playlist you are looking at.
+
+A *watch* link that happens to carry a `list=` in it is still just that one
+video. You asked for the video; quietly turning it into fifty stations would be
+a nasty surprise.
+
+**What this is, and what it is not.** Adding a playlist is an **import**, not a
+subscription and not a play queue. The videos you pick become ordinary favorites
+-- each plays, records, and schedules exactly like a station -- and they sit in
+your favorites list alongside everything else rather than in a folder of their
+own. Nothing plays through them in order: playing one video plays that video, and
+Quill Radio does not move on when it ends. Nothing re-checks the playlist later,
+so videos added upstream after your import are not picked up -- run the command
+again on the same link to collect them, and anything already in your favorites is
+skipped rather than duplicated. Playing a playlist as a queue, and keeping one in
+step with its source, are separate pieces of work; saying so is better than
+letting "playlist support" imply either.
+
+#### Search YouTube from Find Stations
+
+Type a search and YouTube videos appear alongside the radio directories, each
+one an ordinary station you can play, favorite and record. No key, no account,
+no setup -- it uses the same yt-dlp that already plays your YouTube links, so
+there is nothing to configure.
+
+Rows read "title, uploader", and the search is deliberately shallow: one
+request for the whole result set, and no video's audio is fetched until you
+actually play it.
+
+A note on how this works, because it matters for what to expect. Quill Radio
+does not use YouTube's official Data API, which would require every listener to
+create a Google Cloud project and paste an API key in before searching. It uses
+yt-dlp's keyless extraction -- the same approach FreeTube, NewPipe and
+Invidious all take. The trade-off is that YouTube occasionally changes how its
+site works and extraction breaks until upstream fixes it. That is exactly what
+**Station > Update YouTube Support...** is for: it fetches a newer yt-dlp
+without waiting for the next Quill Radio release.
+
+### Choose what Find Stations searches
+
+Quill Radio now searches eight places, which is wonderful when you are hunting
+for something and noise when you already know what you want. **Station > Search
+Sources...** lets you switch any of them off:
+
+| Source | What it is |
+| --- | --- |
+| Radio Browser | The community directory behind most results |
+| TuneIn | TuneIn's station directory |
+| iHeart | iHeartRadio's stations |
+| SomaFM | SomaFM's listener-supported channels |
+| NOAA Weather Radio | US weather radio by SAME code, callsign, county or state |
+| Radio Reading Service | Services broadcasting newspapers and magazines aloud |
+| Spotify | Songs, shows and episodes; needs a connected account |
+| YouTube | Videos, added as stations |
+
+**A source that is off is never contacted.** This is not a filter applied to
+results that were fetched anyway -- turning off iHeart means those network
+requests do not happen. So switching sources off makes searching genuinely
+faster and quieter, not just tidier.
+
+Each row says its own state and what the source is: "On. YouTube. Videos, added
+as stations you can play and record." There are no checkboxes, because checkbox
+state inside a list is announced inconsistently across NVDA, JAWS and Narrator
+-- and on/off is the one thing this dialog exists to tell you. **Turn On or
+Off** flips the row you are on and says what happened.
+
+**Your choices are remembered** -- both which sources are on and the Source
+filter in the results list. A preference you have to set again on every search
+is not really a preference. **Reset to Default** turns everything back on.
+
+### Paste a Live365 link and it just plays
+
+The Live365 link you actually have is almost never the stream -- it is the
+station page or the web player, and both of those are web pages, which no player
+can play. Add Custom Station recognizes any Live365 station page, player link, or
+bare station id and rewrites it to that station's real stream address, telling
+you it did. It is a pure text rewrite: no network
+lookup, nothing sent anywhere, and a link that is not Live365 is passed through
+exactly as you typed it.
 
 ## Browse by network: the BBC, NPR, and broadcasters worldwide
 
@@ -331,6 +486,62 @@ soonest first, rather than the order you entered them, and each row shows the
 stream's host in brackets so two similar entries -- or a duplicate still pointing
 at the original station -- are easy to tell apart.
 
+## Winamp's keys, in the Recordings player
+
+If you came to Windows audio through Winamp, its classic-skin keys never really
+left your fingers. Until now the Recordings window answered to exactly two of
+them -- Ctrl+Up and Ctrl+Down for volume -- and nothing else. There was no play,
+no pause, no stop, no seek, nothing to move between recordings. The whole
+transport set is now there, on the letter keys you already know, with no
+modifier to reach for:
+
+| Key | What it does |
+| --- | --- |
+| X | Play the selected recording, or resume a paused one |
+| C | Pause / unpause |
+| V | Stop |
+| Shift+V | Stop (Winamp's fade-out; this player has no fade, so it stops cleanly) |
+| B | Next recording -- moves down the list and plays it |
+| Z | Previous recording |
+| Left / Right | Back / forward 5 seconds |
+| Shift+Left / Shift+Right | Back / forward 30 seconds |
+| T | Elapsed time, or time remaining -- press again to swap |
+| J | Jump to a recording: type any part of its name |
+| Ctrl+J | Jump to a time: type `90`, `1:30`, or `1:02:03` |
+| L | Open (the same as Play) |
+| Ctrl+Up / Ctrl+Down | Volume up / down |
+
+Every one of them says what it did. A transport key whose result you cannot hear
+is not a working transport key, so "Playing", "Paused", "Back 5 seconds" and the
+rest are spoken -- and, since 2.2, brailled as well.
+
+There are two places this deliberately parts company with Winamp, and both are
+the better answer here rather than an oversight:
+
+- **Ctrl+T stays What's Playing.** Winamp puts the elapsed/remaining toggle
+  there; in a radio app, knowing what is on the air is worth more. The time
+  toggle is on plain **T**, which nothing else was using.
+- **Up and Down still move through the list.** In Winamp those are volume in the
+  main window but list navigation in the Playlist Editor -- and the recordings
+  list *is* a playlist editor by any other name. Volume stays on Ctrl+Up and
+  Ctrl+Down, exactly where it already was.
+
+Seeking needs something with a timeline, which means a finished recording on the
+mpv engine; on a live stream, or with the classic Windows Media engine, the seek
+keys say why they cannot move rather than silently doing nothing. A letter typed
+into a text field is never swallowed. And if you would rather have the letters
+for list typeahead, **Winamp-style playback keys in the Recordings player** in
+Preferences turns them off -- volume is unaffected either way.
+
+Not included, deliberately: shuffle, repeat, and stop-after-current. All three
+describe a play queue, and the recordings list does not have one yet. A key that
+only looks like it worked is worse than a key that is not there, so they wait for
+the release that gives the list a queue to shuffle.
+
+The map itself lives in one small shared module with no wx in it, so the
+standalone Media Player and QUILL Cast can adopt exactly these keys instead of
+growing a second, subtly different set.
+
 ## It looks after itself now
 
 A cluster of quiet reliability wins. Quill Radio **keeps your computer awake**
@@ -356,6 +567,33 @@ minutes** now -- separate Hours and Minutes boxes, so three hours is simply "3" 
 sound card or USB headset in one keystroke instead of opening Preferences. It
 changes the device immediately and remembers the choice, exactly like the
 Preferences setting it shortcuts.
+
+**Broadcast polish follows OptiLab Core 1.4.0.** If you use **Stream Polish**
+for music, its Auto-Adapt slider behaves better now, particularly at the top.
+
+Previously, raising Auto-Adapt pushed every stage harder at once -- the leveler,
+the compressor and the limiter all leaned in together -- and that is what
+produced the occasional volume lurch when the material changed. Following
+upstream, each stage now fades in over its own part of the slider using
+OptiLab's own smoothing curve, so there is no point where something switches on.
+The leveler actually *eases off* as you raise Auto-Adapt, and a separate slow
+loudness lift takes over instead.
+
+That lift only responds to real program material: silence, low-level hiss and
+rumble no longer cause it to build gain, which is the other half of what made
+the old behaviour unpredictable. Bright, high-frequency moments get firmer
+control as the slider rises rather than the flat presence boost the chain used
+to apply at every setting, the limiter looks further ahead toward the top of the
+range, and the whole chain now delivers to OptiLab's -0.1 dBFS target -- so high
+settings give you more sustained loudness rather than more processing.
+
+**Podcast Leveler** and **Smooth Limiter** are untouched: this release's
+Auto-Adapt work is specific to Stream Polish.
+
+With thanks to dgl1984, whose OptiLab Core (Apache-2.0) this is adapted from.
+Quill Radio reproduces the shape of its modes as audio filters rather than
+embedding the plugin, so broadcast polish works on any machine and previews live
+as you move a control.
 
 **Sound Enhancements answers Ctrl+E.** The three-band equalizer -- Bass, Mid and
 Treble, each freely adjustable from -12 to +12 dB, with Flat, Bass Boost, Voice
@@ -418,19 +656,123 @@ disabled in this release.
 
 ## Spotify (experimental)
 
-Quill Radio can play music straight from Spotify, through Spotify's own playback
-engine. It is **experimental**, and it asks a lot of you before it will do
-anything: a paid Spotify **Premium** account (Spotify only lets an app stream its
-audio for Premium subscribers), your own Spotify Client ID, and the Edge WebView2
-runtime. Spotify audio is copy-protected, so a Spotify selection can never be
-recorded or downloaded -- unlike every other station in the app.
+Quill Radio can search Spotify, browse your library and playlists, and play
+through Spotify's own playback engine. It is **experimental**, and it needs
+setting up -- so here is the whole thing, plainly.
 
-Nothing reaches Spotify until you connect an account: sign-in is a one-time
-network-access consent away, and the whole feature is refused in Safe Mode. If you
-would rather not see it at all, turn **Spotify** off in Manage Individual
-Features and its menu items disappear. The full story -- what you need, how to
-connect, and how to browse and play -- is in the **"Spotify (experimental)"**
-section of the Quill Radio User Guide.
+### Does a free Spotify account work?
+
+**Yes for finding things, no for playing them inside Quill Radio.** The
+distinction is worth being precise about, because it is easy to hear "Premium
+required" and conclude a free account is useless here. It is not.
+
+**What works on a free account:**
+
+- Searching Spotify from inside Quill Radio.
+- Browsing your saved shows, episodes, tracks, and playlists.
+- Everything else in Quill Radio, which is untouched by any of this.
+
+**What does not:**
+
+- Audio starting *inside Quill Radio*. A track you choose here will not sound.
+
+**Why -- and what this is not.** This is **not** "free accounts cannot play
+Spotify music". Of course they can, and millions of people do every day, in
+Spotify's own app, where the advertising that funds the free tier lives. The
+restriction is about **where** the audio plays, not whether you are allowed to
+listen. Spotify does not license other people's apps to stream free-tier audio,
+and it says so plainly in its own developer documentation. There are exactly two
+ways another app could play a Spotify track, and both are closed to free
+accounts:
+
+- The Web Playback SDK, which "requires a Spotify Premium subscription (mobile
+  only types of premium subscriptions are excluded)".
+- The Start/Resume Playback web endpoint, of which Spotify says: "This API only
+  works for users who have Spotify Premium."
+
+So with a free account, use Quill Radio to *find* things -- which is the part
+that is genuinely hard with a screen reader -- and play them in the Spotify app.
+Quill Radio now tells you which kind of account you signed in with, immediately,
+rather than letting you discover it when a track silently refuses to start.
+
+### Spotify in Find Stations
+
+Because searching Spotify works on **every** account tier, Spotify results now
+appear in **Find Stations** alongside the radio directories, once you have
+connected your account. Search once and you see stations, shows, and tracks
+together, instead of remembering which of two search boxes holds which kind of
+thing.
+
+- Songs read as "title, artist", so a list of results is still usable when
+  several share a name.
+- Shows read as "show, publisher".
+- Every Spotify row is labelled **Spotify** in the Source column, and there is a
+  **Spotify** entry in the Source filter if you want only those -- or want them
+  out of the way.
+
+On a Spotify row, Shift+F10 offers **Open in Spotify**, which opens it in the
+Spotify app. That is deliberately not called "Open Website": on a free account
+it is not a footnote about a station's home page, it is *how you play the thing*.
+Premium subscribers can simply press Enter and hear it here.
+
+If you have never connected Spotify, nothing changes -- no Spotify rows appear,
+and Find Stations behaves exactly as before. Off in Safe Mode. If Spotify is
+slow or unreachable, the rest of your results still arrive.
+
+For the same reason, a Spotify selection can never be **recorded** or
+**downloaded** on any account, unlike every other station in the app: the audio
+is copy-protected.
+
+### What you need
+
+1. **A Spotify account** -- free or Premium, per above.
+2. **Your own Spotify Client ID.** Quill Radio ships no shared identity, so
+   nothing of yours passes through anyone else's account.
+3. **Windows with the Edge WebView2 runtime**, which current Windows already has
+   -- it arrives with Microsoft Edge.
+
+### Getting your Client ID, step by step
+
+1. Go to the **Spotify Developer Dashboard** at
+   `https://developer.spotify.com/dashboard` and sign in with your ordinary
+   Spotify account. There is no charge, and this works with a free account.
+2. Choose **Create app**.
+3. Give it any **App name** and **App description** you like -- they are just for
+   you. "Quill Radio" is fine.
+4. In **Redirect URI**, enter exactly this, then press **Add**:
+
+   `http://127.0.0.1:43217/callback`
+
+   It must match character for character, including the port number. This is how
+   Spotify hands the finished sign-in back to your own computer; it never leaves
+   your machine.
+5. Under **Which API/SDKs are you planning to use?**, tick **Web API** and
+   **Web Playback SDK**.
+6. Accept the terms and choose **Save**.
+7. Open your new app's **Settings**. Your **Client ID** is shown there -- copy it.
+
+   You will also see a **Client secret**. **You do not need it**, and you should
+   not paste it anywhere. Quill Radio signs in with the modern PKCE flow, which
+   is designed precisely for apps that cannot keep a secret.
+
+### Where to put it in Quill Radio
+
+1. **Station > Connect to Spotify...**
+2. Paste your Client ID into the **Client ID** field.
+3. Choose **Connect**. Your browser opens Spotify's own approval page: you are
+   signing in to Spotify, and your password is never typed into this app.
+4. Approve access. Spotify returns you to a small address on your own machine
+   (`127.0.0.1`) that Quill Radio listens on for that one moment.
+5. Your sign-in is stored in the **Windows Credential Manager** -- never in a
+   plain file, never in a log -- alongside your Client ID, so the whole
+   connection lives in one place and clears together.
+
+You do this once. Afterwards, **Station > Browse Spotify...** opens a search box and
+a results list you can arrow through and play with Enter.
+
+Nothing reaches Spotify until you deliberately connect an account, and the whole
+feature is refused in Safe Mode. If you would rather not see it at all, turn
+**Spotify** off in Manage Individual Features and its menu items disappear.
 
 ## Fixes
 
@@ -450,11 +792,14 @@ section of the Quill Radio User Guide.
   the review window; a stream that sends no titles says so and still opens a window
   naming the station; a failed lookup is reported instead of silently swallowed;
   and the copy confirmation names what it copied.
-- **The Command Palette now says whether Announce Track Titles is on or off.**
-  The palette has no checkmark, so the entry read "Announce Track Titles On/Off"
-  whichever way the switch was actually set -- you had to throw it to find out. It
-  now reads **"Announce Track Titles (currently On)"** or **"(currently Off)"**,
-  and updates the moment you toggle it.
+- **The Command Palette now says which way every toggle is currently set.**
+  Two people asked for this about **Announce Track Titles**: the palette has no
+  checkmark, so the entry read the same whichever way the switch actually was --
+  you had to throw it to find out. It now reads **"Announce Track Titles
+  (currently On)"** or **"(currently Off)"** and updates the moment you toggle
+  it. That was never one entry's problem, though, so the fix was generalised:
+  *every* on/off command in the palette now carries its own state, refreshed each
+  time the palette opens.
 - **Recording filenames follow the computer's current time zone.** Change the
   computer's time zone (or ride a daylight-saving shift) while Quill Radio is
   running and new recordings are named with the new local time straight away -- no

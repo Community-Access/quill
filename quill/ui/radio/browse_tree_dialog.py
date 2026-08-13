@@ -38,6 +38,7 @@ from quill.core.radio import (
 )
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
+from quill.core.radio.spotify_search import open_link_label
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.radio import browse_position
 from quill.ui.radio.browse_tree_helpers import (
@@ -957,7 +958,13 @@ class BrowseTreeDialog:
                 ("&Copy Stream Link", lambda: self._copy_text(station.stream_url)),
             ]
             if station.homepage:
-                entries.append(("Open &Website", lambda: self._open_url(station.homepage)))
+                # A saved Spotify favorite says "Open in Spotify": for a free
+                # account that link is how the track actually plays, not a
+                # footnote about the station's website.
+                entries.append((
+                    open_link_label(station),
+                    lambda: self._open_url(station.homepage),
+                ))
             if self._on_report_bad_station is not None:
                 entries.append((
                     "Report &Bad Station...",

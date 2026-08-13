@@ -308,6 +308,21 @@ native-build = ["pybind11>=3.0.4"]
 # the speech engines below (fasterwhisper, vosk, kokoro) all have on-demand
 # install paths in quill/core/speech/engine_install.py and are bundled here only
 # so a fresh install works without a download.
+youtube = [
+  # yt-dlp resolves a YouTube page link to a playable audio stream: Radio's
+  # YouTube stations and playlists, and the audio converter's URL import.
+  #
+  # Bundled rather than installed on demand. The wheel is ~3 MB (10 MB
+  # unpacked, but 8 MB of that is 941 site-specific extractor modules that
+  # compress hard in the PYZ), which is small enough that making every new
+  # user consent to a download before their first YouTube link is a worse
+  # trade than the disk. The on-demand installer in
+  # quill/core/speech/engine_install.py stays: it is now the *upgrade* path,
+  # because yt-dlp goes stale whenever YouTube changes its player and ships
+  # fixes far more often than QUILL ships releases. An engine-pack copy wins
+  # over this bundled one -- see engine_install.prefer_engine_pack_yt_dlp.
+  "yt-dlp>=2026.7.4",
+]
 runtime = [
   "quill[ui]",
   "quill[spellcheck]",
@@ -323,6 +338,7 @@ runtime = [
   # because what the runtime ships is a product decision, not a build one.
   "quill[office-text]",
   "quill[pdf-ocr]",
+  "quill[youtube]",
   "quill[fasterwhisper]",
   "quill[vosk]",
   "quill[kokoro]",

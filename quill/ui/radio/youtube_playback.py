@@ -65,17 +65,33 @@ def begin_youtube_play(
     controller._set_state(RadioPlayerState.CONNECTING, message="")  # noqa: SLF001
 
     def work() -> None:
+        stream: Any = None
         try:
-            resolved, error = resolver(station.stream_url), ""
+            answer = resolver(station.stream_url)
+            error = ""
+            # The resolver may hand back either a plain URL or the whole
+            # YouTubeStream. The richer form is what carries the video's
+            # length and chapters, which is how a finished video is told
+            # apart from a live broadcast -- see apply_youtube_result.
+            if isinstance(answer, str):
+                resolved = answer
+            else:
+                stream = answer
+                resolved = str(getattr(answer, "stream_url", "") or "")
         except Exception as exc:  # noqa: BLE001 - reported, never raised on a thread
             resolved, error = "", str(exc)
-        wx.CallAfter(apply_youtube_result, controller, station, token, resolved, error)
+        wx.CallAfter(apply_youtube_result, controller, station, token, resolved, error, stream)
 
     threading.Thread(target=work, name="quill-youtube-resolve", daemon=True).start()
 
 
 def apply_youtube_result(
-    controller: Any, station: RadioStation, token: int, resolved: str, error: str
+    controller: Any,
+    station: RadioStation,
+    token: int,
+    resolved: str,
+    error: str,
+    stream: Any = None,
 ) -> None:
     """UI-thread continuation of :func:`begin_youtube_play`."""
     from quill.ui.radio.player_controller import RadioPlayerState
@@ -88,4 +104,9 @@ def apply_youtube_result(
         )
         return
     controller._playback_url_override = resolved  # noqa: SLF001
+    # Hand the controller the video's own facts before playback starts, so the
+    # engine can be told it is holding a finished recording rather than a
+    # broadcast. A live YouTube stream reports no duration and so arrives here
+    # looking exactly like an ordinary station, which is correct.
+    controller._youtube_stream = stream  # noqa: SLF001
     controller._play_resolved_station(station)  # noqa: SLF001

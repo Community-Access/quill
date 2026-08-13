@@ -34,6 +34,38 @@ def _is_constrained_to_home(candidate: Path) -> bool:
         return False
 
 
+def safe_dialog_filename(name: str, *, suffix: str = "", fallback: str = "Untitled") -> str:
+    """A filename safe to hand a native Save panel as ``defaultFile`` (#1345).
+
+    A macOS ``SystemError: ActivateEvent returned a result with an exception
+    set`` was reported while a notebook was being created from a folder whose
+    name began with an emoji: the suggested filename went straight into the
+    native save panel, and the underlying ``wxAssertionError`` ("nIndex <
+    m_nCount", arrstr.h) came out of native code during that panel's
+    activation. Emoji, control characters and the reserved path characters are
+    stripped here so a folder name can never be what reaches the panel raw.
+
+    The *display* name is never touched -- only the filename suggestion, which
+    the user can edit anyway.
+    """
+    cleaned = []
+    for char in str(name):
+        code = ord(char)
+        if code < 0x20 or code == 0x7F:  # control characters
+            continue
+        if char in '<>:"/\\|?*':  # reserved on Windows, awkward everywhere
+            continue
+        if code > 0xFFFF or 0x2190 <= code <= 0x2BFF or 0xFE00 <= code <= 0xFE0F:
+            # Astral-plane characters (all emoji live there), the symbol and
+            # arrow blocks, and variation selectors.
+            continue
+        cleaned.append(char)
+    result = "".join(cleaned).strip(" .")
+    if not result:
+        result = fallback
+    return f"{result}{suffix}"
+
+
 def app_data_dir() -> Path:
     override = os.environ.get("QUILL_DATA_DIR")
     if override and _DEV_BUILD:

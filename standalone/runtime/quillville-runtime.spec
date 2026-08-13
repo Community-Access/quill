@@ -16,16 +16,43 @@
 
 from PyInstaller.utils.hooks import collect_all
 
+# collect_all sweeps whatever is sitting in the package tree, and mypy, pytest
+# and ruff all leave caches *inside* quill/ (quill/core/ai/.mypy_cache and
+# quill/tools/.mypy_cache alone were 15.8 MB). They are gitignored, so they are
+# invisible in a diff, and they were being packaged into every installer:
+# regenerable build detritus carrying absolute paths from the build machine.
+# build_portable.py already filters them for the portable bundles
+# (_DEV_CACHE_IGNORE); this is the same rule for the frozen builds.
+_DEV_CACHE_PARTS = ("__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache")
+
+
+def drop_dev_caches(entries):
+    """Filter (source, dest) data entries whose path sits in a dev cache."""
+    kept = []
+    for entry in entries:
+        source = str(entry[0]).replace("\\", "/")
+        dest = str(entry[1]).replace("\\", "/")
+        if any(f"/{part}/" in f"/{source}/" or f"/{part}/" in f"/{dest}/" for part in _DEV_CACHE_PARTS):
+            continue
+        kept.append(entry)
+    return kept
+
+
 quill_datas, quill_binaries, quill_hidden = collect_all("quill")
 social_datas, social_binaries, social_hidden = collect_all("quill_social")
 nacl_datas, nacl_binaries, nacl_hidden = collect_all("nacl")
+# yt-dlp: part of the [runtime] dependency set, so the shared runtime
+# carries it for every app that resolves a YouTube or media-page link.
+# Collected explicitly -- its ~940 site extractors load through a lazy
+# registry the import tracer cannot follow.
+ytdlp_datas, ytdlp_binaries, ytdlp_hidden = collect_all("yt_dlp")
 
 a = Analysis(
     ["runtime_launcher.py"],
     pathex=[],
-    binaries=quill_binaries + social_binaries + nacl_binaries,
-    datas=quill_datas + social_datas + nacl_datas,
-    hiddenimports=quill_hidden + social_hidden + nacl_hidden,
+    binaries=quill_binaries + social_binaries + nacl_binaries + ytdlp_binaries,
+    datas=drop_dev_caches(quill_datas + social_datas + nacl_datas + ytdlp_datas),
+    hiddenimports=quill_hidden + social_hidden + nacl_hidden + ytdlp_hidden,
     hookspath=[],
     runtime_hooks=[],
     excludes=[

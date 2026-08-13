@@ -58,9 +58,8 @@ def test_no_double_extension_created() -> None:
 # --------------------------------------------------------------------------- #
 # source contract: save wiring
 # --------------------------------------------------------------------------- #
-_SOURCE = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame.py").read_text(
-    encoding="utf-8"
-)
+_UI_DIR = Path(__file__).resolve().parents[3] / "quill" / "ui"
+_SOURCE = (_UI_DIR / "main_frame.py").read_text(encoding="utf-8")
 
 
 def test_surface_sync_machinery_stays_retired() -> None:
@@ -107,11 +106,16 @@ def test_save_file_as_offers_export_for_export_only_suffixes() -> None:
 
 
 def test_save_file_as_reports_write_failures() -> None:
-    # A failed conversion/write must not crash or claim success.
+    # A failed conversion/write must not crash or claim success. The wording
+    # lives in _report_save_failure since #1390, which is also what gives
+    # ENOSPC and read-only their own sentence.
     start = _SOURCE.index("def save_file_as(")
     body = _SOURCE[start : _SOURCE.index("\n    def ", start + 1)]
     assert "except OSError" in body
-    assert "Could not save" in body
+    assert "_report_save_failure(" in body
+    helper = (_UI_DIR / "main_frame_write_safety.py").read_text(encoding="utf-8")
+    assert "Could not save" in helper
+    assert "The disk is full" in helper
 
 
 def test_save_file_as_announces_format_conversion() -> None:

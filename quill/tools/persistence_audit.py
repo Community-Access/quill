@@ -122,6 +122,11 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # meaning could silently change, and losing it costs only the "what was that
     # song earlier?" record. Capped per station and rebuilt as you listen.
     "core/radio/song_history.py::save_song_history": "cache",
+    # Chapters worked out from a transcript or an audio scan, kept so the
+    # expensive tiers run once. Regenerable by definition -- deleting it costs
+    # only the recompute -- and it is deliberately invalidated whenever the
+    # audio file's size or mtime changes, so it can never outlive its episode.
+    "core/podcasts/chapter_inference.py::save_cached_inference": "cache",
     "core/radio/wake_timer.py::save_wake_setting": "content",
     "core/radio/recording.py::save_recording_settings": "content",
     "core/radio/recording_schedule.py::save_schedule": "content",

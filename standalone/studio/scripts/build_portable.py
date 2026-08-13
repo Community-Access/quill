@@ -135,6 +135,19 @@ PRODUCTS: dict[str, Product] = {
         stage_ffmpeg=False,
         stage_mpv=False,
     ),
+    "inkwell": Product(
+        key="inkwell",
+        module="quill.apps.inkwell",
+        exe="QuillInkwell",
+        display="Quill Inkwell",
+        zip_name="Quill-Inkwell-Portable-{ver}.zip",
+        # The smallest app in the family: a keyboard hook, a matcher, and two
+        # dialogs. No media stack, no engines, nothing to download.
+        dep_groups=("ui", "feedback"),
+        stage_engines=False,
+        stage_ffmpeg=False,
+        stage_mpv=False,
+    ),
     "converter": Product(
         key="converter",
         module="quill.apps.converter",

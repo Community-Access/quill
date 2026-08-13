@@ -35,6 +35,7 @@ from typing import TYPE_CHECKING
 
 import wx
 
+from quill.core.audio.channel_mode import normalize as normalize_channel_mode
 from quill.core.audio_enhance import (
     EnhanceError,
     EnhanceRelay,
@@ -130,6 +131,13 @@ class PodcastPlayerController:
         self._eq_treble_db = 0.0
         self._compressor_enabled = False
         self._smart_speed_enabled = False
+        #: Where the audio comes out (stereo / mono / left / right). Shared
+        #: vocabulary with Quill Radio -- see quill.core.audio.channel_mode.
+        #: This is an accessibility setting before it is a sound one: mono
+        #: keeps hard-panned content audible to someone listening with one
+        #: ear, and the single-ear modes leave the other ear free for a
+        #: screen reader.
+        self._channel_mode = "stereo"
         #: The raw (unfiltered) source of whatever is loaded, so a seek or an
         #: enhancement change can restart the relay from the same episode.
         self._enhanced_source = ""
@@ -186,6 +194,7 @@ class PodcastPlayerController:
         treble_db: float | None = None,
         compressor_enabled: bool | None = None,
         smart_speed_enabled: bool | None = None,
+        channel_mode: str | None = None,
         auto_skip_intro_ms: int = 0,
         auto_skip_outro_ms: int = 0,
     ) -> None:
@@ -215,6 +224,8 @@ class PodcastPlayerController:
             self._compressor_enabled = compressor_enabled
         if smart_speed_enabled is not None:
             self._smart_speed_enabled = smart_speed_enabled
+        if channel_mode is not None:
+            self._channel_mode = normalize_channel_mode(channel_mode)
         self._pending_rate = rate if rate > 0 else 1.0
         self._pending_play_after_load = True
         self._state.show_id = show_id
@@ -289,6 +300,7 @@ class PodcastPlayerController:
             self._eq_treble_db,
             compressor_enabled=self._compressor_enabled,
             smart_speed_enabled=self._smart_speed_enabled,
+            channel_mode=self._channel_mode,
         )
 
     def _resolve_playback_url(self, source: str, *, start_ms: int) -> str:
@@ -308,6 +320,7 @@ class PodcastPlayerController:
                 treble_db=self._eq_treble_db,
                 compressor_enabled=self._compressor_enabled,
                 smart_speed_enabled=self._smart_speed_enabled,
+                channel_mode=self._channel_mode,
                 start_seconds=start_ms / 1000.0,
             )
             self._enhanced_offset_ms = start_ms
@@ -325,9 +338,10 @@ class PodcastPlayerController:
         treble_db: float,
         compressor_enabled: bool,
         smart_speed_enabled: bool = False,
+        channel_mode: str | None = None,
     ) -> None:
-        """Change the 3-band EQ / compressor / Smart Speed and, if an
-        episode is loaded, reload it (through the new relay state, or
+        """Change the 3-band EQ / compressor / Smart Speed / channel mode and,
+        if an episode is loaded, reload it (through the new relay state, or
         straight from the source if turned off) at the position it was just
         at."""
         current_position = self.position_ms()
@@ -338,12 +352,39 @@ class PodcastPlayerController:
         self._eq_treble_db = treble_db
         self._compressor_enabled = compressor_enabled
         self._smart_speed_enabled = smart_speed_enabled
+        if channel_mode is not None:
+            self._channel_mode = normalize_channel_mode(channel_mode)
         if not source or self._state.show_id is None:
             return
         self._enhanced_duration_ms = probe_source_duration_ms(source) if self._is_enhanced() else 0
         self._pending_play_after_load = was_playing
         self._set_state(PodcastPlayerState.LOADING)
         self._start_load(source, start_ms=current_position)
+
+    def channel_mode(self) -> str:
+        """Where the audio is currently coming out (stereo/mono/left/right)."""
+        return self._channel_mode
+
+    def set_channel_mode(self, mode: str) -> str:
+        """Change only the channel mode, keeping your place. Returns it.
+
+        Changing it means restarting the ffmpeg relay -- there is no way to
+        alter a running one -- so this reloads at the current position rather
+        than from the top. Someone forty minutes into an episode who switches
+        to mono must not be sent back to the beginning to get there.
+        """
+        resolved = normalize_channel_mode(mode)
+        if resolved == self._channel_mode:
+            return resolved
+        self.set_enhancement(
+            bass_db=self._eq_bass_db,
+            mid_db=self._eq_mid_db,
+            treble_db=self._eq_treble_db,
+            compressor_enabled=self._compressor_enabled,
+            smart_speed_enabled=self._smart_speed_enabled,
+            channel_mode=resolved,
+        )
+        return resolved
 
     def toggle_play_pause(self) -> None:
         if self._engine is None:
@@ -436,6 +477,16 @@ class PodcastPlayerController:
 
     def is_playing(self) -> bool:
         return self._engine.is_playing() if self._engine is not None else False
+
+    @property
+    def rate(self) -> float:
+        """The playback speed in force (1.0 = normal).
+
+        Read from the pending rate rather than the engine: the engine only
+        learns the rate once media is loaded, so asking it during a load
+        reports 1.0 for an episode the listener set to 1.5.
+        """
+        return float(self._pending_rate or 1.0)
 
     def shutdown(self) -> None:
         """Release the engine; called once, from the frame's close path."""

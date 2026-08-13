@@ -19,7 +19,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, show_modal_dialog
 
 if TYPE_CHECKING:
     from quill.core.github.github_provider import GitHubRemoteProvider
@@ -535,6 +535,11 @@ class GitHubRepositoryBrowserDialog:
         refs: list[RemoteRef],
         limit: int,
     ) -> None:
+        # #1353: a repo/refs fetch can land after the user pressed Cancel.
+        # Touching the choice control then raises "wrapped C/C++ object ...
+        # has been deleted"; the result is irrelevant once the dialog is gone.
+        if not dialog_alive(self.dialog):
+            return
         self._repository = repo
         self._refs = refs
         # "Show all refs" stays available only while we have a capped list
@@ -573,6 +578,8 @@ class GitHubRepositoryBrowserDialog:
         self._load_directory("")
 
     def _on_load_error(self, message: str) -> None:
+        if not dialog_alive(self.dialog):  # #1353
+            return
         self._set_loading(False)
         self._set_status(f"Error: {message}")
 
@@ -603,6 +610,8 @@ class GitHubRepositoryBrowserDialog:
             wx.CallAfter(self._on_load_error, str(exc))
 
     def _on_dir_loaded(self, nodes: list[RemoteNode], path: str) -> None:
+        if not dialog_alive(self.dialog):  # #1353
+            return
         self._nodes = nodes
         self._list.DeleteAllItems()
         for node in nodes:

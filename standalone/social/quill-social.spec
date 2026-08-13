@@ -17,6 +17,26 @@
 
 from PyInstaller.utils.hooks import collect_all
 
+# collect_all sweeps whatever is sitting in the package tree, and mypy, pytest
+# and ruff all leave caches *inside* quill/. They are gitignored, so invisible
+# in a diff, and they were being packaged into the installer: regenerable build
+# detritus carrying absolute paths from the build machine. build_portable.py
+# already filters them for the portable bundles (_DEV_CACHE_IGNORE).
+_DEV_CACHE_PARTS = ("__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache")
+
+
+def drop_dev_caches(entries):
+    """Filter (source, dest) data entries whose path sits in a dev cache."""
+    kept = []
+    for entry in entries:
+        source = str(entry[0]).replace("\\", "/")
+        dest = str(entry[1]).replace("\\", "/")
+        if any(f"/{part}/" in f"/{source}/" or f"/{part}/" in f"/{dest}/" for part in _DEV_CACHE_PARTS):
+            continue
+        kept.append(entry)
+    return kept
+
+
 quill_datas, quill_binaries, quill_hiddenimports = collect_all("quill")
 social_datas, social_binaries, social_hiddenimports = collect_all("quill_social")
 nacl_datas, nacl_binaries, nacl_hiddenimports = collect_all("nacl")
@@ -25,11 +45,17 @@ a = Analysis(
     ["launcher.py"],
     pathex=[],
     binaries=quill_binaries + social_binaries + nacl_binaries,
-    datas=quill_datas + social_datas + nacl_datas,
+    datas=drop_dev_caches(quill_datas + social_datas + nacl_datas),
     hiddenimports=quill_hiddenimports + social_hiddenimports + nacl_hiddenimports,
     hookspath=[],
     runtime_hooks=[],
     excludes=[
+        # yt-dlp (~3 MB) is bundled only in the apps with a YouTube or
+        # URL-import path (Radio, Studio, Converter). collect_all("quill")
+        # force-includes quill.core.radio.youtube here too, so without this
+        # exclude the tracer would follow its import and ship the whole
+        # extractor set into an app that can never call it.
+        "yt_dlp",
         # Social is text-and-network: QUILL fetches/uses these only for editor
         # features Social never touches (transcription, neural TTS, science).
         "faster_whisper",

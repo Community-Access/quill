@@ -48,6 +48,30 @@ class ClipEntry:
         return self.preview(40)
 
 
+#: How several marked clips can be joined, as label -> separator. Deliberately a
+#: short, fixed list: this is a convenience for assembling a few kept clips, not
+#: a clipboard manager.
+COMBINE_SEPARATORS: dict[str, str] = {
+    "Space": " ",
+    "Comma and space": ", ",
+    "Full stop and space": ". ",
+    "Vertical bar": " | ",
+    "New line": "\n",
+    "Blank line": "\n\n",
+}
+
+
+def combine_texts(texts: list[str], separator: str) -> str:
+    """Join *texts* with *separator*, in the order given.
+
+    Order is the caller's, never re-sorted: someone who marked three clips to
+    assemble an address expects them in the order they marked them. Empty and
+    whitespace-only entries are dropped so a separator never dangles.
+    """
+    kept = [text.strip() for text in texts if text and text.strip()]
+    return separator.join(kept)
+
+
 class ClipLibrary:
     """Rolling history of Fragments -- the automatic tier beneath Copy Tray."""
 
@@ -96,6 +120,42 @@ class ClipLibrary:
         self._check(index)
         self._entries[index].favorite = favorite
         self._save()
+
+    def rename(self, index: int, title: str) -> None:
+        """Give entry *index* a short name, easier to find than its contents.
+
+        An empty title clears it, so the entry falls back to a preview of its
+        own text rather than being stuck with a name someone regrets.
+        """
+        import dataclasses
+
+        self._check(index)
+        entry = self._entries[index]
+        # Fragment is frozen (it is a value, shared by reference all over the
+        # editor), so renaming means replacing it, not mutating it.
+        entry.fragment = dataclasses.replace(entry.fragment, title=title.strip())
+        self._save()
+
+    def set_text(self, index: int, text: str) -> None:
+        """Replace entry *index*'s text (fixing a mis-copied clip in place)."""
+        import dataclasses
+
+        self._check(index)
+        entry = self._entries[index]
+        entry.fragment = dataclasses.replace(entry.fragment, markup=text)
+        self._save()
+
+    def combine(self, indexes: list[int], separator: str) -> str:
+        """The text of the given entries, joined in the order given.
+
+        Nothing is stored: the result is handed back for the caller to insert
+        or copy, which is what "combine these clips" actually means.
+        """
+        texts: list[str] = []
+        for index in indexes:
+            self._check(index)
+            texts.append(self._entries[index].fragment.markup)
+        return combine_texts(texts, separator)
 
     def remove(self, index: int) -> None:
         self._check(index)

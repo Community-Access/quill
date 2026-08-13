@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio User Guide</title>
   <style>
@@ -41,6 +41,7 @@
       body {
         background-color: transparent;
         color: black;
+        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -529,28 +530,82 @@ Mode.</li>
 <li><strong>Add Custom Station…</strong> – paste any stream URL and name
 it yourself. Three kinds of link get extra help here:
 <ul>
-<li><strong>A YouTube link becomes a station.</strong> Paste an ordinary
-video link, a <code>youtu.be</code> short link, or a channel’s live page
-(<code>youtube.com/@handle/live</code>) and Quill Radio treats it
-exactly like a radio station: it plays through the same player, sits in
-your favorites, records with <strong>Record Now</strong>, and can be
+<li><p><strong>A YouTube link becomes a station.</strong> Paste an
+ordinary video link, a <code>youtu.be</code> short link, or a channel’s
+live page (<code>youtube.com/@handle/live</code>) and Quill Radio treats
+it exactly like a radio station: it plays through the same player, sits
+in your favorites, records with <strong>Record Now</strong>, and can be
 captured by a <strong>scheduled recording</strong>. What gets saved is
 the <em>page</em> address, never a stream address – YouTube’s stream
 addresses expire after a few hours, so Quill Radio looks the audio up
 fresh every time the station plays or records. That is what lets a
-recording you schedule today still work next week. It needs a small
-helper called <code>yt-dlp</code>, which is deliberately
-<strong>not</strong> bundled: the first time you add a YouTube station,
-Quill Radio explains what it is, asks your permission, and installs it
-(about 3 MB). It asks <em>then</em>, not later, so a scheduled recording
-firing while you are asleep is never the first time the app reaches
-YouTube. Because looking the audio up takes a moment, it happens in the
-background: you hear “Connecting” straight away and the window never
+recording you schedule today still work next week. The small helper that
+does the looking-up, <code>yt-dlp</code>, is <strong>built into the
+app</strong>, so your first YouTube link simply plays – there is no
+download to approve and nothing to set up. If YouTube changes how it
+serves audio (which happens from time to time) and links stop resolving,
+<strong>Station &gt; Update YouTube Support…</strong> downloads the
+current version of that helper and uses it in place of the built-in copy
+from then on, so you do not have to wait for the next release of Quill
+Radio. It tells you which version you ended up with, is off in Safe
+Mode, and asks before it reaches the network. You should not need it
+otherwise. Because looking the audio up takes a moment, it happens in
+the background: you hear “Connecting” straight away and the window never
 freezes. A video that is private, removed, blocked in your region, or
 not live yet says so in plain words. YouTube stations are unavailable in
-Safe Mode.</li>
-<li><strong>A Live365 link is fixed for you.</strong> The Live365 link
-most people have is the station page
+Safe Mode.</p></li>
+<li><p><strong>A YouTube playlist becomes a list you can
+browse.</strong> Choose <strong>Station &gt; Add from YouTube
+Playlist…</strong> and paste a playlist link
+(<code>youtube.com/playlist?list=...</code>). If the link is already on
+your clipboard, the box is filled in for you. Quill Radio lists the
+videos in it – in the order the uploader put them, never re-sorted,
+because a series is meant to be worked through in order – and each row
+reads as a whole sentence: its position, its title, how long it runs,
+and who published it, for example “3. Introducing layers, 5 minutes 31
+seconds, 3Blue1Brown”. Arrow the list and select what you want (hold
+Shift or Ctrl to pick several), then choose <strong>Add
+Selected</strong>, or take the lot with <strong>Add All</strong>. Each
+one becomes an ordinary station you can play, favorite, and record.
+Quill Radio tells you how many it added and how many were already in
+your favorites, so “Add All” on a fifty-video playlist never leaves you
+guessing whether anything happened. The listing itself is deliberately
+shallow: Quill Radio asks once for the whole playlist rather than once
+per video, and does not fetch any video’s audio until you actually play
+it. One thing worth knowing: a <em>watch</em> link that happens to carry
+a <code>list=</code> in it – which is what you get when you copy a link
+while a playlist is open – is still treated as that single video. You
+asked for the video, and turning it into fifty stations without being
+asked would be a surprise, so only a genuine playlist address expands.
+The window is headed with the playlist’s own name – Quill Radio reads it
+from the same single request that fetched the list – so you always know
+which playlist you are looking at. Playlists use the same built-in
+<code>yt-dlp</code> helper as any other YouTube link, and are
+unavailable in Safe Mode.</p>
+<p><strong>What adding a playlist does and does not do.</strong> It is
+an <em>import</em>, not a subscription and not a play queue. The videos
+you choose become ordinary favorites – each one plays, records, and can
+be scheduled exactly like a station – and they land in your favorites
+list alongside everything else, not in a folder of their own. Nothing
+plays through the list in order: playing one video plays that video, and
+Quill Radio does not move on to the next when it ends. Nothing re-checks
+the playlist later either, so videos the uploader adds after you import
+are not picked up; run <strong>Add from YouTube Playlist…</strong> on
+the same link again to collect them (anything already in your favorites
+is skipped rather than duplicated). Group the imported videos yourself
+with <strong>New Folder</strong> (Ctrl+Shift+E) and the Favorites
+Manager if you want them kept together.</p></li>
+<li><p><strong>What Quill Radio knows about a YouTube video.</strong>
+Looking up a video’s audio is one request, and that request answers with
+more than an audio address, so Quill Radio keeps all of it: how long the
+video is, who published it, its description, any chapters the uploader
+marked, and whether captions exist. None of it costs an extra moment or
+an extra connection. That is what makes the chapter, seeking, and speed
+controls on the Playback menu possible. A live broadcast reports no
+length, which is the honest answer for something with no ending
+yet.</p></li>
+<li><p><strong>A Live365 link is fixed for you.</strong> The Live365
+link most people have is the station page
 (<code>live365.com/station/...</code>) or the web player
 (<code>player.live365.com/a25891</code>) – both are web pages, and
 pasting one used to save a station that could never play, with nothing
@@ -558,16 +613,16 @@ to explain why. Quill Radio now recognizes a Live365 station page,
 player link, or even a bare station id and rewrites it to that station’s
 real stream address, telling you in the dialog that it did. Nothing is
 fetched or sent anywhere – it is purely a matter of rewriting the text –
-and a link that is not Live365 is used exactly as you typed it.</li>
-<li><strong>Any other stream URL</strong> is saved as you typed it, as
-always. A SecureNet player link
+and a link that is not Live365 is used exactly as you typed it.</p></li>
+<li><p><strong>Any other stream URL</strong> is saved as you typed it,
+as always. A SecureNet player link
 (<code>securenetsystems.net/v5/...</code>) is saved as typed too,
 because unlike the two above its real stream address cannot be worked
 out from the link alone – it has to be read from the page. Two things
 get you there: use <strong>Find Streams from a Website…</strong> below
 with the player link, or just save it and press Play, and the
 self-healing repair will find the stream for you on the first
-attempt.</li>
+attempt.</p></li>
 </ul></li>
 <li><strong>When a station won’t play, Quill Radio tries to fix it for
 you.</strong> Some stations are listed in the directory but their stream
@@ -693,7 +748,12 @@ while a station is playing or a recording is running, so the audio never
 cuts off mid-listen; your screen can still turn off, and the moment
 nothing is playing or recording the setting lets the computer sleep
 normally again. Turn it off if you would rather Quill Radio never touch
-your power settings. (Windows only.)</li>
+your power settings. (Windows only.) And <strong>Winamp-style playback
+keys in the Recordings player</strong> (on by default) governs the
+classic-skin letter keys – X play, C pause, V stop, B next, Z previous,
+arrows to seek, T for elapsed or remaining, J to jump – in the
+Recordings window; turn it off to type letters there for list typeahead
+instead. Ctrl+Up and Ctrl+Down still change the volume either way.</li>
 <li><strong>Send to Tray</strong> (Ctrl+W) – hide the window; playback
 continues from the notification area.</li>
 <li><strong>Exit</strong> – quit Quill Radio. Closing the window this
@@ -760,6 +820,33 @@ audio, open <strong>Station &gt; Preferences (Ctrl+,)</strong> and set
 uses mpv); the buffer, Rewind/Forward, and Back to Live all require that
 engine. (A live stream also only rewinds as far back as the buffer has
 actually filled since you started listening.)</li>
+</ul></li>
+<li><strong>Chapters…</strong> (Ctrl+Shift+C), <strong>Next
+Chapter</strong> (Ctrl+Alt+Right), <strong>Previous Chapter</strong>
+(Ctrl+Alt+Left) – a finished YouTube video has a timeline, so you can
+move around it the way a live broadcast never lets you. Chapters opens
+the uploader’s own chapter list, each entry read as a whole sentence
+(“3. Introducing layers, starts at 5 minutes 31 seconds”) with the one
+playing now marked; Enter jumps to it. Previous Chapter restarts the
+current chapter first, then steps back, the way a CD player does.
+<strong>Rewind / Forward 30 Seconds</strong> (Ctrl+Shift+Left /
+Ctrl+Shift+Right) move along the video as well as along live radio’s
+buffer, and <strong>Where Am I?</strong> (Ctrl+Shift+P) speaks your
+position, the length, and the chapter you are in.</li>
+<li><strong>Play Faster</strong> (Ctrl+Alt+Up), <strong>Play
+Slower</strong> (Ctrl+Alt+Down), <strong>Normal Speed</strong>
+(Ctrl+Alt+0) – speed for a finished video, stepping through round,
+speakable values from 0.25x to 4x rather than drifting by a multiplier.
+The speed you choose is remembered for the next video. Live radio plays
+at normal speed; setting a speed while a station is on says so, and
+remembers it for when a video plays.
+<ul>
+<li><strong>All of these say why when they decline.</strong> Ask for
+chapters, seeking, or speed while a live stream is playing and you hear
+“This is a live stream, so there is no timeline to move along”; ask for
+chapters on a video whose uploader published none and it says that
+instead. A control that quietly does nothing is worse than one that is
+not offered, because you cannot tell it apart from a broken app.</li>
 </ul></li>
 <li><strong>What’s Playing?</strong> (Ctrl+T) – opens a reviewable Now
 Playing window: the current title and artist in a read-only, selectable
@@ -863,13 +950,23 @@ your chosen mode while turned off), a <strong>Polish mode</strong>
 choice – <strong>Podcast Leveler</strong> for speech, <strong>Stream
 Polish</strong> for music, or <strong>Smooth Limiter</strong> for clean
 peak control – an <strong>Input</strong> trim in decibels (0, no change,
-by default), and an <strong>Auto-Adapt</strong> slider (0-100%) that
-leans the leveling and density more assertive as you raise it. Broadcast
-polish levels quiet and loud passages, adds density, and limits peaks,
-so a run of stations at very different loudness sits at a steadier,
-fuller level – especially handy for talk streams and unattended
-recordings. It is adapted, with thanks and credit, from OptiLab Core by
-dgl1984 (<a
+by default), and an <strong>Auto-Adapt</strong> slider (0-100%).
+Broadcast polish levels quiet and loud passages, adds density, and
+limits peaks, so a run of stations at very different loudness sits at a
+steadier, fuller level – especially handy for talk streams and
+unattended recordings. In <strong>Stream Polish</strong>, Auto-Adapt is
+staged rather than a single “more of everything” control (following
+OptiLab Core 1.4.0): each part of the chain fades in over its own
+portion of the slider, the leveler eases off as you raise it while a
+slow loudness lift takes over, that lift ignores silence and low-level
+noise so it cannot build gain on nothing, and high frequencies come
+under firmer control toward the top instead of being boosted. The
+practical effect is that high settings sound louder and steadier rather
+than more processed, with no point where something audibly switches on.
+<strong>Podcast Leveler</strong> and <strong>Smooth Limiter</strong>
+respond to Auto-Adapt more simply, leaning their leveling and density
+more assertive as you raise it. It is adapted, with thanks and credit,
+from OptiLab Core by dgl1984 (<a
 href="https://github.com/dgl1984/optilab">https://github.com/dgl1984/optilab</a>,
 Apache-2.0); it is a faithful adaptation of that plugin’s three modes
 rather than the plugin itself.</li>
@@ -1233,8 +1330,102 @@ are running – stops every one), <strong>Open in Folder</strong>,
 <strong>Refresh</strong>. While a recording plays back,
 <strong>Ctrl+Up</strong> and <strong>Ctrl+Down</strong> change its
 volume right here, the same as they do for live radio. The tray tooltip
-carries “(recording)” – or “(2 recording)” when several run together –
-while a recording is active.</p>
+carries “(recording)” – or “(2 recording)” while a recording is
+active.</p>
+<h3 id="winamp-keys-in-the-recordings-list">Winamp keys in the
+Recordings list</h3>
+<p>If you came to Windows audio through Winamp, its classic-skin keys
+are almost certainly still in your fingers. They work here, on the
+letter keys you already know – no modifier, no menu:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X</td>
+<td>Play the selected recording (or resume a paused one)</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Pause / unpause</td>
+</tr>
+<tr>
+<td>V</td>
+<td>Stop</td>
+</tr>
+<tr>
+<td>Shift+V</td>
+<td>Stop (Winamp’s fade-out; this player has no fade, so it stops
+cleanly)</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Next recording – moves down the list and plays it</td>
+</tr>
+<tr>
+<td>Z</td>
+<td>Previous recording</td>
+</tr>
+<tr>
+<td>Left / Right</td>
+<td>Back / forward 5 seconds</td>
+</tr>
+<tr>
+<td>Shift+Left / Shift+Right</td>
+<td>Back / forward 30 seconds</td>
+</tr>
+<tr>
+<td>T</td>
+<td>Read out elapsed time, or time remaining – press again to swap</td>
+</tr>
+<tr>
+<td>J</td>
+<td>Jump to a recording: type any part of its name</td>
+</tr>
+<tr>
+<td>Ctrl+J</td>
+<td>Jump to a time: type <code>90</code>, <code>1:30</code>, or
+<code>1:02:03</code></td>
+</tr>
+<tr>
+<td>L</td>
+<td>Open (plays the selected recording – the same as Play)</td>
+</tr>
+<tr>
+<td>Ctrl+Up / Ctrl+Down</td>
+<td>Volume up / down</td>
+</tr>
+</tbody>
+</table>
+<p>Every one of them says what it did, so you never have to guess
+whether the key landed.</p>
+<p>Two deliberate differences from Winamp:</p>
+<ul>
+<li><strong>Ctrl+T stays What’s Playing</strong>, which is the more
+useful thing to have on that key in a radio app. Winamp’s
+elapsed/remaining toggle is on plain <strong>T</strong> here
+instead.</li>
+<li><strong>Up and Down arrow move through the list</strong>, not the
+volume. That is what Winamp itself does in its Playlist Editor, and this
+list is a playlist editor by any other name. Volume is on Ctrl+Up and
+Ctrl+Down, where it has always been.</li>
+</ul>
+<p>Seeking needs a recording with a timeline, which means the mpv
+playback engine; on a live stream or with the classic Windows Media
+engine the seek keys say why they cannot move rather than doing
+nothing.</p>
+<p>Turn the letter keys off with <strong>Winamp-style playback keys in
+the Recordings player</strong> in Preferences (Ctrl+,) – worth doing if
+you would rather type a letter to jump through the list. Ctrl+Up and
+Ctrl+Down are unaffected either way.</p>
+<p>Shuffle, repeat, and stop-after-current are not here yet: all three
+describe a play queue, which this list does not have. They are on the
+list for a later release rather than bound to a key that would only look
+like it worked.</p>
 <h3 id="if-the-internet-hiccups-during-a-recording">If the internet
 hiccups during a recording</h3>
 <p>ffmpeg first rides out short gaps itself (the reconnect settings in
@@ -1301,16 +1492,55 @@ is. A <strong>Don’t ask me again</strong> checkbox remembers your choice
 happens when nothing was in progress, and a corrupt marker is discarded
 rather than driving a bogus resume.</p>
 <h2 id="spotify-experimental">Spotify (experimental)</h2>
-<p>Quill Radio can play music straight from Spotify. This is an
+<p>Quill Radio can search Spotify, browse your library and playlists,
+and play through Spotify’s own playback engine. This is an
 <strong>experimental</strong> capability: it ships in the app, but it
-asks a good deal of you before it will do anything, and it is honest to
-say up front that one requirement is a paid <strong>Spotify
-Premium</strong> account – Spotify only lets an app stream its audio for
-Premium subscribers. Nothing reaches Spotify until you deliberately
+needs setting up first. Nothing reaches Spotify until you deliberately
 connect an account.</p>
+<h3 id="does-a-free-spotify-account-work">Does a free Spotify account
+work?</h3>
+<p><strong>Yes for finding things; no for playing them inside Quill
+Radio.</strong> That distinction matters, because it is easy to hear
+“Premium required” and assume a free account is useless here. It is
+not.</p>
+<p><strong>On a free account you can:</strong></p>
+<ul>
+<li>Search Spotify from inside Quill Radio.</li>
+<li>Browse your saved shows, episodes, tracks, and playlists.</li>
+</ul>
+<p><strong>On a free account you cannot:</strong></p>
+<ul>
+<li>Have audio start <em>inside Quill Radio</em>. A track chosen here
+will not sound.</li>
+</ul>
+<p><strong>Why, and what this is not.</strong> This is not “free
+accounts cannot play Spotify music” – of course they can, and millions
+of people do every day, in Spotify’s own app, where the advertising that
+funds the free tier lives. The restriction is about
+<strong>where</strong> the audio plays, not whether you may listen.
+Spotify does not license other applications to stream free-tier audio,
+and says so in its own developer documentation. There are exactly two
+ways another app could play a Spotify track, and both are closed to free
+accounts:</p>
+<ul>
+<li>The <strong>Web Playback SDK</strong>, which “requires a Spotify
+Premium subscription (mobile only types of premium subscriptions are
+excluded)”.</li>
+<li>The <strong>Start/Resume Playback</strong> endpoint, of which
+Spotify says: “This API only works for users who have Spotify
+Premium.”</li>
+</ul>
+<p>So with a free account, the sensible way to use this is to let Quill
+Radio do the <em>finding</em> – which is the part that is genuinely
+awkward with a screen reader – and play what you find in the Spotify
+app.</p>
+<p>Quill Radio tells you which kind of account you signed in with
+straight away, so you are never left wondering why a track will not
+start.</p>
+<p>For the same reason, a Spotify selection can never be recorded or
+downloaded on any account, unlike every other station in the app: the
+audio is copy-protected.</p>
 <h3 id="what-you-need">What you need</h3>
-<p>All three of these must be in place; missing any one means Spotify
-never plays.</p>
 <table>
 <thead>
 <tr>
@@ -1320,19 +1550,17 @@ never plays.</p>
 </thead>
 <tbody>
 <tr>
-<td>A Spotify Premium account</td>
-<td>Spotify’s Web Playback engine only streams audio to Premium
-subscribers. A free account can sign in and browse, but will not
-play.</td>
+<td>A Spotify account</td>
+<td>Free or Premium. Free searches and browses; only Premium plays (see
+above).</td>
 </tr>
 <tr>
 <td>Your own Spotify Client ID</td>
 <td>Quill Radio does not ship a Spotify app identity; you supply your
-own. Register an app in the Spotify Developer Dashboard, then set its
-redirect address to exactly
-<code>http://127.0.0.1:43217/callback</code>. There is no client secret
-to copy – Quill Radio signs in with the modern Authorization Code with
-PKCE flow, which needs only the Client ID.</td>
+own, so nothing of yours passes through anyone else’s. The steps are
+below. There is no client secret to copy – Quill Radio signs in with the
+modern Authorization Code with PKCE flow, which needs only the Client
+ID.</td>
 </tr>
 <tr>
 <td>Windows with the Edge WebView2 runtime</td>
@@ -1343,13 +1571,42 @@ ships with Microsoft Edge), so it is normally already present.</td>
 </tr>
 </tbody>
 </table>
+<h3 id="getting-your-client-id-step-by-step">Getting your Client ID,
+step by step</h3>
+<ol type="1">
+<li>Go to the <strong>Spotify Developer Dashboard</strong> at
+<code>https://developer.spotify.com/dashboard</code> and sign in with
+your ordinary Spotify account. There is no charge, and this works with a
+free account.</li>
+<li>Choose <strong>Create app</strong>.</li>
+<li>Give it any <strong>App name</strong> and <strong>App
+description</strong> you like – they are only for you. “Quill Radio” is
+fine.</li>
+<li>In <strong>Redirect URI</strong>, enter exactly
+<code>http://127.0.0.1:43217/callback</code> and press
+<strong>Add</strong>. It must match character for character, including
+the port number. That address is how Spotify hands the finished sign-in
+back to your own computer; nothing leaves your machine through it.</li>
+<li>Under <strong>Which API/SDKs are you planning to use?</strong>, tick
+<strong>Web API</strong> and <strong>Web Playback SDK</strong>.</li>
+<li>Accept the terms and choose <strong>Save</strong>.</li>
+<li>Open your new app’s <strong>Settings</strong>. Your <strong>Client
+ID</strong> is shown there – copy it. You will also see a <strong>Client
+secret</strong>: <strong>you do not need it</strong>, and you should not
+paste it anywhere.</li>
+</ol>
+<h3 id="where-to-put-it-in-quill-radio">Where to put it in Quill
+Radio</h3>
 <p>Unless you are in Safe Mode, two items sit in the
 <strong>Help</strong> menu: <strong>Connect to Spotify…</strong> and
 <strong>Browse Spotify…</strong> If you would rather not see them at
 all, turn <strong>Spotify</strong> off in <strong>Manage Individual
 Features</strong> and they disappear.</p>
+<p>Choose <strong>Station &gt; Connect to Spotify…</strong>, paste your
+Client ID into the <strong>Client ID</strong> field, and choose
+<strong>Connect</strong>. You do this once.</p>
 <h3 id="connecting-to-spotify">Connecting to Spotify</h3>
-<p>Choose <strong>Help &gt; Connect to Spotify…</strong> to open an
+<p>Choose <strong>Station &gt; Connect to Spotify…</strong> to open an
 accessible sign-in dialog. Enter your Client ID and start the sign-in:
 your web browser opens to Spotify’s own approval page, you approve
 access, and Spotify sends you back to a tiny local address on your own
@@ -1360,7 +1617,7 @@ in a plain file, never in <code>podcasts.json</code> or a log. Your
 Client ID is stored alongside them so the whole connection lives in one
 place and clears together.</p>
 <h3 id="browsing-and-playing">Browsing and playing</h3>
-<p>Choose <strong>Help &gt; Browse Spotify…</strong> to open an
+<p>Choose <strong>Station &gt; Browse Spotify…</strong> to open an
 accessible search box with a results list. Type what you are looking
 for, arrow to a result, and press <strong>Enter</strong> to play it. A
 Spotify item plays through the hidden Web Playback engine, which
@@ -1580,6 +1837,22 @@ other’s File/Weather menu and tray.</p>
 <tr>
 <td>Back to Live</td>
 <td>Ctrl+Shift+L</td>
+</tr>
+<tr>
+<td>Chapters (finished video)</td>
+<td>Ctrl+Shift+C</td>
+</tr>
+<tr>
+<td>Next / previous chapter</td>
+<td>Ctrl+Alt+Right / Ctrl+Alt+Left</td>
+</tr>
+<tr>
+<td>Play faster / slower / normal speed</td>
+<td>Ctrl+Alt+Up / Ctrl+Alt+Down / Ctrl+Alt+0</td>
+</tr>
+<tr>
+<td>Where am I? (position, length, chapter)</td>
+<td>Ctrl+Shift+P</td>
 </tr>
 <tr>
 <td>What’s Playing?</td>

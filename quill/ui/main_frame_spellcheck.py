@@ -681,13 +681,14 @@ class SpellcheckCommandsMixin:
         finally:
             clipboard.Close()
 
-    def _announce_spellcheck_hint(self) -> None:
+    def _announce_spellcheck_hint(self, text: str | None = None) -> None:
         if not getattr(self.settings, "announce_spelling", True):
             self._last_live_misspelling_feedback = None
             return
         dictionary = self._spell_dictionary()
         cursor = self.editor.GetInsertionPoint()
-        text = self.editor.GetValue()
+        if text is None:  # #1346: reuse the typing path's single buffer read.
+            text = self.editor.GetValue()
         item = find_next_misspelling(text, cursor - 1, dictionary)
         if item is None or item.start != cursor:
             self._last_live_misspelling_feedback = None

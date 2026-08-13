@@ -9,6 +9,7 @@ to write to the real ``%APPDATA%\\Quill`` path and fail with stale state.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pytest
@@ -34,8 +35,69 @@ def pytest_configure(config: pytest.Config) -> None:
     on Windows.
     """
     if config.option.basetemp is None:
-        config.option.basetemp = str(Path.home() / ".quill-pytest-tmp")
+        config.option.basetemp = str(_session_basetemp())
     _configure_hypothesis()
+
+
+def _session_basetemp() -> Path:
+    """A temp root under ``$HOME`` that is unique to this pytest session.
+
+    The directory has to live under ``$HOME`` (see above), but it must *not* be
+    shared between concurrent sessions. pytest clears its basetemp at startup,
+    so two runs at once -- a full suite in one terminal and a focused subset in
+    another, or a background run alongside a foreground one -- had the second
+    run deleting the first run's live temp files. That surfaced as hundreds of
+    unrelated PermissionError/OSError setup failures in whichever session lost
+    the race, which is about as misleading as a test failure can be.
+
+    Keying on the process id gives each session its own root. xdist workers are
+    unaffected: the controller passes them an explicit basetemp, so this hook
+    never runs for them and they keep sharing the controller's tree.
+
+    The root is created here because pytest is not going to: for an explicitly
+    given basetemp it calls ``basetemp.mkdir(mode=0o700)`` with no ``parents``,
+    which succeeded while this returned a path one level under ``$HOME`` and
+    fails with ``FileNotFoundError`` now that it returns a per-session
+    subdirectory. It only ever showed up on a machine where the root did not
+    already exist -- i.e. every fresh CI runner, and never a developer's second
+    run.
+    """
+    root = Path.home() / ".quill-pytest-tmp"
+    root.mkdir(parents=True, exist_ok=True)
+    token = os.environ.get("QUILL_PYTEST_RUN_ID") or f"run-{os.getpid()}"
+    _prune_stale_runs(root)
+    return root / token
+
+
+def _prune_stale_runs(root: Path, *, max_age_seconds: float = 6 * 60 * 60) -> None:
+    """Delete run directories left behind by long-finished sessions.
+
+    Best-effort and deliberately conservative: only directories older than
+    *max_age_seconds* are considered, so a session still running (whose files
+    are being touched continuously) is never a candidate, and every error is
+    swallowed -- failing to tidy up must never fail a test run.
+    """
+    import shutil
+    import time
+
+    try:
+        entries = list(root.iterdir())
+    except OSError:
+        return
+    cutoff = time.time() - max_age_seconds
+    for entry in entries:
+        # Everything under this root is pytest's, including the flat
+        # ``test_<name>0`` directories left by the previous shared-basetemp
+        # layout, so age is the only thing worth checking.
+        try:
+            if entry.stat().st_mtime >= cutoff:
+                continue
+            if entry.is_dir():
+                shutil.rmtree(entry, ignore_errors=True)
+            else:
+                entry.unlink(missing_ok=True)
+        except OSError:
+            continue
 
 
 def _configure_hypothesis() -> None:

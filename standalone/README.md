@@ -16,6 +16,7 @@ standalone/
   weather/          Quill Weather        -> quill.apps.weather   (2.2.0, paired with radio)
   cast/             QUILL Cast           -> quill.apps.podcasts
   studio/           Quill Audio Studio   -> quill.apps.studio   (see note)
+  inkwell/          Quill Inkwell        -> quill.apps.inkwell  (see note)
   runtime/          QuillVille Runtime   -> shared CPython used by every app
 ```
 
@@ -79,6 +80,22 @@ releases are still published to the product repo the updater points at (e.g.
 only a **release host** — no build tooling, no code. See
 `docs/design/2026-07-20-radio-cast-consolidation-plan.md` for the update-safety
 rules (never delete a live updater-target repo; archive instead).
+
+## Quill Inkwell
+
+`inkwell/` packages system-wide abbreviation expansion. It is the smallest app
+in the family -- a keyboard hook, a matcher, and two dialogs -- so it bundles no
+ffmpeg, no mpv, and no media or AI stacks.
+
+One thing about it is unlike every sibling: it shares **live data** with QUILL
+rather than only sharing code. Inkwell and QUILL read and write the same
+`abbreviations.json`, so an installed build deliberately keeps its data in
+`%APPDATA%\Quill`, and only a portable build (a `data` folder beside the exe)
+moves the library onto the stick. Anything that changes where that file lives
+changes both products at once.
+
+Its icon is currently a placeholder copy of Weather's, and `inkwell` is not yet
+in `RELEASED_APPS`, so it is developer-build-only until deliberately released.
 
 ## Audio Studio
 

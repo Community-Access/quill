@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL 1.0.0</title>
   <style>
@@ -41,6 +41,7 @@
       body {
         background-color: transparent;
         color: black;
+        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -242,7 +243,12 @@ through the QuillVille switcher.</p>
 watches the National Weather Service for watches, warnings, and
 advisories at the places you care about, and speaks them to you the
 moment they are issued, whether or not anything else is running.</p>
-<p>All three are free. All three are keyboard-first. All three speak
+<p><strong>Quill Inkwell</strong> is a standalone tray application that
+expands your abbreviations in <em>every</em> Windows program – your
+browser, your mail, a form, a spreadsheet – using the same abbreviations
+QUILL expands in its own editor. Not a copy of them: the same ones, in
+the same file.</p>
+<p>All four are free. All four are keyboard-first. All four speak
 through the same announcement service, so QUILL sounds like QUILL
 wherever you are in it.</p>
 <h3 id="platforms">Platforms</h3>
@@ -652,7 +658,29 @@ contributed by extensions, each with its own prompt sequence, including
 a set of ready-made math formulas.</li>
 <li><strong>Abbreviations</strong> expand short triggers into
 boilerplate, signatures, notes, code, or markup, and can be toggled off
-entirely.</li>
+entirely. Each one carries its own settings: a category to group it by,
+which characters expand it (a space or punctuation, a space only,
+punctuation only, or never), whether it adds a trailing space after
+punctuation, what your screen reader says when it fires, and whether it
+plays a sound. Capitalisation follows what you type, so <code>btw</code>
+expands as written, <code>Btw</code> capitalises, and <code>BTW</code>
+shouts.</li>
+<li><strong>Fill-in fields</strong> make an expansion ask before it
+finishes. Write <code>${field:Name}</code> – or
+<code>${field:Reply by=Friday}</code> to offer a starting value – and a
+small form appears with one labelled box per field. A field used twice
+is asked once and filled in both places, so a name in a greeting also
+lands in the sign-off. Cancelling leaves what you typed exactly as it
+was.</li>
+<li><strong>Quick Insert</strong> (<strong>Insert &gt; Quick
+Insert…</strong>) finds an abbreviation by name when you cannot remember
+its trigger, most-used first, with the full expansion shown as you arrow
+through. It is also the only way to reach an abbreviation you have set
+never to expand on its own – the safe home for a long or destructive
+one.</li>
+<li><strong>New Abbreviation from Clipboard</strong> turns whatever you
+have just copied into an abbreviation with the expansion already filled
+in; you supply only the trigger.</li>
 <li><strong>Emmet-style expansion</strong> brings the HTML and CSS
 shorthand grammar (children, siblings, climb-up, grouping,
 multiplication) to QUILL, along with accessible built-ins such as
@@ -681,7 +709,16 @@ from HTML and Markdown tags.</li>
 slot, paste from a slot, and search within slots. Beneath it, the
 <strong>Clip Library</strong> keeps a rolling, searchable history of up
 to two hundred copied selections, any of which can be favorited or
-promoted into a tray slot.</p>
+promoted into a tray slot. A clip can be renamed to something you will
+actually recognise later, corrected in place if you copied slightly the
+wrong thing, or saved as an abbreviation – which then works everywhere,
+not just here. Mark several clips and <strong>Combine Marked…</strong>
+joins them in the order they appear, with a separator you choose: a
+space, comma, full stop, vertical bar, new line, or blank line.</p>
+<p>QUILL remembers what you deliberately keep or copy <em>inside
+QUILL</em>. It does not watch the system clipboard and keeps no history
+of what you copy in other programs. If you want that, use a clipboard
+manager alongside QUILL; the two do different jobs.</p>
 <p>Every tray slot and every quick bookmark plays its own note on a
 shared musical scale: the Copy Tray as soft marimba taps, bookmarks as
 brighter chirps. After a little use, slot seven is a pitch you simply
@@ -2227,6 +2264,81 @@ alert checking happens with no process running at all, delivering a
 Windows toast your screen reader announces.
 <strong>Ctrl+Alt+Shift+W</strong> shows and hides it from anywhere.</p>
 <hr />
+<h2 id="quill-inkwell">Quill Inkwell</h2>
+<p>QUILL has always expanded abbreviations in its own editor. The limit
+was obvious to anyone who used it: leave QUILL for a browser, a mail
+client, or a form, and the abbreviations you had built up stopped
+existing.</p>
+<p>Quill Inkwell removes that boundary. It sits in the system tray,
+watches for the abbreviations you already have, and expands them
+wherever you can type. Type <code>addr</code> and a space in a web form
+and your address appears; type <code>sig.</code> at the end of an email
+and your signature appears with the full stop still in place.</p>
+<h3 id="one-library-not-two">One library, not two</h3>
+<p>This is the part worth understanding, because it is what makes
+Inkwell different from a text expander you would install separately.
+Inkwell and QUILL read and write <strong>the same file</strong>. Add an
+abbreviation in QUILL’s Abbreviation Manager and it works in your
+browser moments later. Add one in Inkwell and QUILL’s editor knows it.
+There is no import, no export, and nothing to keep in step, because
+there is only one library. Every per-abbreviation setting – category,
+what expands it, what is spoken, whether it plays a sound – travels with
+it.</p>
+<p>Inside QUILL’s own editor, QUILL does the expanding and Inkwell stays
+out of the way. QUILL edits the document directly, which is faster and
+safer than any program typing into another program can be. You should
+not be able to tell the difference; the point is that the abbreviations,
+the settings, and the results are identical either way.</p>
+<h3 id="using-it">Using it</h3>
+<p><strong>Ctrl+Alt+Shift+I</strong> shows or hides the window from
+anywhere. <strong>Ctrl+Alt+Shift+K</strong> opens Quick Insert from
+anywhere, so an abbreviation you have not memorised is always two
+keystrokes away. <strong>Ctrl+Alt+Shift+X</strong> expands the word just
+before the cursor without waiting for a space – useful mid-word, at the
+end of a line, and for an abbreviation you have set never to expand on
+its own.</p>
+<p>If an abbreviation expands when you did not want it, press
+<strong>Backspace immediately afterwards</strong> and your original
+abbreviation comes back. The offer lasts a few seconds and only in the
+window where it happened; after that, Backspace does what it always
+does.</p>
+<p>Expansions that ask for values work here too. The same fill-in form
+appears, focus returns to whatever you were typing in, and cancelling
+costs nothing because nothing is erased until you accept.</p>
+<h3 id="where-it-will-not-type">Where it will not type</h3>
+<p>Some places it refuses on purpose, and it is worth knowing which.</p>
+<p>Password managers – 1Password, Bitwarden, KeePass and KeePassXC,
+LastPass, Dashlane, Keeper, NordPass, RoboForm, Enpass – along with the
+Windows sign-in and lock screens, the credential prompt, and the UAC
+dialog. You can add programs of your own to that list. The decision is
+made from which window has focus, never from what you typed.</p>
+<p>It also checks that the thing with focus actually accepts text before
+replacing anything, so backspaces never land in a list doing type-ahead
+or on a page where Backspace means “go back”.</p>
+<p>And there is one limit Windows imposes rather than Inkwell: a normal
+program cannot see keys typed into a program running as administrator.
+Nothing expands there. Inkwell says so the first time it happens rather
+than appearing broken; if you need expansion in such a program, start
+Inkwell as administrator too.</p>
+<h3 id="what-it-does-not-do">What it does not do</h3>
+<p>Inkwell keeps <strong>no clipboard history</strong>. It reads the
+clipboard only at the moment an expansion containing
+<code>${clipboard}</code> fires, and never stores what it finds. Your
+clipboard is yours, and whichever clipboard manager you have chosen
+keeps its job.</p>
+<h3 id="what-it-remembers-while-you-type">What it remembers while you
+type</h3>
+<p>Inkwell has to notice typing in order to recognise the end of a word,
+so here is exactly what that means. It holds at most 64 characters, in
+memory only. Nothing is written to disk, added to a log, or sent
+anywhere – there is no network code in the expansion path at all. The
+memory is emptied after every expansion, on Escape, on any arrow or
+editing key, on any Ctrl or Alt combination, whenever focus moves to
+another window, and whenever you pause expansion. Nothing anywhere
+decides what to keep based on <em>what</em> you typed, which is why the
+rule that stops it typing into a password manager looks at the window
+and not at the text. <strong>Ctrl+Shift+E</strong> stops it, the tray
+menu stops it, and Safe Mode never starts it.</p>
 <h2 id="quillins-extending-quill">Quillins: extending QUILL</h2>
 <p>Quillins are QUILL’s extensions. The model is capability-and-consent:
 a Quillin declares in its manifest exactly what it needs (read text,

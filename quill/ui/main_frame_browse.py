@@ -160,10 +160,11 @@ class BrowseModeMixin:
             sound_kind="move",
         )
 
-    def _schedule_browse_prewarm(self, *, force: bool = False) -> None:
+    def _schedule_browse_prewarm(self, *, force: bool = False, text: str | None = None) -> None:
         if not bool(getattr(self.settings, "browse_mode_preload_cache", True)):
             return
-        text = self.editor.GetValue()
+        if text is None:  # #1346: reuse the typing path's single buffer read.
+            text = self.editor.GetValue()
         if not force and len(text) < self._browse_prewarm_large_document_threshold:
             return
         self._browse_prewarm_request_force = self._browse_prewarm_request_force or force

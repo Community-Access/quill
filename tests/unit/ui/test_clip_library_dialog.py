@@ -71,6 +71,10 @@ def test_remove_deletes_the_selected_entry(wx_app, tmp_path: Path) -> None:
 def test_promote_calls_the_supplied_callback_with_the_real_index(wx_app, tmp_path: Path) -> None:
     calls: list[int] = []
     dlg, frame, _lib = _dialog(wx_app, tmp_path, promote_cb=calls.append)
+    # The list is multi-select now (several clips can be marked and combined),
+    # so moving to another entry means deselecting the one the dialog opened on
+    # -- which is exactly what an arrow key does.
+    dlg._listbox.Deselect(0)
     dlg._listbox.SetSelection(1)
     dlg._on_selection_changed(None)
     expected_index = dlg._indices[1]

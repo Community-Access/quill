@@ -923,7 +923,42 @@ class RadioAppFrame(
             wx.EVT_MENU, lambda _e: self.open_internet_radio(focus_search=True), id=search_id
         )
         station_menu.Append(add_id, "&Add Custom Station...")
+        yt_playlist_id = wx.NewIdRef()
+        station_menu.Append(yt_playlist_id, "Add from &YouTube Playlist...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.radio_add_youtube_playlist(), id=yt_playlist_id
+        )
+        # YouTube support is built in, so this is only ever needed when YouTube
+        # changes how it serves audio and the bundled helper goes stale. It sits
+        # next to the YouTube commands because that is where someone whose
+        # YouTube links stopped working will look for it.
+        yt_update_id = wx.NewIdRef()
+        station_menu.Append(yt_update_id, "&Update YouTube Support...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.radio_update_youtube_support(), id=yt_update_id
+        )
         station_menu.Append(find_id, "Find &Streams from a Website...")
+        # Which directories a search covers. Remembered, and a source that
+        # is off is never contacted -- see core/radio/search_sources.py.
+        sources_id = wx.NewIdRef()
+        station_menu.Append(sources_id, "Search So&urces...")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_search_sources(), id=sources_id)
+        # Spotify (future.spotify) is experimental: the ids are always created
+        # (so _keep_menu_ids can pin them) but the items appear only while the
+        # feature is on and Safe Mode is off. They live on Station, not Help,
+        # because Spotify is somewhere you get stations from -- the same kind of
+        # thing as Browse and Search, which is where someone looks for it.
+        spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
+        if self.features.is_enabled("future.spotify") and not self._safe_mode:
+            station_menu.AppendSeparator()
+            station_menu.Append(spotify_connect_id, "Connect to S&potify...")
+            station_menu.Append(spotify_browse_id, "Bro&wse Spotify...")
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.open_spotify_connect(), id=spotify_connect_id
+            )
+            self.frame.Bind(
+                wx.EVT_MENU, lambda _e: self.open_spotify_browse(), id=spotify_browse_id
+            )
         manage_id = wx.NewIdRef()
         station_menu.Append(manage_id, "&Manage Favorites...")
         new_folder_id = wx.NewIdRef()
@@ -1027,6 +1062,35 @@ class RadioAppFrame(
         playback_menu.Append(rewind_id, "Re&wind 30 Seconds\tCtrl+Shift+Left")
         playback_menu.Append(forward_id, "&Forward 30 Seconds\tCtrl+Shift+Right")
         playback_menu.Append(live_id, "Back to &Live\tCtrl+Shift+L")
+        # Video: a finished YouTube video has a timeline, so it can be scrubbed,
+        # sped up and navigated by chapter -- none of which a live broadcast
+        # can do. Every one of these says so out loud rather than doing nothing
+        # when what is playing is live. Wiring only; the behaviour lives in
+        # ui/radio/bounded_playback_ui.py (radio.py is at budget).
+        from quill.ui.radio import bounded_playback_ui as _video
+
+        playback_menu.AppendSeparator()
+        chapters_id, next_ch_id, prev_ch_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        playback_menu.Append(chapters_id, "C&hapters...\tCtrl+Shift+C")
+        playback_menu.Append(next_ch_id, "Ne&xt Chapter\tCtrl+Alt+Right")
+        playback_menu.Append(prev_ch_id, "Pre&vious Chapter\tCtrl+Alt+Left")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.open_chapters(self), id=chapters_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.next_chapter(self), id=next_ch_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.previous_chapter(self), id=prev_ch_id)
+        faster_id, slower_id, normal_id, where_id = (
+            wx.NewIdRef(),
+            wx.NewIdRef(),
+            wx.NewIdRef(),
+            wx.NewIdRef(),
+        )
+        playback_menu.Append(faster_id, "Play &Faster\tCtrl+Alt+Up")
+        playback_menu.Append(slower_id, "Play Slo&wer\tCtrl+Alt+Down")
+        playback_menu.Append(normal_id, "&Normal Speed\tCtrl+Alt+0")
+        playback_menu.Append(where_id, "Where &Am I?\tCtrl+Shift+P")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.speed_up(self), id=faster_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.slow_down(self), id=slower_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.reset_speed(self), id=normal_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.announce_position(self), id=where_id)
         playback_menu.AppendSeparator()
         whats_playing_id = wx.NewIdRef()
         playback_menu.Append(whats_playing_id, "&What's Playing?\tCtrl+T")
@@ -1131,8 +1195,7 @@ class RadioAppFrame(
             menu_bar.Append(adp_menu, "A&udio Description Project")
 
         help_menu = wx.Menu()
-        palette_id, redeem_id, updates_id, about_id = (
-            wx.NewIdRef(),
+        palette_id, updates_id, about_id = (
             wx.NewIdRef(),
             wx.NewIdRef(),
             wx.NewIdRef(),
@@ -1147,19 +1210,6 @@ class RadioAppFrame(
         help_menu.Append(hotkeys_id, "&Global Hotkeys...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
-        # Spotify (future.spotify) is experimental: the ids are always created
-        # (so _keep_menu_ids can pin them) but the items appear only while the
-        # feature is on and Safe Mode is off.
-        spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
-        if self.features.is_enabled("future.spotify") and not self._safe_mode:
-            help_menu.Append(spotify_connect_id, "Connect to &Spotify...")
-            help_menu.Append(spotify_browse_id, "&Browse Spotify...")
-            self.frame.Bind(
-                wx.EVT_MENU, lambda _e: self.open_spotify_connect(), id=spotify_connect_id
-            )
-            self.frame.Bind(
-                wx.EVT_MENU, lambda _e: self.open_spotify_browse(), id=spotify_browse_id
-            )
         bug_id = wx.NewIdRef()
         help_menu.Append(bug_id, "Report a &Bug...")
         self.frame.Bind(
@@ -1181,11 +1231,9 @@ class RadioAppFrame(
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("prd"), id=prd_id)
         help_menu.AppendSeparator()
-        help_menu.Append(redeem_id, "Redeem &Unlock Code...")
         help_menu.Append(updates_id, "Check for Up&dates...")
         help_menu.AppendSeparator()
         help_menu.Append(about_id, "&About Quill Radio")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_redeem_unlock_code_dialog(), id=redeem_id)
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
@@ -1250,7 +1298,10 @@ class RadioAppFrame(
             text_menu.Check(item_id, abs(self._radio_history.ui_font_scale - scale) < 0.01)
             self.frame.Bind(wx.EVT_MENU, lambda _e, s=scale: self._set_text_size(s), id=item_id)
         view_menu.AppendSubMenu(text_menu, "&Text Size")
-        menu_bar.Append(view_menu, "&View")
+        # Insert rather than Append: View belongs directly after Station, but it
+        # cannot be *built* until here (its Text Size radio items need the font
+        # scale that later setup resolves). Index 1 is immediately after Station.
+        menu_bar.Insert(1, view_menu, "&View")
         from quill.ui.quillville_menu import build_quillville_menu
 
         menu_bar.Append(
@@ -1263,7 +1314,13 @@ class RadioAppFrame(
             ),
             "&QuillVille",
         )
-        menu_bar.Append(self._build_quillins_menu(), "&Quillins")
+        # Quillins is held back from the public build for now: the menu appears
+        # only in a developer build (QUILL_DEV_BUILD=1), via the unreleased
+        # future.quillins_menu flag. The Quillin host itself is untouched --
+        # bundled Quillins still load and still contribute -- this hides only the
+        # top-level menu, so nothing a Quillin provides stops working.
+        if self.features.is_enabled("future.quillins_menu"):
+            menu_bar.Append(self._build_quillins_menu(), "&Quillins")
         menu_bar.Append(help_menu, "&Help")
 
         # Persistent &Window menu + Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 on the
@@ -1274,6 +1331,15 @@ class RadioAppFrame(
         self._windows.register(self.frame, _TITLE)
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
+            sources_id,
+            chapters_id,
+            next_ch_id,
+            prev_ch_id,
+            faster_id,
+            slower_id,
+            normal_id,
+            where_id,
+            yt_update_id,
             spotify_connect_id,
             spotify_browse_id,
             browse_id,
@@ -1317,7 +1383,6 @@ class RadioAppFrame(
             guide_id,
             notes_id,
             prd_id,
-            redeem_id,
             updates_id,
             about_id,
             show_details_id,
@@ -1701,6 +1766,14 @@ class RadioAppFrame(
                     "On by default. (The screen may still turn off.)",
                     history.prevent_sleep,
                 ),
+                PreferenceCheckbox(
+                    "&Winamp-style playback keys in the Recordings player",
+                    "The Winamp classic keys in Recordings: X play, C pause, "
+                    "V stop, B next, Z previous, arrows to seek, T for elapsed "
+                    "or remaining, J to jump to a recording. On by default; "
+                    "turn it off to use letter keys for list typeahead instead",
+                    getattr(history, "winamp_playback_keys", True),
+                ),
             ],
             choices=[
                 PreferenceChoice(
@@ -1766,6 +1839,7 @@ class RadioAppFrame(
             history.alt_f4_to_tray,
             history.debug_mode,
             history.prevent_sleep,
+            history.winamp_playback_keys,
         ) = checkbox_values
         # Apply verbose logging immediately (quill-radio #5) so it takes effect
         # this session, not just the next launch.

@@ -303,6 +303,18 @@ reopening. QUILL Cast never generates transcripts from audio; that stays
 in full QUILL.</li>
 <li><strong>Episode notes</strong> timestamp the playing moment; Enter
 on a note jumps playback there.</li>
+<li><strong>Chapters, from wherever they exist.</strong> QUILL Cast
+looks for chapters in three places, cheapest first: the feed’s own
+chapters document, chapter markers inside the downloaded file, and the
+timestamps published in the episode’s show notes (the familiar
+<code>00:12:34 Topic</code> lines). The Chapters list says which of
+those it came from, so marks worked out from show notes are never
+presented as the publisher’s own. The Chapters button is offered
+whenever any of them could exist, not only when the feed publishes a
+chapters file.</li>
+<li><strong>Filter episodes by “In progress”</strong> – the ones you
+have started but not finished – alongside All, Unplayed, Played,
+Downloaded, and Not downloaded.</li>
 <li><strong>Local podcasts</strong>: turn folders of your own audio into
 shows, with optional watched folders that pick up dropped files.</li>
 <li><strong>Always Sync</strong>, <strong>auto-trim silence</strong>,
@@ -382,18 +394,18 @@ ending your listening. The titlebar X and Exit are unaffected: a
 deliberate exit still exits.</li>
 </ul>
 <h3 id="episode-alte">Episode (Alt+E)</h3>
-<p>A live now-playing line, then Play/Pause (Ctrl+P),
-<strong>Stop</strong> (Ctrl+.), <strong>Mute/Unmute</strong>,
-<strong>Volume Up</strong> (Ctrl+Up) and <strong>Volume Down</strong>
-(Ctrl+Down), Next Chapter, Previous Chapter, <strong>Skip
-Forward</strong> (Ctrl+Right), <strong>Skip Back</strong> (Ctrl+Left),
-Add Episode Note…, <strong>Play Queue…</strong> (the same reorderable
-queue the Manager offers, now one keystroke away), a <strong>Recently
-Played</strong> submenu (your last fifteen episodes, newest first,
-playable inline), Sleep Timer… (fade out and stop after a set time,
-restoring your volume), <strong>Sound Enhancements…</strong>, and
-<strong>Skip Settings…</strong>. The volume keys match Quill Radio’s, so
-the two apps behave the same way.</p>
+<p>A live now-playing line, <strong>Player Information…</strong>, then
+Play/Pause (Ctrl+P), <strong>Stop</strong> (Ctrl+.),
+<strong>Mute/Unmute</strong>, <strong>Volume Up</strong> (Ctrl+Up) and
+<strong>Volume Down</strong> (Ctrl+Down), Next Chapter, Previous
+Chapter, <strong>Skip Forward</strong> (Ctrl+Right), <strong>Skip
+Back</strong> (Ctrl+Left), Add Episode Note…, <strong>Play
+Queue…</strong> (the same reorderable queue the Manager offers, now one
+keystroke away), a <strong>Recently Played</strong> submenu (your last
+fifteen episodes, newest first, playable inline), Sleep Timer… (fade out
+and stop after a set time, restoring your volume), <strong>Sound
+Enhancements…</strong>, and <strong>Skip Settings…</strong>. The volume
+keys match Quill Radio’s, so the two apps behave the same way.</p>
 <p><strong>Sound Enhancements…</strong> applies live, on top of whatever
 is playing: a three-band equalizer (Bass, Mid, Treble sliders, -12 to
 +12 dB each) plus a “Quick preset” shortcut (Flat, Bass Boost, Voice
@@ -410,6 +422,14 @@ pausing/resuming works normally throughout. Every setting here is
 <strong>per-podcast</strong>: open it while an episode is playing to set
 that show’s own sound, or with nothing playing to set the shared default
 every other show follows.</p>
+<p><strong>Player Information…</strong> puts everything about what is
+playing into one read-only text field you can review with the arrow
+keys, character by character or line by line, and copy: title, show,
+position, duration, time remaining, progress as a percentage, playback
+speed, whether it is streaming or a file on this computer, whether that
+file is kept or a temporary copy, how many notes it has, where it will
+resume, and which chapter you are in. A spoken status goes past once;
+this stays put until you close it.</p>
 <p><strong>Skip Forward</strong> and <strong>Skip Back</strong> jump the
 current episode by a fixed number of seconds – 30 forward, 15 back by
 default – unlike Next/Previous Chapter, which jump to the nearest

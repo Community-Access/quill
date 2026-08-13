@@ -20,6 +20,7 @@ from quill.core.radio import (
     acb_media,
     m3u_catalog,
     radio_browser,
+    search_sources,
     soma_fm,
     tunein,
     xiph,
@@ -34,6 +35,15 @@ from quill.core.radio.directory_search import (
 )
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
+from quill.core.radio.spotify_search import (
+    SOURCE as _SPOTIFY_SOURCE,
+)
+from quill.core.radio.spotify_search import (
+    is_spotify_station,
+    open_link_label,
+    spotify_search_stations,
+    youtube_search_stations,
+)
 from quill.ui.dialog_contract import apply_modal_ids
 
 _FAVORITES = "Favorites"
@@ -97,6 +107,8 @@ _SOURCE_FACETS = (
     "ACB Media",
     m3u_catalog.CATEGORY_LABEL,
     xiph.CATEGORY_LABEL,
+    _SPOTIFY_SOURCE,
+    "YouTube",
     "Website",
 )
 
@@ -181,6 +193,10 @@ class StationBrowserDialog:
         on_report_bad_station: Callable[[RadioStation], None] | None = None,
         show_details: bool = True,
         windows: object | None = None,
+        spotify_client_provider: Callable[[], object | None] | None = None,
+        enabled_sources: object = None,
+        source_facet: str = "",
+        on_search_prefs_changed: Callable[[tuple[str, ...], str], None] | None = None,
     ) -> None:
         import wx
 
@@ -195,6 +211,16 @@ class StationBrowserDialog:
         self._on_open_add_custom = on_open_add_custom
         self._on_open_link_finder = on_open_link_finder
         self._on_report_bad_station = on_report_bad_station
+        # Returns a signed-in SpotifyClient, or None when nobody has connected
+        # Spotify (the common case) -- searching Spotify needs a token even
+        # though it works on every account tier, playback tier included.
+        self._spotify_client_provider = spotify_client_provider
+        #: Which sources this search covers. Remembered across sessions: a
+        #: preference you must re-set on every search is not a preference.
+        self._enabled_sources = search_sources.normalize(enabled_sources)
+        #: The remembered Source-facet choice, re-applied when the dialog opens.
+        self._initial_source_facet = str(source_facet or "")
+        self._on_search_prefs_changed = on_search_prefs_changed
 
         self._current_results: list[RadioStation] = []
         #: The unfiltered list behind _current_results, so the Source facet can
@@ -312,7 +338,13 @@ class StationBrowserDialog:
         )
         self._source_facet = wx.Choice(self._surface, choices=list(_SOURCE_FACETS))
         self._source_facet.SetName("Show only results from one source")
-        self._source_facet.SetSelection(0)
+        # Re-apply the remembered facet: a filter you must re-pick on every
+        # search is not a filter. An unknown stored value falls back to
+        # "All sources" rather than to an empty list.
+        remembered = self._initial_source_facet
+        self._source_facet.SetSelection(
+            _SOURCE_FACETS.index(remembered) if remembered in _SOURCE_FACETS else 0
+        )
         facet_row.Add(self._source_facet, 0, wx.RIGHT, 12)
         # Genre picker for the Music Genres (Community M3U) category. Empty and
         # disabled until that category is selected, then filled from the live
@@ -609,6 +641,7 @@ class StationBrowserDialog:
     def _on_source_facet(self, _event: object) -> None:
         """Re-render the current results filtered by the chosen source."""
         self._render_results()
+        self._save_search_prefs()
         self._announce(
             _search_result_summary(len(self._current_results))
             + f" -- {self._source_facet.GetStringSelection()}"
@@ -1037,8 +1070,12 @@ class StationBrowserDialog:
         self._search_offset = 0
 
         def _do_search(**_kwargs: Any) -> tuple[list[RadioStation], list[RadioStation]]:
-            radio = radio_browser.search_stations(
-                name, tag=tag, country=country, limit=_SEARCH_LIMIT, safe_mode=self._safe_mode
+            radio = (
+                radio_browser.search_stations(
+                    name, tag=tag, country=country, limit=_SEARCH_LIMIT, safe_mode=self._safe_mode
+                )
+                if self._source_on("radio_browser")
+                else []
             )
             # Blended in after the RadioBrowser page, each failure-tolerant so
             # one down source never blanks the list. Name/tag searches only:
@@ -1049,20 +1086,40 @@ class StationBrowserDialog:
             extras: list[RadioStation] = []
             query = name or tag
             if query:
-                try:
-                    extras += soma_fm.search_stations(query, safe_mode=self._safe_mode)
-                except soma_fm.SomaFmError:
-                    pass
-                extras += tunein_search_stations(query, safe_mode=self._safe_mode)
+                if self._source_on("somafm"):
+                    try:
+                        extras += soma_fm.search_stations(query, safe_mode=self._safe_mode)
+                    except soma_fm.SomaFmError:
+                        pass
+                if self._source_on("tunein"):
+                    extras += tunein_search_stations(query, safe_mode=self._safe_mode)
                 # NOAA Weather Radio: a SAME code, callsign, or "County, ST"/state
                 # query resolves to authoritative stations; anything else just
                 # comes back empty, so this rides along unconditionally.
-                extras += wxindex_search_stations(query, safe_mode=self._safe_mode)
+                if self._source_on("wxindex"):
+                    extras += wxindex_search_stations(query, safe_mode=self._safe_mode)
                 # Radio Reading Services: a name/tag/state match against the
                 # curated ~20-service list; empty for anything else, so this
                 # rides along unconditionally too.
-                extras += reading_services_search_stations(query, safe_mode=self._safe_mode)
-            if name:
+                if self._source_on("reading_services"):
+                    extras += reading_services_search_stations(query, safe_mode=self._safe_mode)
+                # Spotify: search is open to every account tier, so these rows
+                # ride along whenever the user has connected Spotify. They stay
+                # useful on a free account -- Enter needs Premium, but "Open
+                # Website" opens the track in Spotify's own app, where a free
+                # account plays it normally.
+                if self._source_on("spotify"):
+                    extras += spotify_search_stations(
+                        query,
+                        client=self._spotify_client(),
+                        safe_mode=self._safe_mode,
+                    )
+                # YouTube: yt-dlp's keyless ytsearch, the same extraction route
+                # FreeTube/NewPipe/Invidious use. Each row is a page URL, so it
+                # becomes an ordinary station you can play, favorite and record.
+                if self._source_on("youtube"):
+                    extras += youtube_search_stations(query, safe_mode=self._safe_mode)
+            if name and self._source_on("iheart"):
                 extras += iheart_search_stations(
                     self._iheart_index(), name, safe_mode=self._safe_mode
                 )
@@ -1074,6 +1131,48 @@ class StationBrowserDialog:
             on_success=lambda _op, payload: self._on_search_done(payload, None),
             on_failure=lambda _op, exc: self._on_search_done(([], []), exc),
         )
+
+    def _open_url(self, url: str, *, spotify: bool = False) -> None:
+        """Open a station's web page in the default browser."""
+        import webbrowser
+
+        if url and webbrowser.open(url):
+            self._announce("Opened in Spotify." if spotify else "Opened the station's website.")
+
+    def _save_search_prefs(self) -> None:
+        """Persist the source selection and facet, so both survive the session."""
+        if self._on_search_prefs_changed is None:
+            return
+        try:
+            self._on_search_prefs_changed(
+                self._enabled_sources, self._source_facet.GetStringSelection() or ""
+            )
+        except Exception:  # noqa: BLE001 - a failed save must never block searching
+            pass
+
+    def _source_on(self, source_id: str) -> bool:
+        """Whether this source is switched on for searching.
+
+        A source that is off is never *contacted* -- this gates the fan-out
+        itself, not the results afterwards -- so switching sources off makes a
+        search quieter and faster, and stops its network traffic entirely.
+        """
+        return search_sources.is_enabled(self._enabled_sources, source_id)
+
+    def _spotify_client(self) -> Any:
+        """The signed-in Spotify client, or ``None``.
+
+        Runs inside the off-thread search worker, so the provider must not
+        touch wx -- it only reads the stored token bundle. A provider that
+        raises is treated as "not signed in": Spotify is one optional source
+        among many here, and a broken one must not fail the whole search.
+        """
+        if self._spotify_client_provider is None:
+            return None
+        try:
+            return self._spotify_client_provider()
+        except Exception:  # noqa: BLE001 -- an optional source, never fatal
+            return None
 
     def _iheart_index(self) -> list[Any]:
         """The iHeart sitemap station index, fetched once per session (2 GETs).
@@ -1215,6 +1314,12 @@ class StationBrowserDialog:
                 lambda: self._on_toggle_favorite(None),
             ),
         ]
+        if station.homepage:
+            from_spotify = is_spotify_station(station)
+            entries.append((
+                open_link_label(station),
+                lambda url=station.homepage, s=from_spotify: self._open_url(url, spotify=s),
+            ))
         if self._on_report_bad_station is not None:
             entries.append((
                 "Report &Bad Station...",

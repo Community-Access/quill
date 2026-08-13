@@ -14,6 +14,8 @@ from pathlib import Path
 
 from quill.core.audio_enhance import EQ_PRESETS
 from quill.core.radio.models import RadioStation
+from quill.core.radio.search_sources import DEFAULT_ENABLED as DEFAULT_SEARCH_SOURCES
+from quill.core.radio.search_sources import normalize as normalize_search_sources
 
 _FILE_NAME = "radio_history.json"
 _MAX_ENTRIES = 15
@@ -53,6 +55,19 @@ class RadioHistory:
     #: Show the read-only Station Details pane in Browse/Search Stations. On by
     #: default; View > Show Station Details toggles it, honored by every surface.
     show_station_details: bool = True
+    #: Winamp classic-skin playback keys in the Recordings player (#1344):
+    #: Z X C V B along the bottom row, arrows to seek, T for elapsed/remaining,
+    #: J to jump. On by default -- every key it claims was otherwise unused in
+    #: that dialog -- and one checkbox in Preferences turns them off for anyone
+    #: who wants the letters back for list typeahead.
+    winamp_playback_keys: bool = True
+    #: Which directories Find Stations searches. A source that is off is never
+    #: contacted, so this is a speed/privacy control as well as a tidiness one.
+    #: See quill.core.radio.search_sources for the registry.
+    search_sources_enabled: tuple[str, ...] = DEFAULT_SEARCH_SOURCES
+    #: The last Source-facet choice in Find Stations, re-applied on open -- a
+    #: filter you must re-pick every search is not a filter.
+    search_source_facet: str = ""
     #: Show the arrow-navigable status bar along the bottom of the main window.
     #: On by default; View > Show Status Bar toggles it. F6 moves focus into it.
     show_status_bar: bool = True
@@ -224,6 +239,9 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.resume_on_launch = bool(raw.get("resume_on_launch", False))
         history.announce_track_titles = bool(raw.get("announce_track_titles", False))
         history.show_station_details = bool(raw.get("show_station_details", True))
+        history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
+        history.search_sources_enabled = normalize_search_sources(raw.get("search_sources_enabled"))
+        history.search_source_facet = str(raw.get("search_source_facet", "") or "")
         history.show_status_bar = bool(raw.get("show_status_bar", True))
         history.ui_font_scale = min(2.0, max(1.0, _coerce_float(raw.get("ui_font_scale"), 1.0)))
         history.prevent_sleep = bool(raw.get("prevent_sleep", True))
@@ -336,6 +354,9 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "resume_on_launch": history.resume_on_launch,
             "announce_track_titles": history.announce_track_titles,
             "show_station_details": history.show_station_details,
+            "winamp_playback_keys": history.winamp_playback_keys,
+            "search_sources_enabled": list(history.search_sources_enabled),
+            "search_source_facet": history.search_source_facet,
             "show_status_bar": history.show_status_bar,
             "ui_font_scale": history.ui_font_scale,
             "prevent_sleep": history.prevent_sleep,

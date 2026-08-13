@@ -17,6 +17,40 @@ from quill.core.abbreviations import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 
+#: Stored value -> the words shown in the edit dialog. Ordered, because the
+#: choice controls are populated from these and read back by index.
+_TRIGGER_LABELS: dict[str, str] = {
+    "both": "A space or punctuation",
+    "space": "A space only",
+    "punctuation": "Punctuation only",
+    "manual": "Never — Quick Insert only",
+}
+_SPEAK_LABELS: dict[str, str] = {
+    "silent": "Nothing",
+    "name": "The abbreviation",
+    "expansion": "The expanded text",
+}
+_SOUND_LABELS: dict[str, str] = {
+    "inherit": "Follow the global setting",
+    "on": "Always play",
+    "off": "Never play",
+}
+
+#: The two pseudo-entries at the top of the category filter.
+_ALL_CATEGORIES = "All categories"
+_UNCATEGORISED = "Uncategorised"
+
+
+def _select(control: object, labels: dict[str, str], value: str) -> None:
+    keys = list(labels)
+    control.SetSelection(keys.index(value) if value in keys else 0)  # type: ignore[attr-defined]
+
+
+def _selected(control: object, labels: dict[str, str]) -> str:
+    keys = list(labels)
+    index = int(control.GetSelection())  # type: ignore[attr-defined]
+    return keys[index] if 0 <= index < len(keys) else keys[0]
+
 
 class _AbbreviationEditDialog:
     """Inner dialog for creating or editing a single abbreviation."""
@@ -25,7 +59,9 @@ class _AbbreviationEditDialog:
         self,
         parent: object,
         abbreviation: Abbreviation | None = None,
+        categories: list[str] | None = None,
     ) -> None:
+        categories = categories or []
         title = "Edit Abbreviation" if abbreviation else "New Abbreviation"
         self.dialog = wx.Dialog(
             parent,
@@ -55,12 +91,37 @@ class _AbbreviationEditDialog:
         self._desc_ctrl.SetName("Optional description")
         grid.Add(self._desc_ctrl, 1, wx.EXPAND)
 
+        grid.Add(wx.StaticText(self.dialog, label="C&ategory:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._category_ctrl = wx.ComboBox(self.dialog, choices=sorted(c for c in categories if c))
+        self._category_ctrl.SetName("Category — leave empty for Uncategorised")
+        grid.Add(self._category_ctrl, 1, wx.EXPAND)
+
+        grid.Add(wx.StaticText(self.dialog, label="E&xpand after:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._triggers_ctrl = wx.Choice(self.dialog, choices=list(_TRIGGER_LABELS.values()))
+        self._triggers_ctrl.SetName("Which characters expand this abbreviation")
+        self._triggers_ctrl.SetSelection(0)
+        grid.Add(self._triggers_ctrl, 1, wx.EXPAND)
+
+        grid.Add(wx.StaticText(self.dialog, label="S&peak:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._speak_ctrl = wx.Choice(self.dialog, choices=list(_SPEAK_LABELS.values()))
+        self._speak_ctrl.SetName("What is spoken when this abbreviation expands")
+        self._speak_ctrl.SetSelection(0)
+        grid.Add(self._speak_ctrl, 1, wx.EXPAND)
+
+        grid.Add(wx.StaticText(self.dialog, label="Soun&d:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        self._sound_ctrl = wx.Choice(self.dialog, choices=list(_SOUND_LABELS.values()))
+        self._sound_ctrl.SetName("Play a sound when this abbreviation expands")
+        self._sound_ctrl.SetSelection(0)
+        grid.Add(self._sound_ctrl, 1, wx.EXPAND)
+
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
         self._case_ctrl = wx.CheckBox(self.dialog, label="&Case sensitive")
+        self._space_ctrl = wx.CheckBox(self.dialog, label="Add a trailing space a&fter punctuation")
         self._enabled_ctrl = wx.CheckBox(self.dialog, label="E&nabled")
         self._enabled_ctrl.SetValue(True)
         root.Add(self._case_ctrl, 0, wx.LEFT | wx.BOTTOM, 10)
+        root.Add(self._space_ctrl, 0, wx.LEFT | wx.BOTTOM, 10)
         root.Add(self._enabled_ctrl, 0, wx.LEFT | wx.BOTTOM, 10)
 
         buttons = self.dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
@@ -83,6 +144,11 @@ class _AbbreviationEditDialog:
             self._desc_ctrl.SetValue(abbreviation.description)
             self._case_ctrl.SetValue(abbreviation.case_sensitive)
             self._enabled_ctrl.SetValue(abbreviation.enabled)
+            self._category_ctrl.SetValue(abbreviation.category)
+            self._space_ctrl.SetValue(abbreviation.trailing_space)
+            _select(self._triggers_ctrl, _TRIGGER_LABELS, abbreviation.triggers)
+            _select(self._speak_ctrl, _SPEAK_LABELS, abbreviation.speak_mode)
+            _select(self._sound_ctrl, _SOUND_LABELS, abbreviation.sound)
 
         self._abbr_ctrl.SetFocus()
 
@@ -92,14 +158,27 @@ class _AbbreviationEditDialog:
     def close(self) -> None:
         self.dialog.Destroy()
 
-    def get_values(self) -> tuple[str, str, str, bool, bool]:
-        return (
-            self._abbr_ctrl.GetValue().strip(),
-            self._exp_ctrl.GetValue(),
-            self._desc_ctrl.GetValue().strip(),
-            self._case_ctrl.GetValue(),
-            self._enabled_ctrl.GetValue(),
-        )
+    @property
+    def trigger_text(self) -> str:
+        """The abbreviation as typed (empty means the dialog has nothing to save)."""
+        return str(self._abbr_ctrl.GetValue()).strip()
+
+    @property
+    def expansion_text(self) -> str:
+        return str(self._exp_ctrl.GetValue())
+
+    def apply_to(self, abbreviation: Abbreviation) -> None:
+        """Write every field of this dialog onto *abbreviation*."""
+        abbreviation.abbreviation = self.trigger_text
+        abbreviation.expansion = self.expansion_text
+        abbreviation.description = str(self._desc_ctrl.GetValue()).strip()
+        abbreviation.case_sensitive = bool(self._case_ctrl.GetValue())
+        abbreviation.enabled = bool(self._enabled_ctrl.GetValue())
+        abbreviation.category = str(self._category_ctrl.GetValue()).strip()
+        abbreviation.trailing_space = bool(self._space_ctrl.GetValue())
+        abbreviation.triggers = _selected(self._triggers_ctrl, _TRIGGER_LABELS)
+        abbreviation.speak_mode = _selected(self._speak_ctrl, _SPEAK_LABELS)
+        abbreviation.sound = _selected(self._sound_ctrl, _SOUND_LABELS)
 
 
 class AbbreviationManagerDialog:
@@ -128,6 +207,16 @@ class AbbreviationManagerDialog:
         self._search_ctrl = wx.TextCtrl(self.dialog)
         self._search_ctrl.SetName("Search abbreviations")
         search_row.Add(self._search_ctrl, 1, wx.EXPAND)
+        search_row.Add(
+            wx.StaticText(self.dialog, label="Ca&tegory:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.LEFT | wx.RIGHT,
+            4,
+        )
+        self._category_filter = wx.Choice(self.dialog, choices=[_ALL_CATEGORIES])
+        self._category_filter.SetName("Filter by category")
+        self._category_filter.SetSelection(0)
+        search_row.Add(self._category_filter, 0)
         root.Add(search_row, 0, wx.EXPAND | wx.ALL, 8)
 
         self._list = wx.ListCtrl(
@@ -136,8 +225,9 @@ class AbbreviationManagerDialog:
         )
         self._list.SetName("Abbreviations list")
         self._list.InsertColumn(0, "Abbreviation", width=120)
-        self._list.InsertColumn(1, "Expansion", width=320)
+        self._list.InsertColumn(1, "Expansion", width=260)
         self._list.InsertColumn(2, "On", width=40)
+        self._list.InsertColumn(3, "Category", width=110)
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -167,6 +257,7 @@ class AbbreviationManagerDialog:
         apply_modal_ids(self.dialog, cancel_id=wx.ID_CANCEL, cancel_label="Close")
 
         self._search_ctrl.Bind(wx.EVT_TEXT, self._on_search)
+        self._category_filter.Bind(wx.EVT_CHOICE, self._on_search)
         self._btn_new.Bind(wx.EVT_BUTTON, self._on_new)
         self._btn_edit.Bind(wx.EVT_BUTTON, self._on_edit)
         self._btn_delete.Bind(wx.EVT_BUTTON, self._on_delete)
@@ -175,6 +266,7 @@ class AbbreviationManagerDialog:
         self._btn_export.Bind(wx.EVT_BUTTON, self._on_export)
         self._list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_edit)
 
+        self._refresh_categories()
         self._rebuild_list()
         self._list.SetFocus()
 
@@ -186,13 +278,36 @@ class AbbreviationManagerDialog:
 
     # -- list helpers --
 
+    def _categories(self) -> list[str]:
+        return sorted({a.category for a in self._library.abbreviations if a.category})
+
+    def _refresh_categories(self) -> None:
+        """Rebuild the filter's choices, keeping the current selection when it
+        still exists (adding a category must not silently change the filter)."""
+        current = self._selected_category()
+        choices = [_ALL_CATEGORIES, _UNCATEGORISED, *self._categories()]
+        self._category_filter.Set(choices)
+        self._category_filter.SetSelection(choices.index(current) if current in choices else 0)
+
+    def _selected_category(self) -> str:
+        index = self._category_filter.GetSelection()
+        if index < 0:
+            return _ALL_CATEGORIES
+        return str(self._category_filter.GetString(index))
+
     def _visible_abbreviations(self) -> list[Abbreviation]:
+        entries = list(self._library.abbreviations)
+        category = self._selected_category()
+        if category == _UNCATEGORISED:
+            entries = [a for a in entries if not a.category]
+        elif category != _ALL_CATEGORIES:
+            entries = [a for a in entries if a.category == category]
         if not self._search_query:
-            return list(self._library.abbreviations)
+            return entries
         q = self._search_query.lower()
         return [
             a
-            for a in self._library.abbreviations
+            for a in entries
             if q in a.abbreviation.lower() or q in a.expansion.lower() or q in a.description.lower()
         ]
 
@@ -206,6 +321,7 @@ class AbbreviationManagerDialog:
             preview = abbr.expansion.replace("\n", " ")[:60]
             self._list.SetItem(i, 1, preview)
             self._list.SetItem(i, 2, "Y" if abbr.enabled else "N")
+            self._list.SetItem(i, 3, abbr.category or _UNCATEGORISED)
         if 0 <= sel < self._list.GetItemCount():
             self._list.Select(sel)
             self._list.EnsureVisible(sel)
@@ -230,41 +346,29 @@ class AbbreviationManagerDialog:
     def _on_new(self, _event: object) -> None:
         import uuid
 
-        edit_dlg = _AbbreviationEditDialog(self.dialog)
+        edit_dlg = _AbbreviationEditDialog(self.dialog, categories=self._categories())
         result = edit_dlg.show()
-        if result == wx.ID_OK:
-            abbr_text, exp_text, desc_text, case_s, enabled = edit_dlg.get_values()
-            if abbr_text and exp_text:
-                new_abbr = Abbreviation(
-                    id=str(uuid.uuid4()),
-                    abbreviation=abbr_text,
-                    expansion=exp_text,
-                    description=desc_text,
-                    case_sensitive=case_s,
-                    enabled=enabled,
-                )
-                self._library.abbreviations.append(new_abbr)
-                self._library.abbreviations.sort(key=lambda a: a.abbreviation.lower())
-                save_abbreviation_library(self._library)
-                self._rebuild_list()
+        if result == wx.ID_OK and edit_dlg.trigger_text and edit_dlg.expansion_text:
+            new_abbr = Abbreviation(id=str(uuid.uuid4()), abbreviation="", expansion="")
+            edit_dlg.apply_to(new_abbr)
+            self._library.abbreviations.append(new_abbr)
+            self._library.abbreviations.sort(key=lambda a: a.abbreviation.lower())
+            save_abbreviation_library(self._library)
+            self._refresh_categories()
+            self._rebuild_list()
         edit_dlg.close()
 
     def _on_edit(self, _event: object) -> None:
         abbr = self._selected_abbreviation()
         if abbr is None:
             return
-        edit_dlg = _AbbreviationEditDialog(self.dialog, abbr)
+        edit_dlg = _AbbreviationEditDialog(self.dialog, abbr, categories=self._categories())
         result = edit_dlg.show()
-        if result == wx.ID_OK:
-            abbr_text, exp_text, desc_text, case_s, enabled = edit_dlg.get_values()
-            if abbr_text and exp_text:
-                abbr.abbreviation = abbr_text
-                abbr.expansion = exp_text
-                abbr.description = desc_text
-                abbr.case_sensitive = case_s
-                abbr.enabled = enabled
-                save_abbreviation_library(self._library)
-                self._rebuild_list()
+        if result == wx.ID_OK and edit_dlg.trigger_text and edit_dlg.expansion_text:
+            edit_dlg.apply_to(abbr)
+            save_abbreviation_library(self._library)
+            self._refresh_categories()
+            self._rebuild_list()
         edit_dlg.close()
 
     def _on_delete(self, _event: object) -> None:
