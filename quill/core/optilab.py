@@ -1,14 +1,38 @@
 """OptiLab broadcast polish: three one-touch chains, adapted for ffmpeg.
 
-Adapted from OptiLab Core by dgl1984 (https://github.com/dgl1984/optilab,
-Apache-2.0), with thanks and attribution. OptiLab itself is a GUI-only plugin
-(JSFX/CLAP/Winamp DSP) with no library to call and a Windows-64-only binary, so
-rather than embedding it we reproduce the *shape* of its three modes -- Podcast
-Leveler, Stream Polish, Smooth Limiter -- as ffmpeg filter chains that ride the
-same graph everywhere Sound Enhancements already reaches (mpv-native live, the
-relay, recordings) and so work cross-platform and preview live. This is a
-faithful adaptation, not a bit-for-bit port of OptiLab's custom multiband / AGC
-/ limiter DSP.
+Adapted from OptiLab Core by Lanes Audio / dgl1984
+(https://github.com/dgl1984/optilab), with thanks and attribution. Licensed
+**Apache-2.0 with the Commons Clause v1.0** as of upstream v1.3.0 -- not plain
+Apache-2.0, which is what this file used to say. The Commons Clause withholds
+the right to *sell* the Software; upstream's NOTICE separately grants
+royalty-free commercial use of OptiLab Core as a tool for producing,
+processing, broadcasting or streaming audio. Nothing upstream is embedded here
+either way.
+
+We reproduce the *shape* of its three modes -- Podcast Leveler, Stream Polish,
+Smooth Limiter -- as ffmpeg filter chains that ride the same graph everywhere
+Sound Enhancements already reaches (mpv-native live, the relay, recordings), so
+they work cross-platform, preview live, and need no compiled artifact. This is
+a faithful adaptation, not a bit-for-bit port of OptiLab's custom multiband /
+AGC / limiter DSP.
+
+**Correcting the record (2026-08-13).** This file used to justify that choice
+by saying OptiLab was "a GUI-only plugin with no library to call and a
+Windows-64-only binary". Checked against upstream, all three claims are false:
+``native/API.md`` documents ``optilab-core``, a framework-independent **C++17
+static library** introduced in **v1.2.0** and described as "the same processing
+engine used by the CLAP and StationPlaylist/Winamp plug-in wrappers"; only the
+CLAP and Winamp *wrapper* targets are platform-gated in their CMake, while
+``optilab-core`` and an ``optilab-core-cli`` build with GCC/Clang too.
+
+So the ffmpeg adaptation is a *choice*, not a necessity, and it should be
+defended on its merits: reach (one graph for live, relay and recordings), no
+per-platform compiled dependency, and live preview. Upstream is explicit that
+its C++ API is "not a stable C ABI", so calling it would mean owning an adapter
+and a build per platform. If that trade is ever revisited, the honest upside is
+the two things a feed-forward ffmpeg graph provably cannot express -- upstream's
+limiter feedback loop (see below) and bit-exact fidelity -- and the right shape
+is an optional enhancement over this chain, never a replacement for it.
 
 Each mode maps OptiLab's three controls onto ffmpeg: Mode picks the chain, Input
 is a front-end gain (``volume``, 0 dB by default), and Auto-Adapt (0-100%)

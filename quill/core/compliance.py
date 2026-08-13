@@ -91,16 +91,28 @@ _DEPENDENCY_USAGE_NOTES: dict[str, str] = {
 
 _BUNDLED_COMPONENTS: tuple[dict[str, str], ...] = (
     {
-        "name": "OptiLab Core (dgl1984)",
+        "name": "OptiLab Core (Lanes Audio / dgl1984)",
         "scope": "adapted-dsp",
-        "version": "1.2.0",
-        "license": "Apache-2.0",
+        # The mapping in core/optilab.py tracks 1.4.0; this entry said 1.2.0,
+        # which mattered because the licence changed in between.
+        "version": "1.4.0",
+        # NOT plain Apache-2.0. Upstream LICENSE states "v1.3.0 and later" are
+        # Apache-2.0 **with the Commons Clause v1.0**, which withholds the right
+        # to *sell* the Software. This entry previously recorded 1.2.0 /
+        # Apache-2.0 -- accurate when written, wrong once the mapping moved to
+        # 1.4.0, and a compliance record is the one place that must not lag.
+        "license": "Apache-2.0 WITH Commons-Clause",
         "homepage": "https://github.com/dgl1984/optilab",
         "source": "",
         "notes": (
             "Sound Enhancements' broadcast-polish modes (Podcast Leveler, Stream "
             "Polish, Smooth Limiter) are a faithful adaptation of OptiLab Core's "
-            "DSP, reproduced as ffmpeg filter chains. With thanks to dgl1984."
+            "DSP, reproduced as ffmpeg filter chains -- no upstream code or "
+            "binary is embedded. Upstream's NOTICE grants royalty-free "
+            "commercial use of OptiLab Core as a tool for producing, "
+            "processing, broadcasting or streaming audio; the Commons Clause "
+            "restricts selling the Software itself, which QUILL does not do. "
+            "With thanks to dgl1984."
         ),
     },
     {
