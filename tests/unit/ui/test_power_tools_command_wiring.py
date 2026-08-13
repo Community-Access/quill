@@ -210,7 +210,7 @@ def test_read_only_guard_protects_edit_helpers() -> None:
 def test_event_hooks_are_wired() -> None:
     char_hook = _SOURCE[_SOURCE.index("def _on_editor_char_hook") :][:200]
     assert "if self._maybe_describe_key(event):" in char_hook
-    caret = _SOURCE[_SOURCE.index("def _on_editor_caret_activity") :][:200]
+    caret = _SOURCE[_SOURCE.index("def _on_editor_caret_activity") :][:600]
     assert "self._maybe_announce_indent()" in caret
 
 

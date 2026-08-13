@@ -70,7 +70,10 @@ class TypingPathMixin:
             text = self.editor.GetValue()
         self._browse_navigation_cache = None
         self.document.set_text(text)
-        self._refresh_title()
+        # Title bar only -- _refresh_title would drag the whole statusbar
+        # refresh (several O(n) buffer reads) back onto the synchronous path.
+        # The statusbar catches up in the deferred pass below.
+        self._refresh_title_bar()
         # Quiet: this fires on every keystroke; speaking "Modified" each time is
         # noise for a screen reader (it already echoes the typed character).
         self._set_status_quiet(status)
@@ -117,5 +120,9 @@ class TypingPathMixin:
         self._refresh_browser_preview()
         self._maybe_autosave()
         self._refresh_contextual_menu_items()
+        # The statusbar's word count / line-column / progress cells catch up
+        # here rather than on the synchronous path (the caret handler also
+        # coalesces its own refresh, so pure navigation stays covered).
+        self._refresh_statusbar()
         # #181: debounced auto language detection (no-op unless enabled in Settings).
         self._schedule_language_detection()

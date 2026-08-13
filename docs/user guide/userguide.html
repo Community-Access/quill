@@ -28137,6 +28137,17 @@ screen reader, rather than done before it. It waits for a fifth of a
 second of quiet, and if you are typing faster than that it is skipped
 entirely until you pause — so the faster you type, the less QUILL does
 between your keystrokes.</p>
+<p>Two costs that used to hide on that path are gone as well. The status
+bar no longer recomputes itself between keystrokes — its word count,
+line and column, and progress cells used to re-copy the document several
+times per character, twice over; they now update in the pauses, reading
+the text QUILL already holds rather than copying it out of the editor
+again. And the abbreviation expander no longer opens the Windows
+clipboard on every keystroke — the clipboard is shared with every other
+program (and with your screen reader’s own clipboard features), so
+touching it per character meant waiting on that contention while you
+typed. It is now read only at the moment an abbreviation that actually
+uses <code>${clipboard}</code> expands.</p>
 <p>This matters most with a screen reader. The notification NVDA and
 JAWS wait on to speak the character you just typed is delivered by the
 same thread that does that work, so work done between keystrokes is

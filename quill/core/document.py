@@ -46,7 +46,12 @@ class Document:
         return self._revision
 
     def set_text(self, value: str) -> None:
-        if value == self.text:
+        # Length first: this runs on every keystroke (#1346), and an insertion
+        # or deletion -- the overwhelmingly common case -- changes the length,
+        # making the no-op check O(1) instead of a full-string compare that
+        # scans to the caret. Same-length edits (overwrite mode, a replaced
+        # selection of equal size) still fall through to the real compare.
+        if len(value) == len(self.text) and value == self.text:
             return
         self.text = value
         self.modified = True

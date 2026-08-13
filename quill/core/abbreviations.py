@@ -230,11 +230,23 @@ def try_expand(
     caret: int,
     library: AbbreviationLibrary,
     clipboard_text: str = "",
+    *,
+    clipboard_provider: Callable[[], str] | None = None,
 ) -> AbbreviationMatch | None:
     """Check for an abbreviation ending just before the character at caret-1.
 
     caret-1 must be a trigger character (space, punctuation, etc.).
     Returns an AbbreviationMatch or None.
+
+    *clipboard_provider*, when given, is called instead of *clipboard_text* --
+    and only once an abbreviation has actually matched and its expansion
+    contains ``${clipboard}`` (#1346 follow-up). The Windows clipboard is a
+    shared, single-owner OS resource: opening it is a cross-process
+    synchronization point that can block behind a clipboard manager or a screen
+    reader's own clipboard polling. The old contract made the caller fetch it
+    up front, which in practice meant one clipboard open *per keystroke*;
+    matches are rare and ``${clipboard}`` expansions rarer, so the provider
+    turns that into approximately never.
     """
     if caret < 2 or caret > len(text):
         return None
@@ -261,7 +273,10 @@ def try_expand(
         else:
             match = token.lower() == abbr.abbreviation.lower()
         if match:
-            resolved, cursor_offset, has_cursor = resolve_expansion(abbr.expansion, clipboard_text)
+            clip = clipboard_text
+            if clipboard_provider is not None and "${clipboard}" in abbr.expansion:
+                clip = clipboard_provider()
+            resolved, cursor_offset, has_cursor = resolve_expansion(abbr.expansion, clip)
             return AbbreviationMatch(
                 token_start=token_start,
                 token_end=token_end,

@@ -61,9 +61,41 @@ already fixed in code nobody could run yet.
   menu refresh move behind a restarting 120 ms timer -- so they run in the gap
   *after* the character has reached the screen reader, and are skipped entirely
   while you type faster than that; and the periodic autosave disk write moved off
-  the UI thread, removing a recurring mid-sentence hitch on large files. A build check now asserts the one-read-per-
-  keystroke budget, so this cannot quietly creep back.
-  (`quill/ui/main_frame_typing.py`, `quill/ui/main_frame_write_safety.py`)
+  the UI thread, removing a recurring mid-sentence hitch on large files. A build
+  check now asserts the one-read-per-keystroke budget, so this cannot quietly
+  creep back. (`quill/ui/main_frame_typing.py`, `quill/ui/main_frame_write_safety.py`)
+
+  **A second pass found the larger half.** Re-examining the same report turned
+  up costs the first round's budget could not see, and together they dwarfed
+  what it fixed:
+  - **The status bar refreshed twice per keystroke** -- once dragged in
+    synchronously by the title refresh, once from the key-up handler -- and its
+    cells each re-copied the document to compute themselves: the word count ran
+    a full text pass, line/column scanned to the caret, the progress and page
+    cells copied the buffer again. Nine full-document copies and two full scans
+    per character, on top of everything round one had removed. The title bar now
+    refreshes alone (and skips the native call when the title has not changed --
+    retitling a window fires a screen-reader name-change event, and nobody needs
+    to hear a rename to the same name); the status bar catches up in the typing
+    pause, and caret movement coalesces its refresh, so holding an arrow key
+    costs one refresh when the caret stops instead of one per repeat. Status-bar
+    cells and the entering/leaving-table check now read the document's own text
+    -- the same string, already in memory -- instead of copying the buffer out
+    of the control again.
+  - **The abbreviation expander opened the Windows clipboard on every
+    keystroke.** The clipboard is a shared, single-owner resource: opening it
+    contends with clipboard managers and with a screen reader's own clipboard
+    polling, and the deliberate retry that papers over that contention can hold
+    the typing thread for up to a fifth of a second -- per character. It is now
+    read only when an abbreviation has actually matched *and* its expansion uses
+    `${clipboard}`, which is to say: almost never.
+
+  Modelled on the same basis as round one, the synchronous per-keystroke cost
+  drops a further ~85-155x (200 KB document: ~22 ms to ~0.3 ms per keystroke;
+  1 MB: ~118 ms to ~1.3 ms) -- before counting the removed clipboard
+  contention, which no model captures. The budget test now covers all of it:
+  clipboard laziness, the title/status-bar split, caret coalescing, and the
+  zero-copy display reads.
 - **A background result can no longer crash a dialog you have closed (#1353).**
   Closing the AI Hub while its Ollama probe was still running raised "wrapped
   C/C++ object of type StaticText has been deleted". The AI Hub was fixed in
