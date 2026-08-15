@@ -6,18 +6,303 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
 
-## [Unreleased]
+## [3.0.0] - 2026-08-15
+
+Major: Browse Stations becomes a browsable directory rather than a list of
+sources, podcasts arrive keylessly, transcripts gain timings, and three
+long-standing silent faults are fixed. See `docs/release-notes-3.0.md`.
 
 ### Added
+
+- **Choose Browse Sources... (Station menu)** -- hide any branch of Browse
+  Stations. A branch that is off is not in the tree at all and is never
+  contacted (the Search Sources rule); rows speak their own state; hiding
+  everything leaves one row saying the way back; and "never set" is kept
+  distinct from "chosen", so branches added later appear on their own.
+- **Download Preferences... (Station menu; also a button in View > Downloads)**
+  -- the downloads folder, per-show and per-book folders, author grouping once
+  an author has more than one work, keep-downloads-going on close, and an
+  ask-me-where mode that asks once per book and cancels the enqueue out loud
+  if declined. A live sentence answers "what will happen to the next thing I
+  save?".
+
+- **Browse by Country, then State or region** -- a top-level branch over data
+  Radio Browser always exposed and Quill Radio only used to fill a dropdown. A
+  country with no regional breakdown lists its stations directly.
+- **Browse by Language** -- the same data on the axis that is hardest to find
+  elsewhere.
+- **Trending Now** -- ranked by what is being listened to today, as distinct from
+  Popular Stations, which ranks by votes cast once.
+- **Recently Added or Changed** -- new and just-repaired stations.
+- **Podcasts (Apple)** -- storefront, then Apple's full genre tree, then charts,
+  then a show's episodes. No key, no account, no registration at any step. A show
+  resolves to its own RSS feed and Apple is not involved after that.
+- **Internet Archive** -- the collection tree walked to any depth, with a
+  **More...** node that names how many rows it is hiding, `Retry-After` honoured
+  on HTTP 429, and rights metadata shown only when the item publishes it.
+- **LibriVox** -- Recently Added, By Genre (43), By Author (A-Z over ~7,000).
+  No By Title: the API supports no title filter in any form.
+- **Project Gutenberg** audiobooks by topic and language.
+- **Audius** trending, overall and within 27 genres; gated tracks dropped.
+- **Mixcloud** (Mode A, metadata only) -- 28 music and 10 talk categories; rows
+  state that they open in the browser before activation.
+- **ccMixter** by tag, with each row's licence shown on the row.
+- **My Servers** -- add a broadcaster's own Icecast or SHOUTcast address and
+  browse its mounts, each carrying what is playing on it right now.
+  `browse_actions.py` probes the address before storing it (`my_servers.probe`)
+  and reports the mount count; an address that answers with nothing is **not**
+  stored. Plain `http` on a high port is accepted here deliberately -- a great
+  many small Icecast boxes are exactly that, the address is one the listener
+  typed, only a GET is sent, and no credential is ever attached.
+- **YouTube Channels** -- follow a channel with no Google account. Adding one
+  makes the same shallow request opening the branch would, so a channel that
+  cannot be read is caught before it is stored; channels open into Uploads plus
+  published playlists, paged with a **More...** node.
+- **Action rows in the browse tree now act.** `BrowseNode.is_action` existed and
+  `browse_tree_dialog` did not handle it, so "Add a Server..." and "Add a
+  Channel..." were rows that did nothing on Enter -- the exact failure the house
+  rule in `bounded_playback_ui` exists to prevent. Dispatch lives in
+  `ui/radio/browse_actions.py`, one registry entry per action, so the window
+  still learns nothing source-specific. Both actions run their network check on
+  the task manager, never the UI thread, and refuse out loud in Safe Mode.
+- **Explore (Wikidata)** -- By City, By Owner, By Network, By Format and On the
+  Dial (FM band). Wikidata supplies the organisation, Radio Browser still
+  supplies every stream, and each row is labelled "from Wikidata" because the
+  join between the two is ours rather than either source's.
+- **Your place is kept in anything with an end** (`core/radio/resume.py`,
+  `ui/radio/resume_playback.py`) -- a LibriVox chapter, an Archive episode, a
+  podcast. Keyed on the normalised stream URL, since nothing here is a file. A
+  position under the floor is not a position and saving one clears the entry;
+  finishing clears it too; every failure degrades to "no saved position" rather
+  than reaching the player. Live stations are excluded by
+  `RadioStation.is_recording`, because tuning in *is* your position.
+- **PLS, XSPF and ASX playlists open**, and favorites export to all four formats
+  (M3U, PLS, XSPF, ASX), each round-tripping through its own reader.
+- **Federated search over the libraries** (`core/radio/federated_search.py`,
+  `ui/radio/library_search.py`). Find Stations now also queries LibriVox,
+  Internet Archive, Project Gutenberg and Apple Podcasts, each on its own task,
+  appending into the existing results list with its own `source` so the Source
+  column and filter work unchanged -- no second surface. `internet_archive.search`
+  and a `query` parameter on `gutendex.audiobooks` reuse the endpoints and
+  reviewed egress sites the browse tree already had; no new host. Deliberately no
+  cross-provider ranking: each source's own order is preserved within its group.
+  Sources that cannot answer free text (Audius, Mixcloud, ccMixter) are declared
+  `search=None` with a reason and reported by name. One announcement when the
+  last source reports, never per arrival.
+- **Song Details** (`ui/radio/song_facts.py`) wires `core/radio/musicbrainz.py`,
+  which had been written and called by nothing, into the Song History window:
+  release, year and length for the selected song. Opt-in (a button, never
+  automatic -- a per-row network request would spend somebody's connection on
+  curiosity they did not express), on the task manager, self-rate-limited to
+  MusicBrainz's one request per second, and degrading to "nothing more is known"
+  rather than to an HTTP message.
+- **Video** (`core/radio/video_formats.py`, `core/radio/caption_style.py`,
+  `ui/radio/video_window.py`, `ui/radio/video_commands.py`,
+  `ui/radio/video_output.py`, `ui/radio/mpv_video_mixin.py`,
+  `ui/radio/caption_settings_dialog.py`). **Show Video (Ctrl+Shift+V)** attaches
+  mpv to a `wx.Panel`'s handle *while playing* -- `wid` plus `vid=auto`, and back
+  to `vid=no` on hide -- so showing and hiding the picture never restarts the
+  stream and never loses the position. YouTube serves adaptive video and audio
+  separately, so `pick_video_stream` chooses a **video-only** format (capped at
+  1080p) and the audio rides alongside through mpv's `audio-files`, which is what
+  avoids downloading and merging the whole file first; a combined format is
+  skipped, and a live HLS stream already carries its own picture. The surface
+  carries an accessible name and description, is in the tab order once, and never
+  self-focuses; the status line is not a live region. Captions load via `sub-add`
+  with `CaptionStyle` -> mpv properties, defaulting to **opaque** white-on-black
+  (contrast against arbitrary video cannot be guaranteed otherwise) and scaling to
+  300%. `Ctrl+Shift+I` reports size, rate, codec and whether captions and
+  described audio exist; snapshots write `screenshot-to-file ... video`, without
+  subtitles. Brightness control is the honest answer to a photosensitivity
+  requirement no player can satisfy by inspection. `YOUTUBE_CONSENT` rewritten to
+  cover video; the consent **flag** deliberately does not reset.
+- **Described audio** (`core/radio/audio_tracks.py`,
+  `ui/radio/audio_track_dialog.py`, `ui/radio/track_selection.py`). Every
+  YouTube resolve reports each audio rendition with a language code and a label;
+  `tracks_from_info` reads them, `is_described` decides which is descriptive
+  (generously about form -- "English (Audio Description)", "descriptive",
+  "eng-desc", "English AD", `en-x-description` -- and strictly about meaning),
+  and `describe_track` names each one instead of numbering it.
+  **Playback > Audio and Described Audio... (Ctrl+Shift+A)** lists them with the
+  described track first, the cursor on it, and the availability stated above the
+  list; **Play Described Audio (Ctrl+Alt+D)** switches straight to it. A
+  rendition is a separate URL, so selection is a reload -- and the position is
+  carried across, since losing your place an hour into a film to enable
+  description would defeat the feature. Absence is reported with what the video
+  *does* have, never as a greyed-out command. Detection is pure and unit-tested,
+  so the heuristic can improve without touching the UI.
+- **Timed transcript cues, and the reader that uses them.** WebVTT, SubRip,
+  Podcasting 2.0 JSON and YouTube `json3` parse into timed lines
+  (`TranscriptCue`, `parse_transcript_cues`, `cue_at`, `cues_to_vtt`,
+  `cues_to_srt`, `fetch_transcript_cues`), and `quill/ui/transcript_reader.py`
+  is the window: follow playback, Enter to play from a line, Find with the
+  position spoken, Copy, Save As in text/VTT/SRT, Open in QUILL. Shared with
+  Quill Cast rather than owned by either app. Radio reaches it from **Playback >
+  Transcript... (Ctrl+Shift+T)** via `PlayerController.caption_track()`, which
+  picks up the caption track every YouTube resolve was already fetching and
+  discarding. Follow is off by default and silent while on; positions go through
+  `spoken_duration`; the writers are asserted to round-trip through the parser;
+  an automatic track is labelled automatic.
+- **Browse levels are cached between sessions**, with the age of a cached answer
+  available so it can be spoken rather than implied.
+- **A probe suite for every external service** (37 probes, `S:\radio-probes`),
+  each asserting a specific capability rather than a status code.
+
+### Changed
+
+- **Browse sources moved behind one contract**
+  (`quill/core/radio/browse_sources.py`). The Browse window no longer knows the
+  shape of any source; it renders folders and leaves. Adding a source is one
+  registry entry and one handler, not a node kind plus edits in six places.
+  `browse_tree_dialog.py` is 199 lines smaller while the tree it serves grew
+  from thirteen root branches to twenty-eight, and its GATE-11 budget was
+  **ratcheted down** to match.
+- **An empty branch distinguishes "nothing here" from "could not be reached"**,
+  and Safe Mode says so per branch rather than showing an empty folder.
+- **A folder announces its child count before it is opened** where the source
+  supplies one cheaply.
+- **Xiph genres are offered in the directory's own use order** (most-used first),
+  filtered to plausible genres, and bounded to the top 120 rather than ~3,400
+  free-text strings.
+- **`browse_tree_helpers` moved from `quill/ui/radio/` to `quill/core/radio/`**
+  as `browse_helpers`, since the (core) browse registry needs it and core must
+  not import from the UI layer.
+- **The NOAA Weather Radio user agent is derived from the package version**
+  instead of a hard-coded `2.1.1` that had been stale for two releases.
+
+### Fixed
+
+- **The described-audio picker listed one track as three, and then three as
+  one.** `audio_tracks.tracks_from_info` first identified a track by
+  `format_note`, which carries a quality tier (`low`, `medium`, `high`), so an
+  ordinary video's several bitrates became several unchoosable rows all reading
+  "English". Keying instead on yt-dlp's `audio_track` id with a language
+  fallback was worse: yt-dlp does not populate `audio_track` for YouTube at all,
+  and a video's original and descriptive renditions share a language code, so
+  two tracks would have collapsed into one and the described track would have
+  been discarded silently. `format_note` is now parsed (`track_name_from_note`)
+  -- tiers and the `(default)` marker stripped, the track's own name kept -- and
+  identity is language plus name. A row never repeats its language, and a
+  regional tag survives only when it is the one thing distinguishing two rows.
+  Unit-tested against the shapes YouTube really returns, plus an opt-in live
+  test over fourteen real videos
+  (`QUILL_YT_LIVE=1 pytest tests/integration/test_youtube_audio_tracks_live.py`).
+
+- **Descriptive and dubbed renditions YouTube withholds from desktop players
+  are now reached.** The web player response names a video's alternate audio
+  renditions -- "English descriptive", twenty-four dubbed languages -- but
+  serves them URL-less (SABR streaming), so yt-dlp discards them and every
+  video claimed one track. The resolver now also asks as YouTube's iOS player
+  client (`player_client: ["default", "ios"]`, `formats: ["missing_pot"]`),
+  which gets the same renditions with direct, playable URLs; verified live on
+  all eight known descriptive-track videos at no added resolve time. Fallout
+  fixed along the way: the iOS client's `MISSING POT` stamp read as a phantom
+  second track until stripped; the repeat-strip mangled unmapped language
+  labels at a mid-word boundary ("Tamil" -> "ta (mil)"); and Tamil, Telugu,
+  Malayalam, Punjabi, Marathi, and Bangla joined the language-name table, with
+  unmapped codes now deferring to the track's own label.
+
+- **`http.client.HTTPException` was not caught** by the new fetchers. It is not
+  an `OSError` subclass, so ccMixter's oversized HTTP header (it emits one at
+  page sizes of 20 or more) escaped as an unhandled type and the branch went
+  silently empty instead of reporting that it could not load. ccMixter's page
+  size is now capped at the 15 that works.
+
+- **The Xiph genre index was silently truncated**, losing 412 genres and
+  reporting a different count on every refresh: the page had outgrown the read
+  limit and the forgiving parser hid it. The limit now fits, and an oversized
+  page raises rather than dropping entries.
+- **Xiph genres were sorted alphabetically**, discarding the directory's
+  popularity order and opening the list on `00`, `00s`, `100.1` and `104.5`.
+- **A single failed read ended a live stream** (reported against KFI Los
+  Angeles). iHeart's HLS form is a three-segment, thirty-second window behind a
+  per-listener redirect whose token lives five seconds and is refreshed every
+  ten, so one missed refresh drained the buffer and the audio ran out twenty to
+  thirty seconds later -- and `mpv_radio_engine` set **no ffmpeg reconnect
+  options at all**, while `player_controller._on_finished` treated EOF on a live
+  station as "the stream ended" and stopped. The only retry path that existed
+  (`_attempt_engine_fallback`) is reachable only while `CONNECTING`. Three
+  changes: `stream-lavf-o` now carries
+  `reconnect=1,reconnect_streamed=1,reconnect_on_network_error=1,reconnect_delay_max=30`
+  (`reconnect_streamed` is the one that matters -- without it ffmpeg refuses to
+  reconnect a non-seekable stream, which is every live station); a new
+  `ui/radio/live_reconnect.py` retries a dropped **live** station three times at
+  2 s / 5 s / 15 s, announcing each attempt and the outcome, excluding bounded
+  sources and dropping any retry whose play token has moved on; and
+  `_NETWORK_TIMEOUT_SECONDS` rose from 15 to 30, which was tight for a playlist
+  that only advances every ten seconds.
+- **iHeart stations now prefer the progressive stream over HLS.**
+  `iheart._STREAM_KEYS` puts `secure_shoutcast_stream` first: one long HTTP body,
+  no segment window, no per-refresh token, no per-listener session to lose. It
+  removes the failure mode above rather than recovering from it, and it captured
+  60 seconds clean under probe (59/59 unique one-second PCM hashes) where the
+  HLS form is the one that fails intermittently in the field. HLS remains the
+  fallback for stations that publish nothing else.
+- **A capture that recorded nothing was reported as a completed recording.**
+  ffmpeg creates the output container before the first audio frame, so file
+  existence was never evidence of a capture, and `_monitor` announced
+  "Recording saved" (or, when the file was never created, nothing legible at
+  all) for a job that produced zero bytes. New `core/radio/recording_outcome.py`
+  owns the verdict -- `captured_nothing`, `empty_capture_reason`,
+  `discard_empty_capture`, plus the fatal/recovery classifiers that moved with
+  them -- and `RadioRecorder` gained an `on_capture_failed(station, reason)`
+  callback, deliberately separate from `on_state_changed` because the two say
+  opposite things: one reports a file that exists and the other reports that
+  there is none. The empty file is removed and the failure is spoken on the
+  error cue.
+- **TuneIn preferred an HLS manifest over a progressive stream from the same
+  host**, which is the iHeart dropout arriving through a different directory
+  (96.5 The Fan Kansas City, guide id `s28141`). `best_stream` now demotes HLS
+  -- but **host-scoped**, and the scoping is the point: for that station TuneIn
+  returns the manifest on `live.amperwave.net` and an MP3 on
+  `ais-sa40.cdnstream1.com`, whose own query string carries a *different*
+  station id and `class=music` where the station is sports. A blind preference
+  could hand somebody another broadcaster entirely; where the hosts differ, the
+  engine's reconnect options and `live_reconnect` handle it instead. `_is_hls`
+  matches on the path only, since TuneIn URLs carry heavy tracking query
+  strings.
+- **TuneIn could select an unencrypted stream when an encrypted one was
+  offered.** Stream choice is now ranked -- not-a-redirect first, then HTTPS --
+  instead of taking whichever survived a filter first.
+- **`/json/states/<country>` needs its trailing slash**; without it the directory
+  answers with an empty list rather than an error, which reads as "this country
+  has no states".
+- **Apple chart rows are tagged with their leaf genre**, so filtering a chart by
+  a top-level genre matched nothing until the filter was widened to the genre's
+  whole subtree.
+
+### Security
+
+- **XSPF and ASX playlists are parsed with entity expansion disabled**, so a
+  crafted playlist cannot be used for a billion-laughs expansion.
+
 
 - **Quill Radio's icon is its own again.** Quill Inkwell, Quill Audio Studio and Quill Weather were all shipping byte-identical copies of Quill Radio's broadcast-wave icon, so four products shared one face in the taskbar, in Alt+Tab and in the tray. Every app in the family now has a purpose-drawn icon: one shared tile shape and one shared amber accent, but a distinct silhouette and a distinct colour each. Radio keeps its waves, redrawn to survive tray size -- at 16x16 the old three thin arcs merged into a smear, so there are now two, thicker and further apart.
-- **Exact OptiLab processing for saved recordings.** Quill Radio's broadcast-polish modes have always been a faithful *adaptation* of **OptiLab Core by Lanes Audio / dgl1984** (https://github.com/dgl1984/optilab), rebuilt as ffmpeg filter chains so they work everywhere -- live, relayed and recorded -- and preview the moment you move a control. That adaptation has one honest limit: OptiLab eases its lift and pulls back bass help *while* its final limiter is working hard, and a filter chain cannot do that, because no stage in it can see how hard a later stage is working. For **saved recordings** Quill Radio can now run the real OptiLab engine instead, when the optional OptiLab component is included in your build. Live listening keeps the built-in chain permanently -- that is what makes every adjustment audible immediately, with no reconnect -- and if the component is absent the option says so and nothing else changes. With thanks to dgl1984; licensed Apache-2.0 with the Commons Clause.
+- **Exact OptiLab processing.** Quill Radio's broadcast-polish modes have always been a faithful *adaptation* of **OptiLab Core by Lanes Audio / dgl1984** (https://github.com/dgl1984/optilab), rebuilt as ffmpeg filter chains so they work everywhere -- live, relayed and recorded -- and preview the moment you move a control. That adaptation has one honest limit: OptiLab eases its lift and pulls back bass help *while* its final limiter is working hard, and a filter chain cannot do that, because no stage in it can see how hard a later stage is working. Quill Radio can now run the real OptiLab engine instead, when the optional component is included in your build. One setting, three states, both off by default: **off** (the built-in chain everywhere), **when saving** (recordings and converted files -- the recommended one, and it costs nothing, because a recording is processed after it finishes and the original is replaced only once a good copy exists), or **when saving and while listening** (which relays the stream through the engine, so the station starts slower, uses more CPU, and needs a brief reconnect on every settings change -- stated in the option rather than discovered afterwards). The built-in filters always leave the graph when the real engine runs, so nothing is processed twice; if the component is absent the option says so and nothing else changes. With thanks to dgl1984; licensed Apache-2.0 with the Commons Clause.
 
-## [2.2.0] - 2026-08-12
+### Known incomplete
 
+Written down rather than left to be found, because "not mentioned" and "not
+built" look identical from the outside.
+
+- **RadioDNS is a non-goal, and its module has been removed** rather than left
+  as dead code. It resolves a broadcaster's own service document from the
+  *broadcast* parameters -- frequency plus PI code plus ECC -- and Quill Radio
+  has no source of PI codes. Wiring it would have meant a form asking a listener
+  for a value nobody has, which is the same failure as an axis that quietly
+  finds nothing. `dnspython` went with it, since nothing else needed it.
+
+
+### Also in 3.0.0: everything from 2.2.0 (landed 2026-07-24, never published)
+
+2.2.0 was built and never published, so its entries ship for the first time in
+3.0.0. They are kept under their own sub-headings below rather than merged into
+the lists above, so the record of what landed when survives the version skip.
+
+#### The 2.2.0 work, in full
 2.2.0 was never published, so everything that had accumulated under "Unreleased" is part of it rather than a release after it. It is a large one: the app is delivered differently (a shared runtime and two light downloads), it learns two whole new kinds of station -- YouTube and Live365 -- it remembers the songs each station played, your volume finally stays where you put it, and every message the app speaks now also reaches a braille display.
 
-### Added
+#### Added
 
 - **A play queue for the Recordings list, which unlocks the last three Winamp keys.** **R** (shuffle), **S** (repeat) and **Ctrl+V** (stop after current) were deliberately left unbound when the rest of the Winamp map landed, because all three describe a play queue the recordings list did not have -- and a key that only looks like it worked is worse than a key that is not offered. It has one now. Shuffle is a **fixed order** rather than a fresh roll each time, so every recording plays once before any repeats and **Z** reliably goes back to the one you just heard; "pick at random each time" can do neither. Repeat cycles off, all recordings, this recording, and repeat-one applies when a recording *ends on its own* -- pressing **B** still moves on, because a Next that refused to move would look broken. Stop-after-current outranks repeat, clears itself the moment it fires, and is deliberately not remembered between sessions: a stop that survived a restart would halt playback for a reason nobody could remember asking for. A recording that reaches its end is now followed by whatever the queue says is next. Shuffle and repeat are remembered.
 - **Go to Position... (Ctrl+Shift+J) for a finished video.** Skipping thirty seconds at a time gets you near; this gets you exact. It reuses the same accessible Hours / Minutes / Seconds dialog the Quill Media Player uses -- three labelled spin controls as the primary input, plus a timecode field for `1:23:45` -- rather than growing a second, lesser prompt, and it clamps to the video's length and says so if you asked for a point past the end.
@@ -50,12 +335,12 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 - **Winamp's classic keys work in the Recordings player.** If you came to Windows audio through Winamp, its classic-skin main-window keys are still in your fingers -- and the Recordings window answered to exactly two of them (Ctrl+Up and Ctrl+Down for volume). The whole transport set is now live on the keys you already know: **X** play, **C** pause and unpause, **V** stop, **Shift+V** stop (Winamp's fade-out; this player has no fade, so it stops cleanly rather than pretending), **B** next recording, **Z** previous, **Left/Right** back and forward 5 seconds, **Shift+Left/Shift+Right** 30 seconds, **T** to swap between elapsed and remaining time, **J** to jump to a recording by typing part of its name, **Ctrl+J** to jump to a time (`90`, `1:30`, or `1:02:03`), and **L** to open. Every one of them announces what it did, so a key that did not land is never mistaken for one that did. Two deliberate differences from Winamp, both documented: **Ctrl+T** stays What's Playing, which is worth more in a radio app, so the elapsed/remaining toggle sits on plain **T**; and **Up/Down** keep moving through the list, which is what Winamp itself does in its Playlist Editor -- and this list is a playlist editor by any other name. Seeking needs a timeline, so on a live stream (or the classic Windows Media engine) the seek keys say why they cannot move instead of doing nothing, and a letter typed into a text field is never swallowed. Turn the letter keys off with **Winamp-style playback keys in the Recordings player** in Preferences if you would rather use them for list typeahead; volume is unaffected either way. Shuffle, repeat, and stop-after-current are deliberately absent: all three describe a play queue the recordings list does not have yet, and a key that only looks like it worked is worse than no key. (#1344)
 
-### Changed
+#### Changed
 
 - **Announcements now reach your braille display.** Everything Quill Radio speaks -- What's Playing, a finished refresh, a recording starting -- is now also written to a connected braille display, not only spoken. Nothing is truncated, an identical message inside two seconds does not steal the display twice, and braille never costs speech: an unplugged display or a reader that refuses the call degrades to "spoke but did not braille", never to silence. Turn it off with **Show announcements in braille** in Preferences > Accessibility. A *burst* of different messages no longer flickers across the display either -- the first message of a quiet period writes instantly and anything landing within the next 150 ms settles to the newest, with errors always writing through at once. (#1283)
 - **The scheduled-recordings list is ordered by when each recording next occurs**, soonest first, rather than the order you entered them, and each row shows the stream's host in brackets so two similar entries -- or a duplicate still pointing at the original station -- are easy to tell apart. (#1220)
 
-### Fixed
+#### Fixed
 
 - **Seeking a finished YouTube video no longer reports a live edge that does not exist.** **Rewind / Forward 30 Seconds** always ran the *live-stream* seek, which moves within mpv's rolling buffer and announces how far behind live you now are. On a finished video there is no live edge to be behind, so the number it spoke was invented. The keys now pick the operation the source actually deserves: a video moves along its own timeline and says "3 minutes 10 seconds of 18 minutes 40 seconds"; a live stream is completely unchanged. (This is also what finally reaches the video skip commands, which had been written for exactly this and had no caller at all.)
 - **Show this file in Explorer really does select the file.** The Recordings list's **Open in Folder** passed Windows Explorer its `/select,` switch and the path as two separate arguments; Explorer wants them as one, and given two it quietly drops the switch and opens Documents instead. A window appeared, so it looked like it had worked -- and nothing told a screen-reader user that the wrong folder had opened. There is one tested implementation of this now, shared with QUILL and QUILL Cast.
@@ -66,7 +351,7 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 - **A recording that stops recording is now noticed, even when nothing reports a problem.** A stalled stream can leave FFmpeg alive and apparently healthy while the file stops growing, so the recording looked fine and captured nothing. Quill Radio now watches the recording file's size as a second, independent check: if it has not gained a byte across four checks in a row -- about a minute -- the recording is treated exactly like a dropped connection, so it reconnects and continues or stops and saves what it captured. The existing checks (FFmpeg's own read timeout, and watching for FFmpeg exiting) are unchanged; this one sits alongside them. It is patient enough that a slow network or a station's own rebuffering is never mistaken for a dead one, and it is never applied to a recording you have just asked to stop.
 - **Recording filenames follow the computer's current time zone.** Change the computer's time zone (or ride a daylight-saving shift) while Quill Radio is running and new recordings are named with the new local time straight away -- no restart. Filenames used to keep stamping the zone that was in force when the app launched. (#1223)
 
-### Earlier work in 2.2.0 (landed 2026-07-24)
+#### Earlier work in 2.2.0 (landed 2026-07-24)
 
 These entries were written when this material was expected to ship as its own
 release. It never was, so they belong to 2.2.0 alongside everything above.

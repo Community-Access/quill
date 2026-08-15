@@ -14,9 +14,16 @@ from QUILL's own ``assets-v1`` release -- into a gitignored local cache, and
 prints the staged directories for the build scripts to consume.
 
 Nothing new is trusted: the pins live in
-:mod:`quill.core.release_assets` and :mod:`quill.core.speech.ffmpeg_install`,
-which are the single source of truth for both the runtime downloader and this
-build-time fetcher. There is no second copy of a URL or a hash to drift.
+:mod:`quill.core.release_assets`, :mod:`quill.core.speech.ffmpeg_install` and
+:mod:`quill.core.speech.piper_install`, which are the single source of truth for
+both the runtime downloader and this build-time fetcher. There is no second copy
+of a URL or a hash to drift.
+
+``piper`` is staged for *tooling*, not for a release payload: QUILL does not
+bundle piper.exe (PRD 10.2.x footprint unbundle), but regenerating the bundled
+Piper voice previews with ``scripts/gen_voice_previews.py`` needs the engine, and
+a hand-staged copy is exactly the unreproducible setup this script exists to
+remove. Windows-only, like the runtime install it reuses.
 
 Usage::
 
@@ -25,6 +32,7 @@ Usage::
     python scripts/fetch_build_deps.py --verify-only   # report, download nothing
     python scripts/fetch_build_deps.py --print-paths   # machine-readable NAME=DIR
     python scripts/fetch_build_deps.py --only ffmpeg   # one component
+    python scripts/fetch_build_deps.py --only piper    # the preview-generation engine
 
 The cache lives under ``build/deps/`` (already gitignored) unless
 ``QUILL_BUILD_DEPS_DIR`` overrides it. Re-running is cheap: a component whose
@@ -55,6 +63,12 @@ from quill.core.speech.ffmpeg_install import (  # noqa: E402
     _extract_ffmpeg_from_zip,
     ffmpeg_download_source,
 )
+from quill.core.speech.piper_install import (  # noqa: E402
+    PIPER_RELEASE_TAG,
+    PiperInstallError,
+    install_piper,
+    piper_install_supported,
+)
 
 #: Subdirectory names the build scripts expect, and the file that proves the
 #: component is really staged (not a half-finished download).
@@ -62,8 +76,17 @@ FFMPEG_DIR_NAME = "ffmpeg"
 FFMPEG_SENTINEL = "ffmpeg.exe"
 LIBMPV_DIR_NAME = "mpv"
 LIBMPV_SENTINEL = "libmpv-2.dll"
+PIPER_DIR_NAME = "piper"
+PIPER_SENTINEL = "piper.exe"
 
-COMPONENTS = ("ffmpeg", "libmpv")
+COMPONENTS = ("ffmpeg", "libmpv", "piper")
+
+#: component -> (cache subdirectory, the file that proves it is really staged).
+_LAYOUT: dict[str, tuple[str, str]] = {
+    "ffmpeg": (FFMPEG_DIR_NAME, FFMPEG_SENTINEL),
+    "libmpv": (LIBMPV_DIR_NAME, LIBMPV_SENTINEL),
+    "piper": (PIPER_DIR_NAME, PIPER_SENTINEL),
+}
 
 
 def deps_root() -> Path:
@@ -73,12 +96,11 @@ def deps_root() -> Path:
 
 
 def component_dir(component: str) -> Path:
-    root = deps_root()
-    return root / (FFMPEG_DIR_NAME if component == "ffmpeg" else LIBMPV_DIR_NAME)
+    return deps_root() / _LAYOUT[component][0]
 
 
 def _sentinel(component: str) -> str:
-    return FFMPEG_SENTINEL if component == "ffmpeg" else LIBMPV_SENTINEL
+    return _LAYOUT[component][1]
 
 
 def is_staged(component: str) -> bool:
@@ -138,6 +160,32 @@ def fetch_libmpv(*, force: bool = False) -> Path:
     return dest
 
 
+def fetch_piper(*, force: bool = False) -> Path:
+    """Stage piper.exe (plus its DLLs and espeak-ng-data) into the cache.
+
+    Delegates to :func:`quill.core.speech.piper_install.install_piper`, so this
+    is byte-for-byte the archive QUILL's own on-demand Piper install fetches and
+    SHA-256-verifies -- the pinned tag and hash are not restated here.
+    """
+    dest = component_dir("piper")
+    if is_staged("piper") and not force:
+        print(f"  piper {PIPER_RELEASE_TAG}: already staged at {dest}")
+        return dest
+
+    if not piper_install_supported():
+        raise ReleaseAssetError(
+            "Staging Piper is Windows-only (the pinned release ships a Windows AMD64 zip). "
+            "On macOS/Linux install Piper yourself and pass --piper-exe to gen_voice_previews.py."
+        )
+    print(f"  piper {PIPER_RELEASE_TAG}: downloading (SHA-256 pinned)...")
+    try:
+        install_piper(_progress, dest_dir=dest)
+    except PiperInstallError as exc:
+        raise ReleaseAssetError(f"Could not stage Piper: {exc}") from exc
+    print(f"  piper {PIPER_RELEASE_TAG}: staged at {dest}")
+    return dest
+
+
 def fetch_all(components: tuple[str, ...], *, force: bool = False) -> dict[str, Path]:
     staged: dict[str, Path] = {}
     for component in components:
@@ -145,6 +193,8 @@ def fetch_all(components: tuple[str, ...], *, force: bool = False) -> dict[str, 
             staged[component] = fetch_ffmpeg(force=force)
         elif component == "libmpv":
             staged[component] = fetch_libmpv(force=force)
+        elif component == "piper":
+            staged[component] = fetch_piper(force=force)
         else:  # pragma: no cover - argparse constrains the choices
             raise ReleaseAssetError(f"Unknown build dependency: {component!r}")
     return staged

@@ -48,6 +48,14 @@ class InkwellSettings:
     #: the system-wide twin of QUILL's Expand Abbreviation command. Works
     #: mid-word and at the end of a line.
     expand_now_hotkey: str = "Ctrl+Alt+Shift+X"
+    #: Set when the file on disk came from a newer build. Not persisted: it is
+    #: a fact about *this* load, and saving would be the thing it prevents.
+    read_only: bool = False
+
+
+#: Bumped when a field changes meaning (never merely when one is added --
+#: every field defaults, so an added one needs no migration).
+SCHEMA_VERSION = 1
 
 
 def settings_path(data_dir: Path) -> Path:
@@ -60,6 +68,24 @@ def load_settings(data_dir: Path) -> InkwellSettings:
     raw = read_json(settings_path(data_dir), default={})
     if not isinstance(raw, dict):
         return InkwellSettings()
+    # A file from a *newer* build is read for what this build understands and
+    # never written back over: an older Inkwell that saved would silently drop
+    # every field it had never heard of, which for a settings file people share
+    # between machines is how a preference disappears with no error anywhere.
+    if int(raw.get("schema_version", SCHEMA_VERSION) or SCHEMA_VERSION) > SCHEMA_VERSION:
+        settings = _read_fields(raw)
+        settings.read_only = True
+        return settings
+    return _read_fields(raw)
+
+
+def _read_fields(raw: dict) -> InkwellSettings:
+    """Every field this build knows, defaulted individually.
+
+    Field by field rather than wholesale, so a file missing a key (an older
+    build) and a file with an unknown one (a newer build) both load without a
+    migration step -- which is the versioned contract's whole point.
+    """
     settings = InkwellSettings()
     settings.expansion_enabled = bool(raw.get("expansion_enabled", True))
     mode = str(raw.get("injection_mode", "type"))
@@ -80,11 +106,19 @@ def load_settings(data_dir: Path) -> InkwellSettings:
 
 
 def save_settings(data_dir: Path, settings: InkwellSettings) -> None:
+    """Persist, stamped with the schema version (the versioned contract).
+
+    Refuses when the loaded file came from a newer build: writing would drop
+    every field this build does not know about.
+    """
     from quill.core.storage import write_json_atomic
 
+    if settings.read_only:
+        return
     write_json_atomic(
         settings_path(data_dir),
         {
+            "schema_version": SCHEMA_VERSION,
             "expansion_enabled": settings.expansion_enabled,
             "injection_mode": settings.injection_mode,
             "excluded_processes": settings.excluded_processes,

@@ -89,9 +89,19 @@ class _UnknownIWAMessage:
         return {"_pbtype": f"UNKNOWN.Type{self._type_id}"}
 
 
-def _patched_id_name_map() -> dict[int, Any]:
-    """Return a wrapper around keynote-parser's ID_NAME_MAP that never raises KeyError."""
-    import keynote_parser.codec as _codec
+def _patched_id_name_map(original: dict[int, Any]) -> dict[int, Any]:
+    """A wrapper around keynote-parser's ID_NAME_MAP that never raises KeyError.
+
+    Takes the map it is wrapping rather than re-importing the module to find it:
+    the caller has already resolved that module, and importing it a second time
+    is a second chance to get a *different* object -- which is exactly what
+    happens when two documents open at once and one of them is running under a
+    patched ``sys.modules``.
+
+    Only used against keynote-parser releases that still have that map; 1.14 and
+    later handle an unknown archive type themselves, and
+    :func:`_read_pages_via_iwa` skips this entirely there.
+    """
 
     class _FallbackMap(dict):
         def __missing__(self, type_id: int) -> type:
@@ -104,7 +114,7 @@ def _patched_id_name_map() -> dict[int, Any]:
 
             return _Factory
 
-    return _FallbackMap(_codec.ID_NAME_MAP)
+    return _FallbackMap(original)
 
 
 def _parse_iwa_bundle(path: Path, zip_file_reader: Callable[..., Any]) -> dict[str, list[dict]]:
@@ -148,13 +158,22 @@ def _read_pages_via_iwa(path: Path) -> Document:
     if _ID_NAME_MAP_LOCK is None:
         _ID_NAME_MAP_LOCK = threading.Lock()
         _codec._quill_id_name_map_lock = _ID_NAME_MAP_LOCK  # type: ignore[attr-defined]
+    # keynote-parser 1.14 and later handle an unknown archive type themselves
+    # (``UnknownArchive`` / ``UnknownArchiveWarning``) and no longer expose
+    # ``ID_NAME_MAP`` at all. Patching it unconditionally raised AttributeError
+    # on every .pages file opened against a current install -- the fallback that
+    # existed to stop a crash had become the crash. So the patch is applied only
+    # where there is something to patch, and the newer library is left to do the
+    # job it now does better.
     with _ID_NAME_MAP_LOCK:
-        _original_map = _codec.ID_NAME_MAP
-        _codec.ID_NAME_MAP = _patched_id_name_map()
+        _original_map = getattr(_codec, "ID_NAME_MAP", None)
+        if _original_map is not None:
+            _codec.ID_NAME_MAP = _patched_id_name_map(_original_map)
         try:
             archives_by_id = _parse_iwa_bundle(path, zip_file_reader)
         finally:
-            _codec.ID_NAME_MAP = _original_map
+            if _original_map is not None:
+                _codec.ID_NAME_MAP = _original_map
 
     if not archives_by_id:
         raise ValueError("No IWA archives found in Pages file")

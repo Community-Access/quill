@@ -35,8 +35,9 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from quill.core import http_client
+from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.error_codes import CodedError
-from quill.core.radio import radio_logging
+from quill.core.radio import radio_logging, recording_outcome
 from quill.core.radio.local_clock import local_now
 from quill.core.radio.recording_commands import (
     RECORD_FORMAT_LABELS,
@@ -44,15 +45,17 @@ from quill.core.radio.recording_commands import (
     build_filename,
     build_probe_codec_command,
     build_record_command,
+    encode_args_for_format,
     format_uses_bitrate,
     parse_probe_codec,
+    probe_capture_extension,
     raw_capture_extension,
     uniquify,
 )
 from quill.core.radio.recording_join import describe_join, join_recording_parts
 from quill.core.radio.recording_liveness import wait_for_exit
 from quill.core.radio.recording_winjob import assign_kill_on_close_job, close_job_handle
-from quill.core.speech.ffmpeg import INSTALL_HINT, find_ffmpeg, find_ffprobe
+from quill.core.speech.ffmpeg import INSTALL_HINT, find_ffmpeg
 from quill.stability.redaction import format_args_for_log, redact_source_tokens
 
 # Re-exported for back-compat: callers still do `from ...recording import
@@ -84,26 +87,6 @@ logger = logging.getLogger(__name__)
 _STDERR_ERROR_RE = re.compile(
     r"(?i)\b(error|failed|invalid|unable|no such|not found|denied|refused|timed out)\b"
 )
-
-#: R4/13.3 -- ffmpeg stderr markers that mean the failure is *fatal* (the stream
-#: is gone for good or the disk is full), not a transient drop worth spending a
-#: reconnect attempt on. Only genuinely-terminal HTTP codes count: 404 Not Found,
-#: 410 Gone, 451 Unavailable. A 5xx, a network timeout, a bare EOF, and crucially
-#: a transient 403 Forbidden (an expired/rotating CDN token -- common, and
-#: recoverable) or a 408/409 are treated as transient and DO reconnect, so a
-#: hiccup no longer cuts a recording short after a minute.
-_FATAL_STDERR_RE = re.compile(
-    r"(?i)(no space left|disk full|enospc|read-only|"
-    r"server returned 4(?:04|10|51)|http error 4(?:04|10|51)|http/[0-9.]+ 4(?:04|10|51)|"
-    r"404 not found|410 gone|451 unavailable)"
-)
-
-#: Evidence in ffmpeg's stderr that it (re)connected and is making forward
-#: progress -- an ``Opening '...' for reading`` reconnect line or a progress stat
-#: line. Any earlier error was recovered from, so the recent-stderr tail is
-#: cleared on this signal, preventing a transient error ffmpeg already rode out
-#: from poisoning the fatal/transient verdict of a later, unrelated drop.
-_RECOVERY_STDERR_RE = re.compile(r"(?i)(opening .+ for reading|\btime=\d)")
 
 _PROBE_TIMEOUT_SECONDS = 10.0
 _DEFAULT_BITRATE_KBPS = 192
@@ -161,6 +144,15 @@ class RecordingSettings:
     #: build_record_command's filter_graph parameter -- this module itself
     #: stays decoupled from audio_enhance.py; the caller computes the graph.
     apply_sound_enhancements: bool = False
+    #: Off by default. When true *and* the optional OptiLab component is present
+    #: in this build, a finished recording gets one more pass through the **real**
+    #: OptiLab Core engine (quill/native/optilab), instead of the ffmpeg chain's
+    #: adaptation of it. Saved files only -- live listening is untouched, and is
+    #: meant to be: see quill/core/audio/exact_optilab.py. The caller supplies the
+    #: mode/input/adapt (RadioRecorder.start's ``exact_optilab``) and is
+    #: responsible for leaving the OptiLab *filters* out of the recording's own
+    #: graph so the audio is never processed twice.
+    exact_optilab: bool = False
     #: How many recordings may run at the same time (quill-radio concurrent
     #: recording). ``0`` means *unlimited* -- the recorder starts every
     #: recording the user or the scheduler asks for, so five overlapping
@@ -184,6 +176,7 @@ class RecordingSettings:
             "reconnect_max_attempts": self.reconnect_max_attempts,
             "reconnect_wait_seconds": self.reconnect_wait_seconds,
             "apply_sound_enhancements": self.apply_sound_enhancements,
+            "exact_optilab": self.exact_optilab,
             "max_concurrent_recordings": self.max_concurrent_recordings,
         }
 
@@ -203,6 +196,7 @@ class RecordingSettings:
             reconnect_max_attempts=max(0, _coerce_int(data.get("reconnect_max_attempts"), 5)),
             reconnect_wait_seconds=max(1, _coerce_int(data.get("reconnect_wait_seconds"), 10)),
             apply_sound_enhancements=bool(data.get("apply_sound_enhancements", False)),
+            exact_optilab=bool(data.get("exact_optilab", False)),
             # 0 (unlimited) is the floor -- a negative saved value coerces to it.
             max_concurrent_recordings=max(0, _coerce_int(data.get("max_concurrent_recordings"), 0)),
         )
@@ -268,6 +262,11 @@ class RecordingJob:
     started_at: datetime
     scheduled_end: datetime
     entry_id: str = ""
+    #: The exact-OptiLab pass to run over the finished file, or None (the
+    #: default) for "leave it as recorded". Carried on the job, not read from
+    #: settings at the end, so a recording is post-processed the way it was
+    #: started even if the listener changes their settings while it runs.
+    exact: ExactOptilab | None = None
     #: Recent ffmpeg stderr (R4/13.3), inspected on a drop to decide fatal vs
     #: transient. Per-job so a second recording's stderr never poisons this
     #: job's verdict.
@@ -320,6 +319,8 @@ class RadioRecorder:
         on_state_changed: Callable[[bool, Path | None, str], None] | None = None,
         on_reconnect: Callable[[int, int], None] | None = None,
         on_parts_joined: Callable[[str], None] | None = None,
+        on_exact_processed: Callable[[str], None] | None = None,
+        on_capture_failed: Callable[[str, str], None] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed or (lambda _recording, _dest, _job_id: None)
         #: (attempt, max_attempts) -- fired on a background thread each time a
@@ -329,6 +330,17 @@ class RadioRecorder:
         #: recording that dropped and resumed has finished and its parts have
         #: been joined -- or honestly reported as still separate.
         self._on_parts_joined = on_parts_joined or (lambda _note: None)
+        #: One ready-to-speak sentence, fired on a background thread when a
+        #: finished recording has been through the real OptiLab engine -- or when
+        #: that pass was asked for and could not be done. Never silent either
+        #: way: a listener who turned exact processing on is entitled to know
+        #: whether the file they kept actually got it.
+        self._on_exact_processed = on_exact_processed or (lambda _note: None)
+        #: ``(station name, reason)`` -- fired on a background thread when a
+        #: recording ended having captured nothing. Separate from
+        #: ``on_state_changed`` because the two say opposite things: one reports
+        #: a file that exists, and this reports that there is no file.
+        self._on_capture_failed = on_capture_failed or (lambda _station, _reason: None)
         #: Guards membership of the jobs dict; per-job fields are only mutated
         #: under it (or, for a job's own stderr tail, by that job's single drain
         #: thread, read back under the lock in _monitor).
@@ -433,6 +445,7 @@ class RadioRecorder:
         duration_minutes: int | None = None,
         filter_graph: str = "",
         entry_id: str = "",
+        exact_optilab: ExactOptilab | None = None,
         _job_id: str = "",
         _continuation_part: int = 0,
         _forced_extension: str = "",
@@ -450,7 +463,11 @@ class RadioRecorder:
         stream's own codec.
 
         ``entry_id`` links the recording to a schedule entry (for the resume
-        marker). The ``_``-prefixed parameters are internal to the reconnect
+        marker). ``exact_optilab`` asks for one pass of the **real** OptiLab
+        engine over the finished file (see :mod:`quill.core.audio.exact_optilab`);
+        it is ignored for raw capture, and the caller must have left the OptiLab
+        filters out of ``filter_graph`` so the audio is not processed twice. The
+        ``_``-prefixed parameters are internal to the reconnect
         path: a continuation reuses the dropped recording's ``_job_id`` and its
         original ``_started_at``/``_scheduled_end`` so identity and the
         remaining-time math survive a drop.
@@ -532,7 +549,7 @@ class RadioRecorder:
         # without decoding, so it is dropped. Re-encode formats keep their
         # format name as the extension and honor the filter.
         if settings.format == "copy":
-            extension = _forced_extension or _probe_capture_extension(capture_url)
+            extension = _forced_extension or probe_capture_extension(capture_url)
             record_filter = ""
         else:
             extension = settings.format
@@ -622,6 +639,10 @@ class RadioRecorder:
             entry_id=entry_id,
             win_job=win_job,
             reconnect_attempt=_continuation_part,
+            # Raw capture is never decoded, so it can never be post-processed
+            # without ceasing to be a raw capture. Dropped here rather than in
+            # the caller so every entry point gets the same answer.
+            exact=exact_optilab if settings.format != "copy" else None,
         )
         # Authoritative cap re-check + registration under the lock. If another
         # start won the last slot while we were spawning, kill the process we just
@@ -685,7 +706,7 @@ class RadioRecorder:
                 # so an error it already recovered from cannot poison a later
                 # verdict.
                 with job.stderr_lock:
-                    if _RECOVERY_STDERR_RE.search(line):
+                    if recording_outcome.is_recovery(line):
                         job.stderr_tail.clear()
                     job.stderr_tail.append(line)
                 safe = redact_source_tokens(line)
@@ -734,7 +755,7 @@ class RadioRecorder:
             # process.wait()); iterating it directly races into a RuntimeError.
             with job.stderr_lock:
                 tail_snapshot = list(job.stderr_tail)
-            fatal = failed and any(_FATAL_STDERR_RE.search(line) for line in tail_snapshot)
+            fatal = failed and recording_outcome.is_fatal(tail_snapshot)
             # R4/13.5: close this job's kill-on-close handle now the child has
             # exited (wait() returned), so a long session does not leak a handle
             # per recording.
@@ -757,6 +778,23 @@ class RadioRecorder:
             "dropped/partial" if failed else "stopped/complete",
             format_args_for_log([str(landed)]),
         )
+        # A recording that captured nothing is a failure, and must be reported
+        # as one. Announcing "Recording saved" over a zero-byte file -- or one
+        # that was never created -- is worse than silence, because it sends
+        # somebody looking in a folder for audio that does not exist.
+        if not job.user_stopped and recording_outcome.captured_nothing(landed):
+            reason = recording_outcome.empty_capture_reason(tail_snapshot)
+            recording_outcome.discard_empty_capture(landed)
+            logger.info(
+                "Recording captured nothing (%s): %s",
+                job.station_name,
+                reason,
+            )
+            self._on_state_changed(False, None, job.job_id)
+            self._on_capture_failed(job.station_name, reason)
+            with self._lock:
+                self._parts.pop(job.job_id, None)
+            return
         self._on_state_changed(False, landed, job.job_id)
         with self._lock:
             self._parts.setdefault(job.job_id, []).append(landed)
@@ -765,9 +803,45 @@ class RadioRecorder:
         # parts of a dropped-and-resumed recording stitched back together.
         resumed = self._maybe_reconnect(job) if (failed and not fatal) else False
         if not resumed:
-            self._join_parts(job)
+            final = self._join_parts(job)
+            if final is not None:
+                self._apply_exact_optilab(job, final)
 
-    def _join_parts(self, job: RecordingJob) -> None:
+    def _apply_exact_optilab(self, job: RecordingJob, path: Path) -> None:
+        """Run the real OptiLab engine over the finished recording, if asked.
+
+        Runs *after* the recording is over and after any parts are joined, never
+        during the capture: an adapter fault mid-recording must not be able to
+        cost somebody the recording they were making. The pass writes a temp file
+        and replaces the original only on success, so the worst case here is a
+        file that is exactly what was recorded, plus a spoken explanation.
+        """
+        spec = job.exact
+        if spec is None or not spec.active:
+            return
+        from quill.core.audio import exact_optilab
+
+        if not exact_optilab.available():
+            self._on_exact_processed(
+                f"{path.name} was saved without exact OptiLab processing. "
+                f"{exact_optilab.unavailable_reason()}"
+            )
+            return
+        encode_args = encode_args_for_format(job.settings.format, job.settings.bitrate_kbps)
+        if not encode_args:
+            return  # raw capture; nothing to re-encode into
+        try:
+            exact_optilab.process_in_place(path, spec, encode_args=encode_args)
+        except Exception as exc:  # noqa: BLE001 - the recording itself is safe either way
+            logger.warning("Exact OptiLab processing of %s failed: %s", path.name, exc)
+            self._on_exact_processed(
+                f"{path.name} was saved, but exact OptiLab processing could not be applied: {exc}"
+            )
+            return
+        logger.info("Exact OptiLab processing applied to %s", format_args_for_log([str(path)]))
+        self._on_exact_processed(f"{path.name} was processed with the OptiLab engine.")
+
+    def _join_parts(self, job: RecordingJob) -> Path | None:
         """Stitch a dropped-and-resumed recording's parts into one file.
 
         Runs once per recording, from the monitor thread of its final part. A
@@ -775,14 +849,25 @@ class RadioRecorder:
         that cannot be done, or fails, leaves every part exactly where it is --
         a failed join must never cost the user their recording -- and either
         outcome is announced honestly.
+
+        Returns where the recording now is (the joined file, or the first
+        surviving part), or ``None`` when there was nothing to join -- so the
+        exact-OptiLab pass that follows always processes the whole show rather
+        than part one of it.
         """
         with self._lock:
             parts = self._parts.pop(job.job_id, [])
         if len(parts) < 2:
-            return
-        note = describe_join(join_recording_parts(parts))
+            return parts[0] if parts else None
+        outcome = join_recording_parts(parts)
+        note = describe_join(outcome)
         if note:
             self._on_parts_joined(note)
+        # A join that did not happen leaves several files. Returning None then is
+        # deliberate: processing part one of a show that is still in pieces would
+        # produce a set of files where some had the exact engine applied and some
+        # did not, which is worse than applying it to none of them.
+        return outcome.path if outcome.joined else None
 
     def _maybe_reconnect(self, job: RecordingJob) -> bool:
         """*job* died without being asked to stop: wait, then resume into a
@@ -871,6 +956,7 @@ class RadioRecorder:
                 duration_minutes=remaining,
                 filter_graph=job.filter_graph,
                 entry_id=job.entry_id,
+                exact_optilab=job.exact,
                 _job_id=job.job_id,
                 _continuation_part=attempt,
                 _forced_extension=job.extension,
@@ -1000,41 +1086,6 @@ def _resolve_capture_url(stream_url: str) -> str:
         return resolve_youtube_stream(stream_url).stream_url
     except YouTubeError as exc:
         raise RecordingError(str(exc)) from exc
-
-
-def _probe_capture_extension(stream_url: str) -> str:
-    """Probe *stream_url*'s audio codec and return the raw-capture extension.
-
-    Best-effort: a missing ffprobe, a probe error, or a timeout all fall back
-    to Matroska audio (``.mka``), the universal lossless copy container, so
-    raw capture always has a valid destination.
-    """
-    ffprobe = find_ffprobe()
-    if ffprobe is None:
-        return raw_capture_extension("")
-    extra_kwargs: dict = {}
-    if os.name == "nt":
-        extra_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
-    try:
-        completed = subprocess.run(
-            build_probe_codec_command(ffprobe, stream_url, user_agent=http_client.user_agent()),
-            capture_output=True,
-            text=True,
-            timeout=_PROBE_TIMEOUT_SECONDS,
-            check=False,
-            **extra_kwargs,
-        )
-    except (OSError, subprocess.SubprocessError) as exc:
-        logger.debug("ffprobe failed for raw-capture probe: %s", exc)
-        return raw_capture_extension("")
-    codec = parse_probe_codec(completed.stdout)
-    if not codec:
-        # #5 observability: the probe ran but gave us no codec. ffprobe's own
-        # stderr (redacted) says why -- previously captured but never logged, so
-        # a "why did my recording become .mka?" question had no answer in the log.
-        stderr = format_args_for_log((completed.stderr or "").strip().splitlines()[-3:])
-        logger.debug("ffprobe returned no codec (falling back to .mka); stderr: %s", stderr)
-    return raw_capture_extension(codec)
 
 
 def _default_dir(home: Path | None = None) -> Path:

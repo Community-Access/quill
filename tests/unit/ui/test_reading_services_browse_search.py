@@ -7,10 +7,9 @@ the Browse loader / Search helper are exercised as plain functions.
 
 from __future__ import annotations
 
-from quill.core.radio import reading_services
+from quill.core.radio import browse_sources, reading_services
 from quill.core.radio.directory_search import reading_services_search_stations
 from quill.core.radio.models import RadioStation
-from quill.ui.radio.browse_tree_dialog import _STATION_LOADERS
 
 
 def _rs(name: str, *, tags: tuple[str, ...] = (), country: str = "") -> RadioStation:
@@ -23,15 +22,17 @@ def _rs(name: str, *, tags: tuple[str, ...] = (), country: str = "") -> RadioSta
     )
 
 
-def test_station_loaders_reading_services_returns_list_reading_services(monkeypatch) -> None:
+def test_browse_reading_services_returns_playable_leaves(monkeypatch) -> None:
     expected = [_rs("WRBH 88.3 FM Reading Radio")]
     monkeypatch.setattr(
         reading_services, "list_reading_services", lambda *, safe_mode=False: expected
     )
-    assert _STATION_LOADERS["reading_services"](False) == expected
+    nodes = browse_sources.browse("reading")
+    assert [n.station for n in nodes] == expected
+    assert all(n.is_leaf for n in nodes)
 
 
-def test_station_loaders_reading_services_passes_safe_mode(monkeypatch) -> None:
+def test_browse_reading_services_passes_safe_mode(monkeypatch) -> None:
     seen: dict[str, bool] = {}
 
     def fake_list(*, safe_mode: bool = False) -> list[RadioStation]:
@@ -39,7 +40,7 @@ def test_station_loaders_reading_services_passes_safe_mode(monkeypatch) -> None:
         return []
 
     monkeypatch.setattr(reading_services, "list_reading_services", fake_list)
-    _STATION_LOADERS["reading_services"](True)
+    browse_sources.browse("reading", safe_mode=True)
     assert seen["safe_mode"] is True
 
 

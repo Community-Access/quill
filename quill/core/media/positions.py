@@ -24,7 +24,7 @@ precisely the wrong answer. The most *recent* one is what you meant, so
 :func:`merge_positions` is last-write-wins on ``updated_at`` -- and says so
 when the two disagreed, rather than silently discarding a position.
 
-This is shaped for :mod:`quill.apps.beacon.quillsync`: :class:`PositionStore`
+This is shaped for :mod:`quill.core.sync`: :class:`PositionStore`
 satisfies its ``RecordStore`` protocol and :func:`merge_positions` satisfies
 its ``MergeFn``, so wiring a transport later is adapter work rather than a
 rewrite. Nothing here touches the network.
@@ -38,6 +38,14 @@ wx-free, strict-typed.
 """
 
 from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    # Only for the annotation: importing the sync protocol at runtime
+    # would make a position store depend on the sync framework, and
+    # positions work perfectly well with no sync at all.
+    from quill.core.sync.protocol import Conflict
 
 import hashlib
 import json
@@ -150,7 +158,7 @@ def _as_int(value: object) -> int:
     return 0
 
 
-def merge_positions(local: dict | None, remote: dict) -> tuple[dict, list[object]]:
+def merge_positions(local: dict | None, remote: dict) -> tuple[dict, list[Conflict]]:
     """Combine two versions of one position. A QuillSync ``MergeFn``.
 
     Last write wins, by ``updated_at``. A conflict is reported only when the
@@ -161,7 +169,7 @@ def merge_positions(local: dict | None, remote: dict) -> tuple[dict, list[object
     Ties, and records with no timestamp at all, resolve to the remote, matching
     ``default_merge`` so behaviour is predictable when data is incomplete.
     """
-    from quill.apps.beacon.quillsync.protocol import Conflict
+    from quill.core.sync.protocol import Conflict
 
     if local is None:
         return remote, []
@@ -172,7 +180,7 @@ def merge_positions(local: dict | None, remote: dict) -> tuple[dict, list[object
 
     local_ms = max(0, _as_int(local.get("position_ms")))
     remote_ms = max(0, _as_int(remote.get("position_ms")))
-    conflicts: list[object] = []
+    conflicts: list[Conflict] = []
     if abs(local_ms - remote_ms) >= CONFLICT_GAP_MS:
         conflicts.append(
             Conflict(
@@ -245,6 +253,15 @@ class PositionStore:
         media_id = media_identity(media)
         if not media_id:
             return
+        # Where this file is *on this machine*, kept beside the store rather
+        # than in it: the record travels between machines and a path does not.
+        # See quill/core/media/local_paths.py.
+        try:
+            from quill.core.media import local_paths
+
+            local_paths.remember(self._path.parent, media_id, media)
+        except Exception:  # noqa: BLE001 - a hint is never worth failing a save
+            pass
         entries = self._read()
         entries.pop(_legacy_key(media), None)
         if position_ms < MIN_RESUME_MS:

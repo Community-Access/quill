@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL 1.0.0</title>
+  <title>release1.0.0</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,32 +174,11 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="quill-100">QUILL 1.0.0</h1>
+<h1 id="quill-1.0.0">QUILL 1.0.0</h1>
 <h2
-id="the-screen-reader-first-writing-suite-built-by-the-people-who-depend-on-it">The
+id="the-screen-reader-first-writing-suite-built-by-the-people-who-depend-on-it.">The
 screen-reader-first writing suite, built by the people who depend on
 it.</h2>
 <p><em>From Community Access. Free. Optional by design. Private by
@@ -224,7 +203,7 @@ version and the last one. Every shortcut named here is real, every
 limitation is stated plainly, and nothing important is left for you to
 discover by accident.</p>
 <hr />
-<h2 id="what-ships-in-100">What ships in 1.0.0</h2>
+<h2 id="what-ships-in-1.0.0">What ships in 1.0.0</h2>
 <p>Three programs carry the QUILL name in this release.</p>
 <p><strong>QUILL</strong> is the editor: a complete writing and document
 environment covering plain text, Markdown, HTML, rich text, Word,
@@ -901,7 +880,8 @@ drops it inline in the text as “Math Equation: …”, so a formula is
 spoken as part of its sentence instead of being skipped or read out as
 raw markup. It uses MathCAT when installed and QUILL’s built-in reader
 otherwise, and never fails a book over an equation it cannot parse.</p>
-<p>This feature was contributed by @salorajan.</p>
+<p>This feature was contributed by <span class="citation"
+data-cites="salorajan">@salorajan</span>.</p>
 <hr />
 <h2 id="spelling-language-and-words">Spelling, Language, and Words</h2>
 <p><strong>F7</strong> runs the full guided Spelling Review over the
@@ -1087,10 +1067,8 @@ usable on modest hardware.</p>
 <p>QUILL treats braille as a document format and a reading medium in its
 own right, not as a rendering of print.</p>
 <p>Turn it on through the startup wizard’s <strong>Braille
-Professional</strong> profile, through **Help</p>
-<blockquote>
-<p>Enable Braille Mode**, or through Manage Individual Features.</p>
-</blockquote>
+Professional</strong> profile, through <strong>Help &gt; Enable Braille
+Mode</strong>, or through Manage Individual Features.</p>
 <h3 id="braille-files-byte-for-byte">Braille files, byte for byte</h3>
 <p>QUILL opens and saves <code>.brf</code>, <code>.brl</code>,
 <code>.pef</code>, and <code>.ueb</code> files while <strong>preserving
@@ -1427,7 +1405,7 @@ for your saved sites and an SSH Quick Connect for the one-off case. SSH
 host-key checking defaults to rejecting an unknown key; automatically
 adding one requires an explicit trust-on-first-use opt-in, which is a
 setting you turn on deliberately rather than a prompt you dismiss.</p>
-<h3 id="publishing-read-only-in-10">Publishing, read-only in 1.0</h3>
+<h3 id="publishing-read-only-in-1.0">Publishing, read-only in 1.0</h3>
 <p>If you run the <strong>Full Quill</strong> profile, the File menu
 carries a <strong>Publish</strong> submenu with three items:
 <strong>Publishing Connections</strong>, <strong>Verify Current
@@ -1959,8 +1937,8 @@ file”, which happens to you without a sound.</p>
 <p><strong>Tools &gt; Git and GitHub &gt; Local Git &gt;
 Worktrees</strong> announces the count as it opens, and every row is a
 whole sentence you hear once and understand (“Linked worktree at
-D:\usb\quill-spike, on branch spike, locked: on a USB drive”) rather
-than four narrow columns you would have to arrow across. <strong>New
+D:-spike, on branch spike, locked: on a USB drive”) rather than four
+narrow columns you would have to arrow across. <strong>New
 Worktree</strong> asks where the folder goes and which branch it holds,
 or creates a brand-new branch with an optional starting point, and its
 folder field takes whatever you actually paste. QUILL checks before it
@@ -2514,9 +2492,8 @@ a macOS download.</li>
 disable one specific misbehaving feature, in a way that is announced,
 reversible, honored offline, and overridable locally. A menu item
 disabled by an advisory explains itself right there in the menu rather
-than being mysteriously greyed out.</li>
+than being mysteriously greyed out. ### Resetting and moving</li>
 </ul>
-<h3 id="resetting-and-moving">Resetting and moving</h3>
 <p><strong>Reset Everything to Factory Defaults</strong> puts settings,
 shortcuts, menu customizations, and the feature profile back behind one
 confirmation. <strong>Import data from a previous QUILL install</strong>
@@ -2631,6 +2608,5 @@ that says “this works perfectly” is worth as much as one that says it
 does not.</p>
 <p><strong>QUILL 1.0.0. One editor. Every format. Built with
 you.</strong></p>
-</main>
 </body>
 </html>

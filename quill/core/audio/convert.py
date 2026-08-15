@@ -37,6 +37,7 @@ from dataclasses import dataclass, field, replace
 from enum import StrEnum
 from pathlib import Path
 
+from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.speech.ffmpeg import ENCODE_FORMATS, MP3_VBR_QUALITY, AudioMetadata
 
 # --------------------------------------------------------------------------- #
@@ -167,6 +168,13 @@ class ConversionSpec:
     # Ordered ffmpeg -af filter fragments (v2 DSP); empty in v1.
     filters: tuple[str, ...] = ()
     metadata: AudioMetadata | None = None
+    # Optional pass through the *real* OptiLab Core engine instead of an ffmpeg
+    # approximation of it (quill/core/audio/exact_optilab.py). ``None`` -- the
+    # default -- converts exactly as before. It is not an ``-af`` filter and
+    # cannot be one: the engine is a separate process the audio is piped
+    # through, so ``build_convert_command`` describes only the encode half and
+    # the runner wires up the pipeline.
+    exact_optilab: ExactOptilab | None = None
 
     def output_extension(self) -> str:
         """The file extension (with dot) for this spec's format."""
@@ -456,7 +464,11 @@ def default_destination(source_root: Path) -> Path:
 
 
 def build_convert_command(
-    ffmpeg: str, job: ConversionJob, *, out_path: Path | None = None
+    ffmpeg: str,
+    job: ConversionJob,
+    *,
+    out_path: Path | None = None,
+    pcm_input: tuple[int, int] | None = None,
 ) -> list[str]:
     """Compose the ffmpeg argv that converts ``job.source`` -> ``out_path`` (§9.1).
 
@@ -465,6 +477,13 @@ def build_convert_command(
     ``out_path`` overrides ``job.dest`` so the runner can encode to a temp file
     and move it into place (atomic, never a truncated output). Pure — safe to
     hand to a subprocess: all paths are controlled and ffmpeg is caller-resolved.
+
+    ``pcm_input`` — ``(sample_rate, channels)`` — replaces the file input with
+    raw PCM on stdin: this is the *encode half* of an exact-OptiLab pass, where
+    the source has already been decoded and processed by another two processes
+    (see :mod:`quill.core.audio.exact_optilab`). The source's own ``-af`` filters
+    and the video-extraction switch belong to the decode half and are dropped
+    here, so nothing is applied twice.
     """
     spec = job.spec
     fmt = spec.fmt.strip().lower()
@@ -473,11 +492,16 @@ def build_convert_command(
         raise ValueError(f"Unsupported output format: {spec.fmt!r}")
     target = out_path if out_path is not None else job.dest
 
-    args = [ffmpeg, "-hide_banner", "-loglevel", "error", "-i", str(job.source)]
+    if pcm_input is not None:
+        from quill.core.audio.exact_optilab import build_pcm_input_args
 
-    # Select only the audio track (drops any video); for a video source this is
-    # the "extract audio" path, for an audio source it is a harmless no-op.
-    args += ["-map", "0:a:0?"] if spec.extract_from_video else ["-vn"]
+        args = [ffmpeg, "-hide_banner", "-loglevel", "error"]
+        args += build_pcm_input_args(pcm_input[0], pcm_input[1])
+    else:
+        args = [ffmpeg, "-hide_banner", "-loglevel", "error", "-i", str(job.source)]
+        # Select only the audio track (drops any video); for a video source this
+        # is the "extract audio" path, for an audio source a harmless no-op.
+        args += ["-map", "0:a:0?"] if spec.extract_from_video else ["-vn"]
 
     if spec.copy_audio:
         # Stream-copy fast path: no codec/filter/rate options apply.
@@ -502,7 +526,11 @@ def build_convert_command(
         if fmt == "flac" and spec.bit_depth in _BIT_DEPTH_SAMPLE_FMT:
             args += ["-sample_fmt", _BIT_DEPTH_SAMPLE_FMT[spec.bit_depth]]
 
-        filters = list(spec.filters)
+        # With a PCM input the spec's own DSP filters have already run, in the
+        # decode step, ahead of the OptiLab engine -- the same order the live
+        # chain uses (everything else first, broadcast polish last). Only the
+        # channel layout is left to do here.
+        filters = [] if pcm_input is not None else list(spec.filters)
         chan = _channel_filter(spec.channels)
         if chan:
             filters.append(chan)
@@ -688,6 +716,11 @@ def _default_single_runner(ffmpeg: str, job: ConversionJob) -> JobResult:
     )
     os.close(fd)
     tmp_path = Path(tmp_name)
+    exact = job.spec.exact_optilab
+    # A stream copy is never decoded, so it can never be processed and stay a
+    # copy. The pair is refused here rather than half-honoured.
+    if exact is not None and exact.active and not job.spec.copy_audio:
+        return _exact_optilab_runner(ffmpeg, job, tmp_path)
     try:
         command = build_convert_command(ffmpeg, job, out_path=tmp_path)
         completed = run_subprocess_safely(command, timeout_seconds=3600.0)
@@ -698,6 +731,46 @@ def _default_single_runner(ffmpeg: str, job: ConversionJob) -> JobResult:
         shutil.move(str(tmp_path), str(job.dest))
         return JobResult(job=job, ok=True)
     except Exception as exc:  # noqa: BLE001 - clean up the temp, report the reason
+        tmp_path.unlink(missing_ok=True)
+        return JobResult(job=job, ok=False, error=str(exc))
+
+
+def _exact_optilab_runner(ffmpeg: str, job: ConversionJob, tmp_path: Path) -> JobResult:
+    """Convert one job through the real OptiLab engine instead of an ffmpeg
+    approximation of it: decode -> ``quill-optilab`` -> encode.
+
+    Falls back to nothing: if the optional component is absent the job fails with
+    a reason the batch summary can say out loud, rather than quietly producing a
+    file that says "exact" in the log and is not. The caller decides whether to
+    offer the option at all (:func:`quill.core.audio.exact_optilab.available`).
+    """
+    import shutil
+
+    from quill.core.audio import exact_optilab
+
+    spec = job.spec
+    exact = spec.exact_optilab
+    assert exact is not None  # guarded by the caller
+    if not exact_optilab.available():
+        tmp_path.unlink(missing_ok=True)
+        return JobResult(job=job, ok=False, error=exact_optilab.unavailable_reason())
+    rate, channels = exact_optilab.probe_shape(job.source)
+    try:
+        encode_command = build_convert_command(
+            ffmpeg, job, out_path=tmp_path, pcm_input=(rate, channels)
+        )
+        exact_optilab.process_file(
+            job.source,
+            tmp_path,
+            exact,
+            encode_command=encode_command,
+            filter_graph=",".join(spec.filters),
+            sample_rate=rate,
+            channels=channels,
+        )
+        shutil.move(str(tmp_path), str(job.dest))
+        return JobResult(job=job, ok=True)
+    except Exception as exc:  # noqa: BLE001 - one bad file must never sink the batch
         tmp_path.unlink(missing_ok=True)
         return JobResult(job=job, ok=False, error=str(exc))
 

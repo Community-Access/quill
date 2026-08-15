@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Quill Radio — the public standalone app (version 2.2.0)</title>
+  <title>app-radio</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,30 +174,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="quill-radio--the-public-standalone-app-version-220">Quill Radio
+<h1 id="quill-radio-the-public-standalone-app-version-2.2.0">Quill Radio
 — the public standalone app (version 2.2.0)</h1>
 <p>Quill Radio is a screen-reader-first Internet-radio player that ships
 alongside QUILL 1.0.0 as its own Windows program. It is the same radio
@@ -237,510 +216,395 @@ engine. On the classic Windows Media engine those announce a pointer to
 <strong>N/A</strong> for that engine, not a fail.</li>
 </ul>
 <p>Common inputs used below: a <strong>station name to search</strong>
-(e.g. <code>jazz</code>), a scratch folder you can write to for
+(e.g. <code>jazz</code>), a scratch folder you can write to for
 recordings and backups, and about an hour with headphones.</p>
 <hr />
-<h2 id="radio-01--launch-quill-radio-for-the-first-time">RADIO-01 —
+<h2 id="radio-01-launch-quill-radio-for-the-first-time">RADIO-01 —
 Launch Quill Radio for the first time</h2>
 <p><em>What &amp; why.</em> The first launch must open a real, focused,
 announced window with no crash — and, being an appliance, it may come up
 already playing your last station. This mirrors GS-04 for the standalone
 app.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL 1.0.0 installed (system installer) or the portable folder
-extracted. Screen reader running (GS-01).</li>
-<li>Nothing else open. This is your very first launch, so nothing will
-resume yet.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Launch <strong>Quill Radio</strong>: from the <strong>Start
-menu</strong> press <strong>Enter</strong> on the <strong>Quill
-Radio</strong> entry, or run
-<strong><code>QuillRadio.exe</code></strong> in the portable
-folder.</li>
-<li>Wait a few seconds for the window to appear. Do not click
-anything.</li>
-<li>Listen to what takes focus. Press <strong>Tab</strong> once or twice
-to hear the first controls.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A window titled <strong>Quill Radio</strong> opens and <strong>comes
-to the foreground</strong>; there is <strong>no crash or error
-dialog</strong>. The screen reader announces the window.</li>
-<li>Keyboard focus lands on the <strong>Favorite stations</strong> tree
-(announced as a tree view). A first launch has none yet, so it is empty.
-Near it are a <strong>Now playing</strong> line reading <strong>“Radio:
-stopped”</strong>, a <strong>Play (Ctrl+P)</strong> button, an
-<strong>Add to Favorites</strong> button (disabled while nothing plays),
-a <strong>Record</strong> button, a <strong>Browse Stations…</strong>
-button, and a <strong>Volume, percent</strong> slider.</li>
-<li>Press <strong>Alt</strong> — the menu bar opens (Station, Playback,
-and, unless gated off, Record and Weather, then View, QuillVille,
-Quillins, Window, Help). The first <strong>Alt</strong> opens the app
-menu, not the window’s system menu.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL 1.0.0 installed (system
+installer) or the portable folder extracted. Screen reader running
+(GS-01). - Nothing else open. This is your very first launch, so nothing
+will resume yet.</p>
+<p><strong>Do this</strong> 1. Launch <strong>Quill Radio</strong>: from
+the <strong>Start menu</strong> press <strong>Enter</strong> on the
+<strong>Quill Radio</strong> entry, or run
+<strong><code>QuillRadio.exe</code></strong> in the portable folder. 2.
+Wait a few seconds for the window to appear. Do not click anything. 3.
+Listen to what takes focus. Press <strong>Tab</strong> once or twice to
+hear the first controls.</p>
+<p><strong>You should see and hear</strong> - A window titled
+<strong>Quill Radio</strong> opens and <strong>comes to the
+foreground</strong>; there is <strong>no crash or error dialog</strong>.
+The screen reader announces the window. - Keyboard focus lands on the
+<strong>Favorite stations</strong> tree (announced as a tree view). A
+first launch has none yet, so it is empty. Near it are a <strong>Now
+playing</strong> line reading <strong>“Radio: stopped”</strong>, a
+<strong>Play (Ctrl+P)</strong> button, an <strong>Add to
+Favorites</strong> button (disabled while nothing plays), a
+<strong>Record</strong> button, a <strong>Browse Stations…</strong>
+button, and a <strong>Volume, percent</strong> slider. - Press
+<strong>Alt</strong> — the menu bar opens (Station, Playback, and,
+unless gated off, Record and Weather, then View, QuillVille, Quillins,
+Window, Help). The first <strong>Alt</strong> opens the app menu, not
+the window’s system menu.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="radio-02--get-your-bearings-the-quill-radio-window">RADIO-02 —
+<h2 id="radio-02-get-your-bearings-the-quill-radio-window">RADIO-02 —
 Get your bearings: the Quill Radio window</h2>
 <p><em>What &amp; why.</em> Later scenarios say “focus returns to the
 favorites tree” or “check the status bar.” Learn those places now so the
 rest of the section makes sense.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Quill Radio open (RADIO-01), nothing playing.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>F6</strong>. It moves focus into the <strong>status
-bar</strong> along the bottom; press <strong>F6</strong> again to hand
-focus back to the favorites tree (it says <strong>“Returned to favorite
-stations”</strong>).</li>
-<li>Press <strong>Alt</strong>, then <strong>Right Arrow</strong> across
-the whole menu bar once, just to hear the menu names. Press
-<strong>Escape</strong> to leave the menu bar.</li>
-<li><strong>Tab</strong> through the main panel: Favorite stations tree,
-Play button, Add to Favorites button, Record button, Browse Stations
-button, Volume slider.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li><strong>F6</strong> toggles between the favorites tree and the named
-<strong>Status bar</strong>; each is announced. The menu bar lists the
-expected menus. Every control in the panel is reachable by
-<strong>Tab</strong> with a spoken name (the Play button reports its
-Ctrl+P shortcut). Escape from the menu bar returns you to the tree.</li>
-</ul>
+<p><strong>Before you start</strong> - Quill Radio open (RADIO-01),
+nothing playing.</p>
+<p><strong>Do this</strong> 1. Press <strong>F6</strong>. It moves focus
+into the <strong>status bar</strong> along the bottom; press
+<strong>F6</strong> again to hand focus back to the favorites tree (it
+says <strong>“Returned to favorite stations”</strong>). 2. Press
+<strong>Alt</strong>, then <strong>Right Arrow</strong> across the whole
+menu bar once, just to hear the menu names. Press
+<strong>Escape</strong> to leave the menu bar. 3. <strong>Tab</strong>
+through the main panel: Favorite stations tree, Play button, Add to
+Favorites button, Record button, Browse Stations button, Volume
+slider.</p>
+<p><strong>You should see and hear</strong> - <strong>F6</strong>
+toggles between the favorites tree and the named <strong>Status
+bar</strong>; each is announced. The menu bar lists the expected menus.
+Every control in the panel is reachable by <strong>Tab</strong> with a
+spoken name (the Play button reports its Ctrl+P shortcut). Escape from
+the menu bar returns you to the tree.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-03--browse-stations-radiobrowse-station--browse-stations">RADIO-03
+id="radio-03-browse-stations-radio.browse-station-browse-stations">RADIO-03
 — Browse Stations (<code>radio.browse</code>, Station ▸ Browse
 Stations…)</h2>
 <p><em>What &amp; why.</em> The search-free way to wander every source —
 each source is a branch you expand to reveal its stations. This is the
 “just show me what’s on” view and the fastest path to your first
 favorite.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Quill Radio open; network available (else
-<strong>Blocked</strong>).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press the <strong>Browse Stations…</strong> button, or
-<strong>Station menu (Alt, S) ▸ Browse Stations…</strong>.</li>
-<li>In the <strong>Stations (expand a source to browse it)</strong>
-tree, arrow to a source (e.g. <strong>Popular Stations</strong> or
-<strong>SomaFM</strong>) and press <strong>Right Arrow / Enter</strong>
-to expand it; wait for it to load.</li>
-<li>Arrow onto a station and press <strong>Enter</strong> (or the
-<strong>Play</strong> button) to play it.</li>
-<li>Press <strong>Add to Favorites</strong>. Then try the <strong>Find
-in this folder</strong> field: type a word and press
-<strong>Enter</strong>.</li>
-<li>Press <strong>Escape</strong> or <strong>Close</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The tree is announced (“Station sources; expand one to browse its
-stations, Enter plays, Shift+F10 opens all actions”). Expanding a source
-says <strong>“Loading…”</strong> then <strong>“N item(s).”</strong> A
+<p><strong>Before you start</strong> - Quill Radio open; network
+available (else <strong>Blocked</strong>).</p>
+<p><strong>Do this</strong> 1. Press the <strong>Browse
+Stations…</strong> button, or <strong>Station menu (Alt, S) ▸ Browse
+Stations…</strong>. 2. In the <strong>Stations (expand a source to
+browse it)</strong> tree, arrow to a source (e.g. <strong>Popular
+Stations</strong> or <strong>SomaFM</strong>) and press <strong>Right
+Arrow / Enter</strong> to expand it; wait for it to load. 3. Arrow onto
+a station and press <strong>Enter</strong> (or the <strong>Play</strong>
+button) to play it. 4. Press <strong>Add to Favorites</strong>. Then try
+the <strong>Find in this folder</strong> field: type a word and press
+<strong>Enter</strong>. 5. Press <strong>Escape</strong> or
+<strong>Close</strong>.</p>
+<p><strong>You should see and hear</strong> - The tree is announced
+(“Station sources; expand one to browse its stations, Enter plays,
+Shift+F10 opens all actions”). Expanding a source says
+<strong>“Loading…”</strong> then <strong>“N item(s).”</strong> A
 read-only <strong>details</strong> area reflects the highlighted
-station.</li>
-<li>Enter/Play announces <strong>“Playing {station}”</strong>; the
-<strong>Play</strong> button flips to <strong>Stop</strong> for the
+station. - Enter/Play announces <strong>“Playing {station}”</strong>;
+the <strong>Play</strong> button flips to <strong>Stop</strong> for the
 playing station; Add to Favorites says <strong>“Added {name} to
 Favorites”</strong> (and toggles to Remove from Favorites). Find says
 <strong>“N match(es) in {folder}.”</strong> <strong>Shift+F10</strong>
 opens Play/Stop, Add/Remove Favorites, Copy Stream Link, Open Website,
-Report Bad Station.</li>
-<li><strong>Close leaves the station playing</strong> and says
-<strong>“Exited Browse Stations”</strong>; focus returns to the
-button/menu that opened it.</li>
-</ul>
+Report Bad Station. - <strong>Close leaves the station playing</strong>
+and says <strong>“Exited Browse Stations”</strong>; focus returns to the
+button/menu that opened it.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="radio-04--search-stations-station--search-stations">RADIO-04 —
+<h2 id="radio-04-search-stations-station-search-stations">RADIO-04 —
 Search Stations (Station ▸ Search Stations…)</h2>
 <p><em>What &amp; why.</em> The field-based finder: search by name,
 tag/genre, and country, then play or favorite a result — for when you
 know what you’re looking for.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Quill Radio open; network available (else <strong>Blocked</strong>).
-Search term: <code>jazz</code>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Station menu ▸ Search Stations…</strong>. Focus lands in the
-<strong>Station name</strong> box.</li>
-<li>Type <strong><code>jazz</code></strong>; optionally Tab to
+<p><strong>Before you start</strong> - Quill Radio open; network
+available (else <strong>Blocked</strong>). Search term:
+<code>jazz</code>.</p>
+<p><strong>Do this</strong> 1. <strong>Station menu ▸ Search
+Stations…</strong>. Focus lands in the <strong>Station name</strong>
+box. 2. Type <strong><code>jazz</code></strong>; optionally Tab to
 <strong>Tag/genre</strong> or <strong>Country</strong>; press the
-<strong>Search</strong> button (or Enter).</li>
-<li><strong>Tab</strong> to the <strong>Station results</strong> list;
-arrow through results, hearing each.</li>
-<li>Press <strong>Play</strong>, then <strong>Add to Favorites</strong>.
-Try <strong>More Stations</strong> for the next page. Close with
-<strong>Escape</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Fields are labelled (Station name, Tag/genre (optional), Country
-(optional), default <strong>“(Any country)”</strong>). Search announces
-a summary: <strong>“N station(s) found.”</strong> or <strong>“No
-stations found. Try a different name, tag, or country.”</strong></li>
-<li>The results list is announced with Name/Country/Format/Source
-columns; the details pane and a <strong>Radio volume</strong> slider +
-<strong>Mute</strong> toggle are present. Play says <strong>“Playing
-{name}”</strong>; favoriting says <strong>“Added {name} to
-Favorites”</strong>; More says <strong>“Added N more; M stations
-now.”</strong> or <strong>“No more stations.”</strong></li>
-<li>Close says <strong>“Exited Search Stations”</strong> and leaves
-playback running.</li>
-</ul>
+<strong>Search</strong> button (or Enter). 3. <strong>Tab</strong> to
+the <strong>Station results</strong> list; arrow through results,
+hearing each. 4. Press <strong>Play</strong>, then <strong>Add to
+Favorites</strong>. Try <strong>More Stations</strong> for the next
+page. Close with <strong>Escape</strong>.</p>
+<p><strong>You should see and hear</strong> - Fields are labelled
+(Station name, Tag/genre (optional), Country (optional), default
+<strong>“(Any country)”</strong>). Search announces a summary:
+<strong>“N station(s) found.”</strong> or <strong>“No stations found.
+Try a different name, tag, or country.”</strong> - The results list is
+announced with Name/Country/Format/Source columns; the details pane and
+a <strong>Radio volume</strong> slider + <strong>Mute</strong> toggle
+are present. Play says <strong>“Playing {name}”</strong>; favoriting
+says <strong>“Added {name} to Favorites”</strong>; More says
+<strong>“Added N more; M stations now.”</strong> or <strong>“No more
+stations.”</strong> - Close says <strong>“Exited Search
+Stations”</strong> and leaves playback running.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-05--add-custom-station-radioadd_custom_station-station--add-custom-station">RADIO-05
+id="radio-05-add-custom-station-radio.add_custom_station-station-add-custom-station">RADIO-05
 — Add Custom Station (<code>radio.add_custom_station</code>, Station ▸
 Add Custom Station…)</h2>
 <p><em>What &amp; why.</em> Add a station the directories don’t list, by
 pasting its stream link — and test it before saving so you never save a
 dead link.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A direct stream URL you trust (staged in your notebook), e.g. an
-<code>http(s)://…</code> link ending in a stream. Name it
-<strong><code>My Test Station</code></strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Station menu ▸ Add Custom Station…</strong> (also reachable
-as a button inside Browse/Search).</li>
-<li>Type the <strong>Station name</strong> <code>My Test Station</code>
-and the <strong>Stream URL</strong>; optionally a
-<strong>Homepage</strong> and <strong>Tags</strong>.</li>
-<li>Press the <strong>Test</strong> button and listen. Then press
-<strong>OK</strong> to save.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Labelled fields: Station name, Stream URL, Homepage (optional), Tags
-(optional, comma-separated), and a <strong>Status</strong> line.
-<strong>Test</strong> says <strong>“Testing {name} — listen for it to
-start playing.”</strong> Missing fields report <strong>“A station name
-and a stream URL are both required.”</strong>; a non-http URL reports it
-must start with <code>http://</code> or <code>https://</code>.</li>
-<li><strong>OK</strong> saves the station (it appears in your
-favorites/list); <strong>Cancel</strong> / <strong>Escape</strong>
-discards with no change.</li>
-</ul>
+<p><strong>Before you start</strong> - A direct stream URL you trust
+(staged in your notebook), e.g. an <code>http(s)://…</code> link ending
+in a stream. Name it <strong><code>My Test Station</code></strong>.</p>
+<p><strong>Do this</strong> 1. <strong>Station menu ▸ Add Custom
+Station…</strong> (also reachable as a button inside Browse/Search). 2.
+Type the <strong>Station name</strong> <code>My Test Station</code> and
+the <strong>Stream URL</strong>; optionally a <strong>Homepage</strong>
+and <strong>Tags</strong>. 3. Press the <strong>Test</strong> button and
+listen. Then press <strong>OK</strong> to save.</p>
+<p><strong>You should see and hear</strong> - Labelled fields: Station
+name, Stream URL, Homepage (optional), Tags (optional, comma-separated),
+and a <strong>Status</strong> line. <strong>Test</strong> says
+<strong>“Testing {name} — listen for it to start playing.”</strong>
+Missing fields report <strong>“A station name and a stream URL are both
+required.”</strong>; a non-http URL reports it must start with
+<code>http://</code> or <code>https://</code>. - <strong>OK</strong>
+saves the station (it appears in your favorites/list);
+<strong>Cancel</strong> / <strong>Escape</strong> discards with no
+change.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-06--find-streams-from-a-website-radiofind_streams-station--find-streams-from-a-website">RADIO-06
+id="radio-06-find-streams-from-a-website-radio.find_streams-station-find-streams-from-a-website">RADIO-06
 — Find Streams from a Website (<code>radio.find_streams</code>, Station
 ▸ Find Streams from a Website…)</h2>
 <p><em>What &amp; why.</em> Point Quill Radio at a station’s web page
 and it fetches <strong>that one page</strong> and scans it for playable
 stream links — nothing else is contacted.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station’s website address (staged). Network available (else
-<strong>Blocked</strong>).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Station menu ▸ Find Streams from a Website…</strong>.</li>
-<li>Type the <strong>Website address</strong> and press the
-<strong>Scan</strong> button.</li>
-<li>Arrow the <strong>Candidates found</strong> list; press
-<strong>Test</strong> on a candidate (it toggles to <strong>Stop
-Test</strong>). Press <strong>Use This Link…</strong> to hand it to Add
-Custom Station.</li>
-<li>Close with <strong>Escape</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>An intro states only that one page is fetched. After Scan, the
-status is announced: <strong>“N candidate link(s) found.”</strong> or
-<strong>“No stream-shaped links were found on that page.”</strong> or
-<strong>“Could not scan that page: {error}”</strong>. The Candidates
-list has <strong>Link</strong> and <strong>Why it was flagged</strong>
-columns. Test says <strong>“Testing {name}”</strong>; Stop Test says
-<strong>“Test stopped”</strong>.</li>
-</ul>
+<p><strong>Before you start</strong> - A station’s website address
+(staged). Network available (else <strong>Blocked</strong>).</p>
+<p><strong>Do this</strong> 1. <strong>Station menu ▸ Find Streams from
+a Website…</strong>. 2. Type the <strong>Website address</strong> and
+press the <strong>Scan</strong> button. 3. Arrow the <strong>Candidates
+found</strong> list; press <strong>Test</strong> on a candidate (it
+toggles to <strong>Stop Test</strong>). Press <strong>Use This
+Link…</strong> to hand it to Add Custom Station. 4. Close with
+<strong>Escape</strong>.</p>
+<p><strong>You should see and hear</strong> - An intro states only that
+one page is fetched. After Scan, the status is announced: <strong>“N
+candidate link(s) found.”</strong> or <strong>“No stream-shaped links
+were found on that page.”</strong> or <strong>“Could not scan that page:
+{error}”</strong>. The Candidates list has <strong>Link</strong> and
+<strong>Why it was flagged</strong> columns. Test says <strong>“Testing
+{name}”</strong>; Stop Test says <strong>“Test stopped”</strong>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-07--update-radio-reading-services-station--update-radio-reading-services">RADIO-07
+id="radio-07-update-radio-reading-services-station-update-radio-reading-services">RADIO-07
 — Update Radio Reading Services (Station ▸ Update Radio Reading
 Services…)</h2>
 <p><em>What &amp; why.</em> Refresh the directory of Radio Reading
 Services (audio for people who can’t read print) from the network, then
 hear the new total.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Quill Radio open; network available (else <strong>Blocked</strong>).
-Note: in <strong>Safe Mode</strong> (<code>--safe-mode</code>) this is
-refused by design.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Station menu ▸ Update Radio Reading Services…</strong>.</li>
-<li>Wait for the background refresh to finish.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>It says <strong>“Updating Radio Reading Services…”</strong> then, on
-success, <strong>“Radio Reading Services updated: N services.”</strong>
-A network failure comes back as <strong>“Could not update Radio Reading
-Services. {reason}”</strong> — never a silent failure. In Safe Mode it
-says the service is off and to restart without Safe Mode. (The services
-themselves then appear as a source in Browse Stations.)</li>
-</ul>
+<p><strong>Before you start</strong> - Quill Radio open; network
+available (else <strong>Blocked</strong>). Note: in <strong>Safe
+Mode</strong> (<code>--safe-mode</code>) this is refused by design.</p>
+<p><strong>Do this</strong> 1. <strong>Station menu ▸ Update Radio
+Reading Services…</strong>. 2. Wait for the background refresh to
+finish.</p>
+<p><strong>You should see and hear</strong> - It says <strong>“Updating
+Radio Reading Services…”</strong> then, on success, <strong>“Radio
+Reading Services updated: N services.”</strong> A network failure comes
+back as <strong>“Could not update Radio Reading Services.
+{reason}”</strong> — never a silent failure. In Safe Mode it says the
+service is off and to restart without Safe Mode. (The services
+themselves then appear as a source in Browse Stations.)</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-08--import-stations-from-playlist-station--import-stations-from-playlist">RADIO-08
+id="radio-08-import-stations-from-playlist-station-import-stations-from-playlist">RADIO-08
 — Import Stations from Playlist (Station ▸ Import Stations from
 Playlist…)</h2>
 <p><em>What &amp; why.</em> Bring a whole
 <code>.m3u</code>/<code>.m3u8</code> playlist of stations into your
 favorites at once, choosing a folder and handling any duplicates.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>An <code>.m3u</code> or <code>.m3u8</code> file with one or more
-stations, on disk.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Station menu ▸ Import Stations from Playlist…</strong>.</li>
-<li>In the file dialog, pick your playlist and confirm.</li>
-<li>In <strong>Import Stations</strong>, choose the <strong>Target
-folder</strong> (leave on <strong>“(Top level)”</strong> or type a new
-path like <code>News/Local</code>); confirm with
-<strong>OK</strong>.</li>
-<li>If duplicates are found, choose whether to skip or import them.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The file dialog is keyboard-navigable. The target dialog offers a
-<strong>Target folder</strong> combo (“(Top level)” plus existing
-folders) and explains you can type a nested path. An empty playlist says
-<strong>“No radio stations were found in that playlist.”</strong>
-Duplicates raise a choice (“Skip the N already in your favorites” vs
-“Import everything…”). On success it says <strong>“Imported N stations
-into {the folder / your favorites}.”</strong> and the favorites tree
-updates.</li>
-</ul>
+<p><strong>Before you start</strong> - An <code>.m3u</code> or
+<code>.m3u8</code> file with one or more stations, on disk.</p>
+<p><strong>Do this</strong> 1. <strong>Station menu ▸ Import Stations
+from Playlist…</strong>. 2. In the file dialog, pick your playlist and
+confirm. 3. In <strong>Import Stations</strong>, choose the
+<strong>Target folder</strong> (leave on <strong>“(Top level)”</strong>
+or type a new path like <code>News/Local</code>); confirm with
+<strong>OK</strong>. 4. If duplicates are found, choose whether to skip
+or import them.</p>
+<p><strong>You should see and hear</strong> - The file dialog is
+keyboard-navigable. The target dialog offers a <strong>Target
+folder</strong> combo (“(Top level)” plus existing folders) and explains
+you can type a nested path. An empty playlist says <strong>“No radio
+stations were found in that playlist.”</strong> Duplicates raise a
+choice (“Skip the N already in your favorites” vs “Import everything…”).
+On success it says <strong>“Imported N stations into {the folder / your
+favorites}.”</strong> and the favorites tree updates.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-09--export-favorites-to-playlist-station--export-favorites-to-playlist">RADIO-09
+id="radio-09-export-favorites-to-playlist-station-export-favorites-to-playlist">RADIO-09
 — Export Favorites to Playlist (Station ▸ Export Favorites to
 Playlist…)</h2>
 <p><em>What &amp; why.</em> Write your favorites out to an
 <code>.m3u</code> playlist to share or back up.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>At least one favorite saved (do RADIO-03/05 first). A folder to
-write to.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Station menu ▸ Export Favorites to Playlist…</strong>.</li>
-<li>In the file dialog, accept the default name
+<p><strong>Before you start</strong> - At least one favorite saved (do
+RADIO-03/05 first). A folder to write to.</p>
+<p><strong>Do this</strong> 1. <strong>Station menu ▸ Export Favorites
+to Playlist…</strong>. 2. In the file dialog, accept the default name
 <strong><code>quill-radio-favorites.m3u</code></strong> (or rename) and
-save.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A save dialog titled <strong>“Export favorites to a
-playlist”</strong> with an M3U filter. On success it says
-<strong>“Exported N station(s) to {name}.”</strong>; a write error says
-<strong>“Could not write the playlist: {reason}.”</strong> With no
-favorites yet, it says so (“You have no favorite stations to export
-yet…”) instead of writing an empty file.</li>
-</ul>
+save.</p>
+<p><strong>You should see and hear</strong> - A save dialog titled
+<strong>“Export favorites to a playlist”</strong> with an M3U filter. On
+success it says <strong>“Exported N station(s) to {name}.”</strong>; a
+write error says <strong>“Could not write the playlist:
+{reason}.”</strong> With no favorites yet, it says so (“You have no
+favorite stations to export yet…”) instead of writing an empty file.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-10--play-and-stop-radioplay_pause--radiostop-ctrlp">RADIO-10 —
+id="radio-10-play-and-stop-radio.play_pause-radio.stop-ctrlp">RADIO-10 —
 Play and Stop (<code>radio.play_pause</code> / <code>radio.stop</code>,
 Ctrl+P)</h2>
 <p><em>What &amp; why.</em> The core of a radio: start and stop a
 station. One button and one menu item carry both — it reads
 <strong>Play</strong> when idle and <strong>Stop</strong> while
 playing.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>At least one favorite saved. Network available (else
-<strong>Blocked</strong>).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>In the favorites tree, arrow to a station and press
-<strong>Enter</strong> (or select it and press <strong>Ctrl+P</strong>,
-or the <strong>Play</strong> button, or <strong>Playback menu (Alt, P) ▸
-Play</strong>).</li>
-<li>Let it connect and play. Press <strong>Ctrl+P</strong> (or the
-button) again to <strong>Stop</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Playing announces <strong>“Playing {station}”</strong>; the
-<strong>Now playing</strong> line and status bar update from “Radio:
-stopped” to the station; the button and the Playback menu item both flip
-to <strong>Stop</strong>. Stopping says <strong>“Radio stopped”</strong>
-and the button returns to <strong>Play</strong>. With nothing selected
-it says <strong>“No station selected. Add favorites from Browse
-Stations.”</strong> — never silence.</li>
-<li>Tray transport (RADIO-35) and the status-bar <strong>Now
-playing</strong> cell (RADIO-34) drive the same play/stop.</li>
-</ul>
+<p><strong>Before you start</strong> - At least one favorite saved.
+Network available (else <strong>Blocked</strong>).</p>
+<p><strong>Do this</strong> 1. In the favorites tree, arrow to a station
+and press <strong>Enter</strong> (or select it and press
+<strong>Ctrl+P</strong>, or the <strong>Play</strong> button, or
+<strong>Playback menu (Alt, P) ▸ Play</strong>). 2. Let it connect and
+play. Press <strong>Ctrl+P</strong> (or the button) again to
+<strong>Stop</strong>.</p>
+<p><strong>You should see and hear</strong> - Playing announces
+<strong>“Playing {station}”</strong>; the <strong>Now playing</strong>
+line and status bar update from “Radio: stopped” to the station; the
+button and the Playback menu item both flip to <strong>Stop</strong>.
+Stopping says <strong>“Radio stopped”</strong> and the button returns to
+<strong>Play</strong>. With nothing selected it says <strong>“No station
+selected. Add favorites from Browse Stations.”</strong> — never silence.
+- Tray transport (RADIO-35) and the status-bar <strong>Now
+playing</strong> cell (RADIO-34) drive the same play/stop.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-11--volume-up-down-and-mute-radiovolume_up--radiovolume_down--radiomute_toggle">RADIO-11
+id="radio-11-volume-up-down-and-mute-radio.volume_up-radio.volume_down-radio.mute_toggle">RADIO-11
 — Volume up, down, and Mute (<code>radio.volume_up</code> /
 <code>radio.volume_down</code> / <code>radio.mute_toggle</code>)</h2>
 <p><em>What &amp; why.</em> Adjust Quill Radio’s own volume — separate
 from your system volume and your screen reader — and mute without losing
 the station. Volume is remembered across restarts.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing (RADIO-10).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Up</strong> a few times, then
-<strong>Ctrl+Down</strong> — from anywhere in the window except inside a
-text field. Or Tab to the <strong>Volume, percent</strong> slider and
-arrow it.</li>
-<li>Press <strong>Ctrl+M</strong> (<strong>Playback menu ▸
-Mute/Unmute</strong>) to mute, then again to unmute.</li>
-<li>Stop, close Quill Radio, relaunch, and play again — confirm the
-volume is the level you left it.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Volume keys announce <strong>“Radio volume {N}”</strong>; the slider
-stays in step (arrowing it speaks the native percentage, no
-double-speak). Mute says <strong>“Radio muted”</strong> and unmute
-<strong>“Radio unmuted”</strong>. After a restart the <strong>volume is
+<p><strong>Before you start</strong> - A station playing (RADIO-10).</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Up</strong> a few
+times, then <strong>Ctrl+Down</strong> — from anywhere in the window
+except inside a text field. Or Tab to the <strong>Volume,
+percent</strong> slider and arrow it. 2. Press <strong>Ctrl+M</strong>
+(<strong>Playback menu ▸ Mute/Unmute</strong>) to mute, then again to
+unmute. 3. Stop, close Quill Radio, relaunch, and play again — confirm
+the volume is the level you left it.</p>
+<p><strong>You should see and hear</strong> - Volume keys announce
+<strong>“Radio volume {N}”</strong>; the slider stays in step (arrowing
+it speaks the native percentage, no double-speak). Mute says
+<strong>“Radio muted”</strong> and unmute <strong>“Radio
+unmuted”</strong>. After a restart the <strong>volume is
 remembered</strong> at the same level (per-station memory may also
-apply).</li>
-</ul>
+apply).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="radio-12--volume-boost-radiovolume_boost-ctrlshiftb">RADIO-12 —
+<h2 id="radio-12-volume-boost-radio.volume_boost-ctrlshiftb">RADIO-12 —
 Volume Boost (<code>radio.volume_boost</code>, Ctrl+Shift+B)</h2>
 <p><em>What &amp; why.</em> Push a quiet stream up to 50% past 100 for
 stations that are just too soft — without changing the normal 0–100
 scale.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing on the <strong>mpv</strong> engine (Preferences ▸
-Playback engine). On the classic engine this announces where to switch —
-that is <strong>N/A</strong>, not a fail.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Shift+B</strong>, or <strong>Playback menu ▸
-Volume Boost</strong> (a checkable item).</li>
-<li>Toggle it off again.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>On the mpv engine: <strong>“Volume Boost on: up to 50 percent
-louder.”</strong> and <strong>“Volume Boost off.”</strong>; the menu
-check reflects the state. On the classic engine it says <strong>“Volume
-Boost on. It takes effect on the mpv playback engine — check Preferences
-▸ Playback engine.”</strong></li>
-</ul>
+<p><strong>Before you start</strong> - A station playing on the
+<strong>mpv</strong> engine (Preferences ▸ Playback engine). On the
+classic engine this announces where to switch — that is
+<strong>N/A</strong>, not a fail.</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Shift+B</strong>, or
+<strong>Playback menu ▸ Volume Boost</strong> (a checkable item). 2.
+Toggle it off again.</p>
+<p><strong>You should see and hear</strong> - On the mpv engine:
+<strong>“Volume Boost on: up to 50 percent louder.”</strong> and
+<strong>“Volume Boost off.”</strong>; the menu check reflects the state.
+On the classic engine it says <strong>“Volume Boost on. It takes effect
+on the mpv playback engine — check Preferences ▸ Playback
+engine.”</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-13--live-dvr-rewind-forward-back-to-live-radiorewind--radioforward--radiojump_to_live">RADIO-13
+id="radio-13-live-dvr-rewind-forward-back-to-live-radio.rewind-radio.forward-radio.jump_to_live">RADIO-13
 — Live DVR: Rewind, Forward, Back to Live (<code>radio.rewind</code> /
 <code>radio.forward</code> / <code>radio.jump_to_live</code>)</h2>
 <p><em>What &amp; why.</em> Pause and step back/forward within a live
 stream’s buffer, then jump back to the live edge — so you never miss a
 word. Needs the <strong>mpv</strong> engine.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing on the <strong>mpv</strong> engine (else the
-commands announce where to switch — <strong>N/A</strong>, not a
-fail).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Shift+Left</strong> (<strong>Playback menu ▸
-Rewind 30 Seconds</strong>).</li>
-<li>Press <strong>Ctrl+Shift+Right</strong> (<strong>Forward 30
-Seconds</strong>).</li>
-<li>Press <strong>Ctrl+Shift+L</strong> (<strong>Back to
-Live</strong>).</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Rewind says <strong>“Rewound 30 seconds.”</strong> plus how far
-behind live (e.g. <strong>“30 seconds behind live.”</strong> /
-<strong>“1 minute behind live.”</strong>). Forward says <strong>“Forward
-30 seconds.”</strong> + position. Back to Live says <strong>“Back to
+<p><strong>Before you start</strong> - A station playing on the
+<strong>mpv</strong> engine (else the commands announce where to switch
+— <strong>N/A</strong>, not a fail).</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Shift+Left</strong>
+(<strong>Playback menu ▸ Rewind 30 Seconds</strong>). 2. Press
+<strong>Ctrl+Shift+Right</strong> (<strong>Forward 30 Seconds</strong>).
+3. Press <strong>Ctrl+Shift+L</strong> (<strong>Back to
+Live</strong>).</p>
+<p><strong>You should see and hear</strong> - Rewind says
+<strong>“Rewound 30 seconds.”</strong> plus how far behind live
+(e.g. <strong>“30 seconds behind live.”</strong> / <strong>“1 minute
+behind live.”</strong>). Forward says <strong>“Forward 30
+seconds.”</strong> + position. Back to Live says <strong>“Back to
 live.”</strong> With nothing playing, <strong>“Nothing is
 playing.”</strong>; on the classic engine, <strong>“Rewinding live radio
 needs the mpv playback engine — check Preferences ▸ Playback
-engine.”</strong></li>
-</ul>
+engine.”</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-14--whats-playing-speak-review-copy-announce-radiowhats_playing-radiowhats_playing_details-radiocopy_whats_playing-radiotoggle_title_announcements">RADIO-14
+id="radio-14-whats-playing-speak-review-copy-announce-radio.whats_playing-radio.whats_playing_details-radio.copy_whats_playing-radio.toggle_title_announcements">RADIO-14
 — What’s Playing: speak, review, copy, announce
 (<code>radio.whats_playing</code>,
 <code>radio.whats_playing_details</code>,
@@ -749,989 +613,754 @@ id="radio-14--whats-playing-speak-review-copy-announce-radiowhats_playing-radiow
 <p><em>What &amp; why.</em> Hear the current track on demand, open a
 reviewable/copyable window, copy the text, and turn automatic
 track-title announcements on or off.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing that carries track metadata (many music streams
-do).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+T</strong> (<strong>Playback menu ▸ What’s
-Playing?</strong>). This opens the reviewable <strong>Now
-Playing</strong> window.</li>
-<li>In that window, arrow through the read-only text; press
-<strong>Copy</strong>; close with <strong>Close</strong> /
-<strong>Escape</strong>.</li>
-<li>Back in the main window, toggle <strong>Playback menu ▸ Announce
-Track Titles</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Ctrl+T speaks/opens the current title (formatted per your What’s
-Playing template, default <code>{title} by {artist}</code>), or fetches
-it if not yet known. The Now Playing window is a read-only text area
-named <strong>“Now playing”</strong> with a <strong>Copy</strong> button
-and a character count; <strong>Copy</strong> says
-<strong>“Copied.”</strong> The Announce Track Titles toggle says
-<strong>“Track titles will be announced as they change.”</strong> /
-<strong>“Track title announcements turned off.”</strong> (Copy What’s
-Playing, if bound, copies the same text silently to the clipboard.)</li>
-</ul>
+<p><strong>Before you start</strong> - A station playing that carries
+track metadata (many music streams do).</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+T</strong>
+(<strong>Playback menu ▸ What’s Playing?</strong>). This opens the
+reviewable <strong>Now Playing</strong> window. 2. In that window, arrow
+through the read-only text; press <strong>Copy</strong>; close with
+<strong>Close</strong> / <strong>Escape</strong>. 3. Back in the main
+window, toggle <strong>Playback menu ▸ Announce Track
+Titles</strong>.</p>
+<p><strong>You should see and hear</strong> - Ctrl+T speaks/opens the
+current title (formatted per your What’s Playing template, default
+<code>{title} by {artist}</code>), or fetches it if not yet known. The
+Now Playing window is a read-only text area named <strong>“Now
+playing”</strong> with a <strong>Copy</strong> button and a character
+count; <strong>Copy</strong> says <strong>“Copied.”</strong> The
+Announce Track Titles toggle says <strong>“Track titles will be
+announced as they change.”</strong> / <strong>“Track title announcements
+turned off.”</strong> (Copy What’s Playing, if bound, copies the same
+text silently to the clipboard.)</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="radio-15--play-last-station-radioplay_last-ctrll">RADIO-15 —
+<h2 id="radio-15-play-last-station-radio.play_last-ctrll">RADIO-15 —
 Play Last Station (<code>radio.play_last</code>, Ctrl+L)</h2>
 <p><em>What &amp; why.</em> Instantly resume whatever was on last —
 radio as an appliance.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>You have played at least one station this session or a previous
-one.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Stop playback. Press <strong>Ctrl+L</strong>, or <strong>Station
-menu ▸ Play Last Station</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The last station starts and it says <strong>“Playing
-{station}”</strong>. With an empty history it says <strong>“Nothing in
-the radio history yet. Play a station first.”</strong> (The
-<strong>Recently Played</strong> submenu under Station lists recent
-stations and refreshes each time the menu opens.)</li>
-</ul>
+<p><strong>Before you start</strong> - You have played at least one
+station this session or a previous one.</p>
+<p><strong>Do this</strong> 1. Stop playback. Press
+<strong>Ctrl+L</strong>, or <strong>Station menu ▸ Play Last
+Station</strong>.</p>
+<p><strong>You should see and hear</strong> - The last station starts
+and it says <strong>“Playing {station}”</strong>. With an empty history
+it says <strong>“Nothing in the radio history yet. Play a station
+first.”</strong> (The <strong>Recently Played</strong> submenu under
+Station lists recent stations and refreshes each time the menu
+opens.)</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-16--sound-enhancements-radiosound_enhancements-playback--sound-enhancements">RADIO-16
+id="radio-16-sound-enhancements-radio.sound_enhancements-playback-sound-enhancements">RADIO-16
 — Sound Enhancements (<code>radio.sound_enhancements</code>, Playback ▸
 Sound Enhancements…)</h2>
 <p><em>What &amp; why.</em> A three-band EQ, “even out volume”, channel
 mode, night mode, and broadcast polish (OptiLab) — applied live to
 what’s playing, per-station or as the shared default. Needs
 <strong>FFmpeg</strong>.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing. FFmpeg available (else the dialog says it needs
-FFmpeg).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Playback menu ▸ Sound Enhancements…</strong>.</li>
-<li>Choose a <strong>Quick preset</strong> (Flat / Bass Boost / Voice
-Clarity / Podcast), or Tab through <strong>Bass / Mid / Treble</strong>
-sliders and arrow them; try <strong>Even Out Volume</strong>,
-<strong>Channel mode</strong>, <strong>Night mode</strong>, and the
-<strong>OptiLab</strong> box.</li>
-<li>Press <strong>OK</strong> (or <strong>Cancel</strong> to revert). If
-a per-station override exists, try <strong>Reset to
-Default</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Each slider is named with its band and dB range; picking a preset
-says e.g. <strong>“Voice Clarity: Bass +0, Mid +3, Treble +4.”</strong>
-Changes preview live as you move controls; <strong>Cancel</strong>
-reverts them. When editing a favorite’s own override, <strong>Reset to
-Default</strong> says <strong>“Sound Enhancements for {station}: back to
-the shared default.”</strong> Without FFmpeg the intro tells you to
-install it.</li>
-</ul>
+<p><strong>Before you start</strong> - A station playing. FFmpeg
+available (else the dialog says it needs FFmpeg).</p>
+<p><strong>Do this</strong> 1. <strong>Playback menu ▸ Sound
+Enhancements…</strong>. 2. Choose a <strong>Quick preset</strong> (Flat
+/ Bass Boost / Voice Clarity / Podcast), or Tab through <strong>Bass /
+Mid / Treble</strong> sliders and arrow them; try <strong>Even Out
+Volume</strong>, <strong>Channel mode</strong>, <strong>Night
+mode</strong>, and the <strong>OptiLab</strong> box. 3. Press
+<strong>OK</strong> (or <strong>Cancel</strong> to revert). If a
+per-station override exists, try <strong>Reset to Default</strong>.</p>
+<p><strong>You should see and hear</strong> - Each slider is named with
+its band and dB range; picking a preset says e.g. <strong>“Voice
+Clarity: Bass +0, Mid +3, Treble +4.”</strong> Changes preview live as
+you move controls; <strong>Cancel</strong> reverts them. When editing a
+favorite’s own override, <strong>Reset to Default</strong> says
+<strong>“Sound Enhancements for {station}: back to the shared
+default.”</strong> Without FFmpeg the intro tells you to install it.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-17--output-device-playback--output-device-ctrlshiftd">RADIO-17
-— Output Device (Playback ▸ Output Device…, Ctrl+Shift+D)</h2>
+id="radio-17-output-device-playback-output-device-ctrlshiftd">RADIO-17 —
+Output Device (Playback ▸ Output Device…, Ctrl+Shift+D)</h2>
 <p><em>What &amp; why.</em> Send just the radio to a chosen sound card
 while your screen reader and Quill Radio’s own sounds stay on the system
 default. Needs <strong>mpv</strong>.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing on the <strong>mpv</strong> engine (else a message
-points you to switch). More than one audio output helps you hear the
-difference.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Shift+D</strong>, or <strong>Playback menu ▸
-Output Device…</strong>.</li>
-<li>In <strong>Output Device</strong>, arrow the list and pick a device;
-confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A single-choice dialog titled <strong>“Output Device”</strong>
-asking <strong>“Send Quill Radio’s audio to which device?”</strong> On
-confirm it says <strong>“Output device: {label}.”</strong> and the
-playing station moves to that device immediately; picking the same one
-says <strong>“Output device unchanged: {label}.”</strong> On the classic
-engine a message explains device choice needs libmpv and where to
-switch.</li>
-</ul>
+<p><strong>Before you start</strong> - A station playing on the
+<strong>mpv</strong> engine (else a message points you to switch). More
+than one audio output helps you hear the difference.</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Shift+D</strong>, or
+<strong>Playback menu ▸ Output Device…</strong>. 2. In <strong>Output
+Device</strong>, arrow the list and pick a device; confirm.</p>
+<p><strong>You should see and hear</strong> - A single-choice dialog
+titled <strong>“Output Device”</strong> asking <strong>“Send Quill
+Radio’s audio to which device?”</strong> On confirm it says
+<strong>“Output device: {label}.”</strong> and the playing station moves
+to that device immediately; picking the same one says <strong>“Output
+device unchanged: {label}.”</strong> On the classic engine a message
+explains device choice needs libmpv and where to switch.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-18--sleep-timer-and-wake-up-timer-radiowake_timer-playback--sleep-timer--wake-up-timer">RADIO-18
+id="radio-18-sleep-timer-and-wake-up-timer-radio.wake_timer-playback-sleep-timer-wake-up-timer">RADIO-18
 — Sleep Timer and Wake-Up Timer (<code>radio.wake_timer</code>, Playback
 ▸ Sleep Timer… / Wake-Up Timer…)</h2>
 <p><em>What &amp; why.</em> Fade the radio off after a set time (sleep),
 or have it turn itself on at a set time to a chosen station (wake) — an
 alarm clock that plays radio.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>At least one favorite (for the wake station). For the wake timer to
-actually fire, Quill Radio (or QUILL) must be running, the tray
-counts.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Playback menu ▸ Wake-Up Timer…</strong>.</li>
-<li>Check <strong>Wake up with the radio</strong>; pick a
-<strong>Station</strong>; type a <strong>Time</strong> like
+<p><strong>Before you start</strong> - At least one favorite (for the
+wake station). For the wake timer to actually fire, Quill Radio (or
+QUILL) must be running, the tray counts.</p>
+<p><strong>Do this</strong> 1. <strong>Playback menu ▸ Wake-Up
+Timer…</strong>. 2. Check <strong>Wake up with the radio</strong>; pick
+a <strong>Station</strong>; type a <strong>Time</strong> like
 <code>07:00</code> or <code>7:30 AM</code>; optionally <strong>Every
-day</strong>; press <strong>OK</strong>.</li>
-<li>Separately open <strong>Playback menu ▸ Sleep Timer…</strong> and
-set a short duration to confirm it exists and is keyboard-operable.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Wake-Up Timer shows a current-setting summary, a <strong>Wake up
-with the radio</strong> checkbox, a <strong>Station</strong> choice, a
-<strong>Time</strong> field, and an <strong>Every day</strong> checkbox.
-A bad time says <strong>‘That time was not understood; try “07:00” or
-“7:30 AM”.’</strong>; no station says <strong>“Pick a station first (add
+day</strong>; press <strong>OK</strong>. 3. Separately open
+<strong>Playback menu ▸ Sleep Timer…</strong> and set a short duration
+to confirm it exists and is keyboard-operable.</p>
+<p><strong>You should see and hear</strong> - Wake-Up Timer shows a
+current-setting summary, a <strong>Wake up with the radio</strong>
+checkbox, a <strong>Station</strong> choice, a <strong>Time</strong>
+field, and an <strong>Every day</strong> checkbox. A bad time says
+<strong>‘That time was not understood; try “07:00” or “7:30
+AM”.’</strong>; no station says <strong>“Pick a station first (add
 favorites from Browse Stations).”</strong> On save it speaks the timer
 summary, or <strong>“Wake-up timer turned off.”</strong> The Sleep Timer
 dialog is likewise labelled and keyboard-complete; the status bar’s
-<strong>Sleep timer</strong> cell shows the countdown.</li>
-</ul>
+<strong>Sleep timer</strong> cell shows the countdown.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-19--record-now--stop-recording-radiorecord_toggle-ctrlshiftgrave-then-6">RADIO-19
+id="radio-19-record-now-stop-recording-radio.record_toggle-ctrlshiftgrave-then-6">RADIO-19
 — Record Now / Stop Recording (<code>radio.record_toggle</code>,
 Ctrl+Shift+Grave then 6)</h2>
 <p><em>What &amp; why.</em> Capture the station you’re listening to,
 right now, to a file — and stop it with the same command. <strong>Needs
 FFmpeg</strong> (else <strong>Blocked</strong>).</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing. FFmpeg available (else a message points to Help ▸
-Get FFmpeg… — mark <strong>Blocked</strong>). A destination folder set
-(see RADIO-22).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press the <strong>Record</strong> button, or <strong>Record menu
-(Alt, R) ▸ Record Now / Stop Recording</strong>, or the chord
-<strong>Ctrl+Shift+Grave</strong> then <strong>6</strong>.</li>
-<li>Let it run a few seconds. Press it again to stop.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Starting says <strong>“Recording started: {station}.”</strong> with
-an earcon; the <strong>Record</strong> button flips to <strong>Stop
-Recording</strong>; the status bar’s Recording cell reads Recording.
-Stopping says <strong>“Stopping recording…”</strong> With nothing
-playing it says <strong>“Nothing is playing to record. Start a station
-first.”</strong> Without FFmpeg it shows the <strong>Get
-FFmpeg…</strong> pointer instead of failing silently.</li>
-</ul>
+<p><strong>Before you start</strong> - A station playing. FFmpeg
+available (else a message points to Help ▸ Get FFmpeg… — mark
+<strong>Blocked</strong>). A destination folder set (see RADIO-22).</p>
+<p><strong>Do this</strong> 1. Press the <strong>Record</strong> button,
+or <strong>Record menu (Alt, R) ▸ Record Now / Stop Recording</strong>,
+or the chord <strong>Ctrl+Shift+Grave</strong> then <strong>6</strong>.
+2. Let it run a few seconds. Press it again to stop.</p>
+<p><strong>You should see and hear</strong> - Starting says
+<strong>“Recording started: {station}.”</strong> with an earcon; the
+<strong>Record</strong> button flips to <strong>Stop Recording</strong>;
+the status bar’s Recording cell reads Recording. Stopping says
+<strong>“Stopping recording…”</strong> With nothing playing it says
+<strong>“Nothing is playing to record. Start a station first.”</strong>
+Without FFmpeg it shows the <strong>Get FFmpeg…</strong> pointer instead
+of failing silently.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-20--record-station-radiorecord_station-record--record-station">RADIO-20
+id="radio-20-record-station-radio.record_station-record-record-station">RADIO-20
 — Record Station (<code>radio.record_station</code>, Record ▸ Record
 Station…)</h2>
 <p><em>What &amp; why.</em> Record station B in the background while you
 listen to A (or to nothing), for a set number of minutes.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>At least one favorite. FFmpeg available (else
-<strong>Blocked</strong>).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Record menu ▸ Record Station…</strong>.</li>
-<li>Choose a <strong>Station</strong> from the list; set the
-<strong>Duration (minutes)</strong> with the spinner; press
-<strong>Start Recording</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A dialog explaining the recording runs on its own; a
-<strong>Station</strong> choice (your favorites, plus “{name} (now
-playing)” if applicable) and a <strong>Duration</strong> spinner
-(1–1440). With no station chosen: <strong>“Pick a station first (add
-favorites from Browse Stations).”</strong> On start it says
-<strong>“Recording started: {station}, for N minutes.”</strong> and the
-recording runs in the background while playback is unaffected.</li>
-</ul>
+<p><strong>Before you start</strong> - At least one favorite. FFmpeg
+available (else <strong>Blocked</strong>).</p>
+<p><strong>Do this</strong> 1. <strong>Record menu ▸ Record
+Station…</strong>. 2. Choose a <strong>Station</strong> from the list;
+set the <strong>Duration (minutes)</strong> with the spinner; press
+<strong>Start Recording</strong>.</p>
+<p><strong>You should see and hear</strong> - A dialog explaining the
+recording runs on its own; a <strong>Station</strong> choice (your
+favorites, plus “{name} (now playing)” if applicable) and a
+<strong>Duration</strong> spinner (1–1440). With no station chosen:
+<strong>“Pick a station first (add favorites from Browse
+Stations).”</strong> On start it says <strong>“Recording started:
+{station}, for N minutes.”</strong> and the recording runs in the
+background while playback is unaffected.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-21--schedule-recording-radioschedule_recording-record--schedule-recording">RADIO-21
+id="radio-21-schedule-recording-radio.schedule_recording-record-schedule-recording">RADIO-21
 — Schedule Recording (<code>radio.schedule_recording</code>, Record ▸
 Schedule Recording…)</h2>
 <p><em>What &amp; why.</em> Set a recording to fire at a future time —
 once, daily, or weekly — even while Quill Radio sits in the tray.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>FFmpeg available. A favorite to record, or a station name + stream
-URL.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Record menu ▸ Schedule Recording…</strong>.</li>
-<li>Fill the add form: pick a <strong>Favorite station</strong> (fills
-name + URL) or type <strong>Station name</strong> and <strong>Stream
-URL</strong>; choose <strong>Repeats</strong> (Once/Daily/Weekly), the
-<strong>Day</strong> (weekly) or <strong>Date</strong> (once,
-<code>YYYY-MM-DD</code>), a <strong>Time</strong> (<code>7:30 PM</code>
-or <code>19:30</code>), a <strong>Time zone</strong>, and
-<strong>Duration</strong> hours/minutes.</li>
-<li>Press <strong>Add Schedule</strong>. Then select the new entry in
-the <strong>Scheduled recordings</strong> list and try
+<p><strong>Before you start</strong> - FFmpeg available. A favorite to
+record, or a station name + stream URL.</p>
+<p><strong>Do this</strong> 1. <strong>Record menu ▸ Schedule
+Recording…</strong>. 2. Fill the add form: pick a <strong>Favorite
+station</strong> (fills name + URL) or type <strong>Station
+name</strong> and <strong>Stream URL</strong>; choose
+<strong>Repeats</strong> (Once/Daily/Weekly), the <strong>Day</strong>
+(weekly) or <strong>Date</strong> (once, <code>YYYY-MM-DD</code>), a
+<strong>Time</strong> (<code>7:30 PM</code> or <code>19:30</code>), a
+<strong>Time zone</strong>, and <strong>Duration</strong> hours/minutes.
+3. Press <strong>Add Schedule</strong>. Then select the new entry in the
+<strong>Scheduled recordings</strong> list and try
 <strong>Edit</strong>, <strong>Duplicate</strong>,
-<strong>Disable/Enable</strong>, <strong>Remove</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Every field is labelled and keyboard-complete. Adding says
-<strong>“Scheduled recording added for {name}”</strong>; editing
-<strong>“Saved changes to {name}”</strong>; removing <strong>“Removed
-scheduled recording”</strong>; disable/enable <strong>“{name}
+<strong>Disable/Enable</strong>, <strong>Remove</strong>.</p>
+<p><strong>You should see and hear</strong> - Every field is labelled
+and keyboard-complete. Adding says <strong>“Scheduled recording added
+for {name}”</strong>; editing <strong>“Saved changes to
+{name}”</strong>; removing <strong>“Removed scheduled
+recording”</strong>; disable/enable <strong>“{name}
 disabled/enabled”</strong>. Validation is spoken: a missing name/URL, a
 zero-length duration (“Set a recording length of at least one minute.”),
 a bad time or date, or a past time (“Choose a date and time in the
-future.”).</li>
-</ul>
+future.”).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-22--recording-settings-radiorecording_settings-record--recording-settings">RADIO-22
+id="radio-22-recording-settings-radio.recording_settings-record-recording-settings">RADIO-22
 — Recording Settings (<code>radio.recording_settings</code>, Record ▸
 Recording Settings…)</h2>
 <p><em>What &amp; why.</em> Choose the recording format, quality,
 destination and temp folders, filename pattern, length cap, concurrency,
 reconnect behavior, and whether Sound Enhancements are baked into
 recordings.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Quill Radio open. A folder you can write to for recordings.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Record menu ▸ Recording Settings…</strong>.</li>
-<li>Tab through: <strong>Format</strong>, <strong>Quality
-(bitrate)</strong>, <strong>Destination folder</strong> (+
-<strong>Browse…</strong>), <strong>Temporary folder</strong> (+
+<p><strong>Before you start</strong> - Quill Radio open. A folder you
+can write to for recordings.</p>
+<p><strong>Do this</strong> 1. <strong>Record menu ▸ Recording
+Settings…</strong>. 2. Tab through: <strong>Format</strong>,
+<strong>Quality (bitrate)</strong>, <strong>Destination folder</strong>
+(+ <strong>Browse…</strong>), <strong>Temporary folder</strong> (+
 <strong>Browse…</strong>), <strong>Filename pattern</strong>,
 <strong>Maximum recording length</strong>, <strong>Maximum simultaneous
 recordings</strong>, the <strong>If the connection drops</strong>
 reconnect group, and <strong>Apply Sound Enhancements to
-recordings</strong>.</li>
-<li>Set a destination folder; press <strong>OK</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Every control is labelled and reachable; the
-<strong>Browse…</strong> buttons open native folder pickers. The Quality
-control hides for lossless/raw formats. On <strong>OK</strong> it says
-<strong>“Recording settings saved”</strong> (Cancel/Escape discards).
-The filename pattern accepts <code>{station}</code>,
-<code>{date}</code>, <code>{time}</code>.</li>
-</ul>
+recordings</strong>. 3. Set a destination folder; press
+<strong>OK</strong>.</p>
+<p><strong>You should see and hear</strong> - Every control is labelled
+and reachable; the <strong>Browse…</strong> buttons open native folder
+pickers. The Quality control hides for lossless/raw formats. On
+<strong>OK</strong> it says <strong>“Recording settings saved”</strong>
+(Cancel/Escape discards). The filename pattern accepts
+<code>{station}</code>, <code>{date}</code>, <code>{time}</code>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-23--recordings-library-radiorecordings-record--recordings">RADIO-23
+id="radio-23-recordings-library-radio.recordings-record-recordings">RADIO-23
 — Recordings library (<code>radio.recordings</code>, Record ▸
 Recordings…)</h2>
 <p><em>What &amp; why.</em> One place for every recording — made, in
 progress, and scheduled — where you can play, stop, reveal, and delete
 them.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>At least one finished recording (do RADIO-19). Optionally one in
-progress.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Record menu ▸ Recordings…</strong>.</li>
-<li>Arrow the <strong>Recordings</strong> list (Name/Status/Size/When).
-Press <strong>Enter</strong> or <strong>Play</strong> on a finished one;
-<strong>Stop Recording</strong> on an in-progress one; <strong>Open in
-Folder</strong>; then <strong>Remove…</strong> and confirm.</li>
-<li>Close with <strong>Escape</strong> (recordings continue).</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The list is announced; the Status column reads <strong>Recording /
-Recorded / Scheduled / Completed</strong>; the status line summarizes
-counts and the folder. Play says <strong>“Playing recording
-{name}”</strong> (button flips to Stop); an in-progress row says
-<strong>“Still recording; stop it first to play it.”</strong>; Open in
-Folder says <strong>“Showing {name} in the file manager”</strong>;
-Remove confirms (“Remove Recording”), then says <strong>“Removed
-recording {name}”</strong>. The list live-refreshes.</li>
-</ul>
+<p><strong>Before you start</strong> - At least one finished recording
+(do RADIO-19). Optionally one in progress.</p>
+<p><strong>Do this</strong> 1. <strong>Record menu ▸
+Recordings…</strong>. 2. Arrow the <strong>Recordings</strong> list
+(Name/Status/Size/When). Press <strong>Enter</strong> or
+<strong>Play</strong> on a finished one; <strong>Stop Recording</strong>
+on an in-progress one; <strong>Open in Folder</strong>; then
+<strong>Remove…</strong> and confirm. 3. Close with
+<strong>Escape</strong> (recordings continue).</p>
+<p><strong>You should see and hear</strong> - The list is announced; the
+Status column reads <strong>Recording / Recorded / Scheduled /
+Completed</strong>; the status line summarizes counts and the folder.
+Play says <strong>“Playing recording {name}”</strong> (button flips to
+Stop); an in-progress row says <strong>“Still recording; stop it first
+to play it.”</strong>; Open in Folder says <strong>“Showing {name} in
+the file manager”</strong>; Remove confirms (“Remove Recording”), then
+says <strong>“Removed recording {name}”</strong>. The list
+live-refreshes.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-24--stop-all-recordings-radiostop_all_recordings-record--stop-all-recordings">RADIO-24
+id="radio-24-stop-all-recordings-radio.stop_all_recordings-record-stop-all-recordings">RADIO-24
 — Stop All Recordings (<code>radio.stop_all_recordings</code>, Record ▸
 Stop All Recordings)</h2>
 <p><em>What &amp; why.</em> End every running recording at once.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Two or more recordings running (start one with RADIO-19, another
-with RADIO-20). FFmpeg available.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Record menu ▸ Stop All Recordings</strong> (also on the
-Recordings dialog when ≥2 run).</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>It says <strong>“Stopping all N recordings…”</strong> (singular
-“recording” for one), and the recordings then appear as
-<strong>Recorded</strong> in the library. With nothing recording it says
-<strong>“Nothing is recording right now.”</strong></li>
-</ul>
+<p><strong>Before you start</strong> - Two or more recordings running
+(start one with RADIO-19, another with RADIO-20). FFmpeg available.</p>
+<p><strong>Do this</strong> 1. <strong>Record menu ▸ Stop All
+Recordings</strong> (also on the Recordings dialog when ≥2 run).</p>
+<p><strong>You should see and hear</strong> - It says <strong>“Stopping
+all N recordings…”</strong> (singular “recording” for one), and the
+recordings then appear as <strong>Recorded</strong> in the library. With
+nothing recording it says <strong>“Nothing is recording right
+now.”</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-25--a-scheduled-recording-fires-while-the-app-is-in-the-tray">RADIO-25
+id="radio-25-a-scheduled-recording-fires-while-the-app-is-in-the-tray">RADIO-25
 — A scheduled recording fires while the app is in the tray</h2>
 <p><em>What &amp; why.</em> The whole point of scheduling is that it
 works unattended — even with the window hidden in the system tray.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>FFmpeg available. From RADIO-21, add a schedule set for <strong>two
-or three minutes from now</strong>, Once.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Send Quill Radio to the tray (<strong>Ctrl+W</strong>, or Station ▸
-Send to Tray).</li>
-<li>Wait past the scheduled time without touching the app.</li>
-<li>Bring the window back (tray hotkey
-<strong>Ctrl+Alt+Shift+R</strong>, or double-click the tray icon) and
-open <strong>Record ▸ Recordings…</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The recording starts at its time while the app is in the tray (you
-may hear an earcon / spoken cue), and afterward it appears in the
-Recordings library as a finished <strong>Recorded</strong> file of about
-the scheduled length.</li>
-</ul>
+<p><strong>Before you start</strong> - FFmpeg available. From RADIO-21,
+add a schedule set for <strong>two or three minutes from now</strong>,
+Once.</p>
+<p><strong>Do this</strong> 1. Send Quill Radio to the tray
+(<strong>Ctrl+W</strong>, or Station ▸ Send to Tray). 2. Wait past the
+scheduled time without touching the app. 3. Bring the window back (tray
+hotkey <strong>Ctrl+Alt+Shift+R</strong>, or double-click the tray icon)
+and open <strong>Record ▸ Recordings…</strong>.</p>
+<p><strong>You should see and hear</strong> - The recording starts at
+its time while the app is in the tray (you may hear an earcon / spoken
+cue), and afterward it appears in the Recordings library as a finished
+<strong>Recorded</strong> file of about the scheduled length.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="radio-26--resume-interrupted-recordings-after-a-crash">RADIO-26
-— Resume interrupted recordings after a crash</h2>
+<h2 id="radio-26-resume-interrupted-recordings-after-a-crash">RADIO-26 —
+Resume interrupted recordings after a crash</h2>
 <p><em>What &amp; why.</em> If Quill Radio is killed mid-recording, the
 next launch should offer to resume the interrupted capture rather than
 losing it silently.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>FFmpeg available. Start a recording (RADIO-19), then
-<strong>force-kill</strong> Quill Radio (Task Manager ▸ End task) while
-it records. Optionally have two running for the batch case.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Relaunch Quill Radio.</li>
-<li>Read the resume prompt that appears; choose <strong>Resume</strong>
-(or <strong>Resume All</strong>), or <strong>Skip</strong> /
-<strong>Skip All</strong>. Try the <strong>Don’t ask me again</strong>
-checkbox once to see it.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>For one interrupted recording, a <strong>Resume Recording</strong>
-dialog: “A recording of {station} was in progress… Resume it for the
-remaining N minute(s)?” with <strong>Resume</strong> /
-<strong>Skip</strong> and <strong>Don’t ask me again</strong>. For
-several, a <strong>Resume Recordings</strong> dialog listing them in a
-review area with <strong>Resume All</strong> / <strong>Skip
-All</strong>. Resume continues the capture for its remaining time; the
-result lands in the Recordings library.</li>
-</ul>
+<p><strong>Before you start</strong> - FFmpeg available. Start a
+recording (RADIO-19), then <strong>force-kill</strong> Quill Radio (Task
+Manager ▸ End task) while it records. Optionally have two running for
+the batch case.</p>
+<p><strong>Do this</strong> 1. Relaunch Quill Radio. 2. Read the resume
+prompt that appears; choose <strong>Resume</strong> (or <strong>Resume
+All</strong>), or <strong>Skip</strong> / <strong>Skip All</strong>. Try
+the <strong>Don’t ask me again</strong> checkbox once to see it.</p>
+<p><strong>You should see and hear</strong> - For one interrupted
+recording, a <strong>Resume Recording</strong> dialog: “A recording of
+{station} was in progress… Resume it for the remaining N minute(s)?”
+with <strong>Resume</strong> / <strong>Skip</strong> and <strong>Don’t
+ask me again</strong>. For several, a <strong>Resume Recordings</strong>
+dialog listing them in a review area with <strong>Resume All</strong> /
+<strong>Skip All</strong>. Resume continues the capture for its
+remaining time; the result lands in the Recordings library.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="radio-27--add-and-remove-favorites-from-the-main-page">RADIO-27
-— Add and remove favorites from the main page</h2>
+<h2 id="radio-27-add-and-remove-favorites-from-the-main-page">RADIO-27 —
+Add and remove favorites from the main page</h2>
 <p><em>What &amp; why.</em> Favoriting is a one-key toggle for whatever
 is playing, and the favorites tree on the main page is where you
 live.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing that is not yet a favorite (from
-Browse/Search).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press the <strong>Add to Favorites</strong> button (it toggles to
-<strong>Remove from Favorites</strong>). Confirm the station appears in
-the tree.</li>
-<li>In the tree, select the station and press <strong>Enter</strong> to
-play it; press <strong>Delete</strong> to remove it and confirm the
-prompt; press <strong>F2</strong> to rename.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Add says <strong>“Added {station} to favorites”</strong> (with an
-earcon); the tree updates; the button becomes <strong>Remove from
-Favorites</strong> and says <strong>“Removed {station} from
-favorites”</strong> when pressed again. In the tree,
-<strong>Enter</strong> plays (“Playing {station}”),
+<p><strong>Before you start</strong> - A station playing that is not yet
+a favorite (from Browse/Search).</p>
+<p><strong>Do this</strong> 1. Press the <strong>Add to
+Favorites</strong> button (it toggles to <strong>Remove from
+Favorites</strong>). Confirm the station appears in the tree. 2. In the
+tree, select the station and press <strong>Enter</strong> to play it;
+press <strong>Delete</strong> to remove it and confirm the prompt; press
+<strong>F2</strong> to rename.</p>
+<p><strong>You should see and hear</strong> - Add says <strong>“Added
+{station} to favorites”</strong> (with an earcon); the tree updates; the
+button becomes <strong>Remove from Favorites</strong> and says
+<strong>“Removed {station} from favorites”</strong> when pressed again.
+In the tree, <strong>Enter</strong> plays (“Playing {station}”),
 <strong>Delete</strong> asks <strong>“Remove {name} from your
 favorites?”</strong> then <strong>“Removed {name} from
 favorites”</strong>, and <strong>F2</strong> renames via a “Rename
-Station” prompt (“Station renamed to {name}”).</li>
-</ul>
+Station” prompt (“Station renamed to {name}”).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-28--reorder-favorites-and-confirm-order-survives-a-restart">RADIO-28
+id="radio-28-reorder-favorites-and-confirm-order-survives-a-restart">RADIO-28
 — Reorder favorites, and confirm order survives a restart</h2>
 <p><em>What &amp; why.</em> You should be able to hand-arrange favorites
 and have that order kept — reordering announces where the station
 landed, and it must persist.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>At least three favorites in one folder (or at the top level).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>In the tree, select a station and press
+<p><strong>Before you start</strong> - At least three favorites in one
+folder (or at the top level).</p>
+<p><strong>Do this</strong> 1. In the tree, select a station and press
 <strong>Alt+Shift+Down</strong> to move it down, then
 <strong>Alt+Shift+Up</strong> to move it back. (Or use <strong>Mark for
 Move</strong> from the context menu: Shift+F10 ▸ Mark for Move, select a
-destination, then Move Marked Above/Below.)</li>
-<li>Close Quill Radio and relaunch. Check the order is exactly as you
-left it.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Each move announces where it landed, e.g. <strong>“Moved down, now
-below {station}”</strong>; an edge move says <strong>“Already at the
-edge of its folder.”</strong> If you were in an A–Z/Z–A sort, the first
-reorder says <strong>“Switched to manual order.”</strong> and reveals
-(never destroys) your stored order. <strong>After a restart the manual
-order is preserved.</strong></li>
-</ul>
+destination, then Move Marked Above/Below.) 2. Close Quill Radio and
+relaunch. Check the order is exactly as you left it.</p>
+<p><strong>You should see and hear</strong> - Each move announces where
+it landed, e.g. <strong>“Moved down, now below {station}”</strong>; an
+edge move says <strong>“Already at the edge of its folder.”</strong> If
+you were in an A–Z/Z–A sort, the first reorder says <strong>“Switched to
+manual order.”</strong> and reveals (never destroys) your stored order.
+<strong>After a restart the manual order is preserved.</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-29--manage-favorites-radiomanage_favorites-station--manage-favorites">RADIO-29
+id="radio-29-manage-favorites-radio.manage_favorites-station-manage-favorites">RADIO-29
 — Manage Favorites (<code>radio.manage_favorites</code>, Station ▸
 Manage Favorites…)</h2>
 <p><em>What &amp; why.</em> The full favorites workbench: search, play,
 remove, reorder, and organize into nested folders in one dialog.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Several favorites saved, ideally in a couple of folders.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Station menu ▸ Manage Favorites…</strong>.</li>
-<li>Type in <strong>Search favorites</strong> to filter; arrow the
-<strong>Favorites and folders</strong> tree; press
+<p><strong>Before you start</strong> - Several favorites saved, ideally
+in a couple of folders.</p>
+<p><strong>Do this</strong> 1. <strong>Station menu ▸ Manage
+Favorites…</strong>. 2. Type in <strong>Search favorites</strong> to
+filter; arrow the <strong>Favorites and folders</strong> tree; press
 <strong>Play</strong>; use <strong>Move Up / Move Down / Move to
 Folder…</strong>; try <strong>Mark for Move</strong> then <strong>Move
 Above / Move Below</strong>; <strong>New Folder…</strong>,
 <strong>Rename…</strong>, <strong>Delete Folder…</strong>,
-<strong>Remove All…</strong>.</li>
-<li>Close with <strong>Escape</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A <strong>Search favorites</strong> box (filters
-names/countries/tags/folders), the tree (“Enter plays, Delete removes,
-Shift+F10 opens all actions”), a status line, and the two rows of
-buttons above. Play says “Playing {label}”; moves announce the landing
-(“Moved down, now below {neighbor}”); Mark says “Marked {label}. Select
-a destination…”; Remove All warns it keeps folders and saves a backup.
-Close says <strong>“Exited Manage Favorites”</strong> and keeps playback
-running.</li>
-</ul>
+<strong>Remove All…</strong>. 3. Close with <strong>Escape</strong>.</p>
+<p><strong>You should see and hear</strong> - A <strong>Search
+favorites</strong> box (filters names/countries/tags/folders), the tree
+(“Enter plays, Delete removes, Shift+F10 opens all actions”), a status
+line, and the two rows of buttons above. Play says “Playing {label}”;
+moves announce the landing (“Moved down, now below {neighbor}”); Mark
+says “Marked {label}. Select a destination…”; Remove All warns it keeps
+folders and saves a backup. Close says <strong>“Exited Manage
+Favorites”</strong> and keeps playback running.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-30--favorites-folders-create-rename-move-delete-sort">RADIO-30
+id="radio-30-favorites-folders-create-rename-move-delete-sort">RADIO-30
 — Favorites folders: create, rename, move, delete, sort</h2>
 <p><em>What &amp; why.</em> Folders keep a big favorites list navigable.
 This walks the folder prompts from the main-page context menu.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A few favorites at the top level.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>In the tree, press <strong>Ctrl+Shift+E</strong> (or Shift+F10 ▸ New
-Folder…) — choose a location, then type a name like
-<code>News/Local</code>.</li>
-<li>Select a station, Shift+F10 ▸ <strong>Move to Folder…</strong>, and
-file it into the folder.</li>
-<li>On a folder, Shift+F10 ▸ <strong>Rename Folder…</strong> (F2),
-<strong>Sort This Folder…</strong>, and <strong>Delete
-Folder…</strong>.</li>
-<li>Use <strong>View menu ▸ Sort Favorites</strong> (Ascending /
-Descending / Unsorted) and <strong>Expand All / Collapse All
-Folders</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>New Folder says <strong>“Created folder {path}. File stations into
-it with Move to Folder.”</strong> (or “A folder named {path} already
-exists.”). Move to Folder says <strong>“Filed {station} under
-{folder}.”</strong> Rename says <strong>“Folder renamed to {name}; N
-station(s) came along.”</strong> Sort This Folder is a choice (Follow
-the default / A→Z / Z→A / Unsorted) announced when set. Delete Folder
-reassures your stations are safe, then <strong>“Folder {path} deleted; N
-station(s) moved to the top level.”</strong> View ▸ Sort Favorites
-announces the new order; Expand/Collapse say so.</li>
-</ul>
+<p><strong>Before you start</strong> - A few favorites at the top
+level.</p>
+<p><strong>Do this</strong> 1. In the tree, press
+<strong>Ctrl+Shift+E</strong> (or Shift+F10 ▸ New Folder…) — choose a
+location, then type a name like <code>News/Local</code>. 2. Select a
+station, Shift+F10 ▸ <strong>Move to Folder…</strong>, and file it into
+the folder. 3. On a folder, Shift+F10 ▸ <strong>Rename Folder…</strong>
+(F2), <strong>Sort This Folder…</strong>, and <strong>Delete
+Folder…</strong>. 4. Use <strong>View menu ▸ Sort Favorites</strong>
+(Ascending / Descending / Unsorted) and <strong>Expand All / Collapse
+All Folders</strong>.</p>
+<p><strong>You should see and hear</strong> - New Folder says
+<strong>“Created folder {path}. File stations into it with Move to
+Folder.”</strong> (or “A folder named {path} already exists.”). Move to
+Folder says <strong>“Filed {station} under {folder}.”</strong> Rename
+says <strong>“Folder renamed to {name}; N station(s) came
+along.”</strong> Sort This Folder is a choice (Follow the default / A→Z
+/ Z→A / Unsorted) announced when set. Delete Folder reassures your
+stations are safe, then <strong>“Folder {path} deleted; N station(s)
+moved to the top level.”</strong> View ▸ Sort Favorites announces the
+new order; Expand/Collapse say so.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-31--back-up-and-restore-stations--settings-qrbackup-round-trip">RADIO-31
+id="radio-31-back-up-and-restore-stations-settings-.qrbackup-round-trip">RADIO-31
 — Back Up and Restore stations &amp; settings (<code>.qrbackup</code>
 round-trip)</h2>
 <p><em>What &amp; why.</em> Move Quill Radio to a new PC, or recover
 after a reinstall, by backing up your stations, folders, and settings
 (and optionally recordings) to a single <code>.qrbackup</code> file —
 and restoring it faithfully.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Some favorites, folders, and settings worth saving. A folder to
-write to.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Station menu ▸ Back Up Stations and Settings…</strong>. If
-you have recordings, answer whether to include them; then save the
-<code>.qrbackup</code> file.</li>
-<li>Change something (remove a favorite, rename a folder).</li>
-<li><strong>Station menu ▸ Restore from Backup…</strong>; pick the
-<code>.qrbackup</code>; confirm the replace warning. Verify your
-favorites/folders are back exactly.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Backup: an include-recordings Yes/No/Cancel prompt (if any exist), a
-save dialog defaulting to
-<code>quill-radio-backup-{date}.qrbackup</code>, then <strong>“Backing
-up Quill Radio.”</strong> → <strong>“Backup saved to {name}.”</strong>
-(or a spoken failure). Restore: an open dialog, a confirm (“Restore N
-settings file(s)… This replaces your current stations and settings.”)
-then <strong>“Restoring Quill Radio…”</strong> → <strong>“Restored N
-settings file(s)…. Your stations are back.”</strong> The round-trip
-reproduces your favorites, folders, and settings.</li>
-</ul>
+<p><strong>Before you start</strong> - Some favorites, folders, and
+settings worth saving. A folder to write to.</p>
+<p><strong>Do this</strong> 1. <strong>Station menu ▸ Back Up Stations
+and Settings…</strong>. If you have recordings, answer whether to
+include them; then save the <code>.qrbackup</code> file. 2. Change
+something (remove a favorite, rename a folder). 3. <strong>Station menu
+▸ Restore from Backup…</strong>; pick the <code>.qrbackup</code>;
+confirm the replace warning. Verify your favorites/folders are back
+exactly.</p>
+<p><strong>You should see and hear</strong> - Backup: an
+include-recordings Yes/No/Cancel prompt (if any exist), a save dialog
+defaulting to <code>quill-radio-backup-{date}.qrbackup</code>, then
+<strong>“Backing up Quill Radio.”</strong> → <strong>“Backup saved to
+{name}.”</strong> (or a spoken failure). Restore: an open dialog, a
+confirm (“Restore N settings file(s)… This replaces your current
+stations and settings.”) then <strong>“Restoring Quill Radio…”</strong>
+→ <strong>“Restored N settings file(s)…. Your stations are
+back.”</strong> The round-trip reproduces your favorites, folders, and
+settings.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-32--resume-last-station-and-start-with-windows-autostart">RADIO-32
+id="radio-32-resume-last-station-and-start-with-windows-autostart">RADIO-32
 — Resume Last Station and Start with Windows (autostart)</h2>
 <p><em>What &amp; why.</em> An appliance turns on ready to go:
 optionally start with Windows and resume the last station at launch.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Windows (autostart is Windows-only). A station you have played.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Toggle <strong>Station menu ▸ Resume Last Station on Launch</strong>
-on.</li>
-<li>Toggle <strong>Station menu ▸ Start Quill Radio with
-Windows</strong> on. (Optionally sign out/in or reboot to confirm it
-launches — otherwise verify the menu check and the announcement.)</li>
-<li>Close and relaunch Quill Radio; confirm the last station
-resumes.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Resume toggle says <strong>“Quill Radio will pick up where you left
-off at launch.”</strong> / <strong>“Resume on launch turned
-off.”</strong> Autostart toggle reflects what actually took:
-<strong>“Quill Radio will start with Windows.”</strong> / <strong>“…will
-not start with Windows.”</strong> (a locked-down registry may refuse —
-it reports the real state). On relaunch with Resume on, the last station
-is already playing.</li>
-</ul>
+<p><strong>Before you start</strong> - Windows (autostart is
+Windows-only). A station you have played.</p>
+<p><strong>Do this</strong> 1. Toggle <strong>Station menu ▸ Resume Last
+Station on Launch</strong> on. 2. Toggle <strong>Station menu ▸ Start
+Quill Radio with Windows</strong> on. (Optionally sign out/in or reboot
+to confirm it launches — otherwise verify the menu check and the
+announcement.) 3. Close and relaunch Quill Radio; confirm the last
+station resumes.</p>
+<p><strong>You should see and hear</strong> - Resume toggle says
+<strong>“Quill Radio will pick up where you left off at
+launch.”</strong> / <strong>“Resume on launch turned off.”</strong>
+Autostart toggle reflects what actually took: <strong>“Quill Radio will
+start with Windows.”</strong> / <strong>“…will not start with
+Windows.”</strong> (a locked-down registry may refuse — it reports the
+real state). On relaunch with Resume on, the last station is already
+playing.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="radio-33--missed-recording-report-on-launch">RADIO-33 —
+<h2 id="radio-33-missed-recording-report-on-launch">RADIO-33 —
 Missed-recording report on launch</h2>
 <p><em>What &amp; why.</em> If a scheduled recording’s time passed while
 Quill Radio was closed, the next launch should tell you it was missed —
 not swallow it silently.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>FFmpeg available. From RADIO-21, add a <strong>Once</strong>
-schedule for a time <strong>a couple of minutes from now</strong>, then
-<strong>close Quill Radio</strong> and wait past that time.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Relaunch Quill Radio and listen during the first few seconds.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Shortly after the window comes up, a spoken one-line summary of the
-scheduled recording(s) missed while the app was closed. (An occurrence
-whose window is still open at launch is started late instead of reported
-missed.)</li>
-</ul>
+<p><strong>Before you start</strong> - FFmpeg available. From RADIO-21,
+add a <strong>Once</strong> schedule for a time <strong>a couple of
+minutes from now</strong>, then <strong>close Quill Radio</strong> and
+wait past that time.</p>
+<p><strong>Do this</strong> 1. Relaunch Quill Radio and listen during
+the first few seconds.</p>
+<p><strong>You should see and hear</strong> - Shortly after the window
+comes up, a spoken one-line summary of the scheduled recording(s) missed
+while the app was closed. (An occurrence whose window is still open at
+launch is started late instead of reported missed.)</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="radio-34--the-status-bar-mini-player">RADIO-34 — The status-bar
+<h2 id="radio-34-the-status-bar-mini-player">RADIO-34 — The status-bar
 mini-player</h2>
 <p><em>What &amp; why.</em> The bottom status bar is a compact,
 arrow-navigable mini-player: what’s on, volume, recording, sleep timer,
 favorites count, and the time — each cell does something on Enter.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing. <strong>View menu ▸ Show Status Bar</strong>
-on.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>F6</strong> to move focus into the <strong>Status
-bar</strong>.</li>
-<li><strong>Left/Right Arrow</strong> across the cells (Home/End jump to
-the ends); listen to each. Press <strong>Enter</strong> on a cell.</li>
-<li>Try <strong>Shift+F10</strong> on the <strong>Now playing</strong>
-or <strong>Volume</strong> cell for its context menu. Press
-<strong>Escape</strong> to return to the favorites list.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Six cells, each announced as <strong>“{name}, {value}”</strong>:
-<strong>Now playing</strong> (station or “Stopped”; Enter opens full Now
-Playing details; menu has Play/Pause, Mute, Record),
-<strong>Volume</strong> (“{pct}%” / “Muted” / “{pct}% (boosted)”; Enter
-mutes; menu has Volume Up/Down, Mute, Volume Boost),
-<strong>Recording</strong> (“Idle” / “Recording” / “N recording”; Enter
-toggles record), <strong>Sleep timer</strong> (“Off” / “N min left”;
-Enter opens the sleep dialog), <strong>Favorites</strong> (“N stations”;
-Enter jumps to the list), <strong>Time</strong> (clock; Enter speaks the
-full date/time). Escape says <strong>“Returned to favorite
-stations.”</strong></li>
-</ul>
+<p><strong>Before you start</strong> - A station playing. <strong>View
+menu ▸ Show Status Bar</strong> on.</p>
+<p><strong>Do this</strong> 1. Press <strong>F6</strong> to move focus
+into the <strong>Status bar</strong>. 2. <strong>Left/Right
+Arrow</strong> across the cells (Home/End jump to the ends); listen to
+each. Press <strong>Enter</strong> on a cell. 3. Try
+<strong>Shift+F10</strong> on the <strong>Now playing</strong> or
+<strong>Volume</strong> cell for its context menu. Press
+<strong>Escape</strong> to return to the favorites list.</p>
+<p><strong>You should see and hear</strong> - Six cells, each announced
+as <strong>“{name}, {value}”</strong>: <strong>Now playing</strong>
+(station or “Stopped”; Enter opens full Now Playing details; menu has
+Play/Pause, Mute, Record), <strong>Volume</strong> (“{pct}%” / “Muted” /
+“{pct}% (boosted)”; Enter mutes; menu has Volume Up/Down, Mute, Volume
+Boost), <strong>Recording</strong> (“Idle” / “Recording” / “N
+recording”; Enter toggles record), <strong>Sleep timer</strong> (“Off” /
+“N min left”; Enter opens the sleep dialog), <strong>Favorites</strong>
+(“N stations”; Enter jumps to the list), <strong>Time</strong> (clock;
+Enter speaks the full date/time). Escape says <strong>“Returned to
+favorite stations.”</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-35--send-to-tray-showhide-tray-hotkey-and-media-keys-viewtoggle_window_to_tray">RADIO-35
+id="radio-35-send-to-tray-showhide-tray-hotkey-and-media-keys-view.toggle_window_to_tray">RADIO-35
 — Send to Tray, show/hide, tray hotkey and media keys
 (<code>view.toggle_window_to_tray</code>)</h2>
 <p><em>What &amp; why.</em> Quill Radio keeps playing from the system
 tray, and you can show/hide it and drive transport by global hotkey and
 media keys without the window in front.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+W</strong> (<strong>Station menu ▸ Send to
-Tray</strong>) — the window hides, playback continues.</li>
-<li>Press the <strong>tray hotkey Ctrl+Alt+Shift+R</strong> to bring it
-back; press it again to hide. (This is
-<code>view.toggle_window_to_tray</code>, also in Help ▸ Global
-Hotkeys….)</li>
-<li>With the window hidden or focused, press your keyboard’s
-<strong>Play/Pause</strong> and <strong>Stop</strong> media keys.</li>
-<li>Right-click the tray icon and use its <strong>Play / Pause</strong>
-and <strong>Stop</strong> items.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Send to Tray says <strong>“Quill Radio is still running in the
-system tray.”</strong> and playback keeps going. The tray hotkey
-shows/hides the window (a second launch of Quill Radio also just brings
-the running one forward — single instance). Media keys and the tray
-menu’s Play/Pause and Stop drive the same transport and are spoken.</li>
-</ul>
+<p><strong>Before you start</strong> - A station playing.</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+W</strong>
+(<strong>Station menu ▸ Send to Tray</strong>) — the window hides,
+playback continues. 2. Press the <strong>tray hotkey
+Ctrl+Alt+Shift+R</strong> to bring it back; press it again to hide.
+(This is <code>view.toggle_window_to_tray</code>, also in Help ▸ Global
+Hotkeys….) 3. With the window hidden or focused, press your keyboard’s
+<strong>Play/Pause</strong> and <strong>Stop</strong> media keys. 4.
+Right-click the tray icon and use its <strong>Play / Pause</strong> and
+<strong>Stop</strong> items.</p>
+<p><strong>You should see and hear</strong> - Send to Tray says
+<strong>“Quill Radio is still running in the system tray.”</strong> and
+playback keeps going. The tray hotkey shows/hides the window (a second
+launch of Quill Radio also just brings the running one forward — single
+instance). Media keys and the tray menu’s Play/Pause and Stop drive the
+same transport and are spoken.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-36--close-confirmation-exit-minimize-to-tray-or-cancel">RADIO-36
+id="radio-36-close-confirmation-exit-minimize-to-tray-or-cancel">RADIO-36
 — Close confirmation: Exit, Minimize to Tray, or Cancel</h2>
 <p><em>What &amp; why.</em> Closing while a station plays (or a
 recording runs) must not silently kill it — you get a spoken choice you
 can cancel. Alt+F4 must never be a dead key.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing (and optionally a recording running). Preferences
-▸ “When closing the window” set to <strong>Ask every time</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press the titlebar <strong>Close (X)</strong>, or <strong>Station
-menu ▸ Exit</strong>.</li>
-<li>Read the dialog; press <strong>Cancel</strong> first (stay open).
-Repeat and choose <strong>Minimize to Tray</strong>, then repeat and
-choose <strong>Exit</strong>. Try the <strong>Don’t ask me
-again</strong> checkbox once.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A dialog titled <strong>“Closing Quill Radio”</strong> asking to
-exit or minimize; when a recording is active it prepends
-<strong>“Recording is in progress — exiting now stops it.”</strong>
-Buttons: <strong>Minimize to Tray</strong> (default),
-<strong>Exit</strong>, <strong>Cancel</strong>; <strong>Don’t ask me
-again</strong> remembers the choice in Preferences.
+<p><strong>Before you start</strong> - A station playing (and optionally
+a recording running). Preferences ▸ “When closing the window” set to
+<strong>Ask every time</strong>.</p>
+<p><strong>Do this</strong> 1. Press the titlebar <strong>Close
+(X)</strong>, or <strong>Station menu ▸ Exit</strong>. 2. Read the
+dialog; press <strong>Cancel</strong> first (stay open). Repeat and
+choose <strong>Minimize to Tray</strong>, then repeat and choose
+<strong>Exit</strong>. Try the <strong>Don’t ask me again</strong>
+checkbox once.</p>
+<p><strong>You should see and hear</strong> - A dialog titled
+<strong>“Closing Quill Radio”</strong> asking to exit or minimize; when
+a recording is active it prepends <strong>“Recording is in progress —
+exiting now stops it.”</strong> Buttons: <strong>Minimize to
+Tray</strong> (default), <strong>Exit</strong>, <strong>Cancel</strong>;
+<strong>Don’t ask me again</strong> remembers the choice in Preferences.
 <strong>Cancel/Escape</strong> keeps the window. <strong>Exit</strong>
 quits for real (not minimize). Alt+F4 either closes or, if the
 Alt+F4-to-tray preference is on, tucks to the tray still playing — never
-nothing.</li>
-</ul>
+nothing.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="radio-37--preferences-station--preferences-ctrl">RADIO-37 —
+<h2 id="radio-37-preferences-station-preferences-ctrl">RADIO-37 —
 Preferences (Station ▸ Preferences…, Ctrl+,)</h2>
 <p><em>What &amp; why.</em> One dialog for how Quill Radio behaves:
 resume, updates, engine, output device, close action, What’s Playing
 wording, logging, and more.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Quill Radio open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+,</strong>, or <strong>Station menu ▸
-Preferences…</strong>.</li>
-<li><strong>Tab</strong> through the checkboxes (Resume on Launch, Check
-for updates, Announce dialog transitions, Recover failed streams, Alt+F4
-to tray, Verbose logging, Keep computer awake), the choices (When
-closing the window, Playback engine, Radio output device, Favorites sort
-order), the text fields (What’s Playing announcement, Log folder), and
-the <strong>Reset All Stations’ Sound Enhancements…</strong>
-action.</li>
-<li>Change one setting; press <strong>OK</strong> (or Cancel/Escape to
-discard).</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Every control is labelled with a spoken help description; the
-Playback engine choice lists <strong>Automatic / Windows Media (classic)
-/ mpv</strong>. On <strong>OK</strong> it says <strong>“Preferences
-saved”</strong> and changes apply immediately (a playing station
-reconnects through a newly chosen engine/device). Escape discards.</li>
-</ul>
+<p><strong>Before you start</strong> - Quill Radio open.</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+,</strong>, or
+<strong>Station menu ▸ Preferences…</strong>. 2. <strong>Tab</strong>
+through the checkboxes (Resume on Launch, Check for updates, Announce
+dialog transitions, Recover failed streams, Alt+F4 to tray, Verbose
+logging, Keep computer awake), the choices (When closing the window,
+Playback engine, Radio output device, Favorites sort order), the text
+fields (What’s Playing announcement, Log folder), and the <strong>Reset
+All Stations’ Sound Enhancements…</strong> action. 3. Change one
+setting; press <strong>OK</strong> (or Cancel/Escape to discard).</p>
+<p><strong>You should see and hear</strong> - Every control is labelled
+with a spoken help description; the Playback engine choice lists
+<strong>Automatic / Windows Media (classic) / mpv</strong>. On
+<strong>OK</strong> it says <strong>“Preferences saved”</strong> and
+changes apply immediately (a playing station reconnects through a newly
+chosen engine/device). Escape discards.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-38--view-menu-text-size-show-status-bar-show-station-details-customize-features">RADIO-38
+id="radio-38-view-menu-text-size-show-status-bar-show-station-details-customize-features">RADIO-38
 — View menu: Text Size, Show Status Bar, Show Station Details, Customize
 Features</h2>
 <p><em>What &amp; why.</em> Low-vision legibility and layout choices,
 plus the ability to turn whole feature areas (Recording, Weather) on or
 off.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Quill Radio open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>View menu ▸ Text Size</strong> ▸ <strong>Large</strong>
-(then back to <strong>Normal</strong>).</li>
-<li>Toggle <strong>View ▸ Show Status Bar</strong> off and on; toggle
-<strong>Show Station Details</strong>.</li>
-<li><strong>View ▸ Customize Features…</strong>: turn
-<strong>Recording</strong> or <strong>Weather</strong> off, save, and
-note it takes effect next launch.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Text Size says <strong>“Text size: Large”</strong> and the window
-fonts grow immediately; Normal restores them. Show Status Bar says
-<strong>“Status bar shown/hidden.”</strong> and the bar
-appears/disappears live. Show Station Details announces its new state.
-Customize Features saves with <strong>“Feature settings saved. Menu
-changes take effect the next time you open Quill Radio.”</strong> — and
-on the next launch the turned-off menu (e.g. Record) is absent.</li>
-</ul>
+<p><strong>Before you start</strong> - Quill Radio open.</p>
+<p><strong>Do this</strong> 1. <strong>View menu ▸ Text Size</strong> ▸
+<strong>Large</strong> (then back to <strong>Normal</strong>). 2. Toggle
+<strong>View ▸ Show Status Bar</strong> off and on; toggle <strong>Show
+Station Details</strong>. 3. <strong>View ▸ Customize
+Features…</strong>: turn <strong>Recording</strong> or
+<strong>Weather</strong> off, save, and note it takes effect next
+launch.</p>
+<p><strong>You should see and hear</strong> - Text Size says
+<strong>“Text size: Large”</strong> and the window fonts grow
+immediately; Normal restores them. Show Status Bar says <strong>“Status
+bar shown/hidden.”</strong> and the bar appears/disappears live. Show
+Station Details announces its new state. Customize Features saves with
+<strong>“Feature settings saved. Menu changes take effect the next time
+you open Quill Radio.”</strong> — and on the next launch the turned-off
+menu (e.g. Record) is absent.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="radio-39--weather-menu-and-the-quillville-switcher">RADIO-39 —
+<h2 id="radio-39-weather-menu-and-the-quillville-switcher">RADIO-39 —
 Weather menu and the QuillVille switcher</h2>
 <p><em>What &amp; why.</em> Quill Radio embeds a Weather menu (handing
 full weather off to the Quill Weather app) and a QuillVille switcher to
 reach sibling apps. This scenario proves both are present and reachable;
 the weather features themselves are tested in
 <strong><code>app-weather.md</code></strong>.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Quill Radio open with the <strong>Weather</strong> area enabled
-(default). Quill Weather installed for the launch cross-check.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Weather</strong> menu (Alt, then arrow to Weather).
-Confirm it lists <strong>Open the Quill Weather App</strong>,
-<strong>Weather Now… (Ctrl+Shift+W)</strong>, <strong>Quick Weather
-(Ctrl+Shift+Q)</strong>, <strong>Active Alerts…</strong>, <strong>Add
-Location…</strong>, <strong>Settings…</strong>, <strong>Test
-Alert…</strong>, and (if enabled) NOAA Weather Radio items.</li>
-<li>Open the <strong>QuillVille</strong> menu and read the app
-list.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The <strong>Weather</strong> menu is present and every item
-announced; <strong>Open the Quill Weather App</strong> launches Quill
-Weather side by side (see <code>app-weather.md</code> for the weather
-features). The <strong>QuillVille</strong> switcher lists the sibling
-apps <strong>excluding Quill Radio itself</strong> — for a public build
-that means only QUILL and Quill Weather (the gated apps must not appear;
-cross-check <code>gated-absence.md</code>).</li>
-</ul>
+<p><strong>Before you start</strong> - Quill Radio open with the
+<strong>Weather</strong> area enabled (default). Quill Weather installed
+for the launch cross-check.</p>
+<p><strong>Do this</strong> 1. Open the <strong>Weather</strong> menu
+(Alt, then arrow to Weather). Confirm it lists <strong>Open the Quill
+Weather App</strong>, <strong>Weather Now… (Ctrl+Shift+W)</strong>,
+<strong>Quick Weather (Ctrl+Shift+Q)</strong>, <strong>Active
+Alerts…</strong>, <strong>Add Location…</strong>,
+<strong>Settings…</strong>, <strong>Test Alert…</strong>, and (if
+enabled) NOAA Weather Radio items. 2. Open the
+<strong>QuillVille</strong> menu and read the app list.</p>
+<p><strong>You should see and hear</strong> - The
+<strong>Weather</strong> menu is present and every item announced;
+<strong>Open the Quill Weather App</strong> launches Quill Weather side
+by side (see <code>app-weather.md</code> for the weather features). The
+<strong>QuillVille</strong> switcher lists the sibling apps
+<strong>excluding Quill Radio itself</strong> — for a public build that
+means only QUILL and Quill Weather (the gated apps must not appear;
+cross-check <code>gated-absence.md</code>).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-40--playback-survives-a-dropped-connection-auto-reconnect">RADIO-40
+id="radio-40-playback-survives-a-dropped-connection-auto-reconnect">RADIO-40
 — Playback survives a dropped connection (auto-reconnect)</h2>
 <p><em>What &amp; why.</em> Internet streams hiccup; Quill Radio should
 recover rather than go silent, optionally scanning the station’s own
 website for a working stream.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A station playing. Preferences ▸ “Recover failed streams from the
-station’s website” on (default). A way to briefly interrupt the network
-(e.g. toggle Wi-Fi off a few seconds, then on).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>With a station playing, drop the network briefly, then restore
-it.</li>
-<li>Listen without touching the app.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Playback recovers on its own when the network returns (it may
-reconnect or, if the stream is dead, find a replacement from the
-station’s website), rather than failing silently. Any recovery is
-spoken. (Recording reconnect is governed by the Recording Settings “If
-the connection drops” group in RADIO-22.)</li>
-</ul>
+<p><strong>Before you start</strong> - A station playing. Preferences ▸
+“Recover failed streams from the station’s website” on (default). A way
+to briefly interrupt the network (e.g. toggle Wi-Fi off a few seconds,
+then on).</p>
+<p><strong>Do this</strong> 1. With a station playing, drop the network
+briefly, then restore it. 2. Listen without touching the app.</p>
+<p><strong>You should see and hear</strong> - Playback recovers on its
+own when the network returns (it may reconnect or, if the stream is
+dead, find a replacement from the station’s website), rather than
+failing silently. Any recovery is spoken. (Recording reconnect is
+governed by the Recording Settings “If the connection drops” group in
+RADIO-22.)</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="radio-41--spotify-entries-are-absent-spotifyconnect--spotifybrowse-gated-futurespotify">RADIO-41
+id="radio-41-spotify-entries-are-absent-spotify.connect-spotify.browse-gated-future.spotify">RADIO-41
 — Spotify entries are absent (<code>spotify.connect</code> /
 <code>spotify.browse</code>) [GATED future.spotify]</h2>
 <p><em>What &amp; why.</em> Spotify integration is gated off for the
 public 1.0 release; it must <strong>not</strong> appear in a public
 build.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A public Quill Radio build (feature flag <code>future.spotify</code>
-off).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Help</strong> menu and read every item.</li>
-<li>Open the <strong>Command Palette</strong> (Help ▸ Command Palette…)
-and type <strong><code>spotify</code></strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>There is <strong>no</strong> “Connect to Spotify…” or “Browse
-Spotify…” item in the Help menu, and the palette finds no Spotify
-commands. If you are on a dev/admin build with the flag on, they may
-appear — then mark this <strong>N/A</strong>, do not fail it. Confirm
-absence in <code>gated-absence.md</code>.</li>
-</ul>
+<p><strong>Before you start</strong> - A public Quill Radio build
+(feature flag <code>future.spotify</code> off).</p>
+<p><strong>Do this</strong> 1. Open the <strong>Help</strong> menu and
+read every item. 2. Open the <strong>Command Palette</strong> (Help ▸
+Command Palette…) and type <strong><code>spotify</code></strong>.</p>
+<p><strong>You should see and hear</strong> - There is
+<strong>no</strong> “Connect to Spotify…” or “Browse Spotify…” item in
+the Help menu, and the palette finds no Spotify commands. If you are on
+a dev/admin build with the flag on, they may appear — then mark this
+<strong>N/A</strong>, do not fail it. Confirm absence in
+<code>gated-absence.md</code>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1749,6 +1378,5 @@ absence in <code>gated-absence.md</code>.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
-</main>
 </body>
 </html>

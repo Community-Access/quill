@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL 1.0.0 Sign-off — Installation-mode matrix (portable vs
-system, all scenarios)</title>
+  <title>SIGNOFF-install-matrix</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,31 +174,10 @@ system, all scenarios)</title>
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
-id="quill-100-sign-off--installation-mode-matrix-portable-vs-system-all-scenarios">QUILL
+id="quill-1.0.0-sign-off-installation-mode-matrix-portable-vs-system-all-scenarios">QUILL
 1.0.0 Sign-off — Installation-mode matrix (portable vs system, all
 scenarios)</h1>
 <p>Install-mode behavior is governed by <strong>three independent
@@ -224,7 +202,7 @@ bundle</strong> · <strong>E6 Safe Mode</strong> (portable +
 system).</li>
 </ul>
 <hr />
-<h2 id="1-data-directory--settings-location">1. Data directory &amp;
+<h2 id="data-directory-settings-location">1. Data directory &amp;
 settings location</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />E1 data + <code>settings.json</code>
@@ -245,7 +223,7 @@ it.</label></li>
 creates logs / diagnostics / backups / autosave / sessions in the
 resolved dir (all E).</label></li>
 </ul>
-<h2 id="2-credential--api-key--secret-storage-the-highest-risk-axis">2.
+<h2 id="credential-api-key-secret-storage-the-highest-risk-axis">2.
 Credential / API-key &amp; secret storage (the highest-risk axis)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />E1 (Windows,
@@ -278,7 +256,7 @@ that service’s namespace; nothing left behind.</label></li>
 <li><label><input type="checkbox" />Redaction: no token/key survives
 logs, diagnostics, or crash bundle (SEC-13) in any mode.</label></li>
 </ul>
-<h2 id="3-updates">3. Updates</h2>
+<h2 id="updates">3. Updates</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />E1/E3: offered the <strong>platform
 installer</strong> (<code>.exe</code>/<code>.msi</code>; macOS
@@ -304,7 +282,7 @@ resolve their own portable/installed verdict correctly (they use a bare
 <code>unins000</code>-beside-exe check +
 <code>prefer_portable</code>).</label></li>
 </ul>
-<h2 id="4-first-run-migration--import">4. First-run, migration &amp;
+<h2 id="first-run-migration-import">4. First-run, migration &amp;
 import</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Fresh install triggers the
@@ -326,8 +304,7 @@ on a fresh data dir, QUILL offers to import a populated prior location
 settings quarantined, not lost — backup dir follows the resolved data
 dir in every mode.</label></li>
 </ul>
-<h2
-id="5-safe-mode-install-mode-independent--verify-it-does-not-differ">5.
+<h2 id="safe-mode-install-mode-independent-verify-it-does-not-differ">5.
 Safe Mode (install-mode-independent — verify it does NOT differ)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" /><code>QUILL_SAFE_MODE=1</code> /
@@ -340,8 +317,7 @@ mode-independent.</label></li>
 <li><label><input type="checkbox" />Radio and Weather network features
 all refuse in Safe Mode.</label></li>
 </ul>
-<h2 id="6-portable-specific-behaviors">6. Portable-specific
-behaviors</h2>
+<h2 id="portable-specific-behaviors">6. Portable-specific behaviors</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Everything (data, settings, secrets,
 logs) stays inside the app folder <strong>only when all three signals
@@ -354,7 +330,7 @@ don’t transfer), no crash.</label></li>
 <code>storage-mode.json</code> falls back to appdata path
 gracefully.</label></li>
 </ul>
-<h2 id="7-per-app-install-mode-pass">7. Per-app install-mode pass</h2>
+<h2 id="per-app-install-mode-pass">7. Per-app install-mode pass</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>Editor:</strong> all of
 §1–§6.</label></li>
@@ -375,6 +351,5 @@ exe — so a build shipping <code>data/</code> writes DPAPI
 <code>keys.enc</code> even if the user picked appdata storage. Verify
 this matches product intent before sign-off.</p>
 </blockquote>
-</main>
 </body>
 </html>

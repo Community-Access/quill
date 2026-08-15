@@ -31,7 +31,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "2.2.0"
+$version = "3.0.0"
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on
 # for this run by setting QUILL_SIGN=1, which the shared signer
@@ -155,6 +155,33 @@ if (-not (Test-Path (Join-Path $appDir "QuillRadio.exe"))) {
 }
 if (-not (Test-Path (Join-Path $appDir "pythonw.exe"))) {
     throw "Portable build did not stage the genuine pythonw.exe interpreter."
+}
+
+# -- OptiLab Core adapter (optional) -----------------------------------------
+# quill-optilab.exe links OptiLab Core (Lanes Audio / dgl1984), vendored at
+# v1.4.0 under quill/native/optilab/upstream and licensed Apache-2.0 WITH the
+# Commons Clause. It is what "exact OptiLab processing" runs. Best-effort: with
+# no C++ toolchain the build script says so and exits 0, the app reports the
+# option as unavailable, and the built-in chain works exactly as before -- so a
+# missing toolchain must not fail the release. Its LICENSE and NOTICE ship
+# beside it, which is now an obligation rather than a courtesy: the engine is
+# redistributed here, not merely imitated.
+& $Python (Join-Path $QuillRepo "scripts\build_native_optilab.py") --out $appDir
+$optilabExe = Join-Path $appDir "quill-optilab.exe"
+if (Test-Path $optilabExe) {
+    $upstream = Join-Path $QuillRepo "quill\native\optilab\upstream"
+    foreach ($dest in @($appDir, $sharedRuntimeDist)) {
+        # Both homes: the portable stick carries its own copy, and the shared
+        # runtime is where an *installed* app finds it (the per-app installer
+        # ships only the launcher and docs, so the runtime is beside
+        # sys.executable -- exactly where optilab_adapter.find_adapter looks).
+        Copy-Item $optilabExe (Join-Path $dest "quill-optilab.exe") -Force
+        Copy-Item (Join-Path $upstream "LICENSE") (Join-Path $dest "OptiLabCore-LICENSE.txt") -Force
+        Copy-Item (Join-Path $upstream "NOTICE")  (Join-Path $dest "OptiLabCore-NOTICE.txt")  -Force
+    }
+    Write-Host "Staged the OptiLab Core adapter and its licence files."
+} else {
+    Write-Host "No OptiLab adapter in this build; exact OptiLab processing will be unavailable."
 }
 
 # -- code signing (payload) ---------------------------------------------------

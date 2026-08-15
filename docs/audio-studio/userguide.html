@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Audio Studio User Guide</title>
   <style>
@@ -41,6 +41,7 @@
       body {
         background-color: transparent;
         color: black;
+        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -701,6 +702,40 @@ re-mux (no re-encode, no quality loss) into a new file.</li>
 <h3 id="publish">Publish…</h3>
 <p>Opens the Publish dialog for this book - save your chapter edits
 first. See “Publishing” below.</p>
+<h2 id="copy-sections">Copy Sections</h2>
+<p><strong>Voices &gt; Copy Sections…</strong> takes pieces out of an
+audio file and collects them into a new one. It is for the job that
+always used to mean doing the same thing six times: pulling the four
+quotes you want out of a long interview, or the songs you actually want
+out of a four-hour recording of a broadcast.</p>
+<p>Play the file, and as you listen:</p>
+<ul>
+<li><strong>Mark Start</strong> when a piece begins and <strong>Mark
+End</strong> when it stops. Either can be set first, and either can be
+moved as often as you like – a mark is a position, not a commitment, and
+nothing is written until you ask for a file.</li>
+<li><strong>Preview Marked</strong> plays from your start mark so you
+can hear whether you got it right before keeping it.</li>
+<li><strong>Add to List</strong> collects it, and clears the marks so
+you can go and find the next one.</li>
+</ul>
+<p>The list is what will be saved, in the order shown – <strong>Move
+Up</strong> and <strong>Move Down</strong> change that order,
+<strong>Play This One</strong> replays any collected piece, and
+<strong>Remove</strong> drops one. Each row reads as a whole sentence,
+so there are no columns to arrow across.</p>
+<p>Then either <strong>Save as New File…</strong>, or <strong>Add to an
+Existing File…</strong> to put what you collected onto the end of a file
+you already have. That second one is the reason for collecting at all:
+the fourth quote from the third interview joins the three already in the
+file.</p>
+<p><strong>Your original file is never changed.</strong> Not on marking,
+not on preview, not on save – everything is written somewhere else. And
+if a save fails part way through, the file you were saving into is left
+exactly as it was rather than half written.</p>
+<p>There is no waveform display, deliberately. A waveform is a picture
+of the audio for people who can see it; listening to the marked range
+tells you the same thing and tells it more reliably.</p>
 <h2 id="voices">Voices</h2>
 <h3 id="engines">Engines</h3>
 <ul>

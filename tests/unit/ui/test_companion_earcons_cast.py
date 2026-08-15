@@ -52,7 +52,12 @@ class _Host(PodcastsMixin):
 @pytest.fixture
 def cues(monkeypatch: pytest.MonkeyPatch) -> list[str]:
     posted: list[str] = []
+    # Two call sites since the playback cache landed: the episode-finished cue
+    # is still in main_frame_podcasts, the two download cues moved out with the
+    # transfer callbacks into PodcastTransfersMixin. Patch both, so this stays
+    # a test of "which cue fires" rather than of where the code lives.
     monkeypatch.setattr("quill.ui.main_frame_podcasts.post_cue", posted.append)
+    monkeypatch.setattr("quill.ui.main_frame_podcast_transfers.post_cue", posted.append)
     return posted
 
 

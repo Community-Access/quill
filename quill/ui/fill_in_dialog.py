@@ -28,7 +28,7 @@ class FillInDialog:
 
     def __init__(self, parent: object, specs: list[FieldSpec], *, title: str = "Fill In") -> None:
         self._specs = specs
-        self._controls: list[wx.TextCtrl] = []
+        self._controls: list[wx.Window] = []
 
         self.dialog = wx.Dialog(
             parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
@@ -48,11 +48,20 @@ class FillInDialog:
         for spec in specs:
             label = wx.StaticText(host, label=f"{spec.label}:")
             grid.Add(label, 0, wx.ALIGN_CENTER_VERTICAL)
-            field = wx.TextCtrl(host, value=spec.default, style=wx.TE_PROCESS_ENTER)
+            if spec.is_choice:
+                # A question whose answer is one of a known few offers them:
+                # picking is one arrow key, and typing "Second reminder"
+                # exactly right is a spelling test nobody asked to sit.
+                field: wx.Window = wx.Choice(host, choices=list(spec.choices))
+                field.SetSelection(
+                    spec.choices.index(spec.default) if spec.default in spec.choices else 0
+                )
+            else:
+                field = wx.TextCtrl(host, value=spec.default, style=wx.TE_PROCESS_ENTER)
+                field.Bind(wx.EVT_TEXT_ENTER, self._on_enter)
             # The visible label and the accessible name agree, so speech and
             # braille match what is on screen.
             field.SetName(spec.label)
-            field.Bind(wx.EVT_TEXT_ENTER, self._on_enter)
             grid.Add(field, 1, wx.EXPAND)
             self._controls.append(field)
 
@@ -79,8 +88,15 @@ class FillInDialog:
             cancel_id=wx.ID_CANCEL,
         )
         if self._controls:
-            self._controls[0].SetFocus()
-            self._controls[0].SelectAll()
+            self._focus(0)
+
+    def _focus(self, index: int) -> None:
+        """Focus a field, selecting its text where there is text to select."""
+        control = self._controls[index]
+        control.SetFocus()
+        select_all = getattr(control, "SelectAll", None)
+        if callable(select_all):
+            select_all()
 
     def show(self) -> int:
         return self.dialog.ShowModal()
@@ -91,9 +107,17 @@ class FillInDialog:
     @property
     def values(self) -> dict[str, str]:
         return {
-            spec.key: control.GetValue()
+            spec.key: self._value_of(control)
             for spec, control in zip(self._specs, self._controls, strict=False)
         }
+
+    @staticmethod
+    def _value_of(control: wx.Window) -> str:
+        """What a field currently says, whichever kind of field it is."""
+        get_string_selection = getattr(control, "GetStringSelection", None)
+        if callable(get_string_selection) and not hasattr(control, "SelectAll"):
+            return str(get_string_selection())
+        return str(control.GetValue())
 
     def _on_enter(self, event: wx.CommandEvent) -> None:
         """Enter accepts the form, except when there is another field to fill.
@@ -108,8 +132,7 @@ class FillInDialog:
         except ValueError:
             index = len(self._controls) - 1
         if index < len(self._controls) - 1:
-            self._controls[index + 1].SetFocus()
-            self._controls[index + 1].SelectAll()
+            self._focus(index + 1)
             return
         self.dialog.EndModal(wx.ID_OK)
 

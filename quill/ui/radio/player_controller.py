@@ -40,13 +40,16 @@ from typing import TYPE_CHECKING, Any, NamedTuple
 
 import wx
 
+from quill.core.audio import exact_optilab
+from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.audio_enhance import EnhanceError, EnhanceRelay
+from quill.core.optilab import optilab_active
 from quill.core.radio.models import RadioStation
 from quill.core.sound_events import SoundEvent
 from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import WxMediaEngine
 from quill.ui.companion_cues import post_cue
-from quill.ui.radio.mpv_radio_engine import MpvRadioEngine, mpv_output_device_available
+from quill.ui.radio.mpv_radio_engine import MpvRadioEngine
 from quill.ui.radio.youtube_playback import begin_youtube_play, is_youtube_station
 
 if TYPE_CHECKING:
@@ -77,6 +80,14 @@ class ResolvedEnhancement(NamedTuple):
     optilab_mode: str = "off"
     optilab_input_db: float = 0.0
     optilab_auto_adapt: int = 0
+    #: Exact OptiLab processing: the real engine instead of the ffmpeg
+    #: adaptation. ``optilab_exact`` covers **saved files** (recordings and
+    #: conversion) and is what the host reads when it starts a recording;
+    #: ``optilab_exact_live`` additionally routes *listening* through the engine,
+    #: which costs the gapless preview and adds a short delay, so it is a
+    #: separate, deliberate choice rather than a consequence of the first.
+    optilab_exact: bool = False
+    optilab_exact_live: bool = False
 
 
 class RadioPlayerState(Enum):
@@ -217,6 +228,11 @@ class RadioPlayerController:
         #: None for every ordinary station, and for a live YouTube stream it
         #: reports no duration -- which is the honest answer.
         self._youtube_stream: Any = None
+        #: The audio rendition the listener chose for this station, or None
+        #: for whichever the resolver picked. Cleared on every new play, so
+        #: a described track chosen for one video never silently applies to
+        #: the next.
+        self._selected_audio_track: Any = None
         #: Playback speed for bounded sources (1.0 = normal). Live radio
         #: ignores it: a broadcast plays at broadcast speed.
         self._playback_rate = 1.0
@@ -254,6 +270,11 @@ class RadioPlayerController:
         self._optilab_mode = "off"
         self._optilab_input_db = 0.0
         self._optilab_auto_adapt = 0
+        #: Route live listening through the real OptiLab engine (opt-in). See
+        #: ``_resolve_playback_url``: it forces the relay even on mpv, because
+        #: mpv has no way to host someone else's DSP -- the engine is a separate
+        #: process and the audio has to physically pass through it.
+        self._optilab_exact_live = False
         #: Volume Boost: amplify up to 50% past 100 (mpv engine only; the
         #: wx engine clamps at 100, so it silently does nothing there).
         self._volume_boost = False
@@ -261,6 +282,13 @@ class RadioPlayerController:
         self._state = RadioPlaybackState(
             state=RadioPlayerState.STOPPED, station=None, muted=False, volume_percent=100
         )
+        #: Where you stopped, for stations that are recordings rather than live
+        #: streams. Created lazily so a controller built in a test without a
+        #: data directory never touches the disk.
+        self._resume_store: object | None = None
+        #: Set when a recording starts with a saved position, and consumed once
+        #: the engine reports it is ready to seek.
+        self._pending_resume_ms = 0
 
     @property
     def state(self) -> RadioPlaybackState:
@@ -309,13 +337,24 @@ class RadioPlayerController:
             self._optilab_mode = resolved.optilab_mode
             self._optilab_input_db = resolved.optilab_input_db
             self._optilab_auto_adapt = resolved.optilab_auto_adapt
+            self._optilab_exact_live = resolved.optilab_exact_live
+        # Leaving a recording? Keep the place before the station changes.
+        self._remember_resume_point()
         self._state.station = station
+        self._pending_resume_ms = self._saved_resume_ms(station)
         if self._resolve_volume is not None:
             memorized = self._resolve_volume(station)
             if memorized >= 0:
                 self._state.volume_percent = max(0, min(100, int(memorized)))
                 self._state.muted = self._state.volume_percent == 0
         self._fallback_attempted = False
+        self._selected_audio_track = None
+        # A deliberate play is a fresh start: any reconnect count left over
+        # from a station the listener has moved on from must not make the next
+        # successful load announce "Reconnected".
+        from quill.ui.radio import live_reconnect
+
+        live_reconnect.reset(self)
         self._select_engine()
         # Applied before load so a stream's first audible sample is already
         # at the user's level (the loaded callback re-applies it as well).
@@ -342,10 +381,10 @@ class RadioPlayerController:
     def _declare_source_shape(self) -> None:
         """Tell the engine whether what it just loaded has a timeline.
 
-        A finished YouTube video can be scrubbed, sped up, and navigated by
-        chapter; a live broadcast cannot, because it has no end to measure
-        against. Which one a YouTube link is only becomes known when yt-dlp
-        answers -- after the engine has been chosen -- so the engine is told
+        A recording can be scrubbed, sped up, navigated by chapter and resumed;
+        a live broadcast cannot, because it has no end to measure against.
+        Which one a YouTube link is only becomes known when yt-dlp answers --
+        after the engine has been chosen -- so the engine is told
         here, immediately after the load, rather than the play path being
         rebuilt to choose an engine later.
 
@@ -357,21 +396,67 @@ class RadioPlayerController:
         if declare is None:
             return
         stream = self._youtube_stream
+        # Read the current station defensively: this runs immediately after a
+        # load, and a partially-built controller (as the transport tests use)
+        # has no state object yet. A missing station simply means "not a
+        # recording", which is the safe answer.
+        current = getattr(self, "_state", None)
+        station = getattr(current, "station", None)
+        # Two ways to be bounded, and both are declared here. A YouTube link is
+        # only known to be a finished video once yt-dlp answers; everything else
+        # says so up front, because the source that produced the row knows what
+        # it produced -- an Archive item, a LibriVox chapter and a podcast
+        # episode are recordings, and an Icecast mount never is.
         bounded = bool(stream is not None and getattr(stream, "duration_ms", 0) > 0)
+        bounded = bounded or bool(station is not None and getattr(station, "is_recording", False))
         declare(bounded)
         if bounded and self._playback_rate != 1.0:
             # Re-apply the chosen speed: load() resets mpv's speed so a video
             # left at 2x cannot carry that into the next live station.
             self._engine.set_rate(self._playback_rate)
 
+    # -- resume: where you stopped in a recording -------------------------------
+    # The logic lives in quill/ui/radio/resume_playback.py; this module is at its
+    # GATE-11 ceiling and the concern is self-contained.
+
+    def _remember_resume_point(self) -> None:
+        """Save where the current recording reached, if it is one."""
+        from quill.ui.radio import resume_playback
+
+        resume_playback.remember(self)
+
+    def _saved_resume_ms(self, station: object) -> int:
+        """The position to resume *station* at, or 0."""
+        from quill.ui.radio import resume_playback
+
+        return resume_playback.saved_position_ms(station)
+
+    def take_pending_resume_ms(self) -> int:
+        """The position this playback should start at, consumed once.
+
+        The engine cannot seek until it knows the media's length, which arrives
+        after the load; whoever notices that -- the loaded callback -- asks for
+        this and seeks. Consumed rather than read so a second load, or a station
+        that turns out not to be seekable, cannot resurrect a stale offset.
+        """
+        pending, self._pending_resume_ms = self._pending_resume_ms, 0
+        return pending if self.is_seekable() else 0
+
+    def forget_resume_point(self, station: object | None = None) -> None:
+        """Start this recording from the beginning next time."""
+        from quill.ui.radio import resume_playback
+
+        resume_playback.forget(self, station)
+
     # -- bounded playback: seeking, speed, and chapters --------------------------
 
     def is_seekable(self) -> bool:
         """Whether what is playing has a timeline to move along.
 
-        True only for a finished video. Every ordinary radio station and every
-        live YouTube stream is False, which is what keeps the transport honest
-        rather than offering a slider that cannot move.
+        True for a finished video and for any station a source marked as a
+        recording. Every ordinary radio station and every live YouTube stream is
+        False, which is what keeps the transport honest rather than offering a
+        slider that cannot move.
         """
         probe = getattr(self._engine, "is_bounded", None)
         return bool(probe()) if probe is not None else False
@@ -433,6 +518,31 @@ class RadioPlayerController:
         if stream is None or not self.is_seekable():
             return []
         return list(getattr(stream, "chapters", ()) or ())
+
+    def audio_tracks(self) -> list[Any]:
+        """Every selectable audio rendition of what is playing.
+        See :mod:`quill.ui.radio.track_selection`."""
+        from quill.ui.radio import track_selection
+
+        return track_selection.audio_tracks(self)
+
+    def play_audio_track(self, track: Any) -> bool:
+        """Switch to *track* (a reload, keeping the position). True on success."""
+        from quill.ui.radio import track_selection
+
+        return track_selection.play_audio_track(self, track)
+
+    def selected_audio_track(self) -> Any:
+        """The rendition currently playing, or ``None`` for the default."""
+        from quill.ui.radio import track_selection
+
+        return track_selection.selected_audio_track(self)
+
+    def caption_track(self) -> tuple[str, bool]:
+        """``(caption url, is automatic)`` for what is playing."""
+        from quill.ui.radio import track_selection
+
+        return track_selection.caption_track(self)
 
     def current_chapter_index(self) -> int:
         """Index of the chapter the playhead sits in, or -1 if none applies."""
@@ -521,90 +631,15 @@ class RadioPlayerController:
             self._set_state(RadioPlayerState.PAUSED, message="")
 
     def _select_engine(self) -> None:
-        """Point ``self._engine`` at the backend the playback-engine
-        preference (and the output-device choice) calls for, closing
-        whichever engine is being switched away from.
+        """Point ``self._engine`` at the backend this station needs.
 
-        "auto" prefers mpv whenever libmpv is present (the same philosophy
-        as the podcast/Audio Studio ``create_engine``) -- that is what
-        delivers device routing, live pause/rewind, Volume Boost, and
-        Ogg/Opus/HLS stations to everyone once libmpv ships in the app.
-        "wx" is the classic escape hatch; "mpv" insists (with a spoken
-        fallback when absent). A chosen output device also pulls in mpv
-        even under "wx"-less auto, since no other backend can route it.
-
-        A ``spotify:`` station is a special case handled first: it can only
-        play on the Spotify Web Playback engine, so it is selected outright
-        and the mpv/wx logic is skipped.
+        The decision lives in :mod:`quill.ui.radio.engine_selection`, with the
+        one-per-attempt cross-engine rescue it belongs with; this module is at
+        its GATE-11 ceiling and the pair is a self-contained concern.
         """
-        # Spotify stations play only on the Spotify engine (DRM via the SDK).
-        if self._is_spotify_station(self._state.station):
-            spotify = self._ensure_spotify_engine()
-            if spotify is not None:
-                if self._engine is not spotify:
-                    self._engine.close()
-                    self._engine = spotify
-                return
-            # No token source (not signed in): fall through so load() fails
-            # with the Spotify-specific error rather than silently doing nothing.
-        # Leaving a Spotify station: close the Spotify engine before choosing
-        # a stream backend below (never leave it as the active engine).
-        elif self._spotify_engine is not None and self._engine is self._spotify_engine:
-            self._engine.close()
-            self._spotify_engine = None
-            self._engine = self._wx_engine
-        mpv_present = mpv_output_device_available()
-        if self._playback_engine == "wx":
-            wanted_mpv = False
-        elif self._playback_engine == "mpv":
-            wanted_mpv = mpv_present
-        else:  # auto
-            wanted_mpv = mpv_present
-        # #5 observability: why a given backend was chosen for this station.
-        _log.debug(
-            "Radio engine selection: preference=%s, mpv_present=%s -> %s",
-            self._playback_engine,
-            mpv_present,
-            "mpv" if wanted_mpv else "wx.media",
-        )
-        if wanted_mpv:
-            if self._mpv_engine is None:
-                try:
-                    self._mpv_engine = MpvRadioEngine(
-                        self._parent,
-                        on_loaded=self._on_loaded,
-                        on_finished=self._on_finished,
-                        on_error=self._on_error,
-                        audio_device=self._output_device,
-                        on_buffering=self._on_buffering,
-                    )
-                except Exception:  # noqa: BLE001 - fall back, never fail playback
-                    _log.exception("mpv radio engine unavailable; using wx.media")
-            else:
-                try:
-                    self._mpv_engine.set_audio_device(self._output_device)
-                except Exception:  # noqa: BLE001
-                    _log.exception("audio-device switch failed")
-        if wanted_mpv and self._mpv_engine is not None:
-            if self._engine is not self._mpv_engine:
-                self._engine.close()
-                self._engine = self._mpv_engine
-            return
-        if self._on_output_device_error is not None:
-            if bool(self._output_device) and self._playback_engine != "wx":
-                self._on_output_device_error(
-                    "The chosen radio output device could not be used; playing "
-                    "through the system default instead."
-                )
-            elif self._playback_engine == "mpv":
-                self._on_output_device_error(
-                    "The mpv playback engine is not available; using Windows Media instead."
-                )
-        # Switch away only from the mpv engine (never from a test-injected
-        # fake): in production the engine is always one of the two.
-        if self._mpv_engine is not None and self._engine is self._mpv_engine:
-            self._engine.close()
-            self._engine = self._wx_engine
+        from quill.ui.radio import engine_selection
+
+        engine_selection.select(self)
 
     def set_output_device(self, device: str) -> None:
         """Change the output device ("" = system default) and, if something
@@ -642,13 +677,39 @@ class RadioPlayerController:
             optilab_auto_adapt=self._optilab_auto_adapt,
         )
 
+    def _exact_live_spec(self) -> ExactOptilab | None:
+        """The real-engine spec for *live* playback, or None.
+
+        None whenever the listener has not asked for it, has broadcast polish
+        bypassed, has no mode chosen, or this build has no OptiLab component --
+        in every one of those cases live playback stays on the ffmpeg chain,
+        which is also what it does by default.
+        """
+        if not self._optilab_exact_live:
+            return None
+        if not optilab_active(self._optilab_enabled, self._optilab_mode):
+            return None
+        if not exact_optilab.available():
+            return None
+        return ExactOptilab(
+            mode=self._optilab_mode,
+            input_db=self._optilab_input_db,
+            auto_adapt=self._optilab_auto_adapt,
+        )
+
     def _resolve_playback_url(self, station: RadioStation) -> str:
         """The URL the engine should load: the station's own URL, or a local
         relay URL when Sound Enhancements is active on the wx engine.
 
         On the mpv engine the graph applies natively (``af``) and the
         station URL is loaded directly -- no relay, no second ffmpeg
-        process, no re-encode."""
+        process, no re-encode.
+
+        The one exception is exact OptiLab playback, which **must** relay on
+        every engine: the real engine is a separate process, so the audio has to
+        physically pass through it, and there is no filter string that can
+        express "someone else's DSP" to mpv. That is the whole cost of the
+        option, and it is why it is opt-in and off by default."""
         self._enhance_relay.stop()
         graph = self._current_filter_graph()
         station = (
@@ -656,6 +717,30 @@ class RadioPlayerController:
             if not self._playback_url_override
             else replace(station, stream_url=self._playback_url_override)
         )
+        exact = self._exact_live_spec()
+        if exact is not None:
+            if self._is_mpv_active():
+                # The engine below is the polish; mpv must not also apply the
+                # adaptation of it, or the stream is processed twice.
+                try:
+                    self._mpv_engine.set_filter_graph("")  # type: ignore[union-attr]
+                except Exception:  # noqa: BLE001 - clearing must never block playback
+                    _log.exception("mpv filter graph clear failed")
+            try:
+                return self._enhance_relay.start(
+                    station.stream_url,
+                    bass_db=self._eq_bass_db,
+                    mid_db=self._eq_mid_db,
+                    treble_db=self._eq_treble_db,
+                    compressor_enabled=self._compressor_enabled,
+                    channel_mode=self._channel_mode,
+                    night_mode_enabled=self._night_mode_enabled,
+                    exact_optilab=exact,
+                )
+            except EnhanceError as error:
+                if self._on_enhance_error is not None:
+                    self._on_enhance_error(str(error))
+                return station.stream_url
         if self._is_mpv_active():
             try:
                 self._mpv_engine.set_filter_graph(graph)  # type: ignore[union-attr]
@@ -691,8 +776,13 @@ class RadioPlayerController:
 
         mpv engine: applied live via ``af`` -- no interruption at all.
         wx engine: the relay can only be restarted, so reconnect (live
-        radio has no position to lose; a reconnect is the whole cost)."""
-        if self._is_mpv_active():
+        radio has no position to lose; a reconnect is the whole cost).
+
+        Exact OptiLab playback always takes the reconnect path, on both engines:
+        the engine process is prepared with a mode and a sample rate at start-up
+        and cannot be re-parameterised mid-stream, so "hear it as you move the
+        control" is precisely the property that option trades away."""
+        if self._exact_live_spec() is None and self._is_mpv_active():
             try:
                 self._mpv_engine.set_filter_graph(self._current_filter_graph())  # type: ignore[union-attr]
                 return
@@ -727,6 +817,7 @@ class RadioPlayerController:
         optilab_mode: str = "off",
         optilab_input_db: float = 0.0,
         optilab_auto_adapt: int = 0,
+        optilab_exact_live: bool = False,
     ) -> None:
         """Change the listener-level sound options (channel mode, night mode,
         and OptiLab broadcast polish); same live-apply/reconnect behavior as
@@ -738,6 +829,7 @@ class RadioPlayerController:
             optilab_mode,
             optilab_input_db,
             optilab_auto_adapt,
+            optilab_exact_live,
         )
         current = (
             self._channel_mode,
@@ -746,6 +838,7 @@ class RadioPlayerController:
             self._optilab_mode,
             self._optilab_input_db,
             self._optilab_auto_adapt,
+            self._optilab_exact_live,
         )
         if new == current:
             return
@@ -755,6 +848,7 @@ class RadioPlayerController:
         self._optilab_mode = optilab_mode
         self._optilab_input_db = optilab_input_db
         self._optilab_auto_adapt = optilab_auto_adapt
+        self._optilab_exact_live = optilab_exact_live
         self._apply_sound_change()
 
     def preview_enhancements(
@@ -770,6 +864,7 @@ class RadioPlayerController:
         optilab_mode: str = "off",
         optilab_input_db: float = 0.0,
         optilab_auto_adapt: int = 0,
+        optilab_exact_live: bool = False,
     ) -> None:
         """Apply every Sound Enhancements setting at once and make it heard --
         the live-preview path for the dialog, so moving a slider is heard
@@ -787,6 +882,7 @@ class RadioPlayerController:
         self._optilab_mode = optilab_mode
         self._optilab_input_db = optilab_input_db
         self._optilab_auto_adapt = optilab_auto_adapt
+        self._optilab_exact_live = optilab_exact_live
         self._apply_sound_change()
 
     def set_volume_boost(self, enabled: bool) -> bool:
@@ -811,88 +907,44 @@ class RadioPlayerController:
     # -- live DVR (mpv engine): pause is upstream; rewind/forward/live here --
 
     def rewind(self, seconds: int = 30) -> float | None:
-        """Jump back within the live buffer. Returns how far behind live
-        playback now is (seconds), or None when unavailable (wx engine or
-        nothing playing) -- the caller announces either way."""
-        return self._dvr_seek(-abs(seconds))
+        """Jump back within the live buffer; how far behind live we now are,
+        or None when there is no buffer. See :mod:`quill.ui.radio.live_dvr`."""
+        from quill.ui.radio import live_dvr
+
+        return live_dvr.rewind(self, seconds)
 
     def forward(self, seconds: int = 30) -> float | None:
-        """Jump forward toward the live edge (after a rewind)."""
-        return self._dvr_seek(abs(seconds))
+        """Jump forward toward the live edge, after a rewind."""
+        from quill.ui.radio import live_dvr
 
-    def _dvr_seek(self, seconds: int) -> float | None:
-        if not self._is_mpv_active():
-            return None
-        engine = self._mpv_engine
-        if engine is None or not engine.seek_relative(float(seconds)):
-            return None
-        return engine.behind_live_seconds()
+        return live_dvr.forward(self, seconds)
 
     def jump_to_live(self) -> bool:
-        """Return to the live edge. Prefers an in-cache seek; a stream
-        whose cache cannot say where "live" is reconnects instead (a fresh
-        connection is always live). False when nothing is playing."""
-        station = self._state.station
-        if station is None or self._state.state is RadioPlayerState.STOPPED:
-            return False
-        if self._is_mpv_active() and self._mpv_engine is not None:
-            if self._mpv_engine.jump_to_live():
-                return True
-        self.play_station(station)
-        return True
+        """Return to the live edge. False when nothing is playing."""
+        from quill.ui.radio import live_dvr
+
+        return live_dvr.jump_to_live(self)
 
     def behind_live_seconds(self) -> float | None:
         """How far behind the live edge playback is, or None when unknown."""
-        if not self._is_mpv_active() or self._mpv_engine is None:
-            return None
-        return self._mpv_engine.behind_live_seconds()
+        from quill.ui.radio import live_dvr
+
+        return live_dvr.behind_live_seconds(self)
 
     def engine_track_title(self) -> str:
-        """The engine's own idea of the current track (mpv ``media-title``)
-        -- the fallback when the out-of-band ICY tap gets nothing. "" when
-        unavailable."""
-        if not self._is_mpv_active() or self._mpv_engine is None:
-            return ""
-        try:
-            return self._mpv_engine.now_playing_title()
-        except Exception:  # noqa: BLE001
-            return ""
+        """The engine's own idea of the current track, or "".
+        See :mod:`quill.ui.radio.live_dvr`."""
+        from quill.ui.radio import live_dvr
+
+        return live_dvr.engine_track_title(self)
 
     def _attempt_engine_fallback(self) -> bool:
-        """One cross-engine rescue per play attempt: retry the current
-        station on the other backend. WMP cannot decode Ogg Vorbis, Opus,
-        or HLS streams -- mpv rescues those; a broken mpv falls back to
-        WMP. Returns True when a retry was started."""
-        station = self._state.station
-        if self._fallback_attempted or station is None:
-            return False
-        self._fallback_attempted = True
-        if self._is_mpv_active():
-            target = self._wx_engine
-        elif mpv_output_device_available():
-            if self._mpv_engine is None:
-                try:
-                    self._mpv_engine = MpvRadioEngine(
-                        self._parent,
-                        on_loaded=self._on_loaded,
-                        on_finished=self._on_finished,
-                        on_error=self._on_error,
-                        audio_device=self._output_device,
-                        on_buffering=self._on_buffering,
-                    )
-                except Exception:  # noqa: BLE001
-                    _log.exception("mpv fallback engine unavailable")
-                    return False
-            target = self._mpv_engine
-        else:
-            return False
-        _log.info("Retrying stream on the %s engine", "wx" if target is self._wx_engine else "mpv")
-        self._engine.close()
-        self._engine = target
-        self._engine.set_volume(self._effective_volume())
-        self._set_state(RadioPlayerState.CONNECTING, message="")
-        url = self._resolve_playback_url(station)
-        return bool(self._engine.load(url))
+        """One cross-engine rescue per play attempt: retry the current station
+        on the other backend. True when a retry was started. See
+        :mod:`quill.ui.radio.engine_selection`."""
+        from quill.ui.radio import engine_selection
+
+        return engine_selection.attempt_fallback(self)
 
     def toggle_play_pause(self) -> None:
         if self._state.state is RadioPlayerState.PLAYING:
@@ -905,6 +957,9 @@ class RadioPlayerController:
             self.play_station(self._state.station)
 
     def stop(self) -> None:
+        # Keep the place first: after the engine stops, there is no position to
+        # read, and Stop is the most common way to leave a chapter part-heard.
+        self._remember_resume_point()
         # A YouTube resolve still in flight must not start playing after the
         # listener pressed Stop, so the token moves on and its result is dropped.
         self._play_token += 1
@@ -992,17 +1047,32 @@ class RadioPlayerController:
     # -- engine callbacks -------------------------------------------------
 
     def _on_loaded(self, _length_ms: int) -> None:
+        from quill.ui.radio import live_reconnect
+
         self._engine.set_volume(self._effective_volume())
         self._engine.play()
-        self._set_state(RadioPlayerState.PLAYING, message="")
+        # A load that followed a dropped connection says so, once. Silence
+        # after "Reconnecting..." would leave the listener unable to tell a
+        # recovered stream from a stalled retry.
+        self._set_state(RadioPlayerState.PLAYING, message=live_reconnect.announce_recovery(self))
         station = self._state.station
         if station is not None and station.station_uuid and self._on_register_click:
             uuid = station.station_uuid
             threading.Thread(target=self._on_register_click, args=(uuid,), daemon=True).start()
 
     def _on_finished(self) -> None:
-        # A live stream reaching "finished" means the connection dropped.
-        self._set_state(RadioPlayerState.STOPPED, message="The stream ended or disconnected.")
+        """Playback reached an end. What that means is ``track_end``'s job."""
+        from quill.ui.radio import track_end
+
+        track_end.handle(self)
+
+    def _schedule_later(self, delay_ms: int, work: Callable[[], None]) -> None:
+        """Run *work* on the UI thread after *delay_ms*.
+
+        The one wx call the reconnect path needs, kept here so
+        ``live_reconnect`` stays wx-free and testable.
+        """
+        wx.CallLater(delay_ms, work)
 
     def _on_error(self, message: str) -> None:
         # Before giving up, try the one cross-engine rescue: a stream WMP

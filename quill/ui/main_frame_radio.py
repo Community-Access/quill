@@ -15,6 +15,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
+from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.paths import app_data_dir
 from quill.core.radio import favorites as radio_favorites
 from quill.core.radio import history as radio_history
@@ -112,6 +113,7 @@ class RadioMixin:
             optilab_mode=self._radio_history.optilab_mode,
             optilab_input_db=self._radio_history.optilab_input_db,
             optilab_auto_adapt=self._radio_history.optilab_auto_adapt,
+            optilab_exact_live=self._radio_history.optilab_exact_live,
         )
         self._radio_controller.set_volume_boost(self._radio_history.volume_boost)
         self._radio_recording_settings = load_recording_settings(app_data_dir())
@@ -121,6 +123,17 @@ class RadioMixin:
             # The recorder builds the sentence (it knows how many parts there
             # were and whether the join succeeded); the UI only speaks it.
             on_parts_joined=lambda note: self._wx.CallAfter(self._announce, note),
+            # Same contract for the exact-OptiLab pass: the recorder knows
+            # whether it ran, and says so either way -- a listener who turned it
+            # on is entitled to know whether the file they kept actually got it.
+            on_exact_processed=lambda note: self._wx.CallAfter(self._announce, note),
+            # A recording that captured nothing is reported, in words, with the
+            # reason. Saying "Recording saved" over an empty file -- or saying
+            # nothing at all -- sends somebody looking in a folder for audio
+            # that does not exist, which is exactly what happened.
+            on_capture_failed=lambda station, reason: self._wx.CallAfter(
+                self._radio_announce_capture_failed, station, reason
+            ),
         )
         # The ACTIVE machinery below fires recordings, shows resume prompts, and
         # speaks missed-recording reports on its own. In a public build the
@@ -328,6 +341,7 @@ class RadioMixin:
                 settings=self._radio_recording_settings,
                 duration_minutes=max(1, left),
                 filter_graph=self._radio_recording_filter_graph(),
+                exact_optilab=self._radio_recording_exact(),
                 entry_id=entry_id,
             )
             self._announce(
@@ -383,6 +397,12 @@ class RadioMixin:
     def _apply_radio_recording_changed(
         self, is_recording: bool, destination: Path | None, job_id: str = ""
     ) -> None:
+        # A video that carries described audio says so, once. Without this the
+        # feature only helps people who already know it exists -- and those are
+        # the last people who need telling.
+        from quill.ui.radio import track_selection
+
+        track_selection.announce_described_if_new(self)
         self._refresh_statusbar()
         self._refresh_radio_tray_tooltip()
         self._update_sleep_inhibitor()
@@ -404,54 +424,31 @@ class RadioMixin:
                     sound=SoundEvent.RADIO_RECORDING_STOPPED,
                 )
 
-    def _persist_radio_recording_marker(self, job_id: str = "") -> None:
-        """Write a per-recording marker from the recorder's live state (R3).
+    def _radio_announce_capture_failed(self, station: str, reason: str) -> None:
+        """Say that a recording captured nothing, and why.
 
-        Concurrent recording: keyed by ``job_id`` so several simultaneous
-        recordings each persist their own marker instead of clobbering one.
+        One sentence, on the error cue rather than the saved cue, because the
+        two outcomes must never sound alike. The reason comes from the recorder
+        (which read ffmpeg's own last words); this only speaks it.
         """
-        from datetime import timedelta
-
-        from quill.core.paths import app_data_dir
-        from quill.core.radio.recording_resume import ActiveRecordingMarker, save_marker
-
-        rec = self._radio_recorder
-        snap = rec.job(job_id) if job_id else None
-        if snap is None:
-            return
-        started = snap.started_at
-        minutes = snap.minutes
-        if started is None or minutes <= 0:
-            return
-        marker = ActiveRecordingMarker(
-            station_name=snap.station_name,
-            stream_url=snap.stream_url,
-            temp_path=str(snap.destination or ""),
-            output_path=str(snap.final_destination or ""),
-            started_at=started.isoformat(),
-            scheduled_end=(started + timedelta(minutes=minutes)).isoformat(),
-            duration_minutes=minutes,
-            entry_id=snap.entry_id,
-            job_id=snap.job_id,
+        self._announce(
+            f"Recording of {station} saved nothing: {reason}. No file was kept.",
+            sound=SoundEvent.RADIO_STREAM_ERROR,
         )
-        try:
-            save_marker(app_data_dir(), marker)
-        except Exception:  # noqa: BLE001 - a marker we cannot persist just means no resume offer
-            pass
+        self._refresh_statusbar()
+
+    def _persist_radio_recording_marker(self, job_id: str = "") -> None:
+        """Write a per-recording marker so a crash can offer to resume it.
+        See :mod:`quill.ui.radio.recording_markers`."""
+        from quill.ui.radio import recording_markers
+
+        recording_markers.persist(self, job_id)
 
     def _clear_radio_recording_marker(self, job_id: str | None = None) -> None:
-        """Remove one recording's marker by job id, or every marker when
-        ``job_id`` is ``None`` (R3, clean-stop / clean-close path)."""
-        from quill.core.paths import app_data_dir
-        from quill.core.radio.recording_resume import clear_all_markers, clear_marker
+        """Clear one recording's marker, or all of them when *job_id* is None."""
+        from quill.ui.radio import recording_markers
 
-        try:
-            if job_id is None:
-                clear_all_markers(app_data_dir())
-            else:
-                clear_marker(app_data_dir(), job_id)
-        except Exception:  # noqa: BLE001 - best-effort
-            pass
+        recording_markers.clear(self, job_id)
 
     def _radio_announce_buffering(self) -> None:
         """A mid-stream rebuffer, spoken instead of dead air -- cued once per
@@ -593,6 +590,7 @@ class RadioMixin:
                 stream_url=station.stream_url,
                 settings=self._radio_recording_settings,
                 filter_graph=self._radio_recording_filter_graph(),
+                exact_optilab=self._radio_recording_exact(),
             )
         except RecordingError as error:
             self._announce(str(error))
@@ -623,12 +621,19 @@ class RadioMixin:
 
     def _radio_recording_filter_graph(self) -> str:
         """The current Sound Enhancements filter graph, or "" if Recording
-        Settings' "Apply Sound Enhancements to recordings" is off."""
+        Settings' "Apply Sound Enhancements to recordings" is off.
+
+        When the recording will afterwards go through the *real* OptiLab engine
+        (:meth:`_radio_recording_exact`), the OptiLab filters are left out here:
+        the engine is doing that work, and a recording processed by both the
+        adaptation and the original would be neither. Everything else -- EQ,
+        compressor, channel mode, night mode -- still applies during capture."""
         if not self._radio_recording_settings.apply_sound_enhancements:
             return ""
         from quill.core.audio_enhance import build_filter_graph
 
         history = self._radio_history
+        exact = self._radio_recording_exact()
         return build_filter_graph(
             history.eq_bass_db,
             history.eq_mid_db,
@@ -636,10 +641,32 @@ class RadioMixin:
             compressor_enabled=history.compressor_enabled,
             channel_mode=history.channel_mode,
             night_mode_enabled=history.night_mode_enabled,
-            optilab_enabled=history.optilab_enabled,
-            optilab_mode=history.optilab_mode,
+            optilab_enabled=history.optilab_enabled and exact is None,
+            optilab_mode="off" if exact is not None else history.optilab_mode,
             optilab_input_db=history.optilab_input_db,
             optilab_auto_adapt=history.optilab_auto_adapt,
+        )
+
+    def _radio_recording_exact(self) -> ExactOptilab | None:
+        """The exact-OptiLab pass a new recording should get, or None.
+
+        None unless the listener asked for it, has broadcast polish on with a
+        real mode, and this build actually includes the OptiLab component --
+        every one of which is a reason the recording simply comes out as it does
+        today, not a reason to fail."""
+        from quill.core.audio import exact_optilab
+
+        history = self._radio_history
+        if not history.optilab_exact or not history.optilab_enabled:
+            return None
+        if history.optilab_mode not in ("podcast", "stream", "limiter"):
+            return None
+        if not exact_optilab.available():
+            return None
+        return ExactOptilab(
+            mode=history.optilab_mode,
+            input_db=history.optilab_input_db,
+            auto_adapt=history.optilab_auto_adapt,
         )
 
     def _radio_open_recording_settings(self) -> None:
@@ -1238,6 +1265,7 @@ class RadioMixin:
                 settings=self._radio_recording_settings,
                 duration_minutes=minutes,
                 filter_graph=self._radio_recording_filter_graph(),
+                exact_optilab=self._radio_recording_exact(),
             )
         except RecordingError as error:
             self._announce(str(error))
@@ -1548,6 +1576,8 @@ class RadioMixin:
                 optilab_mode=favorite.optilab_mode,
                 optilab_input_db=favorite.optilab_input_db,
                 optilab_auto_adapt=favorite.optilab_auto_adapt,
+                optilab_exact=favorite.optilab_exact,
+                optilab_exact_live=favorite.optilab_exact_live,
             )
         history = self._radio_history
         return ResolvedEnhancement(
@@ -1561,6 +1591,8 @@ class RadioMixin:
             optilab_mode=history.optilab_mode,
             optilab_input_db=history.optilab_input_db,
             optilab_auto_adapt=history.optilab_auto_adapt,
+            optilab_exact=history.optilab_exact,
+            optilab_exact_live=history.optilab_exact_live,
         )
 
     def _radio_resolve_volume(self, station: RadioStation) -> int:
@@ -1646,6 +1678,8 @@ class RadioMixin:
         opt_mode = src.optilab_mode
         opt_input = src.optilab_input_db
         opt_adapt = src.optilab_auto_adapt
+        opt_exact = src.optilab_exact
+        opt_exact_live = src.optilab_exact_live
         on_reset = None
         if favorite is not None and favorite.has_sound_enhancement_override:
 
@@ -1670,6 +1704,7 @@ class RadioMixin:
                         optilab_mode=history.optilab_mode,
                         optilab_input_db=history.optilab_input_db,
                         optilab_auto_adapt=history.optilab_auto_adapt,
+                        optilab_exact_live=history.optilab_exact_live,
                     )
                 self._announce(
                     f"Sound Enhancements for {favorite.display_label}: back to the shared default."
@@ -1689,6 +1724,8 @@ class RadioMixin:
             optilab_mode=opt_mode,
             optilab_input_db=opt_input,
             optilab_auto_adapt=opt_adapt,
+            optilab_exact=opt_exact,
+            optilab_exact_live=opt_exact_live,
             announce_cb=self._announce,
             on_reset=on_reset,
             on_live_change=self._radio_sound_preview,
@@ -1715,6 +1752,8 @@ class RadioMixin:
                 optilab_mode=options.optilab_mode,
                 optilab_input_db=options.optilab_input_db,
                 optilab_auto_adapt=options.optilab_auto_adapt,
+                optilab_exact=options.optilab_exact,
+                optilab_exact_live=options.optilab_exact_live,
             )
             self._save_radio_favorites()
             target = favorite.display_label
@@ -1729,6 +1768,8 @@ class RadioMixin:
             history.optilab_mode = options.optilab_mode
             history.optilab_input_db = options.optilab_input_db
             history.optilab_auto_adapt = options.optilab_auto_adapt
+            history.optilab_exact = options.optilab_exact
+            history.optilab_exact_live = options.optilab_exact_live
             radio_history.save_history(app_data_dir(), history)
             target = "the shared default"
         # Apply the final values to what's playing (one apply for the whole set).
@@ -1743,6 +1784,7 @@ class RadioMixin:
             optilab_mode=options.optilab_mode,
             optilab_input_db=options.optilab_input_db,
             optilab_auto_adapt=options.optilab_auto_adapt,
+            optilab_exact_live=options.optilab_exact_live,
         )
         self._announce(
             f"Sound Enhancements for {target}: Bass {bass_db:+.0f}, Mid {mid_db:+.0f}, "
@@ -1769,6 +1811,7 @@ class RadioMixin:
             optilab_mode=options.optilab_mode,
             optilab_input_db=options.optilab_input_db,
             optilab_auto_adapt=options.optilab_auto_adapt,
+            optilab_exact_live=options.optilab_exact_live,
         )
 
     def open_manage_radio_favorites(self) -> None:
@@ -1871,6 +1914,11 @@ class RadioMixin:
             on_report_bad_station=getattr(self, "report_bad_station", None),
             show_details=self._radio_history.show_station_details,
             windows=getattr(self, "_windows", None),
+            # The app shell owns the one download queue (View > Downloads);
+            # queueing on the dialog would start transfers no monitor can see.
+            download_host=self,
+            # Which branches to show. None means "never set" -> the defaults.
+            visible_sources=self._radio_history.browse_sources_enabled,
         )
         dlg.show(initial_source=initial_source)
         self._refresh_statusbar()
@@ -1932,6 +1980,16 @@ class RadioMixin:
     def _register_radio_commands(self) -> None:
         for command_id, title, handler in (
             ("radio.browse", "Internet Radio: Browse Stations...", self.open_internet_radio),
+            (
+                "radio.browse_sources",
+                "Internet Radio: Choose Browse Sources...",
+                self.radio_browse_sources_visibility,
+            ),
+            (
+                "radio.download_preferences",
+                "Internet Radio: Download Preferences...",
+                self.radio_download_preferences,
+            ),
             ("radio.play_pause", "Internet Radio: Play/Pause", self.radio_toggle_play_pause),
             ("radio.stop", "Internet Radio: Stop", self.radio_stop),
             ("radio.mute_toggle", "Internet Radio: Mute/Unmute", self.radio_mute_toggle),
@@ -2091,23 +2149,11 @@ class RadioMixin:
             )
 
     def open_spotify_connect(self) -> None:
-        """Open the accessible Spotify sign-in dialog (Radio)."""
-        from quill.core.spotify import auth
+        """Open the accessible Spotify sign-in dialog (Radio).
+        Body in :mod:`quill.ui.radio.spotify_commands` (GATE-11)."""
+        from quill.ui.radio import spotify_commands
 
-        try:
-            auth.refuse_in_safe_mode(self._safe_mode)
-        except auth.SpotifyAuthError as error:
-            self._announce(str(error))
-            return
-        from quill.ui.spotify.connect_dialog import SpotifyConnectDialog
-
-        dialog = SpotifyConnectDialog(
-            self.frame,
-            announce=self._announce,
-            task_runner=getattr(self, "_task_manager", None),
-            safe_mode=self._safe_mode,
-        )
-        self._show_modal_dialog(dialog, "Connect to Spotify")
+        spotify_commands.connect(self)
 
     def _save_radio_history(self) -> None:
         """Persist RadioHistory. A failed save must never block the UI."""
@@ -2120,21 +2166,23 @@ class RadioMixin:
             pass
 
     def radio_search_sources(self) -> None:
-        """Choose which directories Find Stations searches (remembered)."""
-        from quill.core.radio import search_sources
-        from quill.ui.radio.search_sources_dialog import SearchSourcesDialog
+        """Choose which directories Find Stations searches (remembered).
+        Body in :mod:`quill.ui.radio.settings_commands` (GATE-11)."""
+        from quill.ui.radio import settings_commands
 
-        dialog = SearchSourcesDialog(
-            self.frame,
-            enabled=self._radio_history.search_sources_enabled,
-            show_modal_dialog=self._show_modal_dialog,
-            announce=self._announce,
-        )
-        self._radio_history.search_sources_enabled = dialog.show()
-        self._save_radio_history()
-        self._announce(
-            search_sources.describe_selection(self._radio_history.search_sources_enabled)
-        )
+        settings_commands.search_sources(self)
+
+    def radio_browse_sources_visibility(self) -> None:
+        """Choose which branches Browse Stations shows (remembered)."""
+        from quill.ui.radio import settings_commands
+
+        settings_commands.browse_sources_visibility(self)
+
+    def radio_download_preferences(self) -> None:
+        """Where downloads land and how they are filed (remembered)."""
+        from quill.ui.radio import settings_commands
+
+        settings_commands.download_preferences(self)
 
     def _radio_save_search_prefs(self, enabled: tuple[str, ...], facet: str) -> None:
         """Remember the source selection and the Source facet across sessions."""
@@ -2143,52 +2191,13 @@ class RadioMixin:
         self._save_radio_history()
 
     def _spotify_search_client(self) -> object | None:
-        """A signed-in Spotify client for blending Spotify into Find Stations.
+        """A signed-in Spotify client for Find Stations, or ``None``."""
+        from quill.ui.radio import spotify_commands
 
-        ``None`` -- so the source is simply absent -- in Safe Mode, when nobody
-        has connected Spotify, or when no Client ID is configured. Called from
-        the browser's off-thread search worker, so it touches no wx: it only
-        reads the stored token bundle.
-        """
-        if self._safe_mode:
-            return None
-        from quill.core.spotify import token_store
-        from quill.core.spotify.client import SpotifyClient
-
-        tokens = token_store.load_tokens()
-        client_id = token_store.load_client_id()
-        if tokens.is_empty or not client_id:
-            return None
-        return SpotifyClient(tokens, client_id, on_tokens_refreshed=token_store.save_tokens)
+        return spotify_commands.search_client(self)
 
     def open_spotify_browse(self) -> None:
-        """Open the accessible Spotify browse dialog and play the chosen track (Radio)."""
-        from quill.core.spotify import auth, token_store
+        """Open the accessible Spotify browse dialog and play the chosen track."""
+        from quill.ui.radio import spotify_commands
 
-        try:
-            auth.refuse_in_safe_mode(self._safe_mode)
-        except auth.SpotifyAuthError as error:
-            self._announce(str(error))
-            return
-        tokens = token_store.load_tokens()
-        if tokens.is_empty:
-            self._announce("Connect to Spotify first (Spotify: Connect to Spotify).")
-            return
-        from quill.core.radio.models import RadioStation
-        from quill.core.spotify.client import SpotifyClient
-        from quill.ui.spotify.browse_dialog import BrowseItem, SpotifyBrowseDialog
-
-        client = SpotifyClient(
-            tokens,
-            token_store.load_client_id(),
-            on_tokens_refreshed=token_store.save_tokens,
-        )
-
-        def _play(item: BrowseItem) -> None:
-            station = RadioStation(name=item.label, stream_url=item.uri, source="Spotify")
-            self._radio_controller.play_station(station)
-
-        dialog = SpotifyBrowseDialog(
-            self.frame, client=client, on_play=_play, announce=self._announce, kind="radio"
-        )
-        self._show_modal_dialog(dialog, "Browse Spotify")
+        spotify_commands.browse(self)

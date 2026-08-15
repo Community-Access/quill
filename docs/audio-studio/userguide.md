@@ -238,6 +238,42 @@ Long saves run in the background so the window stays responsive.
 
 Opens the Publish dialog for this book - save your chapter edits first. See "Publishing" below.
 
+## Copy Sections
+
+**Voices > Copy Sections...** takes pieces out of an audio file and collects them
+into a new one. It is for the job that always used to mean doing the same thing
+six times: pulling the four quotes you want out of a long interview, or the songs
+you actually want out of a four-hour recording of a broadcast.
+
+Play the file, and as you listen:
+
+- **Mark Start** when a piece begins and **Mark End** when it stops. Either can
+  be set first, and either can be moved as often as you like -- a mark is a
+  position, not a commitment, and nothing is written until you ask for a file.
+- **Preview Marked** plays from your start mark so you can hear whether you got
+  it right before keeping it.
+- **Add to List** collects it, and clears the marks so you can go and find the
+  next one.
+
+The list is what will be saved, in the order shown -- **Move Up** and **Move
+Down** change that order, **Play This One** replays any collected piece, and
+**Remove** drops one. Each row reads as a whole sentence, so there are no columns
+to arrow across.
+
+Then either **Save as New File...**, or **Add to an Existing File...** to put
+what you collected onto the end of a file you already have. That second one is
+the reason for collecting at all: the fourth quote from the third interview joins
+the three already in the file.
+
+**Your original file is never changed.** Not on marking, not on preview, not on
+save -- everything is written somewhere else. And if a save fails part way
+through, the file you were saving into is left exactly as it was rather than half
+written.
+
+There is no waveform display, deliberately. A waveform is a picture of the audio
+for people who can see it; listening to the marked range tells you the same thing
+and tells it more reliably.
+
 ## Voices
 
 ### Engines

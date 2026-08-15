@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Offline Speech / Dictation Stack Audit (#617, #663,
-#669)</title>
+  <title>617-audit</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,31 +174,10 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="offline-speech--dictation-stack-audit-617-663-669">Offline
-Speech / Dictation Stack Audit (#617, #663, #669)</h1>
+<h1 id="offline-speech-dictation-stack-audit-617-663-669">Offline Speech
+/ Dictation Stack Audit (#617, #663, #669)</h1>
 <p><em>Audit date: 2026-08-04. Read-only assessment of the offline
 speech/dictation stack, with follow-up work driven from the
 recommendations. Items marked <strong>[done 2026-08-04]</strong> were
@@ -219,7 +197,7 @@ auto-endpointing and the “Hey QUILL” wake word are both wired, but only
 into Conversation Mode / always-listening — not into dictation. The main
 gaps are dead scaffold, stale catalog data, and a near-total end-user
 documentation gap.</p>
-<h2 id="fully-wired--working-usable-today">Fully wired &amp; working
+<h2 id="fully-wired-working-usable-today">Fully wired &amp; working
 (usable today)</h2>
 <ul>
 <li><strong>Locked Dictation (Ctrl+F9)</strong> — the real #617 feature.
@@ -277,7 +255,7 @@ HF fields and the “left to fill in” module docstring are stale.</li>
 (<code>settings.py:215-218</code>) are consumed only by the legacy Win+H
 path; the real dictation uses <code>speech_default_model_id</code>.</li>
 </ul>
-<h2 id="bugs--inconsistencies">Bugs / inconsistencies</h2>
+<h2 id="bugs-inconsistencies">Bugs / inconsistencies</h2>
 <ol type="1">
 <li><strong>Three overlapping dictation systems</strong> — legacy Win+H
 (<code>core/dictation.py</code>, still instantiated and key-routed),
@@ -367,6 +345,5 @@ command aliases. Wired into Locked Dictation and
 catalog cleanup (#5), wake-word VAD (#6 part 2), the two coverage seams
 (#7), the large-v3 surfacing (#8), and the three-systems consolidation
 (#4).</p>
-</main>
 </body>
 </html>

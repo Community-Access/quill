@@ -1,15 +1,34 @@
-"""Accessible Book Library browser (plan xxx.md Part 4).
+"""The Accessible Libraries Hub: one search across every free book source.
 
-Search free/accessible ebook sources (Project Gutenberg via Gutendex, Standard
-Ebooks via OPDS), then Download or Download & Open -- the download lands in a file
-whose extension matches the format, so it opens in QUILL's reader through the
-normal open flow (plain text and EPUB natively).
+Project Gutenberg, Standard Ebooks, LibriVox recordings, Open Library, Google
+Books' free ebooks and the NLS BARD public catalogue -- searched together, and
+presented as **one row per book** rather than one row per library.
 
-Accessible by construction: results are a single-select ``wx.ListBox`` (no
-checkboxes) with explicit action buttons; the status line is a reviewable,
-spoken read-only field; every control has a label; focus moves to the results
-after a search. The heavy search/download is injectable so the dialog is
-unit-testable without the network.
+Three things carry this window, and each is here because of how it sounds rather
+than how it looks:
+
+* **One row per book.** *Middlemarch* found in four catalogues used to be four
+  near-identical rows differing only in a source name near the end -- which under
+  a screen reader means hearing the same title four times to learn one fact. The
+  rows are :class:`~quill.core.library.works.Work` records now: every edition
+  found, on one line, naming every library it came from.
+* **Every row says what you can do with it.** *open now*, *catalog record*,
+  *account required*, *partner integration required* -- the four-category rule
+  (:mod:`quill.core.library.availability`). Pressing Enter on a mixed result list
+  otherwise opens a book, or a web page, or does nothing, and the only way to
+  find out is to try.
+* **Read or listen is a property of the book, not a separate search.** A LibriVox
+  recording and a Gutenberg text of the same work group into one row that says
+  *read or listen*. Nothing in QUILL joined those two before.
+
+The filter is local to what has already been fetched, so "only what I can open"
+costs nothing rather than a second wait. **Catalogs...** adds an OPDS library
+QUILL has never heard of -- the payoff for building this half on an open standard.
+
+Accessible by construction: a single-select ``wx.ListBox`` (no checkboxes) with
+explicit action buttons; a reviewable, spoken read-only status field; a label on
+every control; focus on the results after a search. The heavy search/download is
+injectable, so the whole window is unit-testable with no network.
 """
 
 from __future__ import annotations
@@ -21,15 +40,24 @@ from pathlib import Path
 import wx
 
 from quill.core import library
+from quill.core.library import availability
+from quill.core.library import catalogs as catalogs_module
+from quill.core.library import works as works_module
 from quill.core.library.model import Book, LibraryError
+from quill.core.library.works import Work
 
-# Display label -> source ids passed to library.search.
+# Display label -> source ids passed to library.search. "Everywhere" is first
+# and is the default: somebody looking for a book wants the book, and choosing
+# which library might have it is a question only this app knows to ask.
 _SOURCES: list[tuple[str, tuple[str, ...]]] = [
-    ("All free sources", ("gutenberg", "googlebooks", "bard")),
+    ("Everywhere free", library.FREE_SOURCES),
     ("Project Gutenberg", ("gutenberg",)),
-    ("Google Books (free ebooks)", ("googlebooks",)),
-    ("NLS BARD (catalogue search)", ("bard",)),
     ("Standard Ebooks", ("standard-ebooks",)),
+    ("LibriVox (recordings)", ("librivox",)),
+    ("Open Library", ("openlibrary",)),
+    ("Google Books (free ebooks)", ("googlebooks",)),
+    ("Internet Archive (public domain)", ("archive",)),
+    ("NLS BARD (catalog search)", ("bard",)),
     ("Feedbooks (public domain)", ("feedbooks",)),
 ]
 
@@ -47,17 +75,28 @@ class LibraryDialog(wx.Dialog):
         announce: Callable[[str], None] | None = None,
         on_open: Callable[[Path], None] | None = None,
         safe_mode: bool = False,
+        data_dir: Path | str | None = None,
     ) -> None:
         super().__init__(
             parent, title="Book Library", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
         self._dest_dir = Path(dest_dir)
+        # Where the catalogue list lives. Separate from where books are saved:
+        # one is a setting and the other is a folder somebody may well move.
+        self._data_dir = Path(data_dir) if data_dir is not None else Path(dest_dir).parent
         self._search_fn = search_fn or library.search
         self._download_fn = download_fn or library.download_to_path
         self._announce = announce or getattr(parent, "_announce", lambda _t: None)
         self._on_open = on_open
         self._safe_mode = safe_mode
+        #: The raw records the last search returned, before grouping. Kept
+        #: because the grouped rows are a view of these, not a replacement.
         self._results: list[Book] = []
+        #: Every work the last search found, and the subset the filter shows.
+        #: Two lists rather than one filtered in place, so changing the filter
+        #: never costs a second search.
+        self._works: list[Work] = []
+        self._shown: list[Work] = []
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -81,9 +120,33 @@ class LibraryDialog(wx.Dialog):
         self.results.SetName("Results")
         sizer.Add(self.results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
-        # Format chooser: populated from the selected book's available formats so
-        # the reader picks (e.g.) EPUB vs plain text rather than accepting a
-        # silent default. Empty until a result is selected.
+        # Filter: local to the results already fetched, so "only what I can open"
+        # is instant rather than a second wait.
+        filter_row = wx.BoxSizer(wx.HORIZONTAL)
+        filter_row.Add(
+            wx.StaticText(self, label="S&how:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
+        )
+        self.filter_choice = wx.Choice(self, choices=[label for _id, label in works_module.FILTERS])
+        self.filter_choice.SetName("Show which results")
+        self.filter_choice.SetSelection(0)
+        filter_row.Add(self.filter_choice, 0)
+        sizer.Add(filter_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 6)
+
+        # Edition chooser: one book can exist in several libraries, and which
+        # edition is a real question -- a proofread text is not a raw scan.
+        # Grouping the row must not take that choice away.
+        ed_row = wx.BoxSizer(wx.HORIZONTAL)
+        ed_row.Add(
+            wx.StaticText(self, label="&Edition:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
+        )
+        self.edition_choice = wx.Choice(self, choices=[])
+        self.edition_choice.SetName("Which library's edition")
+        ed_row.Add(self.edition_choice, 0)
+        sizer.Add(ed_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 6)
+
+        # Format chooser: populated from the selected edition's formats so the
+        # reader picks (e.g.) EPUB vs plain text rather than accepting a silent
+        # default. Empty until a result is selected.
         fmt_row = wx.BoxSizer(wx.HORIZONTAL)
         fmt_row.Add(
             wx.StaticText(self, label="Fo&rmat:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
@@ -116,9 +179,12 @@ class LibraryDialog(wx.Dialog):
         btns = wx.BoxSizer(wx.HORIZONTAL)
         self.open_btn = wx.Button(self, label="Download && &Open")
         self.dl_btn = wx.Button(self, label="&Download")
-        # For catalogue-only results (e.g. NLS BARD) that have a web page but no
-        # in-app download, open the title's official page in the browser.
-        self.bard_btn = wx.Button(self, label="Open in &BARD")
+        # For results QUILL cannot open itself -- a BARD catalog record, an Open
+        # Library page, a borrowable scan -- hand off to the library's own page.
+        # Named for what it does rather than for one provider, because it is now
+        # reached from several.
+        self.bard_btn = wx.Button(self, label="Open in &Browser")
+        self.catalogs_btn = wx.Button(self, label="Catalo&gs...")
         close_btn = wx.Button(self, wx.ID_CANCEL, "&Close")
         self.open_btn.SetDefault()
         # Right-align the buttons with a leading stretch spacer + EXPAND instead of
@@ -127,6 +193,7 @@ class LibraryDialog(wx.Dialog):
         btns.Add(self.open_btn, 0, wx.RIGHT, 6)
         btns.Add(self.dl_btn, 0, wx.RIGHT, 6)
         btns.Add(self.bard_btn, 0, wx.RIGHT, 6)
+        btns.Add(self.catalogs_btn, 0, wx.RIGHT, 6)
         btns.Add(close_btn, 0)
         sizer.Add(btns, 0, wx.EXPAND | wx.ALL, 8)
 
@@ -147,7 +214,10 @@ class LibraryDialog(wx.Dialog):
         self.bard_btn.Bind(wx.EVT_BUTTON, lambda _e: self._open_in_bard())
         self.find.Bind(wx.EVT_TEXT_ENTER, lambda _e: self._find_in_results(1))
         self.find_btn.Bind(wx.EVT_BUTTON, lambda _e: self._find_in_results(1))
-        self.results.Bind(wx.EVT_LISTBOX, lambda _e: self._sync_format_choice())
+        self.catalogs_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_catalogs())
+        self.results.Bind(wx.EVT_LISTBOX, lambda _e: self._on_result_selected())
+        self.edition_choice.Bind(wx.EVT_CHOICE, lambda _e: self._sync_format_choice())
+        self.filter_choice.Bind(wx.EVT_CHOICE, lambda _e: self._apply_filter())
 
         # Keyboard shortcuts: Ctrl+F focuses Find, F3 / Shift+F3 step matches.
         id_find, id_next, id_prev = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
@@ -170,15 +240,6 @@ class LibraryDialog(wx.Dialog):
         idx = self.source.GetSelection()
         return _SOURCES[idx][1] if idx >= 0 else _SOURCES[0][1]
 
-    @staticmethod
-    def _book_tag(book: Book) -> str:
-        """The bracketed availability tag shown after a result's title."""
-        if book.formats:
-            return ", ".join(sorted(book.formats))
-        if book.site_url:
-            return "open in BARD" if book.source == "bard" else "open on site"
-        return "no downloads"
-
     def _on_search(self, _e) -> None:
         query = self.query.GetValue().strip()
         if not query:
@@ -191,7 +252,12 @@ class LibraryDialog(wx.Dialog):
         wx.SafeYield(self)
         try:
             books = self._search_fn(
-                query, sources=self._selected_sources(), safe_mode=self._safe_mode
+                query,
+                sources=self._selected_sources(),
+                safe_mode=self._safe_mode,
+                # Catalogues somebody added themselves are searched like any
+                # other source; the search facade never has to know they exist.
+                catalogs=catalogs_module.enabled_urls(catalogs_module.load(self._data_dir)),
             )
         except LibraryError as exc:
             wx.EndBusyCursor()
@@ -203,35 +269,97 @@ class LibraryDialog(wx.Dialog):
             return
         wx.EndBusyCursor()
         self._results = books
-        for book in books:
-            self.results.Append(f"{book.title} — {book.authors_label}  [{self._book_tag(book)}]")
-        if books:
-            self.results.SetSelection(0)
-            self._sync_format_choice()
+        # One row per book, not one per library: four catalogues holding the same
+        # title used to be four near-identical rows read out in full.
+        self._works = works_module.group(books)
+        self._apply_filter(announce=False)
+        if self._shown:
             self.results.SetFocus()
-            hint = (
-                "Choose one, then Download."
-                if any(book.formats for book in books)
-                else "Choose one, then Open in BARD to sign in and download there."
+        self._set_status(works_module.summarise(self._works))
+
+    def _apply_filter(self, *, announce: bool = True) -> None:
+        """Redraw the results under the chosen filter. Never re-searches."""
+        index = self.filter_choice.GetSelection()
+        mode = works_module.FILTERS[index][0] if index >= 0 else "all"
+        self._shown = works_module.apply_filter(self._works, mode)
+        self.results.Set([work.row_label() for work in self._shown])
+        if self._shown:
+            self.results.SetSelection(0)
+        self._on_result_selected()
+        if not announce:
+            return
+        if not self._works:
+            self._set_status("Nothing found. Try different words.")
+        elif not self._shown:
+            # Said plainly rather than shown as an empty list: an empty list and
+            # a failed search sound identical, and they are not the same thing.
+            self._set_status(
+                f"None of the {len(self._works)} books found match that filter. "
+                "Choose Everything found to see them all again."
             )
-            self._set_status(f"Found {len(books)} book(s). {hint}")
         else:
+            self._set_status(f"Showing {len(self._shown)} of {len(self._works)}.")
+
+    def selected_work(self) -> Work | None:
+        index = self.results.GetSelection()
+        if index < 0 or index >= len(self._shown):
+            return None
+        return self._shown[index]
+
+    def selected_book(self) -> Book | None:
+        """The edition to act on: the one chosen, else the work's best."""
+        work = self.selected_work()
+        if work is None:
+            return None
+        index = self.edition_choice.GetSelection()
+        if 0 <= index < len(work.editions):
+            return work.editions[index]
+        return work.best_edition
+
+    def _on_result_selected(self) -> None:
+        """Fill the Edition chooser, then the Format chooser under it."""
+        work = self.selected_work()
+        if work is None:
+            self.edition_choice.Set([])
             self.format_choice.Set([])
-            self._set_status("No books found. Try different words.")
+            self._sync_buttons()
+            return
+        editions = [works_module.source_name(e.source) for e in work.editions]
+        self.edition_choice.Set(editions)
+        if editions:
+            best = work.best_edition
+            self.edition_choice.SetSelection(
+                work.editions.index(best) if best in work.editions else 0
+            )
+        self._sync_format_choice()
+
+    def _sync_buttons(self) -> None:
+        """Enable only what the highlighted result can actually do.
+
+        A Download button that is pressed and then explains it cannot download a
+        catalog record is worse than one that was never offered -- and the row
+        already said which kind it is, so a disabled button agrees with it.
+        """
+        book = self.selected_book()
+        can_open = book is not None and availability.can_open_here(book)
+        self.open_btn.Enable(bool(can_open))
+        self.dl_btn.Enable(bool(can_open))
+        self.bard_btn.Enable(bool(book is not None and book.site_url))
 
     def _sync_format_choice(self) -> None:
-        """Fill the Format chooser from the selected book, best format first."""
-        idx = self.results.GetSelection()
-        if not (0 <= idx < len(self._results)):
+        """Fill the Format chooser from the selected edition, best format first."""
+        book = self.selected_book()
+        if book is None:
             self.format_choice.Set([])
+            self._sync_buttons()
             return
-        book = self._results[idx]
         formats = sorted(book.formats)
         self.format_choice.Set(formats)
         if formats:
             best = book.resolve()
             chosen = best[0] if best and best[0] in formats else formats[0]
             self.format_choice.SetStringSelection(chosen)
+        self._sync_buttons()
 
     def _chosen_format(self) -> str:
         """The format key the user picked, or '' to let download choose the best."""
@@ -269,11 +397,16 @@ class LibraryDialog(wx.Dialog):
         return -1
 
     def _download(self, *, open_after: bool) -> None:
-        idx = self.results.GetSelection()
-        if idx == wx.NOT_FOUND or not (0 <= idx < len(self._results)):
+        book = self.selected_book()
+        if book is None:
             self._set_status("Choose a book in the results first.")
             return
-        book = self._results[idx]
+        if not availability.can_open_here(book):
+            # The row said "catalog record" and the button is disabled; this is
+            # the belt to that braces, and it names the way forward rather than
+            # only refusing.
+            self._set_status(availability.describe(book))
+            return
         fmt = self._chosen_format()
         self._set_status(f"Downloading {book.title}...")
         wx.BeginBusyCursor()
@@ -295,19 +428,30 @@ class LibraryDialog(wx.Dialog):
             if self.IsModal():
                 self.EndModal(wx.ID_OK)
 
-    def _open_in_bard(self) -> None:
-        """Open the selected result's official BARD / Library of Congress page.
+    def open_catalogs(self) -> None:
+        """Manage the OPDS catalogues this window searches.
 
-        BARD titles are obtained on the BARD website (an eligible patron account
-        and sign-in are required there), so this hands the reader off to the
-        title's page in their browser rather than downloading inside QUILL. The
-        outcome is spoken so a screen-reader user hears where they were taken.
+        Reopened rather than live-refreshed: a catalogue added here changes the
+        *next* search, and quietly re-running the current one would replace a
+        result list somebody may still be reading.
         """
-        idx = self.results.GetSelection()
-        if idx == wx.NOT_FOUND or not (0 <= idx < len(self._results)):
+        from quill.ui.library_catalogs_dialog import LibraryCatalogsDialog
+
+        LibraryCatalogsDialog(self, data_dir=self._dest_dir, announce=self._announce).show()
+        self._set_status("Catalog changes apply to your next search.")
+
+    def _open_in_bard(self) -> None:
+        """Open the selected result on the library's own page.
+
+        Reached for anything QUILL cannot open itself: a BARD record (obtaining
+        the title needs an eligible patron account and happens on their site), an
+        Open Library page, a borrowable scan. The outcome is spoken so a
+        screen-reader user hears where they were taken.
+        """
+        book = self.selected_book()
+        if book is None:
             self._set_status("Choose a result first.")
             return
-        book = self._results[idx]
         if not book.site_url:
             self._set_status(f"No web page is available for {book.title}.")
             return

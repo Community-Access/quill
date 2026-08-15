@@ -28,16 +28,16 @@ def test_add_custom_station_refreshes_favorites_view() -> None:
     assert '_refresh_favorite_toggle", None)' in src
 
 
-def test_tunein_can_be_favorited_from_browse() -> None:
+def test_a_lazily_resolved_station_can_be_favorited_from_browse() -> None:
     src = _read("quill/ui/radio/browse_tree_dialog.py")
-    # A resolve-then-add path exists and is wired to the context menu.
-    assert "def _favorite_tunein(" in src
-    assert "def _tunein_favorite_resolved(" in src
+    # One resolve-then-act path now serves both Play and Add to Favorites, for
+    # every source that needs it -- this used to be two TuneIn-specific methods.
+    assert "def _resolve_then(" in src
+    assert "self._resolve_then(data, self._add_favorite_station)" in src
+    assert "self._resolve_then(data, self._play_station)" in src
     assert '("Add to &Favorites"' in src
-    # The favorite button is enabled for TuneIn nodes (was disabled before).
+    # The favorite button is enabled for a not-yet-resolved row (was disabled).
     assert "self._favorite_btn.Enable(True)" in src
-    # The toggle routes TuneIn nodes to the resolve-then-add path.
-    assert 'data.get("kind") == "tunein-station"' in src
 
 
 def test_favorites_manager_offers_remove_all() -> None:

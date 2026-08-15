@@ -28,7 +28,7 @@ Tab order: the now-playing line, the library tree, then five buttons.
 The Manager (Ctrl+M) is where episode-level life happens, and it is the same Manager QUILL ships:
 
 - **Pinned views** lead the folder tree: **Favorites**, **New Episodes**, **Continue Listening**, and the **Inbox**.
-- **The Inbox** triages episodes rather than shows: route a show to the Inbox and its new episodes land there; file episodes into your own nested folders. Your first manual filing per show is remembered and applied automatically (Forget reverts it).
+- **The Inbox** triages episodes rather than shows: route a show to the Inbox and its new episodes land there; file episodes into your own nested folders. Your first manual filing per show is remembered and applied automatically (Forget reverts it). **Which shows go to the Inbox** (Podcast Settings) decides how the Inbox is filled: *Only the shows I choose* -- the default, and what QUILL Cast has always done -- or *Every show except the ones I exclude*, which suits a large subscription list you triage rather than a few shows you follow closely. Choosing the second reuses the same per-show mark and reads it the other way round, so the menu item on a show changes to **Keep This Show Out of the Inbox** and says so when you use it. Nothing moves unless you change the setting.
 - **"View cross-show lists as"**, a combo box next to "Sort episodes", offers three ways to see the Inbox and every other cross-show list (New Episodes, Continue Listening, Favorites): **Grouped in list** (the default -- each show's episodes cluster together, read one podcast's backlog at a time), **Flat list** (everything as one stream, sorted purely by date across every show at once), or **Folders per podcast** (real expandable tree nodes, one per show, right under the pinned view). The Sort Episodes control now applies to these cross-show lists too, not just a single show's own episode list -- and it's per-podcast: select a show (or its Folders node) and change the sort to override just that podcast, leaving everyone else on the shared default.
 - **Play Queue**: Play Next or Add to Queue on any episode; the queue auto-advances, survives restarts, and reorders from the keyboard (Move Up/Down, or Mark then Move for long hops).
 - **Playlists**, below the Play Queue in the tree: saved, named episode lists, distinct from the (transient) Play Queue and the (fixed) pinned views. Right-click Playlists for **New Playlist...** (manual -- add episodes one at a time via **Add to Playlist...** on any episode's context menu) or **New Smart Playlist...** (rule-based -- which shows, episode status, how recent, how long, and how to sort, re-resolved live every time you open it). Edit Rules..., Rename (F2), and Delete round out each playlist's own context menu.
@@ -80,6 +80,8 @@ Open Podcast Manager... (Ctrl+M), Add Podcast..., Import OPML..., Export OPML...
 - **Default playback speed** -- now anything from 0.5x to 5.0x in tenths, not six fixed choices.
 - **Automatically download** -- none, the newest 1, 3, 5, 10, or every episode. This is the setting that makes new episodes arrive ready to play. "Every episode" and the older **Always sync the full catalog** checkbox are the same instruction, and setting either sets both.
 - **Also download anything you add to the Play Queue** (on) and **Also download everything routed to the Inbox** (off).
+- **Start loading the next episode before this one ends** (off). When one queued episode ends and the next begins there is normally a pause while the next one is opened -- on a slow connection, several seconds of silence. Turning this on fetches the next episode's first moments while you are still listening to the current one, so it simply carries on. It is off by default because it uses data you have not asked for, which matters if you pay for it by the megabyte; it does nothing for episodes already downloaded, and nothing until you are near the end.
+- **Which shows go to the Inbox**: *Only the shows I choose* (the default) or *Every show except the ones I exclude*. The second is the one to pick if you follow a great many shows and use the Inbox to sort through them; the first if you follow a few closely. Whichever you choose, the per-show Inbox caps keep it from becoming a wall of episodes.
 - **Inbox: keep at most** -- 0 means no limit. See "Inbox limits" below.
 - **Delete downloads after (days)** and **Total download storage cap (MB)** -- both 0 (off) by default. See "Managing your downloads".
 - **When an episode finishes** -- "Play the next episode in the Play Queue" (on) and "When the queue is empty, keep going with the same podcast" (off). **With both off, playback stops at the end of the episode you started.**
@@ -100,7 +102,7 @@ Nothing changes until you change it: out of the box, Enter plays an episode and 
 
 ### Episode (Alt+E)
 
-A live now-playing line, **Player Information...**, then Play/Pause (Ctrl+P), **Stop** (Ctrl+.), **Mute/Unmute**, **Volume Up** (Ctrl+Up) and **Volume Down** (Ctrl+Down), Next Chapter, Previous Chapter, **Skip Forward** (Ctrl+Right), **Skip Back** (Ctrl+Left), **Speed Up** (Ctrl+Shift+Up), **Speed Down** (Ctrl+Shift+Down), **Reset Speed to Normal** (Ctrl+Shift+0), **Stop After This Episode**, Add Episode Note..., **Play Queue...** (the same reorderable queue the Manager offers, now one keystroke away), **Mark All as Played...**, **Listening Statistics...**, a **Recently Played** submenu (your last fifteen episodes, newest first, playable inline), Sleep Timer..., **Sleep at End of This Episode**, **Extend Sleep Timer 5 Minutes**, **Sound Enhancements...**, and **Skip Settings...**. The volume keys match Quill Radio's, so the two apps behave the same way.
+A live now-playing line, **Player Information...**, **Continue Listening...**, **About This Episode...**, then Play/Pause (Ctrl+P), **Stop** (Ctrl+.), **Mute/Unmute**, **Volume Up** (Ctrl+Up) and **Volume Down** (Ctrl+Down), Next Chapter, Previous Chapter, **Skip Forward** (Ctrl+Right), **Skip Back** (Ctrl+Left), **Speed Up** (Ctrl+Shift+Up), **Speed Down** (Ctrl+Shift+Down), **Reset Speed to Normal** (Ctrl+Shift+0), **Stop After This Episode**, Add Episode Note..., **Play Queue...** (the same reorderable queue the Manager offers, now one keystroke away), **Mark All as Played...**, **Listening Statistics...**, a **Recently Played** submenu (your last fifteen episodes, newest first, playable inline), Sleep Timer..., **Sleep at End of This Episode**, **Extend Sleep Timer 5 Minutes**, **Sound Enhancements...**, and **Skip Settings...**. The volume keys match Quill Radio's, so the two apps behave the same way.
 
 **Speed Up / Speed Down / Reset Speed** move playback speed in tenths anywhere from 0.5x to 5.0x, and say both the new speed and whose it is -- the playing podcast's own if something is playing, or the shared default when nothing is. The same range is in Podcast Settings and in Settings for This Podcast...
 
@@ -203,6 +205,31 @@ It is a read-only text field you arrow through line by line and can copy -- the 
 
 One number is deliberately absent: time saved by Smart Speed. The silence-trimming path cannot honestly report how much silence it dropped, and an invented figure would be worse than no figure at all.
 
+## The first time you open it
+
+QUILL Cast starts with three short screens: what it is, how to add your first
+podcast, and two things worth knowing before you begin. Three, not seven -- there
+is no account to make and nothing to consent to, so there is nothing to page
+through.
+
+Each screen is a text box you can arrow through and copy, so a sentence you
+missed is there to read again rather than something to ask the app to repeat.
+**Skip** leaves at any point and counts as done -- you will not be asked again.
+And if you already have podcasts, from an import or a backup you restored, you
+never see it at all.
+
+### Tips
+
+After that, the first time you reach somewhere one non-obvious fact would change
+what you can do, QUILL Cast says a single sentence about it -- the difference
+between the Play Queue and the Inbox, that most settings can differ per podcast,
+that a worked-out chapter list can tell you how it was found.
+
+Each tip appears **once, ever**. They are never a dialog, never take the
+keyboard, and go to your braille display as well as to speech. One checkbox turns
+them all off for good, and **Show Tips Again** brings them back if you want the
+refresher later.
+
 ## Chapters you can skip
 
 QUILL Cast finds chapters from three places -- the feed's own chapter document, markers inside the audio file, and timestamps in the show notes. From 1.1 you can also skip them.
@@ -210,6 +237,169 @@ QUILL Cast finds chapters from three places -- the feed's own chapter document, 
 Open **Chapters...** for the episode you are playing and use **Skip This Chapter** to mark the ad break, the sponsor read, or the outro. Playback jumps past it and says "Skipping chapter:" and its name. Consecutive marked chapters are stepped over together, and marking everything to the end simply finishes the episode normally, so auto-advance and delete-after-play still fire. **Skip Nothing** clears every mark.
 
 Marks last for the listening session only -- a chapter you skipped in yesterday's episode says nothing about today's -- and the button only appears for the episode actually playing.
+
+### When an episode has no chapters at all
+
+Most episodes do not publish any. QUILL Cast can work them out, and -- new in this
+version -- the sections it works out are now **named after what they are about**
+rather than after their own first few words or as "Section 4", which told you
+nothing.
+
+It looks in the cheap places first and stops at the first real answer: the feed's
+own chapter document, chapter marks inside the downloaded file, the timestamps in
+the show notes, the moments the podcast marked as worth hearing, and anything
+worked out on a previous run. **A chapter list published by the podcast always
+wins** over anything worked out -- a person wrote those titles.
+
+Marked moments are new here, and they are the last of the authored sources for a
+reason: a podcast that marks two highlights in an hour has answered "what is the
+good bit" completely and "how is this episode laid out" barely at all. So they
+are used only when nothing better was published, each keeps its own real end
+rather than running on to the next one, and the list says what they are --
+**Moments this podcast marked** -- so a set of highlights is never mistaken for a
+chapter list covering the whole episode. One marked moment is enough to offer:
+it is still a place worth jumping to.
+
+Show notes are worth a word of their own, because a publisher who wrote chapter
+timestamps has already done the work for you. QUILL Cast now reads the shapes
+people actually write -- `00:00`, `1:02:03`, `12.34`, `1h05m`, numbered and
+bulleted and bracketed lists, the time at the *end* of the line ("Introduction —
+00:00"), and show notes that arrive as web markup rather than plain text.
+
+When none of those exist, **Podcast Settings > Chapters** decides what happens,
+and there is one thing to choose: **how long are you willing to wait?**
+
+- **Quick** -- only what is already here. Instant.
+- **Thorough** (the default) -- fetch a published transcript if there is one, or
+  listen to the audio for pauses. Seconds.
+- **Deep** -- transcribe the episode on this machine, then work the sections out
+  from what was said. Minutes, and you can stop it at any point.
+
+You can also say **when** to bother at all -- never, only for episodes you have
+downloaded (the default), or always -- and switch each individual method off. Off
+means off: if you say never scan the audio, it never scans the audio, whatever
+the effort is set to. And if you would rather not have worked-out chapters at
+all, one setting turns the whole thing off and you will not hear about it again.
+
+**Nothing interrupts you.** The work happens in the background while you listen.
+While it runs, the menu item says so in its own words -- "Chapters (working them
+out...)" -- and opening it says "Chapters are being worked out. I will say when
+they are ready" rather than showing you something to wait in front of. When it
+finishes you hear one short sentence, and the list is there when you want it.
+
+**And you can ask how they were found.** Chapters that were worked out rather
+than published say so, and the summary tells you which method found them, how
+much was examined, and how confident it was -- "12 sections, worked out by
+listening for pauses in the audio. Examined: 48 minutes of audio. Confidence
+41%." A worked-out chapter list is a guess, and you are entitled to know how good
+a guess it is.
+
+## What else the podcast published
+
+Podcast feeds can carry a good deal more than a title and an audio file, and
+until now QUILL Cast read two of it -- chapters and transcripts -- and threw the
+rest away while it was sitting right there in bytes it had already downloaded.
+
+**About This Episode...** (the Episode menu, and any episode's context menu in
+the Podcast Manager) is where the rest of it now lives. It opens as tabs, and a
+tab is only there when it has something in it -- no empty People tab on a podcast
+that publishes no credits.
+
+- **People.** Who is on this episode, and who makes the podcast. Each row reads
+  as a sentence -- "Bob Brown, guest (this episode)", "Alice Adams, host (this
+  podcast)" -- and where the publisher gave a link, Enter opens it.
+- **Highlights.** The moments the podcast marked as worth hearing, each with what
+  it is called, when it starts and how long it runs, in words: "The good bit --
+  1 hour 2 minutes in, 1 minute long". These are chapter marks written by a
+  person, so they also appear in the chapter list, where Enter plays from one.
+- **Live.** Some podcasts carry a live stream inside their feed. If one is on the
+  air, Enter plays it through the ordinary player -- the same transport, the same
+  volume and pause keys as everything else. One that has finished says so instead
+  of pretending to be playable.
+- **Other Audio.** A second version of the same episode where the publisher
+  offered one, usually a smaller file for a slow or metered connection.
+- **Recommended.** The podcasts this show recommends. Subscribing here is a real
+  subscribe -- QUILL Cast fetches the feed and the show arrives with its proper
+  name, its artwork and its episodes.
+- **Support.** Where the podcast asked to be supported. QUILL Cast opens the page
+  in your browser and has nothing whatever to do with what happens there. Nothing
+  in QUILL Cast costs money and nothing here changes that.
+- **Place.** Where the episode is about, as text. No map, and none is wanted.
+
+The command speaks a one-line summary before the window opens -- "Extra details
+for this episode: 2 people, 1 marked moment, 1 recommended podcast" -- so if all
+you wanted was to know whether there was anything, you have your answer without
+opening anything. On an episode whose podcast published none of it, the window
+still opens and says so: "this podcast publishes no extra details" and "QUILL
+Cast cannot read them" are very different things to know, and a greyed-out menu
+item would leave you guessing which one it was.
+
+**The button says what it will do.** It changes as you move down a list -- *Open
+in Browser*, *Play*, *Subscribe to This Podcast* -- and on a row with nothing to
+do it reads *Nothing to Open* and is disabled, rather than being pressed and
+quietly declining.
+
+## Picking up whatever you were in the middle of
+
+**Continue Listening...** (the Episode menu) is one list of everything you
+started and did not finish, newest first, with the kind named on every row --
+"Rome, The Rest Is History, podcast, 20 minutes in, 33% through". If you also
+use Quill Radio, an unfinished LibriVox chapter or recorded programme appears in
+the same list, because the question people actually have is *what was I in the
+middle of*, not *which app was it in*.
+
+**Resume** starts it where you left off. **Forget This One** drops the saved
+place and takes the row out -- the episode stays unplayed, because "I am not
+going back to this" and "I finished it" are different things to say, and a
+resume list you cannot clear is one that fills with things you abandoned on
+purpose and stops being useful.
+
+Anything the app you are in cannot play -- a radio recording, in Cast -- is
+still listed, but Resume is unavailable for it and says so rather than doing
+nothing.
+
+## Doing something to a lot of episodes at once
+
+Select several episodes in the Manager's list (Shift or Ctrl with the arrow
+keys, or Ctrl+A) and the context menu gains actions for the whole selection:
+**Add N Episodes to Queue**, **Download N Episodes**, **Mark N Episodes as
+Played**, **Add N Episodes to Playlist...**, and **Remove N Downloaded Copies**.
+
+**File N Episodes to Inbox Folder...** is the one the Inbox needed most, since
+triage is what the Inbox is for and triage happens a handful of episodes at a
+time. It asks **once** which folder and files the lot; if that sets a show's
+remembered folder, it says so once rather than once per episode.
+
+Removing downloaded copies never removes the episodes: freeing space and
+unsubscribing are very different things to want, and the episodes stay in your
+library with their played marks and positions, ready to download again.
+
+## Opening a subscription list from Explorer
+
+An OPML file is how one podcast app hands its whole subscription list to
+another. If you let the installer associate `.opml` files with QUILL Cast (a
+tick box during setup, **off** unless you ask for it), double-clicking one opens
+Cast straight into the import, and Cast says which file it is opening. You can
+still use **Import OPML...** at any time, and a list exported with an `.xml`
+extension imports perfectly well that way.
+
+Uninstalling QUILL Cast gives the file type back rather than leaving a dead
+handler behind.
+
+## Scanning forward through an episode
+
+Skipping forward in fixed jumps answers *"get me past this"*. It does not answer
+*"where does this bit end?"* -- for that you need to hear the audio going past.
+
+**Hold Shift+Right** and playback runs at four times speed. Let go and it drops
+back to **exactly** the speed you were listening at: if you listen at 1.5, you
+get 1.5 back, not 1.0. Both edges are announced -- "Scanning forward, 4 times
+speed", then "Back to 1.5 times speed" -- because a player left at four times
+speed without saying so is indistinguishable from a broken one. Moving to
+another window, or closing the app, ends a scan too.
+
+Four times is deliberate: fast enough to cover a minute in fifteen seconds, slow
+enough that speech is still recognisable as speech.
 
 ## Winamp playback keys
 

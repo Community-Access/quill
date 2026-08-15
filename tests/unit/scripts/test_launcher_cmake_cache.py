@@ -24,7 +24,13 @@ def _write_cache(build_dir: Path, home: str) -> Path:
 
 def test_cache_from_another_checkout_path_is_discarded(tmp_path: Path) -> None:
     build_dir = tmp_path / "radio"
-    _write_cache(build_dir, "S:/QUILL/quill/native/launcher")
+    # Derived from this checkout rather than a hard-coded drive letter. The
+    # original literal was the path the repo happened to live at when this was
+    # written; once the repo moved back to that drive the "foreign" path was
+    # this one, and the test asserted a stale cache is discarded while handing
+    # it a perfectly current cache.
+    foreign = f"{_LAUNCHER_SRC.as_posix()}-some-other-checkout"
+    _write_cache(build_dir, foreign)
     (build_dir / "leftover.obj").write_text("x", encoding="utf-8")
 
     assert _discard_relocated_cmake_cache(build_dir) is True

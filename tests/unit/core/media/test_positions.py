@@ -305,7 +305,7 @@ def test_a_missing_timestamp_resolves_to_the_remote() -> None:
 
 
 def test_the_store_satisfies_the_record_store_protocol(tmp_path: Path) -> None:
-    from quill.apps.beacon.quillsync.protocol import RecordStore
+    from quill.core.sync.protocol import RecordStore
 
     assert isinstance(PositionStore(tmp_path), RecordStore)
 

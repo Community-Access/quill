@@ -93,6 +93,35 @@ class PodcastDialogsMixin:
         # dialog so there is one place that owns the file picker + parsing.
         self._podcast_open_add_dialog()
 
+    def podcast_import_opml_file(self, path: object) -> None:
+        """Open the bulk-import flow on *path*, already chosen.
+
+        The command-line half of the ``.opml`` association: somebody who
+        exported a subscription list from another app double-clicks it, and the
+        app opens on the import rather than on an empty library with a menu to
+        find. The whole import still runs where it always did, off the UI
+        thread -- a real subscription list is thousands of entries.
+        """
+        from pathlib import Path
+
+        from quill.core.podcasts.opml_cli import describe_opened_file
+        from quill.ui.podcasts.opml_import_dialog import OpmlImportDialog
+
+        target = Path(str(path))
+        if not target.is_file():
+            self._announce(f"That subscription list could not be found: {target.name}")
+            return
+        self._announce(describe_opened_file(target))
+        OpmlImportDialog(
+            self.frame,
+            library=self._podcast_library,
+            path=target,
+            task_manager=self._task_manager,
+            safe_mode=self._safe_mode,
+            announce_cb=self._announce,
+            on_library_changed=self._save_podcast_library,
+        ).show()
+
     def _podcast_export_opml(self) -> None:
         wx = self._wx
         with wx.FileDialog(

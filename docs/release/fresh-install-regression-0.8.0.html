@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL 0.8.0 Beta 1 - Fresh-Install Regression Test Plan</title>
+  <title>fresh-install-regression-0.8.0</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -239,30 +239,9 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="quill-080-beta-1---fresh-install-regression-test-plan">QUILL
+<h1 id="quill-0.8.0-beta-1---fresh-install-regression-test-plan">QUILL
 0.8.0 Beta 1 - Fresh-Install Regression Test Plan</h1>
 <p>Goal: validate the 0.8.0 Beta 1 installer exactly as a brand-new user
 would experience it, with no state carried over from any prior QUILL
@@ -281,11 +260,11 @@ features are present.</p>
 deliberately left pointing at the prior release, so a freshly installed
 0.8.0 build will NOT advertise an update to itself. That is expected for
 this beta.</p>
-<h2 id="1-get-to-a-truly-clean-machine">1. Get to a truly clean
+<h2 id="get-to-a-truly-clean-machine">1. Get to a truly clean
 machine</h2>
 <p>Pick ONE of the two approaches. Approach A is the most
 trustworthy.</p>
-<h3 id="a-windows-sandbox-recommended---guarantees-never-installed">A.
+<h3 id="a.-windows-sandbox-recommended---guarantees-never-installed">A.
 Windows Sandbox (recommended - guarantees “never installed”)</h3>
 <p>Windows Sandbox is a disposable, clean Windows instance. Nothing from
 your current machine is present, so it is the truest test of a
@@ -304,8 +283,8 @@ is a fresh machine. Great for repeating the test.</li>
 <p>Note: a sandbox has no screen reader installed. To exercise the
 screen-reader announcements, use Approach B on a real machine with
 JAWS/NVDA, or install NVDA portable inside the sandbox.</p>
-<h3 id="b-clean-your-current-machine-manual-reset">B. Clean your current
-machine (manual reset)</h3>
+<h3 id="b.-clean-your-current-machine-manual-reset">B. Clean your
+current machine (manual reset)</h3>
 <p>Use this on your real machine (with your screen reader) but reset all
 QUILL state first so it behaves as a first install.</p>
 <ol type="1">
@@ -343,7 +322,7 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-
 <p>Important: back up <code>%APPDATA%\Quill</code> first if you have
 real projects/settings you want to keep - deleting it is what makes the
 test a true fresh install.</p>
-<h2 id="2-install">2. Install</h2>
+<h2 id="install">2. Install</h2>
 <ol type="1">
 <li>Run <code>Quill-for-All-Setup-0.8.0 Beta 1.exe</code>.</li>
 <li>Confirm the installer title/version reads “QUILL for All 0.8.0 Beta
@@ -352,7 +331,7 @@ test a true fresh install.</p>
 specifically testing component selection.</li>
 <li>Finish and launch QUILL from the Start menu shortcut.</li>
 </ol>
-<h2 id="3-first-run--fresh-state-checks">3. First-run / fresh-state
+<h2 id="first-run-fresh-state-checks">3. First-run / fresh-state
 checks</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />First-run setup wizard appears
@@ -369,7 +348,7 @@ purpose).</label></li>
 <li><label><input type="checkbox" />Settings, keymap, and recovery files
 get created under <code>%APPDATA%\Quill</code>.</label></li>
 </ul>
-<h2 id="4-bundled-dependencies-and-features-present">4. Bundled
+<h2 id="bundled-dependencies-and-features-present">4. Bundled
 dependencies and features present</h2>
 <p>Verify these are present in the install dir without any extra
 download:</p>
@@ -407,7 +386,7 @@ Speech -&gt; Manage Speech Models.</label></li>
 engine binaries/wheels above are bundled; only the large model weights
 are fetched when you first pick a model.</li>
 </ul>
-<h2 id="5-core-regression-pass">5. Core regression pass</h2>
+<h2 id="core-regression-pass">5. Core regression pass</h2>
 <p>Run a quick smoke across the main surfaces:</p>
 <ul class="task-list">
 <li><label><input type="checkbox" />New document, type, save (atomic
@@ -435,10 +414,9 @@ confirm a crash bundle is written with secrets redacted.</label></li>
 <li><label><input type="checkbox" />Uninstall cleanly; confirm install
 dir is removed.</label></li>
 </ul>
-<h2 id="6-record-results">6. Record results</h2>
+<h2 id="record-results">6. Record results</h2>
 <p>For each failure, capture: the step, expected vs actual, the
 screen-reader announcement (or silence), and the crash-bundle path if
 one was produced. File issues against the 0.8.0 Beta 1 milestone.</p>
-</main>
 </body>
 </html>

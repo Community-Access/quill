@@ -1,0 +1,407 @@
+"""One transcript window, shared by Quill Cast and Quill Radio.
+
+Transcripts have been fetchable, parsable, cachable and searchable for a while,
+and until now the only thing you could *do* with one was open it as a QUILL
+document. That is a good thing to be able to do and it is not reading a
+transcript: it cannot follow the audio, it cannot take you to the moment a line
+was spoken, and it cannot tell you *when* something you searched for was said.
+
+This is that window, and it is deliberately one window rather than two. Cast
+opens it on a podcast episode, Radio opens it on a YouTube video's captions, and
+neither owns it -- a second, subtly different transcript reader is exactly the
+kind of drift the shared cue parser exists to prevent.
+
+**Why a plain read-only text control and not a list.** A transcript is prose. A
+text control gives arrow keys, word and line movement, selection, the screen
+reader's own review cursor, and Find, all for nothing and all behaving exactly
+the way they behave everywhere else. A custom list would take those away and give
+back nothing a listener asked for. The timings live alongside the text rather
+than in it: the caret's line is the cue, and the cue knows when it starts.
+
+Four rules this window keeps:
+
+* **Following is opt-in, and reading always wins.** With Follow Playback off --
+  the default -- playback never moves your caret. You are reading; the audio can
+  wait. With it on, the caret follows the audio and says nothing while it does,
+  because a position announcement per line would be unusable.
+* **Every position is spoken as words.** "4 minutes 12 seconds", never "4:12",
+  which a screen reader reads as an ambiguous pair of numbers.
+  ``bounded_playback_ui.spoken_duration`` is the single source for that, here as
+  everywhere else.
+* **A control that cannot work says why.** Jump to a line needs a player that can
+  seek; where there is none, Enter says so rather than doing nothing.
+* **Saving keeps the timings.** Plain text, WebVTT and SubRip, because somebody
+  who wants to keep a transcript very often wants it in a form another player can
+  follow -- writing only flat text would repeat the mistake this whole feature
+  exists to correct.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Callable, Sequence
+from typing import Any
+
+from quill.core.podcasts.transcripts import (
+    TranscriptCue,
+    cue_at,
+    cues_to_srt,
+    cues_to_text,
+    cues_to_vtt,
+)
+from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.radio.bounded_playback_ui import spoken_duration
+
+#: How often the caret is re-synced to the audio while Follow Playback is on.
+#: Twice a second: fast enough that the caret is never visibly behind, slow
+#: enough that it is not fighting a listener who is arrowing around, and cheap
+#: because :func:`cue_at` is a binary search.
+_FOLLOW_INTERVAL_MS = 500
+
+#: Save As formats, in the order the dialog offers them.
+_SAVE_FORMATS: tuple[tuple[str, str, Callable[[Sequence[TranscriptCue]], str]], ...] = (
+    ("Plain text", "txt", cues_to_text),
+    ("WebVTT", "vtt", cues_to_vtt),
+    ("SubRip", "srt", cues_to_srt),
+)
+
+
+def line_starts(cues: Sequence[TranscriptCue]) -> list[int]:
+    """The character offset each cue's line begins at, in the flattened text.
+
+    Pure, and the whole bridge between the two halves of this window: the text
+    control knows about characters and the player knows about milliseconds, and
+    this is what lets one be turned into the other in both directions without
+    either of them learning about the other.
+
+    Built from :func:`cues_to_text`'s own rule -- one line per cue with text --
+    so the two can never disagree about which line is which cue.
+    """
+    offsets: list[int] = []
+    position = 0
+    for cue in cues:
+        if not cue.text.strip():
+            # cues_to_text drops these, so they occupy no line. Point them at
+            # the line that follows, which is where a listener would land.
+            offsets.append(position)
+            continue
+        offsets.append(position)
+        position += len(cue.spoken_label) + 1  # the line, plus its newline
+    return offsets
+
+
+def cue_index_for_offset(offsets: Sequence[int], cues: Sequence[TranscriptCue], offset: int) -> int:
+    """Which cue the character at *offset* belongs to, or ``-1``.
+
+    The inverse of :func:`line_starts`, and the reason Enter on any line can seek
+    to the right moment however the caret got there -- arrowed, clicked,
+    searched, or moved by the screen reader's own review cursor.
+    """
+    found = -1
+    for index, start in enumerate(offsets):
+        if start <= offset and cues[index].text.strip():
+            found = index
+        elif start > offset:
+            break
+    return found
+
+
+def describe_position(cue: TranscriptCue) -> str:
+    """Where a cue sits, as a listener hears it."""
+    return spoken_duration(cue.start_ms)
+
+
+class TranscriptReader:
+    """The transcript window itself.
+
+    The player is injected as two callables rather than as an object, so this
+    module knows nothing about either app's player: ``position_ms`` answers where
+    playback is, and ``seek_to_ms`` moves it. Either may be ``None`` -- a
+    transcript for something that is not playing is still worth reading, and the
+    window says plainly which commands that costs.
+    """
+
+    def __init__(
+        self,
+        parent: Any,
+        *,
+        title: str,
+        cues: Sequence[TranscriptCue],
+        position_ms: Callable[[], int] | None = None,
+        seek_to_ms: Callable[[int], bool] | None = None,
+        announce: Callable[[str], None] | None = None,
+        show_modal_dialog: Callable[[Any, str], int] | None = None,
+        on_send_to_quill: Callable[[str], None] | None = None,
+        is_automatic: bool = False,
+    ) -> None:
+        import wx
+
+        self._wx = wx
+        self._cues = list(cues)
+        self._offsets = line_starts(self._cues)
+        self._position_ms = position_ms
+        self._seek_to_ms = seek_to_ms
+        self._announce = announce or (lambda _m: None)
+        self._show_modal_dialog = show_modal_dialog
+        self._on_send_to_quill = on_send_to_quill
+        self._following = False
+        self._timer: Any = None
+        self._last_followed = -1
+
+        self._dialog = wx.Dialog(
+            parent,
+            title=f"Transcript: {title}",
+            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+        )
+        self._dialog.SetMinSize((640, 520))
+        root = wx.BoxSizer(wx.VERTICAL)
+
+        heading = "&Transcript"
+        if is_automatic:
+            # Said out loud, not implied. A machine transcript presented as a
+            # human one is a confident wrong answer, which is the one kind of
+            # output this app refuses to produce.
+            heading = "&Transcript (automatic captions -- machine-generated, so expect mistakes)"
+        root.Add(wx.StaticText(self._dialog, label=heading), 0, wx.LEFT | wx.TOP, 10)
+
+        self._text = wx.TextCtrl(
+            self._dialog,
+            value=cues_to_text(self._cues),
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.TE_PROCESS_ENTER,
+        )
+        self._text.SetName(
+            "Transcript. Enter on a line plays from there; Ctrl+F finds; "
+            "Ctrl+Shift+F follows the audio"
+        )
+        root.Add(self._text, 1, wx.EXPAND | wx.ALL, 10)
+
+        self._follow_check = wx.CheckBox(self._dialog, label="&Follow the audio as it plays")
+        self._follow_check.SetName("Move the cursor to the line being spoken")
+        self._follow_check.Enable(position_ms is not None)
+        root.Add(self._follow_check, 0, wx.LEFT | wx.RIGHT, 10)
+
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        self._jump_btn = wx.Button(self._dialog, label="&Play from Here")
+        self._find_btn = wx.Button(self._dialog, label="F&ind...")
+        self._copy_btn = wx.Button(self._dialog, label="&Copy")
+        self._save_btn = wx.Button(self._dialog, label="&Save As...")
+        self._quill_btn = wx.Button(self._dialog, label="Open in &QUILL")
+        self._close_btn = wx.Button(self._dialog, wx.ID_CANCEL, "Cl&ose")
+        for button in (
+            self._jump_btn,
+            self._find_btn,
+            self._copy_btn,
+            self._save_btn,
+            self._quill_btn,
+            self._close_btn,
+        ):
+            buttons.Add(button, 0, wx.RIGHT, 6)
+        self._jump_btn.Enable(seek_to_ms is not None)
+        self._quill_btn.Enable(on_send_to_quill is not None)
+        root.Add(buttons, 0, wx.ALL, 10)
+
+        self._dialog.SetSizer(root)
+        apply_modal_ids(self._dialog, cancel_id=wx.ID_CANCEL)
+
+        self._text.Bind(wx.EVT_TEXT_ENTER, lambda _e: self.jump_to_caret())
+        self._text.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        self._follow_check.Bind(wx.EVT_CHECKBOX, self._on_follow_toggled)
+        self._jump_btn.Bind(wx.EVT_BUTTON, lambda _e: self.jump_to_caret())
+        self._find_btn.Bind(wx.EVT_BUTTON, lambda _e: self.find())
+        self._copy_btn.Bind(wx.EVT_BUTTON, lambda _e: self.copy())
+        self._save_btn.Bind(wx.EVT_BUTTON, lambda _e: self.save_as())
+        self._quill_btn.Bind(wx.EVT_BUTTON, lambda _e: self.send_to_quill())
+        self._dialog.Bind(wx.EVT_CLOSE, self._on_close)
+
+        self._text.SetFocus()
+
+    # -- the window ------------------------------------------------------------
+
+    @property
+    def dialog(self) -> Any:
+        return self._dialog
+
+    def show(self) -> int:
+        """Show the reader, through the host's modal helper where there is one."""
+        title = self._dialog.GetTitle()
+        try:
+            if self._show_modal_dialog is not None:
+                return int(self._show_modal_dialog(self._dialog, title))
+            return int(self._dialog.ShowModal())  # dialog_button_contract: exempt
+        finally:
+            self._stop_following()
+            self._dialog.Destroy()
+
+    def _on_close(self, event: Any) -> None:
+        self._stop_following()
+        event.Skip()
+
+    def _on_char_hook(self, event: Any) -> None:
+        wx = self._wx
+        key = event.GetKeyCode()
+        if event.ControlDown() and key == ord("F"):
+            if event.ShiftDown():
+                self._follow_check.SetValue(not self._follow_check.GetValue())
+                self._on_follow_toggled(None)
+            else:
+                self.find()
+            return
+        if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+            self.jump_to_caret()
+            return
+        event.Skip()
+
+    # -- following -------------------------------------------------------------
+
+    def _on_follow_toggled(self, _event: Any) -> None:
+        if self._follow_check.GetValue():
+            self._start_following()
+            self._announce("Following the audio.")
+        else:
+            self._stop_following()
+            self._announce("No longer following the audio.")
+
+    def _start_following(self) -> None:
+        if self._timer is not None or self._position_ms is None:
+            return
+        self._following = True
+        self._timer = self._wx.Timer(self._dialog)
+        self._dialog.Bind(self._wx.EVT_TIMER, lambda _e: self.sync_to_playback(), self._timer)
+        self._timer.Start(_FOLLOW_INTERVAL_MS)
+
+    def _stop_following(self) -> None:
+        self._following = False
+        if self._timer is not None:
+            self._timer.Stop()
+            self._timer = None
+
+    def sync_to_playback(self) -> int:
+        """Move the caret to the line being spoken. Returns the cue index, or -1.
+
+        Deliberately silent. The caret moving *is* the feedback -- a screen reader
+        announces the new line by itself -- and speaking a position on every line
+        would make the feature unusable within about ten seconds.
+        """
+        if self._position_ms is None:
+            return -1
+        index = cue_at(self._cues, int(self._position_ms()))
+        if index < 0 or index == self._last_followed:
+            return index
+        self._last_followed = index
+        offset = self._offsets[index]
+        self._text.SetInsertionPoint(offset)
+        self._text.ShowPosition(offset)
+        return index
+
+    # -- commands --------------------------------------------------------------
+
+    def caret_cue_index(self) -> int:
+        """Which cue the caret is in, however it got there."""
+        return cue_index_for_offset(self._offsets, self._cues, self._text.GetInsertionPoint())
+
+    def jump_to_caret(self) -> bool:
+        """Play from the line the caret is on. True when playback moved."""
+        if self._seek_to_ms is None:
+            self._announce("There is nothing playing to move, so this line cannot be played from.")
+            return False
+        index = self.caret_cue_index()
+        if index < 0:
+            self._announce("Put the cursor on a line of the transcript first.")
+            return False
+        cue = self._cues[index]
+        if not self._seek_to_ms(cue.start_ms):
+            self._announce("That position could not be played.")
+            return False
+        self._announce(f"Playing from {describe_position(cue)}.")
+        return True
+
+    def find(self, query: str = "") -> int:
+        """Find *query* forward from the caret. Returns the cue index, or -1.
+
+        Speaks the *position* of the hit as well as moving to it, which is the
+        whole reason a transcript reader beats a text file: "found at 12 minutes
+        8 seconds" tells you where in the audio to go.
+        """
+        if not query:
+            query = self._ask_for_query()
+        if not query:
+            return -1
+        haystack = self._text.GetValue().lower()
+        start = self._text.GetInsertionPoint() + 1
+        offset = haystack.find(query.lower(), start)
+        if offset < 0:
+            offset = haystack.find(query.lower())  # wrap, like every other Find
+            if offset < 0:
+                self._announce(f"{query} was not found in this transcript.")
+                return -1
+            self._announce("Searched from the beginning.")
+        self._text.SetInsertionPoint(offset)
+        self._text.SetSelection(offset, offset + len(query))
+        self._text.ShowPosition(offset)
+        index = cue_index_for_offset(self._offsets, self._cues, offset)
+        if index >= 0:
+            self._announce(f"Found at {describe_position(self._cues[index])}.")
+        return index
+
+    def _ask_for_query(self) -> str:
+        wx = self._wx
+        entry = wx.TextEntryDialog(self._dialog, "Find in transcript:", "Find")
+        try:
+            if entry.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+                return ""
+            return entry.GetValue().strip()
+        finally:
+            entry.Destroy()
+
+    def copy(self) -> str:
+        """Copy the selection, or the whole transcript when nothing is selected."""
+        wx = self._wx
+        selected = self._text.GetStringSelection()
+        text = selected or self._text.GetValue()
+        try:
+            if wx.TheClipboard.Open():
+                try:
+                    wx.TheClipboard.SetData(wx.TextDataObject(text))
+                finally:
+                    wx.TheClipboard.Close()
+        except Exception:  # noqa: BLE001 - a clipboard is never worth an exception
+            self._announce("The transcript could not be copied.")
+            return ""
+        self._announce("Copied the selection." if selected else "Copied the whole transcript.")
+        return text
+
+    def save_as(self) -> str:
+        """Write the transcript to a file the listener chooses. Returns the path."""
+        wx = self._wx
+        wildcard = "|".join(f"{label} (*.{ext})|*.{ext}" for label, ext, _writer in _SAVE_FORMATS)
+        dialog = wx.FileDialog(
+            self._dialog,
+            "Save Transcript As",
+            wildcard=wildcard,
+            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+        )
+        try:
+            if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+                return ""
+            path = dialog.GetPath()
+            _label, extension, writer = _SAVE_FORMATS[max(0, dialog.GetFilterIndex())]
+        finally:
+            dialog.Destroy()
+        if not path.lower().endswith(f".{extension}"):
+            path = f"{path}.{extension}"
+        try:
+            from pathlib import Path
+
+            Path(path).write_text(writer(self._cues), encoding="utf-8")
+        except OSError as error:
+            self._announce(f"The transcript could not be saved. {error}")
+            return ""
+        self._announce(f"Saved the transcript to {path}.")
+        return path
+
+    def send_to_quill(self) -> bool:
+        """Open the transcript as a QUILL document."""
+        if self._on_send_to_quill is None:
+            self._announce("Opening in QUILL is not available here.")
+            return False
+        self._on_send_to_quill(self._text.GetValue())
+        return True

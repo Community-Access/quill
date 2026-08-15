@@ -1,5 +1,9 @@
 # Quill Radio 2.2 -- Release Notes
 
+> **Superseded.** 2.2.0 was never published, so its contents ship as part of
+> **Quill Radio 3.0** and are reproduced in full as Part Two of the *Quill Radio
+> 3.0 Release Notes*. This document is kept so existing links still resolve.
+
 Quill Radio 2.2.0 is the release where the app grows up around you. Windows stop
 wandering off. Your stations learn to look after themselves -- backed up, kept in
 the order you left them, recoverable when a finger slips. Two whole new kinds of
@@ -644,39 +648,66 @@ Auto-Adapt work is specific to Stream Polish.
 
 With thanks to **dgl1984 / Lanes Audio**, whose OptiLab Core this is adapted
 from -- <https://github.com/dgl1984/optilab>, licensed Apache-2.0 with the
-Commons Clause. Quill Radio reproduces the shape of its modes as audio filters
-rather than embedding the plugin, so broadcast polish works on any machine and
-previews live as you move a control.
+Commons Clause. This built-in version reproduces the shape of its modes as audio
+filters rather than running the plugin, so broadcast polish works on any machine
+and previews live as you move a control. The next section is about running the
+real engine instead.
 
-### And now the real thing, for recordings you keep
+### And now the real thing
 
 Reproducing the shape of those modes has one honest limit, and it is worth
 stating plainly. OptiLab eases its lift and pulls back bass assistance *while*
-its final limiter is working hard. The filter chain Quill Radio uses for live
-listening cannot do that: nothing in it can see how hard a later stage is
-working, so there is no way to react to it. Faking the effect would have meant
-guessing, and a guess dressed as a feature is worse than an absence.
+its final limiter is working hard. A filter chain cannot do that: nothing in it
+can see how hard a later stage is working, so there is no way to react to it.
+Faking the effect would have meant guessing, and a guess dressed as a feature is
+worse than an absence. There are smaller differences too -- the chain has none of
+OptiLab's gated automatic gain control, its six-band density processing, its
+adaptive bass, or its hybrid final stage, and Quill Radio's Podcast and Limiter
+modes deliver to their own ceilings rather than OptiLab's.
 
-So for **saved recordings**, Quill Radio can now run the *actual* OptiLab
-engine. Lanes Audio's processing code is included in the build and does the work
-itself, rather than being imitated -- which means the feedback loop above simply
-happens, and what you keep is what OptiLab would have produced.
+So Quill Radio can now run the **actual** OptiLab engine. Lanes Audio's
+processing code is included in the build and does the work itself, rather than
+being imitated -- which means the feedback loop above simply happens, and what
+you get is what OptiLab would have produced.
 
-**Live listening is unchanged, and deliberately so.** It keeps the built-in
-chain, because that is what lets every adjustment be audible the instant you
-make it, with no reconnect and no gap. A recording has no such constraint: it is
-processed once, afterwards, where taking a moment longer costs nothing.
+One new choice in Sound Enhancements, **Exact OptiLab processing**, says where:
 
-The distinction is worth holding onto, because it is the whole design:
+- **Off** -- the built-in chain everywhere, exactly as before. This is the
+  default, and nothing changes unless you change it.
+- **When saving** -- recordings and converted files go through the real engine.
+  Recommended.
+- **When saving and while listening** -- everything does, including the stream
+  you are listening to right now.
+
+**Why listening is the option with a cost.** The engine is a separate program,
+and Quill Radio's live playback never hands audio to anything else: it tells the
+player what to apply and the player does it, which is exactly why every slider
+you move is audible instantly, with no gap and no reconnect. Running the real
+engine while you listen means routing the stream *through* that program --
+decode, process, re-encode -- so the station takes a moment longer to start, uses
+more of your processor, and, most noticeably, **needs a moment to reconnect every
+time you change a setting**. The engine is set up with its mode when it starts
+and cannot be re-tuned in mid-flight. It is a genuine trade, so it is a choice
+you make, not one made for you.
+
+Saving has none of those costs: a recording is processed once, *after* it
+finishes, where taking a little longer costs nothing. And because it happens
+afterwards, nothing that goes wrong in the engine can ever affect the recording
+itself -- the original is only replaced once a good processed copy exists.
+
+Everything else -- the equalizer, Even Out Volume, channel mode, night mode --
+still applies exactly as it does today, whichever setting you choose. What
+changes is only which piece of software does the broadcast polish.
+
+It is entirely optional. If your build does not include the OptiLab component
+the option is disabled and tells you so, and everything else works exactly as
+before.
 
 | | Built-in chain | Exact OptiLab |
 | --- | --- | --- |
-| Where it runs | Everywhere -- live, relayed, recorded | Saved files only |
-| Hear changes as you make them | Yes | No; it is not on the live path |
+| Where it can run | Everywhere -- live, relayed, recorded | Everywhere, but live costs a reconnect on each change |
+| Hear changes as you make them | Yes, instantly | Only on saved files; live needs a moment |
 | Limiter feedback loop | Absent -- the chain cannot react to its own limiter | Present |
-
-It is entirely optional. If your build does not include the OptiLab component
-the option says so, and everything else works exactly as before.
 
 **Sound Enhancements answers Ctrl+E.** The three-band equalizer -- Bass, Mid and
 Treble, each freely adjustable from -12 to +12 dB, with Flat, Bass Boost, Voice

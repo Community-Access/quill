@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Section — App launcher &amp; ADP (`app.*` 10, `adp.*`
-2)</title>
+  <title>section-app-adp</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,30 +174,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="section--app-launcher--adp-app-10-adp-2">Section — App launcher
+<h1 id="section-app-launcher-adp-app.-10-adp.-2">Section — App launcher
 &amp; ADP (<code>app.*</code> 10, <code>adp.*</code> 2)</h1>
 <p>Two small families that sit at the edges of the editor.
 <strong><code>app.*</code></strong> is the application-level surface:
@@ -210,8 +188,8 @@ Project</strong> assistant — a pre-release, ON-by-default search for
 described films and TV.</p>
 <p>Surface reference (label + shortcut) is
 <code>../../planning/signoff/SIGNOFF-editor.md</code> → the
-<code>## </code>app.<em><code> (10)</code> and
-<code>## </code>adp.</em><code> (2)</code> sections. Read §2–§3 of
+<code>##</code>app.<em><code>(10)</code> and
+<code>##</code>adp.</em><code>(2)</code> sections. Read §2–§3 of
 <code>README.md</code> for the scenario layout, the
 Pass/Fail/Blocked/N-A + Works/Surface-exact/Accessible boxes, and §5 for
 what <strong>[GATED]</strong> means.</p>
@@ -239,416 +217,315 @@ and both are <strong>N/A</strong>. The separate hands-free
 is out of scope here.</li>
 </ul>
 <hr />
-<h2 id="app-01--announcement-self-test-appannouncement_self_test">APP-01
+<h2 id="app-01-announcement-self-test-app.announcement_self_test">APP-01
 — Announcement Self-Test (<code>app.announcement_self_test</code>)</h2>
 <p><em>What &amp; why.</em> Answers “is anything actually reaching me?”
 It announces one test phrase on every channel, then shows exactly which
 channels delivered it and through which backend — the difference between
 “braille is broken” and “no display is connected.”</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open, any document. A screen reader running; optionally a
-braille display connected so you can see a second channel light up.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Command Palette</strong>
+<p><strong>Before you start</strong> - QUILL open, any document. A
+screen reader running; optionally a braille display connected so you can
+see a second channel light up.</p>
+<p><strong>Do this</strong> 1. Open the <strong>Command Palette</strong>
 (<strong>Ctrl+Shift+P</strong>) and run <strong>Announcement
-Self-Test…</strong> (there is no default shortcut).</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>You hear the phrase <strong>“QUILL announcement self-test.”</strong>
-spoken (and a sound plays). A report then opens (a copyable text
-surface) listing each channel — Speech, Braille, Visual, Transcript — as
-either <strong>“delivered, through <backend>.”</strong> or <strong>“not
-delivered”</strong> with a plain-English reason (e.g. “no display
-bridge”). It ends with a one-line summary, e.g. <strong>“The self-test
+Self-Test…</strong> (there is no default shortcut).</p>
+<p><strong>You should see and hear</strong> - You hear the phrase
+<strong>“QUILL announcement self-test.”</strong> spoken (and a sound
+plays). A report then opens (a copyable text surface) listing each
+channel — Speech, Braille, Visual, Transcript — as either
+<strong>“delivered, through <backend>.”</strong> or <strong>“not
+delivered”</strong> with a plain-English reason (e.g. “no display
+bridge”). It ends with a one-line summary, e.g. <strong>“The self-test
 reached 3 channels: speech, transcript, visual.”</strong> No status
-codes; prose you can read aloud.</li>
-</ul>
+codes; prose you can read aloud.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="app-02--command-palette-appcommand_palette-ctrlshiftp">APP-02 —
+<h2 id="app-02-command-palette-app.command_palette-ctrlshiftp">APP-02 —
 Command Palette… (<code>app.command_palette</code>, Ctrl+Shift+P)</h2>
 <p><em>What &amp; why.</em> The keyboard-first way to reach any command
 by name without hunting through menus. A <strong>double-press</strong>
 re-runs your last palette command.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open, any document.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Shift+P</strong> once. A search dialog
-opens.</li>
-<li>Type a few letters of a command name (e.g. <code>word count</code>);
-arrow to a result; press <strong>Enter</strong> to run it.</li>
-<li>Now press <strong>Ctrl+Shift+P</strong> <strong>twice
-quickly</strong> (within the multi-press window).</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A single press opens the palette: a labelled search field with a
-results list below; typing filters it live; focus starts in the field;
-<strong>Escape</strong> closes it and returns focus to the editor. The
-chosen command runs. A quick <strong>double-press</strong> does
-<strong>not</strong> reopen the palette — it re-runs the last command
-you ran from it, announced as it fires.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open, any document.</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Shift+P</strong> once.
+A search dialog opens. 2. Type a few letters of a command name
+(e.g. <code>word count</code>); arrow to a result; press
+<strong>Enter</strong> to run it. 3. Now press
+<strong>Ctrl+Shift+P</strong> <strong>twice quickly</strong> (within the
+multi-press window).</p>
+<p><strong>You should see and hear</strong> - A single press opens the
+palette: a labelled search field with a results list below; typing
+filters it live; focus starts in the field; <strong>Escape</strong>
+closes it and returns focus to the editor. The chosen command runs. A
+quick <strong>double-press</strong> does <strong>not</strong> reopen the
+palette — it re-runs the last command you ran from it, announced as it
+fires.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="app-03--change-display-language-appdisplay_language">APP-03 —
+<h2 id="app-03-change-display-language-app.display_language">APP-03 —
 Change Display Language… (<code>app.display_language</code>)</h2>
 <p><em>What &amp; why.</em> Choose the language for QUILL’s menus,
 dialogs, and messages. In 1.0.0 QUILL ships English only, so on a normal
 build this command’s job is to say so honestly rather than pretend to
 offer choices that are not installed.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open, any document. No community translations installed (the
-shipping state).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Command Palette</strong>
+<p><strong>Before you start</strong> - QUILL open, any document. No
+community translations installed (the shipping state).</p>
+<p><strong>Do this</strong> 1. Open the <strong>Command Palette</strong>
 (<strong>Ctrl+Shift+P</strong>) and run <strong>Change Display
-Language…</strong> (no default shortcut).</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>With no translations installed, an information dialog is announced
-saying QUILL is <strong>available in English only</strong> for now and
-that installed translations will appear here later;
+Language…</strong> (no default shortcut).</p>
+<p><strong>You should see and hear</strong> - With no translations
+installed, an information dialog is announced saying QUILL is
+<strong>available in English only</strong> for now and that installed
+translations will appear here later;
 <strong>OK</strong>/<strong>Escape</strong> dismisses it, nothing
 changes. If any translations <em>are</em> installed (dev/translated
 build), you instead get a keyboard-navigable chooser listing
 <strong>System default</strong> plus each installed language; the
 current one is pre-selected; choosing one saves it and announces the
 change (menus and already-built dialogs update after a restart, runtime
-announcements immediately).</li>
-</ul>
+announcements immediately).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="app-04--exit-appexit-ctrlq">APP-04 — Exit
+<h2 id="app-04-exit-app.exit-ctrlq">APP-04 — Exit
 (<code>app.exit</code>, Ctrl+Q)</h2>
 <p><em>What &amp; why.</em> Quit QUILL, guarding unsaved work on the way
 out.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open with <strong>one document that has an unsaved
-change</strong> (type a word in <code>plain.txt</code> and do not
-save).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Q</strong>, or <strong>File menu ▸ Exit</strong>
-(label <strong>Exit</strong>).</li>
-<li>At the unsaved-work guard, choose <strong>Cancel</strong> first
-(hear it), then repeat and choose <strong>Don’t Save</strong> /
-<strong>Save</strong> as appropriate.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Because there is unsaved work, a <strong>spoken
-confirmation</strong> appears offering Save / Don’t Save / Cancel (the
-universal keyboard contract, README §3 — no destructive close without a
-cancellable prompt). <strong>Cancel</strong> keeps QUILL open exactly as
-it was. Confirming closes the window and the app exits cleanly. With
-<strong>no</strong> unsaved work, Exit closes without a prompt.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open with <strong>one
+document that has an unsaved change</strong> (type a word in
+<code>plain.txt</code> and do not save).</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Q</strong>, or
+<strong>File menu ▸ Exit</strong> (label <strong>Exit</strong>). 2. At
+the unsaved-work guard, choose <strong>Cancel</strong> first (hear it),
+then repeat and choose <strong>Don’t Save</strong> /
+<strong>Save</strong> as appropriate.</p>
+<p><strong>You should see and hear</strong> - Because there is unsaved
+work, a <strong>spoken confirmation</strong> appears offering Save /
+Don’t Save / Cancel (the universal keyboard contract, README §3 — no
+destructive close without a cancellable prompt). <strong>Cancel</strong>
+keeps QUILL open exactly as it was. Confirming closes the window and the
+app exits cleanly. With <strong>no</strong> unsaved work, Exit closes
+without a prompt.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2
-id="app-05--open-the-media-player-appopen_media_player--gated">APP-05 —
-Open the Media Player (<code>app.open_media_player</code>) —
+<h2 id="app-05-open-the-media-player-app.open_media_player-gated">APP-05
+— Open the Media Player (<code>app.open_media_player</code>) —
 [GATED]</h2>
 <p><em>What &amp; why.</em> Launch the standalone <strong>Quill Media
 Player</strong> from inside QUILL, reusing the shared library/bookmarks
 rather than embedding a second player. The Media Player is a
 <strong>gated</strong> companion for 1.0.0.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Note whether you are on a public build or a developer build
-(<code>QUILL_DEV_BUILD=1</code>).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Look for <strong>Tools ▸ Media ▸ Media Player…</strong>, or search
-the Command Palette (<strong>Ctrl+Shift+P</strong>) for “Media
-Player”.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li><strong>Public build (expected): ABSENT.</strong> The command is
-<strong>not registered</strong> and the menu item does
-<strong>not</strong> appear, so it will not show in the palette either.
-Mark this <strong>N/A</strong> and record the real check in
+<p><strong>Before you start</strong> - Note whether you are on a public
+build or a developer build (<code>QUILL_DEV_BUILD=1</code>).</p>
+<p><strong>Do this</strong> 1. Look for <strong>Tools ▸ Media ▸ Media
+Player…</strong>, or search the Command Palette
+(<strong>Ctrl+Shift+P</strong>) for “Media Player”.</p>
+<p><strong>You should see and hear</strong> - <strong>Public build
+(expected): ABSENT.</strong> The command is <strong>not
+registered</strong> and the menu item does <strong>not</strong> appear,
+so it will not show in the palette either. Mark this
+<strong>N/A</strong> and record the real check in
 <strong><code>gated-absence.md</code></strong> — do not fail it for
-being missing.</li>
-<li><strong>Developer build only:</strong> the item appears (command
-label <strong>“Open the Media Player”</strong>; menu label
+being missing. - <strong>Developer build only:</strong> the item appears
+(command label <strong>“Open the Media Player”</strong>; menu label
 <strong>“Media Player…”</strong> — note the wording differs). Running it
 opens Quill Media Player in its own window (<strong>“Opening Quill Media
 Player.”</strong>); if it is not installed, QUILL offers to download it
-(Yes/No) or says it could not be opened — never a silent failure.</li>
-</ul>
+(Yes/No) or says it could not be opened — never a silent failure.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="app-06--open-quill-radio-appopen_radio">APP-06 — Open Quill
+<h2 id="app-06-open-quill-radio-app.open_radio">APP-06 — Open Quill
 Radio (<code>app.open_radio</code>)</h2>
 <p><em>What &amp; why.</em> Launch the standalone <strong>Quill
 Radio</strong> app in its own window and process. Radio is a
 <strong>released</strong> public sibling, so it is present in a normal
 build.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open. Quill Radio may or may not be installed alongside QUILL
-— both paths are worth seeing.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>QuillVille</strong> menu (in the menu bar, just
-before Help) and choose <strong>Open Quill Radio</strong>. (No default
-shortcut.)</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Quill Radio opens in its own window with its own system-tray icon;
-QUILL announces <strong>“Opening Quill Radio.”</strong> If Radio is
-already running it simply comes to the front (single-instance) rather
-than opening a second copy. If it is <strong>not</strong> installed,
-QUILL warmly offers to download and install it (Yes/No) — and on a
-source run says it could not be opened; it never fails silently and
-never disturbs the document you are in.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open. Quill Radio may or
+may not be installed alongside QUILL — both paths are worth seeing.</p>
+<p><strong>Do this</strong> 1. Open the <strong>QuillVille</strong> menu
+(in the menu bar, just before Help) and choose <strong>Open Quill
+Radio</strong>. (No default shortcut.)</p>
+<p><strong>You should see and hear</strong> - Quill Radio opens in its
+own window with its own system-tray icon; QUILL announces
+<strong>“Opening Quill Radio.”</strong> If Radio is already running it
+simply comes to the front (single-instance) rather than opening a second
+copy. If it is <strong>not</strong> installed, QUILL warmly offers to
+download and install it (Yes/No) — and on a source run says it could not
+be opened; it never fails silently and never disturbs the document you
+are in.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="app-07--open-quill-weather-appopen_weather">APP-07 — Open Quill
+<h2 id="app-07-open-quill-weather-app.open_weather">APP-07 — Open Quill
 Weather (<code>app.open_weather</code>)</h2>
 <p><em>What &amp; why.</em> Launch the standalone <strong>Quill
 Weather</strong> app in its own window and process. Weather is a
 <strong>released</strong> public sibling.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>QuillVille</strong> menu and choose <strong>Open
-Quill Weather</strong>. (No default shortcut.)</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Quill Weather opens in its own window; QUILL announces
-<strong>“Opening Quill Weather.”</strong> Already running → it comes
-forward instead of duplicating. Not installed → the same friendly Yes/No
-download offer as APP-06; never a silent failure. Confirm the QuillVille
-menu lists <strong>only</strong> released siblings (Radio, Weather) on a
-public build — Cast / Audio Studio / Converter must <strong>not</strong>
-appear (their absence is proven in <code>gated-absence.md</code>).</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open.</p>
+<p><strong>Do this</strong> 1. Open the <strong>QuillVille</strong> menu
+and choose <strong>Open Quill Weather</strong>. (No default
+shortcut.)</p>
+<p><strong>You should see and hear</strong> - Quill Weather opens in its
+own window; QUILL announces <strong>“Opening Quill Weather.”</strong>
+Already running → it comes forward instead of duplicating. Not installed
+→ the same friendly Yes/No download offer as APP-06; never a silent
+failure. Confirm the QuillVille menu lists <strong>only</strong>
+released siblings (Radio, Weather) on a public build — Cast / Audio
+Studio / Converter must <strong>not</strong> appear (their absence is
+proven in <code>gated-absence.md</code>).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="app-08--preferences-apppreferences-ctrl">APP-08 — Preferences…
+<h2 id="app-08-preferences-app.preferences-ctrl">APP-08 — Preferences…
 (<code>app.preferences</code>, Ctrl+,)</h2>
 <p><em>What &amp; why.</em> Open QUILL’s Settings — the one place to
 change how the app behaves, organized into categories with a search box
 and per-setting reset.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open, any document.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+,</strong> (Control plus comma), or
-<strong>File/Edit menu ▸ Preferences…</strong>.</li>
-<li>Tab through a category page; change one setting; use the search box
-to jump to a named setting; try a per-setting <strong>Reset</strong>.
-Confirm with the default button, or <strong>Escape</strong> to
-cancel.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A dialog titled <strong>Settings</strong> opens with a
-<strong>tabbed notebook</strong> of categories (announced as “Settings
-categories”); every field is labelled and reachable by keyboard; the
-search box jumps focus to a matching control; a per-setting Reset
-restores that one default. Saving applies and announces the change;
-<strong>Escape</strong> cancels with no change and returns focus to the
-editor.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open, any document.</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+,</strong> (Control
+plus comma), or <strong>File/Edit menu ▸ Preferences…</strong>. 2. Tab
+through a category page; change one setting; use the search box to jump
+to a named setting; try a per-setting <strong>Reset</strong>. Confirm
+with the default button, or <strong>Escape</strong> to cancel.</p>
+<p><strong>You should see and hear</strong> - A dialog titled
+<strong>Settings</strong> opens with a <strong>tabbed notebook</strong>
+of categories (announced as “Settings categories”); every field is
+labelled and reachable by keyboard; the search box jumps focus to a
+matching control; a per-setting Reset restores that one default. Saving
+applies and announces the change; <strong>Escape</strong> cancels with
+no change and returns focus to the editor.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="app-09--repeat-last-announcement-apprepeat_last_announcement">APP-09
+id="app-09-repeat-last-announcement-app.repeat_last_announcement">APP-09
 — Repeat Last Announcement
 (<code>app.repeat_last_announcement</code>)</h2>
 <p><em>What &amp; why.</em> “What did it just say?” Speech is gone the
 moment it finishes; this re-announces the most recent message so you can
 catch it again.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open. First trigger any announcement (e.g.
-<strong>Ctrl+S</strong> to save, or move the cursor so a status is
-spoken) so there is something to repeat.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Command Palette</strong>
+<p><strong>Before you start</strong> - QUILL open. First trigger any
+announcement (e.g. <strong>Ctrl+S</strong> to save, or move the cursor
+so a status is spoken) so there is something to repeat.</p>
+<p><strong>Do this</strong> 1. Open the <strong>Command Palette</strong>
 (<strong>Ctrl+Shift+P</strong>) and run <strong>Repeat Last
-Announcement</strong> (no default shortcut).</li>
-<li>As a negative check, restart QUILL and run it again
-<strong>before</strong> anything else has been announced.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The most recent announcement is spoken again,
-<strong>forcefully</strong> — it cuts across whatever the reader is
-currently saying (this one you asked for) — and reaches every available
-channel, including braille. On the negative check, instead of silence
-you hear <strong>“No announcement to repeat yet.”</strong></li>
-</ul>
+Announcement</strong> (no default shortcut). 2. As a negative check,
+restart QUILL and run it again <strong>before</strong> anything else has
+been announced.</p>
+<p><strong>You should see and hear</strong> - The most recent
+announcement is spoken again, <strong>forcefully</strong> — it cuts
+across whatever the reader is currently saying (this one you asked for)
+— and reaches every available channel, including braille. On the
+negative check, instead of silence you hear <strong>“No announcement to
+repeat yet.”</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="app-10--report-editor-surface-appreport_editor_surface">APP-10 —
+<h2 id="app-10-report-editor-surface-app.report_editor_surface">APP-10 —
 Report Editor Surface (<code>app.report_editor_surface</code>)</h2>
 <p><em>What &amp; why.</em> A spoken bug-report helper for someone who
 cannot screenshot: in one keystroke it says which editor surface, native
 window class, emulation state, and braille bridge are live.
 <strong>Content-free</strong> — nothing from your document is
 spoken.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open with any document.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Command Palette</strong>
+<p><strong>Before you start</strong> - QUILL open with any document.</p>
+<p><strong>Do this</strong> 1. Open the <strong>Command Palette</strong>
 (<strong>Ctrl+Shift+P</strong>) and run <strong>Report Editor
-Surface</strong> (no default shortcut).</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A single spoken (and status-bar) line naming the diagnostic state,
-e.g. <strong>“Editor surface … Native class … System edit emulation
-on/off. Braille system edit fix on/off. Editor border shown/hidden.
-Braille output active/inactive/no display bridge. Announcement backend
-….”</strong> Confirm it names a real backend and a sensible braille
-state, and that <strong>no words from your document</strong> are
-read.</li>
-</ul>
+Surface</strong> (no default shortcut).</p>
+<p><strong>You should see and hear</strong> - A single spoken (and
+status-bar) line naming the diagnostic state, e.g. <strong>“Editor
+surface … Native class … System edit emulation on/off. Braille system
+edit fix on/off. Editor border shown/hidden. Braille output
+active/inactive/no display bridge. Announcement backend ….”</strong>
+Confirm it names a real backend and a sensible braille state, and that
+<strong>no words from your document</strong> are read.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="adp-01--adp-ask-about-described-movies-and-tv-adpask--gated-futureadp_assistant-default-on">ADP-01
+id="adp-01-adp-ask-about-described-movies-and-tv-adp.ask-gated-future.adp_assistant-default-on">ADP-01
 — ADP: Ask about Described Movies and TV… (<code>adp.ask</code>) —
 [GATED <code>future.adp_assistant</code>, default ON]</h2>
 <p><em>What &amp; why.</em> Ask a natural-language question about
 <strong>audio-described</strong> films, series, and TV and get a short,
 speakable answer plus a navigable table of results. The ADP brain runs
 on a server; the answer text is fetched from it.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>The flag <strong><code>future.adp_assistant</code></strong> is
+<p><strong>Before you start</strong> - The flag
+<strong><code>future.adp_assistant</code></strong> is
 <strong>on</strong> (the default): the top-level <strong>Audio
 Description Project</strong> menu is present. If a profile has turned it
 off, the whole menu is gone — mark <strong>N/A</strong>. Network
-available (the query reaches the ADP server). Not in Safe Mode.</li>
-<li>A question to type:
-<strong><code>what described comedies are on Netflix</code></strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Audio Description Project</strong> menu ▸
-<strong>Ask ADP…</strong>, or the Command Palette
-(<strong>Ctrl+Shift+P</strong>) → “ADP: Ask about Described Movies and
-TV”.</li>
-<li>Type the question into the labelled field; press the
-<strong>Ask</strong> button (Alt+A) or Enter.</li>
-<li>Try <strong>New Conversation</strong> to clear context, then Escape
-to close.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A dialog titled <strong>“Ask ADP — Audio Description
-Search”</strong> opens with a labelled question field, an
-<strong>Ask</strong> button, and a <strong>New Conversation</strong>
-button. On Ask you hear <strong>“Asking ADP…”</strong>; when the answer
-returns, <strong>focus moves to a read-only answer region</strong> (a
-focus-managed region, deliberately <strong>not</strong> a live region)
-so the reader speaks the answer, and the structured results fill a
-navigable table with a row-count status. In <strong>Safe Mode</strong>,
-running it instead says <strong>“The ADP Assistant is disabled in Safe
-Mode.”</strong> and does nothing else.</li>
-</ul>
+available (the query reaches the ADP server). Not in Safe Mode. - A
+question to type:
+<strong><code>what described comedies are on Netflix</code></strong>.</p>
+<p><strong>Do this</strong> 1. Open the <strong>Audio Description
+Project</strong> menu ▸ <strong>Ask ADP…</strong>, or the Command
+Palette (<strong>Ctrl+Shift+P</strong>) → “ADP: Ask about Described
+Movies and TV”. 2. Type the question into the labelled field; press the
+<strong>Ask</strong> button (Alt+A) or Enter. 3. Try <strong>New
+Conversation</strong> to clear context, then Escape to close.</p>
+<p><strong>You should see and hear</strong> - A dialog titled
+<strong>“Ask ADP — Audio Description Search”</strong> opens with a
+labelled question field, an <strong>Ask</strong> button, and a
+<strong>New Conversation</strong> button. On Ask you hear
+<strong>“Asking ADP…”</strong>; when the answer returns, <strong>focus
+moves to a read-only answer region</strong> (a focus-managed region,
+deliberately <strong>not</strong> a live region) so the reader speaks
+the answer, and the structured results fill a navigable table with a
+row-count status. In <strong>Safe Mode</strong>, running it instead says
+<strong>“The ADP Assistant is disabled in Safe Mode.”</strong> and does
+nothing else.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="adp-02--adp-settings-adpsettings--gated-futureadp_assistant-default-on">ADP-02
+id="adp-02-adp-settings-adp.settings-gated-future.adp_assistant-default-on">ADP-02
 — ADP: Settings… (<code>adp.settings</code>) — [GATED
 <code>future.adp_assistant</code>, default ON]</h2>
 <p><em>What &amp; why.</em> Configure the ADP assistant: its server
 address, an optional client access key (kept in the OS credential vault,
 never in plain settings), your first name for personalized answers, and
 whether answers speak automatically.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Same flag as ADP-01 (menu present when
-<code>future.adp_assistant</code> is on, else
-<strong>N/A</strong>).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Audio Description Project</strong> menu ▸
-<strong>ADP Settings…</strong>, or the Command Palette → “ADP:
-Settings”.</li>
-<li>Tab through the fields. Confirm the <strong>Server address</strong>,
-<strong>Client access key</strong> (masked), and <strong>first
-name</strong> fields and the <strong>Speak answers
-automatically</strong> checkbox. Change nothing invalid; press
-<strong>Save</strong>.</li>
-<li>As a negative check, set the server address to a value
-<strong>not</strong> starting with <code>https://</code> and press
-Save.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A dialog titled <strong>“ADP Settings”</strong> with every field
-labelled and keyboard-complete: server address (https-only), a
+<p><strong>Before you start</strong> - Same flag as ADP-01 (menu present
+when <code>future.adp_assistant</code> is on, else
+<strong>N/A</strong>).</p>
+<p><strong>Do this</strong> 1. Open the <strong>Audio Description
+Project</strong> menu ▸ <strong>ADP Settings…</strong>, or the Command
+Palette → “ADP: Settings”. 2. Tab through the fields. Confirm the
+<strong>Server address</strong>, <strong>Client access key</strong>
+(masked), and <strong>first name</strong> fields and the <strong>Speak
+answers automatically</strong> checkbox. Change nothing invalid; press
+<strong>Save</strong>. 3. As a negative check, set the server address to
+a value <strong>not</strong> starting with <code>https://</code> and
+press Save.</p>
+<p><strong>You should see and hear</strong> - A dialog titled
+<strong>“ADP Settings”</strong> with every field labelled and
+keyboard-complete: server address (https-only), a
 <strong>masked</strong> access-key field whose help says leaving it
 blank uses the built-in key, a first-name field, and a <strong>Speak
 answers automatically</strong> checkbox. <strong>Save</strong> persists
@@ -659,8 +536,7 @@ spoken <strong>“The server address must start with https; not
 saved.”</strong> The hands-free “Route spoken questions to ADP” checkbox
 is <strong>hidden</strong> unless the separate
 <code>future.adp_voice_mode</code> unlock is active — its absence here
-is correct.</li>
-</ul>
+is correct.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -678,6 +554,5 @@ is correct.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
-</main>
 </body>
 </html>

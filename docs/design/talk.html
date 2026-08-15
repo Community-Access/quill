@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>talk.md — Always-On Voice ("Hey Player") Specification</title>
+  <title>talk</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,30 +174,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="talkmd--always-on-voice-hey-player-specification">talk.md —
+<h1 id="talk.md-always-on-voice-hey-player-specification">talk.md —
 Always-On Voice (“Hey Player”) Specification</h1>
 <blockquote>
 <p><strong>The one decisive question:</strong> are we willing to keep a
@@ -214,29 +193,25 @@ directly. It reuses the offline stack that already ships (#617) and the
 push-to-talk feature already built for the player; it adds only the
 <em>continuous</em> listening loop and the wake-phrase gate in front of
 it.</p>
-<p>Status of the pieces this builds on (all shipping today):</p>
-<ul>
-<li><strong>Push-to-talk in the player</strong> —
+<p>Status of the pieces this builds on (all shipping today): -
+<strong>Push-to-talk in the player</strong> —
 <code>quill/ui/media/listen_mixin.py</code>,
 <code>quill/ui/media/voice_capture.py</code> (capture → transcribe →
-parse → dispatch).</li>
-<li><strong>The command grammar</strong> —
+parse → dispatch). - <strong>The command grammar</strong> —
 <code>quill/core/media/voice.py</code>
 (<code>parse_voice_command</code>),
 <code>quill/ui/media/voice_control.py</code>
-(<code>apply_voice_intent</code>).</li>
-<li><strong>The wake-word policy engine</strong> —
-<code>quill/core/speech/wakeword.py</code>
+(<code>apply_voice_intent</code>). - <strong>The wake-word policy
+engine</strong> — <code>quill/core/speech/wakeword.py</code>
 (<code>WakeController</code>), already used by the editor’s “Hey QUILL”.
 Pure, wx-free, string-driven, fully unit-testable. <strong>This spec’s
-core reuses it unchanged.</strong></li>
-<li><strong>Offline recognition</strong> — <code>MicRecorder</code>,
-<code>VoiceServices</code>, Whisper/Nemotron/Vosk.</li>
-<li><strong>The safety allowlist</strong> — voice only ever reaches
-non-destructive commands.</li>
-</ul>
+core reuses it unchanged.</strong> - <strong>Offline
+recognition</strong> — <code>MicRecorder</code>,
+<code>VoiceServices</code>, Whisper/Nemotron/Vosk. - <strong>The safety
+allowlist</strong> — voice only ever reaches non-destructive
+commands.</p>
 <hr />
-<h2 id="1-goal-and-the-one-hard-problem">1. Goal, and the one hard
+<h2 id="goal-and-the-one-hard-problem">1. Goal, and the one hard
 problem</h2>
 <p><strong>Goal.</strong> Let a user say a wake phrase — <em>“Hey
 Player”</em> — and then a command (<em>“next chapter”</em>, <em>“skip
@@ -256,8 +231,7 @@ on demand, and around never letting that state persist silently.</p>
 wake-word training/personalization; any cloud recognition; running when
 the player is not the foreground intent.</p>
 <hr />
-<h2 id="2-the-shape-a-two-stage-gate">2. The shape: a two-stage
-gate</h2>
+<h2 id="the-shape-a-two-stage-gate">2. The shape: a two-stage gate</h2>
 <p>Always-on voice is two nested listeners:</p>
 <pre><code>        ┌─────────────────────────  ALWAYS-LISTENING LOOP  ─────────────────────────┐
         │                                                                            │
@@ -293,7 +267,7 @@ capture and feed the trailing text straight through.</p>
 loop</strong> and its <strong>accessibility skin</strong>. That is the
 whole job.</p>
 <hr />
-<h2 id="3-the-wake-phrase">3. The wake phrase</h2>
+<h2 id="the-wake-phrase">3. The wake phrase</h2>
 <ul>
 <li><strong>Default:</strong> <code>"hey player"</code>. Configurable to
 <code>"hey quill"</code> (shared with the editor loop) or a user phrase,
@@ -317,12 +291,12 @@ prevents the wake utterance’s own tail from re-triggering
 (<code>WakeController.cooldown_windows</code>).</li>
 </ul>
 <hr />
-<h2 id="4-recognition-pipeline--endpointing">4. Recognition pipeline
-&amp; endpointing</h2>
+<h2 id="recognition-pipeline-endpointing">4. Recognition pipeline &amp;
+endpointing</h2>
 <p>There are two implementable engines behind the same
 <code>WakeController</code>. Ship the first; the second is the
 documented performance upgrade.</p>
-<h3 id="4a-transcription-based-wake-v1--buildable-today">4a.
+<h3 id="a.-transcription-based-wake-v1-buildable-today">4a.
 Transcription-based wake (v1 — buildable today)</h3>
 <p>Continuously record short rolling windows (~2.5 s, ~0.5 s overlap),
 transcribe each with the small Whisper/Nemotron model already resolved
@@ -345,7 +319,7 @@ from the start.)</li>
 elsewhere).</li>
 </ul>
 <h3
-id="4b-low-power-keyword-spotter-v2--the-real-destination-part-two">4b.
+id="b.-low-power-keyword-spotter-v2-the-real-destination-part-two">4b.
 Low-power keyword spotter (v2 — the real destination, “Part Two”)</h3>
 <p>Replace the “transcribe every window” front end with a
 <strong>three-tier cascade</strong> so the expensive model almost never
@@ -468,7 +442,7 @@ transcription-based always-on first, settings and docs state plainly
 that it uses more CPU/battery than push-to-talk, and that this cascade
 is the fix.</p>
 <hr />
-<h2 id="5-state-machine">5. State machine</h2>
+<h2 id="state-machine">5. State machine</h2>
 <p>Reuse <code>WakeState</code> (<code>OFF | LISTENING | WOKEN</code>)
 and extend the player’s own listening states for the command stage. Full
 lifecycle:</p>
@@ -488,7 +462,7 @@ lifecycle:</p>
 → TRANSCRIBING by feeding the trailing text directly (no command capture
 window).</p>
 <hr />
-<h2 id="6-accessibility--the-specifications-core">6. Accessibility — the
+<h2 id="accessibility-the-specifications-core">6. Accessibility — the
 specification’s core</h2>
 <p>This is not a section; it is the reason the feature is hard.
 Requirements are <strong>MUST</strong> unless noted. They extend the
@@ -498,7 +472,7 @@ player already follows. Route <strong>all</strong> speech through the
 app’s <code>_announce(message, *, force, sound)</code> so braille
 mirroring and screen-reader-aware interrupt/queue come for free — never
 a second TTS path.</p>
-<h3 id="61-the-live-mic-state-must-be-continuously-perceivable">6.1 The
+<h3 id="the-live-mic-state-must-be-continuously-perceivable">6.1 The
 live-mic state must be continuously perceivable</h3>
 <ul>
 <li><strong>Open/close earcons (MUST).</strong> A distinct rising cue
@@ -523,11 +497,17 @@ braille mirrors it persistently via <code>_announce</code>.</li>
 <code>wx.ITEM_CHECK</code> item; its checkmark mirrors the armed state,
 giving a role-native second signal the reader announces.</li>
 </ul>
-<h3 id="62-the-wake-and-command-moments">6.2 The wake and command
+<h3 id="the-wake-and-command-moments">6.2 The wake and command
 moments</h3>
 <p>Announcement/earcon/interrupt table (extends the push-to-talk
 <code>event_style</code>):</p>
 <table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr>
 <th>Moment</th>
@@ -599,7 +579,7 @@ thirty.”</td>
 politely behind the reader; failures interrupt; echo the transcript
 <strong>only</strong> on failure.</p>
 <h3
-id="63-the-screen-reader-captures-itself-problem-amplified-by-always-on">6.3
+id="the-screen-reader-captures-itself-problem-amplified-by-always-on">6.3
 The screen-reader-captures-itself problem (amplified by always-on)</h3>
 <p>With a mic open continuously, the screen reader’s own speech and the
 audiobook are <em>always</em> candidates to be transcribed as a false
@@ -620,7 +600,7 @@ mic.</li>
 entire feature is transient announcements + status text + braille. Focus
 stays where the user put it.</li>
 </ul>
-<h3 id="64-instant-reliable-off">6.4 Instant, reliable off</h3>
+<h3 id="instant-reliable-off">6.4 Instant, reliable off</h3>
 <ul>
 <li>Re-invoking the toggle, saying the stop phrase, closing the app, or
 entering Safe Mode all stop always-listening immediately and play
@@ -630,7 +610,7 @@ the user explicitly opts into persistence (and even then, never across
 Safe Mode).</li>
 </ul>
 <hr />
-<h2 id="7-performance-battery-and-honesty">7. Performance, battery, and
+<h2 id="performance-battery-and-honesty">7. Performance, battery, and
 honesty</h2>
 <p>Transcription-based always-on runs the STT model on every window —
 real CPU, real battery, real heat on a laptop. This spec
@@ -655,8 +635,7 @@ fall back to OFF with a clear announcement — never a silent dead loop
 that looks armed but hears nothing.</li>
 </ul>
 <hr />
-<h2 id="8-privacy-consent-and-safety">8. Privacy, consent, and
-safety</h2>
+<h2 id="privacy-consent-and-safety">8. Privacy, consent, and safety</h2>
 <ul>
 <li><strong>On-device only.</strong> No audio and no transcript leaves
 the machine. No network call is on this path; the network-egress audit
@@ -677,10 +656,15 @@ send, or overwrite anything.</li>
 user must never be able to <em>forget</em> it is on.</li>
 </ul>
 <hr />
-<h2 id="9-settings">9. Settings</h2>
+<h2 id="settings">9. Settings</h2>
 <p>All with real static-text labels; all off/conservative by
 default.</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Setting</th>
@@ -733,7 +717,7 @@ default.</p>
 </tbody>
 </table>
 <hr />
-<h2 id="10-proposed-module-layout">10. Proposed module layout</h2>
+<h2 id="proposed-module-layout">10. Proposed module layout</h2>
 <p>Keep the wx-free policy pure and testable; keep the wx loop thin.</p>
 <ul>
 <li><strong>Reused unchanged:</strong>
@@ -763,7 +747,7 @@ Commands</em> (<code>wx.ITEM_CHECK</code>), an optional accelerator, and
 a keymap entry so it shows in Preferences.</li>
 </ul>
 <hr />
-<h2 id="11-edge-cases">11. Edge cases</h2>
+<h2 id="edge-cases">11. Edge cases</h2>
 <ul>
 <li><strong>Wake fires on the audiobook’s narration</strong> → duck +
 uncommon phrase + cooldown; a false wake that captures no real command
@@ -785,7 +769,7 @@ always-on) → mutually exclusive; starting one suspends the other.</li>
 listening,” plays <code>CONVERSATION_OFF</code>.</li>
 </ul>
 <hr />
-<h2 id="12-testing">12. Testing</h2>
+<h2 id="testing">12. Testing</h2>
 <ul>
 <li><strong>Pure policy (no audio):</strong> <code>WakeController</code>
 is already covered; add player-specific tests for the effect→intent
@@ -806,7 +790,7 @@ persistence of the armed state. This is the promotion gate and cannot be
 faked headless.</li>
 </ul>
 <hr />
-<h2 id="13-phased-rollout">13. Phased rollout</h2>
+<h2 id="phased-rollout">13. Phased rollout</h2>
 <ol type="1">
 <li><strong>P1 — Wake gate on the built pipeline.</strong> Continuous
 rolling-window loop feeding <code>WakeController</code>; bare-wake → the
@@ -824,7 +808,7 @@ loop/config across the editor and the player; one wake-phrase setting;
 consistent cues everywhere.</li>
 </ol>
 <hr />
-<h2 id="14-open-questions">14. Open questions</h2>
+<h2 id="open-questions">14. Open questions</h2>
 <ol type="1">
 <li><strong>Default wake phrase</strong> — “hey player” (app-specific,
 distinct) vs “hey quill” (one phrase family-wide)? Recommendation:
@@ -841,8 +825,8 @@ offer always-on, do they coordinate the microphone, or is it
 last-armed-wins with a clear announcement?</li>
 </ol>
 <hr />
-<h2 id="15-what-this-reuses-vs-adds-summary">15. What this reuses vs
-adds (summary)</h2>
+<h2 id="what-this-reuses-vs-adds-summary">15. What this reuses vs adds
+(summary)</h2>
 <p><strong>Reused, unchanged:</strong> <code>WakeController</code>
 (policy), <code>extract_transcript_body</code> (phrase match), the
 command grammar + dispatch, <code>build_media_voice_services</code>
@@ -858,6 +842,5 @@ affordable.</p>
 capture loop and, above all, making a mic that never sleeps something a
 blind user can always hear, review, and trust — which is the whole point
 of doing it right.</p>
-</main>
 </body>
 </html>

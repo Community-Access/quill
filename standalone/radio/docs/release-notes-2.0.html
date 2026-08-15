@@ -518,15 +518,19 @@ while keeping your chosen mode. It levels, adds density, and limits, so
 a run of stations at wildly different loudness sits at a steadier,
 fuller level – especially nice for talk streams and unattended
 recordings. This is adapted, with thanks and full credit, from
-<strong>OptiLab Core by dgl1984</strong> (<a
-href="https://github.com/dgl1984/optilab">github.com/dgl1984/optilab</a>,
-Apache-2.0). OptiLab itself is a GUI-only plugin (JSFX/CLAP/Winamp DSP)
-with no library to call, so rather than embedding its Windows-only
-binary we reproduce the shape of its three modes as ffmpeg filter chains
-that ride the same pipeline as the rest of Sound Enhancements – so it
-previews live on the default engine, applies to recordings, and works
-cross-platform. It’s a faithful adaptation, not a bit-for-bit port of
-OptiLab’s custom DSP; if you want the exact plugin, grab it from
+<strong>OptiLab Core by Lanes Audio / dgl1984</strong> (<a
+href="https://github.com/dgl1984/optilab">github.com/dgl1984/optilab</a>;
+Apache-2.0 with the Commons Clause from upstream v1.3.0). <em>Corrected
+2026-08-13: these notes originally said OptiLab was a GUI-only plugin
+with no library to call and a Windows-only binary. That was wrong –
+OptiLab Core has shipped a framework-independent C++ library since
+v1.2.0, and Quill Radio 2.2.0 can run that engine itself. What follows
+describes the built-in version, which is still what runs by
+default.</em> We reproduce the shape of its three modes as ffmpeg filter
+chains that ride the same pipeline as the rest of Sound Enhancements –
+so it previews live on the default engine, applies to recordings, and
+works cross-platform. It’s a faithful adaptation, not a bit-for-bit port
+of OptiLab’s custom DSP; if you want the exact plugin, grab it from
 dgl1984’s repository.</li>
 <li><strong>Record as many stations at once as you want.</strong> Until
 now the recorder held exactly one recording at a time. If you scheduled

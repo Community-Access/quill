@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Consolidating Quill Radio and Quill Cast into quill —
-safely</title>
+  <title>2026-07-20-radio-cast-consolidation-plan</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,31 +174,10 @@ safely</title>
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
-id="consolidating-quill-radio-and-quill-cast-into-quill--safely">Consolidating
+id="consolidating-quill-radio-and-quill-cast-into-quill-safely">Consolidating
 Quill Radio and Quill Cast into quill — safely</h1>
 <p>Date: 2026-07-20. Companion to the Audio Studio reverse-vendor
 (<code>2026-07-17-audio-studio-migration-audit.md</code> §25) and the
@@ -245,7 +223,7 @@ packaging. They cannot drift from quill because they build
 beyond tidying, and one genuinely hard step (retiring the repos) that
 must be tiered.</p>
 <h2 id="tiered-plan">Tiered plan</h2>
-<h3 id="tier-0--tidy-now-safe-no-user-impact--done-this-pass">Tier 0 —
+<h3 id="tier-0-tidy-now-safe-no-user-impact-done-this-pass">Tier 0 —
 tidy now (safe, no user impact) — DONE THIS PASS</h3>
 <ol type="1">
 <li><strong>Move the open issues to quill</strong>, where the code and
@@ -270,22 +248,19 @@ under Tier 2 do its docs move to quill — at that point there is one
 copy, not two.)</li>
 </ol>
 <h3
-id="tier-1--the-consolidated-steady-state-safe--recommended-end-state">Tier
+id="tier-1-the-consolidated-steady-state-safe-recommended-end-state">Tier
 1 — the consolidated steady state (safe) — RECOMMENDED END STATE</h3>
 <p>Keep the <code>quill-radio</code> and <code>quill-cast</code> repos
 as <strong>thin release-and-build shells</strong>: launcher + spec +
-installer + docs + <code>quill @ tag</code> pin. They:</p>
-<ul>
-<li>host the GitHub releases users download and the updater polls,</li>
-<li>build the standalone products,</li>
-<li>cannot drift from quill (no code of their own).</li>
-</ul>
+installer + docs + <code>quill @ tag</code> pin. They: - host the GitHub
+releases users download and the updater polls, - build the standalone
+products, - cannot drift from quill (no code of their own).</p>
 <p>This is the same shape as the target Audio Studio wrapper. There is
 nothing unsafe here and nothing more that <em>needs</em> doing — the
 family is already one codebase. Do <strong>not</strong> delete these
 repos in this tier.</p>
 <h3
-id="tier-2--retiring-a-wrapper-repo-deferred-only-if-going-quill-only">Tier
+id="tier-2-retiring-a-wrapper-repo-deferred-only-if-going-quill-only">Tier
 2 — retiring a wrapper repo (deferred; only if going QUILL-only)</h3>
 <p>Only pursue this if the decision is to stop shipping a standalone
 product and make it QUILL-only. It is a <strong>multi-release,
@@ -293,7 +268,7 @@ multi-month migration</strong>, never an abrupt delete, because existing
 installs poll the old repo until they update:</p>
 <ol type="1">
 <li><strong>Repoint the updater</strong> in quill: change
-<code>_REPO</code> to a repo that will persist (e.g. a single long-lived
+<code>_REPO</code> to a repo that will persist (e.g. a single long-lived
 <code>Community-Access/quill-releases</code>, or the quill repo’s own
 releases), and give the updater a small fallback that tries the new
 target and then the old.</li>
@@ -324,6 +299,5 @@ thin release shells, no drift, updates intact. Treat <strong>Tier
 2</strong> (deleting a repo) as a deliberate, migration-gated project,
 not a cleanup — and even then, <em>archive</em> rather than delete, so
 no user’s update check ever 404s.</p>
-</main>
 </body>
 </html>

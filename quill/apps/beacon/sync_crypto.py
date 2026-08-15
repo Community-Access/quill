@@ -8,7 +8,7 @@ keep working unchanged.
 
 from __future__ import annotations
 
-from quill.apps.beacon.quillsync.crypto import (  # noqa: F401  # noqa: F401
+from quill.core.sync.crypto import (  # noqa: F401  # noqa: F401
     VaultKey,
     _b64,
     _unb64,

@@ -343,7 +343,7 @@ The **File** menu is the full document lifecycle.
 - **Save All** writes every modified open document.
 - **Save As Plain Text...** exports a clean plain-text version. Because plain text has no links, **Settings → Editing → Links in plain-text export** controls how Markdown links are written: keep the link text and its URL (the default, so you never lose where a link pointed), the link text only, the URL only, or the original Markdown link. This setting also applies whenever Save As writes a `.txt` file. If the document carries hidden formatting (fonts, colours, alignment), Quill offers to keep it with an **Illumination** — see below.
 
-##### Keeping formatting in a plain-text file: Illuminations
+#### Keeping formatting in a plain-text file: Illuminations
 
 A plain `.txt` file has nowhere to store fonts, colours, or alignment, so saving formatted text as plain text normally drops the formatting. Quill gives you a choice, named after the decorative layer a scribe paints over a manuscript: an **Illumination** is a small companion file, `yourfile.txt.illumination`, that holds the formatting beside the clean text. Your `.txt` stays genuinely plain — readable in Notepad, e-mail, or anywhere — and when you reopen it *in Quill*, the matching Illumination restores every font, colour, and alignment exactly.
 
@@ -4451,7 +4451,7 @@ drifts to the wrong spot the way a plain position marker would. If the bookmarke
 was itself deleted, the jump falls back to the remembered position. This works for
 named bookmarks and the numbered quick bookmarks alike, and needs nothing from you.
 
-##### Temporary bookmark (one keystroke, no dialog)
+#### Temporary bookmark (one keystroke, no dialog)
 
 For the times you just want to mark "right here" and come straight back — no name,
 no picker, no dialog — use the temporary bookmark. Both commands are on the
@@ -6464,14 +6464,17 @@ The manager also has **Import** and **Export** buttons for JSON round-trips. Exp
 - `${field:Label}` asks for a value with that label.
 - `${field:Label=something}` offers a starting value you can accept or replace.
 - The same label used twice is asked once and filled everywhere, so a name in the greeting also lands in the sign-off.
+- `${choice:Label|first reminder|second reminder|final notice}` offers a list to pick from instead of a box to type in. Use it wherever the answer is one of a known few: picking is one arrow key, and typing "Second reminder" exactly right is a spelling test nobody asked to sit. The first option is the default, so a choice left alone behaves like a field with a starting value.
 
-A small form appears with one labelled box per field, in the order the template asks for them. Tab moves between them, Enter moves to the next, Enter on the last accepts, and Escape cancels — and cancelling leaves what you typed exactly as it was. `${cursor}` still works alongside fields: the caret lands where the template put it, after the answers are in. The same form appears in Quill Inkwell, so a template behaves identically wherever you use it.
+A small form appears with one labelled control per field -- a box to type in, or a list to choose from -- in the order the template asks for them, which is the order it reads in. Tab moves between them, Enter moves to the next, Enter on the last accepts, and Escape cancels — and cancelling leaves what you typed exactly as it was. `${cursor}` still works alongside fields: the caret lands where the template put it, after the answers are in. The same form appears in Quill Inkwell, so a template behaves identically wherever you use it.
 
 **Multi-press window.** The double/triple press detection window is configurable in `Tools > Customize & Support > Preferences > Editing` as **Multi-press window (ms)** (default 400 ms; range 100–1000 ms). A larger window helps if you press keys slowly; a smaller window prevents accidental double-fires for fast typists.
 
 **Sound feedback.** Optional: enable **Play sound on abbreviation expansion** in `Tools > Customize & Support > Preferences > Editing` and optionally point **Abbreviation expansion sound file** to a `.wav` file. Leave the path blank for the default system beep.
 
-**Quillin-contributed abbreviations.** Installed Quillins can add their own abbreviations to the registry. Each one can be turned on or off individually in the Quillin's own preferences page (open **Preferences**, Ctrl+Comma, then navigate to the Quillin by name — for the bundled Smart Insert Quillin, the toggles are on its **Abbreviations** tab). Contributed abbreviations are kept separate from your saved library and are never written into it. Your own abbreviations always take priority over Quillin-contributed ones; if two Quillins claim the same trigger, the one loaded first wins.
+**Abbreviations that only fire in certain applications.** An abbreviation can be limited to named applications -- a signature to your mail client, a code snippet to your editor -- by listing them in the abbreviation's **Applications** field. Leave it empty, as every abbreviation is by default, and it fires everywhere. This only applies to Quill Inkwell, which types into whatever application you are in; inside QUILL there is one application, so scoping to it could only ever switch an entry off. A scoped abbreviation deliberately does **not** fire when Inkwell cannot tell which application is in front: the safe answer to "I do not know where this would land" is not to type into it.
+
+**Quillin-contributed abbreviations.** Installed Quillins can add their own abbreviations to the registry. Each one can be turned on or off individually in the Quillin's own preferences page (open **Preferences**, Ctrl+Comma, then navigate to the Quillin by name — for the bundled Smart Insert Quillin, the toggles are on its **Abbreviations** tab). Contributed abbreviations are kept separate from your saved library and are never written into it, so removing a Quillin takes its abbreviations with it. Your own abbreviations always take priority over Quillin-contributed ones; if two Quillins claim the same trigger, the one loaded first wins. **They work in other applications too**, through Quill Inkwell -- a Quillin that adds a set of medical abbreviations or company boilerplate should not stop at the edge of the editor.
 
 The bundled **Smart Insert** Quillin contributes four expanding abbreviations by default:
 
@@ -8326,6 +8329,8 @@ If you don't have them, **Help > Download Optional Components** has two rows for
 
 Internet radio plays live streams in the background — the station browser, favorites, recording, scheduling, and everything else described in this chapter. In QUILL 1.0.0 it runs as the standalone **Quill Radio** app rather than inside the editor; see *Quill Radio: the standalone app* (below) for how to launch it. It is disabled entirely in Safe Mode, since it is a network feature.
 
+> **The browsing described in this chapter is the older, in-editor dialog.** Quill Radio 3.0 replaced it with a tree of twenty-eight branches you can wander without searching for anything: the station directory by country, by language, by what is trending today; podcasts by country and genre with no account anywhere; and whole libraries — the Internet Archive, LibriVox, Project Gutenberg, Audius, Mixcloud, ccMixter — plus browse axes drawn from Wikidata (by city, owner, network, format, or where a station sits on the dial). None of it needs a key or a sign-in. It is all documented in the **Quill Radio User Guide**, which the standalone app opens from its own Help menu.
+
 ### Finding and playing a station
 
 **Browse Stations...** opens a search-and-browse dialog:
@@ -8424,6 +8429,59 @@ Sound Enhancements is remembered **per favorite station**: open it while a favor
 ### What's not in Internet Radio
 
 TuneIn and iHeartRadio **are** now supported as station sources (they appear blended into your search results, above) — through open, no-key, no-account backends that resolve only the stations you actually search for, never a bulk scrape. YouTube audio is still not supported.
+
+## Everything you started, and carrying your place between machines
+
+### Continue Listening
+
+**Continue Listening...** (in the Command Palette) is one list of everything you
+started and did not finish, newest first, with the kind named on every row: a
+podcast episode you are twenty minutes into, a recorded programme or LibriVox
+chapter you were halfway through. QUILL remembered each of those separately and
+never showed you the two together, which meant the question people actually have
+-- *what was I in the middle of?* -- had no place to be asked.
+
+**Resume** starts the highlighted row where you left off. **Forget This One**
+drops the saved place and removes the row; the episode stays unplayed, because
+"I am not going back to this" and "I finished it" are different things to say.
+A resume list you cannot clear is one that fills with things you abandoned on
+purpose and stops being worth opening.
+
+### Carry My Place Between Machines
+
+If you listen on more than one computer, **Carry My Place Between Machines...**
+makes where-you-got-to follow you. It needs two things: a folder both machines
+can see, and a recovery phrase.
+
+**The folder is yours.** Point it at somewhere inside OneDrive, Dropbox, iCloud
+Drive, a network share, or even a memory stick you carry between two machines.
+QUILL runs no server of its own and never holds your listening history:
+everything is encrypted before it reaches the folder, so whoever runs that folder
+learns nothing but file sizes and times.
+
+**The recovery phrase is eight ordinary words**, generated for you -- something
+like *earth dock hollow iris farm laser daisy amber*. Write it down. It is the
+key, and QUILL cannot recover it for you if it is lost. **Read My Phrase
+Aloud** says it back numbered, one word at a time, which is what you want while
+writing it on paper.
+
+**Setting up the second machine is the same window.** Point it at the same
+folder and type the phrase from the first one. QUILL notices the folder is
+already set up and says so, and if the phrase is wrong it tells you straight
+away -- *"that recovery phrase does not match this folder; nothing was
+changed"* -- rather than half-syncing and failing later. Typing is forgiving
+about capitals, spacing and punctuation, and a word that is not from the list is
+named so you can check that one instead of all eight.
+
+**Sync Now** runs it, and says what happened in a sentence: what came back, what
+went out, and whether two machines disagreed about a place (the most recent one
+wins, and you are told). Optionally it can also run when playback stops. If both
+machines remembered a different place in the same thing and the difference is
+more than a few minutes, that is a real disagreement and QUILL says so rather
+than quietly picking one.
+
+Everything works completely normally with no sync at all: this is additive, and
+nothing waits on a folder before playing.
 
 ## Quill Radio: the standalone app
 
@@ -9141,11 +9199,11 @@ python -m quill.tools.build_docs
 
 ---
 
-# Appendix: QUILL Developer Console
+## Appendix: QUILL Developer Console
 
 _Folded in from the former docs/userguide.md on 2026-06-13._
 
-# QUILL Developer Console (QDC) documentation
+## QUILL Developer Console (QDC) documentation
 
 _Consolidated on 2026-06-13 from qdc-tutorial and "QUILL Developer Console and Automation". The scripting contract (docs/quillins.md) remains a standalone document because code references it by section number._
 
@@ -9166,7 +9224,7 @@ _Consolidated on 2026-06-13 from qdc-tutorial and "QUILL Developer Console and A
 
 <!-- Source: docs/qdc-tutorial.md -->
 
-# QUILL Developer Console Tutorial
+## QUILL Developer Console Tutorial
 
 Status: **Implemented in 0.5.0** (Developer and Power Text / Full QUILL profiles;
 Tools > Advanced > Developer Console). The Python console and the `q` scripting
@@ -9591,7 +9649,7 @@ this build; the status note at the top of this document is authoritative.
 
 <!-- Source: docs/QUILL Developer Console and Automation.md -->
 
-# QUILL Developer Console and Automation API PRD
+## QUILL Developer Console and Automation API PRD
 
 ## Feature name
 
@@ -10670,11 +10728,11 @@ This feature is done when:
 
 ---
 
-# Appendix: Skills tutorial
+## Appendix: Skills tutorial
 
 _Folded in from the former docs/userguide.md on 2026-06-13._
 
-# Writing Skills for QUILL — A Tutorial
+## Writing Skills for QUILL — A Tutorial
 
 This guide teaches you to write, validate, and share `.sqp` (Skill Quill Pack) files.
 A skill is a multi-step AI workflow written in plain Markdown. If you can write a
@@ -11100,7 +11158,7 @@ readability score) where the result is read but not inserted.
 
 ---
 
-# Appendix: Feature notes (Copy Tray)
+## Appendix: Feature notes (Copy Tray)
 
 _Folded in from the former docs/userguide.md on 2026-06-13._
 
@@ -11109,7 +11167,7 @@ _Folded in from the former docs/userguide.md on 2026-06-13._
 > Tray chord is `Ctrl+Shift+Grave, X`; see the "Copy Tray" section above for
 > current behavior and bindings.
 
-# QUILL feature documentation
+## QUILL feature documentation
 
 _Consolidated from the former docs/features/ folder on 2026-06-13. Each section preserves the original document in full._
 
@@ -11118,7 +11176,7 @@ _Consolidated from the former docs/features/ folder on 2026-06-13. Each section 
 
 <!-- Source: docs/features/copy_tray.md -->
 
-# Copy Tray
+## Copy Tray
 
 ## Overview
 
@@ -11271,7 +11329,7 @@ Labels are persisted alongside slot text and survive restarts.
 
 ---
 
-# Appendix: Copy Tray design notes
+## Appendix: Copy Tray design notes
 
 _Folded in from the former docs/copy_tray_notes.md on 2026-06-13._
 
@@ -11280,7 +11338,7 @@ _Folded in from the former docs/copy_tray_notes.md on 2026-06-13._
 > -, =`); see the "Copy Tray" section above for current behavior and
 > bindings.
 
-# Copy Tray: What Was Built and How It Feels
+## Copy Tray: What Was Built and How It Feels
 
 ## What Was Built
 

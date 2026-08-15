@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="optilab-core-and-quills-adapter-around-it">OptiLab Core, and
+QUILL’s adapter around it</h1>
+<h2 id="attribution">Attribution</h2>
+<p><strong>OptiLab Core is the work of Lanes Audio /
+dgl1984.</strong></p>
+<ul>
+<li>Repository: <a href="https://github.com/dgl1984/optilab"
+class="uri">https://github.com/dgl1984/optilab</a></li>
+<li>Author: <a href="https://github.com/dgl1984"
+class="uri">https://github.com/dgl1984</a></li>
+<li>Description (upstream): <em>“Free accessible broadcast and mastering
+plug-in from LanesAudio for REAPER JSFX, Windows CLAP, and
+Winamp-compatible DSP hosts.”</em></li>
+</ul>
+<p>QUILL uses it with thanks. Everything in <code>upstream/</code> is
+theirs; the only file in this directory QUILL wrote is
+<code>quill_optilab.cpp</code>, and it contains <strong>no
+DSP</strong>.</p>
+<h2 id="what-is-vendored">What is vendored</h2>
+<p><code>upstream/</code> holds OptiLab Core’s processing engine, copied
+<strong>unmodified</strong> from upstream at tag <code>v1.4.0</code>
+(commit <code>fb5c5b13fc4a06efadefaaff8ffd66ebe0b562bb</code>):</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Origin</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>upstream/OptiLabCore.h</code></td>
+<td><code>native/core/OptiLabCore.h</code></td>
+</tr>
+<tr>
+<td><code>upstream/OptiLabCore.cpp</code></td>
+<td><code>native/core/OptiLabCore.cpp</code></td>
+</tr>
+<tr>
+<td><code>upstream/LICENSE</code></td>
+<td>repository root</td>
+</tr>
+<tr>
+<td><code>upstream/NOTICE</code></td>
+<td>repository root</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Do not edit anything under <code>upstream/</code>.</strong>
+To take a newer release, re-copy those four files at the new tag, update
+the version and commit recorded here, in
+<code>quill/core/optilab_adapter.py</code> and in
+<code>quill/core/compliance.py</code>, and re-read upstream’s
+<code>CHANGELOG.md</code> for anything that changes the <em>mapping</em>
+in <code>quill/core/optilab.py</code>.</p>
+<h2 id="licence">Licence</h2>
+<p><strong>Apache License 2.0 with the Commons Clause License Condition
+v1.0</strong>, from upstream v1.3.0 onward. Both
+<code>upstream/LICENSE</code> and <code>upstream/NOTICE</code> ship
+alongside the code and must continue to.</p>
+<p>The Commons Clause withholds the right to <strong>sell the
+Software</strong> — that is, to provide a product or service to third
+parties for a fee whose value derives entirely or substantially from
+OptiLab Core’s functionality.</p>
+<p>Upstream’s NOTICE separately and explicitly grants:</p>
+<blockquote>
+<p><em>“Commercial use of OptiLab Core as a tool for producing,
+processing, mastering, broadcasting, streaming, or otherwise creating
+audio is permitted without royalties to Lanes Audio.”</em></p>
+</blockquote>
+<p>QUILL is free, and Sound Enhancements is one optional feature among
+many, so QUILL’s use sits squarely inside the permitted grant. That is a
+fact to keep true rather than one to assume: anything that made QUILL a
+paid product whose value derived substantially from this engine would
+need this re-read first.</p>
+<h2 id="why-an-adapter-executable">Why an adapter executable</h2>
+<p>Upstream’s own <code>native/API.md</code> is explicit:</p>
+<blockquote>
+<p><em>“This is a C++ API, not a stable C ABI. If you need to call
+OptiLab Core from C, Rust, C#, Python, or another language, wrap this
+C++ class in a small adapter owned by your project.”</em></p>
+</blockquote>
+<p>So QUILL owns one. It is a <strong>process</strong>, not a Python
+extension, for the same reason ffmpeg is: QUILL’s offline audio paths
+already drive ffmpeg through <code>stability.safe_subprocess</code> with
+an argv list and never a shell, so this slots into an established
+pattern — no new failure mode, no in-process native crash surface, and
+no ABI to keep in step across releases.</p>
+<h2 id="where-it-is-used">Where it is used</h2>
+<p>Three settings, one control (Sound Enhancements &gt; <strong>Exact
+OptiLab processing</strong>):</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Choice</th>
+<th>What runs the polish</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Off (the default)</td>
+<td>The ffmpeg chain in <code>quill/core/optilab.py</code>,
+everywhere</td>
+</tr>
+<tr>
+<td>When saving</td>
+<td>The real engine on recordings and converted files; the chain
+live</td>
+</tr>
+<tr>
+<td>When saving and while listening</td>
+<td>The real engine on both</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Saved files</strong> are the easy case and the default
+recommendation. Recordings and conversion already shell out to ffmpeg,
+offline; a file is processed once, afterwards, with no live-preview
+property to protect and no reconnect to avoid. A recording is
+post-processed <strong>after</strong> it finishes, never during – an
+adapter fault mid-capture must not be able to cost somebody the show
+they were recording.</p>
+<h2 id="why-real-time-playback-is-the-hard-case">Why real-time playback
+is the hard case</h2>
+<p>Not impossible – QUILL does it when asked – but it cannot be free,
+and the reasons are structural rather than a missing feature:</p>
+<ol type="1">
+<li><strong>It is a separate process, by upstream’s own
+instruction.</strong> <code>native/API.md</code> states the C++ API is
+<em>“not a stable C ABI”</em> and asks consumers to <em>“wrap this C++
+class in a small adapter owned by your project”</em>. So the audio has
+to physically travel through another program. No filter string can
+express “someone else’s DSP” to mpv or to ffmpeg, and mpv does not host
+CLAP, so the plug-in build is no use on this path either.</li>
+<li><strong>Nothing on the live path ever holds a sample.</strong> mpv
+is handed a filter string (<code>ui/audio/mpv_engine.py</code> sets
+<code>af</code>) and does all the work itself. That is the design’s
+central virtue – it is why every enhancement previews with no gap and no
+reconnect, and why one graph serves live radio, podcasts and recordings
+– and it is exactly what an external engine cannot join.</li>
+<li><strong>So live means relaying.</strong> Decode the stream, pipe it
+through the engine, re-encode it, serve the result on a loopback URL
+(<code>EnhanceRelay.start</code> in <code>core/audio_enhance.py</code>).
+Three processes where there was none, and it costs: a slower start, an
+MP3 re-encode generation, more CPU, and a reconnect on
+<strong>every</strong> settings change – the engine is prepared with a
+mode and a sample rate at start-up and cannot be re-parameterised
+mid-stream. “Hear it as you move the control” is precisely the property
+this option trades away.</li>
+</ol>
+<p>The alternatives were considered and rejected: a custom libavfilter
+wrapping <code>optilab-core</code> (heavy, and it needs an ffmpeg that
+will load it); an in-process Python extension (a real-time callback
+beside a garbage-collected runtime, over an ABI upstream explicitly does
+not offer); an mpv CLAP host (mpv has none).</p>
+<p>The honest framing is therefore not “live is impossible” but
+<strong>“live costs the instant preview, and the listener
+chooses”</strong> – which is why the setting names the surface rather
+than the engine, states the cost inside the option, and is off by
+default.</p>
+<h2 id="what-the-real-engine-actually-gets-you">What the real engine
+actually gets you</h2>
+<p>The one difference that can be stated with confidence: upstream’s
+limiter feedback loop – easing the lift and withdrawing bass assistance
+<em>while</em> final limiting runs heavy – cannot be expressed in a
+feed-forward ffmpeg graph at all.</p>
+<p>Beyond that, the chain reproduces the <em>shape</em> of three modes
+and does not contain upstream’s gated AGC, six-band density processing,
+adaptive bass and top control, stereo processing or hybrid final stage;
+its Podcast and Limiter ceilings (-1.5 and -2.0 dBFS) are QUILL’s own,
+not upstream’s -0.1, and its Input default is 0 dB where upstream’s
+<code>inputDriveDb</code> is 3.5.</p>
+<p>On gentle material the two may be indistinguishable, and nothing here
+should imply otherwise.</p>
+<h2 id="building">Building</h2>
+<p>Optional. With no MSVC/CMake the adapter is simply absent,
+<code>optilab_adapter.available()</code> is <code>False</code>, and
+every caller uses the ffmpeg chain exactly as before.</p>
+<p>The supported way is the wrapper, which is also what the release
+builds call:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>python scripts\build_native_optilab<span class="op">.</span><span class="fu">py</span></span></code></pre></div>
+<p>It configures and builds Release, then copies the executable
+<strong>beside these sources</strong>
+(<code>quill/native/optilab/quill-optilab.exe</code>) – the first place
+<code>optilab_adapter.find_adapter</code> looks – so a checkout that has
+built once is a checkout where the end-to-end tests actually run rather
+than skip. With no toolchain it prints what is missing and exits 0.</p>
+<p>Or by hand:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>cmake <span class="op">-</span>S quill<span class="op">/</span>native<span class="op">/</span>optilab <span class="op">-</span>B quill<span class="op">/</span>native<span class="op">/</span>optilab<span class="op">/</span>build</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>cmake <span class="op">--</span>build quill<span class="op">/</span>native<span class="op">/</span>optilab<span class="op">/</span>build <span class="op">--</span>config Release</span></code></pre></div>
+<p>The executable lands at <code>build/Release/quill-optilab.exe</code>
+and is found automatically. <code>QUILL_OPTILAB_ADAPTER</code> overrides
+the location.</p>
+<h2 id="protocol">Protocol</h2>
+<pre><code>quill-optilab --mode &lt;podcast|stream|limiter&gt; --rate &lt;hz&gt;
+              [--channels &lt;1|2&gt;] [--input-db &lt;db&gt;] [--adapt &lt;0-100&gt;]</code></pre>
+<p>Interleaved 32-bit float PCM in on stdin, the same out on stdout. The
+format is fixed and unnegotiated on purpose: the caller is ffmpeg, told
+exactly what to emit (<code>-f f32le</code>), so there is no header to
+mis-parse. Exit codes: <code>0</code> success, <code>2</code> bad
+arguments, <code>3</code> I/O failure.</p>
+</body>
+</html>

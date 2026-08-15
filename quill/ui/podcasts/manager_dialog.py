@@ -341,7 +341,13 @@ class PodcastManagerDialog(
         self._episode_sort_choice.Bind(wx.EVT_CHOICE, self._on_episode_sort_choice)
         self._view_mode_choice.Bind(wx.EVT_CHOICE, self._on_view_mode_choice)
 
-        self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_winamp_char_hook)
+        from quill.ui.podcasts.scan_hold_control import ScanHoldController
+
+        self._scan_hold = ScanHoldController(self, parent=self.dialog)
+        from quill.ui.podcasts import manager_keys
+
+        self.dialog.Bind(wx.EVT_CHAR_HOOK, lambda e: manager_keys.on_char_hook(self, e))
+        self.dialog.Bind(wx.EVT_KEY_UP, lambda e: manager_keys.on_key_up(self, e))
 
         self.refresh_tree()
         self._update_now_playing()

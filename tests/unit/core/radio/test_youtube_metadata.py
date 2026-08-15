@@ -5,11 +5,13 @@ the stream URL, so capturing it costs no extra network call. The parsers are
 pure, so these tests never touch YouTube.
 """
 
+# pick_caption_track moved to core/radio/captions.py under GATE-11; the
+# decision it makes is unchanged.
+from quill.core.radio.captions import pick_caption_track
 from quill.core.radio.youtube import (
     YouTubeChapter,
     is_youtube_playlist_url,
     parse_chapters,
-    pick_caption_track,
     playlist_entries_from_info,
     stream_from_info,
 )

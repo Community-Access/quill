@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Quill User Guide</title>
+  <title>userguide</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -239,29 +239,8 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="quill-user-guide">Quill User Guide</h1>
 <p><strong>QUILL</strong> stands for <strong>Quality, Usable, Inclusive,
 Lightweight, Literate</strong>.</p>
@@ -444,7 +423,7 @@ you to be able to reach it from where you already are.</p>
 <h2 id="getting-around-quill">Getting Around QUILL</h2>
 <p>QUILL is designed so you never need to memorize an action to reach
 it.</p>
-<h3 id="f1--help-on-the-focused-control">F1 — help on the focused
+<h3 id="f1-help-on-the-focused-control">F1 — help on the focused
 control</h3>
 <p>Press <code>F1</code> on any focusable control — a dialog field, a
 button, a menu item, the editor itself — and a small help dialog opens.
@@ -476,19 +455,16 @@ label moves. The display rewrite is one function
 the same label and a rebrand in <code>quill/branding.py</code> follows
 everywhere.</p>
 </blockquote>
-<p>It operates in two primary layers:</p>
-<ol type="1">
-<li><strong>Prefix Mode (One-shot).</strong> Press it once and QUILL
-arms a short-lived prefix. The next key you press runs a chord command
-(like <code>G</code> for Go to Anything or <code>M</code> for Markdown
-paste), and then the prefix expires.</li>
-<li><strong>Browse Mode (Locked).</strong> Press the QUILL key twice in
-a row, and QUILL locks <strong>Quick Nav (Browse) mode</strong> on. In
-this mode, single-letter keys (like <code>H</code> for headings,
+<p>It operates in two primary layers: 1. <strong>Prefix Mode
+(One-shot).</strong> Press it once and QUILL arms a short-lived prefix.
+The next key you press runs a chord command (like <code>G</code> for Go
+to Anything or <code>M</code> for Markdown paste), and then the prefix
+expires. 2. <strong>Browse Mode (Locked).</strong> Press the QUILL key
+twice in a row, and QUILL locks <strong>Quick Nav (Browse) mode</strong>
+on. In this mode, single-letter keys (like <code>H</code> for headings,
 <code>P</code> for paragraphs, or <code>S</code> for sentences) move the
 cursor through the document structure. This mode stays active until you
-press <code>Esc</code>.</li>
-</ol>
+press <code>Esc</code>.</p>
 <p>The QUILL key is its own tiny language: every chord is data-driven
 from the keymap, which means every chord is fully remappable in
 <strong>Preferences → Keyboard → Keymap Editor</strong>. The full cheat
@@ -916,8 +892,8 @@ Markdown link. This setting also applies whenever Save As writes a
 (fonts, colours, alignment), Quill offers to keep it with an
 <strong>Illumination</strong> — see below.</li>
 </ul>
-<h5 id="keeping-formatting-in-a-plain-text-file-illuminations">Keeping
-formatting in a plain-text file: Illuminations</h5>
+<h4 id="keeping-formatting-in-a-plain-text-file-illuminations">Keeping
+formatting in a plain-text file: Illuminations</h4>
 <p>A plain <code>.txt</code> file has nowhere to store fonts, colours,
 or alignment, so saving formatted text as plain text normally drops the
 formatting. Quill gives you a choice, named after the decorative layer a
@@ -951,38 +927,33 @@ notices the text no longer matches the Illumination and opens it as
 plain text rather than re-applying formatting to the wrong words. If
 you’d rather a single self-contained file that preserves everything,
 save as <strong>Markdown</strong> (which keeps the formatting inline) or
-<strong>Word/RTF</strong> (which turn it into native formatting).</p>
-<ul>
-<li><strong>Reload from Disk</strong> throws away in-memory edits and
-reloads the file from storage after confirmation.</li>
-<li><strong>Restore Backup…</strong> lets you restore a saved backup
-version.</li>
-<li><strong>Page Setup…</strong> and <strong>Print…</strong> support
-paper and print workflows. <strong>Print Studio…</strong> goes one step
-further: it reports a spoken/textual preview — “3 pages, Letter, default
-margins” — the screen-reader equivalent of a visual print preview, then
-lets you choose <strong>all, odd, or even pages</strong>, <strong>print
-in reverse order</strong>, or <strong>skip the first page</strong>
-(handy if page 1 is pre-printed letterhead) before handing off to the
-same print dialog Print already uses.</li>
-<li><strong>Header and Footer…</strong> builds a header and footer for
-the current document from named presets — <strong>Title left, page
-number right</strong>, <strong>Filename and date</strong>, <strong>Roman
-numerals for front matter</strong> — or your own combination of a small
-set of tokens (title, filename, date, page number) placed left, center,
-or right. Turn on <strong>Different first page</strong> for its own
-separate header/footer, and choose <strong>numeric or Roman</strong>
-page numbering with a starting number of your choice. It’s saved with
-the document and drawn on every printed page, whether you use Print or
-Print Studio.</li>
-<li><strong>Run Current File</strong> executes the saved file with its
-associated tool, and <strong>Open Target at Cursor</strong> opens the
-path or link under the caret.</li>
-<li><strong>Rename Current File…</strong> and <strong>Delete Current
-File…</strong> manage the file on disk from inside the editor.</li>
-<li><strong>Close Document</strong> closes the current tab.</li>
-<li><strong>Exit</strong> closes the application.</li>
-</ul>
+<strong>Word/RTF</strong> (which turn it into native formatting). -
+<strong>Reload from Disk</strong> throws away in-memory edits and
+reloads the file from storage after confirmation. - <strong>Restore
+Backup…</strong> lets you restore a saved backup version. - <strong>Page
+Setup…</strong> and <strong>Print…</strong> support paper and print
+workflows. <strong>Print Studio…</strong> goes one step further: it
+reports a spoken/textual preview — “3 pages, Letter, default margins” —
+the screen-reader equivalent of a visual print preview, then lets you
+choose <strong>all, odd, or even pages</strong>, <strong>print in
+reverse order</strong>, or <strong>skip the first page</strong> (handy
+if page 1 is pre-printed letterhead) before handing off to the same
+print dialog Print already uses. - <strong>Header and Footer…</strong>
+builds a header and footer for the current document from named presets —
+<strong>Title left, page number right</strong>, <strong>Filename and
+date</strong>, <strong>Roman numerals for front matter</strong> — or
+your own combination of a small set of tokens (title, filename, date,
+page number) placed left, center, or right. Turn on <strong>Different
+first page</strong> for its own separate header/footer, and choose
+<strong>numeric or Roman</strong> page numbering with a starting number
+of your choice. It’s saved with the document and drawn on every printed
+page, whether you use Print or Print Studio. - <strong>Run Current
+File</strong> executes the saved file with its associated tool, and
+<strong>Open Target at Cursor</strong> opens the path or link under the
+caret. - <strong>Rename Current File…</strong> and <strong>Delete
+Current File…</strong> manage the file on disk from inside the editor. -
+<strong>Close Document</strong> closes the current tab. -
+<strong>Exit</strong> closes the application.</p>
 <p>The File menu is also where Quill quietly proves that it respects
 risk. Reload is explicit. Backup restore is explicit. URL opening is
 explicit. Nothing important is hidden behind a side effect.</p>
@@ -1340,9 +1311,13 @@ Accessible Emoji Picker section for the full maintenance runbook).</p>
 <p>The full catalog, grouped by category, is listed below for
 reference.</p>
 <!-- BEGIN GENERATED EMOJI TABLE (quill/tools/generate_emoji_catalog.py output; do not hand-edit, regenerate instead) -->
-
-<h5 id="smileys--emotion-169">Smileys &amp; Emotion (169)</h5>
+<h5 id="smileys-emotion-169">Smileys &amp; Emotion (169)</h5>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Emoji</th>
@@ -2352,8 +2327,13 @@ representing sleep or snoring.</td>
 </tr>
 </tbody>
 </table>
-<h5 id="people--body-2261">People &amp; Body (2261)</h5>
+<h5 id="people-body-2261">People &amp; Body (2261)</h5>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Emoji</th>
@@ -9362,38 +9342,38 @@ beard, embodying the joy of Christmas.</td>
 </tr>
 <tr>
 <td>🤶</td>
-<td>Mrs. Claus</td>
-<td>Mrs. Claus is smiling warmly, dressed in a red dress with white
+<td>Mrs. Claus</td>
+<td>Mrs. Claus is smiling warmly, dressed in a red dress with white
 trim, radiating kindness and holiday cheer.</td>
 </tr>
 <tr>
 <td>🤶🏻</td>
-<td>Mrs. Claus: light skin tone</td>
-<td>Mrs. Claus with light skin tone, wearing a festive red dress and
+<td>Mrs. Claus: light skin tone</td>
+<td>Mrs. Claus with light skin tone, wearing a festive red dress and
 white trim, looking cheerful and welcoming.</td>
 </tr>
 <tr>
 <td>🤶🏼</td>
-<td>Mrs. Claus: medium-light skin tone</td>
-<td>Mrs. Claus with medium-light skin tone, dressed in a red dress with
+<td>Mrs. Claus: medium-light skin tone</td>
+<td>Mrs. Claus with medium-light skin tone, dressed in a red dress with
 white trim, exuding warmth and joy.</td>
 </tr>
 <tr>
 <td>🤶🏽</td>
-<td>Mrs. Claus: medium skin tone</td>
-<td>Mrs. Claus with medium skin tone, wearing a red dress with white
+<td>Mrs. Claus: medium skin tone</td>
+<td>Mrs. Claus with medium skin tone, wearing a red dress with white
 trim, smiling with a friendly demeanor.</td>
 </tr>
 <tr>
 <td>🤶🏾</td>
-<td>Mrs. Claus: medium-dark skin tone</td>
-<td>Mrs. Claus with medium-dark skin tone, dressed in a red dress with
+<td>Mrs. Claus: medium-dark skin tone</td>
+<td>Mrs. Claus with medium-dark skin tone, dressed in a red dress with
 white trim, radiating holiday spirit.</td>
 </tr>
 <tr>
 <td>🤶🏿</td>
-<td>Mrs. Claus: dark skin tone</td>
-<td>Mrs. Claus with dark skin tone, wearing a red dress with white trim,
+<td>Mrs. Claus: dark skin tone</td>
+<td>Mrs. Claus with dark skin tone, wearing a red dress with white trim,
 embodying warmth and cheer.</td>
 </tr>
 <tr>
@@ -15985,8 +15965,13 @@ evidence.</td>
 </tr>
 </tbody>
 </table>
-<h5 id="animals--nature-159">Animals &amp; Nature (159)</h5>
+<h5 id="animals-nature-159">Animals &amp; Nature (159)</h5>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Emoji</th>
@@ -16951,8 +16936,13 @@ landscape.</td>
 </tr>
 </tbody>
 </table>
-<h5 id="food--drink-131">Food &amp; Drink (131)</h5>
+<h5 id="food-drink-131">Food &amp; Drink (131)</h5>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Emoji</th>
@@ -17744,8 +17734,13 @@ often depicted in earthy tones.</td>
 </tr>
 </tbody>
 </table>
-<h5 id="travel--places-218">Travel &amp; Places (218)</h5>
+<h5 id="travel-places-218">Travel &amp; Places (218)</h5>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Emoji</th>
@@ -19069,6 +19064,11 @@ the ocean or surf.</td>
 </table>
 <h5 id="activities-85">Activities (85)</h5>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Emoji</th>
@@ -19589,6 +19589,11 @@ twists.</td>
 </table>
 <h5 id="objects-264">Objects (264)</h5>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Emoji</th>
@@ -21189,6 +21194,11 @@ information and often featuring a photo, in a simple design.</td>
 </table>
 <h5 id="symbols-224">Symbols (224)</h5>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Emoji</th>
@@ -22498,6 +22508,11 @@ Japanese.</td>
 </table>
 <h5 id="flags-270">Flags (270)</h5>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Emoji</th>
@@ -22709,7 +22724,7 @@ red on the right, featuring a white star in the green section.</td>
 </tr>
 <tr>
 <td>🇧🇱</td>
-<td>flag: St. Barthélemy</td>
+<td>flag: St. Barthélemy</td>
 <td>A red flag with a blue field on the left side, featuring a white
 star in the center.</td>
 </tr>
@@ -23306,7 +23321,7 @@ the left, featuring a yellow crescent and four stars.</td>
 </tr>
 <tr>
 <td>🇰🇳</td>
-<td>flag: St. Kitts &amp; Nevis</td>
+<td>flag: St. Kitts &amp; Nevis</td>
 <td>A diagonal green stripe with a yellow triangle on the left,
 featuring a yellow sun and two green stars.</td>
 </tr>
@@ -23354,7 +23369,7 @@ center, featuring a green cedar tree in the middle.</td>
 </tr>
 <tr>
 <td>🇱🇨</td>
-<td>flag: St. Lucia</td>
+<td>flag: St. Lucia</td>
 <td>A blue field with a white triangle on the left, containing a yellow
 triangle and a black outline.</td>
 </tr>
@@ -23430,7 +23445,7 @@ arms in the center.</td>
 </tr>
 <tr>
 <td>🇲🇫</td>
-<td>flag: St. Martin</td>
+<td>flag: St. Martin</td>
 <td>A blue field with a red stripe at the top and a white stripe at the
 bottom, featuring a white star.</td>
 </tr>
@@ -23667,7 +23682,7 @@ symbolizing Islam.</td>
 </tr>
 <tr>
 <td>🇵🇲</td>
-<td>flag: St. Pierre &amp; Miquelon</td>
+<td>flag: St. Pierre &amp; Miquelon</td>
 <td>A flag with a blue field, featuring a small French flag in the top
 left corner and a red and white striped triangle on the right.</td>
 </tr>
@@ -23781,9 +23796,9 @@ Singapore.</td>
 </tr>
 <tr>
 <td>🇸🇭</td>
-<td>flag: St. Helena</td>
+<td>flag: St. Helena</td>
 <td>A flag with a blue field featuring the Union Jack in the top left
-corner and a coat of arms, representing St. Helena.</td>
+corner and a coat of arms, representing St. Helena.</td>
 </tr>
 <tr>
 <td>🇸🇮</td>
@@ -24024,7 +24039,7 @@ center.</td>
 </tr>
 <tr>
 <td>🇻🇨</td>
-<td>flag: St. Vincent &amp; Grenadines</td>
+<td>flag: St. Vincent &amp; Grenadines</td>
 <td>A flag with a diagonal yellow triangle pointing down from the hoist
 side, flanked by green and red triangles, with a black border around the
 yellow triangle.</td>
@@ -24131,7 +24146,6 @@ edges, representing England.</td>
 </tbody>
 </table>
 <!-- END GENERATED EMOJI TABLE -->
-
 <h4 id="format">Format</h4>
 <p>The <strong>Format</strong> menu handles presentation and
 markup-aware editing of existing text.</p>
@@ -24292,8 +24306,8 @@ the wrong spot the way a plain position marker would. If the bookmarked
 text was itself deleted, the jump falls back to the remembered position.
 This works for named bookmarks and the numbered quick bookmarks alike,
 and needs nothing from you.</p>
-<h5 id="temporary-bookmark-one-keystroke-no-dialog">Temporary bookmark
-(one keystroke, no dialog)</h5>
+<h4 id="temporary-bookmark-one-keystroke-no-dialog">Temporary bookmark
+(one keystroke, no dialog)</h4>
 <p>For the times you just want to mark “right here” and come straight
 back — no name, no picker, no dialog — use the temporary bookmark. Both
 commands are on the <strong>Navigate &gt; Bookmarks</strong> submenu,
@@ -24330,7 +24344,7 @@ sets the jump point for that slot at the cursor.</li>
 names like “Quick 3” — so they persist per document with no separate
 storage to manage. Jumping to a slot that has not been set announces
 that clearly rather than failing silently.</p>
-<h5 id="marks-bookmarks-and-selecting-a-block--which-is-which">Marks,
+<h5 id="marks-bookmarks-and-selecting-a-block-which-is-which">Marks,
 bookmarks, and selecting a block — which is which</h5>
 <p>These three are easy to confuse because they all “mark a spot,” so
 here is exactly what each one is and the command that drives it.</p>
@@ -24404,7 +24418,7 @@ top-level regions of the window.</li>
 Structure” is the broader sweep, “Next Heading” is the heading-only
 subset.</p>
 <h5
-id="favorite-folders--a-short-curated-list-for-instant-access">Favorite
+id="favorite-folders-a-short-curated-list-for-instant-access">Favorite
 folders — a short, curated list for instant access</h5>
 <p>A short list of folders you mark as favorites, distinct from Windows’
 recent-folders list. Recent folders tracks what you <em>recently</em>
@@ -24421,7 +24435,7 @@ Folder…</strong> Choose one from your current favorites to remove.</li>
 Folder…</strong> Opens Quick Open, described next.</li>
 </ul>
 <p>All three also live on <strong>File → Favorite Folders</strong>.</p>
-<h5 id="open-from-favorite-folder--a-vscode-style-quick-open">Open From
+<h5 id="open-from-favorite-folder-a-vscode-style-quick-open">Open From
 Favorite Folder — a VSCode-style Quick Open</h5>
 <p><strong>Ctrl+Alt+Shift+O</strong> opens a small dialog with a text
 box already focused. Start typing part of a filename and the list below
@@ -24526,7 +24540,7 @@ query modes:</p>
 </ul>
 <p>The palette also learns from usage. Commands you use more often rise
 naturally.</p>
-<h4 id="story-studio--organize-a-whole-book">Story Studio — organize a
+<h4 id="story-studio-organize-a-whole-book">Story Studio — organize a
 whole book</h4>
 <p><strong>Tools → Story Studio…</strong> (also on the command palette
 as <em>Story Studio</em>) opens a <strong>binder</strong> for a project
@@ -24556,7 +24570,7 @@ HTML, Word, DAISY, and more.</li>
 order and element groups. The companion is advisory, so deleting it
 never loses any writing. Story Studio is optional and additive — it
 changes nothing about ordinary editing.</p>
-<h4 id="vault--linked-notes-search-tags-and-more">Vault — linked notes,
+<h4 id="vault-linked-notes-search-tags-and-more">Vault — linked notes,
 search, tags, and more</h4>
 <p><strong>Tools → Vault</strong> brings a full linked-notes workspace
 to QUILL — links and backlinks, search, tags, embeds, templates, daily
@@ -24672,7 +24686,7 @@ a folder of Markdown files plus a small <code>.quill</code> cache;
 delete the cache and nothing is lost. Every command here is on the
 command palette and can be given a keyboard shortcut in the Keymap
 Editor.</p>
-<h4 id="quill-sync--carrying-your-work-between-devices">QUILL Sync —
+<h4 id="quill-sync-carrying-your-work-between-devices">QUILL Sync —
 carrying your work between devices</h4>
 <p>QUILL does not run its own sync service — no QUILL cloud account, no
 QUILL-hosted storage. Instead it leans on two things that already solve
@@ -24991,7 +25005,7 @@ too.</p>
 <p>For release-safe beta validation, Word and CSV open in the normal
 plain-text editor surface; AI connection and chat flows remain
 available.</p>
-<h3 id="ai-engines--bring-the-agent-you-already-use">AI engines — bring
+<h3 id="ai-engines-bring-the-agent-you-already-use">AI engines — bring
 the agent you already use</h3>
 <p>QUILL’s agent (the reviewable, multi-step help behind Ask Quill and
 the AI Library agents) can run on more than one <strong>engine</strong>.
@@ -25142,7 +25156,7 @@ reminders.</li>
 misspelling, QUILL reads it letter by letter. The pause before spelling
 starts is configurable.</li>
 </ul>
-<h4 id="spell-check-word-altf7--instant-single-word-check">Spell Check
+<h4 id="spell-check-word-altf7-instant-single-word-check">Spell Check
 Word (Alt+F7) — instant, single-word check</h4>
 <p>If you have used the “press F7 on a focused word” workflow in other
 word processors, <strong>Alt+F7</strong> is that, for QUILL: it checks
@@ -25160,7 +25174,7 @@ through a whole document or selection systematically; use
 <strong>Alt+F7</strong> when you just want to check the one word you are
 looking at right now.</p>
 <h4
-id="ranked-spelling-ctrlshiftl--misspellings-sorted-by-frequency">Ranked
+id="ranked-spelling-ctrlshiftl-misspellings-sorted-by-frequency">Ranked
 spelling (Ctrl+Shift+L) — misspellings sorted by frequency</h4>
 <p><strong>Ctrl+Shift+L</strong> opens the misspelling list in a
 different order than the regular <strong>Misspelling List</strong>
@@ -25174,7 +25188,7 @@ word at once. Arrow through the list and press Enter to jump to any
 occurrence, exactly like the regular list. The document-order list on
 <strong>Alt+Shift+L</strong> is unchanged and remains the default.</p>
 <h4
-id="ranked-spelling-review-altshiftf7--the-full-guided-review-ranked">Ranked
+id="ranked-spelling-review-altshiftf7-the-full-guided-review-ranked">Ranked
 Spelling Review (Alt+Shift+F7) — the full guided review, ranked</h4>
 <p><strong>Alt+Shift+F7</strong> is the other half of ranked spelling:
 the entire guided F7 Spelling Review — <strong>Change</strong>,
@@ -25312,15 +25326,10 @@ libretranslate</code></pre>
 translation dialog. This is the most private option: your text never
 leaves your machine.</p></li>
 </ul>
-<p>After translation:</p>
-<ul>
-<li>Copy to Clipboard: copies the result without changing your
-document.</li>
-<li>Replace Original: replaces the selection or document with the
-translation.</li>
-<li>Open as New Document: opens the translation as a new unsaved
-document tab.</li>
-</ul>
+<p>After translation: - Copy to Clipboard: copies the result without
+changing your document. - Replace Original: replaces the selection or
+document with the translation. - Open as New Document: opens the
+translation as a new unsaved document tab.</p>
 <h4 id="transcribe-audio-file">Transcribe Audio File</h4>
 <p><code>AI &gt; Transcribe Audio File...</code> opens a file picker and
 sends the chosen audio file to OpenAI Whisper for transcription.
@@ -25351,7 +25360,7 @@ turned off, you go straight to the viewer.</p>
 to the Whisper translation flow, bypassing the language selection
 step.</p>
 <h4
-id="transcript-actions--turning-sound-into-a-finished-document">Transcript
+id="transcript-actions-turning-sound-into-a-finished-document">Transcript
 Actions — turning sound into a finished document</h4>
 <p>A transcript is rarely the thing you actually need; the
 <em>minutes</em>, the <em>action items</em>, or the <em>clean draft</em>
@@ -25394,7 +25403,7 @@ voice with Clean Up &amp; Draft — but every action is always available.
 The finished document opens in a new window so your original transcript
 is never overwritten. Transcript Actions use whichever AI provider you
 have configured in the AI Hub.</p>
-<h3 id="setting-up-ai--the-gentle-wizard">Setting up AI — the gentle
+<h3 id="setting-up-ai-the-gentle-wizard">Setting up AI — the gentle
 wizard</h3>
 <p>The first item in the <code>&amp;AI</code> menu is <strong>Set Up
 AI…</strong> (labeled “start here” until you’ve done it). It opens a
@@ -25483,7 +25492,7 @@ providers already write cleanly and are left untouched.</li>
 </ul>
 <p>You can change your provider or model any time from <strong>Set Up
 AI</strong> or the <strong>AI Hub</strong>.</p>
-<h3 id="the-ai-library--prompts-skills-and-agents-in-one-place">The AI
+<h3 id="the-ai-library-prompts-skills-and-agents-in-one-place">The AI
 Library — Prompts, Skills, and Agents in one place</h3>
 <p><code>AI &gt; AI Library...</code> is the single home for everything
 QUILL can do with AI on your writing. It has three tabs, all sharing the
@@ -25541,8 +25550,8 @@ automatically, named like <code>standup-meeting-minutes.md</code>. If AI
 is off or no provider is configured, you still get the transcript — the
 action step is simply skipped with a note, never an error. Watch folders
 respect Do Not Disturb and run quietly in the background.</p>
-<h3 id="offline-transcription-tools--speech">Offline transcription
-(Tools &gt; Speech)</h3>
+<h3 id="offline-transcription-tools-speech">Offline transcription (Tools
+&gt; Speech)</h3>
 <p>QUILL can also transcribe <strong>entirely on your computer</strong>,
 with no cloud account and without uploading your audio. <strong>No AI
 account or key is required</strong> — you do not need to enable
@@ -25731,27 +25740,22 @@ behaviour is never a surprise.</li>
 </ul>
 <p>You do not have to touch these — QUILL picks sensible defaults for
 your machine — but they are there if you want to tune how much memory
-QUILL uses.</p>
-<ul>
-<li><strong>Speaker attribution.</strong> If you download the “Small
-English with speaker detection” model (in Manage Speech Models), QUILL
-marks <strong>who is speaking when</strong> — each turn is labelled
-“Speaker 1”, “Speaker 2”, and so on in the transcript (shown in bold in
-Markdown and HTML). Speaker detection identifies separate turns; it does
-not name the people.</li>
-<li><strong>Generate Captions (Offline)…</strong> transcribes a file
-with timestamps and saves the result as <strong>SRT</strong> or
-<strong>VTT</strong> caption files.</li>
-<li><strong>Dictate (Offline)</strong> speaks straight into your
-document. Run it (or press <strong>QUILL Key + Shift + D</strong>) to
-start: QUILL plays a distinct start tone and shows “Dictation listening”
-in the status bar. Run it again to stop; QUILL plays a stop tone,
-transcribes what you said in the background, and inserts the text at
-your cursor as a single undoable edit (the status bar shows the word
-count).</li>
-<li><strong>Dictation Microphone…</strong> chooses which microphone
-dictation uses, or the system default.</li>
-</ul>
+QUILL uses. - <strong>Speaker attribution.</strong> If you download the
+“Small English with speaker detection” model (in Manage Speech Models),
+QUILL marks <strong>who is speaking when</strong> — each turn is
+labelled “Speaker 1”, “Speaker 2”, and so on in the transcript (shown in
+bold in Markdown and HTML). Speaker detection identifies separate turns;
+it does not name the people. - <strong>Generate Captions
+(Offline)…</strong> transcribes a file with timestamps and saves the
+result as <strong>SRT</strong> or <strong>VTT</strong> caption files. -
+<strong>Dictate (Offline)</strong> speaks straight into your document.
+Run it (or press <strong>QUILL Key + Shift + D</strong>) to start: QUILL
+plays a distinct start tone and shows “Dictation listening” in the
+status bar. Run it again to stop; QUILL plays a stop tone, transcribes
+what you said in the background, and inserts the text at your cursor as
+a single undoable edit (the status bar shows the word count). -
+<strong>Dictation Microphone…</strong> chooses which microphone
+dictation uses, or the system default.</p>
 <h5 id="locked-dictation-ctrlf9">Locked Dictation (Ctrl+F9)</h5>
 <p>One keyboard-only way to dictate without opening a dialog or leaving
 the editor. It uses the same on-device Whisper engine and microphone as
@@ -25930,18 +25934,12 @@ looks up synonyms for the selected word using your configured AI
 provider. Unlike a static thesaurus, it reads the sentence the word
 appears in and returns synonyms that match the actual meaning in
 context.</p>
-<p>To use it:</p>
-<ol type="1">
-<li>Place the cursor on a word, or select it.</li>
-<li>Press Ctrl+Alt+Shift+H or choose AI &gt; AI Thesaurus.</li>
-<li>The dialog opens with the word pre-filled and synonyms loading.</li>
-<li>Arrow through the list; each item shows the synonym and a brief
-usage note.</li>
-<li>Press Enter or click Replace Word to substitute the word in your
-document.</li>
-<li>Type a different word in the search box to look up another without
-closing.</li>
-</ol>
+<p>To use it: 1. Place the cursor on a word, or select it. 2. Press
+Ctrl+Alt+Shift+H or choose AI &gt; AI Thesaurus. 3. The dialog opens
+with the word pre-filled and synonyms loading. 4. Arrow through the
+list; each item shows the synonym and a brief usage note. 5. Press Enter
+or click Replace Word to substitute the word in your document. 6. Type a
+different word in the search box to look up another without closing.</p>
 <p>Privacy: only the word (up to 80 characters) and the surrounding
 sentence (up to 400 characters) are sent. The full document is never
 sent for thesaurus lookups.</p>
@@ -25988,7 +25986,7 @@ passages replaced — QUILL deliberately presents it as lines instead:
 hearing forty word pairs is worse than hearing the old and new lines
 whole. Spacing-only changes are also shown as lines, never spoken as
 word edits.</p>
-<h4 id="suggest-document-metadata--reviewed-field-by-field">Suggest
+<h4 id="suggest-document-metadata-reviewed-field-by-field">Suggest
 Document Metadata — reviewed field by field</h4>
 <p><strong>Suggest Document Metadata…</strong> (in the command palette;
 bindable in the Keymap Editor) asks your configured AI to propose front
@@ -26008,6 +26006,10 @@ step. Close without applying and the document is exactly as it was.</p>
 <p>The AI menu includes quick agentic actions that run a one-shot AI
 task on your document or selection and show the result:</p>
 <table>
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 59%" />
+</colgroup>
 <thead>
 <tr>
 <th>Command</th>
@@ -26034,17 +26036,12 @@ list format.</td>
 </tr>
 </tbody>
 </table>
-<p>All four open an Agent Result dialog where you can:</p>
-<ul>
-<li>View the output with a step log (if a refine pass was run).</li>
-<li>Insert at Cursor: inserts the result without replacing
-anything.</li>
-<li>Replace Selection: replaces the current selection with the
-result.</li>
-<li>Copy: copies the output to the clipboard.</li>
-<li>Re-Run: reruns the same task (useful if the first output was not
-right).</li>
-</ul>
+<p>All four open an Agent Result dialog where you can: - View the output
+with a step log (if a refine pass was run). - Insert at Cursor: inserts
+the result without replacing anything. - Replace Selection: replaces the
+current selection with the result. - Copy: copies the output to the
+clipboard. - Re-Run: reruns the same task (useful if the first output
+was not right).</p>
 <h4 id="ai-hub">AI Hub</h4>
 <p><code>AI &gt; AI Hub...</code> is the central configuration panel for
 all AI settings. It has five tabs:</p>
@@ -26067,8 +26064,8 @@ button.</li>
 <p>For the full provider setup experience (per-provider key management,
 model listing, and verification), use the Full Connection Settings
 button in the Provider tab.</p>
-<h4 id="custom-instructions-ai-hub--instructions-tab">Custom
-Instructions (AI Hub &gt; Instructions tab)</h4>
+<h4 id="custom-instructions-ai-hub-instructions-tab">Custom Instructions
+(AI Hub &gt; Instructions tab)</h4>
 <p>Every AI task in QUILL has a built-in default system prompt that
 tells the AI how to behave. The <strong>Instructions</strong> tab in AI
 Hub lets you read, customise, and share these prompts.</p>
@@ -26081,7 +26078,7 @@ can extend, replace, or turn off these instructions.</p>
 <ol type="1">
 <li>Open <code>AI &gt; AI Hub...</code> and go to the
 <strong>Instructions</strong> tab.</li>
-<li>Select a task from the list on the left (e.g. “AI Spell
+<li>Select a task from the list on the left (e.g. “AI Spell
 Check”).</li>
 <li>The built-in default appears in the lower panel for reference.</li>
 <li>Type your custom instructions in the editor above it.
@@ -26101,6 +26098,10 @@ immediately.</li>
 </ol>
 <p><strong>Built-in defaults — what each task gets:</strong></p>
 <table>
+<colgroup>
+<col style="width: 18%" />
+<col style="width: 81%" />
+</colgroup>
 <thead>
 <tr>
 <th>Task</th>
@@ -26208,6 +26209,12 @@ every supported provider.</p>
 without your request. This section describes exactly what each action
 sends and where.</p>
 <table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr>
 <th>Action</th>
@@ -26297,19 +26304,14 @@ file paths, and any text that looks like a secret before writing the
 diagnostic bundle.</li>
 </ul>
 <p><strong>On-device alternatives:</strong></p>
-<p>If you prefer to keep your text on your machine entirely:</p>
-<ul>
-<li>Use <strong>Ollama (local)</strong> as your AI provider. All spell
-check, grammar, and translation requests go only to your local Ollama
-instance.</li>
-<li>Use <strong>LibreTranslate</strong> (local install) for
-translation.</li>
-<li>Use <strong>Piper</strong> or <strong>Kokoro</strong> for Read Aloud
-— these are local voice engines.</li>
-<li>Avoid the Transcribe and Diarize actions, which require cloud
-services.</li>
-</ul>
-<h4 id="reading--dictation">Reading &amp; Dictation</h4>
+<p>If you prefer to keep your text on your machine entirely: - Use
+<strong>Ollama (local)</strong> as your AI provider. All spell check,
+grammar, and translation requests go only to your local Ollama instance.
+- Use <strong>LibreTranslate</strong> (local install) for translation. -
+Use <strong>Piper</strong> or <strong>Kokoro</strong> for Read Aloud —
+these are local voice engines. - Avoid the Transcribe and Diarize
+actions, which require cloud services.</p>
+<h4 id="reading-dictation">Reading &amp; Dictation</h4>
 <ul>
 <li><strong>Read Aloud</strong> submenu for start or pause, stop, and
 voice selection</li>
@@ -26371,11 +26373,8 @@ own.</li>
 </ul>
 <p>For the complete reference — every voice mode, every spoken command,
 and the privacy rules — see <a href="voice-interaction.md">Voice
-Interaction</a>.</p>
-<ul>
-<li><strong>OCR Image…</strong> converts an image to text via optical
-character recognition.</li>
-</ul>
+Interaction</a>. - <strong>OCR Image…</strong> converts an image to text
+via optical character recognition.</p>
 <h4 id="watch-folder">Watch Folder</h4>
 <ul>
 <li><strong>Watch Folder Monitoring (in Settings)…</strong> toggles
@@ -26502,11 +26501,10 @@ things happen at once: the pattern lands in the pattern box, a
 <strong>plain-language explanation</strong> appears (“One or more
 digits. Optionally: a period…”), and a <strong>preview</strong> runs
 against sample text seeded from your selection, with every match read as
-a sentence (“Match 3: line 4, column 7: <a
-href="mailto:foo@bar.com">foo@bar.com</a>”) and replace previews for the
-transformation recipes. The explanation is live: type or paste
-<strong>any</strong> pattern and QUILL explains it step by step — and a
-broken pattern is diagnosed in words, naming the exact character
+a sentence (“Match 3: line 4, column 7: foo@bar.com”) and replace
+previews for the transformation recipes. The explanation is live: type
+or paste <strong>any</strong> pattern and QUILL explains it step by step
+— and a broken pattern is diagnosed in words, naming the exact character
 position (“Unclosed group: the open-parenthesis at character 4 has no
 matching close”). When the pattern is right, <strong>Use in Find All
 Matches</strong> carries it straight into the search flow with regex
@@ -26560,7 +26558,7 @@ reader.</li>
 </ul>
 <p>These tools help review the editor experience itself, the current
 document’s link surface, and low-vision presentation issues.</p>
-<h4 id="customize--support">Customize &amp; Support</h4>
+<h4 id="customize-support">Customize &amp; Support</h4>
 <ul>
 <li><strong>Preferences…</strong></li>
 <li><strong>Customize Menus…</strong></li>
@@ -26862,6 +26860,10 @@ them.</p>
 <p><strong>Copying to a slot uses the QUILL key prefix followed by the
 same key with Shift:</strong></p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Key</th>
@@ -27022,15 +27024,13 @@ not only here.</li>
 deliberately keep or copy <em>inside QUILL</em>. It does not watch the
 system clipboard, and it keeps no history of what you copy in other
 programs. If you want a full clipboard history across everything you do,
-use a clipboard manager alongside QUILL; the two do different jobs.</p>
-<ul>
-<li><strong>Format.</strong> What “Copy to Clipboard” puts on the
-clipboard, and what Send/Copy as Email sends, both follow the same
+use a clipboard manager alongside QUILL; the two do different jobs. -
+<strong>Format.</strong> What “Copy to Clipboard” puts on the clipboard,
+and what Send/Copy as Email sends, both follow the same
 <strong>Preferences &gt; Editing &gt; “Kept and sent content
 format”</strong> setting (plain text, Markdown, or HTML) — change it
-once, and both features follow.</li>
-</ul>
-<h3 id="send-as-email--copy-as-email-body">Send as Email / Copy as Email
+once, and both features follow.</p>
+<h3 id="send-as-email-copy-as-email-body">Send as Email / Copy as Email
 Body</h3>
 <p><code>File &gt; Send as Email</code> opens your default mail client
 with the current selection — or the whole document if nothing is
@@ -27110,8 +27110,8 @@ Finder-launchable <code>.command</code> shell script on macOS
 contexts — not multi-user accounts, and not a replacement for Story
 Studio, Notebooks, or Copy Tray, all of which a persona can point
 to.</p>
-<h3 id="saving-in-different-formats--what-happens-to-your-file">Saving
-in Different Formats — what happens to your file</h3>
+<h3 id="saving-in-different-formats-what-happens-to-your-file">Saving in
+Different Formats — what happens to your file</h3>
 <p><strong>File &gt; Save As</strong> genuinely converts your document
 to the format you pick in the “Save as type” list — it never just
 renames the file. QUILL’s editor holds your text in one clean canonical
@@ -27212,6 +27212,14 @@ structure; <strong>◑</strong> means it carries over but as text or as
 QUILL’s portable markup rather than a native object; <strong>✕</strong>
 means it is not preserved.</p>
 <table>
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+</colgroup>
 <thead>
 <tr>
 <th>Feature</th>
@@ -27463,7 +27471,7 @@ chord is <strong>QUILL key, B</strong>.</p>
 <li><strong>Introduction.</strong> A short summary, then a live Pandoc
 version probe. If Pandoc is not installed, the page says so and Start
 stays disabled until you install Pandoc 3.x from <a
-href="https://pandoc.org">https://pandoc.org</a>.</li>
+href="https://pandoc.org" class="uri">https://pandoc.org</a>.</li>
 <li><strong>Folder and options.</strong> A folder picker, an
 <strong>Include subfolders</strong> checkbox, an <strong>Output
 layout</strong> radio (Same folder as source, or Output subfolder per
@@ -27567,8 +27575,8 @@ text.</p>
 type without your knowledge, abbreviation expansion is <strong>disabled
 by default</strong> — turn it on when you want it (see <em>Enabling and
 disabling</em> below). Once on, your choice is remembered.</p>
-<p><strong>Example:</strong> type <code>btw </code> (note the trailing
-space) and QUILL replaces it with <code>by the way </code>.</p>
+<p><strong>Example:</strong> type <code>btw</code> (note the trailing
+space) and QUILL replaces it with <code>by the way</code>.</p>
 <p>QUILL ships with fifteen built-in abbreviations covering common
 shorthand. You can add, edit, and disable any abbreviation, including
 the built-in ones.</p>
@@ -27659,10 +27667,10 @@ it the same ways later):</p>
 <code>Ctrl+Shift+Grave, Shift+A</code>) to add, edit, and organise your
 abbreviations. Each abbreviation has:</p>
 <ul>
-<li><strong>Abbreviation</strong> — the short trigger word, e.g.
-<code>btw</code>.</li>
-<li><strong>Expansion</strong> — the full text to substitute, e.g.
-<code>by the way</code>.</li>
+<li><strong>Abbreviation</strong> — the short trigger word,
+e.g. <code>btw</code>.</li>
+<li><strong>Expansion</strong> — the full text to substitute,
+e.g. <code>by the way</code>.</li>
 <li><strong>Description</strong> — optional note for your own
 reference.</li>
 <li><strong>Case sensitive</strong> — when checked, only the exact-case
@@ -27686,7 +27694,7 @@ long template sometimes does.</li>
 play, or never play.</li>
 <li><strong>Add a trailing space after punctuation</strong> — adds one
 space after the punctuation that fired the expansion, so
-<code>co.</code> gives <code>Company, </code> rather than
+<code>co.</code> gives <code>Company,</code> rather than
 <code>Company ,</code>. It has no effect on a space trigger, which
 already leaves a space.</li>
 </ul>
@@ -27744,11 +27752,11 @@ placeholders:</p>
 </tr>
 <tr>
 <td><code>${date}</code></td>
-<td>Current date (e.g. June 11, 2026)</td>
+<td>Current date (e.g. June 11, 2026)</td>
 </tr>
 <tr>
 <td><code>${time}</code></td>
-<td>Current time (e.g. 02:30 PM)</td>
+<td>Current time (e.g. 02:30 PM)</td>
 </tr>
 <tr>
 <td><code>${clipboard}</code></td>
@@ -27786,14 +27794,22 @@ in the expansion and QUILL asks for it before inserting:</p>
 can accept or replace.</li>
 <li>The same label used twice is asked once and filled everywhere, so a
 name in the greeting also lands in the sign-off.</li>
+<li><code>${choice:Label|first reminder|second reminder|final notice}</code>
+offers a list to pick from instead of a box to type in. Use it wherever
+the answer is one of a known few: picking is one arrow key, and typing
+“Second reminder” exactly right is a spelling test nobody asked to sit.
+The first option is the default, so a choice left alone behaves like a
+field with a starting value.</li>
 </ul>
-<p>A small form appears with one labelled box per field, in the order
-the template asks for them. Tab moves between them, Enter moves to the
-next, Enter on the last accepts, and Escape cancels — and cancelling
-leaves what you typed exactly as it was. <code>${cursor}</code> still
-works alongside fields: the caret lands where the template put it, after
-the answers are in. The same form appears in Quill Inkwell, so a
-template behaves identically wherever you use it.</p>
+<p>A small form appears with one labelled control per field – a box to
+type in, or a list to choose from – in the order the template asks for
+them, which is the order it reads in. Tab moves between them, Enter
+moves to the next, Enter on the last accepts, and Escape cancels — and
+cancelling leaves what you typed exactly as it was.
+<code>${cursor}</code> still works alongside fields: the caret lands
+where the template put it, after the answers are in. The same form
+appears in Quill Inkwell, so a template behaves identically wherever you
+use it.</p>
 <p><strong>Multi-press window.</strong> The double/triple press
 detection window is configurable in
 <code>Tools &gt; Customize &amp; Support &gt; Preferences &gt; Editing</code>
@@ -27806,19 +27822,38 @@ on abbreviation expansion</strong> in
 and optionally point <strong>Abbreviation expansion sound file</strong>
 to a <code>.wav</code> file. Leave the path blank for the default system
 beep.</p>
+<p><strong>Abbreviations that only fire in certain
+applications.</strong> An abbreviation can be limited to named
+applications – a signature to your mail client, a code snippet to your
+editor – by listing them in the abbreviation’s
+<strong>Applications</strong> field. Leave it empty, as every
+abbreviation is by default, and it fires everywhere. This only applies
+to Quill Inkwell, which types into whatever application you are in;
+inside QUILL there is one application, so scoping to it could only ever
+switch an entry off. A scoped abbreviation deliberately does
+<strong>not</strong> fire when Inkwell cannot tell which application is
+in front: the safe answer to “I do not know where this would land” is
+not to type into it.</p>
 <p><strong>Quillin-contributed abbreviations.</strong> Installed
 Quillins can add their own abbreviations to the registry. Each one can
 be turned on or off individually in the Quillin’s own preferences page
 (open <strong>Preferences</strong>, Ctrl+Comma, then navigate to the
 Quillin by name — for the bundled Smart Insert Quillin, the toggles are
 on its <strong>Abbreviations</strong> tab). Contributed abbreviations
-are kept separate from your saved library and are never written into it.
-Your own abbreviations always take priority over Quillin-contributed
-ones; if two Quillins claim the same trigger, the one loaded first
-wins.</p>
+are kept separate from your saved library and are never written into it,
+so removing a Quillin takes its abbreviations with it. Your own
+abbreviations always take priority over Quillin-contributed ones; if two
+Quillins claim the same trigger, the one loaded first wins. <strong>They
+work in other applications too</strong>, through Quill Inkwell – a
+Quillin that adds a set of medical abbreviations or company boilerplate
+should not stop at the edge of the editor.</p>
 <p>The bundled <strong>Smart Insert</strong> Quillin contributes four
 expanding abbreviations by default:</p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Trigger</th>
@@ -27879,6 +27914,10 @@ accidentally fire inside a sentence.</p>
 <p>The bundled <strong>Smart Insert</strong> Quillin contributes these
 triggers out of the box:</p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Trigger</th>
@@ -27986,6 +28025,11 @@ review workflows, and evidence gathering.</p>
 <p><strong>F8-based anchor selection</strong></p>
 <p>Quill uses an anchor-based selection model:</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Key</th>
@@ -28033,6 +28077,11 @@ review workflows, and evidence gathering.</p>
 </table>
 <p><strong>Structural selection</strong></p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Key</th>
@@ -28075,6 +28124,11 @@ default key; assign one in Preferences &gt; Keyboard). When active, an
 <p>The mark ring is a rolling stack of temporary jump points for
 in-session back-and-forth navigation:</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Key</th>
@@ -28256,7 +28310,7 @@ editing characteristics, not just token navigation:</p>
 for HTML and Markdown.</li>
 <li><strong>Toggle Line/Block Comment</strong> uses the language’s
 comment syntax (<code>#</code>, <code>//</code>,
-<code>&lt;!-- --&gt;</code>, <code>-- </code>).</li>
+<code>&lt;!-- --&gt;</code>, <code>--</code>).</li>
 <li><strong>Heading and structure navigation, the outline, link
 insertion, and live preview</strong> all follow the chosen
 language.</li>
@@ -28372,6 +28426,11 @@ document.</p>
 <p>Each finding is reported with a confidence level (High, Medium, or
 Low) so you can prioritize what to fix.</p>
 <table>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 32%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Rule</th>
@@ -28457,6 +28516,11 @@ changed.</p>
 <p>Four preferences in <code>Settings → Preferences → General</code>
 control Quill Eraser behaviour:</p>
 <table>
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 28%" />
+<col style="width: 43%" />
+</colgroup>
 <thead>
 <tr>
 <th>Setting</th>
@@ -28486,8 +28550,8 @@ control Quill Eraser behaviour:</p>
 <tr>
 <td><code>hygiene_rules_disabled</code></td>
 <td>(empty)</td>
-<td>Comma-separated list of rule IDs to disable (e.g.
-<code>prose.lowercase_sentence_start,prose.missing_space_after_comma</code>).</td>
+<td>Comma-separated list of rule IDs to disable
+(e.g. <code>prose.lowercase_sentence_start,prose.missing_space_after_comma</code>).</td>
 </tr>
 </tbody>
 </table>
@@ -28664,7 +28728,7 @@ list item, the markers are stripped and the line returns to plain text;
 otherwise a new list is inserted at the caret. Numbered-list insertion
 honours the <code>list_auto_fill_numbers</code> setting (Preferences
 -&gt; Editing -&gt; Lists) — when the setting is on, every item gets
-<code>1. </code>, <code>2. </code>, <code>3. </code> markers; when it is
+<code>1.</code>, <code>2.</code>, <code>3.</code> markers; when it is
 off, only the first item does. The chord is always available in markdown
 and HTML surfaces; plain-text documents announce the chord is
 unavailable and the action is skipped.</p>
@@ -28807,7 +28871,8 @@ binary or opaque. The live preview and exported HTML render it properly
 (QUILL loads a maths renderer only for documents that actually contain
 maths), and because the source stays as text you can always arrow
 through the raw LaTeX to check it.</p>
-<p><em>Insert Equation was contributed by @salorajan.</em></p>
+<p><em>Insert Equation was contributed by <span class="citation"
+data-cites="salorajan">@salorajan</span>.</em></p>
 <h3 id="citations-and-bibliographies">Citations and bibliographies</h3>
 <p>For research writing, <strong>Insert -&gt; Insert Citation…</strong>
 builds correctly formatted citations from details you type, so you do
@@ -28992,7 +29057,7 @@ connection; the underlying LaTeX/MathML (and everything your screen
 reader announces) is always present offline. If you are offline,
 equations show as their raw source rather than typeset math — the
 content is never lost.</p>
-<h4 id="common-formulas-gallery--no-typing-required">Common Formulas
+<h4 id="common-formulas-gallery-no-typing-required">Common Formulas
 gallery — no typing required</h4>
 <p><strong>Insert → Snippet Gallery…</strong> lists ten ready-made
 formulas contributed by the Math Equations Quillin: the Quadratic
@@ -29007,18 +29072,18 @@ abbreviations</h4>
 <p>Typing a backslash code followed by a space or punctuation — matching
 Word’s own Math AutoCorrect behavior — expands it to the corresponding
 symbol anywhere in ordinary prose (not inside the equation prompt):
-<code>\alpha </code> becomes <code>α</code>, <code>\sqrt </code> becomes
-<code>√</code>, <code>\ne </code> becomes <code>≠</code>, and so on. The
+<code>\alpha</code> becomes <code>α</code>, <code>\sqrt</code> becomes
+<code>√</code>, <code>\ne</code> becomes <code>≠</code>, and so on. The
 full table (88 entries covering operators, relations, set and logic
 notation, number sets, Greek letters, calculus notation, and geometry
 symbols) is seeded from the DAISY-published Word Math AutoCorrect list
 (daisy.org/MSMathCodes) and lives under <strong>Preferences → Editing →
 Insert Automation</strong>, where any entry — or the whole set — can be
 disabled like any other contributed abbreviation. Case matters where it
-matters mathematically: <code>\delta </code> gives lowercase δ and
-<code>\Delta </code> gives uppercase Δ.</p>
+matters mathematically: <code>\delta</code> gives lowercase δ and
+<code>\Delta</code> gives uppercase Δ.</p>
 <h4
-id="explore-equation-structure--step-through-a-formula-by-ear">Explore
+id="explore-equation-structure-step-through-a-formula-by-ear">Explore
 Equation Structure — step through a formula by ear</h4>
 <p>Select an equation (or type one fresh) and run <strong>Insert →
 Explore Equation Structure…</strong>, or press <strong>Ctrl+Shift+Grave,
@@ -29031,7 +29096,7 @@ MathML first — Enter accepts it, Escape cancels the command before it
 starts.</li>
 <li>At each step, QUILL <strong>announces</strong> the current piece
 (speech only — “Whole equation” at the top, or the piece’s name once
-you’ve descended, e.g. “Fraction”), then opens a standard Windows
+you’ve descended, e.g. “Fraction”), then opens a standard Windows
 single-selection list (<code>wx.SingleChoiceDialog</code>) with that
 piece’s children as choices, always followed by <strong>Read this part
 aloud</strong>, then <strong>Back up one level</strong> (once you’re
@@ -29420,7 +29485,7 @@ that service — pick an on-device voice to keep everything local. The
 reader page (which contains your document text) is written to QUILL’s
 app-data folder and deleted when you close QUILL, so no plaintext copy
 is left behind.</p>
-<h3 id="audiobook--batch-speech-the-audio-production-wizard">Audiobook
+<h3 id="audiobook-batch-speech-the-audio-production-wizard">Audiobook
 &amp; Batch Speech (the audio production wizard)</h3>
 <p><strong>Tools → Speech → Audiobook &amp; Batch Speech…</strong> is
 the guided home for audio production: it converts a whole folder of
@@ -29551,57 +29616,57 @@ Rewind/Forward, a position slider that speaks minutes and seconds, and a
 volume slider; the current chapter is announced as playback crosses into
 it.</p>
 <ul>
-<li><p><strong>Split at playhead</strong> — listen for the spot where a
+<li><strong>Split at playhead</strong> — listen for the spot where a
 chapter should begin, pause there, press the button: the chapter is cut
 in two exactly at the playhead. This is how you fix a book whose
-chapters landed in the wrong places.</p></li>
-<li><p><strong>Set start to playhead</strong> — retime an existing
+chapters landed in the wrong places.</li>
+<li><strong>Set start to playhead</strong> — retime an existing
 boundary: select the chapter, park the playhead where it should start,
 press. The previous chapter’s end moves with it, so the timeline always
-stays contiguous.</p></li>
-<li><p><strong>Merge into previous</strong>, <strong>Rename</strong>
-(type and press Enter), and <strong>Restore original</strong> (one press
-undoes every edit) round out the surgery.</p></li>
-<li><p><strong>Propose chapters from silences…</strong> scans the
-recording with ffmpeg’s <code>silencedetect</code>, with a small dialog
-asking for the <strong>noise threshold</strong> (dB, default -30) and
+stays contiguous.</li>
+<li><strong>Merge into previous</strong>, <strong>Rename</strong> (type
+and press Enter), and <strong>Restore original</strong> (one press
+undoes every edit) round out the surgery.</li>
+<li><strong>Propose chapters from silences…</strong> scans the recording
+with ffmpeg’s <code>silencedetect</code>, with a small dialog asking for
+the <strong>noise threshold</strong> (dB, default -30) and
 <strong>minimum silence</strong> length (seconds, default 0.8), and
 proposes chapter boundaries at the silence midpoints. The proposal lands
 in the chapter list for review — never applied blind; press
 <strong>Restore original</strong> to undo. The one-long-recording story
 is complete: open a single 80-minute file (it opens as one chapter),
-press one button, review, save.</p></li>
-<li><p><strong>Check against ACX</strong> measures the file with
-fbmpeg’s loudnorm and shows a verdict dialog with integrated loudness,
-true peak, and noise floor, plus a speakable recommendation for each
-failing criterion (“Integrated loudness is -14.2 LUFS, target -20 plus
-or minus 3; make the recording 5.8 dB quieter”). The verdict is
-announced when the measurement finishes, regardless of how the dialog is
-dismissed.</p></li>
-<li><p><strong>Import chapters…</strong> replaces the whole list from
+press one button, review, save.</li>
+<li><strong>Check against ACX</strong> measures the file with fbmpeg’s
+loudnorm and shows a verdict dialog with integrated loudness, true peak,
+and noise floor, plus a speakable recommendation for each failing
+criterion (“Integrated loudness is -14.2 LUFS, target -20 plus or minus
+3; make the recording 5.8 dB quieter”). The verdict is announced when
+the measurement finishes, regardless of how the dialog is
+dismissed.</li>
+<li><strong>Import chapters…</strong> replaces the whole list from
 Audacity labels, a CUE sheet, timestamp lines, Podcasting 2.0 JSON, or
 CSV; <strong>Export chapters…</strong> writes the list in any of the
-same five formats.</p></li>
-<li><p><strong>Split into files…</strong> goes the other way: one audio
+same five formats.</li>
+<li><strong>Split into files…</strong> goes the other way: one audio
 file per chapter, named <code>NN - Title</code>, into a folder you pick
 — instant podcast episodes, or tracks for players without chapter
-support.</p></li>
-<li><p><strong>Propose AI titles…</strong> names a folder of
+support.</li>
+<li><strong>Propose AI titles…</strong> names a folder of
 <code>track07</code>-style chapters by listening to them: the opening
 minute of each chapter is transcribed on this machine by the local
 speech model (the audio never leaves your computer), only that text goes
 to your configured AI (a local model keeps even the text on-device), and
 a short proposed title per chapter lands in the list for your review —
 <strong>Restore original</strong> undoes the lot. Needs a configured AI;
-unavailable in Safe Mode.</p></li>
-<li><p>The player <strong>remembers where you stopped</strong> in each
-book and resumes there next time, offers a <strong>playback
-speed</strong> control (0.75x to 2x, pitch preserved), and answers
-<strong>“Where am I?”</strong> with the full audible glance: “Chapter 4
-of 24: The Long Road. 3:12 into the chapter, 9:28 left in it. 1:02:03 of
-7:41:00 in the book, 6:38:57 remaining.”</p></li>
-<li><p>Playback normally uses Windows’ built-in media engine — nothing
-to install. For gapless audio, exact seeking, and instant chapter jumps
+unavailable in Safe Mode.</li>
+<li>The player <strong>remembers where you stopped</strong> in each book
+and resumes there next time, offers a <strong>playback speed</strong>
+control (0.75x to 2x, pitch preserved), and answers <strong>“Where am
+I?”</strong> with the full audible glance: “Chapter 4 of 24: The Long
+Road. 3:12 into the chapter, 9:28 left in it. 1:02:03 of 7:41:00 in the
+book, 6:38:57 remaining.”</li>
+<li>Playback normally uses Windows’ built-in media engine — nothing to
+install. For gapless audio, exact seeking, and instant chapter jumps
 even on 8-hour books, download the <strong>mpv player engine</strong>
 from <strong>Help &gt; Download Optional Components</strong> (about 44
 MB, checksum-verified; its licenses and a source offer ship inside the
@@ -29609,16 +29674,16 @@ download) and the player switches to <strong>libmpv</strong> the next
 time it opens. Power users can instead drop a <code>libmpv-2.dll</code>
 into the data folder’s <code>engine-packs\mpv</code> directory or point
 <code>QUILL_LIBMPV</code> at one. If the DLL is missing or broken, QUILL
-quietly stays on the built-in engine.</p></li>
-<li><p><strong>Book details</strong> (title, author, narrator, genre,
-year) are edited right in the dialog.</p></li>
-<li><p><strong>Save</strong> writes an MP3’s edits <strong>in
+quietly stays on the built-in engine.</li>
+<li><strong>Book details</strong> (title, author, narrator, genre, year)
+are edited right in the dialog.</li>
+<li><strong>Save</strong> writes an MP3’s edits <strong>in
 place</strong> — only the tags are rewritten; the audio is untouched. An
 M4B is saved with <strong>Save As</strong> instead: a lossless re-mux
 (no re-encode, no quality loss) into a new file. Long saves run in the
-background so QUILL stays responsive.</p></li>
-<li><p><strong>Publish…</strong> opens three ways to get the finished
-book out into the world, each an explicit action:</p>
+background so QUILL stays responsive.</li>
+<li><strong>Publish…</strong> opens three ways to get the finished book
+out into the world, each an explicit action:
 <ul>
 <li><strong>Podcast feed</strong> — QUILL writes a complete
 <code>.rss</code> file next to the book (RSS 2.0 with iTunes and
@@ -29653,7 +29718,7 @@ your balance before anything uploads. The token can also be managed
 centrally in <strong>AI &gt; AI Hub &gt; Services</strong>, alongside
 QUILL’s other service keys. QUILL asks before anything is uploaded.</li>
 </ul>
-<p>Publishing is unavailable in Safe Mode, and every upload runs in the
+Publishing is unavailable in Safe Mode, and every upload runs in the
 background with spoken completion. SFTP uploads and Auphonic transfers
 show a progress dialog that speaks whole-percent steps as bytes move
 (“Uploading book.m4b: 42%”) and has a real <strong>Cancel</strong>
@@ -29661,7 +29726,7 @@ button: cancelling an SFTP upload stops mid-file (already-completed
 files stay on the server), cancelling an Auphonic run before the upload
 finishes means no production starts, and cancelling after that leaves
 the production running in your Auphonic account and skips the download —
-QUILL announces which of these happened.</p></li>
+QUILL announces which of these happened.</li>
 </ul>
 <p>Each step is announced as you arrive (“Step 2 of 7: What should I
 read?”), <strong>Back</strong> and <strong>Next</strong> move between
@@ -29884,7 +29949,7 @@ master.</p>
 <li>Point it at a <strong>folder of audio files</strong>; each file
 becomes one <strong>chapter</strong>, in natural-sorted order, with the
 chapter title taken from the file name (a leading track number like
-<code>01 - </code> is stripped).</li>
+<code>01 -</code> is stripped).</li>
 <li><strong>Edit the chapters before building.</strong> The dialog lists
 the chapters; you can <strong>rename</strong> the selected one (type a
 new title and press Rename or Enter), <strong>move</strong> it
@@ -30804,7 +30869,7 @@ rich text mode. The rule to hold onto: <strong>bold means bold — QUILL
 speaks your document’s language.</strong></p>
 <ul>
 <li><strong>Writing Markdown (.md):</strong> Ctrl+B wraps your selection
-in <code>**</code>, Insert Heading 2 puts <code>## </code> on the line.
+in <code>**</code>, Insert Heading 2 puts <code>##</code> on the line.
 Exactly as always.</li>
 <li><strong>Writing HTML (.html):</strong> Ctrl+B wraps in
 <code>&lt;strong&gt;</code>, headings become real HTML headings. Exactly
@@ -31026,7 +31091,7 @@ or not at all, so an interrupted backup can never be the thing you
 restore, and always as UTF-8, so a document QUILL opened in a narrower
 encoding cannot fail to back up the moment you type an accented
 character. Backups made by earlier versions still restore normally.</p>
-<h3 id="restore-points--bring-back-any-earlier-save">Restore points —
+<h3 id="restore-points-bring-back-any-earlier-save">Restore points —
 bring back any earlier save</h3>
 <p>Every time you save, QUILL quietly keeps a snapshot of the document.
 <strong>File &gt; Restore Previous Version</strong> lists them in plain
@@ -31255,7 +31320,7 @@ or normal text editor mode. You can remember your preferred default and
 still switch modes from inside the tab at any time. Grid mode is
 keyboard-friendly and designed for screen-reader users who need
 cell-level table editing without leaving Quill.</p>
-<h3 id="word-docx-and-doc">Word (.docx and .doc)</h3>
+<h3 id="word-.docx-and-.doc">Word (.docx and .doc)</h3>
 <p>Word documents open through a choice flow: structured Word view or
 normal text editor mode. You can remember your preferred default and
 still switch modes inside the tab.</p>
@@ -31265,8 +31330,8 @@ screen readers. Normal text mode keeps full Quill editing behavior for
 direct edits.</p>
 <p><strong>Saving to Word.</strong> You can also save any document
 <em>as</em> Word. In <strong>File -&gt; Save As…</strong>, choose
-<strong>Word Document (*.docx)</strong> (or <strong>Rich Text Format
-(*.rtf)</strong>) from the file-type list, and Quill converts the
+<strong>Word Document (<em>.docx)<strong> (or </strong>Rich Text Format
+(</em>.rtf)</strong>) from the file-type list, and Quill converts the
 current content to that format on save. Markdown and HTML structure —
 headings, lists, emphasis, links, simple tables — maps to real Word
 styles, so the result is navigable in Word, not just visually formatted.
@@ -31274,13 +31339,13 @@ Saving plain text produces a correct but unformatted document, since
 plain text has no structure to carry.</p>
 <h3 id="epub">EPUB</h3>
 <p>EPUB gets navigator support and chapter-oriented reading.</p>
-<h3 id="powerpoint-pptx-and-ppt">PowerPoint (.pptx and .ppt)</h3>
+<h3 id="powerpoint-.pptx-and-.ppt">PowerPoint (.pptx and .ppt)</h3>
 <p>PowerPoint imports are structure-aware: slide titles become headings,
 slide bullets become nested list items, tables are rendered into
 tab-friendly text tables, and speaker notes are included when
 present.</p>
-<h3 id="excel-style-spreadsheets-xlsx-and-xls">Excel-style spreadsheets
-(.xlsx and .xls)</h3>
+<h3 id="excel-style-spreadsheets-.xlsx-and-.xls">Excel-style
+spreadsheets (.xlsx and .xls)</h3>
 <p>Spreadsheet intake is text-first and structure-aware. Quill extracts
 sheets into readable table-oriented text so you can inspect and review
 content quickly. If optional converters are installed, extraction
@@ -31288,8 +31353,8 @@ quality improves for legacy and mixed-format files.</p>
 <h3 id="pdf-and-ocr-derived-text">PDF and OCR-derived text</h3>
 <p>PDF and OCR work are where Quill’s extraction review commands matter
 most. Treat those commands as quality checks, not optional extras.</p>
-<h3 id="import--convert-document--free-first-conversion-and-ocr">Import
-/ Convert Document — free-first conversion and OCR</h3>
+<h3 id="import-convert-document-free-first-conversion-and-ocr">Import /
+Convert Document — free-first conversion and OCR</h3>
 <p><strong>File &gt; Import &gt; Import / Convert Document
 (OCR)…</strong> (also under <strong>Tools &gt; Reading &amp;
 Dictation</strong>) is QUILL’s document-rescue tool for files that are
@@ -31516,16 +31581,12 @@ first.</li>
 <li><strong>Status</strong> — shows progress messages and item
 counts.</li>
 </ul>
-<p>Navigation:</p>
-<ul>
-<li>Press Enter on a folder to open it.</li>
-<li>Press Enter on a file to open it (same as clicking Open File).</li>
-<li>Press Backspace to go up one level.</li>
-<li>Press F5 to refresh the current folder.</li>
-<li>Tab through the buttons: <strong>Open File</strong>, <strong>Go
-Up</strong>, <strong>Refresh</strong>, <strong>Copy URL</strong>,
-<strong>Cancel</strong>.</li>
-</ul>
+<p>Navigation: - Press Enter on a folder to open it. - Press Enter on a
+file to open it (same as clicking Open File). - Press Backspace to go up
+one level. - Press F5 to refresh the current folder. - Tab through the
+buttons: <strong>Open File</strong>, <strong>Go Up</strong>,
+<strong>Refresh</strong>, <strong>Copy URL</strong>,
+<strong>Cancel</strong>.</p>
 <p><strong>Opening a file by URL</strong></p>
 <p>If you have a GitHub file URL (for example from a colleague), use
 <strong>File &gt; Open from Remote &gt; GitHub File URL…</strong></p>
@@ -31538,15 +31599,11 @@ press Enter. QUILL fetches the file directly.</p>
 <p>QUILL will ask for a commit message. Type a short description of your
 changes and press Enter. QUILL commits your changes to the same
 repository, branch, and file path using the GitHub API.</p>
-<p>Notes:</p>
-<ul>
-<li>You need a token with write permission (<code>repo</code> scope) to
-save back.</li>
-<li>If the file was changed on GitHub since you opened it, QUILL will
-tell you to refresh and try again.</li>
-<li>This command does not run automatically when you press Save. You
-must choose it deliberately.</li>
-</ul>
+<p>Notes: - You need a token with write permission (<code>repo</code>
+scope) to save back. - If the file was changed on GitHub since you
+opened it, QUILL will tell you to refresh and try again. - This command
+does not run automatically when you press Save. You must choose it
+deliberately.</p>
 <p><strong>Managing your GitHub account</strong></p>
 <p>Use <strong>File &gt; Open from Remote &gt; Manage GitHub
 Accounts…</strong> to:</p>
@@ -31990,13 +32047,12 @@ Worktrees…</strong> opens the list. QUILL announces how many worktrees
 the repository has as the dialog opens, and each row reads as a complete
 sentence rather than a set of columns you have to arrow across:</p>
 <ul>
-<li><em>“Main worktree at S:\code\quill, on branch main”</em></li>
-<li><em>“Linked worktree at S:\code\quill-feature-x, on branch
-feature/x”</em></li>
-<li><em>“Linked worktree at D:\usb\quill-spike, on branch spike, locked:
-on a USB drive”</em></li>
-<li><em>“Linked worktree at S:\code\quill-old, on branch old, missing
-from disk, ready to prune”</em></li>
+<li><em>“Main worktree at S:, on branch main”</em></li>
+<li><em>“Linked worktree at S:-feature-x, on branch feature/x”</em></li>
+<li><em>“Linked worktree at D:-spike, on branch spike, locked: on a USB
+drive”</em></li>
+<li><em>“Linked worktree at S:-old, on branch old, missing from disk,
+ready to prune”</em></li>
 </ul>
 <p>A worktree that is not on a branch at all reads as <em>“not on a
 branch, at commit 3f9a21c”</em>. After any action, QUILL speaks the
@@ -32126,6 +32182,19 @@ in this chapter. In QUILL 1.0.0 it runs as the standalone <strong>Quill
 Radio</strong> app rather than inside the editor; see <em>Quill Radio:
 the standalone app</em> (below) for how to launch it. It is disabled
 entirely in Safe Mode, since it is a network feature.</p>
+<blockquote>
+<p><strong>The browsing described in this chapter is the older,
+in-editor dialog.</strong> Quill Radio 3.0 replaced it with a tree of
+twenty-eight branches you can wander without searching for anything: the
+station directory by country, by language, by what is trending today;
+podcasts by country and genre with no account anywhere; and whole
+libraries — the Internet Archive, LibriVox, Project Gutenberg, Audius,
+Mixcloud, ccMixter — plus browse axes drawn from Wikidata (by city,
+owner, network, format, or where a station sits on the dial). None of it
+needs a key or a sign-in. It is all documented in the <strong>Quill
+Radio User Guide</strong>, which the standalone app opens from its own
+Help menu.</p>
+</blockquote>
 <h3 id="finding-and-playing-a-station">Finding and playing a
 station</h3>
 <p><strong>Browse Stations…</strong> opens a search-and-browse
@@ -32306,7 +32375,7 @@ FLAC, or WAV), bitrate, destination folder, a filename pattern using
 <code>{station}</code>, <code>{date}</code>, and <code>{time}</code>
 placeholders, and a maximum recording length that acts as a safety cap
 even if you forget a recording is running. New recordings go to a
-visible <strong>Music\Quill Radio Recordings</strong> folder by default
+visible <strong>MusicRadio Recordings</strong> folder by default
 (falling back to your home folder) rather than a buried application-data
 path, so a finished recording is easy to find. An optional
 <strong>Temporary folder (while recording)</strong> writes the file
@@ -32330,6 +32399,10 @@ Recordings list</h3>
 main-window keys work in the <strong>Recordings…</strong> window on the
 letter keys you already know — no modifier, no menu:</p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Key</th>
@@ -32484,6 +32557,57 @@ sources (they appear blended into your search results, above) — through
 open, no-key, no-account backends that resolve only the stations you
 actually search for, never a bulk scrape. YouTube audio is still not
 supported.</p>
+<h2
+id="everything-you-started-and-carrying-your-place-between-machines">Everything
+you started, and carrying your place between machines</h2>
+<h3 id="continue-listening">Continue Listening</h3>
+<p><strong>Continue Listening…</strong> (in the Command Palette) is one
+list of everything you started and did not finish, newest first, with
+the kind named on every row: a podcast episode you are twenty minutes
+into, a recorded programme or LibriVox chapter you were halfway through.
+QUILL remembered each of those separately and never showed you the two
+together, which meant the question people actually have – <em>what was I
+in the middle of?</em> – had no place to be asked.</p>
+<p><strong>Resume</strong> starts the highlighted row where you left
+off. <strong>Forget This One</strong> drops the saved place and removes
+the row; the episode stays unplayed, because “I am not going back to
+this” and “I finished it” are different things to say. A resume list you
+cannot clear is one that fills with things you abandoned on purpose and
+stops being worth opening.</p>
+<h3 id="carry-my-place-between-machines">Carry My Place Between
+Machines</h3>
+<p>If you listen on more than one computer, <strong>Carry My Place
+Between Machines…</strong> makes where-you-got-to follow you. It needs
+two things: a folder both machines can see, and a recovery phrase.</p>
+<p><strong>The folder is yours.</strong> Point it at somewhere inside
+OneDrive, Dropbox, iCloud Drive, a network share, or even a memory stick
+you carry between two machines. QUILL runs no server of its own and
+never holds your listening history: everything is encrypted before it
+reaches the folder, so whoever runs that folder learns nothing but file
+sizes and times.</p>
+<p><strong>The recovery phrase is eight ordinary words</strong>,
+generated for you – something like <em>earth dock hollow iris farm laser
+daisy amber</em>. Write it down. It is the key, and QUILL cannot recover
+it for you if it is lost. <strong>Read My Phrase Aloud</strong> says it
+back numbered, one word at a time, which is what you want while writing
+it on paper.</p>
+<p><strong>Setting up the second machine is the same window.</strong>
+Point it at the same folder and type the phrase from the first one.
+QUILL notices the folder is already set up and says so, and if the
+phrase is wrong it tells you straight away – <em>“that recovery phrase
+does not match this folder; nothing was changed”</em> – rather than
+half-syncing and failing later. Typing is forgiving about capitals,
+spacing and punctuation, and a word that is not from the list is named
+so you can check that one instead of all eight.</p>
+<p><strong>Sync Now</strong> runs it, and says what happened in a
+sentence: what came back, what went out, and whether two machines
+disagreed about a place (the most recent one wins, and you are told).
+Optionally it can also run when playback stops. If both machines
+remembered a different place in the same thing and the difference is
+more than a few minutes, that is a real disagreement and QUILL says so
+rather than quietly picking one.</p>
+<p>Everything works completely normally with no sync at all: this is
+additive, and nothing waits on a folder before playing.</p>
 <h2 id="quill-radio-the-standalone-app">Quill Radio: the standalone
 app</h2>
 <p>You don’t have to open the full QUILL editor to listen. <strong>Quill
@@ -32767,6 +32891,10 @@ documentation section for this control.</li>
 </ul>
 <p><strong>How the three Help keys work together:</strong></p>
 <table>
+<colgroup>
+<col style="width: 26%" />
+<col style="width: 73%" />
+</colgroup>
 <thead>
 <tr>
 <th>Key</th>
@@ -32853,6 +32981,10 @@ plain-English starting points). You can switch profiles at any time from
 <strong>Tools → Customize &amp; Support → Profiles and
 Features…</strong> or by pressing <code>Alt+Shift+P</code>.</p>
 <table>
+<colgroup>
+<col style="width: 47%" />
+<col style="width: 52%" />
+</colgroup>
 <thead>
 <tr>
 <th>Profile</th>
@@ -32879,7 +33011,7 @@ announcements</td>
 </tr>
 </tbody>
 </table>
-<h3 id="fixes-in-070-beta-2">Fixes in 0.7.0 Beta 2</h3>
+<h3 id="fixes-in-0.7.0-beta-2">Fixes in 0.7.0 Beta 2</h3>
 <p>The Beta 2 release includes a sweep of accessibility, macOS, and
 crash-resistance fixes. Where the fix is invisible to the user, the note
 says so; where the fix is user-visible, the note gives the user-facing
@@ -33102,6 +33234,10 @@ Responsibilities</h3>
 <p>QUILL follows a four-tier model aligned with NV Access community
 practice:</p>
 <table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 72%" />
+</colgroup>
 <thead>
 <tr>
 <th>Role</th>
@@ -33370,6 +33506,10 @@ own label text and are exempt.</p>
 automatically — no user action required. Fourteen events are
 available:</p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Event</th>
@@ -33757,15 +33897,11 @@ the left (type in the search field to filter by name or category). The
 selected prompt’s instruction text on the right. An optional input text
 field where you can type or paste text to use as the selection
 context.</p>
-<p><strong>Running a prompt.</strong></p>
-<ol type="1">
-<li>Select a prompt from the list (or type in the search field to find
-it).</li>
-<li>Optionally paste text into the input field. If blank, QUILL uses the
-current editor selection or full document.</li>
-<li>Press <strong>Run with AI</strong>. The result opens in the AI
-Response dialog.</li>
-</ol>
+<p><strong>Running a prompt.</strong> 1. Select a prompt from the list
+(or type in the search field to find it). 2. Optionally paste text into
+the input field. If blank, QUILL uses the current editor selection or
+full document. 3. Press <strong>Run with AI</strong>. The result opens
+in the AI Response dialog.</p>
 <p><strong>Built-in prompts.</strong> QUILL ships a set of ready-to-run
 prompts you can use immediately or use as starting points. They include
 editing and tone tools (Check Grammar, Fix Grammar, Improve Clarity,
@@ -33820,6 +33956,10 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="
 across five categories. These are always present and fully editable;
 they cannot be deleted.</p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Category</th>
@@ -33853,7 +33993,7 @@ prompts (Expand This, Vary Sentence Rhythm, Make More Vivid, Write a
 Title, Generate Outline, Suggest Supporting Evidence, Plain Language).
 These appear in the list and can be run like any other prompt; they are
 not persisted to your library file.</p>
-<h3 id="skill-library-sqp-skills">Skill Library (.sqp skills)</h3>
+<h3 id="skill-library-.sqp-skills">Skill Library (.sqp skills)</h3>
 <p>Skills are multi-step AI workflows. Where a prompt is one
 instruction, a skill is a sequence of steps where each step can use the
 output of the step before it.</p>
@@ -33884,17 +34024,14 @@ clipboard.</li>
 logical structure, finds weaknesses and counterarguments, then produces
 a strengthened version tailored to your chosen audience.</li>
 </ul>
-<p><strong>Running a skill.</strong></p>
-<ol type="1">
-<li>Open <strong>AI &gt; Skill Library…</strong></li>
-<li>Select a skill from the list.</li>
-<li>Press <strong>Run</strong>. If the skill has parameters, a small
-dialog appears — fill in the choices and press OK.</li>
-<li>QUILL announces “Running step 1 of N…” as each step executes.</li>
-<li>When complete, the result dialog appears. Read the output, then
-press <strong>Accept</strong> to apply it (if the skill places output in
-the document) or <strong>Copy</strong> to copy to clipboard.</li>
-</ol>
+<p><strong>Running a skill.</strong> 1. Open <strong>AI &gt; Skill
+Library…</strong> 2. Select a skill from the list. 3. Press
+<strong>Run</strong>. If the skill has parameters, a small dialog
+appears — fill in the choices and press OK. 4. QUILL announces “Running
+step 1 of N…” as each step executes. 5. When complete, the result dialog
+appears. Read the output, then press <strong>Accept</strong> to apply it
+(if the skill places output in the document) or <strong>Copy</strong> to
+copy to clipboard.</p>
 <p><strong>No streaming.</strong> Each step sends a complete prompt and
 waits for the full response before the next step begins. This makes step
 outputs reliable and readable between steps.</p>
@@ -33920,12 +34057,12 @@ new topics:</p>
 <div class="sourceCode" id="cb3"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">build_docs</span></span></code></pre></div>
 <hr />
-<h1 id="appendix-quill-developer-console">Appendix: QUILL Developer
-Console</h1>
+<h2 id="appendix-quill-developer-console">Appendix: QUILL Developer
+Console</h2>
 <p><em>Folded in from the former docs/userguide.md on
 2026-06-13.</em></p>
-<h1 id="quill-developer-console-qdc-documentation">QUILL Developer
-Console (QDC) documentation</h1>
+<h2 id="quill-developer-console-qdc-documentation">QUILL Developer
+Console (QDC) documentation</h2>
 <p><em>Consolidated on 2026-06-13 from qdc-tutorial and “QUILL Developer
 Console and Automation”. The scripting contract (docs/quillins.md)
 remains a standalone document because code references it by section
@@ -33952,9 +34089,8 @@ P1-3.)</p>
 </blockquote>
 <hr />
 <!-- Source: docs/qdc-tutorial.md -->
-
-<h1 id="quill-developer-console-tutorial">QUILL Developer Console
-Tutorial</h1>
+<h2 id="quill-developer-console-tutorial">QUILL Developer Console
+Tutorial</h2>
 <p>Status: <strong>Implemented in 0.5.0</strong> (Developer and Power
 Text / Full QUILL profiles; Tools &gt; Advanced &gt; Developer Console).
 The Python console and the <code>q</code> scripting API are wired; the
@@ -34011,6 +34147,10 @@ transcript, Insert snippet, Help, Close.</li>
 <hr />
 <h2 id="keyboard-reference">Keyboard reference</h2>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Key</th>
@@ -34216,6 +34356,10 @@ an async operation is in flight. Results and errors appear in the
 transcript automatically.</p>
 <h3 id="available-globals">Available globals</h3>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Global</th>
@@ -34305,6 +34449,11 @@ one used by all other QUILL announcements.</li>
 or command <code>quill.console.openSafetySettings</code>.</p>
 <p>Settings:</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Setting</th>
@@ -34353,6 +34502,10 @@ or command <code>quill.console.openSafetySettings</code>.</p>
 <hr />
 <h2 id="transcript-commands">Transcript commands</h2>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Command</th>
@@ -34431,7 +34584,7 @@ class="sourceCode ts"><code class="sourceCode typescript"><span id="cb30-1"><a h
 <span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="kw">const</span> ann <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">lastAnnouncement</span>()<span class="op">;</span></span>
 <span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>ts<span class="op">&gt;</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(ann)<span class="op">;</span></span></code></pre></div>
 <hr />
-<h2 id="implementation-status-050">Implementation status (0.5.0)</h2>
+<h2 id="implementation-status-0.5.0">Implementation status (0.5.0)</h2>
 <p>The QDC is implemented and reachable under the Developer and Power
 Text and Full QUILL profiles (Tools &gt; Advanced &gt; Developer
 Console). Shipped today:</p>
@@ -34459,9 +34612,8 @@ plus <code>q.describe_command</code>.</li>
 document is authoritative.</p>
 <hr />
 <!-- Source: docs/QUILL Developer Console and Automation.md -->
-
-<h1 id="quill-developer-console-and-automation-api-prd">QUILL Developer
-Console and Automation API PRD</h1>
+<h2 id="quill-developer-console-and-automation-api-prd">QUILL Developer
+Console and Automation API PRD</h2>
 <h2 id="feature-name">Feature name</h2>
 <p><strong>QUILL Developer Console and Automation API</strong></p>
 <h2 id="status">Status</h2>
@@ -34484,7 +34636,7 @@ Access</p>
 staff</li>
 <li>Future Quillins/plugin developers</li>
 </ul>
-<h2 id="1-vision">1. Vision</h2>
+<h2 id="vision">1. Vision</h2>
 <p>QUILL should provide a screen-reader-first developer console that
 lets trusted users inspect and manipulate the running editor through a
 stable automation API.</p>
@@ -34510,7 +34662,7 @@ class="sourceCode ts"><code class="sourceCode typescript"><span id="cb32-1"><a h
 registry or official scripting API so undo, dirty-state tracking,
 accessibility announcements, status bar updates, telemetry, and tests
 remain consistent.</p>
-<h2 id="2-problem-statement">2. Problem statement</h2>
+<h2 id="problem-statement">2. Problem statement</h2>
 <p>QUILL is becoming a rich writing and document environment with
 commands, macros, Quillins, profiles, diagnostics, document intake,
 spell checking, format conversion, and accessibility-aware UI
@@ -34531,7 +34683,7 @@ behavior.</li>
 </ul>
 <p>QUILL needs an embedded, accessible command line for trusted local
 development and automation.</p>
-<h2 id="3-goals">3. Goals</h2>
+<h2 id="goals">3. Goals</h2>
 <ol type="1">
 <li>Provide an accessible Python console inside the running QUILL
 app.</li>
@@ -34553,7 +34705,7 @@ not surprise ordinary users.</li>
 support diagnostics, and test automation.</li>
 <li>Never enable remote execution by default.</li>
 </ol>
-<h2 id="4-non-goals">4. Non-goals</h2>
+<h2 id="non-goals">4. Non-goals</h2>
 <ol type="1">
 <li>QUILL will not provide a public remote execution service in v1.</li>
 <li>QUILL will not allow untrusted scripts to run silently.</li>
@@ -34567,8 +34719,8 @@ code in the local Python console.</li>
 <li>QUILL will not let scripts bypass document protection, source-file
 safety, cloud-consent prompts, or profile safety rules.</li>
 </ol>
-<h2 id="5-user-stories">5. User stories</h2>
-<h3 id="51-developer">5.1 Developer</h3>
+<h2 id="user-stories">5. User stories</h2>
+<h3 id="developer">5.1 Developer</h3>
 <p>As a QUILL developer, I want to open a console, inspect the active
 document, run commands, and test editor behavior without rebuilding or
 adding temporary menu items.</p>
@@ -34578,7 +34730,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb33-1"><a h
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>q.selection.text</span>
 <span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>q.goto_line(<span class="dv">100</span>)</span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.find.next&quot;</span>)</span></code></pre></div>
-<h3 id="52-accessibility-tester">5.2 Accessibility tester</h3>
+<h3 id="accessibility-tester">5.2 Accessibility tester</h3>
 <p>As an accessibility tester, I want to inspect the focused region,
 active command, current screen-reader announcement backend, and the last
 announcements so I can diagnose what a user experienced.</p>
@@ -34587,7 +34739,7 @@ announcements so I can diagnose what a user experienced.</p>
 class="sourceCode python"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>q.a11y.last_announcements()</span>
 <span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>q.a11y.announce(<span class="st">&quot;Testing announcement path.&quot;</span>)</span>
 <span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>q.focus.describe()</span></code></pre></div>
-<h3 id="53-macro-author">5.3 Macro author</h3>
+<h3 id="macro-author">5.3 Macro author</h3>
 <p>As a power user, I want to experiment with commands interactively and
 save successful sequences as a macro.</p>
 <p>Example:</p>
@@ -34597,13 +34749,13 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb35-1"><a h
 <span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.dehyphenateLines&quot;</span>)</span>
 <span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>q.run_command(<span class="st">&quot;quill.text.reflowParagraphs&quot;</span>)</span>
 <span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>q.end_macro()</span></code></pre></div>
-<h3 id="54-support-technician">5.4 Support technician</h3>
+<h3 id="support-technician">5.4 Support technician</h3>
 <p>As a support technician, I want a user to run a safe diagnostic
 command and copy the output into an email or support ticket.</p>
 <p>Example:</p>
 <div class="sourceCode" id="cb36"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>q.support.diagnostic_summary()</span></code></pre></div>
-<h3 id="55-typescript-user">5.5 TypeScript user</h3>
+<h3 id="typescript-user">5.5 TypeScript user</h3>
 <p>As a developer more comfortable with TypeScript, I want to run async
 commands against QUILL using a typed API and receive clear errors.</p>
 <p>Example:</p>
@@ -34611,7 +34763,7 @@ commands against QUILL using a typed API and receive clear errors.</p>
 class="sourceCode ts"><code class="sourceCode typescript"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> doc <span class="op">=</span> <span class="cf">await</span> quill<span class="op">.</span><span class="fu">activeDocument</span>()<span class="op">;</span></span>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">gotoLine</span>(<span class="dv">25</span>)<span class="op">;</span></span>
 <span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(doc<span class="op">.</span><span class="at">name</span>)<span class="op">;</span></span></code></pre></div>
-<h2 id="6-feature-placement">6. Feature placement</h2>
+<h2 id="feature-placement">6. Feature placement</h2>
 <p>The feature appears in the following command surfaces:</p>
 <h3 id="tools-menu">Tools menu</h3>
 <p><code>Tools &gt; Authoring and Automation &gt; Developer Console</code></p>
@@ -34645,6 +34797,13 @@ class="sourceCode ts"><code class="sourceCode typescript"><span id="cb37-1"><a h
 <h3 id="feature-profiles-1">Feature profiles</h3>
 <p>Default visibility:</p>
 <table>
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 14%" />
+<col style="width: 18%" />
+<col style="width: 15%" />
+<col style="width: 14%" />
+</colgroup>
 <thead>
 <tr>
 <th>Profile</th>
@@ -34715,8 +34874,8 @@ class="sourceCode ts"><code class="sourceCode typescript"><span id="cb37-1"><a h
 </table>
 <p>Remote execution remains unavailable unless an experimental developer
 build explicitly enables it.</p>
-<h2 id="7-ux-requirements">7. UX requirements</h2>
-<h3 id="71-console-window-layout">7.1 Console window layout</h3>
+<h2 id="ux-requirements">7. UX requirements</h2>
+<h3 id="console-window-layout">7.1 Console window layout</h3>
 <p>The console is a standard wx dialog or frame using stock
 controls.</p>
 <p>Required controls:</p>
@@ -34758,9 +34917,13 @@ status</li>
 <li>Close</li>
 </ul></li>
 </ol>
-<h3 id="72-keyboard-behavior">7.2 Keyboard behavior</h3>
+<h3 id="keyboard-behavior">7.2 Keyboard behavior</h3>
 <p>Required shortcuts:</p>
 <table>
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 88%" />
+</colgroup>
 <thead>
 <tr>
 <th>Shortcut</th>
@@ -34824,7 +34987,7 @@ setting</td>
 </tr>
 </tbody>
 </table>
-<h3 id="73-screen-reader-behavior">7.3 Screen-reader behavior</h3>
+<h3 id="screen-reader-behavior">7.3 Screen-reader behavior</h3>
 <p>The console must be fully usable with NVDA, JAWS, and Narrator.</p>
 <p>Requirements:</p>
 <ul>
@@ -34841,7 +35004,7 @@ announces a summary and lets the user review the transcript.</li>
 <li>No custom drawn controls are allowed in the primary console
 workflow.</li>
 </ul>
-<h3 id="74-prompt-behavior">7.4 Prompt behavior</h3>
+<h3 id="prompt-behavior">7.4 Prompt behavior</h3>
 <p>Python prompt:</p>
 <pre class="text"><code>&gt;&gt;&gt;</code></pre>
 <p>Continuation prompt:</p>
@@ -34852,15 +35015,14 @@ workflow.</li>
 <pre class="text"><code>ts*&gt;</code></pre>
 <p>The prompt itself is included in the transcript but not required in
 copied code unless the user chooses “Copy with prompts”.</p>
-<h2 id="8-python-console-requirements">8. Python console
-requirements</h2>
-<h3 id="81-execution-model">8.1 Execution model</h3>
+<h2 id="python-console-requirements">8. Python console requirements</h2>
+<h3 id="execution-model">8.1 Execution model</h3>
 <p>The Python console runs in-process and uses Python’s embedded
 interpreter facilities.</p>
 <p>The console maintains a persistent namespace for the session. Hiding
 the console does not destroy the namespace unless the user explicitly
 resets it.</p>
-<h3 id="82-default-namespace">8.2 Default namespace</h3>
+<h3 id="default-namespace">8.2 Default namespace</h3>
 <p>The following names are available by default:</p>
 <div class="sourceCode" id="cb42"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>q              <span class="co"># Primary QUILL scripting API</span></span>
@@ -34877,7 +35039,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb42-1"><a h
 <span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>a11y           <span class="co"># Announcement/testing facade</span></span>
 <span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>log            <span class="co"># Console-safe logger</span></span>
 <span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>wx             <span class="co"># wx module, developer profile only</span></span></code></pre></div>
-<h3 id="83-snapshot-refresh">8.3 Snapshot refresh</h3>
+<h3 id="snapshot-refresh">8.3 Snapshot refresh</h3>
 <p>The console updates snapshot variables when:</p>
 <ul>
 <li>The console opens.</li>
@@ -34889,7 +35051,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb42-1"><a h
 <p>Snapshot variables such as <code>doc</code>, <code>sel</code>, and
 <code>caret</code> are safe read-only snapshots unless explicitly
 documented otherwise.</p>
-<h3 id="84-python-examples">8.4 Python examples</h3>
+<h3 id="python-examples">8.4 Python examples</h3>
 <div class="sourceCode" id="cb43"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>q.insert_text(<span class="st">&quot;Hello from QUILL.&quot;</span>)</span></code></pre></div>
 <div class="sourceCode" id="cb44"><pre
@@ -34904,9 +35066,9 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb47-1"><a h
 class="sourceCode python"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>q.diagnostics.document_summary()</span></code></pre></div>
 <div class="sourceCode" id="cb49"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>q.commands.search(<span class="st">&quot;spell&quot;</span>)</span></code></pre></div>
-<h2 id="9-typescript-console-requirements">9. TypeScript console
+<h2 id="typescript-console-requirements">9. TypeScript console
 requirements</h2>
-<h3 id="91-execution-model">9.1 Execution model</h3>
+<h3 id="execution-model-1">9.1 Execution model</h3>
 <p>The TypeScript console runs out-of-process through a Node worker.</p>
 <p>Python QUILL process:</p>
 <ul>
@@ -34926,7 +35088,7 @@ thread.</li>
 <li>Captures <code>console.log</code>, warnings, errors, and return
 values.</li>
 </ul>
-<h3 id="92-typescript-global-api">9.2 TypeScript global API</h3>
+<h3 id="typescript-global-api">9.2 TypeScript global API</h3>
 <p>The TypeScript console exposes:</p>
 <div class="sourceCode" id="cb50"><pre
 class="sourceCode ts"><code class="sourceCode typescript"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>quill</span>
@@ -34937,7 +35099,7 @@ class="sourceCode ts"><code class="sourceCode typescript"><span id="cb50-1"><a h
 <p>The TypeScript worker must not expose unrestricted filesystem,
 network, process, or shell access through the default console
 environment.</p>
-<h3 id="93-typescript-examples">9.3 TypeScript examples</h3>
+<h3 id="typescript-examples">9.3 TypeScript examples</h3>
 <div class="sourceCode" id="cb51"><pre
 class="sourceCode ts"><code class="sourceCode typescript"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">insertText</span>(<span class="st">&quot;Hello from TypeScript.&quot;</span>)<span class="op">;</span></span></code></pre></div>
 <div class="sourceCode" id="cb52"><pre
@@ -34949,7 +35111,7 @@ class="sourceCode ts"><code class="sourceCode typescript"><span id="cb54-1"><a h
 <span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`</span><span class="sc">${</span>stats<span class="op">.</span><span class="at">words</span><span class="sc">}</span><span class="vs"> words`</span>)<span class="op">;</span></span></code></pre></div>
 <div class="sourceCode" id="cb55"><pre
 class="sourceCode ts"><code class="sourceCode typescript"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">runCommand</span>(<span class="st">&quot;quill.markdown.normalizeHeadings&quot;</span>)<span class="op">;</span></span></code></pre></div>
-<h3 id="94-type-definitions">9.4 Type definitions</h3>
+<h3 id="type-definitions">9.4 Type definitions</h3>
 <p>QUILL ships a <code>quill-console.d.ts</code> type definition file so
 TypeScript users get completion and documentation.</p>
 <p>Example:</p>
@@ -34963,7 +35125,7 @@ class="sourceCode ts"><code class="sourceCode typescript"><span id="cb56-1"><a h
 <span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>QuillDocumentStats<span class="op">&gt;;</span></span>
 <span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">announce</span>(text<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> options<span class="op">?:</span> AnnouncementOptions)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
 <span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<h3 id="95-worker-lifecycle">9.5 Worker lifecycle</h3>
+<h3 id="worker-lifecycle">9.5 Worker lifecycle</h3>
 <p>The TypeScript worker starts only when the TypeScript console is
 opened.</p>
 <p>The worker stops when:</p>
@@ -34975,8 +35137,8 @@ opened.</p>
 <li>The worker crashes.</li>
 </ul>
 <p>Worker crashes must not crash QUILL.</p>
-<h2 id="10-quill-scripting-api">10. QUILL scripting API</h2>
-<h3 id="101-api-principles">10.1 API principles</h3>
+<h2 id="quill-scripting-api">10. QUILL scripting API</h2>
+<h3 id="api-principles">10.1 API principles</h3>
 <p>The scripting API is the official automation surface.</p>
 <p>Rules:</p>
 <ol type="1">
@@ -34991,7 +35153,7 @@ opened.</p>
 <li>Commands must return structured results.</li>
 <li>Errors must be plain-language first, traceback second.</li>
 </ol>
-<h3 id="102-python-api-shape">10.2 Python API shape</h3>
+<h3 id="python-api-shape">10.2 Python API shape</h3>
 <div class="sourceCode" id="cb57"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> QuillScriptAPI:</span>
 <span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> insert_text(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span>
@@ -35007,7 +35169,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb57-1"><a h
 <span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> active_document(<span class="va">self</span>) <span class="op">-&gt;</span> DocumentSnapshot: ...</span>
 <span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> document_stats(<span class="va">self</span>) <span class="op">-&gt;</span> DocumentStats: ...</span>
 <span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> refresh_context(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>: ...</span></code></pre></div>
-<h3 id="103-typescript-api-shape">10.3 TypeScript API shape</h3>
+<h3 id="typescript-api-shape">10.3 TypeScript API shape</h3>
 <div class="sourceCode" id="cb58"><pre
 class="sourceCode ts"><code class="sourceCode typescript"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="kw">interface</span> QuillApi {</span>
 <span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">insertText</span>(text<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
@@ -35024,7 +35186,7 @@ class="sourceCode ts"><code class="sourceCode typescript"><span id="cb58-1"><a h
 <span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">documentStats</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span>DocumentStats<span class="op">&gt;;</span></span>
 <span id="cb58-14"><a href="#cb58-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">refreshContext</span>()<span class="op">:</span> <span class="bu">Promise</span><span class="op">&lt;</span><span class="dt">void</span><span class="op">&gt;;</span></span>
 <span id="cb58-15"><a href="#cb58-15" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<h3 id="104-safe-facades">10.4 Safe facades</h3>
+<h3 id="safe-facades">10.4 Safe facades</h3>
 <p>The console exposes safe facades instead of raw internals wherever
 possible.</p>
 <p>Required facades:</p>
@@ -35046,7 +35208,7 @@ possible.</p>
 <li><code>q.macros</code></li>
 <li><code>q.quillins</code></li>
 </ul>
-<h2 id="11-command-registry-integration">11. Command registry
+<h2 id="command-registry-integration">11. Command registry
 integration</h2>
 <p>Every console-callable command must declare metadata:</p>
 <div class="sourceCode" id="cb59"><pre
@@ -35081,7 +35243,7 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb59-1"><a h
 <p>The console refuses to run commands marked
 <code>scriptable=False</code> unless developer unsafe mode is
 enabled.</p>
-<h2 id="12-macro-integration">12. Macro integration</h2>
+<h2 id="macro-integration">12. Macro integration</h2>
 <p>The console is the fastest path to creating and testing macros.</p>
 <p>Requirements:</p>
 <ul>
@@ -35107,8 +35269,8 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb60-1"><a href=
 <span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span><span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;quill.text.reflowParagraphs&quot;</span><span class="fu">}</span></span>
 <span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
 <span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<h2 id="13-security-and-safety">13. Security and safety</h2>
-<h3 id="131-local-trust-model">13.1 Local trust model</h3>
+<h2 id="security-and-safety">13. Security and safety</h2>
+<h3 id="local-trust-model">13.1 Local trust model</h3>
 <p>The Python console is trusted local code execution.</p>
 <p>QUILL must clearly warn users:</p>
 <pre class="text"><code>The Developer Console can run code inside QUILL.
@@ -35120,7 +35282,7 @@ Only run commands you understand or received from a trusted source.</code></pre>
 <li>When pasting multi-line code from the clipboard.</li>
 <li>When attempting to enable unsafe developer mode.</li>
 </ul>
-<h3 id="132-remote-execution">13.2 Remote execution</h3>
+<h3 id="remote-execution">13.2 Remote execution</h3>
 <p>Remote execution is locked off by default.</p>
 <p>Requirements:</p>
 <ul>
@@ -35134,7 +35296,7 @@ only by default.</li>
 <li>Remote console must auto-disable on restart unless the user
 explicitly chooses otherwise.</li>
 </ul>
-<h3 id="133-dangerous-operations">13.3 Dangerous operations</h3>
+<h3 id="dangerous-operations">13.3 Dangerous operations</h3>
 <p>The console must prompt or block for:</p>
 <ul>
 <li>Running shell commands</li>
@@ -35147,7 +35309,7 @@ explicitly chooses otherwise.</li>
 <li>Accessing protected source documents</li>
 <li>Running pasted multi-line code</li>
 </ul>
-<h3 id="134-typescript-worker-limits">13.4 TypeScript worker limits</h3>
+<h3 id="typescript-worker-limits">13.4 TypeScript worker limits</h3>
 <p>Default limits:</p>
 <table>
 <thead>
@@ -35184,8 +35346,7 @@ explicitly chooses otherwise.</li>
 </tbody>
 </table>
 <p>Long-running TypeScript scripts must support cancellation.</p>
-<h2 id="14-accessibility-requirements">14. Accessibility
-requirements</h2>
+<h2 id="accessibility-requirements">14. Accessibility requirements</h2>
 <p>The console must pass QUILL’s normal accessibility gates.</p>
 <p>Required tests:</p>
 <ul>
@@ -35203,7 +35364,7 @@ requirements</h2>
 <li>Keyboard-only users can run, copy, save, clear, and close.</li>
 <li>No console action traps focus.</li>
 </ul>
-<h2 id="15-error-handling">15. Error handling</h2>
+<h2 id="error-handling">15. Error handling</h2>
 <p>Errors appear in three layers:</p>
 <ol type="1">
 <li>Plain-language summary</li>
@@ -35218,7 +35379,7 @@ Details: CommandNotFoundError: quill.markdown.fixHeading</code></pre>
 details” unless the active profile is Developer and Power Text.</p>
 <p>TypeScript stack traces are captured and mapped to the user’s
 submitted code when possible.</p>
-<h2 id="16-logging-and-transcripts">16. Logging and transcripts</h2>
+<h2 id="logging-and-transcripts">16. Logging and transcripts</h2>
 <p>The console keeps a local transcript of:</p>
 <ul>
 <li>Commands entered</li>
@@ -35238,7 +35399,7 @@ it.</li>
 <li>Users can save transcripts manually.</li>
 <li>Support packages ask before including transcript content.</li>
 </ul>
-<h2 id="17-settings">17. Settings</h2>
+<h2 id="settings-1">17. Settings</h2>
 <p>Settings page:
 <code>Settings &gt; Developer Console and Automation</code></p>
 <p>Settings:</p>
@@ -35264,7 +35425,7 @@ it.</li>
 </ul>
 <p>Dangerous settings are available only in Developer and Power Text or
 Full Quill profiles.</p>
-<h2 id="18-data-storage">18. Data storage</h2>
+<h2 id="data-storage">18. Data storage</h2>
 <p>Suggested files:</p>
 <pre class="text"><code>%APPDATA%\Quill\console\
   history.jsonl
@@ -35285,8 +35446,8 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb64-1"><a href=
 <span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;success&quot;</span><span class="fu">:</span> <span class="kw">true</span></span>
 <span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
 <p>History must not store command output by default.</p>
-<h2 id="19-technical-architecture">19. Technical architecture</h2>
-<h3 id="191-new-modules">19.1 New modules</h3>
+<h2 id="technical-architecture">19. Technical architecture</h2>
+<h3 id="new-modules">19.1 New modules</h3>
 <pre class="text"><code>quill/
   core/
     scripting.py              Official QuillScriptAPI facade
@@ -35307,7 +35468,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb64-1"><a href=
       worker.ts               TypeScript worker source
       worker.js               Built worker
       quill-console.d.ts      Type definitions</code></pre>
-<h3 id="192-threading-model">19.2 Threading model</h3>
+<h3 id="threading-model">19.2 Threading model</h3>
 <p>Rules:</p>
 <ul>
 <li>UI mutations must run on the wx main thread.</li>
@@ -35319,7 +35480,7 @@ commands.</li>
 <code>wx.CallAfter</code>.</li>
 <li>Command cancellation must be supported for long-running tasks.</li>
 </ul>
-<h3 id="193-command-execution-flow">19.3 Command execution flow</h3>
+<h3 id="command-execution-flow">19.3 Command execution flow</h3>
 <pre class="text"><code>User enters command
     ↓
 Console parser receives input
@@ -35337,7 +35498,7 @@ Document/editor/status/a11y systems update
 Structured result returns to console
     ↓
 Transcript updates and concise result is announced</code></pre>
-<h2 id="20-completion-and-help">20. Completion and help</h2>
+<h2 id="completion-and-help">20. Completion and help</h2>
 <p>The console should provide discoverability without requiring users to
 memorize APIs.</p>
 <p>Completion sources:</p>
@@ -35362,8 +35523,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb67-1"><a h
 class="sourceCode ts"><code class="sourceCode typescript"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">help</span>()<span class="op">;</span></span>
 <span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="at">commands</span><span class="op">.</span><span class="fu">search</span>(<span class="st">&quot;bookmark&quot;</span>)<span class="op">;</span></span>
 <span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="cf">await</span> quill<span class="op">.</span><span class="fu">describeCommand</span>(<span class="st">&quot;quill.editor.gotoLine&quot;</span>)<span class="op">;</span></span></code></pre></div>
-<h2 id="21-testing-strategy">21. Testing strategy</h2>
-<h3 id="211-unit-tests">21.1 Unit tests</h3>
+<h2 id="testing-strategy">21. Testing strategy</h2>
+<h3 id="unit-tests">21.1 Unit tests</h3>
 <ul>
 <li><code>QuillScriptAPI.insert_text</code> routes through command
 registry.</li>
@@ -35378,7 +35539,7 @@ plain-language errors.</li>
 correctly.</li>
 <li>Worker crash returns a structured error.</li>
 </ul>
-<h3 id="212-integration-tests">21.2 Integration tests</h3>
+<h3 id="integration-tests">21.2 Integration tests</h3>
 <ul>
 <li>Open Python console, run <code>q.insert_text</code>, verify document
 changes.</li>
@@ -35392,7 +35553,7 @@ transcript.</li>
 <li>Copy diagnostic summary and verify redaction.</li>
 <li>Paste multi-line code and verify confirmation prompt.</li>
 </ul>
-<h3 id="213-accessibility-tests">21.3 Accessibility tests</h3>
+<h3 id="accessibility-tests">21.3 Accessibility tests</h3>
 <ul>
 <li>NVDA reads transcript and input controls.</li>
 <li>JAWS reads transcript and input controls.</li>
@@ -35403,7 +35564,7 @@ transcript.</li>
 <li>Long output does not cause speech flood.</li>
 <li>Error details are reachable and copyable.</li>
 </ul>
-<h3 id="214-security-tests">21.4 Security tests</h3>
+<h3 id="security-tests">21.4 Security tests</h3>
 <ul>
 <li>Remote execution is not listening in stable builds.</li>
 <li>TypeScript worker cannot directly access unrestricted shell by
@@ -35414,7 +35575,7 @@ default.</li>
 <li>Unsafe developer mode cannot be enabled by imported profile
 alone.</li>
 </ul>
-<h2 id="22-success-criteria">22. Success criteria</h2>
+<h2 id="success-criteria">22. Success criteria</h2>
 <p>The feature is successful when:</p>
 <ol type="1">
 <li>A developer can open the Python console and inspect/manipulate the
@@ -35434,7 +35595,7 @@ by default.</li>
 <li>CI covers unit, integration, accessibility, and safety
 behavior.</li>
 </ol>
-<h2 id="23-mvp-scope">23. MVP scope</h2>
+<h2 id="mvp-scope">23. MVP scope</h2>
 <h3 id="mvp-python-developer-console">MVP: Python Developer Console</h3>
 <p>Included:</p>
 <ul>
@@ -35482,7 +35643,7 @@ authoring</h3>
 <li>Command-sequence macro editor</li>
 <li>Console-based plugin diagnostics</li>
 </ul>
-<h2 id="24-open-questions">24. Open questions</h2>
+<h2 id="open-questions">24. Open questions</h2>
 <ol type="1">
 <li>Should Python console be included in QUILL 1.0 as hidden
 experimental functionality?</li>
@@ -35501,7 +35662,7 @@ and diagnostics?</li>
 <li>Should console transcript export support Markdown, plain text, and
 JSON?</li>
 </ol>
-<h2 id="25-example-first-run-warning">25. Example first-run warning</h2>
+<h2 id="example-first-run-warning">25. Example first-run warning</h2>
 <pre class="text"><code>Developer Console
 
 This console can run commands inside QUILL and may change the current document.
@@ -35513,7 +35674,7 @@ Recommended:
 - Save your document before running document-wide commands.
 
 [Open Console] [Cancel] [Learn More]</code></pre>
-<h2 id="26-example-diagnostic-summary-command">26. Example diagnostic
+<h2 id="example-diagnostic-summary-command">26. Example diagnostic
 summary command</h2>
 <p>Python:</p>
 <div class="sourceCode" id="cb70"><pre
@@ -35532,7 +35693,7 @@ TypeScript console: available
 Last command: quill.editor.gotoLine
 Last error: none
 Document content included: no</code></pre>
-<h2 id="27-definition-of-done">27. Definition of done</h2>
+<h2 id="definition-of-done">27. Definition of done</h2>
 <p>This feature is done when:</p>
 <ul>
 <li>The Python console is fully keyboard accessible.</li>
@@ -35553,17 +35714,17 @@ failure, permissions, and undo behavior.</li>
 <li>User documentation explains examples, risks, and safe patterns.</li>
 </ul>
 <hr />
-<h1 id="appendix-skills-tutorial">Appendix: Skills tutorial</h1>
+<h2 id="appendix-skills-tutorial">Appendix: Skills tutorial</h2>
 <p><em>Folded in from the former docs/userguide.md on
 2026-06-13.</em></p>
-<h1 id="writing-skills-for-quill--a-tutorial">Writing Skills for QUILL —
-A Tutorial</h1>
+<h2 id="writing-skills-for-quill-a-tutorial">Writing Skills for QUILL —
+A Tutorial</h2>
 <p>This guide teaches you to write, validate, and share
 <code>.sqp</code> (Skill Quill Pack) files. A skill is a multi-step AI
 workflow written in plain Markdown. If you can write a prompt, you can
 write a skill.</p>
 <hr />
-<h2 id="1-what-is-a-skill">1. What is a skill?</h2>
+<h2 id="what-is-a-skill">1. What is a skill?</h2>
 <p>A QUILL prompt is one instruction. A skill is a conversation — a
 series of instructions where each step can see what the previous step
 produced.</p>
@@ -35578,7 +35739,7 @@ and take a different path depending on the answer.</li>
 the model context it built in an earlier step.</li>
 </ul>
 <hr />
-<h2 id="2-your-first-skill">2. Your first skill</h2>
+<h2 id="your-first-skill">2. Your first skill</h2>
 <p>Create a file called <code>my-first-skill.sqp</code> and open it in
 QUILL.</p>
 <div class="sourceCode" id="cb72"><pre
@@ -35618,7 +35779,7 @@ python -m quill.tools.sqp_validator my-first-skill.sqp</code></pre>
 <p>You should see:</p>
 <pre><code>my-first-skill.sqp: OK</code></pre>
 <hr />
-<h2 id="3-adding-parameters">3. Adding parameters</h2>
+<h2 id="adding-parameters">3. Adding parameters</h2>
 <p>Parameters let users choose options before the skill runs. QUILL
 shows a small dialog collecting the choices before step 1 begins.</p>
 <p>Add a reading-level choice to the skill above:</p>
@@ -35699,7 +35860,7 @@ Document:
 <p>Both are equivalent; the <code>input</code> block is just cleaner
 when the data is long.</p>
 <hr />
-<h2 id="5-conditional-branching">5. Conditional branching</h2>
+<h2 id="conditional-branching">5. Conditional branching</h2>
 <p>Use a <code>condition</code> block to route execution based on a
 step’s output.</p>
 <div class="sourceCode" id="cb78"><pre
@@ -35798,12 +35959,8 @@ line. If the text has no issues, say &quot;No issues found.&quot;
 <h1 id="step-2-rewrite-for-accessibility">Step 2: Rewrite for
 accessibility</h1>
 <p>Rewrite the text below to fix the issues identified in Step 1.
-Requirements:</p>
-<ul>
-<li>Target reading level: {parameters.reading_level}</li>
-<li>Preserve all factual content</li>
-<li>Do not add new information</li>
-</ul>
+Requirements: - Target reading level: {parameters.reading_level} -
+Preserve all factual content - Do not add new information</p>
 <p>Original text: {selection}</p>
 <p>Issues to fix: {step1.output}</p>
 <pre class="output"><code>format: text
@@ -35830,6 +35987,11 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb86
 <code>author</code> are missing.</p>
 <p><strong>Common errors and how to fix them.</strong></p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Error</th>
@@ -35872,7 +36034,7 @@ matter</td>
 </tbody>
 </table>
 <hr />
-<h2 id="9-sharing-skills">9. Sharing skills</h2>
+<h2 id="sharing-skills">9. Sharing skills</h2>
 <p>A <code>.sqp</code> file is a plain text file — share it the same way
 you share any document.</p>
 <p><strong>Via the Skill Library.</strong> When someone receives your
@@ -35885,7 +36047,7 @@ automatically at Skill Library load time.</p>
 self-contained. The recipient can also open it in QUILL’s editor to
 read, understand, and customise every step.</p>
 <hr />
-<h2 id="10-skill-authoring-tips">10. Skill authoring tips</h2>
+<h2 id="skill-authoring-tips">10. Skill authoring tips</h2>
 <p><strong>Keep step instructions specific.</strong> “List the five most
 important claims” is better than “What are the claims?” The model
 follows precision.</p>
@@ -35959,6 +36121,10 @@ inserted.</p>
 </table>
 <p><strong>Variables.</strong></p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Variable</th>
@@ -35994,6 +36160,11 @@ inserted.</p>
 </table>
 <p><strong>Fenced block types.</strong></p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Block</th>
@@ -36034,8 +36205,8 @@ runs</td>
 <p><strong>Output accept_into values.</strong> <code>selection</code>,
 <code>clipboard</code>, <code>none</code>.</p>
 <hr />
-<h1 id="appendix-feature-notes-copy-tray">Appendix: Feature notes (Copy
-Tray)</h1>
+<h2 id="appendix-feature-notes-copy-tray">Appendix: Feature notes (Copy
+Tray)</h2>
 <p><em>Folded in from the former docs/userguide.md on
 2026-06-13.</em></p>
 <blockquote>
@@ -36045,13 +36216,12 @@ original nine-slot Copy Tray design document. Copy Tray now has
 <code>Ctrl+Shift+Grave, X</code>; see the “Copy Tray” section above for
 current behavior and bindings.</p>
 </blockquote>
-<h1 id="quill-feature-documentation">QUILL feature documentation</h1>
+<h2 id="quill-feature-documentation">QUILL feature documentation</h2>
 <p><em>Consolidated from the former docs/features/ folder on 2026-06-13.
 Each section preserves the original document in full.</em></p>
 <hr />
 <!-- Source: docs/features/copy_tray.md -->
-
-<h1 id="copy-tray-1">Copy Tray</h1>
+<h2 id="copy-tray-1">Copy Tray</h2>
 <h2 id="overview">Overview</h2>
 <p>Copy Tray gives you nine independently addressable clipboard slots.
 Each slot holds a piece of text that you copy there explicitly. Slots
@@ -36281,8 +36451,8 @@ directly from the notification-area icon without bringing the window to
 the front.</li>
 </ul>
 <hr />
-<h1 id="appendix-copy-tray-design-notes">Appendix: Copy Tray design
-notes</h1>
+<h2 id="appendix-copy-tray-design-notes">Appendix: Copy Tray design
+notes</h2>
 <p><em>Folded in from the former docs/copy_tray_notes.md on
 2026-06-13.</em></p>
 <blockquote>
@@ -36291,13 +36461,13 @@ as originally built with nine slots. Copy Tray now has
 <strong>twelve</strong> slots (<code>Ctrl+Shift+1..9, 0, -, =</code>);
 see the “Copy Tray” section above for current behavior and bindings.</p>
 </blockquote>
-<h1 id="copy-tray-what-was-built-and-how-it-feels">Copy Tray: What Was
-Built and How It Feels</h1>
+<h2 id="copy-tray-what-was-built-and-how-it-feels">Copy Tray: What Was
+Built and How It Feels</h2>
 <h2 id="what-was-built">What Was Built</h2>
 <p>Copy Tray is a nine-slot persistent clipboard integrated across
 QUILL’s menu bar, keyboard layer, dialog system, and system tray icon.
 Every slot holds text that survives application restarts.</p>
-<h3 id="core-model-quillcorecopy_traypy">Core model
+<h3 id="core-model-quillcorecopy_tray.py">Core model
 (<code>quill/core/copy_tray.py</code>)</h3>
 <p>A pure Python model with no wx dependency. <code>CopyTray</code> owns
 nine <code>TraySlot</code> instances. Each slot has <code>text</code>,
@@ -36305,7 +36475,7 @@ nine <code>TraySlot</code> instances. Each slot has <code>text</code>,
 writes <code>copy_tray.json</code> in the QUILL data directory using
 <code>write_json_atomic</code> (temp file + <code>os.replace</code>). A
 corrupt file causes a silent fresh start; it never raises to the UI.</p>
-<h3 id="ui-mixin-quilluimain_frame_copy_traypy">UI mixin
+<h3 id="ui-mixin-quilluimain_frame_copy_tray.py">UI mixin
 (<code>quill/ui/main_frame_copy_tray.py</code>)</h3>
 <p><code>CopyTrayMixin</code> is mixed into <code>MainFrame</code>.
 Methods:</p>
@@ -36319,7 +36489,7 @@ if the user chooses Paste and returns to the editor.</li>
 <li><code>clear_all_tray_slots()</code> — Yes/No confirmation (default
 No); clears all nine slots on Yes.</li>
 </ul>
-<h3 id="dialog-quilluicopy_tray_dialogpy">Dialog
+<h3 id="dialog-quilluicopy_tray_dialog.py">Dialog
 (<code>quill/ui/copy_tray_dialog.py</code>)</h3>
 <p>A resizable wx.Dialog with a ListBox and five action buttons. Each
 list row shows slot number, optional label, and a 60-character preview.
@@ -36328,9 +36498,13 @@ Here, Set Label…, Clear Slot, Close (Escape). Double-click pastes.
 Button states update on every selection change: Paste and Clear Slot are
 disabled on empty slots; Copy Selection Here is disabled when no editor
 text is selected.</p>
-<h3 id="keyboard-bindings-quillcorekeymappy">Keyboard bindings
+<h3 id="keyboard-bindings-quillcorekeymap.py">Keyboard bindings
 (<code>quill/core/keymap.py</code>)</h3>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Key</th>
@@ -36363,20 +36537,16 @@ chord with no conflict.</p>
 <code>edit.paste_from_tray_1..9</code>) are registered in the keymap and
 appear in the Command Palette. All are reassignable in the Keymap
 Editor.</p>
-<h3 id="menu-integration-quilluimain_frame_menupy">Menu integration
+<h3 id="menu-integration-quilluimain_frame_menu.py">Menu integration
 (<code>quill/ui/main_frame_menu.py</code>)</h3>
-<p><code>Edit &gt; Copy Tray</code> submenu with:</p>
-<ul>
-<li>Copy to Slot 1-9</li>
-<li>Paste from Slot 1-9</li>
-<li>Open Copy Tray…</li>
-<li>Clear All Tray Slots</li>
-</ul>
+<p><code>Edit &gt; Copy Tray</code> submenu with: - Copy to Slot 1-9 -
+Paste from Slot 1-9 - Open Copy Tray… - Clear All Tray Slots</p>
 <p>The 18 per-slot items use dedicated <code>wx.NewIdRef()</code> IDs
 (<code>_id_copy_tray_slots</code> and <code>_id_paste_tray_slots</code>
 arrays). Management commands are recirculated from the power tools
 manifest via <code>_append_power_tools_copy_tray_items</code>.</p>
-<h3 id="power-tools-manifest-quilluimain_frame_power_tools_menupy">Power
+<h3
+id="power-tools-manifest-quilluimain_frame_power_tools_menu.py">Power
 tools manifest
 (<code>quill/ui/main_frame_power_tools_menu.py</code>)</h3>
 <p>New <code>"copy_tray"</code> group with
@@ -36385,7 +36555,7 @@ tools manifest
 <code>_append_power_tools_copy_tray_items</code>. The 18 individual slot
 commands are also registered in the manifest for Command Palette
 discoverability.</p>
-<h3 id="system-tray-integration-quilluimain_framepy">System tray
+<h3 id="system-tray-integration-quilluimain_frame.py">System tray
 integration (<code>quill/ui/main_frame.py</code>)</h3>
 <p>The <code>_on_tray_right_click</code> method now builds a
 <strong>Copy Tray</strong> submenu listing every occupied slot with its
@@ -36469,7 +36639,7 @@ dismisses. Every control announces itself by name.</p>
 <p>Assign the browser a global hotkey (next section) and it opens from
 anywhere in Windows — QUILL restores its own window first, so the
 browser always appears even when QUILL was minimized to the tray.</p>
-<h3 id="global-hotkeys-tools--global-hotkeys">Global Hotkeys (Tools &gt;
+<h3 id="global-hotkeys-tools-global-hotkeys">Global Hotkeys (Tools &gt;
 Global Hotkeys…)</h3>
 <p>Global hotkeys let a key combination work
 <strong>system-wide</strong> — in your browser, your mail client,
@@ -36747,6 +36917,5 @@ Editor; only the display layer rewrites the prefix, through
 constant <code>QUILL_KEY_LABEL</code> in <code>quill/branding.py</code>
 is the single source of truth for the brand, so a future rebrand touches
 one file.</p>
-</main>
 </body>
 </html>

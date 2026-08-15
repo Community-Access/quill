@@ -164,13 +164,36 @@ class DownloadsDialog:
         if settings.storage_cap_mb > 0:
             parts.append(f"total storage is capped at {settings.storage_cap_mb} MB")
         if not parts:
-            return (
+            text = (
                 "No automatic storage rules are set. Podcast Settings can add an age "
                 "limit or a total cap."
             )
+        else:
+            text = (
+                "In force: " + "; ".join(parts) + ". A queued or part-played episode is "
+                "never removed automatically."
+            )
+        return text + self._streamed_text()
+
+    def _streamed_text(self) -> str:
+        """What streamed episodes are using, said separately from downloads.
+
+        Deliberately its own sentence rather than a row in the table above: a
+        streamed episode's audio is not a download, it is removed on its own,
+        and counting the two together would make the list of things the
+        listener *keeps* wrong.
+        """
+        from quill.core.podcasts import playback_cache
+
+        used = playback_cache.total_bytes()
+        if used <= 0:
+            return ""
+        cap = self._library.settings.playback_cache_cap_mb
+        limit = f" of at most {cap} MB" if cap > 0 else ""
         return (
-            "In force: " + "; ".join(parts) + ". A queued or part-played episode is "
-            "never removed automatically."
+            f" Streamed episodes are separately using "
+            f"{retention.format_bytes(used)}{limit}; that audio is removed "
+            "automatically and is not part of the figures above."
         )
 
     # -- actions ---------------------------------------------------------

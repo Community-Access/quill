@@ -8,11 +8,12 @@ import urllib.error
 import urllib.request
 from collections.abc import Callable
 
+from quill import __version__
 from quill.core.error_codes import CodedError
 
 _BASE = "https://api.wxindex.org"
 _TIMEOUT_SECONDS = 15.0
-_USER_AGENT = "QUILL-Radio/2.1.1 (+https://github.com/Community-Access/quill)"
+_USER_AGENT = f"QUILL-Radio/{__version__} (+https://github.com/Community-Access/quill)"
 
 Fetcher = Callable[[str], str]
 

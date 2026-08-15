@@ -3965,9 +3965,9 @@ class MainFrame(
         podcast_controller = getattr(self, "_podcast_controller", None)
         if podcast_controller is not None:
             _safely("podcast player", podcast_controller.shutdown)
-        podcast_queue = getattr(self, "_podcast_download_queue", None)
-        if podcast_queue is not None:
-            _safely("podcast downloads", podcast_queue.shutdown)
+        podcast_transfers = getattr(self, "_shutdown_podcast_transfers", None)
+        if podcast_transfers is not None:
+            _safely("podcast transfers", podcast_transfers)
         sleep_timer = getattr(self, "_sleep_timer_controller", None)
         if sleep_timer is not None:
             _safely("media sleep timer", sleep_timer.shutdown)

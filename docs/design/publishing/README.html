@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Publishing Providers Framework — Design Documents</title>
+  <title>README</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,30 +174,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="publishing-providers-framework--design-documents">Publishing
+<h1 id="publishing-providers-framework-design-documents">Publishing
 Providers Framework — Design Documents</h1>
 <p>Design and planning documents for QUILL’s provider-aware publishing
 feature (connect to a remote site such as WordPress and browse / open /
@@ -206,6 +185,10 @@ adapter).</p>
 <p>These were authored during the framework’s development and relocated
 here from the working notes for durable reference.</p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Document</th>
@@ -255,6 +238,5 @@ UI. Only a developer removing <code>locked_off</code> in source can lift
 the gate. The File &gt; Publish menu and all <code>publishing.*</code>
 commands are gated on this flag (the command palette and Go to Anything
 exclude locked-off features automatically).</p>
-</main>
 </body>
 </html>

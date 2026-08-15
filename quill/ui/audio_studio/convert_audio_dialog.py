@@ -27,6 +27,7 @@ from typing import Any
 
 import wx
 
+from quill.core.audio import exact_optilab as exact_optilab_component
 from quill.core.audio.convert import (
     Channels,
     ConversionJob,
@@ -37,6 +38,7 @@ from quill.core.audio.convert import (
     plan_jobs,
 )
 from quill.core.audio.dsp import DspOptions, build_dsp_filters, loudness_choices
+from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.audio.presets import DEFAULT_PRESET_ID, preset_choices, preset_spec
 
 _TITLE = "Convert Audio"
@@ -127,6 +129,16 @@ _CHANNEL_CHOICES: tuple[tuple[Channels, str], ...] = (
     (Channels.MONO, "Mono (1 channel)"),
     (Channels.STEREO, "Stereo (2 channels)"),
 )
+#: Exact OptiLab processing for a conversion (§ the OptiLab component). The
+#: first entry is the neutral "leave it alone" default, like every other
+#: Advanced control. There is no "live" question here: a conversion has no live.
+_EXACT_OPTILAB_CHOICES: tuple[tuple[str, str], ...] = (
+    ("", "Off (built-in processing)"),
+    ("podcast", "Exact OptiLab: Podcast Leveler (speech)"),
+    ("stream", "Exact OptiLab: Stream Polish (music)"),
+    ("limiter", "Exact OptiLab: Smooth Limiter (peak control)"),
+)
+
 _DEPTH_CHOICES: tuple[tuple[str, str], ...] = (
     ("", "Keep source depth"),
     ("16", "16-bit"),
@@ -143,6 +155,7 @@ def apply_advanced(
     channels: Channels | None = None,
     bit_depth: int | None = None,
     dsp: DspOptions | None = None,
+    exact_optilab: ExactOptilab | None = None,
 ) -> ConversionSpec:
     """Layer Advanced overrides onto a preset's *base* spec (pure).
 
@@ -160,6 +173,7 @@ def apply_advanced(
         channels=channels if channels is not None else base.channels,
         bit_depth=bit_depth if bit_depth is not None else base.bit_depth,
         filters=build_dsp_filters(dsp) if dsp is not None else base.filters,
+        exact_optilab=exact_optilab if exact_optilab is not None else base.exact_optilab,
     )
 
 
@@ -501,6 +515,24 @@ class ConvertAudioDialog(wx.Dialog):
             "Fade &out (seconds):", lambda: new_spin(0.0, 10.0, 0.5, 1, "Fade-out seconds")
         )
 
+        # Exact OptiLab processing, when this build includes the component. A
+        # conversion is a saved file, which is the one place the real engine can
+        # run without costing anything: the file is processed once, afterwards.
+        exact_available = exact_optilab_component.available()
+        self._adv_exact_optilab = labeled(
+            "Broadcast &polish:",
+            lambda: choice(_EXACT_OPTILAB_CHOICES, "Exact OptiLab broadcast polish"),
+        )
+        if not exact_available:
+            # Disabled with the reason beside it -- never silently missing.
+            self._adv_exact_optilab.Enable(False)
+            box.Add(
+                wx.StaticText(self, label=exact_optilab_component.unavailable_reason()),
+                0,
+                wx.LEFT | wx.RIGHT | wx.BOTTOM,
+                6,
+            )
+
         self._adv_highpass = wx.CheckBox(self, label="Remove low-frequency r&umble (high-pass)")
         self._adv_trim = wx.CheckBox(self, label="&Trim leading and trailing silence")
         self._adv_compressor = wx.CheckBox(self, label="&Compress dynamics (even out loud/quiet)")
@@ -649,7 +681,9 @@ class ConvertAudioDialog(wx.Dialog):
             fade_in_s=float(self._adv_fade_in.GetValue()),
             fade_out_s=float(self._adv_fade_out.GetValue()),
         )
+        exact_mode = self._choice_value(self._adv_exact_optilab, _EXACT_OPTILAB_CHOICES)
         return {
+            "exact_optilab": ExactOptilab(mode=exact_mode) if exact_mode else None,
             "bitrate_kbps": int(bitrate) if bitrate else None,
             "sample_rate": int(rate) if rate else None,
             "channels": channels if channels is not Channels.KEEP else None,

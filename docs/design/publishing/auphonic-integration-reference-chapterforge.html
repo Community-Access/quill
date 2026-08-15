@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Auphonic Integration</title>
+  <title>auphonic-integration-reference-chapterforge</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -239,29 +239,8 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <blockquote>
 <p><strong>Archived reference.</strong> This is ChapterForge’s Auphonic
 integration design, kept when ChapterForge was consolidated into QUILL
@@ -326,29 +305,29 @@ chapters)</li>
 </tbody>
 </table>
 <h2 id="setup">Setup</h2>
-<h3 id="0-enable-beta-features">0. Enable beta features</h3>
+<h3 id="enable-beta-features">0. Enable beta features</h3>
 <p>Open <strong>Tools &gt; Settings</strong>, go to the
 <strong>General</strong> tab, and check <strong>Enable beta features
 (Auphonic integration)</strong>. Click OK. The <strong>Auphonic</strong>
 menu will appear in the menu bar.</p>
-<h3 id="1-get-an-auphonic-account">1. Get an Auphonic account</h3>
-<p>Sign up at <a href="https://auphonic.com">https://auphonic.com</a>.
-New accounts receive free credits.</p>
-<h3 id="2-register-a-desktop-oauth-app-admin--developer-step">2.
-Register a desktop OAuth app (admin / developer step)</h3>
+<h3 id="get-an-auphonic-account">1. Get an Auphonic account</h3>
+<p>Sign up at https://auphonic.com. New accounts receive free
+credits.</p>
+<h3 id="register-a-desktop-oauth-app-admin-developer-step">2. Register a
+desktop OAuth app (admin / developer step)</h3>
 <p>Contact Auphonic support to register a desktop OAuth application. You
 will receive a <strong>Client ID</strong> and <strong>Client
 Secret</strong>. These are set per deployment:</p>
 <ul>
-<li>For development: set environment variables before launching:
+<li><p>For development: set environment variables before launching:</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">AUPHONIC_CLIENT_ID</span> <span class="op">=</span> <span class="st">&quot;your-client-id&quot;</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="va">$env</span><span class="op">:</span><span class="va">AUPHONIC_CLIENT_SECRET</span> <span class="op">=</span> <span class="st">&quot;your-client-secret&quot;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>python main<span class="op">.</span><span class="fu">py</span></span></code></pre></div></li>
-<li>For production builds: the build pipeline injects these at build
-time (same pattern as the GitHub feedback token).</li>
+<li><p>For production builds: the build pipeline injects these at build
+time (same pattern as the GitHub feedback token).</p></li>
 </ul>
-<h3 id="3-connect-from-inside-chapterforge">3. Connect from inside
+<h3 id="connect-from-inside-chapterforge">3. Connect from inside
 ChapterForge</h3>
 <ol type="1">
 <li>Open <strong>Auphonic &gt; Connect Account</strong></li>
@@ -376,6 +355,11 @@ background</li>
 History</strong> to download results.</p>
 <h2 id="built-in-presets">Built-in Presets</h2>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Preset</th>
@@ -456,6 +440,10 @@ review-before-publish</li>
 sent to ChapterForge’s servers.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Problem</th>
@@ -492,6 +480,5 @@ variables</td>
 </tr>
 </tbody>
 </table>
-</main>
 </body>
 </html>

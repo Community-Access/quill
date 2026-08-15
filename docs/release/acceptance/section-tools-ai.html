@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Section — Tools: AI writing &amp; analysis (`tools.*`, AI
-subset)</title>
+  <title>section-tools-ai</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,30 +174,9 @@ subset)</title>
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="section--tools-ai-writing--analysis-tools-ai-subset">Section —
+<h1 id="section-tools-ai-writing-analysis-tools.-ai-subset">Section —
 Tools: AI writing &amp; analysis (<code>tools.*</code>, AI subset)</h1>
 <p>The <strong>AI writing and analysis</strong> tools: the conversation
 front door (Ask Quill), document-scoped repairs (Improve Reading Order,
@@ -230,7 +208,7 @@ onto the machine first): <code>reading-order.txt</code> (the
 out-of-order tea recipe), <code>formatting.md</code>,
 <code>plain.txt</code>.</p>
 <h2
-id="before-you-start-read-once--applies-to-every-scenario-here">Before
+id="before-you-start-read-once-applies-to-every-scenario-here">Before
 you start (read once — applies to every scenario here)</h2>
 <ul>
 <li><strong>AI must be configured.</strong> Every command in this
@@ -252,12 +230,14 @@ the refusal.</li>
 may transmit your document without consent. That consent takes two forms
 in QUILL, both of which you must observe: (a) a <strong>standing
 per-provider share consent</strong> granted once in the Set Up AI wizard
-— a feature routes you back to setup if it is missing; and (b) for
-<strong>Improve Reading Order</strong>, an additional
+— a feature routes you back to setup if it is missing; and
+<ol start="2" type="a">
+<li>for <strong>Improve Reading Order</strong>, an additional
 <strong>per-run</strong> confirmation that names the provider/host and
 the approximate size before it sends (TAI-07). If a feature ever sends
 the whole document to a remote host with neither consent in place, that
 is a release-blocking failure.</li>
+</ol></li>
 <li><strong>Results open as a NEW, unsaved document where the feature
 reflows or generates whole-document text</strong> (Improve Reading
 Order; the “open in a new document” option of Translate). Proofreading
@@ -271,197 +251,148 @@ build mark them <strong>N/A</strong> (do not fail them for being
 missing); only run them on a dev/admin build where the flag is on.</li>
 </ul>
 <hr />
-<h2 id="tai-01--ai-connection-toolsai_connection">TAI-01 — AI Connection
+<h2 id="tai-01-ai-connection-tools.ai_connection">TAI-01 — AI Connection
 (<code>tools.ai_connection</code>)</h2>
 <p><em>What &amp; why.</em> The provider/connection settings dialog —
 where a cloud provider, host, model, and API key are entered and
 verified. This is the plumbing that every other scenario depends on, so
 run it first.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open, any document. Have your provider details ready (or a
-local engine installed).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Command Palette</strong> (Tools ▸ Command Palette,
-or its shortcut) and run <strong>AI Connection</strong> — the surface is
-also reached from <strong>AI Model</strong> (TAI-03) via its connection
-button.</li>
-<li>Tab through the fields (provider, host, model, key); enter your
-provider; activate <strong>Verify</strong>/<strong>Test</strong> if
-offered; confirm with <strong>OK</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Every field is labelled and keyboard-complete. On confirm QUILL
-announces the outcome in substance — “Updated AI connection settings.
-Ready.” on a good connection, or “…Needs attention.” with a
-plain-language reason if verification failed. <strong>Escape</strong>
-cancels with “AI connection settings cancelled” and changes nothing. The
-API key is stored in the platform secret store (Credential Manager /
-DPAPI), never echoed or written in plain text.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open, any document. Have
+your provider details ready (or a local engine installed).</p>
+<p><strong>Do this</strong> 1. Open the <strong>Command Palette</strong>
+(Tools ▸ Command Palette, or its shortcut) and run <strong>AI
+Connection</strong> — the surface is also reached from <strong>AI
+Model</strong> (TAI-03) via its connection button. 2. Tab through the
+fields (provider, host, model, key); enter your provider; activate
+<strong>Verify</strong>/<strong>Test</strong> if offered; confirm with
+<strong>OK</strong>.</p>
+<p><strong>You should see and hear</strong> - Every field is labelled
+and keyboard-complete. On confirm QUILL announces the outcome in
+substance — “Updated AI connection settings. Ready.” on a good
+connection, or “…Needs attention.” with a plain-language reason if
+verification failed. <strong>Escape</strong> cancels with “AI connection
+settings cancelled” and changes nothing. The API key is stored in the
+platform secret store (Credential Manager / DPAPI), never echoed or
+written in plain text.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-02--ai-hub-toolsai_hub">TAI-02 — AI Hub
+<h2 id="tai-02-ai-hub-tools.ai_hub">TAI-02 — AI Hub
 (<code>tools.ai_hub</code>)</h2>
 <p><em>What &amp; why.</em> The single configuration front door:
 engines, provider keys, session branches, and services (OCR/Datalab) all
 live here on tabs. The friendlier way to do what TAI-01 does, plus
 engine and session management.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open, any document.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu (Alt, A) ▸ AI Hub…</strong>.</li>
-<li>Tab across the tabs (Engines, Sessions, Services, …); read the
-controls; make no change; close with <strong>Escape</strong> or the
-Close button.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The Hub opens as a keyboard-navigable, announced dialog; tabs and
-their controls are labelled and reachable by keyboard alone. Closing
-returns focus to the editor. Any Services (OCR/Datalab) values you save
-take effect without a restart.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open, any document.</p>
+<p><strong>Do this</strong> 1. <strong>AI menu (Alt, A) ▸ AI
+Hub…</strong>. 2. Tab across the tabs (Engines, Sessions, Services, …);
+read the controls; make no change; close with <strong>Escape</strong> or
+the Close button.</p>
+<p><strong>You should see and hear</strong> - The Hub opens as a
+keyboard-navigable, announced dialog; tabs and their controls are
+labelled and reachable by keyboard alone. Closing returns focus to the
+editor. Any Services (OCR/Datalab) values you save take effect without a
+restart.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-03--ai-model-toolsai_model">TAI-03 — AI Model
+<h2 id="tai-03-ai-model-tools.ai_model">TAI-03 — AI Model
 (<code>tools.ai_model</code>)</h2>
 <p><em>What &amp; why.</em> The combined <strong>AI Model &amp;
 Connection</strong> dialog — pick the model and jump to the connection
 settings from one place.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A provider configured (TAI-01/02).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Run <strong>AI Model</strong> from the Command Palette.</li>
-<li>Read the model control; use the button that opens
+<p><strong>Before you start</strong> - A provider configured
+(TAI-01/02).</p>
+<p><strong>Do this</strong> 1. Run <strong>AI Model</strong> from the
+Command Palette. 2. Read the model control; use the button that opens
 <strong>Connection</strong> settings to confirm it reaches the TAI-01
-dialog; close.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The model dialog is labelled and keyboard-operable; its connection
-button opens the AI Connection dialog and returns cleanly. Selecting a
-model is announced.</li>
-</ul>
+dialog; close.</p>
+<p><strong>You should see and hear</strong> - The model dialog is
+labelled and keyboard-operable; its connection button opens the AI
+Connection dialog and returns cleanly. Selecting a model is
+announced.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-04--switch-ai-engine-toolsai_switch_engine-ctrlaltshifte">TAI-04
+id="tai-04-switch-ai-engine-tools.ai_switch_engine-ctrlaltshifte">TAI-04
 — Switch AI Engine (<code>tools.ai_switch_engine</code>,
 Ctrl+Alt+Shift+E)</h2>
 <p><em>What &amp; why.</em> Round-robin to the next available AI engine
 without opening a dialog — the power-user quick switch, mirrored on the
 status bar.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>AI on, with at least one engine available (ideally two, so the
-round-robin has somewhere to go).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Alt+Shift+E</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>QUILL announces the engine it switched to (in substance “Switched to
-<engine>”); the status bar’s AI cell updates to match. With AI off it
-says AI is turned off rather than switching silently. With only one
-engine it reports there is nothing to switch to rather than
-erroring.</li>
-</ul>
+<p><strong>Before you start</strong> - AI on, with at least one engine
+available (ideally two, so the round-robin has somewhere to go).</p>
+<p><strong>Do this</strong> 1. Press
+<strong>Ctrl+Alt+Shift+E</strong>.</p>
+<p><strong>You should see and hear</strong> - QUILL announces the engine
+it switched to (in substance “Switched to <engine>”); the status bar’s
+AI cell updates to match. With AI off it says AI is turned off rather
+than switching silently. With only one engine it reports there is
+nothing to switch to rather than erroring.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-05--ask-quill-chat-toolsask_quill_chat-altq">TAI-05 — Ask
+<h2 id="tai-05-ask-quill-chat-tools.ask_quill_chat-altq">TAI-05 — Ask
 Quill Chat (<code>tools.ask_quill_chat</code>, Alt+Q)</h2>
 <p><em>What &amp; why.</em> The conversation front door — ask questions,
 request edits, and let QUILL act on the current document through its
 tool catalog. The everyday “talk to the assistant.”</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A provider configured <strong>and</strong> its share consent granted
-in Set Up AI. Open <code>formatting.md</code> so there is a document to
-ask about.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Alt+Q</strong>, or <strong>AI menu ▸ Ask
-Quill…</strong>.</li>
-<li>Type a question in the composer (for example “How many headings does
-this document have?”) and send it.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The chat opens as a keyboard-navigable, announced dialog with a
-labelled composer and a readable transcript. If AI is off, not
-configured, or the provider has <strong>no standing share
-consent</strong>, QUILL routes you to <strong>Set Up AI</strong> first
-rather than sending anything. Sent, the answer appears in the transcript
-and is announced; any change it proposes to your document goes through a
-review step, not a silent edit. Re-invoking while it is open just brings
-the existing chat forward.</li>
-</ul>
+<p><strong>Before you start</strong> - A provider configured
+<strong>and</strong> its share consent granted in Set Up AI. Open
+<code>formatting.md</code> so there is a document to ask about.</p>
+<p><strong>Do this</strong> 1. Press <strong>Alt+Q</strong>, or
+<strong>AI menu ▸ Ask Quill…</strong>. 2. Type a question in the
+composer (for example “How many headings does this document have?”) and
+send it.</p>
+<p><strong>You should see and hear</strong> - The chat opens as a
+keyboard-navigable, announced dialog with a labelled composer and a
+readable transcript. If AI is off, not configured, or the provider has
+<strong>no standing share consent</strong>, QUILL routes you to
+<strong>Set Up AI</strong> first rather than sending anything. Sent, the
+answer appears in the transcript and is announced; any change it
+proposes to your document goes through a review step, not a silent edit.
+Re-invoking while it is open just brings the existing chat forward.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-06--ask-quill-voice-conversation-toolsask_quill_conversation">TAI-06
+id="tai-06-ask-quill-voice-conversation-tools.ask_quill_conversation">TAI-06
 — Ask Quill: Voice Conversation
 (<code>tools.ask_quill_conversation</code>)</h2>
 <p><em>What &amp; why.</em> The same chat, but spoken: answers can play
 aloud with transport controls and a spoken question can be captured —
 falling back to text plus screen-reader announcements when voice I/O is
 unavailable.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured and consented (as TAI-05). Text-to-speech
-available for the spoken-answer path; if not, the text fallback still
-applies.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ Ask Quill by Voice…</strong> (or run <strong>Ask
-Quill: Voice Conversation</strong> from the Command Palette).</li>
-<li>Send a question; if TTS is available, use the transport controls on
-the spoken answer.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The dialog opens exactly like TAI-05 with voice mode on; the same
-setup/consent routing applies. With TTS available the answer plays with
-keyboard-operable transport; without it, the answer is shown as text and
-announced — never a silent dead end. <strong>Note:</strong> if no TTS
-engine is present, confirm the fallback is spoken by the screen reader,
-not merely displayed.</li>
-</ul>
+<p><strong>Before you start</strong> - Provider configured and consented
+(as TAI-05). Text-to-speech available for the spoken-answer path; if
+not, the text fallback still applies.</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ Ask Quill by
+Voice…</strong> (or run <strong>Ask Quill: Voice Conversation</strong>
+from the Command Palette). 2. Send a question; if TTS is available, use
+the transport controls on the spoken answer.</p>
+<p><strong>You should see and hear</strong> - The dialog opens exactly
+like TAI-05 with voice mode on; the same setup/consent routing applies.
+With TTS available the answer plays with keyboard-operable transport;
+without it, the answer is shown as text and announced — never a silent
+dead end. <strong>Note:</strong> if no TTS engine is present, confirm
+the fallback is spoken by the screen reader, not merely displayed.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-07--improve-reading-order-toolsai_reading_order">TAI-07 —
+<h2 id="tai-07-improve-reading-order-tools.ai_reading_order">TAI-07 —
 Improve Reading Order (<code>tools.ai_reading_order</code>)</h2>
 <p><em>What &amp; why.</em> Send the whole document to your provider to
 repair a jumbled reading order (columns, sidebars, out-of-sequence
@@ -469,746 +400,552 @@ lines) and open the reflowed result as a <strong>new, unsaved</strong>
 document — never touching the original. This is the flagship
 confirm-before-send flow; it mirrors <code>../qa-core-journeys.md</code>
 <strong>JOURNEY-005</strong>.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured; <strong>not</strong> Safe Mode. Open
+<p><strong>Before you start</strong> - Provider configured;
+<strong>not</strong> Safe Mode. Open
 <strong><code>reading-order.txt</code></strong> (a four-step tea recipe
 printed out of order, one step broken across a mid-sentence line break;
 the file records the intended order for you to check against). Do
-<strong>not</strong> send the tester’s note block to the AI.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ More ▸ Improve Reading Order…</strong>.</li>
-<li>Read the confirmation dialog. First choose <strong>No</strong>
-(default) to prove it cancels; then re-invoke and choose
-<strong>Yes</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li><strong>Before anything is sent</strong>, a confirmation names the
-provider and approximate size, in substance: “QUILL will send this
-document — about 1 page — to <provider>(host) to repair its reading
-order… The result opens as a new, unsaved document; your current
-document is not changed… Send the document now?” Default is
-<strong>No</strong>; choosing No announces <strong>“Improve Reading
-Order cancelled — nothing was sent.”</strong></li>
-<li>On <strong>Yes</strong>: a progress status speaks (“Improving
-reading order… this can take a moment.”); on success a <strong>new,
+<strong>not</strong> send the tester’s note block to the AI.</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ More ▸ Improve Reading
+Order…</strong>. 2. Read the confirmation dialog. First choose
+<strong>No</strong> (default) to prove it cancels; then re-invoke and
+choose <strong>Yes</strong>.</p>
+<p><strong>You should see and hear</strong> - <strong>Before anything is
+sent</strong>, a confirmation names the provider and approximate size,
+in substance: “QUILL will send this document — about 1 page — to
+<provider>(host) to repair its reading order… The result opens as a new,
+unsaved document; your current document is not changed… Send the
+document now?” Default is <strong>No</strong>; choosing No announces
+<strong>“Improve Reading Order cancelled — nothing was sent.”</strong> -
+On <strong>Yes</strong>: a progress status speaks (“Improving reading
+order… this can take a moment.”); on success a <strong>new,
 unsaved</strong> document opens, announced “Reading order improved —
 opened as a new unsaved document (Save As to keep it).” The four steps
 read <strong>First → Second → Third → Fourth</strong>, the broken “Third
 … steep …” step is rejoined into one sentence, wording is unchanged, and
 the original <code>reading-order.txt</code> is untouched on disk and in
-its tab.</li>
-<li><strong>Guards:</strong> in Safe Mode it says “Improve Reading Order
-is unavailable in Safe Mode” and sends nothing; a document over the page
-limit is refused with the over-limit message and sends nothing.</li>
-</ul>
+its tab. - <strong>Guards:</strong> in Safe Mode it says “Improve
+Reading Order is unavailable in Safe Mode” and sends nothing; a document
+over the page limit is refused with the over-limit message and sends
+nothing.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-08--check-grammar-with-ai-toolscheck_grammar_ai">TAI-08 —
+<h2 id="tai-08-check-grammar-with-ai-tools.check_grammar_ai">TAI-08 —
 Check Grammar with AI (<code>tools.check_grammar_ai</code>)</h2>
 <p><em>What &amp; why.</em> A quick, read-only grammar pass over the
 selection (or the whole document) using the built-in grammar prompt,
 shown in a result dialog.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured. Open <code>plain.txt</code>; optionally select
-a paragraph (with no selection the whole document is used).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ Proofread ▸ Check Grammar with AI…</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>QUILL announces “Checking grammar with <model>…”; on completion a
-<strong>read-only</strong> result dialog presents the AI’s grammar
-notes, announced and keyboard-navigable. With nothing to check it says
-“No text to check grammar for.” If AI is not configured it routes to
-setup rather than failing silently. <strong>Note:</strong> this variant
-reports findings; it does not auto-apply edits (contrast
-TAI-10/TAI-11).</li>
-</ul>
+<p><strong>Before you start</strong> - Provider configured. Open
+<code>plain.txt</code>; optionally select a paragraph (with no selection
+the whole document is used).</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ Proofread ▸ Check
+Grammar with AI…</strong>.</p>
+<p><strong>You should see and hear</strong> - QUILL announces “Checking
+grammar with <model>…”; on completion a <strong>read-only</strong>
+result dialog presents the AI’s grammar notes, announced and
+keyboard-navigable. With nothing to check it says “No text to check
+grammar for.” If AI is not configured it routes to setup rather than
+failing silently. <strong>Note:</strong> this variant reports findings;
+it does not auto-apply edits (contrast TAI-10/TAI-11).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-09--ai-grammar-and-style-check-toolsai_grammar_style-ctrlaltshiftg">TAI-09
+id="tai-09-ai-grammar-and-style-check-tools.ai_grammar_style-ctrlaltshiftg">TAI-09
 — AI Grammar and Style Check (<code>tools.ai_grammar_style</code>,
 Ctrl+Alt+Shift+G)</h2>
 <p><em>What &amp; why.</em> A structured grammar-and-style review of the
 whole document that you step through and apply issue by issue.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured. Open <code>plain.txt</code> (or any prose
-document).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Alt+Shift+G</strong>, or <strong>AI menu ▸
-Proofread ▸ Grammar and Style Check…</strong>.</li>
-<li>Walk the issues; accept some fixes; confirm/close.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>QUILL announces “AI grammar check running…”; if none are found it
-says “AI grammar check: no issues found.” Otherwise a keyboard-navigable
-issues dialog opens; the fixes you accept are applied into the
-<strong>current document</strong> and QUILL announces the count (“AI
-grammar check: N fix(es) applied”); accepting none says so. An empty
-document is reported, not sent.</li>
-</ul>
+<p><strong>Before you start</strong> - Provider configured. Open
+<code>plain.txt</code> (or any prose document).</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Alt+Shift+G</strong>,
+or <strong>AI menu ▸ Proofread ▸ Grammar and Style Check…</strong>. 2.
+Walk the issues; accept some fixes; confirm/close.</p>
+<p><strong>You should see and hear</strong> - QUILL announces “AI
+grammar check running…”; if none are found it says “AI grammar check: no
+issues found.” Otherwise a keyboard-navigable issues dialog opens; the
+fixes you accept are applied into the <strong>current document</strong>
+and QUILL announces the count (“AI grammar check: N fix(es) applied”);
+accepting none says so. An empty document is reported, not sent.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-10--ai-spell-check-toolsai_spell_check-ctrlaltshifts">TAI-10
+<h2 id="tai-10-ai-spell-check-tools.ai_spell_check-ctrlaltshifts">TAI-10
 — AI Spell Check (<code>tools.ai_spell_check</code>,
 Ctrl+Alt+Shift+S)</h2>
 <p><em>What &amp; why.</em> A whole-document AI spelling pass presented
 as a batch of corrections to review and apply.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured. Open <code>plain.txt</code>; optionally type an
-obvious misspelling so there is something to catch.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Alt+Shift+S</strong>, or <strong>AI menu ▸
-Proofread ▸ Spell Check…</strong>.</li>
-<li>Review the corrections; apply; confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>QUILL announces “AI spell check running…”; with no issues it says
-“AI spell check: no issues found.” Otherwise a corrections dialog opens
-(labelled, keyboard- navigable); applying updates the document and
-announces “AI spell check: N correction(s) applied”; applying none says
-so. An empty document is reported.</li>
-</ul>
+<p><strong>Before you start</strong> - Provider configured. Open
+<code>plain.txt</code>; optionally type an obvious misspelling so there
+is something to catch.</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Alt+Shift+S</strong>,
+or <strong>AI menu ▸ Proofread ▸ Spell Check…</strong>. 2. Review the
+corrections; apply; confirm.</p>
+<p><strong>You should see and hear</strong> - QUILL announces “AI spell
+check running…”; with no issues it says “AI spell check: no issues
+found.” Otherwise a corrections dialog opens (labelled, keyboard-
+navigable); applying updates the document and announces “AI spell check:
+N correction(s) applied”; applying none says so. An empty document is
+reported.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-11--ai-spell-check-interactive-toolsai_spell_check_interactive-ctrlaltshifti">TAI-11
+id="tai-11-ai-spell-check-interactive-tools.ai_spell_check_interactive-ctrlaltshifti">TAI-11
 — AI Spell Check Interactive
 (<code>tools.ai_spell_check_interactive</code>, Ctrl+Alt+Shift+I)</h2>
 <p><em>What &amp; why.</em> The same spell check, but paragraph by
 paragraph — you accept or reject each correction as you go, instead of
 one batch.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured. Open a multi-paragraph document (e.g.
-<code>plain.txt</code>, three paragraphs).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Alt+Shift+I</strong>, or <strong>AI menu ▸
-Proofread ▸ Spell Check Interactive…</strong>.</li>
-<li>Step through each paragraph; accept some corrections and skip
-others; finish.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>An interactive dialog walks the paragraphs; each proposed correction
-is announced with context and is accept/skip by keyboard. Accepted
-corrections are applied into the current document and the running count
-is announced. Reaching the end closes cleanly; an empty document is
-reported rather than sent.</li>
-</ul>
+<p><strong>Before you start</strong> - Provider configured. Open a
+multi-paragraph document (e.g. <code>plain.txt</code>, three
+paragraphs).</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Alt+Shift+I</strong>,
+or <strong>AI menu ▸ Proofread ▸ Spell Check Interactive…</strong>. 2.
+Step through each paragraph; accept some corrections and skip others;
+finish.</p>
+<p><strong>You should see and hear</strong> - An interactive dialog
+walks the paragraphs; each proposed correction is announced with context
+and is accept/skip by keyboard. Accepted corrections are applied into
+the current document and the running count is announced. Reaching the
+end closes cleanly; an empty document is reported rather than sent.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-12--expand-selection-toolsai_expand_selection">TAI-12 —
+<h2 id="tai-12-expand-selection-tools.ai_expand_selection">TAI-12 —
 Expand Selection (<code>tools.ai_expand_selection</code>)</h2>
 <p><em>What &amp; why.</em> Elaborate the selected passage into a fuller
 version, offered for insert or replace through the agent result
 dialog.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured. Open <code>plain.txt</code> and <strong>select
-one sentence</strong> (with no selection it uses the current paragraph
-and says so).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ Transform Selection ▸ Expand
-Selection</strong>.</li>
-<li>In the result dialog, read the expanded text; choose
-<strong>Insert</strong> or <strong>Replace</strong>, or close without
-applying.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>QUILL announces “Expand: generating…”; on completion a result dialog
-shows the expanded text, keyboard-navigable, with
-<strong>Insert</strong> and <strong>Replace</strong> actions — no silent
-edit. With no selection and an empty paragraph it says “Select text
-first.” Applying a change lands it in the current document.</li>
-</ul>
+<p><strong>Before you start</strong> - Provider configured. Open
+<code>plain.txt</code> and <strong>select one sentence</strong> (with no
+selection it uses the current paragraph and says so).</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ Transform Selection ▸
+Expand Selection</strong>. 2. In the result dialog, read the expanded
+text; choose <strong>Insert</strong> or <strong>Replace</strong>, or
+close without applying.</p>
+<p><strong>You should see and hear</strong> - QUILL announces “Expand:
+generating…”; on completion a result dialog shows the expanded text,
+keyboard-navigable, with <strong>Insert</strong> and
+<strong>Replace</strong> actions — no silent edit. With no selection and
+an empty paragraph it says “Select text first.” Applying a change lands
+it in the current document.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-13--generate-table-of-contents-toolsai_generate_toc">TAI-13
+<h2 id="tai-13-generate-table-of-contents-tools.ai_generate_toc">TAI-13
 — Generate Table of Contents (<code>tools.ai_generate_toc</code>)</h2>
 <p><em>What &amp; why.</em> Build a table of contents from the whole
 document’s headings, offered for insertion through the result
 dialog.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured. Open
+<p><strong>Before you start</strong> - Provider configured. Open
 <strong><code>formatting.md</code></strong> (six headings, H1–H6 in
-order).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ Transform Selection ▸ Generate Table of
-Contents</strong>.</li>
-<li>Read the generated TOC; choose <strong>Insert</strong> where you
-want it, or close.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>QUILL announces it is generating; the result dialog presents a TOC
-that reflects the document’s six headings in order, keyboard-navigable,
-with an insert action. It works on the <strong>whole document</strong>
-(not a selection). An empty document is reported.</li>
-</ul>
+order).</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ Transform Selection ▸
+Generate Table of Contents</strong>. 2. Read the generated TOC; choose
+<strong>Insert</strong> where you want it, or close.</p>
+<p><strong>You should see and hear</strong> - QUILL announces it is
+generating; the result dialog presents a TOC that reflects the
+document’s six headings in order, keyboard-navigable, with an insert
+action. It works on the <strong>whole document</strong> (not a
+selection). An empty document is reported.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-14--translate-selection-toolsai_translate_selection-ctrlaltshiftt">TAI-14
+id="tai-14-translate-selection-tools.ai_translate_selection-ctrlaltshiftt">TAI-14
 — Translate Selection (<code>tools.ai_translate_selection</code>,
 Ctrl+Alt+Shift+T)</h2>
 <p><em>What &amp; why.</em> Translate the selected text into a chosen
 language, then either replace the selection or open the translation as a
 new document.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured. Open <code>plain.txt</code> and <strong>select
-a paragraph</strong>. Target language: <strong>Spanish</strong> (or any
-you can verify).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Alt+Shift+T</strong>, or <strong>AI menu ▸
-Translate ▸ Translate Selection…</strong>.</li>
-<li>Choose the target language; run the translation; then choose
+<p><strong>Before you start</strong> - Provider configured. Open
+<code>plain.txt</code> and <strong>select a paragraph</strong>. Target
+language: <strong>Spanish</strong> (or any you can verify).</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Alt+Shift+T</strong>,
+or <strong>AI menu ▸ Translate ▸ Translate Selection…</strong>. 2.
+Choose the target language; run the translation; then choose
 <strong>Replace selection</strong> on one pass and <strong>Open in new
-document</strong> on another.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A labelled translation dialog: pick language and provider by
-keyboard. <strong>Replace</strong> swaps just the selected text and
-announces “Translation applied.” <strong>Open in new document</strong>
-opens the translation as a <strong>new unsaved</strong> buffer,
-announced “Opened translation (<language>) in new document,” leaving the
-original untouched. With no selection it says “No selection text to
-translate.”</li>
-</ul>
+document</strong> on another.</p>
+<p><strong>You should see and hear</strong> - A labelled translation
+dialog: pick language and provider by keyboard. <strong>Replace</strong>
+swaps just the selected text and announces “Translation applied.”
+<strong>Open in new document</strong> opens the translation as a
+<strong>new unsaved</strong> buffer, announced “Opened translation
+(<language>) in new document,” leaving the original untouched. With no
+selection it says “No selection text to translate.”</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-15--ai-thesaurus-toolsai_thesaurus-ctrlaltshifth">TAI-15 —
+<h2 id="tai-15-ai-thesaurus-tools.ai_thesaurus-ctrlaltshifth">TAI-15 —
 AI Thesaurus (<code>tools.ai_thesaurus</code>, Ctrl+Alt+Shift+H)</h2>
 <p><em>What &amp; why.</em> Context-aware synonyms for the selected word
 — it reads the surrounding sentence so suggestions fit the sense, and
 one click replaces the word.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured. Open <code>plain.txt</code> and <strong>select
-a single word</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+Alt+Shift+H</strong>, or <strong>AI menu ▸ More ▸
-AI Thesaurus…</strong>.</li>
-<li>Read the synonym list; pick one and <strong>Replace</strong>, or
-close.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The thesaurus dialog opens with the selected word and its context
-sentence shown; the synonym list is announced and keyboard-navigable;
-choosing one replaces the selected word in the document. With no
-configured provider it routes to setup.</li>
-</ul>
+<p><strong>Before you start</strong> - Provider configured. Open
+<code>plain.txt</code> and <strong>select a single word</strong>.</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+Alt+Shift+H</strong>,
+or <strong>AI menu ▸ More ▸ AI Thesaurus…</strong>. 2. Read the synonym
+list; pick one and <strong>Replace</strong>, or close.</p>
+<p><strong>You should see and hear</strong> - The thesaurus dialog opens
+with the selected word and its context sentence shown; the synonym list
+is announced and keyboard-navigable; choosing one replaces the selected
+word in the document. With no configured provider it routes to
+setup.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-16--accessibility-tune-up-toolsai_accessibility_agent">TAI-16 —
+id="tai-16-accessibility-tune-up-tools.ai_accessibility_agent">TAI-16 —
 Accessibility Tune-Up (<code>tools.ai_accessibility_agent</code>)</h2>
 <p><em>What &amp; why.</em> An accessibility agent that proposes fixes
 to the current document (headings, alt text, structure) and, on apply,
 writes them in and drops a report in a new named tab so you can see
 exactly what changed.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Provider configured. Open
+<p><strong>Before you start</strong> - Provider configured. Open
 <strong><code>formatting.md</code></strong> (has headings, a list, an
-image with alt text — material for the agent to reason about).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ Accessibility Tune-Up…</strong>.</li>
-<li>Read the announced plan; review the proposed changes in the dialog;
-<strong>Apply</strong>, or close without applying.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>On open, QUILL <strong>announces the plan</strong> in substance
-(what it intends to check/fix). The dialog is keyboard-navigable and its
-findings are announced. On <strong>Apply</strong>, the changes land in
-the current document, a status line reports “Accessibility Tune-Up
-applied N changes; M findings remain,” and a <strong>new named
-tab</strong> (“Accessibility Tune-Up - <document>”) holds the report.
-Closing without applying changes nothing.</li>
-</ul>
+image with alt text — material for the agent to reason about).</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ Accessibility
+Tune-Up…</strong>. 2. Read the announced plan; review the proposed
+changes in the dialog; <strong>Apply</strong>, or close without
+applying.</p>
+<p><strong>You should see and hear</strong> - On open, QUILL
+<strong>announces the plan</strong> in substance (what it intends to
+check/fix). The dialog is keyboard-navigable and its findings are
+announced. On <strong>Apply</strong>, the changes land in the current
+document, a status line reports “Accessibility Tune-Up applied N
+changes; M findings remain,” and a <strong>new named tab</strong>
+(“Accessibility Tune-Up - <document>”) holds the report. Closing without
+applying changes nothing.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-17--ai-library-toolsai_library">TAI-17 — AI Library
+<h2 id="tai-17-ai-library-tools.ai_library">TAI-17 — AI Library
 (<code>tools.ai_library</code>)</h2>
 <p><em>What &amp; why.</em> The unified manager for Prompts, Skills, and
 Agents — one tabbed place to browse, edit, and promote them. (Prompt
 Studio and Agent Center now redirect here; see TAI-18/TAI-19.)</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open, any document.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ AI Library…</strong>.</li>
-<li>Tab across the Prompts / Skills / Agents tabs; read the list and its
-verbs (add/edit/…); close.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The manager opens as a keyboard-navigable, announced dialog; each
-tab’s list and its action buttons are labelled and reachable by
-keyboard. Closing returns focus to the editor.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open, any document.</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ AI Library…</strong>.
+2. Tab across the Prompts / Skills / Agents tabs; read the list and its
+verbs (add/edit/…); close.</p>
+<p><strong>You should see and hear</strong> - The manager opens as a
+keyboard-navigable, announced dialog; each tab’s list and its action
+buttons are labelled and reachable by keyboard. Closing returns focus to
+the editor.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-18--prompt-studio-toolsai_prompt_studio">TAI-18 — Prompt
+<h2 id="tai-18-prompt-studio-tools.ai_prompt_studio">TAI-18 — Prompt
 Studio (<code>tools.ai_prompt_studio</code>)</h2>
 <p><em>What &amp; why.</em> A retired entry point kept alive during the
 deprecation window: invoking it must <strong>redirect</strong> to the AI
 Library (Prompts), never dead-end.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open. This command has no menu item — reach it from the
-<strong>Command Palette</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Run <strong>Prompt Studio</strong> from the Command Palette.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The <strong>AI Library</strong> opens (the Prompts surface) — the
-same dialog as TAI-17 — rather than a missing or broken window. Any old
-keybinding or palette entry lands in the new manager.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open. This command has no
+menu item — reach it from the <strong>Command Palette</strong>.</p>
+<p><strong>Do this</strong> 1. Run <strong>Prompt Studio</strong> from
+the Command Palette.</p>
+<p><strong>You should see and hear</strong> - The <strong>AI
+Library</strong> opens (the Prompts surface) — the same dialog as TAI-17
+— rather than a missing or broken window. Any old keybinding or palette
+entry lands in the new manager.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-19--agent-center-toolsai_agent_center">TAI-19 — Agent Center
+<h2 id="tai-19-agent-center-tools.ai_agent_center">TAI-19 — Agent Center
 (<code>tools.ai_agent_center</code>)</h2>
 <p><em>What &amp; why.</em> Like TAI-18, a retired entry point that must
 <strong>redirect</strong> to the AI Library (Agents) instead of
 dead-ending.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open. No menu item — reach it from the <strong>Command
-Palette</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Run <strong>Agent Center</strong> from the Command Palette.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The <strong>AI Library</strong> opens (the Agents surface) — the
-same dialog as TAI-17 — cleanly, with no missing window or error.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open. No menu item — reach
+it from the <strong>Command Palette</strong>.</p>
+<p><strong>Do this</strong> 1. Run <strong>Agent Center</strong> from
+the Command Palette.</p>
+<p><strong>You should see and hear</strong> - The <strong>AI
+Library</strong> opens (the Agents surface) — the same dialog as TAI-17
+— cleanly, with no missing window or error.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-20--ai-session-branches-toolsai_session_browser">TAI-20 — AI
+<h2 id="tai-20-ai-session-branches-tools.ai_session_browser">TAI-20 — AI
 Session Branches (<code>tools.ai_session_browser</code>)</h2>
 <p><em>What &amp; why.</em> Browse the branch tree of your most recent
 writing session and jump between or compare branches — the record of an
 Ask Quill conversation.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Ideally, hold an Ask Quill conversation first (TAI-05) so a session
-exists. Then also test the <strong>empty</strong> case on a fresh
-profile.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Run <strong>AI Session Branches</strong> from the Command
-Palette.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>With a saved session: a keyboard-navigable branch tree opens,
-announced, with jump/compare actions. With <strong>none</strong>: a
-clear, <strong>announced dialog</strong> (not just a status line) says
-“No saved AI writing sessions yet…” and points you to Ask Quill — it
-does not fail silently.</li>
-</ul>
+<p><strong>Before you start</strong> - Ideally, hold an Ask Quill
+conversation first (TAI-05) so a session exists. Then also test the
+<strong>empty</strong> case on a fresh profile.</p>
+<p><strong>Do this</strong> 1. Run <strong>AI Session Branches</strong>
+from the Command Palette.</p>
+<p><strong>You should see and hear</strong> - With a saved session: a
+keyboard-navigable branch tree opens, announced, with jump/compare
+actions. With <strong>none</strong>: a clear, <strong>announced
+dialog</strong> (not just a status line) says “No saved AI writing
+sessions yet…” and points you to Ask Quill — it does not fail
+silently.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-21--writing-assistant-toolsai_assistant-gated-futureai">TAI-21 —
-Writing Assistant (<code>tools.ai_assistant</code>) <strong>[GATED
+id="tai-21-writing-assistant-tools.ai_assistant-gated-future.ai">TAI-21
+— Writing Assistant (<code>tools.ai_assistant</code>) <strong>[GATED
 future.ai]</strong></h2>
 <p><em>What &amp; why.</em> The multi-tool writing assistant dialog
 (prompts, run-Python tools, document/selection context). Behind the
 <code>future.ai</code> flag for 1.0.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>[GATED future.ai]</strong> — on a public build this is
-<strong>N/A</strong>. On a dev/admin build with the flag on: provider
-configured; <strong>not</strong> Safe Mode. Open
-<code>plain.txt</code>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Run <strong>Writing Assistant</strong> from the Command Palette (or
-its AI-menu item if the flag exposes one).</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>On a public build: absent → mark <strong>N/A</strong> (confirm its
-absence in <code>gated-absence.md</code>). On a flagged build: the
-assistant dialog opens, keyboard- navigable and announced, seeded with
-the current selection/document. In <strong>Safe Mode</strong> it refuses
-with “Writing assistant is unavailable in safe mode” and opens
-nothing.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>[GATED
+future.ai]</strong> — on a public build this is <strong>N/A</strong>. On
+a dev/admin build with the flag on: provider configured;
+<strong>not</strong> Safe Mode. Open <code>plain.txt</code>.</p>
+<p><strong>Do this</strong> 1. Run <strong>Writing Assistant</strong>
+from the Command Palette (or its AI-menu item if the flag exposes
+one).</p>
+<p><strong>You should see and hear</strong> - On a public build: absent
+→ mark <strong>N/A</strong> (confirm its absence in
+<code>gated-absence.md</code>). On a flagged build: the assistant dialog
+opens, keyboard- navigable and announced, seeded with the current
+selection/document. In <strong>Safe Mode</strong> it refuses with
+“Writing assistant is unavailable in safe mode” and opens nothing.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-22--continue-writing-toolsai_continue_writing-gated-futureai">TAI-22
+id="tai-22-continue-writing-tools.ai_continue_writing-gated-future.ai">TAI-22
 — Continue Writing (<code>tools.ai_continue_writing</code>)
 <strong>[GATED future.ai]</strong></h2>
 <p><em>What &amp; why.</em> Continue the prose from your selection (or
 the whole document) by opening the Writing Assistant pre-seeded with a
 “continue” prompt.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>[GATED future.ai]</strong> — public build =
-<strong>N/A</strong>. Flagged build: provider configured; open
-<code>plain.txt</code> and place the caret at the end (or select a
-passage).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ Transform Selection ▸ Continue Writing</strong>
-(flagged builds), or the Command Palette.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>On a flagged build the Writing Assistant opens with a continuation
-prompt built from your text; with nothing to continue from it says
-“Nothing to continue from. Type some text first.” With AI off it
-announces AI is disabled. On a public build, <strong>N/A</strong>.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>[GATED
+future.ai]</strong> — public build = <strong>N/A</strong>. Flagged
+build: provider configured; open <code>plain.txt</code> and place the
+caret at the end (or select a passage).</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ Transform Selection ▸
+Continue Writing</strong> (flagged builds), or the Command Palette.</p>
+<p><strong>You should see and hear</strong> - On a flagged build the
+Writing Assistant opens with a continuation prompt built from your text;
+with nothing to continue from it says “Nothing to continue from. Type
+some text first.” With AI off it announces AI is disabled. On a public
+build, <strong>N/A</strong>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-23--fix-grammar-toolsai_fix_grammar-gated-futureai">TAI-23 —
-Fix Grammar (<code>tools.ai_fix_grammar</code>) <strong>[GATED
+<h2 id="tai-23-fix-grammar-tools.ai_fix_grammar-gated-future.ai">TAI-23
+— Fix Grammar (<code>tools.ai_fix_grammar</code>) <strong>[GATED
 future.ai]</strong></h2>
 <p><em>What &amp; why.</em> Grammar fix for the
 selection/paragraph/document via the Writing Assistant, seeded with a
 “grammar” prompt.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>[GATED future.ai]</strong> — public build =
-<strong>N/A</strong>. Flagged build: provider configured; open
-<code>plain.txt</code> and select a sentence (or none, to use the
-paragraph).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ Transform Selection ▸ Fix Grammar</strong>
-(flagged builds), or the Command Palette.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>On a flagged build the assistant opens seeded with the grammar
-prompt, and QUILL announces the scope it is checking (“Checking grammar
-in <scope>…”); with nothing to check it says so. With AI off it
-announces AI is disabled. Public build = <strong>N/A</strong>.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>[GATED
+future.ai]</strong> — public build = <strong>N/A</strong>. Flagged
+build: provider configured; open <code>plain.txt</code> and select a
+sentence (or none, to use the paragraph).</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ Transform Selection ▸
+Fix Grammar</strong> (flagged builds), or the Command Palette.</p>
+<p><strong>You should see and hear</strong> - On a flagged build the
+assistant opens seeded with the grammar prompt, and QUILL announces the
+scope it is checking (“Checking grammar in <scope>…”); with nothing to
+check it says so. With AI off it announces AI is disabled. Public build
+= <strong>N/A</strong>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-24--rewrite-selection-toolsai_rewrite_selection-gated-futureai">TAI-24
+id="tai-24-rewrite-selection-tools.ai_rewrite_selection-gated-future.ai">TAI-24
 — Rewrite Selection (<code>tools.ai_rewrite_selection</code>)
 <strong>[GATED future.ai]</strong></h2>
 <p><em>What &amp; why.</em> Rewrite the selected passage, offered for
 insert/replace via the agent result dialog (same mechanism as
 Expand).</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>[GATED future.ai]</strong> — public build =
-<strong>N/A</strong>. Flagged build: provider configured; open
-<code>plain.txt</code> and <strong>select a sentence</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ Transform Selection ▸ Rewrite Selection</strong>
-(flagged builds), or the Command Palette.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>On a flagged build QUILL announces “Rewrite: generating…”; a result
-dialog offers the rewritten text with
-<strong>Insert</strong>/<strong>Replace</strong> — no silent edit. With
-no selection it uses the current paragraph and says so, or asks you to
-select text. Public build = <strong>N/A</strong>.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>[GATED
+future.ai]</strong> — public build = <strong>N/A</strong>. Flagged
+build: provider configured; open <code>plain.txt</code> and
+<strong>select a sentence</strong>.</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ Transform Selection ▸
+Rewrite Selection</strong> (flagged builds), or the Command Palette.</p>
+<p><strong>You should see and hear</strong> - On a flagged build QUILL
+announces “Rewrite: generating…”; a result dialog offers the rewritten
+text with <strong>Insert</strong>/<strong>Replace</strong> — no silent
+edit. With no selection it uses the current paragraph and says so, or
+asks you to select text. Public build = <strong>N/A</strong>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-25--summarize-selection-toolsai_summarize_selection-gated-futureai">TAI-25
+id="tai-25-summarize-selection-tools.ai_summarize_selection-gated-future.ai">TAI-25
 — Summarize Selection (<code>tools.ai_summarize_selection</code>)
 <strong>[GATED future.ai]</strong></h2>
 <p><em>What &amp; why.</em> Summarize the selection (or the document)
 into a result dialog offered for insert/replace.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>[GATED future.ai]</strong> — public build =
-<strong>N/A</strong>. Flagged build: provider configured; open
-<code>formatting.md</code> (or select a passage in
-<code>plain.txt</code>).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>AI menu ▸ Transform Selection ▸ Summarize Selection</strong>
-(flagged builds), or the Command Palette.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>On a flagged build QUILL announces it is generating; a result dialog
-presents the summary, keyboard-navigable, with
+<p><strong>Before you start</strong> - <strong>[GATED
+future.ai]</strong> — public build = <strong>N/A</strong>. Flagged
+build: provider configured; open <code>formatting.md</code> (or select a
+passage in <code>plain.txt</code>).</p>
+<p><strong>Do this</strong> 1. <strong>AI menu ▸ Transform Selection ▸
+Summarize Selection</strong> (flagged builds), or the Command
+Palette.</p>
+<p><strong>You should see and hear</strong> - On a flagged build QUILL
+announces it is generating; a result dialog presents the summary,
+keyboard-navigable, with
 <strong>Insert</strong>/<strong>Replace</strong>. An empty document is
-reported. Public build = <strong>N/A</strong>.</li>
-</ul>
+reported. Public build = <strong>N/A</strong>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-26--describe-image-toolsdescribe_image-ctrlshiftgrave-i-gated-futureai">TAI-26
+id="tai-26-describe-image-tools.describe_image-ctrlshiftgrave-i-gated-future.ai">TAI-26
 — Describe Image (<code>tools.describe_image</code>, Ctrl+Shift+Grave,
 I) <strong>[GATED future.ai]</strong></h2>
 <p><em>What &amp; why.</em> Send an image (file, clipboard, or screen
 capture) to the provider’s <strong>vision</strong> model and get a
 written description you can insert, copy, or discard — alt text on
 demand. Behind <code>future.ai</code> for 1.0.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>[GATED future.ai]</strong> — public build =
-<strong>N/A</strong>. Flagged build: a provider with a
-<strong>vision-capable</strong> model configured. Have an image ready
-(for example <code>qa-samples/red-circle.png</code>, or any picture).
-Chord: <strong>Ctrl+Shift+Grave</strong> then <strong>I</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open via the chord, or <strong>Tools menu ▸ Reading and Dictation ▸
-Describe Image…</strong>.</li>
-<li>Pick the image source (file / clipboard / screen capture). If the
-style picker appears, choose a style. Wait for the description.</li>
-<li>In the review dialog choose <strong>Insert</strong>,
-<strong>Copy</strong>, <strong>Try a different prompt…</strong>, or
-<strong>Discard</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>On a flagged build: a keyboard-navigable image-source picker, then a
-progress dialog (“Asking the model to describe the image…”), then a
-review dialog with the written description — announced, with
-Insert/Copy/retry/Discard actions. If AI is off it says “AI is turned
-off…”; if no vision provider is connected it says “No AI provider is
-connected…” and describes nothing. Cancelling the picker announces
-“Image description cancelled.” Public build = <strong>N/A</strong>.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>[GATED
+future.ai]</strong> — public build = <strong>N/A</strong>. Flagged
+build: a provider with a <strong>vision-capable</strong> model
+configured. Have an image ready (for example
+<code>qa-samples/red-circle.png</code>, or any picture). Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>I</strong>.</p>
+<p><strong>Do this</strong> 1. Open via the chord, or <strong>Tools menu
+▸ Reading and Dictation ▸ Describe Image…</strong>. 2. Pick the image
+source (file / clipboard / screen capture). If the style picker appears,
+choose a style. Wait for the description. 3. In the review dialog choose
+<strong>Insert</strong>, <strong>Copy</strong>, <strong>Try a different
+prompt…</strong>, or <strong>Discard</strong>.</p>
+<p><strong>You should see and hear</strong> - On a flagged build: a
+keyboard-navigable image-source picker, then a progress dialog (“Asking
+the model to describe the image…”), then a review dialog with the
+written description — announced, with Insert/Copy/retry/Discard actions.
+If AI is off it says “AI is turned off…”; if no vision provider is
+connected it says “No AI provider is connected…” and describes nothing.
+Cancelling the picker announces “Image description cancelled.” Public
+build = <strong>N/A</strong>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-27--prompt-library-toolsprompt_library">TAI-27 — Prompt
+<h2 id="tai-27-prompt-library-tools.prompt_library">TAI-27 — Prompt
 Library (<code>tools.prompt_library</code>)</h2>
 <p><em>What &amp; why.</em> A library of reusable AI prompts you can run
 on your text and import/export as <code>.pqp</code> files.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>AI provider configured (else the dialog shows a “not configured”
-guard at open — verify that path too). A scratch document with a
-sentence selected.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open <strong>Tools ▸ AI ▸ Prompt Library</strong> (or Command
-Palette → “Prompt Library”).</li>
-<li>Tab through the list and its add/edit/import/export controls; run a
-prompt against the selection.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The dialog is keyboard-navigable and announced; entries have names;
-running a prompt sends only on your action and returns a result (as a
-new/unsaved doc or an insert, per the prompt). With no AI configured, it
-says so at open rather than failing later. <strong>Note:</strong>
-confirm the exact spoken wording against the build.</li>
-</ul>
+<p><strong>Before you start</strong> - AI provider configured (else the
+dialog shows a “not configured” guard at open — verify that path too). A
+scratch document with a sentence selected.</p>
+<p><strong>Do this</strong> 1. Open <strong>Tools ▸ AI ▸ Prompt
+Library</strong> (or Command Palette → “Prompt Library”). 2. Tab through
+the list and its add/edit/import/export controls; run a prompt against
+the selection.</p>
+<p><strong>You should see and hear</strong> - The dialog is
+keyboard-navigable and announced; entries have names; running a prompt
+sends only on your action and returns a result (as a new/unsaved doc or
+an insert, per the prompt). With no AI configured, it says so at open
+rather than failing later. <strong>Note:</strong> confirm the exact
+spoken wording against the build.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-28--skill-library-toolsskill_library">TAI-28 — Skill Library
+<h2 id="tai-28-skill-library-tools.skill_library">TAI-28 — Skill Library
 (<code>tools.skill_library</code>)</h2>
 <p><em>What &amp; why.</em> Multi-step AI “skills” (a chain of steps)
 you can run on a document, with intermediate step output and a cancel
 button.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>AI provider configured. A scratch document.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open <strong>Tools ▸ AI Assistant ▸ Skill Library…</strong> (or
-Command Palette → “Skill Library”).</li>
-<li>Pick a skill; run it; watch the per-step progress; try
-<strong>Cancel</strong> mid-run.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Keyboard-navigable list; each step’s progress/name is announced;
-intermediate outputs are reachable; Cancel stops cleanly. With no AI
-configured, an early guard says so at open. <strong>Note:</strong>
-verify exact announcements.</li>
-</ul>
+<p><strong>Before you start</strong> - AI provider configured. A scratch
+document.</p>
+<p><strong>Do this</strong> 1. Open <strong>Tools ▸ AI Assistant ▸ Skill
+Library…</strong> (or Command Palette → “Skill Library”). 2. Pick a
+skill; run it; watch the per-step progress; try <strong>Cancel</strong>
+mid-run.</p>
+<p><strong>You should see and hear</strong> - Keyboard-navigable list;
+each step’s progress/name is announced; intermediate outputs are
+reachable; Cancel stops cleanly. With no AI configured, an early guard
+says so at open. <strong>Note:</strong> verify exact announcements.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-29--run-agent-on-selection-toolsrun_agent">TAI-29 — Run
+<h2 id="tai-29-run-agent-on-selection-tools.run_agent">TAI-29 — Run
 Agent on Selection (<code>tools.run_agent</code>)</h2>
 <p><em>What &amp; why.</em> Run a configured AI agent against the
 currently selected text.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>AI provider configured; not Safe Mode. Select a sentence in a
-scratch document.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Select text, then run <strong>Run Agent on Selection</strong> (Tools
-▸ AI, or Command Palette → “Run Agent”).</li>
-<li>Pick the agent if prompted; confirm any send; wait for the
-result.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The selection (not the whole document) is what is sent; a send is
-confirmed before it leaves; progress is announced; the agent result
-opens in its result view / a new unsaved doc. Safe Mode / no-provider
-refuses and sends nothing. <strong>Note:</strong> verify exact
-wording.</li>
-</ul>
+<p><strong>Before you start</strong> - AI provider configured; not Safe
+Mode. Select a sentence in a scratch document.</p>
+<p><strong>Do this</strong> 1. Select text, then run <strong>Run Agent
+on Selection</strong> (Tools ▸ AI, or Command Palette → “Run Agent”). 2.
+Pick the agent if prompted; confirm any send; wait for the result.</p>
+<p><strong>You should see and hear</strong> - The selection (not the
+whole document) is what is sent; a send is confirmed before it leaves;
+progress is announced; the agent result opens in its result view / a new
+unsaved doc. Safe Mode / no-provider refuses and sends nothing.
+<strong>Note:</strong> verify exact wording.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="tai-30--train-writing-style-toolstrain_writing_style">TAI-30 —
+<h2 id="tai-30-train-writing-style-tools.train_writing_style">TAI-30 —
 Train Writing Style (<code>tools.train_writing_style</code>)</h2>
 <p><em>What &amp; why.</em> Teach the AI your writing style from sample
 text so later AI writing matches your voice.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>AI provider configured. Sample text available (e.g.
-<code>formatting.md</code> or your own).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open <strong>Train Writing Style</strong> (Tools ▸ AI, or Command
-Palette).</li>
-<li>Follow the prompts to supply/confirm the sample; complete the
-flow.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Keyboard-navigable, announced steps; it confirms what it will learn
-from before doing so; on completion it says the style profile was saved.
-No content is sent without your action. <strong>Note:</strong> verify
-exact wording and where the profile is stored.</li>
-</ul>
+<p><strong>Before you start</strong> - AI provider configured. Sample
+text available (e.g. <code>formatting.md</code> or your own).</p>
+<p><strong>Do this</strong> 1. Open <strong>Train Writing Style</strong>
+(Tools ▸ AI, or Command Palette). 2. Follow the prompts to
+supply/confirm the sample; complete the flow.</p>
+<p><strong>You should see and hear</strong> - Keyboard-navigable,
+announced steps; it confirms what it will learn from before doing so; on
+completion it says the style profile was saved. No content is sent
+without your action. <strong>Note:</strong> verify exact wording and
+where the profile is stored.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="tai-31--open-writing-instructions-toolswriting_instructions-gated-futureai">TAI-31
+id="tai-31-open-writing-instructions-tools.writing_instructions-gated-future.ai">TAI-31
 — Open Writing Instructions (<code>tools.writing_instructions</code>)
 [GATED future.ai]</h2>
 <p><em>What &amp; why.</em> Edit the standing “writing instructions” the
@@ -1216,23 +953,17 @@ AI applies to your writing tasks. Present only when
 <code>future.ai</code> is on — on a public build, mark
 <strong>N/A</strong> (verify absence in
 <code>gated-absence.md</code>).</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A build with <code>future.ai</code> enabled; AI provider configured.
-Otherwise N/A.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open <strong>Writing Instructions</strong> (Tools ▸ AI, or Command
-Palette → “Writing Instructions”).</li>
-<li>Tab through the fields; edit the instruction text; save.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Labelled, keyboard-complete editor for the instructions; saving is
-announced and persists to the next AI writing action. On a public build
-the command is absent. <strong>Note:</strong> verify exact wording.</li>
-</ul>
+<p><strong>Before you start</strong> - A build with
+<code>future.ai</code> enabled; AI provider configured. Otherwise
+N/A.</p>
+<p><strong>Do this</strong> 1. Open <strong>Writing
+Instructions</strong> (Tools ▸ AI, or Command Palette → “Writing
+Instructions”). 2. Tab through the fields; edit the instruction text;
+save.</p>
+<p><strong>You should see and hear</strong> - Labelled,
+keyboard-complete editor for the instructions; saving is announced and
+persists to the next AI writing action. On a public build the command is
+absent. <strong>Note:</strong> verify exact wording.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1250,6 +981,5 @@ the command is absent. <strong>Note:</strong> verify exact wording.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
-</main>
 </body>
 </html>

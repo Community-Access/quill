@@ -345,18 +345,94 @@ def resolve_station_streams(guide_id: str, *, safe_mode: bool = False) -> list[s
     return parse_tune_response(_fetch(f"{_OPML_BASE}/Tune.ashx?{params}"))
 
 
+#: TuneIn's own player endpoint, which several engines cannot follow. The host
+#: is regionalised (``stream.platform.prod.us-west-2.tunein.com``) but the path
+#: is stable, so match on the path rather than the host.
+_TUNEIN_REDIRECT_PATH = "tunein.com/listen.stream"
+
+
+def _stream_rank(url: str) -> tuple[int, int]:
+    """Sort key for one Tune.ashx URL (pure). Lower is better.
+
+    Two preferences, most significant first:
+
+    1. **Not TuneIn's own redirect.** ``stream.platform...tunein.com/listen.stream``
+       is a player endpoint several engines cannot follow, so a directly-playable
+       CDN URL always wins -- even an insecure one, because an http stream that
+       plays beats an https URL that does not.
+    2. **https over http.** Measured across 40 stations on 2026-08-13, one
+       returned an http URL ahead of an https alternative for the same station,
+       so first-wins silently chose plaintext where TLS was on offer.
+
+    Everything else keeps TuneIn's own order, which is its stated preference --
+    :func:`sorted` is stable, so equal-ranked URLs are never reshuffled.
+    """
+    lowered = url.lower()
+    return (
+        1 if _TUNEIN_REDIRECT_PATH in lowered else 0,
+        1 if lowered.startswith("http://") else 0,
+    )
+
+
+def _is_hls(lowered_url: str) -> bool:
+    """Whether this URL is an HLS manifest rather than a progressive stream.
+
+    Path-only on purpose: a query string can carry ``.m3u8`` as a parameter
+    value (TuneIn's own URLs are full of tracking parameters), and matching that
+    would demote a perfectly ordinary stream.
+    """
+    path = lowered_url.split("?", 1)[0]
+    return path.endswith((".m3u8", ".m3u")) or "/manifest/" in path
+
+
 def best_stream(streams: list[str]) -> str:
     """Pick the most broadly-playable URL from a Tune.ashx result (pure).
 
-    TuneIn often returns its own ``stream.platform...tunein.com/listen.stream``
-    redirect first, which several engines can't follow; a direct CDN media URL
-    (``.mp3``/``.aac``/``.m3u8``, a StreamTheWorld redirect, etc.) later in the
-    list plays reliably. So prefer the first stream that is NOT that proprietary
-    endpoint, falling back to the first stream if they all are."""
-    for url in streams:
-        if "tunein.com/listen.stream" not in url.lower():
-            return url
-    return streams[0] if streams else ""
+    Ranked by :func:`_stream_rank` rather than "first that is not the redirect",
+    so the choice is a stated preference instead of an accident of ordering.
+    When every URL is TuneIn's un-followable redirect the best of those is still
+    returned -- a URL we are unsure about beats no URL, and the player's own
+    repair ladder (``core/radio/recovery.py``) gets its turn.
+
+    Then one more preference, and the reason it is **host-scoped** is the whole
+    point of it (2026-08-14). HLS delivers a short segment window that must be
+    topped up every few seconds, so a single failed refresh drains the buffer and
+    the stream dies twenty to thirty seconds later -- the fault reported against
+    96.5 The Fan, and the same one already fixed for iHeart by preferring its
+    progressive stream. The obvious fix is "prefer progressive everywhere", and
+    it is wrong: for that very station TuneIn returns an HLS manifest on one CDN
+    and an MP3 on a **completely different** one, whose own query string names a
+    different station id and a music genre where the station is sports. Choosing
+    it might well play somebody a different broadcaster, which is a far worse
+    failure than a dropout.
+
+    So progressive wins over HLS **only when both come from the same host**,
+    which is a strong signal that they are two forms of one stream rather than
+    two streams -- and is exactly the shape of the iHeart case. Where the hosts
+    differ, the HLS form is kept and the engine's reconnect options plus
+    ``ui/radio/live_reconnect`` do the work instead.
+    """
+    if not streams:
+        return ""
+    ranked = sorted(streams, key=_stream_rank)
+    best = ranked[0]
+    if not _is_hls(best.lower()):
+        return best
+    host = _host_of(best)
+    for candidate in ranked[1:]:
+        if _host_of(candidate) == host and not _is_hls(candidate.lower()):
+            return candidate
+    return best
+
+
+def _host_of(url: str) -> str:
+    """The lowercased host of *url*, or "" when it has none."""
+    from urllib.parse import urlsplit
+
+    try:
+        return (urlsplit(url).hostname or "").lower()
+    except ValueError:
+        return ""
 
 
 def to_radio_station(result: TuneInResult, stream_url: str) -> RadioStation:

@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Section — GitHub, Local Git, and Publishing (`github.*`
-`localgit.*` `publishing.*`, 40 commands)</title>
+  <title>section-github</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,31 +174,10 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
-id="section--github-local-git-and-publishing-github-localgit-publishing-40-commands">Section
+id="section-github-local-git-and-publishing-github.-localgit.-publishing.-40-commands">Section
 — GitHub, Local Git, and Publishing (<code>github.*</code>
 <code>localgit.*</code> <code>publishing.*</code>, 40 commands)</h1>
 <p>Three related but separate surfaces, all about moving your writing
@@ -283,77 +261,58 @@ status bar, not raised as silent crashes. Unless noted, the repository
 field prefills from the current document’s GitHub origin and takes the
 form <strong><code>owner/repo</code></strong>.</p>
 <h2
-id="gh-01--browse-organization-repositories-githubbrowse_organization">GH-01
+id="gh-01-browse-organization-repositories-github.browse_organization">GH-01
 — Browse Organization Repositories…
 (<code>github.browse_organization</code>)</h2>
 <p><em>What &amp; why.</em> List the organizations your account belongs
 to, pick one, then pick one of its repositories to open in the GitHub
 Items viewer.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected GitHub account (FILE-29); ideally a member of at least one
-org.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools menu ▸ Git and GitHub ▸ GitHub ▸ Browse Organization
-Repositories…</strong> (or Command Palette → “Browse Organization
-Repositories”).</li>
-<li>In the first list, arrow to an organization; press
-<strong>Enter</strong>.</li>
-<li>In the repository list, arrow to a repo; press
-<strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Loading organizations” is announced. A keyboard-navigable
-single-choice list of org names appears; choosing one loads and
-announces its repositories in a second list; choosing a repo opens the
-<strong>GitHub Items viewer</strong> for it. If the account is in no
-orgs, you hear “This account belongs to no organizations”; an org with
-no visible repos says so — never a silent dead end.</li>
-</ul>
+<p><strong>Before you start</strong> - Connected GitHub account
+(FILE-29); ideally a member of at least one org.</p>
+<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Git and GitHub ▸
+GitHub ▸ Browse Organization Repositories…</strong> (or Command Palette
+→ “Browse Organization Repositories”). 2. In the first list, arrow to an
+organization; press <strong>Enter</strong>. 3. In the repository list,
+arrow to a repo; press <strong>Enter</strong>.</p>
+<p><strong>You should see and hear</strong> - “Loading organizations” is
+announced. A keyboard-navigable single-choice list of org names appears;
+choosing one loads and announces its repositories in a second list;
+choosing a repo opens the <strong>GitHub Items viewer</strong> for it.
+If the account is in no orgs, you hear “This account belongs to no
+organizations”; an org with no visible repos says so — never a silent
+dead end.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gh-02--change-default-branch-githubchange_default_branch-ctrlshiftgrave-then-shiftb">GH-02
+id="gh-02-change-default-branch-github.change_default_branch-ctrlshiftgrave-then-shiftb">GH-02
 — Change Default Branch… (<code>github.change_default_branch</code>,
 Ctrl+Shift+Grave then Shift+B)</h2>
 <p><em>What &amp; why.</em> Set which branch GitHub treats as the
 repository’s default.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account with <strong>write access</strong> to a repo that
-has two or more branches.</li>
-<li>Chord: press <strong>Ctrl+Shift+Grave</strong>, release, then
-<strong>Shift+B</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open via the chord, or <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
-Change Default Branch…</strong>.</li>
-<li>Type the repository as <strong><code>owner/repo</code></strong>;
-confirm.</li>
-<li>In the branch list, arrow to the new default branch; press
-<strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The repo prompt is a labelled text field. “Loading branches for
-owner/repo” is announced, then a single-choice list of branch names. On
-confirm you hear “owner/repo’s default branch is now
-<code>&lt;branch&gt;</code>”. No branches found is reported.</li>
-</ul>
+<p><strong>Before you start</strong> - Connected account with
+<strong>write access</strong> to a repo that has two or more branches. -
+Chord: press <strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>Shift+B</strong>.</p>
+<p><strong>Do this</strong> 1. Open via the chord, or <strong>Tools ▸
+Git and GitHub ▸ GitHub ▸ Change Default Branch…</strong>. 2. Type the
+repository as <strong><code>owner/repo</code></strong>; confirm. 3. In
+the branch list, arrow to the new default branch; press
+<strong>Enter</strong>.</p>
+<p><strong>You should see and hear</strong> - The repo prompt is a
+labelled text field. “Loading branches for owner/repo” is announced,
+then a single-choice list of branch names. On confirm you hear
+“owner/repo’s default branch is now <code>&lt;branch&gt;</code>”. No
+branches found is reported.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gh-03--change-repository-visibility-githubchange_repository_visibility-ctrlshiftgrave-then-shiftv">GH-03
+id="gh-03-change-repository-visibility-github.change_repository_visibility-ctrlshiftgrave-then-shiftv">GH-03
 — Change Repository Visibility…
 (<code>github.change_repository_visibility</code>, Ctrl+Shift+Grave then
 Shift+V)</h2>
@@ -362,474 +321,348 @@ private. High-consequence, so it is guarded by a <strong>typed
 confirmation</strong> (you retype the repo name), and making a repo
 public carries an explicit warning that its whole history becomes
 visible.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account with admin rights to a repo. Chord:
-<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+V</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open via the chord, or <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
-Change Repository Visibility…</strong>.</li>
-<li>Enter <strong><code>owner/repo</code></strong>; confirm.</li>
-<li>Read the confirmation; in the typed-confirm dialog, <strong>type the
-repository name exactly</strong> to enable the action, then
-confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Checking owner/repo” then a confirmation stating the current
-visibility and the target (“… is currently public. Make it private?”).
-Making a repo <strong>public</strong> adds the warning about exposing
-full history. The typed-confirm field is labelled and must match before
-the button enables — cancelling or a mismatch leaves it unchanged and
-says “Visibility change cancelled”. On success: “owner/repo is now
-private” (or public).</li>
-</ul>
+<p><strong>Before you start</strong> - Connected account with admin
+rights to a repo. Chord: <strong>Ctrl+Shift+Grave</strong> then
+<strong>Shift+V</strong>.</p>
+<p><strong>Do this</strong> 1. Open via the chord, or <strong>Tools ▸
+Git and GitHub ▸ GitHub ▸ Change Repository Visibility…</strong>. 2.
+Enter <strong><code>owner/repo</code></strong>; confirm. 3. Read the
+confirmation; in the typed-confirm dialog, <strong>type the repository
+name exactly</strong> to enable the action, then confirm.</p>
+<p><strong>You should see and hear</strong> - “Checking owner/repo” then
+a confirmation stating the current visibility and the target (“… is
+currently public. Make it private?”). Making a repo
+<strong>public</strong> adds the warning about exposing full history.
+The typed-confirm field is labelled and must match before the button
+enables — cancelling or a mismatch leaves it unchanged and says
+“Visibility change cancelled”. On success: “owner/repo is now private”
+(or public).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gh-04--commit-multiple-files-githubcommit_multiple_files-ctrlshiftgrave-then-shiftu">GH-04
+id="gh-04-commit-multiple-files-github.commit_multiple_files-ctrlshiftgrave-then-shiftu">GH-04
 — Commit Multiple Files… (<code>github.commit_multiple_files</code>,
 Ctrl+Shift+Grave then Shift+U)</h2>
 <p><em>What &amp; why.</em> Push several local files to a repo branch in
 one atomic commit, without cloning it first.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account with write access. A couple of local files to
-upload. Chord: <strong>Ctrl+Shift+Grave</strong> then
-<strong>Shift+U</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open via the chord, or <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
-Commit Multiple Files…</strong>.</li>
-<li>Enter <strong><code>owner/repo</code></strong>.</li>
-<li>In the file picker (multi-select), choose the files; confirm.</li>
-<li>Enter the branch (defaults to <strong><code>main</code></strong>)
-and a commit message.</li>
-<li>Read the file listing in the confirmation; choose
-<strong>Yes</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Labelled prompts for repo, branch, and message; a keyboard-operable
-multi-select file dialog. The confirmation lists the files (first ten,
-then “and N more”) and the target branch — nothing is pushed until you
-confirm. On success: “Committed N file(s) to owner/repo
-(<code>&lt;short-sha&gt;</code>)”.</li>
-</ul>
+<p><strong>Before you start</strong> - Connected account with write
+access. A couple of local files to upload. Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+U</strong>.</p>
+<p><strong>Do this</strong> 1. Open via the chord, or <strong>Tools ▸
+Git and GitHub ▸ GitHub ▸ Commit Multiple Files…</strong>. 2. Enter
+<strong><code>owner/repo</code></strong>. 3. In the file picker
+(multi-select), choose the files; confirm. 4. Enter the branch (defaults
+to <strong><code>main</code></strong>) and a commit message. 5. Read the
+file listing in the confirmation; choose <strong>Yes</strong>.</p>
+<p><strong>You should see and hear</strong> - Labelled prompts for repo,
+branch, and message; a keyboard-operable multi-select file dialog. The
+confirmation lists the files (first ten, then “and N more”) and the
+target branch — nothing is pushed until you confirm. On success:
+“Committed N file(s) to owner/repo
+(<code>&lt;short-sha&gt;</code>)”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gh-05--configure-branch-protection-githubconfigure_branch_protection-ctrlshiftgrave-then-shiftl">GH-05
+id="gh-05-configure-branch-protection-github.configure_branch_protection-ctrlshiftgrave-then-shiftl">GH-05
 — Configure Branch Protection…
 (<code>github.configure_branch_protection</code>, Ctrl+Shift+Grave then
 Shift+L)</h2>
 <p><em>What &amp; why.</em> Add or remove branch-protection rules
 (required reviews, required status checks, enforce-on-admins) for a
 branch.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account with admin rights. Chord:
-<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+L</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open via the chord, or <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
-Configure Branch Protection…</strong>.</li>
-<li>Enter <strong><code>owner/repo</code></strong>.</li>
-<li>In the Branch Protection dialog, pick the branch and set the options
-(or choose Remove); confirm.</li>
-<li>Answer the “Protect …?” / “Remove all protection …?”
-confirmation.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Loading owner/repo”, then a dialog whose branch chooser and option
-fields (required approving reviews, status checks, enforce admins) are
-labelled and keyboard-complete, defaulting to the repo’s default branch.
-A plain confirmation precedes the change. On success: “Protected
+<p><strong>Before you start</strong> - Connected account with admin
+rights. Chord: <strong>Ctrl+Shift+Grave</strong> then
+<strong>Shift+L</strong>.</p>
+<p><strong>Do this</strong> 1. Open via the chord, or <strong>Tools ▸
+Git and GitHub ▸ GitHub ▸ Configure Branch Protection…</strong>. 2.
+Enter <strong><code>owner/repo</code></strong>. 3. In the Branch
+Protection dialog, pick the branch and set the options (or choose
+Remove); confirm. 4. Answer the “Protect …?” / “Remove all protection
+…?” confirmation.</p>
+<p><strong>You should see and hear</strong> - “Loading owner/repo”, then
+a dialog whose branch chooser and option fields (required approving
+reviews, status checks, enforce admins) are labelled and
+keyboard-complete, defaulting to the repo’s default branch. A plain
+confirmation precedes the change. On success: “Protected
 <code>&lt;branch&gt;</code> in owner/repo” or “Removed protection from
-<code>&lt;branch&gt;</code> in owner/repo”.</li>
-</ul>
+<code>&lt;branch&gt;</code> in owner/repo”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gh-06--explain-a-command-githubcopilot_explain">GH-06 — Explain
+<h2 id="gh-06-explain-a-command-github.copilot_explain">GH-06 — Explain
 a Command… (<code>github.copilot_explain</code>)</h2>
 <p><em>What &amp; why.</em> Paste a <code>git</code> or <code>gh</code>
 command and have GitHub Copilot CLI explain it in plain language.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>Precondition:</strong> the <strong>GitHub CLI
-(<code>gh</code>)</strong> installed with Copilot access
-(<code>gh copilot</code>). If not present, QUILL points you to
+<p><strong>Before you start</strong> - <strong>Precondition:</strong>
+the <strong>GitHub CLI (<code>gh</code>)</strong> installed with Copilot
+access (<code>gh copilot</code>). If not present, QUILL points you to
 cli.github.com / Download Optional Components — mark
 <strong>Blocked</strong> if you cannot install it. Needs live-device
-verification.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ GitHub ▸ Explain a
-Command…</strong>.</li>
-<li>Paste a command such as
-<strong><code>git reset --soft HEAD~1</code></strong>; confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Asking Copilot” is announced; the explanation appears in a
-readable, dismissible message box. If <code>gh</code> is missing you
-hear the “GitHub CLI Not Found” guidance instead of an error; an empty
-answer reports “Copilot did not explain that command.”</li>
-</ul>
+verification.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
+Explain a Command…</strong>. 2. Paste a command such as
+<strong><code>git reset --soft HEAD~1</code></strong>; confirm.</p>
+<p><strong>You should see and hear</strong> - “Asking Copilot” is
+announced; the explanation appears in a readable, dismissible message
+box. If <code>gh</code> is missing you hear the “GitHub CLI Not Found”
+guidance instead of an error; an empty answer reports “Copilot did not
+explain that command.”</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gh-07--ask-copilot-for-a-command-githubcopilot_suggest">GH-07 —
+<h2 id="gh-07-ask-copilot-for-a-command-github.copilot_suggest">GH-07 —
 Ask Copilot for a Command… (<code>github.copilot_suggest</code>)</h2>
 <p><em>What &amp; why.</em> Describe what you want to do in words and
 get a suggested <code>git</code>/<code>gh</code> command from Copilot
 CLI.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Same <code>gh</code> + Copilot precondition as GH-06 (else
-<strong>Blocked</strong>). Needs live-device verification.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ GitHub ▸ Ask Copilot for a
-Command…</strong>.</li>
-<li>Type e.g.
-<strong><code>undo my last commit but keep the changes</code></strong>;
-confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Asking Copilot”; the suggested command appears in a readable
-message box; a blank result says “Copilot did not suggest anything.”
-Missing <code>gh</code> gives the guidance message, not a crash.</li>
-</ul>
+<p><strong>Before you start</strong> - Same <code>gh</code> + Copilot
+precondition as GH-06 (else <strong>Blocked</strong>). Needs live-device
+verification.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
+Ask Copilot for a Command…</strong>. 2. Type
+e.g. <strong><code>undo my last commit but keep the changes</code></strong>;
+confirm.</p>
+<p><strong>You should see and hear</strong> - “Asking Copilot”; the
+suggested command appears in a readable message box; a blank result says
+“Copilot did not suggest anything.” Missing <code>gh</code> gives the
+guidance message, not a crash.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gh-08--create-codespace-githubcreate_codespace">GH-08 — Create
+<h2 id="gh-08-create-codespace-github.create_codespace">GH-08 — Create
 Codespace… (<code>github.create_codespace</code>)</h2>
 <p><em>What &amp; why.</em> Start a new GitHub Codespace for a
 repository. <strong>Codespaces cost real compute/storage
 minutes</strong> on GitHub’s side — the confirmation says so
 explicitly.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>Precondition:</strong> <code>gh</code> CLI installed and a
-Codespaces-enabled account. Needs live-device verification; mark
-<strong>Blocked</strong> if unavailable. Be aware this may <strong>cost
-money</strong> on your plan.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ GitHub ▸ Create
-Codespace…</strong>.</li>
-<li>Enter <strong><code>owner/repo</code></strong>; optionally a branch
-(blank = default).</li>
-<li>Read the paid-compute warning; choose <strong>Yes</strong> to
-proceed.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The confirmation is titled “Confirm Create Codespace (uses paid
-GitHub compute)” and warns it is not a free action — nothing is created
-until you accept. On success: “Created codespace
-<code>&lt;name&gt;</code> (<code>&lt;state&gt;</code>)”.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>Precondition:</strong>
+<code>gh</code> CLI installed and a Codespaces-enabled account. Needs
+live-device verification; mark <strong>Blocked</strong> if unavailable.
+Be aware this may <strong>cost money</strong> on your plan.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
+Create Codespace…</strong>. 2. Enter
+<strong><code>owner/repo</code></strong>; optionally a branch (blank =
+default). 3. Read the paid-compute warning; choose <strong>Yes</strong>
+to proceed.</p>
+<p><strong>You should see and hear</strong> - The confirmation is titled
+“Confirm Create Codespace (uses paid GitHub compute)” and warns it is
+not a free action — nothing is created until you accept. On success:
+“Created codespace <code>&lt;name&gt;</code>
+(<code>&lt;state&gt;</code>)”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gh-09--create-release-githubcreate_release">GH-09 — Create
+<h2 id="gh-09-create-release-github.create_release">GH-09 — Create
 Release… (<code>github.create_release</code>)</h2>
 <p><em>What &amp; why.</em> Cut a GitHub release from a tag, optionally
 auto-generating notes from merged pull requests, and optionally as a
 draft.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account with write access to a repo.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ GitHub ▸ Create
-Release…</strong>.</li>
-<li>Enter <strong><code>owner/repo</code></strong>, then a tag (e.g.
-<strong><code>v1.0.0</code></strong>) and an optional title.</li>
-<li>Answer “Auto-generate release notes …?”; if No, enter notes.</li>
-<li>Answer “Save as a draft …?”.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Labelled prompts throughout. On success: “Created draft release
-<code>&lt;tag&gt;</code> (<code>&lt;url&gt;</code>)” or “Created
-published release <code>&lt;tag&gt;</code> (<code>&lt;url&gt;</code>)”
-matching your draft choice. Errors (bad tag, no access) are spoken.</li>
-</ul>
+<p><strong>Before you start</strong> - Connected account with write
+access to a repo.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
+Create Release…</strong>. 2. Enter
+<strong><code>owner/repo</code></strong>, then a tag
+(e.g. <strong><code>v1.0.0</code></strong>) and an optional title. 3.
+Answer “Auto-generate release notes …?”; if No, enter notes. 4. Answer
+“Save as a draft …?”.</p>
+<p><strong>You should see and hear</strong> - Labelled prompts
+throughout. On success: “Created draft release <code>&lt;tag&gt;</code>
+(<code>&lt;url&gt;</code>)” or “Created published release
+<code>&lt;tag&gt;</code> (<code>&lt;url&gt;</code>)” matching your draft
+choice. Errors (bad tag, no access) are spoken.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gh-10--create-repository-githubcreate_repository-ctrlshiftgrave-then-shiftk">GH-10
+id="gh-10-create-repository-github.create_repository-ctrlshiftgrave-then-shiftk">GH-10
 — Create Repository… (<code>github.create_repository</code>,
 Ctrl+Shift+Grave then Shift+K)</h2>
 <p><em>What &amp; why.</em> Create a brand-new GitHub repository
 (optionally in an org, public or private) and, in one continuous flow,
 offer to wire it up to a local sync folder.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account. Chord: <strong>Ctrl+Shift+Grave</strong> then
-<strong>Shift+K</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open via the chord, or <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
-Create Repository…</strong>.</li>
-<li>In the Create Repository dialog set name, private/public,
-description, and optional org; confirm.</li>
-<li>When asked “Set up a local folder to sync …?”, either choose a
-folder or decline.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The dialog’s fields are labelled and keyboard-complete. On success:
-“Created <code>&lt;owner/name&gt;</code> at <code>&lt;url&gt;</code>”,
-then the sync offer. Declining says “Local sync skipped”; accepting and
-choosing a folder runs the local init/sync and announces progress.</li>
-</ul>
+<p><strong>Before you start</strong> - Connected account. Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+K</strong>.</p>
+<p><strong>Do this</strong> 1. Open via the chord, or <strong>Tools ▸
+Git and GitHub ▸ GitHub ▸ Create Repository…</strong>. 2. In the Create
+Repository dialog set name, private/public, description, and optional
+org; confirm. 3. When asked “Set up a local folder to sync …?”, either
+choose a folder or decline.</p>
+<p><strong>You should see and hear</strong> - The dialog’s fields are
+labelled and keyboard-complete. On success: “Created
+<code>&lt;owner/name&gt;</code> at <code>&lt;url&gt;</code>”, then the
+sync offer. Declining says “Local sync skipped”; accepting and choosing
+a folder runs the local init/sync and announces progress.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gh-11--delete-branch-githubdelete_branch-ctrlshiftgrave-then-shiftx">GH-11
+id="gh-11-delete-branch-github.delete_branch-ctrlshiftgrave-then-shiftx">GH-11
 — Delete Branch… (<code>github.delete_branch</code>, Ctrl+Shift+Grave
 then Shift+X)</h2>
 <p><em>What &amp; why.</em> Delete a branch from a repository. The
 default branch is excluded from the list, and deletion is guarded by a
 <strong>typed confirmation</strong> (retype the branch name).</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account with write access to a repo that has a deletable
-(non-default) branch. Chord: <strong>Ctrl+Shift+Grave</strong> then
-<strong>Shift+X</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open via the chord, or <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
-Delete Branch…</strong>.</li>
-<li>Enter <strong><code>owner/repo</code></strong>.</li>
-<li>Pick the branch from the list; in the typed-confirm dialog,
-<strong>type the branch name exactly</strong>; confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The branch list excludes the default branch (“No deletable branches
-… (default branch excluded)” if none remain). The confirmation warns
-“This cannot be undone from QUILL” and requires the exact branch name.
-On success: “Deleted branch <code>&lt;name&gt;</code> from
-owner/repo”.</li>
-</ul>
+<p><strong>Before you start</strong> - Connected account with write
+access to a repo that has a deletable (non-default) branch. Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+X</strong>.</p>
+<p><strong>Do this</strong> 1. Open via the chord, or <strong>Tools ▸
+Git and GitHub ▸ GitHub ▸ Delete Branch…</strong>. 2. Enter
+<strong><code>owner/repo</code></strong>. 3. Pick the branch from the
+list; in the typed-confirm dialog, <strong>type the branch name
+exactly</strong>; confirm.</p>
+<p><strong>You should see and hear</strong> - The branch list excludes
+the default branch (“No deletable branches … (default branch excluded)”
+if none remain). The confirmation warns “This cannot be undone from
+QUILL” and requires the exact branch name. On success: “Deleted branch
+<code>&lt;name&gt;</code> from owner/repo”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gh-12--dispatch-workflow-githubdispatch_workflow">GH-12 —
+<h2 id="gh-12-dispatch-workflow-github.dispatch_workflow">GH-12 —
 Dispatch Workflow… (<code>github.dispatch_workflow</code>)</h2>
 <p><em>What &amp; why.</em> Manually trigger a GitHub Actions workflow
 (<code>workflow_dispatch</code>) on a chosen branch or tag.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account with write access to a repo that has a
-dispatchable workflow (e.g. <code>ci.yml</code>).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ GitHub ▸ Dispatch
-Workflow…</strong>.</li>
-<li>Enter <strong><code>owner/repo</code></strong>, the workflow file
-name (e.g. <strong><code>ci.yml</code></strong>), and a ref (defaults to
-<strong><code>main</code></strong>).</li>
-<li>Confirm “Dispatch … ?”.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Labelled prompts; a confirmation before firing. On success:
-“Dispatched <code>&lt;file&gt;</code> on <code>&lt;ref&gt;</code>”. A
-missing workflow or no access is reported clearly.</li>
-</ul>
+<p><strong>Before you start</strong> - Connected account with write
+access to a repo that has a dispatchable workflow
+(e.g. <code>ci.yml</code>).</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
+Dispatch Workflow…</strong>. 2. Enter
+<strong><code>owner/repo</code></strong>, the workflow file name
+(e.g. <strong><code>ci.yml</code></strong>), and a ref (defaults to
+<strong><code>main</code></strong>). 3. Confirm “Dispatch … ?”.</p>
+<p><strong>You should see and hear</strong> - Labelled prompts; a
+confirmation before firing. On success: “Dispatched
+<code>&lt;file&gt;</code> on <code>&lt;ref&gt;</code>”. A missing
+workflow or no access is reported clearly.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gh-13--fork-repository-githubfork_repository-ctrlshiftgrave-then-shiftf">GH-13
+id="gh-13-fork-repository-github.fork_repository-ctrlshiftgrave-then-shiftf">GH-13
 — Fork Repository… (<code>github.fork_repository</code>,
 Ctrl+Shift+Grave then Shift+F)</h2>
 <p><em>What &amp; why.</em> Fork a repository into your account or an
 organization, then offer the same local-sync wiring as Create
 Repository.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account. A public repo to fork (e.g. a well-known one).
-Chord: <strong>Ctrl+Shift+Grave</strong> then
-<strong>Shift+F</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open via the chord, or <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
-Fork Repository…</strong>.</li>
-<li>Enter the source <strong><code>owner/repo</code></strong>;
-optionally an org to fork into (blank = your account); confirm.</li>
-<li>Decline or accept the “Set up a local folder to sync …?” offer.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Labelled prompts. On success: “Created
-<code>&lt;your-owner&gt;/&lt;repo&gt;</code> at
+<p><strong>Before you start</strong> - Connected account. A public repo
+to fork (e.g. a well-known one). Chord:
+<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+F</strong>.</p>
+<p><strong>Do this</strong> 1. Open via the chord, or <strong>Tools ▸
+Git and GitHub ▸ GitHub ▸ Fork Repository…</strong>. 2. Enter the source
+<strong><code>owner/repo</code></strong>; optionally an org to fork into
+(blank = your account); confirm. 3. Decline or accept the “Set up a
+local folder to sync …?” offer.</p>
+<p><strong>You should see and hear</strong> - Labelled prompts. On
+success: “Created <code>&lt;your-owner&gt;/&lt;repo&gt;</code> at
 <code>&lt;url&gt;</code>” followed by the local-sync offer, same as
-GH-10.</li>
-</ul>
+GH-10.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gh-14--codespaces-githublist_codespaces">GH-14 — Codespaces…
+<h2 id="gh-14-codespaces-github.list_codespaces">GH-14 — Codespaces…
 (<code>github.list_codespaces</code>)</h2>
 <p><em>What &amp; why.</em> List your existing Codespaces and act on one
 (Stop or Delete).</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>Precondition:</strong> <code>gh</code> CLI installed. Needs
-live-device verification; <strong>Blocked</strong> without
-<code>gh</code>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ GitHub ▸ Codespaces…</strong>.</li>
-<li>If any exist, arrow to one; press <strong>Enter</strong>; from the
-pop-up menu choose <strong>Stop</strong> or
-<strong>Delete</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Loading codespaces”. With none: “No codespaces. Use GitHub: Create
-Codespace… to start one.” With some: a single-choice list of “name
-(repo) — state”; a pop-up offers Stop / Delete; <strong>Delete</strong>
-requires a confirmation (“cannot be undone”). Results are spoken
-(“Stopped …”, “Deleted …”).</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>Precondition:</strong>
+<code>gh</code> CLI installed. Needs live-device verification;
+<strong>Blocked</strong> without <code>gh</code>.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
+Codespaces…</strong>. 2. If any exist, arrow to one; press
+<strong>Enter</strong>; from the pop-up menu choose
+<strong>Stop</strong> or <strong>Delete</strong>.</p>
+<p><strong>You should see and hear</strong> - “Loading codespaces”. With
+none: “No codespaces. Use GitHub: Create Codespace… to start one.” With
+some: a single-choice list of “name (repo) — state”; a pop-up offers
+Stop / Delete; <strong>Delete</strong> requires a confirmation (“cannot
+be undone”). Results are spoken (“Stopped …”, “Deleted …”).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gh-15--rename-repository-githubrename_repository-ctrlshiftgrave-then-shifte">GH-15
+id="gh-15-rename-repository-github.rename_repository-ctrlshiftgrave-then-shifte">GH-15
 — Rename Repository… (<code>github.rename_repository</code>,
 Ctrl+Shift+Grave then Shift+E)</h2>
 <p><em>What &amp; why.</em> Rename a repository. GitHub auto-redirects
 the old URL, but this is still guarded by a <strong>typed
 confirmation</strong> (retype the full <code>owner/repo</code>).</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account with admin rights. Chord:
-<strong>Ctrl+Shift+Grave</strong> then <strong>Shift+E</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open via the chord, or <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
-Rename Repository…</strong>.</li>
-<li>Enter <strong><code>owner/repo</code></strong>, then the new
-name.</li>
-<li>In the typed-confirm dialog, <strong>type <code>owner/repo</code>
-exactly</strong>; confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The confirmation notes GitHub will redirect the old URL but
-hardcoded references need updating, and requires the exact
-<code>owner/repo</code> to enable. On success: “Renamed to
-<code>&lt;owner/newname&gt;</code>”. Cancel/mismatch says “Rename
-cancelled”.</li>
-</ul>
+<p><strong>Before you start</strong> - Connected account with admin
+rights. Chord: <strong>Ctrl+Shift+Grave</strong> then
+<strong>Shift+E</strong>.</p>
+<p><strong>Do this</strong> 1. Open via the chord, or <strong>Tools ▸
+Git and GitHub ▸ GitHub ▸ Rename Repository…</strong>. 2. Enter
+<strong><code>owner/repo</code></strong>, then the new name. 3. In the
+typed-confirm dialog, <strong>type <code>owner/repo</code>
+exactly</strong>; confirm.</p>
+<p><strong>You should see and hear</strong> - The confirmation notes
+GitHub will redirect the old URL but hardcoded references need updating,
+and requires the exact <code>owner/repo</code> to enable. On success:
+“Renamed to <code>&lt;owner/newname&gt;</code>”. Cancel/mismatch says
+“Rename cancelled”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gh-16--notifications-githubview_notifications">GH-16 —
+<h2 id="gh-16-notifications-github.view_notifications">GH-16 —
 Notifications… (<code>github.view_notifications</code>)</h2>
 <p><em>What &amp; why.</em> Read your GitHub notifications as a keyboard
 list and open one; the one you open is marked read.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account with at least one notification (star/watch a repo
-and generate activity if needed).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ GitHub ▸
-Notifications…</strong>.</li>
-<li>Arrow to a notification; press <strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Loading notifications”. With none: “No notifications”. With some: a
-single-choice list reading “Unread/Read: repo — subject (reason)”.
-Opening one launches the GitHub notifications page in your browser; an
-unread one is then marked read (“Marked as read”).</li>
-</ul>
+<p><strong>Before you start</strong> - Connected account with at least
+one notification (star/watch a repo and generate activity if
+needed).</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
+Notifications…</strong>. 2. Arrow to a notification; press
+<strong>Enter</strong>.</p>
+<p><strong>You should see and hear</strong> - “Loading notifications”.
+With none: “No notifications”. With some: a single-choice list reading
+“Unread/Read: repo — subject (reason)”. Opening one launches the GitHub
+notifications page in your browser; an unread one is then marked read
+(“Marked as read”).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gh-17--security-alerts-githubview_security_alerts">GH-17 —
+<h2 id="gh-17-security-alerts-github.view_security_alerts">GH-17 —
 Security Alerts… (<code>github.view_security_alerts</code>)</h2>
 <p><em>What &amp; why.</em> List a repository’s open Dependabot/security
 alerts and open one in the browser.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Connected account with access to a repo that has open alerts.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ GitHub ▸ Security
-Alerts…</strong>.</li>
-<li>Enter <strong><code>owner/repo</code></strong>.</li>
-<li>Arrow to an alert; press <strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Loading security alerts for owner/repo”. With none: “No open
-security alerts”. With some: a list reading “#N severity: package —
-summary”; opening one launches its GitHub page in the browser.</li>
-</ul>
+<p><strong>Before you start</strong> - Connected account with access to
+a repo that has open alerts.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ GitHub ▸
+Security Alerts…</strong>. 2. Enter
+<strong><code>owner/repo</code></strong>. 3. Arrow to an alert; press
+<strong>Enter</strong>.</p>
+<p><strong>You should see and hear</strong> - “Loading security alerts
+for owner/repo”. With none: “No open security alerts”. With some: a list
+reading “#N severity: package — summary”; opening one launches its
+GitHub page in the browser.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -844,340 +677,235 @@ document’s folder, or prompts you to pick a folder; each needs a
 <code>qa-git/a.txt</code> before you begin. If <code>git</code> cannot
 be found and you decline the download, mark the affected scenarios
 <strong>Blocked</strong>.</p>
-<h2 id="git-01--uncommitted-changes-localgituncommitted_changes">GIT-01
+<h2 id="git-01-uncommitted-changes-localgit.uncommitted_changes">GIT-01
 — Uncommitted Changes… (<code>localgit.uncommitted_changes</code>)</h2>
 <p><em>What &amp; why.</em> See what has changed in the working tree,
 read a diff, and stage or unstage files — by keyboard and by ear.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>qa-git</code> repo with at least one uncommitted change (edit
-<code>a.txt</code> and save it).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools menu ▸ Git and GitHub ▸ Local Git ▸ Uncommitted
-Changes…</strong>.</li>
-<li>Arrow the change list; read a file’s diff; use the dialog’s Stage /
-Unstage / Stage All controls.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Checking for changes”; with none, “No uncommitted changes”.
-Otherwise a keyboard-navigable list of changed files with a diff view
-(HEAD vs working copy); staging announces “Staged
-<code>&lt;path&gt;</code>”, unstaging “Unstaged
-<code>&lt;path&gt;</code>”, stage-all “Staged all changes”.</li>
-</ul>
+<p><strong>Before you start</strong> - <code>qa-git</code> repo with at
+least one uncommitted change (edit <code>a.txt</code> and save it).</p>
+<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Git and GitHub ▸
+Local Git ▸ Uncommitted Changes…</strong>. 2. Arrow the change list;
+read a file’s diff; use the dialog’s Stage / Unstage / Stage All
+controls.</p>
+<p><strong>You should see and hear</strong> - “Checking for changes”;
+with none, “No uncommitted changes”. Otherwise a keyboard-navigable list
+of changed files with a diff view (HEAD vs working copy); staging
+announces “Staged <code>&lt;path&gt;</code>”, unstaging “Unstaged
+<code>&lt;path&gt;</code>”, stage-all “Staged all changes”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-02--switch-branch-localgitswitch_branch">GIT-02 — Switch
+<h2 id="git-02-switch-branch-localgit.switch_branch">GIT-02 — Switch
 Branch… (<code>localgit.switch_branch</code>)</h2>
 <p><em>What &amp; why.</em> Check out a different local branch, with a
 spoken guard when uncommitted changes are in the way.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>qa-git</code> repo with a second branch
-(<code>git branch feature</code> in the terminal).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Switch
-Branch…</strong>.</li>
-<li>Pick a branch (the current one is excluded); press
-<strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Loading branches”, then a single-choice list of other branches (“No
-other local branches” if none). On success the result is announced. If
-uncommitted changes block the switch, you are asked “…Switch anyway and
-carry them over?” and can cancel — never a silent overwrite.</li>
-</ul>
+<p><strong>Before you start</strong> - <code>qa-git</code> repo with a
+second branch (<code>git branch feature</code> in the terminal).</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ Switch Branch…</strong>. 2. Pick a branch (the current one is
+excluded); press <strong>Enter</strong>.</p>
+<p><strong>You should see and hear</strong> - “Loading branches”, then a
+single-choice list of other branches (“No other local branches” if
+none). On success the result is announced. If uncommitted changes block
+the switch, you are asked “…Switch anyway and carry them over?” and can
+cancel — never a silent overwrite.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-03--stash-changes-localgitstash_changes">GIT-03 — Stash
+<h2 id="git-03-stash-changes-localgit.stash_changes">GIT-03 — Stash
 Changes… (<code>localgit.stash_changes</code>)</h2>
 <p><em>What &amp; why.</em> Set aside your uncommitted work on a named
 stash.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>qa-git</code> repo with an uncommitted change.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Stash
-Changes…</strong>.</li>
-<li>Type an optional stash message; confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A labelled message field. “Stashing changes”, then “Changes
-stashed”. The working tree returns to a clean state.</li>
-</ul>
+<p><strong>Before you start</strong> - <code>qa-git</code> repo with an
+uncommitted change.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ Stash Changes…</strong>. 2. Type an optional stash message;
+confirm.</p>
+<p><strong>You should see and hear</strong> - A labelled message field.
+“Stashing changes”, then “Changes stashed”. The working tree returns to
+a clean state.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-04--manage-stashes-localgitmanage_stashes">GIT-04 — Manage
+<h2 id="git-04-manage-stashes-localgit.manage_stashes">GIT-04 — Manage
 Stashes… (<code>localgit.manage_stashes</code>)</h2>
 <p><em>What &amp; why.</em> Review existing stashes and apply or drop
 one.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>qa-git</code> repo with at least one stash (do GIT-03
-first).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Manage
-Stashes…</strong>.</li>
-<li>Pick a stash; from the pop-up menu choose <strong>Apply</strong> or
-<strong>Drop</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Loading stashes”; with none, “No stashes”. Otherwise a
-single-choice list reading “<code>&lt;ref&gt;</code>:
-<code>&lt;message&gt;</code>”; a pop-up offers Apply / Drop, announcing
-“Applied <code>&lt;ref&gt;</code>” or “Dropped
-<code>&lt;ref&gt;</code>”.</li>
-</ul>
+<p><strong>Before you start</strong> - <code>qa-git</code> repo with at
+least one stash (do GIT-03 first).</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ Manage Stashes…</strong>. 2. Pick a stash; from the pop-up menu
+choose <strong>Apply</strong> or <strong>Drop</strong>.</p>
+<p><strong>You should see and hear</strong> - “Loading stashes”; with
+none, “No stashes”. Otherwise a single-choice list reading
+“<code>&lt;ref&gt;</code>: <code>&lt;message&gt;</code>”; a pop-up
+offers Apply / Drop, announcing “Applied <code>&lt;ref&gt;</code>” or
+“Dropped <code>&lt;ref&gt;</code>”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-05--who-wrote-this-line-localgitblame_at_cursor">GIT-05 —
+<h2 id="git-05-who-wrote-this-line-localgit.blame_at_cursor">GIT-05 —
 Who Wrote This Line… (<code>localgit.blame_at_cursor</code>)</h2>
 <p><em>What &amp; why.</em> Announce the author, summary, and commit of
 the line at the cursor (git blame), spoken rather than shown in a
 gutter.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Open a <strong>committed</strong> file inside <code>qa-git</code>
-(e.g. <code>a.txt</code>) and put the cursor on a line.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Who Wrote This
-Line…</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Line N: <code>&lt;author&gt;</code>, <code>&lt;summary&gt;</code>
+<p><strong>Before you start</strong> - Open a <strong>committed</strong>
+file inside <code>qa-git</code> (e.g. <code>a.txt</code>) and put the
+cursor on a line.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ Who Wrote This Line…</strong>.</p>
+<p><strong>You should see and hear</strong> - “Line N:
+<code>&lt;author&gt;</code>, <code>&lt;summary&gt;</code>
 (<code>&lt;short-sha&gt;</code>)”. With no open file, “No file to
 blame”; a file outside a repo, “This file is not inside a git
-repository”.</li>
-</ul>
+repository”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-06--start-bisect-localgitbisect_start">GIT-06 — Start
+<h2 id="git-06-start-bisect-localgit.bisect_start">GIT-06 — Start
 Bisect… (<code>localgit.bisect_start</code>)</h2>
 <p><em>What &amp; why.</em> Begin a <code>git bisect</code> to hunt down
 the commit that introduced a bug, answering good/bad by keyboard as
 QUILL checks out each candidate.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>qa-git</code> repo with several commits (the precondition
-script gives you two; add a few more for a meaningful run).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Start
-Bisect…</strong>.</li>
-<li>Enter the bad commit (default <strong><code>HEAD</code></strong>)
-and a known-good commit or tag.</li>
-<li>Answer each “Is this version good or bad? (Yes = bad, No =
-good)”.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Starting bisect”, then for each step a confirmation telling you
-QUILL checked out the next commit to test and asking good/bad. When
-done: “Bisect complete: …”.</li>
-</ul>
+<p><strong>Before you start</strong> - <code>qa-git</code> repo with
+several commits (the precondition script gives you two; add a few more
+for a meaningful run).</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ Start Bisect…</strong>. 2. Enter the bad commit (default
+<strong><code>HEAD</code></strong>) and a known-good commit or tag. 3.
+Answer each “Is this version good or bad? (Yes = bad, No = good)”.</p>
+<p><strong>You should see and hear</strong> - “Starting bisect”, then
+for each step a confirmation telling you QUILL checked out the next
+commit to test and asking good/bad. When done: “Bisect complete: …”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-07--end-bisect-localgitbisect_reset">GIT-07 — End Bisect
+<h2 id="git-07-end-bisect-localgit.bisect_reset">GIT-07 — End Bisect
 (<code>localgit.bisect_reset</code>)</h2>
 <p><em>What &amp; why.</em> Stop a bisect in progress and return to your
 original checkout.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A bisect started (GIT-06). (Running it with no bisect active still
-ends cleanly.)</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ End
-Bisect</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Ending bisect”, then “Bisect ended”; the repo returns to its
-pre-bisect state.</li>
-</ul>
+<p><strong>Before you start</strong> - A bisect started (GIT-06).
+(Running it with no bisect active still ends cleanly.)</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ End Bisect</strong>.</p>
+<p><strong>You should see and hear</strong> - “Ending bisect”, then
+“Bisect ended”; the repo returns to its pre-bisect state.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-08--resolve-conflicts-localgitresolve_conflicts">GIT-08 —
+<h2 id="git-08-resolve-conflicts-localgit.resolve_conflicts">GIT-08 —
 Resolve Conflicts… (<code>localgit.resolve_conflicts</code>)</h2>
 <p><em>What &amp; why.</em> Walk each conflicted file’s hunks and choose
 a resolution, then mark it resolved — accessible merge-conflict
 handling.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A repo with an in-progress merge conflict. To make one in
-<code>qa-git</code>:
-<code>git checkout -b other &amp;&amp; echo other-change &gt; a.txt &amp;&amp; git commit -am other &amp;&amp; git checkout main &amp;&amp; echo main-change &gt; a.txt &amp;&amp; git commit -am main &amp;&amp; git merge other</code>
+<p><strong>Before you start</strong> - A repo with an in-progress merge
+conflict. To make one in <code>qa-git</code>:
+<code>git checkout -b other &amp;&amp; echo other-change &gt; a.txt &amp;&amp; git commit -am other &amp;&amp;   git checkout main &amp;&amp; echo main-change &gt; a.txt &amp;&amp; git commit -am main &amp;&amp;   git merge other</code>
 (this leaves <code>a.txt</code> conflicted). If you cannot produce one,
-mark <strong>Blocked</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Resolve
-Conflicts…</strong>.</li>
-<li>For each conflicted file, choose a resolution per hunk in the
-dialog; confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Checking for conflicts”; with none, “No conflicts to resolve”.
-Otherwise each conflicted file opens a hunk-by-hunk dialog with keyboard
-choices; on finishing, the file is written and marked resolved. Skipping
-a file says how many remain. When all are done: “Resolved N
-file(s)”.</li>
-</ul>
+mark <strong>Blocked</strong>.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ Resolve Conflicts…</strong>. 2. For each conflicted file, choose a
+resolution per hunk in the dialog; confirm.</p>
+<p><strong>You should see and hear</strong> - “Checking for conflicts”;
+with none, “No conflicts to resolve”. Otherwise each conflicted file
+opens a hunk-by-hunk dialog with keyboard choices; on finishing, the
+file is written and marked resolved. Skipping a file says how many
+remain. When all are done: “Resolved N file(s)”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-09--interactive-rebase-localgitinteractive_rebase">GIT-09 —
+<h2 id="git-09-interactive-rebase-localgit.interactive_rebase">GIT-09 —
 Interactive Rebase… (<code>localgit.interactive_rebase</code>)</h2>
 <p><em>What &amp; why.</em> Reorder, squash, edit, or drop commits since
 a base ref, through a keyboard dialog instead of an editor of cryptic
 todo lines — with conflict handling if the rebase stops.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>qa-git</code> repo with a few commits on the current branch
-and a base to rebase onto (e.g. an earlier commit or another
-branch).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Interactive
-Rebase…</strong>.</li>
-<li>Enter the base (branch, tag, or commit).</li>
-<li>In the rebase dialog set each commit’s action; confirm.</li>
-<li>If it pauses on conflicts, answer “Resolve them now?” and work
-through them.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Loading commits”; “No commits between …” if the range is empty.
-Otherwise a keyboard-navigable list of commits with per-commit actions.
-“Rebasing”, then a spoken result. A conflict pause offers to resolve
-conflicts (as in GIT-08) and continue.</li>
-</ul>
+<p><strong>Before you start</strong> - <code>qa-git</code> repo with a
+few commits on the current branch and a base to rebase onto (e.g. an
+earlier commit or another branch).</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ Interactive Rebase…</strong>. 2. Enter the base (branch, tag, or
+commit). 3. In the rebase dialog set each commit’s action; confirm. 4.
+If it pauses on conflicts, answer “Resolve them now?” and work through
+them.</p>
+<p><strong>You should see and hear</strong> - “Loading commits”; “No
+commits between …” if the range is empty. Otherwise a keyboard-navigable
+list of commits with per-commit actions. “Rebasing”, then a spoken
+result. A conflict pause offers to resolve conflicts (as in GIT-08) and
+continue.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-10--abort-rebase-localgitrebase_abort">GIT-10 — Abort Rebase
+<h2 id="git-10-abort-rebase-localgit.rebase_abort">GIT-10 — Abort Rebase
 (<code>localgit.rebase_abort</code>)</h2>
 <p><em>What &amp; why.</em> Cancel an in-progress rebase and restore the
 original branch state.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A rebase paused/in progress (e.g. from GIT-09).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ Abort
-Rebase</strong>.</li>
-<li>Confirm “Abort the in-progress rebase …?”.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A spoken confirmation you can cancel; on confirm, “Aborting rebase”
-then “Rebase aborted”, with the branch back to its original state.</li>
-</ul>
+<p><strong>Before you start</strong> - A rebase paused/in progress
+(e.g. from GIT-09).</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ Abort Rebase</strong>. 2. Confirm “Abort the in-progress rebase
+…?”.</p>
+<p><strong>You should see and hear</strong> - A spoken confirmation you
+can cancel; on confirm, “Aborting rebase” then “Rebase aborted”, with
+the branch back to its original state.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-11--worktrees-localgitworktrees">GIT-11 — Worktrees…
+<h2 id="git-11-worktrees-localgit.worktrees">GIT-11 — Worktrees…
 (<code>localgit.worktrees</code>)</h2>
 <p><em>What &amp; why.</em> List and manage git worktrees. QUILL prefers
 worktrees precisely because switching a branch in place silently
 rewrites the open file under a screen-reader user; a worktree makes
 “change branch” into “open a different file” you can hear.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>qa-git</code> repo.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸
-Worktrees…</strong>.</li>
-<li>In the dialog, explore the list and its controls: New, Open, Remove,
-Lock/Unlock, Prune.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Loading worktrees”, then a keyboard-navigable list of worktrees
-with the actions above. <strong>Open</strong> opens the current
-document’s counterpart from the chosen worktree (or offers a file picker
-pointed there if there is none). <strong>Remove</strong> warns the
-folder will be deleted (branch kept) and confirms before force-removing
-uncommitted changes. Every action is announced before and after.</li>
-</ul>
+<p><strong>Before you start</strong> - <code>qa-git</code> repo.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ Worktrees…</strong>. 2. In the dialog, explore the list and its
+controls: New, Open, Remove, Lock/Unlock, Prune.</p>
+<p><strong>You should see and hear</strong> - “Loading worktrees”, then
+a keyboard-navigable list of worktrees with the actions above.
+<strong>Open</strong> opens the current document’s counterpart from the
+chosen worktree (or offers a file picker pointed there if there is
+none). <strong>Remove</strong> warns the folder will be deleted (branch
+kept) and confirms before force-removing uncommitted changes. Every
+action is announced before and after.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="git-12--new-worktree-localgitnew_worktree">GIT-12 — New
+<h2 id="git-12-new-worktree-localgit.new_worktree">GIT-12 — New
 Worktree… (<code>localgit.new_worktree</code>)</h2>
 <p><em>What &amp; why.</em> Create a new worktree (for an existing or
 new branch) directly, without opening the list first.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>qa-git</code> repo with a branch not already checked out
-anywhere.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ Local Git ▸ New
-Worktree…</strong>.</li>
-<li>In the New Worktree dialog choose the branch (or a new branch +
-start ref) and the parent folder; confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A labelled dialog defaulting the parent folder to the repo’s parent;
-the branch chooser lists only branches not already checked out.
-“Creating the worktree. This can take a moment …” is announced, then the
-result. Cancel says “New worktree cancelled.”</li>
-</ul>
+<p><strong>Before you start</strong> - <code>qa-git</code> repo with a
+branch not already checked out anywhere.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Git and GitHub ▸ Local
+Git ▸ New Worktree…</strong>. 2. In the New Worktree dialog choose the
+branch (or a new branch + start ref) and the parent folder; confirm.</p>
+<p><strong>You should see and hear</strong> - A labelled dialog
+defaulting the parent folder to the repo’s parent; the branch chooser
+lists only branches not already checked out. “Creating the worktree.
+This can take a moment …” is announced, then the result. Cancel says
+“New worktree cancelled.”</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1199,325 +927,234 @@ WordPress-style site; <strong>site secrets are stored in the platform
 secret store (Credential Manager / DPAPI), never in plain
 text.</strong></p>
 <h2
-id="pub-01--publishing-connections-publishingconnections-gated-futurepublishing_read">PUB-01
+id="pub-01-publishing-connections-publishing.connections-gated-future.publishing_read">PUB-01
 — Publishing Connections… (<code>publishing.connections</code>) [GATED
 future.publishing_read]</h2>
 <p><em>What &amp; why.</em> Add, edit, and remove the site accounts
 publishing uses; the read-only front door.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing_read</code> enabled. Details of a
+<p><strong>Before you start</strong> -
+<code>future.publishing_read</code> enabled. Details of a
 WordPress-style site (URL + an application password / API token). If you
 cannot enable the flag, <strong>Blocked</strong>; if not present at all
-on this build, <strong>N/A</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Publishing Connections…</strong>.</li>
-<li>Add a connection: enter the site URL and credentials by keyboard;
-save; then remove it to confirm removal.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A keyboard-operable connections dialog with labelled fields; saving
-announces “Updated publishing connections”, cancelling “Publishing
-connections cancelled”. The <strong>secret is written to the OS secret
-store</strong>, not to any settings file in plain text — confirm you are
-never shown or asked to paste it back from a plain file.</li>
-</ul>
+on this build, <strong>N/A</strong>.</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Publishing
+Connections…</strong>. 2. Add a connection: enter the site URL and
+credentials by keyboard; save; then remove it to confirm removal.</p>
+<p><strong>You should see and hear</strong> - A keyboard-operable
+connections dialog with labelled fields; saving announces “Updated
+publishing connections”, cancelling “Publishing connections cancelled”.
+The <strong>secret is written to the OS secret store</strong>, not to
+any settings file in plain text — confirm you are never shown or asked
+to paste it back from a plain file.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pub-02--verify-current-publishing-connection-publishingverify_connection-gated-futurepublishing_read">PUB-02
+id="pub-02-verify-current-publishing-connection-publishing.verify_connection-gated-future.publishing_read">PUB-02
 — Verify Current Publishing Connection
 (<code>publishing.verify_connection</code>) [GATED
 future.publishing_read]</h2>
 <p><em>What &amp; why.</em> Check that the selected connection actually
 reaches the site with the stored credentials.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing_read</code> enabled and a connection added
-(PUB-01), and selected as current.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Verify Current Publishing
-Connection</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A spoken result in a message box and the status bar: success or a
-clear failure reason. With no current connection selected: “No current
-publishing connection is selected.” — never a silent no-op.</li>
-</ul>
+<p><strong>Before you start</strong> -
+<code>future.publishing_read</code> enabled and a connection added
+(PUB-01), and selected as current.</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Verify
+Current Publishing Connection</strong>.</p>
+<p><strong>You should see and hear</strong> - A spoken result in a
+message box and the status bar: success or a clear failure reason. With
+no current connection selected: “No current publishing connection is
+selected.” — never a silent no-op.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pub-03--browse-publishing-content-publishingbrowse_content-gated-futurepublishing_read">PUB-03
+id="pub-03-browse-publishing-content-publishing.browse_content-gated-future.publishing_read">PUB-03
 — Browse Publishing Content… (<code>publishing.browse_content</code>)
 [GATED future.publishing_read]</h2>
 <p><em>What &amp; why.</em> Browse the site’s posts/pages and open one
 into the editor as an editable document.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing_read</code> enabled, a verified connection
-with some content.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Browse Publishing
-Content…</strong>.</li>
-<li>Browse the list by keyboard; open a post or page.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>A keyboard-navigable browse dialog; opening an item creates a new
-document tab from its content and announces “Opened post from
-publishing.” (or “page”). Cancel says “Browse publishing content
-cancelled”. The opened document is tagged as remote so the send commands
-(below) can target it.</li>
-</ul>
+<p><strong>Before you start</strong> -
+<code>future.publishing_read</code> enabled, a verified connection with
+some content.</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Browse
+Publishing Content…</strong>. 2. Browse the list by keyboard; open a
+post or page.</p>
+<p><strong>You should see and hear</strong> - A keyboard-navigable
+browse dialog; opening an item creates a new document tab from its
+content and announces “Opened post from publishing.” (or “page”). Cancel
+says “Browse publishing content cancelled”. The opened document is
+tagged as remote so the send commands (below) can target it.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pub-04--create-post-draft-publishingcreate_draft-gated-futurepublishing">PUB-04
+id="pub-04-create-post-draft-publishing.create_draft-gated-future.publishing">PUB-04
 — Create Post Draft… (<code>publishing.create_draft</code>) [GATED
 future.publishing]</h2>
 <p><em>What &amp; why.</em> Send the current document to the site as a
 <strong>draft</strong> post.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing</code> <strong>locked off</strong> in public
-1.0 → this menu item is absent. Mark <strong>N/A</strong>. (If a
-dev/admin build has it on: a connection selected and a document
-open.)</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Create Post Draft…</strong>.</li>
-<li>Read the review confirmation (title, authoring surface, site);
-choose <strong>Yes</strong>.</li>
-</ol>
+<p><strong>Before you start</strong> - <code>future.publishing</code>
+<strong>locked off</strong> in public 1.0 → this menu item is absent.
+Mark <strong>N/A</strong>. (If a dev/admin build has it on: a connection
+selected and a document open.)</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Create Post
+Draft…</strong>. 2. Read the review confirmation (title, authoring
+surface, site); choose <strong>Yes</strong>.</p>
 <p><strong>You should see and hear</strong> <em>(dev/admin build
-only)</em></p>
-<ul>
-<li>A review dialog stating what will be sent and where; nothing leaves
-until you accept. On success a “created” result with the remote
-title/URL; with no connection, “No current publishing connection is
-selected.”</li>
-</ul>
+only)</em> - A review dialog stating what will be sent and where;
+nothing leaves until you accept. On success a “created” result with the
+remote title/URL; with no connection, “No current publishing connection
+is selected.”</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pub-05--create-page-draft-publishingcreate_page_draft-gated-futurepublishing">PUB-05
+id="pub-05-create-page-draft-publishing.create_page_draft-gated-future.publishing">PUB-05
 — Create Page Draft… (<code>publishing.create_page_draft</code>) [GATED
 future.publishing]</h2>
 <p><em>What &amp; why.</em> Send the current document to the site as a
 <strong>draft page</strong> (rather than a post).</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing</code> locked off → item absent →
-<strong>N/A</strong> on public 1.0.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Create Page Draft…</strong>.</li>
-<li>Review and confirm.</li>
-</ol>
+<p><strong>Before you start</strong> - <code>future.publishing</code>
+locked off → item absent → <strong>N/A</strong> on public 1.0.</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Create Page
+Draft…</strong>. 2. Review and confirm.</p>
 <p><strong>You should see and hear</strong> <em>(dev/admin build
-only)</em></p>
-<ul>
-<li>Same review-then-send flow as PUB-04, labelled as a page draft;
-success reports the created page.</li>
-</ul>
+only)</em> - Same review-then-send flow as PUB-04, labelled as a page
+draft; success reports the created page.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pub-06--publish-post-now-publishingpublish_current-gated-futurepublishing">PUB-06
+id="pub-06-publish-post-now-publishing.publish_current-gated-future.publishing">PUB-06
 — Publish Post Now… (<code>publishing.publish_current</code>) [GATED
 future.publishing]</h2>
 <p><em>What &amp; why.</em> Send the current document and
 <strong>publish</strong> it immediately as a post.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing</code> locked off → item absent →
-<strong>N/A</strong> on public 1.0.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Publish Post Now…</strong>.</li>
-<li>Review the “Publish … as published on <code>&lt;site&gt;</code>?”
-confirmation; choose <strong>Yes</strong>.</li>
-</ol>
+<p><strong>Before you start</strong> - <code>future.publishing</code>
+locked off → item absent → <strong>N/A</strong> on public 1.0.</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Publish
+Post Now…</strong>. 2. Review the “Publish … as published on
+<code>&lt;site&gt;</code>?” confirmation; choose
+<strong>Yes</strong>.</p>
 <p><strong>You should see and hear</strong> <em>(dev/admin build
-only)</em></p>
-<ul>
-<li>An explicit publish confirmation; on success the document is linked
-to the remote item and the title bar updates. Cancel says “Publish
-current document cancelled”.</li>
-</ul>
+only)</em> - An explicit publish confirmation; on success the document
+is linked to the remote item and the title bar updates. Cancel says
+“Publish current document cancelled”.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pub-07--publish-page-now-publishingpublish_current_page-gated-futurepublishing">PUB-07
+id="pub-07-publish-page-now-publishing.publish_current_page-gated-future.publishing">PUB-07
 — Publish Page Now… (<code>publishing.publish_current_page</code>)
 [GATED future.publishing]</h2>
 <p><em>What &amp; why.</em> Send the current document and
 <strong>publish</strong> it immediately as a page.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing</code> locked off → item absent →
-<strong>N/A</strong> on public 1.0.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Publish Page Now…</strong>.</li>
-<li>Review and confirm.</li>
-</ol>
+<p><strong>Before you start</strong> - <code>future.publishing</code>
+locked off → item absent → <strong>N/A</strong> on public 1.0.</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Publish
+Page Now…</strong>. 2. Review and confirm.</p>
 <p><strong>You should see and hear</strong> <em>(dev/admin build
-only)</em></p>
-<ul>
-<li>Same as PUB-06, labelled as a page; success reports the published
-page.</li>
-</ul>
+only)</em> - Same as PUB-06, labelled as a page; success reports the
+published page.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pub-08--compare-with-remote-publishingcompare_remote_item-gated-futurepublishing">PUB-08
+id="pub-08-compare-with-remote-publishing.compare_remote_item-gated-future.publishing">PUB-08
 — Compare With Remote… (<code>publishing.compare_remote_item</code>)
 [GATED future.publishing]</h2>
 <p><em>What &amp; why.</em> Compare the open remote-sourced document
 against the current state of its remote item before you overwrite
 it.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing</code> locked off → item absent →
-<strong>N/A</strong> on public 1.0. (Dev/admin: a document opened via
-PUB-03 whose connection matches the current one.)</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Compare With Remote…</strong>.</li>
-</ol>
+<p><strong>Before you start</strong> - <code>future.publishing</code>
+locked off → item absent → <strong>N/A</strong> on public 1.0.
+(Dev/admin: a document opened via PUB-03 whose connection matches the
+current one.)</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Compare
+With Remote…</strong>.</p>
 <p><strong>You should see and hear</strong> <em>(dev/admin build
-only)</em></p>
-<ul>
-<li>A spoken comparison report. Guard messages if the document is not
-remote-sourced or the connection/site does not match — never a
-wrong-target overwrite.</li>
-</ul>
+only)</em> - A spoken comparison report. Guard messages if the document
+is not remote-sourced or the connection/site does not match — never a
+wrong-target overwrite.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pub-09--update-remote-content-publishingupdate_remote_item-gated-futurepublishing">PUB-09
+id="pub-09-update-remote-content-publishing.update_remote_item-gated-future.publishing">PUB-09
 — Update Remote Content… (<code>publishing.update_remote_item</code>)
 [GATED future.publishing]</h2>
 <p><em>What &amp; why.</em> Send the current document text back to the
 remote item it came from (without changing its published/draft
 status).</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing</code> locked off → item absent →
-<strong>N/A</strong> on public 1.0.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Update Remote Content…</strong>.</li>
-<li>Review “Update this remote …?” (title, authoring surface, remote
-URL); choose <strong>Yes</strong>.</li>
-</ol>
+<p><strong>Before you start</strong> - <code>future.publishing</code>
+locked off → item absent → <strong>N/A</strong> on public 1.0.</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Update
+Remote Content…</strong>. 2. Review “Update this remote …?” (title,
+authoring surface, remote URL); choose <strong>Yes</strong>.</p>
 <p><strong>You should see and hear</strong> <em>(dev/admin build
-only)</em></p>
-<ul>
-<li>A review confirmation naming the exact remote item; on success an
-“updated” result and the document re-linked/marked saved.
-Connection/site mismatch and not-remote-sourced are guarded aloud.</li>
-</ul>
+only)</em> - A review confirmation naming the exact remote item; on
+success an “updated” result and the document re-linked/marked saved.
+Connection/site mismatch and not-remote-sourced are guarded aloud.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pub-10--publish-open-remote-content-publishingpublish_remote_item-gated-futurepublishing">PUB-10
+id="pub-10-publish-open-remote-content-publishing.publish_remote_item-gated-future.publishing">PUB-10
 — Publish Open Remote Content…
 (<code>publishing.publish_remote_item</code>) [GATED
 future.publishing]</h2>
 <p><em>What &amp; why.</em> Send the current document to its remote item
 <strong>and publish</strong> it.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing</code> locked off → item absent →
-<strong>N/A</strong> on public 1.0.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Publish Open Remote
-Content…</strong>.</li>
-<li>Review the publish confirmation; choose <strong>Yes</strong>.</li>
-</ol>
+<p><strong>Before you start</strong> - <code>future.publishing</code>
+locked off → item absent → <strong>N/A</strong> on public 1.0.</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Publish
+Open Remote Content…</strong>. 2. Review the publish confirmation;
+choose <strong>Yes</strong>.</p>
 <p><strong>You should see and hear</strong> <em>(dev/admin build
-only)</em></p>
-<ul>
-<li>Same guarded review-then-send as PUB-09 but with publish status;
-success reports the published remote item.</li>
-</ul>
+only)</em> - Same guarded review-then-send as PUB-09 but with publish
+status; success reports the published remote item.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pub-11--schedule-publish-publishingschedule_publish-gated-futurepublishing">PUB-11
+id="pub-11-schedule-publish-publishing.schedule_publish-gated-future.publishing">PUB-11
 — Schedule Publish… (<code>publishing.schedule_publish</code>) [GATED
 future.publishing]</h2>
 <p><em>What &amp; why.</em> Schedule the current document to publish (as
 a new item or an update to the open remote item) at a chosen future
 date/time.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>future.publishing</code> locked off → item absent →
-<strong>N/A</strong> on public 1.0.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>File menu ▸ Publish ▸ Schedule Publish…</strong>.</li>
-<li>In the Schedule Publish dialog set the date/time (and content kind
-if not fixed); review the confirmation; choose
-<strong>Yes</strong>.</li>
-</ol>
+<p><strong>Before you start</strong> - <code>future.publishing</code>
+locked off → item absent → <strong>N/A</strong> on public 1.0.</p>
+<p><strong>Do this</strong> 1. <strong>File menu ▸ Publish ▸ Schedule
+Publish…</strong>. 2. In the Schedule Publish dialog set the date/time
+(and content kind if not fixed); review the confirmation; choose
+<strong>Yes</strong>.</p>
 <p><strong>You should see and hear</strong> <em>(dev/admin build
-only)</em></p>
-<ul>
-<li>A labelled scheduling dialog; a review stating “Scheduled for:
-<code>&lt;local time&gt;</code>”; on success a “scheduled” result with
-the remote item’s scheduled time recorded. No connection or a mismatch
-is reported, not silently ignored.</li>
-</ul>
+only)</em> - A labelled scheduling dialog; a review stating “Scheduled
+for: <code>&lt;local time&gt;</code>”; on success a “scheduled” result
+with the remote item’s scheduled time recorded. No connection or a
+mismatch is reported, not silently ignored.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1535,6 +1172,5 @@ is reported, not silently ignored.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
-</main>
 </body>
 </html>

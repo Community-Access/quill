@@ -26,15 +26,16 @@ import re
 import ssl
 import urllib.error
 import urllib.request
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 import feedparser
 
 from quill import __version__
 from quill.core.error_codes import CodedError
 from quill.core.net_retry import retry_transient
-from quill.core.podcasts import feed_auth
+from quill.core.podcasts import feed_auth, namespace_tags
 from quill.core.podcasts.models import PodcastEpisode
+from quill.core.podcasts.namespace_tags import NamespaceTags
 
 _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
 _TIMEOUT_SECONDS = 15.0
@@ -82,6 +83,10 @@ class FeedInfo:
     homepage: str
     artwork_url: str
     episodes: list[PodcastEpisode]
+    #: Channel-level Podcasting 2.0 tags: the show's regular hosts, its podroll,
+    #: its funding link, where it is about. Separate from the per-episode set
+    #: because a guest belongs to one episode and a host belongs to the show.
+    tags: NamespaceTags = field(default_factory=NamespaceTags)
 
 
 def _basic_auth_header(username: str, password: str) -> str:
@@ -198,6 +203,10 @@ def _entry_to_episode(entry: object, entry_xml: str) -> PodcastEpisode | None:
         chapters_url=chapters_url,
         transcript_url=transcript_url,
         transcript_type=transcript_type,
+        # Who is on it, the bits the publisher marked, what else they
+        # recommend -- all of it was already in these bytes and all of it was
+        # being thrown away (namespace_tags.py).
+        tags=namespace_tags.parse(entry_xml),
     )
 
 
@@ -224,7 +233,21 @@ def parse_feed(raw_bytes: bytes) -> FeedInfo:
         episode = _entry_to_episode(entry, fragment)
         if episode is not None:
             episodes.append(episode)
-    return FeedInfo(title=title, homepage=homepage, artwork_url=artwork_url, episodes=episodes)
+    # fragments[0] is the channel header -- everything before the first item --
+    # which is where a feed declares its regular hosts, its podroll and its
+    # funding link. Reading the whole text here would re-read every episode's
+    # people as the show's own.
+    channel_tags = namespace_tags.parse(fragments[0] if fragments else "")
+    # ...except live items, which are channel-level but may be written anywhere
+    # among the episodes, so those are looked for across the whole feed.
+    channel_tags.live_items = namespace_tags.parse_live_items(raw_text)
+    return FeedInfo(
+        title=title,
+        homepage=homepage,
+        artwork_url=artwork_url,
+        episodes=episodes,
+        tags=channel_tags,
+    )
 
 
 def fetch_and_parse_feed(

@@ -87,6 +87,24 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # Audio Studio: saved SFTP destinations and the folder feed's show settings
     # are user-created, additive-shaped stores; the listening position and the
     # incremental-rebuild fingerprints are regenerable.
+    # A list of catalogue addresses the user chose to add. Additive and
+    # self-describing: an unknown key is ignored on read and a built-in that
+    # is not in the file keeps its shipped default, so a newer build adding a
+    # field cannot change what an older one already searches.
+    # This machine's sync settings: a folder, a device label, two switches.
+    # Additive and self-describing, and never the recovery phrase -- that is
+    # a key and lives in the platform credential store.
+    "core/sync/places_config.py::save": "content",
+    # Quill Radio download preferences: a root folder and four filing
+    # switches. Additive and self-describing; a damaged file reads as the
+    # defaults, which is where every install starts anyway.
+    # Where each remembered file was last seen on *this* machine. A cache in
+    # the strict sense: a stale entry is dropped on read, losing it costs a
+    # row in a list, and it is deliberately never synced.
+    "core/media/local_paths.py::remember": "cache",
+    "core/media/local_paths.py::forget": "cache",
+    "core/radio/download_prefs.py::save": "content",
+    "core/library/catalogs.py::save": "content",
     "core/publish/destinations.py::save_destinations": "content",
     "core/publish/feed_folder.py::save_feed_config": "content",
     # Audio Studio Phase 2 (standalone port-in): per-book volume/mute prefs,
@@ -152,6 +170,23 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # future prune-the-caches sweep. The store now lives in
     # core/media/positions.py, keyed portably so it can also sync.
     "core/media/positions.py::_write": "content",
+    # Quill Radio 3.0's own resume store, and content for exactly the same
+    # reason as core/media/positions.py above: a place in a four-hour LibriVox
+    # chapter cannot be recomputed. Deliberately a *second* store rather than a
+    # reuse -- positions.py keys on a file's name and size, and nothing Radio
+    # plays here is a file, so these key on the normalised stream URL. A
+    # prune-the-caches sweep must never be able to take either of them.
+    "core/radio/resume.py::_write": "content",
+    # The servers and channels a listener added by hand. Nothing regenerates
+    # them: no directory lists somebody's church or school Icecast box, which is
+    # the entire reason the branch exists. Content, and small.
+    "core/radio/my_servers.py::_write": "content",
+    "core/radio/youtube_channels.py::_write": "content",
+    # Browse levels, cached so opening a source does not re-download its whole
+    # index every time (the Xiph genre page alone is 5 MB). Regenerable by
+    # definition -- every entry has a live fetch behind it -- and each answer
+    # carries its own age so a stale one can say so rather than imply currency.
+    "core/radio/directory_cache.py::save": "cache",
     "core/speech/synth_cache.py::save_cache": "cache",
     "core/palette.py::save_palette_usage": "cache",
     "core/recent.py::save_recent_files": "cache",
@@ -194,7 +229,10 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/ai/quick_switch.py::save_preferred_harness_id": "marker",
     "core/ai/onboarding.py::_save_state": "marker",
     # --- content (user-created data; additive) ---
-    "core/abbreviations.py::save_abbreviation_library": "content",
+    # Moved to core/abbreviations_store.py under GATE-11; the classification
+    # travels with it, and the shape is unchanged (every field defaults, and
+    # a field nobody set is not written).
+    "core/abbreviations_store.py::save_abbreviation_library": "content",
     "core/assistant_prompts.py::save_custom_prompts": "content",
     "core/ai/custom_instructions.py::save_instructions": "content",
     "core/ai/sessions.py::save_session": "content",
@@ -259,7 +297,6 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # with no schema stamp yet, so it is honestly backlogged alongside the other
     # per-app preference stores. Note this is *not* where abbreviations live:
     # those are the shared, versioned core/abbreviations.py library.
-    "core/expansion/settings.py::save_settings": "needs-versioning",
     # --- config stores now stamped per the contract (was: needs-versioning) ---
     "core/assistant_ai.py::save_assistant_connection_settings": "versioned",
     "core/assistant_ai.py::save_provider_model": "versioned",
@@ -268,6 +305,11 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/ai/model_tiers.py::_write_raw": "versioned",
     "core/publishing.py::save_publishing_connections": "versioned",
     "core/publishing_linkage.py::save_publishing_linkage_registry": "versioned",
+    # Quill Inkwell's own preferences: stamped with schema_version, every
+    # field defaulted individually on read, and a file from a newer build is
+    # read but never written back over (which is how a preference silently
+    # disappears when two machines run different builds).
+    "core/expansion/settings.py::save_settings": "versioned",
     "core/quillin_settings.py::save_settings": "versioned",
     "core/quillins/loader.py::save_state": "versioned",
     "core/remote_sites.py::save_sites": "versioned",

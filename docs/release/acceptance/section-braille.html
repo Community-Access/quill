@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Section — Braille display &amp; tables (`braille.*`, 45
-commands)</title>
+  <title>section-braille</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,30 +174,9 @@ commands)</title>
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="section--braille-display--tables-braille-45-commands">Section —
+<h1 id="section-braille-display-tables-braille.-45-commands">Section —
 Braille display &amp; tables (<code>braille.*</code>, 45 commands)</h1>
 <p>Everything QUILL does with <strong>braille-formatted
 documents</strong> (BRF / BRL — the ASCII “braille ready format” a
@@ -225,11 +203,11 @@ Palette</strong> route: press <strong>Ctrl+Shift+Grave</strong> then
 type the command name, press <strong>Enter</strong>. Where a menu label
 and the palette label differ, both are printed — check the one you
 actually used for <strong>Surface-exact</strong>.</p>
-<h2 id="before-you-start--read-this-once-for-the-whole-section">Before
+<h2 id="before-you-start-read-this-once-for-the-whole-section">Before
 you start — read this once for the whole section</h2>
 <p>Three preconditions decide what you can run. Set them up now.</p>
 <ol type="1">
-<li><p><strong>A refreshable braille display (strongly recommended, not
+<li><strong>A refreshable braille display (strongly recommended, not
 always required).</strong> QUILL sends every spoken announcement to an
 attached braille display as a <strong>flash message</strong> as well as
 speaking it (this is a real, deliberate output channel — braille was
@@ -239,7 +217,7 @@ braille under the caret. So for every scenario there are
 <strong>three</strong> things to confirm: what you <strong>hear</strong>
 (speech), what you <strong>see</strong> (status bar / new document), and
 — with a display — what you <strong>feel</strong> (the flash message and
-the cells the caret lands on).</p>
+the cells the caret lands on).
 <ul>
 <li>If you <strong>have</strong> a display: confirm all three. Note in
 each scenario that the announcement reached the display and that the
@@ -255,12 +233,12 @@ toggles, translation/table selection, profile switching, trailing-space
 repair) are flagged in their <strong>Before you start</strong> so you
 never mark them Blocked for lack of hardware.</li>
 </ul></li>
-<li><p><strong>A real braille (BRF) document.</strong> Most commands do
+<li><strong>A real braille (BRF) document.</strong> Most commands do
 nothing useful unless the active document is a braille file — QUILL only
 treats a document as braille when it was opened from a
 <code>.brf</code>, <code>.brl</code>, <code>.pef</code>, or
 <code>.ueb</code> file. <strong><code>qa-samples/</code> does not ship
-one</strong>, so make one now (it also exercises the translator):</p>
+one</strong>, so make one now (it also exercises the translator):
 <ol type="1">
 <li>Open <strong><code>plain.txt</code></strong> from
 <code>../qa-samples/</code>.</li>
@@ -280,14 +258,14 @@ an NLS/transcription source and open it. Scenarios that need a braille
 file open say <strong>“BRF sample open”</strong>; if you have none, mark
 them <strong>Blocked</strong>.</li>
 </ul></li>
-<li><p><strong>The Braille Translation Pack</strong> (for the eight
+<li><strong>The Braille Translation Pack</strong> (for the eight
 Translation commands and the auto-detect back-translation). If it is
 <strong>not</strong> installed, the whole <strong>Translation</strong>
 submenu is replaced by a single <strong>Download Braille Translation
 Pack…</strong> item, and the translation commands are unavailable — mark
 those scenarios <strong>Blocked</strong> and note the pack was missing.
 Installing the pack is covered in the Tools/Speech section; do it before
-the Translation scenarios.</p></li>
+the Translation scenarios.</li>
 </ol>
 <p>Also set your page geometry once under <strong>Tools ▸ Preferences ▸
 Braille</strong> (or accept defaults): <strong>cells per line</strong>
@@ -297,449 +275,325 @@ status, metrics, and validation scenarios.</p>
 <strong><code>sample.brf</code></strong> you just created.</p>
 <hr />
 <h2 id="status-submenu">Status submenu</h2>
-<h2 id="brl-01--read-braille-status-brailleread_status">BRL-01 — Read
+<h2 id="brl-01-read-braille-status-braille.read_status">BRL-01 — Read
 Braille Status (<code>braille.read_status</code>)</h2>
 <p><em>What &amp; why.</em> The one-key “where am I?” for a braille page
 — the transcriber’s most used call: which braille page, line, and cell
 the caret is on.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong> (<code>sample.brf</code>); put the
-caret somewhere in the middle.</li>
-<li>A display is recommended but not required; the answer is
-spoken.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools menu (Alt, T) ▸ Braille ▸ Status ▸ Read
-Status</strong>, or Command Palette → <strong>“Read Braille
-Status”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>A spoken/status summary of the current braille position — in
-substance <strong>braille page N (of the total), line, and
-cell</strong>, drawn from the live page map. On a non-braille document
-it instead says <strong>“This is not a braille document.”</strong> With
-a display, the same status text flashes to the display.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>
+(<code>sample.brf</code>); put the caret somewhere in the middle. - A
+display is recommended but not required; the answer is spoken.</p>
+<p><strong>Do this</strong> 1. <strong>Tools menu (Alt, T) ▸ Braille ▸
+Status ▸ Read Status</strong>, or Command Palette → <strong>“Read
+Braille Status”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+A spoken/status summary of the current braille position — in substance
+<strong>braille page N (of the total), line, and cell</strong>, drawn
+from the live page map. On a non-braille document it instead says
+<strong>“This is not a braille document.”</strong> With a display, the
+same status text flashes to the display.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-02--read-detailed-braille-status-brailleread_detailed_status">BRL-02
+id="brl-02-read-detailed-braille-status-braille.read_detailed_status">BRL-02
 — Read Detailed Braille Status
 (<code>braille.read_detailed_status</code>)</h2>
 <p><em>What &amp; why.</em> The full picture for proofing: braille
 position <strong>plus</strong> the detected print page, continuation
 letter, running head, and a confidence level for the detection.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong>; caret a few pages in.</li>
-<li>The running head is included only if the “include running head”
-setting is on (see BRL-08/09).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Status ▸ Read Detailed Status</strong>, or
-Command Palette → <strong>“Read Detailed Braille Status”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>A longer spoken status than BRL-01: braille page/line/cell
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>;
+caret a few pages in. - The running head is included only if the
+“include running head” setting is on (see BRL-08/09).</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Status ▸ Read
+Detailed Status</strong>, or Command Palette → <strong>“Read Detailed
+Braille Status”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+A longer spoken status than BRL-01: braille page/line/cell
 <strong>and</strong> the detected <strong>print page</strong>, any
 <strong>continuation letter</strong>, the <strong>running head</strong>
 (only if the setting is on), and a <strong>detection confidence</strong>
 (high / medium / low). Non-braille document → “This is not a braille
 document.” With a display the detailed line flashes across the cells
-(pan to read it all — QUILL never truncates it).</li>
-</ul>
+(pan to read it all — QUILL never truncates it).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-03--read-current-line-and-cell-brailleread_line_and_cell">BRL-03
+id="brl-03-read-current-line-and-cell-braille.read_line_and_cell">BRL-03
 — Read Current Line and Cell
 (<code>braille.read_line_and_cell</code>)</h2>
 <p><em>What &amp; why.</em> Pinpoints the caret within the page: which
 line of the page and which cell of the line — the exact coordinate you
 quote when reporting a transcription error.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong>; place the caret partway along a
-line.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Status ▸ Read Current Line and
-Cell</strong>, or Command Palette → <strong>“Read Current Line and
-Cell”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Spoken in substance <strong>“Line X of N. Cell Y of W.”</strong> —
-the line number within the current braille page (of the page’s line
-count) and the cell number within the line (of the cells-per-line
-width). Non-braille document → “This is not a braille document.” With a
-display the coordinate flashes and your fingers are already on that
-cell.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>;
+place the caret partway along a line.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Status ▸ Read
+Current Line and Cell</strong>, or Command Palette → <strong>“Read
+Current Line and Cell”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Spoken in substance <strong>“Line X of N. Cell Y of W.”</strong> — the
+line number within the current braille page (of the page’s line count)
+and the cell number within the line (of the cells-per-line width).
+Non-braille document → “This is not a braille document.” With a display
+the coordinate flashes and your fingers are already on that cell.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-04--read-current-braille-page-brailleread_braille_page">BRL-04 —
+id="brl-04-read-current-braille-page-braille.read_braille_page">BRL-04 —
 Read Current Braille Page (<code>braille.read_braille_page</code>)</h2>
 <p><em>What &amp; why.</em> Just the braille page number and total — a
 quick “how far in am I.”</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Status ▸ Read Current Braille
-Page</strong>, or Command Palette → <strong>“Read Current Braille
-Page”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Spoken <strong>“Braille page N of M.”</strong> Non-braille document
-→ “This is not a braille document.” Flashes to the display if
-attached.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>BRF sample
+open</strong>.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Status ▸ Read
+Current Braille Page</strong>, or Command Palette → <strong>“Read
+Current Braille Page”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Spoken <strong>“Braille page N of M.”</strong> Non-braille document →
+“This is not a braille document.” Flashes to the display if
+attached.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-05--read-current-print-page-brailleread_print_page">BRL-05 —
+<h2 id="brl-05-read-current-print-page-braille.read_print_page">BRL-05 —
 Read Current Print Page (<code>braille.read_print_page</code>)</h2>
 <p><em>What &amp; why.</em> The <strong>print</strong> page (the
 original book’s page) the caret sits on — detected from print-page
 indicators in the BRF, not the braille page count.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong>. Print pages are only reported if
-the file carries print-page indicators; a freshly translated
-<code>sample.brf</code> may report “unknown.”</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Status ▸ Read Current Print Page</strong>,
-or Command Palette → <strong>“Read Current Print Page”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Spoken <strong>“Print page N.”</strong> when an indicator at or
-before the caret is found; otherwise <strong>“Print page
-unknown.”</strong> Non-braille document → “This is not a braille
-document.” Both outcomes are correct behavior — note which you got.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>.
+Print pages are only reported if the file carries print-page indicators;
+a freshly translated <code>sample.brf</code> may report “unknown.”</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Status ▸ Read
+Current Print Page</strong>, or Command Palette → <strong>“Read Current
+Print Page”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Spoken <strong>“Print page N.”</strong> when an indicator at or before
+the caret is found; otherwise <strong>“Print page unknown.”</strong>
+Non-braille document → “This is not a braille document.” Both outcomes
+are correct behavior — note which you got.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-06--read-progress-summary-brailleread_progress_summary">BRL-06 —
+id="brl-06-read-progress-summary-braille.read_progress_summary">BRL-06 —
 Read Progress Summary (<code>braille.read_progress_summary</code>)</h2>
 <p><em>What &amp; why.</em> How far through the document you are, as a
 percentage — for pacing a long transcription.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong>; caret roughly mid-document.
-(Palette label: <strong>“Read Progress Summary”</strong> — do not
-confuse it with the <em>proofing</em> progress in BRL-31, whose palette
-label is “Read Proofing Progress Summary”.)</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Status ▸ Read Progress Summary</strong>,
-or Command Palette → <strong>“Read Progress Summary”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Spoken <strong>“Braille page N of M, P percent through the
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>;
+caret roughly mid-document. (Palette label: <strong>“Read Progress
+Summary”</strong> — do not confuse it with the <em>proofing</em>
+progress in BRL-31, whose palette label is “Read Proofing Progress
+Summary”.)</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Status ▸ Read
+Progress Summary</strong>, or Command Palette → <strong>“Read Progress
+Summary”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Spoken <strong>“Braille page N of M, P percent through the
 document.”</strong> Non-braille document → “This is not a braille
-document.” Flashes to the display.</li>
-</ul>
+document.” Flashes to the display.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-07--announce-running-head-brailleannounce_running_head">BRL-07 —
+id="brl-07-announce-running-head-braille.announce_running_head">BRL-07 —
 Announce Running Head (<code>braille.announce_running_head</code>)</h2>
 <p><em>What &amp; why.</em> Speaks the <strong>running head</strong>
 (the repeated page-top title line) detected for the current braille
 page.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong>. A file with no repeated header
-line will honestly report none — that is a valid result.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Status ▸ Announce Running Head</strong>,
-or Command Palette → <strong>“Announce Running Head”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Spoken <strong>“Running head: <text>.”</strong> when one is detected
-for this page; otherwise <strong>“No running head detected for this
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>.
+A file with no repeated header line will honestly report none — that is
+a valid result.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Status ▸
+Announce Running Head</strong>, or Command Palette → <strong>“Announce
+Running Head”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Spoken <strong>“Running head: <text>.”</strong> when one is detected for
+this page; otherwise <strong>“No running head detected for this
 page.”</strong> Non-braille document → “This is not a braille document.”
-The head text flashes to the display.</li>
-</ul>
+The head text flashes to the display.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-08--include-running-head-in-status-brailleuse_running_head_in_status">BRL-08
+id="brl-08-include-running-head-in-status-braille.use_running_head_in_status">BRL-08
 — Include Running Head in Status
 (<code>braille.use_running_head_in_status</code>)</h2>
 <p><em>What &amp; why.</em> Turns <strong>on</strong> inclusion of the
 running head in the detailed status (BRL-02). A preference toggle, not a
 document action.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>No display and no BRF file needed</strong> — this only flips
-a setting. (Verify its effect afterward with BRL-02 on a file that has a
-running head.)</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Status ▸ Include Running Head in
-Status</strong>, or Command Palette → <strong>“Include Running Head in
-Status”</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Spoken <strong>“Running head will be included in the detailed
-status.”</strong> The <code>braille_include_running_head</code>
-preference is now on; a later Read Detailed Status includes the
-head.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>No display and no BRF
+file needed</strong> — this only flips a setting. (Verify its effect
+afterward with BRL-02 on a file that has a running head.)</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Status ▸
+Include Running Head in Status</strong>, or Command Palette →
+<strong>“Include Running Head in Status”</strong>.</p>
+<p><strong>You should see and hear</strong> - Spoken <strong>“Running
+head will be included in the detailed status.”</strong> The
+<code>braille_include_running_head</code> preference is now on; a later
+Read Detailed Status includes the head.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-09--omit-running-head-from-status-brailleignore_running_head_for_status">BRL-09
+id="brl-09-omit-running-head-from-status-braille.ignore_running_head_for_status">BRL-09
 — Omit Running Head from Status
 (<code>braille.ignore_running_head_for_status</code>)</h2>
 <p><em>What &amp; why.</em> Turns the same preference
 <strong>off</strong> again — the counterpart to BRL-08.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>No display and no BRF file needed.</strong> Run BRL-08 first
-so there is something to turn off.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Status ▸ Omit Running Head from
-Status</strong>, or Command Palette → <strong>“Omit Running Head from
-Status”</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Spoken <strong>“Running head will be omitted from the detailed
-status.”</strong> A later Read Detailed Status no longer speaks the
-head. Toggle back and forth to confirm both directions.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>No display and no BRF
+file needed.</strong> Run BRL-08 first so there is something to turn
+off.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Status ▸ Omit
+Running Head from Status</strong>, or Command Palette → <strong>“Omit
+Running Head from Status”</strong>.</p>
+<p><strong>You should see and hear</strong> - Spoken <strong>“Running
+head will be omitted from the detailed status.”</strong> A later Read
+Detailed Status no longer speaks the head. Toggle back and forth to
+confirm both directions.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2 id="navigation-submenu">Navigation submenu</h2>
-<h2 id="brl-10--go-to-braille-page-braillego_to_page">BRL-10 — Go to
+<h2 id="brl-10-go-to-braille-page-braille.go_to_page">BRL-10 — Go to
 Braille Page… (<code>braille.go_to_page</code>)</h2>
 <p><em>What &amp; why.</em> Jump straight to a braille page by
 number.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong>. Note the total page count (from
-BRL-04) so you can pick a valid target.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Navigation ▸ Go to Braille Page…</strong>,
-or Command Palette → <strong>“Go to Braille Page…”</strong>.</li>
-<li>In the dialog <strong>“Enter a braille page number (1-N):”</strong>
-type a page (e.g. <strong>2</strong>); press
-<strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>The caret moves to the start of that page, focus returns to the
-editor, and QUILL speaks <strong>“Braille page N of M.”</strong> A
-non-numeric entry raises a spoken/visible error <strong>“Page number
-must be a number.”</strong> and does not move. With a display, the first
-cells of the target page are now under your fingers.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>.
+Note the total page count (from BRL-04) so you can pick a valid
+target.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Navigation ▸ Go
+to Braille Page…</strong>, or Command Palette → <strong>“Go to Braille
+Page…”</strong>. 2. In the dialog <strong>“Enter a braille page number
+(1-N):”</strong> type a page (e.g. <strong>2</strong>); press
+<strong>Enter</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+The caret moves to the start of that page, focus returns to the editor,
+and QUILL speaks <strong>“Braille page N of M.”</strong> A non-numeric
+entry raises a spoken/visible error <strong>“Page number must be a
+number.”</strong> and does not move. With a display, the first cells of
+the target page are now under your fingers.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-11--next-braille-page-braillenext_page">BRL-11 — Next
+<h2 id="brl-11-next-braille-page-braille.next_page">BRL-11 — Next
 Braille Page (<code>braille.next_page</code>)</h2>
 <p><em>What &amp; why.</em> Step forward one braille page.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong>; caret not on the last page.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Navigation ▸ Next Braille Page</strong>,
-or Command Palette → <strong>“Next Braille Page”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Caret jumps to the next page start; spoken <strong>“Braille page N
-of M.”</strong> On the last page it instead says <strong>“No next
-braille page.”</strong> and does not move. Display follows the caret to
-the new page.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>;
+caret not on the last page.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Navigation ▸
+Next Braille Page</strong>, or Command Palette → <strong>“Next Braille
+Page”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Caret jumps to the next page start; spoken <strong>“Braille page N of
+M.”</strong> On the last page it instead says <strong>“No next braille
+page.”</strong> and does not move. Display follows the caret to the new
+page.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-12--previous-braille-page-brailleprevious_page">BRL-12 —
+<h2 id="brl-12-previous-braille-page-braille.previous_page">BRL-12 —
 Previous Braille Page (<code>braille.previous_page</code>)</h2>
 <p><em>What &amp; why.</em> Step back one braille page — the mirror of
 BRL-11.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong>; caret not on the first page.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Navigation ▸ Previous Braille
-Page</strong>, or Command Palette → <strong>“Previous Braille
-Page”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Caret jumps to the previous page start; spoken <strong>“Braille page
-N of M.”</strong> On the first page it says <strong>“No previous braille
-page.”</strong> and does not move.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>;
+caret not on the first page.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Navigation ▸
+Previous Braille Page</strong>, or Command Palette → <strong>“Previous
+Braille Page”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Caret jumps to the previous page start; spoken <strong>“Braille page N
+of M.”</strong> On the first page it says <strong>“No previous braille
+page.”</strong> and does not move.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-13--go-to-print-page-braillego_to_print_page">BRL-13 — Go to
+<h2 id="brl-13-go-to-print-page-braille.go_to_print_page">BRL-13 — Go to
 Print Page… (<code>braille.go_to_print_page</code>)</h2>
 <p><em>What &amp; why.</em> Jump to a <strong>print</strong> page
 (original book page) by number — QUILL finds the braille page that hosts
 it.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong> with detected print pages. If none
-are detected the command says so (see below); a plain translated
-<code>sample.brf</code> may have none.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Navigation ▸ Go to Print Page…</strong>,
-or Command Palette → <strong>“Go to Print Page…”</strong>.</li>
-<li>In <strong>“Enter a print page number:”</strong> type a page; press
-<strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>If print pages exist and your number matches one, the caret moves to
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>
+with detected print pages. If none are detected the command says so (see
+below); a plain translated <code>sample.brf</code> may have none.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Navigation ▸ Go
+to Print Page…</strong>, or Command Palette → <strong>“Go to Print
+Page…”</strong>. 2. In <strong>“Enter a print page number:”</strong>
+type a page; press <strong>Enter</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+If print pages exist and your number matches one, the caret moves to
 that braille page and QUILL speaks <strong>“Print page X on braille page
 Y.”</strong> If no print pages were detected: <strong>“No print pages
 detected. Try recalculating the page map.”</strong> If your number was
 not among them: <strong>“Print page X was not detected.”</strong> A
-non-numeric entry → spoken error. All are correct — note which.</li>
-</ul>
+non-numeric entry → spoken error. All are correct — note which.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-14--next-print-page-change-braillenext_print_page_change">BRL-14
+id="brl-14-next-print-page-change-braille.next_print_page_change">BRL-14
 — Next Print Page Change
 (<code>braille.next_print_page_change</code>)</h2>
 <p><em>What &amp; why.</em> Jump forward to the next place where the
 <strong>print</strong> page number changes — the transcriber’s way to
 hop print page to print page.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong> with detected print-page
-indicators.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Navigation ▸ Next Print Page
-Change</strong>, or Command Palette → <strong>“Next Print Page
-Change”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Caret moves to the next print-page-change and QUILL speaks
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>
+with detected print-page indicators.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Navigation ▸
+Next Print Page Change</strong>, or Command Palette → <strong>“Next
+Print Page Change”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Caret moves to the next print-page-change and QUILL speaks
 <strong>“Print page change: print page X on braille page Y.”</strong>
 (or <strong>“an unknown print page”</strong> when the number could not
 be read). With none ahead: <strong>“No next print page change.”</strong>
-Display follows the caret.</li>
-</ul>
+Display follows the caret.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-15--previous-print-page-change-brailleprevious_print_page_change">BRL-15
+id="brl-15-previous-print-page-change-braille.previous_print_page_change">BRL-15
 — Previous Print Page Change
 (<code>braille.previous_print_page_change</code>)</h2>
 <p><em>What &amp; why.</em> The backward mirror of BRL-14.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong> with detected print-page
-indicators; caret past the first change.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Navigation ▸ Previous Print Page
-Change</strong>, or Command Palette → <strong>“Previous Print Page
-Change”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Caret moves back to the previous print-page-change; spoken
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>
+with detected print-page indicators; caret past the first change.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Navigation ▸
+Previous Print Page Change</strong>, or Command Palette →
+<strong>“Previous Print Page Change”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Caret moves back to the previous print-page-change; spoken
 <strong>“Print page change: print page X on braille page Y.”</strong>
-With none behind: <strong>“No previous print page change.”</strong></li>
-</ul>
+With none behind: <strong>“No previous print page change.”</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -747,147 +601,105 @@ With none behind: <strong>“No previous print page change.”</strong></li>
 <hr />
 <h2 id="page-tools-submenu">Page Tools submenu</h2>
 <h2
-id="brl-16--insert-braille-page-break-brailleinsert_page_break">BRL-16 —
+id="brl-16-insert-braille-page-break-braille.insert_page_break">BRL-16 —
 Insert Braille Page Break (<code>braille.insert_page_break</code>)</h2>
 <p><em>What &amp; why.</em> Insert a form-feed (the braille page-break
 character) at the caret.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Any document with an editor focused (a BRF sample is ideal so the
-map updates).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Place the caret where the new page should begin.</li>
-<li><strong>Tools ▸ Braille ▸ Page Tools ▸ Insert Braille Page
+<p><strong>Before you start</strong> - Any document with an editor
+focused (a BRF sample is ideal so the map updates).</p>
+<p><strong>Do this</strong> 1. Place the caret where the new page should
+begin. 2. <strong>Tools ▸ Braille ▸ Page Tools ▸ Insert Braille Page
 Break</strong>, or Command Palette → <strong>“Insert Braille Page
-Break”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>A form-feed character is written at the caret and QUILL speaks
+Break”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+A form-feed character is written at the caret and QUILL speaks
 <strong>“Braille page break inserted.”</strong> On a BRF file the page
 total from BRL-04 goes up by one after a recalculate (BRL-19). Display
-flashes the confirmation.</li>
-</ul>
+flashes the confirmation.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-17--remove-braille-page-break-brailleremove_page_break">BRL-17 —
+id="brl-17-remove-braille-page-break-braille.remove_page_break">BRL-17 —
 Remove Braille Page Break (<code>braille.remove_page_break</code>)</h2>
 <p><em>What &amp; why.</em> Delete a braille page-break character at (or
 just before) the caret.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A document containing a page break; put the caret on or right after
-the break you inserted in BRL-16.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Page Tools ▸ Remove Braille Page
-Break</strong>, or Command Palette → <strong>“Remove Braille Page
-Break”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>If a break is at or immediately before the caret it is removed and
-QUILL speaks <strong>“Braille page break removed.”</strong> If there is
-none there: <strong>“No braille page break at the cursor.”</strong> and
-nothing changes.</li>
-</ul>
+<p><strong>Before you start</strong> - A document containing a page
+break; put the caret on or right after the break you inserted in
+BRL-16.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Page Tools ▸
+Remove Braille Page Break</strong>, or Command Palette → <strong>“Remove
+Braille Page Break”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+If a break is at or immediately before the caret it is removed and QUILL
+speaks <strong>“Braille page break removed.”</strong> If there is none
+there: <strong>“No braille page break at the cursor.”</strong> and
+nothing changes.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-18--normalize-line-endings-braillenormalize_line_endings">BRL-18
+id="brl-18-normalize-line-endings-braille.normalize_line_endings">BRL-18
 — Normalize Line Endings
 (<code>braille.normalize_line_endings</code>)</h2>
 <p><em>What &amp; why.</em> Intended to normalize the file’s line
 endings for clean BRF output. <strong>Known state:</strong> this is a
 Phase-1 stub in 1.0 — the wiring exists but the action is not
 implemented yet.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Any document; no display or BRF file needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Page Tools ▸ Normalize Line
-Endings</strong>, or Command Palette → <strong>“Normalize Line
-Endings”</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Spoken/status <strong>“Normalize line endings is not available
-yet.”</strong> and no change to the document. This is the
-<strong>expected</strong> 1.0 behavior — pass it if you hear exactly
-that (an honest “not yet”, never a silent no-op or a crash). If it
-silently does nothing with <strong>no</strong> announcement, fail
-<strong>Accessible</strong>.</li>
-</ul>
+<p><strong>Before you start</strong> - Any document; no display or BRF
+file needed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Page Tools ▸
+Normalize Line Endings</strong>, or Command Palette → <strong>“Normalize
+Line Endings”</strong>.</p>
+<p><strong>You should see and hear</strong> - Spoken/status
+<strong>“Normalize line endings is not available yet.”</strong> and no
+change to the document. This is the <strong>expected</strong> 1.0
+behavior — pass it if you hear exactly that (an honest “not yet”, never
+a silent no-op or a crash). If it silently does nothing with
+<strong>no</strong> announcement, fail <strong>Accessible</strong>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-19--recalculate-page-map-braillerecalculate_page_map">BRL-19
+<h2 id="brl-19-recalculate-page-map-braille.recalculate_page_map">BRL-19
 — Recalculate Page Map (<code>braille.recalculate_page_map</code>)</h2>
 <p><em>What &amp; why.</em> Force QUILL to rebuild the braille page map
 — do this after editing breaks or changing page geometry so status and
 navigation are accurate again.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>BRF sample open</strong> (ideally after inserting/removing a
-break in BRL-16/17).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Page Tools ▸ Recalculate Page
-Map</strong>, or Command Palette → <strong>“Recalculate Page
-Map”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Spoken <strong>“Braille page map recalculated.”</strong>, the status
-bar refreshes, and a following BRL-04 reflects any new page count.
-Flashes to the display.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>BRF sample open</strong>
+(ideally after inserting/removing a break in BRL-16/17).</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Page Tools ▸
+Recalculate Page Map</strong>, or Command Palette → <strong>“Recalculate
+Page Map”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Spoken <strong>“Braille page map recalculated.”</strong>, the status bar
+refreshes, and a following BRL-04 reflects any new page count. Flashes
+to the display.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-20--save-as-clean-brf-braillesave_as_clean">BRL-20 — Save As
+<h2 id="brl-20-save-as-clean-brf-braille.save_as_clean">BRL-20 — Save As
 Clean BRF (<code>braille.save_as_clean</code>)</h2>
 <p><em>What &amp; why.</em> Intended to save a “cleaned” copy of the
 BRF. <strong>Known state:</strong> a Phase-1 stub in 1.0 — registered so
 the wiring is stable, action not implemented. It is <strong>not</strong>
 on the Braille menu; reach it from the Command Palette only.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Any document; no display needed. (There is no menu item — use the
-palette.)</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Command Palette (<strong>Ctrl+Shift+Grave, K</strong>) →
-<strong>“Save As Clean BRF”</strong> → <strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Spoken/status <strong>“Save as clean BRF is not available
-yet.”</strong> and nothing is written. This is the
-<strong>expected</strong> 1.0 behavior — pass on hearing exactly that. A
-silent no-op or a crash is a fail.</li>
-</ul>
+<p><strong>Before you start</strong> - Any document; no display needed.
+(There is no menu item — use the palette.)</p>
+<p><strong>Do this</strong> 1. Command Palette
+(<strong>Ctrl+Shift+Grave, K</strong>) → <strong>“Save As Clean
+BRF”</strong> → <strong>Enter</strong>.</p>
+<p><strong>You should see and hear</strong> - Spoken/status
+<strong>“Save as clean BRF is not available yet.”</strong> and nothing
+is written. This is the <strong>expected</strong> 1.0 behavior — pass on
+hearing exactly that. A silent no-op or a crash is a fail.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -904,252 +716,186 @@ None of these need a braille <em>display</em>; they operate on the
 editor text and open the result as a new document.</p>
 </blockquote>
 <h2
-id="brl-21--translate-to-ueb-grade-2--contracted-brailletranslate_ueb_g2">BRL-21
+id="brl-21-translate-to-ueb-grade-2-contracted-braille.translate_ueb_g2">BRL-21
 — Translate to UEB Grade 2 / Contracted
 (<code>braille.translate_ueb_g2</code>)</h2>
 <p><em>What &amp; why.</em> Forward-translate the whole document into
 <strong>UEB contracted</strong> braille — the default modern English
 braille. Table selection, no display needed.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Open <strong><code>plain.txt</code></strong> (or any text). Pack
-installed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Translation ▸ UEB ▸ Translate to
-Contracted (Grade 2)</strong>, or Command Palette → <strong>“Translate
-to UEB Grade 2 (Contracted)”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>QUILL translates via the braille worker and opens a <strong>new
+<p><strong>Before you start</strong> - Open
+<strong><code>plain.txt</code></strong> (or any text). Pack
+installed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Translation ▸
+UEB ▸ Translate to Contracted (Grade 2)</strong>, or Command Palette →
+<strong>“Translate to UEB Grade 2 (Contracted)”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+QUILL translates via the braille worker and opens a <strong>new
 document</strong> of braille cells, focus in it; spoken
 <strong>“Translated to UEB G2. N braille pages.”</strong> Empty source →
 <strong>“Nothing to translate.”</strong> A worker failure shows a spoken
 <strong>and</strong> dialog error (“Translation failed: …”), never
 silence. With a display, the new document’s cells are readable under
-your fingers.</li>
-</ul>
+your fingers.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-22--translate-to-ueb-grade-1--uncontracted-brailletranslate_ueb_g1">BRL-22
+id="brl-22-translate-to-ueb-grade-1-uncontracted-braille.translate_ueb_g1">BRL-22
 — Translate to UEB Grade 1 / Uncontracted
 (<code>braille.translate_ueb_g1</code>)</h2>
 <p><em>What &amp; why.</em> Forward-translate into <strong>UEB
 uncontracted</strong> (letter-for-letter, no contractions) — used for
 early readers and some technical text.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Text document open; pack installed. No display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Translation ▸ UEB ▸ Translate to
-Uncontracted (Grade 1)</strong>, or Command Palette → <strong>“Translate
-to UEB Grade 1 (Uncontracted)”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>New braille document opens; spoken <strong>“Translated to UEB G1. N
+<p><strong>Before you start</strong> - Text document open; pack
+installed. No display needed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Translation ▸
+UEB ▸ Translate to Uncontracted (Grade 1)</strong>, or Command Palette →
+<strong>“Translate to UEB Grade 1 (Uncontracted)”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+New braille document opens; spoken <strong>“Translated to UEB G1. N
 braille pages.”</strong> It should be visibly longer than the Grade 2
 result of the same text (no contractions). Empty source / failure
-handled as in BRL-21.</li>
-</ul>
+handled as in BRL-21.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-23--translate-selection-to-ueb-brailletranslate_selection">BRL-23
+id="brl-23-translate-selection-to-ueb-braille.translate_selection">BRL-23
 — Translate Selection to UEB
 (<code>braille.translate_selection</code>)</h2>
 <p><em>What &amp; why.</em> Translate just the <strong>selected</strong>
 text to UEB contracted — for spot work without converting the whole
 file.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Text document open; <strong>select a sentence or two</strong>. Pack
-installed. No display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Select the text.</li>
-<li><strong>Tools ▸ Braille ▸ Translation ▸ UEB ▸ Translate
-Selection</strong>, or Command Palette → <strong>“Translate Selection to
-UEB”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Only the selection is translated and opened as a new braille
-document; spoken <strong>“Translated selection to UEB G2. N braille
+<p><strong>Before you start</strong> - Text document open;
+<strong>select a sentence or two</strong>. Pack installed. No display
+needed.</p>
+<p><strong>Do this</strong> 1. Select the text. 2. <strong>Tools ▸
+Braille ▸ Translation ▸ UEB ▸ Translate Selection</strong>, or Command
+Palette → <strong>“Translate Selection to UEB”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Only the selection is translated and opened as a new braille document;
+spoken <strong>“Translated selection to UEB G2. N braille
 pages.”</strong> With nothing selected the source is empty →
-<strong>“Nothing to translate.”</strong></li>
-</ul>
+<strong>“Nothing to translate.”</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-24--back-translate-ueb-draft-brailleback_translate">BRL-24 —
+<h2 id="brl-24-back-translate-ueb-draft-braille.back_translate">BRL-24 —
 Back-Translate UEB (draft) (<code>braille.back_translate</code>)</h2>
 <p><em>What &amp; why.</em> Turn braille back into readable text (a
 <strong>draft</strong> for proofreading). Uses the selection if there is
 one, else the whole document, assuming UEB.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open</strong> (or select some
-braille). Pack installed. No display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Optionally select a braille passage.</li>
-<li><strong>Tools ▸ Braille ▸ Translation ▸ UEB ▸ Back-Translate
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open</strong> (or select some braille). Pack installed. No display
+needed.</p>
+<p><strong>Do this</strong> 1. Optionally select a braille passage. 2.
+<strong>Tools ▸ Braille ▸ Translation ▸ UEB ▸ Back-Translate
 (draft)</strong>, or Command Palette → <strong>“Back-Translate UEB
-(draft)”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>A new text document opens with the recovered words; spoken
+(draft)”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+A new text document opens with the recovered words; spoken
 <strong>“Back-translation draft from selection/document. N words. Review
 against the BRF.”</strong> The word “draft” matters — it is not
-guaranteed exact. Empty/failure handled as in BRL-21.</li>
-</ul>
+guaranteed exact. Empty/failure handled as in BRL-21.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-25--back-translate-to-text-auto-detect-code-brailleback_translate_auto">BRL-25
+id="brl-25-back-translate-to-text-auto-detect-code-braille.back_translate_auto">BRL-25
 — Back-Translate to Text, Auto-Detect Code
 (<code>braille.back_translate_auto</code>)</h2>
 <p><em>What &amp; why.</em> The “just read this braille to me” path —
 QUILL detects the braille code itself (UEB G1/G2, EBAE G1/G2, computer
 braille) and back-translates without asking you to pick a table.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open</strong> (or a braille
-selection). Pack installed. No display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Translation ▸ Back-Translate to Text
-(Auto-Detect Code)</strong>, or Command Palette →
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open</strong> (or a braille selection). Pack installed. No display
+needed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Translation ▸
+Back-Translate to Text (Auto-Detect Code)</strong>, or Command Palette →
 <strong>“Back-Translate to Text (Auto-Detect Braille
-Code)”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>First a spoken <strong>“Detecting braille code…”</strong>, then a
-new draft document and a spoken <strong>“Detected <code>.
-Back-translation draft from … : N words. Use Save As to export it as
-Markdown, HTML, Word, or plain text.”</strong> A detection failure
-surfaces a spoken + dialog error, never silence.</li>
-</ul>
+Code)”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+First a spoken <strong>“Detecting braille code…”</strong>, then a new
+draft document and a spoken <strong>“Detected <code>. Back-translation
+draft from … : N words. Use Save As to export it as Markdown, HTML,
+Word, or plain text.”</strong> A detection failure surfaces a spoken +
+dialog error, never silence.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-26--convert-brf-file-to-document-brailleconvert_brf_file">BRL-26
+id="brl-26-convert-brf-file-to-document-braille.convert_brf_file">BRL-26
 — Convert BRF File to Document…
 (<code>braille.convert_brf_file</code>)</h2>
 <p><em>What &amp; why.</em> One-shot: pick any
 <code>.brf</code>/<code>.brl</code> <strong>on disk</strong>,
 auto-detect its code, and open it as a normal editable document you can
 then Save As to any format — BRF in, anything out.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A <code>.brf</code>/<code>.brl</code> file on disk (e.g. your
-<code>sample.brf</code>). Pack installed. No display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Translation ▸ Convert BRF File to
-Document…</strong>, or Command Palette → <strong>“Convert BRF File to
-Document…”</strong>.</li>
-<li>In the file dialog choose the <code>.brf</code>;
-<strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>A new draft document opens with the recovered text; spoken
+<p><strong>Before you start</strong> - A
+<code>.brf</code>/<code>.brl</code> file on disk (e.g. your
+<code>sample.brf</code>). Pack installed. No display needed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Translation ▸
+Convert BRF File to Document…</strong>, or Command Palette →
+<strong>“Convert BRF File to Document…”</strong>. 2. In the file dialog
+choose the <code>.brf</code>; <strong>Enter</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+A new draft document opens with the recovered text; spoken
 <strong>“Converted <name>. Detected <code>: N words. Use Save As to
 export it…”</strong>. An unreadable file reports a spoken + dialog error
 naming the file. Confirm you can then <strong>File ▸ Save As…</strong>
-it to <code>.md</code>/<code>.docx</code>/<code>.txt</code>.</li>
-</ul>
+it to <code>.md</code>/<code>.docx</code>/<code>.txt</code>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-27--translate-to-standard-american-contracted--legacy-grade-2-brailletranslate_standard_g2">BRL-27
+id="brl-27-translate-to-standard-american-contracted-legacy-grade-2-braille.translate_standard_g2">BRL-27
 — Translate to Standard American Contracted / Legacy Grade 2
 (<code>braille.translate_standard_g2</code>)</h2>
 <p><em>What &amp; why.</em> Forward-translate into <strong>EBAE /
 Standard American English contracted</strong> (the pre-UEB legacy code)
 — for shops still producing legacy braille.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Text document open; pack installed. No display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Translation ▸ Standard American English
-(Legacy) ▸ Translate to Contracted (Grade 2)</strong>, or Command
-Palette → <strong>“Translate to Standard American Braille Contracted
-(Legacy Grade 2)”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>New braille document; spoken <strong>“Translated to Standard
-American Grade 2. N braille pages.”</strong> Empty/failure handled as in
-BRL-21.</li>
-</ul>
+<p><strong>Before you start</strong> - Text document open; pack
+installed. No display needed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Translation ▸
+Standard American English (Legacy) ▸ Translate to Contracted (Grade
+2)</strong>, or Command Palette → <strong>“Translate to Standard
+American Braille Contracted (Legacy Grade 2)”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+New braille document; spoken <strong>“Translated to Standard American
+Grade 2. N braille pages.”</strong> Empty/failure handled as in
+BRL-21.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-28--translate-to-standard-american-uncontracted--legacy-grade-1-brailletranslate_standard_g1">BRL-28
+id="brl-28-translate-to-standard-american-uncontracted-legacy-grade-1-braille.translate_standard_g1">BRL-28
 — Translate to Standard American Uncontracted / Legacy Grade 1
 (<code>braille.translate_standard_g1</code>)</h2>
 <p><em>What &amp; why.</em> The uncontracted legacy counterpart to
 BRL-27.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Text document open; pack installed. No display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Translation ▸ Standard American English
-(Legacy) ▸ Translate to Uncontracted (Grade 1)</strong>, or Command
-Palette → <strong>“Translate to Standard American Braille Uncontracted
-(Legacy Grade 1)”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>New braille document; spoken <strong>“Translated to Standard
-American Grade 1. N braille pages.”</strong></li>
-</ul>
+<p><strong>Before you start</strong> - Text document open; pack
+installed. No display needed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Translation ▸
+Standard American English (Legacy) ▸ Translate to Uncontracted (Grade
+1)</strong>, or Command Palette → <strong>“Translate to Standard
+American Braille Uncontracted (Legacy Grade 1)”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+New braille document; spoken <strong>“Translated to Standard American
+Grade 1. N braille pages.”</strong></p>
 <blockquote>
 <p><strong>Also present, not a numbered scenario:</strong> a
 <strong>More Languages</strong> item appears under Translation when the
@@ -1177,354 +923,247 @@ before tracking proofing.”</strong> — that is correct behavior, not a
 failure.</p>
 </blockquote>
 <h2
-id="brl-29--mark-current-page-proofed-braillemark_page_proofed">BRL-29 —
+id="brl-29-mark-current-page-proofed-braille.mark_page_proofed">BRL-29 —
 Mark Current Page Proofed (<code>braille.mark_page_proofed</code>)</h2>
 <p><em>What &amp; why.</em> Flag the braille page at the caret as
 <strong>proofed</strong> — the core transcription-QA gesture.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open and saved on disk</strong>;
-caret on the page to mark. No display needed to sign the spoken
-outcome.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Proofing ▸ Mark Current Page
-Proofed</strong>, or Command Palette → <strong>“Mark Current Braille
-Page as Proofed”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Spoken confirmation that the current braille page is marked proofed
-(the sidecar is written). On an unsaved document → “Save the braille
-file before tracking proofing.” Flashes to the display.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open and saved on disk</strong>; caret on the page to mark. No display
+needed to sign the spoken outcome.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Proofing ▸ Mark
+Current Page Proofed</strong>, or Command Palette → <strong>“Mark
+Current Braille Page as Proofed”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Spoken confirmation that the current braille page is marked proofed (the
+sidecar is written). On an unsaved document → “Save the braille file
+before tracking proofing.” Flashes to the display.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-30--mark-current-page-needs-review-braillemark_page_needs_review">BRL-30
+id="brl-30-mark-current-page-needs-review-braille.mark_page_needs_review">BRL-30
 — Mark Current Page Needs Review
 (<code>braille.mark_page_needs_review</code>)</h2>
 <p><em>What &amp; why.</em> Flag the current braille page as
 <strong>needs review</strong> — the “come back to this” marker.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open and saved</strong>; caret on
-the page.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Proofing ▸ Mark Current Page Needs
-Review</strong>, or Command Palette → <strong>“Mark Current Braille Page
-Needs Review”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Spoken confirmation the page is marked needs-review; sidecar
-written. Unsaved → the save-first message.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open and saved</strong>; caret on the page.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Proofing ▸ Mark
+Current Page Needs Review</strong>, or Command Palette → <strong>“Mark
+Current Braille Page Needs Review”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Spoken confirmation the page is marked needs-review; sidecar written.
+Unsaved → the save-first message.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-31--clear-proofing-mark-brailleclear_proofing_mark">BRL-31 —
+<h2 id="brl-31-clear-proofing-mark-braille.clear_proofing_mark">BRL-31 —
 Clear Proofing Mark (<code>braille.clear_proofing_mark</code>)</h2>
 <p><em>What &amp; why.</em> Remove any proofed / needs-review mark from
 the current braille page.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open and saved</strong>; caret on a
-page you marked in BRL-29/30.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Proofing ▸ Clear Proofing Mark</strong>,
-or Command Palette → <strong>“Clear Proofing Mark on Current
-Page”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Spoken confirmation the mark is cleared; sidecar updated. A later
-Read Proofing Progress (BRL-33) shows the counts drop.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open and saved</strong>; caret on a page you marked in BRL-29/30.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Proofing ▸
+Clear Proofing Mark</strong>, or Command Palette → <strong>“Clear
+Proofing Mark on Current Page”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Spoken confirmation the mark is cleared; sidecar updated. A later Read
+Proofing Progress (BRL-33) shows the counts drop.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-32--add-proofing-note-brailleadd_proofing_note">BRL-32 — Add
+<h2 id="brl-32-add-proofing-note-braille.add_proofing_note">BRL-32 — Add
 Proofing Note… (<code>braille.add_proofing_note</code>)</h2>
 <p><em>What &amp; why.</em> Attach a free-text note to the current
-braille page (e.g. “check this contraction”).</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open and saved</strong>; caret on
-the page. A note text ready, e.g.
-<strong><code>Check dropped word</code></strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Proofing ▸ Add Proofing Note…</strong>, or
-Command Palette → <strong>“Add Proofing Note to Current
-Page”</strong>.</li>
-<li>In <strong>“Note for braille page N:”</strong> type your note;
-<strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>The labelled entry dialog is keyboard-complete; on confirm the note
-is saved to the sidecar and QUILL speaks a confirmation. Escape cancels
-with no note added. Unsaved document → the save-first message.</li>
-</ul>
+braille page (e.g. “check this contraction”).</p>
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open and saved</strong>; caret on the page. A note text ready, e.g.
+<strong><code>Check dropped word</code></strong>.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Proofing ▸ Add
+Proofing Note…</strong>, or Command Palette → <strong>“Add Proofing Note
+to Current Page”</strong>. 2. In <strong>“Note for braille page
+N:”</strong> type your note; <strong>Enter</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+The labelled entry dialog is keyboard-complete; on confirm the note is
+saved to the sidecar and QUILL speaks a confirmation. Escape cancels
+with no note added. Unsaved document → the save-first message.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-33--read-proofing-progress-summary-brailleread_proofing_progress">BRL-33
+id="brl-33-read-proofing-progress-summary-braille.read_proofing_progress">BRL-33
 — Read Proofing Progress Summary
 (<code>braille.read_proofing_progress</code>)</h2>
 <p><em>What &amp; why.</em> How much of the transcription has been
 proofed — proofed vs needs-review vs remaining. (Distinct from the plain
 progress in BRL-06.)</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open and saved</strong>, with a few
-pages marked (BRL-29/30). Palette label: <strong>“Read Proofing Progress
-Summary”</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Proofing ▸ Read Progress Summary</strong>,
-or Command Palette → <strong>“Read Proofing Progress
-Summary”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>A spoken summary of proofing progress across the page count (proofed
-/ needs review counts, current page). Unsaved → the save-first message.
-Flashes to the display.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open and saved</strong>, with a few pages marked (BRL-29/30). Palette
+label: <strong>“Read Proofing Progress Summary”</strong>.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Proofing ▸ Read
+Progress Summary</strong>, or Command Palette → <strong>“Read Proofing
+Progress Summary”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+A spoken summary of proofing progress across the page count (proofed /
+needs review counts, current page). Unsaved → the save-first message.
+Flashes to the display.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-34--list-proofed-pages-braillelist_proofed_pages">BRL-34 —
+<h2 id="brl-34-list-proofed-pages-braille.list_proofed_pages">BRL-34 —
 List Proofed Pages… (<code>braille.list_proofed_pages</code>)</h2>
 <p><em>What &amp; why.</em> A pick-list of every page marked proofed;
 choosing one jumps there.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open and saved</strong>, with at
-least one page marked proofed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Proofing ▸ List Proofed Pages…</strong>,
-or Command Palette → <strong>“List Proofed Braille Pages”</strong>.</li>
-<li>Arrow the list; pick a page; <strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>A keyboard-navigable <strong>single-choice</strong> dialog titled
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open and saved</strong>, with at least one page marked proofed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Proofing ▸ List
+Proofed Pages…</strong>, or Command Palette → <strong>“List Proofed
+Braille Pages”</strong>. 2. Arrow the list; pick a page;
+<strong>Enter</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+A keyboard-navigable <strong>single-choice</strong> dialog titled
 “Proofed Pages (N)” listing “Braille page X” entries; choosing one moves
 the caret there and speaks “Braille page N of M.” With none marked:
-spoken <strong>“No proofed pages.”</strong> and no dialog.</li>
-</ul>
+spoken <strong>“No proofed pages.”</strong> and no dialog.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-35--list-pages-needing-review-braillelist_pages_needing_review">BRL-35
+id="brl-35-list-pages-needing-review-braille.list_pages_needing_review">BRL-35
 — List Pages Needing Review…
 (<code>braille.list_pages_needing_review</code>)</h2>
 <p><em>What &amp; why.</em> The needs-review counterpart to BRL-34.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open and saved</strong>, with at
-least one page marked needs-review.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Proofing ▸ List Pages Needing
-Review…</strong>, or Command Palette → <strong>“List Braille Pages
-Needing Review”</strong>.</li>
-<li>Pick a page; <strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>A single-choice dialog titled “Pages Needing Review (N)”; choosing
-one jumps there and speaks the page. With none: spoken <strong>“No pages
-needing review.”</strong></li>
-</ul>
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open and saved</strong>, with at least one page marked needs-review.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Proofing ▸ List
+Pages Needing Review…</strong>, or Command Palette → <strong>“List
+Braille Pages Needing Review”</strong>. 2. Pick a page;
+<strong>Enter</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+A single-choice dialog titled “Pages Needing Review (N)”; choosing one
+jumps there and speaks the page. With none: spoken <strong>“No pages
+needing review.”</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-36--export-proofing-report-brailleexport_proofing_report">BRL-36
+id="brl-36-export-proofing-report-braille.export_proofing_report">BRL-36
 — Export Proofing Report…
 (<code>braille.export_proofing_report</code>)</h2>
 <p><em>What &amp; why.</em> Write a plain-text report of the proofing
 state (proofed pages, pages needing review, notes) to a file to hand
 off.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open and saved</strong>, with some
-marks/notes. A target name is suggested for you
-(<code>&lt;name&gt;-proofing.txt</code>).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Proofing ▸ Export Proofing
-Report…</strong>, or Command Palette → <strong>“Export Proofing
-Report”</strong>.</li>
-<li>In the Save dialog accept or change the name;
-<strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>A keyboard-navigable Save dialog defaulting to
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open and saved</strong>, with some marks/notes. A target name is
+suggested for you (<code>&lt;name&gt;-proofing.txt</code>).</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Proofing ▸
+Export Proofing Report…</strong>, or Command Palette → <strong>“Export
+Proofing Report”</strong>. 2. In the Save dialog accept or change the
+name; <strong>Enter</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+A keyboard-navigable Save dialog defaulting to
 <code>&lt;name&gt;-proofing.txt</code>; on confirm a UTF-8 text report
 is written and QUILL speaks <strong>“Proofing report saved to
 <name>.”</strong> Open the file to confirm it lists the pages and notes.
-Unsaved braille document → the save-first message.</li>
-</ul>
+Unsaved braille document → the save-first message.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2 id="validation-submenu">Validation submenu</h2>
-<h2 id="brl-37--validate-brf-layout-braillevalidate_layout">BRL-37 —
+<h2 id="brl-37-validate-brf-layout-braille.validate_layout">BRL-37 —
 Validate BRF Layout… (<code>braille.validate_layout</code>)</h2>
 <p><em>What &amp; why.</em> Check the file against your page geometry
 (cells per line, lines per page) and list every layout warning —
 overlong lines, overfull pages, etc.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open</strong>. Geometry set under
-Preferences ▸ Braille (defaults 40×25 are fine). No display needed to
-sign the spoken/dialog outcome.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Validation ▸ Validate BRF
-Layout…</strong>, or Command Palette → <strong>“Validate BRF
-Layout”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>If clean: spoken <strong>“No braille layout warnings
-found.”</strong> If not: a keyboard- navigable single-choice dialog “N
-layout warning(s)” listing each as <strong>“Line L, page P, <severity>:
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open</strong>. Geometry set under Preferences ▸ Braille (defaults 40×25
+are fine). No display needed to sign the spoken/dialog outcome.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Validation ▸
+Validate BRF Layout…</strong>, or Command Palette → <strong>“Validate
+BRF Layout”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+If clean: spoken <strong>“No braille layout warnings found.”</strong> If
+not: a keyboard- navigable single-choice dialog “N layout warning(s)”
+listing each as <strong>“Line L, page P, <severity>:
 <message>”</strong>; choosing one jumps the caret to it and speaks
-“Warning k of N: <message>”. This also arms BRL-38…BRL-40.</li>
-</ul>
+“Warning k of N: <message>”. This also arms BRL-38…BRL-40.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="brl-38--next-braille-layout-warning-braillenext_warning">BRL-38
+<h2 id="brl-38-next-braille-layout-warning-braille.next_warning">BRL-38
 — Next Braille Layout Warning (<code>braille.next_warning</code>)</h2>
 <p><em>What &amp; why.</em> Step to the next warning from the last
 validation run.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Run <strong>BRL-37</strong> first and get at least one warning. No
-display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Validation ▸ Next Warning</strong>, or
-Command Palette → <strong>“Next Braille Layout Warning”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Caret moves to the next warning and QUILL speaks <strong>“Warning k
-of N: <message>.”</strong> Past the last: <strong>“No next
+<p><strong>Before you start</strong> - Run <strong>BRL-37</strong> first
+and get at least one warning. No display needed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Validation ▸
+Next Warning</strong>, or Command Palette → <strong>“Next Braille Layout
+Warning”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Caret moves to the next warning and QUILL speaks <strong>“Warning k of
+N: <message>.”</strong> Past the last: <strong>“No next
 warning.”</strong> With no validation run yet: <strong>“No warnings. Run
-Validate BRF Layout first.”</strong></li>
-</ul>
+Validate BRF Layout first.”</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-39--previous-braille-layout-warning-brailleprevious_warning">BRL-39
+id="brl-39-previous-braille-layout-warning-braille.previous_warning">BRL-39
 — Previous Braille Layout Warning
 (<code>braille.previous_warning</code>)</h2>
 <p><em>What &amp; why.</em> Step back to the previous warning — mirror
 of BRL-38.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Validation run with warnings; caret past the first warning. No
-display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Validation ▸ Previous Warning</strong>, or
-Command Palette → <strong>“Previous Braille Layout
-Warning”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Caret moves to the previous warning; spoken <strong>“Warning k of N:
+<p><strong>Before you start</strong> - Validation run with warnings;
+caret past the first warning. No display needed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Validation ▸
+Previous Warning</strong>, or Command Palette → <strong>“Previous
+Braille Layout Warning”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Caret moves to the previous warning; spoken <strong>“Warning k of N:
 <message>.”</strong> Before the first: <strong>“No previous
 warning.”</strong> No run yet: the “Run Validate BRF Layout first”
-message.</li>
-</ul>
+message.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-40--braille-layout-warnings-summary-braillewarnings_summary">BRL-40
+id="brl-40-braille-layout-warnings-summary-braille.warnings_summary">BRL-40
 — Braille Layout Warnings Summary
 (<code>braille.warnings_summary</code>)</h2>
 <p><em>What &amp; why.</em> A spoken tally of the current warnings — how
 many and the top categories — without stepping through them.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Run <strong>BRL-37</strong> first. No display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Validation ▸ Warnings Summary</strong>, or
-Command Palette → <strong>“Braille Layout Warnings
-Summary”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Spoken <strong>“N layout warning(s). Top categories: <kind> (c),
+<p><strong>Before you start</strong> - Run <strong>BRL-37</strong>
+first. No display needed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Validation ▸
+Warnings Summary</strong>, or Command Palette → <strong>“Braille Layout
+Warnings Summary”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Spoken <strong>“N layout warning(s). Top categories: <kind> (c),
 ….”</strong> If the run found none: <strong>“No braille layout warnings
 found.”</strong> If nothing has been validated: <strong>“No validation
-run yet. Run Validate BRF Layout first.”</strong></li>
-</ul>
+run yet. Run Validate BRF Layout first.”</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1533,151 +1172,112 @@ run yet. Run Validate BRF Layout first.”</strong></li>
 <h2 id="repair-submenu-nls-brt-parity-widthdepth-diagnostics">Repair
 submenu (NLS-BRT parity: width/depth diagnostics)</h2>
 <h2
-id="brl-41--read-braille-layout-metrics-brailleread_layout_metrics">BRL-41
+id="brl-41-read-braille-layout-metrics-braille.read_layout_metrics">BRL-41
 — Read Braille Layout Metrics
 (<code>braille.read_layout_metrics</code>)</h2>
 <p><em>What &amp; why.</em> Speak the NLS-style layout metrics for the
 file at the caret — cells/line and lines/page usage against your
 configured limits.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open</strong>. Geometry set
-(defaults 40×25). No display needed to sign the spoken outcome.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Repair ▸ Read Layout Metrics</strong>, or
-Command Palette → <strong>“Read Braille Layout Metrics”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>A spoken description of the layout metrics (line/page dimensions
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open</strong>. Geometry set (defaults 40×25). No display needed to sign
+the spoken outcome.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Repair ▸ Read
+Layout Metrics</strong>, or Command Palette → <strong>“Read Braille
+Layout Metrics”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+A spoken description of the layout metrics (line/page dimensions
 relative to the configured limits). Non-braille document → “This is not
-a braille document.” Flashes to the display.</li>
-</ul>
+a braille document.” Flashes to the display.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-42--go-to-longest-braille-line-braillego_to_longest_line">BRL-42
+id="brl-42-go-to-longest-braille-line-braille.go_to_longest_line">BRL-42
 — Go to Longest Braille Line
 (<code>braille.go_to_longest_line</code>)</h2>
 <p><em>What &amp; why.</em> Jump straight to the longest line in the
 document — the usual suspect for a “page width exceeded” error.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A document with text (a BRF sample is ideal). Works on any
-document’s editor text — no braille resolver required. No display needed
-to sign the spoken outcome.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Repair ▸ Go to Longest Line</strong>, or
-Command Palette → <strong>“Go to Longest Braille Line”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Caret jumps to the longest line; spoken <strong>“Longest line: C
-cells.”</strong>, plus <strong>“ Page width exceeded.“</strong> appended
+<p><strong>Before you start</strong> - A document with text (a BRF
+sample is ideal). Works on any document’s editor text — no braille
+resolver required. No display needed to sign the spoken outcome.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Repair ▸ Go to
+Longest Line</strong>, or Command Palette → <strong>“Go to Longest
+Braille Line”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Caret jumps to the longest line; spoken <strong>“Longest line: C
+cells.”</strong>, plus <strong>” Page width exceeded.”</strong> appended
 when C exceeds your cells-per-line. Empty document → <strong>“The
 document is empty.”</strong> With a display, the offending line is under
-your fingers.</li>
-</ul>
+your fingers.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-43--go-to-longest-braille-page-braillego_to_longest_page">BRL-43
+id="brl-43-go-to-longest-braille-page-braille.go_to_longest_page">BRL-43
 — Go to Longest Braille Page
 (<code>braille.go_to_longest_page</code>)</h2>
 <p><em>What &amp; why.</em> Jump to the page with the most lines — the
 usual suspect for a “page depth exceeded” error.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong><code>sample.brf</code> open</strong> (needs the braille
-page map). No display needed to sign the spoken outcome.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Repair ▸ Go to Longest Page</strong>, or
-Command Palette → <strong>“Go to Longest Braille Page”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Caret jumps to that page; spoken <strong>“Longest page: braille page
-N of M, L lines.”</strong>, plus <strong>“ Page depth
-exceeded.“</strong> when L exceeds your lines-per-page. Non-braille
-document → “This is not a braille document.”</li>
-</ul>
+<p><strong>Before you start</strong> - <strong><code>sample.brf</code>
+open</strong> (needs the braille page map). No display needed to sign
+the spoken outcome.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Repair ▸ Go to
+Longest Page</strong>, or Command Palette → <strong>“Go to Longest
+Braille Page”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Caret jumps to that page; spoken <strong>“Longest page: braille page N
+of M, L lines.”</strong>, plus <strong>” Page depth exceeded.”</strong>
+when L exceeds your lines-per-page. Non-braille document → “This is not
+a braille document.”</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-44--remove-trailing-spaces-on-current-line-braillestrip_trailing_spaces_line">BRL-44
+id="brl-44-remove-trailing-spaces-on-current-line-braille.strip_trailing_spaces_line">BRL-44
 — Remove Trailing Spaces on Current Line
 (<code>braille.strip_trailing_spaces_line</code>)</h2>
 <p><em>What &amp; why.</em> Strip trailing spaces from the caret’s line
 — trailing spaces are a classic hidden cause of “page width exceeded” in
 BRF.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A document; put the caret on a line you have padded with trailing
-spaces. Works on any document. No display needed. (Read-only documents
-are refused with a spoken “Document is read-only”.)</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Repair ▸ Remove Trailing Spaces on This
-Line</strong>, or Command Palette → <strong>“Remove Trailing Spaces on
-Current Line”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>The trailing spaces on that line vanish and QUILL speaks
+<p><strong>Before you start</strong> - A document; put the caret on a
+line you have padded with trailing spaces. Works on any document. No
+display needed. (Read-only documents are refused with a spoken “Document
+is read-only”.)</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Repair ▸ Remove
+Trailing Spaces on This Line</strong>, or Command Palette →
+<strong>“Remove Trailing Spaces on Current Line”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+The trailing spaces on that line vanish and QUILL speaks
 <strong>“Removed K trailing character(s).”</strong> With none present:
 <strong>“No trailing spaces on this line.”</strong> and no change. The
-caret is kept sensible.</li>
-</ul>
+caret is kept sensible.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="brl-45--remove-trailing-spaces-in-whole-file-braillestrip_trailing_spaces_document">BRL-45
+id="brl-45-remove-trailing-spaces-in-whole-file-braille.strip_trailing_spaces_document">BRL-45
 — Remove Trailing Spaces in Whole File
 (<code>braille.strip_trailing_spaces_document</code>)</h2>
 <p><em>What &amp; why.</em> Strip trailing spaces from every line at
 once — the bulk fix before sending a BRF to emboss.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A document with trailing spaces on several lines. Works on any
-document. No display needed.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Braille ▸ Repair ▸ Remove Trailing Spaces in Whole
-File</strong>, or Command Palette → <strong>“Remove Trailing Spaces in
-Whole File”</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel on the
-display)</strong></p>
-<ul>
-<li>Every line’s trailing spaces are removed and QUILL speaks
+<p><strong>Before you start</strong> - A document with trailing spaces
+on several lines. Works on any document. No display needed.</p>
+<p><strong>Do this</strong> 1. <strong>Tools ▸ Braille ▸ Repair ▸ Remove
+Trailing Spaces in Whole File</strong>, or Command Palette →
+<strong>“Remove Trailing Spaces in Whole File”</strong>.</p>
+<p><strong>You should see and hear (and feel on the display)</strong> -
+Every line’s trailing spaces are removed and QUILL speaks
 <strong>“Removed K trailing character(s) from the file.”</strong> With
 none present: <strong>“No trailing spaces found.”</strong> and no
-change. Re-run BRL-41/BRL-37 to confirm width warnings drop.</li>
-</ul>
+change. Re-run BRL-41/BRL-37 to confirm width warnings drop.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1697,6 +1297,5 @@ change. Re-run BRL-41/BRL-37 to confirm width warnings drop.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
-</main>
 </body>
 </html>

@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Publishing Providers Framework — Consolidated Design
-Record</title>
+  <title>publishing-framework-design-record</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,31 +174,10 @@ Record</title>
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
-id="publishing-providers-framework--consolidated-design-record">Publishing
+id="publishing-providers-framework-consolidated-design-record">Publishing
 Providers Framework — Consolidated Design Record</h1>
 <p>The dated design and checkpoint notes for QUILL’s provider-aware
 publishing feature, merged into one chronological record (2026-07-05).
@@ -227,7 +205,7 @@ href="#publishing-profile-restriction-writer-and-above--scoping-plan-2026-06-22"
 restriction, “writer and above” (2026-06-22)</a></li>
 </ul>
 <hr />
-<h2 id="publishing--remote-integration-planning-2026-06-10">Publishing /
+<h2 id="publishing-remote-integration-planning-2026-06-10">Publishing /
 Remote Integration Planning (2026-06-10)</h2>
 <p>Timestamp: <code>2026-06-10 17:24:40 -04:00</code></p>
 <p>Purpose:</p>
@@ -281,7 +259,7 @@ than when the publishing plan was first drafted.</p>
 Publishing And Remote Sites Truly Overlap</h3>
 <p>These parts overlap enough that future alignment is worth
 planning:</p>
-<h4 id="1-saved-remote-destination-pattern">1. Saved Remote Destination
+<h4 id="saved-remote-destination-pattern">1. Saved Remote Destination
 Pattern</h4>
 <p>Both systems need:</p>
 <ul>
@@ -297,7 +275,7 @@ Pattern</h4>
 remote destination</li>
 <li>they do not need to stay totally unrelated forever</li>
 </ul>
-<h4 id="2-credential-persistence-strategy">2. Credential Persistence
+<h4 id="credential-persistence-strategy">2. Credential Persistence
 Strategy</h4>
 <p>Both systems already use the same broad trust model:</p>
 <ul>
@@ -311,7 +289,7 @@ Strategy</h4>
 naming, and lifecycle expectations</li>
 <li>this is a strong candidate for shared infrastructure</li>
 </ul>
-<h4 id="3-file-menu-placement-and-dialog-rhythm">3. File Menu Placement
+<h4 id="file-menu-placement-and-dialog-rhythm">3. File Menu Placement
 And Dialog Rhythm</h4>
 <p>Both systems live under <code>File</code> and follow a similar
 high-level rhythm:</p>
@@ -328,7 +306,7 @@ model without changing the underlying publishing semantics</li>
 <h3 id="where-publishing-and-remote-sites-should-stay-separate">Where
 Publishing And Remote Sites Should Stay Separate</h3>
 <p>This is the important part.</p>
-<h4 id="1-publishing-is-not-file-transfer">1. Publishing Is Not File
+<h4 id="publishing-is-not-file-transfer">1. Publishing Is Not File
 Transfer</h4>
 <p>Remote Sites is fundamentally about files and paths:</p>
 <ul>
@@ -353,7 +331,7 @@ transport”</li>
 <li>a WordPress post is not analogous to an SFTP path in the user’s
 mental model or in the code’s behavior</li>
 </ul>
-<h4 id="2-publishing-needs-content-aware-metadata">2. Publishing Needs
+<h4 id="publishing-needs-content-aware-metadata">2. Publishing Needs
 Content-Aware Metadata</h4>
 <p>Publishing already depends on content-specific truth:</p>
 <ul>
@@ -372,7 +350,7 @@ representation metadata</li>
 <li>collapsing this into generic remote-site metadata would likely make
 the design less honest and harder to maintain</li>
 </ul>
-<h4 id="3-publishing-uses-provider-logic-not-just-transport-logic">3.
+<h4 id="publishing-uses-provider-logic-not-just-transport-logic">3.
 Publishing Uses Provider Logic, Not Just Transport Logic</h4>
 <p>Remote Sites is transport-oriented. Publishing is
 provider-oriented.</p>
@@ -507,7 +485,7 @@ actually worth it before we touch the implementation.</p>
 <hr />
 <h2 id="publishing-follow-up-phases-2026-06-19">Publishing Follow-Up
 Phases (2026-06-19)</h2>
-<h3 id="2026-06-19-phase-order">2026-06-19 Phase Order</h3>
+<h3 id="phase-order">2026-06-19 Phase Order</h3>
 <p>The publishing framework readiness checkpoint is complete. The next
 work moves into follow-up phases. These phases should be developed
 deliberately, with local commits and validation after each slice.</p>
@@ -658,7 +636,7 @@ storage</li>
 </ul>
 <h3 id="current-recommendation">Current Recommendation</h3>
 <h2
-id="start-with-phase-1-slice-a-define-the-bundled-provider-adapter-contract-in-docs-and-tests-then-implement-only-the-smallest-adapter-seam-needed-to-prove-wordpress-can-be-package-shaped-without-changing-user-visible-publishing-behavior">Start
+id="start-with-phase-1-slice-a-define-the-bundled-provider-adapter-contract-in-docs-and-tests-then-implement-only-the-smallest-adapter-seam-needed-to-prove-wordpress-can-be-package-shaped-without-changing-user-visible-publishing-behavior.">Start
 with Phase 1 slice A: define the bundled-provider adapter contract in
 docs and tests, then implement only the smallest adapter seam needed to
 prove WordPress can be package-shaped without changing user-visible
@@ -717,7 +695,7 @@ full unit suite with workspace-local temporary state.</p>
 <h3 id="phase-1-contract-finalized---2026-06-20">Phase 1 Contract
 Finalized - 2026-06-20</h3>
 <h2
-id="the-closeout-audit-accepts-this-bundled-adapter-contract-as-the-completed-phase-1-foundation-later-phases-may-extend-execution-and-loading-policy-only-in-separate-reviewed-slices-they-must-not-silently-weaken-identity-validation-host-owned-secret-handling-explicit-network-action-or-validation-before-exposure">The
+id="the-closeout-audit-accepts-this-bundled-adapter-contract-as-the-completed-phase-1-foundation.-later-phases-may-extend-execution-and-loading-policy-only-in-separate-reviewed-slices-they-must-not-silently-weaken-identity-validation-host-owned-secret-handling-explicit-network-action-or-validation-before-exposure.">The
 closeout audit accepts this bundled-adapter contract as the completed
 Phase 1 foundation. Later phases may extend execution and loading policy
 only in separate reviewed slices; they must not silently weaken identity
@@ -858,7 +836,7 @@ the provider registry gate passed; full unit suite
 pre-existing baseline exactly.</p>
 <p>Next roadmap phase: live third-party provider loading.</p>
 <h3
-id="live-third-party-provider-loading--contract-shipped-roadmap-closed---2026-06-21">Live
+id="live-third-party-provider-loading-contract-shipped-roadmap-closed---2026-06-21">Live
 Third-Party Provider Loading — Contract Shipped, Roadmap Closed -
 2026-06-21</h3>
 <p>Found this phase was really a product security policy question, not
@@ -876,14 +854,14 @@ the provider registry gate passed (confirming zero registry impact);
 full unit suite <code>4100 passed, 66 failed, 14 skipped</code> matching
 the pre-existing baseline exactly.</p>
 <h2
-id="all-four-roadmap-phases-authorized-by-the-2026-06-20-phase-1-closeout-are-now-addressed-two-decisions-remain-explicitly-open-for-the-userproduct-not-engineering-defaults-the-deferred-cross-session-publishing-linkage-registry-from-the-compare-phase-and-whetherwhen-to-loosen-sec-8-for-real-third-party-execution">All
+id="all-four-roadmap-phases-authorized-by-the-2026-06-20-phase-1-closeout-are-now-addressed.-two-decisions-remain-explicitly-open-for-the-userproduct-not-engineering-defaults-the-deferred-cross-session-publishing-linkage-registry-from-the-compare-phase-and-whetherwhen-to-loosen-sec-8-for-real-third-party-execution.">All
 four roadmap phases authorized by the 2026-06-20 Phase 1 closeout are
 now addressed. Two decisions remain explicitly open for the
 user/product, not engineering defaults: the deferred cross-session
 publishing-linkage registry (from the compare phase), and whether/when
 to loosen SEC-8 for real third-party execution.</h2>
 <h2
-id="publishing-profile-restriction-writer-and-above--scoping-plan-2026-06-22">Publishing
+id="publishing-profile-restriction-writer-and-above-scoping-plan-2026-06-22">Publishing
 Profile Restriction (“Writer and Above”) — Scoping Plan
 (2026-06-22)</h2>
 <h3 id="status">Status</h3>
@@ -965,6 +943,12 @@ different use cases, not a writing-capability tier, and do not get it.
 Essential — the baseline/default profile — does not get it either.</p>
 </blockquote>
 <table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr>
 <th>Profile (id)</th>
@@ -1036,7 +1020,7 @@ Essential — the baseline/default profile — does not get it either.</p>
 </tr>
 </tbody>
 </table>
-<h3 id="current-state-vs-target-state">Current state vs. target
+<h3 id="current-state-vs.-target-state">Current state vs. target
 state</h3>
 <p>Read directly from <code>quill/core/features.py</code> (lines as of
 this writing):</p>
@@ -1129,7 +1113,7 @@ yields <code>ON</code>)</li>
 <li>Update <code>future.publishing</code>’s <code>description</code> in
 <code>quill/core/feature_catalog.py</code> to also state the profile
 restriction once it’s actually live (today’s description only mentions
-the review-gate lock — e.g. append something like “Once enabled,
+the review-gate lock — e.g. append something like “Once enabled,
 available by default in the Casual Writer, Author or Student, Developer
 and Power Text, and Full Quill profiles; off by default elsewhere, but
 any user can still turn it on individually via Manage Individual
@@ -1172,12 +1156,12 @@ soft per-profile default, not a hard lock — see below) once
 </ul></li>
 </ul>
 <h3
-id="open-questions--flagged-assumptions-confirm-before-implementing">Open
+id="open-questions-flagged-assumptions-confirm-before-implementing">Open
 questions / flagged assumptions (confirm before implementing)</h3>
 <p>These are genuine product decisions, not engineering defaults —
 flagged explicitly rather than silently assumed:</p>
 <ol type="1">
-<li><strong>Soft vs. hard restriction.</strong> Every profile-scoped
+<li><strong>Soft vs. hard restriction.</strong> Every profile-scoped
 feature in this catalog today (<code>future.ai</code>,
 <code>future.character_inspector</code>, <code>future.cleanup</code>,
 and publishing itself) uses a <em>soft</em> default: the profile sets
@@ -1191,13 +1175,14 @@ writer and above” was meant literally — i.e., an Essential-profile user
 must never be able to turn it on even manually — that requires a
 different, larger design and should be raised explicitly before
 implementing.</li>
-<li><strong><code>FEATURE_STATE_ON</code> vs.
-<code>FEATURE_STATE_QUIET</code> for the 3 included profiles.</strong>
-This plan recommends <code>ON</code> (fully available, not gated behind
-a separate “show quiet/future features” toggle) since the instruction
-was “available,” not “discoverable for advanced users only.”
-<code>QUIET</code> would mean even Writer-profile users wouldn’t see it
-by default without first enabling that separate toggle.</li>
+<li><strong><code>FEATURE_STATE_ON</code>
+vs. <code>FEATURE_STATE_QUIET</code> for the 3 included
+profiles.</strong> This plan recommends <code>ON</code> (fully
+available, not gated behind a separate “show quiet/future features”
+toggle) since the instruction was “available,” not “discoverable for
+advanced users only.” <code>QUIET</code> would mean even Writer-profile
+users wouldn’t see it by default without first enabling that separate
+toggle.</li>
 <li><strong>Timing.</strong> This plan doesn’t decide <em>when</em> to
 make the <code>features.py</code> edit — it could land now (harmless and
 inert while <code>locked_off=True</code> stays in place) so it’s ready
@@ -1212,6 +1197,5 @@ publishing-providers-framework roadmap, not a new roadmap phase. See
 <code>codex-notes/plans/publishing-providers-framework.md</code> for the
 full history; a one-paragraph pointer to this file has been appended
 there.</p>
-</main>
 </body>
 </html>

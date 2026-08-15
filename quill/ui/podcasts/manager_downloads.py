@@ -11,8 +11,6 @@ the dialog at all rather than closures at the call site.
 
 from __future__ import annotations
 
-from pathlib import Path
-
 from quill.core.podcasts.download_queue import DownloadItem
 from quill.core.podcasts.models import PodcastShow
 
@@ -54,13 +52,11 @@ class ManagerDownloadsMixin:
         self._refresh_selected_episode_row()
 
     def _on_remove_download(self, _event: object) -> None:
+        from quill.core.podcasts.retention import remove_downloaded_copy
+
         episode = self._selected_episode()
-        if episode is None or not episode.downloaded_path:
+        if episode is None or not remove_downloaded_copy(episode):
             return
-        path = Path(episode.downloaded_path)
-        if path.exists():
-            path.unlink(missing_ok=True)
-        episode.downloaded_path = ""
         self._on_library_changed()
         self._announce(f"Removed downloaded copy of {episode.title}")
         self._refresh_selected_episode_row()

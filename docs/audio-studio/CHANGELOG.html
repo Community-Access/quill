@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -41,6 +41,7 @@
       body {
         background-color: transparent;
         color: black;
+        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -203,6 +204,48 @@ file.</p>
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
 this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2 id="unreleased">Unreleased</h2>
+<h3 id="added">Added</h3>
+<ul>
+<li><p><strong>Copy Sections</strong> (Voices &gt; Copy Sections…, or
+the Command Palette). Cutting one piece out of an audio file has worked
+for a long time; what was missing is the <em>workflow</em>, and the
+workflow is the feature. Play the file, <strong>Mark Start</strong>
+where a piece begins and <strong>Mark End</strong> where it stops,
+<strong>Preview Marked</strong> to hear exactly what you selected before
+committing to it, and <strong>Add to List</strong>. Then go and find the
+next piece and add that too.</p>
+<p>That collecting is why this exists rather than a Save-As with two
+numbers in it. Pulling four quotes out of a two-hour interview, or the
+six songs somebody actually wants out of a four-hour broadcast
+recording, is <em>one</em> task – and an editor that offers “trim”
+without “and another one” makes you do it six times and stitch the
+results yourself.</p>
+<p><strong>Save as New File…</strong> writes everything collected, in
+the order the list shows (Move Up and Move Down change it). <strong>Add
+to an Existing File…</strong> puts them on the end of a file that
+already exists, which is the point of collecting across several
+sources.</p>
+<p><strong>The original is never modified</strong>, ever. Marks are
+numbers; saving writes somewhere else entirely. There is no undo for a
+destructive edit of the only copy of a recording, so there is no
+destructive edit – and a save that fails part way through leaves the
+destination exactly as it was rather than half written.</p>
+<p>There is deliberately <strong>no waveform</strong>, and that is not
+an apology: a waveform is a picture of the audio for people who can see
+it, and the same job is done here by listening to the marked range,
+which is the more reliable check for everybody. Every row of the list is
+a whole sentence – “1. The good bit, from 4 minutes 12 seconds to 5
+minutes 30 seconds, 1 minute 18 seconds long” – rather than columns to
+arrow across, and every position is spoken in words rather than as a
+timecode.</p></li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li><strong>Generate Captions (Offline) moved to its own module</strong>
+(<code>ui/audio_studio/captions_command.py</code>) so the app shell
+stayed inside its size budget. No behaviour change.</li>
+</ul>
 <h2 id="220---built-not-yet-released">[2.2.0] - built, not yet
 released</h2>
 <p>Audio Studio jumps from 1.0.0 to 2.2.0 with no 2.0 or 2.1 in between.
@@ -214,7 +257,7 @@ number is aligned; the releases are still independent.</p>
 <p>This version is built but not yet published: Audio Studio is not
 offered in the QuillVille menu, and there is no 2.2.0 download page.
 Everything below is in the build.</p>
-<h3 id="added">Added</h3>
+<h3 id="added-1">Added</h3>
 <ul>
 <li><p><strong>QUILL Audio Studio has its own icon.</strong> It used to
 ship a byte-identical copy of Quill Radio’s broadcast-wave icon, carried
@@ -336,7 +379,7 @@ severities interrupt speech. They live in the store the Studio shares
 with QUILL, so setting them in QUILL’s Preferences applies here
 too.</p></li>
 </ul>
-<h3 id="changed">Changed</h3>
+<h3 id="changed-1">Changed</h3>
 <ul>
 <li><strong>Fewer antivirus false positives.</strong> The app’s launcher
 is now a genuine, tiny native program, and the bundled Python is the
@@ -396,7 +439,7 @@ than only inside the dialog.</li>
 <p>First release: the QUILL editor’s Audio Studio as a self-contained
 standalone app for Windows and macOS, screen-reader-first
 throughout.</p>
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 <ul>
 <li>Standalone app frame (<code>quillas.apps.studio</code>): home window
 with the three journey buttons and a “Your books” library, menu bar,

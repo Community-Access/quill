@@ -20,16 +20,16 @@ from pathlib import Path
 from quill.apps.beacon import db as dbmod
 from quill.apps.beacon import sync_crypto as crypto  # re-export surface
 from quill.apps.beacon.model import Beacon, Location, Resource
-from quill.apps.beacon.quillsync import (
+from quill.core.sync import (
     Commit,
     Conflict,
     FolderTransport,
     ManifestEntry,
 )
-from quill.apps.beacon.quillsync import (
+from quill.core.sync import (
     SyncEngine as _Engine,
 )
-from quill.apps.beacon.quillsync import merge as merge_mod
+from quill.core.sync import merge as merge_mod
 
 __all__ = [
     "SyncEngine",

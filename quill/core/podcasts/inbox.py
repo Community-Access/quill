@@ -21,6 +21,23 @@ from quill.core.podcasts.models import PodcastEpisode, PodcastFolder, PodcastSho
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
 
 
+def in_inbox(library: PodcastLibrary, show: PodcastShow) -> bool:
+    """Whether *show*'s episodes belong in the Inbox.
+
+    The one place that answers it, and the whole of the opt-out mode. Under
+    ``include`` -- the default, and everything Cast has ever done -- a show is in
+    the Inbox because it was marked. Under ``exclude`` the same mark means the
+    opposite: **every** show is in the Inbox except the ones marked to stay out.
+
+    One flag read two ways rather than a second per-show field, because two
+    fields can disagree and a listener would have no way to tell which won.
+    """
+    mode = str(getattr(library.settings, "inbox_mode", "include") or "include").lower()
+    if mode == "exclude":
+        return not show.route_to_inbox
+    return bool(show.route_to_inbox)
+
+
 def inbox_key(show_id: str, episode_guid: str) -> str:
     """The assignment-map key for one episode."""
     return f"{show_id}\n{episode_guid}"
@@ -83,6 +100,29 @@ def file_episode(
     return False
 
 
+def file_episodes(
+    library: PodcastLibrary,
+    pairs: list[tuple[PodcastShow, PodcastEpisode]],
+    folder_id: str | None,
+) -> tuple[int, list[str]]:
+    """File a whole selection at once. Returns ``(filed, shows_remembered)``.
+
+    Triage is the Inbox's entire job, and triage is something people do to a
+    handful of episodes at a time -- so filing one at a time was the surface
+    that made a forty-episode Inbox unusable. The remembered-default rule is
+    unchanged and still per show: the *first* manual placement of an episode
+    from a show sets that show's default, so filing thirty episodes of one show
+    sets it once and says so once, rather than thirty times.
+    """
+    filed = 0
+    remembered: list[str] = []
+    for show, episode in pairs:
+        if file_episode(library, show, episode, folder_id):
+            remembered.append(show.title)
+        filed += 1
+    return filed, remembered
+
+
 def rename_inbox_folder(library: PodcastLibrary, folder_id: str, new_name: str) -> bool:
     folder = find_inbox_folder(library, folder_id)
     name = new_name.strip()
@@ -142,7 +182,7 @@ def inbox_pairs(library: PodcastLibrary) -> list[tuple[PodcastShow, PodcastEpiso
     (which stays unplayed in its show's own list -- see :func:`trim_inbox`)."""
     pairs: list[tuple[PodcastShow, PodcastEpisode]] = []
     for show in library.shows:
-        if not show.route_to_inbox:
+        if not in_inbox(library, show):
             continue
         for episode in show.episodes:
             if episode.played:
@@ -243,7 +283,7 @@ def resurface_republished(
     and an episode that was never trimmed is already in the Inbox and needs no
     help.
     """
-    if not republished_guids or not show.route_to_inbox:
+    if not republished_guids or not in_inbox(library, show):
         return []
 
     queued = {(item.show_id, item.episode_guid) for item in library.queue}
@@ -277,7 +317,7 @@ def trim_inbox(
     queued = {(item.show_id, item.episode_guid) for item in library.queue}
     trimmed: list[tuple[PodcastShow, PodcastEpisode]] = []
     for show in library.shows:
-        if not show.route_to_inbox:
+        if not in_inbox(library, show):
             continue
         max_episodes, age_hours = inbox_caps(library, show)
         if max_episodes <= 0 and age_hours <= 0:

@@ -90,12 +90,41 @@ class InkwellExpansionMixin:
         try:
             stamp = path.stat().st_mtime_ns
         except OSError:
-            return self._library
+            return self._merged_library(self._library)
         if stamp != getattr(self, "_library_stamp", None):
             self._library = load_abbreviation_library(self._data_dir)
             self._library_stamp = stamp
             wx.CallAfter(self._reload_list)
-        return self._library
+        return self._merged_library(self._library)
+
+    def _merged_library(self, user: AbbreviationLibrary) -> AbbreviationLibrary:
+        """The user's abbreviations plus anything the Quillins contribute.
+
+        A Quillin's abbreviations used to stop at the edge of QUILL's editor,
+        which is the wrong boundary: the point of Inkwell is that an
+        abbreviation is an abbreviation wherever you are typing.
+
+        Built once and reused, and rebuilt only when the Quillins are reloaded
+        -- discovery walks a directory tree, which is not work to do on a
+        keystroke. Contributed entries are never written to the user's file, so
+        uninstalling a Quillin takes its abbreviations with it.
+        """
+        from quill.core.expansion.contributed import contributed_library, merge_libraries
+
+        cached = getattr(self, "_contributed_library", None)
+        if cached is None:
+            cached = contributed_library(
+                getattr(self, "_features", None), safe_mode=self._safe_mode
+            )
+            self._contributed_library = cached
+        return merge_libraries(user, cached)
+
+    def refresh_contributed_abbreviations(self) -> None:
+        """Forget the cached Quillin abbreviations, so the next match rebuilds.
+
+        Called when Quillins are installed, removed, enabled or disabled.
+        """
+        self._contributed_library = None
 
     def _clipboard_text(self) -> str:
         """The clipboard as plain text, for ``${clipboard}`` only.

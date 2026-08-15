@@ -198,6 +198,24 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
 <h1 id="quill-radio-planning-notes">Quill Radio Planning Notes</h1>
+<blockquote>
+<p><strong>Status, 2026-08-14.</strong> The commercial and
+relationship-gated half of this document is <strong>closed</strong>, and
+has been removed from it. Quill Radio will not pursue, license, or
+integrate a station directory that needs a commercial agreement, a paid
+tier, a partner approval, or a per-application developer key – airable,
+vTuner, myTuner, Radioplayer, Radioline, Radio.net, Broadcastify, and
+the SHOUTcast <em>directory</em> are all out, and the SHOUTcast API
+request sent on 2026-08-12 is abandoned rather than awaited. The
+reasoning lives in Quill Radio’s PRD, section 7. <strong>SHOUTcast and
+Icecast streams remain fully supported</strong>, and
+<code>My Servers</code> browses an individual server with no directory
+involved at all.</p>
+<p>What remains here is the keyless material: the sources that need
+nobody’s permission, and the provider architecture. Much of even that
+has since shipped in 3.0 – see the release notes rather than this file
+for what exists.</p>
+</blockquote>
 <p>Yes. I would expand QUILL Radio beyond traditional broadcast
 directories, but treat these as <strong>different provider
 classes</strong>, because a station directory, police-scanner network,
@@ -226,12 +244,6 @@ limits</td>
 <td><strong>Very high</strong></td>
 </tr>
 <tr>
-<td><strong>SHOUTcast Directory</strong></td>
-<td>Independent internet stations and genre-based browsing</td>
-<td>Official partner API application</td>
-<td><strong>High</strong></td>
-</tr>
-<tr>
 <td><strong>Icecast Directory</strong></td>
 <td>Independent and community-hosted streams</td>
 <td>Public directory; formal reuse expectations should be confirmed</td>
@@ -242,25 +254,6 @@ limits</td>
 <td>Station names, logos, identifiers, metadata, service following</td>
 <td>Open broadcast-radio standards</td>
 <td><strong>High for enrichment</strong></td>
-</tr>
-<tr>
-<td><strong>Radioplayer</strong></td>
-<td>Broadcast stations, search, location, now playing, schedules and
-on-demand programs</td>
-<td>Approved commercial or strategic partner access</td>
-<td><strong>High partnership target</strong></td>
-</tr>
-<tr>
-<td><strong>airable</strong></td>
-<td>Curated radio, podcast and music-service catalogs</td>
-<td>Business API, negotiated access</td>
-<td>Medium</td>
-</tr>
-<tr>
-<td><strong>Radioline Business</strong></td>
-<td>Worldwide station and podcast catalog</td>
-<td>Partner API</td>
-<td>Medium</td>
 </tr>
 <tr>
 <td><strong>RepeaterBook</strong></td>
@@ -338,17 +331,15 @@ apply as API partners and comply with its branding and reporting
 agreement. (<a href="https://directory.shoutcast.com/Developer" title="
 SHOUTcast - API
 ">SHOUTcast</a>)</p>
-<p>There is no application form: SHOUTcast asks for an email with your
-company details and proposed application. <strong>That request was sent
-on 2026-08-12</strong>; the submission of record is
-<code>partner-outreach-shoutcast.md</code>, which also carries the two
-commitments we made in it (a spoken as well as visible source label, and
-per-source recording suppression if they ask for it). SHOUTcast’s own
-developer wiki does not currently resolve, so the endpoint reference and
-attribution rules were requested rather than looked up, and no
-implementation can start until a <code>dev_id</code> arrives.
-<strong>Icecast below needs no approval and should not wait on this
-reply</strong> – it is the part of 1b that can begin today.</p>
+<p><strong>The SHOUTcast directory is out</strong> (2026-08-14). It
+needs a partner application and a per-application <code>dev_id</code>,
+which is exactly the kind of relationship-gated access the closure above
+rules out; the request sent on 2026-08-12 is abandoned rather than
+awaited, and the commitments made in it lapse with it, nothing having
+been built on them. <strong>Icecast needs no approval</strong>, and it
+is what shipped: <code>My Servers</code> in Quill Radio 3.0 enumerates
+an individual Icecast or SHOUTcast server’s mounts directly, with
+now-playing text on each – the same content, with nobody to ask.</p>
 <p>That would add a great deal of independent programming:</p>
 <ul>
 <li>Community radio.</li>
@@ -397,10 +388,13 @@ several stream alternatives.</p>
 public-safety feeds</h2>
 <p>There is no broadly open, nationwide police-scanner catalog with
 unrestricted third-party playback.</p>
-<h3 id="broadcastify">Broadcastify</h3>
-<p>Broadcastify remains the largest obvious source, but—as discussed—its
-catalog and audio policies make a broad QUILL scanner experience
-difficult without a negotiated partnership.</p>
+<h3 id="broadcastify--closed">Broadcastify – closed</h3>
+<p>Broadcastify is the largest obvious source and it is
+<strong>out</strong> (2026-08-14). Its feed-catalog API is a paid
+subscription (USD 2,500 per month as of June 2026) and it explicitly
+declines to license new consumer-facing scanner applications. Both
+halves are disqualifying on their own; together there is nothing to
+discuss.</p>
 <h3 id="openmhz">OpenMHz</h3>
 <p>OpenMHz is worth approaching. It focuses on individual radio calls
 from trunked public-safety systems rather than only continuous mixed
@@ -439,8 +433,8 @@ Support</a>)</p>
 <li>Conventional frequencies.</li>
 <li>County and statewide system organization.</li>
 </ul>
-<p>But it should not be treated as a free replacement for Broadcastify
-audio.</p>
+<p>But it is metadata, not audio, and it should not be read as a free
+replacement for a scanner feed.</p>
 <h3 id="a-quill-community-feeds-program">A QUILL Community Feeds
 program</h3>
 <p>The best long-term solution may be for QUILL to operate a
@@ -652,33 +646,6 @@ create the missing directory through:</p>
 </ul>
 <p>This could become the definitive accessible directory of
 radio-reading services rather than another partial import.</p>
-<h2 id="commercial-partnership-targets">Commercial partnership
-targets</h2>
-<p>These are worth contacting after the open integrations are
-established:</p>
-<h3 id="radioplayer">Radioplayer</h3>
-<p>Radioplayer’s partner API supports station discovery, geographic
-search, live metadata, schedules, on-demand programming and
-recommendations. It requires an approved account and API credentials.
-(<a href="https://developers.radioplayer.org/api-reference"
-title="Radioplayer Partner API (WRAPI)">Radioplayer Developer
-Hub</a>)</p>
-<h3 id="airable">airable</h3>
-<p>airable offers curated radio and podcast data through APIs for device
-manufacturers and other commercial partners. (<a
-href="https://www.airablenow.com/"
-title="airable | internet media catalogues">Airable Now</a>)</p>
-<h3 id="radioline-business">Radioline Business</h3>
-<p>Radioline offers its worldwide radio and podcast database to approved
-partners through custom API arrangements. (<a
-href="https://business.radioline.co/?utm_source=chatgpt.com"
-title="Radioline">Radioline</a>)</p>
-<h3 id="vtuner-and-mytuner">vTuner and myTuner</h3>
-<p>Both are potential catalog partners, although their access models are
-oriented toward approved devices, applications and licensed partners
-rather than unrestricted public APIs. (<a
-href="https://www.vtuner.com/services.asp?utm_source=chatgpt.com"
-title="Featured Products">vTuner</a>)</p>
 <h2 id="recommended-implementation-order">Recommended implementation
 order</h2>
 <h3 id="build-or-begin-now">Build or begin now</h3>
@@ -694,20 +661,11 @@ with provenance.</li>
 <li><strong>QUILL Community Feed manifest</strong></li>
 <li><strong>Reading-services submission directory</strong></li>
 </ol>
-<h3 id="pursue-as-strategic-partnerships">Pursue as strategic
-partnerships</h3>
-<ol type="1">
-<li>Radioplayer</li>
-<li>OpenMHz</li>
-<li>radio.net</li>
-<li>IAAIS</li>
-<li>airable</li>
-<li>Radioline</li>
-<li>AllStarLink and EchoLink</li>
-<li>RailroadRadio.net</li>
-</ol>
-<h3 id="do-not-integrate-without-an-explicit-agreement">Do not integrate
-without an explicit agreement</h3>
+<h3 id="do-not-integrate-closed-not-pending">Do not integrate: closed,
+not pending</h3>
+<p>Everything here needs somebody’s permission, a paid tier, or both,
+and that is now a settled non-goal rather than a queue (Quill Radio PRD,
+section 7). Listed so it is not rediscovered as an opportunity.</p>
 <ul>
 <li>Broadcastify</li>
 <li>LiveATC</li>

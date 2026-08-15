@@ -17,11 +17,15 @@ def _src(rel: str) -> str:
 
 
 def test_browse_tree_offers_report_bad_station_when_callback_present() -> None:
-    src = _src("quill/ui/radio/browse_tree_dialog.py")
-    assert "on_report_bad_station" in src
-    assert "Report &Bad Station..." in src
+    # The row menu moved to browse_tree_menu.py under GATE-11 when Download...
+    # arrived; the dialog still owns the injected callback, the menu builds the
+    # entry from it, and both halves are asserted so neither can drift away.
+    dialog = _src("quill/ui/radio/browse_tree_dialog.py")
+    menu = _src("quill/ui/radio/browse_tree_menu.py")
+    assert "on_report_bad_station" in dialog
+    assert "Report &Bad Station..." in menu
     # Only offered when a callback was injected (embedded QUILL passes none).
-    assert "if self._on_report_bad_station is not None:" in src
+    assert "if dialog._on_report_bad_station is not None:" in menu
 
 
 def test_station_browser_offers_report_bad_station_when_callback_present() -> None:

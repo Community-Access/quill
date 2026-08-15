@@ -10,7 +10,7 @@
 
 #define AppName "Quill Radio"
 #ifndef AppVersion
-  #define AppVersion "2.2.0"
+  #define AppVersion "3.0.0"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-radio"
@@ -22,7 +22,7 @@ AppName={#AppName}
 AppVersion={#AppVersion}
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
-VersionInfoVersion=2.2.0.0
+VersionInfoVersion=3.0.0.0
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} (thin installer -- shared runtime downloaded on demand)
 DefaultDirName={autopf}\{#AppName}

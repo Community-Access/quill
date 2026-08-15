@@ -77,7 +77,12 @@ def episodes_to_auto_download(
         wanted.extend(_newest(show.episodes, count))
     if settings.auto_download_queued and queued_guids:
         wanted.extend(e for e in show.episodes if e.guid in queued_guids)
-    if settings.auto_download_inbox and inbox_guids and show.route_to_inbox:
+    # Inbox membership is a mode, not a flag: under opt-out, an unmarked show
+    # *is* in the Inbox. Asked of one helper so auto-download can never
+    # disagree with what the Inbox itself shows.
+    from quill.core.podcasts.inbox import in_inbox
+
+    if settings.auto_download_inbox and inbox_guids and in_inbox(library, show):
         wanted.extend(e for e in show.episodes if e.guid in inbox_guids)
     seen: set[str] = set()
     result: list[PodcastEpisode] = []

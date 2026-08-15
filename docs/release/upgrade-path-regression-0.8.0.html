@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL 0.8.0 Beta 1 - Upgrade-Path Regression Test Plan</title>
+  <title>upgrade-path-regression-0.8.0</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -239,30 +239,9 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="quill-080-beta-1---upgrade-path-regression-test-plan">QUILL
+<h1 id="quill-0.8.0-beta-1---upgrade-path-regression-test-plan">QUILL
 0.8.0 Beta 1 - Upgrade-Path Regression Test Plan</h1>
 <p>Goal: validate that a user on an older QUILL release can install
 newer releases <strong>on top</strong> without losing data, ending up
@@ -297,7 +276,7 @@ launch</em>, not in the installer:</p>
 <code>quill/core/settings_migration.py</code>). The legacy flat settings
 file is only rewritten into the nested/versioned shape when a version
 that understands it actually loads it.</li>
-<li>Field-level migrations fire on read, e.g. the retired
+<li>Field-level migrations fire on read, e.g. the retired
 <code>pyttsx3</code> read-aloud engine id -&gt; <code>sapi5</code>, and
 the dictation engine <code>vosk</code>/<code>whisper</code> -&gt;
 <code>offline</code> (#617). These only execute when that version’s code
@@ -357,7 +336,7 @@ upgrade removed or replaced.</li>
 <p>User data lives in <code>%APPDATA%\Quill</code> for every version, so
 settings/keymap/ recovery should carry across all three upgrades
 untouched. Confirming that is the other half of this test.</p>
-<h2 id="0-reset-to-a-clean-machine-first">0. Reset to a clean machine
+<h2 id="reset-to-a-clean-machine-first">0. Reset to a clean machine
 first</h2>
 <p>An upgrade test is only meaningful starting from nothing - otherwise
 leftover state from a prior run hides regressions. Use the cleanup
@@ -377,40 +356,40 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-
 your screen reader. Windows Sandbox is clean but has no screen reader
 and does not persist state between launches, which defeats an upgrade
 test.</p>
-<h2 id="1-install-the-baseline-050">1. Install the baseline (0.5.0)</h2>
+<h2 id="install-the-baseline-0.5.0">1. Install the baseline (0.5.0)</h2>
 <ol type="1">
-<li>Run <code>installers\Quill-Setup-0.5.0.exe</code>, accept defaults
-(per-user).</li>
-<li>Confirm install dir is <code>%LOCALAPPDATA%\Programs\Quill</code>
-and the Start Menu group is <code>Quill</code>.</li>
-<li>Launch QUILL. Confirm About reports <code>0.5.0</code>.</li>
-<li><strong>Seed user data so the upgrade has something to
-preserve:</strong>
+<li><p>Run <code>installers\Quill-Setup-0.5.0.exe</code>, accept
+defaults (per-user).</p></li>
+<li><p>Confirm install dir is <code>%LOCALAPPDATA%\Programs\Quill</code>
+and the Start Menu group is <code>Quill</code>.</p></li>
+<li><p>Launch QUILL. Confirm About reports <code>0.5.0</code>.</p></li>
+<li><p><strong>Seed user data so the upgrade has something to
+preserve:</strong></p>
 <ul class="task-list">
 <li><label><input type="checkbox" />Create and save a document (note its
 path and contents).</label></li>
 <li><label><input type="checkbox" />Change at least one visible setting
-(e.g. a speech voice or a verbosity level).</label></li>
+(e.g. a speech voice or a verbosity level).</label></li>
 <li><label><input type="checkbox" />Remap one key in the Keymap
 Editor.</label></li>
 <li><label><input type="checkbox" />Note the contents of
 <code>%APPDATA%\Quill</code> (settings.json, keymap, etc.).</label></li>
 </ul></li>
-<li><strong>Confirm 0.5.0 actually wrote its state before
-continuing</strong> (this is the gate the chain depends on):
+<li><p><strong>Confirm 0.5.0 actually wrote its state before
+continuing</strong> (this is the gate the chain depends on):</p>
 <div class="sourceCode" id="cb4"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Test-Path</span> <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">APPDATA</span><span class="st">\Quill\settings.json&quot;</span>   <span class="co"># expect True</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-ChildItem</span> <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">APPDATA</span><span class="st">\Quill&quot;</span>             <span class="co"># settings, keymap, recovery, etc.</span></span></code></pre></div>
-If these do not exist, the app did not run far enough - stop and fix
-before upgrading, or the migration test below is meaningless.</li>
-<li>Close QUILL fully (check Task Manager for <code>quill.exe</code> /
-<code>pythonw.exe</code>).</li>
+<p>If these do not exist, the app did not run far enough - stop and fix
+before upgrading, or the migration test below is meaningless.</p></li>
+<li><p>Close QUILL fully (check Task Manager for <code>quill.exe</code>
+/ <code>pythonw.exe</code>).</p></li>
 </ol>
 <p>Record a snapshot for later comparison:</p>
 <div class="sourceCode" id="cb5"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-ChildItem</span> <span class="st">&quot;</span><span class="va">$env</span><span class="op">:</span><span class="va">APPDATA</span><span class="st">\Quill&quot;</span> <span class="op">-</span>Recurse <span class="op">|</span> <span class="fu">Select-Object</span> FullName<span class="op">,</span>Length <span class="op">|</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">Sort-Object</span> FullName <span class="op">|</span> <span class="fu">Format-Table</span> <span class="op">-</span>Auto</span></code></pre></div>
-<h2 id="2-upgrade-050---070-beta-1-the-critical-step">2. Upgrade 0.5.0
+<h2 id="upgrade-0.5.0---0.7.0-beta-1-the-critical-step">2. Upgrade 0.5.0
 -&gt; 0.7.0 Beta 1 (the critical step)</h2>
 <ol type="1">
 <li>Run <code>installers\Quill-for-All-Setup-0.7.0.Beta.1.exe</code>
@@ -424,7 +403,7 @@ install (same AppId) and upgrades in place - it does NOT prompt as a
 brand-new install into a fresh dir.</label></li>
 <li><label><input type="checkbox" /><strong>Exactly one</strong> install
 dir exists afterward. Record which:
-<code>powershell Test-Path "$env:LOCALAPPDATA\Programs\Quill"          # in-place upgrade -&gt; True Test-Path "$env:LOCALAPPDATA\Programs\QUILL for All"  # relocated/new -&gt; True </code>
+<code>powershell     Test-Path "$env:LOCALAPPDATA\Programs\Quill"          # in-place upgrade -&gt; True     Test-Path "$env:LOCALAPPDATA\Programs\QUILL for All"  # relocated/new -&gt; True</code>
 One of these must be True and the <strong>other False</strong>. Both
 True = the side-by-side duplication bug; file it.</label></li>
 <li><label><input type="checkbox" /><strong>Exactly one</strong>
@@ -450,7 +429,7 @@ snapshot - additive changes are fine, data loss is not).</label></li>
 ran:</strong> after this launch, <code>settings.json</code> carries the
 nested/versioned shape (<code>schema_version: 1</code>, a
 <code>groups</code> object), not the old flat 0.5.0 layout:
-<code>powershell (Get-Content "$env:APPDATA\Quill\settings.json" -Raw) -match '"schema_version"' </code></label></li>
+<code>powershell     (Get-Content "$env:APPDATA\Quill\settings.json" -Raw) -match '"schema_version"'</code></label></li>
 <li><label><input type="checkbox" />Any retired ids migrated rather than
 breaking: a <code>pyttsx3</code> read-aloud engine becomes
 <code>sapi5</code>; a <code>vosk</code>/<code>whisper</code> dictation
@@ -463,7 +442,7 @@ on foreground; no crash dialog.</label></li>
 <p>Close QUILL fully before the next step. Re-run the snapshot command
 from step 1 so you have a 0.7.0 baseline to diff against after the 0.8.0
 upgrade.</p>
-<h2 id="3-upgrade-070---080-beta-1">3. Upgrade 0.7.0 -&gt; 0.8.0 Beta
+<h2 id="upgrade-0.7.0---0.8.0-beta-1">3. Upgrade 0.7.0 -&gt; 0.8.0 Beta
 1</h2>
 <ol type="1">
 <li>Run <code>installers\Quill-for-All-Setup-0.8.0 Beta 1.exe</code>
@@ -494,7 +473,7 @@ the prior release for this beta).</label></li>
 <li><label><input type="checkbox" />Screen reader announces on
 foreground; no crash dialog.</label></li>
 </ul>
-<h2 id="4-post-upgrade-feature-smoke-on-the-upgraded-install">4.
+<h2 id="post-upgrade-feature-smoke-on-the-upgraded-install">4.
 Post-upgrade feature smoke (on the upgraded install)</h2>
 <p>Confirm the upgraded install is fully functional, not just
 launchable. Bundled dependencies should all be present from the 0.8.0
@@ -521,7 +500,7 @@ by keyboard.</label></li>
 <li><label><input type="checkbox" />A bundled Quillin loads; Safe Mode
 disables contributions.</label></li>
 </ul>
-<h2 id="5-clean-uninstall-after-upgrade">5. Clean-uninstall after
+<h2 id="clean-uninstall-after-upgrade">5. Clean-uninstall after
 upgrade</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Uninstall via Add/Remove
@@ -536,12 +515,11 @@ preserved across uninstall).</label></li>
 <li><label><input type="checkbox" />No dead Start Menu shortcut under
 either <code>Quill</code> or <code>QUILL for All</code>.</label></li>
 </ul>
-<h2 id="6-record-results">6. Record results</h2>
-<p>For each failure capture: the upgrade step (e.g. “0.5.0 -&gt;
+<h2 id="record-results">6. Record results</h2>
+<p>For each failure capture: the upgrade step (e.g. “0.5.0 -&gt;
 0.7.0”), expected vs actual, the install-dir / Add-Remove / Start-Menu
 state, the screen-reader announcement (or silence), any data that was
 lost, and the crash-bundle path if one was produced. File issues against
 the 0.8.0 Beta 1 milestone and tag them <code>upgrade-path</code>.</p>
-</main>
 </body>
 </html>

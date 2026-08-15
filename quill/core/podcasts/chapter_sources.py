@@ -16,6 +16,13 @@ Tier order:
 1. ``file``       -- ID3 chapter frames in the downloaded audio
    (``quill.core.speech.chapters.read_mp3_chapters``).
 2. ``show_notes`` -- "00:12:34 Topic" lines parsed from the description.
+3. ``soundbites`` -- ``podcast:soundbite`` marks read from the feed
+   (``namespace_tags.py``). Authored -- a person chose the moment and wrote
+   its title -- but ranked last of the authored tiers because soundbites are
+   **highlights, not a partition**: two of them in an hour answers "what is
+   the good bit" completely and "how is this laid out" barely at all. They
+   win only when nothing better was published, and they are always labelled
+   as what they are.
 3. ``transcript`` / 4. ``audio`` / 5. ``suggested`` -- the expensive tiers, which
    are not part of this module; :func:`chapter_cascade` simply reports that
    nothing free was found so the caller can offer them.
@@ -42,13 +49,14 @@ SOURCE_LABELS: dict[str, str] = {
     "published": "Published chapters",
     "file": "Chapters in the file",
     "show_notes": "From the show notes",
+    "soundbites": "Moments this podcast marked",
     "transcript": "From the transcript",
     "audio": "Detected from the audio",
     "suggested": "Suggested",
 }
 
 #: Sources whose titles were written by a person, so they are used as-is.
-AUTHORED_SOURCES: frozenset[str] = frozenset({"published", "file", "show_notes"})
+AUTHORED_SOURCES: frozenset[str] = frozenset({"published", "file", "show_notes", "soundbites"})
 
 #: Episodes shorter than this are not worth sectioning.
 MIN_EPISODE_MS = 10 * 60 * 1000
@@ -144,6 +152,20 @@ def parse_show_notes_chapters(notes: str, *, total_ms: int = 0) -> list[PodcastC
     return [PodcastChapter(start_ms=start, title=title) for start, title in marks]
 
 
+def show_identity(show: PodcastShow | None) -> str:
+    """A show's stable id, whichever name the caller reached for.
+
+    ``PodcastShow`` calls the field ``id``; a download-queue item calls the
+    same value ``show_id``, and code that crossed between the two quietly got
+    an empty string -- which is how Find Chapters came to answer "this episode
+    cannot be identified" for every episode. One helper, so the two spellings
+    cannot disagree again.
+    """
+    if show is None:
+        return ""
+    return str(getattr(show, "id", "") or getattr(show, "show_id", "") or "")
+
+
 def read_file_chapters(path: Path) -> list[PodcastChapter]:
     """Chapters embedded in a downloaded episode's own tags, or []."""
     try:
@@ -160,11 +182,38 @@ def read_file_chapters(path: Path) -> list[PodcastChapter]:
         return []
 
 
+def soundbite_chapters(episode: PodcastEpisode | None) -> list[PodcastChapter]:
+    """``podcast:soundbite`` marks as chapters, earliest first.
+
+    Each keeps its published ``end_ms``, so the silence between two highlights
+    stays silence rather than being absorbed into whichever one came first --
+    the difference between "this podcast marked two moments" and a chapter list
+    that quietly claims to cover the whole episode.
+
+    An untitled soundbite is given a plain positional name rather than being
+    dropped: the mark is still a place worth jumping to, and "Highlight 2" is
+    honest about knowing nothing more than that.
+    """
+    tags = getattr(episode, "tags", None)
+    bites = list(getattr(tags, "soundbites", []) or [])
+    chapters: list[PodcastChapter] = []
+    for index, bite in enumerate(sorted(bites, key=lambda b: b.start_ms), start=1):
+        chapters.append(
+            PodcastChapter(
+                start_ms=bite.start_ms,
+                title=bite.title.strip() or f"Highlight {index}",
+                end_ms=bite.end_ms or None,
+            )
+        )
+    return chapters
+
+
 def chapter_cascade(
     *,
     published: Callable[[], list[PodcastChapter]] | None = None,
     audio_path: Path | None = None,
     show_notes: str = "",
+    soundbites: list[PodcastChapter] | None = None,
     total_ms: int = 0,
 ) -> ChapterSet:
     """The first free source that yields chapters, with its label.
@@ -197,6 +246,11 @@ def chapter_cascade(
     if chapters:
         return ChapterSet(_clamp(chapters, total_ms), "show_notes")
 
+    # One marked moment is still a place worth jumping to, so unlike the tiers
+    # above this one has no floor of two: the honest label carries the meaning.
+    if soundbites:
+        return ChapterSet(_clamp(list(soundbites), total_ms), "soundbites")
+
     return ChapterSet()
 
 
@@ -210,6 +264,7 @@ def episode_has_possible_chapters(episode: PodcastEpisode) -> bool:
         str(getattr(episode, "chapters_url", ""))
         or str(getattr(episode, "description", ""))
         or str(getattr(episode, "downloaded_path", ""))
+        or getattr(getattr(episode, "tags", None), "soundbites", None)
     )
 
 
@@ -240,13 +295,17 @@ def build_episode_chapters(
             chapters_url, safe_mode=safe_mode, auth_header=auth_header
         )
 
-    downloaded = str(getattr(episode, "downloaded_path", ""))
-    audio_path = Path(downloaded) if downloaded else None
+    # Downloaded file, or the playback cache entry a streamed episode fills as
+    # it plays -- both are bytes, and the file tiers cannot tell them apart.
+    from quill.core.podcasts.playback_cache import local_audio_path
+
+    audio_path = local_audio_path(show, episode)
     duration_seconds = int(getattr(episode, "duration_seconds", 0) or 0)
     found = chapter_cascade(
         published=_published,
         audio_path=audio_path,
         show_notes=str(getattr(episode, "description", "")),
+        soundbites=soundbite_chapters(episode),
         total_ms=duration_seconds * 1000,
     )
     if found.chapters:
@@ -260,7 +319,7 @@ def build_episode_chapters(
     from quill.core.podcasts.chapter_inference import load_cached_inference
 
     cached, source = load_cached_inference(
-        str(getattr(show, "show_id", "") if show is not None else ""),
+        show_identity(show),
         str(getattr(episode, "guid", "")),
         audio_path=audio_path,
     )

@@ -36,8 +36,9 @@ from quill.core.podcasts.chapter_inference import (
     save_cached_inference,
     segment_transcript,
 )
-from quill.core.podcasts.chapter_sources import MIN_EPISODE_MS, SOURCE_LABELS
+from quill.core.podcasts.chapter_sources import MIN_EPISODE_MS, SOURCE_LABELS, show_identity
 from quill.core.podcasts.chapters import PodcastChapter
+from quill.core.podcasts.playback_cache import local_audio_path
 
 
 def _episode_total_ms(episode: Any) -> int:
@@ -111,7 +112,7 @@ def find_chapters_for_episode(host: Any, show: Any, episode: Any) -> None:
         host._announce("Play or select an episode first.")
         return
 
-    show_id = str(getattr(show, "show_id", ""))
+    show_id = show_identity(show)
     guid = str(getattr(episode, "guid", ""))
     if not show_id or not guid:
         host._announce("This episode cannot be identified.")
@@ -122,8 +123,9 @@ def find_chapters_for_episode(host: Any, show: Any, episode: Any) -> None:
         host._announce("This episode is too short to need chapters.")
         return
 
-    downloaded = str(getattr(episode, "downloaded_path", ""))
-    audio_path = Path(downloaded) if downloaded else None
+    # A streamed episode whose bytes are in the playback cache is scannable
+    # exactly like a downloaded one -- that is the whole point of the cache.
+    audio_path = local_audio_path(show, episode)
 
     cached, source = load_cached_inference(show_id, guid, audio_path=audio_path)
     if len(cached) >= 2:
@@ -167,17 +169,14 @@ def _apply(host: Any, show_id: str, guid: str, chapters: list[PodcastChapter], s
         )
         return
 
-    downloaded = ""
     show = host._podcast_library.find_show(show_id)
     episode = show.find_episode(guid) if show is not None else None
-    if episode is not None:
-        downloaded = str(getattr(episode, "downloaded_path", ""))
     save_cached_inference(
         show_id,
         guid,
         chapters,
         source,
-        audio_path=Path(downloaded) if downloaded else None,
+        audio_path=local_audio_path(show, episode) if episode is not None else None,
     )
 
     # Only adopt into the player when this is still the episode being played.

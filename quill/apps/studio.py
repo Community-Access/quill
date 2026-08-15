@@ -966,6 +966,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         pronunciation_id, captions_id, convert_id, convert_url_id = (
             wx.NewIdRef() for _ in range(4)
         )
+        sections_id = wx.NewIdRef()
         voices.Append(hub_id, "Speech &Hub (Voices and Engines)...")
         voices.Append(models_id, "&Manage Speech Models...")
         voices.Append(
@@ -987,6 +988,12 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             convert_url_id,
             "Convert from &URL...",
             "Download the audio from a link (YouTube and more) and convert it",
+        )
+        voices.Append(
+            sections_id,
+            "Copy &Sections...",
+            "Mark pieces of the file you are listening to and collect them into one new "
+            "file; the original is never changed",
         )
         voices.AppendSeparator()
         voices.Append(components_id, "&Download Optional Components...")
@@ -1068,6 +1075,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             (captions_id, self.generate_captions_offline),
             (convert_id, self.convert_audio),
             (convert_url_id, self.convert_from_url),
+            (sections_id, self.copy_sections),
             (components_id, self.open_optional_components),
             (ffmpeg_id, self.download_ffmpeg_component),
             (ai_setup_id, self.open_ai_setup),
@@ -1189,6 +1197,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             ("studio.captions", "Generate Captions (Offline)...", self.generate_captions_offline),
             ("studio.convert_audio", "Convert Audio...", self.convert_audio),
             ("studio.convert_from_url", "Convert from URL...", self.convert_from_url),
+            ("studio.copy_sections", "Copy Sections...", self.copy_sections),
             (
                 "studio.components",
                 "Download Optional Components...",
@@ -1257,6 +1266,17 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         from quill.ui.audio_studio.convert_audio_dialog import run_url_conversion
 
         run_url_conversion(self)
+
+    def copy_sections(self) -> None:
+        """Voices > Copy Sections...: mark pieces of a file and collect them.
+
+        The cut itself has worked for a long time; this is the workflow around
+        it -- mark, preview, add another, save -- and the source file is never
+        touched. See quill/ui/audio_studio/sections_command.py.
+        """
+        from quill.ui.audio_studio.sections_command import open_copy_sections
+
+        open_copy_sections(self)
 
     def open_book_picker(self) -> None:
         """Edit a Book: straight to a file picker, then the Chapter Workbench."""
@@ -1595,75 +1615,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         return RECOMMENDED_MODEL_ID if RECOMMENDED_MODEL_ID in ids else ids[0]
 
     def generate_captions_offline(self) -> None:
-        """Transcribe an audio/video file to timed captions on this machine, then
-        save them as .srt or .vtt -- a faithful port of QUILL's Tools > Speech >
-        Generate Captions (Offline). Disabled in Safe Mode."""
-        wx = self._wx
-        if bool(getattr(self, "_safe_mode", False)):
-            self._announce("Generating captions is disabled in Safe Mode.")
-            return
-        provider = self._speech_provider()
-        installed = self._installed_or_prompt(provider, "Generate Captions")
-        if installed is None:
-            return
-        model_id = self._default_model_id(installed)
-        with wx.FileDialog(
-            self.frame,
-            "Choose an audio or video file to caption",
-            wildcard=_AUDIO_VIDEO_WILDCARD,
-            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Generate Captions") != wx.ID_OK:
-                return
-            source = Path(dialog.GetPath())
+        """Transcribe an audio or video file to timed captions, on this machine.
+        See :mod:`quill.ui.audio_studio.captions_command`."""
+        from quill.ui.audio_studio.captions_command import generate_captions
 
-        from quill.core.speech.provider import TranscriptionRequest
-
-        request = TranscriptionRequest(
-            source_path=source, model_id=model_id, output_timestamps=True
-        )
-
-        def _work(progress):
-            def _on_progress(fraction: float, message: str) -> None:
-                progress(message, int(fraction * 100), 100)
-
-            return provider.transcribe_file(request, _on_progress)  # type: ignore[attr-defined]
-
-        self._run_background_task(
-            f"Captioning {source.name}", _work, lambda result: self._save_captions(result, source)
-        )
-
-    def _save_captions(self, result: object, source: Path) -> None:
-        from quill.core.speech import formatters
-
-        wx = self._wx
-        segments = getattr(result, "segments", ()) or ()
-        if not segments:
-            self._announce("No timed segments were produced, so captions cannot be made.")
-            return
-        formats = ["SubRip captions (.srt)", "WebVTT captions (.vtt)"]
-        with wx.SingleChoiceDialog(
-            self.frame, "Caption format:", "Generate Captions", formats
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Generate Captions") != wx.ID_OK:
-                return
-            choice = dialog.GetSelection()
-        if choice == 0:
-            text, ext = formatters.to_srt(segments), ".srt"
-        else:
-            text, ext = formatters.to_vtt(segments), ".vtt"
-        with wx.FileDialog(
-            self.frame,
-            "Save captions",
-            defaultFile=f"{source.stem}{ext}",
-            wildcard="Caption files (*.srt;*.vtt)|*.srt;*.vtt|All files (*.*)|*.*",
-            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Save captions") != wx.ID_OK:
-                return
-            target = Path(dialog.GetPath())
-        target.write_text(text, encoding="utf-8", newline="\n")
-        self._announce(f"Captions saved to {target.name}.")
+        generate_captions(self)
 
     def choose_read_aloud_configuration(self) -> None:
         """Open the unified Speech Hub on the Speech (Offline) tab."""

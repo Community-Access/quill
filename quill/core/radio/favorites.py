@@ -79,6 +79,13 @@ class FavoriteStation:
     optilab_mode: str = "off"
     optilab_input_db: float = 0.0
     optilab_auto_adapt: int = 0
+    #: "Use exact OptiLab processing when saving" for this station's recordings
+    #: (see RadioHistory.optilab_exact). Saved files only; live listening is
+    #: unaffected on purpose.
+    optilab_exact: bool = False
+    #: ... and through the engine while listening to this station (see
+    #: RadioHistory.optilab_exact_live for what that costs).
+    optilab_exact_live: bool = False
 
     @property
     def key(self) -> str:
@@ -247,6 +254,8 @@ class RadioFavoritesStore:
         optilab_mode: str = "off",
         optilab_input_db: float = 0.0,
         optilab_auto_adapt: int = 0,
+        optilab_exact: bool = False,
+        optilab_exact_live: bool = False,
     ) -> bool:
         """Give this station its own Sound Enhancements, overriding every shared
         default (RadioHistory's EQ/compressor, channel mode, night mode, and
@@ -265,6 +274,8 @@ class RadioFavoritesStore:
         favorite.optilab_mode = optilab_mode
         favorite.optilab_input_db = optilab_input_db
         favorite.optilab_auto_adapt = optilab_auto_adapt
+        favorite.optilab_exact = optilab_exact
+        favorite.optilab_exact_live = optilab_exact_live
         return True
 
     def clear_enhancement_override(self, key: str) -> bool:
@@ -464,6 +475,8 @@ def load_favorites(data_dir: Path) -> RadioFavoritesStore:
                 optilab_auto_adapt=max(
                     0, min(100, int(_coerce_float(entry.get("optilab_auto_adapt"), 0.0)))
                 ),
+                optilab_exact=bool(entry.get("optilab_exact", False)),
+                optilab_exact_live=bool(entry.get("optilab_exact_live", False)),
             )
         )
     return store
@@ -531,6 +544,8 @@ def save_favorites(data_dir: Path, store: RadioFavoritesStore) -> None:
                 "optilab_mode": favorite.optilab_mode,
                 "optilab_input_db": favorite.optilab_input_db,
                 "optilab_auto_adapt": favorite.optilab_auto_adapt,
+                "optilab_exact": favorite.optilab_exact,
+                "optilab_exact_live": favorite.optilab_exact_live,
             }
             for favorite in store.favorites
         ],

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL artifact signing</title>
+  <title>signing</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -239,29 +239,8 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="quill-artifact-signing">QUILL artifact signing</h1>
 <p>QUILL artifacts (Quillins, AI agents, verbosity packs, sound packs,
 keyboard packs, skill packs, pronunciation dictionaries) are distributed
@@ -295,6 +274,10 @@ macOS signing/notarization runbook in
 </ul>
 <h2 id="key-files">Key files</h2>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>File</th>
@@ -330,6 +313,10 @@ keypair, deliberately distinct from the artifact-signing key above.
 Different purpose, different blast radius, independently rotatable:
 compromising one does not compromise the other.</p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>File</th>
@@ -364,6 +351,11 @@ a new build with a new public key and leaving already-installed copies
 unable to verify any newer feed.</p>
 <p>Three copies, covering three different ways to lose it:</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Copy</th>
@@ -457,7 +449,7 @@ failure (missing key, bad sidecar, I/O error).</p>
 class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python</span> <span class="at">-m</span> quill.tools.signing verify path/to/manifest.json</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="co"># exit 0 = verified, 2 = not signed / invalid, 1 = I/O error</span></span></code></pre></div>
 <p>CI uses this exit code to gate artifact publication.</p>
-<h3 id="override-the-public-key-deploy--tests">Override the public key
+<h3 id="override-the-public-key-deploy-tests">Override the public key
 (deploy + tests)</h3>
 <p><code>SIGNING_PUBLIC_KEY_PATH</code> env var overrides the bundled
 key file. The Hub deployment uses this to point at the rotated key
@@ -504,7 +496,7 @@ dialog (<code>Tools &gt; Quillins &gt; Manage...</code>) and the in-app
 <li>Sign all existing artifacts with the new key; the old sidecars
 become unverifiable.</li>
 <li>Bump the <code>KEY_ID</code> constant in
-<code>quill/tools/signing.py</code> (e.g. to
+<code>quill/tools/signing.py</code> (e.g. to
 <code>ca-pubkey-2026b</code>) and re-sign.</li>
 <li>Cut a new release; the Hub’s <code>SIGNING_PUBLIC_KEY_PATH</code>
 env var should be updated at deploy time so the in-process Hub uses the
@@ -526,6 +518,5 @@ publisher key, upload both files to the Hub, and the Forge accepts.</li>
 submission must carry a sidecar signed by
 <code>ca-pubkey-2026</code>”.</li>
 </ul>
-</main>
 </body>
 </html>

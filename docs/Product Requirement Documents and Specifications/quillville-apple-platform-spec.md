@@ -146,7 +146,7 @@ says.
 
 ### 4.1 Adopt, do not invent
 
-The engine already exists and is complete: `quill/apps/beacon/quillsync/`
+The engine already exists and is complete: `quill/core/sync/`
 provides a git-like append-only commit log of AES-GCM encrypted,
 content-addressed blobs under a scrypt-derived vault key, with a `Transport`
 abstraction, a `RecordStore` protocol, pluggable merge functions, and tombstones
@@ -161,11 +161,16 @@ and a deliberately opaque hint endpoint.
   sync process -- is honored in substance: this is adoption of an engine that
   already exists in the tree, not a new one, and it does not revive the retired
   multi-provider OAuth plan.
-- **SY-2.** **Promotion is a prerequisite.** QuillSync moves from
-  `quill/apps/beacon/quillsync/` to `quill/core/sync/`, with a re-export shim
-  left behind for Beacon. No non-Beacon app can adopt it cleanly while it is
-  namespaced under one app, and the Beacon docs already assume the promotion has
-  happened.
+- **SY-2.** **Promotion is a prerequisite. Done 2026-08-13.** QuillSync now
+  lives at `quill/core/sync/`. No non-Beacon app could adopt it cleanly while it
+  was namespaced under one app, and `core/media/positions.py` was already
+  reaching up into `apps/` for a `Conflict` type. **No re-export shim was left
+  behind**, contrary to this item's original wording: a shim protects consumers
+  you cannot edit, and Beacon's three importers live in this repo and moved in
+  the same commit. Leaving one would have meant two supported ways to import the
+  same module and no forcing function to retire either. Its new home also puts
+  the framework permanently in `mypy`'s strict scope, which found and fixed two
+  untyped boundaries on the way in.
 
 ### 4.2 The three transports
 
@@ -396,8 +401,8 @@ These are non-negotiables that already govern the ecosystem and continue to:
 A concise list of the work this specification creates outside the two app
 targets, so it can be scheduled rather than discovered:
 
-1. **Promote QuillSync** from `quill/apps/beacon/quillsync/` to
-   `quill/core/sync/`, with a Beacon re-export shim (SY-2).
+1. ~~**Promote QuillSync** from `quill/apps/beacon/quillsync/` to
+   `quill/core/sync/` (SY-2).~~ Done 2026-08-13, without a shim -- see SY-2.
 2. **Write three Windows record-store adapters** -- settings, weather, radio --
    plus their merge functions (SY-15, SY-16).
 3. **Build a Windows sync UI** through the existing dialog contract (SY-17).

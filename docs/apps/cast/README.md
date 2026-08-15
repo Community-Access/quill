@@ -37,7 +37,7 @@
 
 ---
 
-# Part 1 -- relocated user guide material
+## Part 1 -- relocated user guide material
 
 _Moved from `docs/user guide/userguide.md`. Heading levels are one deeper than in
 the source; wording is otherwise unchanged._
@@ -84,6 +84,16 @@ Select an episode and press **Play/Pause**, double-click it, or use its context 
 Your position within an episode is saved automatically, so returning to it later — even from a different session — resumes exactly where you stopped. That position is stored the same way QUILL Sync already carries your settings between machines, so it travels with you if you sync your data folder.
 
 A **Speed** control on the Podcasts dialog's player row sets playback rate for the selected podcast, from 0.75x to 2.0x, remembered the next time you open that show.
+
+#### Streaming an episode, and keeping one
+
+A streamed episode is a fully capable episode. While one plays, Quill Cast also saves its audio, which is what makes three things work that used to need a download first:
+
+- **A dropped connection is no longer an interruption.** The audio you were about to hear has almost always already arrived, so playback simply continues from it instead of going silent and re-buffering.
+- **Chapters can be found in it.** **Find Chapters in This Episode** scans the audio, which it can only do when there is audio to scan.
+- **Keeping it costs nothing.** **Episode > Keep This Episode** turns what you are streaming into a permanent download. If the audio is already here, that is a move, not a second download of the same bytes — nothing is fetched and it is instant. If it isn't (you pressed play a moment ago, or you turned this off for this show), it falls back to an ordinary download.
+
+None of this is announced while it happens, and none of it appears in Downloads: it is not a download, it is removed automatically, and the episode you are listening to is never the one removed. **Podcast Settings...** offers **Keep streamed episodes ready while they play** (on by default) and the space it may use between them (1024 MB by default, 0 for no limit); a single podcast can turn it off from **Settings for This Podcast**. The Downloads dialog says how much streamed audio is currently held, separately from your downloads, so the two figures can never be confused.
 
 #### Chapters
 
@@ -154,6 +164,20 @@ Above the manager's tree: an **Episodes** filter (All, Unplayed, Played, Downloa
 #### Transcripts
 
 When a feed provides an episode transcript (Podcasting 2.0), the episode's right-click menu offers **Save Transcript As...** and **Open Transcript in Editor** — the transcript arrives as plain readable text (VTT/SRT/JSON formats handled), and once fetched it's cached locally so Search Everywhere can search it and reopening is instant.
+
+#### About This Episode
+
+A podcast feed can carry a good deal more than a title and an audio file, and most of it was being downloaded and discarded. **About This Episode...** (QUILL Cast's Episode menu, the command palette, or any episode's right-click menu in the Manager) opens it as tabs, and a tab is only there when it has something in it:
+
+- **People** — who is on this episode, and who makes the podcast. Each row reads as a sentence ("Bob Brown, guest (this episode)"), and Enter opens the publisher's link where there is one.
+- **Highlights** — the moments the podcast marked as worth hearing, with when each starts and how long it runs, in words. These also appear in the chapter list, where Enter plays from one.
+- **Live** — some podcasts carry a live stream inside their feed. If one is on the air, Enter plays it through the ordinary transport, so pause and volume are the same keys as everywhere else.
+- **Other Audio** — a second version of the same episode, usually a smaller one for a slow or metered connection.
+- **Recommended** — the podcasts this show recommends. Subscribing here is a real subscribe: the show arrives with its proper name, artwork and episodes.
+- **Support** — where the podcast asked to be supported. QUILL opens the page in your browser and takes no further part. Nothing in QUILL costs money.
+- **Place** — where the episode is about, as text.
+
+The command speaks a one-line summary before the window opens, so if all you wanted was to know whether there was anything, you never have to open it. Where a podcast published none of it, the window still opens and says so. The button names what it will do — *Open in Browser*, *Play*, *Subscribe to This Podcast* — and reads *Nothing to Open*, disabled, on a row with nothing to do.
 
 #### Episode notes
 
@@ -253,7 +277,7 @@ fades and stops whichever of the two is actually active.
 
 ---
 
-# Part 2 -- relocated PRD material
+## Part 2 -- relocated PRD material
 
 _Moved from `docs/Product Requirement Documents and Specifications/QUILL-PRD.md`.
 Heading levels are two deeper than in the source; wording is otherwise unchanged
@@ -264,7 +288,7 @@ except where a sentence described both a public app and a gated one._
 _The PRD keeps a stub at 5.84g pointing here, so every existing `5.84g`
 cross-reference in the code and the docs still resolves._
 
-##### 5.84g Podcasts (Phase 1-2, shipped)
+### 5.84g Podcasts (Phase 1-2, shipped)
 
 **Goal.** Subscribe to, organize, download, and play podcasts inside QUILL,
 sharing Internet Radio's (§5.84f) proven "one player that outlives any
@@ -299,7 +323,22 @@ egress surface. Podcasting 2.0's `<podcast:chapters>`/`<podcast:transcript>`
 tags aren't reliably exposed by `feedparser` across versions, so those two
 are extracted with a tolerant regex pass scoped per-`<item>` fragment as a
 fallback that doesn't depend on guessing `feedparser`'s internal key
-mapping. `core/podcasts/subscriptions.py`'s `PodcastLibrary` is the one
+mapping. **The rest of the namespace is read the same way**
+(`core/podcasts/namespace_tags.py`): `podcast:person`, `podcast:soundbite`,
+`podcast:liveItem`, `podcast:podroll`, `podcast:funding`,
+`podcast:location` and alternate enclosures, for the same reason plus one
+more -- a second full XML parse of every feed on every refresh is real cost
+across a large library, and each of these is a shallow attribute grab. Every
+parser is tolerant: a malformed tag yields nothing rather than raising,
+because one bad tag must never cost somebody their whole feed. The channel
+half is read from the text *before the first `<item>`*, so an episode's
+guests are never credited to the podcast itself; live items are looked for
+across the whole feed, because publishers write them among the episodes.
+Tags persist with the episode and the show and **only when non-empty**, so a
+library of feeds that publish none of this pays nothing for the feature
+existing, and `merge_episodes` never lets an empty replacement erase what a
+feed already said -- that is far more often a partial feed than a
+retraction. `core/podcasts/subscriptions.py`'s `PodcastLibrary` is the one
 atomic-JSON store (shows, folders, global settings); `merge_episodes()`
 refreshes a known episode's feed-supplied metadata but never drops one just
 because a refreshed feed no longer lists it, and never resets its local
@@ -432,7 +471,7 @@ Listening Companion (§5.84b) for transcribe-and-summarize, something no
 standalone podcast app offers, and the same QUILL Sync story that already
 carries settings between machines now carries listening position too.
 
-###### Phase 4 (shipped): views, Inbox, queue, transcripts, notes, local, sync
+#### Phase 4 (shipped): views, Inbox, queue, transcripts, notes, local, sync
 
 Everything the original phased plan deferred, now shipped. Every core is
 wx-free and unit-tested; the manager UI additions live in
@@ -465,6 +504,34 @@ decomposition note) and ``play_queue_dialog.py``; standalone QUILL Cast
   transcripts (VTT/SRT/JSON parsed to plain text) save to a file or open in
   the editor; fetched transcripts cache locally (searchable, instant
   reopen).
+- **The rest of the Podcasting 2.0 namespace (``namespace_tags.py``,
+  ``extras.py``).** People, soundbites, live items, podroll, funding,
+  location and alternate enclosures, surfaced through **About This
+  Episode...** (``ui/podcasts/episode_extras_dialog.py``, a ``wx.Notebook``
+  of ``wx.ListBox`` pages; ``ui/podcasts/extras_command.py`` for the three
+  actions a row can take: open a link, play a stream, subscribe to a feed).
+  A tab exists only when it has something in it; the one-line summary is
+  spoken before the window opens; the window still opens and says so when a
+  podcast published none of it, because *publishes nothing* and *cannot be
+  read* are different facts a greyed-out item cannot distinguish. The action
+  button is named from the highlighted row and reads *Nothing to Open*,
+  disabled, where there is nothing to do. Subscribing from a podroll goes
+  through the same path Add by Feed URL uses, on the task manager and
+  refused in Safe Mode; funding opens in the browser and is processed no
+  further, so listening stays free. Value-for-value / cryptocurrency
+  streaming is out of scope, deliberately.
+- **Soundbites as an authored chapter tier (``chapter_scoring.py``,
+  ``chapter_sources.py``, ``chapter_cascade.py``).** A soundbite is a
+  chapter marker in all but name -- a person chose the moment and titled it
+  -- so ``SOURCE_SOUNDBITES`` joins the authored tiers (base confidence
+  0.85, inside ``is_authored``) as the **last** of them. Last, because a
+  highlight is not a partition: two marks in an hour answers *what is the
+  good bit* completely and *how is this laid out* barely at all. They win
+  only where nothing better was published; each chapter keeps the
+  soundbite's own ``end_ms`` rather than running on to the next mark; and
+  the source is labelled *Moments this podcast marked*. The floor is one
+  mark rather than two -- a single marked moment is still a place worth
+  jumping to.
 - **Episode notes (P4-6, ``episode_notes.py``).** Timestamped notes on the
   playing episode; the notes dialog jumps playback to a note's moment.
 - **Local podcasts + watched folders (P4-7, ``local_import.py``).** Audio
@@ -492,7 +559,7 @@ decomposition note) and ``play_queue_dialog.py``; standalone QUILL Cast
   summary rows and download-task rows (with started/finished timestamps)
   for the Help Status page.
 
-###### Phase 5 (shipped): Sound Enhancements + Smart Speed
+#### Phase 5 (shipped): Sound Enhancements + Smart Speed
 
 Shares Radio's ``core/audio_enhance.py`` (§5.84f) rather than duplicating
 it, with the one real wrinkle Radio doesn't have: episodes support seeking
@@ -520,7 +587,7 @@ natively. Full parity was built, not a degraded no-seek mode.
   never declares a length for the engine to compute a scrub bar from, so
   duration comes from an independent ``ffprobe`` call instead.
 
-###### Phase 6 (shipped): Download All Episodes / Remove All Episodes
+#### Phase 6 (shipped): Download All Episodes / Remove All Episodes
 
 Two new show-level context-menu actions, implemented once in
 ``quill/ui/podcasts/show_actions.py`` and called from both surfaces that act
@@ -538,7 +605,7 @@ library tree) rather than duplicating the logic a third time.
   for a removed episode first, so nothing is left running against a guid
   about to disappear.
 
-###### Phase 7 (shipped): Inbox grouping + per-podcast sort for every cross-show view
+#### Phase 7 (shipped): Inbox grouping + per-podcast sort for every cross-show view
 
 The Inbox (and every other cross-show virtual view -- New Episodes,
 Continue Listening, Favorites) previously rendered ``(show, episode)``
@@ -583,7 +650,7 @@ per-show override, not a global-only toggle.
   tree nodes fresh on every ``refresh_tree()`` -- auto-generated, never
   persisted, distinct from the existing manual freeform Inbox folder tree.
 
-###### Phase 8 (shipped): per-podcast Sound Enhancements, Skip Forward/Back, auto-skip intro/outro
+#### Phase 8 (shipped): per-podcast Sound Enhancements, Skip Forward/Back, auto-skip intro/outro
 
 A competitive pass against Downcast/Overcast/Pocket Casts/Castro surfaced two
 gaps: Sound Enhancements (Phase 5, above) was global-only, and there was no
@@ -622,7 +689,7 @@ skip-by-N-seconds command at all (only absolute chapter-boundary seeks).
   on every save. Now ``dataclasses.replace(self._settings, **edits)``, the
   same pattern ``apply_show_override`` already uses.
 
-###### Phase 9 (shipped): saved Playlists -- Smart (rule-based) and manual
+#### Phase 9 (shipped): saved Playlists -- Smart (rule-based) and manual
 
 The other half of the same competitive pass: no way to save a curated or
 rule-based cross-show episode list, only the four fixed pinned views and the
@@ -658,6 +725,70 @@ Filters and curated Playlists.
 - Episode context menu gained "Add to Playlist..." (a native
   ``wx.SingleChoiceDialog`` among existing manual playlists, or create one
   inline).
+
+##### 5.84g.7 The playback cache -- a streamed episode is a fully capable episode
+
+**The problem, stated as what it costs the listener.** Through 1.1.0 Cast had
+two classes of episode and a listener had to know which one they were holding
+before they knew which features they had. Chapters found in the audio, exact
+bookmarks, dependable resume, precise seeking and any kind of analysis were all
+downloaded-only, because every one of them needs a *file* and a stream is a
+socket. This is not a file-management feature; it is the removal of that tier
+split.
+
+**The mechanism, which is the boring part.** While a streamed episode plays,
+its bytes are also written to a managed cache
+(``core/podcasts/playback_cache.py``), so the episode becomes byte-backed
+without anybody asking for a download. The cache is keyed by show id and
+episode guid (never by URL -- a feed that moves its enclosures must not orphan
+every file), hashed rather than named after publisher-supplied text, and writes
+to a ``.part`` file that is promoted to the real name with one ``os.replace``,
+so no reader can ever see a half-written file under the complete name.
+
+**What the bytes buy, which is the point.**
+
+1. **A dropped connection stops being an interruption.** The player asks, on
+   error, whether a local file already covers the position it was at
+   (``PodcastPlayerController._recover_locally``) and reloads from it if so.
+   The fetch runs far ahead of realtime, so it usually does. It recovers once
+   per source: if the local file also fails, the error is reported rather than
+   looped on.
+2. **"Keep this one" costs nothing.** ``playback_cache.promote`` moves the file
+   into the download folder -- a rename on the same volume -- rather than
+   downloading the same bytes a second time. **Keep This Episode**
+   (``podcasts.keep_episode``) falls back to an ordinary download when there is
+   no complete entry, which is exactly what the listener would have done.
+3. **The analysis tiers get something to analyse.** ``local_audio_path`` is the
+   single resolver -- download first, then cache -- that ``chapter_sources``
+   and ``chapter_inference_ui`` now ask, so the file tiers cannot tell a
+   streamed episode from a downloaded one.
+
+**Cache, never content.** Bounded (``playback_cache_cap_mb``, 1024 MB by
+default), evicted least-recently-used, and losing all of it costs nothing but
+bandwidth. **The episode you are listening to is never evicted** --
+``evict_to_cap`` and ``clear`` both take the in-use paths and skip them, the
+same instinct as ``retention.is_protected``. An unreachable cap is simply not
+reached; nothing protected is taken to satisfy it.
+
+**Its own queue.** Cache fills run on a second ``PodcastDownloadQueue`` with
+``max_concurrent=1`` and no status callback. Separate from the download queue
+because the episode being listened to must never wait behind a forty-episode
+download batch for the bytes that make it drop-proof; silent because a cache
+fill is not a download -- it never earcons, never reaches the status bar, and
+never appears in the Downloads list. Starting a different episode cancels the
+fill for the one you left (the ``.part`` file stays, so replaying that episode
+resumes by Range rather than starting over).
+
+**Naming.** The setting reads as reliability, not disk management: *Keep
+streamed episodes ready while they play*. "Playback cache" is the internal
+name, and is deliberately unremarkable -- this is something the listener should
+never have to think about.
+
+**Found while wiring this.** ``chapter_inference_ui`` read ``show.show_id``,
+but ``PodcastShow`` names the field ``id`` (``show_id`` is what a *download
+queue item* calls it), so Find Chapters answered "this episode cannot be
+identified" for every episode and had never run. ``chapter_sources.
+show_identity`` is now the one place that resolves either spelling.
 
 ## PRD 5.89e The Quill Cast standalone app
 

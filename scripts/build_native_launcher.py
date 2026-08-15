@@ -197,12 +197,22 @@ def _discard_relocated_cmake_cache(build_dir: Path) -> bool:
     cache = build_dir / "CMakeCache.txt"
     if not cache.is_file():
         return False
-    expected = f"CMAKE_HOME_DIRECTORY:INTERNAL={_LAUNCHER_SRC.as_posix()}"
+    expected = _LAUNCHER_SRC.as_posix().casefold()
     try:
         text = cache.read_text(encoding="utf-8", errors="replace")
     except OSError:
         text = ""
-    if expected.casefold() in text.casefold():
+    # Compared as a whole value rather than as a substring of the file: a cache
+    # recording ".../launcher-old" contains ".../launcher", so a substring test
+    # keeps a genuinely foreign cache and the build fails with CMake's own
+    # error instead -- which is the failure this function exists to prevent.
+    recorded = ""
+    for line in text.splitlines():
+        key, _, value = line.partition("=")
+        if key.strip().casefold() == "cmake_home_directory:internal":
+            recorded = value.strip().casefold()
+            break
+    if recorded == expected:
         return False
     print(f"Discarding CMake cache configured for another path: {build_dir}")
     shutil.rmtree(build_dir, ignore_errors=True)

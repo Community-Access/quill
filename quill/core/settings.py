@@ -16,6 +16,7 @@ from quill.core.settings_normalizers import (
     _clamp_int,
     _default_status_bar_hidden,
     _default_status_bar_order,
+    _normalize_browse_mode,
     _normalize_status_bar_hidden,
     _normalize_status_bar_order,
 )
@@ -160,6 +161,14 @@ class Settings:
     read_aloud_piper_executable: str = ""
     read_aloud_piper_model: str = ""
     announcement_backend: str = "auto"
+    #: What Quill Radio says when a recording resumes where you stopped
+    #: (Quill Radio 3.0). "spoken" gives the position -- "Resuming at 12 minutes
+    #: 8 seconds" -- because a recording that silently starts twenty minutes in
+    #: is disorienting if you had forgotten you were part-way through it.
+    #: "brief" says only "Resuming."; "silent" says nothing. Live stations are
+    #: unaffected: they have no position to resume.
+    radio_resume_announcement: str = "spoken"
+
     #: Mirror spoken announcements to a connected braille display (#1283).
     #: On by default: a braille user was receiving none of these messages
     #: at all, so this is a bug fix rather than an opt-in feature.
@@ -648,21 +657,11 @@ class Settings:
         keyboard_pack = str(data.get("keyboard_pack", "Quill Default"))
         soft_wrap = bool(data.get("soft_wrap", True))
         wrap_find = bool(data.get("wrap_find", True))
-        browse_mode_wrap = bool(data.get("browse_mode_wrap", True))
-        browse_mode_feedback = str(data.get("browse_mode_feedback", "speech")).strip().lower()
-        if browse_mode_feedback not in {"sound", "speech", "both", "none"}:
-            browse_mode_feedback = "speech"
-        browse_mode_move_detail = (
-            str(data.get("browse_mode_move_detail", "position")).strip().lower()
-        )
-        if browse_mode_move_detail not in {"none", "line", "position"}:
-            browse_mode_move_detail = "position"
-        browse_mode_preload_cache = bool(
-            data.get(
-                "browse_mode_preload_cache",
-                data.get("browse_mode_prewarm_for_large_docs", True),
-            )
-        )
+        browse_mode = _normalize_browse_mode(data)
+        browse_mode_wrap = browse_mode["wrap"]
+        browse_mode_feedback = browse_mode["feedback"]
+        browse_mode_move_detail = browse_mode["move_detail"]
+        browse_mode_preload_cache = browse_mode["preload_cache"]
         quill_key_binding = str(data.get("quill_key_binding", "Ctrl+Shift+Grave")).strip()
         if not quill_key_binding:
             quill_key_binding = "Ctrl+Shift+Grave"
@@ -674,30 +673,8 @@ class Settings:
             quill_key_timeout_seconds = 0.0
         if quill_key_timeout_seconds > 60:
             quill_key_timeout_seconds = 60.0
-        # #265 follow-up: replace float seconds with a string-valued choice
-        # (preset token) plus an integer custom-ms override. Unknown tokens
-        # fall back to 'unlimited' so the consumer treats them as no
-        # timeout. Custom-ms clamps to [0, 60000] ms = [0, 60] s.
-        browse_mode_followon_timeout = (
-            str(data.get("browse_mode_followon_timeout", "unlimited")).strip().lower()
-        )
-        if browse_mode_followon_timeout not in {
-            "instant",
-            "fast",
-            "normal",
-            "slow",
-            "custom",
-            "unlimited",
-        }:
-            browse_mode_followon_timeout = "unlimited"
-        try:
-            browse_mode_followon_custom_ms = int(data.get("browse_mode_followon_custom_ms", 4000))
-        except (TypeError, ValueError):
-            browse_mode_followon_custom_ms = 4000
-        if browse_mode_followon_custom_ms < 0:
-            browse_mode_followon_custom_ms = 0
-        if browse_mode_followon_custom_ms > 60000:
-            browse_mode_followon_custom_ms = 60000
+        browse_mode_followon_timeout = browse_mode["followon_timeout"]
+        browse_mode_followon_custom_ms = browse_mode["followon_custom_ms"]
         csv_open_mode = str(data.get("csv_open_mode", "prompt")).strip().lower()
         if csv_open_mode not in {"prompt", "text", "grid"}:
             csv_open_mode = "prompt"

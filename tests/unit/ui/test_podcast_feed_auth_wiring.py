@@ -59,9 +59,13 @@ def test_chapters_and_transcripts_pass_auth_header() -> None:
         src = _read(rel)
         assert "build_episode_chapters(" in src, rel
         assert "fetch_and_parse_chapters(" not in src, rel
-    assert "auth_header_for_url(show, episode.transcript_url)" in _read(
-        "ui/podcasts/manager_phase4.py"
-    )
+    # The transcript commands moved to ui/podcasts/transcript_actions.py when the
+    # shared reader arrived (manager_phase4.py was at its GATE-11 ceiling); the
+    # rule follows them. Both fetch paths there -- text, and timed cues -- must
+    # carry the feed's own credentials, or a private feed's transcript 401s.
+    actions = _read("ui/podcasts/transcript_actions.py")
+    assert actions.count("auth_header_for_url(show, episode.transcript_url)") == 2
+    assert "auth_header_for_url" not in _read("ui/podcasts/manager_phase4.py")
 
 
 def test_every_play_call_site_uses_the_shared_playback_helper() -> None:

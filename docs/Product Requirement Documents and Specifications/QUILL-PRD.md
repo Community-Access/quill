@@ -2210,15 +2210,53 @@ cannot be expressed there at all.
 
 Upstream's engine is therefore also **vendored unmodified at v1.4.0** under
 `quill/native/optilab/upstream/` (with its LICENSE and NOTICE) and linked into
-an adapter QUILL owns, used for **saved files only**: radio recordings and
-audio conversion, which already shell out to ffmpeg offline.
+an adapter QUILL owns (`quill/core/audio/exact_optilab.py` runs it).
 
-**Live playback keeps the ffmpeg chain permanently, and this is normative.**
-mpv applies enhancement natively from a filter string, and nothing on that path
-ever holds a PCM sample in Python; routing live audio through a subprocess
-would reintroduce a relay everywhere and cost the live preview that path exists
-to provide. Any future proposal to run the native engine live must first say
-what it does about those two properties.
+**One setting, three states, named for the surface and not for the engine**:
+off (the built-in chain everywhere, the default), **when saving** (radio
+recordings and audio conversion), or **when saving and while listening**. A
+control named after an engine would imply it applies wherever that engine's
+name appears; naming the surface removes the whole class of confusion, and the
+third option states its own cost inside the option (rule A-9: no control may
+silently apply to only part of what it names).
+
+**Saved files are the recommended state and cost nothing.** Recordings and
+conversion already shell out to ffmpeg offline. A recording is post-processed
+**after** it finishes and after any dropped-and-resumed parts are joined, into
+a temp file that replaces the original only on success -- a fault in the engine
+must never be able to cost somebody the show they were recording -- and a raw
+capture is never post-processed at all, because re-encoding it is exactly what
+raw capture exists to avoid.
+
+**Live playback through the engine is possible, opt-in, and normatively not the
+default.** The reason is structural, not a missing feature: the engine is a
+separate process (upstream's API is explicitly not a stable C ABI), and nothing
+on QUILL's live path ever holds a PCM sample -- mpv applies enhancement natively
+from a filter string, which is why every enhancement previews instantly with no
+gap and why one graph serves live radio, podcasts and recordings. There is no
+filter string that expresses another product's DSP, and mpv does not host CLAP.
+So live means **relaying**: decode, pipe through the engine, re-encode, play a
+loopback URL (`EnhanceRelay`, on *both* engines, with mpv's native graph
+cleared so nothing is processed twice). The costs are a slower start, an MP3
+re-encode generation, more CPU, and a reconnect on every settings change,
+because the engine is prepared with a mode and a sample rate at start-up and
+cannot be re-parameterised mid-stream. Rejected alternatives, recorded so they
+are not re-proposed: a custom libavfilter wrapping `optilab-core`, an
+in-process Python extension over an ABI upstream does not offer, and an mpv
+CLAP host.
+
+**Never both engines on the same audio.** Whenever the real engine will run,
+the OptiLab *filters* leave the ffmpeg graph; everything else (EQ, compressor,
+channel mode, night mode) still applies.
+
+**State the differences; do not imply them.** The chain contains none of
+upstream's gated AGC, six-band density processing, adaptive bass and top
+control, stereo processing or hybrid final stage; its Podcast and Limiter
+ceilings are -1.5 and -2.0 dBFS where upstream delivers to -0.1; its Input
+default is 0 dB where upstream's `inputDriveDb` is 3.5; and the limiter
+feedback loop cannot be expressed in a feed-forward graph at all, which is the
+one difference that can be claimed with confidence. On gentle material the two
+may be indistinguishable, and no QUILL text may suggest otherwise.
 
 An adapter **executable** rather than a Python extension, because upstream's
 `native/API.md` states its C++ API is *"not a stable C ABI"* and asks consumers
@@ -4348,6 +4386,213 @@ chosen over Shoutcast (revocable Developer-ID-gated API) and Live365
 (`html.parser`, no embedded browser) for stream-shaped links, for stations
 not in RadioBrowser's directory.
 
+**Browse is a contract, not a window (Quill Radio 3.0; `core/radio/browse_nodes.py`,
+`core/radio/browse_sources.py`, `core/radio/browse_visibility.py`,
+`core/radio/directory_cache.py`, `core/radio/browse_helpers.py`).** The Browse
+Stations dialog used to know the shape of every source in it: adding iHeart cost
+three internal node-kind strings and edits in six places, and *Find in this
+folder* carried a **second** copy of that knowledge, hand-synchronised — so a
+source added to the display and forgotten there was silently unsearchable, with
+no error to notice. `BrowseNode` is now the whole contract (folder / leaf /
+action, plus a note and an optional child count), `ROOT_SOURCES` plus one handler
+per source is the registry, and every source answers exactly one question: *what
+is inside this folder*. The dialog knows only that a row is something to open or
+something to play. Adding a source is a registry entry and a function, both
+testable with no `wx` at all; the dialog ended **199 lines smaller while the tree
+grew from thirteen root branches to twenty-eight**, and its GATE-11 budget was
+ratcheted down to hold that, so re-introducing a source-specific branch inside it
+fails the build. `browse_tree_helpers.py` moved out of `quill/ui/radio/` to
+`core/radio/browse_helpers.py`, because the core registry needs it and core may
+not import from the UI layer. Three behaviours ride the same refactor: an empty
+branch distinguishes *nothing here* from *could not be reached* (indistinguishable
+before, which is how somebody concludes a working source is broken); a folder
+announces its size with its name wherever the source can say cheaply; and
+`directory_cache` adds the fourth cache tier — fresh → live → stale — so a level
+survives the session, a failed refresh keeps what was there rather than blanking a
+working branch, and a cached answer reports its own age instead of implying it is
+current. `LOCAL_SOURCES` is what Safe Mode reads, **per branch**, rather than one
+app-wide switch.
+
+**The keyless-source rule, and the fifteen branches it produced (3.0).** The
+organising constraint is stricter than "free": **no API key, no account, no
+developer registration, and no business relationship** for anything a listener
+needs. Four of the new branches are axes over data QUILL was already downloading
+and spending on two dropdowns — By Country → state/region, By Language, Trending
+Now (`topclick`, genuinely distinct from the `topvote` behind Popular Stations),
+and Recently Added or Changed. The rest are libraries: **Apple Podcasts**
+(`core/podcasts/apple_podcasts.py`: storefront → genre tree → charts → lazy
+`lookup` → the publisher's own `feedUrl`; genre tree cached a week, charts six
+hours, feed URLs a month, one chart request serving every genre in a storefront);
+the **Internet Archive** (`core/radio/internet_archive.py`, the collection tree
+walked to any depth because every item declares its parents, `Retry-After`
+honoured per the Archive's automated-access rules, and a **More...** node that
+states how many rows it is hiding); **LibriVox** (`core/media/librivox.py`);
+**Project Gutenberg** (`core/radio/gutendex.py`); **Audius, Mixcloud and
+ccMixter** (`core/radio/free_music.py`); and **Wikidata**
+(`core/radio/wikidata.py`: By City / Owner / Network / Format via P131 / P127 /
+P449 / P2360, plus FM dial bands, joined conservatively against Radio Browser,
+which still supplies every stream — hence the "from Wikidata" label on every row,
+because the join is ours). Three standing decisions: **Podcast Index is out**
+(2026-08-13, reversing the earlier plan — it needs a free key, and a key is
+something to configure, support and explain at the worst possible moment, while
+transcripts never came from a directory in the first place); **Mixcloud is Mode A
+only**, metadata browse with activation opening the show in the listener's own
+browser and the row saying so *before* activation, per its widget terms; and
+**LibriVox has no By Title**, because the catalogue supports no title filter in
+any form and an axis that quietly finds nothing is worse than one not offered.
+
+**Where you stopped (3.0; `core/radio/resume.py`, `ui/radio/resume_playback.py`).**
+Deliberately separate from `core/media/positions.py`, which Cast and the Media
+Player use: that store keys on a *file* by name and size, and nothing Radio plays
+here is a file. These key on the normalised stream URL, so a session token or a
+changed scheme still finds the place. A position under `MIN_RESUME_MS` is not a
+position and saving one *clears* the entry; within `END_MARGIN_MS` of the end
+counts as finished and clears it too; and every failure degrades to "no saved
+position" rather than reaching the player. Which rows have a timeline at all is
+`RadioStation.is_recording`, declared by the source that produced the row — a
+live station has no position worth remembering, because tuning in *is* the
+position.
+
+**Federated search over the libraries (Quill Radio 3.0;
+`core/radio/federated_search.py`, `ui/radio/library_search.py`).** LibriVox, the
+Internet Archive, Project Gutenberg and Apple Podcasts are queried alongside the
+station directories, into the **existing** results list — each row carries its
+own `RadioStation.source`, which the Source column renders and the Source filter
+narrows, and the cross-directory merge de-duplicates them unchanged. No new
+egress hosts. Four invariants: no cross-provider ranking (each source's order
+preserved within its group); one task per source, appended as they land with the
+reader's cursor preserved; one announcement when the last source reports; and a
+source that cannot answer free text declares `search=None` with a reason and is
+named, because "found nothing" and "cannot be asked" are different facts.
+
+**Video (Quill Radio 3.0; `core/radio/video_formats.py`,
+`core/radio/caption_style.py`, `ui/radio/video_window.py`,
+`ui/radio/video_commands.py`, `ui/radio/video_output.py`).** **Video is a view
+onto playback, never a mode of playback** — mpv's `wid` is set to the panel's
+handle and `vid` flipped `no`↔`auto` at runtime, so showing and hiding the
+picture never restarts the stream and never costs the position; never opening it
+leaves prior behaviour unchanged. Adaptive video and audio are two URLs, so a
+**video-only** format (≤1080p) is loaded and the audio handed to `audio-files`,
+avoiding a download-and-merge that would not be streaming at all. The surface
+carries an accessible name and description, sits in the tab order once with no
+trap, and never self-focuses; a top-level frame keeps the main window's tested
+tab order intact; there are no on-screen buttons and the status line is not a
+live region; the close handler opens no modal. Section 508 503.4 places Captions
+and Audio-and-Described-Audio beside Volume. Captions default to an **opaque**
+background (contrast over arbitrary video is otherwise unguaranteeable) and scale
+to 300%; automatic tracks are announced as such. Photosensitivity is answered
+with control rather than a claim: video never auto-starts, the picture dims, and
+hiding it is one keystroke from anywhere. No web player, no downloading, never
+the default; `YOUTUBE_CONSENT` rewritten, consent flag not reset.
+
+**Described audio (Quill Radio 3.0; `core/radio/audio_tracks.py`,
+`ui/radio/audio_track_dialog.py`, `ui/radio/track_selection.py`).** The product's
+reason for existing, stated as a requirement rather than a feature: a described
+audio track narrates what a sighted viewer can see, and the desktop state of the
+art is an audio-track menu reading "Track 1 / Track 2 / Track 3" — which for a
+blind listener is a puzzle, not a control. `is_described` is a **pure,
+unit-tested** predicate, generous about form (label, language tag, BCP 47
+`x-description` subtags) and strict about meaning, so the heuristic improves
+without touching UI; `describe_track` **names** each rendition and drops yt-dlp's
+quality notes. **Ctrl+Shift+A** lists them with the described track first and its
+availability announced above the list; **Ctrl+Alt+D** switches straight to it.
+Invariants: ordered never filtered; **position carried across the switch** (a
+rendition is a separate URL, so it is a reload, and losing an hour of a film to
+enable description would defeat the feature); absence reported with what the
+video *does* have, never a disabled command; and the selection cleared on every
+new play.
+
+**The shared transcript reader (`quill/ui/transcript_reader.py`).** The window
+the timed cue model existed for, opened by Quill Cast (**Read Transcript...**)
+and Quill Radio (**Transcript...**, Ctrl+Shift+T) alike — one window, because two
+would drift. A read-only `wx.TextCtrl` rather than a custom list, deliberately:
+arrow keys, word and line movement, selection, the screen reader's own review
+cursor and Find are all free and identical to everywhere else, and a list would
+have removed them and returned nothing. `line_starts` / `cue_index_for_offset`
+map character offsets to cues and back, so Enter seeks correctly however the
+caret arrived. Invariants: Follow Playback is **off by default** and silent while
+on; positions are spoken as words via `spoken_duration`; jump and follow are
+offered only where a seekable player exists and say why when they are not; Save
+As keeps the timings (`cues_to_vtt`, `cues_to_srt`, both round-trip-tested); an
+automatic caption track is labelled automatic. The player is injected as two
+callables, so the reader knows nothing about either app's controller.
+
+**A dropped live stream reconnects, in two layers (Quill Radio 3.0;
+`ui/radio/mpv_radio_engine.py`, `ui/radio/live_reconnect.py`,
+`core/radio/iheart.py`).** Reported fault: some stations play for about twenty
+seconds and stop, and one replayed its last five seconds. iHeart's
+`secure_hls_stream` answers 302 to a *per-listener* host carrying `rj-ttl=5`
+plus a session cookie, and the media playlist behind it holds three segments at
+`EXT-X-TARGETDURATION:10` — a thirty-second window refilled every ten seconds —
+so a single failed refresh drains the buffer and ends the stream twenty to
+thirty seconds later. The gap was total: no ffmpeg reconnect options were set at
+all, so one transient read error was terminal, and `_on_finished` read EOF on a
+live station as the end of the stream (`_attempt_engine_fallback`, the only
+retry that existed, is gated on `CONNECTING`). Three parts, and each answers a
+different failure: `stream-lavf-o` reconnect options heal the read below the
+player, where most of these belong and nothing needs announcing;
+`live_reconnect.py` retries a dropped **live** station three times at 2 s / 5 s /
+15 s with every attempt and outcome spoken; and `_STREAM_KEYS` prefers the
+progressive `secure_shoutcast_stream`, which has no segment window, no token and
+no per-listener session to lose. The invariants: a **bounded** source is never
+reconnected (a recording reaching its end has ended, and reconnecting replays
+it), a retry whose `_play_token` has moved on is dropped so Stop always wins, and
+"Reconnected" is spoken only from `_on_loaded` so no success is claimed that was
+not observed. Both `live_reconnect.py` and `engine_selection.py` are extractions
+from `player_controller.py` under GATE-11 — extract, never rebaseline.
+
+**Action rows, and the two branches you add to yourself (Quill Radio 3.0;
+`ui/radio/browse_actions.py`, `core/radio/my_servers.py`,
+`core/radio/youtube_channels.py`).** `BrowseNode.is_action` existed from the
+first day of the contract and `browse_tree_dialog` never handled it, so "Add a
+Server..." and "Add a Channel..." were rows that did nothing on Enter — the exact
+failure `bounded_playback_ui`'s house rule exists to prevent, and the only thing
+standing between those two branches and being usable. Dispatch is a registry in
+`browse_actions`, one entry per action, so the window still learns nothing
+source-specific. The shared rules: the address is **probed before it is stored**
+and one that answers with nothing is refused rather than kept as a dead row; the
+probe runs on `QuillTaskManager`, never the UI thread; and Safe Mode refuses out
+loud, per action, before anything is asked. `my_servers` carries the app's one
+deliberate plain-`http` exception — most small Icecast boxes are http on a high
+port, refusing them would refuse the audience the branch exists for, the address
+is one the listener typed, only a GET is sent, and no credential is attached.
+
+**TuneIn stream choice prefers progressive over HLS, host-scoped (Quill Radio
+3.0; `core/radio/tunein.py`).** The same failure mode as `iheart._STREAM_KEYS`,
+through a different directory. `best_stream` demotes an HLS manifest **only when
+a progressive URL on the same host exists** — because for the station that
+prompted it the two URLs are on different CDNs and the second one's query string
+names a different station id and a music genre where the station is sports, so a
+blind preference could play a different broadcaster entirely. Where the hosts
+differ, the reconnect layer covers the dropout instead. `_is_hls` matches the
+path only, since TuneIn URLs carry heavy tracking query strings.
+
+**A capture that recorded nothing is a failure, not a recording (Quill Radio
+3.0; `core/radio/recording_outcome.py`).** ffmpeg writes the output container the
+instant it opens the file, so file existence was never evidence that audio
+arrived — and a zero-byte job was reported through `on_state_changed`, which the
+frame announces as "Recording saved". The verdict now lives in one module:
+`captured_nothing` (missing, or under an 8 KiB floor — generous on purpose,
+because deleting wanted audio is far worse than keeping a very short file),
+`empty_capture_reason` (ffmpeg's own last stderr lines, most recent match first,
+falling back to an honest admission rather than a guess), `discard_empty_capture`,
+and the fatal/recovery classifiers that answer the same question.
+`RadioRecorder.on_capture_failed(station, reason)` is separate from
+`on_state_changed` because the two report opposite facts, and it is spoken on the
+error cue. A listener-stopped capture is exempt.
+
+**Song Details (Quill Radio 3.0; `ui/radio/song_facts.py`).** MusicBrainz
+release, year and length for a song in the history — opt-in (a button; a per-row
+lookup would spend a listener's connection on curiosity they did not express), on
+the task manager, self-rate-limited to one request per second, degrading to
+"nothing more is known" rather than to an HTTP message.
+
+**RadioDNS is a non-goal (2026-08-14).** The module was deleted rather than left
+as dead code: it resolves a broadcaster's service document from *broadcast*
+parameters (frequency, PI code, ECC), and QUILL has no source of PI codes, so
+wiring it would have meant a form asking for a value nobody has. `dnspython` was
+dropped with it.
+
 **JavaScript players — the Triton Digital / StreamTheWorld resolver
 (`core/radio/triton.py`).** A large class of broadcast stations (thousands of
 US AM/FM stations, and the entire `player.listenlive.co` network) put their
@@ -6203,6 +6448,235 @@ The Book Library gains **NLS BARD** as a search source alongside Project Gutenbe
 - **Scope: catalogue search only.** QUILL queries BARD's public metadata search and shows matching titles (title, authors, subjects) as ordinary Library results. It does **not** download or store BARD files — borrowing a title requires an eligible BARD patron account and is done on the BARD website. Each BARD result therefore carries a `site_url` (the title's stable `hdl.loc.gov` Library of Congress page), and the Library dialog offers an **Open in BARD** action that opens it in the browser. In-app borrowing of BARD titles is planned for a future release.
 - **No credentials, no key.** The search endpoint is unauthenticated; QUILL sends only the search terms. No BARD account, token, or secret is involved.
 - **Implementation.** `quill/core/library/bard.py` (`parse_search`, `search`) mirrors the other single-source providers; because BARD's search is an HTTP `POST` with a JSON body, `quill/core/library/http.py` gained `fetch_json_post` (same HTTPS-only, Safe-Mode, timeout and size-cap guarantees as `fetch_bytes`). `providers.py` registers the `"bard"` source; `quill/ui/library_dialog.py` adds the source and the accessible **Open in BARD** action. The new egress site is reviewed in `network_egress_audit.py` (GATE-9). Disabled in Safe Mode. Unit-tested in `tests/unit/core/library/test_library_catalog.py` and `tests/unit/ui/test_library_dialog.py`.
+
+---
+
+### 5.95a The Accessible Libraries Hub (Book Library, shipped)
+
+**Release scope** is 5.95's: developer-build-only, behind `QUILL_DEV_BUILD`.
+
+The Book Library stopped being a list of catalogues and became a hub over them.
+Three things changed, and each is here because of how the window *sounds* rather
+than how it looks.
+
+**One row per book, not one per library.** *Middlemarch* found in Project
+Gutenberg, Standard Ebooks, LibriVox and Open Library used to be four
+near-identical rows differing only in a source name near the end -- which under a
+screen reader means hearing the same title four times to learn one fact. Results
+are now `quill/core/library/works.py` `Work` records: every edition found, on one
+line, naming every library it came from.
+
+Grouping is on **normalised title and first author**, deliberately not on ISBN: a
+public-domain text and a volunteer recording of it share no identifier at all,
+and those are exactly the two rows worth joining. Titles lose subtitles
+(*Middlemarch: A Study of Provincial Life* is *Middlemarch*), authors reduce to a
+surname (*George Eliot*, *Eliot, George* and *Eliot, George, 1819-1880* are one
+person), and the **plainest title wins** as the row's own name. Nothing is
+hidden: an **Edition** chooser lists every library the work was found in, because
+"which edition" is a real question -- a professionally proofread Standard Ebooks
+EPUB is materially better with a screen reader than a raw scan, which is why it
+is marked *professionally proofread and formatted* and is the edition Enter acts
+on.
+
+**Every row says what can be done with it** -- the four-category rule, now real
+in code (`quill/core/library/availability.py`): *open now*, *catalog record*,
+*account required*, *partner integration required*. The category is computed from
+what the record **carries**, not from which provider returned it, because Open
+Library holds both public-domain texts QUILL can fetch and records it can only
+point at, and a rule keyed on the source name would get one of those wrong every
+time. Download and Download & Open are **disabled** on a row QUILL cannot open,
+which agrees with what the row already said; pressing them anyway explains rather
+than failing. Category 4 has no source today and exists so that adding a closed
+collection later cannot quietly present it as something it is not.
+
+**Read or listen is a property of the book, not a separate search.**
+`quill/core/library/audio_sources.py` maps a LibriVox recording to an ordinary
+`Book` carrying one `audio` format, which is all the grouping needs to put the
+recording and the text on one row that says *read or listen*. One result per
+recording rather than one per chapter: a LibriVox book is dozens of section
+files, and playing the whole thing in order is Quill Radio's job. This is the
+join nothing in QUILL previously made.
+
+**Open Library** (`quill/core/library/openlibrary.py`) is the new bibliographic
+source: it knows a book exists when none of the free libraries hold it. It asks
+for only the fields used rather than the whole record, and it is careful about
+one thing above all -- a **borrowable** scan is a catalog record, never a
+download. Reproducing controlled digital lending inside QUILL would be a worse
+version of Open Library's own site with more ways to fail, and offering a
+borrowable scan as a free full text would be QUILL claiming a right nobody
+granted. Only `public_scan_b` / `ebook_access: public` records carry a text.
+
+**Catalogs you add yourself** (`quill/core/library/catalogs.py`, `Catalogs...` in
+the Library window) is the payoff for building the ebook half on OPDS rather than
+one adapter per provider: a catalogue is a name and a URL, so a personal Calibre
+library, a school repository or a community collection becomes searchable with no
+QUILL release. Plain HTTP is **accepted and labelled** -- a library on a home
+network usually is not encrypted, and refusing those outright would rule out the
+case the feature mostly exists for, while a quiet downgrade would be worse than
+either. Removing a built-in **switches it off and says so**, because the
+built-ins are code and deleting one would only bring it back next launch. Stored
+atomically; classified `content` in the persistence audit.
+
+**The filter is local.** *Everything found / only what QUILL can open now / only
+books to read / only recordings to listen to* narrows what has already been
+fetched, so it costs nothing rather than a second wait, and a filter that hides
+everything says so rather than presenting an empty list -- an empty list and a
+failed search sound identical and are not the same thing. The status line counts
+by what can be done ("2 books found, 1 you can open here, 1 you can listen to")
+rather than totalling rows, because "40 results" of which two are openable is a
+worse answer than the truth.
+
+**Egress:** every call still funnels through `quill/core/library/http.py`, the
+library layer's single reviewed site, so Open Library and LibriVox added no new
+outbound site (GATE-9). Refused in Safe Mode like every other library fetch, and
+a slow catalogue returns nothing rather than failing the whole search.
+
+**Not built, deliberately:** in-app borrowing of anything, and any provider
+needing an organizational agreement.
+
+---
+
+### 5.84j Carrying your place between machines (QuillSync, wired)
+
+**Everything underneath this existed and nothing connected it.** The QuillSync
+engine (`core/sync/`) commits, pushes and pulls encrypted records;
+`core/media/positions.PositionStore` already satisfied its `RecordStore`
+protocol and `merge_positions` its `MergeFn`. What did not exist was anything
+that *moved a record*. `core/sync/places.py` is that adapter.
+
+**Two stores, one vault, one folder.** The media store keys on a file's
+contents; Quill Radio's `ResumeStore` keys on a normalised stream identity, and
+no single key can mean both. They therefore stay two stores and sync as two
+entity types over two commit logs, sharing one recovery phrase and one remote
+folder in separate subdirectories. `ResumeStore` gained the `RecordStore`
+contract and a `merge_resume_points` `MergeFn` to make that possible. Merging
+them into one identity space would mean inventing a key that is neither, and
+forcing every future provider into it.
+
+**Bring your own remote.** The transport is a folder
+(`FolderTransport`) -- in practice one inside whatever the listener already
+syncs: OneDrive, Dropbox, iCloud Drive, a network share, a stick carried between
+two machines. QUILL runs no server and holds nobody's listening history, and the
+contents are encrypted before they reach the folder, so its provider learns
+nothing but sizes and timings.
+
+**The key management story, which the plan had left open.** "Type this base64"
+was never an answer, and a self-chosen password for a key protecting a listening
+history is usually four characters and a birthday. So: a **recovery phrase** --
+eight words from a fixed 256-word list (`core/sync/recovery_phrase.py`), 64 bits
+in front of scrypt. The list is chosen for *listening*: nothing that sounds like
+anything else, short and common words only, and fixed forever, because the list
+*is* the format and editing it would invalidate every phrase already written
+down. Typing it back is forgiving about case, spacing and punctuation; a wrong
+word is **named** rather than the phrase merely refused, because with eight words
+read off paper "one of these is wrong" means checking all eight again; and
+*Read My Phrase Aloud* says it numbered, one word at a time, which is what
+somebody writing it down needs.
+
+**The salt travels, and so does a check value** (`core/sync/vault_file.py`). The
+second machine has only the phrase, so `quillsync/vault.json` in the remote
+folder carries the scrypt parameters, the salt, and one fixed known string
+encrypted with the derived key. That file gives nothing away -- a salt is not a
+secret -- and the check is what turns a mistyped phrase from *a decryption
+failure part-way through a pull* into *"that recovery phrase does not match this
+folder; nothing was changed"*. A vault is **never overwritten**: doing so would
+orphan every commit already there, unreadable forever, while the machine that
+did it appeared to sync correctly to an empty remote.
+
+**Local-first, always.** Sync is additive, nothing is called on a playback path,
+and the failures are sentences: a folder that has gone missing says so rather
+than reporting "everything was already up to date", which would be the most
+misleading thing this feature could possibly say. Syncing twice in a row
+manufactures no history -- a fingerprint of the store decides whether there is
+anything to commit -- so a machine left running does not grow a commit log made
+entirely of duplicates on somebody's cloud folder.
+
+The recovery phrase is stored in the platform credential store like every other
+secret; `core/sync/places_config.py` records only *that* one was saved, plus the
+folder, a device label, and whether to sync when playback stops (off by default:
+a write to somebody's cloud folder is a real cost and should be asked for).
+`ui/sync_places_dialog.py` is the setup window, built around the one question
+that makes or breaks the feature -- **is this the first machine or the second?**
+-- which it answers itself by looking at the folder rather than asking somebody
+who would have to already understand the thing they are setting up.
+
+---
+
+### 5.84i Continue Listening, across every provider
+
+**The problem was that four memories never met.** QUILL remembered where you
+were in a podcast episode (`episode.position_ms`), in a streamed recording
+(`core/radio/resume.py`), and in a local file (`core/media/positions.py`). Each
+worked. None of them could answer the question people actually have, which is
+*what was I in the middle of?*
+
+`core/media/continue_listening.py` gathers them into one list, newest first,
+**with the provider named on every row** -- because "The Moonstone, chapter 4"
+means something quite different depending on whether Enter starts a podcast, a
+stream, or a file, and a list that hides which is one you have to try things in
+to understand.
+
+Three decisions:
+
+- **Each source is asked separately and may fail alone.** A podcast library that
+  will not load must not cost you the LibriVox chapter you were halfway through.
+- **Only things that can actually be resumed.** Radio's store keys on a
+  normalised stream identity that deliberately cannot be turned back into an
+  address, so it gained `label` and `url` fields and the listing skips any entry
+  saved before they existed. An offer that cannot be honoured is worse than an
+  absence.
+- **Newest first, and that is the only order.** Not "most nearly finished", not
+  grouped by provider: the question is chronological and so is the answer.
+
+`ui/continue_listening_dialog.py` shows it; `ui/continue_listening_command.py`
+discovers the sources from the host's own attributes, so Quill Cast contributes
+podcasts, Quill Radio contributes recordings, and QUILL contributes both with no
+per-app copy of the list. **Resume is disabled** on a row the running app cannot
+play -- Cast has no radio player and Radio has no podcast library -- rather than
+silently declining. **Forget** is a first-class button: the reason people avoid
+a resume list is that it fills with things they abandoned on purpose, and the
+place is dropped while the episode stays unplayed, because "I am not going back
+to this" and "I finished it" are different statements.
+
+---
+
+### 5.97a Quill Inkwell: choices, application scope, and Quillin reach
+
+Three capabilities, each removing a reason people switch an expander off.
+
+**Choice fields.** `${choice:Label|one|two|three}` in an expansion offers its
+options instead of asking for typing (`core/expansion/fields.py`,
+`ui/fill_in_dialog.py`). Picking is one arrow key; typing *"Second reminder"*
+exactly right is a spelling test nobody asked to sit. The first option is the
+default, an answer that is not one of the options falls back to it (a choice
+whose result can be anything is not a choice), and the form asks in the order the
+template reads -- being asked for the closing before the greeting is
+disorienting when the form is heard rather than seen.
+
+**Per-application abbreviations.** `Abbreviation.apps` scopes an entry to named
+executables; empty means everywhere, which is every entry that exists today.
+Only Quill Inkwell honours it -- inside QUILL's editor there is one application
+and scoping to it could only ever switch an entry off. A signature belongs in a
+mail client and a code snippet in an editor, and an expander that fires both
+everywhere is one people turn off. A scoped entry does **not** fire when the
+foreground application cannot be identified: the safe direction for "I do not
+know where this would land" is not to type into it. Names are normalised on
+read, so a hand-edited `Outlook.exe` and `outlook` are one application rather
+than a comparison repeated on every keystroke.
+
+**Quillin abbreviations, system-wide.** A Quillin's contributed abbreviations
+used to stop at the edge of the editor, which is the wrong boundary.
+`core/expansion/contributed.py` discovers the same manifests and merges them for
+matching. The user's own entry always wins on a collision -- anything else means
+an installed extension silently changing what a key sequence does -- contributed
+entries are never persisted, so uninstalling a Quillin takes its abbreviations
+with it, and the merge is cached and rebuilt on Quillin reload rather than per
+keystroke.
+
+Inkwell's own preferences also adopted the **versioned persistence contract**: a
+`schema_version` stamp, every field defaulted individually on read, and a file
+written by a newer build is read but never written back over -- which is how a
+preference silently disappears when two machines run different builds.
 
 ---
 
@@ -10199,11 +10673,11 @@ apps.
 
 ---
 
-# Appendix: Engineering documentation
+## Appendix: Engineering documentation
 
 _Folded in from the former docs/QUILL-PRD.md on 2026-06-13._
 
-# QUILL engineering documentation
+## QUILL engineering documentation
 
 _Consolidated from the former docs/engineering/ folder on 2026-06-13. Each section preserves the original document in full._
 
@@ -10212,7 +10686,7 @@ _Consolidated from the former docs/engineering/ folder on 2026-06-13. Each secti
 
 <!-- Source: docs/engineering/thread-safety.md -->
 
-# Thread-safety invariants
+## Thread-safety invariants
 
 This note documents the concurrency invariants for Quill's module-level and
 shared caches (CQ-17). It is the canonical reference for how the lazily-loaded
@@ -10362,7 +10836,7 @@ are two design systems.
 | QuillBeacon | a place-marker pin | crimson |
 | QUILL Social | two overlapping speech bubbles | plum |
 
-# Docs-artifact regeneration pipeline
+## Docs-artifact regeneration pipeline
 
 This note documents how Quill keeps each `docs/**/*.md` source in sync with its
 rendered `.html` and `.epub` artifacts, and how the GitHub Actions workflows that
@@ -10475,7 +10949,7 @@ behavioral simulation before relying on CI.
 
 <!-- Source: docs/engineering/macos-build.md -->
 
-# Building Quill for macOS
+## Building Quill for macOS
 
 The macOS build reuses the cross-platform wxPython core plus the
 `quill/platform/macos/` adapters. See issue #42 for the full plan.
@@ -10540,7 +11014,7 @@ A full-codebase audit of QUILL's macOS support landed a batch of fixes that clos
 
 <!-- Source: docs/engineering/security-advisory-workflow.md -->
 
-# Security Advisory Workflow
+## Security Advisory Workflow
 
 This runbook defines how QUILL handles private vulnerability coordination.
 
@@ -10580,7 +11054,7 @@ This runbook defines how QUILL handles private vulnerability coordination.
 
 <!-- Source: docs/engineering/dialog-estate-report.md -->
 
-# QUILL Dialog Estate Report (DLG-3)
+## QUILL Dialog Estate Report (DLG-3)
 
 _Last updated: 2026-06-04_
 
@@ -10678,7 +11152,7 @@ No dialog was flattened; live search, lists, and preview panes are preserved.
 
 <!-- Source: docs/engineering/installer-evaluation.md -->
 
-# Windows installer evaluation and rethink
+## Windows installer evaluation and rethink
 
 This document evaluates the QUILL Windows installer (Inno Setup), grounded in
 what QUILL actually ships, and records the changes made plus a forward-looking
@@ -10806,7 +11280,7 @@ python -m pytest tests/unit/scripts/test_build_windows_distribution.py -q
 
 <!-- Source: docs/engineering/blocked-items-completion-guide.md -->
 
-# Blocked-items completion guide — the exact path to Done on the environment-gated 1.0 features
+## Blocked-items completion guide — the exact path to Done on the environment-gated 1.0 features
 
 Status as of 2026-06-03. A small set of QUILL 1.0 items are honestly "In progress"
 or "Todo" in `docs/planning/ROADMAP.md` because they are genuinely blocked on something that cannot
@@ -11259,11 +11733,11 @@ no further code. AI-19 still needs real code plus a live provider.
 
 ---
 
-# Appendix: Accessibility documentation
+## Appendix: Accessibility documentation
 
 _Folded in from the former docs/QUILL-PRD.md on 2026-06-13 (ACR/VPAT conformance report + announcement-grammar style guide)._
 
-# QUILL accessibility documentation
+## QUILL accessibility documentation
 
 _Consolidated from the former docs/accessibility/ folder on 2026-06-13. Each section preserves the original document in full._
 
@@ -11272,7 +11746,7 @@ _Consolidated from the former docs/accessibility/ folder on 2026-06-13. Each sec
 
 <!-- Source: docs/accessibility/acr-vpat.md -->
 
-# Accessibility Conformance Report (ACR)
+## Accessibility Conformance Report (ACR)
 
 ## Report details
 
@@ -11308,7 +11782,7 @@ _Consolidated from the former docs/accessibility/ folder on 2026-06-13. Each sec
 
 <!-- Source: docs/accessibility/announcement-style-guide.md -->
 
-# Announcement style guide
+## Announcement style guide
 
 This guide defines the shared grammar for every status message and
 screen-reader announcement in Quill. A single predictable shape lets users of
@@ -11383,11 +11857,11 @@ rather than hand-building strings, and keep this document in sync with them.
 
 ---
 
-# Appendix: QA test plan
+## Appendix: QA test plan
 
 _Folded in from the former docs/QUILL-PRD.md on 2026-06-13._
 
-# QUILL QA documentation
+## QUILL QA documentation
 
 _Consolidated from the former docs/qa/ folder on 2026-06-13. Each section preserves the original document in full._
 
@@ -11396,7 +11870,7 @@ _Consolidated from the former docs/qa/ folder on 2026-06-13. Each section preser
 
 <!-- Source: docs/qa/final-qa-test-plan.md -->
 
-# QUILL 1.0 final-QA test plan
+## QUILL 1.0 final-QA test plan
 
 Status: living document — execution owned by the maintainer for the Tier 6
 release gate (DLG-3.8). This is the authoritative manual and exploratory test
@@ -11663,11 +12137,11 @@ the deferred SR-verification criteria of DLG-2 and DLG-3.6.
 
 ---
 
-# Appendix: Deployment
+## Appendix: Deployment
 
 _Folded in from the former docs/QUILL-PRD.md on 2026-06-13._
 
-# QUILL Deployment Guide
+## QUILL Deployment Guide
 
 Covers distribution, update packaging, pack distribution, and release best practices.
 
@@ -12164,11 +12638,11 @@ feed.
 
 ---
 
-# Appendix: AccessibleApps integration
+## Appendix: AccessibleApps integration
 
 _Folded in from the former docs/QUILL-PRD.md on 2026-06-13._
 
-# AccessibleApps Integration Strategy for Quill
+## AccessibleApps Integration Strategy for Quill
 
 ## Overview
 
@@ -12395,11 +12869,11 @@ Links:
 
 ---
 
-# Appendix: Native RTF editing and Ulysses study (design)
+## Appendix: Native RTF editing and Ulysses study (design)
 
 _Folded in from the former docs/QUILL-PRD.md on 2026-06-13._
 
-# QUILL: Native RTF Editing and a Ulysses Competitive Study
+## QUILL: Native RTF Editing and a Ulysses Competitive Study
 
 Two forward-looking proposals in one place. Part One asks what it would take for
 QUILL to host a real rich-text editing surface so a writer can choose between

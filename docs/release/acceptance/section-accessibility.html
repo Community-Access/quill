@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Section — Accessibility (cross-cutting, applies to every
-feature)</title>
+  <title>section-accessibility</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,31 +174,10 @@ feature)</title>
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
-id="section--accessibility-cross-cutting-applies-to-every-feature">Section
+id="section-accessibility-cross-cutting-applies-to-every-feature">Section
 — Accessibility (cross-cutting, applies to every feature)</h1>
 <p>This section is different from the feature sections. It does not test
 one menu; it tests the <strong>promises QUILL makes about <em>every</em>
@@ -239,148 +217,113 @@ unplugged</strong> (keyboard only), then again reading with your screen
 reader’s review / virtual cursor. If you ever reach for the mouse to
 finish a step, that alone fails <strong>Accessible</strong>.</p>
 <hr />
-<h2 id="a11y-01--do-a-whole-task-with-the-mouse-unplugged">A11Y-01 — Do
-a whole task with the mouse unplugged</h2>
+<h2 id="a11y-01-do-a-whole-task-with-the-mouse-unplugged">A11Y-01 — Do a
+whole task with the mouse unplugged</h2>
 <p><em>What &amp; why.</em> The core promise: a screen-reader user with
 no mouse can complete real work end to end. If any single step needs a
 pointer, the app is not usable for its primary audience.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>Physically unplug the mouse</strong> (or disable the
-trackpad). Leave it unplugged for this whole section.</li>
-<li><code>../qa-samples/</code> on disk.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+O</strong>; in the Open dialog type or arrow to
-<strong><code>plain.txt</code></strong>; press
-<strong>Enter</strong>.</li>
-<li>In the editor, type the word
-<strong><code>accessible</code></strong> at the caret.</li>
-<li>Press <strong>Ctrl+S</strong> to save.</li>
-<li>Press <strong>Alt</strong> to enter the menu bar, arrow to
-<strong>File</strong>, arrow to <strong>Close Document</strong>, press
-<strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>Every step completes from the keyboard alone: the file opens with
-focus landing in the editor (announced as <strong>Document</strong>,
-multi-line text area); your typed word reads back; the save is confirmed
-aloud and the title bar’s <strong>modified marker clears</strong>; the
-document closes and focus moves to another open document or a clean
-empty state — <strong>never to nowhere</strong>. At no point were you
-forced to click.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>Physically unplug the
+mouse</strong> (or disable the trackpad). Leave it unplugged for this
+whole section. - <code>../qa-samples/</code> on disk.</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+O</strong>; in the
+Open dialog type or arrow to <strong><code>plain.txt</code></strong>;
+press <strong>Enter</strong>. 2. In the editor, type the word
+<strong><code>accessible</code></strong> at the caret. 3. Press
+<strong>Ctrl+S</strong> to save. 4. Press <strong>Alt</strong> to enter
+the menu bar, arrow to <strong>File</strong>, arrow to <strong>Close
+Document</strong>, press <strong>Enter</strong>.</p>
+<p><strong>You should see and hear (and feel)</strong> - Every step
+completes from the keyboard alone: the file opens with focus landing in
+the editor (announced as <strong>Document</strong>, multi-line text
+area); your typed word reads back; the save is confirmed aloud and the
+title bar’s <strong>modified marker clears</strong>; the document closes
+and focus moves to another open document or a clean empty state —
+<strong>never to nowhere</strong>. At no point were you forced to
+click.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="a11y-02--tab--shifttab-move-through-a-dialog-in-a-sensible-order">A11Y-02
+id="a11y-02-tab-shifttab-move-through-a-dialog-in-a-sensible-order">A11Y-02
 — Tab / Shift+Tab move through a dialog in a sensible order</h2>
 <p><em>What &amp; why.</em> In any dialog, Tab must walk the controls in
 the order a person reads them, and Shift+Tab must walk back. A jumbled
 or dead-ending tab order strands a keyboard user.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Any document open. You will use a plain multi-field dialog —
-<strong>File menu ▸ Header and Footer…</strong> (or <strong>Page
-Setup…</strong> if your build routes header/footer through the system
-dialog).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the dialog (<strong>Alt, F</strong>, then arrow to the item,
-<strong>Enter</strong>).</li>
-<li>Press <strong>Tab</strong> repeatedly and listen to each control’s
-name/role as focus lands.</li>
-<li>From somewhere in the middle, press <strong>Shift+Tab</strong>
-several times.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li><strong>Tab</strong> visits each field, then the buttons, in a
-logical top-to-bottom order and eventually cycles (it never lands on
-nothing and never jumps out of the dialog while it is open).
+<p><strong>Before you start</strong> - Any document open. You will use a
+plain multi-field dialog — <strong>File menu ▸ Header and
+Footer…</strong> (or <strong>Page Setup…</strong> if your build routes
+header/footer through the system dialog).</p>
+<p><strong>Do this</strong> 1. Open the dialog (<strong>Alt, F</strong>,
+then arrow to the item, <strong>Enter</strong>). 2. Press
+<strong>Tab</strong> repeatedly and listen to each control’s name/role
+as focus lands. 3. From somewhere in the middle, press
+<strong>Shift+Tab</strong> several times.</p>
+<p><strong>You should see and hear (and feel)</strong> -
+<strong>Tab</strong> visits each field, then the buttons, in a logical
+top-to-bottom order and eventually cycles (it never lands on nothing and
+never jumps out of the dialog while it is open).
 <strong>Shift+Tab</strong> retraces the same path backward. Each stop
-announces a <strong>name and a role</strong> (e.g. “Test Header, edit”;
+announces a <strong>name and a role</strong> (e.g. “Test Header, edit”;
 “OK, button”). No stop is silent or announced only as a bare role
-(“edit”, “button”) with no name.</li>
-</ul>
+(“edit”, “button”) with no name.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="a11y-03--escape-cancels-and-returns-focus-to-the-control-that-opened-the-dialog">A11Y-03
+id="a11y-03-escape-cancels-and-returns-focus-to-the-control-that-opened-the-dialog">A11Y-03
 — Escape cancels and returns focus to the control that opened the
 dialog</h2>
 <p><em>What &amp; why.</em> Escape must always back out of a dialog with
 no change, and focus must snap back to exactly where you were — the menu
 item or button you opened it from — so you never lose your place. This
 is the <code>apply_modal_ids</code> contract.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>plain.txt</code> open. Note where the caret is (e.g. start of
-line 1).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open <strong>File menu ▸ Header and Footer…</strong> (or any modal
-dialog you can reach).</li>
-<li>Type something into the first field so the dialog is “dirty”.</li>
-<li>Press <strong>Escape</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>The dialog closes with <strong>no change saved</strong> (re-open it:
-the field is empty again). Focus <strong>returns to the opener</strong>
-— the File menu item / the editor — not to some unrelated control and
-not to nowhere. If the screen reader goes silent after Escape, focus was
-lost: that is a fail.</li>
-</ul>
+<p><strong>Before you start</strong> - <code>plain.txt</code> open. Note
+where the caret is (e.g. start of line 1).</p>
+<p><strong>Do this</strong> 1. Open <strong>File menu ▸ Header and
+Footer…</strong> (or any modal dialog you can reach). 2. Type something
+into the first field so the dialog is “dirty”. 3. Press
+<strong>Escape</strong>.</p>
+<p><strong>You should see and hear (and feel)</strong> - The dialog
+closes with <strong>no change saved</strong> (re-open it: the field is
+empty again). Focus <strong>returns to the opener</strong> — the File
+menu item / the editor — not to some unrelated control and not to
+nowhere. If the screen reader goes silent after Escape, focus was lost:
+that is a fail.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="a11y-04--enter-activates-the-default-button">A11Y-04 — Enter
+<h2 id="a11y-04-enter-activates-the-default-button">A11Y-04 — Enter
 activates the default button</h2>
 <p><em>What &amp; why.</em> Pressing Enter from anywhere in a dialog
 should fire its default (usually OK / Save), so a keyboard user does not
 have to Tab to a button first. Destructive defaults are the exception —
 those must confirm, not just fire.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Any document open. Use <strong>File menu ▸ Header and
-Footer…</strong>.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the dialog; type <strong><code>Test Header</code></strong> in
-the first field.</li>
-<li>Without tabbing to any button, press <strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>The default button fires — the dialog accepts the value and closes —
-and the outcome is announced (focus returns to the editor). Re-open the
-dialog to confirm <strong><code>Test Header</code></strong> was kept.
-Cross-check the guard case: on a <strong>destructive</strong>
-confirmation (e.g. the unsaved-changes prompt on Close), Enter must
-<strong>not</strong> silently discard work — the safe choice is the
-default or the action is spoken and cancellable (§3).</li>
-</ul>
+<p><strong>Before you start</strong> - Any document open. Use
+<strong>File menu ▸ Header and Footer…</strong>.</p>
+<p><strong>Do this</strong> 1. Open the dialog; type
+<strong><code>Test Header</code></strong> in the first field. 2. Without
+tabbing to any button, press <strong>Enter</strong>.</p>
+<p><strong>You should see and hear (and feel)</strong> - The default
+button fires — the dialog accepts the value and closes — and the outcome
+is announced (focus returns to the editor). Re-open the dialog to
+confirm <strong><code>Test Header</code></strong> was kept. Cross-check
+the guard case: on a <strong>destructive</strong> confirmation (e.g. the
+unsaved-changes prompt on Close), Enter must <strong>not</strong>
+silently discard work — the safe choice is the default or the action is
+spoken and cancellable (§3).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="a11y-05--every-focusable-control-has-an-accessible-name-spotting-an-unnamed-one-by-ear">A11Y-05
+id="a11y-05-every-focusable-control-has-an-accessible-name-spotting-an-unnamed-one-by-ear">A11Y-05
 — Every focusable control has an accessible name (spotting an unnamed
 one by ear)</h2>
 <p><em>What &amp; why.</em> If a control has no name, a screen reader
@@ -388,156 +331,118 @@ can only say its <strong>role</strong> — “edit”, “button”, “list” 
 nothing to tell you <em>which</em> one. QUILL’s
 <code>accessible_name_audit</code> gate exists to prevent exactly this.
 Here you learn to hear the failure.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Open a dialog that is dense with fields. Good choices: <strong>Help
-▸ Application Status</strong> (tabbed lists), or an AI authoring /
-model-search dialog if AI is configured. Any multi-field surface
-works.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the dialog.</li>
-<li><strong>Tab</strong> through every control, one at a time. For each,
-say out loud what you heard: does it have a <strong>human name</strong>,
-or only a role?</li>
-<li>Listen specifically for two failure sounds: a bare role with
-<strong>no name</strong> (“edit” … silence), and a <strong>snake_case /
-code name</strong> spelled or run together (“status underscore
-overview”, “status overview” read as an identifier rather than
-words).</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>Every stop announces a <strong>readable name + role</strong>, e.g.
-“Status overview, list”; “Refresh, button”; “Search models, edit”.
+<p><strong>Before you start</strong> - Open a dialog that is dense with
+fields. Good choices: <strong>Help ▸ Application Status</strong> (tabbed
+lists), or an AI authoring / model-search dialog if AI is configured.
+Any multi-field surface works.</p>
+<p><strong>Do this</strong> 1. Open the dialog. 2. <strong>Tab</strong>
+through every control, one at a time. For each, say out loud what you
+heard: does it have a <strong>human name</strong>, or only a role? 3.
+Listen specifically for two failure sounds: a bare role with <strong>no
+name</strong> (“edit” … silence), and a <strong>snake_case / code
+name</strong> spelled or run together (“status underscore overview”,
+“status overview” read as an identifier rather than words).</p>
+<p><strong>You should see and hear (and feel)</strong> - Every stop
+announces a <strong>readable name + role</strong>, e.g. “Status
+overview, list”; “Refresh, button”; “Search models, edit”.
 <strong>No</strong> control is nameless, and <strong>none</strong> reads
 as a raw identifier (<code>status_overview</code>, letter-for-letter or
 underscore spoken). A single unnamed or code-named focusable control is
-a fail — note exactly which control and what it said.</li>
-</ul>
+a fail — note exactly which control and what it said.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="a11y-06--roles-are-correct-an-edit-sounds-like-an-edit-a-list-like-a-list">A11Y-06
+id="a11y-06-roles-are-correct-an-edit-sounds-like-an-edit-a-list-like-a-list">A11Y-06
 — Roles are correct: an edit sounds like an edit, a list like a
 list</h2>
 <p><em>What &amp; why.</em> A name is not enough — the
 <strong>role</strong> must match what the control really is, or the
-screen reader gives the wrong navigation hints (e.g. announcing a text
+screen reader gives the wrong navigation hints (e.g. announcing a text
 area as read-only, or a list as a plain pane). This confirms the editor
 and a list surface expose the right role and state.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>plain.txt</code> open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Move focus into the editor text area.</li>
-<li>Type a few words, then select them
-(<strong>Shift+Home</strong>).</li>
-<li>Open <strong>Help ▸ Application Status</strong>; Tab to one of its
-lists and arrow within it.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>The editor announces as <strong>Document</strong>, <strong>edit /
+<p><strong>Before you start</strong> - <code>plain.txt</code> open.</p>
+<p><strong>Do this</strong> 1. Move focus into the editor text area. 2.
+Type a few words, then select them (<strong>Shift+Home</strong>). 3.
+Open <strong>Help ▸ Application Status</strong>; Tab to one of its lists
+and arrow within it.</p>
+<p><strong>You should see and hear (and feel)</strong> - The editor
+announces as <strong>Document</strong>, <strong>edit /
 text-area</strong> role, <strong>multi-line</strong>; typed text reads
 back and the <strong>selection is announced</strong> and stays visible
 when focus leaves. The Application-Status list announces as a
 <strong>list</strong> with items you can arrow through (item count /
 position spoken). A control whose spoken role contradicts its behaviour
 (a real text area announced as a button, an interactive list announced
-as static text) is a fail.</li>
-</ul>
+as static text) is a fail.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="a11y-07--menu-mnemonics-and-shortcuts-work-with-no-mnemonic-collisions">A11Y-07
+id="a11y-07-menu-mnemonics-and-shortcuts-work-with-no-mnemonic-collisions">A11Y-07
 — Menu mnemonics and shortcuts work, with no mnemonic collisions</h2>
 <p><em>What &amp; why.</em> Every top menu and item carries an
 <strong>underlined letter</strong> (a mnemonic) you can press after Alt,
-plus its accelerator (e.g. Ctrl+S). Two items in the same menu must not
+plus its accelerator (e.g. Ctrl+S). Two items in the same menu must not
 share a mnemonic, or one becomes unreachable by letter.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Any document open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Alt</strong> to enter the menu bar. Note the
-underlined letter on each top menu (<strong>F</strong>ile,
-<strong>E</strong>dit, …); press each letter in turn to open that
-menu.</li>
-<li>Inside one open menu (e.g. File), press <strong>Down</strong>
-through every item and, for each, note the underlined letter the screen
-reader announces.</li>
-<li>Type a mnemonic letter within the open menu and confirm exactly one
-item responds. Then close the menu and confirm the printed
-<strong>accelerator</strong> for a couple of items (e.g.
-<strong>Ctrl+S</strong> Save, <strong>Ctrl+O</strong> Open) actually
-fires the command.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li><strong>Alt</strong> enters the menu bar (announced); each top-level
+<p><strong>Before you start</strong> - Any document open.</p>
+<p><strong>Do this</strong> 1. Press <strong>Alt</strong> to enter the
+menu bar. Note the underlined letter on each top menu
+(<strong>F</strong>ile, <strong>E</strong>dit, …); press each letter in
+turn to open that menu. 2. Inside one open menu (e.g. File), press
+<strong>Down</strong> through every item and, for each, note the
+underlined letter the screen reader announces. 3. Type a mnemonic letter
+within the open menu and confirm exactly one item responds. Then close
+the menu and confirm the printed <strong>accelerator</strong> for a
+couple of items (e.g. <strong>Ctrl+S</strong> Save,
+<strong>Ctrl+O</strong> Open) actually fires the command.</p>
+<p><strong>You should see and hear (and feel)</strong> -
+<strong>Alt</strong> enters the menu bar (announced); each top-level
 letter opens its menu. Within a menu, <strong>no two enabled items share
 the same mnemonic</strong> — pressing a letter activates one item
 unambiguously, or (if the platform cycles duplicates) the screen reader
 clearly moves between them rather than silently doing nothing. The
 printed accelerators fire their commands. A duplicated mnemonic that
 makes an item unreachable by letter is a fail — record the menu and the
-two items.</li>
-</ul>
+two items.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="a11y-08--no-silent-state-changes-every-outcome-is-announced">A11Y-08
+id="a11y-08-no-silent-state-changes-every-outcome-is-announced">A11Y-08
 — No silent state changes: every outcome is announced</h2>
 <p><em>What &amp; why.</em> QUILL’s <strong>GATE-12</strong> promise is
 that a user-visible change never happens in silence — a toggle, a mode
 switch, a save, a count all speak. A screen-reader user who hears
 nothing has no way to know it worked.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>plain.txt</code> open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Fire a <strong>toggle</strong> with a spoken outcome — e.g.
-<strong>File menu ▸ Toggle Line Endings</strong> (or a View toggle such
-as word-wrap). Do it, then do it again to flip back.</li>
-<li>Fire a <strong>save</strong>: press <strong>Ctrl+S</strong> after
-making one edit.</li>
-<li>Fire a <strong>navigation/status</strong> action with a spoken
-result — e.g. the focus-status-bar command, or Go To Line — anything
-that changes state.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>Each action produces an <strong>immediate spoken announcement of the
-new state</strong> — e.g. “Line endings: Unix (LF)”, then “Windows
-(CRLF)” on the second press; a save confirmation with the modified
-marker clearing; the status/position spoken. A toggle that changes the
-app but says <strong>nothing</strong> is an accessibility fail even
-though it “worked” — note which action was silent.</li>
-</ul>
+<p><strong>Before you start</strong> - <code>plain.txt</code> open.</p>
+<p><strong>Do this</strong> 1. Fire a <strong>toggle</strong> with a
+spoken outcome — e.g. <strong>File menu ▸ Toggle Line Endings</strong>
+(or a View toggle such as word-wrap). Do it, then do it again to flip
+back. 2. Fire a <strong>save</strong>: press <strong>Ctrl+S</strong>
+after making one edit. 3. Fire a <strong>navigation/status</strong>
+action with a spoken result — e.g. the focus-status-bar command, or Go
+To Line — anything that changes state.</p>
+<p><strong>You should see and hear (and feel)</strong> - Each action
+produces an <strong>immediate spoken announcement of the new
+state</strong> — e.g. “Line endings: Unix (LF)”, then “Windows (CRLF)”
+on the second press; a save confirmation with the modified marker
+clearing; the status/position spoken. A toggle that changes the app but
+says <strong>nothing</strong> is an accessibility fail even though it
+“worked” — note which action was silent.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="a11y-09--a-validation-error-speaks-and-moves-focus-to-the-field-to-fix">A11Y-09
+id="a11y-09-a-validation-error-speaks-and-moves-focus-to-the-field-to-fix">A11Y-09
 — A validation error speaks <em>and</em> moves focus to the field to
 fix</h2>
 <p><em>What &amp; why.</em> When a form rejects your input, two things
@@ -545,36 +450,28 @@ must happen together: the error is <strong>announced</strong>, and focus
 <strong>moves to the offending field</strong> so you can correct it
 without hunting. Announcing an error while leaving focus on the button
 is a half-failure that strands a keyboard user.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>Precondition:</strong> a way to open a validating form. The
-reference case is the GitHub open-repository form (<strong>File ▸ Open
-Remote GitHub Repository…</strong>). If GitHub is not configured,
-substitute any dialog with a required/format-checked field, or mark
-<strong>Blocked</strong> and say why.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the form.</li>
-<li>Leave the required field empty (or enter a value in the wrong
-format, e.g. a repo name with no <code>/</code>).</li>
-<li>Activate the submit/Load button.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>The rejection is <strong>spoken</strong> (“Enter a repository name…”
-/ “Repository must be in owner/repo format.”), <strong>and</strong>
-focus lands <strong>in the field to fix</strong>, not on the button you
-just pressed. You can immediately type the correction. Silence, or a
-spoken error with focus left on the button, is a fail.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>Precondition:</strong> a
+way to open a validating form. The reference case is the GitHub
+open-repository form (<strong>File ▸ Open Remote GitHub
+Repository…</strong>). If GitHub is not configured, substitute any
+dialog with a required/format-checked field, or mark
+<strong>Blocked</strong> and say why.</p>
+<p><strong>Do this</strong> 1. Open the form. 2. Leave the required
+field empty (or enter a value in the wrong format, e.g. a repo name with
+no <code>/</code>). 3. Activate the submit/Load button.</p>
+<p><strong>You should see and hear (and feel)</strong> - The rejection
+is <strong>spoken</strong> (“Enter a repository name…” / “Repository
+must be in owner/repo format.”), <strong>and</strong> focus lands
+<strong>in the field to fix</strong>, not on the button you just
+pressed. You can immediately type the correction. Silence, or a spoken
+error with focus left on the button, is a fail.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="a11y-10--announcements-mirror-to-a-refreshable-braille-display-editor-radio-cast">A11Y-10
+id="a11y-10-announcements-mirror-to-a-refreshable-braille-display-editor-radio-cast">A11Y-10
 — Announcements mirror to a refreshable braille display (Editor, Radio,
 Cast)</h2>
 <p><em>What &amp; why.</em> A braille user who has speech muted must
@@ -583,90 +480,73 @@ display</strong>. The <strong>#1283</strong> path mirrors every
 announcement to braille (Settings ▸ <code>announcement_braille</code>,
 on by default) and must do so in the editor <strong>and</strong> in the
 standalone Quill Radio app.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>Precondition:</strong> a <strong>refreshable braille
-display</strong> connected and driving your screen reader. <strong>If
-you have no braille hardware, mark this Blocked</strong> and say so — it
-cannot be felt without a display.</li>
-<li>Confirm braille mirroring is enabled (it is on by default).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>In the editor, fire an announcing action — <strong>Ctrl+S</strong>
-on an edited <code>plain.txt</code>, or <strong>Toggle Line
-Endings</strong>. Read the braille display.</li>
-<li>Launch <strong>Quill Radio</strong> (QuillVille switcher). Perform
-an announcing action there (e.g. play/stop, or change station); read the
-braille display.</li>
-<li><strong>Cast:</strong> the <strong>Quill Cast</strong> app is
-<strong>gated out of the public 1.0 build</strong> — mark the Cast leg
-<strong>N/A</strong> on a public build. On a dev/admin build
-(<code>QUILL_DEV_BUILD=1</code>) only, repeat step 2 in Cast.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>The same message you <strong>hear</strong> also appears <strong>on
-the braille cells</strong> — the save confirmation, the line-ending
-mode, the Radio state — in both the editor and Radio. It routes through
-the active braille backend without throwing (a braille failure is
-recorded, never crashes the app). If speech spoke but the display stayed
-blank, that is the #1283 failure — note which surface.</li>
-<li><strong>Note:</strong> Cast is not present in a public build; do not
-fail its leg for being absent — mark <strong>N/A</strong> and confirm
-its true absence in <code>gated-absence.md</code>.</li>
-</ul>
+<p><strong>Before you start</strong> - <strong>Precondition:</strong> a
+<strong>refreshable braille display</strong> connected and driving your
+screen reader. <strong>If you have no braille hardware, mark this
+Blocked</strong> and say so — it cannot be felt without a display. -
+Confirm braille mirroring is enabled (it is on by default).</p>
+<p><strong>Do this</strong> 1. In the editor, fire an announcing action
+— <strong>Ctrl+S</strong> on an edited <code>plain.txt</code>, or
+<strong>Toggle Line Endings</strong>. Read the braille display. 2.
+Launch <strong>Quill Radio</strong> (QuillVille switcher). Perform an
+announcing action there (e.g. play/stop, or change station); read the
+braille display. 3. <strong>Cast:</strong> the <strong>Quill
+Cast</strong> app is <strong>gated out of the public 1.0 build</strong>
+— mark the Cast leg <strong>N/A</strong> on a public build. On a
+dev/admin build (<code>QUILL_DEV_BUILD=1</code>) only, repeat step 2 in
+Cast.</p>
+<p><strong>You should see and hear (and feel)</strong> - The same
+message you <strong>hear</strong> also appears <strong>on the braille
+cells</strong> — the save confirmation, the line-ending mode, the Radio
+state — in both the editor and Radio. It routes through the active
+braille backend without throwing (a braille failure is recorded, never
+crashes the app). If speech spoke but the display stayed blank, that is
+the #1283 failure — note which surface. - <strong>Note:</strong> Cast is
+not present in a public build; do not fail its leg for being absent —
+mark <strong>N/A</strong> and confirm its true absence in
+<code>gated-absence.md</code>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="a11y-11--the-screen-reader-matrix-one-representative-task-under-each-sr">A11Y-11
+id="a11y-11-the-screen-reader-matrix-one-representative-task-under-each-sr">A11Y-11
 — The screen-reader matrix: one representative task under each SR</h2>
 <p><em>What &amp; why.</em> QUILL commits to <strong>NVDA, JAWS,
 Narrator</strong> (Windows) and <strong>VoiceOver</strong> (macOS,
 environment <strong>E5</strong>). The same task must succeed and be
 announced correctly under each — a control named for NVDA can still be
 mute under JAWS.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>The representative task is <strong>A11Y-01</strong> (open
-<code>plain.txt</code>, type a word, save, close).</li>
-<li>Have <strong>NVDA</strong>, <strong>JAWS</strong>, and
+<p><strong>Before you start</strong> - The representative task is
+<strong>A11Y-01</strong> (open <code>plain.txt</code>, type a word,
+save, close). - Have <strong>NVDA</strong>, <strong>JAWS</strong>, and
 <strong>Narrator</strong> available on Windows. On <strong>E5</strong>
 (macOS app bundle) have <strong>VoiceOver</strong>. On a Windows-only
 run, mark the VoiceOver row <strong>N/A</strong> and note it will be
-covered on E5.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Start <strong>NVDA</strong>. Run the A11Y-01 task start to finish,
-keyboard only; record the actual spoken text at each step.</li>
-<li>Quit NVDA, start <strong>JAWS</strong>. Repeat the same task; record
-what it said.</li>
-<li>Quit JAWS, start <strong>Narrator</strong>. Repeat; record.</li>
-<li>On <strong>E5 only</strong>: with <strong>VoiceOver</strong> on,
-repeat; record.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>Under <strong>each</strong> screen reader the task completes by
-keyboard, focus lands correctly (editor announced as Document; close
-returns focus sensibly), and the save is spoken with the modified marker
-clearing. Exact wording differs per SR — that is expected — but the
-<strong>name, role, state, and load-bearing values</strong> must be
-present and correct in all of them. A step that works under one SR but
-is silent or misnamed under another is a fail for that SR; record which
-one and the words.</li>
-</ul>
+covered on E5.</p>
+<p><strong>Do this</strong> 1. Start <strong>NVDA</strong>. Run the
+A11Y-01 task start to finish, keyboard only; record the actual spoken
+text at each step. 2. Quit NVDA, start <strong>JAWS</strong>. Repeat the
+same task; record what it said. 3. Quit JAWS, start
+<strong>Narrator</strong>. Repeat; record. 4. On <strong>E5
+only</strong>: with <strong>VoiceOver</strong> on, repeat; record.</p>
+<p><strong>You should see and hear (and feel)</strong> - Under
+<strong>each</strong> screen reader the task completes by keyboard,
+focus lands correctly (editor announced as Document; close returns focus
+sensibly), and the save is spoken with the modified marker clearing.
+Exact wording differs per SR — that is expected — but the <strong>name,
+role, state, and load-bearing values</strong> must be present and
+correct in all of them. A step that works under one SR but is silent or
+misnamed under another is a fail for that SR; record which one and the
+words.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="a11y-12--high-contrast-theme-and-reduced-motion-are-respected">A11Y-12
+id="a11y-12-high-contrast-theme-and-reduced-motion-are-respected">A11Y-12
 — High-contrast theme and reduced-motion are respected</h2>
 <p><em>What &amp; why.</em> Low-vision users who are not on a screen
 reader rely on the OS <strong>high-contrast</strong> theme and, where
@@ -674,83 +554,63 @@ the OS asks for it, <strong>reduced motion</strong>. QUILL’s native wx
 controls should repaint under high contrast and stay legible; any
 animation must never be the <em>only</em> signal that something
 happened.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Any document open.</li>
-<li>Know how to toggle Windows <strong>High Contrast</strong> (Left Alt
-+ Left Shift + Print Screen, or Settings ▸ Accessibility ▸ Contrast
-themes) and <strong>Animation effects</strong> off (Settings ▸
-Accessibility ▸ Visual effects).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Turn <strong>High Contrast</strong> on. Look at QUILL: menus, dialog
-fields, the editor, the status bar.</li>
-<li>Open a dialog (e.g. Header and Footer…) and read its fields under
-the theme.</li>
-<li>Turn <strong>reduce animations</strong> on. Trigger anything with
+<p><strong>Before you start</strong> - Any document open. - Know how to
+toggle Windows <strong>High Contrast</strong> (Left Alt + Left Shift +
+Print Screen, or Settings ▸ Accessibility ▸ Contrast themes) and
+<strong>Animation effects</strong> off (Settings ▸ Accessibility ▸
+Visual effects).</p>
+<p><strong>Do this</strong> 1. Turn <strong>High Contrast</strong> on.
+Look at QUILL: menus, dialog fields, the editor, the status bar. 2. Open
+a dialog (e.g. Header and Footer…) and read its fields under the theme.
+3. Turn <strong>reduce animations</strong> on. Trigger anything with
 progress/motion (a save, a conversion, any spinner) and confirm you can
-still tell it happened.</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>Under high contrast, text and controls repaint to the theme’s
-colours and stay <strong>readable</strong> (no invisible text on a
-same-colour background, no controls that vanish into the background).
-With reduced motion, outcomes are still conveyed by <strong>text /
-speech / a settled end state</strong>, not by animation alone.</li>
-<li><strong>Note:</strong> QUILL is screen-reader-first and largely
-non-animated; if the build has no bespoke theming it inherits the OS/wx
-high-contrast behaviour — that is acceptable as long as everything stays
-legible. If a surface has custom colours that ignore the OS theme, or a
-spinner is the sole indicator, fail and record the surface.</li>
-</ul>
+still tell it happened.</p>
+<p><strong>You should see and hear (and feel)</strong> - Under high
+contrast, text and controls repaint to the theme’s colours and stay
+<strong>readable</strong> (no invisible text on a same-colour
+background, no controls that vanish into the background). With reduced
+motion, outcomes are still conveyed by <strong>text / speech / a settled
+end state</strong>, not by animation alone. - <strong>Note:</strong>
+QUILL is screen-reader-first and largely non-animated; if the build has
+no bespoke theming it inherits the OS/wx high-contrast behaviour — that
+is acceptable as long as everything stays legible. If a surface has
+custom colours that ignore the OS theme, or a spinner is the sole
+indicator, fail and record the surface.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="a11y-13--focus-is-never-lost-and-never-trapped">A11Y-13 — Focus
+<h2 id="a11y-13-focus-is-never-lost-and-never-trapped">A11Y-13 — Focus
 is never lost and never trapped</h2>
 <p><em>What &amp; why.</em> Two opposite failures strand a keyboard
 user: focus <strong>lost</strong> (Tab lands on nothing; the SR goes
 silent), or focus <strong>trapped</strong> (a control eats Tab so you
 can never leave it). Neither may happen anywhere in QUILL.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>plain.txt</code> open, and a second document (Ctrl+N) so the
-tab bar exists.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>From the editor, press <strong>Tab</strong> and keep pressing it,
-listening at every stop, all the way around the main window (editor →
-controls → menu region → back). Note any stop that is
-<strong>silent</strong> or any point where Tab <strong>stops
-responding</strong>.</li>
-<li>Focus the <strong>editor text area</strong> and press
-<strong>Tab</strong> once — confirm focus <strong>leaves</strong> the
-editor to the next control (it must not insert a tab character or trap
-you).</li>
-<li>Focus a <strong>multi-line prose field</strong> in any dialog (e.g.
-a Note / prompt body) and press <strong>Tab</strong> — confirm focus
-moves to the next control.</li>
-<li>Open a dialog and close it with <strong>Escape</strong>; confirm
-focus returns (cross-check with A11Y-03).</li>
-</ol>
-<p><strong>You should see and hear (and feel)</strong></p>
-<ul>
-<li>Tab always moves to a <strong>named, announced</strong> control and
-eventually cycles — it never lands on nothing and never dead-ends in
-silence. The editor and prose fields <strong>let Tab out</strong> (no
-tab character inserted, no trap). Focus after any dialog closes is
-accounted for.</li>
-<li><strong>Note:</strong> the restricted-Python <strong>code
+<p><strong>Before you start</strong> - <code>plain.txt</code> open, and
+a second document (Ctrl+N) so the tab bar exists.</p>
+<p><strong>Do this</strong> 1. From the editor, press
+<strong>Tab</strong> and keep pressing it, listening at every stop, all
+the way around the main window (editor → controls → menu region → back).
+Note any stop that is <strong>silent</strong> or any point where Tab
+<strong>stops responding</strong>. 2. Focus the <strong>editor text
+area</strong> and press <strong>Tab</strong> once — confirm focus
+<strong>leaves</strong> the editor to the next control (it must not
+insert a tab character or trap you). 3. Focus a <strong>multi-line prose
+field</strong> in any dialog (e.g. a Note / prompt body) and press
+<strong>Tab</strong> — confirm focus moves to the next control. 4. Open
+a dialog and close it with <strong>Escape</strong>; confirm focus
+returns (cross-check with A11Y-03).</p>
+<p><strong>You should see and hear (and feel)</strong> - Tab always
+moves to a <strong>named, announced</strong> control and eventually
+cycles — it never lands on nothing and never dead-ends in silence. The
+editor and prose fields <strong>let Tab out</strong> (no tab character
+inserted, no trap). Focus after any dialog closes is accounted for. -
+<strong>Note:</strong> the restricted-Python <strong>code
 editor</strong> field is a deliberate exception — it keeps Tab for
 indentation and does not yet offer a keyboard focus-exit (a recorded
 follow-up, not a new fail). If you test that specific field, confirm the
-documented behaviour and note it; do not fail the section for it.</li>
-</ul>
+documented behaviour and note it; do not fail the section for it.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -768,6 +628,5 @@ documented behaviour and note it; do not fail the section for it.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
-</main>
 </body>
 </html>

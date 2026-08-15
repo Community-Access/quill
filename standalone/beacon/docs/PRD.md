@@ -2604,7 +2604,7 @@ The following artifacts should be created from this PRD:
 
 ---
 
-# Appendix A: Candidate names considered
+## Appendix A: Candidate names considered
 
 ## QuillBeacon — recommended
 
@@ -2660,7 +2660,7 @@ Concern:
 
 ---
 
-# Appendix B: Command vocabulary
+## Appendix B: Command vocabulary
 
 Suggested commands:
 
@@ -2693,7 +2693,7 @@ Suggested commands:
 
 ---
 
-# Appendix C: Definition of outstanding
+## Appendix C: Definition of outstanding
 
 QuillBeacon is outstanding when:
 
@@ -2710,7 +2710,7 @@ QuillBeacon is outstanding when:
 
 ---
 
-# 44. Implementation plan (grounded in the QUILL stack)
+## 44. Implementation plan (grounded in the QUILL stack)
 
 This section maps the product vision onto the real QUILL engineering stack so
 delivery is concrete rather than aspirational. It is the bridge between the
@@ -2991,7 +2991,7 @@ every network surface is behind an injectable or optional dependency.
 
 ---
 
-# 45. QuillSync implementation plan (aligned with QUILL Sync)
+## 45. QuillSync implementation plan (aligned with QUILL Sync)
 
 Section 23 sketched a conventional PostgreSQL-plus-object-storage sync server.
 The QUILL platform already has a sync design -- QUILL Sync in
@@ -3375,7 +3375,7 @@ on a new device with a magic link, then restore the vault from a recovery
 kit or via trusted-device approval (PRD 23.4). The accessible warning that
 losing every authorized device and recovery method may make end-to-end
 encrypted data unrecoverable is presented in plain text before enrollment.
-# 46. QuillSync as the shared sync framework
+## 46. QuillSync as the shared sync framework
 
 ## 46.1 The framework lives here
 
@@ -3445,7 +3445,7 @@ change when the server is upgraded. Auth is magic-link (45.9) for all apps;
 device tokens are scoped per app namespace so a Beacon device token cannot read
 Quill Cast objects (PRD 23.3 device revocation rotates per-app keys).
 
-# 47. Intelligent assistance (local heuristics, no AI required)
+## 47. Intelligent assistance (local heuristics, no AI required)
 
 Phase 5 adds on-device assists that run without any model or network call
 (`quill_beacon/assist.py`). They are opt-in menu actions, never background

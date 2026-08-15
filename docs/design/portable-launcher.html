@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Portable &amp; Installed Launcher Contract</title>
+  <title>portable-launcher</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,30 +174,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="portable--installed-launcher-contract">Portable &amp; Installed
+<h1 id="portable-installed-launcher-contract">Portable &amp; Installed
 Launcher Contract</h1>
 <blockquote>
 <p><strong>Why this file exists.</strong> Twice now the Windows launcher
@@ -208,7 +187,7 @@ cannot return unnoticed. The rules below are enforced by tests in
 <code>tests/unit/scripts/test_build_windows_distribution.py</code>; if
 you change the packaging, change this doc and those guards together.</p>
 </blockquote>
-<h2 id="1-the-one-invariant">1. The one invariant</h2>
+<h2 id="the-one-invariant">1. The one invariant</h2>
 <p><strong>The <code>quill.exe</code> a user clicks must sit in the same
 directory as the embedded Python runtime it needs
 (<code>python313.dll</code>, <code>python313.zip</code>,
@@ -231,7 +210,7 @@ with a system Python it binds to the wrong interpreter and crashes. This
 is the bug.</li>
 <li><strong>A self-run hook.</strong> See §2.</li>
 </ol>
-<h2 id="2-how-quillexe-self-runs-sitecustomizepy">2. How
+<h2 id="how-quill.exe-self-runs-sitecustomize.py">2. How
 <code>quill.exe</code> self-runs: <code>sitecustomize.py</code></h2>
 <p>The build writes a generated <code>sitecustomize.py</code> next to
 the runtime (<code>scripts/build_windows_distribution.py</code> →
@@ -260,6 +239,11 @@ nothing.</li>
 </ul>
 <p>So:</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Invocation</th>
@@ -286,7 +270,7 @@ nothing.</li>
 installer registers)</td>
 </tr>
 <tr>
-<td><code>python.exe ...</code>, <code>pip ...</code> (incl. during the
+<td><code>python.exe ...</code>, <code>pip ...</code> (incl. during the
 build)</td>
 <td>no-op</td>
 <td>normal Python</td>
@@ -305,8 +289,7 @@ rejects a bare <code>--action</code> option and would otherwise run the
 file as a script; the <code>sitecustomize</code> file-association branch
 above is the safety net for associations a user sets manually (whose
 command is just <code>quill.exe "%1"</code>).</p>
-<h2 id="3-the-layout-flat-not-nested">3. The layout: flat, not
-nested</h2>
+<h2 id="the-layout-flat-not-nested">3. The layout: flat, not nested</h2>
 <p>The portable bundle and the installed app both use a
 <strong>flat</strong> layout — the embedded runtime is unpacked at the
 bundle/install root, beside <code>quill.exe</code>:</p>
@@ -385,7 +368,7 @@ extract-over-old would leave the stale <code>python\</code> subfolder
 beside the new flat runtime. It is harmless (the flat
 <code>quill.exe</code> ignores it), but it is clutter and confusing. The
 README advises a clean extract.</p>
-<h2 id="4-portable-mode-detection-depends-on-this">4. Portable-mode
+<h2 id="portable-mode-detection-depends-on-this">4. Portable-mode
 detection depends on this</h2>
 <p><code>quill.core.storage_mode._has_portable_evidence</code> marks a
 bundle “portable” when the anchor has <strong><code>quill.exe</code> + a
@@ -401,7 +384,7 @@ portable.</li>
 <code>quill.exe</code> runs from the root (flat) — the supported layout
 — or, defensively, one level down.</li>
 </ul>
-<h2 id="5-regression-guards-do-not-remove">5. Regression guards (do not
+<h2 id="regression-guards-do-not-remove">5. Regression guards (do not
 remove)</h2>
 <p>In
 <code>tests/unit/scripts/test_build_windows_distribution.py</code>:</p>
@@ -435,7 +418,7 @@ subdir</strong>, and a <code>data/</code> folder.</li>
 — <code>installer/quill.iss</code> is the exact generator output;
 regenerate it when the generator changes.</li>
 </ul>
-<h2 id="6-manual-verification-before-a-release">6. Manual verification
+<h2 id="manual-verification-before-a-release">6. Manual verification
 before a release</h2>
 <p>After building (or before re-uploading a portable zip):</p>
 <ol type="1">
@@ -452,7 +435,7 @@ non-GUI smoke check that the flat runtime loads.)</li>
 <strong>and</strong> by double-clicking <code>{app}\quill.exe</code>
 directly — both must work.</li>
 </ol>
-<h2 id="7-things-that-will-re-break-this--dont">7. Things that will
+<h2 id="things-that-will-re-break-this-dont">7. Things that will
 re-break this — don’t</h2>
 <ul>
 <li>Re-nesting the runtime under <code>python\</code> while leaving
@@ -467,6 +450,5 @@ vanish on zip/unzip).</li>
 <li>Hand-editing <code>installer/quill.iss</code> (it is generated; edit
 <code>build_inno_setup_script()</code> and regenerate).</li>
 </ul>
-</main>
 </body>
 </html>

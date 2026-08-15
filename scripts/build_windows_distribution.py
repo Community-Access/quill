@@ -1877,6 +1877,7 @@ def bundle_embedded_python(
 
     _install_vendored_glow(python_exe, source_root)
     _stage_table_uia(site_packages, source_root)
+    _stage_optilab_adapter(target_dir, source_root)
     _prune_embedded_runtime(site_packages)
 
     if identity is not None:
@@ -1987,6 +1988,43 @@ def _stage_table_uia(site_packages: Path, source_root: Path) -> None:
         print(f"Staged native UIA provider {existing.name} into the runtime.")
     else:
         print("No native UIA provider built; Table Studio ships with the MSAA fallback.")
+
+
+def _stage_optilab_adapter(runtime_dir: Path, source_root: Path) -> None:
+    """Build (best-effort) and stage ``quill-optilab``, the OptiLab Core adapter.
+
+    OptiLab Core is by Lanes Audio / dgl1984, vendored at v1.4.0 under
+    ``quill/native/optilab/upstream`` (Apache-2.0 WITH Commons Clause); its
+    LICENSE and NOTICE ship beside the executable, which is a real obligation
+    now that the engine is redistributed rather than merely imitated.
+
+    Entirely optional, exactly like the native UIA provider above: with no C++
+    toolchain the adapter is absent, "exact OptiLab processing" says so in the
+    UI, and everything else works as before. It goes next to the app rather than
+    into site-packages because it is an executable QUILL runs, not a module it
+    imports (``optilab_adapter.find_adapter`` looks beside the app first).
+    """
+    native_dir = source_root / "quill" / "native" / "optilab"
+    if not native_dir.is_dir():
+        return
+    exe_name = "quill-optilab.exe"
+    existing = native_dir / exe_name
+    if not existing.is_file():
+        build_script = source_root / "scripts" / "build_native_optilab.py"
+        if build_script.is_file():
+            try:
+                subprocess.run([sys.executable, str(build_script)], cwd=source_root, check=False)
+            except Exception as exc:  # noqa: BLE001 - optional; never fail the build
+                print(f"OptiLab adapter build skipped: {exc}")
+    if existing.is_file():
+        shutil.copy2(existing, runtime_dir / exe_name)
+        for notice in ("LICENSE", "NOTICE"):
+            source = native_dir / "upstream" / notice
+            if source.is_file():
+                shutil.copy2(source, runtime_dir / f"OptiLabCore-{notice}.txt")
+        print("Staged the OptiLab adapter (with its LICENSE and NOTICE) into the build.")
+    else:
+        print("No OptiLab adapter built; exact OptiLab processing will be unavailable.")
 
 
 def _prune_embedded_runtime(site_packages: Path) -> None:

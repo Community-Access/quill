@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL QA sample-document corpus</title>
+  <title>README</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,29 +174,8 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="quill-qa-sample-document-corpus">QUILL QA sample-document
 corpus</h1>
 <p>Small, purpose-built input documents for <strong>manual</strong>
@@ -212,6 +191,11 @@ suite and nothing here is asserted by CI.</p>
 contents, alt text, and screen-reader wording, so editing a sample
 silently invalidates the “Expected” fields that depend on it.</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>File</th>
@@ -244,7 +228,7 @@ in a cell; Save-As table fidelity</td>
 <td>One caption sentence above a <strong>3-column</strong> table with a
 header row (Region/Device/Notes) and <strong>3 body rows</strong>; the
 South row’s Device cell contains the literal pipe
-<strong><code>Phone | Watch</code></strong> (must stay one cell, not
+<strong><code>Phone \| Watch</code></strong> (must stay one cell, not
 split); last cell is East/Laptop/Backordered so the “end of table” edge
 is reachable</td>
 </tr>
@@ -345,6 +329,5 @@ endings, or the scenario they support becomes untestable.</li>
 <code>qa-core-journeys.md</code> (and <code>../acceptance/</code>) in
 the same change.</li>
 </ul>
-</main>
 </body>
 </html>

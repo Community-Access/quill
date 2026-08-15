@@ -2,6 +2,11 @@
 
 Uses only stdlib urllib so it runs without ``requests``. The bridge listens on
 an ephemeral port (port=0) and writes to a temp data dir.
+
+The request timeout is deliberately generous: these are loopback calls, so a
+slow one means the machine is busy (a full-suite run) rather than that the
+bridge is broken, and a timeout surfaces as an uncaught URLError -- a failure
+about load wearing the costume of a failure about behaviour.
 """
 
 from __future__ import annotations
@@ -26,7 +31,7 @@ def _get(url, token=None, origin=None):
     if origin:
         req.add_header("Origin", origin)
     try:
-        with urllib.request.urlopen(req, timeout=5) as r:
+        with urllib.request.urlopen(req, timeout=30) as r:
             return r.status, json.loads(r.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         return e.code, json.loads(e.read().decode("utf-8"))
@@ -41,7 +46,7 @@ def _post(url, body, token=None, origin=None):
     if origin:
         req.add_header("Origin", origin)
     try:
-        with urllib.request.urlopen(req, timeout=5) as r:
+        with urllib.request.urlopen(req, timeout=30) as r:
             return r.status, json.loads(r.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         return e.code, json.loads(e.read().decode("utf-8"))

@@ -263,7 +263,16 @@ class TestInboxCaps:
         assert {e.guid for _s, e in inbox_pairs(library)} == {"e0", "e1"}
 
     def test_the_age_cap_drops_older_episodes(self) -> None:
-        library, _show = self._library(age_hours=48)
+        # 36 hours, not 48, so no episode sits *exactly* on the cap. The
+        # episodes are built 0, 1, 2, 3 and 4 days old from one `now()` and
+        # trimmed against a second one, and `trim_inbox` keeps an episode whose
+        # age equals the cap (`stamped < cutoff`). With a 48-hour cap the
+        # two-day-old episode is on the line and the answer depends on whether
+        # those two `now()` calls landed in the same clock tick -- which on
+        # Windows, where the wall clock moves in ~15ms steps, they sometimes do.
+        # 36 hours falls squarely between the one- and two-day episodes, so the
+        # test measures the rule instead of the clock.
+        library, _show = self._library(age_hours=36)
 
         trim_inbox(library)
 

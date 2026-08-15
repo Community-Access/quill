@@ -47,6 +47,7 @@ from collections.abc import Callable
 import wx
 
 from quill.ui.audio.mpv_engine import _MpvClient, find_libmpv
+from quill.ui.radio.mpv_video_mixin import VideoOutputMixin
 
 _log = logging.getLogger(__name__)
 
@@ -74,7 +75,32 @@ def _pick_mpv_title(get_str: Callable[[str], str | None], current_url: str) -> s
 _POLL_MS = 200
 #: mpv's own bound on a stalled network connect/read; a dead URL errors out
 #: in seconds instead of hanging "connecting..." forever.
-_NETWORK_TIMEOUT_SECONDS = 15
+#:
+#: Raised from 15 to 30 for the HLS case (quill-radio, John 2026-08-13). An
+#: iHeart HLS media playlist advertises ``EXT-X-TARGETDURATION:10`` and only
+#: advances every ten seconds, so a segment fetch that waits out one normal
+#: refresh plus ordinary jitter was brushing against a fifteen-second ceiling
+#: and reading as a dead stream. Thirty still errors a genuinely dead URL out
+#: quickly enough to be spoken while somebody is still listening for it.
+_NETWORK_TIMEOUT_SECONDS = 30
+#: ffmpeg-level reconnect, passed through to the demuxer as `stream-lavf-o`.
+#:
+#: Without these a **single** failed read is terminal: mpv reaches EOF, the poll
+#: reports ACTION_FINISHED, and a live station stops. That is the exact shape of
+#: the reported KFI fault -- iHeart serves those stations as HLS with a
+#: three-segment (30-second) window behind a per-listener redirect and a
+#: five-second token, so one missed playlist refresh drains the buffer and the
+#: audio simply runs out twenty to thirty seconds later.
+#:
+#: ``reconnect_streamed`` is the one that matters here: without it ffmpeg
+#: refuses to reconnect a non-seekable stream, which is every live station.
+#: ``reconnect_delay_max`` bounds the retry backoff so a genuinely dead server
+#: still fails rather than retrying forever behind a silent player -- the
+#: controller's own bounded reconnect (``live_reconnect.py``) is the layer that
+#: then speaks.
+_STREAM_LAVF_OPTIONS = (
+    "reconnect=1,reconnect_streamed=1,reconnect_on_network_error=1,reconnect_delay_max=30"
+)
 #: The live-radio DVR buffer: mpv's demuxer cache keeps this much of the
 #: stream behind (and ahead while paused), which is what makes pausing a
 #: live show and rewinding it possible at all. 50 MiB is roughly 45
@@ -215,7 +241,7 @@ def mpv_output_device_available() -> bool:
         return False
 
 
-class MpvRadioEngine:
+class MpvRadioEngine(VideoOutputMixin):
     """The libmpv radio engine: live-stream readiness + ``audio-device``.
 
     Satisfies the parts of the ``AudioEngine`` protocol the radio controller
@@ -239,6 +265,8 @@ class MpvRadioEngine:
             raise OSError("libmpv is not installed")
         self._mpv = _MpvClient(dll_path)
         self._mpv.set_str("network-timeout", str(_NETWORK_TIMEOUT_SECONDS))
+        # Self-heal a transient read failure instead of ending the stream.
+        self._mpv.set_str("stream-lavf-o", _STREAM_LAVF_OPTIONS)
         # Identify as Quill Radio (not the default "libmpv") in station logs
         # (quill-radio #6).
         from quill.core import http_client

@@ -92,6 +92,28 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; WorkingDir: "
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
+; Opt-in, and unchecked: taking over a file type without being asked is how an
+; installer earns a reputation. Somebody who exported a subscription list from
+; another podcast app can then open it the way they open anything else.
+Name: "opmlassoc"; Description: "Open &subscription lists (.opml) with {#AppName}"; GroupDescription: "File types:"; Flags: unchecked
+
+[Registry]
+; The .opml association, written under HKA so it follows the install scope --
+; per-user for the default lowest-privileges install, machine-wide when the
+; user elevated. uninsdeletekey/uninsdeletevalue means uninstalling gives the
+; extension back rather than leaving a dead handler behind.
+;
+; Deliberately NOT the ".xml" extension, though the app accepts one on the
+; command line: .xml belongs to no single application and claiming it would
+; break unrelated files. A .xml subscription list still imports fine through
+; Import OPML... or by dragging it onto the app.
+Root: HKA; Subkey: "Software\Classes\.opml"; ValueType: string; ValueName: ""; ValueData: "QUILLCast.opml"; Flags: uninsdeletevalue; Tasks: opmlassoc
+Root: HKA; Subkey: "Software\Classes\QUILLCast.opml"; ValueType: string; ValueName: ""; ValueData: "Podcast subscription list"; Flags: uninsdeletekey; Tasks: opmlassoc
+Root: HKA; Subkey: "Software\Classes\QUILLCast.opml\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#AppExeName},0"; Tasks: opmlassoc
+Root: HKA; Subkey: "Software\Classes\QUILLCast.opml\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Tasks: opmlassoc
+; Listed in Explorer's "Open with" for .opml even when it is not the default,
+; so a file that belongs to another app can still be sent here once.
+Root: HKA; Subkey: "Software\Classes\.opml\OpenWithProgids"; ValueType: string; ValueName: "QUILLCast.opml"; ValueData: ""; Flags: uninsdeletevalue; Tasks: opmlassoc
 
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked

@@ -49,6 +49,11 @@ _SITEMAP_INDEX = "https://www.iheart.com/sitemap.xml"
 #: sitemap carries no category). Genres list + live stations for one genre;
 #: each station row embeds its own stream URLs, so no per-station page GET.
 _API_GENRES = "https://us.api.iheart.com/api/v2/content/genre"
+#: The same keyless content API's market (city) directory. 317 markets on
+#: 2026-08-13, each carrying its city, state, country and station count, and
+#: ``liveStations`` accepts ``marketId`` exactly as it accepts ``genreId``. This
+#: is the "by city" axis commercial catalogues charge for.
+_API_MARKETS = "https://us.api.iheart.com/api/v2/content/markets"
 _API_LIVE_STATIONS = "https://us.api.iheart.com/api/v2/content/liveStations"
 #: Stations pulled per genre for the browse tree (bounded; one genre is then
 #: grouped A-Z under its folder). Generous enough to cover a genre in full
@@ -95,9 +100,56 @@ class IHeartGenre:
     name: str
 
 
-#: iHeart's per-station ``streams`` dict, most-preferred key first (HTTPS HLS
-#: before plain, HLS before PLS playlist).
-_STREAM_KEYS = ("secure_hls_stream", "secure_pls_stream", "hls_stream", "pls_stream")
+@dataclass(slots=True)
+class IHeartMarket:
+    """One browsable iHeart market -- a city, with the state that disambiguates
+    it and the number of stations in it.
+
+    The station count is why this is worth a browse node rather than a search:
+    a folder can say "Phoenix, 34 stations" before the listener spends a round
+    trip opening it.
+    """
+
+    market_id: int
+    city: str
+    state: str = ""
+    country: str = ""
+    station_count: int = 0
+
+    @property
+    def display_name(self) -> str:
+        """ "Phoenix, AZ" -- the state disambiguates the many repeated city
+        names, and is omitted when the market has none."""
+        return f"{self.city}, {self.state}" if self.state else self.city
+
+
+#: iHeart's per-station ``streams`` dict, most-preferred key first: encrypted
+#: before plain, and **progressive before HLS**.
+#:
+#: The progressive preference is deliberate and was a bug fix (John, 2026-08-13:
+#: "KFI plays for about 20 seconds and then stops"). iHeart's HLS form is
+#: structurally fragile for a listener: requesting
+#: ``https://stream.revma.ihrhls.com/zc177/hls.m3u8`` answers 302 to a
+#: *per-listener* host carrying ``rj-ttl=5`` -- a five-second token -- plus a
+#: session cookie, and the media playlist behind it holds three segments, a
+#: thirty-second window that must be topped up every ten seconds. One failed
+#: refresh drains the buffer and the audio runs out twenty to thirty seconds
+#: later, which is exactly what was reported.
+#:
+#: ``secure_shoutcast_stream`` is the same audio as one long HTTP body: no
+#: segment window, no per-refresh token, no per-listener session to lose. It
+#: streamed sixty seconds clean under probe (59/59 unique one-second PCM
+#: hashes, so no replayed audio either) where the HLS form is the one that
+#: fails intermittently in the field. HLS stays as the fallback, because some
+#: stations publish nothing else.
+_STREAM_KEYS = (
+    "secure_shoutcast_stream",
+    "shoutcast_stream",
+    "secure_hls_stream",
+    "secure_pls_stream",
+    "hls_stream",
+    "pls_stream",
+)
 
 
 def _best_stream(streams: object) -> str:
@@ -408,4 +460,64 @@ def fetch_genre_stations(
     on a network failure or a Safe Mode refusal."""
     refuse_in_safe_mode(safe_mode)
     url = f"{_API_LIVE_STATIONS}?genreId={int(genre_id)}&limit={int(limit)}"
+    return parse_genre_stations(_fetch(url))
+
+
+def parse_markets(json_text: str) -> list[IHeartMarket]:
+    """Parse the market directory into :class:`IHeartMarket` (pure).
+
+    Sorted by city so the A-Z grouping above it is stable; markets without a
+    city name are dropped, and malformed input yields ``[]``.
+    """
+    import json
+
+    try:
+        data = json.loads(json_text)
+    except (ValueError, TypeError):
+        return []
+    hits = data.get("hits") if isinstance(data, dict) else None
+    if not isinstance(hits, list):
+        return []
+    markets: list[IHeartMarket] = []
+    for hit in hits:
+        if not isinstance(hit, dict):
+            continue
+        market_id = hit.get("marketId")
+        city = str(hit.get("city", "")).strip()
+        if not isinstance(market_id, int) or not city:
+            continue
+        markets.append(
+            IHeartMarket(
+                market_id=market_id,
+                city=city,
+                state=str(hit.get("stateAbbreviation", "")).strip(),
+                country=str(hit.get("countryName", "")).strip(),
+                station_count=int(hit.get("stationCount") or 0),
+            )
+        )
+    markets.sort(key=lambda m: (m.city.casefold(), m.state))
+    return markets
+
+
+def fetch_markets(*, limit: int = 400, safe_mode: bool = False) -> list[IHeartMarket]:
+    """Every iHeart market -- one keyless JSON GET.
+
+    The whole directory is 317 markets, so a single request covers it; the
+    limit is a guard against the list growing without anyone noticing, not a
+    page size.
+    """
+    refuse_in_safe_mode(safe_mode)
+    return parse_markets(_fetch(f"{_API_MARKETS}?limit={int(limit)}"))
+
+
+def fetch_market_stations(
+    market_id: int, *, limit: int = _GENRE_STATION_LIMIT, safe_mode: bool = False
+) -> list[RadioStation]:
+    """The live stations in one iHeart market -- one keyless JSON GET.
+
+    Same row shape as a genre's stations, streams already embedded, so it
+    reuses the same parser rather than a near-copy of it.
+    """
+    refuse_in_safe_mode(safe_mode)
+    url = f"{_API_LIVE_STATIONS}?marketId={int(market_id)}&limit={int(limit)}"
     return parse_genre_stations(_fetch(url))

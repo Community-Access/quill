@@ -29,15 +29,25 @@ from typing import Any
 #: someone to agree to something that will not happen, which is a worse kind of
 #: wrong than saying too little. What is still worth consenting to is the part
 #: that remains true: adding the station means contacting YouTube.
+#: Rewritten when video shipped. The old text promised only that Quill Radio
+#: found "the audio stream behind the page", which stopped being the whole truth
+#: the moment a picture could be shown -- and a consent notice that understates
+#: what happens is not consent. The **flag** deliberately does not reset:
+#: somebody who consented to YouTube has consented to YouTube, and asking twice
+#: for a superset of the same thing is friction rather than ethics. The change is
+#: stated plainly in the release notes for everyone who already agreed.
 YOUTUBE_CONSENT = (
     "Adding a YouTube link lets Quill Radio play and record it like any other "
-    "station. To do that it contacts YouTube to find the audio stream behind "
-    "the page, every time the station plays -- YouTube's own stream addresses "
-    "expire after a few hours.\n\n"
+    "station. To do that it contacts YouTube to find the audio -- or, if you ask "
+    "to see the picture, the video -- behind the page, every time the station "
+    "plays. YouTube's own stream addresses expire after a few hours.\n\n"
+    "Quill Radio plays audio only unless you press Show Video. It never "
+    "downloads a video, and it never embeds YouTube's own player.\n\n"
     "The component that does this, yt-dlp, is already included; nothing is "
     "downloaded or installed.\n\n"
-    "Only record content you have the right to record. QUILL sends no account "
-    "or credential to YouTube, and this is unavailable in Safe Mode.\n\n"
+    "Only play or record content you have the right to. Video raises more of "
+    "those questions than audio does. QUILL sends no account or credential to "
+    "YouTube, and this is unavailable in Safe Mode.\n\n"
     "Continue?"
 )
 

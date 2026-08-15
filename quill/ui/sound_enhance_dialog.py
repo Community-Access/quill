@@ -43,6 +43,19 @@ _CHANNEL_ORDER = ("stereo", "mono", "left", "right")
 #: OptiLab mode Choice order -- index maps to the stored ``optilab_mode``.
 _OPTILAB_ORDER = ("off", "podcast", "stream", "limiter")
 
+#: "Exact processing" Choice order -- index maps to
+#: ``(optilab_exact, optilab_exact_live)``. One control rather than two
+#: checkboxes because the three states are ordered and mutually exclusive, and
+#: because the second one's cost has to be said in the option itself: a listener
+#: choosing it is choosing to lose the instant preview, and that must not be a
+#: surprise discovered afterwards.
+_EXACT_ORDER: tuple[tuple[bool, bool], ...] = ((False, False), (True, False), (True, True))
+_EXACT_LABELS = (
+    "Off -- use the built-in chain everywhere",
+    "When saving -- recordings and converted files",
+    "When saving and while listening -- starts slower, and changes need a moment",
+)
+
 
 class SoundOptions(NamedTuple):
     """The listener-level options the dialog returns via :attr:`sound_options`
@@ -54,6 +67,12 @@ class SoundOptions(NamedTuple):
     optilab_mode: str = "off"
     optilab_input_db: float = 0.0
     optilab_auto_adapt: int = 0
+    #: Exact OptiLab processing -- the real engine rather than the ffmpeg
+    #: adaptation of it. ``optilab_exact`` is saved files (recordings and
+    #: conversion); ``optilab_exact_live`` additionally routes listening through
+    #: it. Both False by default.
+    optilab_exact: bool = False
+    optilab_exact_live: bool = False
 
 
 class SoundEnhanceDialog:
@@ -80,6 +99,8 @@ class SoundEnhanceDialog:
         optilab_mode: str = "off",
         optilab_input_db: float = 0.0,
         optilab_auto_adapt: int = 0,
+        optilab_exact: bool = False,
+        optilab_exact_live: bool = False,
         announce_cb: Callable[[str], None] | None = None,
         on_reset: Callable[[], None] | None = None,
         on_live_change: Callable[[object], None] | None = None,
@@ -103,6 +124,8 @@ class SoundEnhanceDialog:
             optilab_mode=optilab_mode,
             optilab_input_db=optilab_input_db,
             optilab_auto_adapt=optilab_auto_adapt,
+            optilab_exact=optilab_exact,
+            optilab_exact_live=optilab_exact_live,
         )
         # wx.Window.SetName() is inert for MSAA/UIA on Windows (see
         # quill.ui.accessible_names) -- screen readers there normally infer a
@@ -178,6 +201,7 @@ class SoundEnhanceDialog:
         self._optilab_mode_choice: wx.Choice | None = None
         self._optilab_input_ctrl: wx.SpinCtrl | None = None
         self._optilab_adapt_slider: wx.Slider | None = None
+        self._optilab_exact_choice: wx.Choice | None = None
         if show_sound_options:
             # A RadioBox (not a checkbox): Stereo / Mono / Left only / Right only.
             # Left/Right send just that channel to both ears, so the radio can
@@ -278,6 +302,54 @@ class SoundEnhanceDialog:
             adapt_row.Add(self._optilab_adapt_slider, 1, wx.EXPAND | wx.LEFT, 8)
             optilab_box.Add(adapt_row, 0, wx.EXPAND | wx.ALL, 6)
 
+            # Exact processing: run OptiLab Core itself instead of the ffmpeg
+            # chain that reproduces the shape of its modes. Named for *where* it
+            # applies rather than for the engine, because a control named after
+            # an engine implies it applies wherever that engine's name appears --
+            # and the cost of the third option is stated in the option.
+            from quill.core.audio import exact_optilab as _exact
+
+            exact_row = wx.BoxSizer(wx.HORIZONTAL)
+            exact_row.Add(
+                wx.StaticText(self.dialog, label="&Exact OptiLab processing:"),
+                0,
+                wx.ALIGN_CENTER_VERTICAL,
+            )
+            self._optilab_exact_choice = wx.Choice(self.dialog, choices=list(_EXACT_LABELS))
+            available = _exact.available()
+            self._optilab_exact_choice.SetName(
+                "Exact OptiLab processing -- runs the real OptiLab engine instead of "
+                "Quill's filter-chain version of it"
+                if available
+                else f"Exact OptiLab processing, unavailable. {_exact.unavailable_reason()}"
+            )
+            current = (bool(optilab_exact), bool(optilab_exact_live))
+            self._optilab_exact_choice.SetSelection(
+                _EXACT_ORDER.index(current) if current in _EXACT_ORDER else 0
+            )
+            if not available:
+                # Disabled, never silently absent, and it says why: the reason is
+                # in the accessible name above and in the note below, so a
+                # listener who cannot find the option learns what is missing
+                # instead of doubting themselves.
+                self._optilab_exact_choice.Enable(False)
+            exact_row.Add(self._optilab_exact_choice, 1, wx.EXPAND | wx.LEFT, 8)
+            optilab_box.Add(exact_row, 0, wx.EXPAND | wx.ALL, 6)
+
+            exact_note = wx.StaticText(
+                self.dialog,
+                label=(
+                    "Exact processing runs OptiLab Core itself. Saved files are "
+                    "processed after they finish. Listening through it means the "
+                    "audio passes through the engine as it plays, so it starts a "
+                    "moment later and a settings change reconnects the stream."
+                    if available
+                    else _exact.unavailable_reason()
+                ),
+            )
+            exact_note.Wrap(400)
+            optilab_box.Add(exact_note, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+
             root.Add(optilab_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
@@ -324,6 +396,8 @@ class SoundEnhanceDialog:
                 self._optilab_input_ctrl.Bind(wx.EVT_SPINCTRL, self._on_control_changed)
             if self._optilab_adapt_slider is not None:
                 self._optilab_adapt_slider.Bind(wx.EVT_SLIDER, self._on_control_changed)
+            if self._optilab_exact_choice is not None:
+                self._optilab_exact_choice.Bind(wx.EVT_CHOICE, self._on_control_changed)
 
         # The starting values, so Cancel can revert a live preview to how it was.
         self._original_snapshot = self._live_snapshot()
@@ -410,7 +484,16 @@ class SoundEnhanceDialog:
             optilab_auto_adapt=(
                 int(self._optilab_adapt_slider.GetValue()) if self._optilab_adapt_slider else 0
             ),
+            optilab_exact=self._read_exact()[0],
+            optilab_exact_live=self._read_exact()[1],
         )
+
+    def _read_exact(self) -> tuple[bool, bool]:
+        """``(saved files, live)`` from the exact-processing choice."""
+        if self._optilab_exact_choice is None:
+            return False, False
+        index = max(0, self._optilab_exact_choice.GetSelection())
+        return _EXACT_ORDER[index] if index < len(_EXACT_ORDER) else (False, False)
 
     def _live_snapshot(self) -> tuple[float, float, float, bool, bool, SoundOptions]:
         """Everything the live-preview / revert callback needs: the EQ bands,

@@ -50,6 +50,8 @@ def _frame(monkeypatch: pytest.MonkeyPatch, *, playing: RadioStation | None) -> 
         optilab_mode="off",
         optilab_input_db=0.0,
         optilab_auto_adapt=0,
+        optilab_exact=False,
+        optilab_exact_live=False,
     )
     frame._radio_favorites = RadioFavoritesStore()
     frame._radio_controller = SimpleNamespace(
@@ -141,6 +143,7 @@ def test_on_reset_pushes_live_update_when_that_station_is_playing(
                 "optilab_mode": "off",
                 "optilab_input_db": 0.0,
                 "optilab_auto_adapt": 0,
+                "optilab_exact_live": False,
             },
         ),
     ]

@@ -442,17 +442,32 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
     def _append_transcript_items(
         self, menu: object, show: PodcastShow, episode: PodcastEpisode
     ) -> None:
-        """Transcript items, appended only when the episode publishes one.
+        """The per-episode items that come and go with the episode's own feed
+        metadata: About This Episode..., and the transcript trio.
 
         Not Quick Actions: they appear and disappear with the episode's own
         metadata, and an orderable list whose entries vanish per row is a
         list whose order means nothing.
         """
+        wx = self._wx
+        # About This Episode... appears for any episode whose feed published
+        # Podcasting 2.0 details, which is independent of whether it published a
+        # transcript -- so it is decided on its own, before the early return.
+        from quill.ui.podcasts.extras_command import has_extras, open_episode_extras
+
+        if has_extras(show, episode):
+            about_item = menu.Append(wx.ID_ANY, "&About This Episode...")
+            menu.Bind(
+                wx.EVT_MENU,
+                lambda _e: open_episode_extras(self, show, episode),
+                about_item,
+            )
         if not episode.transcript_url:
             return
-        wx = self._wx
         save_tr_item = menu.Append(wx.ID_ANY, "Save &Transcript As...")
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_save_transcript(show, episode), save_tr_item)
+        read_tr_item = menu.Append(wx.ID_ANY, "&Read Transcript...")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_read_transcript(show, episode), read_tr_item)
         open_tr_item = menu.Append(wx.ID_ANY, "Open Transcript in &Editor")
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_open_transcript(show, episode), open_tr_item)
 
@@ -472,13 +487,22 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
         )
 
     def _on_toggle_route_to_inbox(self, show: PodcastShow) -> None:
+        """Flip this show's Inbox mark, and say what the mark now *means*.
+
+        Under opt-out the same flag reads as "keep this one out", so the
+        announcement has to change with the mode -- saying "will appear in the
+        Inbox" while excluding it would be a confident wrong answer.
+        """
+        from quill.core.podcasts.inbox import in_inbox
+
         show.route_to_inbox = not show.route_to_inbox
         self._on_library_changed()
         self.refresh_tree()
+        inside = in_inbox(self._library, show)
         self._announce(
             f"New {show.title} episodes will appear in the Inbox"
-            if show.route_to_inbox
-            else f"{show.title} no longer routes to the Inbox"
+            if inside
+            else f"{show.title} is kept out of the Inbox"
         )
 
     def _on_forget_inbox_folder(self, show: PodcastShow) -> None:
@@ -672,71 +696,25 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
 
     # -- transcripts ----------------------------------------------------------------
 
+    def _on_read_transcript(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        """Open the transcript in the shared reader, with its timings."""
+        from quill.ui.podcasts import transcript_actions
+
+        transcript_actions.read_transcript(self, show, episode)
+
     def _on_save_transcript(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        wx = self._wx
-        with wx.FileDialog(  # dialog_button_contract: exempt
-            self.dialog,
-            "Save Transcript As",
-            defaultFile=f"{episode.title}.txt",
-            wildcard="Text files (*.txt)|*.txt|All files (*.*)|*.*",
-            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-        ) as dialog:
-            if dialog.ShowModal() != wx.ID_OK:
-                return
-            target = dialog.GetPath()
-        self._fetch_transcript_then(
-            show, episode, lambda text: self._write_transcript(target, text)
-        )
+        from quill.ui.podcasts import transcript_actions
 
-    def _write_transcript(self, target: str, text: str) -> None:
-        from pathlib import Path
-
-        try:
-            Path(target).write_text(text, encoding="utf-8", newline="\n")
-        except OSError as error:
-            self._announce(f"Could not save the transcript: {error}")
-            return
-        self._announce(f"Transcript saved to {Path(target).name}")
+        transcript_actions.save_transcript(self, show, episode)
 
     def _on_open_transcript(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        send = self._on_send_show_notes
-        if send is None:
-            self._announce("Opening in the editor is not available here.")
-            return
-        self._fetch_transcript_then(show, episode, send)
+        from quill.ui.podcasts import transcript_actions
+
+        transcript_actions.open_in_editor(self, show, episode)
 
     def _fetch_transcript_then(
         self, show: PodcastShow, episode: PodcastEpisode, consume: object
     ) -> None:
-        from quill.core.podcasts import feed_auth
-        from quill.core.podcasts import transcripts as transcripts_module
+        from quill.ui.podcasts import transcript_actions
 
-        if self._task_manager is None:
-            self._announce("Transcript fetching is unavailable right now.")
-            return
-        self._announce("Fetching transcript...")
-        auth_header = feed_auth.auth_header_for_url(show, episode.transcript_url)
-
-        def _do_fetch(**_kwargs: object) -> str:
-            text = transcripts_module.fetch_and_parse_transcript(
-                episode.transcript_url,
-                episode.transcript_type,
-                safe_mode=self._safe_mode,
-                auth_header=auth_header,
-            )
-            if text:
-                # Cache so Search Everywhere can search it with no re-fetch.
-                transcripts_module.save_cached_transcript(show.id, episode.guid, text)
-            return text
-
-        def _on_success(_op: str, text: str) -> None:
-            wx = self._wx
-            wx.CallAfter(consume, text)
-
-        def _on_failure(_op: str, error: object) -> None:
-            wx = self._wx
-            wx.CallAfter(self._announce, f"Transcript failed: {error}")
-
-        self._task_manager.submit(
-            "podcast-transcript", _do_fetch, on_success=_on_success, on_failure=_on_failure
-        )
+        transcript_actions.fetch_then(self, show, episode, consume)

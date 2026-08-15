@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Rewriting QUILL in Rust: honest assessment and staged
-plan</title>
+  <title>rust-assessment</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,35 +174,14 @@ plan</title>
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
 id="rewriting-quill-in-rust-honest-assessment-and-staged-plan">Rewriting
 QUILL in Rust: honest assessment and staged plan</h1>
 <p>Date: 2026-08-02 Status: analysis / decision document. Nothing here
 is committed work.</p>
-<h2 id="1-verdict-first">1. Verdict first</h2>
+<h2 id="verdict-first">1. Verdict first</h2>
 <p>A full Rust rewrite of QUILL would be a <strong>large negative-value
 project</strong>, and the “save space” motivation is the weakest of the
 possible justifications for it. The binary-size problem is not caused by
@@ -215,8 +193,8 @@ handful of CPU-bound paths, and possibly a Rust rewrite of one small
 standalone app as a controlled experiment.</p>
 <p>Short version: do not rewrite the app. Do adopt Rust in specific
 places.</p>
-<h2 id="2-what-save-space-actually-means-here-with-numbers">2. What
-“save space” actually means here, with numbers</h2>
+<h2 id="what-save-space-actually-means-here-with-numbers">2. What “save
+space” actually means here, with numbers</h2>
 <p>Measured 2026-08-02 in this tree.</p>
 <p>Source size:</p>
 <table>
@@ -298,7 +276,7 @@ multi-year rewrite.</strong> The same 60-90 MB is available for a few
 weeks of payload work (see section 6). That is the honest arithmetic,
 and it is decisive on its own.</p>
 <h2
-id="3-the-real-blocker-accessibility-and-we-already-have-the-evidence">3.
+id="the-real-blocker-accessibility-and-we-already-have-the-evidence">3.
 The real blocker: accessibility, and we already have the evidence</h2>
 <p>QUILL is not a text editor that happens to be accessible. It is an
 accessibility product. Its differentiator is that JAWS and NVDA behave
@@ -343,7 +321,7 @@ entire application at once, with no fallback and no way to revert
 incrementally.</p>
 <p>That single paragraph is, in my honest opinion, the end of the
 argument for a UI rewrite. Everything else below is secondary.</p>
-<h2 id="4-the-other-costs-briefly">4. The other costs, briefly</h2>
+<h2 id="the-other-costs-briefly">4. The other costs, briefly</h2>
 <ul>
 <li><strong>Ecosystem.</strong> wxPython, prismatoid,
 accessible_output2, comtypes, pyenchant, python-docx, feedparser,
@@ -366,8 +344,8 @@ Rust host does not remove the need to embed a Python interpreter for
 bundled Quillins – so we would ship CPython anyway, and lose most of the
 claimed space saving.</li>
 </ul>
-<h2 id="5-where-rust-genuinely-pays-starting-now">5. Where Rust
-genuinely pays, starting now</h2>
+<h2 id="where-rust-genuinely-pays-starting-now">5. Where Rust genuinely
+pays, starting now</h2>
 <p>These are real, incremental, reversible, and worth doing regardless
 of any rewrite decision. Build them as <code>PyO3</code> +
 <code>maturin</code> extension modules or as standalone sidecar
@@ -402,8 +380,8 @@ threads.</li>
 <p>Each of these is a self-contained PR. Each can be reverted by
 deleting one module and restoring the Python path behind it. That is the
 correct way to introduce a second language into a shipping product.</p>
-<h2 id="6-the-space-work-that-actually-pays-and-is-not-rust">6. The
-space work that actually pays, and is not Rust</h2>
+<h2 id="the-space-work-that-actually-pays-and-is-not-rust">6. The space
+work that actually pays, and is not Rust</h2>
 <p>If the goal is genuinely “make the download smaller”, these dominate
 a rewrite by an order of magnitude of effort-to-megabyte:</p>
 <ol type="1">
@@ -456,7 +434,7 @@ OpenSSL. That is the exact failure mode the QuillVille shared-runtime
 work already eliminated. The packaging battle was won at the
 distribution layer, not the language layer – which is precisely why the
 language layer is the wrong place to fight it again.</p>
-<h2 id="6a-why-the-nuitka-attempt-probably-failed">6a. Why the Nuitka
+<h2 id="a.-why-the-nuitka-attempt-probably-failed">6a. Why the Nuitka
 attempt probably failed</h2>
 <p><strong>Probe result (2026-08-02): <code>quill/core</code> compiles
 cleanly.</strong> A scoped run –
@@ -532,7 +510,7 @@ report’s missing-module list is what turns “it seemed to fail” into a
 specific cause. The UI-layer probe is the one that matters, and it is
 also the one most likely to take hours and stress the linker, so run it
 detached.</p>
-<h2 id="7-future-state-read-3-5-years">7. Future-state read (3-5
+<h2 id="future-state-read-3-5-years">7. Future-state read (3-5
 years)</h2>
 <p>Being honest about what could change my answer:</p>
 <ul>
@@ -561,7 +539,7 @@ QUILL is still “native Windows controls for anything a screen reader
 touches, with compiled hot paths behind them.” The language of the hot
 paths is the part that should change. The language of the UI should
 not.</p>
-<h2 id="8-if-you-want-to-test-the-rust-thesis-anyway">8. If you want to
+<h2 id="if-you-want-to-test-the-rust-thesis-anyway">8. If you want to
 test the Rust thesis anyway</h2>
 <p>Do not test it on QUILL. Test it on <strong>quill-radio</strong>.</p>
 <p>Rationale:</p>
@@ -600,7 +578,7 @@ year.</li>
 question into a documented, evidence-based answer – which is exactly
 what the STC/JAWS post-mortem did, and that turned out to be one of the
 most useful documents in the repo.</p>
-<h2 id="9-recommendation">9. Recommendation</h2>
+<h2 id="recommendation">9. Recommendation</h2>
 <ol type="1">
 <li><strong>No</strong> to rewriting QUILL, Audio Studio, Cast, or the
 shared runtime in Rust.</li>
@@ -621,6 +599,5 @@ big and Python is not free. The fix is payload discipline plus a few
 compiled modules, not a new language for the UI. The accessibility
 surface is the one asset we cannot rebuild, and it is precisely the
 asset a rewrite would spend first.</p>
-</main>
 </body>
 </html>

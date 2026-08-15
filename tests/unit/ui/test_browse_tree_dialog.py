@@ -1,7 +1,10 @@
-"""Unified Browse Stations tree -- node building, play routing, favorites.
+"""Unified Browse Stations tree -- row rendering, play routing, favorites.
 
 Drives the wx-heavy dialog against a fake tree (the real one needs a wx.App to
-construct); the source catalogs themselves are tested in their own core modules.
+construct). What each *source* produces is tested in
+``tests/unit/core/radio/test_browse_sources.py``; what is tested here is the
+half that only the dialog can do -- turning BrowseNodes into rows, and routing
+an activation to playback, resolution, or expansion.
 """
 
 from __future__ import annotations
@@ -9,9 +12,10 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import Any
 
-from quill.core.radio.favorites import RadioFavoritesStore
+from quill.core.radio import browse_sources
+from quill.core.radio.browse_nodes import folder, lazy_leaf, leaf
+from quill.core.radio.favorites import FavoriteStation, RadioFavoritesStore
 from quill.core.radio.models import RadioStation
-from quill.core.radio.tunein import TuneInResult
 from quill.ui.radio.browse_tree_dialog import BrowseTreeDialog
 
 
@@ -43,31 +47,42 @@ class _FakeTree:
     def DeleteChildren(self, node):  # noqa: N802
         self.children[node] = []
 
-    def GetChildrenCount(self, node, _recursive):  # noqa: N802
+    def GetChildrenCount(self, node, recursive=True):  # noqa: N802
         return len(self.children.get(node, []))
 
     def GetFirstChild(self, node):  # noqa: N802
         kids = self.children.get(node, [])
-        return (kids[0][0] if kids else _Node(False), 0)
+        return (kids[0][0] if kids else _Node(False)), 0
 
     def GetNextChild(self, node, cookie):  # noqa: N802
         kids = self.children.get(node, [])
-        nxt = cookie + 1
-        return (kids[nxt][0] if nxt < len(kids) else _Node(False), nxt)
+        index = cookie + 1
+        return (kids[index][0] if index < len(kids) else _Node(False)), index
+
+    def GetItemText(self, node):  # noqa: N802
+        for kids in self.children.values():
+            for child, label in kids:
+                if child is node:
+                    return label
+        return ""
 
     def SelectItem(self, node):  # noqa: N802
         self._selection = node
+
+    def SetFocus(self):  # noqa: N802
+        return None
 
     def GetSelection(self):  # noqa: N802
         return self._selection
 
 
-def _dialog() -> Any:
+def _dialog(*, safe_mode: bool = False) -> Any:
     d = BrowseTreeDialog.__new__(BrowseTreeDialog)
     d._tree = _FakeTree()
     d._announced: list[str] = []
     d._announce = d._announced.append
     d._favorites = RadioFavoritesStore(favorites=[])
+    d._safe_mode = safe_mode
     d._details = SimpleNamespace(SetValue=lambda _v: None)
     d._play_btn = SimpleNamespace(Enable=lambda _v: None, SetLabel=lambda _l: None)
     d._favorite_btn = SimpleNamespace(Enable=lambda _v: None, SetLabel=lambda _l: None)
@@ -79,146 +94,231 @@ def _child_data(d, node):
     return [d._tree.GetItemData(n) for n, _label in d._tree.children.get(node, [])]
 
 
-def test_add_children_stations_makes_station_leaves() -> None:
+def _labels(d, node):
+    return [label for _n, label in d._tree.children.get(node, [])]
+
+
+def _station(name: str = "Test FM", url: str = "https://a.example/s") -> RadioStation:
+    return RadioStation(name=name, stream_url=url)
+
+
+# --- rendering rows ------------------------------------------------------------
+
+
+def test_a_leaf_becomes_a_playable_row() -> None:
     d = _dialog()
     root = _Node()
-    d._tree.SetItemData(root, {"kind": "stations", "payload": "acb"})
-    d._add_children(root, "stations", [RadioStation(name="ACB 1", stream_url="https://x/1")])
-    data = _child_data(d, root)
-    assert data[0]["kind"] == "station"
-    assert data[0]["station"].name == "ACB 1"
+    d._tree.SetItemData(root, {"node_id": "acb", "label": "ACB Media"})
+    d._add_children(root, [leaf(_station("ACB 1"))])
+    data = _child_data(d, root)[0]
+    assert data["station"].name == "ACB 1"
+    assert not data.get("resolve_lazily")
 
 
-def test_add_children_genres_makes_genre_folders() -> None:
-    from quill.core.radio import m3u_catalog
-
+def test_a_folder_becomes_an_openable_row_with_a_loading_placeholder() -> None:
     d = _dialog()
     root = _Node()
-    d._tree.SetItemData(root, {"kind": "genres", "payload": m3u_catalog})
-    d._add_children(root, "genres", ["acid_jazz", "rock"])
-    labels = [label for _n, label in d._tree.children[root]]
-    assert labels == ["Acid Jazz", "Rock"]
-    assert _child_data(d, root)[0]["kind"] == "genre"
+    d._tree.SetItemData(root, {"node_id": "xiph", "label": "Xiph"})
+    d._add_children(root, [folder("xiph:jazz", "Jazz")])
+    child_node = d._tree.children[root][0][0]
+    assert _child_data(d, root)[0]["node_id"] == "xiph:jazz"
+    assert _labels(d, child_node) == ["Loading..."], "a folder must look expandable"
 
 
-def test_add_children_tunein_folders_and_stations() -> None:
+def test_a_child_count_is_shown_before_the_folder_is_opened() -> None:
+    # The whole point of child_count: decide whether to spend the wait.
     d = _dialog()
     root = _Node()
-    d._tree.SetItemData(root, {"kind": "tunein", "payload": ""})
-    d._add_children(
-        root,
-        "tunein",
-        [
-            TuneInResult(
-                guide_id="", title="Music", is_station=False, browse_url="http://x?c=music"
-            ),
-            TuneInResult(guide_id="s9", title="Jazz FM", is_station=True),
-        ],
+    d._tree.SetItemData(root, {"node_id": "iheart", "label": "iHeart"})
+    d._add_children(root, [folder("iheart:1310", "Rock", child_count=214)])
+    assert "214" in _labels(d, root)[0]
+
+
+def test_a_note_is_shown_so_nothing_surprises_after_enter() -> None:
+    d = _dialog()
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "tunein", "label": "TuneIn"})
+    d._add_children(root, [lazy_leaf("tuneinstation:s1", "BBC", note="resolves when you play it")])
+    assert "resolves when you play it" in _labels(d, root)[0]
+
+
+# --- the empty-branch message --------------------------------------------------
+
+
+def test_an_empty_internet_branch_says_it_might_be_unreachable() -> None:
+    # Reading "could not reach the source" as "this folder is empty" is how a
+    # listener concludes a working source is broken, or the reverse.
+    d = _dialog()
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "soma", "label": "SomaFM"})
+    d._add_children(root, [])
+    assert "could not be reached" in d._announced[-1]
+
+
+def test_an_empty_local_branch_just_says_it_is_empty() -> None:
+    d = _dialog()
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "networks", "label": "Networks"})
+    d._add_children(root, [])
+    assert "could not be reached" not in d._announced[-1]
+
+
+def test_safe_mode_says_so_rather_than_showing_an_empty_folder() -> None:
+    d = _dialog(safe_mode=True)
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "tunein", "label": "TuneIn"})
+    d._add_children(root, [])
+    assert "Safe Mode" in d._announced[-1]
+
+
+def test_a_populated_branch_announces_its_count() -> None:
+    d = _dialog()
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "acb", "label": "ACB Media"})
+    d._add_children(root, [leaf(_station("A")), leaf(_station("B", "https://a/2"))])
+    assert d._announced[-1] == "2 items."
+
+
+# --- play routing --------------------------------------------------------------
+
+
+class _Controller:
+    def __init__(self) -> None:
+        self.played: list[RadioStation] = []
+        self.stopped = 0
+        self.state = SimpleNamespace(station=None, state=None, volume_percent=100, muted=False)
+
+    def play_station(self, station):
+        self.played.append(station)
+
+    def stop(self):
+        self.stopped += 1
+
+
+def test_activating_a_station_leaf_plays_it() -> None:
+    d = _dialog()
+    d._controller = _Controller()
+    station = _station("Jazz FM")
+    d._tree._selection = _Node()
+    d._tree.SetItemData(
+        d._tree._selection, {"node_id": "x", "label": "Jazz FM", "station": station}
     )
-    kinds = [dat["kind"] for dat in _child_data(d, root)]
-    assert kinds == ["tunein", "tunein-station"]
+    d._play_selected()
+    assert [s.name for s in d._controller.played] == ["Jazz FM"]
 
 
-def test_play_selected_routes_station_and_tunein() -> None:
+def test_activating_a_lazy_leaf_resolves_first_then_plays(monkeypatch) -> None:
     d = _dialog()
-    played: list = []
-    d._controller = SimpleNamespace(
-        play_station=lambda s: played.append(s.name),
-        state=SimpleNamespace(station=None, state=None),
-        stop=lambda: None,
+    d._controller = _Controller()
+    submitted: list = []
+    d._task_manager = SimpleNamespace(
+        submit=lambda op, work, on_success=None, on_failure=None: submitted.append((
+            work,
+            on_success,
+        ))
     )
-    d._is_playing = lambda s: False
-    # a resolved station plays directly
-    node = _Node()
-    d._tree._data[node] = {"kind": "station", "station": RadioStation(name="WJAZZ", stream_url="s")}
-    d._tree._selection = node
+    monkeypatch.setattr(
+        browse_sources,
+        "resolve",
+        lambda node_id, **_kw: RadioStation(name="", stream_url="https://cdn/bbc.mp3"),
+    )
+    d._tree._selection = _Node()
+    d._tree.SetItemData(
+        d._tree._selection,
+        {"node_id": "tuneinstation:s1", "label": "BBC", "station": None, "resolve_lazily": True},
+    )
     d._play_selected()
-    assert played == ["WJAZZ"]
-    # a TuneIn station goes through resolve
-    resolved: list = []
-    d._play_tunein = lambda gid, title: resolved.append((gid, title))
-    tnode = _Node()
-    d._tree._data[tnode] = {"kind": "tunein-station", "guide_id": "s7", "title": "WABC"}
-    d._tree._selection = tnode
+    assert submitted, "a lazy leaf must resolve off the UI thread"
+    work, on_success = submitted[0]
+    on_success("op", work())
+    assert [s.stream_url for s in d._controller.played] == ["https://cdn/bbc.mp3"]
+    assert d._controller.played[0].name == "BBC", "the row's label names the resolved station"
+
+
+def test_a_failed_resolve_says_so_and_plays_nothing(monkeypatch) -> None:
+    d = _dialog()
+    d._controller = _Controller()
+    submitted: list = []
+    d._task_manager = SimpleNamespace(
+        submit=lambda op, work, on_success=None, on_failure=None: submitted.append((
+            work,
+            on_success,
+        ))
+    )
+    monkeypatch.setattr(browse_sources, "resolve", lambda node_id, **_kw: None)
+    d._tree._selection = _Node()
+    d._tree.SetItemData(
+        d._tree._selection,
+        {"node_id": "tuneinstation:s1", "label": "BBC", "station": None, "resolve_lazily": True},
+    )
     d._play_selected()
-    assert resolved == [("s7", "WABC")]
+    work, on_success = submitted[0]
+    on_success("op", work())
+    assert d._controller.played == []
+    assert "Could not play BBC." in d._announced
+
+
+def test_activating_a_folder_plays_nothing() -> None:
+    d = _dialog()
+    d._controller = _Controller()
+    d._tree._selection = _Node()
+    d._tree.SetItemData(d._tree._selection, {"node_id": "xiph", "label": "Xiph", "loaded": False})
+    d._play_selected()
+    assert d._controller.played == []
+
+
+# --- favorites -----------------------------------------------------------------
 
 
 def test_toggle_favorite_adds_and_removes() -> None:
     d = _dialog()
-    station = RadioStation(name="WJAZZ", stream_url="https://x/s", station_uuid="u1")
-    node = _Node()
-    d._tree._data[node] = {"kind": "station", "station": station}
-    d._tree._selection = node
+    station = _station("Keeper")
+    d._tree._selection = _Node()
+    d._tree.SetItemData(d._tree._selection, {"node_id": "x", "label": "Keeper", "station": station})
     d._toggle_favorite()
     assert d._favorites.contains(station)
     d._toggle_favorite()
     assert not d._favorites.contains(station)
 
 
-def test_toggle_favorite_refreshes_open_favorites_branch() -> None:
-    # Adding a favorite while the Browse window is open updates the Favorites
-    # branch live, without the user reopening the window.
+def test_favorites_branch_lists_unfiled_stations_then_folders() -> None:
     d = _dialog()
-    fav_node = _Node()
-    d._favorites_root = fav_node
-    d._tree.SetItemData(fav_node, {"kind": "favorites", "payload": None, "loaded": True})
-    d._add_favorites(fav_node)  # branch built (empty placeholder for now)
-
-    station = RadioStation(name="WJAZZ", stream_url="https://x/s", station_uuid="u1")
-    sel = _Node()
-    d._tree._data[sel] = {"kind": "station", "station": station}
-    d._tree._selection = sel
-    d._toggle_favorite()
-
-    # The Favorites branch now lists the just-added station.
-    labels = [label for _n, label in d._tree.children[fav_node]]
-    assert any("WJAZZ" in label for label in labels)
-
-
-def test_add_favorites_builds_unfiled_stations_then_folders() -> None:
-    d = _dialog()
-    top = RadioStation(name="Top FM", stream_url="https://x/t", station_uuid="t")
-    filed = RadioStation(name="News One", stream_url="https://x/n", station_uuid="n")
-    d._favorites.add(top)
-    d._favorites.add(filed, folder="News")
+    d._favorites = RadioFavoritesStore(
+        favorites=[
+            FavoriteStation(station=_station("Unfiled", "https://a/1")),
+            FavoriteStation(station=_station("Filed", "https://a/2"), folder="News"),
+        ]
+    )
     root = _Node()
+    d._tree.SetItemData(root, {"node_id": "favorites", "label": "Favorites"})
     d._add_favorites(root)
-    kids = d._tree.children[root]
-    labels = [label for _n, label in kids]
-    kinds = [d._tree.GetItemData(n).get("kind") for n, _label in kids]
-    # unfiled station leaf first, then the folder node
-    assert labels[0] == "Top FM" and kinds[0] == "station"
-    assert "News" in labels[1] and kinds[1] == "fav-folder"
-    # the folder holds its station
-    folder_node = kids[1][0]
-    assert _child_data(d, folder_node)[0]["station"].name == "News One"
+    labels = _labels(d, root)
+    assert labels[0] == "Unfiled"
+    assert "News" in labels[-1]
 
 
-def test_add_favorites_empty_shows_placeholder() -> None:
+def test_an_empty_favorites_branch_explains_how_to_fill_it() -> None:
     d = _dialog()
     root = _Node()
+    d._tree.SetItemData(root, {"node_id": "favorites", "label": "Favorites"})
     d._add_favorites(root)
-    assert _child_data(d, root)[0]["kind"] == "placeholder"
+    assert "No favorites yet" in _labels(d, root)[0]
 
 
 def test_favorite_folder_adds_all_loaded_stations() -> None:
     d = _dialog()
-    changed: list = []
-    d._on_favorites_changed = lambda: changed.append(True)
-    folder = _Node()
-    s1 = RadioStation(name="A", stream_url="https://x/a", station_uuid="a")
-    s2 = RadioStation(name="B", stream_url="https://x/b", station_uuid="b")
-    for s in (s1, s2):
-        leaf = d._tree.AppendItem(folder, s.name)
-        d._tree.SetItemData(leaf, {"kind": "station", "station": s})
-    d._favorite_folder(folder)
-    assert d._favorites.contains(s1) and d._favorites.contains(s2)
-    assert changed == [True]
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "acb", "label": "ACB Media"})
+    d._add_children(root, [leaf(_station("A")), leaf(_station("B", "https://a/2"))])
+    d._favorite_folder(root)
+    assert len(d._favorites.favorites) == 2
+    assert "Added 2 stations to Favorites." in d._announced
 
 
-def test_favorite_folder_unloaded_asks_to_open() -> None:
+def test_favorite_folder_on_an_unopened_folder_asks_you_to_open_it() -> None:
     d = _dialog()
-    folder = _Node()  # no children loaded
-    d._favorite_folder(folder)
-    assert any("Open the folder first" in m for m in d._announced)
+    root = _Node()
+    d._tree.SetItemData(root, {"node_id": "xiph", "label": "Xiph"})
+    d._add_children(root, [folder("xiph:jazz", "Jazz")])
+    d._favorite_folder(root)
+    assert "Open the folder first" in d._announced[-1]
