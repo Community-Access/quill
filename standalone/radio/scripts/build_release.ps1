@@ -175,7 +175,16 @@ if (Test-Path $optilabExe) {
         # runtime is where an *installed* app finds it (the per-app installer
         # ships only the launcher and docs, so the runtime is beside
         # sys.executable -- exactly where optilab_adapter.find_adapter looks).
-        Copy-Item $optilabExe (Join-Path $dest "quill-optilab.exe") -Force
+        $optilabTarget = Join-Path $dest "quill-optilab.exe"
+        # ...but `--out $appDir` above already wrote it into the first of those,
+        # so that copy is the file onto itself -- which PowerShell treats as a
+        # hard error, not a no-op. With $ErrorActionPreference = "Stop" that
+        # took the whole release build down at the last step before signing, on
+        # any machine with a C++ toolchain to build the adapter in the first
+        # place.
+        if ([IO.Path]::GetFullPath($optilabTarget) -ne [IO.Path]::GetFullPath($optilabExe)) {
+            Copy-Item $optilabExe $optilabTarget -Force
+        }
         Copy-Item (Join-Path $upstream "LICENSE") (Join-Path $dest "OptiLabCore-LICENSE.txt") -Force
         Copy-Item (Join-Path $upstream "NOTICE")  (Join-Path $dest "OptiLabCore-NOTICE.txt")  -Force
     }
