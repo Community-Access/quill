@@ -17,6 +17,15 @@
 #define RuntimeUrl "https://github.com/Community-Access/quill/releases/latest/download/QuillVille-Runtime-Setup.exe"
 
 [Setup]
+#ifdef Sign
+; Code signing (opt-in). Present only when ISCC is invoked with /DSign plus a
+; matching /Squilltrusted=<sign command>; Inno then signs the compiled Setup.exe
+; and the generated uninstaller. A plain build passes neither, so these
+; directives are absent and the unsigned build compiles unchanged. See
+; docs/code-signing.md.
+SignTool=quilltrusted
+SignedUninstaller=yes
+#endif
 AppId={{35DAB52F-94BB-475C-BA97-A5059C85B3D1}}
 AppName={#AppName}
 AppVersion={#AppVersion}
