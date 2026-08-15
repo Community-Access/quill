@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Radio 3.0 -- test plan</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-radio-30--test-plan">Quill Radio 3.0 – test plan</h1>
+<p>A run-through of everything 3.0 changed, with <strong>real links that
+were checked against the live services</strong> while this was written.
+Nothing here is a guessed address: every one came back through Quill
+Radio’s own adapters, so if a link fails, that is a finding rather than
+a typo.</p>
+<p>Where a service could not supply a case, this says so and tells you
+how to find one yourself, rather than offering a link that might not be
+what it claims. And where finding one took real work – described audio
+on YouTube is the story of this plan – the section says what was tried,
+what failed, and what finally worked, so the next run does not have to
+rediscover it.</p>
+<h2 id="how-to-use-this">How to use this</h2>
+<p>Work top to bottom or dip in by section – each is self-contained.
+Every scenario has a <strong>Do</strong>, an <strong>Expect</strong>,
+and where it matters a <strong>Listen for</strong>, because for this
+audience the spoken result <em>is</em> the result: a thing that happens
+silently has not happened.</p>
+<p>Three settings worth knowing before you start:</p>
+<ul>
+<li><strong>Downloads land</strong> in
+<code>Downloads\Quill Radio</code> unless you change it in preferences.
+Books go in <code>Books\</code>, podcasts in <code>Podcasts\</code>,
+music in <code>Music\</code>.</li>
+<li><strong>Safe Mode</strong> (<code>--safe-mode</code>) turns off
+every network source. Several scenarios below check that it refuses
+<em>out loud, per branch</em>, rather than showing empty folders.</li>
+<li><strong>Nothing here needs an account, a key or a sign-in</strong>
+except the Spotify section, which is explicitly marked and entirely
+optional.</li>
+</ul>
+<hr />
+<h2 id="1-live-radio-the-ordinary-path">1. Live radio: the ordinary
+path</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Find Stations -&gt; type <code>BBC World Service</code> -&gt;
+Enter</td>
+<td>Plays. Row says where it came from.</td>
+</tr>
+<tr>
+<td>Playback &gt; Stop, then Play again</td>
+<td>Resumes the same station.</td>
+</tr>
+<tr>
+<td>Ctrl+E (Sound Enhancements), move a slider</td>
+<td>Audible <strong>immediately</strong> – no gap, no reconnect.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Stations verified live:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Station</th>
+<th>Address</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BBC World Service</td>
+<td><code>http://stream.live.vc.bbcmedia.co.uk/bbc_world_service</code></td>
+</tr>
+<tr>
+<td>BBC Radio 4</td>
+<td><code>http://as-hls-ww-live.akamaized.net/pool_55057080/live/ww/bbc_radio_fourfm/...</code></td>
+</tr>
+<tr>
+<td>SomaFM Groove Salad (<code>.pls</code>)</td>
+<td><code>https://somafm.com/groovesalad.pls</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Listen for:</strong> a station that drops should say it is
+reconnecting, with an attempt number, and either “Reconnected” or an
+honest failure. It must <strong>not</strong> go silent. (Three attempts,
+at roughly 2, 5 and 15 seconds.)</p>
+<hr />
+<h2 id="2-browse-stations-loading-and-the-two-kinds-of-empty">2. Browse
+Stations: loading, and the two kinds of empty</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+<th>Listen for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open Browse Stations, expand <strong>Internet Archive</strong></td>
+<td>A “Loading…” row appears, then real rows</td>
+<td>“Loading…”, then a count: “24 items.”</td>
+</tr>
+<tr>
+<td>Expand a branch, then collapse and expand again</td>
+<td>Instant – it is not re-fetched</td>
+<td>The count again, no second “Loading…”</td>
+</tr>
+<tr>
+<td>Expand any network branch with the network <strong>off</strong></td>
+<td>The placeholder clears; the branch does not sit on “Loading…”
+forever</td>
+<td>“Nothing in X. It may be empty, or the source could not be
+reached.”</td>
+</tr>
+<tr>
+<td>Same branch again after reconnecting</td>
+<td>It <strong>retries</strong> – a branch that failed is not stuck</td>
+<td>Real rows this time</td>
+</tr>
+<tr>
+<td>Run in Safe Mode, expand <strong>TuneIn</strong></td>
+<td>Refuses by name</td>
+<td>“TuneIn is disabled in Safe Mode.”</td>
+</tr>
+<tr>
+<td>Pull the network, expand a fresh branch</td>
+<td>The decisive message, not the hedge</td>
+<td>“X could not be reached. Close and reopen it to try again.”</td>
+</tr>
+</tbody>
+</table>
+<p>This is the async-loading behaviour: the tree never blocks, every
+fetch is off the UI thread, and a failed branch can be retried by
+closing and reopening it.</p>
+<h3 id="choosing-which-branches-exist-at-all">Choosing which branches
+exist at all</h3>
+<p>Station &gt; Ch&amp;oose Browse Sources… The rule under test: a
+branch that is off is <strong>not in the tree and is never
+contacted</strong> – not hidden-but-fetched.</p>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Arrow the list</td>
+<td>Every row speaks its own state first: “On. LibriVox Audiobooks.
+Public-domain audiobooks, by chapter.” – with the group named on the
+first row of each run</td>
+</tr>
+<tr>
+<td>Turn LibriVox off, close, open Browse Stations</td>
+<td>No LibriVox branch anywhere; everything else untouched</td>
+</tr>
+<tr>
+<td>Turn Off everything, open Browse Stations</td>
+<td>One row only: “All sources are hidden. Choose Browse Sources from
+the menu to show some.”</td>
+</tr>
+<tr>
+<td>Reset to Default</td>
+<td>The summary line says the count; Explore (Wikidata) stays off by
+default, everything else on</td>
+</tr>
+<tr>
+<td>Restart the app</td>
+<td>The choice survived</td>
+</tr>
+<tr>
+<td>Find in this folder, on a ccMixter branch</td>
+<td>Each result row keeps its note – the licence rides along into search
+results</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-find-stations-reaches-the-libraries">3. Find Stations reaches
+the libraries</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Find Stations -&gt; <code>Middlemarch</code></td>
+<td>Radio stations first, then <strong>LibriVox</strong> rows as they
+arrive</td>
+</tr>
+<tr>
+<td>Find Stations -&gt; <code>Sherlock</code></td>
+<td><strong>Project Gutenberg</strong> audiobook rows appear</td>
+</tr>
+<tr>
+<td>Find Stations -&gt; <code>Johnny Dollar</code></td>
+<td><strong>Internet Archive</strong> recordings appear</td>
+</tr>
+<tr>
+<td>Find Stations -&gt; <code>The Rest Is History</code></td>
+<td>A <strong>Podcasts</strong> group appears</td>
+</tr>
+<tr>
+<td>Find Stations -&gt; <code>jazz</code></td>
+<td><strong>Audius</strong>, <strong>ccMixter</strong> and
+<strong>Mixcloud</strong> rows appear</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Listen for:</strong> libraries answer <em>after</em> the
+stations and you are told <strong>once</strong> when they have all
+reported – not five times. If you are already arrowing the results when
+one lands, your place must be kept.</p>
+<p><strong>The music three are the regression case.</strong> They
+shipped declared “cannot be searched”; all three publish a keyword
+search. A ccMixter row carries its licence in the row. A Mixcloud row
+says <em>“opens on Mixcloud in your browser”</em>
+<strong>before</strong> you press Enter.</p>
+<hr />
+<h2 id="4-podcasts-with-and-without-transcripts">4. Podcasts, with and
+without transcripts</h2>
+<p>Three feeds that <strong>do</strong> publish Podcasting 2.0 tags
+(verified):</p>
+<table>
+<thead>
+<tr>
+<th>Show</th>
+<th>Feed</th>
+<th>Carries</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Podcasting 2.0</td>
+<td><code>https://feeds.podcastindex.org/pc20.xml</code></td>
+<td>transcript (SRT), chapters, people, funding</td>
+</tr>
+<tr>
+<td>Buzzcast</td>
+<td><code>https://feeds.buzzsprout.com/1538779.rss</code></td>
+<td>transcript (HTML), chapters, people, funding</td>
+</tr>
+<tr>
+<td>No Agenda</td>
+<td><code>https://feed.nashownotes.com/rss.xml</code></td>
+<td>transcript (SRT), chapters, funding</td>
+</tr>
+</tbody>
+</table>
+<p>Three that <strong>do not</strong> – the “without” cases, equally
+important:</p>
+<table>
+<thead>
+<tr>
+<th>Show</th>
+<th>Feed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The Rest Is History</td>
+<td><code>https://feeds.megaphone.fm/GLT4787413333</code></td>
+</tr>
+<tr>
+<td>99% Invisible</td>
+<td><code>https://feeds.simplecast.com/BqbsxVfO</code></td>
+</tr>
+<tr>
+<td>Radiolab</td>
+<td><code>https://feeds.simplecast.com/EmVW7VGp</code></td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Browse Stations -&gt; Podcasts (Apple) -&gt; pick a country -&gt; a
+genre -&gt; a show</td>
+<td>Episodes list; Enter plays</td>
+</tr>
+<tr>
+<td>Choose the <strong>Arts</strong> genre in a country’s top chart</td>
+<td>Results include Books, Design, Food – <strong>not</strong> empty
+(this was the leaf-genre bug)</td>
+</tr>
+<tr>
+<td>Open an episode from a feed in the first table -&gt; <strong>About
+This Episode…</strong></td>
+<td>Tabs for People, and Support; no empty tabs</td>
+</tr>
+<tr>
+<td>Same on a feed from the second table</td>
+<td>Says plainly that the podcast published no extra details</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-transcripts">5. Transcripts</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+<th>Listen for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>An episode from <strong>Podcasting 2.0</strong> -&gt; Read
+Transcript…</td>
+<td>Opens as a read-only text box</td>
+<td>Arrow keys, word/line movement and your review cursor all behave
+normally</td>
+</tr>
+<tr>
+<td>Turn <strong>Follow the audio</strong> on</td>
+<td>Caret tracks the spoken line</td>
+<td>Nothing spoken per line – silence here is correct</td>
+</tr>
+<tr>
+<td>Turn it off, arrow around</td>
+<td>Playback never moves your caret</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Enter on any line</td>
+<td>Plays from there</td>
+<td>“Playing from 4 minutes 12 seconds” – words, never
+<code>4:12</code></td>
+</tr>
+<tr>
+<td>Find a word</td>
+<td>Jumps and says where</td>
+<td>“Found at 12 minutes 8 seconds”</td>
+</tr>
+<tr>
+<td>Save As -&gt; WebVTT, reopen it</td>
+<td>Timings survive the round trip</td>
+<td>–</td>
+</tr>
+<tr>
+<td>An episode with no transcript</td>
+<td>Says so; does not open an empty window</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-video-captions-and-described-audio">6. Video, captions, and
+described audio</h2>
+<p><strong>Verified videos</strong> (all have human captions, not
+automatic):</p>
+<table>
+<thead>
+<tr>
+<th>Video</th>
+<th>URL</th>
+<th>Chapters</th>
+<th>Audio tracks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TED talk</td>
+<td><code>https://www.youtube.com/watch?v=iG9CE55wbtY</code></td>
+<td>10</td>
+<td>1 (English)</td>
+</tr>
+<tr>
+<td>Big Buck Bunny</td>
+<td><code>https://www.youtube.com/watch?v=YE7VzlLtp-4</code></td>
+<td>0</td>
+<td>1 (English)</td>
+</tr>
+<tr>
+<td>MrBeast</td>
+<td><code>https://www.youtube.com/watch?v=0e3GPea1Tyg</code></td>
+<td>7</td>
+<td>24 (dubbed: English (US), Hindi, Tamil, Japanese…)</td>
+</tr>
+</tbody>
+</table>
+<p>A single-track video still returns four to six audio <em>formats</em>
+– one per codec and per bitrate – and the difference between those two
+numbers is the first bug described below. The MrBeast video is the
+multi-language check: every one of its twenty-four rows must read as a
+language name (“Tamil”, “Bangla”), never a code (“ta”), a mangled
+fragment (“ta (mil)”), or a duplicate.</p>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+<th>Listen for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Play one, then Ctrl+Shift+V</td>
+<td>Picture appears <strong>without restarting</strong> the audio</td>
+<td>“Video shown, 1280 by 720.”</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+V again</td>
+<td>Picture goes; audio continues</td>
+<td>“Video hidden. Audio is still playing.”</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+K</td>
+<td>Captions on/off</td>
+<td>Says plainly if they are automatic</td>
+</tr>
+<tr>
+<td>Caption Settings -&gt; 300%</td>
+<td>Text scales; background is <strong>opaque</strong> by default</td>
+<td>–</td>
+</tr>
+<tr>
+<td>F11</td>
+<td>Full screen</td>
+<td><strong>Both</strong> ways out stated on entry</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+A (Audio and Described Audio)</td>
+<td>Lists every track by name</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<h3 id="described-audio--read-this-part">Described audio – read this
+part</h3>
+<h4 id="what-a-search-of-youtube-actually-turns-up">What a search of
+YouTube actually turns up</h4>
+<p>Around a hundred and forty videos were probed for this plan through
+Quill Radio’s own resolver: every result for <em>audio description</em>,
+<em>audio described</em>, <em>described video</em>, <em>descriptive
+video service</em> and similar; the recent uploads of
+<strong>Apple</strong>, <strong>Apple Support</strong>,
+<strong>Microsoft</strong>, <strong>Microsoft Design</strong> and
+Microsoft’s accessibility channel, <strong>@MSFTEnable</strong>; and
+finally a named list of videos reported to carry a genuine selectable
+descriptive track.</p>
+<p>Two different things came back, and keeping them apart is the whole
+of this section.</p>
+<p><strong>Most described content on YouTube is a second <em>video</em>,
+not a second track.</strong> Apple and Microsoft both work this way:
+<em>“Be My Eyes + Microsoft Disability Answer Desk (audio described
+version)”</em> is its own upload with the narration mixed into its only
+audio track. There is nothing to select, because the description
+<em>is</em> the audio. One track is the correct answer for these, and
+the picker must not invent a second.</p>
+<p><strong>A few videos really do publish a selectable descriptive track
+– and Quill Radio finds it.</strong> YouTube supports alternate audio
+renditions on one video, and the videos in the table below use it (the
+<em>ART LAB</em> series says so in its own description; several
+<em>Tested</em> videos carry a descriptive track supplied by the
+Described and Captioned Media Program; two Apple films tell viewers to
+pick it from the settings gear).</p>
+<p>Reaching those tracks took a fight worth recording. YouTube’s web
+player response <em>names</em> the renditions – “English original”,
+“English descriptive” – but serves them without addresses (SABR
+streaming), so yt-dlp discards them before any caller sees one; asked
+the ordinary way, every one of these videos claims a single track,
+labelled <em>“English original (default)”</em>, the platform quietly
+admitting it kept the rest. The resolver now also asks as YouTube’s
+<strong>iOS player client</strong>, which is handed the same renditions
+with direct, playable URLs – verified live, the descriptive stream
+plays. Both clients are queried concurrently, so resolving costs no
+extra time.</p>
+<h4 id="the-described-uploads-worth-playing-anyway">The described
+uploads worth playing anyway</h4>
+<p>These are real described content from the teams who make it, and they
+should sound right end to end. Each one has human captions as well.</p>
+<table>
+<thead>
+<tr>
+<th>Described upload</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Apple – <em>Designed for Shane R. (with Audio
+Descriptions)</em></td>
+<td><code>https://www.youtube.com/watch?v=r0XRoogmJuk</code></td>
+</tr>
+<tr>
+<td>MSFTEnable – <em>Be My Eyes + Microsoft Disability Answer Desk
+(audio described version)</em></td>
+<td><code>https://www.youtube.com/watch?v=LYKUnym0EqU</code></td>
+</tr>
+<tr>
+<td>MSFTEnable – <em>Accessibility drives… (audio described
+version)</em></td>
+<td><code>https://www.youtube.com/watch?v=l3qRka9mECI</code></td>
+</tr>
+<tr>
+<td>MSFTEnable – <em>Introduction to Disability and Accessibility (audio
+described version)</em></td>
+<td><code>https://www.youtube.com/watch?v=Kl4CT4DaypM</code></td>
+</tr>
+<tr>
+<td>MSFTEnable – <em>Integrated Audio Description: At a Glance</em></td>
+<td><code>https://www.youtube.com/watch?v=SgfICec18Gw</code></td>
+</tr>
+<tr>
+<td>Microsoft APAC – <em>A Commitment to Accessibility, full length
+(Audio Description)</em></td>
+<td><code>https://www.youtube.com/watch?v=pqiS7evCXsY</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="the-ab-pairs--the-same-film-described-and-not">The A/B pairs –
+the same film, described and not</h4>
+<p>This is the most useful comparison in the section, because it is the
+shape the platform actually offers. Play the plain one, then the
+described one, and listen for the narration appearing in the gaps. Quill
+Radio should report <strong>one track</strong> for both, and should
+never claim description on the plain one.</p>
+<table>
+<thead>
+<tr>
+<th>Plain</th>
+<th>Described</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Be My Eyes + Microsoft Disability Answer Desk</em> –
+<code>https://www.youtube.com/watch?v=VM9yLxnzQAM</code></td>
+<td><code>https://www.youtube.com/watch?v=LYKUnym0EqU</code></td>
+</tr>
+<tr>
+<td><em>Accessibility drives…</em> –
+<code>https://www.youtube.com/watch?v=koAhcSTn-uU</code></td>
+<td><code>https://www.youtube.com/watch?v=l3qRka9mECI</code></td>
+</tr>
+<tr>
+<td><em>Introduction to Disability and Accessibility</em> –
+<code>https://www.youtube.com/watch?v=GGB_xreE3OU</code></td>
+<td><code>https://www.youtube.com/watch?v=Kl4CT4DaypM</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="testing-the-absence-path-which-is-the-common-case">Testing the
+absence path, which is the common case</h4>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl+Shift+A on the TED talk or Big Buck Bunny</td>
+<td>Window <strong>opens</strong> (never greyed out): <em>“This video
+has one audio track, English. No described audio was
+published.”</em></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+D on the same video</td>
+<td>The same honest answer – not silence</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+A on the MrBeast video</td>
+<td>All twenty-four dubbed tracks, each named as a language, and the
+same closing honesty: none of them is described</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+A on a <strong>described upload</strong> from the table
+above</td>
+<td>The same honest answer, and it is <strong>correct</strong>: the
+description is baked in, so there is genuinely one track. The picker
+must not invent a second</td>
+</tr>
+<tr>
+<td>Play a described upload through</td>
+<td>Plays normally; description is simply the audio</td>
+</tr>
+</tbody>
+</table>
+<h4
+id="the-presence-path-videos-with-a-real-descriptive-track-all-verified">The
+presence path: videos with a real descriptive track, all verified</h4>
+<p>Every video below resolves through Quill Radio to <strong>two named
+tracks</strong> – the original and <em>“English (described)”</em> – and
+the described stream was fetched and played during verification. These
+are the links to walk for the whole presence experience: the
+announcement on start, the picker with the described track first,
+Ctrl+Alt+D, and the position surviving the switch.</p>
+<table>
+<thead>
+<tr>
+<th>Video</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Emily Graslie – <em>ART LAB</em> introduction (says so in its own
+description)</td>
+<td><code>https://www.youtube.com/watch?v=UusppshIAio</code></td>
+</tr>
+<tr>
+<td>Tested – <em>Adam Savage’s Ingenious Fractal Vise</em> (DCMP
+track)</td>
+<td><code>https://www.youtube.com/watch?v=mZBwhJxrcW4</code></td>
+</tr>
+<tr>
+<td>Tested – <em>Adam Savage Loves This Old Box</em></td>
+<td><code>https://www.youtube.com/watch?v=1JgYMJDfPvc</code></td>
+</tr>
+<tr>
+<td>Tested – <em>Setting Up the New Milling Machine</em></td>
+<td><code>https://www.youtube.com/watch?v=OHfSZlfPTNc</code></td>
+</tr>
+<tr>
+<td>Tested – <em>Workbench Cubby Door</em></td>
+<td><code>https://www.youtube.com/watch?v=WhQU-nc4xkg</code></td>
+</tr>
+<tr>
+<td>Tested – <em>Smartphone Camera Rig</em></td>
+<td><code>https://www.youtube.com/watch?v=2igc_BelOXk</code></td>
+</tr>
+<tr>
+<td>Apple – <em>I’m Not Remarkable</em></td>
+<td><code>https://www.youtube.com/watch?v=KmFPWxjmnqE</code></td>
+</tr>
+<tr>
+<td>Apple – <em>Designing the Hikawa Grip &amp; Stand</em></td>
+<td><code>https://www.youtube.com/watch?v=TTb_cjCo7Nc</code></td>
+</tr>
+</tbody>
+</table>
+<p>There is an automated version of exactly this check, which walks
+every link in this section and fails if the reading is dishonest:</p>
+<pre><code>QUILL_YT_LIVE=1 pytest tests/integration/test_youtube_audio_tracks_live.py -v</code></pre>
+<h4 id="three-bugs-this-probing-found-all-fixed">Three bugs this probing
+found, all fixed</h4>
+<p><strong>Rows multiplied.</strong> Every ordinary video listed two or
+three audio tracks – “English”, “English” – because a track was
+identified by its <em>quality tier</em> (<code>low</code>,
+<code>medium</code>, <code>high</code>). yt-dlp returns one audio format
+per codec <strong>and</strong> per bitrate: a TED talk returns four, all
+of them one track. The picker showed duplicate rows nobody could choose
+between, which is precisely the “Track 1 / Track 2” puzzle the feature
+exists to remove, sitting inside the feature.</p>
+<p><strong>Then rows collapsed – the worse one.</strong> The first fix
+keyed a track on the identifier yt-dlp supplies for multi-track videos,
+falling back to the language code. yt-dlp does not supply that
+identifier for YouTube at all: it writes the track’s own name into the
+same field as the quality tier. So the fallback did all the work, and
+because YouTube gives a video’s original and descriptive renditions the
+<em>same</em> language code, two tracks would have been read as one –
+<strong>silently discarding the described track, in the feature whose
+only job is to find it.</strong></p>
+<p><strong>Then a phantom row returned.</strong> The iOS client’s
+formats arrive stamped “MISSING POT” (served without a proof-of-origin
+token), and with that left in the name, the one original track read as
+two – “English”, “English (MISSING POT)” – on every ordinary video. It
+is a delivery detail, not a track, and is now stripped. All three are
+covered by tests over the real shapes YouTube returns.</p>
+<p><strong>Worth re-checking on several videos</strong> that the count
+is right in both directions: never a duplicate row, never a missing
+one.</p>
+<h4 id="walking-the-presence-path">Walking the presence path</h4>
+<p>On each video in the presence table above, expect:</p>
+<ul>
+<li>On starting the video, <strong>once</strong>: <em>“Described audio
+is available for this video. Press Ctrl+Alt+D to hear the narration of
+what is on screen.”</em></li>
+<li>In Ctrl+Shift+A, the described track listed <strong>first</strong>,
+cursor already on it, and a line <strong>above</strong> the list:
+<em>“Described audio is available for this video.”</em></li>
+<li>Ctrl+Alt+D switches straight to it, and the narration is audibly
+there – on the <em>ART LAB</em> introduction it begins over the opening
+titles.</li>
+<li>Switching <strong>keeps your position</strong> – it is a separate
+stream, and losing an hour of a film to turn description on would defeat
+the feature exactly where it matters most.</li>
+<li>The ordinary track still listed and still labelled, so nobody who
+did not ask for description is surprised by it.</li>
+</ul>
+<h2 id="7-youtube-channels-and-playlists">7. YouTube channels and
+playlists</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Link</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Browse Stations -&gt; YouTube Channels -&gt; Add a channel</td>
+<td><code>https://www.youtube.com/@TED</code></td>
+<td>Channel’s recent videos appear as rows</td>
+</tr>
+<tr>
+<td>Station &gt; Add from YouTube Playlist</td>
+<td><code>https://www.youtube.com/playlist?list=PLbpi6ZahtOH6Blw3RGYpWkSByi_T7Rygb</code></td>
+<td><strong>19 entries</strong> added as stations (verified count)</td>
+</tr>
+<tr>
+<td>Play one, then Ctrl+Shift+I</td>
+<td>–</td>
+<td>Size, frame rate, codec, and whether captions and described audio
+exist</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-playlists-the-internet-actually-uses">8. Playlists the
+internet actually uses</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Link</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Import a <code>.pls</code></td>
+<td><code>https://somafm.com/groovesalad.pls</code></td>
+<td>3 entries (verified); each playable</td>
+</tr>
+<tr>
+<td>Export favorites as M3U, re-import</td>
+<td>–</td>
+<td>Same stations, same order</td>
+</tr>
+<tr>
+<td>Paste a Live365 station page</td>
+<td>any <code>live365.com/station/...</code></td>
+<td>Rewritten to the real stream, and it says it did</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-downloads--the-new-one-test-it-hardest">9. Downloads – the new
+one, test it hardest</h2>
+<h3 id="9-pre-download-preferences">9-pre. Download Preferences</h3>
+<p>Station &gt; &amp;Download Preferences… (also the &amp;Preferences…
+button inside View &gt; Downloads).</p>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open it and just listen</td>
+<td>Focus lands in the folder field; its name says what blank means and
+where the default is</td>
+</tr>
+<tr>
+<td>Toggle any checkbox</td>
+<td>The sentence at the bottom updates – it always answers “what will
+happen to the next thing I save?”</td>
+</tr>
+<tr>
+<td>Turn on “Ask where to save”, OK, then Download a whole book</td>
+<td><strong>One</strong> folder prompt for the whole book – never one
+per chapter</td>
+</tr>
+<tr>
+<td>Cancel that prompt</td>
+<td>“Download cancelled. Nothing was queued.” – declining the ask never
+files things anyway</td>
+</tr>
+<tr>
+<td>Change the downloads folder, OK, download one file</td>
+<td>It lands under the new folder immediately – no restart</td>
+</tr>
+<tr>
+<td>Cancel the dialog after editing</td>
+<td>Nothing changed; the old rules still apply</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Books verified live:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Book</th>
+<th>Chapters</th>
+<th>First chapter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Middlemarch (George Eliot)</td>
+<td><strong>86</strong></td>
+<td><code>https://www.archive.org/download/middlemarch_0810_librivox/middlemarch_01_eliot_...</code></td>
+</tr>
+<tr>
+<td>Middlemarch, version 2</td>
+<td>84</td>
+<td><code>https://www.archive.org/download/middlemarch_version2_1310_librivox/...</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Music with a licence:</strong> ccMixter
+<code>Xtended Chords -- Javolenus</code>, licence <em>Attribution
+Noncommercial (4.0)</em> – search <code>jazz</code> in Find
+Stations.</p>
+<h3 id="9a-what-may-and-may-not-be-saved">9a. What may and may not be
+saved</h3>
+<table>
+<thead>
+<tr>
+<th>Row</th>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A LibriVox chapter</td>
+<td>Right-click -&gt; Download…</td>
+<td>Queued; saved under <code>Books\</code></td>
+</tr>
+<tr>
+<td>A live station (BBC)</td>
+<td>Right-click</td>
+<td><strong>No</strong> Download item. Via the palette: <em>“A live
+station… has no end… Use Record Station”</em></td>
+</tr>
+<tr>
+<td>A Mixcloud row</td>
+<td>Right-click</td>
+<td>No Download. Refusal names Mixcloud and the browser</td>
+</tr>
+<tr>
+<td>A YouTube video</td>
+<td>Right-click</td>
+<td>No Download. <em>“deliberately does not download from
+YouTube”</em></td>
+</tr>
+<tr>
+<td>An Audius track</td>
+<td>Right-click</td>
+<td>No Download. <em>“the artist’s choice… does not guess”</em></td>
+</tr>
+<tr>
+<td>A ccMixter track</td>
+<td>Download</td>
+<td>Saved <strong>plus</strong> a <code>.licence.txt</code> beside
+it</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9b-a-whole-book-and-the-queue">9b. A whole book, and the
+queue</h3>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+<th>Listen for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open Middlemarch’s folder in Browse, right-click the folder</td>
+<td><strong>Download All 86 Files…</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td>Choose it</td>
+<td>One folder prompt, not 86</td>
+<td>“Queued Middlemarch… You can carry on listening.”</td>
+</tr>
+<tr>
+<td>Start a station playing while it runs</td>
+<td>Playback is unaffected</td>
+<td>–</td>
+</tr>
+<tr>
+<td><strong>View &gt; Downloads…</strong> (Ctrl+Shift+J)</td>
+<td>Queue window; rows read as sentences with state last</td>
+<td>“Chapter 4, Middlemarch, downloading now”</td>
+</tr>
+<tr>
+<td>Let several finish</td>
+<td>Finished rows <strong>stay</strong></td>
+<td>A heartbeat every few chapters: “12 of 86.”</td>
+</tr>
+<tr>
+<td>Select a finished row -&gt; Open Containing Folder</td>
+<td>Explorer opens <strong>on that file</strong></td>
+<td>–</td>
+</tr>
+<tr>
+<td>Select a waiting row -&gt; Cancel This One</td>
+<td>Cancelled; anything saved is kept</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Remove From List on the <strong>running</strong> row</td>
+<td>Refused</td>
+<td>“That one is downloading now. Cancel it first.”</td>
+</tr>
+<tr>
+<td>Clear Finished, then Clear All</td>
+<td>List empties; disk untouched</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Alt+F4 with downloads outstanding</td>
+<td>Per preference: keeps going <strong>or</strong> stops</td>
+<td>Either way it <strong>says which</strong> – this is the point</td>
+</tr>
+</tbody>
+</table>
+<h3 id="9c-where-things-land">9c. Where things land</h3>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Download one book by George Eliot</td>
+<td><code>Books\Middlemarch\</code> – <strong>no</strong> author
+folder</td>
+</tr>
+<tr>
+<td>Download a second by the same author</td>
+<td>The second goes in <code>Books\George Eliot\...</code></td>
+</tr>
+<tr>
+<td>Download a podcast episode</td>
+<td><code>Podcasts\&lt;show name&gt;\</code></td>
+</tr>
+<tr>
+<td>Download a ccMixter track</td>
+<td><code>Music\</code></td>
+</tr>
+<tr>
+<td>Turn off “folder per book”</td>
+<td>Chapters land directly in <code>Books\</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="9d-interruption">9d. Interruption</h3>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Start a book, kill the network mid-chapter</td>
+<td>That chapter fails; the <strong>next one still runs</strong></td>
+</tr>
+<tr>
+<td>Restore the network, download the same book again</td>
+<td>Part-finished files <strong>resume</strong> rather than restart</td>
+</tr>
+<tr>
+<td>Cancel mid-chapter</td>
+<td>Stops within seconds, not at the end of a 90 MB file</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-a-downloaded-book-plays-as-a-book">10. A downloaded book
+plays as a book</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+<th>Listen for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Play chapter 1 of a downloaded book</td>
+<td>Plays</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Let it run to the end</td>
+<td><strong>Chapter 2 starts on its own</strong></td>
+<td>“2 of 86, …” – position first</td>
+</tr>
+<tr>
+<td>Check ordering on a book with 10+ chapters</td>
+<td>Chapter 2 comes before chapter 10</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Play the <strong>last</strong> chapter to its end</td>
+<td>Stops, and says so</td>
+<td>“That was the last chapter of Middlemarch.”</td>
+</tr>
+<tr>
+<td>Rename a chapter file by hand, reopen</td>
+<td>The book simply reflects the change</td>
+<td>–</td>
+</tr>
+<tr>
+<td>Let a <strong>live station</strong> run and drop</td>
+<td>Reconnects – never treated as a book</td>
+<td>–</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-continue-listening">11. Continue Listening</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Get 20 minutes into a podcast episode, stop</td>
+<td>Appears in the list</td>
+</tr>
+<tr>
+<td>Get 10 minutes into a LibriVox chapter, stop</td>
+<td>Appears, labelled <strong>recording</strong></td>
+</tr>
+<tr>
+<td>Get 10 minutes into a downloaded file, stop</td>
+<td>Appears, labelled <strong>file on this computer</strong></td>
+</tr>
+<tr>
+<td>Open <strong>Continue Listening…</strong></td>
+<td>Newest first; every row names its kind and how far in</td>
+</tr>
+<tr>
+<td>Resume a row</td>
+<td>Starts where you left off</td>
+</tr>
+<tr>
+<td>Forget This One</td>
+<td>Row goes; the episode stays <strong>unplayed</strong></td>
+</tr>
+<tr>
+<td>Move a downloaded file, reopen the list</td>
+<td>That row is quietly <strong>absent</strong> – not offered and then
+failing</td>
+</tr>
+<tr>
+<td>Play the moved file again from its new place, stop</td>
+<td>It comes back</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Listen for:</strong> “2 things you did not finish, across
+recordings, podcasts.” A row this app cannot play (a radio recording
+inside Cast) must have Resume disabled and say which app has it.</p>
+<hr />
+<h2 id="12-recording">12. Recording</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Record a live station for 30 seconds, stop</td>
+<td>File exists <strong>and</strong> the stop is announced</td>
+</tr>
+<tr>
+<td>Record a station that produces no audio</td>
+<td>Reported as capturing nothing, and the empty file is deleted</td>
+</tr>
+<tr>
+<td>Schedule a recording in hours and minutes</td>
+<td>Separate Hours/Minutes boxes; “3” and “0” means three hours</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="13-safe-mode">13. Safe Mode</h2>
+<p>Run with <code>--safe-mode</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Expand any network branch</td>
+<td>Refuses <strong>by name</strong>, per branch</td>
+</tr>
+<tr>
+<td>Favorites, ACB Media, NFB Radio, Networks</td>
+<td>Still work – they need no network</td>
+</tr>
+<tr>
+<td>Try a download</td>
+<td>Refused before any request</td>
+</tr>
+<tr>
+<td>Find Stations</td>
+<td>Refuses; no request leaves the machine</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="14-spotify-optional-experimental">14. Spotify (optional,
+experimental)</h2>
+<p>Skip unless you have Premium and a Client ID. Nothing else in this
+plan depends on it.</p>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Search with Spotify enabled</td>
+<td>Rows appear alongside stations</td>
+</tr>
+<tr>
+<td>Try to download a Spotify row</td>
+<td><em>“copy-protected and cannot be saved by any app, including this
+one.”</em></td>
+</tr>
+<tr>
+<td>Try to record one</td>
+<td>Same refusal</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="15-the-quillville-menu">15. The QuillVille menu</h2>
+<table>
+<thead>
+<tr>
+<th>Do</th>
+<th>Expect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Open the QuillVille menu</td>
+<td><strong>QUILL</strong> and <strong>Quill Weather</strong></td>
+</tr>
+<tr>
+<td>Look for Inkwell</td>
+<td><strong>Not there</strong> – deliberately off Radio’s menu for
+3.0</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="what-to-report">What to report</h2>
+<p>For anything that fails, the useful report is: what you did, what was
+<strong>said</strong>, and what you expected to hear. A silent failure
+is the most serious kind here – if something simply did nothing, that is
+worth reporting even when nothing looks broken.</p>
+</main>
+</body>
+</html>

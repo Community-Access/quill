@@ -2,7 +2,7 @@
 
 This is the complete, authoritative product-requirements document for the QUILL Weather feature set -- the weather code shared by the standalone **Quill Weather** app, **Quill Radio**, and **QUILL**. It moved here from the Quill Radio PRD when Quill Weather became its own app (2.2.0). For what is specific to Quill Weather *as a standalone app* (its own process, tray, run-at-login, independent distribution), see the app-specific notes at the end of this document.
 
-### Implementation status (2.2.0)
+## Implementation status (2.2.0)
 
 Much of this roadmap is now shipped. As of 2.2.0 the following are **delivered**:
 

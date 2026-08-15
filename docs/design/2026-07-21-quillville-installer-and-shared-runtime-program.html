@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QuillVille installer + shared runtime program</title>
+  <title>2026-07-21-quillville-installer-and-shared-runtime-program</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,30 +174,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="quillville-installer--shared-runtime-program">QuillVille
+<h1 id="quillville-installer-shared-runtime-program">QuillVille
 installer + shared runtime program</h1>
 <p>Status: proposed (2026-07-21). Author: consolidation work. This is
 the umbrella plan for the remaining packaging work requested: a
@@ -213,6 +192,11 @@ reference-count” philosophy to the Python runtime itself and to the
 installer UX.</p>
 <h2 id="apps-in-scope">Apps in scope</h2>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>App</th>
@@ -261,7 +245,7 @@ yet</strong></td>
 </tr>
 </tbody>
 </table>
-<h2 id="part-a--shared-python-runtime">Part A – Shared Python
+<h2 id="part-a-shared-python-runtime">Part A – Shared Python
 runtime</h2>
 <h3 id="problem">Problem</h3>
 <p>Each app is a PyInstaller <strong>onedir</strong> bundle that carries
@@ -319,11 +303,11 @@ Validation MUST happen on Windows (and macOS for the mac port) – it
 cannot be verified in this dev session. Until then, the existing onedir
 installers remain the shipping path; the shared runtime lands behind a
 build flag and is cut over once green.</p>
-<h2 id="part-b--rich-installer-experience-all-apps">Part B – Rich
+<h2 id="part-b-rich-installer-experience-all-apps">Part B – Rich
 installer experience (all apps)</h2>
 <p>Every app’s <code>.iss</code> gains the same Inno structure so the
 experience is uniform:</p>
-<h3 id="types--install-profiles"><code>[Types]</code> – install
+<h3 id="types-install-profiles"><code>[Types]</code> – install
 profiles</h3>
 <ul>
 <li><strong>Full</strong> – app + shared runtime + the app’s common
@@ -335,9 +319,8 @@ components fetch on demand.</li>
 <li><strong>Custom</strong> – user checks exactly the
 <code>[Components]</code> they want.</li>
 </ul>
-<h3
-id="components--optional-feature-selection"><code>[Components]</code> –
-optional feature selection</h3>
+<h3 id="components-optional-feature-selection"><code>[Components]</code>
+– optional feature selection</h3>
 <p>Driven by the same per-app catalog as #5
 (<code>_optional_component_allowlist</code>): Radio offers ffmpeg/mpv;
 Studio offers the speech engines + voices + audio pack; QUILL offers the
@@ -350,7 +333,7 @@ picker.</p>
 <p>Inno’s wizard is MSAA-exposed; keep it (the “Installer stays Inno
 Setup” memory). Add clear captions, logical tab order, and a plain-text
 summary page. No custom owner-drawn pages that break screen readers.</p>
-<h2 id="part-c--portable-and-offline-variants">Part C – Portable and
+<h2 id="part-c-portable-and-offline-variants">Part C – Portable and
 Offline variants</h2>
 <ul>
 <li><strong>Portable</strong> – a no-installer <code>.zip</code> that
@@ -370,7 +353,7 @@ marker and stages the components into the bundle at build time. Extend
 each <code>build_release.ps1</code> with an <code>-Offline</code> switch
 that stages the app’s allowlisted components.</li>
 </ul>
-<h2 id="part-d--macos-runtime-gaps-6">Part D – macOS runtime gaps
+<h2 id="part-d-macos-runtime-gaps-6">Part D – macOS runtime gaps
 (#6)</h2>
 <p><code>model_mirrors.py</code> has zero macOS runtime entries. The mac
 <em>models</em> were staged; the mac <em>runtime binaries</em> were not.
@@ -422,6 +405,5 @@ user.</li>
 shell and the existing component/offline machinery, and is gated by
 ruff/mypy(core)/size/ banned-patterns, but the four items above need
 their named environment before merge.</p>
-</main>
 </body>
 </html>

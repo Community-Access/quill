@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL 1.0.0 — Core-Journey Test Plan (hand-held)</title>
+  <title>qa-core-journeys</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,72 +174,42 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="quill-100--core-journey-test-plan-hand-held">QUILL 1.0.0 —
+<h1 id="quill-1.0.0-core-journey-test-plan-hand-held">QUILL 1.0.0 —
 Core-Journey Test Plan (hand-held)</h1>
 <p>Rigorous, end-to-end validation of QUILL’s critical editor journeys,
 each keyed to a known sample file in <code>qa-samples/</code>. Where the
 screen-reader plan (<code>screen-reader-test-plan.md</code>) proves a
 single fix is announced, this plan proves a whole task works from start
 to finish, on a real build, by ear and by keyboard.</p>
-<p>How to use this plan:</p>
-<ul>
-<li>Test with <strong>NVDA and JAWS</strong> on a real Windows build
-(Narrator where noted). Run each journey twice: once
+<p>How to use this plan: - Test with <strong>NVDA and JAWS</strong> on a
+real Windows build (Narrator where noted). Run each journey twice: once
 <strong>keyboard-only with the mouse unplugged</strong>, then again
-reading with the screen reader’s review/virtual cursor.</li>
-<li>Copy the whole <code>qa-samples/</code> corpus onto the machine
-first. Every step names the exact sample file it opens; do not
-substitute your own document.</li>
-<li>Record <strong>Pass / Fail / Blocked / Not tested</strong> and the
+reading with the screen reader’s review/virtual cursor. - Copy the whole
+<code>qa-samples/</code> corpus onto the machine first. Every step names
+the exact sample file it opens; do not substitute your own document. -
+Record <strong>Pass / Fail / Blocked / Not tested</strong> and the
 <strong>actual spoken text</strong> for each case. “Expected” describes
 the intended announcement; exact wording varies by screen reader, but
 the field name, role, state, and the load-bearing values (counts, cell
-contents, format labels) must be present and correct.</li>
-<li>A case fails if focus is lost, a value is wrong, an outcome is
-silent, an error is not announced, or the produced file does not match
-the “Expected” structure.</li>
-</ul>
+contents, format labels) must be present and correct. - A case fails if
+focus is lost, a value is wrong, an outcome is silent, an error is not
+announced, or the produced file does not match the “Expected”
+structure.</p>
 <p>General keyboard contract to confirm throughout: Tab / Shift+Tab move
 predictably, Escape cancels, Enter activates the default, and focus
 returns to a sensible place when a dialog closes. No destructive action
 happens without a confirmation you can hear.</p>
 <p>Preconditions common to every journey (confirm once, per
-environment):</p>
-<ul>
-<li>A packaged 1.0.0 build installed per the master sign-off §A
-environment matrix.</li>
-<li>NVDA or JAWS running and speaking.</li>
-<li>The <code>qa-samples/</code> folder present on a local disk; note
-its full path here: ______.</li>
-<li>AI configured with a working provider <strong>only</strong> for
-JOURNEY-005 (Improve Reading Order); all other journeys run with AI
-off.</li>
-</ul>
+environment): - A packaged 1.0.0 build installed per the master sign-off
+§A environment matrix. - NVDA or JAWS running and speaking. - The
+<code>qa-samples/</code> folder present on a local disk; note its full
+path here: ______. - AI configured with a working provider
+<strong>only</strong> for JOURNEY-005 (Improve Reading Order); all other
+journeys run with AI off.</p>
 <hr />
-<h2 id="journey-001--open-and-heading-navigation">JOURNEY-001 — Open and
+<h2 id="journey-001-open-and-heading-navigation">JOURNEY-001 — Open and
 heading navigation</h2>
 <p>Sample: <code>formatting.md</code> (six headings, one of each level
 H1–H6, in order).</p>
@@ -288,7 +258,7 @@ Formatting at Cursor</strong> (<code>format.describe_formatting</code>,
 silent.</li>
 </ul></li>
 </ul>
-<h2 id="journey-002--table-cell-navigation">JOURNEY-002 — Table cell
+<h2 id="journey-002-table-cell-navigation">JOURNEY-002 — Table cell
 navigation</h2>
 <p>Sample: <code>table.md</code> (caption sentence, then a 3-column
 table: header row + 3 body rows; the South row’s Device cell holds the
@@ -334,7 +304,7 @@ press Ctrl+Alt+Right.</li>
 it is — no crash, no jump.</li>
 </ul></li>
 </ul>
-<h2 id="journey-003--save-as-format-fidelity">JOURNEY-003 — Save-As
+<h2 id="journey-003-save-as-format-fidelity">JOURNEY-003 — Save-As
 format fidelity</h2>
 <p>Sample: <code>formatting.md</code>. Verifies the CHANGELOG fidelity
 promise: headings, lists, links, the image, and a table survive Save-As
@@ -380,14 +350,14 @@ cell is a single cell; no column split from the escaped pipe.</li>
 <li>TC-003d — Nothing is dropped silently
 <ul>
 <li>Steps: repeat TC-003a but Save As to a format that cannot hold rich
-formatting (e.g. plain <code>.txt</code> via
+formatting (e.g. plain <code>.txt</code> via
 <code>file.save_as_plain_text</code>).</li>
 <li>Expected: QUILL tells you before committing what will be dropped
 (per the Links-in-plain-text setting), rather than dropping it
 silently.</li>
 </ul></li>
 </ul>
-<h2 id="journey-004--insert-equation-and-math-reading">JOURNEY-004 —
+<h2 id="journey-004-insert-equation-and-math-reading">JOURNEY-004 —
 Insert Equation and math reading</h2>
 <p>Sample: <code>math.md</code> (two inline <code>\(...\)</code>
 equations, one <code>$$...$$</code> block, one MathML block).</p>
@@ -434,7 +404,7 @@ without it, the built-in template reading speaks it and nothing errors.
 Note which path ran.</li>
 </ul></li>
 </ul>
-<h2 id="journey-005--improve-reading-order-ai">JOURNEY-005 — Improve
+<h2 id="journey-005-improve-reading-order-ai">JOURNEY-005 — Improve
 Reading Order (AI)</h2>
 <p>Sample: <code>reading-order.txt</code> (a four-step recipe printed
 out of order, one step broken across a mid-sentence line break; the file
@@ -451,7 +421,7 @@ sent</strong>, naming the provider and the approximate size — in
 substance: “QUILL will send this document — about 1 page — to
 <provider name> to repair its reading order … The result opens as a new,
 unsaved document; your current document is not changed …. Send the
-document now?” Default is No. Cancelling announces “Improve Reading
+document now?” Default is No. Cancelling announces “Improve Reading
 Order cancelled — nothing was sent.”</li>
 </ul></li>
 <li>TC-005b — Run it and check the result opens unsaved
@@ -482,7 +452,7 @@ over the page limit it refuses with the over-limit message and sends
 nothing.</li>
 </ul></li>
 </ul>
-<h2 id="journey-006--find-replace-and-regex-helper">JOURNEY-006 — Find,
+<h2 id="journey-006-find-replace-and-regex-helper">JOURNEY-006 — Find,
 Replace, and Regex Helper</h2>
 <p>Sample: <code>formatting.md</code>.</p>
 <ul>
@@ -510,14 +480,14 @@ single Undo (<code>Ctrl+Z</code>) reverts the bulk replace cleanly.</li>
 <ul>
 <li>Steps: Tools &gt; Regular Expression Helper
 (<code>tools.regex_helper</code>); build a pattern that matches an
-ordered-list item (e.g. <code>^\d+\. </code>); apply it in Replace with
+ordered-list item (e.g. <code>^\d+\.</code>); apply it in Replace with
 regex mode on; then feed an <strong>invalid</strong> regex.</li>
 <li>Expected: the helper is keyboard/SR navigable and its fields are
 named; the valid pattern matches the three ordered-list lines; the
 invalid regex is reported as an error and does not crash.</li>
 </ul></li>
 </ul>
-<h2 id="journey-007--read-aloud">JOURNEY-007 — Read Aloud</h2>
+<h2 id="journey-007-read-aloud">JOURNEY-007 — Read Aloud</h2>
 <p>Sample: <code>plain.txt</code> (baseline) and
 <code>formatting.md</code>.</p>
 <ul>
@@ -547,9 +517,8 @@ not as raw syntax character-by-character; the fenced code block is read
 as code, not as backtick noise.</li>
 </ul></li>
 </ul>
-<h2
-id="journey-008--open-from-url-and-paste-path-robustness">JOURNEY-008 —
-Open from URL and paste-path robustness</h2>
+<h2 id="journey-008-open-from-url-and-paste-path-robustness">JOURNEY-008
+— Open from URL and paste-path robustness</h2>
 <p>Sample: <code>plain.txt</code> (as the local comparison), plus a
 small text URL you provide.</p>
 <ul>
@@ -586,7 +555,7 @@ an image with alt “Red circle” — not raw HTML tags.</li>
 </ul></li>
 </ul>
 <h2
-id="journey-009--plain-text-round-trip-and-html-import-baseline">JOURNEY-009
+id="journey-009-plain-text-round-trip-and-html-import-baseline">JOURNEY-009
 — Plain-text round-trip and HTML import (baseline)</h2>
 <p>Sample: <code>plain.txt</code>, <code>sample.html</code>.</p>
 <ul>
@@ -622,6 +591,5 @@ text.</li>
 <li>Overall result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
-</main>
 </body>
 </html>

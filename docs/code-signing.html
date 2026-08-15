@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Windows code signing (Authenticode via Azure Trusted
-Signing)</title>
+  <title>code-signing</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -240,29 +239,8 @@ Signing)</title>
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
 id="windows-code-signing-authenticode-via-azure-trusted-signing">Windows
 code signing (Authenticode via Azure Trusted Signing)</h1>
@@ -275,6 +253,12 @@ from <a href="signing.md"><code>docs/signing.md</code></a>, which is
 Ed25519 <em>provenance</em> signing (minisign sidecars) for Quillins and
 other Hub artifacts. Both exist on purpose:</p>
 <table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr>
 <th>System</th>
@@ -325,7 +309,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;CodeSigningAccountName&quot;</span><span class="fu">:</span> <span class="st">&quot;JeffBishopSigningCert&quot;</span><span class="fu">,</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;CertificateProfileName&quot;</span><span class="fu">:</span> <span class="st">&quot;QUILL&quot;</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<h2 id="the-one-tool-scriptscode_signingpy">The one tool:
+<h2 id="the-one-tool-scriptscode_signing.py">The one tool:
 <code>scripts/code_signing.py</code></h2>
 <p>Everything routes through a single, reusable module. It is
 import-safe (build scripts call it in-process) and a CLI.</p>
@@ -368,12 +352,16 @@ credential is visible.</li>
 that has the <strong>Trusted Signing Certificate Profile Signer</strong>
 role on the account.</li>
 </ul>
-<h2 id="the-opt-in--fail-open-contract">The opt-in / fail-open
+<h2 id="the-opt-in-fail-open-contract">The opt-in / fail-open
 contract</h2>
 <p>Signing never changes a plain build. It is controlled by two
 environment variables (or the <code>-Sign</code> switch on the
 standalone build scripts, which sets the first):</p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Variable</th>
@@ -486,7 +474,7 @@ report a <em>catalog</em> signer (e.g.
 catalog-signed by the OS; that is the Windows security-catalog match,
 independent of the embedded Authenticode signature <code>signtool</code>
 reports.</p>
-<h2 id="rotation--account-changes">Rotation / account changes</h2>
+<h2 id="rotation-account-changes">Rotation / account changes</h2>
 <p>The signing identity is entirely in <code>metadata.json</code> plus
 the Azure account’s certificate profile. To move accounts or profiles,
 edit <code>metadata.json</code> (or point
@@ -495,6 +483,5 @@ the tree hard-codes the endpoint, account, or profile. To bump the
 signing dlib, change <code>TRUSTED_SIGNING_CLIENT_VERSION</code> /
 <code>TRUSTED_SIGNING_CLIENT_SHA256</code> in
 <code>scripts/code_signing.py</code>.</p>
-</main>
 </body>
 </html>

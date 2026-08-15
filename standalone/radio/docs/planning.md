@@ -1,5 +1,21 @@
 # Quill Radio Planning Notes
 
+> **Status, 2026-08-14.** The commercial and relationship-gated half of this
+> document is **closed**, and has been removed from it. Quill Radio will not
+> pursue, license, or integrate a station directory that needs a commercial
+> agreement, a paid tier, a partner approval, or a per-application developer key
+> -- airable, vTuner, myTuner, Radioplayer, Radioline, Radio.net, Broadcastify,
+> and the SHOUTcast *directory* are all out, and the SHOUTcast API request sent
+> on 2026-08-12 is abandoned rather than awaited. The reasoning lives in Quill
+> Radio's PRD, section 7. **SHOUTcast and Icecast streams remain fully
+> supported**, and `My Servers` browses an individual server with no directory
+> involved at all.
+>
+> What remains here is the keyless material: the sources that need nobody's
+> permission, and the provider architecture. Much of even that has since shipped
+> in 3.0 -- see the release notes rather than this file for what exists.
+
+
 Yes. I would expand QUILL Radio beyond traditional broadcast directories, but treat these as **different provider classes**, because a station directory, police-scanner network, repeater database, and remotely controlled radio receiver work very differently.
 
 The most important rule is that **directory access and audio playback rights are separate**. A source may permit searching its metadata without permitting QUILL to resolve, embed, cache, or redistribute its streams.
@@ -9,12 +25,8 @@ The most important rule is that **directory access and audio playback rights are
 | Source                         | What it adds                                                                        | Access outlook                                                        | QUILL priority              |
 | ------------------------------ | ----------------------------------------------------------------------------------- | --------------------------------------------------------------------- | --------------------------- |
 | **FMSTREAM**                   | Large international radio catalog with direct station streams                       | Noncommercial database API available with a free key and usage limits | **Very high**               |
-| **SHOUTcast Directory**        | Independent internet stations and genre-based browsing                              | Official partner API application                                      | **High**                    |
 | **Icecast Directory**          | Independent and community-hosted streams                                            | Public directory; formal reuse expectations should be confirmed       | **High**                    |
 | **RadioDNS**                   | Station names, logos, identifiers, metadata, service following                      | Open broadcast-radio standards                                        | **High for enrichment**     |
-| **Radioplayer**                | Broadcast stations, search, location, now playing, schedules and on-demand programs | Approved commercial or strategic partner access                       | **High partnership target** |
-| **airable**                    | Curated radio, podcast and music-service catalogs                                   | Business API, negotiated access                                       | Medium                      |
-| **Radioline Business**         | Worldwide station and podcast catalog                                               | Partner API                                                           | Medium                      |
 | **RepeaterBook**               | Amateur-radio repeaters, frequencies, modes and locations                           | Approved application integration; licensing depends on use            | **High for ham metadata**   |
 | **OpenWebRX/Receiverbook**     | Public remotely controlled SDR receivers                                            | Open ecosystem, but receiver operators control access                 | **High experimental value** |
 | **OpenMHz**                    | Public-safety radio calls and archives                                              | Partnership required for third-party API use                          | Medium/high                 |
@@ -52,15 +64,14 @@ FMSTREAM belongs **alongside Radio Browser**, not underneath it. QUILL merges bo
 
 The **SHOUTcast Directory API** is explicitly intended for websites, applications and media players, although developers must apply as API partners and comply with its branding and reporting agreement. ([SHOUTcast][2])
 
-There is no application form: SHOUTcast asks for an email with your company
-details and proposed application. **That request was sent on 2026-08-12**; the
-submission of record is `partner-outreach-shoutcast.md`, which also carries the
-two commitments we made in it (a spoken as well as visible source label, and
-per-source recording suppression if they ask for it). SHOUTcast's own developer
-wiki does not currently resolve, so the endpoint reference and attribution rules
-were requested rather than looked up, and no implementation can start until a
-`dev_id` arrives. **Icecast below needs no approval and should not wait on this
-reply** -- it is the part of 1b that can begin today.
+**The SHOUTcast directory is out** (2026-08-14). It needs a partner application
+and a per-application `dev_id`, which is exactly the kind of relationship-gated
+access the closure above rules out; the request sent on 2026-08-12 is abandoned
+rather than awaited, and the commitments made in it lapse with it, nothing having
+been built on them. **Icecast needs no approval**, and it is what shipped: `My
+Servers` in Quill Radio 3.0 enumerates an individual Icecast or SHOUTcast
+server's mounts directly, with now-playing text on each -- the same content, with
+nobody to ask.
 
 That would add a great deal of independent programming:
 
@@ -102,9 +113,12 @@ alternatives.
 
 There is no broadly open, nationwide police-scanner catalog with unrestricted third-party playback.
 
-### Broadcastify
+### Broadcastify -- closed
 
-Broadcastify remains the largest obvious source, but—as discussed—its catalog and audio policies make a broad QUILL scanner experience difficult without a negotiated partnership.
+Broadcastify is the largest obvious source and it is **out** (2026-08-14). Its
+feed-catalog API is a paid subscription (USD 2,500 per month as of June 2026) and
+it explicitly declines to license new consumer-facing scanner applications. Both
+halves are disqualifying on their own; together there is nothing to discuss.
 
 ### OpenMHz
 
@@ -131,7 +145,7 @@ It could still enrich QUILL with:
 * Conventional frequencies.
 * County and statewide system organization.
 
-But it should not be treated as a free replacement for Broadcastify audio.
+But it is metadata, not audio, and it should not be read as a free replacement for a scanner feed.
 
 ### A QUILL Community Feeds program
 
@@ -307,26 +321,6 @@ There does not appear to be a unified listening API, so QUILL could create the m
 
 This could become the definitive accessible directory of radio-reading services rather than another partial import.
 
-## Commercial partnership targets
-
-These are worth contacting after the open integrations are established:
-
-### Radioplayer
-
-Radioplayer’s partner API supports station discovery, geographic search, live metadata, schedules, on-demand programming and recommendations. It requires an approved account and API credentials. ([Radioplayer Developer Hub][20])
-
-### airable
-
-airable offers curated radio and podcast data through APIs for device manufacturers and other commercial partners. ([Airable Now][21])
-
-### Radioline Business
-
-Radioline offers its worldwide radio and podcast database to approved partners through custom API arrangements. ([Radioline][22])
-
-### vTuner and myTuner
-
-Both are potential catalog partners, although their access models are oriented toward approved devices, applications and licensed partners rather than unrestricted public APIs. ([vTuner][23])
-
 ## Recommended implementation order
 
 ### Build or begin now
@@ -341,18 +335,11 @@ Both are potential catalog partners, although their access models are oriented t
 5. **QUILL Community Feed manifest**
 6. **Reading-services submission directory**
 
-### Pursue as strategic partnerships
+### Do not integrate: closed, not pending
 
-1. Radioplayer
-2. OpenMHz
-3. radio.net
-4. IAAIS
-5. airable
-6. Radioline
-7. AllStarLink and EchoLink
-8. RailroadRadio.net
-
-### Do not integrate without an explicit agreement
+Everything here needs somebody's permission, a paid tier, or both, and that is
+now a settled non-goal rather than a queue (Quill Radio PRD, section 7). Listed
+so it is not rediscovered as an opportunity.
 
 * Broadcastify
 * LiveATC
@@ -411,7 +398,3 @@ My strongest next combination would be **the directory-expansion workstream (FMS
 [17]: https://www.weather.gov/documentation/services-web-api?utm_source=chatgpt.com "API Web Service"
 [18]: https://www.weather.gov/hnx/wxradio?utm_source=chatgpt.com "NOAA Weather Radio"
 [19]: https://www.iaais.org/?utm_source=chatgpt.com "IAAIS: Home"
-[20]: https://developers.radioplayer.org/api-reference "Radioplayer Partner API (WRAPI)"
-[21]: https://www.airablenow.com/ "airable | internet media catalogues"
-[22]: https://business.radioline.co/?utm_source=chatgpt.com "Radioline"
-[23]: https://www.vtuner.com/services.asp?utm_source=chatgpt.com "Featured Products"

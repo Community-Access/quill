@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Dialog contract — every dialog, by area</title>
+  <title>dialogs</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,30 +174,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="dialog-contract--every-dialog-by-area">Dialog contract — every
+<h1 id="dialog-contract-every-dialog-by-area">Dialog contract — every
 dialog, by area</h1>
 <p>This section proves the one promise QUILL makes about
 <strong>every</strong> dialog it can put on screen: it opens, you can
@@ -258,7 +237,7 @@ with your screen reader’s review / virtual cursor. Both must pass.</p>
 · keyboard-complete · named · Escape+Close return focus · announces
 outcome</strong> — so you can verify without scrolling back.</p>
 <hr />
-<h2 id="core-editor--the-editors-dialogs-487">CORE-EDITOR — the editor’s
+<h2 id="core-editor-the-editors-dialogs-487">CORE-EDITOR — the editor’s
 dialogs (487)</h2>
 <p>The main QUILL editor. Every dialog below is reachable in a public
 build. Work through them area by area; each must satisfy the contract
@@ -2235,7 +2214,7 @@ type="checkbox" /><code>quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_s
 return focus · announces outcome</label></li>
 </ul>
 <hr />
-<h2 id="radio--quill-radio-public-standalone-app-36">RADIO — Quill Radio
+<h2 id="radio-quill-radio-public-standalone-app-36">RADIO — Quill Radio
 (public standalone app) (36)</h2>
 <p>Dialogs in the standalone Quill Radio app. All are present in a
 public build.</p>
@@ -2391,7 +2370,7 @@ type="checkbox" /><code>quill/ui/radio/wake_timer_dialog.py::WakeUpTimerDialog._
 Escape+Close return focus · announces outcome</label></li>
 </ul>
 <hr />
-<h2 id="weather--quill-weather-public-standalone-app-4">WEATHER — Quill
+<h2 id="weather-quill-weather-public-standalone-app-4">WEATHER — Quill
 Weather (public standalone app) (4)</h2>
 <p>Dialogs in the standalone Quill Weather app. All are present in a
 public build.</p>
@@ -2414,12 +2393,12 @@ type="checkbox" /><code>quill/ui/weather/weather_center_dialog.py::WeatherCenter
 Escape+Close return focus · announces outcome</label></li>
 </ul>
 <hr />
-<h2 id="studio-gated--quill-studio--audiobook-production-43">STUDIO
+<h2 id="studio-gated-quill-studio-audiobook-production-43">STUDIO
 [GATED] — Quill Studio / audiobook production (43)</h2>
 <p>Quill Studio is gated out of the public 1.0 build. On a public build
 every line here is N/A; confirm their absence in
-<code>gated-absence.md</code>. Only test if a dev/admin build (e.g.
-QUILL_DEV_BUILD=1) enables Studio.</p>
+<code>gated-absence.md</code>. Only test if a dev/admin build
+(e.g. QUILL_DEV_BUILD=1) enables Studio.</p>
 <p><em>Every line in this area is</em> <strong>[GATED] / N/A</strong>
 <em>on a public 1.0 build.</em></p>
 <ul class="task-list">
@@ -2641,7 +2620,7 @@ Escape+Close return focus · announces outcome · <strong>[GATED] / N/A on
 public build</strong></label></li>
 </ul>
 <hr />
-<h2 id="podcasts-gated--podcasts-app-35">PODCASTS [GATED] — Podcasts app
+<h2 id="podcasts-gated-podcasts-app-35">PODCASTS [GATED] — Podcasts app
 (35)</h2>
 <p>The Podcasts app is gated out of the public 1.0 build. On a public
 build every line here is N/A; confirm absence in
@@ -2833,7 +2812,7 @@ Escape+Close return focus · announces outcome · <strong>[GATED] / N/A on
 public build</strong></label></li>
 </ul>
 <hr />
-<h2 id="beacon-gated--quill-beacon-app-30">BEACON [GATED] — Quill Beacon
+<h2 id="beacon-gated-quill-beacon-app-30">BEACON [GATED] — Quill Beacon
 app (30)</h2>
 <p>Quill Beacon is gated out of the public 1.0 build. On a public build
 every line here is N/A; confirm absence in
@@ -2994,7 +2973,7 @@ Escape+Close return focus · announces outcome · <strong>[GATED] / N/A on
 public build</strong></label></li>
 </ul>
 <hr />
-<h2 id="player-gated--quill-media-player-app-9">PLAYER [GATED] — Quill
+<h2 id="player-gated-quill-media-player-app-9">PLAYER [GATED] — Quill
 Media Player app (9)</h2>
 <p>The Media Player is gated out of the public 1.0 build. On a public
 build every line here is N/A; confirm absence in
@@ -3050,8 +3029,8 @@ Escape+Close return focus · announces outcome · <strong>[GATED] / N/A on
 public build</strong></label></li>
 </ul>
 <hr />
-<h2 id="converter-gated--quill-converter-app-3">CONVERTER [GATED] —
-Quill Converter app (3)</h2>
+<h2 id="converter-gated-quill-converter-app-3">CONVERTER [GATED] — Quill
+Converter app (3)</h2>
 <p>The Converter app is gated out of the public 1.0 build. On a public
 build every line here is N/A; confirm absence in
 <code>gated-absence.md</code>. Only test on a build that enables the
@@ -3088,6 +3067,5 @@ build</strong></label></li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
-</main>
 </body>
 </html>

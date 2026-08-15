@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Speech runtime + model coverage (Windows / macOS), post
-self-hosting</title>
+  <title>2026-07-20-runtime-coverage-matrix</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,39 +174,23 @@ self-hosting</title>
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
-id="speech-runtime--model-coverage-windows--macos-post-self-hosting">Speech
+id="speech-runtime-model-coverage-windows-macos-post-self-hosting">Speech
 runtime + model coverage (Windows / macOS), post self-hosting</h1>
 <p>Status: verification as of 2026-07-20, after mirroring models +
 ffmpeg to <code>assets-v1</code>. Answers “are the <em>runtimes</em>
 handled as well as the models, on Windows and Mac?” Records two engine
 gaps for follow-up.</p>
-<h2 id="models--all-off-hugging-face-now-except-two-noted-cases">Models
-— all off Hugging Face now (except two noted cases)</h2>
+<h2 id="models-all-off-hugging-face-now-except-two-noted-cases">Models —
+all off Hugging Face now (except two noted cases)</h2>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Model set</th>
@@ -248,9 +231,15 @@ exceeds GitHub’s 2 GiB/file release-asset limit -&gt; manual-obtain / HF
 fallback), and the <strong>gated <code>pyannote</code>
 diarization</strong> model (kept on Hugging Face, token-required,
 isolated).</p>
-<h2 id="runtimes-engines--windows-vs-macos">Runtimes (engines) — Windows
+<h2 id="runtimes-engines-windows-vs-macos">Runtimes (engines) — Windows
 vs macOS</h2>
 <table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr>
 <th>Runtime</th>
@@ -310,40 +299,33 @@ builds — so on macOS QUILL has a complete offline TTS (Kokoro) + STT
 Hugging Face</strong>. macOS offline speech does not depend on the two
 engine gaps below.</p>
 <h2 id="the-two-engine-gaps">The two engine gaps</h2>
-<h3 id="1-piper-engine-on-macos--fixable-not-yet-done">1. Piper engine
-on macOS — fixable, not yet done</h3>
+<h3 id="piper-engine-on-macos-fixable-not-yet-done">1. Piper engine on
+macOS — fixable, not yet done</h3>
 <p>Upstream <code>rhasspy/piper</code> <code>2023.11.14-2</code>
 publishes <code>piper_macos_x64.tar.gz</code> and
-<code>piper_macos_aarch64.tar.gz</code>. To close this:</p>
-<ul>
-<li>Upload both tarballs to <code>assets-v1</code>, pin their
-SHA-256.</li>
-<li>Make <code>piper_install</code> platform-aware:
+<code>piper_macos_aarch64.tar.gz</code>. To close this: - Upload both
+tarballs to <code>assets-v1</code>, pin their SHA-256. - Make
+<code>piper_install</code> platform-aware:
 <code>piper_install_supported()</code> returns true on darwin too;
 select the Windows zip vs the mac tarball by platform + arch; extract
 <code>.tar.gz</code> on mac (the current extractor is zip-only); and
 confirm the discover/resolve path finds <code>piper</code> in the
 managed mac dir. Deferred here because it is platform-specific engine +
 extraction + resolver code that cannot be exercised from this Windows
-environment; needs a mac to validate.</li>
-</ul>
-<h3
-id="2-whispercpp-engine-on-macos--needs-a-build-not-hostable-as-is">2.
+environment; needs a mac to validate.</p>
+<h3 id="whisper.cpp-engine-on-macos-needs-a-build-not-hostable-as-is">2.
 whisper.cpp engine on macOS — needs a build, not hostable as-is</h3>
 <p>Upstream ships <strong>no</strong> standalone macOS
 <code>whisper-cli</code> binary (the release’s
 <code>whisper-v1.9.1-xcframework.zip</code> is a library for embedding
 in an Xcode app, not a runnable CLI). Options, all requiring a mac/CI
-build:</p>
-<ul>
-<li>Compile <code>whisper-cli</code> for macOS (arm64 + x64) in CI, host
-on <code>assets-v1</code>, add a platform-aware <code>whispercpp</code>
-asset + resolver entry; or</li>
-<li>Bundle a mac <code>whisper-cli</code> in the mac app at build time.
-Until then, <strong>Faster Whisper is the recommended offline STT engine
-on macOS</strong> (pip wheels + the mirrored CT2 models — fully working
-today, no binary, no HF).</li>
-</ul>
+build: - Compile <code>whisper-cli</code> for macOS (arm64 + x64) in CI,
+host on <code>assets-v1</code>, add a platform-aware
+<code>whispercpp</code> asset + resolver entry; or - Bundle a mac
+<code>whisper-cli</code> in the mac app at build time. Until then,
+<strong>Faster Whisper is the recommended offline STT engine on
+macOS</strong> (pip wheels + the mirrored CT2 models — fully working
+today, no binary, no HF).</p>
 <h2 id="recommendation">Recommendation</h2>
 <ul>
 <li>macOS is already fully served for offline speech via Kokoro + Faster
@@ -354,6 +336,5 @@ platform-aware install (a bounded change, best validated on a mac).</li>
 <code>whisper-cli</code>), or accept Faster Whisper as the mac default
 and leave whisper.cpp Windows-only.</li>
 </ul>
-</main>
 </body>
 </html>

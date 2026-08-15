@@ -4,6 +4,48 @@ All notable changes to QUILL Audio Studio are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- **Copy Sections** (Voices > Copy Sections..., or the Command Palette). Cutting
+  one piece out of an audio file has worked for a long time; what was missing is
+  the *workflow*, and the workflow is the feature. Play the file, **Mark Start**
+  where a piece begins and **Mark End** where it stops, **Preview Marked** to
+  hear exactly what you selected before committing to it, and **Add to List**.
+  Then go and find the next piece and add that too.
+
+  That collecting is why this exists rather than a Save-As with two numbers in
+  it. Pulling four quotes out of a two-hour interview, or the six songs somebody
+  actually wants out of a four-hour broadcast recording, is *one* task -- and an
+  editor that offers "trim" without "and another one" makes you do it six times
+  and stitch the results yourself.
+
+  **Save as New File...** writes everything collected, in the order the list
+  shows (Move Up and Move Down change it). **Add to an Existing File...** puts
+  them on the end of a file that already exists, which is the point of
+  collecting across several sources.
+
+  **The original is never modified**, ever. Marks are numbers; saving writes
+  somewhere else entirely. There is no undo for a destructive edit of the only
+  copy of a recording, so there is no destructive edit -- and a save that fails
+  part way through leaves the destination exactly as it was rather than half
+  written.
+
+  There is deliberately **no waveform**, and that is not an apology: a waveform
+  is a picture of the audio for people who can see it, and the same job is done
+  here by listening to the marked range, which is the more reliable check for
+  everybody. Every row of the list is a whole sentence -- "1. The good bit, from
+  4 minutes 12 seconds to 5 minutes 30 seconds, 1 minute 18 seconds long" --
+  rather than columns to arrow across, and every position is spoken in words
+  rather than as a timecode.
+
+### Changed
+
+- **Generate Captions (Offline) moved to its own module**
+  (`ui/audio_studio/captions_command.py`) so the app shell stayed inside its
+  size budget. No behaviour change.
+
 ## [2.2.0] - built, not yet released
 
 Audio Studio jumps from 1.0.0 to 2.2.0 with no 2.0 or 2.1 in between. On 2026-07-21 the standalone build shell was rebuilt from the shared QuillVille template and adopted the family version number, the same number Quill Radio (2026-07-24) and Quill Weather (2026-07-23) carry, because all of them now install and run on one shared runtime. The number is aligned; the releases are still independent.

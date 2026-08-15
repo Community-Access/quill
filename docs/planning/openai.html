@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>The QUILL AI Gateway — Product Requirements Document</title>
+  <title>openai</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -239,31 +239,10 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="the-quill-ai-gateway--product-requirements-document">The QUILL
-AI Gateway — Product Requirements Document</h1>
+<h1 id="the-quill-ai-gateway-product-requirements-document">The QUILL AI
+Gateway — Product Requirements Document</h1>
 <p><strong>Status:</strong> Draft PRD, v1.0. <strong>Author:</strong>
 Claude Fable 5. <strong>Date:</strong> 2026-07-05.
 <strong>Scope:</strong> Initial rollout (100 requests/user/month,
@@ -286,8 +265,8 @@ every quota, budget, and kill switch server-side because the client —
 being open source — cannot be trusted to enforce anything about
 itself.</p>
 <hr />
-<h2 id="0-where-this-plugs-into-quill-today-read-this-first">0. Where
-this plugs into QUILL today (read this first)</h2>
+<h2 id="where-this-plugs-into-quill-today-read-this-first">0. Where this
+plugs into QUILL today (read this first)</h2>
 <p>QUILL already has the exact seam a hosted backend needs, and reusing
 it is most of the client-side work:</p>
 <ul>
@@ -321,7 +300,7 @@ first, DPAPI-encrypted JSON fallback
 (<code>save_provider_api_key</code>/<code>load_provider_api_key</code>,
 target <code>f"QUILL:assistant:{provider}:api-key"</code>). The Gateway
 session token stores under the identical pattern — target
-<code>"QUILL:assistant:quill_gateway:api-key"" </code>— so no new
+<code>"QUILL:assistant:quill_gateway:api-key""</code>— so no new
 secure-storage code is needed, only a new target string.</li>
 <li><strong>Device auth</strong>
 (<code>quill/core/ai/device_login.py</code> +
@@ -364,7 +343,7 @@ request-proxying backend service, any device-fingerprint/registration
 concept beyond OAuth user accounts, and any billing/budget-cap logic.
 None of this exists in QUILL today. This document designs all of it.</p>
 <hr />
-<h2 id="1-executive-summary">1. Executive summary</h2>
+<h2 id="executive-summary">1. Executive summary</h2>
 <p>QUILL is free, open source, and accessibility-first. Its AI features
 today are entirely bring-your-own-key (BYOK): the user pastes an
 OpenAI/Claude/ Gemini/OpenRouter key, or runs a fully local model
@@ -387,7 +366,7 @@ server-side; the client only <em>displays</em> remaining allowance.</p>
 of an API key — is entirely a server-side engineering and operations
 problem. The client-side change is small and mostly wiring into seams
 that already exist.</p>
-<h2 id="2-recommended-architecture">2. Recommended architecture</h2>
+<h2 id="recommended-architecture">2. Recommended architecture</h2>
 <pre><code>┌─────────────────────┐        HTTPS, Bearer &lt;gateway-token&gt;       ┌──────────────────────────┐
 │   QUILL desktop      │ ─────────────────────────────────────────▶ │   QUILL AI Gateway        │
 │  (open source, MIT)  │                                            │  (private, closed infra)  │
@@ -436,8 +415,12 @@ are unmodified.</li>
 from the <code>remaining_quota</code> field in the response — display
 only, never enforcement.</li>
 </ol>
-<h2 id="3-threat-model">3. Threat model</h2>
+<h2 id="threat-model">3. Threat model</h2>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Threat</th>
@@ -503,7 +486,7 @@ questions in June,” not what was in any of them.</td>
 </tr>
 <tr>
 <td>Screen-reader users get a worse experience than sighted users under
-abuse controls (e.g. CAPTCHAs, lockouts on retry)</td>
+abuse controls (e.g. CAPTCHAs, lockouts on retry)</td>
 <td>Explicit design constraint throughout (§9): no CAPTCHA anywhere in
 this flow; retry-tolerant rate limiting distinguishes “many similar
 requests in a burst” (normal for someone re-issuing a command while
@@ -520,13 +503,13 @@ time.</td>
 </tr>
 </tbody>
 </table>
-<h2 id="4-privacy-model">4. Privacy model</h2>
+<h2 id="privacy-model">4. Privacy model</h2>
 <p><strong>Design rule: store the least data that lets you answer the
 questions in §4.1. Never store document content or full prompts unless
 the user explicitly opts in per-incident for
 troubleshooting.</strong></p>
 <h3
-id="41-questions-the-system-must-be-able-to-answer-without-reading-private-content">4.1
+id="questions-the-system-must-be-able-to-answer-without-reading-private-content">4.1
 Questions the system must be able to answer without reading private
 content</h3>
 <ul>
@@ -556,7 +539,7 @@ This is a structural guarantee, not a policy promise: the “prove a
 negative” case is much stronger when the data literally isn’t
 there.</li>
 </ul>
-<h3 id="42-identity-model">4.2 Identity model</h3>
+<h3 id="identity-model">4.2 Identity model</h3>
 <ul>
 <li><strong>Pseudonymous by default.</strong> A user is a UUID
 (<code>user.id</code>) created at device registration (§7). No email, no
@@ -575,7 +558,7 @@ usage table — only a salted hash
 (<code>sha256(ip + rotating_salt)</code>) with a short TTL in Redis for
 rate-limiting purposes, discarded from long-term storage.</li>
 </ul>
-<h3 id="43-whats-redacted-and-where">4.3 What’s redacted, and where</h3>
+<h3 id="whats-redacted-and-where">4.3 What’s redacted, and where</h3>
 <ul>
 <li>Server access logs: no request body logged at all (structured
 logging emits
@@ -594,8 +577,13 @@ client-side crash-report consent pattern) for a support case; even then,
 the prompt text is truncated and PII-scrubbed before it’s written, and
 the record auto-expires (§4.4).</li>
 </ul>
-<h3 id="44-retention">4.4 Retention</h3>
+<h3 id="retention">4.4 Retention</h3>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Data</th>
@@ -639,7 +627,7 @@ re-registering</td>
 </tbody>
 </table>
 <h3
-id="45-user-visible-privacy-explanation-what-ships-in-the-client-ui">4.5
+id="user-visible-privacy-explanation-what-ships-in-the-client-ui">4.5
 User-visible privacy explanation (what ships in the client UI)</h3>
 <p>A single, plain-language paragraph shown the first time a user turns
 on hosted AI, and reachable anytime from the AI Hub’s Services tab:</p>
@@ -654,7 +642,7 @@ and stop abuse — never what you asked or what came back. You can always
 use your own API key instead, or a fully local model, and QUILL never
 sends anything anywhere without your say-so.”</p>
 </blockquote>
-<h2 id="5-data-model">5. Data model</h2>
+<h2 id="data-model">5. Data model</h2>
 <div class="sourceCode" id="cb2"><pre
 class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Identity ---------------------------------------------------------------</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> users (</span>
@@ -766,7 +754,7 @@ rate counters (<code>ratelimit:{user_id}:{window}</code>), the
 current-month running total per user (write-through cache of
 <code>monthly_usage_summary</code>, source of truth is Postgres), and
 the salted-IP-hash sets for abuse heuristics (§9).</p>
-<h2 id="6-secret-management-plan">6. Secret management plan</h2>
+<h2 id="secret-management-plan">6. Secret management plan</h2>
 <ul>
 <li><strong>Where the OpenAI key lives:</strong> on Jeff’s existing
 server (per §16), the same place GLOW’s and <code>quillin-hub</code>’s
@@ -816,13 +804,18 @@ one backup person) can read the value,” enforced by file
 permissions/shell access rather than a platform IAM feature.</li>
 </ul>
 <h3
-id="61-concretely-on-a-self-administered-unix-server-the-real-options">6.1
+id="concretely-on-a-self-administered-unix-server-the-real-options">6.1
 Concretely, on a self-administered Unix server: the real options</h3>
 <p>Jeff’s server is a real Unix box, not a managed PaaS, so “the
 platform’s secret manager” above needs a concrete Unix-native answer. In
 increasing order of operational weight — pick the lightest one that
 meets the moment, not the heaviest one available:</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Option</th>
@@ -905,7 +898,7 @@ host for GLOW. Revisit this table if the operational picture changes
 project doesn’t need yet — the same “start small and learn” principle
 that governs the quota numbers (§8.1) applies to infrastructure choices
 too.</p>
-<h2 id="7-authentication-and-onboarding">7. Authentication and
+<h2 id="authentication-and-onboarding">7. Authentication and
 onboarding</h2>
 <p><strong>Recommendation: OAuth 2.0 Device Authorization Grant, reusing
 <code>device_login.py</code> + <code>copilot_auth.py</code>’s pattern
@@ -963,7 +956,7 @@ secure-storage code.</li>
 <code>devices.token_hash = sha256(token)</code> (never stores the raw
 token) to resolve <code>user_id</code>/<code>device_id</code>.</li>
 </ol>
-<h3 id="new-computer--compromised-device">New computer / compromised
+<h3 id="new-computer-compromised-device">New computer / compromised
 device</h3>
 <ul>
 <li><strong>New computer:</strong> run device registration again; it’s a
@@ -985,7 +978,7 @@ token’s hash is rejected immediately, no propagation delay (checked
 against Postgres directly for this specific, low-frequency path — not
 cached).</li>
 </ul>
-<h2 id="8-server-side-quota-model">8. Server-side quota model</h2>
+<h2 id="server-side-quota-model">8. Server-side quota model</h2>
 <p><strong>Every check below happens in the Gateway before the OpenAI
 call is made, using the cheapest available signal first</strong> (Redis
 counter check, ~1ms) before falling through to anything requiring a
@@ -999,6 +992,12 @@ rollout, deliberately conservative per “start small and learn”: prove
 the system holds up at a small scale before opening the tap, rather than
 guessing a generous number on day one and having to walk it back.</p>
 <table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr>
 <th>Limit</th>
@@ -1139,7 +1138,7 @@ prompt templates (same reasoning — a template is effectively the system
 prompt every user’s request runs through; changing it is a product
 decision with real behavior consequences, not a quota dial, so it stays
 in code review like any other prompt-engineering change).</p>
-<h3 id="81-why-100month-to-start">8.1 Why 100/month to start</h3>
+<h3 id="why-100month-to-start">8.1 Why 100/month to start</h3>
 <p>500 users × 100 requests × the tightened per-request cost ceiling
 (§13) projects to roughly <strong>$3–5/month in the realistic-average
 case</strong>, with a <strong>worst-case ceiling around
@@ -1180,13 +1179,18 @@ and <code>GatewayBackend</code> translates <code>scope</code> +
 place (the client’s i18n catalog, <code>_()</code>-wrapped like every
 other QUILL string) so it’s translatable, not hardcoded Gateway-side
 strings shown verbatim.</p>
-<h2 id="9-abuse-detection-and-cutoff-model">9. Abuse detection and
-cutoff model</h2>
+<h2 id="abuse-detection-and-cutoff-model">9. Abuse detection and cutoff
+model</h2>
 <p>Explicit constraint carried through every control here: <strong>no
 CAPTCHA, ever, anywhere in this flow.</strong> QUILL is an
 accessibility-first product; a CAPTCHA is close to a hard blocker for
 many blind users and is the wrong tool for this problem regardless.</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Signal</th>
@@ -1215,12 +1219,12 @@ invisible throttle before any hard block</td>
 <td>Credential stuffing, a broken client build</td>
 <td>5 failures in 5 minutes from one IP → temporary IP-level soft rate
 limit (not a block) for 15 minutes; does not affect other users sharing
-that IP (e.g. NAT/VPN/campus network) beyond a slightly lower
+that IP (e.g. NAT/VPN/campus network) beyond a slightly lower
 ceiling</td>
 </tr>
 <tr>
 <td>Token-budget anomaly (this device’s average tokens-per-request is a
-big outlier vs. its own 7-day baseline)</td>
+big outlier vs. its own 7-day baseline)</td>
 <td>A device suddenly being used very differently (compromised token, or
 automated scripting against a stolen token)</td>
 <td>Flag for the admin review queue (below); do not auto-block —
@@ -1240,7 +1244,7 @@ groups on shared connections)</td>
 <td>Admin review queue</td>
 <td>Aggregates the above into a ranked list an admin can glance at</td>
 <td>A device/user entering <code>status = 'review'</code> gets a
-<strong>reduced</strong>, not zero, quota (e.g. 5 requests/day) while an
+<strong>reduced</strong>, not zero, quota (e.g. 5 requests/day) while an
 admin looks — legitimate users barely notice; determined abuse gets
 throttled to uneconomical levels without a hard, sudden cutoff that
 could catch an innocent user badly</td>
@@ -1282,8 +1286,7 @@ usage patterns as “bot-like.” This system deliberately limits itself to
 request volume/size/timing at the API layer, never client-side
 interaction telemetry.</li>
 </ul>
-<h2 id="10-admin-console-requirements">10. Admin console
-requirements</h2>
+<h2 id="admin-console-requirements">10. Admin console requirements</h2>
 <p><strong>Built:</strong>
 <code>quill-ai-gateway/app/routes/dashboard.py</code> — an accessible,
 server-rendered web UI (no JavaScript, no build step; every action is a
@@ -1311,7 +1314,7 @@ that data doesn’t exist to view (§4, §5).</li>
 global <code>hosted_ai</code> switch).</li>
 <li>Adjust
 <code>monthly_request_cap</code>/<code>monthly_cost_cap_usd</code> for
-one user immediately (e.g. lower a suspicious account’s cap to near-zero
+one user immediately (e.g. lower a suspicious account’s cap to near-zero
 without fully blocking them).</li>
 <li><strong>Permanently remove a user</strong> — a distinct, harder
 action from setting <code>status = 'blocked'</code> (which is reversible
@@ -1361,7 +1364,7 @@ the admin console itself is audited, so “who disabled this user and why”
 is always answerable.</li>
 </ul>
 <h3
-id="101-the-dashboard-concretely-pages-auth-and-the-accessibility-design">10.1
+id="the-dashboard-concretely-pages-auth-and-the-accessibility-design">10.1
 The dashboard, concretely: pages, auth, and the accessibility
 design</h3>
 <p><strong>Auth (v1, built):</strong> the dashboard’s “sign in” form
@@ -1387,6 +1390,10 @@ intended direction, not yet built (<code>app/dashboard_auth.py</code>’s
 docstring points back to this paragraph).</p>
 <p><strong>Pages, each mapping directly to a bullet above:</strong></p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Page</th>
@@ -1396,7 +1403,7 @@ docstring points back to this paragraph).</p>
 <tbody>
 <tr>
 <td>Overview</td>
-<td>Spend vs. budget cap, monthly request-volume trend, account totals —
+<td>Spend vs. budget cap, monthly request-volume trend, account totals —
 see the visualization design below</td>
 </tr>
 <tr>
@@ -1443,11 +1450,10 @@ identical numbers — the chart is illustrative reinforcement, the table
 is the source of truth a screen reader reads without needing to parse a
 <code>&lt;canvas&gt;</code> or SVG at all. No JavaScript, and therefore
 no charting library, is used anywhere on the page.</p>
-<h2
-id="11-secret-management--see-6-kept-together-intentionally-this">11.
+<h2 id="secret-management-see-6-kept-together-intentionally-this">11.
 Secret management — see §6 (kept together intentionally; this</h2>
 <p>section number preserved for the deliverable checklist below)</p>
-<h2 id="12-byok-plan">12. BYOK plan</h2>
+<h2 id="byok-plan">12. BYOK plan</h2>
 <p>BYOK is not new to QUILL — it’s the <em>existing, default</em> mode
 for every provider today (<code>providers.py</code>,
 <code>assistant_ai.py</code>). The Gateway plan changes nothing about
@@ -1478,13 +1484,12 @@ usage is billed by the provider directly and is entirely separate from
 the free hosted allowance.</li>
 <li>Separate tracking: BYOK usage is not tracked by the Gateway at all
 (it never sees BYOK traffic). If QUILL wants local BYOK usage stats for
-the user’s own awareness, that’s a client-side-only feature (e.g.
-counting local API calls in <code>settings.json</code>-adjacent local
-state) — out of scope for this plan, which is specifically about the
-<em>hosted</em> allowance.</li>
+the user’s own awareness, that’s a client-side-only feature
+(e.g. counting local API calls in <code>settings.json</code>-adjacent
+local state) — out of scope for this plan, which is specifically about
+the <em>hosted</em> allowance.</li>
 </ul>
-<h2
-id="13-cost-control-model--initial-rollout-then-scaling-to-500-mau">13.
+<h2 id="cost-control-model-initial-rollout-then-scaling-to-500-mau">13.
 Cost-control model — initial rollout, then scaling to 500 MAU</h2>
 <p><strong>Assumptions grounded in the plan above, at the
 initial-rollout defaults from §8:</strong> nano-class model only
@@ -1510,6 +1515,10 @@ deliberately conservative planning number.</p>
 <h3 id="initial-rollout-projection-start-here">Initial rollout
 projection (start here)</h3>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Assumption</th>
@@ -1553,12 +1562,16 @@ something is genuinely wrong (a bug causing runaway retries, or real
 abuse), never as a routine ceiling that legitimate small-scale usage
 bumps into.</p>
 <h3
-id="scaling-projection--500-mau-once-the-initial-rollout-has-proven-out">Scaling
+id="scaling-projection-500-mau-once-the-initial-rollout-has-proven-out">Scaling
 projection — 500 MAU, once the initial rollout has proven out</h3>
 <p>Once <code>gateway_config</code>’s <code>monthly_request_cap</code>
 is deliberately raised (§8.1) and the user base has grown, the same math
 scales linearly:</p>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Assumption</th>
@@ -1612,6 +1625,12 @@ shown for both the initial-rollout $25 cap and the later $250</h3>
 <h3 id="scaling-stage-cap-from-the-projection-above">scaling-stage cap
 from the projection above)</h3>
 <table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr>
 <th>Threshold</th>
@@ -1674,19 +1693,24 @@ adoption outpaces the plan</h3>
 <ol type="1">
 <li>Lower the per-user monthly cap (500 → 250) — a config change, no
 deploy.</li>
-<li>Add response caching for genuinely repeat-safe operations (e.g. two
+<li>Add response caching for genuinely repeat-safe operations (e.g. two
 users summarizing the exact same publicly-shared document text) —
 marginal savings, not the primary lever, and only safe where no user-
 specific context is in the prompt.</li>
 <li>Raise the global budget cap once real usage data justifies it — the
 whole point of measuring first is not guessing this number twice.</li>
 </ol>
-<h2 id="14-document-qa-strategy">14. Document Q&amp;A strategy</h2>
+<h2 id="document-qa-strategy">14. Document Q&amp;A strategy</h2>
 <p><strong>Never “send the whole document every time.”</strong> The plan
 distinguishes four scopes, matching how <code>document_qa.py</code> and
 <code>assistant.py</code> already let a user scope a question, and adds
 a consent step before anything server-side is involved:</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Scope</th>
@@ -1723,7 +1747,7 @@ document</td>
 <td>chunk + rank locally</td>
 </tr>
 <tr>
-<td>Document collection (e.g. a Vault)</td>
+<td>Document collection (e.g. a Vault)</td>
 <td>Same chunking principle, but scored across multiple documents;
 explicitly flagged as a v2/later feature, not part of the first beta —
 the complexity of cross-document ranking isn’t justified until
@@ -1733,7 +1757,7 @@ whole-document Q&amp;A is proven out</td>
 </tbody>
 </table>
 <h3
-id="141-large-document-safeguards-defense-in-depth--three-independent-layers">14.1
+id="large-document-safeguards-defense-in-depth-three-independent-layers">14.1
 Large-document safeguards (defense in depth — three independent
 layers)</h3>
 <p>The free hosted tier is the one place QUILL must be strict about
@@ -1757,7 +1781,7 @@ a modified or malicious client can skip it entirely, which is exactly
 why layers 2 and 3 exist.</li>
 <li><strong>Server-side hard reject, before tokenizing counts as
 “trusted.”</strong> Every <code>/v1/chat</code> request has its request
-body size checked against a generous absolute byte ceiling (e.g. 64KB)
+body size checked against a generous absolute byte ceiling (e.g. 64KB)
 <em>before</em> any parsing or tokenization happens — this stops a
 trivial “send a 500MB body” attack from even reaching the tokenizer.
 Then the actual prompt is tokenized server-side (never trusting a
@@ -1787,7 +1811,7 @@ the client did one already.</p>
 local machine for hosted AI, QUILL shows (once, dismissible,
 screen-reader clear): “This will send the selected text (about N words)
 to QUILL’s hosted AI. Continue?” — mirroring the exact pattern QUILL
-already uses for other consented network actions (e.g. the Audio
+already uses for other consented network actions (e.g. the Audio
 Studio’s book-lookup consent dialog, “QUILL will contact Open Library
 and MusicBrainz…”). Whole-document mode’s consent message states plainly
 that several excerpts (not the whole document) will be sent, and names
@@ -1801,7 +1825,7 @@ This is a pure client- side optimization (a small local cache in QUILL’s
 existing app-data directory, same pattern as other local caches like
 <code>translate_sections.py</code>’s translation cache) and needs no
 Gateway-side change.</p>
-<h2 id="15-image-and-alt-text-strategy">15. Image and alt-text
+<h2 id="image-and-alt-text-strategy">15. Image and alt-text
 strategy</h2>
 <p>Builds directly on the existing
 <code>vision.py describe_image()</code> — same function signature, same
@@ -1824,7 +1848,7 @@ it.</li>
 <li><strong>Daily image limit: 20/user</strong> (§8) — generous for
 normal alt-text- authoring workflows, restrictive enough to bound
 vision-model cost, which is meaningfully higher per-call than text.</li>
-<li><strong>Alt text vs. long description:</strong> both are existing
+<li><strong>Alt text vs. long description:</strong> both are existing
 prompt variants in <code>vision.py</code>
 (<code>DEFAULT_IMAGE_DESCRIPTION_PROMPT</code> and presumably a longer
 variant) — the Gateway’s fixed per-feature template (§8) has one entry
@@ -1839,7 +1863,7 @@ qualitatively more sensitive than short text excerpts — “unless you use
 your own API key or a local vision model, this image is sent to OpenAI’s
 servers to generate a description.”</li>
 </ul>
-<h2 id="16-recommended-stack">16. Recommended stack</h2>
+<h2 id="recommended-stack">16. Recommended stack</h2>
 <p><strong>Updated recommendation: host it on Jeff’s existing server, on
 Flask.</strong> Jeff already operates a server running Flask for GLOW
 and for <code>quillin-hub</code> (a real, in-repo precedent — see §0 and
@@ -1856,6 +1880,11 @@ Postgres schema in §5, the Redis rate-limiting model in §8/§9, the
 quota/abuse logic) is framework-agnostic and ports to Flask with no
 design changes — only the route-handler syntax differs.</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Component</th>
@@ -1976,11 +2005,11 @@ tooling</td>
 </tbody>
 </table>
 <p><strong>If Jeff’s existing server ever needs to be swapped for
-managed hosting</strong> (e.g. outgrowing a single box), everything
+managed hosting</strong> (e.g. outgrowing a single box), everything
 above ports cleanly to Fly.io or similar — the Postgres/Redis/Flask
 combination is supported everywhere; nothing in this plan is tied to one
 host.</p>
-<h2 id="17-user-experience-flows">17. User experience flows</h2>
+<h2 id="user-experience-flows">17. User experience flows</h2>
 <ol type="1">
 <li><strong>First AI use, no BYOK key configured yet:</strong> AI Hub
 shows two paths side by side — “Use QUILL’s free hosted AI (recommended
@@ -2008,7 +2037,7 @@ feature sees a specific, honest message (§8) naming what’s paused and
 why, never a generic error.</li>
 </ol>
 <h3
-id="172-the-usage-display-concretely-client-side-implementation-not-yet-built">17.2
+id="the-usage-display-concretely-client-side-implementation-not-yet-built">17.2
 The usage display, concretely (client-side implementation, not yet
 built)</h3>
 <p>This is specified precisely here as the contract a future client
@@ -2020,7 +2049,7 @@ separately.</p>
 <ul>
 <li><strong>Status bar</strong> (mirroring how GitHub Copilot shows its
 own usage in an editor status bar): a small, always-visible status-bar
-segment reading e.g. “AI: 38/100” when hosted AI is the active provider,
+segment reading e.g. “AI: 38/100” when hosted AI is the active provider,
 hidden entirely when BYOK/local is active (BYOK usage isn’t tracked by
 the Gateway at all — §12 — so there’s nothing to show). Screen-reader
 accessible on demand: focusing or activating the segment announces the
@@ -2057,8 +2086,7 @@ requests left” and is wrong by one is a cosmetic bug; a client that
 <em>enforces</em> “5 requests left” and is wrong is a security
 bug).</li>
 </ul>
-<h2 id="18-accessibility-requirements">18. Accessibility
-requirements</h2>
+<h2 id="accessibility-requirements">18. Accessibility requirements</h2>
 <ul>
 <li>Device-code screen-reader announcement: exact code and URL read
 once, clearly, with the option to repeat it (reuses
@@ -2080,7 +2108,7 @@ distinguishable from each other in wording (a screen reader user quickly
 moving through dialogs must be able to tell “this one’s about an image”
 from “this one’s about text” without extra navigation).</li>
 </ul>
-<h2 id="19-implementation-phases">19. Implementation phases</h2>
+<h2 id="implementation-phases">19. Implementation phases</h2>
 <p><strong>Phase 0 — Gateway skeleton (no client changes yet)</strong>
 Stand up the private repo: Flask app, Postgres schema (§5), Redis
 counters, device-code endpoints (§7), one hardcoded test feature
@@ -2114,7 +2142,7 @@ month.</p>
 upgrade</strong> Email magic-link account linking for multi-device quota
 continuity (§7), only if the anonymous-per-device model proves limiting
 in practice.</p>
-<h2 id="20-open-questions">20. Open questions</h2>
+<h2 id="open-questions">20. Open questions</h2>
 <ol type="1">
 <li><strong>Hosting target confirmation:</strong> Jeff’s existing server
 (already running GLOW and <code>quillin-hub</code>) is the
@@ -2144,14 +2172,18 @@ Recommend shipping the simple version first and measuring whether users
 complain about answer relevance before adding embedding-model
 complexity.</li>
 <li><strong>Does the Gateway ever need to support streaming
-responses</strong> (<code> respond_stream</code>) for a good UX on
-longer document Q&amp;A answers, or is blocking <code>respond()</code>
+responses</strong> (<code>respond_stream</code>) for a good UX on longer
+document Q&amp;A answers, or is blocking <code>respond()</code>
 acceptable for a nano-class, capped-output-token first beta? Recommend
 blocking-only for Phase 1, revisit if latency feedback says
 otherwise.</li>
 </ol>
-<h2 id="21-risks-and-mitigations">21. Risks and mitigations</h2>
+<h2 id="risks-and-mitigations">21. Risks and mitigations</h2>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Risk</th>
@@ -2199,7 +2231,7 @@ at the moment of choice, not buried in settings</td>
 </tr>
 </tbody>
 </table>
-<h2 id="22-beta-launch-checklist">22. Beta launch checklist</h2>
+<h2 id="beta-launch-checklist">22. Beta launch checklist</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Gateway repo exists, private,
 separate from the open-source QUILL client repo.</label></li>
@@ -2246,7 +2278,7 @@ exists in the Gateway repo.</label></li>
 dry-run at least once before launch, not left untested until the first
 real rotation is needed.</label></li>
 </ul>
-<h2 id="23-recommended-defaults-for-the-initial-rollout-summary">23.
+<h2 id="recommended-defaults-for-the-initial-rollout-summary">23.
 Recommended defaults for the initial rollout (summary)</h2>
 <ul>
 <li><strong>Auth:</strong> OAuth device-code flow, anonymous
@@ -2279,8 +2311,7 @@ reject on real tokenized size (the actual boundary), and an independent
 chunk-count ceiling that can’t be routed around with many small
 chunks.</li>
 </ul>
-<h2
-id="24-api-reference-contract-between-the-client-and-the-gateway">24.
+<h2 id="api-reference-contract-between-the-client-and-the-gateway">24.
 API reference (contract between the client and the Gateway)</h2>
 <p>This is the concrete interface <code>GatewayBackend</code> (client)
 and the Flask app (server, §16) implement against. Every endpoint
@@ -2425,7 +2456,7 @@ user (never prompt content — see §4).</li>
 <code>active</code>/<code>revoked</code>.</li>
 <li><code>PUT /admin/feature-flags/{feature}</code> — enable/disable one
 feature or the global <code>hosted_ai</code> switch.</li>
-<li><code>GET /admin/spend</code> — current-month total spend vs. the
+<li><code>GET /admin/spend</code> — current-month total spend vs. the
 global budget cap.</li>
 </ul>
 <hr />
@@ -2438,6 +2469,5 @@ pre-write the Gateway’s entire source. The actual Flask implementation
 lives in <code>quill-ai-gateway/</code> at the repository root (a
 sibling to <code>quillin-hub/</code>, matching that precedent) and
 implements this contract.</em></p>
-</main>
 </body>
 </html>

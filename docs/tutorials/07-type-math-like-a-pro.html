@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Tutorial 7: Write math without learning a new language</title>
+  <title>07-type-math-like-a-pro</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,29 +174,8 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="tutorial-7-write-math-without-learning-a-new-language">Tutorial
 7: Write math without learning a new language</h1>
 <p><strong>Goal:</strong> get math into a document several different
@@ -209,8 +188,8 @@ algebra — homework, lecture notes, a lab report — who has never used a
 <p>You will not need to memorize anything before you start. The fastest
 path needs no typing at all; the next needs only <code>^</code> for a
 power; only the fancier formulas need a couple of extra words.</p>
-<h2 id="1-the-easiest-way-in-pick-a-ready-made-formula">1. The easiest
-way in: pick a ready-made formula</h2>
+<h2 id="the-easiest-way-in-pick-a-ready-made-formula">1. The easiest way
+in: pick a ready-made formula</h2>
 <p>QUILL ships ten common algebra and geometry formulas you can insert
 with no typing at all:</p>
 <ol type="1">
@@ -232,37 +211,37 @@ Squares</strong>, and the <strong>Area</strong> and
 one of these ten, you are already done with this tutorial — everything
 past this point is for formulas the gallery doesn’t have, or for
 understanding what landed in your document.</p>
-<h2 id="2-your-first-equation-from-scratch">2. Your first equation from
+<h2 id="your-first-equation-from-scratch">2. Your first equation from
 scratch</h2>
 <p>For anything the gallery doesn’t cover, typing one yourself is just
 as approachable:</p>
 <ol type="1">
-<li>Type a line of context, like “The Pythagorean theorem relates the
-sides of a right triangle:”.</li>
-<li>Press <strong>Ctrl+Shift+E</strong> (or <strong>Insert &gt; Insert
-Equation…</strong>).</li>
-<li>A box appears asking for the equation, and it even suggests an
+<li><p>Type a line of context, like “The Pythagorean theorem relates the
+sides of a right triangle:”.</p></li>
+<li><p>Press <strong>Ctrl+Shift+E</strong> (or <strong>Insert &gt;
+Insert Equation…</strong>).</p></li>
+<li><p>A box appears asking for the equation, and it even suggests an
 example right in the prompt (<code>E=mc^2</code>) so you can see the
-expected shape. Type:
+expected shape. Type:</p>
 <pre><code>a^2 + b^2 = c^2</code></pre>
-That’s it — <code>^</code> just means “to the power of.” No backslashes,
-no codes, nothing to look up.</li>
-<li>QUILL asks whether this should sit on its own line
+<p>That’s it — <code>^</code> just means “to the power of.” No
+backslashes, no codes, nothing to look up.</p></li>
+<li><p>QUILL asks whether this should sit on its own line
 (<strong>Block</strong>) or flow inside a sentence
 (<strong>Inline</strong>). Since this formula deserves its own line,
-pick <strong>Block</strong>.</li>
-<li>Look at what landed in your document: plain text, wrapped in
+pick <strong>Block</strong>.</p></li>
+<li><p>Look at what landed in your document: plain text, wrapped in
 <code>$$ $$</code>. Nothing mysterious happened — that’s just how QUILL
 marks “this bit is math” so it can be typeset properly later. You can
 select it and press Ctrl+Shift+E again any time you want to change it,
-the same way you’d reopen any dialog.</li>
+the same way you’d reopen any dialog.</p></li>
 </ol>
 <p>Try a second one the same way, inline this time: type “the graph of a
 straight line follows”, press Ctrl+Shift+E, type
 <code>y = mx + b</code>, and choose <strong>Inline</strong> so it stays
 in the sentence. Two equations in, and you still haven’t typed anything
 you wouldn’t type on a calculator.</p>
-<h2 id="3-when-a-formula-needs-a-fraction-or-a-square-root">3. When a
+<h2 id="when-a-formula-needs-a-fraction-or-a-square-root">3. When a
 formula needs a fraction or a square root</h2>
 <p>Some formulas — like the quadratic formula, if you type it yourself
 instead of using the gallery — have a fraction stacked over another
@@ -277,27 +256,27 @@ you’d read it out loud. Choose <strong>Block</strong>. If you only
 remember one thing from this section, remember this:
 <code>\frac{top}{bottom}</code> and <code>\sqrt{...}</code>. Nothing
 else about plain equations changes.</p>
-<h2 id="4-a-shortcut-once-youre-comfortable-totally-optional">4. A
+<h2 id="a-shortcut-once-youre-comfortable-totally-optional">4. A
 shortcut, once you’re comfortable (totally optional)</h2>
 <p>Once the basics feel normal, here’s a convenience worth knowing
 about: if you type a few of those backslash words <em>while writing an
 ordinary sentence</em> — not inside the equation box — QUILL turns them
-into the actual symbol right away. Type <code>\pi </code> (with a
-trailing space) and it becomes <code>π</code>. Type <code>\ne </code>
-and it becomes <code>≠</code>. This is entirely optional — everything in
+into the actual symbol right away. Type <code>\pi</code> (with a
+trailing space) and it becomes <code>π</code>. Type <code>\ne</code> and
+it becomes <code>≠</code>. This is entirely optional — everything in
 Sections 1 through 3 works with or without it — but it’s a fast way to
 drop a single symbol into a sentence without opening the equation box at
 all. It lives under <strong>Preferences &gt; Editing &gt; Insert
 Automation</strong> if you ever want to turn it off. A fuller list is in
 the reference section at the end.</p>
-<h2 id="5-see-it-look-right">5. See it look right</h2>
+<h2 id="see-it-look-right">5. See it look right</h2>
 <p><strong>View &gt; Browser Preview…</strong> — your equations show up
 as real typeset math: the fraction actually stacked, the square root
 actually drawn, <code>^2</code> actually raised. You are not expected to
 picture what <code>$$...$$</code> means in your head; QUILL renders it
 for you, automatically, every time — this was checked directly against a
 real rendered page while writing this tutorial, not assumed.</p>
-<h2 id="6-explore-a-formulas-structure-by-ear">6. Explore a formula’s
+<h2 id="explore-a-formulas-structure-by-ear">6. Explore a formula’s
 structure by ear</h2>
 <p>Reading a long formula start to finish, in one breath, is hard
 whether you are listening or looking. <strong>Select an
@@ -330,7 +309,7 @@ it</strong> — QUILL speaks its name (“Fraction”) and the list refreshes
 to show <em>its</em> pieces (<strong>Numerator</strong>,
 <strong>Denominator</strong>).</li>
 <li><strong>Read this part aloud</strong> speaks a full reading of
-exactly the piece you’re currently on — e.g. “the square root of b
+exactly the piece you’re currently on — e.g. “the square root of b
 squared minus 4 a c” — without the rest of the formula around it, then
 reopens the same list so you can keep exploring from where you
 were.</li>
@@ -363,7 +342,7 @@ equation, after the export step below) gives you that fuller,
 braille-aware experience; QUILL’s explorer is the fast,
 no-extra-software version for getting your bearings in a formula while
 you’re still writing it.</p>
-<h2 id="7-hand-it-to-word">7. Hand it to Word</h2>
+<h2 id="hand-it-to-word">7. Hand it to Word</h2>
 <p><strong>File &gt; Export &gt; Word Document…</strong>, then open the
 result in Word (or LibreOffice). Click on the equation — it’s a real,
 editable Word equation, the same kind you’d get from Word’s own equation
@@ -371,7 +350,7 @@ tools, not a picture and not stray text. That matters for anyone reading
 with a screen reader too: a real equation gets read as math; a picture
 of one doesn’t get read at all. If you use JAWS, this is also the point
 where its own Math Viewer becomes available on the equation.</p>
-<h2 id="8-get-it-back">8. Get it back</h2>
+<h2 id="get-it-back">8. Get it back</h2>
 <p>Reopen that Word file later (<strong>File &gt; Open…</strong>) and
 the equation comes back exactly as you typed it — still plain text you
 can select and edit with Ctrl+Shift+E, not frozen into anything. Handing
@@ -422,33 +401,33 @@ Automation</strong>.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>\cdot </code></td>
+<td><code>\cdot</code></td>
 <td>⋅</td>
-<td><code>\times </code></td>
+<td><code>\times</code></td>
 <td>×</td>
 </tr>
 <tr>
-<td><code>\div </code></td>
+<td><code>\div</code></td>
 <td>÷</td>
-<td><code>\pm </code></td>
+<td><code>\pm</code></td>
 <td>±</td>
 </tr>
 <tr>
-<td><code>\mp </code></td>
+<td><code>\mp</code></td>
 <td>∓</td>
-<td><code>\sqrt </code></td>
+<td><code>\sqrt</code></td>
 <td>√</td>
 </tr>
 <tr>
-<td><code>\cbrt </code></td>
+<td><code>\cbrt</code></td>
 <td>∛</td>
-<td><code>\qdrt </code></td>
+<td><code>\qdrt</code></td>
 <td>∜</td>
 </tr>
 <tr>
-<td><code>\infty </code></td>
+<td><code>\infty</code></td>
 <td>∞</td>
-<td><code>\circ </code></td>
+<td><code>\circ</code></td>
 <td>∘</td>
 </tr>
 </tbody>
@@ -465,27 +444,27 @@ Automation</strong>.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>\ne </code> / <code>\neq </code></td>
+<td><code>\ne</code> / <code>\neq</code></td>
 <td>≠</td>
-<td><code>\le </code> / <code>\leq </code></td>
+<td><code>\le</code> / <code>\leq</code></td>
 <td>≤</td>
 </tr>
 <tr>
-<td><code>\ge </code> / <code>\geq </code></td>
+<td><code>\ge</code> / <code>\geq</code></td>
 <td>≥</td>
-<td><code>\approx </code></td>
+<td><code>\approx</code></td>
 <td>≈</td>
 </tr>
 <tr>
-<td><code>\propto </code></td>
+<td><code>\propto</code></td>
 <td>∝</td>
-<td><code>\cong </code></td>
+<td><code>\cong</code></td>
 <td>≅</td>
 </tr>
 <tr>
-<td><code>\sim </code></td>
+<td><code>\sim</code></td>
 <td>∼</td>
-<td><code>\ll </code> / <code>\gg </code></td>
+<td><code>\ll</code> / <code>\gg</code></td>
 <td>≪ / ≫</td>
 </tr>
 </tbody>
@@ -502,37 +481,37 @@ Automation</strong>.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>\in </code></td>
+<td><code>\in</code></td>
 <td>∈</td>
-<td><code>\notin </code></td>
+<td><code>\notin</code></td>
 <td>∉</td>
 </tr>
 <tr>
-<td><code>\subset </code></td>
+<td><code>\subset</code></td>
 <td>⊂</td>
-<td><code>\subseteq </code></td>
+<td><code>\subseteq</code></td>
 <td>⊆</td>
 </tr>
 <tr>
-<td><code>\cup </code> / <code>\cap </code></td>
+<td><code>\cup</code> / <code>\cap</code></td>
 <td>∪ / ∩</td>
-<td><code>\rightarrow </code> / <code>\to </code></td>
+<td><code>\rightarrow</code> / <code>\to</code></td>
 <td>→</td>
 </tr>
 <tr>
-<td><code>\leftrightarrow </code></td>
+<td><code>\leftrightarrow</code></td>
 <td>↔︎</td>
-<td><code>\wedge </code> / <code>\vee </code></td>
+<td><code>\wedge</code> / <code>\vee</code></td>
 <td>∧ / ∨</td>
 </tr>
 <tr>
-<td><code>\neg </code></td>
+<td><code>\neg</code></td>
 <td>¬</td>
-<td><code>\forall </code> / <code>\exists </code></td>
+<td><code>\forall</code> / <code>\exists</code></td>
 <td>∀ / ∃</td>
 </tr>
 <tr>
-<td><code>\emptyset </code></td>
+<td><code>\emptyset</code></td>
 <td>∅</td>
 <td></td>
 <td></td>
@@ -551,19 +530,19 @@ Automation</strong>.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>\doubleN </code></td>
+<td><code>\doubleN</code></td>
 <td>ℕ</td>
-<td><code>\doubleZ </code></td>
+<td><code>\doubleZ</code></td>
 <td>ℤ</td>
 </tr>
 <tr>
-<td><code>\doubleQ </code></td>
+<td><code>\doubleQ</code></td>
 <td>ℚ</td>
-<td><code>\doubleR </code></td>
+<td><code>\doubleR</code></td>
 <td>ℝ</td>
 </tr>
 <tr>
-<td><code>\doubleC </code></td>
+<td><code>\doubleC</code></td>
 <td>ℂ</td>
 <td></td>
 <td></td>
@@ -582,33 +561,33 @@ Automation</strong>.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>\alpha </code> / <code>\beta </code></td>
+<td><code>\alpha</code> / <code>\beta</code></td>
 <td>α / β</td>
-<td><code>\gamma </code> / <code>\delta </code></td>
+<td><code>\gamma</code> / <code>\delta</code></td>
 <td>γ / δ</td>
 </tr>
 <tr>
-<td><code>\Delta </code></td>
+<td><code>\Delta</code></td>
 <td>Δ</td>
-<td><code>\theta </code> / <code>\lambda </code></td>
+<td><code>\theta</code> / <code>\lambda</code></td>
 <td>θ / λ</td>
 </tr>
 <tr>
-<td><code>\mu </code> / <code>\pi </code></td>
+<td><code>\mu</code> / <code>\pi</code></td>
 <td>μ / π</td>
-<td><code>\rho </code> / <code>\Sigma </code></td>
+<td><code>\rho</code> / <code>\Sigma</code></td>
 <td>ρ / Σ</td>
 </tr>
 <tr>
-<td><code>\tau </code> / <code>\phi </code></td>
+<td><code>\tau</code> / <code>\phi</code></td>
 <td>τ / ϕ</td>
-<td><code>\chi </code> / <code>\omega </code></td>
+<td><code>\chi</code> / <code>\omega</code></td>
 <td>χ / ω</td>
 </tr>
 </tbody>
 </table>
-<p>Note that case matters — <code>\delta </code> gives lowercase δ and
-<code>\Delta </code> gives uppercase Δ, the same way they’re different
+<p>Note that case matters — <code>\delta</code> gives lowercase δ and
+<code>\Delta</code> gives uppercase Δ, the same way they’re different
 symbols in math itself.</p>
 <p><em>Calculus</em></p>
 <table>
@@ -622,27 +601,27 @@ symbols in math itself.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>\int </code></td>
+<td><code>\int</code></td>
 <td>∫</td>
-<td><code>\iint </code> / <code>\iiint </code></td>
+<td><code>\iint</code> / <code>\iiint</code></td>
 <td>∬ / ∭</td>
 </tr>
 <tr>
-<td><code>\partial </code></td>
+<td><code>\partial</code></td>
 <td>∂</td>
-<td><code>\sum </code></td>
+<td><code>\sum</code></td>
 <td>∑</td>
 </tr>
 <tr>
-<td><code>\prod </code></td>
+<td><code>\prod</code></td>
 <td>∏</td>
-<td><code>\nabla </code></td>
+<td><code>\nabla</code></td>
 <td>∇</td>
 </tr>
 <tr>
-<td><code>\prime </code></td>
+<td><code>\prime</code></td>
 <td>′</td>
-<td><code>\pprime </code></td>
+<td><code>\pprime</code></td>
 <td>″</td>
 </tr>
 </tbody>
@@ -659,21 +638,21 @@ symbols in math itself.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>\vec </code></td>
+<td><code>\vec</code></td>
 <td>→</td>
-<td><code>\angle </code></td>
+<td><code>\angle</code></td>
 <td>∠</td>
 </tr>
 <tr>
-<td><code>\perp </code></td>
+<td><code>\perp</code></td>
 <td>⊥</td>
-<td><code>\parallel </code></td>
+<td><code>\parallel</code></td>
 <td>∥</td>
 </tr>
 <tr>
-<td><code>\degree </code></td>
+<td><code>\degree</code></td>
 <td>°</td>
-<td><code>\degc </code> / <code>\degf </code></td>
+<td><code>\degc</code> / <code>\degf</code></td>
 <td>°C / °F</td>
 </tr>
 </tbody>
@@ -690,19 +669,19 @@ symbols in math itself.</p>
 </thead>
 <tbody>
 <tr>
-<td><code>\therefore </code></td>
+<td><code>\therefore</code></td>
 <td>∴</td>
-<td><code>\because </code></td>
+<td><code>\because</code></td>
 <td>∵</td>
 </tr>
 <tr>
-<td><code>\cdots </code></td>
+<td><code>\cdots</code></td>
 <td>⋯</td>
-<td><code>\vdots </code> / <code>\ddots </code></td>
+<td><code>\vdots</code> / <code>\ddots</code></td>
 <td>⋮ / ⋱</td>
 </tr>
 <tr>
-<td><code>\dots </code> / <code>\ldots </code></td>
+<td><code>\dots</code> / <code>\ldots</code></td>
 <td>…</td>
 <td></td>
 <td></td>
@@ -725,6 +704,5 @@ what each part means and names the formula if it’s a well-known one,
 without solving anything or changing your document.</em></p>
 <p><strong>Next:</strong> <a href="08-github-inside-quill.md">GitHub
 inside QUILL</a>.</p>
-</main>
 </body>
 </html>

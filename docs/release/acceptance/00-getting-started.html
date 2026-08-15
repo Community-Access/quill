@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Part 0 — Getting Started (you have never used QUILL)</title>
+  <title>00-getting-started</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,30 +174,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="part-0--getting-started-you-have-never-used-quill">Part 0 —
+<h1 id="part-0-getting-started-you-have-never-used-quill">Part 0 —
 Getting Started (you have never used QUILL)</h1>
 <p>Do this part <strong>first</strong>, once on each test machine,
 before any feature section. It takes you from “I have a download” to “I
@@ -209,359 +188,265 @@ report — nothing downstream will be trustworthy.</p>
 scenario layout and the Pass/Fail/Blocked/N-A boxes make sense.</p>
 <hr />
 <h2
-id="gs-01--turn-on-your-screen-reader-and-confirm-it-is-speaking">GS-01
-— Turn on your screen reader and confirm it is speaking</h2>
+id="gs-01-turn-on-your-screen-reader-and-confirm-it-is-speaking">GS-01 —
+Turn on your screen reader and confirm it is speaking</h2>
 <p><em>What &amp; why.</em> QUILL is designed to be used by ear. Before
 you touch QUILL, make sure the screen reader itself is running and
 talking, so that later “it was silent” means QUILL was silent, not that
 your screen reader was off.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A Windows machine with <strong>NVDA</strong> or
-<strong>JAWS</strong> installed. (macOS testers: use
-<strong>VoiceOver</strong>, Command+F5.)</li>
-<li>Nothing else needs to be open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Start your screen reader: <strong>NVDA</strong> with
-<strong>Ctrl+Alt+N</strong>, or <strong>JAWS</strong> from its
-Start-menu shortcut. (Narrator:
-<strong>Ctrl+Windows+Enter</strong>.)</li>
-<li>Press the keys to read the focused item — with NVDA, tap
-<strong>NVDA+Tab</strong> (NVDA is usually the Insert key or Caps
-Lock).</li>
-<li>Open the Start menu (<strong>Windows key</strong>) and press
-<strong>Down Arrow</strong> once or twice.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The screen reader speaks as you move: it announces the Start menu
-and reads each item you arrow onto. You hear a clear, responsive
-voice.</li>
-</ul>
+<p><strong>Before you start</strong> - A Windows machine with
+<strong>NVDA</strong> or <strong>JAWS</strong> installed. (macOS
+testers: use <strong>VoiceOver</strong>, Command+F5.) - Nothing else
+needs to be open.</p>
+<p><strong>Do this</strong> 1. Start your screen reader:
+<strong>NVDA</strong> with <strong>Ctrl+Alt+N</strong>, or
+<strong>JAWS</strong> from its Start-menu shortcut. (Narrator:
+<strong>Ctrl+Windows+Enter</strong>.) 2. Press the keys to read the
+focused item — with NVDA, tap <strong>NVDA+Tab</strong> (NVDA is usually
+the Insert key or Caps Lock). 3. Open the Start menu (<strong>Windows
+key</strong>) and press <strong>Down Arrow</strong> once or twice.</p>
+<p><strong>You should see and hear</strong> - The screen reader speaks
+as you move: it announces the Start menu and reads each item you arrow
+onto. You hear a clear, responsive voice.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gs-02--install-quill-system-installer">GS-02 — Install QUILL
+<h2 id="gs-02-install-quill-system-installer">GS-02 — Install QUILL
 (system installer)</h2>
 <p><em>What &amp; why.</em> Most users run the system installer: a
 normal Windows setup that adds QUILL to the Start menu. This scenario
 proves it installs and appears where a new user would look. (If you are
 testing the <strong>portable ZIP</strong> instead, skip to GS-03.)</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>The file <strong><code>Quill-Setup-1.0.0.exe</code></strong> (the
-system installer) downloaded to a known folder, e.g. your
-Downloads.</li>
-<li>You know whether this is a <strong>per-user</strong> install (no
-admin needed) — the default.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>In File Explorer, arrow to <code>Quill-Setup-1.0.0.exe</code> and
-press <strong>Enter</strong> to run it.</li>
-<li>Move through the installer with <strong>Tab</strong> and
+<p><strong>Before you start</strong> - The file
+<strong><code>Quill-Setup-1.0.0.exe</code></strong> (the system
+installer) downloaded to a known folder, e.g. your Downloads. - You know
+whether this is a <strong>per-user</strong> install (no admin needed) —
+the default.</p>
+<p><strong>Do this</strong> 1. In File Explorer, arrow to
+<code>Quill-Setup-1.0.0.exe</code> and press <strong>Enter</strong> to
+run it. 2. Move through the installer with <strong>Tab</strong> and
 <strong>Enter</strong>; read each screen. Accept the default install
 location. When offered a <strong>Desktop shortcut</strong> and
 <strong>Open-With</strong> file associations, note the choices but you
-may accept defaults.</li>
-<li>On the last screen, leave <strong>Launch QUILL</strong> unchecked
-for now and press <strong>Finish</strong>.</li>
-<li>Open the Start menu (<strong>Windows key</strong>), type
-<strong>QUILL</strong>, and confirm an entry appears.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Each installer screen is keyboard-navigable and its controls are
-announced (this is the Inno Setup UI, not QUILL, but it must still be
-operable by keyboard).</li>
-<li>After finishing, <strong>QUILL</strong> appears in the Start menu.
-If you accepted them, a Desktop shortcut exists and QUILL appears in
+may accept defaults. 3. On the last screen, leave <strong>Launch
+QUILL</strong> unchecked for now and press <strong>Finish</strong>. 4.
+Open the Start menu (<strong>Windows key</strong>), type
+<strong>QUILL</strong>, and confirm an entry appears.</p>
+<p><strong>You should see and hear</strong> - Each installer screen is
+keyboard-navigable and its controls are announced (this is the Inno
+Setup UI, not QUILL, but it must still be operable by keyboard). - After
+finishing, <strong>QUILL</strong> appears in the Start menu. If you
+accepted them, a Desktop shortcut exists and QUILL appears in
 <strong>Add or Remove Programs</strong> with a proper name, version
 <strong>1.0.0</strong>, and publisher <strong>Community
-Access</strong>.</li>
-</ul>
+Access</strong>.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gs-03--set-up-the-portable-copy-portable-zip-do-instead-of-gs-02-for-portable">GS-03
+id="gs-03-set-up-the-portable-copy-portable-zip-do-instead-of-gs-02-for-portable">GS-03
 — Set up the portable copy (portable ZIP) [do instead of GS-02 for
 portable]</h2>
 <p><em>What &amp; why.</em> The portable edition runs from a folder with
 no installation, keeping all its data beside itself — ideal for a USB
 stick or a locked-down machine. This proves the ZIP unpacks into a
 self-contained, runnable folder.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>The file <strong><code>Quill-Portable-1.0.0.zip</code></strong>
-downloaded.</li>
-<li>A folder you can write to, e.g. <code>C:\QuillPortable</code> or a
-USB drive.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>In File Explorer, select the ZIP, press the <strong>Application/Menu
-key</strong>, and choose <strong>Extract All…</strong>; extract into
-your chosen folder.</li>
-<li>Open the extracted folder and confirm it contains a launcher named
+<p><strong>Before you start</strong> - The file
+<strong><code>Quill-Portable-1.0.0.zip</code></strong> downloaded. - A
+folder you can write to, e.g. <code>C:\QuillPortable</code> or a USB
+drive.</p>
+<p><strong>Do this</strong> 1. In File Explorer, select the ZIP, press
+the <strong>Application/Menu key</strong>, and choose <strong>Extract
+All…</strong>; extract into your chosen folder. 2. Open the extracted
+folder and confirm it contains a launcher named
 <strong><code>QUILL.exe</code></strong> (a genuine native launcher, not
 a script) and a <strong><code>data</code></strong> subfolder beside
-it.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The folder is self-contained: <code>QUILL.exe</code>, a bundled
+it.</p>
+<p><strong>You should see and hear</strong> - The folder is
+self-contained: <code>QUILL.exe</code>, a bundled
 <code>pythonw.exe</code>, and a <code>data\</code> folder are all
-present. Nothing had to be installed system-wide.</li>
-</ul>
+present. Nothing had to be installed system-wide.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gs-04--launch-quill-for-the-first-time">GS-04 — Launch QUILL for
+<h2 id="gs-04-launch-quill-for-the-first-time">GS-04 — Launch QUILL for
 the first time</h2>
 <p><em>What &amp; why.</em> The first launch is the moment of truth: the
 window must open, take focus, and be announced, with no crash dialog.
 First launch may also show a one-time welcome/onboarding — that is
 expected.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL installed (GS-02) or extracted (GS-03). Screen reader running
-(GS-01).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Launch QUILL: from the <strong>Start menu</strong> (system install)
-press <strong>Enter</strong> on the QUILL entry, <strong>or</strong> run
-<strong><code>QUILL.exe</code></strong> in the portable folder.</li>
-<li>Wait a few seconds for the main window to appear. Do not click
-anything.</li>
-<li>If a welcome / first-run dialog appears, read it fully with the
-screen reader, then dismiss it with its default button (or
-<strong>Escape</strong>) — note what it offered.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The QUILL window opens and <strong>comes to the foreground</strong>;
-the screen reader announces the window (its title includes
-<strong>QUILL</strong>). There is <strong>no crash or error
-dialog</strong>.</li>
-<li>Any first-run welcome is keyboard-operable and announced; after
-dismissing it, focus lands in the editor.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL installed (GS-02) or
+extracted (GS-03). Screen reader running (GS-01).</p>
+<p><strong>Do this</strong> 1. Launch QUILL: from the <strong>Start
+menu</strong> (system install) press <strong>Enter</strong> on the QUILL
+entry, <strong>or</strong> run <strong><code>QUILL.exe</code></strong>
+in the portable folder. 2. Wait a few seconds for the main window to
+appear. Do not click anything. 3. If a welcome / first-run dialog
+appears, read it fully with the screen reader, then dismiss it with its
+default button (or <strong>Escape</strong>) — note what it offered.</p>
+<p><strong>You should see and hear</strong> - The QUILL window opens and
+<strong>comes to the foreground</strong>; the screen reader announces
+the window (its title includes <strong>QUILL</strong>). There is
+<strong>no crash or error dialog</strong>. - Any first-run welcome is
+keyboard-operable and announced; after dismissing it, focus lands in the
+editor.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gs-05--confirm-the-version-and-build-help--about">GS-05 —
-Confirm the version and build (Help ▸ About)</h2>
+<h2 id="gs-05-confirm-the-version-and-build-help-about">GS-05 — Confirm
+the version and build (Help ▸ About)</h2>
 <p><em>What &amp; why.</em> Sign-off is only valid against a known
 build. This records exactly which build you are testing.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open (GS-04).</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Alt</strong> to enter the menu bar; the screen reader
-announces the first menu.</li>
-<li><strong>Right Arrow</strong> to the <strong>Help</strong> menu, then
-<strong>Down Arrow</strong> to <strong>About QUILL…</strong> and press
+<p><strong>Before you start</strong> - QUILL open (GS-04).</p>
+<p><strong>Do this</strong> 1. Press <strong>Alt</strong> to enter the
+menu bar; the screen reader announces the first menu. 2. <strong>Right
+Arrow</strong> to the <strong>Help</strong> menu, then <strong>Down
+Arrow</strong> to <strong>About QUILL…</strong> and press
 <strong>Enter</strong>. (Or open the menu and press its mnemonic
-letter.)</li>
-<li>Read the dialog top to bottom with your screen reader. Write the
-version and build stamp in your notebook.</li>
-<li>Close the dialog with <strong>Escape</strong> or its
-<strong>OK/Close</strong> button.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The About dialog opens, is fully readable by keyboard, and states
-version <strong>1.0.0</strong> and a build/commit stamp. Closing it
-returns focus to the editor.</li>
-</ul>
+letter.) 3. Read the dialog top to bottom with your screen reader. Write
+the version and build stamp in your notebook. 4. Close the dialog with
+<strong>Escape</strong> or its <strong>OK/Close</strong> button.</p>
+<p><strong>You should see and hear</strong> - The About dialog opens, is
+fully readable by keyboard, and states version <strong>1.0.0</strong>
+and a build/commit stamp. Closing it returns focus to the editor.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gs-06--get-your-bearings-the-main-window">GS-06 — Get your
+<h2 id="gs-06-get-your-bearings-the-main-window">GS-06 — Get your
 bearings: the main window</h2>
 <p><em>What &amp; why.</em> Later sections say things like “focus
 returns to the editor” or “check the status bar.” This scenario teaches
 you those places so the rest of the book makes sense.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open, no document changes yet.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>F6</strong> a few times to cycle between the window’s
-main regions (editor, status bar, and any panels). Listen to what each
-region is called.</li>
-<li>Press <strong>Alt</strong> and <strong>Right Arrow</strong> across
-the whole menu bar once — File, Edit, View, Insert, Format, Navigate,
-Search, Tools, and so on — just to hear the menu names. Press
-<strong>Escape</strong> to leave the menu bar.</li>
-<li>Return to the editor (press <strong>Escape</strong> until the screen
-reader says you are in the document / text area).</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li><strong>F6</strong> moves between named regions and each is
-announced (e.g. the editor as a multi-line “Document” text area, and a
-status bar). The menu bar lists the expected top-level menus. Escape
-lands you back in the editor.</li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open, no document changes
+yet.</p>
+<p><strong>Do this</strong> 1. Press <strong>F6</strong> a few times to
+cycle between the window’s main regions (editor, status bar, and any
+panels). Listen to what each region is called. 2. Press
+<strong>Alt</strong> and <strong>Right Arrow</strong> across the whole
+menu bar once — File, Edit, View, Insert, Format, Navigate, Search,
+Tools, and so on — just to hear the menu names. Press
+<strong>Escape</strong> to leave the menu bar. 3. Return to the editor
+(press <strong>Escape</strong> until the screen reader says you are in
+the document / text area).</p>
+<p><strong>You should see and hear</strong> - <strong>F6</strong> moves
+between named regions and each is announced (e.g. the editor as a
+multi-line “Document” text area, and a status bar). The menu bar lists
+the expected top-level menus. Escape lands you back in the editor.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gs-07--your-first-document-type-hear-it-and-read-it-back">GS-07
-— Your first document: type, hear it, and read it back</h2>
+<h2 id="gs-07-your-first-document-type-hear-it-and-read-it-back">GS-07 —
+Your first document: type, hear it, and read it back</h2>
 <p><em>What &amp; why.</em> The core of QUILL is typing and having it
 spoken. This proves the editor accepts text and reads back what you
 wrote.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A new, empty document. If one is not already open, press
-<strong>Ctrl+N</strong> (New File).</li>
-<li>The exact text to type:
-<strong><code>Hello QUILL, this is my first line.</code></strong></li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>With focus in the editor, type:
-<code>Hello QUILL, this is my first line.</code></li>
-<li>Press <strong>Enter</strong>, then type a second line:
-<code>And this is my second line.</code></li>
-<li>Press <strong>Ctrl+Home</strong> to go to the top, then <strong>Down
+<p><strong>Before you start</strong> - A new, empty document. If one is
+not already open, press <strong>Ctrl+N</strong> (New File). - The exact
+text to type:
+<strong><code>Hello QUILL, this is my first line.</code></strong></p>
+<p><strong>Do this</strong> 1. With focus in the editor, type:
+<code>Hello QUILL, this is my first line.</code> 2. Press
+<strong>Enter</strong>, then type a second line:
+<code>And this is my second line.</code> 3. Press
+<strong>Ctrl+Home</strong> to go to the top, then <strong>Down
 Arrow</strong> to move line by line and listen. Press
 <strong>Ctrl+A</strong> to select all and listen to the selection
-announcement.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Characters/words are echoed as you type (per your screen reader’s
-echo setting). Arrowing reads each line back <strong>exactly</strong> as
-typed. <strong>Ctrl+A</strong> announces that all text is selected. The
-title bar now shows a <strong>modified</strong> indicator (an unsaved
-change marker).</li>
-</ul>
+announcement.</p>
+<p><strong>You should see and hear</strong> - Characters/words are
+echoed as you type (per your screen reader’s echo setting). Arrowing
+reads each line back <strong>exactly</strong> as typed.
+<strong>Ctrl+A</strong> announces that all text is selected. The title
+bar now shows a <strong>modified</strong> indicator (an unsaved change
+marker).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gs-08--save-it-close-it-reopen-it-the-round-trip">GS-08 — Save
+<h2 id="gs-08-save-it-close-it-reopen-it-the-round-trip">GS-08 — Save
 it, close it, reopen it (the round trip)</h2>
 <p><em>What &amp; why.</em> A newcomer’s real first task is “write
 something and get it back later.” This proves save, the unsaved-changes
 guard, and reopen — the safety net every other scenario relies on.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>The two-line document from GS-07, unsaved.</li>
-<li>A filename to use: <strong><code>first.md</code></strong>, saved to
-your Documents folder.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Press <strong>Ctrl+S</strong> (Save). Because the document is new, a
-<strong>Save As</strong> dialog opens.</li>
-<li>In the dialog, type the name <strong><code>first</code></strong>,
+<p><strong>Before you start</strong> - The two-line document from GS-07,
+unsaved. - A filename to use: <strong><code>first.md</code></strong>,
+saved to your Documents folder.</p>
+<p><strong>Do this</strong> 1. Press <strong>Ctrl+S</strong> (Save).
+Because the document is new, a <strong>Save As</strong> dialog opens. 2.
+In the dialog, type the name <strong><code>first</code></strong>,
 confirm the type is Markdown/<code>.md</code>, and press
-<strong>Enter</strong> to save into Documents.</li>
-<li>Press <strong>Ctrl+W</strong> (Close Document).</li>
-<li>Press <strong>Ctrl+O</strong> (Open), navigate to
+<strong>Enter</strong> to save into Documents. 3. Press
+<strong>Ctrl+W</strong> (Close Document). 4. Press
+<strong>Ctrl+O</strong> (Open), navigate to
 <strong><code>first.md</code></strong> in Documents, and press
-<strong>Enter</strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>On save, the screen reader confirms the save and the title bar
-updates to <strong><code>first.md</code></strong> with the modified
-marker <strong>gone</strong>.</li>
-<li>Close leaves you with no unsaved-changes prompt (you just saved).
-Reopening <strong><code>first.md</code></strong> shows both lines
-exactly as written; focus lands in the editor.</li>
-<li>Cross-check the guard: type one character, press
-<strong>Ctrl+W</strong>, and confirm QUILL <strong>asks before
-discarding</strong> the change (you can hear and cancel the prompt).
-Cancel it.</li>
-</ul>
+<strong>Enter</strong>.</p>
+<p><strong>You should see and hear</strong> - On save, the screen reader
+confirms the save and the title bar updates to
+<strong><code>first.md</code></strong> with the modified marker
+<strong>gone</strong>. - Close leaves you with no unsaved-changes prompt
+(you just saved). Reopening <strong><code>first.md</code></strong> shows
+both lines exactly as written; focus lands in the editor. - Cross-check
+the guard: type one character, press <strong>Ctrl+W</strong>, and
+confirm QUILL <strong>asks before discarding</strong> the change (you
+can hear and cancel the prompt). Cancel it.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gs-09--undo-redo-and-getting-unstuck">GS-09 — Undo, redo, and
+<h2 id="gs-09-undo-redo-and-getting-unstuck">GS-09 — Undo, redo, and
 getting unstuck</h2>
 <p><em>What &amp; why.</em> Newcomers make mistakes; QUILL must make
 them recoverable. This also teaches Escape as the universal “get me out
 of here.”</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><code>first.md</code> open from GS-08.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Type the word <code>TEMP</code> somewhere, then press
-<strong>Ctrl+Z</strong> (Undo). Press <strong>Ctrl+Y</strong>
-(Redo).</li>
-<li>Open any menu with <strong>Alt</strong>, then press
-<strong>Escape</strong> to confirm it closes and focus returns to the
-editor.</li>
-<li>Open a dialog you have already met — <strong>Help ▸ About</strong> —
-and close it with <strong>Escape</strong> alone.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>Undo removes <code>TEMP</code> and says so; Redo restores it. Escape
-reliably closes menus and dialogs and returns you to the editor every
-time. Nothing is silent.</li>
-</ul>
+<p><strong>Before you start</strong> - <code>first.md</code> open from
+GS-08.</p>
+<p><strong>Do this</strong> 1. Type the word <code>TEMP</code>
+somewhere, then press <strong>Ctrl+Z</strong> (Undo). Press
+<strong>Ctrl+Y</strong> (Redo). 2. Open any menu with
+<strong>Alt</strong>, then press <strong>Escape</strong> to confirm it
+closes and focus returns to the editor. 3. Open a dialog you have
+already met — <strong>Help ▸ About</strong> — and close it with
+<strong>Escape</strong> alone.</p>
+<p><strong>You should see and hear</strong> - Undo removes
+<code>TEMP</code> and says so; Redo restores it. Escape reliably closes
+menus and dialogs and returns you to the editor every time. Nothing is
+silent.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gs-10--find-every-command-without-memorizing-anything-command-palette">GS-10
+id="gs-10-find-every-command-without-memorizing-anything-command-palette">GS-10
 — Find every command without memorizing anything (Command Palette)</h2>
 <p><em>What &amp; why.</em> No one can memorize 700 commands. The
 Command Palette lets you find any command by typing part of its name —
 your escape hatch for the entire rest of this book. Learn it now.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>QUILL open with any document.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Command Palette</strong>
-(<strong>Ctrl+Shift+P</strong>). A search box appears with focus.</li>
-<li>Type <strong><code>save as</code></strong> and listen as the results
-filter. Arrow through them.</li>
-<li>Press <strong>Escape</strong> to close it without running
-anything.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The palette opens with focus in the search field; typing filters a
-list that is announced as it changes (result count and the focused
-item). Arrowing reads each match with its name and shortcut. Escape
-closes it and returns focus to the editor. <strong>From here on, if you
-cannot find a command in a menu, open the palette and type its
-name.</strong></li>
-</ul>
+<p><strong>Before you start</strong> - QUILL open with any document.</p>
+<p><strong>Do this</strong> 1. Open the <strong>Command Palette</strong>
+(<strong>Ctrl+Shift+P</strong>). A search box appears with focus. 2.
+Type <strong><code>save as</code></strong> and listen as the results
+filter. Arrow through them. 3. Press <strong>Escape</strong> to close it
+without running anything.</p>
+<p><strong>You should see and hear</strong> - The palette opens with
+focus in the search field; typing filters a list that is announced as it
+changes (result count and the focused item). Arrowing reads each match
+with its name and shortcut. Escape closes it and returns focus to the
+editor. <strong>From here on, if you cannot find a command in a menu,
+open the palette and type its name.</strong></p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -579,6 +464,5 @@ name.</strong></li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
-</main>
 </body>
 </html>

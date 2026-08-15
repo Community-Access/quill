@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Section — Gated-absence (prove the non-1.0 features are
-gone)</title>
+  <title>gated-absence</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,31 +174,10 @@ gone)</title>
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
-id="section--gated-absence-prove-the-non-10-features-are-gone">Section —
+id="section-gated-absence-prove-the-non-1.0-features-are-gone">Section —
 Gated-absence (prove the non-1.0 features are gone)</h1>
 <p>Some things in the codebase are <strong>deliberately not
 shipped</strong> in QUILL 1.0.0. The editor-embedded <strong>Internet
@@ -228,62 +206,45 @@ flag them here.</p>
 §2–§3 for the scenario/box layout.</p>
 <hr />
 <h2
-id="gate-01--quillville-app-switcher-lists-only-the-public-apps">GATE-01
+id="gate-01-quillville-app-switcher-lists-only-the-public-apps">GATE-01
 — QuillVille app switcher lists only the public apps</h2>
 <p><em>What &amp; why.</em> The QuillVille switcher is how a user
 launches sibling apps. In a public build it must offer only the three
 that ship.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Public build, QUILL open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>QuillVille menu</strong> (from the menu bar,
-<strong>Alt</strong> then across to <strong>QuillVille</strong>), or run
-the app switcher command from the Command Palette
-(<strong>Ctrl+Shift+P</strong>, type “QuillVille”).</li>
-<li>Read every entry with your screen reader.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>The list contains <strong>only</strong>: Open QUILL, Quill Radio,
-Quill Weather. <strong>Cast, Studio, Converter, and Beacon are
-absent</strong> (per the <code>RELEASED_APPS</code> allowlist). Nothing
-hints at a hidden app.</li>
-</ul>
+<p><strong>Before you start</strong> - Public build, QUILL open.</p>
+<p><strong>Do this</strong> 1. Open the <strong>QuillVille menu</strong>
+(from the menu bar, <strong>Alt</strong> then across to
+<strong>QuillVille</strong>), or run the app switcher command from the
+Command Palette (<strong>Ctrl+Shift+P</strong>, type “QuillVille”). 2.
+Read every entry with your screen reader.</p>
+<p><strong>You should see and hear</strong> - The list contains
+<strong>only</strong>: Open QUILL, Quill Radio, Quill Weather.
+<strong>Cast, Studio, Converter, and Beacon are absent</strong> (per the
+<code>RELEASED_APPS</code> allowlist). Nothing hints at a hidden
+app.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gate-02--media-player-is-not-present">GATE-02 — Media Player is
+<h2 id="gate-02-media-player-is-not-present">GATE-02 — Media Player is
 not present</h2>
 <p><em>What &amp; why.</em> The embedded Media Player
 (<code>app.open_media_player</code>) is gated.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Public build, QUILL open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Look under <strong>Tools ▸ Media</strong> (if that submenu exists at
-all — see GATE-05).</li>
-<li>In the Command Palette, type
-<strong><code>Media Player</code></strong>.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>There is <strong>no Media Player</strong> menu item and
-<strong>no</strong> command-palette result for it.</li>
-</ul>
+<p><strong>Before you start</strong> - Public build, QUILL open.</p>
+<p><strong>Do this</strong> 1. Look under <strong>Tools ▸ Media</strong>
+(if that submenu exists at all — see GATE-05). 2. In the Command
+Palette, type <strong><code>Media Player</code></strong>.</p>
+<p><strong>You should see and hear</strong> - There is <strong>no Media
+Player</strong> menu item and <strong>no</strong> command-palette result
+for it.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gate-03--the-standalone-audio-studio-launcher-is-gated-but-batch-speech-stays">GATE-03
+id="gate-03-the-standalone-audio-studio-launcher-is-gated-but-batch-speech-stays">GATE-03
 — The standalone Audio Studio launcher is gated (but batch speech
 stays)</h2>
 <p><em>What &amp; why.</em> The standalone <strong>Quill Audio
@@ -292,170 +253,124 @@ Studio</strong> app is gated. Do not confuse it with the editor-embedded
 (<code>tools.speech_batch_export</code>), which is a <em>different</em>
 feature that <strong>does</strong> ship (it was renamed to remove the
 name clash).</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Public build, QUILL open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>In the QuillVille switcher (GATE-01), confirm no
-<strong>Studio</strong> launcher.</li>
-<li>Under <strong>Tools ▸ Speech</strong>, find <strong>Audiobook &amp;
-Batch Speech…</strong> and confirm it <strong>is</strong> present and
-opens.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>No standalone Audio Studio launcher anywhere; <strong>Audiobook
-&amp; Batch Speech…</strong> is present and works (its full test lives
-in the speech-tools section).</li>
-</ul>
+<p><strong>Before you start</strong> - Public build, QUILL open.</p>
+<p><strong>Do this</strong> 1. In the QuillVille switcher (GATE-01),
+confirm no <strong>Studio</strong> launcher. 2. Under <strong>Tools ▸
+Speech</strong>, find <strong>Audiobook &amp; Batch Speech…</strong> and
+confirm it <strong>is</strong> present and opens.</p>
+<p><strong>You should see and hear</strong> - No standalone Audio Studio
+launcher anywhere; <strong>Audiobook &amp; Batch Speech…</strong> is
+present and works (its full test lives in the speech-tools section).</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gate-04--cast--converter--beacon-are-unreachable-everywhere">GATE-04
-— Cast / Converter / Beacon are unreachable everywhere</h2>
+id="gate-04-cast-converter-beacon-are-unreachable-everywhere">GATE-04 —
+Cast / Converter / Beacon are unreachable everywhere</h2>
 <p><em>What &amp; why.</em> These companion apps are gated across every
 entry point, including the Windows Explorer shell integration.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Public build. Have a document file visible in File Explorer.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Confirm no Cast / Converter / Beacon in the QuillVille switcher
-(GATE-01).</li>
-<li>In the Command Palette, type <strong><code>Cast</code></strong>,
-then <strong><code>Converter</code></strong>, then
-<strong><code>Beacon</code></strong>.</li>
-<li>In File Explorer, right-click a document and read the context
-menu.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>No launcher, <strong>no command-palette commands</strong>, and
-<strong>no “Convert with Quill”</strong> (or similar) shell verb in the
-Explorer menu. None of these apps are installed as a build product in a
-public install.</li>
-</ul>
+<p><strong>Before you start</strong> - Public build. Have a document
+file visible in File Explorer.</p>
+<p><strong>Do this</strong> 1. Confirm no Cast / Converter / Beacon in
+the QuillVille switcher (GATE-01). 2. In the Command Palette, type
+<strong><code>Cast</code></strong>, then
+<strong><code>Converter</code></strong>, then
+<strong><code>Beacon</code></strong>. 3. In File Explorer, right-click a
+document and read the context menu.</p>
+<p><strong>You should see and hear</strong> - No launcher, <strong>no
+command-palette commands</strong>, and <strong>no “Convert with
+Quill”</strong> (or similar) shell verb in the Explorer menu. None of
+these apps are installed as a build product in a public install.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gate-05--podcasts-internet-radio-and-book-library-are-absent--and-the-whole-media-submenu-is-gone">GATE-05
+id="gate-05-podcasts-internet-radio-and-book-library-are-absent-and-the-whole-media-submenu-is-gone">GATE-05
 — Podcasts, Internet Radio, and Book Library are absent — and the whole
 Media submenu is gone</h2>
 <p><em>What &amp; why.</em> All three editor-embedded media features are
 gated. With every child gated, the <strong><code>Tools ▸ Media</code>
 submenu is omitted entirely</strong> — a good single tell.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Public build, QUILL open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Open the <strong>Tools</strong> menu and look for a
-<strong>Media</strong> submenu.</li>
-<li>In the Command Palette, type each of:
-<strong><code>Podcasts</code></strong>,
+<p><strong>Before you start</strong> - Public build, QUILL open.</p>
+<p><strong>Do this</strong> 1. Open the <strong>Tools</strong> menu and
+look for a <strong>Media</strong> submenu. 2. In the Command Palette,
+type each of: <strong><code>Podcasts</code></strong>,
 <strong><code>Internet Radio</code></strong>,
 <strong><code>Book Library</code></strong>, and the raw prefixes
 <strong><code>podcasts.</code></strong>,
 <strong><code>radio.</code></strong>,
-<strong><code>library.</code></strong>.</li>
-<li>Read the <strong>status bar</strong> end to end (no Radio
-mini-player, no Podcasts cell).</li>
-<li>Open the system <strong>tray</strong> icon menu and read it (no
-radio controls, no Podcasts section).</li>
-<li>Open <strong>Tools ▸ Global Hotkeys</strong> and <strong>Tools ▸
-Manage Individual Features</strong> and scan for any Podcasts / Radio /
-Book Library rows.</li>
-<li>Enter QUILL-key mode (<strong>Ctrl+Shift+Grave</strong>) and press
-<strong>?</strong> to read the chord cheat sheet.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li><strong>No <code>Tools ▸ Media</code> submenu at all.</strong> No
-palette results for any of the three (and none for the
+<strong><code>library.</code></strong>. 3. Read the <strong>status
+bar</strong> end to end (no Radio mini-player, no Podcasts cell). 4.
+Open the system <strong>tray</strong> icon menu and read it (no radio
+controls, no Podcasts section). 5. Open <strong>Tools ▸ Global
+Hotkeys</strong> and <strong>Tools ▸ Manage Individual Features</strong>
+and scan for any Podcasts / Radio / Book Library rows. 6. Enter
+QUILL-key mode (<strong>Ctrl+Shift+Grave</strong>) and press
+<strong>?</strong> to read the chord cheat sheet.</p>
+<p><strong>You should see and hear</strong> - <strong>No
+<code>Tools ▸ Media</code> submenu at all.</strong> No palette results
+for any of the three (and none for the
 <code>podcasts.</code>/<code>radio.</code>/<code>library.</code>
 prefixes). No status-bar cell, no tray controls, no Global-Hotkeys
 entries, no Manage-Individual-Features rows, and <strong>no
 Podcasts/Radio/Book-Library chords</strong> on the cheat sheet. The
-background new-episode check never runs.</li>
-</ul>
+background new-episode check never runs.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gate-06--other-already-gated-features-stay-gated">GATE-06 —
-Other already-gated features stay gated</h2>
+<h2 id="gate-06-other-already-gated-features-stay-gated">GATE-06 — Other
+already-gated features stay gated</h2>
 <p><em>What &amp; why.</em> A grab-bag of experimental/optional features
 must remain off (or in their documented default) for 1.0.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Public build, QUILL open.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>In the Command Palette, search for
+<p><strong>Before you start</strong> - Public build, QUILL open.</p>
+<p><strong>Do this</strong> 1. In the Command Palette, search for
 <strong><code>Spotify</code></strong>,
 <strong><code>GLOW</code></strong>, and
 <strong><code>BITS Whisperer</code></strong> (or
-<code>whisperer.</code>).</li>
-<li>Note the state of <strong>ADP</strong>
+<code>whisperer.</code>). 2. Note the state of <strong>ADP</strong>
 (<code>future.adp_assistant</code>, currently default ON — a product
-decision for 1.0; record whether it is present).</li>
-<li>Note the <strong>Publishing</strong> send half
-(<code>future.publishing</code>) — the compose/preview may exist but the
-send step should be gated.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li><strong>Spotify</strong> absent (<code>future.spotify</code>);
-<strong>GLOW</strong> absent (<code>core.glow</code>); <strong>BITS
-Whisperer</strong> absent (<code>core.bw_whisperer</code>). Third-party
-Quillins are locked (bundled ones still load). Record ADP and Publishing
-states for the release decision.</li>
-</ul>
+decision for 1.0; record whether it is present). 3. Note the
+<strong>Publishing</strong> send half (<code>future.publishing</code>) —
+the compose/preview may exist but the send step should be gated.</p>
+<p><strong>You should see and hear</strong> - <strong>Spotify</strong>
+absent (<code>future.spotify</code>); <strong>GLOW</strong> absent
+(<code>core.glow</code>); <strong>BITS Whisperer</strong> absent
+(<code>core.bw_whisperer</code>). Third-party Quillins are locked
+(bundled ones still load). Record ADP and Publishing states for the
+release decision.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="gate-07--dev-flag-restores-everything-proves-gating-is-a-live-switch">GATE-07
+id="gate-07-dev-flag-restores-everything-proves-gating-is-a-live-switch">GATE-07
 — Dev flag restores everything (proves gating is a live switch)</h2>
 <p><em>What &amp; why.</em> The gated features are hidden by a flag, not
 deleted. Flipping the developer flag must bring them all back — that is
 what proves the gate works.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>A build you can relaunch with an environment variable set. Set
+<p><strong>Before you start</strong> - A build you can relaunch with an
+environment variable set. Set
 <strong><code>QUILL_DEV_BUILD=1</code></strong> and launch QUILL. (This
 is the only scenario in this section that is <strong>not</strong> run on
-a plain public build.)</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li>Relaunch with <code>QUILL_DEV_BUILD=1</code>.</li>
-<li>Re-check GATE-01, GATE-02, and GATE-05: the QuillVille switcher, the
-Media Player, and the <code>Tools ▸ Media</code> submenu with Podcasts /
-Internet Radio / Book Library.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>With the flag on, the gated apps and the <code>Tools ▸ Media</code>
-submenu <strong>reappear</strong> and are reachable. Quitting and
-relaunching <strong>without</strong> the flag hides them again. This
-confirms 1.0 gating is a runtime switch, and the public build genuinely
-has the flag off.</li>
-</ul>
+a plain public build.)</p>
+<p><strong>Do this</strong> 1. Relaunch with
+<code>QUILL_DEV_BUILD=1</code>. 2. Re-check GATE-01, GATE-02, and
+GATE-05: the QuillVille switcher, the Media Player, and the
+<code>Tools ▸ Media</code> submenu with Podcasts / Internet Radio / Book
+Library.</p>
+<p><strong>You should see and hear</strong> - With the flag on, the
+gated apps and the <code>Tools ▸ Media</code> submenu
+<strong>reappear</strong> and are reachable. Quitting and relaunching
+<strong>without</strong> the flag hides them again. This confirms 1.0
+gating is a runtime switch, and the public build genuinely has the flag
+off.</p>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -473,6 +388,5 @@ has the flag off.</li>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
-</main>
 </body>
 </html>

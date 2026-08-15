@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QuillVille consolidation program — one repo, many
-products</title>
+  <title>2026-07-20-quillville-consolidation-program</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -175,31 +174,10 @@ products</title>
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
-id="quillville-consolidation-program--one-repo-many-products">QuillVille
+id="quillville-consolidation-program-one-repo-many-products">QuillVille
 consolidation program — one repo, many products</h1>
 <p>Date: 2026-07-20. Supersedes the scope of
 <code>2026-07-20-radio-cast-consolidation-plan.md</code> (still valid
@@ -219,6 +197,13 @@ packaging. Consolidating = move the packaging into
 <code>quill/standalone/&lt;product&gt;/</code> and reduce the product
 repo to a release host. Cheap and low-risk.</p>
 <table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
 <thead>
 <tr>
 <th>Product</th>
@@ -264,6 +249,13 @@ migration: rewrite imports to <code>quill.*</code>, pass the GATE suite
 — then add a <code>standalone/&lt;product&gt;/</code> shell). Real work
 per app.</p>
 <table>
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+<col style="width: 20%" />
+</colgroup>
 <thead>
 <tr>
 <th>Product</th>
@@ -318,7 +310,7 @@ removing <code>S:\</code> roots).</li>
 </ul>
 <h2 id="sequenced-plan-smallest-risk-first">Sequenced plan (smallest
 risk first)</h2>
-<h3 id="phase-1--finish-the-thin-wrappers-low-risk">Phase 1 — finish the
+<h3 id="phase-1-finish-the-thin-wrappers-low-risk">Phase 1 — finish the
 thin wrappers (low risk)</h3>
 <ol type="1">
 <li><strong>Strip quill-radio to a release host.</strong> Its packaging
@@ -337,7 +329,7 @@ below).</li>
 and no updater constraint — it is pure build tooling.</li>
 </ol>
 <h3
-id="phase-2--reverse-vendor-the-separate-apps-one-at-a-time-verified">Phase
+id="phase-2-reverse-vendor-the-separate-apps-one-at-a-time-verified">Phase
 2 — reverse-vendor the separate apps (one at a time, verified)</h3>
 <p>Do these <strong>individually</strong>, each on its own branch, each
 fully GATE-green with tests before the next — exactly how Audio Studio
@@ -351,7 +343,7 @@ Python — likely <code>quill/data/beacon-ext/</code> or a top-level
 real GATE work (size budgets, new persistence/egress sites). 5. Each
 gets a <code>standalone/&lt;product&gt;/</code> shell after its code is
 in <code>quill</code>.</p>
-<h3 id="phase-3--macos-radio-port-qrm">Phase 3 — macOS radio port
+<h3 id="phase-3-macos-radio-port-qrm">Phase 3 — macOS radio port
 (QRM)</h3>
 <ol start="6" type="1">
 <li>Fold <code>quill_radio_mac</code> packaging into the repo under a
@@ -365,19 +357,16 @@ same app.</li>
 id="update-safety-rules-unchanged-apply-to-every-shipped-repo">Update-safety
 rules (unchanged, apply to every shipped repo)</h2>
 <p>Every shipped product’s updater polls its own repo
-(<code>quill/apps/&lt;app&gt;.py: _REPO</code>). Therefore:</p>
-<ul>
-<li><strong>Never delete or rename a shipped product’s GitHub
-repo.</strong> Its <code>/releases</code> API is live infrastructure. To
-retire one, follow the migration in
+(<code>quill/apps/&lt;app&gt;.py: _REPO</code>). Therefore: -
+<strong>Never delete or rename a shipped product’s GitHub repo.</strong>
+Its <code>/releases</code> API is live infrastructure. To retire one,
+follow the migration in
 <code>2026-07-20-radio-cast-consolidation-plan.md</code> (repoint
 <code>_REPO</code>, ship a transitional release from the old repo, wait
-for adoption) and then <strong>archive, not delete</strong>.</li>
-<li>Archiving is the safe “remove”: read-only, reversible, releases stay
-served. That is what was done to quill-cast.</li>
-<li>Audio Studio and any never-shipped product are exempt (no users, no
-updater).</li>
-</ul>
+for adoption) and then <strong>archive, not delete</strong>. - Archiving
+is the safe “remove”: read-only, reversible, releases stay served. That
+is what was done to quill-cast. - Audio Studio and any never-shipped
+product are exempt (no users, no updater).</p>
 <h2 id="status-2026-07-21">Status (2026-07-21)</h2>
 <ul>
 <li><strong>Radio, Cast, Beacon, Audio Studio</strong> each have a full
@@ -403,43 +392,32 @@ gated pyannote diarization extra pulls it).</li>
 this approach (distribution and beyond)</h2>
 <p>Why one repo of shared code with thin per-product shells beats
 separate per-product codebases:</p>
-<p><strong>Distribution.</strong></p>
-<ul>
-<li>One <code>onedir</code> build per product feeds <em>both</em>
-deliverables — zip it for the portable, point Inno Setup at it for the
-installer — and each <code>.iss</code> carries per-user
-<strong>and</strong> per-machine install in one script
-(<code>PrivilegesRequired=lowest</code>
-<ul>
-<li>dialog override). One build recipe, two install types, every
-product.</li>
-</ul></li>
-<li>Everything is bundled (no install- or first-run downloads); the
-heavy speech engines are fetched on demand through the shared,
-<strong>SHA-256-verified</strong> <code>assets-v1</code> component
-system, so base builds stay small and no product depends on a
-third-party host (Hugging Face) staying up.</li>
-<li>Every product inherits the same verified self-update path (Quill’s
+<p><strong>Distribution.</strong> - One <code>onedir</code> build per
+product feeds <em>both</em> deliverables — zip it for the portable,
+point Inno Setup at it for the installer — and each <code>.iss</code>
+carries per-user <strong>and</strong> per-machine install in one script
+(<code>PrivilegesRequired=lowest</code> + dialog override). One build
+recipe, two install types, every product. - Everything is bundled (no
+install- or first-run downloads); the heavy speech engines are fetched
+on demand through the shared, <strong>SHA-256-verified</strong>
+<code>assets-v1</code> component system, so base builds stay small and
+no product depends on a third-party host (Hugging Face) staying up. -
+Every product inherits the same verified self-update path (Quill’s
 signed release feed + the decompression-safety fix), so “Install and
-restart” behaves identically everywhere.</li>
-</ul>
-<p><strong>Maintenance and correctness.</strong></p>
-<ul>
-<li>Single source of truth: a fix or feature written once in the
-<code>quill</code> package reaches <em>every</em> product at once — no
-vendoring, no re-pinning, no drift. The design rule holds: “if it
-breaks, it breaks everywhere,” so a defect surfaces once across the
-whole family instead of hiding in a stale copy.</li>
-<li>One gate suite guards all shared code — ruff, strict mypy on
-<code>core</code>/<code>io</code>, module-size budgets, the
+restart” behaves identically everywhere.</p>
+<p><strong>Maintenance and correctness.</strong> - Single source of
+truth: a fix or feature written once in the <code>quill</code> package
+reaches <em>every</em> product at once — no vendoring, no re-pinning, no
+drift. The design rule holds: “if it breaks, it breaks everywhere,” so a
+defect surfaces once across the whole family instead of hiding in a
+stale copy. - One gate suite guards all shared code — ruff, strict mypy
+on <code>core</code>/<code>io</code>, module-size budgets, the
 dialog-surface inventory, the accessible-name audit, the network-egress
 audit, and the banned-pattern check — so quality is uniform, not
-per-repo.</li>
-<li>Apps declare <code>REQUIRED_COMPONENTS</code> and a refcount
+per-repo. - Apps declare <code>REQUIRED_COMPONENTS</code> and a refcount
 registry shares downloaded components (ffmpeg, mpv) across co-installed
 products, so a listener with Radio <em>and</em> Studio downloads ffmpeg
-once.</li>
-</ul>
+once.</p>
 <p><strong>Accessibility.</strong> One accessibility contract
 (<code>dialog_contract</code>, accessible-name inference,
 region-entry/-exit announcements, the transition-cue policy) is enforced
@@ -460,6 +438,5 @@ Treat Phase 2 (Beacon, Social) as separate, verified migrations on their
 own branches, and Phase 3 (QRM/macOS) after. Resist doing all
 reverse-vendors at once — one GATE-green app at a time keeps
 <code>main</code> shippable throughout.</p>
-</main>
 </body>
 </html>

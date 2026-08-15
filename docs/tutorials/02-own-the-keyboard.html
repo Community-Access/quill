@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Tutorial 2: Own the keyboard</title>
+  <title>02-own-the-keyboard</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,33 +174,12 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="tutorial-2-own-the-keyboard">Tutorial 2: Own the keyboard</h1>
 <p><strong>Goal:</strong> move anywhere in QUILL without the mouse, and
 bend the keymap to your hands.</p>
-<h2 id="1-the-quill-key-prefix-commands">1. The QUILL key (prefix
+<h2 id="the-quill-key-prefix-commands">1. The QUILL key (prefix
 commands)</h2>
 <p>QUILL has more commands than convenient key combinations, so it uses
 a prefix: press the <strong>QUILL key</strong>
@@ -219,7 +198,7 @@ letters and arrows act as navigation commands until you press
 <code>Escape</code> — the same idea as a screen reader’s virtual cursor.
 One press arms exactly one command (Quick Nav); two presses lock the
 mode.</p>
-<h2 id="2-deep-navigation">2. Deep navigation</h2>
+<h2 id="deep-navigation">2. Deep navigation</h2>
 <ul>
 <li>Jump by heading in Markdown documents; move by section; set and jump
 to named marks (palette &gt; <code>mark</code>).</li>
@@ -228,7 +207,7 @@ every saved file at your last cursor position.</li>
 <li><code>Ctrl+Tab</code> cycles document tabs; the tab name is
 announced on switch.</li>
 </ul>
-<h2 id="3-the-keymap-editor">3. The Keymap Editor</h2>
+<h2 id="the-keymap-editor">3. The Keymap Editor</h2>
 <p><strong>Preferences &gt; Keyboard</strong> opens the editor. Three
 things to try:</p>
 <ol type="1">
@@ -247,13 +226,13 @@ the repairable ones in one click.</li>
 </ol>
 <p>Export your keymap as a <code>.kqp</code> keyboard pack to share it
 or carry it between machines.</p>
-<h2 id="4-ask-dont-wait-status-queries">4. Ask, don’t wait: status
+<h2 id="ask-dont-wait-status-queries">4. Ask, don’t wait: status
 queries</h2>
 <p>Instead of QUILL deciding what to announce, ask on demand (all in the
 palette): <strong>Where am I?</strong>, <strong>What changed?</strong>,
 <strong>Speak Status</strong>, and <strong>Describe Formatting at
 Cursor</strong> (“Arial, 14 point, centered, bold”).</p>
-<h2 id="5-exercise">5. Exercise</h2>
+<h2 id="exercise">5. Exercise</h2>
 <ol type="1">
 <li>Rebind <strong>GLOW Audit Current Document</strong> to a key of your
 choice.</li>
@@ -266,6 +245,5 @@ of that announced.</li>
 </ol>
 <p><strong>Next:</strong> <a href="03-rescue-a-scanned-pdf.md">Rescue a
 scanned PDF</a>.</p>
-</main>
 </body>
 </html>

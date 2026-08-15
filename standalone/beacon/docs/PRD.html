@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc" />
+  <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QuillBeacon Product Requirements Document</title>
+  <title>QuillBeacon Product Requirements</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -156,8 +156,12 @@
       text-decoration: none;
     }
     span.smallcaps{font-variant: small-caps;}
-    div.columns{display: flex; gap: min(4vw, 1.5em);}
-    div.column{flex: auto; overflow-x: auto;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
     div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
     /* The extra [class] is a hack that increases specificity enough to
        override a similar rule in reveal.js */
@@ -234,36 +238,648 @@
     code span.va { color: #19177c; } /* Variable */
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. Only the color is
-       changed; each token keeps its default weight/style. Placed last so it
-       wins the cascade over the styles.html() highlighting defaults above. */
-    code span.al, code span.er { color: #c00000; }              /* was #ff0000 */
-    code span.an, code span.co, code span.cv,
-    code span.in, code span.wa { color: #3a6b74; }              /* was #60a0b0 */
-    code span.at { color: #55631a; }                            /* was #7d9029 */
-    code span.bn, code span.dv, code span.fl { color: #217a4a; }/* was #40a070 */
-    code span.ch, code span.sc, code span.st,
-    code span.vs { color: #2f5c86; }                            /* was #4070a0 */
-    code span.pp { color: #8a5a00; }                            /* was #bc7a00 */
-    code span.ss { color: #8a3a5a; }                            /* was #bb6688 */
   </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
+<header id="title-block-header">
+<h1 class="title">QuillBeacon Product Requirements</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#quillbeacon-product-requirements-document"
+id="toc-quillbeacon-product-requirements-document">QuillBeacon Product
+Requirements Document</a>
+<ul>
+<li><a href="#1-executive-product-decision"
+id="toc-1-executive-product-decision">1. Executive product
+decision</a></li>
+<li><a href="#2-product-name-and-brand"
+id="toc-2-product-name-and-brand">2. Product name and brand</a>
+<ul>
+<li><a href="#21-recommended-name-quillbeacon"
+id="toc-21-recommended-name-quillbeacon">2.1 Recommended name:
+QuillBeacon</a></li>
+<li><a href="#22-product-language" id="toc-22-product-language">2.2
+Product language</a></li>
+</ul></li>
+<li><a href="#3-product-vision" id="toc-3-product-vision">3. Product
+vision</a>
+<ul>
+<li><a href="#31-vision-statement" id="toc-31-vision-statement">3.1
+Vision statement</a></li>
+<li><a href="#32-product-promise" id="toc-32-product-promise">3.2
+Product promise</a></li>
+<li><a href="#33-the-larger-opportunity"
+id="toc-33-the-larger-opportunity">3.3 The larger opportunity</a></li>
+</ul></li>
+<li><a href="#4-product-principles" id="toc-4-product-principles">4.
+Product principles</a>
+<ul>
+<li><a href="#41-accessibility-is-the-architecture"
+id="toc-41-accessibility-is-the-architecture">4.1 Accessibility is the
+architecture</a></li>
+<li><a href="#42-local-first-cloud-connected"
+id="toc-42-local-first-cloud-connected">4.2 Local-first,
+cloud-connected</a></li>
+<li><a href="#43-native-where-the-user-touches-it"
+id="toc-43-native-where-the-user-touches-it">4.3 Native where the user
+touches it</a></li>
+<li><a href="#44-exact-locations-with-graceful-fallback"
+id="toc-44-exact-locations-with-graceful-fallback">4.4 Exact locations
+with graceful fallback</a></li>
+<li><a href="#45-search-before-filing"
+id="toc-45-search-before-filing">4.5 Search before filing</a></li>
+<li><a href="#46-user-ownership" id="toc-46-user-ownership">4.6 User
+ownership</a></li>
+<li><a href="#47-interconnection-without-lock-in"
+id="toc-47-interconnection-without-lock-in">4.7 Interconnection without
+lock-in</a></li>
+<li><a href="#48-delight-without-mystery"
+id="toc-48-delight-without-mystery">4.8 Delight without mystery</a></li>
+</ul></li>
+<li><a href="#5-goals" id="toc-5-goals">5. Goals</a>
+<ul>
+<li><a href="#51-primary-goals" id="toc-51-primary-goals">5.1 Primary
+goals</a></li>
+<li><a href="#52-success-definition" id="toc-52-success-definition">5.2
+Success definition</a></li>
+</ul></li>
+<li><a href="#6-non-goals-for-the-initial-release"
+id="toc-6-non-goals-for-the-initial-release">6. Non-goals for the
+initial release</a></li>
+<li><a href="#7-primary-audiences-and-personas"
+id="toc-7-primary-audiences-and-personas">7. Primary audiences and
+personas</a>
+<ul>
+<li><a href="#71-the-rapid-retriever"
+id="toc-71-the-rapid-retriever">7.1 The rapid retriever</a></li>
+<li><a href="#72-the-researcher" id="toc-72-the-researcher">7.2 The
+researcher</a></li>
+<li><a href="#73-the-podcast-and-radio-listener"
+id="toc-73-the-podcast-and-radio-listener">7.3 The podcast and radio
+listener</a></li>
+<li><a href="#74-the-student" id="toc-74-the-student">7.4 The
+student</a></li>
+<li><a href="#75-the-professional" id="toc-75-the-professional">7.5 The
+professional</a></li>
+<li><a href="#76-the-accessibility-first-power-user"
+id="toc-76-the-accessibility-first-power-user">7.6 The
+accessibility-first power user</a></li>
+<li><a href="#77-the-cross-device-user"
+id="toc-77-the-cross-device-user">7.7 The cross-device user</a></li>
+</ul></li>
+<li><a href="#8-core-jobs-to-be-done" id="toc-8-core-jobs-to-be-done">8.
+Core jobs to be done</a></li>
+<li><a href="#9-supported-resource-model"
+id="toc-9-supported-resource-model">9. Supported resource model</a>
+<ul>
+<li><a href="#91-resource-categories"
+id="toc-91-resource-categories">9.1 Resource categories</a></li>
+<li><a href="#92-resource-state" id="toc-92-resource-state">9.2 Resource
+state</a></li>
+</ul></li>
+<li><a href="#10-the-universal-location-model"
+id="toc-10-the-universal-location-model">10. The universal location
+model</a>
+<ul>
+<li><a href="#101-locator-layers" id="toc-101-locator-layers">10.1
+Locator layers</a></li>
+<li><a href="#102-recovery-behavior" id="toc-102-recovery-behavior">10.2
+Recovery behavior</a></li>
+</ul></li>
+<li><a href="#11-podcast-and-episode-design"
+id="toc-11-podcast-and-episode-design">11. Podcast and episode
+design</a>
+<ul>
+<li><a href="#111-bookmarkable-podcast-entities"
+id="toc-111-bookmarkable-podcast-entities">11.1 Bookmarkable podcast
+entities</a></li>
+<li><a href="#112-chapter-sources" id="toc-112-chapter-sources">11.2
+Chapter sources</a></li>
+<li><a href="#113-personal-episode-chapters"
+id="toc-113-personal-episode-chapters">11.3 Personal episode
+chapters</a></li>
+<li><a href="#114-time-point-capture"
+id="toc-114-time-point-capture">11.4 Time-point capture</a></li>
+<li><a href="#115-chapter-and-time-point-navigation"
+id="toc-115-chapter-and-time-point-navigation">11.5 Chapter and
+time-point navigation</a></li>
+<li><a href="#116-transcript-linked-bookmarks"
+id="toc-116-transcript-linked-bookmarks">11.6 Transcript-linked
+bookmarks</a></li>
+<li><a href="#117-continue-listening"
+id="toc-117-continue-listening">11.7 Continue listening</a></li>
+<li><a href="#118-podcast-subscriptions-and-scope"
+id="toc-118-podcast-subscriptions-and-scope">11.8 Podcast subscriptions
+and scope</a></li>
+</ul></li>
+<li><a href="#12-radio-stream-design"
+id="toc-12-radio-stream-design">12. Radio-stream design</a>
+<ul>
+<li><a href="#121-bookmarkable-radio-entities"
+id="toc-121-bookmarkable-radio-entities">12.1 Bookmarkable radio
+entities</a></li>
+<li><a href="#122-stream-metadata" id="toc-122-stream-metadata">12.2
+Stream metadata</a></li>
+<li><a href="#123-live-stream-limitations"
+id="toc-123-live-stream-limitations">12.3 Live-stream
+limitations</a></li>
+<li><a href="#124-radio-delight" id="toc-124-radio-delight">12.4 Radio
+delight</a></li>
+</ul></li>
+<li><a href="#13-information-architecture"
+id="toc-13-information-architecture">13. Information architecture</a>
+<ul>
+<li><a href="#131-primary-destinations"
+id="toc-131-primary-destinations">13.1 Primary destinations</a></li>
+<li><a href="#132-home" id="toc-132-home">13.2 Home</a></li>
+<li><a href="#133-three-pane-desktop-layout"
+id="toc-133-three-pane-desktop-layout">13.3 Three-pane desktop
+layout</a></li>
+<li><a href="#134-ios-structure" id="toc-134-ios-structure">13.4 iOS
+structure</a></li>
+</ul></li>
+<li><a href="#14-capture-experience" id="toc-14-capture-experience">14.
+Capture experience</a>
+<ul>
+<li><a href="#141-capture-modes" id="toc-141-capture-modes">14.1 Capture
+modes</a></li>
+<li><a href="#142-global-capture-command"
+id="toc-142-global-capture-command">14.2 Global capture command</a></li>
+<li><a href="#143-quick-capture-form"
+id="toc-143-quick-capture-form">14.3 Quick capture form</a></li>
+<li><a href="#144-context-captured-automatically"
+id="toc-144-context-captured-automatically">14.4 Context captured
+automatically</a></li>
+<li><a href="#145-capture-routing-rules"
+id="toc-145-capture-routing-rules">14.5 Capture routing rules</a></li>
+</ul></li>
+<li><a href="#15-search-vision" id="toc-15-search-vision">15. Search
+vision</a>
+<ul>
+<li><a href="#151-searchable-fields" id="toc-151-searchable-fields">15.1
+Searchable fields</a></li>
+<li><a href="#152-search-behavior" id="toc-152-search-behavior">15.2
+Search behavior</a></li>
+<li><a href="#153-query-examples" id="toc-153-query-examples">15.3 Query
+examples</a></li>
+<li><a href="#154-accessible-search-builder"
+id="toc-154-accessible-search-builder">15.4 Accessible search
+builder</a></li>
+<li><a href="#155-filters" id="toc-155-filters">15.5 Filters</a></li>
+<li><a href="#156-sorting" id="toc-156-sorting">15.6 Sorting</a></li>
+<li><a href="#157-result-presentation"
+id="toc-157-result-presentation">15.7 Result presentation</a></li>
+<li><a href="#158-smart-collections" id="toc-158-smart-collections">15.8
+Smart Collections</a></li>
+</ul></li>
+<li><a href="#16-organization-model" id="toc-16-organization-model">16.
+Organization model</a>
+<ul>
+<li><a href="#161-collections" id="toc-161-collections">16.1
+Collections</a></li>
+<li><a href="#162-tags" id="toc-162-tags">16.2 Tags</a></li>
+<li><a href="#163-trails" id="toc-163-trails">16.3 Trails</a></li>
+<li><a href="#164-relationships" id="toc-164-relationships">16.4
+Relationships</a></li>
+</ul></li>
+<li><a href="#17-delightful-product-capabilities"
+id="toc-17-delightful-product-capabilities">17. Delightful product
+capabilities</a>
+<ul>
+<li><a href="#171-return-cards" id="toc-171-return-cards">17.1 Return
+Cards</a></li>
+<li><a href="#172-one-command-mark-this"
+id="toc-172-one-command-mark-this">17.2 One-command “Mark This”</a></li>
+<li><a href="#173-context-rewind" id="toc-173-context-rewind">17.3
+Context rewind</a></li>
+<li><a href="#174-broken-location-repair-assistant"
+id="toc-174-broken-location-repair-assistant">17.4 Broken-location
+repair assistant</a></li>
+<li><a href="#175-duplicate-intelligence"
+id="toc-175-duplicate-intelligence">17.5 Duplicate intelligence</a></li>
+<li><a href="#176-accessible-where-am-i-command"
+id="toc-176-accessible-where-am-i-command">17.6 Accessible “Where Am I?”
+command</a></li>
+<li><a href="#177-daily-resurfacing" id="toc-177-daily-resurfacing">17.7
+Daily resurfacing</a></li>
+</ul></li>
+<li><a href="#18-accessibility-requirements"
+id="toc-18-accessibility-requirements">18. Accessibility
+requirements</a>
+<ul>
+<li><a href="#181-non-negotiable-requirements"
+id="toc-181-non-negotiable-requirements">18.1 Non-negotiable
+requirements</a></li>
+<li><a href="#182-screen-reader-experience"
+id="toc-182-screen-reader-experience">18.2 Screen-reader
+experience</a></li>
+<li><a href="#183-keyboard-design" id="toc-183-keyboard-design">18.3
+Keyboard design</a></li>
+<li><a href="#184-accessible-notifications"
+id="toc-184-accessible-notifications">18.4 Accessible
+notifications</a></li>
+</ul></li>
+<li><a href="#19-native-platform-strategy"
+id="toc-19-native-platform-strategy">19. Native platform strategy</a>
+<ul>
+<li><a href="#191-architectural-decision"
+id="toc-191-architectural-decision">19.1 Architectural decision</a></li>
+<li><a href="#192-platform-specific-integration"
+id="toc-192-platform-specific-integration">19.2 Platform-specific
+integration</a></li>
+</ul></li>
+<li><a href="#20-quillville-ecosystem-integration"
+id="toc-20-quillville-ecosystem-integration">20. QuillVille ecosystem
+integration</a>
+<ul>
+<li><a href="#201-quille-integration"
+id="toc-201-quille-integration">20.1 QUILLE integration</a></li>
+<li><a href="#202-quillsync-integration"
+id="toc-202-quillsync-integration">20.2 QuillSync integration</a></li>
+<li><a href="#203-future-quillville-integrations"
+id="toc-203-future-quillville-integrations">20.3 Future QuillVille
+integrations</a></li>
+</ul></li>
+<li><a href="#21-browser-extension" id="toc-21-browser-extension">21.
+Browser extension</a>
+<ul>
+<li><a href="#211-required-browser-actions"
+id="toc-211-required-browser-actions">21.1 Required browser
+actions</a></li>
+<li><a href="#212-browser-accessibility"
+id="toc-212-browser-accessibility">21.2 Browser accessibility</a></li>
+<li><a href="#213-location-capture" id="toc-213-location-capture">21.3
+Location capture</a></li>
+</ul></li>
+<li><a href="#22-search-and-storage-implementation"
+id="toc-22-search-and-storage-implementation">22. Search and storage
+implementation</a>
+<ul>
+<li><a href="#221-local-database" id="toc-221-local-database">22.1 Local
+database</a></li>
+<li><a href="#222-search-index-layers"
+id="toc-222-search-index-layers">22.2 Search index layers</a></li>
+<li><a href="#223-search-performance-targets"
+id="toc-223-search-performance-targets">22.3 Search performance
+targets</a></li>
+</ul></li>
+<li><a href="#23-quillsync-architecture"
+id="toc-23-quillsync-architecture">23. QuillSync architecture</a>
+<ul>
+<li><a href="#231-sync-principles" id="toc-231-sync-principles">23.1
+Sync principles</a></li>
+<li><a href="#232-recommended-server-architecture"
+id="toc-232-recommended-server-architecture">23.2 Recommended server
+architecture</a></li>
+<li><a href="#233-encryption-model" id="toc-233-encryption-model">23.3
+Encryption model</a></li>
+<li><a href="#234-recovery-options" id="toc-234-recovery-options">23.4
+Recovery options</a></li>
+<li><a href="#235-sync-conflict-policy"
+id="toc-235-sync-conflict-policy">23.5 Sync conflict policy</a></li>
+<li><a href="#236-device-handoff" id="toc-236-device-handoff">23.6
+Device handoff</a></li>
+</ul></li>
+<li><a href="#24-core-data-model" id="toc-24-core-data-model">24. Core
+data model</a>
+<ul>
+<li><a href="#241-principal-entities"
+id="toc-241-principal-entities">24.1 Principal entities</a></li>
+<li><a href="#242-example-portable-record"
+id="toc-242-example-portable-record">24.2 Example portable
+record</a></li>
+</ul></li>
+<li><a href="#25-import-and-migration"
+id="toc-25-import-and-migration">25. Import and migration</a>
+<ul>
+<li><a href="#251-initial-import-sources"
+id="toc-251-initial-import-sources">25.1 Initial import sources</a></li>
+<li><a href="#252-future-import-sources"
+id="toc-252-future-import-sources">25.2 Future import sources</a></li>
+<li><a href="#253-import-experience" id="toc-253-import-experience">25.3
+Import experience</a></li>
+</ul></li>
+<li><a href="#26-export-and-portability"
+id="toc-26-export-and-portability">26. Export and portability</a></li>
+<li><a href="#27-sharing-and-collaboration"
+id="toc-27-sharing-and-collaboration">27. Sharing and collaboration</a>
+<ul>
+<li><a href="#271-sharing-modes" id="toc-271-sharing-modes">27.1 Sharing
+modes</a></li>
+<li><a href="#272-accessible-share-representation"
+id="toc-272-accessible-share-representation">27.2 Accessible share
+representation</a></li>
+<li><a href="#273-collaboration-requirements"
+id="toc-273-collaboration-requirements">27.3 Collaboration
+requirements</a></li>
+</ul></li>
+<li><a href="#28-optional-intelligent-capabilities"
+id="toc-28-optional-intelligent-capabilities">28. Optional intelligent
+capabilities</a>
+<ul>
+<li><a href="#281-suggested-tags" id="toc-281-suggested-tags">28.1
+Suggested tags</a></li>
+<li><a href="#282-summaries" id="toc-282-summaries">28.2
+Summaries</a></li>
+<li><a href="#283-suggested-podcast-chapters"
+id="toc-283-suggested-podcast-chapters">28.3 Suggested podcast
+chapters</a></li>
+<li><a href="#284-semantic-search" id="toc-284-semantic-search">28.4
+Semantic search</a></li>
+<li><a href="#285-relationship-suggestions"
+id="toc-285-relationship-suggestions">28.5 Relationship
+suggestions</a></li>
+<li><a href="#286-repair-suggestions"
+id="toc-286-repair-suggestions">28.6 Repair suggestions</a></li>
+<li><a href="#287-privacy-boundaries"
+id="toc-287-privacy-boundaries">28.7 Privacy boundaries</a></li>
+</ul></li>
+<li><a href="#29-settings" id="toc-29-settings">29. Settings</a>
+<ul>
+<li><a href="#291-general" id="toc-291-general">29.1 General</a></li>
+<li><a href="#292-accessibility" id="toc-292-accessibility">29.2
+Accessibility</a></li>
+<li><a href="#293-search" id="toc-293-search">29.3 Search</a></li>
+<li><a href="#294-sync" id="toc-294-sync">29.4 Sync</a></li>
+<li><a href="#295-media" id="toc-295-media">29.5 Media</a></li>
+<li><a href="#296-privacy" id="toc-296-privacy">29.6 Privacy</a></li>
+</ul></li>
+<li><a href="#30-notifications-and-status"
+id="toc-30-notifications-and-status">30. Notifications and
+status</a></li>
+<li><a href="#31-security-and-privacy-requirements"
+id="toc-31-security-and-privacy-requirements">31. Security and privacy
+requirements</a></li>
+<li><a href="#32-reliability-and-non-functional-requirements"
+id="toc-32-reliability-and-non-functional-requirements">32. Reliability
+and non-functional requirements</a>
+<ul>
+<li><a href="#321-availability" id="toc-321-availability">32.1
+Availability</a></li>
+<li><a href="#322-data-integrity" id="toc-322-data-integrity">32.2 Data
+integrity</a></li>
+<li><a href="#323-performance" id="toc-323-performance">32.3
+Performance</a></li>
+<li><a href="#324-localization" id="toc-324-localization">32.4
+Localization</a></li>
+</ul></li>
+<li><a href="#33-analytics-and-measurement"
+id="toc-33-analytics-and-measurement">33. Analytics and measurement</a>
+<ul>
+<li><a href="#331-product-metrics" id="toc-331-product-metrics">33.1
+Product metrics</a></li>
+<li><a href="#332-metrics-not-to-optimize-blindly"
+id="toc-332-metrics-not-to-optimize-blindly">33.2 Metrics not to
+optimize blindly</a></li>
+</ul></li>
+<li><a href="#34-functional-requirements-by-epic"
+id="toc-34-functional-requirements-by-epic">34. Functional requirements
+by epic</a>
+<ul>
+<li><a href="#epic-a-library-foundation"
+id="toc-epic-a-library-foundation">Epic A: Library foundation</a></li>
+<li><a href="#epic-b-capture" id="toc-epic-b-capture">Epic B:
+Capture</a></li>
+<li><a href="#epic-c-search-and-discovery"
+id="toc-epic-c-search-and-discovery">Epic C: Search and
+discovery</a></li>
+<li><a href="#epic-d-opening-and-recovery"
+id="toc-epic-d-opening-and-recovery">Epic D: Opening and
+recovery</a></li>
+<li><a href="#epic-e-podcasts-and-media"
+id="toc-epic-e-podcasts-and-media">Epic E: Podcasts and media</a></li>
+<li><a href="#epic-f-radio" id="toc-epic-f-radio">Epic F: Radio</a></li>
+<li><a href="#epic-g-quillsync" id="toc-epic-g-quillsync">Epic G:
+QuillSync</a></li>
+<li><a href="#epic-h-accessibility-and-customization"
+id="toc-epic-h-accessibility-and-customization">Epic H: Accessibility
+and customization</a></li>
+</ul></li>
+<li><a href="#35-recommended-delivery-phases"
+id="toc-35-recommended-delivery-phases">35. Recommended delivery
+phases</a>
+<ul>
+<li><a href="#phase-0-product-and-accessibility-prototype"
+id="toc-phase-0-product-and-accessibility-prototype">Phase 0: Product
+and accessibility prototype</a></li>
+<li><a href="#phase-1-desktop-local-first-mvp"
+id="toc-phase-1-desktop-local-first-mvp">Phase 1: Desktop local-first
+MVP</a></li>
+<li><a href="#phase-2-quillsync-and-multi-device-desktop"
+id="toc-phase-2-quillsync-and-multi-device-desktop">Phase 2: QuillSync
+and multi-device desktop</a></li>
+<li><a href="#phase-3-rich-media" id="toc-phase-3-rich-media">Phase 3:
+Rich media</a></li>
+<li><a href="#phase-4-ios-and-ipados"
+id="toc-phase-4-ios-and-ipados">Phase 4: iOS and iPadOS</a></li>
+<li><a href="#phase-5-intelligent-assistance-and-advanced-integrations"
+id="toc-phase-5-intelligent-assistance-and-advanced-integrations">Phase
+5: Intelligent assistance and advanced integrations</a></li>
+</ul></li>
+<li><a href="#36-mvp-acceptance-criteria"
+id="toc-36-mvp-acceptance-criteria">36. MVP acceptance criteria</a>
+<ul>
+<li><a href="#capture" id="toc-capture">Capture</a></li>
+<li><a href="#search" id="toc-search">Search</a></li>
+<li><a href="#open" id="toc-open">Open</a></li>
+<li><a href="#accessibility"
+id="toc-accessibility">Accessibility</a></li>
+<li><a href="#portability" id="toc-portability">Portability</a></li>
+</ul></li>
+<li><a href="#37-example-end-to-end-experiences"
+id="toc-37-example-end-to-end-experiences">37. Example end-to-end
+experiences</a>
+<ul>
+<li><a href="#371-save-a-document-hotspot"
+id="toc-371-save-a-document-hotspot">37.1 Save a document
+hotspot</a></li>
+<li><a href="#372-save-a-podcast-chapter-and-precise-point"
+id="toc-372-save-a-podcast-chapter-and-precise-point">37.2 Save a
+podcast chapter and precise point</a></li>
+<li><a href="#373-create-a-personal-podcast-chapter"
+id="toc-373-create-a-personal-podcast-chapter">37.3 Create a personal
+podcast chapter</a></li>
+<li><a href="#374-save-a-live-radio-moment"
+id="toc-374-save-a-live-radio-moment">37.4 Save a live radio
+moment</a></li>
+<li><a href="#375-continue-a-cross-device-trail"
+id="toc-375-continue-a-cross-device-trail">37.5 Continue a cross-device
+Trail</a></li>
+</ul></li>
+<li><a href="#38-risks-and-mitigations"
+id="toc-38-risks-and-mitigations">38. Risks and mitigations</a>
+<ul>
+<li><a href="#381-exact-location-fragility"
+id="toc-381-exact-location-fragility">38.1 Exact-location
+fragility</a></li>
+<li><a href="#382-product-scope-explosion"
+id="toc-382-product-scope-explosion">38.2 Product scope
+explosion</a></li>
+<li><a href="#383-native-multi-platform-cost"
+id="toc-383-native-multi-platform-cost">38.3 Native multi-platform
+cost</a></li>
+<li><a href="#384-encryption-recovery-complexity"
+id="toc-384-encryption-recovery-complexity">38.4 Encryption recovery
+complexity</a></li>
+<li><a href="#385-search-index-size" id="toc-385-search-index-size">38.5
+Search index size</a></li>
+<li><a href="#386-inconsistent-podcast-metadata"
+id="toc-386-inconsistent-podcast-metadata">38.6 Inconsistent podcast
+metadata</a></li>
+<li><a href="#387-live-radio-impermanence"
+id="toc-387-live-radio-impermanence">38.7 Live radio
+impermanence</a></li>
+<li><a href="#388-accessibility-regressions"
+id="toc-388-accessibility-regressions">38.8 Accessibility
+regressions</a></li>
+</ul></li>
+<li><a href="#39-testing-strategy" id="toc-39-testing-strategy">39.
+Testing strategy</a>
+<ul>
+<li><a href="#391-automated-testing" id="toc-391-automated-testing">39.1
+Automated testing</a></li>
+<li><a href="#392-manual-accessibility-gates"
+id="toc-392-manual-accessibility-gates">39.2 Manual accessibility
+gates</a></li>
+<li><a href="#393-community-validation"
+id="toc-393-community-validation">39.3 Community validation</a></li>
+</ul></li>
+<li><a href="#40-recommended-product-decisions"
+id="toc-40-recommended-product-decisions">40. Recommended product
+decisions</a></li>
+<li><a href="#41-product-statement" id="toc-41-product-statement">41.
+Product statement</a></li>
+<li><a href="#42-standards-and-technical-references"
+id="toc-42-standards-and-technical-references">42. Standards and
+technical references</a></li>
+<li><a href="#43-immediate-next-implementation-artifacts"
+id="toc-43-immediate-next-implementation-artifacts">43. Immediate next
+implementation artifacts</a></li>
+<li><a href="#appendix-a-candidate-names-considered"
+id="toc-appendix-a-candidate-names-considered">Appendix A: Candidate
+names considered</a></li>
+<li><a href="#quillbeacon--recommended"
+id="toc-quillbeacon--recommended">QuillBeacon — recommended</a></li>
+<li><a href="#quillatlas" id="toc-quillatlas">QuillAtlas</a></li>
+<li><a href="#quillcompass" id="toc-quillcompass">QuillCompass</a></li>
+<li><a href="#quilltrail" id="toc-quilltrail">QuillTrail</a></li>
+<li><a href="#quillmark" id="toc-quillmark">QuillMark</a></li>
+<li><a href="#appendix-b-command-vocabulary"
+id="toc-appendix-b-command-vocabulary">Appendix B: Command
+vocabulary</a></li>
+<li><a href="#appendix-c-definition-of-outstanding"
+id="toc-appendix-c-definition-of-outstanding">Appendix C: Definition of
+outstanding</a></li>
+<li><a href="#44-implementation-plan-grounded-in-the-quill-stack"
+id="toc-44-implementation-plan-grounded-in-the-quill-stack">44.
+Implementation plan (grounded in the QUILL stack)</a></li>
+<li><a href="#441-architecture-decision-revised-against-the-real-stack"
+id="toc-441-architecture-decision-revised-against-the-real-stack">44.1
+Architecture decision (revised against the real stack)</a></li>
+<li><a href="#442-phase-1-mvp-scope-this-build"
+id="toc-442-phase-1-mvp-scope-this-build">44.2 Phase-1 MVP scope (this
+build)</a></li>
+<li><a href="#443-module-map-epic-to-file"
+id="toc-443-module-map-epic-to-file">44.3 Module map (epic to
+file)</a></li>
+<li><a href="#444-accessibility-verification-how-epic-h-is-met"
+id="toc-444-accessibility-verification-how-epic-h-is-met">44.4
+Accessibility verification (how Epic H is met)</a></li>
+<li><a href="#445-build-status" id="toc-445-build-status">44.5 Build
+status</a></li>
+<li><a href="#446-completed-feature-set-this-repo"
+id="toc-446-completed-feature-set-this-repo">44.6 Completed feature set
+(this repo)</a></li>
+<li><a href="#447-second-pass-in-repo-completions"
+id="toc-447-second-pass-in-repo-completions">44.7 Second-pass in-repo
+completions</a></li>
+<li><a href="#45-quillsync-implementation-plan-aligned-with-quill-sync"
+id="toc-45-quillsync-implementation-plan-aligned-with-quill-sync">45.
+QuillSync implementation plan (aligned with QUILL Sync)</a></li>
+<li><a href="#451-model-the-library-is-a-repository"
+id="toc-451-model-the-library-is-a-repository">45.1 Model: the library
+is a repository</a></li>
+<li><a href="#452-transport-three-tiers-cheapest-first"
+id="toc-452-transport-three-tiers-cheapest-first">45.2 Transport: three
+tiers, cheapest first</a></li>
+<li><a href="#453-security-non-negotiable"
+id="toc-453-security-non-negotiable">45.3 Security
+(non-negotiable)</a></li>
+<li><a href="#454-sync-scopes-smallest-first"
+id="toc-454-sync-scopes-smallest-first">45.4 Sync scopes, smallest
+first</a></li>
+<li><a href="#455-hosted-quillsync-server-architecture"
+id="toc-455-hosted-quillsync-server-architecture">45.5 Hosted QuillSync
+server architecture</a></li>
+<li><a href="#456-client-sync-protocol"
+id="toc-456-client-sync-protocol">45.6 Client sync protocol</a></li>
+<li><a href="#457-sequencing" id="toc-457-sequencing">45.7
+Sequencing</a></li>
+<li><a href="#458-what-this-changes-in-section-23"
+id="toc-458-what-this-changes-in-section-23">45.8 What this changes in
+section 23</a></li>
+<li><a href="#448-read-only-web-publish-surface-in-repo-built"
+id="toc-448-read-only-web-publish-surface-in-repo-built">44.8 Read-only
+web publish surface (in-repo, built)</a></li>
+<li><a href="#449-unified-preferences-hub-in-repo-built"
+id="toc-449-unified-preferences-hub-in-repo-built">44.9 Unified
+Preferences hub (in-repo, built)</a></li>
+<li><a
+href="#4410-headless-cli-native-messaging-fallback-player-settings-collection-edit-in-repo-built"
+id="toc-4410-headless-cli-native-messaging-fallback-player-settings-collection-edit-in-repo-built">44.10
+Headless CLI, native messaging fallback, player settings, collection
+edit (in-repo, built)</a></li>
+<li><a href="#4411-capture-routing-rules-in-repo-built"
+id="toc-4411-capture-routing-rules-in-repo-built">44.11 Capture routing
+rules (in-repo, built)</a></li>
+<li><a href="#4510-incremental-commits-and-auto-sync-in-repo-built"
+id="toc-4510-incremental-commits-and-auto-sync-in-repo-built">45.10
+Incremental commits and auto-sync (in-repo, built)</a></li>
+<li><a href="#459-authentication-magic-links-via-postmark"
+id="toc-459-authentication-magic-links-via-postmark">45.9
+Authentication: magic links via Postmark</a>
+<ul>
+<li><a href="#why-magic-links" id="toc-why-magic-links">Why magic
+links</a></li>
+<li><a href="#no-web-interface-client-based-verification"
+id="toc-no-web-interface-client-based-verification">No web interface
+(client-based verification)</a></li>
+<li><a href="#flow" id="toc-flow">Flow</a></li>
+<li><a href="#security-properties" id="toc-security-properties">Security
+properties</a></li>
+<li><a href="#provider-abstraction"
+id="toc-provider-abstraction">Provider abstraction</a></li>
+<li><a href="#accessibility-of-the-email-itself"
+id="toc-accessibility-of-the-email-itself">Accessibility of the email
+itself</a></li>
+<li><a href="#recovery-interaction"
+id="toc-recovery-interaction">Recovery interaction</a></li>
+</ul></li>
+<li><a href="#46-quillsync-as-the-shared-sync-framework"
+id="toc-46-quillsync-as-the-shared-sync-framework">46. QuillSync as the
+shared sync framework</a></li>
+<li><a href="#461-the-framework-lives-here"
+id="toc-461-the-framework-lives-here">46.1 The framework lives
+here</a></li>
+<li><a
+href="#462-the-integration-contract-what-each-companion-app-implements"
+id="toc-462-the-integration-contract-what-each-companion-app-implements">46.2
+The integration contract (what each companion app implements)</a></li>
+<li><a href="#463-integration-plans-planned-not-built-here"
+id="toc-463-integration-plans-planned-not-built-here">46.3 Integration
+plans (planned, not built here)</a></li>
+<li><a href="#464-server-integration"
+id="toc-464-server-integration">46.4 Server integration</a></li>
+<li><a href="#47-intelligent-assistance-local-heuristics-no-ai-required"
+id="toc-47-intelligent-assistance-local-heuristics-no-ai-required">47.
+Intelligent assistance (local heuristics, no AI required)</a></li>
+<li><a href="#474-semantic-search--opt-in-hook-no-default-model"
+id="toc-474-semantic-search--opt-in-hook-no-default-model">47.4 Semantic
+search – opt-in hook, no default model</a></li>
+</ul></li>
+</ul>
+</nav>
 <h1 id="quillbeacon-product-requirements-document">QuillBeacon Product
 Requirements Document</h1>
 <p><strong>Working product name:</strong> QuillBeacon<br />
@@ -1138,8 +1754,8 @@ automatically</h3>
 <h3 id="145-capture-routing-rules">14.5 Capture routing rules</h3>
 <p>Users can define an ordered list of routing rules that file new web
 bookmarks into a folder automatically. Each rule maps one <strong>URL
-keyword</strong> -- a domain name (<code>github.com</code>) or any text
-a URL could contain (<code>/recipes/</code>) -- to one folder.</p>
+keyword</strong> – a domain name (<code>github.com</code>) or any text a
+URL could contain (<code>/recipes/</code>) – to one folder.</p>
 <p>Requirements:</p>
 <ul>
 <li>Matching is a case-insensitive substring test against the captured
@@ -2884,8 +3500,8 @@ cases.</li>
 <li>Native proof-of-concept plan.</li>
 </ol>
 <hr />
-<h1 id="appendix-a-candidate-names-considered">Appendix A: Candidate
-names considered</h1>
+<h2 id="appendix-a-candidate-names-considered">Appendix A: Candidate
+names considered</h2>
 <h2 id="quillbeacon--recommended">QuillBeacon — recommended</h2>
 <p>Strengths:</p>
 <ul>
@@ -2935,8 +3551,8 @@ feature.</li>
 <li>Less expansive and distinctive than QuillBeacon.</li>
 </ul>
 <hr />
-<h1 id="appendix-b-command-vocabulary">Appendix B: Command
-vocabulary</h1>
+<h2 id="appendix-b-command-vocabulary">Appendix B: Command
+vocabulary</h2>
 <p>Suggested commands:</p>
 <ul>
 <li>Add Bookmark.</li>
@@ -2967,8 +3583,8 @@ vocabulary</h1>
 <li>Search Transcript.</li>
 </ul>
 <hr />
-<h1 id="appendix-c-definition-of-outstanding">Appendix C: Definition of
-outstanding</h1>
+<h2 id="appendix-c-definition-of-outstanding">Appendix C: Definition of
+outstanding</h2>
 <p>QuillBeacon is outstanding when:</p>
 <ul>
 <li>A new user understands how to save and retrieve an item without
@@ -2986,8 +3602,8 @@ confidently.</li>
 accumulate bookmarks.</li>
 </ul>
 <hr />
-<h1 id="44-implementation-plan-grounded-in-the-quill-stack">44.
-Implementation plan (grounded in the QUILL stack)</h1>
+<h2 id="44-implementation-plan-grounded-in-the-quill-stack">44.
+Implementation plan (grounded in the QUILL stack)</h2>
 <p>This section maps the product vision onto the real QUILL engineering
 stack so delivery is concrete rather than aspirational. It is the bridge
 between the PRD and the first running code.</p>
@@ -3026,15 +3642,15 @@ labels.</li>
 indexing.</li>
 </ul></li>
 <li>The local store is <strong>SQLite with FTS5</strong> (WAL mode,
-transactional migrations), matching the PRD's storage recommendation and
-the stack's existing SQLite use. No new language runtime (Rust) is
+transactional migrations), matching the PRD’s storage recommendation and
+the stack’s existing SQLite use. No new language runtime (Rust) is
 introduced for the first phase; the portable-core recommendation in
 section 19 is retained as a later optimization once the data model and
 ULD are proven in Python.</li>
 </ul>
-<p>Rationale: the PRD's section 19 recommends a shared portable core
-with native shells. QUILL's existing companion-app architecture already
-delivers the "shared core, native shell" property for Windows and macOS
+<p>Rationale: the PRD’s section 19 recommends a shared portable core
+with native shells. QUILL’s existing companion-app architecture already
+delivers the “shared core, native shell” property for Windows and macOS
 using wxPython plus platform-native accessibility, so QuillBeacon adopts
 it instead of spinning up a parallel Rust toolchain. The ULD, search
 grammar, JSON schema, and sync protocol remain provider-neutral and
@@ -3080,68 +3696,68 @@ an automated test suite for the pure logic layers.</li>
 <h2 id="443-module-map-epic-to-file">44.3 Module map (epic to file)</h2>
 <p>Engine (pure logic, wx-free, unit-tested):</p>
 <ul>
-<li><code>quill_beacon/model.py</code> -- dataclasses: Resource, Beacon,
+<li><code>quill_beacon/model.py</code> – dataclasses: Resource, Beacon,
 Location, MediaChapter, Collection, Trail, Tag, Relationship,
 Attachment. Epic A.</li>
-<li><code>quill_beacon/uld.py</code> -- Universal Location Descriptor:
+<li><code>quill_beacon/uld.py</code> – Universal Location Descriptor:
 locator layers, confidence scoring, fallback resolution order from
 section 10.2, repair history. Epic D.</li>
-<li><code>quill_beacon/db.py</code> -- SQLite schema, transactional
+<li><code>quill_beacon/db.py</code> – SQLite schema, transactional
 migrations, FTS5 indexes, CRUD, tombstones, integrity checks. Epic A;
 section 22.1.</li>
-<li><code>quill_beacon/search.py</code> -- query grammar parser, FTS5 +
+<li><code>quill_beacon/search.py</code> – query grammar parser, FTS5 +
 structured queries, filters, facets, sort, duplicate detection. Epic C;
 section 15.</li>
-<li><code>quill_beacon/capture.py</code> -- canonicalization,
+<li><code>quill_beacon/capture.py</code> – canonicalization,
 clipboard/file/folder/URI capture, context capture. Epic B.</li>
-<li><code>quill_beacon/media.py</code> -- podcast feed parse, chapter
+<li><code>quill_beacon/media.py</code> – podcast feed parse, chapter
 normalization (Podcasting 2.0 JSON, ID3 CHAP/CTOC), radio stream
 metadata. Epic E/F.</li>
-<li><code>quill_beacon/importers.py</code> -- HTML bookmarks, OPML,
+<li><code>quill_beacon/importers.py</code> – HTML bookmarks, OPML,
 M3U/PLS, CSV, JSON, plain text. Epic C import; section 25.</li>
-<li><code>quill_beacon/exporters.py</code> -- JSON archive, HTML,
+<li><code>quill_beacon/exporters.py</code> – JSON archive, HTML,
 Markdown, CSV, OPML, M3U, plain text. Section 26.</li>
-<li><code>quill_beacon/undo.py</code> -- UndoManager + full-Beacon
+<li><code>quill_beacon/undo.py</code> – UndoManager + full-Beacon
 snapshot/restore for bulk ops and permanent-delete undo. Epic A; PRD
 18.5.</li>
-<li><code>quill_beacon/radio.py</code> -- stream validation, alternate
+<li><code>quill_beacon/radio.py</code> – stream validation, alternate
 URLs, program metadata capture. Epic F; PRD 9.1.</li>
-<li><code>quill_beacon/external_player.py</code> -- VLC/mpv/system
+<li><code>quill_beacon/external_player.py</code> – VLC/mpv/system
 handoff with resume time. PRD 11.5.</li>
-<li><code>quill_beacon/a11y.py</code> -- accessibility settings model +
+<li><code>quill_beacon/a11y.py</code> – accessibility settings model +
 apply. Epic H; PRD 29.</li>
-<li><code>quill_beacon/sync_ui.py</code> -- in-client sync controller
+<li><code>quill_beacon/sync_ui.py</code> – in-client sync controller
 (config, vault, snapshots, history, rollback, CLI verify). PRD 45,
 45.9.</li>
-<li><code>quill_beacon/sync.py</code> -- Beacon adapter over the
+<li><code>quill_beacon/sync.py</code> – Beacon adapter over the
 <code>quillsync</code> framework (RecordStore + merge). PRD 45,
 46.2.</li>
-<li><code>quill_beacon/capture_bridge.py</code> -- localhost capture
+<li><code>quill_beacon/capture_bridge.py</code> – localhost capture
 bridge for browser extensions. PRD 46.</li>
-<li><code>quill_beacon/assist.py</code> -- local heuristics:
+<li><code>quill_beacon/assist.py</code> – local heuristics:
 tag/relationship suggestions, extractive summary, opt-in semantic hook.
 PRD 47.</li>
 </ul>
 <p>UI (wxPython, accessible):</p>
 <ul>
-<li><code>quill_beacon/app.py</code> -- three-pane shell, menus, tray,
+<li><code>quill_beacon/app.py</code> – three-pane shell, menus, tray,
 status center. Section 13.3.</li>
-<li><code>quill_beacon/dialogs.py</code> -- quick capture form, Build
+<li><code>quill_beacon/dialogs.py</code> – quick capture form, Build
 Search dialog, Collection/Trail editors, repair review, radio program,
 sync settings, sync history, status center, accessibility settings.
 Sections 14.3, 15.4, 17.4, 29, 45.9.</li>
-<li><code>quill_beacon/tray.py</code> -- system tray icon (show/hide,
+<li><code>quill_beacon/tray.py</code> – system tray icon (show/hide,
 capture, sync, status). PRD 13.4.</li>
-<li><code>quill_beacon/commands.py</code> -- Command Palette and command
+<li><code>quill_beacon/commands.py</code> – Command Palette and command
 vocabulary from Appendix B.</li>
-<li><code>quill_beacon/announce.py</code> -- accessible announcements
-and Where Am I. Sections 17.6, 18.4.</li>
+<li><code>quill_beacon/announce.py</code> – accessible announcements and
+Where Am I. Sections 17.6, 18.4.</li>
 </ul>
 <p>Product wrapper (this repo):</p>
 <ul>
-<li><code>quill_beacon/__init__.py</code> -- <code>main()</code> entry,
+<li><code>quill_beacon/__init__.py</code> – <code>main()</code> entry,
 mirrors <code>quill_cast/__init__.py</code>.</li>
-<li><code>launcher.py</code> -- PyInstaller entry, mirrors
+<li><code>launcher.py</code> – PyInstaller entry, mirrors
 <code>quill_cast/launcher.py</code>.</li>
 <li><code>pyproject.toml</code>, <code>run-quill-beacon.bat</code>,
 <code>README.md</code>, <code>CHANGELOG.md</code>.</li>
@@ -3171,7 +3787,7 @@ layers, the three-pane accessible wx shell, the generic QuillSync
 framework, the reference server, the browser extensions, intelligent
 assistance, and end-to-end sync UI are all implemented and covered by
 the test suite (279 tests at last count). What remains is
-cross-application integration (planned, not built here -- see section
+cross-application integration (planned, not built here – see section
 46.3 and <code>Docs/PLAN-beacon-surfaces.md</code>) and the iOS
 companion (planned only, per section 35 Phase 4).</p>
 <p>A second pass closed the remaining in-repo gaps (see 44.7): conflict
@@ -3225,7 +3841,7 @@ playlist-to-direct guesses), <code>radio.capture_program</code>
 Menu: Add Radio Station, Add Radio Program.</li>
 <li><strong>Sync end-to-end UI (Epic / Phase 2):</strong>
 <code>sync_ui.SyncController</code> (config persistence, vault
-unlock/setup from a passphrase + scrypt salt -- passphrase never stored,
+unlock/setup from a passphrase + scrypt salt – passphrase never stored,
 folder + server transports, pre-sync DB snapshots, history, rollback,
 fail-safe wrapping), <code>dialogs.SyncSettingsDialog</code> (transport,
 in-client magic-link request/verify, vault unlock/setup, Sync Now), and
@@ -3273,7 +3889,7 @@ action in Sync Settings (import replaces the local vault, with a
 warning).</li>
 <li><strong>Server hints badge (PRD 45.5):</strong>
 <code>fetch_hints</code> calls <code>/sync/hints</code> and the Status
-Center shows "N new" / "up to date" / the error string. Fail-safe: no
+Center shows “N new” / “up to date” / the error string. Fail-safe: no
 server, no token, missing requests, or an unreachable host all return an
 error dict, never raise.</li>
 <li><strong>Incremental sync (PRD 45.8):</strong> schema v2 adds
@@ -3289,13 +3905,13 @@ serialized in a record, so pulls never cause re-commit ping-pong.
 all set the markers so they propagate. <code>open_count</code> is
 intentionally device-local and not synced.</li>
 <li><strong>Attachments UI (PRD 24.1):</strong>
-<code>AttachmentsDialog</code> lists a beacon's files/URLs/notes with
+<code>AttachmentsDialog</code> lists a beacon’s files/URLs/notes with
 add (file via Browse, URL, or inline note), view (OS default handler for
 file/URL, a popup for notes), and remove. Edit menu (Ctrl+Shift+E).
 Attachments stay local-only, never synced as blobs.</li>
 <li><strong>Trails step-through (PRD 17.4):</strong> trails appear in
 the sidebar with <code>done/total</code> progress; selecting one opens
-<code>TrailStepDialog</code> -- a listbox of steps with per-step notes,
+<code>TrailStepDialog</code> – a listbox of steps with per-step notes,
 Previous/Next (persisted <code>current_step</code>), Mark Complete, and
 Open Current (hands the beacon back to the shell to read in place).
 Progress is announced.</li>
@@ -3309,10 +3925,10 @@ new Edit-menu bulk ops, each a single composite undo step. Bulk Remove
 Tag offers the tags present across the selection (Ctrl+Shift+V); Bulk
 Add to Collection creates the collection if needed (Ctrl+Shift+O).</li>
 <li><strong>Health revalidation (PRD 13.4, 17.4):</strong>
-<code>quill_beacon/health.py</code> rechecks each beacon's resource.
+<code>quill_beacon/health.py</code> rechecks each beacon’s resource.
 Local files/folders are checked against the filesystem; web links are
-checked only when a fetcher is supplied (no network by default -- web
-URLs are "skipped", health unchanged). Tools &gt; Revalidate Health
+checked only when a fetcher is supplied (no network by default – web
+URLs are “skipped”, health unchanged). Tools &gt; Revalidate Health
 confirms before any network use and reports
 checked/available/broken/skipped. A failed check never aborts the
 batch.</li>
@@ -3327,33 +3943,33 @@ on close and re-applied when transport is configured.</p>
 </blockquote></li>
 </ul>
 <hr />
-<h1 id="45-quillsync-implementation-plan-aligned-with-quill-sync">45.
-QuillSync implementation plan (aligned with QUILL Sync)</h1>
+<h2 id="45-quillsync-implementation-plan-aligned-with-quill-sync">45.
+QuillSync implementation plan (aligned with QUILL Sync)</h2>
 <p>Section 23 sketched a conventional PostgreSQL-plus-object-storage
-sync server. The QUILL platform already has a sync design -- QUILL Sync
-in <code>s:\quill\docs\planning\plan.md</code> -- that is better suited
+sync server. The QUILL platform already has a sync design – QUILL Sync
+in <code>s:\quill\docs\planning\plan.md</code> – that is better suited
 to QuillBeacon: git-like, versioned, diffable, rollback-capable,
 end-to-end encrypted, and bring-your-own-remote. QuillSync adopts that
 model instead of inventing a second database. This section is the
 concrete implementation plan.</p>
 <h2 id="451-model-the-library-is-a-repository">45.1 Model: the library
 is a repository</h2>
-<p>QuillBeacon's local store is already schema-validated,
+<p>QuillBeacon’s local store is already schema-validated,
 atomically-written records (SQLite rows + FTS5). Sync treats the library
-as a versioned repository, borrowing git's ideas rather than inventing a
+as a versioned repository, borrowing git’s ideas rather than inventing a
 database:</p>
 <ul>
 <li><strong>Versioned.</strong> Every change batch is a commit with a
-human-readable, screen-reader-friendly message ("Added 3 bookmarks,
-edited note on 'Keyboard Interaction'"). History is browsable and
+human-readable, screen-reader-friendly message (“Added 3 bookmarks,
+edited note on ‘Keyboard Interaction’”). History is browsable and
 speakable.</li>
-<li><strong>Diffable.</strong> "What changed between this library today
-and last Tuesday?" is a first-class accessible question with a
+<li><strong>Diffable.</strong> “What changed between this library today
+and last Tuesday?” is a first-class accessible question with a
 first-class answer (PRD 17.3 context rewind reuses this).</li>
 <li><strong>Rollback.</strong> One command restores any prior state of
 any synced scope. A bad bulk-edit experiment is never a disaster
 (supports PRD 32.2 integrity and undo).</li>
-<li><strong>Profiles.</strong> A "work" and "home" profile share a
+<li><strong>Profiles.</strong> A “work” and “home” profile share a
 common base with per-device overlays (different offline packs, same
 collections and tags).</li>
 </ul>
@@ -3363,12 +3979,12 @@ tombstones keyed by entity id; the server stores encrypted blobs and an
 opaque commit graph, not plaintext.</p>
 <h2 id="452-transport-three-tiers-cheapest-first">45.2 Transport: three
 tiers, cheapest first</h2>
-<p>Matching QUILL's $0-to-Jeff philosophy and the consent-first rule
+<p>Matching QUILL’s $0-to-Jeff philosophy and the consent-first rule
 (sync is off until the user turns it on):</p>
 <ol type="1">
 <li><strong>BYO git remote.</strong> Point QuillSync at a private
 GitHub/GitLab/Gitea repo. QuillBeacon manages the plumbing; the user
-never sees a merge conflict marker. QUILL's existing paramiko/SSH key
+never sees a merge conflict marker. QUILL’s existing paramiko/SSH key
 work is directly reusable.</li>
 <li><strong>BYO folder.</strong> Any synced folder (iCloud Drive,
 OneDrive, Dropbox, Syncthing) as the remote, using the same commit
@@ -3390,7 +4006,7 @@ to authorized members.</li>
 entries) never sync at all. A <strong>sync manifest</strong> marks each
 scope as <code>syncable</code>, <code>encrypted-syncable</code>, or
 <code>local-only</code>.</li>
-<li>Every outbound call goes through QUILL's existing network egress
+<li>Every outbound call goes through QUILL’s existing network egress
 audit.</li>
 <li>Recovery is accessible (PRD 23.4): recovery phrase, printable
 recovery kit, trusted-device approval. No recovery flow may be
@@ -3401,11 +4017,11 @@ first</h2>
 <ol type="1">
 <li><strong>Preferences and tags.</strong> Tag taxonomy, collections,
 smart collections, settings, terminology preference. Small,
-low-conflict, immediately valuable -- "sit down at any machine and it is
-your QuillBeacon."</li>
+low-conflict, immediately valuable – “sit down at any machine and it is
+your QuillBeacon.”</li>
 <li><strong>Library content.</strong> Beacons, notes, locations (ULDs),
 relationships, trails. Text merges use a three-way/CRDT strategy tuned
-for prose; conflicts surface as an accessible "two versions" review
+for prose; conflicts surface as an accessible “two versions” review
 flow, never as inline markers (PRD 23.5).</li>
 <li><strong>Opt-in extras.</strong> Personal podcast chapters, listening
 positions, offline-pack manifests, optional snapshots (size-controlled,
@@ -3432,8 +4048,8 @@ git-like core; it gives history, diff, and rollback for free.</li>
 blobs (per-object DEK, wrapped by the vault key). Deduplicated by
 ciphertext hash. S3-compatible object storage or a content-addressed
 filesystem layout.</li>
-<li><strong>Push hint service.</strong> Carries only opaque "new commits
-available" hints to online devices via websockets/APNs/FCM. Never
+<li><strong>Push hint service.</strong> Carries only opaque “new commits
+available” hints to online devices via websockets/APNs/FCM. Never
 carries plaintext or even object ids that would leak structure.</li>
 <li><strong>Shared Collection membership.</strong> PostgreSQL for
 account, device, collection membership, and encrypted collection-key
@@ -3445,7 +4061,7 @@ per-account limits; egress audit hook shared with QUILL.</li>
 object-retention policy (PRD SEC-011). Deleted cloud objects follow a
 documented purge timeline.</li>
 </ul>
-<p>Recommended stack: a small Python service (FastAPI) reusing QUILL's
+<p>Recommended stack: a small Python service (FastAPI) reusing QUILL’s
 egress-audit and crypto helpers, PostgreSQL for membership metadata,
 S3-compatible object storage for blobs, Redis for push-hint fanout. No
 new language runtime; the same Python crypto used client-side is used
@@ -3464,13 +4080,13 @@ meaningful progress, not latest timestamp.</li>
 <li><strong>Audit-friendly local history.</strong> Every change records
 device, timestamp, and scope (PRD 23.1, 32.2).</li>
 <li><strong>Device handoff (PRD 23.6).</strong> An encrypted handoff
-request ("open this Beacon", "continue episode at position") is a
+request (“open this Beacon”, “continue episode at position”) is a
 special commit the receiving device confirms.</li>
 </ul>
 <h2 id="457-sequencing">45.7 Sequencing</h2>
 <ol type="1">
 <li><strong>Scope 1 client (BYO git remote).</strong> Pure desktop work;
-settings and tags as a repo. Reuses QUILL's storage and SSH code.
+settings and tags as a repo. Reuses QUILL’s storage and SSH code.
 Valuable on day one, no server needed.</li>
 <li><strong>Scope 2 client (library content).</strong> Three-way merge
 and accessible conflict review solved on desktop first, where debugging
@@ -3484,7 +4100,7 @@ Collections riding the now-proven sync.</li>
 </ol>
 <h2 id="458-what-this-changes-in-section-23">45.8 What this changes in
 section 23</h2>
-<p>Section 23's "PostgreSQL for everything" recommendation is replaced
+<p>Section 23’s “PostgreSQL for everything” recommendation is replaced
 by the git-like commit-log-plus-encrypted-object-store model above.
 PostgreSQL is retained only for membership and key-distribution
 metadata. All other section 23 requirements (E2E by default, local
@@ -3536,17 +4152,17 @@ gathers the settings that were previously scattered across four menus
 into one keyboard-navigable hub. A left list selects one of four
 right-hand panels:</p>
 <ul>
-<li><strong>Accessibility</strong> -- verbosity, high contrast, text
+<li><strong>Accessibility</strong> – verbosity, high contrast, text
 scale, reduced motion (the former Accessibility Settings dialog, now
 inlined).</li>
-<li><strong>Sync</strong> -- a read-only status summary (transport,
+<li><strong>Sync</strong> – a read-only status summary (transport,
 folder, server, device, vault state), an editable auto-sync interval,
 and buttons that open Sync Settings and run Sync Now.</li>
-<li><strong>Capture Bridge</strong> -- running status, base URL, and
+<li><strong>Capture Bridge</strong> – running status, base URL, and
 token (read-only, with a Copy Token button).</li>
-<li><strong>Published Pages</strong> -- the list of published
-collections with an Unpublish action (publishing itself remains via
-Tools &gt; Publish Collection).</li>
+<li><strong>Published Pages</strong> – the list of published collections
+with an Unpublish action (publishing itself remains via Tools &gt;
+Publish Collection).</li>
 </ul>
 <p>Apply writes the inline-editable settings (accessibility fields and
 the auto-sync interval); the heavier actions delegate to the existing
@@ -3556,7 +4172,7 @@ list and each panel are named regions.</p>
 id="4410-headless-cli-native-messaging-fallback-player-settings-collection-edit-in-repo-built">44.10
 Headless CLI, native messaging fallback, player settings, collection
 edit (in-repo, built)</h2>
-<p>A fourth pass closed the last four in-repo "for later" items so
+<p>A fourth pass closed the last four in-repo “for later” items so
 Beacon is whole without a GUI and resilient to a blocked loopback:</p>
 <ul>
 <li><strong>Headless CLI (<code>quill_beacon.cli</code>).</strong>
@@ -3581,7 +4197,7 @@ standard 4-byte-LE length-prefixed JSON stdio protocol and dispatches to
 the same
 <code>CaptureBridge.handle_capture</code>/<code>handle_batch</code> the
 HTTP bridge uses; it never starts the HTTP server. The browser enforces
-which extension may reach the host via the manifest's
+which extension may reach the host via the manifest’s
 <code>allowed_origins</code>/<code>allowed_extensions</code>, so the
 host trusts the stdio channel and does not re-check the bearer token.
 Register with
@@ -3595,10 +4211,10 @@ installs not on PATH), and a <code>per_type</code> map (radio in one
 player, podcasts in another) are persisted to
 <code>player_settings.json</code> and honored by
 <code>build_command</code>/<code>launch</code>; the missing player still
-falls back to the system default. Edited via Tools &gt; External
-Player... and used by <code>_on_play_external</code>.</li>
+falls back to the system default. Edited via Tools &gt; External Player…
+and used by <code>_on_play_external</code>.</li>
 <li><strong>Edit existing collections.</strong> Tools &gt; Collection
-Editor... (Ctrl+Shift+C) now edits the selected sidebar collection in
+Editor… (Ctrl+Shift+C) now edits the selected sidebar collection in
 place (by <code>collection_id</code>, so <code>put_collection</code>
 updates rather than duplicates) and creates a new one when nothing is
 selected. The dialog carries the <code>collection_id</code> through
@@ -3624,12 +4240,12 @@ the caller chose no collection, and a rule matches. The Inbox flag is
 never touched, so routed bookmarks still appear for review.</li>
 <li><strong>Wired at every web capture surface:</strong> the capture
 bridge (extension and native messaging both flow through
-<code>handle_capture</code>), quick capture (which announces "Bookmark
-added to Inbox and filed in <folder>"), the headless CLI, and file
+<code>handle_capture</code>), quick capture (which announces “Bookmark
+added to Inbox and filed in <folder>”), the headless CLI, and file
 imports.</li>
 <li><strong>Preferences &gt; Routing Rules:</strong> an ordered,
-accessible list ("keyword files into folder") with Add/Edit/Remove and
-Move Up/Move Down buttons -- no drag-and-drop. The rule editor is a
+accessible list (“keyword files into folder”) with Add/Edit/Remove and
+Move Up/Move Down buttons – no drag-and-drop. The rule editor is a
 two-field dialog (keyword text field, folder combo seeded with existing
 collections); duplicate keywords are announced as errors and not
 saved.</li>
@@ -3667,7 +4283,7 @@ one.</p>
 <h3 id="why-magic-links">Why magic links</h3>
 <p>Passwords and captchas are a screen-reader minefield: password
 managers intermittently fill the wrong field, captchas present audio
-challenges that degrade under speech, and "prove you are human" flows
+challenges that degrade under speech, and “prove you are human” flows
 frequently trap keyboard users. A magic link removes all of that:</p>
 <ul>
 <li>The user enters only their email address.</li>
@@ -3682,16 +4298,16 @@ a button.</p>
 <h3 id="no-web-interface-client-based-verification">No web interface
 (client-based verification)</h3>
 <p>There is no hosted web UI for sign-in. The entire auth UX lives
-inside the desktop companion app: one in-app dialog (email field + "Send
-sign-in link" button) plus the user's existing mail client. The magic
+inside the desktop companion app: one in-app dialog (email field + “Send
+sign-in link” button) plus the user’s existing mail client. The magic
 link uses a <strong>custom URL scheme</strong>
 (<code>quillsync://verify?token=...&amp;device=...</code>) so activating
 it in the mail client hands the token straight to the registered
-companion app, not to a browser tab. The server's
+companion app, not to a browser tab. The server’s
 <code>/auth/verify</code> endpoint returns JSON for the client to
 consume; it is not a page a person reads. A hosted HTTPS verify URL is
 kept only as a fallback for headless environments and shows a single
-"open the app" line, never a form. See
+“open the app” line, never a form. See
 <code>Docs/PLAN-quillsync-integration.md</code> section 0.5 for the
 per-app flow and install-time scheme registration.</p>
 <p><strong>Scheme registration helper.</strong>
@@ -3709,20 +4325,20 @@ invokes it; it does not run at app startup by default.</p>
 <h3 id="flow">Flow</h3>
 <ol type="1">
 <li><strong>Request (in-app).</strong> User enters email in the
-companion app's Sync Settings dialog (one labeled field, one "Send
-sign-in link" button). Rate-limited per email and per IP.</li>
+companion app’s Sync Settings dialog (one labeled field, one “Send
+sign-in link” button). Rate-limited per email and per IP.</li>
 <li><strong>Issue.</strong> Server generates a cryptographically random
 token, stores its hash with an expiry (15 minutes) and a single-use
 flag, and sends an email via Postmark containing a link of the form
 <code>quillsync://verify?token=...&amp;device=...</code>.</li>
 <li><strong>Verify (in-app, no browser).</strong> The user activates the
 link in their mail client; the OS opens the registered companion app,
-which calls the server's <code>/auth/verify</code>. The server hashes
+which calls the server’s <code>/auth/verify</code>. The server hashes
 the presented token, matches it, checks expiry and single-use, then
 issues a per-device bearer token bound to device metadata. The link is
 invalidated. No web page is rendered.</li>
 <li><strong>Device registration.</strong> The device token is registered
-against the account; the user names the device ("Jeff's laptop"). Device
+against the account; the user names the device (“Jeff’s laptop”). Device
 revocation (PRD 23.3) rotates or rewraps affected keys.</li>
 </ol>
 <h3 id="security-properties">Security properties</h3>
@@ -3734,7 +4350,7 @@ forwarded link cannot be replayed on another machine.</li>
 <li>Postmark delivers through a provider whose deliverability is high;
 the server never trusts the email body for anything but the token, and
 the token alone grants only a device enrollment, not vault-key access.
-The vault key is still protected by the user's passphrase-derived key
+The vault key is still protected by the user’s passphrase-derived key
 (section 45.3), so account access never equals content access.</li>
 <li>Email is the only PII the hosted server holds for auth; it is never
 used for analytics (PRD 33, SEC-008).</li>
@@ -3744,13 +4360,13 @@ used for analytics (PRD 33, SEC-008).</li>
 Postmark can be swapped for SES, Mailgun, or a self-hosted SMTP without
 touching the auth flow. The default is Postmark because of its
 deliverability and transactional-only posture. No email is ever sent
-without the user's action; there is no marketing or engagement email
+without the user’s action; there is no marketing or engagement email
 (PRD 33.2).</p>
 <h3 id="accessibility-of-the-email-itself">Accessibility of the email
 itself</h3>
 <p>The magic-link email is plain-text-first with a clear, single, full
-link on its own line, a plain-language sender name ("QuillSync
-sign-in"), and a short statement of purpose. Screen readers should hear
+link on its own line, a plain-language sender name (“QuillSync
+sign-in”), and a short statement of purpose. Screen readers should hear
 the link and purpose without parsing decorative HTML. A redundant
 accessible HTML part is included for clients that prefer it, but the
 text part is authoritative.</p>
@@ -3761,42 +4377,42 @@ recovery kit or via trusted-device approval (PRD 23.4). The accessible
 warning that losing every authorized device and recovery method may make
 end-to-end encrypted data unrecoverable is presented in plain text
 before enrollment.</p>
-<h1 id="46-quillsync-as-the-shared-sync-framework">46. QuillSync as the
-shared sync framework</h1>
+<h2 id="46-quillsync-as-the-shared-sync-framework">46. QuillSync as the
+shared sync framework</h2>
 <h2 id="461-the-framework-lives-here">46.1 The framework lives here</h2>
 <p>QuillSync is not a Beacon feature; it is the shared sync layer for
 every QUILL companion app. The canonical implementation lives in this
 repo as the top-level <code>quillsync/</code> package, with no
-dependency on Beacon's domain model. It speaks only the
+dependency on Beacon’s domain model. It speaks only the
 <code>RecordStore</code> protocol (three methods over opaque JSON-able
 record dicts) and a <code>MergeFn</code> the application supplies.</p>
 <p>Package layout (built here):</p>
 <ul>
-<li><code>quillsync/crypto.py</code> -- vault key (scrypt), per-object
+<li><code>quillsync/crypto.py</code> – vault key (scrypt), per-object
 DEKs, AES-GCM AEAD, content-addressed blob hashes. The single audited
 crypto path every app shares. <code>quill_beacon/sync_crypto.py</code>
 re-exports it for back-compat.</li>
-<li><code>quillsync/protocol.py</code> -- <code>RecordStore</code>
+<li><code>quillsync/protocol.py</code> – <code>RecordStore</code>
 Protocol, <code>MergeFn</code>, <code>Commit</code>,
 <code>ManifestEntry</code>, <code>Conflict</code>,
 <code>default_merge</code>.</li>
-<li><code>quillsync/transports.py</code> -- <code>Transport</code> base,
+<li><code>quillsync/transports.py</code> – <code>Transport</code> base,
 <code>FolderTransport</code> (BYO folder, tier 2),
-<code>ServerTransport</code> (adapts the hosted server's bulk push/pull
+<code>ServerTransport</code> (adapts the hosted server’s bulk push/pull
 to the per-item Transport interface, tier 3).</li>
-<li><code>quillsync/engine.py</code> -- generic <code>SyncEngine</code>:
+<li><code>quillsync/engine.py</code> – generic <code>SyncEngine</code>:
 commit log, push, pull, topological apply, tombstones.</li>
-<li><code>quillsync/merge.py</code> -- <code>union_lists</code>,
+<li><code>quillsync/merge.py</code> – <code>union_lists</code>,
 <code>three_way_note</code> (line-based three-way merge with accessible
 conflict surfacing).</li>
-<li><code>server/</code> -- the reference hosted server (stdlib
+<li><code>server/</code> – the reference hosted server (stdlib
 http.server + sqlite) with magic-link auth (45.9), push/pull/hints, and
 <code>server/client.py</code>.</li>
 </ul>
 <p>Beacon is the exception (PRD 46.2): its adapter
 <code>BeaconRecordStore</code> and <code>beacon_merge</code> live here
 in <code>quill_beacon/sync.py</code>, wrapping <code>BeaconStore</code>
-for the framework. Every other app's adapter lives in its own repo.</p>
+for the framework. Every other app’s adapter lives in its own repo.</p>
 <h2
 id="462-the-integration-contract-what-each-companion-app-implements">46.2
 The integration contract (what each companion app implements)</h2>
@@ -3805,18 +4421,18 @@ The integration contract (what each companion app implements)</h2>
 <li>A <code>RecordStore</code> adapter:
 <code>get_record(id) -&gt; dict|None</code>,
 <code>put_record(id, dict)</code>, <code>delete_record(id)</code>. The
-dict is the app's own portable shape; the framework encrypts it without
+dict is the app’s own portable shape; the framework encrypts it without
 inspecting it. <code>None</code> means deleted/trashed and syncs as a
 tombstone.</li>
 <li>A <code>MergeFn</code>:
 <code>(local_record|None, remote_record) -&gt; (merged_record, conflicts)</code>.
 Built from <code>union_lists</code> and <code>three_way_note</code> for
 consistent merge behavior across apps.</li>
-<li>A vault key from the user's passphrase
+<li>A vault key from the user’s passphrase
 (<code>quillsync.derive_vault_key</code>), kept in sync across devices
 via the recovery kit (PRD 23.4).</li>
 <li>A transport: <code>FolderTransport</code> for BYO folder, or
-<code>ServerTransport</code> over the app's own HTTP client for the
+<code>ServerTransport</code> over the app’s own HTTP client for the
 hosted server.</li>
 </ol>
 <p>Then
@@ -3824,8 +4440,8 @@ hosted server.</li>
 gives the app commit/push/pull with no further framework knowledge.</p>
 <h2 id="463-integration-plans-planned-not-built-here">46.3 Integration
 plans (planned, not built here)</h2>
-<p>The per-app integration plans -- what each repo would add, which
-scopes it syncs, and how it sequences against Beacon -- are in
+<p>The per-app integration plans – what each repo would add, which
+scopes it syncs, and how it sequences against Beacon – are in
 <code>Docs/PLAN-quillsync-integration.md</code>. That document covers
 Quill (settings-as- a-repo + Vault scopes 1-3), Quill Radio
 (stations/favorites/recordings), Quill Cast (episodes/publishing state),
@@ -3841,15 +4457,15 @@ keeps the same JSON contract, so apps do not change when the server is
 upgraded. Auth is magic-link (45.9) for all apps; device tokens are
 scoped per app namespace so a Beacon device token cannot read Quill Cast
 objects (PRD 23.3 device revocation rotates per-app keys).</p>
-<h1 id="47-intelligent-assistance-local-heuristics-no-ai-required">47.
-Intelligent assistance (local heuristics, no AI required)</h1>
+<h2 id="47-intelligent-assistance-local-heuristics-no-ai-required">47.
+Intelligent assistance (local heuristics, no AI required)</h2>
 <p>Phase 5 adds on-device assists that run without any model or network
 call (<code>quill_beacon/assist.py</code>). They are opt-in menu
 actions, never background processing that changes the library without
 the user asking.</p>
 <ul>
 <li><strong>Suggest tags</strong> (Ctrl+Shift+T): term-frequency tag
-suggestions from the selected beacon's title and note,
+suggestions from the selected beacon’s title and note,
 stopword-filtered, excluding tags already present. The user invokes it;
 suggested tags are added in one action and announced.</li>
 <li><strong>Suggest relationships</strong> (Ctrl+Shift+K): ranks other
@@ -3857,11 +4473,11 @@ beacons by shared tags (weight 3), shared collections (2), and same
 domain (1), excluding self and already-related beacons. Top matches are
 linked with a reason note.</li>
 <li><strong>Summarize note</strong> (Ctrl+Shift+M): an extractive
-summary -- the highest- scoring sentences by word frequency, returned in
-original order -- shown in a dialog and announced.</li>
+summary – the highest- scoring sentences by word frequency, returned in
+original order – shown in a dialog and announced.</li>
 </ul>
-<h2 id="474-semantic-search----opt-in-hook-no-default-model">47.4
-Semantic search -- opt-in hook, no default model</h2>
+<h2 id="474-semantic-search--opt-in-hook-no-default-model">47.4 Semantic
+search – opt-in hook, no default model</h2>
 <p><code>assist.semantic_search</code> is a seam, not a feature: with no
 index registered it returns an empty list, so the capability is silent
 until the user turns it on. A <code>SemanticIndex</code> protocol
@@ -3869,6 +4485,5 @@ defines where an external embedding model plugs in; the framework ships
 no model and makes no network call. This keeps the free-first,
 local-first ethos (PRD 5, 33) while leaving a documented extension point
 for users who bring their own model.</p>
-</main>
 </body>
 </html>

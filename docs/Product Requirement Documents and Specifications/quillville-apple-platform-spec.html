@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QuillVille Apple Platform Specification</title>
+  <title>quillville-apple-platform-spec</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,29 +174,8 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="quillville-apple-platform-specification">QuillVille Apple
 Platform Specification</h1>
 <p><strong>Scope:</strong> The shared foundation for Quill Weather for
@@ -215,7 +194,7 @@ recorded in <code>docs/engineering/sync-engine-history.md</code> – see
 §4.1, which adopts the existing QuillSync engine rather than building a
 new one, and does not reopen the retired multi-provider OAuth plan.</p>
 <hr />
-<h2 id="1-why-this-document-exists">1. Why this document exists</h2>
+<h2 id="why-this-document-exists">1. Why this document exists</h2>
 <p>Two iOS apps are being built at once, and they are the first two of
 several. If each one invents its own settings store, its own sync, its
 own network policy, and its own way of turning a number into a sentence,
@@ -238,8 +217,7 @@ two excellent iOS apps possible without either app growing its own
 private infrastructure?</li>
 </ol>
 <hr />
-<h2 id="2-the-apple-repository-layout">2. The Apple repository
-layout</h2>
+<h2 id="the-apple-repository-layout">2. The Apple repository layout</h2>
 <pre><code>apple/
   QuillKit/                 SwiftPM package, the shared foundation
     Sources/
@@ -278,10 +256,10 @@ Ogg/Opus decoder for Quill Radio (its E-3), which must be audited and
 recorded in <code>docs/legal/THIRD_PARTY_NOTICES.md</code>.</li>
 </ul>
 <hr />
-<h2 id="3-quillnarrate-and-the-narration-golden-corpus">3. QuillNarrate
+<h2 id="quillnarrate-and-the-narration-golden-corpus">3. QuillNarrate
 and the narration golden corpus</h2>
 <p>This is the most important section in the document.</p>
-<h3 id="31-the-invariant-being-protected">3.1 The invariant being
+<h3 id="the-invariant-being-protected">3.1 The invariant being
 protected</h3>
 <p>The Windows weather renderer’s module docstring states the product’s
 whole thesis: pure functions that produce warm, fully spelled-out
@@ -293,7 +271,7 @@ strings and can never drift apart</strong>.</p>
 reimplements the phrasing, the two products slowly become two products.
 The user notices, because the sentence they memorized on the desktop is
 not the sentence the phone says.</p>
-<h3 id="32-the-rule">3.2 The rule</h3>
+<h3 id="the-rule">3.2 The rule</h3>
 <ul>
 <li><strong>NR-1.</strong> <code>QuillNarrate</code> is a <strong>parity
 port</strong>, not a reimplementation. For any given input it produces
@@ -311,7 +289,7 @@ review.</li>
 <strong>both</strong> implementations and to the corpus, in one commit.
 There is no “fix it on iOS first.”</li>
 </ul>
-<h3 id="33-the-corpus">3.3 The corpus</h3>
+<h3 id="the-corpus">3.3 The corpus</h3>
 <ul>
 <li><strong>NR-5.</strong>
 <code>apple/QuillKit/Fixtures/narration/*.json</code> holds
@@ -348,7 +326,7 @@ live” phrasing, the schedule list line with time zones, and the
 <code>compact_braille</code> variants.</li>
 </ul></li>
 </ul>
-<h3 id="34-where-new-wording-comes-from">3.4 Where new wording comes
+<h3 id="where-new-wording-comes-from">3.4 Where new wording comes
 from</h3>
 <ul>
 <li><strong>NR-8.</strong> iOS will produce sentences Windows cannot –
@@ -361,10 +339,9 @@ Windows grows the capability. This is how the ecosystem stays one
 product.</li>
 </ul>
 <hr />
-<h2
-id="4-quillsync--how-settings-and-identifications-track-either-way">4.
+<h2 id="quillsync-how-settings-and-identifications-track-either-way">4.
 QuillSync – how settings and identifications track either way</h2>
-<h3 id="41-adopt-do-not-invent">4.1 Adopt, do not invent</h3>
+<h3 id="adopt-do-not-invent">4.1 Adopt, do not invent</h3>
 <p>The engine already exists and is complete:
 <code>quill/core/sync/</code> provides a git-like append-only commit log
 of AES-GCM encrypted, content-addressed blobs under a scrypt-derived
@@ -396,11 +373,17 @@ module and no forcing function to retire either. Its new home also puts
 the framework permanently in <code>mypy</code>’s strict scope, which
 found and fixed two untyped boundaries on the way in.</li>
 </ul>
-<h3 id="42-the-three-transports">4.2 The three transports</h3>
+<h3 id="the-three-transports">4.2 The three transports</h3>
 <p>All three carry the <strong>identical</strong> encrypted commit log,
 so a user can switch transports, or run more than one, without
 re-pairing or losing history.</p>
 <table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr>
 <th>Tier</th>
@@ -451,7 +434,7 @@ implementation.</li>
 in either iOS app requires an account.</strong> A user who never signs
 in to anything gets every feature except push-hint latency.</li>
 </ul>
-<h3 id="43-cross-language-wire-format-parity">4.3 Cross-language
+<h3 id="cross-language-wire-format-parity">4.3 Cross-language
 wire-format parity</h3>
 <ul>
 <li><strong>SY-6.</strong> Swift <code>QuillSyncKit</code> and Python
@@ -483,11 +466,16 @@ backup that travels, and never derivable from anything the server holds.
 Losing it costs sync, not data – local data is always intact and always
 readable.</li>
 </ul>
-<h3 id="44-the-settings-scope-map">4.4 The settings scope map</h3>
+<h3 id="the-settings-scope-map">4.4 The settings scope map</h3>
 <p>Every setting in the ecosystem is classified into exactly one of
 three scopes. This map is the contract; an unclassified setting does not
 sync.</p>
 <table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
 <thead>
 <tr>
 <th>Scope</th>
@@ -541,7 +529,7 @@ iOS PRD (Quill Weather §11, Quill Radio §7) and are normative. This
 document owns the classification rules; the apps own their key
 lists.</li>
 </ul>
-<h3 id="45-what-windows-has-to-gain">4.5 What Windows has to gain</h3>
+<h3 id="what-windows-has-to-gain">4.5 What Windows has to gain</h3>
 <p>Sync is only bidirectional if the desktop is a peer, so the Windows
 side is part of this work, not a follow-on:</p>
 <ul>
@@ -565,9 +553,9 @@ bug is recoverable. Weather locations follow, then QUILL
 preferences.</li>
 </ul>
 <hr />
-<h2 id="5-quillpush--the-only-new-service">5. QuillPush – the only new
+<h2 id="quillpush-the-only-new-service">5. QuillPush – the only new
 service</h2>
-<h3 id="51-why-it-is-needed">5.1 Why it is needed</h3>
+<h3 id="why-it-is-needed">5.1 Why it is needed</h3>
 <p>The Windows product approximates push with a 30-second poll while an
 alert is active, and its own PRD records the NWWS relay as evaluated and
 deferred because it needed per-user credentials for a marginal gain. On
@@ -575,7 +563,7 @@ iOS the calculus is different in two ways: a phone cannot poll while it
 is asleep, and a phone is the device that is with the user when the
 tornado warning is issued. Push is not an optimization here; it is the
 feature.</p>
-<h3 id="52-the-privacy-preserving-design">5.2 The privacy-preserving
+<h3 id="the-privacy-preserving-design">5.2 The privacy-preserving
 design</h3>
 <ul>
 <li><strong>PU-1.</strong> The device registers only
@@ -604,7 +592,7 @@ polling, and manual refresh, and says so.</li>
 QUILL-operated service either iOS app talks to. It is inventoried in the
 network egress audit and disabled by Offline Mode.</li>
 </ul>
-<h3 id="53-shape">5.3 Shape</h3>
+<h3 id="shape">5.3 Shape</h3>
 <ul>
 <li><strong>PU-7.</strong> One process polls NWS alerts once per
 zone-set per interval – the cost is dominated by the NWS poll, not by
@@ -618,7 +606,7 @@ what the Windows PRD’s §17 always intended.</li>
 nothing to push.</li>
 </ul>
 <hr />
-<h2 id="6-the-shared-accessibility-contract">6. The shared accessibility
+<h2 id="the-shared-accessibility-contract">6. The shared accessibility
 contract</h2>
 <p><code>QuillA11y</code> exists so the contract is code, not prose that
 each app re-reads.</p>
@@ -654,7 +642,7 @@ naming what works, what is known-limited (Quill Radio’s §13), and how to
 report a defect.</li>
 </ul>
 <hr />
-<h2 id="7-shared-network-policy">7. Shared network policy</h2>
+<h2 id="shared-network-policy">7. Shared network policy</h2>
 <ul>
 <li><strong>NW-1.</strong> One chokepoint per platform, mirroring
 <code>quill/core/weather/_http.py</code>: HTTPS only with a hard failure
@@ -681,7 +669,7 @@ language and with what it receives, in an in-app privacy screen, in the
 Privacy Manifest, and in the ecosystem network egress audit.</li>
 </ul>
 <hr />
-<h2 id="8-shared-conventions-carried-over-from-the-windows-product">8.
+<h2 id="shared-conventions-carried-over-from-the-windows-product">8.
 Shared conventions carried over from the Windows product</h2>
 <p>These are non-negotiables that already govern the ecosystem and
 continue to:</p>
@@ -710,8 +698,8 @@ truth for product names.</li>
 and the third-party notices carried into the app bundles.</li>
 </ul>
 <hr />
-<h2 id="9-what-this-adds-to-the-quill-ecosystem">9. What this adds to
-the QUILL ecosystem</h2>
+<h2 id="what-this-adds-to-the-quill-ecosystem">9. What this adds to the
+QUILL ecosystem</h2>
 <p>A concise list of the work this specification creates outside the two
 app targets, so it can be scheduled rather than discovered:</p>
 <ol type="1">
@@ -757,13 +745,19 @@ shared accessibility statement (AX-6).</li>
 Everything else is either a port, a gate, or a correction to something
 already known to be wrong.</p>
 <hr />
-<h2 id="10-sequencing-across-the-two-apps">10. Sequencing across the two
+<h2 id="sequencing-across-the-two-apps">10. Sequencing across the two
 apps</h2>
 <p>The two apps share Phase 1, diverge through the middle, and converge
 again on sync. This ordering is chosen so that each shared component is
 built once, by whichever app needs it first, and is exercised by a real
 product before the second app depends on it.</p>
 <table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
 <thead>
 <tr>
 <th>Stage</th>
@@ -822,8 +816,8 @@ for both platforms, per SY-18. Weather locations follow only after
 favorites have survived real use.</li>
 </ul>
 <hr />
-<h2 id="11-open-questions-owned-by-this-document">11. Open questions
-owned by this document</h2>
+<h2 id="open-questions-owned-by-this-document">11. Open questions owned
+by this document</h2>
 <ol type="1">
 <li><strong>scrypt in Swift</strong> – select and audit the
 implementation, pin test vectors against the Python output, and confirm
@@ -854,7 +848,7 @@ build exactly what the two apps need, and extract further only when a
 third app arrives.</li>
 </ol>
 <hr />
-<h2 id="12-related-documents">12. Related documents</h2>
+<h2 id="related-documents">12. Related documents</h2>
 <ul>
 <li><code>standalone/weather/docs/prd-ios.md</code> – Quill Weather for
 iOS</li>
@@ -876,6 +870,5 @@ decisions this document is consistent with</li>
 <li><code>docs/release/acceptance/app-weather.md</code> – the existing
 literal-speech acceptance document that seeds the narration corpus</li>
 </ul>
-</main>
 </body>
 </html>

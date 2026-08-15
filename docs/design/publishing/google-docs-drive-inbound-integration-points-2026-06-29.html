@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Google Docs and Drive: Inbound Integration Points</title>
+  <title>google-docs-drive-inbound-integration-points-2026-06-29</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,29 +174,8 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1 id="google-docs-and-drive-inbound-integration-points">Google Docs
 and Drive: Inbound Integration Points</h1>
 <p>Date: 2026-06-29 Source of record:
@@ -210,7 +189,7 @@ lit up. Building real OAuth + Drive + Docs network code is deliberately
 out of scope for this pass because it cannot be exercised safely or
 tested unattended, and because the standing instruction is to not light
 up sending content to Google.</p>
-<h2 id="1-in-scope-vs-out-of-scope-for-the-inbound-pass">1. In scope vs
+<h2 id="in-scope-vs-out-of-scope-for-the-inbound-pass">1. In scope vs
 out of scope for the inbound pass</h2>
 <p>In scope (read-only):</p>
 <ul>
@@ -232,8 +211,8 @@ separate approval, mirroring how WordPress send stays locked):</p>
 (PRD 9.2).</li>
 <li>Comment/suggestion creation or resolution (PRD 5, Level B).</li>
 </ul>
-<h2 id="2-why-this-is-its-own-subsystem-not-a-publishing-provider">2.
-Why this is its own subsystem, not a publishing provider</h2>
+<h2 id="why-this-is-its-own-subsystem-not-a-publishing-provider">2. Why
+this is its own subsystem, not a publishing provider</h2>
 <p>The WordPress provider is a REST + application-password model that
 fits the <code>publishing_providers</code> framework. Google Docs is
 materially different:</p>
@@ -251,7 +230,7 @@ surface and its own feature flag, reusing QUILL’s cross-cutting
 primitives (command registry, feature gating, credential storage, egress
 audit, task manager) rather than the
 <code>PublishingProviderClient</code> contract.</p>
-<h2 id="3-feature-gating-proposed">3. Feature gating (proposed)</h2>
+<h2 id="feature-gating-proposed">3. Feature gating (proposed)</h2>
 <ul>
 <li>Add <code>future.google_docs</code> to
 <code>quill/core/feature_catalog.py</code> with
@@ -266,8 +245,8 @@ commands.</li>
 them unreachable (the same mechanism that keeps
 <code>publishing.*</code> dark today).</li>
 </ul>
-<h2 id="4-inbound-command-and-menu-embed-map">4. Inbound command and
-menu embed map</h2>
+<h2 id="inbound-command-and-menu-embed-map">4. Inbound command and menu
+embed map</h2>
 <p>Per PRD 9.1, add a File submenu (built only when
 <code>future.google_docs</code> is enabled), with handlers registered in
 the command registry alongside the existing <code>publishing.*</code>
@@ -294,7 +273,7 @@ in Google Docs (web).</li>
 <code>google.refresh</code>, …) are intentionally not registered in this
 pass. When they are, they must land behind the send approval, never as
 part of the inbound surface.</p>
-<h2 id="5-load-into-editor-flow-mirrors-the-wordpress-inbound-shape">5.
+<h2 id="load-into-editor-flow-mirrors-the-wordpress-inbound-shape">5.
 Load-into-editor flow (mirrors the WordPress inbound shape)</h2>
 <ol type="1">
 <li><code>google.open_from_*</code> resolves an account + document
@@ -317,7 +296,7 @@ shows the read-only state form from PRD 9.3 (for example
 <code>requiredRevisionId</code>/<code>targetRevisionId</code> write path
 is created. The shadow snapshot and operation journal described in the
 PRD belong to the later sync (send) phase and are not built here.</p>
-<h2 id="6-safety-requirements-for-the-eventual-implementation">6. Safety
+<h2 id="safety-requirements-for-the-eventual-implementation">6. Safety
 requirements for the eventual implementation</h2>
 <ul>
 <li>OAuth scopes must be the minimum read scopes for the inbound slice;
@@ -333,7 +312,7 @@ Google passwords (PRD 5 non-goal) and never log tokens (respect
 <li>Gate the whole subsystem under Safe Mode in addition to the feature
 flag, since it is a network + credential feature.</li>
 </ul>
-<h2 id="7-suggested-first-slice-when-approved">7. Suggested first slice
+<h2 id="suggested-first-slice-when-approved">7. Suggested first slice
 (when approved)</h2>
 <ol type="1">
 <li><code>future.google_docs</code> flag (locked off) +
@@ -350,6 +329,5 @@ menu built only when the flag is enabled.</li>
 </ol>
 <p>Send (new/save-copy/sync) remains a separate, later, explicitly
 approved phase.</p>
-</main>
 </body>
 </html>

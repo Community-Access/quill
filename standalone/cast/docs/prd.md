@@ -32,6 +32,11 @@ In scope (all reused from upstream):
 - The full Podcast Manager: pinned views (Favorites, New Episodes, Continue Listening), Inbox with per-show filing memory, Play Queue with keyboard reordering, Search Everywhere, filters.
 - Playback: transport, chapters, volume boost, sleep-timer-safe restore, reliable position saves.
 - Feed-provided transcripts (Podcasting 2.0; VTT/SRT/JSON), cached; episode notes with timestamp jump.
+- **Bulk actions across the Inbox** (§14): File N to Inbox Folder, Add N to Playlist, Remove N Downloaded Copies -- alongside the queue/download/played trio 1.1.0 shipped.
+- **The `.opml` file association** (§14): an opt-in installer task plus a path accepted on the command line, so a subscription list exported from another app opens by double-clicking it.
+- **Hold-to-scan at 4x** (§14): Shift+Right held scans forward and releases back to the exact speed you were at, announced at both edges.
+- **Continue Listening** (QUILL PRD §5.84i): one list of everything started and unfinished, across every provider the running app has.
+- **The rest of the Podcasting 2.0 namespace** (§13): people, soundbites, live items, podroll, funding, location and alternate enclosures, read from the feed and surfaced through **About This Episode...**. Soundbites additionally feed the chapter cascade as an authored tier.
 - Local podcasts and watched folders (stored outside the synced data folder by construction).
 - Downloads: queue, pause/resume all, Always Sync, auto-trim silence, normalize loudness, and **auto-reconnect on a dropped connection** (configurable attempts/wait, mirroring Quill Radio's recording reconnect).
 - System tray presence with podcast controls, plus an opt-in preference that makes Alt+F4 minimize to the tray instead of closing (the titlebar X and Exit keep the configured close behavior).
@@ -214,5 +219,330 @@ player rather than reimplemented: `Z X C V B`, arrows to seek, `J`, `Ctrl+J`,
 finishing a mid-queue episode now continues from the slot after it instead of
 jumping back to the queue head, and chapter auto-skip carries a loop guard so
 a seek's own position report cannot re-trigger the skip that caused it.
+
+**Onboarding and one-shot tips** (`core/podcasts/onboarding.py`,
+`ui/podcasts/first_run_dialog.py`, persisted on `PodcastLibrary.onboarding`).
+
+**Three screens, not seven.** Welcome, add your first podcast, you're set. Cast
+has no account, no tracker and no cloud, so it does not need the privacy screens
+a phone app needs -- and a first-run flow that pages somebody through consent
+they never gave anything is how people learn to dismiss dialogs unread. The
+screens are a **read-only text area**, arrowable and copyable, rather than a wall
+of labels: somebody who missed a sentence goes back over it at their own pace
+instead of asking the app to repeat itself. **Skip is a first-class button**, and
+skipping counts as completed -- it was a choice, and re-showing the flow would be
+overriding it with a guess. `needs_first_run` is false for anybody who already
+has shows, however they got them (OPML import, restored backup, upgrade):
+explaining how to add a first podcast to somebody with two hundred says nobody
+checked.
+
+**Tips are one sentence, once ever.** `TIPS` is a reviewable dict rather than
+strings at call sites, so the whole set can be audited in one place. Four rules:
+once ever (a tip that reappears is an interruption; one that appears once is a
+fact you now know); never modal and never focus-stealing -- they ride the ordinary
+announcement path, so speech and braille both get them; only where they change
+what somebody can *do*, never to explain a button whose label already does; and
+**off in one place, permanently**, because somebody who does not want them should
+not have to dismiss each one to discover that. `tip_for` and `mark_seen` are
+deliberately separate calls, so a tip that could not actually be delivered is not
+recorded as shown.
+
+State is **a set of ids, not a version stamp**: a tip added next year must fire
+for somebody who has used Cast for a year, and a version number would say they
+had already seen it. An unknown id from a newer build is kept rather than
+dropped, so moving between builds does not replay tips.
+
+**Prebuffering the next queue item** (`core/podcasts/prebuffer.py`,
+`PodcastSettings.prebuffer_next`). Sample-accurate gapless playback is a property
+of the *decoder* and neither engine offers it; what is achievable, and what
+actually removes the wait, is **having the next episode's first seconds on disk
+before the current one ends** -- the switch then costs an open and a seek rather
+than a network round trip and a buffer fill.
+
+A pure policy function with every input passed in (`plan`), so it is testable
+without a player, a queue or a network: the caller knows what is playing and what
+is next, this knows when. Four refusals carry the design: **off unless asked for**
+(speculative bytes are paid for by the megabyte on a metered connection), never
+for an episode already local (there is nothing to gain), never before the final
+`LEAD_MS` (thirty seconds -- longer than a stream takes to open on a poor line,
+short enough that skipping around does not trigger it repeatedly), and never for
+a source with no known length, because a live item never becomes "nearly over" so
+there is no cue to fire on. What it fetches is a **cache** capped at
+`PREBUFFER_BYTES`, landing in the playback cache rather than the library, and a
+prune may take it. It announces nothing: a player narrating its own buffering is
+the wrong kind of feedback.
+
+**Chapter inference: scored answers, a budget, and titles that say what a
+section is about** (`core/podcasts/chapter_scoring.py`, `chapter_cascade.py`,
+`chapter_naming.py`, `show_note_chapters.py`, `inference_budget.py`).
+
+*The five gaps this closes, in the order they mattered.*
+
+1. **Nothing named anything.** Tier 3 titled a section with its literal opening
+   words; tier 4 titled them `Section 1..N`. Neither says what the part is
+   *about*, which is the entire point of a chapter list. `chapter_naming`
+   closes it with **one batched, text-only call** that names every section at
+   once -- never one call per chapter, which would be N times the cost, N times
+   the latency and N chances to leave a hole in the list. A section the model
+   cannot summarise gets a single hyphen and keeps the title it had, because a
+   plausible invention is worse than an honest gap.
+2. **Tier 3 never fetched a transcript.** It read the cache and gave up when it
+   was cold, so an episode publishing a perfectly good `podcast:transcript` URL
+   nobody had opened fell straight through to the slow audio scan. The best free
+   answer available was routinely skipped; the budget now allows the fetch.
+3. **Every knob was a hard-coded constant and none was reachable.** Replaced by
+   **one control with three values** -- Quick, Thorough, Deep -- from which every
+   constant derives (`InferenceBudget`). Not because the knobs do not matter, but
+   because *nobody can reason about "silence threshold -35 dB"* and everybody can
+   reason about how long they are willing to wait. The advanced values stay
+   adjustable in a settings file and are deliberately absent from the UI: the
+   failure mode of exposing them is somebody nudging `noise_db` once and quietly
+   getting worse chapters forever.
+4. **First answer won, with no idea whether it was any good.** Now every tier
+   returns a scored `ChapterAnswer`, the cascade runs every tier the budget
+   allows and **keeps the best**, and a low-confidence segmentation no longer
+   suppresses a better scan. Below `MIN_USEFUL_CONFIDENCE` the honest answer
+   stays "no chapters could be found". **Authored always beats inferred** --
+   published, file tags, show notes short-circuit outright, because a person
+   wrote those titles and no heuristic produces titles worth more.
+5. **A chapter was a start and a title.** It now carries `end_ms` (so "3 of 12,
+   four minutes long" is sayable and the last chapter has an honest end),
+   `source` **per chapter** rather than only per set, `confidence`, and `reason`
+   in words -- which is what makes the *"How were these found?"* report possible
+   at all.
+
+*The show-notes tier is the biggest unclaimed win in the whole cascade*, and it
+costs nothing: a publisher who wrote timestamps has already done the work, and
+the words beside each one are an **authored title**. `show_note_chapters` reads
+what people actually write -- `00:00`, `1:02:03`, `12.34`, `1h05m`, bracketed,
+bulleted and numbered forms, the timestamp at the **end** of the line, and
+**HTML**, since show notes usually arrive as markup -- and refuses anything that
+does not look like a chapter list (out of order, one mark, starting an hour in,
+running past the end), because a page that merely contains times is not a
+chapter list and returning it would be a confident wrong answer.
+
+*Sampling is a cost-avoidance measure for transcription, never a quality
+choice.* Where the text is already in hand -- a published transcript, or one Deep
+just produced -- the section's **whole** text names it, because reading less would
+save nothing and lose accuracy. Only where naming would otherwise mean
+transcribing audio nobody asked to pay for does it sample, and even then the
+sample is the opening **plus a probe from the middle**: a section's first minute
+is very often the tail of the previous topic, an ad read or throat-clearing, and
+naming a chapter after what the host was just finishing is exactly the
+confident-but-wrong output rule A-10 exists to prevent.
+
+*Nothing may interrupt.* The work runs in the background with a real cancel; a
+cheap tier answering first never blocks a better one from replacing its answer;
+**a published list is never overwritten**; the menu item is *disabled and
+renamed* during a scan (`working_label`) so a screen reader reads the state as
+part of the item rather than having to discover it; opening Chapters mid-scan
+says so and returns rather than offering a spinner; and completion is announced
+politely, once, in one short sentence.
+
+*Settings, global and per show* (`PodcastSettings.chapters_*`, resolved through
+`effective_settings` like everything else): when to run at all (off / when
+downloaded / always), the effort, each individual tier, whether to name sections
+with a model, which speech engine, and whether to announce. **A tier switched off
+is disabled, not deprioritised** -- somebody who says "never scan the audio" has
+said something specific and must be obeyed at any effort level -- and the whole
+feature is switchable off in one place, because somebody who does not want
+inferred chapters should never hear about them again.
+
+**Inbox opt-out mode** (`PodcastSettings.inbox_mode`, `inbox.in_inbox`). The
+Inbox was opt-in only -- a show is in it because it was marked. `inbox_mode`
+adds `"exclude"`: every show is in the Inbox except the ones marked, which is a
+materially different object over a 1,300-show library and the shape somebody
+with a large subscription list actually wants.
+
+**One flag, read two ways.** The existing `PodcastShow.route_to_inbox` is
+reused rather than a second per-show field being added, because two fields can
+disagree and a listener would have no way to tell which won. Every surface that
+asks "is this show in the Inbox?" goes through `inbox.in_inbox`, so the listing,
+the trim sweep, the republish sweep and auto-download can never diverge on what
+the mark means. The per-show menu label and the spoken confirmation both change
+with the mode, since "keep this one out" and "put this one in" are not the same
+instruction.
+
+**Global, not per show**, deliberately: the mode answers *which shows*, and a
+per-show mode would be a question about a question. An unknown stored value
+reads as `"include"` -- the direction that can only ever show *fewer* shows than
+expected, never sweep a whole library in by accident. And the **Inbox caps that
+shipped in 1.1.0 came first for this reason**: an opt-out Inbox is only
+survivable because they exist.
+
+## 12. Transcripts: the foundation, and the surface that followed
+
+Recorded together so that "built" and "usable" are never confused. This section
+was written when only the first half existed; the reading surface has since
+shipped, and the heading said otherwise for longer than it should have.
+
+**Transcripts keep their timings** (`quill/core/podcasts/transcripts.py`).
+Cast could already fetch a feed-provided transcript, read it, cache it for
+offline search, and open it as a QUILL document -- and the reader threw the
+timings away, which was exactly right for "open this as a document" and useless
+for anything that follows along. `TranscriptCue`, `parse_transcript_cues`,
+`cues_to_text` and a binary-search `cue_at` now parse WebVTT, SubRip,
+Podcasting 2.0 JSON **and** YouTube's `json3` (which arrives free with every
+YouTube resolve in Quill Radio and was being discarded). `parse_transcript` is
+redefined as the timed form with the timings removed, so there is one reader
+rather than two that drift apart, and Cast's existing transcript tests are the
+regression gate and pass untouched.
+
+**And the reading surface now exists**: `quill/ui/transcript_reader.py`, shared
+with Quill Radio rather than owned by either app, reached from **Read
+Transcript...** on the episode context menu (`ui/podcasts/transcript_actions.py`,
+extracted from `manager_phase4.py`, which was at its GATE-11 ceiling).
+
+A read-only `wx.TextCtrl` on purpose: arrow keys, word and line movement,
+selection, the screen reader's own review cursor and Find all come free and
+behave identically to everywhere else, where a custom list would have removed
+them and returned nothing. The timings sit alongside the text rather than in it
+-- `line_starts` and `cue_index_for_offset` map character offsets to cues and
+back, which is what lets Enter on any line seek correctly however the caret got
+there (arrowed, clicked, searched, or moved by the review cursor).
+
+Four rules it keeps: **following is opt-in and reading wins** (with Follow off,
+playback never moves the caret; with it on, the caret moves and says nothing,
+because a position announcement per line would be unusable); **every position is
+spoken as words** through `bounded_playback_ui.spoken_duration`, never as a
+timecode; **a control that cannot work says why** (jump needs a seekable player,
+and follow and jump are offered only while *this* episode is the one playing);
+and **saving keeps the timings** -- `cues_to_vtt` and `cues_to_srt` are asserted
+to round-trip through the parser, not merely to serialise. An automatic caption
+track is announced as automatic in the window's heading.
+
+## 13. The rest of the Podcasting 2.0 namespace
+
+`core/podcasts/feed_reader.py` read **`podcast:chapters`** and
+**`podcast:transcript`** and discarded everything else in the namespace --
+tags real shows already publish, sitting in bytes Cast had already downloaded
+and parsed. All of it is now read (`core/podcasts/namespace_tags.py`), kept with
+the episode and the show, and surfaced through **About This Episode...**
+(`core/podcasts/extras.py` for the rows and the words,
+`ui/podcasts/episode_extras_dialog.py` for the window,
+`ui/podcasts/extras_command.py` for the three actions a row can take).
+
+What each tag is for, and the decision that goes with it:
+
+- **`podcast:person`** -- *who is on this?* Hosts, co-hosts and guests, with role
+  and link. A host belongs to the podcast and a guest belongs to the episode, and
+  the People list says which is which rather than flattening the two: that
+  distinction is what somebody opened the list for. Every row is a whole sentence
+  ("Bob Brown, guest (this episode)"), never a Name column and a Role column.
+- **`podcast:soundbite`** -- *what is the good bit?* A publisher-marked highlight
+  with a start and a length. **This is a chapter marker in all but name**, and it
+  is the one that changed the chapter work (below).
+- **`podcast:liveItem`** -- *is this on right now?* A live stream carried inside a
+  podcast feed. It plays through the ordinary podcast transport rather than a
+  second one of its own, so pause and volume are the same keys wherever the audio
+  came from. Channel-level, but read from anywhere in the feed, because
+  publishers write them among the episodes.
+- **`podcast:podroll`** -- *what else does this show recommend?* Feed addresses
+  the host vouches for, which beats any recommendation this app could compute.
+  Subscribing goes through the same path Add by Feed URL uses, so the show
+  arrives with its real name, artwork and episodes rather than as a bare address.
+  Nothing is resolved until somebody chooses to subscribe: resolving is a network
+  act and `namespace_tags.py` never performs one.
+- **`podcast:funding`** -- *how do I support this?* Opened in the browser and
+  processed no further. Listening stays free and QUILL is not buying anything, so
+  this does not touch the cost rule.
+- **`podcast:location`** -- *where is this about?* Text only. No map is offered.
+- **Alternate enclosures** -- a second audio source for the same episode, which is
+  what a low-bandwidth or lossless option looks like in a feed.
+
+**Value-for-value / cryptocurrency streaming remains out of scope**, deliberately
+and permanently: Cast can claim meaningful Podcasting 2.0 support without it.
+
+### 13.1 Soundbites as an authored chapter tier
+
+A soundbite is an authored mark -- a person chose the moment and wrote its title
+-- so it belongs in the chapter cascade rather than in a side list nothing
+consults. It is added as `SOURCE_SOUNDBITES` in `chapter_scoring.py` (base
+confidence 0.85, inside `is_authored`) and as the last of the authored tiers in
+both `chapter_sources.chapter_cascade` and the scored `chapter_cascade.run`.
+
+Last of the authored tiers, and the reason is the whole design: **a highlight is
+not a partition.** Two soundbites in an hour answers *what is the good bit*
+completely and *how is this laid out* barely at all. So they win only when
+nothing better was published; each chapter keeps the soundbite's own `end_ms`
+rather than running on to the next mark, so the silence between two highlights
+stays silence instead of being absorbed into whichever came first; and the source
+is labelled **Moments this podcast marked**, so a set of highlights is never
+mistaken for a chapter list covering the episode.
+
+One exception to the shape of the other tiers: the floor is **one** mark, not
+two. A single marked moment is still a place worth jumping to, and the honest
+label carries the meaning.
+
+### 13.2 Reading, persistence and refusals
+
+Read with regular expressions over the raw item fragment, matching how
+`chapters` and `transcript` are already read: the feed parser in use does not
+surface unknown namespaces, a second full XML parse of every feed on every
+refresh is real cost across a large library, and each of these is a shallow
+attribute grab. Every parser is tolerant -- a malformed tag yields nothing rather
+than raising, because one bad tag must never cost somebody their whole feed.
+
+The channel half is read from the feed text **before the first item**, so an
+episode's guests are never credited to the podcast itself. Tags are persisted
+with the episode and the show, and **only when non-empty**, so a library of feeds
+that publish none of this pays nothing for the feature existing. A refresh brings
+in a credit added after publication; a feed that stops carrying them does **not**
+erase what it already said, because an empty replacement is far more often a
+partial feed than a retraction.
+
+`About This Episode...` speaks a one-line summary before the window opens, builds
+a tab only when it has something in it, and still opens (saying so) when a
+podcast published none of it: *this podcast publishes no extra details* and
+*QUILL Cast cannot read them* are very different facts, and a greyed-out menu
+item would leave the listener unable to tell which. The action button is named
+from the highlighted row and disabled with *Nothing to Open* where there is
+nothing to do -- a control that silently declines is worse than one not offered.
+
+## 14. Triage, hand-off, and scanning
+
+Three small things, each removing a reason somebody works around the app.
+
+**Bulk actions reached the Inbox.** The episode list has allowed a multiple
+selection since 1.0 and gained bulk queue/download/played in 1.1.0, but the one
+surface where selecting forty episodes is the *normal* thing to do -- the Inbox,
+whose entire job is triage -- had only single-episode filing. **File N Episodes
+to Inbox Folder...** asks once which folder and files the lot; being asked the
+same question forty times is how a bulk action stops being one. The
+remembered-default rule is unchanged and still per show, so filing thirty
+episodes of one podcast sets its default once and says so once. **Add N
+Episodes to Playlist...** and **Remove N Downloaded Copies** came with it;
+removing downloads never removes episodes, because freeing space and
+unsubscribing are different things to want. The shared
+`retention.remove_downloaded_copy` is now the one implementation, so the single
+and bulk paths cannot drift.
+
+**The `.opml` association** (`core/podcasts/opml_cli.py`, an opt-in
+`[Tasks]`/`[Registry]` pair in the installer). An OPML file is how one podcast
+app hands its whole subscription list to another, and Cast could only receive
+one through a file picker inside a dialog inside a menu. The task is
+**unchecked** by default -- taking over a file type without being asked is how
+an installer earns a reputation -- and uninstalling gives the extension back
+rather than leaving a dead handler. Only `.opml` is claimed, though the command
+line also accepts `.xml`: that extension belongs to no single application and
+claiming it would break unrelated files. The import is deferred with `CallAfter`
+so the window exists before a modal appears over it, or the app looks like it
+failed to start.
+
+**Hold-to-scan** (`core/podcasts/scan_hold.py`,
+`ui/podcasts/scan_hold_control.py`). Skipping in fixed jumps answers "get me
+past this"; it does not answer "where does this bit end?", which needs to hear
+the audio going past. Shift+Right held runs at 4x -- fast enough to cover a
+minute in fifteen seconds, slow enough that speech is still recognisable -- and
+release restores the *exact* prior speed, so somebody who listens at 1.5 gets
+1.5 back. Both edges are announced, because a player stuck at 4x with no
+announcement is indistinguishable from a broken one.
+
+**Release is inferred from the auto-repeat stopping, not from a key-up event.**
+A key-up can be missed outright when focus moves, a dialog opens, or the window
+is deactivated mid-hold, and every one of those would leave playback at 4x
+forever. Repeats that stop arriving cannot fail that way; the key-up is still
+honoured when it comes, so the drop back is immediate rather than up to the
+grace window late. Losing the window and closing the app both end a scan too.
 
 See `CHANGELOG.md` for the full, versioned history.

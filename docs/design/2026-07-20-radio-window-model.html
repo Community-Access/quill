@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Radio window model: modeless frames + persistent menu bar +
-numbered Window menu</title>
+  <title>2026-07-20-radio-window-model</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -240,31 +239,10 @@ numbered Window menu</title>
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
 <h1
-id="radio-window-model-modeless-frames--persistent-menu-bar--numbered-window-menu">Radio
+id="radio-window-model-modeless-frames-persistent-menu-bar-numbered-window-menu">Radio
 window model: modeless frames + persistent menu bar + numbered Window
 menu</h1>
 <p>Status: planned (deferred behind runtime completion). Decided
@@ -366,7 +344,7 @@ resumed)</h2>
 <ol type="1">
 <li>Land <code>window_manager.py</code> + unit tests (pure,
 gate-safe).</li>
-<li>wx mixin: builds the shared menu bar incl. a dynamic “&amp;Window”
+<li>wx mixin: builds the shared menu bar incl. a dynamic “&amp;Window”
 menu from <code>registry.items()</code>; installs an accelerator table
 (Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9); on Show, <code>register</code>;
 on Close, <code>unregister</code> + raise the previous window.</li>
@@ -389,6 +367,5 @@ rebaseline as needed.</li>
 <li>Modeless surfaces can now co-exist; guard against opening duplicates
 (focus the existing window instead of opening a second).</li>
 </ul>
-</main>
 </body>
 </html>

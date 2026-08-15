@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Scribe for Documents — QUILL Integration (Draft Spec)</title>
+  <title>scribe</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -174,30 +174,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content">
-<h1 id="scribe-for-documents--quill-integration-draft-spec">Scribe for
+<h1 id="scribe-for-documents-quill-integration-draft-spec">Scribe for
 Documents — QUILL Integration (Draft Spec)</h1>
 <ul>
 <li>Status: Draft / Proposed</li>
@@ -211,11 +190,11 @@ OAuth)</li>
 <blockquote>
 <p>Purpose: a complete answer to Matt’s questions and a concrete,
 accessible, QUILL-native integration design he and Mike can build
-against quickly. Scribe turns inaccessible documents (e.g. image-only
+against quickly. Scribe turns inaccessible documents (e.g. image-only
 PDFs) into accessible formats by streaming + converting them; this
 brings that power into QUILL without leaving the editor.</p>
 </blockquote>
-<h2 id="1-matts-proposal-restated">1. Matt’s proposal (restated)</h2>
+<h2 id="matts-proposal-restated">1. Matt’s proposal (restated)</h2>
 <p>Three REST endpoints:</p>
 <ol type="1">
 <li><strong>Upload a new document</strong> → returns a URL QUILL opens
@@ -229,10 +208,9 @@ formats already converted.</li>
 <p>Auth: <strong>OAuth</strong> (Pneuma accounts have no passwords;
 web-UI auth, SSO-ready). Matt asks whether QUILL already uses OAuth, and
 what features/UX we want.</p>
-<h2 id="2-answers-to-matts-questions">2. Answers to Matt’s
-questions</h2>
+<h2 id="answers-to-matts-questions">2. Answers to Matt’s questions</h2>
 <h3
-id="21-are-you-already-using-oauth-for-any-of-the-other-services-you-support">2.1
+id="are-you-already-using-oauth-for-any-of-the-other-services-you-support">2.1
 “Are you already using OAuth for any of the other services you
 support?”</h3>
 <p><strong>Yes.</strong> QUILL already implements a complete OAuth
@@ -259,7 +237,7 @@ authorization + token endpoints, client registration (or a
 pre-registered QUILL client id), supported redirect URIs (loopback?
 OOB?), scopes, PKCE support, and refresh-token behavior.</p>
 <h3
-id="22-did-you-have-specific-ideas-about-features-and-how-it-should-work">2.2
+id="did-you-have-specific-ideas-about-features-and-how-it-should-work">2.2
 “Did you have specific ideas about features and how it should
 work?”</h3>
 <p>Yes — see §3 (UX), §4 (the three endpoints mapped to QUILL flows),
@@ -270,10 +248,9 @@ editable documents, and an <strong>“open this inaccessible PDF with
 Scribe”</strong> offer at the moment the user hits a document QUILL
 can’t read well. All optional, consent-gated, and private-by-default (a
 document only leaves the machine on an explicit action).</p>
-<h2 id="3-accessible-ux-quill-native">3. Accessible UX
-(QUILL-native)</h2>
+<h2 id="accessible-ux-quill-native">3. Accessible UX (QUILL-native)</h2>
 <ul>
-<li><strong>Surface:</strong> a small set of actions, e.g. under
+<li><strong>Surface:</strong> a small set of actions, e.g. under
 <strong>File → Convert with Scribe</strong> (or the AI/Documents area),
 plus a context offer when opening a low-text PDF.</li>
 <li><strong>Sign in once:</strong> “Connect Scribe…” runs the OAuth flow
@@ -290,9 +267,9 @@ that the document will be sent to Scribe (Pneuma) for conversion, and
 asks once (remembered per choice). Disabled in <strong>Safe
 Mode</strong>; audited in the network-egress inventory (GATE-9).</li>
 </ul>
-<h2 id="4-the-three-endpoints--quill-flows">4. The three endpoints →
-QUILL flows</h2>
-<h3 id="41-upload-endpoint-1--send-to-scribe">4.1 Upload (endpoint 1) —
+<h2 id="the-three-endpoints-quill-flows">4. The three endpoints → QUILL
+flows</h2>
+<h3 id="upload-endpoint-1-send-to-scribe">4.1 Upload (endpoint 1) —
 “Send to Scribe”</h3>
 <p>From the current document/file (or a chosen file), QUILL uploads it,
 then <strong>opens the returned streaming URL</strong> in the default
@@ -300,14 +277,14 @@ browser so the user watches the stream and picks conversions in Scribe’s
 accessible web UI. QUILL records the returned document id so it can
 later list/download results. Large uploads run on a worker thread with
 cancelable progress.</p>
-<h3 id="42-list-endpoint-2--my-scribe-documents">4.2 List (endpoint 2) —
-“My Scribe Documents”</h3>
+<h3 id="list-endpoint-2-my-scribe-documents">4.2 List (endpoint 2) — “My
+Scribe Documents”</h3>
 <p>An accessible list (native list control) of the account’s documents,
 each row showing title/date, <strong>already-converted formats</strong>,
 and an <strong>“Open in Scribe”</strong> link (the per-document web-UI
 URL) for requesting more. Selecting a converted format offers
 <strong>Download into QUILL</strong> (§4.3).</p>
-<h3 id="43-download-endpoint-3--open-the-converted-file-in-quill">4.3
+<h3 id="download-endpoint-3-open-the-converted-file-in-quill">4.3
 Download (endpoint 3) — “Open the converted file in QUILL”</h3>
 <p>QUILL downloads a chosen converted output and <strong>opens it as a
 new document</strong> (Markdown/HTML/RTF/DOCX/text all already supported
@@ -315,7 +292,7 @@ by QUILL’s readers), so the user goes straight from “inaccessible
 source” to “editable, accessible text” without leaving QUILL. Downloads
 are verified (size/type) and land in the user data dir or a chosen
 path.</p>
-<h2 id="5-magical-possibilities-where-this-gets-amazing">5. Magical
+<h2 id="magical-possibilities-where-this-gets-amazing">5. Magical
 possibilities (where this gets amazing)</h2>
 <ul>
 <li><strong>Inaccessible-PDF rescue, in place:</strong> when the user
@@ -335,7 +312,7 @@ action.</li>
 a conversion requested on the web later is one click to pull into
 QUILL.</li>
 </ul>
-<h2 id="6-open-questions-for-pneuma-to-finalize-the-build">6. Open
+<h2 id="open-questions-for-pneuma-to-finalize-the-build">6. Open
 questions for Pneuma (to finalize the build)</h2>
 <ol type="1">
 <li><strong>OAuth endpoints + client:</strong> authorization URL, token
@@ -365,7 +342,7 @@ QUILL can message them accessibly and back off.</li>
 <li><strong>Account display:</strong> is there a “who am I” call so
 QUILL can show the connected account name?</li>
 </ol>
-<h2 id="7-quill-integration-points-for-our-side">7. QUILL integration
+<h2 id="quill-integration-points-for-our-side">7. QUILL integration
 points (for our side)</h2>
 <ul>
 <li>Auth/flow: reuse the OAuth pattern in
@@ -386,7 +363,7 @@ QUILL’s existing document readers.</li>
 only on an explicit action), connection state surfaced and
 revocable.</li>
 </ul>
-<h2 id="8-phased-plan">8. Phased plan</h2>
+<h2 id="phased-plan">8. Phased plan</h2>
 <ul>
 <li><strong>Phase 1 — Connect + Send + Open result.</strong> OAuth
 connect, “Send to Scribe” (upload + open streaming URL), “My Scribe
@@ -397,11 +374,10 @@ chaining.</li>
 <li><strong>Phase 3 — Automation.</strong> Watch-folder auto-convert;
 remembered preferences.</li>
 </ul>
-<h2 id="9-privacy--scope">9. Privacy &amp; scope</h2>
+<h2 id="privacy-scope">9. Privacy &amp; scope</h2>
 <p>Optional and off until connected; documents are uploaded only on an
 explicit, consented action; disabled in Safe Mode; all egress audited.
 Windows-primary, macOS-supported (the OAuth + credential patterns
 already work on both).</p>
-</main>
 </body>
 </html>

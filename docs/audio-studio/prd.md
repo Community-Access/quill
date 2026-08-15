@@ -657,3 +657,42 @@ requirement, not a layer.
 Change history lives in CHANGELOG.md. Upstream behavior of record: QUILL PRD
 sections 5.25d (Batch Document-to-Speech) and 5.25e (Build Audiobook from
 Folder / ChapterForge surface).
+
+## Copy Sections (`core/audio/sections.py`, `ui/audio_studio/sections_dialog.py`)
+
+`speech/audio_edit.trim_file` has performed the cut for a long time. What was
+missing, and what this is, is the **workflow**: mark a start, mark an end,
+preview the marked range, add it to a list, and repeat -- then save the list as
+one file, or onto the end of an existing one.
+
+**The collecting is the feature.** Four quotes out of a two-hour interview is one
+task; an editor offering "trim" without "and another one" turns it into six
+trims plus a stitch the listener performs by hand.
+
+Invariants, in the order they matter:
+
+- **The source is never modified.** Marks are integers; every write goes
+  elsewhere. There is no undo for a destructive edit of a unique recording, so
+  there is no destructive edit. `save_sections` cuts each piece to its own
+  temporary file and joins those, so the destination gains everything asked for
+  or nothing -- `join_recording_parts` refuses rather than half-writes, and its
+  reason is surfaced.
+- **A mark is a position, not a commitment.** `SectionMarks` accepts either mark
+  first (somebody listening forward marks the start when they hear it begin), and
+  a start set after an existing end drops the stale mark rather than producing an
+  inside-out pair. Marking in a different file starts a fresh pair, since a
+  section spanning two recordings is meaningless.
+- **Too short is refused, not warned about.** `MIN_SECTION_MS` (250 ms) is the
+  floor; below it the listener meant to move a mark, and the saved file would be
+  too short to be anything.
+- **Everything is words.** `describe_marks`, `spoken_span` and
+  `SectionCollection.row_label` all speak positions through `spoken_duration`,
+  never as a timecode, and every list row is one sentence rather than columns.
+- **No waveform, and that is a design decision rather than a gap.** A waveform is
+  a picture of the audio for sighted users; preview-by-listening does the same
+  job for everybody, and does it more reliably.
+
+Preview deliberately seeks and plays rather than playing a bounded range: a stop
+timer racing a seek works on a fast machine and stutters on a slow one, and a
+preview that claims to stop at the end mark and does not is worse than one that
+never promised to. The announcement says exactly what it does.

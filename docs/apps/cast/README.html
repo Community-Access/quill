@@ -281,8 +281,8 @@ QUILL Cast”); it has nothing to do with the Quill Cast podcast client
 documented here.</p>
 </blockquote>
 <hr />
-<h1 id="part-1--relocated-user-guide-material">Part 1 – relocated user
-guide material</h1>
+<h2 id="part-1--relocated-user-guide-material">Part 1 – relocated user
+guide material</h2>
 <p><em>Moved from <code>docs/user guide/userguide.md</code>. Heading
 levels are one deeper than in the source; wording is otherwise
 unchanged.</em></p>
@@ -582,6 +582,41 @@ and <strong>Open Transcript in Editor</strong> — the transcript arrives
 as plain readable text (VTT/SRT/JSON formats handled), and once fetched
 it’s cached locally so Search Everywhere can search it and reopening is
 instant.</p>
+<h4 id="about-this-episode">About This Episode</h4>
+<p>A podcast feed can carry a good deal more than a title and an audio
+file, and most of it was being downloaded and discarded. <strong>About
+This Episode…</strong> (QUILL Cast’s Episode menu, the command palette,
+or any episode’s right-click menu in the Manager) opens it as tabs, and
+a tab is only there when it has something in it:</p>
+<ul>
+<li><strong>People</strong> — who is on this episode, and who makes the
+podcast. Each row reads as a sentence (“Bob Brown, guest (this
+episode)”), and Enter opens the publisher’s link where there is
+one.</li>
+<li><strong>Highlights</strong> — the moments the podcast marked as
+worth hearing, with when each starts and how long it runs, in words.
+These also appear in the chapter list, where Enter plays from one.</li>
+<li><strong>Live</strong> — some podcasts carry a live stream inside
+their feed. If one is on the air, Enter plays it through the ordinary
+transport, so pause and volume are the same keys as everywhere
+else.</li>
+<li><strong>Other Audio</strong> — a second version of the same episode,
+usually a smaller one for a slow or metered connection.</li>
+<li><strong>Recommended</strong> — the podcasts this show recommends.
+Subscribing here is a real subscribe: the show arrives with its proper
+name, artwork and episodes.</li>
+<li><strong>Support</strong> — where the podcast asked to be supported.
+QUILL opens the page in your browser and takes no further part. Nothing
+in QUILL costs money.</li>
+<li><strong>Place</strong> — where the episode is about, as text.</li>
+</ul>
+<p>The command speaks a one-line summary before the window opens, so if
+all you wanted was to know whether there was anything, you never have to
+open it. Where a podcast published none of it, the window still opens
+and says so. The button names what it will do — <em>Open in
+Browser</em>, <em>Play</em>, <em>Subscribe to This Podcast</em> — and
+reads <em>Nothing to Open</em>, disabled, on a row with nothing to
+do.</p>
 <h4 id="episode-notes">Episode notes</h4>
 <p><strong>Podcasts: Add Episode Note…</strong> (command palette, or
 QUILL Cast’s Episode menu) saves a timestamped note on whatever is
@@ -710,8 +745,8 @@ then stops; your volume is set back to what it was before the fade
 started. Since Radio and Podcasts are independent players, the timer
 fades and stops whichever of the two is actually active.</p>
 <hr />
-<h1 id="part-2--relocated-prd-material">Part 2 – relocated PRD
-material</h1>
+<h2 id="part-2--relocated-prd-material">Part 2 – relocated PRD
+material</h2>
 <p><em>Moved from
 <code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code>.
 Heading levels are two deeper than in the source; wording is otherwise
@@ -722,8 +757,8 @@ gated one.</em></p>
 <p><em>The PRD keeps a stub at 5.84g pointing here, so every existing
 <code>5.84g</code> cross-reference in the code and the docs still
 resolves.</em></p>
-<h5 id="584g-podcasts-phase-1-2-shipped">5.84g Podcasts (Phase 1-2,
-shipped)</h5>
+<h3 id="584g-podcasts-phase-1-2-shipped">5.84g Podcasts (Phase 1-2,
+shipped)</h3>
 <p><strong>Goal.</strong> Subscribe to, organize, download, and play
 podcasts inside QUILL, sharing Internet Radio’s (§5.84f) proven “one
 player that outlives any dialog” architecture rather than inventing a
@@ -763,7 +798,26 @@ would move it outside QUILL’s audited egress surface. Podcasting 2.0’s
 tags aren’t reliably exposed by <code>feedparser</code> across versions,
 so those two are extracted with a tolerant regex pass scoped
 per-<code>&lt;item&gt;</code> fragment as a fallback that doesn’t depend
-on guessing <code>feedparser</code>’s internal key mapping.
+on guessing <code>feedparser</code>’s internal key mapping. <strong>The
+rest of the namespace is read the same way</strong>
+(<code>core/podcasts/namespace_tags.py</code>):
+<code>podcast:person</code>, <code>podcast:soundbite</code>,
+<code>podcast:liveItem</code>, <code>podcast:podroll</code>,
+<code>podcast:funding</code>, <code>podcast:location</code> and
+alternate enclosures, for the same reason plus one more – a second full
+XML parse of every feed on every refresh is real cost across a large
+library, and each of these is a shallow attribute grab. Every parser is
+tolerant: a malformed tag yields nothing rather than raising, because
+one bad tag must never cost somebody their whole feed. The channel half
+is read from the text <em>before the first
+<code>&lt;item&gt;</code></em>, so an episode’s guests are never
+credited to the podcast itself; live items are looked for across the
+whole feed, because publishers write them among the episodes. Tags
+persist with the episode and the show and <strong>only when
+non-empty</strong>, so a library of feeds that publish none of this pays
+nothing for the feature existing, and <code>merge_episodes</code> never
+lets an empty replacement erase what a feed already said – that is far
+more often a partial feed than a retraction.
 <code>core/podcasts/subscriptions.py</code>’s
 <code>PodcastLibrary</code> is the one atomic-JSON store (shows,
 folders, global settings); <code>merge_episodes()</code> refreshes a
@@ -912,9 +966,9 @@ chains directly into the Listening Companion (§5.84b) for
 transcribe-and-summarize, something no standalone podcast app offers,
 and the same QUILL Sync story that already carries settings between
 machines now carries listening position too.</p>
-<h6
+<h4
 id="phase-4-shipped-views-inbox-queue-transcripts-notes-local-sync">Phase
-4 (shipped): views, Inbox, queue, transcripts, notes, local, sync</h6>
+4 (shipped): views, Inbox, queue, transcripts, notes, local, sync</h4>
 <p>Everything the original phased plan deferred, now shipped. Every core
 is wx-free and unit-tested; the manager UI additions live in
 <code>quill/ui/podcasts/manager_phase4.py</code> (a mixin, per the
@@ -952,6 +1006,38 @@ manager live.</li>
 Feed-provided Podcasting 2.0 transcripts (VTT/SRT/JSON parsed to plain
 text) save to a file or open in the editor; fetched transcripts cache
 locally (searchable, instant reopen).</li>
+<li><strong>The rest of the Podcasting 2.0 namespace
+(<code>namespace_tags.py</code>, <code>extras.py</code>).</strong>
+People, soundbites, live items, podroll, funding, location and alternate
+enclosures, surfaced through <strong>About This Episode…</strong>
+(<code>ui/podcasts/episode_extras_dialog.py</code>, a
+<code>wx.Notebook</code> of <code>wx.ListBox</code> pages;
+<code>ui/podcasts/extras_command.py</code> for the three actions a row
+can take: open a link, play a stream, subscribe to a feed). A tab exists
+only when it has something in it; the one-line summary is spoken before
+the window opens; the window still opens and says so when a podcast
+published none of it, because <em>publishes nothing</em> and <em>cannot
+be read</em> are different facts a greyed-out item cannot distinguish.
+The action button is named from the highlighted row and reads
+<em>Nothing to Open</em>, disabled, where there is nothing to do.
+Subscribing from a podroll goes through the same path Add by Feed URL
+uses, on the task manager and refused in Safe Mode; funding opens in the
+browser and is processed no further, so listening stays free.
+Value-for-value / cryptocurrency streaming is out of scope,
+deliberately.</li>
+<li><strong>Soundbites as an authored chapter tier
+(<code>chapter_scoring.py</code>, <code>chapter_sources.py</code>,
+<code>chapter_cascade.py</code>).</strong> A soundbite is a chapter
+marker in all but name – a person chose the moment and titled it – so
+<code>SOURCE_SOUNDBITES</code> joins the authored tiers (base confidence
+0.85, inside <code>is_authored</code>) as the <strong>last</strong> of
+them. Last, because a highlight is not a partition: two marks in an hour
+answers <em>what is the good bit</em> completely and <em>how is this
+laid out</em> barely at all. They win only where nothing better was
+published; each chapter keeps the soundbite’s own <code>end_ms</code>
+rather than running on to the next mark; and the source is labelled
+<em>Moments this podcast marked</em>. The floor is one mark rather than
+two – a single marked moment is still a place worth jumping to.</li>
 <li><strong>Episode notes (P4-6,
 <code>episode_notes.py</code>).</strong> Timestamped notes on the
 playing episode; the notes dialog jumps playback to a note’s
@@ -988,8 +1074,8 @@ write half of resume, which previously only read.</li>
 and download-task rows (with started/finished timestamps) for the Help
 Status page.</li>
 </ul>
-<h6 id="phase-5-shipped-sound-enhancements--smart-speed">Phase 5
-(shipped): Sound Enhancements + Smart Speed</h6>
+<h4 id="phase-5-shipped-sound-enhancements--smart-speed">Phase 5
+(shipped): Sound Enhancements + Smart Speed</h4>
 <p>Shares Radio’s <code>core/audio_enhance.py</code> (§5.84f) rather
 than duplicating it, with the one real wrinkle Radio doesn’t have:
 episodes support seeking and a duration/scrub bar, which a live one-way
@@ -1020,9 +1106,9 @@ The relay’s own MP3 output never declares a length for the engine to
 compute a scrub bar from, so duration comes from an independent
 <code>ffprobe</code> call instead.</li>
 </ul>
-<h6
+<h4
 id="phase-6-shipped-download-all-episodes--remove-all-episodes">Phase 6
-(shipped): Download All Episodes / Remove All Episodes</h6>
+(shipped): Download All Episodes / Remove All Episodes</h4>
 <p>Two new show-level context-menu actions, implemented once in
 <code>quill/ui/podcasts/show_actions.py</code> and called from both
 surfaces that act on a subscribed show (the Podcast Manager dialog and
@@ -1041,10 +1127,10 @@ refresh can repopulate its episode list from the feed itself. Cancels
 any in-flight/queued download for a removed episode first, so nothing is
 left running against a guid about to disappear.</li>
 </ul>
-<h6
+<h4
 id="phase-7-shipped-inbox-grouping--per-podcast-sort-for-every-cross-show-view">Phase
 7 (shipped): Inbox grouping + per-podcast sort for every cross-show
-view</h6>
+view</h4>
 <p>The Inbox (and every other cross-show virtual view – New Episodes,
 Continue Listening, Favorites) previously rendered
 <code>(show, episode)</code> pairs in raw feed-fetch order, with the
@@ -1094,10 +1180,10 @@ per-podcast tree nodes fresh on every <code>refresh_tree()</code> –
 auto-generated, never persisted, distinct from the existing manual
 freeform Inbox folder tree.</li>
 </ul>
-<h6
+<h4
 id="phase-8-shipped-per-podcast-sound-enhancements-skip-forwardback-auto-skip-introoutro">Phase
 8 (shipped): per-podcast Sound Enhancements, Skip Forward/Back,
-auto-skip intro/outro</h6>
+auto-skip intro/outro</h4>
 <p>A competitive pass against Downcast/Overcast/Pocket Casts/Castro
 surfaced two gaps: Sound Enhancements (Phase 5, above) was global-only,
 and there was no skip-by-N-seconds command at all (only absolute
@@ -1145,9 +1231,9 @@ loaded (they have no meaningful global value).</li>
 Now <code>dataclasses.replace(self._settings, **edits)</code>, the same
 pattern <code>apply_show_override</code> already uses.</li>
 </ul>
-<h6
+<h4
 id="phase-9-shipped-saved-playlists--smart-rule-based-and-manual">Phase
-9 (shipped): saved Playlists – Smart (rule-based) and manual</h6>
+9 (shipped): saved Playlists – Smart (rule-based) and manual</h4>
 <p>The other half of the same competitive pass: no way to save a curated
 or rule-based cross-show episode list, only the four fixed pinned views
 and the transient Play Queue – a real gap against Pocket Casts’ Smart
