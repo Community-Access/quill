@@ -2,7 +2,7 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-2.0.md` for the fuller narrative version of the latest release.
 
-## [3.0.0] - 2026-08-13
+## [3.0.0] - 2026-08-15
 
 A major version, and the number is doing real work. Quill Radio 3.0 changes what the app *is*: for two years it was a very good way to play a station you could already name, and it is now somewhere you can wander. Browse Stations grew from thirteen branches to twenty-eight -- four of them axes the station directory always had and nobody had ever exposed -- podcasts arrived as a first-class thing you can walk into by country and by genre with no account anywhere, and the machinery underneath was rebuilt so that the next source costs an afternoon instead of a refactor.
 

@@ -29,7 +29,7 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Radio"
-_VERSION = "2.2.0"
+_VERSION = "3.0.0"
 _REPO = "Community-Access/quill"
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for recording; mpv/libmpv is the playback engine).

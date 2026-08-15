@@ -18,7 +18,7 @@ Deliberately not included: QUILL's editor, AI, transcription, braille, and speec
 
 ## Install
 
-Quill Radio, QUILL, Quill Weather, and QUILL Audio Studio all run on one shared **QuillVille Runtime** (about 230 MB), installed once per user and reference-counted so it is removed only when the last app that needs it is uninstalled. There are **four downloads** on this repository's Releases page (`<version>` is the release, e.g. 2.2.0):
+Quill Radio, QUILL, Quill Weather, and QUILL Audio Studio all run on one shared **QuillVille Runtime** (about 230 MB), installed once per user and reference-counted so it is removed only when the last app that needs it is uninstalled. There are **four downloads** on this repository's Releases page (`<version>` is the release, e.g. 3.0.0):
 
 - **`Quill-Radio-Portable-<version>.zip`** (~311 MB) -- the full portable edition. Fully self-contained (its own genuine Python, plus bundled ffmpeg and mpv); extract anywhere (a USB stick included) and run `QuillRadio\QuillRadio.exe`. Nothing ever downloads at runtime. The bundled `data` folder keeps favorites, history, recordings, and settings inside the app folder, so the whole thing travels -- exactly like QUILL portable.
 - **`Quill-Radio-Companion-<version>.zip`** (~3 MB) -- the feather-light edition: just the app and its docs, running on the shared runtime. On first launch it offers to download and install the runtime (~230 MB, once) if no other QuillVille app has already put it in place, with a fully accessible progress bar.

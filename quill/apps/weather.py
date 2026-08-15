@@ -26,8 +26,13 @@ from quill.ui.main_frame_adp import AdpMixin
 from quill.ui.main_frame_weather import WeatherMixin
 
 _TITLE = "Quill Weather"
-#: Versioned in lockstep with Quill Radio (2.2.0): the two ship the same weather
-#: feature code and were released together, so they share a version line.
+#: Shared a version line with Quill Radio up to 2.2.0, when the two shipped the
+#: same weather feature code and were released together. **That lockstep ended
+#: at Radio 3.0.0**, which is a Radio release: nothing in it changes what Quill
+#: Weather does, and moving this to 3.0.0 to match would tell Weather's users
+#: they had missed a major release that does not exist. The two update
+#: independently (each resolves its own release asset), so nothing requires the
+#: numbers to agree.
 _VERSION = "2.2.0"
 #: Every QuillVille app now updates from the one shared repo, each resolving its
 #: own release asset (Quill-Weather-*), so they update and maintain independently.

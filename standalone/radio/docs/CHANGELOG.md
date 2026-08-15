@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
 
-## [3.0.0] - 2026-08-13
+## [3.0.0] - 2026-08-15
 
 Major: Browse Stations becomes a browsable directory rather than a list of
 sources, podcasts arrive keylessly, transcripts gain timings, and three
