@@ -22,18 +22,23 @@ from quill.core.library.model import (
 )
 from quill.core.library.providers import (
     DEFAULT_SOURCES,
+    FREE_SOURCES,
     download,
     download_to_path,
     search,
 )
+from quill.core.library.works import Work, group
 
 __all__ = [
     "DEFAULT_SOURCES",
+    "FREE_SOURCES",
     "Book",
     "LibraryError",
     "LibraryHTTPError",
     "LibraryParseError",
+    "Work",
     "download",
     "download_to_path",
+    "group",
     "search",
 ]

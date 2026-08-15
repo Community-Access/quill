@@ -73,6 +73,7 @@ class SongHistoryDialog:
         announce: Callable[[str], None],
         send_to_clip_library: Callable[[str, str], bool],
         request_background: Callable[[SongPlay, str, Callable[[str, str], None]], None],
+        request_facts: Callable[[SongPlay, Callable[[str], None]], None] | None = None,
         on_changed: Callable[[], None],
         title: str = "Song History",
     ) -> None:
@@ -85,6 +86,9 @@ class SongHistoryDialog:
         self._announce = announce
         self._send_to_clips = send_to_clip_library
         self._request_background = request_background
+        #: Injected like the Background lookup above: the frame owns the task
+        #: manager and Safe Mode, this window owns the box the answer lands in.
+        self._request_facts = request_facts
         self._on_changed = on_changed
         self._title = title
         self._busy = False
@@ -142,12 +146,14 @@ class SongHistoryDialog:
         self._copy_btn = wx.Button(panel, label="&Copy")
         self._clip_btn = wx.Button(panel, label="Send to Clip &Library")
         self._background_btn = wx.Button(panel, label="&Background")
+        self._facts_btn = wx.Button(panel, label="Song &Details")
         self._clear_btn = wx.Button(panel, label="Clea&r...")
         close_btn = wx.Button(panel, wx.ID_CLOSE, label="C&lose")
         for button in (
             self._copy_btn,
             self._clip_btn,
             self._background_btn,
+            self._facts_btn,
             self._clear_btn,
             close_btn,
         ):
@@ -162,6 +168,7 @@ class SongHistoryDialog:
         self.dialog.SetSizer(root)
 
         self._station_choice.Bind(self._wx.EVT_CHOICE, lambda _e: self._reload_songs())
+        self._facts_btn.Bind(self._wx.EVT_BUTTON, self._on_song_facts)
         self._songs.Bind(self._wx.EVT_LISTBOX, lambda _e: self._update_buttons())
         self._copy_btn.Bind(self._wx.EVT_BUTTON, self._on_copy)
         self._clip_btn.Bind(self._wx.EVT_BUTTON, self._on_clip)
@@ -215,6 +222,7 @@ class SongHistoryDialog:
         self._copy_btn.Enable(has_song)
         self._clip_btn.Enable(has_song)
         self._background_btn.Enable(has_song and not self._busy)
+        self._facts_btn.Enable(has_song and self._request_facts is not None)
         self._clear_btn.Enable(bool(self._stations))
 
     # -- actions --
@@ -238,6 +246,19 @@ class SongHistoryDialog:
             # remember() returns False for an exact duplicate, which is a
             # perfectly ordinary outcome and must not read as an error.
             self._announce("Already in the Clip Library.")
+
+    def _on_song_facts(self, _event: object) -> None:
+        """**Song Details**: which release, what year, how long.
+
+        The difference between a list of titles and a history you can do
+        something with. Opt-in, off the UI thread, and it degrades to "nothing
+        more is known" rather than to an error message.
+        """
+        song = self._selected_song()
+        if song is None or self._request_facts is None:
+            return
+        self._background.SetValue("Looking up...")
+        self._request_facts(song, self._background.SetValue)
 
     def _on_background(self, _event: object) -> None:
         song = self._selected_song()

@@ -38,8 +38,11 @@ import logging
 import os
 import subprocess
 import threading
+from pathlib import Path
 from typing import IO
 
+from quill.core import optilab_adapter
+from quill.core.audio.exact_optilab import ExactOptilab, build_pcm_input_args
 from quill.core.error_codes import CodedError
 from quill.core.optilab import (
     OPTILAB_INPUT_MAX_DB,
@@ -227,6 +230,92 @@ def build_filter_graph(
     return ",".join(filters)
 
 
+def build_relay_pcm_commands(
+    ffmpeg: str,
+    stream_url: str,
+    adapter: str,
+    *,
+    exact: ExactOptilab,
+    sample_rate: int = 48_000,
+    channels: int = 2,
+    bass_db: float = 0.0,
+    mid_db: float = 0.0,
+    treble_db: float = 0.0,
+    compressor_enabled: bool = False,
+    smart_speed_enabled: bool = False,
+    channel_mode: str = "stereo",
+    night_mode_enabled: bool = False,
+    start_seconds: float = 0.0,
+) -> tuple[list[str], list[str], list[str]]:
+    """The three argvs that relay *stream_url* **through the real OptiLab engine**.
+
+    ``decode | quill-optilab | encode``: ffmpeg reads the stream and applies
+    everything that is not broadcast polish (EQ, compressor, channel mode, night
+    mode) as usual, hands raw float PCM to the engine, and a second ffmpeg
+    re-encodes the engine's output to MP3 on stdout for the same loopback relay
+    the ordinary path uses.
+
+    The OptiLab *filters* are deliberately never in the graph here: the engine
+    itself is doing that work, and running both would process the same audio
+    twice. This is the one place where "the adaptation" and "the real thing" could
+    silently stack, so it is prevented in the builder rather than trusted to
+    callers.
+
+    Pure and unit-tested; :meth:`EnhanceRelay.start` runs them.
+    """
+    graph = build_filter_graph(
+        bass_db,
+        mid_db,
+        treble_db,
+        compressor_enabled=compressor_enabled,
+        smart_speed_enabled=smart_speed_enabled,
+        channel_mode=channel_mode,
+        night_mode_enabled=night_mode_enabled,
+        optilab_enabled=False,  # the engine below is the polish; never both
+        optilab_mode="off",
+    )
+    decode = [ffmpeg, "-hide_banner", "-loglevel", "error"]
+    if stream_url.lower().startswith(("http://", "https://")):
+        decode.extend(["-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "10"])
+    if start_seconds > 0:
+        decode.extend(["-ss", f"{start_seconds:.3f}"])
+    decode.extend(["-i", stream_url, "-vn"])
+    if graph:
+        decode.extend(["-af", graph])
+    decode.extend([
+        "-f",
+        "f32le",
+        "-ar",
+        str(int(sample_rate)),
+        "-ac",
+        str(int(channels)),
+        "pipe:1",
+    ])
+    process = optilab_adapter.adapter_command(
+        Path(adapter),
+        mode=exact.mode,
+        sample_rate=sample_rate,
+        channels=channels,
+        input_db=exact.input_db,
+        auto_adapt=exact.auto_adapt,
+    )
+    encode = [
+        ffmpeg,
+        "-hide_banner",
+        "-loglevel",
+        "error",
+        *build_pcm_input_args(sample_rate, channels),
+        "-c:a",
+        "libmp3lame",
+        "-b:a",
+        "192k",
+        "-f",
+        "mp3",
+        "pipe:1",
+    ]
+    return decode, process, encode
+
+
 def build_relay_command(
     ffmpeg: str,
     stream_url: str,
@@ -367,6 +456,10 @@ class EnhanceRelay:
     def __init__(self) -> None:
         self._lock = threading.Lock()
         self._process: subprocess.Popen[bytes] | None = None
+        #: Upstream children of ``_process`` when the relay is running the real
+        #: OptiLab engine (decode and the adapter). They are wired to each
+        #: other's pipes, so the parent only has to stop them.
+        self._upstream: list[subprocess.Popen[bytes]] = []
         self._server: _RelayHTTPServer | None = None
         self._server_thread: threading.Thread | None = None
 
@@ -391,11 +484,21 @@ class EnhanceRelay:
         optilab_input_db: float = 0.0,
         optilab_auto_adapt: int = 0,
         start_seconds: float = 0.0,
+        exact_optilab: ExactOptilab | None = None,
     ) -> str:
         """Start relaying *stream_url* through the filter graph; returns the
         local URL to hand to the player engine instead of *stream_url*. A
         positive ``start_seconds`` begins the relay partway through a
         bounded source (see :func:`build_relay_command`).
+
+        ``exact_optilab`` relays through the **real** OptiLab engine instead of
+        the ffmpeg adaptation of it (see :func:`build_relay_pcm_commands`). This
+        is the only way live listening can use the real engine, and it is not
+        free: the audio makes an extra decode/encode trip through three
+        processes, so it starts a little later and every settings change costs a
+        reconnect. It is opt-in for exactly that reason. Ignored when the
+        optional component is absent -- the ordinary chain runs instead, rather
+        than playback failing.
 
         Raises :class:`EnhanceError` if ffmpeg is unavailable or the relay
         could not be started. Stops any previous relay first.
@@ -404,6 +507,22 @@ class EnhanceRelay:
         ffmpeg = find_ffmpeg()
         if ffmpeg is None:
             raise EnhanceError(f"ffmpeg is not installed. {INSTALL_HINT}")
+        adapter = optilab_adapter.find_adapter() if exact_optilab is not None else None
+        if exact_optilab is not None and exact_optilab.active and adapter is not None:
+            return self._start_exact(
+                ffmpeg,
+                str(adapter),
+                stream_url,
+                exact=exact_optilab,
+                bass_db=bass_db,
+                mid_db=mid_db,
+                treble_db=treble_db,
+                compressor_enabled=compressor_enabled,
+                smart_speed_enabled=smart_speed_enabled,
+                channel_mode=channel_mode,
+                night_mode_enabled=night_mode_enabled,
+                start_seconds=start_seconds,
+            )
         args = build_relay_command(
             ffmpeg,
             stream_url,
@@ -452,14 +571,121 @@ class EnhanceRelay:
         port = server.server_address[1]
         return f"http://127.0.0.1:{port}/enhanced.mp3"
 
+    def _start_exact(
+        self,
+        ffmpeg: str,
+        adapter: str,
+        stream_url: str,
+        *,
+        exact: ExactOptilab,
+        bass_db: float,
+        mid_db: float,
+        treble_db: float,
+        compressor_enabled: bool,
+        smart_speed_enabled: bool,
+        channel_mode: str,
+        night_mode_enabled: bool,
+        start_seconds: float,
+    ) -> str:
+        """Relay through the real OptiLab engine: decode | engine | encode.
+
+        The three children are wired to each other's pipes and never pumped by
+        this process -- the same rule the offline path follows and for the same
+        reason: a parent that shuttles bytes between two pipes deadlocks the
+        moment one buffer fills, which on a live stream is within seconds.
+        """
+        decode, process_args, encode = build_relay_pcm_commands(
+            ffmpeg,
+            stream_url,
+            adapter,
+            exact=exact,
+            bass_db=bass_db,
+            mid_db=mid_db,
+            treble_db=treble_db,
+            compressor_enabled=compressor_enabled,
+            smart_speed_enabled=smart_speed_enabled,
+            channel_mode=channel_mode,
+            night_mode_enabled=night_mode_enabled,
+            start_seconds=start_seconds,
+        )
+        extra_kwargs: dict = {}
+        if os.name == "nt":
+            extra_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+        logger.info(
+            "Starting exact OptiLab relay: %s | %s | %s",
+            format_args_for_log(decode),
+            format_args_for_log(process_args),
+            format_args_for_log(encode),
+        )
+        started: list[subprocess.Popen[bytes]] = []
+        try:
+            p_decode = subprocess.Popen(
+                decode,
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                **extra_kwargs,
+            )
+            started.append(p_decode)
+            p_engine = subprocess.Popen(
+                process_args,
+                stdin=p_decode.stdout,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                **extra_kwargs,
+            )
+            started.append(p_engine)
+            p_encode = subprocess.Popen(
+                encode,
+                stdin=p_engine.stdout,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                **extra_kwargs,
+            )
+            started.append(p_encode)
+        except OSError as exc:
+            for child in started:
+                child.kill()
+            raise EnhanceError(f"Could not start exact OptiLab playback: {exc}") from exc
+        for handle in (p_decode.stdout, p_engine.stdout):
+            if handle is not None:
+                handle.close()
+        read_lock = threading.Lock()
+        handler = functools.partial(_RelayHTTPHandler, source=p_encode.stdout, read_lock=read_lock)
+        try:
+            server = _RelayHTTPServer(("127.0.0.1", 0), handler)
+        except OSError as exc:
+            for child in started:
+                child.kill()
+            raise EnhanceError(f"Could not start the Sound Enhancements relay: {exc}") from exc
+        thread = threading.Thread(
+            target=server.serve_forever, daemon=True, name="quill-radio-enhance-relay"
+        )
+        thread.start()
+        with self._lock:
+            self._process = p_encode
+            self._upstream = [p_engine, p_decode]
+            self._server = server
+            self._server_thread = thread
+        port = server.server_address[1]
+        return f"http://127.0.0.1:{port}/enhanced.mp3"
+
     def stop(self) -> None:
         """Stop any active relay; a no-op if idle."""
         with self._lock:
             process = self._process
+            upstream = list(self._upstream)
             server = self._server
             self._process = None
+            self._upstream = []
             self._server = None
             self._server_thread = None
+        for child in upstream:
+            if child.poll() is None:
+                try:
+                    child.terminate()
+                except OSError:
+                    pass
         if server is not None:
             try:
                 server.shutdown()

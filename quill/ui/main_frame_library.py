@@ -22,6 +22,7 @@ class LibraryMixin:
         dialog = LibraryDialog(
             self.frame,
             dest_dir=dest,
+            data_dir=paths.app_data_dir(),
             announce=lambda text: self._announce(text),
             on_open=lambda path: self.open_file(path),
             safe_mode=safe_mode,

@@ -53,6 +53,14 @@ class RadioStation:
     #: (e.g. a SomaFM channel RadioBrowser also lists). Not persisted, and
     #: excluded from equality so it never changes a station's identity.
     alt_sources: tuple[str, ...] = field(default=(), compare=False)
+    #: True when this is a **finished recording** rather than a live stream: an
+    #: audiobook chapter, an Archive item, a podcast episode. It is the one fact
+    #: the transport cannot work out for itself at load time, and everything
+    #: follows from it -- seeking, speed, position, chapters, and resuming where
+    #: you stopped. Until Quill Radio 3.0 only a resolved YouTube video was ever
+    #: treated as bounded, so a four-hour LibriVox chapter behaved like a live
+    #: broadcast: no seek bar, no position, and no memory of where you were.
+    is_recording: bool = False
 
     @property
     def display_name(self) -> str:
@@ -97,6 +105,7 @@ class RadioStation:
             "codec": self.codec,
             "bitrate_kbps": self.bitrate_kbps,
             "votes": self.votes,
+            "is_recording": self.is_recording,
         }
 
     @classmethod
@@ -120,4 +129,7 @@ class RadioStation:
             codec=str(data.get("codec", "")),
             bitrate_kbps=bitrate,
             votes=votes,
+            # Absent in favorites saved before 3.0, which is correct: everything
+            # saved before then was a live station.
+            is_recording=bool(data.get("is_recording", False)),
         )

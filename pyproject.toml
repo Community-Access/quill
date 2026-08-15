@@ -23,6 +23,10 @@ classifiers = [
 dependencies = [
     "regex>=2026.7.19",
     "defusedxml>=0.7.1",
+    # RadioDNS (Quill Radio 3.0, core/radio/radiodns.py). The standard library
+    # resolves A records and nothing else; RadioDNS needs CNAME chasing and an
+    # SRV lookup (_radioepg._tcp) to find a broadcaster's service document, so
+    # a real resolver is required rather than convenient. Approved 2026-08-13.
     # Podcast RSS/Atom feed parsing (Tools > Media > Podcasts). Real-world feeds
     # are too messy (malformed XML, mixed RSS/Atom/iTunes/Podcasting-2.0
     # namespaces) for a hand-rolled ElementTree walk to handle reliably; this is
@@ -547,6 +551,8 @@ exclude = ["quill/ui/"]
 [[tool.mypy.overrides]]
 module = [
     "defusedxml.*",
+    "dns",
+    "dns.*",
     "feedparser",
     "regex",
     "enchant",

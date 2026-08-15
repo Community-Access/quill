@@ -48,12 +48,44 @@ def refuse_in_safe_mode(safe_mode: bool) -> None:
 
 @dataclass(slots=True)
 class PodcastChapter:
-    """One chapter marker: a start time and a title, plus optional extras."""
+    """One chapter marker: a start time and a title, plus optional extras.
+
+    The four fields below ``link_url`` are what turn a chapter list from
+    something you *have* into something you can *trust*. An inferred chapter is
+    a claim, and a claim you cannot inspect is one you have to take on faith:
+
+    * ``end_ms`` makes "3 of 12, four minutes long" sayable, and gives the last
+      chapter an honest end instead of an implied one.
+    * ``source`` is which tier produced *this* chapter -- carried per chapter,
+      not only per set, because a cascade that keeps the best answer per region
+      can mix them.
+    * ``confidence`` (0.0-1.0) lets a marginal boundary be presented differently
+      from a published one. Published chapters are 1.0 by definition: a person
+      wrote them.
+    * ``reason``, in words -- "a 2.4 second silence", "the topic changed", "from
+      the show notes". This is what makes a *"How were these found?"* report
+      possible at all.
+
+    All four default to the empty/zero case, so every existing construction of a
+    published chapter is unchanged and reads as "published, certain, no
+    explanation needed".
+    """
 
     start_ms: int
     title: str
     image_url: str = ""
     link_url: str = ""
+    end_ms: int | None = None
+    source: str = ""
+    confidence: float = 1.0
+    reason: str = ""
+
+    @property
+    def duration_ms(self) -> int:
+        """How long this chapter runs, or 0 when its end is not known."""
+        if self.end_ms is None:
+            return 0
+        return max(0, int(self.end_ms) - int(self.start_ms))
 
 
 def _fetch_chapters_bytes(url: str, *, auth_header: str = "") -> bytes:

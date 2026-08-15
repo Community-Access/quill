@@ -52,3 +52,45 @@ def test_released_siblings_are_offered_and_self_is_excluded() -> None:
     assert "Open QUILL" in labels
     assert "Open Quill Weather" in labels
     assert "Open Quill Radio" not in labels  # self excluded
+
+
+def test_an_app_can_leave_a_sibling_off_its_own_menu(monkeypatch) -> None:
+    """Quill Radio ships 3.0 without Inkwell on its QuillVille menu.
+
+    Not by un-releasing Inkwell -- it stays on every other app's menu. A
+    listener opening a radio app has no reason to be offered a text expander,
+    and a menu item that opens one is a promise that release did not mean to
+    make.
+    """
+    from quill.ui import quillville_menu
+
+    monkeypatch.setattr(quillville_menu, "is_app_released", lambda _key: True)
+    offered: list[str] = []
+
+    class _Menu:
+        def Append(self, _id, label):
+            offered.append(label)
+
+    class _Wx:
+        Menu = _Menu
+        EVT_MENU = object()
+
+        @staticmethod
+        def NewIdRef():
+            return object()
+
+    class _Frame:
+        def Bind(self, *_args, **_kwargs):
+            return None
+
+    quillville_menu.build_quillville_menu(
+        _Wx,
+        _Frame(),
+        lambda _key: None,
+        exclude="radio",
+        retain=lambda _id: None,
+        also_exclude=("inkwell",),
+    )
+    assert not any("Inkwell" in label for label in offered)
+    # The rest of the family is untouched.
+    assert any("QUILL" in label for label in offered)

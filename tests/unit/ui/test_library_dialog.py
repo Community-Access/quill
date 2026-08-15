@@ -36,7 +36,9 @@ def test_search_download_and_open(app, tmp_path):
     said: list[str] = []
     opened: list[Path] = []
 
-    def fake_search(query, *, sources, safe_mode=False):
+    def fake_search(query, *, sources, safe_mode=False, catalogs=None):
+        # `catalogs` arrived with user-added OPDS catalogues: the window passes
+        # the enabled ones so the search facade never has to know they exist.
         assert query == "pride"
         return books
 
@@ -59,7 +61,8 @@ def test_search_download_and_open(app, tmp_path):
         dlg._on_search(None)
         assert dlg.results.GetCount() == 1
         assert "Pride and Prejudice" in dlg.results.GetString(0)
-        assert any("Found 1" in s for s in said)
+        # The status counts by what can be done rather than totalling rows.
+        assert any("1 book found" in s for s in said)
 
         dlg.results.SetSelection(0)
         dlg._download(open_after=True)
@@ -120,7 +123,9 @@ def test_new_sources_offered(app, tmp_path):
     )
     try:
         labels = [dlg.source.GetString(i) for i in range(dlg.source.GetCount())]
-        assert any("All free sources" in s for s in labels)
+        assert any("Everywhere free" in s for s in labels)
+        assert any("Open Library" in s for s in labels)
+        assert any("LibriVox" in s for s in labels)
         assert any("Google Books" in s for s in labels)
         assert any("NLS BARD" in s for s in labels)
         assert any("Feedbooks" in s for s in labels)
@@ -153,8 +158,10 @@ def test_open_in_bard_opens_site_url(app, tmp_path, monkeypatch):
     try:
         dlg.query.SetValue("sunset")
         dlg._on_search(None)
-        # A metadata-only BARD result is tagged for the "Open in BARD" action.
-        assert "open in BARD" in dlg.results.GetString(0)
+        # A metadata-only BARD result now carries the four-category label, which
+        # says the same thing in the words every other row uses.
+        assert "account required" in dlg.results.GetString(0)
+        assert "the BARD catalog" in dlg.results.GetString(0)
         dlg.results.SetSelection(0)
         dlg._open_in_bard()
         assert opened == ["http://hdl.loc.gov/loc.nls/db.55555"]

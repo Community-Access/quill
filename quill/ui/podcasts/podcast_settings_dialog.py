@@ -288,6 +288,30 @@ class PodcastSettingsDialog:
         self._auto_download_inbox_check.SetValue(settings.auto_download_inbox)
         root.Add(self._auto_download_inbox_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        # Which shows the Inbox holds. A radio pair rather than a checkbox,
+        # because the two modes are opposites rather than an on/off: reading a
+        # ticked box called "opt out" and working out what it means is exactly
+        # the kind of puzzle this app avoids.
+        root.Add(
+            wx.StaticText(self.dialog, label="Which shows go to the &Inbox:"),
+            0,
+            wx.LEFT | wx.RIGHT | wx.TOP,
+            10,
+        )
+        self._inbox_mode = wx.Choice(
+            self.dialog,
+            choices=[
+                "Only the shows I choose",
+                "Every show except the ones I exclude",
+            ],
+        )
+        self._inbox_mode.SetName(
+            "Which shows the Inbox holds. Choosing every show suits a large library "
+            "you triage; choosing only some suits a few shows you follow closely"
+        )
+        self._inbox_mode.SetSelection(1 if settings.inbox_mode == "exclude" else 0)
+        root.Add(self._inbox_mode, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         session_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "When an episode finishes")
         self._continue_queue_check = wx.CheckBox(
             self.dialog, label="Play the next episode in the Play &Queue"
@@ -298,6 +322,16 @@ class PodcastSettingsDialog:
         )
         self._continue_queue_check.SetValue(settings.continue_after_queue)
         session_box.Add(self._continue_queue_check, 0, wx.ALL, 6)
+
+        self._prebuffer_check = wx.CheckBox(
+            self.dialog, label="Start loading the ne&xt episode before this one ends"
+        )
+        self._prebuffer_check.SetName(
+            "Removes the pause between queued episodes. Off by default because it "
+            "uses data speculatively, which matters on a metered connection"
+        )
+        self._prebuffer_check.SetValue(settings.prebuffer_next)
+        session_box.Add(self._prebuffer_check, 0, wx.ALL, 6)
         self._continue_group_check = wx.CheckBox(
             self.dialog, label="When the queue is empty, keep going with the same podcast"
         )
@@ -468,12 +502,14 @@ class PodcastSettingsDialog:
             auto_download_count=-1 if always_sync else auto_count,
             auto_download_queued=self._auto_download_queued_check.GetValue(),
             auto_download_inbox=self._auto_download_inbox_check.GetValue(),
+            inbox_mode="exclude" if self._inbox_mode.GetSelection() == 1 else "include",
             inbox_max_episodes=self._inbox_max_ctrl.GetValue(),
             download_retention_days=self._retention_days_ctrl.GetValue(),
             storage_cap_mb=self._storage_cap_ctrl.GetValue(),
             playback_cache=self._playback_cache_ctrl.GetValue(),
             playback_cache_cap_mb=self._playback_cache_cap_ctrl.GetValue(),
             continue_after_queue=self._continue_queue_check.GetValue(),
+            prebuffer_next=self._prebuffer_check.GetValue(),
             continue_after_group=self._continue_group_check.GetValue(),
             announce_show_name_first=self._name_first_check.GetValue(),
             default_launch_view=_LAUNCH_VIEW_VALUES[launch_index],

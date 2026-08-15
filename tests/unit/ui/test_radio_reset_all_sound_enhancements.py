@@ -47,6 +47,8 @@ def _frame(*, playing: RadioStation | None = None) -> Any:
         optilab_mode="off",
         optilab_input_db=0.0,
         optilab_auto_adapt=0,
+        optilab_exact=False,
+        optilab_exact_live=False,
     )
     frame._radio_favorites = RadioFavoritesStore()
     frame._radio_controller = SimpleNamespace(
@@ -126,6 +128,7 @@ def test_reset_all_live_updates_when_playing_station_was_reset() -> None:
                 "optilab_mode": "off",
                 "optilab_input_db": 0.0,
                 "optilab_auto_adapt": 0,
+                "optilab_exact_live": False,
             },
         ),
     ]

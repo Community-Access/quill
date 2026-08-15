@@ -85,11 +85,18 @@ def match_buffer(
     buffer: RingBuffer,
     library: AbbreviationLibrary,
     clipboard_text: str = "",
+    *,
+    process_name: str = "",
 ) -> GlobalMatch | None:
     """Return the expansion the buffer's last word just triggered, if any.
 
     The buffer must end with a trigger character. The buffer is not modified --
     the caller clears it when it acts on the result.
+
+    *process_name* is the application in front, so an entry scoped to particular
+    applications (``Abbreviation.apps``) only fires in one of them. A signature
+    belongs in a mail client and a code snippet in an editor, and an expander
+    that fires both everywhere is one people switch off.
     """
     text = buffer.text()
     if len(text) < 2:
@@ -112,6 +119,8 @@ def match_buffer(
     # Longest abbreviation wins, so "addr" cannot be shadowed by "ad".
     for entry in sorted(library.enabled_only(), key=lambda a: len(a.abbreviation), reverse=True):
         if not entry.accepts_trigger(trigger_char):
+            continue
+        if not entry.matches_app(process_name):
             continue
         if entry.case_sensitive:
             if token != entry.abbreviation:

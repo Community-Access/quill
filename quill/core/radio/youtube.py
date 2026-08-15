@@ -34,30 +34,24 @@ wx-free, strict-typed.
 from __future__ import annotations
 
 import os
-import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from urllib.parse import parse_qs, urlparse
 
 from quill.core.error_codes import CodedError
 
+# The pure URL readers live in youtube_urls (a GATE-11 extraction) and are
+# re-exported here, because every caller has always imported them from this
+# module and a link-shape question should not require knowing the split.
+from quill.core.radio.youtube_urls import (  # noqa: F401
+    _VIDEO_ID_RE,
+    canonical_youtube_url,
+    is_youtube_playlist_url,
+    is_youtube_url,
+    youtube_video_id,
+)
+
 #: ``progress(fraction_0_to_1, message)`` -- the shape every on-demand install uses.
 ProgressCallback = Callable[[float, str], None]
-
-#: Hosts whose links this module knows how to turn into a stream. ``www.`` and a
-#: leading ``m.`` (mobile) are stripped before the comparison.
-_YOUTUBE_HOSTS: frozenset[str] = frozenset({
-    "youtube.com",
-    "music.youtube.com",
-    "youtu.be",
-    "youtube-nocookie.com",
-})
-
-#: A YouTube video id: 11 characters of the URL-safe base64 alphabet.
-_VIDEO_ID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")
-
-#: Path shapes that carry the video id as the last path segment.
-_ID_PATH_PREFIXES: tuple[str, ...] = ("/live/", "/shorts/", "/embed/", "/v/")
 
 
 class YouTubeError(CodedError):
@@ -105,6 +99,20 @@ class YouTubeStream:
     #: automatic one. Empty when the video published no captions at all.
     caption_url: str = ""
     caption_is_automatic: bool = False
+    #: Every selectable audio rendition, named rather than numbered -- and, on a
+    #: growing number of videos, including a **described** track that narrates
+    #: what is on screen. Read from the same response as everything else here.
+    #: See :mod:`quill.core.radio.audio_tracks`.
+    audio_tracks: tuple[object, ...] = ()
+    #: The picture, when there is a separate one. Empty for audio-only stations
+    #: and for a live HLS stream, which already carries its own video -- so
+    #: "no video stream here" and "no video at all" are not the same statement.
+    #: See :mod:`quill.core.radio.video_formats`.
+    video_url: str = ""
+    video_width: int = 0
+    video_height: int = 0
+    video_fps: float = 0.0
+    video_codec: str = ""
 
 
 @dataclass(frozen=True, slots=True)
@@ -115,112 +123,6 @@ class YouTubePlaylistEntry:
     title: str = ""
     duration_ms: int = 0
     uploader: str = ""
-
-
-def is_youtube_playlist_url(url: str) -> bool:
-    """True when *url* is a YouTube playlist rather than a single video.
-
-    A ``/playlist?list=`` link is unambiguous. A watch link that *also* carries
-    ``list=`` is deliberately **not** treated as a playlist: the listener asked
-    for that video, and silently expanding it into fifty stations because the
-    link happened to be copied from within a playlist would be a nasty surprise.
-    """
-    # Checked independently of is_youtube_url: a playlist link carries no video
-    # id, so that function rejects it by design.
-    candidate = (url or "").strip()
-    if not candidate.lower().startswith(("http://", "https://")):
-        return False
-    try:
-        parsed = urlparse(candidate)
-    except ValueError:
-        return False
-    host = (parsed.hostname or "").lower()
-    host = host[4:] if host.startswith("www.") else host
-    if host.startswith("m.") and host[2:] in _YOUTUBE_HOSTS:
-        host = host[2:]
-    if host not in _YOUTUBE_HOSTS:
-        return False
-    if parsed.path.rstrip("/") != "/playlist":
-        return False
-    return bool(parse_qs(parsed.query).get("list"))
-
-
-def is_youtube_url(url: str) -> bool:
-    """True when *url* is a YouTube link this module can resolve.
-
-    Covers watch links, ``youtu.be`` shorteners, ``/live/`` and ``/shorts/``
-    paths, embeds, YouTube Music, and a channel's live page
-    (``/@handle/live``, ``/channel/<id>/live``, ``/c/<name>/live``) -- the last
-    of which is how a listener follows a station that broadcasts continuously.
-    """
-    candidate = (url or "").strip()
-    if not candidate:
-        return False
-    if not candidate.lower().startswith(("http://", "https://")):
-        return False
-    try:
-        parsed = urlparse(candidate)
-    except ValueError:
-        return False
-    host = (parsed.hostname or "").lower()
-    host = host[4:] if host.startswith("www.") else host
-    if host.startswith("m.") and host[2:] in _YOUTUBE_HOSTS:
-        host = host[2:]
-    if host not in _YOUTUBE_HOSTS:
-        return False
-    if host == "youtu.be":
-        return bool(parsed.path.strip("/"))
-    path = parsed.path
-    if path in ("/watch", "/watch/"):
-        return bool(parse_qs(parsed.query).get("v"))
-    if path.rstrip("/").endswith("/live"):
-        return True
-    return any(path.startswith(prefix) for prefix in _ID_PATH_PREFIXES)
-
-
-def youtube_video_id(url: str) -> str:
-    """The 11-character video id in *url*, or "" when it carries none.
-
-    A channel-live link (``/@handle/live``) legitimately has no id -- yt-dlp
-    resolves the currently-live broadcast at play time -- so "" is a normal
-    answer, not a failure.
-    """
-    if not is_youtube_url(url):
-        return ""
-    parsed = urlparse(url.strip())
-    host = (parsed.hostname or "").lower()
-    if host.endswith("youtu.be"):
-        candidate = parsed.path.strip("/").split("/")[0]
-        return candidate if _VIDEO_ID_RE.match(candidate) else ""
-    if parsed.path in ("/watch", "/watch/"):
-        values = parse_qs(parsed.query).get("v") or [""]
-        return values[0] if _VIDEO_ID_RE.match(values[0]) else ""
-    for prefix in _ID_PATH_PREFIXES:
-        if parsed.path.startswith(prefix):
-            candidate = parsed.path[len(prefix) :].strip("/").split("/")[0]
-            return candidate if _VIDEO_ID_RE.match(candidate) else ""
-    return ""
-
-
-def canonical_youtube_url(url: str) -> str:
-    """The tidy link to *store* for this station.
-
-    A video collapses to ``https://www.youtube.com/watch?v=<id>``, dropping
-    playlist, timestamp, and tracking parameters that would otherwise ride along
-    in a saved favorite. A channel-live link keeps its own shape (there is no id
-    to canonicalize) with its query stripped. A non-YouTube URL is returned
-    untouched, so this is safe to call on anything.
-    """
-    candidate = (url or "").strip()
-    if not is_youtube_url(candidate):
-        return candidate
-    video_id = youtube_video_id(candidate)
-    if video_id:
-        return f"https://www.youtube.com/watch?v={video_id}"
-    parsed = urlparse(candidate)
-    host = (parsed.hostname or "").lower()
-    host = host[2:] if host.startswith("m.") else host
-    return f"https://{host}{parsed.path.rstrip('/')}"
 
 
 def youtube_version() -> str:
@@ -338,6 +240,19 @@ def _default_resolver(page_url: str) -> YouTubeStream:
         "quiet": True,
         "no_warnings": True,
         "skip_download": True,
+        # The iOS player client, added alongside the defaults, is what makes
+        # described audio findable on YouTube at all. The web client's response
+        # names a video's alternate renditions -- "English descriptive" -- but
+        # serves them URL-less (SABR), so yt-dlp discards them before this
+        # module ever sees one. The iOS client serves the same renditions with
+        # direct, playable URLs; yt-dlp flags them "MISSING POT" (served
+        # without a proof-of-origin token) and needs ``formats: missing_pot``
+        # to keep them. Verified live: the descriptive rendition streams. The
+        # clients are fetched concurrently, so this costs no wall-clock, and
+        # ordinary playback still selects from the default clients' formats.
+        "extractor_args": {
+            "youtube": {"player_client": ["default", "ios"], "formats": ["missing_pot"]}
+        },
     }
     with yt_dlp.YoutubeDL(options) as ydl:
         info = ydl.extract_info(page_url, download=False)
@@ -386,45 +301,20 @@ def parse_chapters(info: dict[str, object]) -> tuple[YouTubeChapter, ...]:
     return tuple(chapters)
 
 
-def pick_caption_track(info: dict[str, object]) -> tuple[str, bool]:
-    """The best timed caption track as ``(url, is_automatic)`` (pure).
-
-    A human-written track is preferred over an automatic one, and English is
-    preferred over other languages only as a tie-break -- a listener watching a
-    French video wants the French captions. Returns ``("", False)`` when the
-    video published none, which callers read as "no transcript available"
-    rather than as an error.
-    """
-    for key, automatic in (("subtitles", False), ("automatic_captions", True)):
-        tracks = info.get(key)
-        if not isinstance(tracks, dict) or not tracks:
-            continue
-        languages = sorted(tracks, key=lambda code: (not str(code).startswith("en"), str(code)))
-        for language in languages:
-            formats = tracks.get(language)
-            if not isinstance(formats, list):
-                continue
-            # Timed formats only: json3/srv*/vtt carry positions, and a plain
-            # text dump would be useless for both seeking and segmentation.
-            for wanted in ("vtt", "srt", "json3", "srv3", "srv1"):
-                for entry in formats:
-                    if not isinstance(entry, dict):
-                        continue
-                    if str(entry.get("ext", "")).lower() != wanted:
-                        continue
-                    url = str(entry.get("url", ""))
-                    if url.startswith("https://"):
-                        return url, automatic
-    return "", False
-
-
 def stream_from_info(info: dict[str, object], page_url: str) -> YouTubeStream:
     """Build a :class:`YouTubeStream` from a yt-dlp info dict (pure).
 
     Split out from the resolver so every field it captures is testable without
     touching the network.
     """
+    from quill.core.radio import audio_tracks
+    from quill.core.radio.captions import pick_caption_track
+    from quill.core.radio.video_formats import pick_video_stream
+
     caption_url, caption_is_automatic = pick_caption_track(info)
+    # Captured on every resolve, at no extra cost, exactly like the chapters and
+    # the captions -- and, like them, costing nothing when nobody asks to see it.
+    video = pick_video_stream(info)
     return YouTubeStream(
         stream_url=_best_audio_url(info),
         page_url=str(info.get("webpage_url") or page_url),
@@ -436,6 +326,12 @@ def stream_from_info(info: dict[str, object], page_url: str) -> YouTubeStream:
         chapters=parse_chapters(info),
         caption_url=caption_url,
         caption_is_automatic=caption_is_automatic,
+        audio_tracks=tuple(audio_tracks.tracks_from_info(info)),
+        video_url=video.url,
+        video_width=video.width,
+        video_height=video.height,
+        video_fps=video.fps,
+        video_codec=video.codec,
     )
 
 

@@ -58,6 +58,20 @@ class ManagerActionsMixin:
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_bulk_download(), download_item)
         played_item = menu.Append(wx.ID_ANY, f"Mark {count} Episodes as &Played")
         menu.Bind(wx.EVT_MENU, lambda _e: self._on_bulk_mark_played(), played_item)
+        rows = self._selected_rows()
+        # Filing is the Inbox's whole job, and triage happens a handful of
+        # episodes at a time -- so this is the one bulk action the Inbox
+        # actually needed, and the one it did not have. Offered only when
+        # something in the selection is routed there, since filing an episode
+        # of a show that never reaches the Inbox files it nowhere.
+        if any(show.route_to_inbox for _index, show, _episode in rows):
+            file_item = menu.Append(wx.ID_ANY, f"F&ile {count} Episodes to Inbox Folder...")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_bulk_file_to_inbox(), file_item)
+        playlist_item = menu.Append(wx.ID_ANY, f"Add {count} Episodes to Play&list...")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._on_bulk_add_to_playlist(), playlist_item)
+        if any(episode.downloaded_path for _index, _show, episode in rows):
+            remove_item = menu.Append(wx.ID_ANY, f"&Remove {count} Downloaded Copies")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_bulk_remove_download(), remove_item)
         menu.AppendSeparator()
 
     def _on_bulk_queue(self) -> None:
@@ -111,6 +125,123 @@ class ManagerActionsMixin:
         self._on_library_changed()
         self._refresh_episode_list()
         self._announce(f"Marked {changed} episode(s) as played")
+
+    def _on_bulk_file_to_inbox(self) -> None:
+        """File the whole selection into one Inbox folder, chosen once.
+
+        One picker for the selection rather than one per episode: being asked
+        the same question forty times is how a bulk action stops being one.
+        """
+        from quill.core.podcasts import inbox as inbox_ops
+        from quill.ui.podcasts.folder_picker_dialog import FolderPickerDialog
+
+        rows = [
+            (show, episode)
+            for _index, show, episode in self._selected_rows()
+            if show.route_to_inbox
+        ]
+        if not rows:
+            self._announce("None of those podcasts route to the Inbox.")
+            return
+        picker = FolderPickerDialog(
+            self.dialog,
+            title=f"File {len(rows)} Episodes to Inbox Folder",
+            scope="inbox",
+            folders_provider=lambda: list(self._library.inbox_folders),
+            create_folder=lambda name, parent_id: inbox_ops.add_inbox_folder(
+                self._library, name, parent_folder_id=parent_id
+            ),
+            rename_folder=lambda folder_id, name: inbox_ops.rename_inbox_folder(
+                self._library, folder_id, name
+            ),
+            delete_folder=lambda folder_id: inbox_ops.delete_inbox_folder(self._library, folder_id),
+            top_level_label="Inbox (top level)",
+            announce_cb=self._announce,
+        )
+        result = picker.show()
+        if not result.confirmed:
+            return
+        filed, remembered = inbox_ops.file_episodes(self._library, rows, result.folder_id)
+        self._on_library_changed()
+        self.refresh_tree()
+        message = f"Filed {filed} episode(s)"
+        if remembered:
+            # Said once per show that gained a default, not once per episode.
+            names = ", ".join(sorted(set(remembered)))
+            message += f". Future episodes of {names} will file here automatically"
+        self._announce(message)
+
+    def _pick_manual_playlist(self, count: int) -> object | None:
+        """Ask once which manual playlist the selection goes to.
+
+        Manual playlists only: a Smart Playlist re-asks its own question every
+        time it is opened, so adding episodes to one by hand would be putting
+        them somewhere the next refresh takes them straight back out of.
+        """
+        wx = self._wx
+        manual = sorted(
+            (p for p in self._library.playlists if p.kind == "manual"),
+            key=lambda p: p.name.casefold(),
+        )
+        if not manual:
+            self._announce(
+                "There are no playlists to add to yet. Make one from a single "
+                "episode's Add to Playlist first."
+            )
+            return None
+        with wx.SingleChoiceDialog(  # dialog_button_contract: exempt
+            self.dialog,
+            f"Add {count} episodes to which playlist?",
+            "Add to Playlist",
+            [p.name for p in manual],
+        ) as dialog:
+            if dialog.ShowModal() != wx.ID_OK:
+                return None
+            return manual[dialog.GetSelection()]
+
+    def _on_bulk_add_to_playlist(self) -> None:
+        """Add the selection to one manual playlist, chosen once."""
+        from quill.core.podcasts.models import QueueItem
+
+        rows = self._selected_rows()
+        playlist = self._pick_manual_playlist(len(rows))
+        if playlist is None:
+            return
+        existing = {(item.show_id, item.episode_guid) for item in playlist.items}
+        added = 0
+        for _index, show, episode in rows:
+            if (show.id, episode.guid) in existing:
+                continue
+            playlist.items.append(QueueItem(show_id=show.id, episode_guid=episode.guid))
+            existing.add((show.id, episode.guid))
+            added += 1
+        self._on_library_changed()
+        skipped = len(rows) - added
+        message = f"Added {added} episode(s) to {playlist.name}"
+        if skipped:
+            message += f"; {skipped} already there"
+        self._announce(message)
+
+    def _on_bulk_remove_download(self) -> None:
+        """Delete the downloaded copies in the selection, keeping the episodes.
+
+        Never touches an episode that is not downloaded, and never removes the
+        episode itself -- freeing space and unsubscribing are very different
+        things to want.
+        """
+        from quill.core.podcasts.retention import remove_downloaded_copy
+
+        removed = sum(
+            1 for _index, _show, episode in self._selected_rows() if remove_downloaded_copy(episode)
+        )
+        if not removed:
+            self._announce("None of those had a downloaded copy.")
+            return
+        self._on_library_changed()
+        self._refresh_episode_list()
+        self._announce(
+            f"Removed {removed} downloaded copy(ies). The episodes are still in your library."
+        )
 
     # -- per-show actions ------------------------------------------------
 

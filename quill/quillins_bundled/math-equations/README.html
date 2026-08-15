@@ -180,11 +180,85 @@
 <p>Bundled Quillin that inserts LaTeX or MathML equations at the
 caret.</p>
 <ul>
-<li>LaTeX equations are wrapped in <code>$</code> (inline) or
-<code>$$</code> (display) delimiters.</li>
+<li>LaTeX equations are wrapped in <code>\(...\)</code> (inline) or
+<code>$$...$$</code> (display) delimiters — both are MathJax’s own
+default math delimiters, so preview and HTML export need no extra
+configuration.</li>
 <li>MathML is inserted verbatim.</li>
 </ul>
 <p>Contributed via the Insert menu and the keyboard shortcut
 Ctrl+Shift+E.</p>
+<h2 id="math-autocorrect-style-abbreviations">Math AutoCorrect-style
+abbreviations</h2>
+<p>Typing a backslash code followed by a space or punctuation (matching
+Word’s Math AutoCorrect behavior) expands it to the corresponding symbol
+— e.g. <code>\alpha</code> becomes <code>α</code>, <code>\sqrt</code>
+becomes <code>√</code>, <code>\ne</code> becomes <code>≠</code>. Codes
+are seeded from the DAISY-published Word Math AutoCorrect list
+(daisy.org/MSMathCodes) and cover Greek letters, relations, set/logic
+notation, calculus notation, and geometry symbols. Disable individual
+entries or the whole set from the Insert Automation preferences page
+like any other contributed abbreviation.</p>
+<h2 id="common-formulas-gallery">Common Formulas gallery</h2>
+<p>Ten ready-made algebra and geometry formulas (quadratic formula,
+Pythagorean theorem, slope-intercept and point-slope forms,
+slope/distance/midpoint formulas, difference of squares, area and
+circumference of a circle) are available from <strong>Insert &gt;
+Snippet Gallery…</strong> — pick one and it inserts correctly formatted,
+with nothing to type. Each is a plain <code>$$...$$</code> block, so it
+can be selected and re-edited with Ctrl+Shift+E like any other
+equation.</p>
+<h2 id="explore-equation-structure">Explore Equation Structure</h2>
+<p>Select an equation (or type/paste one) and run <strong>Insert &gt;
+Explore Equation Structure…</strong>, or press <strong>Ctrl+Shift+Grave,
+F</strong>, to step through it piece by piece instead of reading it
+start to finish in one breath.</p>
+<p><strong>Keyboard interaction, precisely:</strong></p>
+<ul>
+<li>If nothing is selected, an ordinary text prompt asks for LaTeX or
+MathML first (Enter accepts, Escape cancels the command before it
+starts).</li>
+<li>Each step: QUILL <strong>announces</strong> the current piece
+(speech only — “Whole equation” at the top, or the piece’s name once
+you’ve descended), then opens a standard
+<code>wx.SingleChoiceDialog</code> (a normal Windows single-select list)
+with that piece’s children as choices, always followed by <strong>Read
+this part aloud</strong>, then <strong>Back up one level</strong> (once
+you’re below the root), then <strong>Done exploring</strong>.</li>
+<li>Inside that list: <strong>Up/Down arrows</strong> move the
+highlight, typing a letter jumps to the next matching item, and
+<strong>Enter</strong> (or <strong>OK</strong>) activates the
+highlighted choice:
+<ul>
+<li>a numbered child <strong>descends</strong> into it and reopens the
+list for its children (e.g. a fraction’s <strong>Numerator</strong> and
+<strong>Denominator</strong>);</li>
+<li><strong>Read this part aloud</strong> speaks a full reading of only
+the current piece, then <strong>reopens the same list at the same
+position</strong>;</li>
+<li><strong>Back up one level</strong> moves to the parent and reopens
+the list there;</li>
+<li><strong>Done exploring</strong> ends the session and returns focus
+to the editor.</li>
+</ul></li>
+<li><strong>Escape</strong> (or <strong>Cancel</strong>), at any list,
+at any depth, <strong>ends the whole session immediately</strong> — the
+same as Done exploring. It is <em>not</em> “go back one level”;
+<strong>Back up one level</strong> is the dedicated choice for
+that.</li>
+</ul>
+<p>Structural navigation itself (the numerator/denominator/base/exponent
+stepping above) is always the lightweight, dependency-free
+<code>quill.core.math.navigator</code> walker — no download, no setup.
+<strong>Read this part aloud</strong> is the one part that upgrades:
+install the free MathCAT engine (<strong>Help &gt; Download Optional
+Components… &gt; MathCAT math speech engine</strong>, ~3 MB,
+MIT-licensed, daisy/MathCATForC) and that command switches to the same
+natural-language math speech engine NVDA itself ships; without it, or if
+MathCAT fails on a given formula, the same command keeps working with
+navigator’s simpler template-based reading — nothing breaks either way.
+See <code>quill.core.math.speech</code> and
+<code>quill.core.math.mathcat_engine</code>, and the QUILL PRD §5.94 for
+the full architecture writeup.</p>
 </body>
 </html>

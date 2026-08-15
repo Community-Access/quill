@@ -938,11 +938,12 @@ class RadioAppFrame(
             wx.EVT_MENU, lambda _e: self.radio_update_youtube_support(), id=yt_update_id
         )
         station_menu.Append(find_id, "Find &Streams from a Website...")
-        # Which directories a search covers. Remembered, and a source that
-        # is off is never contacted -- see core/radio/search_sources.py.
-        sources_id = wx.NewIdRef()
-        station_menu.Append(sources_id, "Search So&urces...")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_search_sources(), id=sources_id)
+        # Remembered-choice items live in radio_settings_menu (GATE-11); the
+        # ids come back for pinning.
+        from quill.apps.radio_settings_menu import build_download_prefs_item, build_settings_items
+
+        sources_id, browse_sources_id = build_settings_items(self, station_menu, wx)
+        self._keep_menu_ids(browse_sources_id)
         # Spotify (future.spotify) is experimental: the ids are always created
         # (so _keep_menu_ids can pin them) but the items appear only while the
         # feature is on and Safe Mode is off. They live on Station, not Help,
@@ -1019,6 +1020,8 @@ class RadioAppFrame(
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._toggle_launch_at_startup(), id=self._startup_menu_item_id
         )
+        (download_prefs_id,) = build_download_prefs_item(self, station_menu, wx)
+        self._keep_menu_ids(download_prefs_id)
         prefs_id = wx.NewIdRef()
         station_menu.Append(prefs_id, "&Preferences...\tCtrl+,")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_preferences(), id=prefs_id)
@@ -1062,38 +1065,16 @@ class RadioAppFrame(
         playback_menu.Append(rewind_id, "Re&wind 30 Seconds\tCtrl+Shift+Left")
         playback_menu.Append(forward_id, "&Forward 30 Seconds\tCtrl+Shift+Right")
         playback_menu.Append(live_id, "Back to &Live\tCtrl+Shift+L")
-        # Video: a finished YouTube video has a timeline, so it can be scrubbed,
-        # sped up and navigated by chapter -- none of which a live broadcast
-        # can do. Every one of these says so out loud rather than doing nothing
-        # when what is playing is live. Wiring only; the behaviour lives in
-        # ui/radio/bounded_playback_ui.py (radio.py is at budget).
-        from quill.ui.radio import bounded_playback_ui as _video
+        # Video: a finished YouTube video has a timeline, so it can be
+        # scrubbed, sped up, navigated by chapter and read as a transcript --
+        # none of which a live broadcast can do, and every one of which says so
+        # out loud rather than doing nothing. Wiring lives in
+        # quill/apps/radio_video_menu.py; radio.py is at its GATE-11 budget.
+        from quill.apps.radio_video_menu import build_video_playback_items
 
-        playback_menu.AppendSeparator()
-        chapters_id, next_ch_id, prev_ch_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        playback_menu.Append(chapters_id, "C&hapters...\tCtrl+Shift+C")
-        playback_menu.Append(next_ch_id, "Ne&xt Chapter\tCtrl+Alt+Right")
-        playback_menu.Append(prev_ch_id, "Pre&vious Chapter\tCtrl+Alt+Left")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.open_chapters(self), id=chapters_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.next_chapter(self), id=next_ch_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.previous_chapter(self), id=prev_ch_id)
-        faster_id, slower_id, normal_id, where_id = (
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-        )
-        playback_menu.Append(faster_id, "Play &Faster\tCtrl+Alt+Up")
-        playback_menu.Append(slower_id, "Play Slo&wer\tCtrl+Alt+Down")
-        playback_menu.Append(normal_id, "&Normal Speed\tCtrl+Alt+0")
-        playback_menu.Append(where_id, "Where &Am I?\tCtrl+Shift+P")
-        goto_pos_id = wx.NewIdRef()
-        playback_menu.Append(goto_pos_id, "&Go to Position...\tCtrl+Shift+J")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.go_to_position(self), id=goto_pos_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.speed_up(self), id=faster_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.slow_down(self), id=slower_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.reset_speed(self), id=normal_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: _video.announce_position(self), id=where_id)
+        # Pinned as a group rather than unpacked: the helper owns which items
+        # exist, and a fixed-length unpack here would break every time it grew.
+        video_menu_ids = build_video_playback_items(self, playback_menu, wx)
         playback_menu.AppendSeparator()
         whats_playing_id = wx.NewIdRef()
         playback_menu.Append(whats_playing_id, "&What's Playing?\tCtrl+T")
@@ -1286,6 +1267,11 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(True), id=expand_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(False), id=collapse_id)
         view_menu.AppendSeparator()
+        downloads_id = wx.NewIdRef()
+        view_menu.Append(downloads_id, "&Downloads...	Ctrl+Shift+J")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_download_queue(), id=downloads_id)
+        self._keep_menu_ids(downloads_id)
+        view_menu.AppendSeparator()
         features_id = wx.NewIdRef()
         view_menu.Append(features_id, "&Customize Features...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_app_features(), id=features_id)
@@ -1314,6 +1300,12 @@ class RadioAppFrame(
                 self._launch_sibling,
                 exclude="radio",
                 retain=self._keep_menu_ids,
+                # Quill Inkwell is deliberately off Quill Radio's menu for 3.0.
+                # It is released elsewhere in the family; a listener opening a
+                # radio app has no reason to be offered a text expander, and a
+                # menu item that opens one is a promise this release did not
+                # mean to make.
+                also_exclude=("inkwell",),
             ),
             "&QuillVille",
         )
@@ -1335,14 +1327,7 @@ class RadioAppFrame(
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
             sources_id,
-            chapters_id,
-            next_ch_id,
-            prev_ch_id,
-            faster_id,
-            slower_id,
-            normal_id,
-            where_id,
-            goto_pos_id,
+            *video_menu_ids,
             yt_update_id,
             spotify_connect_id,
             spotify_browse_id,
@@ -1431,9 +1416,23 @@ class RadioAppFrame(
         if callable(skip):
             skip()
 
+    def _open_download_queue(self) -> None:
+        """View > Downloads... See ``ui/radio/download_menu.py``."""
+        from quill.ui.radio import download_menu
+
+        download_menu.open_queue(self)
+
     def _send_to_tray(self) -> None:
+        """Hide to the tray, saying what happens to any downloads still going.
+
+        Said either way: a queue that silently keeps running is exactly as
+        surprising as one that silently stops, and which happens is a
+        preference somebody set once and will not remember.
+        """
+        from quill.ui.radio import download_menu
+
         self.frame.Hide()
-        self._announce("Quill Radio is still running in the system tray.")
+        self._announce(download_menu.tray_message(self))
 
     # -- single instance (#1152) ------------------------------------------------
 
@@ -1941,6 +1940,7 @@ class RadioAppFrame(
                 optilab_mode=history.optilab_mode,
                 optilab_input_db=history.optilab_input_db,
                 optilab_auto_adapt=history.optilab_auto_adapt,
+                optilab_exact_live=history.optilab_exact_live,
             )
         self._announce(f"Reset {count} station{plural} to the shared default.")
 

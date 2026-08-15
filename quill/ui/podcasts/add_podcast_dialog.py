@@ -231,6 +231,7 @@ class AddPodcastDialog:
             homepage=info.homepage,
             artwork_url=info.artwork_url,
             feed_username=username,
+            tags=info.tags,
             episodes=info.episodes,
         )
         added = self._library.add_show(show)

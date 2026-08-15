@@ -327,7 +327,15 @@ class ExpansionHook:
             library = self._get_library()
         except Exception:  # noqa: BLE001
             return False
-        match = match_buffer(self._buffer, library, self._get_clipboard_text())
+        # The foreground window is already in hand from the deny-list check
+        # above, so scoping an entry to particular applications costs nothing
+        # extra per keystroke.
+        match = match_buffer(
+            self._buffer,
+            library,
+            self._get_clipboard_text(),
+            process_name=window.process_name,
+        )
         if match is None:
             return False
         self._buffer.clear()

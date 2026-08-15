@@ -29,6 +29,22 @@ def _delete_file(path_str: str) -> None:
         pass
 
 
+def remove_downloaded_copy(episode: PodcastEpisode) -> bool:
+    """Delete an episode's downloaded file, keeping the episode itself.
+
+    Freeing space and unsubscribing are very different things to want, and this
+    is the first: the episode stays in the library, keeps its played mark and
+    its position, and can be downloaded again. Returns whether there was a copy
+    to remove, so a bulk caller can count honestly rather than claiming work it
+    did not do.
+    """
+    if not episode.downloaded_path:
+        return False
+    _delete_file(episode.downloaded_path)
+    episode.downloaded_path = ""
+    return True
+
+
 def apply_keep_last_n(show: PodcastShow, settings: PodcastSettings) -> list[PodcastEpisode]:
     """For ``retention == "keep_last_n"``, delete the oldest downloaded
     episodes beyond ``retention_count``; returns the episodes pruned."""

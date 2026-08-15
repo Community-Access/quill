@@ -27,6 +27,7 @@ from quill.core.podcasts.models import (
     QueueItem,
     now_iso,
 )
+from quill.core.podcasts.onboarding import OnboardingState
 
 _FILE_NAME = "podcasts_library.json"
 
@@ -61,6 +62,11 @@ class PodcastLibrary:
     #: view -- which is why it lives here and not in virtual_views.py.
     #: Operations live in podcasts.expiration.
     recently_expired: list[ExpiredEntry] = field(default_factory=list)
+    #: What the listener has already been shown: the first-run flow, and which
+    #: one-shot tips have fired. Stored as a set of ids rather than a version
+    #: stamp, so a tip added next year still fires for somebody who has been
+    #: using Cast for a year. Operations live in podcasts.onboarding.
+    onboarding: OnboardingState = field(default_factory=OnboardingState)
 
     def queue_episode(self, show_id: str, episode_guid: str) -> bool:
         """Append an episode to the Play Queue (False when already queued).
@@ -256,6 +262,13 @@ def merge_episodes(
         current.chapters_url = fetched_episode.chapters_url
         current.transcript_url = fetched_episode.transcript_url
         current.transcript_type = fetched_episode.transcript_type
+        # Feed-supplied like everything above it: a publisher who adds a guest
+        # credit or marks a soundbite after publishing gets it on the next
+        # refresh. Never cleared by a feed that has stopped carrying them --
+        # a namespace the publisher dropped is not a reason to forget what it
+        # said, and an empty replacement is far more often a partial feed.
+        if not fetched_episode.tags.is_empty:
+            current.tags = fetched_episode.tags
     return new_count
 
 
@@ -352,6 +365,7 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         inbox_assignments=inbox_assignments,
         playlists=playlists,
         recently_expired=recently_expired,
+        onboarding=OnboardingState.from_dict(raw.get("onboarding")),
     )
 
 
@@ -376,5 +390,6 @@ def save_library(data_dir: Path, library: PodcastLibrary) -> None:
             "inbox_assignments": dict(library.inbox_assignments),
             "playlists": [p.to_dict() for p in library.playlists],
             "recently_expired": [e.to_dict() for e in library.recently_expired],
+            "onboarding": library.onboarding.to_dict(),
         },
     )

@@ -45,6 +45,7 @@ from quill.core.radio.spotify_search import (
     youtube_search_stations,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.radio import library_search
 
 _FAVORITES = "Favorites"
 _ACB_MEDIA = acb_media.CATEGORY_LABEL
@@ -1219,58 +1220,35 @@ class StationBrowserDialog:
         # this so arrowing the dropdown does not fling focus to the results.
         if self._current_results and getattr(self, "_focus_results_after_search", True):
             self._results.SetFocus()
+        # The libraries answer separately and append as they land, so a slow one
+        # never holds up the stations. See quill/ui/radio/library_search.py.
+        library_search.begin(self, self._search_query)
+
+    def _show_category_for_library_results(self) -> None:
+        """Re-render after a library's rows land, without moving the cursor.
+
+        Somebody may already be arrowing the station results by the time a
+        library answers; re-selecting row 0 under them would be worse than the
+        rows arriving late.
+        """
+        index = self._results.GetFirstSelected()
+        self._show_category(_SEARCH_RESULTS)
+        if index >= 0 and index < len(self._current_results):
+            self._results.Select(index)
+            self._results.Focus(index)
 
     def _on_more_stations(self, _event: object) -> None:
-        """Fetch and append the next page of RadioBrowser results (#1064)."""
-        if not self._search_more_available:
-            return
-        self._more_btn.Enable(False)
-        self._status.SetLabel("Loading more stations...")
-        offset = self._search_offset
-        name, tag, country = self._search_query, self._search_tag, self._search_country
+        """Fetch and append the next page of results (#1064).
+        See :mod:`quill.ui.radio.search_paging`."""
+        from quill.ui.radio import search_paging
 
-        def _do_more(**_kwargs: Any) -> list[RadioStation]:
-            return radio_browser.search_stations(
-                name,
-                tag=tag,
-                country=country,
-                limit=_SEARCH_LIMIT,
-                offset=offset,
-                safe_mode=self._safe_mode,
-            )
-
-        self._task_manager.submit(
-            "radio-search-more",
-            _do_more,
-            on_success=lambda _op, stations: self._on_more_done(stations, None),
-            on_failure=lambda _op, exc: self._on_more_done([], exc),
-        )
+        search_paging.fetch_more(self)
 
     def _on_more_done(self, stations: list[RadioStation], error: BaseException | None) -> None:
-        if error is not None:
-            self._status.SetLabel(f"Could not load more: {error}")
-            self._more_btn.Enable(True)  # let the user try again
-            return
-        first_new_index = len(self._search_results)
-        self._search_rb = self._search_rb + stations
-        self._search_results = merge_and_rank(
-            [self._search_rb, self._search_extras], self._search_query
-        )
-        self._search_offset += len(stations)
-        self._search_more_available = len(stations) >= _SEARCH_LIMIT
-        self._more_btn.Enable(self._search_more_available)
-        self._show_category(_SEARCH_RESULTS)
-        # Land focus on the first newly added station so the reader picks up
-        # right where the previous page ended, not back at the top.
-        if stations and first_new_index < len(self._current_results):
-            self._results.Select(first_new_index)
-            self._results.Focus(first_new_index)
-            self._results.EnsureVisible(first_new_index)
-        self._announce(
-            f"Added {len(stations)} more; {len(self._search_results)} stations now."
-            if stations
-            else "No more stations."
-        )
+        """Merge a new page in, landing the cursor on its first row."""
+        from quill.ui.radio import search_paging
+
+        search_paging.more_arrived(self, stations, error)
 
     def _on_result_selected(self, event: object) -> None:
         index = event.GetIndex()

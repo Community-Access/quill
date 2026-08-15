@@ -9,9 +9,23 @@ is held. :mod:`quill.core.radio.recording` re-exports the public names, so
 
 from __future__ import annotations
 
+import logging
+import os
 import re
+import subprocess
 from datetime import datetime
 from pathlib import Path
+
+from quill.core import http_client
+from quill.core.speech.ffmpeg import find_ffprobe
+from quill.stability.redaction import format_args_for_log
+
+logger = logging.getLogger(__name__)
+
+#: How long the raw-capture codec probe may take before it gives up and falls
+#: back to the universal container. Short on purpose: this runs on the path to
+#: starting a recording, and a slow answer is worse than a safe default.
+_PROBE_TIMEOUT_SECONDS = 10.0
 
 #: Formats a live stream can be recorded to. The first four re-encode the
 #: decoded audio to a chosen codec. ``"copy"`` is the raw-capture mode
@@ -36,6 +50,28 @@ _CODECS = {"mp3": "libmp3lame", "ogg": "libvorbis", "flac": "flac", "wav": "pcm_
 #: Lossless re-encodes (flac/wav) and the raw stream copy ignore it entirely
 #: (see ``build_record_command``: ``-b:a`` is only emitted for these).
 BITRATE_FORMATS = ("mp3", "ogg")
+
+
+def encode_args_for_format(format: str, bitrate_kbps: int) -> list[str]:
+    """The codec/quality ffmpeg args for a recording *format* (pure).
+
+    One source of truth for "how a recording is encoded", shared by
+    :func:`build_record_command` (the capture itself) and the exact-OptiLab
+    post-pass (:mod:`quill.core.audio.exact_optilab`), which re-encodes the
+    finished file and must land on the same codec and bitrate it was recorded
+    with -- otherwise turning exact processing on would silently change the
+    format of what somebody keeps.
+
+    ``"copy"`` has no encode args at all: a raw capture is never decoded, so it
+    cannot be re-encoded without ceasing to be one. Callers must not post-process
+    a raw capture.
+    """
+    if format == "copy":
+        return []
+    args = ["-c:a", _CODECS.get(format, "libmp3lame")]
+    if format in BITRATE_FORMATS:
+        args.extend(["-b:a", f"{max(32, bitrate_kbps)}k"])
+    return args
 
 
 def format_uses_bitrate(format: str) -> bool:
@@ -204,9 +240,7 @@ def build_record_command(
     else:
         if filter_graph:
             args.extend(["-af", filter_graph])
-        args.extend(["-c:a", _CODECS.get(format, "libmp3lame")])
-        if format in ("mp3", "ogg"):
-            args.extend(["-b:a", f"{max(32, bitrate_kbps)}k"])
+        args.extend(encode_args_for_format(format, bitrate_kbps))
     args.extend(["-t", str(max(1, duration_seconds)), str(out_path)])
     return args
 
@@ -252,3 +286,42 @@ def raw_capture_extension(codec: str) -> str:
     Matroska audio (``.mka``), which stream-copies any codec losslessly.
     """
     return _RAW_EXT_BY_CODEC.get(codec.strip().lower(), _RAW_FALLBACK_EXT)
+
+
+def probe_capture_extension(stream_url: str) -> str:
+    """Probe *stream_url*'s audio codec and return the raw-capture extension.
+
+    Lives here rather than in ``recording.py`` because this is where the
+    probe command is built and its output parsed -- the runner belongs with
+    the pair it drives, and ``recording.py`` is at its GATE-11 ceiling.
+
+    Best-effort: a missing ffprobe, a probe error, or a timeout all fall back
+    to Matroska audio (``.mka``), the universal lossless copy container, so
+    raw capture always has a valid destination.
+    """
+    ffprobe = find_ffprobe()
+    if ffprobe is None:
+        return raw_capture_extension("")
+    extra_kwargs: dict = {}
+    if os.name == "nt":
+        extra_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+    try:
+        completed = subprocess.run(
+            build_probe_codec_command(ffprobe, stream_url, user_agent=http_client.user_agent()),
+            capture_output=True,
+            text=True,
+            timeout=_PROBE_TIMEOUT_SECONDS,
+            check=False,
+            **extra_kwargs,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        logger.debug("ffprobe failed for raw-capture probe: %s", exc)
+        return raw_capture_extension("")
+    codec = parse_probe_codec(completed.stdout)
+    if not codec:
+        # #5 observability: the probe ran but gave us no codec. ffprobe's own
+        # stderr (redacted) says why -- previously captured but never logged, so
+        # a "why did my recording become .mka?" question had no answer in the log.
+        stderr = format_args_for_log((completed.stderr or "").strip().splitlines()[-3:])
+        logger.debug("ffprobe returned no codec (falling back to .mka); stderr: %s", stderr)
+    return raw_capture_extension(codec)

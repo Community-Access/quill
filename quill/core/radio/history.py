@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.audio_enhance import EQ_PRESETS
+from quill.core.radio.browse_visibility import normalize as normalize_browse_sources
 from quill.core.radio.models import RadioStation
 from quill.core.radio.play_queue import normalize_repeat_mode
 from quill.core.radio.search_sources import DEFAULT_ENABLED as DEFAULT_SEARCH_SOURCES
@@ -76,6 +77,12 @@ class RadioHistory:
     #: The last Source-facet choice in Find Stations, re-applied on open -- a
     #: filter you must re-pick every search is not a filter.
     search_source_facet: str = ""
+    #: Which branches Browse Stations shows. ``None`` means "never set", which
+    #: matters: it lets a branch added in a later release appear for people who
+    #: never touched the setting, instead of being frozen out by a stored list
+    #: that predates it. A branch that is off is not in the tree at all and is
+    #: never contacted -- see quill.core.radio.browse_visibility.
+    browse_sources_enabled: tuple[str, ...] | None = None
     #: Show the arrow-navigable status bar along the bottom of the main window.
     #: On by default; View > Show Status Bar toggles it. F6 moves focus into it.
     show_status_bar: bool = True
@@ -164,6 +171,18 @@ class RadioHistory:
     optilab_mode: str = "off"
     optilab_input_db: float = 0.0
     optilab_auto_adapt: int = 0
+    #: "Use exact OptiLab processing when saving" -- recordings and converted
+    #: files go through the real OptiLab Core engine instead of the ffmpeg
+    #: adaptation of it. Off by default, and deliberately scoped to *saved
+    #: files*: live listening cannot run it (nothing on that path ever holds a
+    #: PCM sample) and a setting that silently applied to only some of what it
+    #: named would be the exact failure rule A-9 forbids.
+    optilab_exact: bool = False
+    #: The same, extended to *listening*: the stream is relayed through the real
+    #: engine as it plays. Separate from ``optilab_exact`` because it costs
+    #: something the saved-file case does not -- a slower start and a reconnect
+    #: on every change -- so it must be chosen, never inherited.
+    optilab_exact_live: bool = False
     #: Favorites sort order for the tree/menus: "az" (A-Z, the default so a
     #: fresh list is alphabetized), "za" (Z-A), or "manual" (the hand-arranged
     #: Move Up/Down order). Applies to folders and to stations; a folder may
@@ -252,6 +271,11 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.recordings_repeat = normalize_repeat_mode(raw.get("recordings_repeat"))
         history.search_sources_enabled = normalize_search_sources(raw.get("search_sources_enabled"))
         history.search_source_facet = str(raw.get("search_source_facet", "") or "")
+        # Present-vs-absent is load-bearing: absent stays None ("never set").
+        if "browse_sources_enabled" in raw:
+            history.browse_sources_enabled = normalize_browse_sources(
+                raw.get("browse_sources_enabled")
+            )
         history.show_status_bar = bool(raw.get("show_status_bar", True))
         history.ui_font_scale = min(2.0, max(1.0, _coerce_float(raw.get("ui_font_scale"), 1.0)))
         history.prevent_sleep = bool(raw.get("prevent_sleep", True))
@@ -310,6 +334,8 @@ def load_history(data_dir: Path) -> RadioHistory:
             history.optilab_auto_adapt = max(0, min(100, raw_adapt))
         except (TypeError, ValueError):
             history.optilab_auto_adapt = 0
+        history.optilab_exact = bool(raw.get("optilab_exact", False))
+        history.optilab_exact_live = bool(raw.get("optilab_exact_live", False))
         # Favorites sort order (added in 2.0.2). A store written before that
         # release has no key and kept favorites in the user's hand-arranged
         # order; defaulting an absent key to "az" silently re-sorted 30-plus
@@ -369,6 +395,11 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "recordings_repeat": history.recordings_repeat,
             "search_sources_enabled": list(history.search_sources_enabled),
             "search_source_facet": history.search_source_facet,
+            **(
+                {"browse_sources_enabled": list(history.browse_sources_enabled)}
+                if history.browse_sources_enabled is not None
+                else {}
+            ),
             "show_status_bar": history.show_status_bar,
             "ui_font_scale": history.ui_font_scale,
             "prevent_sleep": history.prevent_sleep,
@@ -398,6 +429,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "optilab_mode": history.optilab_mode,
             "optilab_input_db": history.optilab_input_db,
             "optilab_auto_adapt": history.optilab_auto_adapt,
+            "optilab_exact": history.optilab_exact,
+            "optilab_exact_live": history.optilab_exact_live,
             "alt_f4_to_tray": history.alt_f4_to_tray,
             "debug_mode": history.debug_mode,
             "last_seen": history.last_seen,

@@ -42,6 +42,7 @@ def build_quillville_menu(
     *,
     exclude: str,
     retain: Callable[[Any], None],
+    also_exclude: tuple[str, ...] = (),
 ) -> Any:
     """Build the QuillVille menu for one app.
 
@@ -50,10 +51,16 @@ def build_quillville_menu(
     menu-item id for the frame's lifetime (a bare ``NewIdRef`` would otherwise
     hand its id to whatever allocates one next). Bindings go on ``frame`` so the
     menu-bar events are caught.
+
+    ``also_exclude`` lets one app leave a sibling off its own menu without
+    changing whether that sibling is released for everybody else. A menu item
+    that opens an app somebody is not expecting to be shipped alongside this
+    release is a promise this release did not mean to make.
     """
     menu = wx.Menu()
+    skip = {exclude, *also_exclude}
     for key in QUILLVILLE_APP_ORDER:
-        if key == exclude or not is_app_released(key):
+        if key in skip or not is_app_released(key):
             continue
         item_id = wx.NewIdRef()
         menu.Append(item_id, f"Open {APP_NAMES[key]}")

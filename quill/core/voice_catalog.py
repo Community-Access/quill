@@ -249,6 +249,14 @@ PIPER_VOICES: list[tuple[str, str]] = [
     ("en_US-libritts_r-medium", "LibriTTS R (US, medium)"),
     ("en_US-ljspeech-high", "LJSpeech (US, high)"),
     ("en_US-ljspeech-medium", "LJSpeech (US, medium)"),
+    # NOT listed: en_US-mike-medium. It exists upstream in rhasspy/piper-voices,
+    # but it is a piper 1.5.0-era voice whose phoneme_id_map uses multi-codepoint
+    # diphthong symbols (aɪ aʊ ɔɪ eɪ oʊ). QUILL pins the last MIT-licensed engine
+    # (piper_install.PIPER_RELEASE_TAG = 2023.11.14-2), whose piper_phonemize
+    # rejects them outright -- synthesis dies with `"aɪ" is not a single
+    # codepoint`, after the user has already downloaded ~60 MB. Every voice above
+    # is piper_version <= 1.0.0 with a single-codepoint map. Re-check this list
+    # only when the engine pin moves (see OHF-Voice/piper1-gpl).
     ("en_US-norman-medium", "Norman (US, medium)"),
     ("en_US-reza_ibrahim-medium", "Reza Ibrahim (US, medium)"),
     ("en_US-ryan-high", "Ryan (US, high)"),

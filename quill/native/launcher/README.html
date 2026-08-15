@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="quillville-native-launcher-c-source">QuillVille native launcher
+(C source)</h1>
+<blockquote>
+<p><strong>For the design and rationale, read <a
+href="../../../docs/design/native-launcher-2026-07-24.md"><code>docs/design/native-launcher-2026-07-24.md</code></a>.</strong>
+This README is a 60-second orientation for someone landing in the
+directory and wondering what to do.</p>
+</blockquote>
+<h2 id="what-this-is">What this is</h2>
+<p>A tiny, genuinely-compiled-from-C Windows / macOS / Linux launcher
+that replaces the prior pattern of stamping a copy of
+<code>pythonw.exe</code> with <code>rcedit</code> to make the
+user-facing exe.</p>
+<p>The compiled launcher is <strong>a process-spawn shim</strong> — it
+does not embed CPython. It:</p>
+<ol type="1">
+<li>Computes its own install root from its executable path.</li>
+<li>Resolves a Python interpreter (shared QuillVille runtime → private
+embedded runtime → legacy <code>pythonw.exe</code> fallback).</li>
+<li>Spawns the resolved interpreter with the right
+<code>-m quill.apps.&lt;product&gt;</code> argv and the
+<code>QUILL_APP_ROOT</code> / <code>QUILL_PORTABLE</code> env vars.</li>
+<li>Forwards the exit code.</li>
+</ol>
+<h2 id="files">Files</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>launcher.c</code></td>
+<td>The launcher body. <code>wmain</code> on Windows, <code>main</code>
+on POSIX.</td>
+</tr>
+<tr>
+<td><code>runtime_resolve.c</code></td>
+<td>Path-walk + version-marker validation. The never-crash
+contract.</td>
+</tr>
+<tr>
+<td><code>runtime_resolve.h</code></td>
+<td><code>QlRuntime</code> struct + the two public entry points.</td>
+</tr>
+<tr>
+<td><code>product.h.in</code></td>
+<td>Per-product identity template. CMake substitutes the values at
+configure time.</td>
+</tr>
+<tr>
+<td><code>CMakeLists.txt</code></td>
+<td>Build script. One executable target per product, configured by
+<code>-DPRODUCT_NAME=…</code> etc.</td>
+</tr>
+</tbody>
+</table>
+<p>The same source compiles on Windows (MSVC), macOS
+(<code>clang</code>), and Linux (<code>gcc</code>) — the only
+<code>#ifdef _WIN32</code> branches are <code>GetModuleFileNameA</code>
+vs <code>readlink("/proc/self/exe")</code> and
+<code>CreateProcessW</code> vs <code>fork/execv</code>.</p>
+<h2 id="how-to-build">How to build</h2>
+<p>The launchers are not built by hand. The build wrapper is <a
+href="../../../scripts/build_native_launcher.py"><code>scripts/build_native_launcher.py</code></a>
+and it is invoked by the per-product build scripts:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Per-product (run from the per-product repo, e.g. standalone/radio):</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_native_launcher<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>product radio <span class="op">--</span>out dist\QuillRadio</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_native_launcher<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>product weather <span class="op">--</span>out dist\QuillWeather</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_native_launcher<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>product studio <span class="op">--</span>out dist\QuillAudioStudio</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Main QUILL (run from the quill repo root):</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>build_native_launcher<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>product quill <span class="op">--</span>out dist\windows\portable</span></code></pre></div>
+<p>The wrapper detects MSVC 2022 (the <code>BuildTools</code> edition
+first, then Community / Professional / Enterprise), configures CMake
+with the per-product identity, builds, and copies the resulting
+<code>&lt;product&gt;.exe</code> to the requested <code>--out</code>
+directory.</p>
+<p><strong>The build is best-effort by design.</strong> If MSVC or cmake
+is missing on the build machine, the wrapper prints a clear message and
+exits 0 with no exe produced. The caller falls back to the legacy
+stamped-pythonw launcher so the release still ships. Once every
+supported build machine has MSVC + cmake, the fallback is removed.</p>
+<h2 id="manual-build-when-you-need-to-iterate-on-the-c-source">Manual
+build (when you need to iterate on the C source)</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> quill\native\launcher</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mkdir build</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> build</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>cmake <span class="op">-</span>G <span class="st">&quot;Visual Studio 17 2022&quot;</span> <span class="op">-</span>A x64 `</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>DPRODUCT_NAME<span class="op">=</span>QuillRadio `</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>DPRODUCT_DISPLAY_NAME<span class="op">=</span><span class="st">&quot;Quill Radio&quot;</span> `</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>DPRODUCT_VERSION<span class="op">=</span><span class="dv">2.2</span><span class="op">.</span><span class="dv">0</span> `</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>DPRODUCT_PYTHON_MODULE<span class="op">=</span>quill<span class="op">.</span><span class="fu">apps</span><span class="op">.</span><span class="fu">radio</span> `</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>DPRODUCT_REPO<span class="op">=</span>Community-Access<span class="op">/</span>quill `</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>DPRODUCT_APP_ID<span class="op">=</span>CommunityAccess<span class="op">.</span><span class="fu">QuillRadio</span> `</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="op">-</span>DPRODUCT_ICON<span class="op">=../../../</span>standalone<span class="op">/</span>radio<span class="op">/</span>assets<span class="op">/</span>quill-radio<span class="op">.</span><span class="fu">ico</span> `</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="op">..</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>cmake <span class="op">--</span>build <span class="op">.</span> <span class="op">--</span>config Release</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Result: build/Release/QuillRadio.exe</span></span></code></pre></div>
+<h2 id="tests">Tests</h2>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>native<span class="op">/</span>test_runtime_resolver<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>unit<span class="op">/</span>scripts<span class="op">/</span>test_build_native_launcher<span class="op">.</span><span class="fu">py</span> <span class="op">-</span>v</span></code></pre></div>
+<p>The first is a Python mirror of the C runtime resolver and exercises
+the algorithm in isolation. The second is the per-product identity
+contract and the cross-product storage-mode allowlist check.</p>
+<h2 id="what-this-is-not">What this is NOT</h2>
+<ul>
+<li><strong>Not a Python C-API host.</strong> The launcher does not link
+<code>python313.dll</code> on Windows. It <code>exec</code>s a separate
+process that does.</li>
+<li><strong>Not a PyInstaller bootloader.</strong> The PyInstaller
+bootloaders were the same repackaging pattern this launcher was designed
+to remove.</li>
+<li><strong>Not a code-signing tool.</strong> Signtool is invoked by a
+follow-up <code>--sign</code> flag (a separate PR).</li>
+<li><strong>Not the source of truth for the marker file format.</strong>
+The <code>quillville-runtime.json</code> shape is owned by <a
+href="../../core/runtime_marker.py"><code>quill/core/runtime_marker.py</code></a>.
+The C side reads the marker; the Python side writes it. Update
+both.</li>
+</ul>
+</body>
+</html>

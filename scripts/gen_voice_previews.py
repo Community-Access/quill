@@ -9,6 +9,12 @@ Requires:
   - Engine binaries / models already installed in their default locations
     (or specified via CLI flags)
 
+For Piper, both requirements can be met from the repo -- no hand-staging::
+
+    python scripts/fetch_build_deps.py --only piper      # stages build/deps/piper/piper.exe
+    python scripts/gen_voice_previews.py --engines piper \
+        --piper-exe build/deps/piper/piper.exe --fetch-missing-voices
+
 Usage
 -----
     python scripts/gen_voice_previews.py preview_text.txt
@@ -91,6 +97,42 @@ def _wav_to_mp3(wav: Path, mp3: Path) -> None:
 # ---------------------------------------------------------------------------
 
 
+def _fetch_missing_piper_models(model_dir: Path, *, overwrite: bool) -> None:
+    """Download any catalog Piper voice whose ``.onnx`` is not in *model_dir*.
+
+    Reuses :func:`quill.core.speech.piper_install.download_piper_voice`, so each
+    voice comes from QUILL's SHA-verified ``assets-v1`` mirror when it is
+    published and falls back to upstream rhasspy/piper-voices otherwise --
+    exactly what a user's in-app download does. A voice that only *some* preview
+    run needs no longer has to be staged by hand.
+    """
+    from quill.core.speech.piper_install import PiperInstallError, download_piper_voice
+    from quill.core.voice_catalog import PIPER_VOICES
+
+    preview_dir = _PREVIEW_DIR / "piper"
+    missing = [
+        voice_id
+        for voice_id, _label in PIPER_VOICES
+        if not (model_dir / f"{voice_id}.onnx").exists()
+        # Nothing to synthesize for a voice that already has its preview, unless
+        # the caller is regenerating -- do not download ~60 MB to skip a file.
+        and (overwrite or not (preview_dir / f"{voice_id}.mp3").exists())
+    ]
+    if not missing:
+        print("  [piper] all catalog voice models needed for previews are present")
+        return
+
+    print(f"  [piper] fetching {len(missing)} missing voice model(s) into {model_dir}")
+    for voice_id in missing:
+        print(f"  [piper] fetch {voice_id} ...", end="", flush=True)
+        try:
+            download_piper_voice(voice_id, model_dir)
+            print(" OK")
+        except PiperInstallError as exc:
+            # Not fatal: the generator reports the voice as skipped below.
+            print(f" ERROR: {exc}")
+
+
 def _gen_piper(
     text: str,
     out_dir: Path,
@@ -98,8 +140,9 @@ def _gen_piper(
     piper_exe: str | None,
     piper_model_dir: str | None,
     overwrite: bool,
+    fetch_missing: bool = False,
 ) -> tuple[int, int, int]:
-    """Synthesize all catalog Piper voices. Returns (generated, skipped)."""
+    """Synthesize all catalog Piper voices. Returns (generated, skipped, errored)."""
     from quill.core.read_aloud import (
         default_piper_model_dir,
         discover_piper_executable,
@@ -110,9 +153,12 @@ def _gen_piper(
     exe = discover_piper_executable(piper_exe or "")
     if exe is None:
         print("  [piper] SKIP — piper executable not found (pass --piper-exe)")
-        return 0, 0
+        print("          Stage it with: python scripts/fetch_build_deps.py --only piper")
+        return 0, 0, 0
 
     model_dir = Path(piper_model_dir) if piper_model_dir else default_piper_model_dir()
+    if fetch_missing:
+        _fetch_missing_piper_models(model_dir, overwrite=overwrite)
     voices = list_piper_catalog_voices(model_dir)
 
     generated = skipped = errored = 0
@@ -374,6 +420,14 @@ def main(argv: list[str] | None = None) -> int:
         "--piper-model-dir", metavar="DIR", help="Directory containing .onnx model files."
     )
     parser.add_argument(
+        "--fetch-missing-voices",
+        action="store_true",
+        help=(
+            "Download any catalog Piper voice model missing from --piper-model-dir "
+            "(mirror-first, same path as the in-app download) before generating."
+        ),
+    )
+    parser.add_argument(
         "--dectalk-exe",
         metavar="PATH",
         help="Path to DECtalk.dll (the synthesis runtime) or its folder.",
@@ -386,6 +440,13 @@ def main(argv: list[str] | None = None) -> int:
         "--espeak-rate", type=int, default=160, help="eSpeak words-per-minute rate (default 160)."
     )
     args = parser.parse_args(argv)
+
+    # Engine errors quote IPA phonemes (e.g. 'aɪ'), which a cp1252 console
+    # cannot encode -- printing one used to abort the whole run with a
+    # UnicodeEncodeError instead of reporting that single voice as failed.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
 
     # Verify ffmpeg is available.
     if shutil.which("ffmpeg") is None:
@@ -420,6 +481,7 @@ def main(argv: list[str] | None = None) -> int:
             piper_exe=args.piper_exe,
             piper_model_dir=args.piper_model_dir,
             overwrite=args.overwrite,
+            fetch_missing=args.fetch_missing_voices,
         )
         total_gen += g
         total_skip += s

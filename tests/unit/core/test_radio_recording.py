@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 
 import quill.core.radio.recording as recording
+import quill.core.radio.recording_outcome as recording_outcome
 from quill.core.radio.recording import (
     RadioRecorder,
     RecordingError,
@@ -425,7 +426,7 @@ def test_start_copy_probes_extension_and_names_file_by_codec(
 ) -> None:
     monkeypatch.setattr(recording.subprocess, "Popen", lambda *a, **k: _FakeProcess())
     # Stand in for the ffprobe subprocess: the stream is AAC.
-    monkeypatch.setattr(recording, "_probe_capture_extension", lambda _url: "aac")
+    monkeypatch.setattr(recording, "probe_capture_extension", lambda _url: "aac")
     recorder = RadioRecorder()
     dest = recorder.start(
         station_name="WXYZ",
@@ -695,7 +696,7 @@ def test_fatal_classification_only_terminal_codes() -> None:
         "Failed to reconnect to server",
         "End of file",
     ):
-        assert recording._FATAL_STDERR_RE.search(transient) is None, transient
+        assert recording_outcome.is_fatal([transient]) is False, transient
     # Genuinely gone / disk full is fatal (no point spending the attempt budget).
     for fatal in (
         "server returned 404 Not Found",
@@ -705,7 +706,7 @@ def test_fatal_classification_only_terminal_codes() -> None:
         "No space left on device",
         "disk full",
     ):
-        assert recording._FATAL_STDERR_RE.search(fatal) is not None, fatal
+        assert recording_outcome.is_fatal([fatal]) is True, fatal
 
 
 def test_stderr_tail_cleared_on_recovery_so_stale_403_does_not_poison() -> None:
@@ -738,7 +739,7 @@ def test_stderr_tail_cleared_on_recovery_so_stale_403_does_not_poison() -> None:
     job = _make_job(_FakeProcess(lines))
     recorder._drain_stderr(job)
     tail = list(job.stderr_tail)
-    assert not any(recording._FATAL_STDERR_RE.search(line) for line in tail)
+    assert not recording_outcome.is_fatal(tail)
     assert any("Failed to reconnect" in line for line in tail)
 
 

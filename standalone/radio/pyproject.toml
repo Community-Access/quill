@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "quill-radio"
-version = "2.2.0"
+version = "3.0.0"
 description = "Quill Radio -- accessible, screen-reader-first internet radio as a standalone app"
 readme = "README.md"
 requires-python = ">=3.12"

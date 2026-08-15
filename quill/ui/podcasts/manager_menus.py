@@ -37,6 +37,17 @@ class ResolvedAction:
     run: Callable[[], None]
 
 
+def _inbox_menu_label(dialog: object, show: object) -> str:
+    """What the per-show Inbox item says, under either Inbox mode."""
+    library = getattr(dialog, "_library", None)
+    mode = str(getattr(getattr(library, "settings", None), "inbox_mode", "include") or "include")
+    if mode.lower() == "exclude":
+        return (
+            "Put Back in the &Inbox" if show.route_to_inbox else "Keep This Show Out of the &Inbox"
+        )
+    return "Stop Routing to &Inbox" if show.route_to_inbox else "Route New Episodes to &Inbox"
+
+
 def episode_actions(
     dialog: object, show: PodcastShow, episode: PodcastEpisode
 ) -> dict[str, ResolvedAction]:
@@ -168,7 +179,11 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
         ),
         action(
             "toggle_inbox",
-            "Stop Routing to &Inbox" if show.route_to_inbox else "Route New Episodes to &Inbox",
+            # Under opt-out the same mark means the opposite, so the label has
+            # to change with it: "keep this show out" and "put this show in" are
+            # not the same instruction, and a menu that said the wrong one would
+            # be worse than no menu item at all.
+            _inbox_menu_label(dialog, show),
             lambda: dialog._on_toggle_route_to_inbox(show),
         ),
         action(

@@ -169,6 +169,13 @@ class PodcastsAppFrame(
         # Radio's key map (quill/ui/radio/winamp_keys.py) so the letters mean
         # the same thing in both apps.
         self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_main_char_hook)
+        self.frame.Bind(wx.EVT_KEY_UP, self._on_main_key_up)
+        # Losing the window must end a scan: a listener left at four times
+        # speed because they alt-tabbed mid-hold has no way to know why.
+        self.frame.Bind(wx.EVT_ACTIVATE, self._on_main_activate)
+        from quill.ui.podcasts.scan_hold_control import ScanHoldController
+
+        self._scan_hold = ScanHoldController(self, parent=self.frame)
         self._select_default_launch_view()
         self._shows_tree.SetFocus()
 
@@ -188,7 +195,36 @@ class PodcastsAppFrame(
         ):
             self._send_to_tray()
             return
+        scan = getattr(self, "_scan_hold", None)
+        if scan is not None and scan.handles(
+            key_code=event.GetKeyCode(),
+            shift=bool(event.ShiftDown()),
+            ctrl=bool(event.ControlDown()),
+            alt=bool(event.AltDown()),
+        ):
+            # Every auto-repeat comes through here, which is how the hold is
+            # measured; press() is idempotent for exactly that reason.
+            scan.press()
+            return
         self._on_winamp_char_hook(event)
+
+    def _on_main_key_up(self, event: wx.KeyEvent) -> None:
+        """End a scan the moment the key actually comes up.
+
+        The watchdog timer would end it anyway; this only makes the drop back
+        immediate rather than up to the grace window late.
+        """
+        scan = getattr(self, "_scan_hold", None)
+        if scan is not None and scan.is_scanning and event.GetKeyCode() == wx.WXK_RIGHT:
+            scan.stop()
+        event.Skip()
+
+    def _on_main_activate(self, event: wx.ActivateEvent) -> None:
+        if not event.GetActive():
+            scan = getattr(self, "_scan_hold", None)
+            if scan is not None:
+                scan.stop()
+        event.Skip()
 
     def _winamp_keys_enabled(self) -> bool:
         return bool(getattr(self._podcast_history, "winamp_playback_keys", True))
@@ -902,6 +938,7 @@ class PodcastsAppFrame(
         except Exception:  # noqa: BLE001 - a failed save must never block exit
             pass
         for action in (
+            getattr(getattr(self, "_scan_hold", None), "shutdown", None),
             getattr(self._podcast_controller, "shutdown", None),
             getattr(self, "_shutdown_podcast_transfers", None),
         ):
@@ -927,11 +964,20 @@ def main() -> int:
 
     safe_mode = should_enable_safe_mode(sys.argv[1:], os.environ)
     from quill.core import components
+    from quill.core.podcasts.opml_cli import opml_path_from_argv
 
     components.register_running_app("cast", REQUIRED_COMPONENTS)
     app = wx.App()
     frame = PodcastsAppFrame(safe_mode=safe_mode)
     frame.frame.Show()
+    # A subscription list opened from Explorer (the .opml association the
+    # installer offers). Deferred with CallAfter rather than run here: the
+    # window has to exist and be showing before a modal import appears over it,
+    # or the import is the first thing on screen and the app looks like it
+    # failed to start.
+    opml_path = opml_path_from_argv(sys.argv[1:])
+    if opml_path is not None:
+        wx.CallAfter(frame.podcast_import_opml_file, opml_path)
     app.MainLoop()
     return 0
 

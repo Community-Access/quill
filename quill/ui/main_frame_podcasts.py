@@ -693,6 +693,8 @@ class PodcastsMixin(
         def _on_success(_op: str, info: feed_reader.FeedInfo) -> None:
             known = {episode.guid for episode in show.episodes}
             republished: list[str] = []
+            if not info.tags.is_empty:
+                show.tags = info.tags
             new_count = merge_episodes(show, info.episodes, republished=republished)
             fresh = [episode for episode in show.episodes if episode.guid not in known]
             queued = self._podcast_route_new_episodes(show, fresh)
@@ -937,6 +939,30 @@ class PodcastsMixin(
 
         episode_notes_commands.open_for_playing_episode(self)
 
+    def open_continue_listening(self) -> None:
+        """Everything started and not finished, whichever app it came from.
+
+        Lives on the podcasts mixin because that is the mixin every host with a
+        media library already has; the window itself gathers from Quill Radio's
+        resume store too where the host has one.
+        """
+        from quill.ui.continue_listening_command import open_continue_listening
+
+        open_continue_listening(self)
+
+    def open_sync_places(self) -> None:
+        """Carry My Place Between Machines... -- the QuillSync setup window."""
+        from quill.ui.sync_places_command import open_sync_places
+
+        open_sync_places(self)
+
+    def open_podcast_episode_extras(self) -> None:
+        """About This Episode... for the playing episode -- the credits, the
+        marked moments, the podroll and the rest of the Podcasting 2.0 tags."""
+        from quill.ui.podcasts import extras_command
+
+        extras_command.open_for_playing_episode(self)
+
     # -- command palette registration ----------------------------------------
 
     def _register_podcasts_commands(self) -> None:
@@ -989,6 +1015,21 @@ class PodcastsMixin(
                 "podcasts.episode_notes",
                 "Podcasts: My Notes in This Episode...",
                 self.open_podcast_episode_notes,
+            ),
+            (
+                "media.sync_places",
+                "Carry My Place Between Machines...",
+                self.open_sync_places,
+            ),
+            (
+                "media.continue_listening",
+                "Continue Listening...",
+                self.open_continue_listening,
+            ),
+            (
+                "podcasts.episode_extras",
+                "Podcasts: About This Episode...",
+                self.open_podcast_episode_extras,
             ),
             (
                 "podcasts.find_chapters",

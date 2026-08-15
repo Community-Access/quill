@@ -1,0 +1,51 @@
+"""The Station-menu items that decide what the app remembers about you.
+
+Extracted from ``quill/apps/radio.py`` under GATE-11 (extract, never
+rebaseline) when Choose Browse Sources and Download Preferences arrived. A
+coherent group rather than a slice: every item here opens a small remembered
+choice -- which directories search covers, which branches browsing shows, and
+the standing rules for the download queue -- and each confirms itself in one
+spoken sentence.
+
+Wiring only -- every behaviour lives in ``ui/radio/settings_commands.py``.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+
+def build_settings_items(app: Any, station_menu: Any, wx: Any) -> tuple[Any, ...]:
+    """Append the remembered-choice commands to *station_menu*, bound to *app*.
+
+    Returns every id ref it created, because the caller must **pin** them: a
+    menu id ref that is garbage-collected can be reissued to a different item,
+    and the symptom is a random menu entry firing the wrong command.
+    """
+    # Which directories a search covers. Remembered, and a source that is off
+    # is never contacted -- see core/radio/search_sources.py.
+    sources_id = wx.NewIdRef()
+    station_menu.Append(sources_id, "Search So&urces...")
+    app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_search_sources(), id=sources_id)
+    # Which branches Browse Stations shows, under the same rule: a branch that
+    # is off is not in the tree and is never contacted.
+    browse_sources_id = wx.NewIdRef()
+    station_menu.Append(browse_sources_id, "Ch&oose Browse Sources...")
+    app.frame.Bind(
+        wx.EVT_MENU, lambda _e: app.radio_browse_sources_visibility(), id=browse_sources_id
+    )
+    return (sources_id, browse_sources_id)
+
+
+def build_download_prefs_item(app: Any, station_menu: Any, wx: Any) -> tuple[Any, ...]:
+    """Append Download Preferences to *station_menu*, bound to *app*.
+
+    Standing rules for the download queue: where things land, how they are
+    filed, and whether closing to the tray keeps transfers going. Appended
+    separately from :func:`build_settings_items` so it can sit beside
+    Preferences, where somebody looking for a setting already looks.
+    """
+    download_prefs_id = wx.NewIdRef()
+    station_menu.Append(download_prefs_id, "&Download Preferences...")
+    app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_download_preferences(), id=download_prefs_id)
+    return (download_prefs_id,)

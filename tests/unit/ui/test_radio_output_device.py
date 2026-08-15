@@ -193,11 +193,11 @@ def test_wx_mode_never_touches_mpv(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_auto_mode_prefers_mpv_when_available(monkeypatch: pytest.MonkeyPatch) -> None:
     # "auto" = mpv whenever libmpv is present (device routing, live
     # pause/rewind, Volume Boost, Ogg/Opus/HLS all need it), wx otherwise.
-    import quill.ui.radio.player_controller as pc
+    import quill.ui.radio.engine_selection as es
 
     fake_mpv = _FakeEngine()
-    monkeypatch.setattr(pc, "mpv_output_device_available", lambda: True)
-    monkeypatch.setattr(pc, "MpvRadioEngine", lambda *a, **k: fake_mpv)
+    monkeypatch.setattr(es, "mpv_output_device_available", lambda: True)
+    monkeypatch.setattr(es, "MpvRadioEngine", lambda *a, **k: fake_mpv)
     frame = wx.Frame(None)
     controller = RadioPlayerController(frame)  # default: auto
     controller.play_station(_station())
@@ -206,9 +206,9 @@ def test_auto_mode_prefers_mpv_when_available(monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_auto_mode_uses_wx_when_libmpv_absent(monkeypatch: pytest.MonkeyPatch) -> None:
-    import quill.ui.radio.player_controller as pc
+    import quill.ui.radio.engine_selection as es
 
-    monkeypatch.setattr(pc, "mpv_output_device_available", lambda: False)
+    monkeypatch.setattr(es, "mpv_output_device_available", lambda: False)
     frame = wx.Frame(None)
     controller = RadioPlayerController(frame)
     fake = _FakeEngine()
@@ -222,9 +222,9 @@ def test_auto_mode_uses_wx_when_libmpv_absent(monkeypatch: pytest.MonkeyPatch) -
 def test_device_with_no_libmpv_falls_back_with_announcement(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import quill.ui.radio.player_controller as pc
+    import quill.ui.radio.engine_selection as es
 
-    monkeypatch.setattr(pc, "mpv_output_device_available", lambda: False)
+    monkeypatch.setattr(es, "mpv_output_device_available", lambda: False)
     announced: list[str] = []
     frame = wx.Frame(None)
     controller = RadioPlayerController(
@@ -243,9 +243,9 @@ def test_device_with_no_libmpv_falls_back_with_announcement(
 def test_device_switch_reconnects_the_playing_station(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import quill.ui.radio.player_controller as pc
+    import quill.ui.radio.engine_selection as es
 
-    monkeypatch.setattr(pc, "mpv_output_device_available", lambda: False)
+    monkeypatch.setattr(es, "mpv_output_device_available", lambda: False)
     frame = wx.Frame(None)
     controller = RadioPlayerController(frame)
     fake = _FakeEngine()
@@ -301,11 +301,11 @@ class _FakeMpvEngine(_FakeEngine):
 
 
 def _mpv_controller(monkeypatch: pytest.MonkeyPatch, **kwargs) -> tuple:
-    import quill.ui.radio.player_controller as pc
+    import quill.ui.radio.engine_selection as es
 
     fake_mpv = _FakeMpvEngine()
-    monkeypatch.setattr(pc, "mpv_output_device_available", lambda: True)
-    monkeypatch.setattr(pc, "MpvRadioEngine", lambda *a, **k: fake_mpv)
+    monkeypatch.setattr(es, "mpv_output_device_available", lambda: True)
+    monkeypatch.setattr(es, "MpvRadioEngine", lambda *a, **k: fake_mpv)
     frame = wx.Frame(None)
     controller = RadioPlayerController(frame, **kwargs)
     return controller, fake_mpv
@@ -324,9 +324,9 @@ def test_volume_boost_multiplies_on_the_mpv_engine(monkeypatch: pytest.MonkeyPat
 
 
 def test_volume_boost_reports_ineffective_on_wx(monkeypatch: pytest.MonkeyPatch) -> None:
-    import quill.ui.radio.player_controller as pc
+    import quill.ui.radio.engine_selection as es
 
-    monkeypatch.setattr(pc, "mpv_output_device_available", lambda: False)
+    monkeypatch.setattr(es, "mpv_output_device_available", lambda: False)
     frame = wx.Frame(None)
     controller = RadioPlayerController(frame, playback_engine="wx")
     fake = _FakeEngine()
@@ -367,9 +367,9 @@ def test_dvr_rewind_and_live_route_through_the_mpv_engine(
 
 
 def test_dvr_unavailable_on_wx_engine(monkeypatch: pytest.MonkeyPatch) -> None:
-    import quill.ui.radio.player_controller as pc
+    import quill.ui.radio.engine_selection as es
 
-    monkeypatch.setattr(pc, "mpv_output_device_available", lambda: False)
+    monkeypatch.setattr(es, "mpv_output_device_available", lambda: False)
     frame = wx.Frame(None)
     controller = RadioPlayerController(frame, playback_engine="wx")
     fake = _FakeEngine()
@@ -385,11 +385,11 @@ def test_dvr_unavailable_on_wx_engine(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_wx_error_rescued_once_by_mpv(monkeypatch: pytest.MonkeyPatch) -> None:
     # The Ogg/Opus/HLS case: WMP cannot open the stream; one silent retry
     # on the mpv engine rescues it instead of an error.
-    import quill.ui.radio.player_controller as pc
+    import quill.ui.radio.engine_selection as es
 
     fake_mpv = _FakeMpvEngine()
-    monkeypatch.setattr(pc, "mpv_output_device_available", lambda: True)
-    monkeypatch.setattr(pc, "MpvRadioEngine", lambda *a, **k: fake_mpv)
+    monkeypatch.setattr(es, "mpv_output_device_available", lambda: True)
+    monkeypatch.setattr(es, "MpvRadioEngine", lambda *a, **k: fake_mpv)
     frame = wx.Frame(None)
     controller = RadioPlayerController(frame, playback_engine="wx")
     fake_wx = _FakeEngine()
@@ -407,9 +407,9 @@ def test_wx_error_rescued_once_by_mpv(monkeypatch: pytest.MonkeyPatch) -> None:
 
 def test_error_after_playing_is_not_rescued(monkeypatch: pytest.MonkeyPatch) -> None:
     # The rescue is for "could not open", not for a drop mid-listen.
-    import quill.ui.radio.player_controller as pc
+    import quill.ui.radio.engine_selection as es
 
-    monkeypatch.setattr(pc, "mpv_output_device_available", lambda: True)
+    monkeypatch.setattr(es, "mpv_output_device_available", lambda: True)
     frame = wx.Frame(None)
     controller = RadioPlayerController(frame, playback_engine="wx")
     fake = _FakeEngine()

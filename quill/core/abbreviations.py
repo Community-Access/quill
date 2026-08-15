@@ -10,9 +10,8 @@ from __future__ import annotations
 import datetime
 import os
 import uuid
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from dataclasses import dataclass
-from pathlib import Path
 
 _TRIGGER_CHARS: frozenset[str] = frozenset({
     " ",
@@ -79,6 +78,32 @@ class Abbreviation:
     #: Quick Insert sorts by recency of use; both are maintained at the call site.
     usage_count: int = 0
     last_used: str = ""
+    #: Applications this entry may fire in, by executable name without the
+    #: extension and lowercase ("outlook", "code"). Empty means everywhere,
+    #: which is what every existing entry is and stays.
+    #:
+    #: This only bites system-wide (Quill Inkwell): inside QUILL's own editor
+    #: there is one application and scoping to it would be a setting that could
+    #: only ever switch an entry off. A signature belongs in a mail client, a
+    #: code snippet belongs in an editor, and an expander that fires both
+    #: everywhere is one people turn off.
+    apps: tuple[str, ...] = ()
+
+    def matches_app(self, process_name: str) -> bool:
+        """Whether this entry may fire in the application currently in front.
+
+        An entry with no apps fires anywhere -- that is the default and the
+        overwhelming majority. When the caller cannot tell what is in front
+        (no process name), a *scoped* entry does not fire: the safe direction
+        for "I do not know where this would land" is not to type into it.
+        """
+        if not self.apps:
+            return True
+        name = str(process_name or "").strip().lower()
+        if not name:
+            return False
+        stem = name.rsplit(".", 1)[0] if name.endswith(".exe") else name
+        return stem in self.apps
 
     def accepts_trigger(self, char: str) -> bool:
         """Whether this entry may be fired by trigger character *char*."""
@@ -289,147 +314,23 @@ def try_expand(
     return None
 
 
-def contributed_abbreviation_id(quillin_id: str, trigger: str) -> str:
-    """Return a stable, namespaced id for a Quillin-contributed abbreviation."""
-    return f"quillin:{quillin_id}:{trigger}"
+# Quillin-contributed abbreviations moved to their own module under GATE-11
+# (extract, never rebaseline); re-exported so every existing import still works.
+from quill.core.abbreviations_contributed import (  # noqa: E402
+    build_contributed_library as build_contributed_library,
+)
+from quill.core.abbreviations_contributed import (  # noqa: E402
+    contributed_abbreviation_id as contributed_abbreviation_id,
+)
 
-
-def build_contributed_library(
-    contributions: Iterable[tuple[str, Iterable[object]]],
-    *,
-    is_enabled: Callable[[str, str, bool], bool] | None = None,
-) -> AbbreviationLibrary:
-    """Build an in-memory library from Quillin-contributed abbreviation dicts.
-
-    *contributions* pairs a ``quillin_id`` with that manifest's raw
-    ``contributes.abbreviations`` entries. Only *static* abbreviations (those
-    with an ``expansion``) are included; handler-based entries are skipped
-    because the bare-word expander cannot run a handler mid-type (use a smart
-    trigger or menu command for those). ``is_enabled(quillin_id, trigger,
-    enabled_by_default)`` decides inclusion; when omitted the entry's
-    ``enabled_by_default`` (default True) is used. Ids are deterministic so this
-    library can be rebuilt on every Quillin reload without churn, and is kept
-    separate from the user's saved library (it is never persisted).
-    """
-    abbreviations: list[Abbreviation] = []
-    for quillin_id, entries in contributions:
-        for raw in entries:
-            if not isinstance(raw, dict):
-                continue
-            trigger = str(raw.get("trigger", "")).strip()
-            expansion = raw.get("expansion")
-            if not trigger or not isinstance(expansion, str):
-                continue
-            default_enabled = bool(raw.get("enabled_by_default", True))
-            if is_enabled is not None:
-                if not is_enabled(quillin_id, trigger, default_enabled):
-                    continue
-            elif not default_enabled:
-                continue
-            abbreviations.append(
-                Abbreviation(
-                    id=contributed_abbreviation_id(quillin_id, trigger),
-                    abbreviation=trigger,
-                    expansion=expansion,
-                    description=str(raw.get("description", "")),
-                    case_sensitive=bool(raw.get("case_sensitive", False)),
-                )
-            )
-    return AbbreviationLibrary(version=1, abbreviations=abbreviations)
-
-
-def _one_of(value: object, allowed: tuple[str, ...], default: str) -> str:
-    """*value* when it is one of *allowed*, else *default* (unknown values in a
-    hand-edited file degrade to the safe setting rather than breaking the load)."""
-    text = str(value) if value is not None else ""
-    return text if text in allowed else default
-
-
-def _as_int(value: object) -> int:
-    return int(value) if isinstance(value, int) and not isinstance(value, bool) else 0
-
-
-def load_abbreviation_library(data_dir: Path | None = None) -> AbbreviationLibrary:
-    from quill.core import paths
-    from quill.core.storage import read_json
-
-    base = data_dir if data_dir is not None else paths.app_data_dir()
-    path = base / _ABBREVIATIONS_FILE
-    if not path.exists():
-        return _make_default_library()
-    # read_json returns its default (not a raise) on a corrupt/unreadable file.
-    # Use a sentinel so a present-but-corrupt file degrades to the built-in
-    # defaults rather than an empty library (passing default={} would look like
-    # a valid-but-empty payload and silently wipe the user's abbreviations).
-    corrupt = object()
-    try:
-        data = read_json(path, default=corrupt)
-    except Exception:  # noqa: BLE001
-        return _make_default_library()
-    if data is corrupt or not isinstance(data, dict):
-        return _make_default_library()
-    abbreviations: list[Abbreviation] = []
-    for raw in data.get("abbreviations", []):
-        if not isinstance(raw, dict):
-            continue
-        try:
-            abbreviations.append(
-                Abbreviation(
-                    id=str(raw.get("id", uuid.uuid4())),
-                    abbreviation=str(raw.get("abbreviation", "")),
-                    expansion=str(raw.get("expansion", "")),
-                    case_sensitive=bool(raw.get("case_sensitive", False)),
-                    enabled=bool(raw.get("enabled", True)),
-                    description=str(raw.get("description", "")),
-                    # v2 per-entry settings. Every one defaults, so a v1 file
-                    # (which has none of these keys) loads unchanged.
-                    category=str(raw.get("category", "")),
-                    speak_mode=_one_of(raw.get("speak_mode"), SPEAK_MODES, "silent"),
-                    sound=_one_of(raw.get("sound"), SOUND_MODES, "inherit"),
-                    trailing_space=bool(raw.get("trailing_space", False)),
-                    triggers=_one_of(raw.get("triggers"), TRIGGER_MODES, "both"),
-                    usage_count=_as_int(raw.get("usage_count")),
-                    last_used=str(raw.get("last_used", "")),
-                )
-            )
-        except Exception:  # noqa: BLE001
-            continue
-    return AbbreviationLibrary(
-        version=int(data.get("version", 1)),
-        abbreviations=abbreviations,
-    )
-
-
-def save_abbreviation_library(library: AbbreviationLibrary, data_dir: Path | None = None) -> None:
-    from quill.core import paths
-    from quill.core.storage import write_json_atomic
-
-    base = data_dir if data_dir is not None else paths.app_data_dir()
-    path = base / _ABBREVIATIONS_FILE
-    write_json_atomic(
-        path,
-        {
-            "version": SCHEMA_VERSION,
-            "abbreviations": [
-                {
-                    "id": a.id,
-                    "abbreviation": a.abbreviation,
-                    "expansion": a.expansion,
-                    "case_sensitive": a.case_sensitive,
-                    "enabled": a.enabled,
-                    "description": a.description,
-                    "category": a.category,
-                    "speak_mode": a.speak_mode,
-                    "sound": a.sound,
-                    "trailing_space": a.trailing_space,
-                    "triggers": a.triggers,
-                    "usage_count": a.usage_count,
-                    "last_used": a.last_used,
-                }
-                for a in library.abbreviations
-            ],
-        },
-    )
+# The on-disk half moved to its own module under GATE-11 (extract, never
+# rebaseline); re-exported so every existing import still works.
+from quill.core.abbreviations_store import (  # noqa: E402
+    load_abbreviation_library as load_abbreviation_library,
+)
+from quill.core.abbreviations_store import (  # noqa: E402
+    save_abbreviation_library as save_abbreviation_library,
+)
 
 
 def record_use(library: AbbreviationLibrary, abbreviation_id: str) -> None:

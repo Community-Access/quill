@@ -134,6 +134,10 @@ class CastMenuBarMixin:
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.podcast_toggle_stop_after_episode(), id=stop_after_id
         )
+        continue_id = wx.NewIdRef()
+        episode_menu.Append(continue_id, "&Continue Listening...")
+        about_ep_id = wx.NewIdRef()
+        episode_menu.Append(about_ep_id, "&About This Episode...")
         note_id = wx.NewIdRef()
         episode_menu.Append(note_id, "Add Episode &Note...")
         queue_id = wx.NewIdRef()
@@ -189,6 +193,8 @@ class CastMenuBarMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_previous_chapter(), id=prev_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_skip_forward(), id=skip_fwd_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_skip_back(), id=skip_back_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_continue_listening(), id=continue_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_podcast_episode_extras(), id=about_ep_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_podcast_note(), id=note_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_play_queue(), id=queue_id)
         menu_bar.Append(episode_menu, "&Episode")
@@ -337,6 +343,8 @@ class CastMenuBarMixin:
             prev_id,
             skip_fwd_id,
             skip_back_id,
+            continue_id,
+            about_ep_id,
             note_id,
             queue_id,
             sleep_id,

@@ -19,6 +19,8 @@ import re
 import ssl
 import urllib.error
 import urllib.request
+from collections.abc import Sequence
+from dataclasses import dataclass
 from pathlib import Path
 
 from quill import __version__
@@ -33,6 +35,15 @@ _MAX_BYTES = 10_000_000
 #: timing line. Anything else is spoken text to keep.
 _VTT_TIMING_RE = re.compile(r"^\d{2}:\d{2}:\d{2}[.,]\d{3}\s*-->\s*\d{2}:\d{2}:\d{2}[.,]\d{3}")
 _SRT_INDEX_RE = re.compile(r"^\d+$")
+
+#: The same cue-timing line, but capturing, for the timed-cue parser. Hours are
+#: optional because plenty of real WebVTT writes ``00:04.000 --> 00:08.000``.
+_CUE_TIMING_RE = re.compile(
+    r"(?:(\d{1,3}):)?(\d{2}):(\d{2})[.,](\d{3})\s*-->\s*(?:(\d{1,3}):)?(\d{2}):(\d{2})[.,](\d{3})"
+)
+#: WebVTT inline markup to drop from cue text: ``<v Speaker>``, ``<i>``, and the
+#: per-word timestamps YouTube emits (``<00:00:01.240>``).
+_VTT_TAG_RE = re.compile(r"<[^>]*>")
 
 
 class TranscriptError(CodedError):
@@ -67,6 +78,220 @@ def _fetch_transcript_bytes(url: str, *, auth_header: str = "") -> bytes:
             return payload
     except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
         raise TranscriptError(f"Could not reach that transcript file: {error}") from error
+
+
+@dataclass(frozen=True, slots=True)
+class TranscriptCue:
+    """One timed line of a transcript.
+
+    The piece this module was missing. :func:`parse_transcript` deliberately
+    throws timestamps away, which is right for "open this as a QUILL document"
+    and wrong for anything that follows playback: a reader cannot move its caret
+    with the audio, jump playback to a line, or say "found at 12 minutes 8
+    seconds" without knowing when each line is spoken.
+
+    Times are milliseconds, matching the rest of the player stack (``duration_ms``
+    on a YouTube stream, mpv's position) so nothing has to convert at a boundary.
+    """
+
+    start_ms: int
+    end_ms: int
+    text: str
+    speaker: str = ""
+
+    @property
+    def spoken_label(self) -> str:
+        """The line as a listener hears it, speaker first when there is one."""
+        return f"{self.speaker}: {self.text}" if self.speaker else self.text
+
+
+def cues_to_text(cues: Sequence[TranscriptCue]) -> str:
+    """Flatten *cues* to the same plain text :func:`parse_transcript` returns.
+
+    So there is one parser rather than two that drift: the text form is defined
+    as the cue form with the timings dropped, not as a separate code path.
+    """
+    return "\n".join(cue.spoken_label for cue in cues if cue.text.strip())
+
+
+def _vtt_timestamp(ms: int) -> str:
+    """``HH:MM:SS.mmm``, WebVTT's form."""
+    ms = max(0, int(ms))
+    hours, remainder = divmod(ms, 3_600_000)
+    minutes, remainder = divmod(remainder, 60_000)
+    seconds, millis = divmod(remainder, 1000)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}.{millis:03d}"
+
+
+def cues_to_vtt(cues: Sequence[TranscriptCue]) -> str:
+    """*cues* written back out as WebVTT (pure).
+
+    So **Save Transcript As** can offer the timed forms rather than only flat
+    text: a listener who wants to keep a transcript very often wants to keep it
+    in a form another player can follow, and throwing the timings away on the
+    way out would be the same mistake the reader was built to correct.
+
+    Round-trips through :func:`parse_transcript_cues`, which is what its tests
+    assert -- a writer that only *looks* right is worth nothing.
+    """
+    lines = ["WEBVTT", ""]
+    for cue in cues:
+        lines.append(f"{_vtt_timestamp(cue.start_ms)} --> {_vtt_timestamp(cue.end_ms)}")
+        lines.append(cue.spoken_label)
+        lines.append("")
+    return "\n".join(lines)
+
+
+def cues_to_srt(cues: Sequence[TranscriptCue]) -> str:
+    """*cues* written back out as SubRip (pure).
+
+    SubRip differs from WebVTT in three ways that matter and no more: a 1-based
+    index line before each cue, a comma rather than a point before the
+    milliseconds, and no header.
+    """
+    lines: list[str] = []
+    for number, cue in enumerate(cues, start=1):
+        start = _vtt_timestamp(cue.start_ms).replace(".", ",")
+        end = _vtt_timestamp(cue.end_ms).replace(".", ",")
+        lines.append(str(number))
+        lines.append(f"{start} --> {end}")
+        lines.append(cue.spoken_label)
+        lines.append("")
+    return "\n".join(lines)
+
+
+def cue_at(cues: Sequence[TranscriptCue], position_ms: int) -> int:
+    """Index of the cue being spoken at *position_ms* (pure), or ``-1``.
+
+    Binary search, because Follow Playback calls this on every position update
+    and a transcript can run to thousands of cues. Returns the last cue that has
+    started, which is what a reader wants during the gap between two cues -- the
+    caret should rest on the line just spoken, not jump back to nothing.
+    """
+    if not cues:
+        return -1
+    low, high, found = 0, len(cues) - 1, -1
+    while low <= high:
+        middle = (low + high) // 2
+        if cues[middle].start_ms <= position_ms:
+            found = middle
+            low = middle + 1
+        else:
+            high = middle - 1
+    return found
+
+
+def _timestamp_ms(hours: str | None, minutes: str, seconds: str, fraction: str) -> int:
+    """One ``HH:MM:SS.mmm`` timestamp in milliseconds. Hours are optional --
+    plenty of real WebVTT writes ``00:04.000 --> 00:08.000``."""
+    return ((int(hours or 0) * 3600 + int(minutes) * 60 + int(seconds)) * 1000) + int(fraction)
+
+
+def _parse_vtt_or_srt_cues(text: str) -> list[TranscriptCue]:
+    """WebVTT and SRT into cues. One parser for both, as the text path already
+    does: they differ only in the decimal separator and the cue-index line."""
+    cues: list[TranscriptCue] = []
+    pending: tuple[int, int] | None = None
+    buffer: list[str] = []
+
+    def flush() -> None:
+        if pending is not None and buffer:
+            body = " ".join(buffer).strip()
+            if body:
+                cues.append(TranscriptCue(pending[0], pending[1], body))
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        timing = _CUE_TIMING_RE.search(line)
+        if timing:
+            flush()
+            buffer = []
+            groups = timing.groups()
+            pending = (_timestamp_ms(*groups[:4]), _timestamp_ms(*groups[4:]))
+            continue
+        if not line or line == "WEBVTT" or _SRT_INDEX_RE.match(line):
+            continue
+        if line.startswith(("NOTE ", "STYLE", "REGION")):
+            continue  # WebVTT blocks that are not spoken content
+        if pending is not None:
+            # Strip WebVTT inline markup (<v Speaker>, <00:00:01.000>, <i>).
+            buffer.append(_VTT_TAG_RE.sub("", line))
+    flush()
+    return cues
+
+
+def _parse_json_cues(data: object) -> list[TranscriptCue]:
+    """Podcasting 2.0 JSON (``segments[]``) and YouTube ``json3`` (``events[]``).
+
+    Two shapes, one function, because both arrive here through the same
+    ``application/json`` content type and telling them apart by their keys is
+    cheaper and more honest than asking the caller to know which it fetched.
+    """
+    if not isinstance(data, dict):
+        return []
+    segments = data.get("segments")
+    if isinstance(segments, list):
+        cues: list[TranscriptCue] = []
+        for entry in segments:
+            if not isinstance(entry, dict):
+                continue
+            body = str(entry.get("body", "")).strip()
+            if not body:
+                continue
+            start = _seconds_to_ms(entry.get("startTime"))
+            end = _seconds_to_ms(entry.get("endTime"))
+            cues.append(
+                TranscriptCue(start, max(end, start), body, str(entry.get("speaker", "")).strip())
+            )
+        return cues
+    events = data.get("events")
+    if isinstance(events, list):
+        cues = []
+        for event in events:
+            if not isinstance(event, dict):
+                continue
+            segs = event.get("segs")
+            if not isinstance(segs, list):
+                continue
+            body = "".join(str(seg.get("utf8", "")) for seg in segs if isinstance(seg, dict))
+            body = body.replace("\n", " ").strip()
+            if not body:
+                continue
+            start = int(event.get("tStartMs") or 0)
+            duration = int(event.get("dDurationMs") or 0)
+            cues.append(TranscriptCue(start, start + duration, body))
+        return cues
+    return []
+
+
+def _seconds_to_ms(value: object) -> int:
+    try:
+        return int(float(value) * 1000)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return 0
+
+
+def parse_transcript_cues(raw_bytes: bytes, transcript_type: str) -> list[TranscriptCue]:
+    """Parse already-fetched transcript bytes into **timed** cues.
+
+    Sits beside :func:`parse_transcript` rather than replacing it -- callers that
+    only want text keep working unchanged. Understands WebVTT, SRT, Podcasting
+    2.0 JSON, and YouTube's ``json3`` caption format, which is the only new
+    input: it arrives free with every YouTube resolve and was being discarded.
+
+    An unrecognised or untimed document yields ``[]`` rather than raising, so a
+    caller can fall back to :func:`parse_transcript` and still show *something*.
+    Only genuinely invalid JSON raises, matching :func:`parse_transcript`.
+    """
+    text = raw_bytes.decode("utf-8", errors="replace")
+    mime = transcript_type.strip().lower()
+    if mime == "application/json" or (not mime and text.lstrip().startswith("{")):
+        try:
+            data = json.loads(text)
+        except ValueError as error:
+            raise TranscriptError(f"That transcript file was not valid JSON: {error}") from error
+        return _parse_json_cues(data)
+    return _parse_vtt_or_srt_cues(text)
 
 
 def _parse_vtt_or_srt(text: str) -> str:
@@ -143,6 +368,27 @@ def fetch_and_parse_transcript(
 # --------------------------------------------------------------------------- #
 
 _CACHE_DIRNAME = "podcast-transcripts"
+
+
+def fetch_transcript_cues(
+    url: str,
+    transcript_type: str,
+    *,
+    safe_mode: bool = False,
+    auth_header: str = "",
+) -> list[TranscriptCue]:
+    """Fetch *url* once and parse it into timed cues.
+
+    The counterpart of :func:`fetch_and_parse_transcript` for anything that
+    follows playback. One fetch, not two: a caller that needs both the cues and
+    the flat text takes the cues and calls :func:`cues_to_text`, rather than
+    downloading the same file twice for two shapes of the same content.
+    """
+    refuse_in_safe_mode(safe_mode)
+    if not url:
+        return []
+    raw = _fetch_transcript_bytes(url, auth_header=auth_header)
+    return parse_transcript_cues(raw, transcript_type)
 
 
 def _cache_dir() -> Path:
