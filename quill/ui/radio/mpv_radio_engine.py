@@ -399,6 +399,11 @@ class MpvRadioEngine(VideoOutputMixin):
             # would otherwise carry that speed into the next live station.
             self._mpv.set_str("speed", "1.00")
             self._mpv.set_str("pause", "no")
+            # Per-host Referer (ccMixter answers 403 without one); empty
+            # clears it so one station's header never leaks onto the next.
+            from quill.core.radio.stream_headers import referrer_for
+
+            self._mpv.set_str("referrer", referrer_for(path))
             self._mpv.command("loadfile", path, "replace")
         except Exception:  # noqa: BLE001 - a bad URL must not crash the app
             _log.exception("mpv loadfile failed")

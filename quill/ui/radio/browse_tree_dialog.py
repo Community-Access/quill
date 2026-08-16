@@ -103,7 +103,6 @@ class BrowseTreeDialog:
             self._win = wx.Frame(parent, title="Browse Stations", style=wx.DEFAULT_FRAME_STYLE)
             self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
             self._build_surface_menu_bar()
-            self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
             self._win.Bind(wx.EVT_CLOSE, self._on_close)
         else:
             self._win = wx.Dialog(
@@ -111,8 +110,33 @@ class BrowseTreeDialog:
             )
             self._surface = self._win
         self.dialog = self._win  # back-compat alias for callers that reference it
+        # Both shapes: Ctrl+F jumps to the Find box from anywhere in the window.
+        self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self._win.SetMinSize((560, 460))
         root = wx.BoxSizer(wx.VERTICAL)
+
+        # Find sits ABOVE the tree -- physically and in the tab order -- so it
+        # is one Shift+Tab away from the tree instead of a lap around the
+        # buttons (asked for by name, 2026-08-16).
+        find_row = wx.BoxSizer(wx.HORIZONTAL)
+        find_row.Add(
+            wx.StaticText(self._surface, label="&Find in this folder:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            6,
+        )
+        self._find_ctrl = wx.TextCtrl(self._surface, style=wx.TE_PROCESS_ENTER)
+        self._find_ctrl.SetName(
+            "Find in the highlighted folder and everything below it; press Enter"
+        )
+        find_row.Add(self._find_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
+        self._find_btn = wx.Button(self._surface, label="Find")
+        self._find_btn.SetName("Find in this folder")
+        self._find_clear_btn = wx.Button(self._surface, label="C&lear")
+        self._find_clear_btn.SetName("Clear the search and return to the folder")
+        find_row.Add(self._find_btn, 0, wx.RIGHT, 6)
+        find_row.Add(self._find_clear_btn, 0)
+        root.Add(find_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         root.Add(
             wx.StaticText(self._surface, label="&Stations (expand a source to browse it):"),
@@ -129,26 +153,11 @@ class BrowseTreeDialog:
             "Shift+F10 opens all actions"
         )
         root.Add(self._tree, 1, wx.EXPAND | wx.ALL, 10)
-
-        find_row = wx.BoxSizer(wx.HORIZONTAL)
-        find_row.Add(
-            wx.StaticText(self._surface, label="&Find in this folder:"),
-            0,
-            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
-            6,
-        )
-        self._find_ctrl = wx.TextCtrl(self._surface, style=wx.TE_PROCESS_ENTER)
-        self._find_ctrl.SetName(
-            "Find stations in the highlighted folder and everything below it; press Enter"
-        )
-        find_row.Add(self._find_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
-        self._find_btn = wx.Button(self._surface, label="Find")
-        self._find_btn.SetName("Find in this folder")
-        self._find_clear_btn = wx.Button(self._surface, label="C&lear")
-        self._find_clear_btn.SetName("Clear the search and return to the folder")
-        find_row.Add(self._find_btn, 0, wx.RIGHT, 6)
-        find_row.Add(self._find_clear_btn, 0)
-        root.Add(find_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
+        # Tab order: Find box, tree, then the Find/Clear buttons -- so
+        # Shift+Tab from the tree lands directly on the Find box.
+        self._find_ctrl.MoveBeforeInTabOrder(self._tree)
+        self._find_btn.MoveAfterInTabOrder(self._tree)
+        self._find_clear_btn.MoveAfterInTabOrder(self._find_btn)
 
         self._details = wx.TextCtrl(
             self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
@@ -232,8 +241,20 @@ class BrowseTreeDialog:
         self._menu_id_refs.append(close_id)
 
     def _on_char_hook(self, event: object) -> None:
+        wx = self._wx
+        # Ctrl+F: straight to the Find box, from wherever focus is.
+        if (
+            event.ControlDown()
+            and not event.ShiftDown()
+            and not event.AltDown()
+            and event.GetKeyCode() == ord("F")
+        ):
+            self._find_ctrl.SelectAll()
+            self._find_ctrl.SetFocus()
+            self._announce("Find in this folder")
+            return
         # A frame has no automatic Escape->Cancel; wire it to close.
-        if event.GetKeyCode() == self._wx.WXK_ESCAPE:
+        if self._modeless and event.GetKeyCode() == wx.WXK_ESCAPE:
             self._win.Close()
             return
         event.Skip()
@@ -363,6 +384,13 @@ class BrowseTreeDialog:
                 tree.SetItemData(tree.AppendItem(item, "Loading..."), dict(_PLACEHOLDER))
         count = tree.GetChildrenCount(node, False)
         self._announce(self._children_summary(node, count, failed=failed))
+        from quill.ui.radio import browse_prefetch
+
+        # Read one level ahead: the first few child folders fetch now, so
+        # walking downward stays ahead of the listener.
+        browse_prefetch.read_ahead(
+            self, [c.node_id for c in children if c.is_folder and not c.is_action]
+        )
         # #1188: leave the cursor on the just-expanded node -- do NOT jump it
         # into the station list. The count announcement says what is inside; the
         # listener arrows down to enter the list when ready.
@@ -489,6 +517,12 @@ class BrowseTreeDialog:
         if node_id == "favorites":
             self._add_favorites(node)  # local, instant, no task manager
             return
+        from quill.ui.radio import browse_prefetch
+
+        ready = browse_prefetch.take(self, node_id)
+        if ready is not None:
+            self._add_children(node, ready)  # prefetched while you arrowed here
+            return
         if self._safe_mode and browse_sources.needs_network(node_id):
             self._details.SetValue("Browsing this source is disabled in Safe Mode.")
         self._announce("Loading...")
@@ -549,6 +583,11 @@ class BrowseTreeDialog:
     def _on_selected(self, _event: Any) -> None:
         browse_position.remember(self._tree, self._tree.GetSelection())
         data = self._selected_data()
+        from quill.ui.radio import browse_prefetch
+
+        # Landing on a collapsed folder starts its fetch now, so the expand
+        # that usually follows opens instantly instead of loading.
+        browse_prefetch.note_selected(self, data)
         station = data.get("station") if data else None
         if station is not None:
             self._details.SetValue(station.details_text)

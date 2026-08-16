@@ -56,6 +56,9 @@ class PodcastSearchResult:
     artist: str = ""
     artwork_url: str = ""
     homepage: str = ""
+    #: iTunes collection id -- lets browse surfaces open the show as an
+    #: ``appleshow:<collection-id>`` folder of episodes.
+    collection_id: str = ""
 
     @property
     def display_name(self) -> str:
@@ -106,6 +109,7 @@ def _result_from_json(entry: dict[str, object]) -> PodcastSearchResult | None:
         artist=str(entry.get("artistName", "")),
         artwork_url=str(entry.get("artworkUrl600") or entry.get("artworkUrl100") or ""),
         homepage=str(entry.get("collectionViewUrl", "")),
+        collection_id=str(entry.get("collectionId") or ""),
     )
 
 

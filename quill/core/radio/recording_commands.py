@@ -219,6 +219,14 @@ def build_record_command(
         # Identify as Quill Radio in the station's listener logs instead of the
         # default "Lavf" (quill-radio #6). Input option, so it goes before -i.
         args.extend(["-user_agent", user_agent])
+    if is_http:
+        # Per-host Referer: ccMixter's content host answers 403 without one
+        # (stream_headers.referrer_for is the single source of that knowledge).
+        from quill.core.radio.stream_headers import referrer_for
+
+        referrer = referrer_for(stream_url)
+        if referrer:
+            args.extend(["-referer", referrer])
     if is_http and rw_timeout_seconds > 0:
         # -rw_timeout is in MICROSECONDS and applies to the network read, so a
         # silent stall (not just a clean disconnect) is detected and aborted.
