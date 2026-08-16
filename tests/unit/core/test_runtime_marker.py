@@ -75,3 +75,22 @@ def test_needs_install_without_required_build_is_version_only(tmp_path: Path) ->
     m.write_marker(tmp_path, python_version="3.13.1", build_id="2026-07-24")
     assert m.needs_install(tmp_path, "3.13.1") is False
     assert m.needs_install(tmp_path, "3.14.0") is True
+
+
+def test_two_builds_on_one_day_are_distinguishable(tmp_path: Path) -> None:
+    """The 2026-08-16 fault: build ids were bare dates, so the morning's
+    runtime and the afternoon's compared equal and an update installed over
+    the old one was skipped -- the app kept running the earlier code while
+    the installer reported success. Stamps carry the time now."""
+    m.write_marker(tmp_path, python_version="3.13.14", build_id="2026-08-16T08:30:00Z")
+    assert m.needs_install(tmp_path, "3.13.14", required_build="2026-08-16T11:12:00Z") is True
+    # ...and the reverse is still a no-op, so an older sibling never downgrades.
+    m.write_marker(tmp_path, python_version="3.13.14", build_id="2026-08-16T11:12:00Z")
+    assert m.needs_install(tmp_path, "3.13.14", required_build="2026-08-16T08:30:00Z") is False
+
+
+def test_a_date_only_marker_is_older_than_any_stamp_from_the_same_day(tmp_path: Path) -> None:
+    """Upgrading from a pre-fix install: "2026-08-16" < "2026-08-16T..." by
+    plain string compare, so the first fixed installer refreshes it."""
+    m.write_marker(tmp_path, python_version="3.13.14", build_id="2026-08-16")
+    assert m.needs_install(tmp_path, "3.13.14", required_build="2026-08-16T00:01:00Z") is True
