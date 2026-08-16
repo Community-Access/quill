@@ -237,6 +237,24 @@ def _fetch_books(url: str, fetch: Fetch | None) -> list[LibriVoxBook]:
     return _parse_books(raw)
 
 
+def fetch_book_page(
+    offset: int, limit: int = 500, *, fetch: Fetch | None = None
+) -> list[LibriVoxBook]:
+    """One page of the whole public-domain catalog, for the local catalog.
+
+    Through the same reviewed egress site as every other call here. Measured
+    2026-08-15: with ``extended=1`` (sections included, which is the point)
+    the API serves pages of 800 but returns nothing at 900+ -- so 500 is the
+    page size, comfortably inside the working range. The full catalog is
+    ~22-24k books, and a past-the-end offset answers with HTTP 404 rather
+    than an empty list; the caller treats either as the end.
+    """
+    try:
+        return _fetch_books(_books_url(limit=max(1, int(limit)), offset=max(0, int(offset))), fetch)
+    except LibriVoxError:
+        return []  # past the end (their 404), or a page that failed: stop
+
+
 def recent_books(*, limit: int = 60, fetch: Fetch | None = None) -> list[LibriVoxBook]:
     """Books added in the last few weeks, newest first."""
     import time

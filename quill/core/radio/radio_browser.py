@@ -153,6 +153,23 @@ def _station_from_json(entry: dict[str, object]) -> RadioStation | None:
     )
 
 
+def fetch_station_page(
+    offset: int, limit: int = 10000, *, safe_mode: bool = False
+) -> list[dict[str, object]]:
+    """One raw page of the full working-station dump, for the local catalog.
+
+    Through the same reviewed egress chokepoint as every other call here.
+    Pagination is mandatory, not a nicety: the endpoint silently caps an
+    unpaged request at 1,000 rows (measured 2026-08-15; the full dump is
+    62,377). ``hidebroken=true`` is the catalog posture -- a station the
+    directory itself marks broken is not worth shipping to anyone.
+    """
+    refuse_in_safe_mode(safe_mode)
+    path = f"/json/stations?hidebroken=true&limit={int(limit)}&offset={int(offset)}"
+    data = _http_json(path)
+    return [entry for entry in data if isinstance(entry, dict)] if isinstance(data, list) else []
+
+
 def stations_from_json(data: object) -> list[RadioStation]:
     """Parse a RadioBrowser station-list payload (pure; tolerant of junk)."""
     stations: list[RadioStation] = []

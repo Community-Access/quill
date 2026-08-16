@@ -179,6 +179,7 @@ def audiobooks(
     topic: str = "",
     language: str = "",
     limit: int = 60,
+    page: int = 1,
     safe_mode: bool = False,
     refresh: bool = False,
 ) -> list[RadioStation]:
@@ -196,8 +197,13 @@ def audiobooks(
         params["topic"] = topic.strip()
     if language.strip():
         params["languages"] = language.strip()
+    if page > 1:
+        params["page"] = str(int(page))
     url = f"{_BASE}?{urllib.parse.urlencode(params)}"
-    key = f"gutendex:{query.strip().lower()}:{topic.strip().lower()}:{language.strip().lower()}"
+    key = (
+        f"gutendex:{query.strip().lower()}:{topic.strip().lower()}"
+        f":{language.strip().lower()}:{int(page)}"
+    )
     payload, _age = directory_cache.resolve(
         key,
         lambda: [

@@ -17,27 +17,13 @@ from typing import Any
 
 from quill.core.radio import wxindex
 from quill.core.radio.models import RadioStation
-from quill.core.radio.wxindex_models import to_radio_station
+from quill.core.radio.wxindex_models import local_noaa_radio_station
 from quill.core.sound_events import SoundEvent
 
 _SAFE_MODE_WEATHER = (
     "Weather is a network service and is turned off in Safe Mode. "
     "Restart without Safe Mode to use it."
 )
-
-
-def local_noaa_radio_station(
-    *, latitude: float, longitude: float, county: str = "", safe_mode: bool = False
-) -> RadioStation | None:
-    """Resolve the NOAA Weather Radio station nearest a location (pure, no wx).
-
-    Delegates to ``wxindex.local_stations`` -- county/SAME match first, else
-    nearest-by-coordinate over the bundled snapshot -- and adapts the first
-    hit to a playable ``RadioStation`` via ``to_radio_station``. None when
-    nothing resolves, so the caller can prompt instead of playing silence.
-    """
-    stations = wxindex.local_stations(latitude, longitude, county=county, safe_mode=safe_mode)
-    return to_radio_station(stations[0]) if stations else None
 
 
 class WeatherMixin:
@@ -510,8 +496,13 @@ class WeatherMixin:
             self._announce(f"Weather monitoring off{where}.")
 
     def start_weather_monitoring_if_enabled(self) -> None:
-        """Resume monitoring on launch when it was left on (host calls this
-        once the frame and task manager are ready)."""
+        """Resume monitoring on launch when it was left on -- but only on the
+        host that owns the watch. The config is shared family-wide, so a host
+        that offers "Open the Quill Weather App" defers to it; without this
+        gate Quill Radio resumed Quill Weather's watch and opened by speaking
+        a weather summary. On-demand weather is unaffected."""
+        if getattr(self, "_weather_offers_app_launch", False):
+            return
         from quill.core.weather import monitor
 
         try:

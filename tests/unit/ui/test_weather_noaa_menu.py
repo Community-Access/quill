@@ -5,17 +5,17 @@ no network."""
 
 from __future__ import annotations
 
-from quill.core.radio.wxindex_models import WxStation
-from quill.ui import main_frame_weather as mfw
+from quill.core.radio import wxindex
+from quill.core.radio.wxindex_models import WxStation, local_noaa_radio_station
 
 
 def test_local_noaa_station_for_location(monkeypatch):
     monkeypatch.setattr(
-        mfw.wxindex,
+        wxindex,
         "local_stations",
         lambda lat, lon, county="", **k: [WxStation("KHB36", 162.55, feeds=("https://s/k",))],
     )
-    rs = mfw.local_noaa_radio_station(latitude=38.75, longitude=-77.48, county="Prince William, VA")
+    rs = local_noaa_radio_station(latitude=38.75, longitude=-77.48, county="Prince William, VA")
     assert rs is not None
     assert rs.source == "NOAA Weather Radio"
     assert rs.stream_url == "https://s/k"
@@ -23,5 +23,5 @@ def test_local_noaa_station_for_location(monkeypatch):
 
 
 def test_local_noaa_none_when_no_stations(monkeypatch):
-    monkeypatch.setattr(mfw.wxindex, "local_stations", lambda *a, **k: [])
-    assert mfw.local_noaa_radio_station(latitude=0.0, longitude=0.0) is None
+    monkeypatch.setattr(wxindex, "local_stations", lambda *a, **k: [])
+    assert local_noaa_radio_station(latitude=0.0, longitude=0.0) is None

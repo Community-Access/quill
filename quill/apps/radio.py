@@ -143,6 +143,11 @@ class RadioAppFrame(
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
+        # This app IS the radio: the editor's release gate on ``core.radio``
+        # (#1340) must not apply here, or the recording scheduler, wake task,
+        # missed-recording reports, and every radio palette command silently
+        # die in a public build. Safety locks still apply on top.
+        self.features.grant_product_features({"core.radio"})
         from quill.core.paths import app_data_dir
 
         self._app_features = load_app_features(app_data_dir(), "radio")
@@ -942,8 +947,10 @@ class RadioAppFrame(
         # ids come back for pinning.
         from quill.apps.radio_settings_menu import build_download_prefs_item, build_settings_items
 
-        sources_id, browse_sources_id = build_settings_items(self, station_menu, wx)
-        self._keep_menu_ids(browse_sources_id)
+        sources_id, browse_sources_id, update_catalog_id = build_settings_items(
+            self, station_menu, wx
+        )
+        self._keep_menu_ids(browse_sources_id, update_catalog_id)
         # Spotify (future.spotify) is experimental: the ids are always created
         # (so _keep_menu_ids can pin them) but the items appear only while the
         # feature is on and Safe Mode is off. They live on Station, not Help,
@@ -1211,7 +1218,7 @@ class RadioAppFrame(
         help_menu.Append(prd_id, "&Product Requirements...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("userguide"), id=guide_id)
         self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self._open_radio_doc("release-notes-2.2"), id=notes_id
+            wx.EVT_MENU, lambda _e: self._open_radio_doc("release-notes-3.0"), id=notes_id
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("prd"), id=prd_id)
         help_menu.AppendSeparator()
@@ -1271,6 +1278,10 @@ class RadioAppFrame(
         view_menu.Append(downloads_id, "&Downloads...	Ctrl+Shift+J")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_download_queue(), id=downloads_id)
         self._keep_menu_ids(downloads_id)
+        from quill.apps.radio_settings_menu import build_catalog_status_item
+
+        (catalog_status_id,) = build_catalog_status_item(self, view_menu, wx)
+        self._keep_menu_ids(catalog_status_id)
         view_menu.AppendSeparator()
         features_id = wx.NewIdRef()
         view_menu.Append(features_id, "&Customize Features...")
@@ -1387,7 +1398,7 @@ class RadioAppFrame(
     def _open_radio_doc(self, stem: str) -> None:
         titles = {
             "userguide": "Quill Radio User Guide",
-            "release-notes-2.2": "Quill Radio Release Notes",
+            "release-notes-3.0": "Quill Radio Release Notes",
             "prd": "Quill Radio Product Requirements",
         }
         self.open_app_document(

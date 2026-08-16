@@ -578,6 +578,7 @@
   "quill/ui/radio/browse_sources_dialog.py::BrowseSourcesDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/browse_tree_dialog.py::BrowseTreeDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/caption_settings_dialog.py::CaptionSettingsDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/radio/catalog_status_dialog.py::show_catalog_status::wx.Dialog": "hardened_custom",
   "quill/ui/radio/chapter_list_dialog.py::ChapterListDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/close_confirm_dialog.py::RadioCloseConfirmDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/download_command.py::_choose_folder::wx.DirDialog": "native",

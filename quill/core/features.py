@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -481,6 +481,20 @@ class FeatureManager:
             show_quiet_features=show_quiet_features,
             unlocked_feature_ids=cls._load_unlocked_feature_ids(),
         )
+
+    def grant_product_features(self, feature_ids: Iterable[str]) -> None:
+        """Mark the features a companion app *is* as enabled in this process.
+
+        The release gate (``FeatureDefinition.released=False``, #1340) exists
+        to keep unreleased features out of public *QUILL* builds. A standalone
+        app built around one of those features -- Quill Radio and
+        ``core.radio`` -- must not gate itself off: doing so silently killed
+        the recording scheduler, missed-recording reports, the wake task, and
+        every palette command in public builds. In-memory only: ``save()``
+        never persists this, and safety locks (``feature_lock``) still apply
+        on top.
+        """
+        self.unlocked_feature_ids = frozenset(self.unlocked_feature_ids | set(feature_ids))
 
     def save(self) -> None:
         write_json_atomic(

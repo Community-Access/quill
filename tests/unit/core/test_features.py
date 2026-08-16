@@ -556,3 +556,48 @@ def test_podcast_commands_are_not_visible_in_the_palette(
     visible = {command.id for command in registry.list(manager)}
     assert "podcasts.open_manager" not in visible
     assert "radio.browse" not in visible  # Internet Radio is gated out of the editor too
+
+
+# -- the standalone apps and the release gate -------------------------------
+# The gate above keeps unreleased features out of public *QUILL* builds. The
+# companion app that IS the feature must escape it, or a public Quill Radio
+# ships with no recording scheduler, no wake task, and an empty palette --
+# exactly what the 3.0.0 release candidate did until caught. ``grant_product_features`` is
+# the sanctioned escape: in-memory, never persisted, safety locks untouched.
+
+
+def test_a_product_grant_enables_a_locked_off_feature(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _public_build(monkeypatch)
+    manager = FeatureManager(active_profile_id=PROFILE_FULL_QUILL)
+    assert manager.is_enabled("core.radio") is False
+    manager.grant_product_features({"core.radio"})
+    assert manager.is_enabled("core.radio") is True
+    assert manager.is_visible("core.radio") is True
+    # The grant is this process's, not the editor's: nothing else opens up.
+    assert manager.is_enabled("core.podcasts") is False
+
+
+def test_a_product_grant_is_never_persisted(
+    feature_data_env: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _public_build(monkeypatch)
+    manager = FeatureManager()
+    manager.grant_product_features({"core.radio"})
+    manager.save()
+    reloaded = FeatureManager.load()
+    assert "core.radio" not in reloaded.unlocked_feature_ids
+    assert reloaded.is_enabled("core.radio") is False
+
+
+def test_the_radio_and_cast_apps_grant_their_own_feature() -> None:
+    """The wiring half: each standalone app claims the feature it is built
+    around, right after the shell comes up. Source-pinned (constructing the
+    frames needs a display); the enforcement half is the grant tests above."""
+    for module, feature_id in (
+        ("quill/apps/radio.py", "core.radio"),
+        ("quill/apps/podcasts.py", "core.podcasts"),
+    ):
+        source = (Path(__file__).parents[3] / module).read_text(encoding="utf-8")
+        assert f'grant_product_features({{"{feature_id}"}})' in source, module

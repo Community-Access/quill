@@ -49,6 +49,20 @@ def open_preferences(app: Any) -> None:
     device_labels, device_names, device_index = output_device_choices(
         list_audio_devices(), history.output_device
     )
+    catalog_interval_labels = [
+        "Every 6 hours",
+        "Every 12 hours",
+        "Every 24 hours (default)",
+        "Every 2 days",
+        "Manually only",
+    ]
+    catalog_interval_values = [6, 12, 24, 48, 0]
+    try:
+        catalog_interval_index = catalog_interval_values.index(
+            int(getattr(history, "catalog_refresh_hours", 24))
+        )
+    except ValueError:
+        catalog_interval_index = 2
     dialog = PreferencesDialog(
         app.frame,
         app_title=_TITLE,
@@ -111,6 +125,19 @@ def open_preferences(app: Any) -> None:
                 history.wake_for_scheduled_recording,
             ),
             PreferenceCheckbox(
+                "Keep a local station catalo&g on this computer",
+                "Browse the station directories instantly from a copy kept on "
+                "this computer, updated quietly in the background. Turning it "
+                "off restores live-only browsing; nothing is stored.",
+                history.catalog_enabled,
+            ),
+            PreferenceCheckbox(
+                "Check for station catalog &updates when Quill Radio starts",
+                "A quick background check shortly after launch, skipped when "
+                "the catalog is already fresh. On by default.",
+                history.catalog_refresh_on_startup,
+            ),
+            PreferenceCheckbox(
                 "&Winamp-style playback keys in the Recordings player",
                 "The Winamp classic keys in Recordings: X play, C pause, "
                 "V stop, B next, Z previous, arrows to seek, T for elapsed "
@@ -147,6 +174,14 @@ def open_preferences(app: Any) -> None:
                 "for its own stations from its context menu.",
                 list(_FAVORITES_SORT_LABELS),
                 _FAVORITES_SORT_VALUES.index(history.favorites_sort),
+            ),
+            PreferenceChoice(
+                "Station catalog update &frequency:",
+                "How often the background refresh runs. Sources are checked "
+                "one at a time on their own schedules -- a trickle, never a "
+                "burst. Station > Update Station Catalog always works.",
+                catalog_interval_labels,
+                catalog_interval_index,
             ),
         ],
         texts=[
@@ -185,6 +220,8 @@ def open_preferences(app: Any) -> None:
         history.prevent_sleep,
         history.keep_awake_before_recording,
         history.wake_for_scheduled_recording,
+        history.catalog_enabled,
+        history.catalog_refresh_on_startup,
         history.winamp_playback_keys,
     ) = checkbox_values
     # Apply verbose logging immediately (quill-radio #5) so it takes effect
@@ -205,6 +242,7 @@ def open_preferences(app: Any) -> None:
         # station already on air moves to the new device immediately.
         app._radio_controller.set_output_device(chosen_device)
     chosen_sort = _FAVORITES_SORT_VALUES[choice_indices[3]]
+    history.catalog_refresh_hours = catalog_interval_values[choice_indices[4]]
     if chosen_sort != history.favorites_sort:
         history.favorites_sort = chosen_sort
         app._reload_favorites_tree()
