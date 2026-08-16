@@ -580,6 +580,22 @@ handles <code>ID_CANCEL</code> for free and <code>wx.Frame</code> does
 not, so the window model’s conversion left four Close buttons doing
 nothing, with only Escape working. A control that looks like the way out
 and is not is worse than no control.</li>
+<li>A-13. <strong>Every control on a window has an Alt key, and it is a
+letter the menu bar has not claimed.</strong> A button mnemonic on a
+frame competes with the menu bar’s: when the transport button claimed
+Alt+S / Alt+P those keys opened the Station and Playback menus instead
+of stopping the radio (#1208), and the fix at the time removed the
+button’s mnemonic entirely – trading a broken key for no key. Two
+buttons kept colliding ones until 2026-08-16 (Add to Fa&amp;vorites vs
+&amp;View; &amp;Record vs &amp;Record), both silently dead. The rule is
+a <em>free</em> letter, never no letter: P&amp;lay/S&amp;top (Alt+L /
+Alt+T), Add to &amp;Favorites, Rec&amp;ord, &amp;Browse Stations, plus
+Ctrl+Alt+P as an unconditional stop beside Ctrl+P’s toggle. Status-bar
+cells are exempt – they are a read-out reached with F6 and arrows (A-6),
+and spending six letters on them would starve the actions that need
+them. Enforced by <code>tests/unit/ui/test_button_mnemonics.py</code>,
+which checks both halves (a key exists; the menu bar does not answer it
+first).</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
@@ -829,6 +845,65 @@ technically in the URL” is not consent. Add-from-playlist is its own
 explicit command.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><strong>An update offers back the edition you are running (3.0.0;
+<code>core/install_edition.py</code>, <code>core/updates.py</code>,
+<code>ui/app_shell.py</code>, the <code>.iss</code> markers).</strong>
+Reported twice – #1100 (“what was downloaded was the portable version
+rather than the full installer”) and again 2026-08-16 (“whenever i
+update it shows me the portable”). #1100 was closed after fixing one
+axis, and the complaint outlived it because <strong>three</strong>
+faults produce the same symptom. (1)
+<code>_running_portable_build</code> looked for
+<code>unins000.exe</code> beside <code>sys.executable</code>; on the
+shared QuillVille Runtime that is
+<code>%LOCALAPPDATA%\QuillVille\Runtime\QuillVilleRuntime.exe</code>,
+installed <code>uninsneveruninstall</code>, so no uninstaller sits
+beside it and <em>every</em> installed listener answered “portable” –
+the root cause both reports describe. (2) <code>_pick_asset</code> chose
+among four published assets by file extension, so an installed listener
+got whichever <code>.exe</code> GitHub listed first (the 2.6 MB thin
+setup even when running the 240 MB full edition) and a Companion
+listener got an <code>.exe</code> that cannot install a zip-based copy.
+(3) The uninstaller test knew only the literal <code>unins000</code>,
+while Inno writes <code>unins001</code>, <code>unins002</code>… when a
+copy is installed over an existing one. The fix gives the app a real
+identity: each installer stages a <code>quill-edition.txt</code> marker,
+detection falls back to folder shape for installs that predate it, and
+the uninstaller is matched by pattern; an install that cannot be told
+apart resolves to the thin installer, which shares the full one’s AppId
+and upgrades either. 15 tests, including one asserting each published
+asset matches exactly <strong>one</strong> edition, so “first
+<code>.exe</code> wins” cannot return. Two more repairs on the same
+path: all three thin installers looked for the runtime under
+<code>Runtime\3.13\</code> while it installs to <code>Runtime\</code>,
+so the already-present test never fired and every thin install
+re-downloaded 230 MB; and the shared-runtime fragment skipped the
+payload copy whenever the CPython version matched, so an update
+installed cleanly and left the old code in place (both fixed here and in
+the sibling installer PR).</li>
+<li><strong>Directories say when they are down, instead of looking empty
+(3.0.0; <code>core/radio/browse_failure.py</code>,
+<code>core/radio/directory_cache.py</code>,
+<code>core/radio/internet_archive.py</code>,
+<code>core/media/librivox.py</code>,
+<code>ui/radio/browse_feedback.py</code>).</strong> The
+empty-versus-broken distinction the browse contract promises was leaking
+in two places. Every source wraps transport failures in its own coded
+error and the classifier matched only the outermost type, so LibriVox
+being unreachable for a day (Cloudflare 522 after a ~19.5 s hold)
+reported “no data in the folder” on every shelf; it now walks the
+<code>__cause__</code>/<code>__context__</code> chain. And the Internet
+Archive answers a failed search with <strong>HTTP 200</strong> plus
+<code>{"error": "[BACKEND_ERROR] ..."}</code>, which parsed to zero docs
+– Radio Programs reported itself empty, and because that empty payload
+was a truthy dict it was <strong>cached</strong>, outliving the outage;
+the error body now raises (<code>service_unreachable</code>), empty
+listings are never cached, and <code>directory_cache</code> records a
+swallowed refresh failure so <code>browse</code> can still tell empty
+from broken without the cache layer having to raise into a tree.
+LibriVox browse also drops from the 20 s book-download budget to 8 s,
+and a branch names itself while loading and speaks up if it passes three
+seconds, because slow and hung are the same experience in silence.</li>
 <li><strong>AudioPub as a Community Audio source, v1 = Discover only
 (3.0.0; <code>core/radio/audiopub.py</code>, handlers in
 <code>core/radio/browse_libraries.py</code>).</strong> AudioPub

@@ -703,6 +703,32 @@ instead, and the label says so.
 browse tree, and it lands on the source you were last in -- Networks, TuneIn,
 iHeart, wherever -- instead of collapsed at the top with everything closed.
 
+### Updating gives you back the edition you installed
+
+If you have ever chosen Check for Updates and been handed the *portable zip*
+when you installed Quill Radio properly -- this is the release where that
+stops. It was reported twice, and the second report is the one that found it:
+the app decided whether you were "portable" by looking for an uninstaller next
+to the running program, and on the shared runtime the running program lives in
+your AppData folder, where an uninstaller never sits. So essentially every
+installed listener looked portable, forever.
+
+Underneath that were two more: a release publishes four different downloads --
+full installer, thin installer, portable zip, Companion zip -- and the choice
+between them was made by file extension, so a full-edition listener could be
+handed the two-megabyte thin setup and a Companion listener an installer that
+cannot install their copy at all. And a copy installed over an existing one
+looked portable too, because Windows numbers the uninstallers it leaves behind
+and only the first name was recognised.
+
+Each installer now writes down which edition it is, and an update offers that
+same edition back. Two related repairs ship with it: the thin installer no
+longer re-downloads the 230 MB shared runtime every single time (it was
+looking for the copy you already have in a folder that never existed), and an
+update now actually replaces the program -- before this, updating a machine
+that already had the right Python version copied nothing at all and reported
+success.
+
 ### Every menu item tells you its key
 
 Open any menu in 3.0 and every item ends with the way to reach it from the
@@ -723,6 +749,22 @@ actually have bound** -- rebind it in Keyboard Shortcuts and the menu says the
 new key, rather than confidently repeating a default you no longer use. A
 build check now fails if any menu item ships without a working, unique key, so
 this stays true.
+
+### And every button on the main window has an Alt key
+
+**Alt+L** plays, **Alt+T** stops, **Alt+F** adds the playing station to your
+favorites, **Alt+O** records, **Alt+B** opens Browse Stations. Plus
+**Ctrl+Alt+P** to stop outright, next to Ctrl+P's play/stop toggle.
+
+The transport button had no Alt key at all before this, and the reason is
+worth knowing, because it explains why Play is not Alt+P. A button's Alt key
+competes with the *menu bar's*: Alt+P is the Playback menu, Alt+S is Station.
+When the button claimed those letters, pressing them opened a menu instead of
+stopping the radio -- so the earlier fix removed the button's key entirely,
+which traded a broken key for no key. Two other buttons kept theirs and stayed
+broken: Add to Fa**v**orites fought the **V**iew menu, and **R**ecord fought
+the **R**ecord menu. Every button now uses a letter the menu bar has not
+claimed, and a build check refuses any that does.
 
 ### The Close button closes
 
@@ -2031,6 +2073,22 @@ Three smaller things came with it:
   in this genre" and "that directory could not be reached" used to look
   identical. That is how a listener concludes a working source is broken -- or,
   worse, decides a broken one is simply empty and stops checking.
+
+  Two ways that distinction was still slipping through, both closed here.
+  Every source wraps its own network errors in its own error type, and the
+  check that told the two apart only examined the outermost one -- so when
+  LibriVox went down for a day, every one of its shelves said *no data in this
+  folder* rather than *could not be reached*. And the Internet Archive answers
+  a failed search with a **success** code carrying an error message inside it,
+  which read as "zero results": Radio Programs reported itself empty, and
+  because an empty answer looked like a real one it was **cached**, so it kept
+  reporting empty long after the Archive recovered. Empty answers are no
+  longer stored, and an error inside a success is treated as the outage it is.
+- **A slow branch says it is still working.** It names what it is loading --
+  "Loading Old Time Radio..." -- and if it passes three seconds it says so out
+  loud, because slow and stuck are the same experience in silence. LibriVox
+  also gives up in eight seconds now rather than twenty: a browse click was
+  using the timeout meant for downloading an entire book.
 - **A folder says how big it is before you open it.** Where a source can tell us
   cheaply, the size is announced with the name, so you can decide whether to
   spend the wait before you have spent it.

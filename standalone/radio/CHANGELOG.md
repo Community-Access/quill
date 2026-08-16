@@ -29,6 +29,13 @@ Three separate faults, all of them now closed:
 
 Two more upgrade fixes ride along: **the thin installer no longer re-downloads the 230 MB runtime every time** (it was looking for it in a folder that never existed, so it never found the copy already on your disk), and **an update actually replaces the program code** -- previously an update onto a machine that already had the same Python version skipped the copy entirely and reported success while leaving the old app in place.
 
+### A directory that is down says so, instead of looking empty
+
+- **"There is nothing here" and "this could not be reached" had quietly merged again.** LibriVox spent 2026-08-16 unreachable, and every one of its shelves reported *no data in the folder* -- so the honest response (try again later) looked like the wrong one (this branch is useless). Each source wraps its own network errors, and the check that tells the two apart only looked at the outermost one. It now looks all the way down.
+- **The Internet Archive's outage was being cached.** Their search backend answers a failure with a *success* code and an error message inside it, which read as "zero results" -- so Radio Programs reported itself empty, and because an empty answer looked like a real one it was stored and kept reporting empty long after the Archive recovered. Empty answers are no longer cached, and an error inside a success is treated as the outage it is.
+- **LibriVox gives up in eight seconds, not twenty.** A browse click was using the timeout meant for downloading a whole book.
+- **A slow branch says it is still working.** It names what it is loading ("Loading Old Time Radio...") and, if it passes three seconds, says so out loud -- because slow and stuck are the same experience in silence.
+
 ### Every menu item now tells you its key, and Close closes
 
 - **Every menu item shows a keyboard shortcut.** All 115 of them -- menus, submenus, even the Recently Played list -- and Browse Stations is **Ctrl+B**. Before this, 49 items offered no shortcut at all, so the only way to learn there was no faster route was to walk the menu and find out. Where an item is backed by a command, the label shows *what is actually bound*, so rebinding it in Keyboard Shortcuts changes what the menu says.

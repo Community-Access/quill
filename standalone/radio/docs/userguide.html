@@ -353,14 +353,20 @@ readout of the station’s source, stream, format, and country – the same
 view the search results give), Rename, Move to Folder, Remove, New
 Folder, Mark for Move, and Manage Favorites. Your custom names are used
 everywhere.</li>
-<li>Buttons: <strong>Play</strong> (it becomes <strong>Stop</strong>
-while connecting or playing – one transport control, never a dead
-button; its reliable keyboard shortcut is <strong>Ctrl+P</strong>, which
-works from anywhere in the window), <strong>Add to Favorites</strong>
-(it becomes <strong>Remove from Favorites</strong> when the playing
-station is already saved – perfect for keeping something you found in
-ACB Media or Recently Played), <strong>Record</strong>, and
-<strong>Browse Stations…</strong></li>
+<li>Buttons, each with its own Alt key: <strong>P&amp;lay</strong>
+(<strong>Alt+L</strong>; it becomes <strong>S&amp;top</strong>,
+<strong>Alt+T</strong>, while connecting or playing – one transport
+control, never a dead button), <strong>Add to &amp;Favorites</strong>
+(<strong>Alt+F</strong>; it becomes <strong>Remove from
+&amp;Favorites</strong> when the playing station is already saved –
+perfect for keeping something you found in ACB Media or Recently
+Played), <strong>Rec&amp;ord</strong> (<strong>Alt+O</strong>), and
+<strong>&amp;Browse Stations…</strong> (<strong>Alt+B</strong>).
+<strong>Ctrl+P</strong> plays or stops from anywhere in the window and
+<strong>Ctrl+Alt+P</strong> stops outright, whatever is happening. (Play
+is Alt+L rather than the more obvious Alt+P because Alt+P belongs to the
+Playback menu – a button that claimed it would open the menu instead of
+playing, which is a bug this app has already had once.)</li>
 <li><strong>Volume</strong> (slider): right in the Tab order after the
 buttons, so you can tab to it while a station is playing and use the
 <strong>arrow keys</strong> (or Page Up/Page Down) to turn the volume up
@@ -401,6 +407,13 @@ opening one made the menus seem to disappear.)</li>
 <li><strong>The main window stays reachable.</strong> Opening one of
 these windows no longer locks you out of the favorites list; you can
 keep several windows open at once and work across them.</li>
+<li><strong>Three ways out, all working.</strong> Every one of these
+windows closes from its <strong>Close</strong> button, from
+<strong>Escape</strong>, and from the titlebar. (The Close button did
+nothing in 3.0’s first builds: these surfaces became real windows so
+they could carry the menu bar, and a real window – unlike a dialog –
+does not answer a Close button on its own. Only Escape worked. Fixed,
+with a build check so a new window cannot grow the same hole.)</li>
 </ul>
 <p>A <strong>Window</strong> menu on every window lists what is open,
 numbered in the order you opened them. To move between windows:</p>
@@ -654,6 +667,16 @@ it showed only the first results – and a directory that cannot be
 reached says so instead of posing as “no matches.” For a search across
 <em>every</em> directory at once, use <strong>Search Stations…</strong>
 instead.</li>
+<li><strong>A branch that is slow says so, and a branch that is broken
+says <em>that</em>.</strong> Opening a source names what it is loading
+(“Loading Old Time Radio…”), and if it takes more than three seconds it
+tells you it is still working – silence and a hang feel identical
+otherwise. And an empty branch distinguishes the two kinds of empty:
+“there are no stations in this genre” is an answer, while “that
+directory could not be reached” means try again later. If a directory is
+having a bad day (it happens – LibriVox and the Internet Archive both
+were on 16 August), Quill Radio says so plainly rather than quietly
+showing you nothing.</li>
 <li><strong>The tree reads ahead.</strong> Land on a closed folder and
 Quill Radio quietly starts fetching what is inside it; open a folder and
 the first few folders inside it fetch behind you. The expand you were
@@ -1623,14 +1646,23 @@ Radio’s playback controls so they work while another program has focus
 pre-release capability. Verified entirely on your machine; nothing is
 transmitted; one code counts for QUILL, Quill Radio, and QUILL Cast
 together.</li>
-<li><strong>Check for Updates…</strong> – compares your version with the
-newest release, downloads the right artifact for your flavor directly
-(the installer for an installed copy, the portable zip for a portable
-one) with spoken progress, then offers Install now or Open folder.
-Already up to date shows a dialog too, not just a spoken announcement.
-Quill Radio also runs this check quietly once a day when it launches –
-silent unless it actually finds something, and Station &gt; Preferences
-(Ctrl+,) turns it off if you’d rather check manually only.</li>
+<li><strong>Check for Updates…</strong> (Ctrl+Alt+U) – compares your
+version with the newest release, downloads <strong>the edition you are
+actually running</strong> with spoken progress, then offers Install now
+or Open folder. A release publishes four downloads – the full installer,
+the thin “Lite” installer, the portable zip, and the Companion zip – and
+each installer records which one it laid down, so an update gives you
+the same kind back. (Before 3.0 the choice was made by file extension,
+and the “are you portable?” test looked for an uninstaller beside the
+running program – which, on the shared runtime, lives in your AppData
+folder where no uninstaller sits. Nearly every installed listener was
+therefore offered the portable zip. If that happened to you, this is the
+fix; you do not need to reinstall by hand, though installing once over
+the top records your edition so future updates are exact.) Already up to
+date shows a dialog too, not just a spoken announcement. Quill Radio
+also runs this check quietly once a day when it launches – silent unless
+it actually finds something, and Station &gt; Preferences (Ctrl+,) turns
+it off if you’d rather check manually only.</li>
 <li><strong>Get FFmpeg…</strong> – a safety net: FFmpeg ships inside
 Quill Radio, but if it ever goes missing this downloads the official
 build so recording works again.</li>

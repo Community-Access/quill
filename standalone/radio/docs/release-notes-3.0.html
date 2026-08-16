@@ -946,6 +946,31 @@ stations instead, and the label says so.</p>
 a station and reopen the browse tree, and it lands on the source you
 were last in – Networks, TuneIn, iHeart, wherever – instead of collapsed
 at the top with everything closed.</p>
+<h3 id="updating-gives-you-back-the-edition-you-installed">Updating
+gives you back the edition you installed</h3>
+<p>If you have ever chosen Check for Updates and been handed the
+<em>portable zip</em> when you installed Quill Radio properly – this is
+the release where that stops. It was reported twice, and the second
+report is the one that found it: the app decided whether you were
+“portable” by looking for an uninstaller next to the running program,
+and on the shared runtime the running program lives in your AppData
+folder, where an uninstaller never sits. So essentially every installed
+listener looked portable, forever.</p>
+<p>Underneath that were two more: a release publishes four different
+downloads – full installer, thin installer, portable zip, Companion zip
+– and the choice between them was made by file extension, so a
+full-edition listener could be handed the two-megabyte thin setup and a
+Companion listener an installer that cannot install their copy at all.
+And a copy installed over an existing one looked portable too, because
+Windows numbers the uninstallers it leaves behind and only the first
+name was recognised.</p>
+<p>Each installer now writes down which edition it is, and an update
+offers that same edition back. Two related repairs ship with it: the
+thin installer no longer re-downloads the 230 MB shared runtime every
+single time (it was looking for the copy you already have in a folder
+that never existed), and an update now actually replaces the program –
+before this, updating a machine that already had the right Python
+version copied nothing at all and reported success.</p>
 <h3 id="every-menu-item-tells-you-its-key">Every menu item tells you its
 key</h3>
 <p>Open any menu in 3.0 and every item ends with the way to reach it
@@ -966,6 +991,24 @@ the key you actually have bound</strong> – rebind it in Keyboard
 Shortcuts and the menu says the new key, rather than confidently
 repeating a default you no longer use. A build check now fails if any
 menu item ships without a working, unique key, so this stays true.</p>
+<h3 id="and-every-button-on-the-main-window-has-an-alt-key">And every
+button on the main window has an Alt key</h3>
+<p><strong>Alt+L</strong> plays, <strong>Alt+T</strong> stops,
+<strong>Alt+F</strong> adds the playing station to your favorites,
+<strong>Alt+O</strong> records, <strong>Alt+B</strong> opens Browse
+Stations. Plus <strong>Ctrl+Alt+P</strong> to stop outright, next to
+Ctrl+P’s play/stop toggle.</p>
+<p>The transport button had no Alt key at all before this, and the
+reason is worth knowing, because it explains why Play is not Alt+P. A
+button’s Alt key competes with the <em>menu bar’s</em>: Alt+P is the
+Playback menu, Alt+S is Station. When the button claimed those letters,
+pressing them opened a menu instead of stopping the radio – so the
+earlier fix removed the button’s key entirely, which traded a broken key
+for no key. Two other buttons kept theirs and stayed broken: Add to
+Fa<strong>v</strong>orites fought the <strong>V</strong>iew menu, and
+<strong>R</strong>ecord fought the <strong>R</strong>ecord menu. Every
+button now uses a letter the menu bar has not claimed, and a build check
+refuses any that does.</p>
 <h3 id="the-close-button-closes">The Close button closes</h3>
 <p>In the standalone app, the Close button in Browse Stations did
 nothing. Only Escape worked. That is a peculiar kind of broken: the
@@ -2464,21 +2507,39 @@ have no reason to read: it is the difference between “we added a few
 sources” and “the next one costs an afternoon”.</p>
 <p>Three smaller things came with it:</p>
 <ul>
-<li><strong>An empty branch tells you which kind of empty it
+<li><p><strong>An empty branch tells you which kind of empty it
 is.</strong> “There are no stations in this genre” and “that directory
 could not be reached” used to look identical. That is how a listener
 concludes a working source is broken – or, worse, decides a broken one
-is simply empty and stops checking.</li>
-<li><strong>A folder says how big it is before you open it.</strong>
+is simply empty and stops checking.</p>
+<p>Two ways that distinction was still slipping through, both closed
+here. Every source wraps its own network errors in its own error type,
+and the check that told the two apart only examined the outermost one –
+so when LibriVox went down for a day, every one of its shelves said
+<em>no data in this folder</em> rather than <em>could not be
+reached</em>. And the Internet Archive answers a failed search with a
+<strong>success</strong> code carrying an error message inside it, which
+read as “zero results”: Radio Programs reported itself empty, and
+because an empty answer looked like a real one it was
+<strong>cached</strong>, so it kept reporting empty long after the
+Archive recovered. Empty answers are no longer stored, and an error
+inside a success is treated as the outage it is.</p></li>
+<li><p><strong>A slow branch says it is still working.</strong> It names
+what it is loading – “Loading Old Time Radio…” – and if it passes three
+seconds it says so out loud, because slow and stuck are the same
+experience in silence. LibriVox also gives up in eight seconds now
+rather than twenty: a browse click was using the timeout meant for
+downloading an entire book.</p></li>
+<li><p><strong>A folder says how big it is before you open it.</strong>
 Where a source can tell us cheaply, the size is announced with the name,
 so you can decide whether to spend the wait before you have spent
-it.</li>
-<li><strong>Browse levels are remembered between sessions.</strong>
+it.</p></li>
+<li><p><strong>Browse levels are remembered between sessions.</strong>
 Opening a source used to fetch its whole index again every single time,
 and some of those are very large. They are kept now, so a branch opens
 straight away; a refresh that fails leaves you with what you had rather
 than an empty branch, and anything shown from memory can tell you how
-old it is instead of quietly implying it is current.</li>
+old it is instead of quietly implying it is current.</p></li>
 </ul>
 <hr />
 <h2 id="knowing-when-someone-elses-service-moves">Knowing when someone
