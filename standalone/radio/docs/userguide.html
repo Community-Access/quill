@@ -495,6 +495,15 @@ popular ranks by votes cast over years, trending ranks by what is being
 listened to today, and the two lists disagree more than you would
 expect. <strong>Recently Added or Changed</strong> is new stations and
 ones whose address was just repaired.</li>
+<li><strong>AudioPub (Community Audio)</strong> – audio that people made
+and shared publicly on audiopub.site. Its <strong>Discover</strong>
+shelf is a random fifty, different every single time, each row named
+with its creator and play count, each playable with a full timeline; a
+“More to discover” row keeps going. Nothing from AudioPub is stored on
+this computer – the uploaders keep the rights to their audio, and
+Station Catalog Status says so. Discover is deliberately the only shelf
+for now: newest, popular, search and live broadcasts wait on AudioPub’s
+developer blessing a public interface for them.</li>
 <li><strong>Podcasts (Apple)</strong> – choose a country and you get
 that storefront’s top shows plus Apple’s whole podcast genre tree, with
 subgenres beneath each genre. Open a show for its episodes;
@@ -523,8 +532,10 @@ Title</strong>: LibriVox’s catalogue supports author, genre and date
 filters and no title filter in any form, and a branch that quietly finds
 nothing is worse than one that is not offered.</li>
 <li><strong>Project Gutenberg Audiobooks</strong> – the 1,124 Gutenberg
-records that carry human-read audio, by topic and by language. It
-complements LibriVox rather than duplicating it.</li>
+records that carry human-read audio, by topic and by language, each
+shelf paging through completely via a “More audiobooks” row. It
+complements LibriVox rather than duplicating it. With the station
+catalog on, All Audiobooks answers from your own disk, instantly.</li>
 <li><strong>Saving what you are allowed to save.</strong> Right-click
 (or Shift+F10) a book chapter, an archive recording, a Creative Commons
 track or a podcast episode and choose <strong>Download…</strong> to keep
@@ -612,19 +623,43 @@ channel with thousands of videos pages with <strong>More…</strong>
 rather than trying to be one enormous level. Videos play, record and can
 be favorited exactly like a station.</li>
 </ul></li>
-<li><strong>Find in this folder</strong> – below the tree is a search
-box that searches <strong>only from the folder you are highlighted on,
-downward</strong> – one iHeart genre, one state, one source – so you get
-a short, relevant list instead of searching every directory at once.
-Highlight the folder you want to search within, type part of a station
-name, and press <strong>Enter</strong> (or the <strong>Find</strong>
-button); matching stations appear as a flat list under that folder.
-Press <strong>Clear</strong> to drop the results and put the cursor back
-on the folder you searched from. To search a folder, Quill Radio loads
-that folder’s stations first, so a search from a very large branch is
-kept bounded (it tells you if it showed only the first results – search
-a smaller folder to see the rest). For a search across <em>every</em>
-directory at once, use <strong>Search Stations…</strong> instead.</li>
+<li><strong>Find in this folder</strong> – above the tree (one Shift+Tab
+away from the stations) is a search box that searches <strong>from the
+folder you are highlighted on, downward</strong> – one iHeart genre, one
+state, one source – so you get a short, relevant list instead of
+searching every directory at once. Highlight the folder, type, press
+<strong>Enter</strong> (or the <strong>Find</strong> button); matches
+appear under that folder, and <strong>Clear</strong> puts you back where
+you searched from. <strong>Ctrl+F</strong> jumps to the box from
+anywhere in the window. Find takes the fastest route for where you are
+standing, and says which it took: on the <strong>Podcasts</strong>
+branch it asks the real podcast search engine, and shows come back as
+folders you expand straight into episodes – type “double tap”, press
+Enter, expand, play. On a catalog-served branch (<strong>By
+Country</strong>, <strong>By Language</strong>, <strong>By
+Genre</strong>, <strong>By Quality</strong>) it answers instantly from
+the catalog on this computer, scoped to where you are – Find “jazz”
+while on France and you get France’s jazz stations, online or off,
+announced as “From your catalog.” On <strong>LibriVox</strong> it
+searches the whole book catalog (books arrive as folders of chapters);
+the <strong>Internet Archive</strong> answers with items you can drill
+into; <strong>TuneIn</strong> with stations already resolved;
+<strong>iHeart</strong> from its full station index;
+<strong>NOAA</strong> by call sign, SAME code, or “County, ST”;
+<strong>Project Gutenberg</strong>, <strong>SomaFM</strong>,
+<strong>Audius</strong>, <strong>Mixcloud</strong> and
+<strong>ccMixter</strong> through their own catalogs. Only a branch with
+no search engine of its own walks the subtree, bounded, and tells you if
+it showed only the first results – and a directory that cannot be
+reached says so instead of posing as “no matches.” For a search across
+<em>every</em> directory at once, use <strong>Search Stations…</strong>
+instead.</li>
+<li><strong>The tree reads ahead.</strong> Land on a closed folder and
+Quill Radio quietly starts fetching what is inside it; open a folder and
+the first few folders inside it fetch behind you. The expand you were
+about to make opens instantly. This follows your cursor only – a source
+you hid in Choose Browse Sources is still never contacted, and Safe Mode
+still fetches nothing.</li>
 <li><strong>Search Stations…</strong> – the full station search: search
 across four directories at once – <strong>RadioBrowser</strong>,
 <strong>SomaFM</strong>, <strong>iHeart</strong>, and
@@ -647,6 +682,11 @@ requests). And since 3.0 the search starts at home: matches from the
 you press Enter – ordinary rows, labeled with the directory they came
 from – with the live directories layering in behind them, so a search
 answers immediately, and still answers when the internet does not.
+Library results play too: press Enter on a podcast show and Quill Radio
+fetches its feed and plays the <strong>latest episode</strong>; a
+LibriVox book plays its <strong>first section</strong>; each is
+announced by name, and an Internet Archive collection says plainly that
+it opens on its own site.
 <ul>
 <li><p><strong>The libraries are searched too.</strong> Beside the radio
 directories, a search also asks <strong>LibriVox</strong>, the

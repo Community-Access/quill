@@ -93,21 +93,41 @@ def on_find(host: Any) -> None:
     label = host._tree.GetItemText(anchor)
     host._announce(f"Searching {label} for {query}...")
 
-    def _work(**_kwargs: Any) -> tuple[list[dict], bool]:
-        return find_matches(host, node_id, query)
+    def _work(**_kwargs: Any) -> tuple[list[dict], bool, str]:
+        # The fast, branch-aware route first (Apple's search API, the local
+        # catalog); the bounded crawl only when no faster channel fits.
+        from quill.core.radio import branch_find
+
+        fast = branch_find.fast_find(
+            node_id,
+            query,
+            safe_mode=host._safe_mode,
+            catalog=getattr(host, "_catalog", None),
+        )
+        if fast is not None:
+            nodes, provenance = fast
+            return [{**host._row_data(n), "note": n.note} for n in nodes], False, provenance
+        matches, capped = find_matches(host, node_id, query)
+        return matches, capped, ""
 
     def _ok(_op: str, result: object) -> None:
         # Already on the UI thread (call_ui_safely marshals + guards this);
         # call directly. A second raw CallAfter would run outside that guard,
         # so a closed dialog would hit a destroyed TreeCtrl and raise.
-        matches, capped = result if isinstance(result, tuple) else ([], False)
-        show_find_results(host, anchor, label, matches, capped)
+        matches, capped, provenance = result if isinstance(result, tuple) else ([], False, "")
+        show_find_results(host, anchor, label, matches, capped, provenance=provenance)
 
     host._task_manager.submit("radio-browse-find", _work, on_success=_ok, on_failure=None)
 
 
 def show_find_results(
-    host: Any, anchor: Any, label: str, matches: list[dict], capped: bool
+    host: Any,
+    anchor: Any,
+    label: str,
+    matches: list[dict],
+    capped: bool,
+    *,
+    provenance: str = "",
 ) -> None:
     if not host._tree:  # dialog closed while the search was in flight
         return
@@ -126,6 +146,10 @@ def show_find_results(
         note = str(node_data.get("note") or "")
         child = tree.AppendItem(anchor, f"{text}  ({note})" if note else text)
         tree.SetItemData(child, node_data)
+        if host._is_folder_data(node_data):
+            # A fast route can answer with folders (a podcast show that expands
+            # into its episodes); give each its lazy placeholder so it does.
+            tree.SetItemData(tree.AppendItem(child, "Loading..."), dict(host._placeholder()))
     if not matches:
         empty = tree.AppendItem(anchor, f"No matches in {label}.")
         tree.SetItemData(empty, dict(host._placeholder()))
@@ -135,8 +159,9 @@ def show_find_results(
     tree.Expand(anchor)
     count = len(matches)
     more = " Showing the first results; search a smaller folder for the rest." if capped else ""
+    origin = f" {provenance.capitalize()}." if provenance else ""
     host._announce(
-        f"{count} match{'es' if count != 1 else ''} in {label}."
+        f"{count} match{'es' if count != 1 else ''} in {label}.{origin}"
         f"{more} Clear to return to the folder."
     )
     first, _cookie = tree.GetFirstChild(anchor)

@@ -112,3 +112,80 @@ def _browse_apple_show(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
             )
         )
     return nodes
+
+
+# --- AudioPub (community audio) ----------------------------------------------
+# v1 is Discover only: the one JSON endpoint AudioPub's own source implements
+# for clients. Newest/popular/search/live exist server-side but have no public
+# API; the plan of record is to ask the developer for one, not to scrape.
+
+
+def _browse_audiopub(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
+    return [
+        folder(
+            make_id("audiopubdiscover", "1"),
+            "Discover",
+            note="a random fifty, different every time",
+        )
+    ]
+
+
+def _browse_audiopub_discover(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
+    from quill.core.radio import audiopub
+
+    page = int(args[0]) if args and args[0].isdigit() else 1
+    nodes: list[BrowseNode] = [
+        leaf(station, note=", ".join(station.tags))
+        for station in audiopub.discover(page, safe_mode=safe_mode)
+    ]
+    if nodes:
+        nodes.append(folder(make_id("audiopubdiscover", str(page + 1)), "More to discover"))
+    return nodes
+
+
+# --- Project Gutenberg audio --------------------------------------------------
+
+
+def _browse_gutenberg(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
+    from quill.core.radio import gutendex
+
+    nodes = [folder("gutenbergtopic", "All Audiobooks")]
+    nodes += [
+        folder(make_id("gutenbergtopic", slug), label) for slug, label in gutendex.BROWSE_TOPICS
+    ]
+    nodes += [
+        folder(make_id("gutenberglang", code), f"In {label}")
+        for code, label in gutendex.BROWSE_LANGUAGES
+    ]
+    return nodes
+
+
+def _gutenberg_page(
+    kind: str, filter_value: str, page: int, *, safe_mode: bool
+) -> list[BrowseNode]:
+    """One gutendex page as rows, chained with a More node while pages remain.
+
+    Gutendex serves 32 records per page and the old handlers fetched exactly
+    one, so every topic silently showed its first 32 books and no more
+    (reported 2026-08-16). The More row states what it is; a truncated list
+    that says nothing reads as the whole answer.
+    """
+    from quill.core.radio import gutendex
+
+    topic = filter_value if kind == "gutenbergtopic" else ""
+    language = filter_value if kind == "gutenberglang" else ""
+    rows = gutendex.audiobooks(topic=topic, language=language, page=page, safe_mode=safe_mode)
+    nodes: list[BrowseNode] = [leaf(station) for station in rows]
+    if len(rows) >= 32:  # a full page: gutendex has more behind it
+        nodes.append(folder(make_id(kind, filter_value, str(page + 1)), "More audiobooks"))
+    return nodes
+
+
+def _browse_gutenberg_topic(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
+    page = int(args[1]) if len(args) > 1 and args[1].isdigit() else 1
+    return _gutenberg_page("gutenbergtopic", args[0] if args else "", page, safe_mode=safe_mode)
+
+
+def _browse_gutenberg_lang(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
+    page = int(args[1]) if len(args) > 1 and args[1].isdigit() else 1
+    return _gutenberg_page("gutenberglang", args[0] if args else "", page, safe_mode=safe_mode)

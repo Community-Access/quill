@@ -1365,6 +1365,8 @@ class StationBrowserDialog:
         if self._is_station_playing(station):
             self._controller.stop()
             self._announce("Radio stopped")
+        elif library_search.activate_row(self, station):
+            pass  # a show or book row: resolved and played (or refused) by name
         else:
             self._controller.play_station(station)
             self._announce(f"Playing {station.name}")

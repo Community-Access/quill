@@ -258,6 +258,15 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "User-Agent. No new hosts: every address comes from a directory the "
         "browse tree already reached."
     ),
+    "core/radio/audiopub.py::_fetch": (
+        "AudioPub (audiopub.site) community audio, Discover shelf only: one "
+        "GET to /quickfeed/api?page=N (50 randomized items) plus playback of "
+        "the audio URLs those rows carry. Reached only by expanding the "
+        "AudioPub branch; deliberately uncached (the server shuffles, and "
+        "uploaders keep the rights to their audio, so nothing is stored). "
+        "HTTPS-only over a verified TLS context with bounded timeout and "
+        "size. Disabled in Safe Mode."
+    ),
     "core/radio/free_music.py::_fetch": (
         "Single egress site for three keyless music directories: Audius "
         "(trending and trending-by-genre; an app_name parameter identifies the "

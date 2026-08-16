@@ -135,6 +135,12 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         "Human-read public-domain books.",
         group="Spoken word",
     ),
+    BrowseSourceInfo(
+        "audiopub",
+        "AudioPub",
+        "Community audio people made and shared; a Discover shelf of fifty.",
+        group="Music",
+    ),
     BrowseSourceInfo("audius", "Audius", "Independent music, trending by genre.", group="Music"),
     BrowseSourceInfo(
         "mixcloud", "Mixcloud", "DJ sets and shows; opens in your browser.", group="Music"

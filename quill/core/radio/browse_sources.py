@@ -39,6 +39,7 @@ Node id grammar, all opaque to the caller (see :mod:`browse_nodes`)::
     librivox | librivoxgenre:<g> | librivoxauthors:<L> | librivoxauthor:<name>
     librivoxbook:<id>               ...a book's sections
     gutenberg | gutenbergtopic:<t> | gutenberglang:<code>
+    audiopub | audiopubdiscover:<page>  AudioPub community audio (Discover)
     audius | audius:<genre>
     mixcloud | mixcloudfmt:<music|talk> | mixcloudcat:<slug>
     ccmixter | ccmixter:<tag>
@@ -109,6 +110,11 @@ from quill.core.radio.browse_libraries import (
     _browse_apple_chart,
     _browse_apple_genre,
     _browse_apple_show,
+    _browse_audiopub,
+    _browse_audiopub_discover,
+    _browse_gutenberg,
+    _browse_gutenberg_lang,
+    _browse_gutenberg_topic,
 )
 from quill.core.radio.browse_nodes import (
     ARG_SEP,
@@ -146,6 +152,7 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("archive", "Internet Archive"),
     ("librivox", "LibriVox Audiobooks"),
     ("gutenberg", "Project Gutenberg Audiobooks"),
+    ("audiopub", "AudioPub (Community Audio)"),
     ("audius", "Audius (Independent Music)"),
     ("mixcloud", "Mixcloud (Shows & DJ Sets)"),
     ("ccmixter", "ccMixter (Creative Commons)"),
@@ -555,34 +562,6 @@ def _browse_librivox_book(args: list[str], *, safe_mode: bool) -> list[BrowseNod
 # --- Project Gutenberg --------------------------------------------------------
 
 
-def _browse_gutenberg(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    from quill.core.radio import gutendex
-
-    nodes = [folder("gutenbergtopic", "All Audiobooks")]
-    nodes += [
-        folder(make_id("gutenbergtopic", slug), label) for slug, label in gutendex.BROWSE_TOPICS
-    ]
-    nodes += [
-        folder(make_id("gutenberglang", code), f"In {label}")
-        for code, label in gutendex.BROWSE_LANGUAGES
-    ]
-    return nodes
-
-
-def _browse_gutenberg_topic(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    from quill.core.radio import gutendex
-
-    topic = args[0] if args else ""
-    return _stations(gutendex.audiobooks(topic=topic, safe_mode=safe_mode))
-
-
-def _browse_gutenberg_lang(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    from quill.core.radio import gutendex
-
-    language = args[0] if args else ""
-    return _stations(gutendex.audiobooks(language=language, safe_mode=safe_mode))
-
-
 def refuse_when_offline(safe_mode: bool) -> None:
     """Refuse LibriVox in Safe Mode.
 
@@ -761,6 +740,8 @@ _HANDLERS: dict[str, Callable[..., list[BrowseNode]]] = {
     "apple": _browse_apple,
     "applegenre": _browse_apple_genre,
     "appleshow": _browse_apple_show,
+    "audiopub": _browse_audiopub,
+    "audiopubdiscover": _browse_audiopub_discover,
 }
 
 

@@ -410,19 +410,46 @@ class CatalogStore:
     def top_voted(self, *, limit: int = 100) -> list[StationRow]:
         return self._rows("1=1", (), limit=limit)
 
-    def search(self, query: str, *, limit: int = 200) -> list[StationRow]:
+    def search(
+        self,
+        query: str,
+        *,
+        limit: int = 200,
+        country: str = "",
+        state: str = "",
+        language: str = "",
+        tag: str = "",
+        codec: str = "",
+    ) -> list[StationRow]:
+        """FTS name search, optionally scoped to one browse axis value --
+        the instant answer behind Find on a catalog-served branch."""
         text = " ".join(query.split())
         if not text:
             return []
         quoted = " ".join('"' + part.replace('"', '""') + '"*' for part in text.split())
+        where = ["vanished_at IS NULL"]
+        params: list[object] = []
+        for column, value in (
+            ("country", country),
+            ("state", state),
+            ("language", language),
+            ("codec", codec),
+        ):
+            if value:
+                where.append(f"{column} = ? COLLATE NOCASE")
+                params.append(value)
+        if tag:
+            where.append("(',' || tags || ',') LIKE ? COLLATE NOCASE")
+            params.append(f"%,{tag},%")
+        params.append(quoted)  # the MATCH placeholder is last in the SQL
         sql = (
             f"SELECT {self._ROW_COLUMNS} FROM stations "
-            "WHERE vanished_at IS NULL AND rowid IN "
+            f"WHERE {' AND '.join(where)} AND rowid IN "
             "(SELECT rowid FROM stations_fts WHERE stations_fts MATCH ?) "
             f"ORDER BY votes DESC, name LIMIT {int(limit)}"
         )
         try:
-            return [StationRow(*row) for row in self._connect().execute(sql, (quoted,))]
+            return [StationRow(*row) for row in self._connect().execute(sql, params)]
         except sqlite3.OperationalError:
             return []  # an unparsable FTS query is "no matches", never a crash
 

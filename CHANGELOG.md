@@ -412,6 +412,37 @@ hard 10 MB gate (`scripts/build_radio_catalog.py`); the full plan with its
 measurements is `standalone/radio/docs/prd.md` (Section 11, the Station
 Catalog).
 
+### Radio Find became a search engine, the tree reads ahead, AudioPub arrives
+
+Find in this folder routes to the fastest honest channel per branch
+(`core/radio/branch_find.py`): the Podcasts anchor asks the real iTunes
+Search API and answers with expandable show folders (a crawl of chart pages
+is how Double Tap came back unfindable); catalog-served axes answer scoped
+from local FTS, offline included; and every branch with its own engine uses
+it -- LibriVox (book folders), Internet Archive (drillable items),
+Gutenberg, SomaFM, TuneIn (stream-resolved), iHeart (sitemap index), NOAA,
+Audius, Mixcloud, ccMixter. The crawl remains only where no engine exists;
+every answer states its origin, and an unreachable directory says so
+instead of posing as "no matches." The Find box moved above the tree (one
+Shift+Tab, or Ctrl+F from anywhere in the window).
+`ui/radio/browse_prefetch.py` adds cursor-driven prefetch -- highlight-ahead
+and one-level read-ahead -- so expands open instantly; hidden sources stay
+uncontacted, Safe Mode fetches nothing. Find Stations results that are works
+(Apple shows, LibriVox books) now resolve off-thread and play their latest
+episode / first section instead of handing the player an empty URL. And
+AudioPub (audiopub.site) lands as a Community Audio source
+(`core/radio/audiopub.py`): a Discover shelf of fifty randomized uploads per
+page, live-only because uploaders keep their rights -- further branches wait
+on a developer-blessed public API rather than scraping internal ones. Two
+source fixes rode along: ccMixter's content host 403s any request without a
+ccmixter.org Referer, so playback failed silently -- `stream_headers.py` is
+now the one place per-host header knowledge lives, feeding both mpv
+(`referrer`, cleared between stations) and the ffmpeg recorder
+(`-referer`); and Gutenberg's topic/language branches fetched exactly one
+32-record gutendex page posing as the whole shelf -- they page through with
+an honest "More audiobooks" row now, handlers extracted to
+`browse_libraries.py`.
+
 ### The standalone apps escape the editor's release gate
 
 The `core.radio` release gate (#1347, public QUILL builds) also fired inside

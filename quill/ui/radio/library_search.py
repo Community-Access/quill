@@ -109,3 +109,92 @@ def summary(host: Any) -> str:
     if unsearchable:
         said += f" {', '.join(unsearchable)} can be browsed but not searched."
     return said
+
+
+# -- playing a library row (the Double Tap fix, 2026-08-16) --------------------
+# A Podcasts (Apple) or LibriVox result carries no stream URL: the show is a
+# folder of episodes and the book a folder of chapters. Play used to hand the
+# player an empty URL and nothing happened -- found, then silently unplayable.
+# Now Play resolves the work off-thread and starts its natural first thing:
+# a show's LATEST episode, a book's FIRST section, each announced by name.
+
+
+def activate_row(host: Any, station: Any) -> bool:
+    """Handle a stream-less library row; True when this path owns it."""
+    if getattr(station, "stream_url", ""):
+        return False
+    source = getattr(station, "source", "")
+    uuid = getattr(station, "station_uuid", "") or ""
+    if source == "Podcasts (Apple)" and getattr(station, "homepage", ""):
+        _play_latest_episode(host, station)
+        return True
+    if uuid.startswith("librivoxbook:"):
+        _play_first_section(host, station, uuid)
+        return True
+    if source == "Internet Archive":
+        # An Archive row is a collection page, not audio; say so rather than
+        # handing the player an empty URL. (Spotify and every other special
+        # row keeps its own path -- this only claims the library lanes.)
+        host._announce(
+            f"{station.name} opens on its own site; press Shift+F10 and choose Open Website."
+        )
+        return True
+    return False
+
+
+def _play_latest_episode(host: Any, station: Any) -> None:
+    host._announce(f"Getting the latest episode of {station.name}...")
+
+    def _work(**_kwargs: Any) -> Any:
+        from quill.core.podcasts.feed_reader import fetch_and_parse_feed
+
+        info = fetch_and_parse_feed(station.homepage, safe_mode=host._safe_mode)
+        return next((e for e in info.episodes if e.audio_url), None)
+
+    def _ok(_op: str, episode: object) -> None:
+        audio_url = getattr(episode, "audio_url", "")
+        if not audio_url:
+            host._announce(f"{station.name}'s feed lists no playable episodes.")
+            return
+        from quill.core.radio.models import RadioStation
+
+        host._controller.play_station(
+            RadioStation(
+                name=f"{getattr(episode, 'title', '')} - {station.name}",
+                stream_url=audio_url,
+                homepage=station.homepage,
+                source="Apple Podcasts",
+                is_recording=True,
+            )
+        )
+        host._announce(f"Playing {getattr(episode, 'title', '')}, the latest episode.")
+
+    def _failed(_op: str, _error: BaseException) -> None:
+        host._announce(f"Could not read {station.name}'s feed; keeping quiet rather than guessing.")
+
+    host._task_manager.submit("radio-library-episode", _work, on_success=_ok, on_failure=_failed)
+
+
+def _play_first_section(host: Any, station: Any, node_id: str) -> None:
+    host._announce(f"Getting the first section of {station.name}...")
+
+    def _work(**_kwargs: Any) -> list:
+        from quill.core.radio import browse_sources
+
+        return browse_sources.browse(node_id, safe_mode=host._safe_mode, favorites=None)
+
+    def _ok(_op: str, nodes: object) -> None:
+        first = next(
+            (n for n in (nodes if isinstance(nodes, list) else []) if n.station is not None),
+            None,
+        )
+        if first is None:
+            host._announce(f"{station.name} lists no playable sections.")
+            return
+        host._controller.play_station(first.station)
+        host._announce(f"Playing {first.station.name}.")
+
+    def _failed(_op: str, _error: BaseException) -> None:
+        host._announce(f"Could not fetch {station.name}'s sections.")
+
+    host._task_manager.submit("radio-library-book", _work, on_success=_ok, on_failure=_failed)

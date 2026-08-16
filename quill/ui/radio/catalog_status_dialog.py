@@ -32,6 +32,7 @@ LIVE_ONLY = [
         "rest of the catalog combined.",
     ),
     ("Audius, Mixcloud, ccMixter", "Live only; charts are stale the moment they are stored."),
+    ("AudioPub", "Live only; the people who uploaded the audio keep the rights to it."),
 ]
 
 _SOURCE_LABELS = {
