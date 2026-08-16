@@ -36,6 +36,28 @@ timings, and three long-standing silent faults are fixed. See
   speaking a weather summary. The host that offers "Open the Quill Weather
   App" now leaves the watch to it; Radio's Weather menu still works on
   demand.
+- **Branch-smart Find + predictive prefetch** (`core/radio/branch_find.py`,
+  `ui/radio/browse_prefetch.py`): Find routes to the anchored branch's own
+  search engine -- iTunes for Podcasts (show folders that expand to episodes;
+  the Double Tap report), scoped local FTS for catalog axes (offline
+  included), and the native searches of LibriVox (book folders), Internet
+  Archive (drillable), Gutenberg, SomaFM, TuneIn (resolved), iHeart, NOAA,
+  Audius, Mixcloud, ccMixter. Crawl only where no engine exists; every
+  answer states its origin, and an unreachable directory says so. The Find
+  box sits above the tree (Shift+Tab; Ctrl+F from anywhere).
+  Highlight-ahead and read-ahead prefetch make expands the listener was about
+  to make open instantly; cursor-driven only, hidden sources never contacted.
+  Find Stations rows that are works (Apple show, LibriVox book) now resolve
+  and play their latest episode / first section instead of silently failing.
+- **ccMixter plays; Gutenberg topics complete** (`core/radio/stream_headers.py`,
+  gutenberg pagination in `browse_libraries.py`): ccMixter's host 403s
+  without a ccmixter.org Referer -- mpv and the ffmpeg recorder now send it
+  per-host; Gutendex topics/languages page through all records with a "More
+  audiobooks" row instead of silently showing the first 32.
+- **AudioPub (Community Audio)** (`core/radio/audiopub.py`): Discover shelf
+  over its one client JSON endpoint (50 randomized per page + More). Live-only
+  by rights (uploaders keep theirs; excluded from the catalog, Status says
+  so); further branches await a developer-blessed public API, not scraping.
 - **The standalone apps escape the editor's release gate.** The `core.radio`
   gate (public QUILL builds, upstream #1347) also fired inside Quill Radio,
   which would have silently disabled the recording scheduler,

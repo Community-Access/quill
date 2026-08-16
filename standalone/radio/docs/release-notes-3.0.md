@@ -590,7 +590,11 @@ there.
 #### Project Gutenberg: human-read audiobooks
 
 The 1,124 Gutenberg records that carry human-read audio, by topic and by
-language. Complementary to LibriVox rather than a duplicate of it.
+language. Complementary to LibriVox rather than a duplicate of it. Every
+topic and language pages through its whole shelf with a "More audiobooks"
+row -- a list that stops at the first thirty-two and says nothing would read
+as the whole answer, which is the kind of quiet lie this app does not tell.
+(With the catalog on, All Audiobooks answers from your own disk, instantly.)
 
 #### Audius, Mixcloud and ccMixter: three music libraries
 
@@ -605,7 +609,28 @@ so before you press Enter**, not after.
 
 **ccMixter** -- Creative Commons music by tag, and every row carries its licence
 in the row itself. For material offered under terms, showing the terms is the
-whole courtesy.
+whole courtesy. (And the rows *play*: ccMixter's file host refuses any player
+that does not arrive with a Referer from ccmixter.org -- measured, not
+guessed -- so Quill Radio sends exactly that header for ccMixter and nothing
+else, in playback and in Record Now alike.)
+
+#### AudioPub: audio people made, and want you to hear
+
+AudioPub is a community where people publicly share audio they created --
+its whole philosophy is that uploads are there for anyone to stream. Quill
+Radio's new **AudioPub (Community Audio)** branch opens with a **Discover**
+shelf: a random fifty, different every single time you open it, each row
+telling you who made it and how often it has been played, and each one
+playable with a full timeline, like any recording. A "More to discover" row
+keeps the surprises coming.
+
+Two honest boundaries. Nothing from AudioPub is stored on your computer --
+the platform is open source, but the *audio* belongs to the people who
+uploaded it, and Station Catalog Status says exactly that. And Discover is
+deliberately the only branch for now: newest, popular, search, and live
+broadcasts all exist on AudioPub's side, and rather than scrape its
+internals, we are asking its developer to bless a small public API -- when
+that lands, so do the branches.
 
 #### Explore: every station Wikidata knows about
 
@@ -678,6 +703,48 @@ instead, and the label says so.
 browse tree, and it lands on the source you were last in -- Networks, TuneIn,
 iHeart, wherever -- instead of collapsed at the top with everything closed.
 
+### Find became a search engine, and the tree reads ahead
+
+"Find in this folder" used to answer one way everywhere: walk the subtree
+and match what the tree happened to have loaded. Honest, bounded -- and on
+the Podcasts branch, useless: it crawled chart pages and never once asked
+Apple's search engine, so a show as findable as Double Tap came back "no
+matches". No more. Find now takes the fastest honest route for wherever you
+are standing:
+
+- **On the Podcasts branch**, it asks the real podcast search API. Type
+  "double tap", press Enter, and the show is the first row -- as a folder
+  you expand straight into its episodes.
+- **On a catalog-served branch** -- By Country, By Language, By Genre, By
+  Quality -- it answers from the catalog on your own disk, scoped to where
+  you are: Find "jazz" while on France and you get France's jazz stations,
+  instantly, internet or not.
+- **On any branch with a search engine of its own, it uses it.** LibriVox
+  answers with books as folders of chapters; the Internet Archive with items
+  you can drill into; TuneIn with stations already resolved to their
+  streams; iHeart from its station index; NOAA by call sign, SAME code or
+  county; Project Gutenberg, SomaFM, Audius, Mixcloud and ccMixter with
+  their own catalogs.
+- **Only where no engine exists**, the bounded crawl still works exactly as
+  before -- and a directory that cannot be reached says so, instead of
+  posing as "no matches."
+
+And every answer tells you where it came from -- "Searched the whole podcast
+directory." or "From your catalog." -- because a fast answer whose origin is
+stated beats a fast answer you might mistake for a complete one.
+
+The Find box also moved **above the tree**: one Shift+Tab from the stations
+and you are typing, instead of tabbing a lap around the buttons -- and
+**Ctrl+F** jumps straight to it from anywhere in the Browse window.
+
+The tree itself got quicker in a way you will feel rather than see:
+**predictive prefetch**. Land on a collapsed folder and Quill Radio starts
+fetching its contents immediately, in the background, so the expand that
+usually follows opens instantly; open a folder and its first few child
+folders fetch behind it, so walking downward stays ahead of you. It is
+driven entirely by where your cursor actually is -- a source you hide is
+still never contacted, and Safe Mode still fetches nothing.
+
 ### And the tree is yours to prune
 
 Twenty-eight branches is a good problem and still a problem: if you only ever
@@ -717,6 +784,14 @@ respecting a directory you refreshed by hand.
 Browsing is how you find something you could not have named. Search is how you
 get to something you can -- and in 3.0 it reaches everything, not just the radio
 directories.
+
+And what it finds, it plays. A podcast or an audiobook in the results is a
+*work*, not a stream -- there is no single address to hand the player -- and
+pressing Play on one used to do exactly nothing. Now it does the obvious
+thing by itself: an Apple Podcasts show fetches its feed and plays the
+**latest episode**, a LibriVox book plays its **first section**, each
+announced by name, and an Internet Archive collection says plainly that it
+opens on its own site.
 
 ### Choose what Find Stations searches
 
