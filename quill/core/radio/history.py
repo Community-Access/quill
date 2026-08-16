@@ -94,6 +94,18 @@ class RadioHistory:
     #: running, so audio does not stop when the system would otherwise sleep.
     #: On by default (Windows only); a Preferences checkbox turns it off.
     prevent_sleep: bool = True
+    #: Hold standby off as a scheduled recording approaches, not only while one
+    #: is running. A scheduled recording cannot fire on a sleeping machine, and
+    #: nothing used to keep it awake while merely *waiting* -- so a computer
+    #: that dozed at 10:58 started an 11:00 recording whenever it next woke.
+    #: See quill/core/radio/schedule_wake.py.
+    keep_awake_before_recording: bool = True
+    #: Ask Windows to *wake* the computer for a scheduled recording (a per-user
+    #: Task Scheduler entry with WakeToRun). Separate from the setting above on
+    #: purpose: inhibiting standby is local and needs no permissions, while
+    #: registering a wake changes the machine, and somebody may reasonably want
+    #: one and not the other.
+    wake_for_scheduled_recording: bool = True
     #: Silently check GitHub releases for a newer Quill Radio on launch (the
     #: same check Help > Check for Updates runs, just quiet unless a genuine
     #: update is found); on by default, one checkbox in Preferences (Ctrl+,)
@@ -279,6 +291,8 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.show_status_bar = bool(raw.get("show_status_bar", True))
         history.ui_font_scale = min(2.0, max(1.0, _coerce_float(raw.get("ui_font_scale"), 1.0)))
         history.prevent_sleep = bool(raw.get("prevent_sleep", True))
+        history.keep_awake_before_recording = bool(raw.get("keep_awake_before_recording", True))
+        history.wake_for_scheduled_recording = bool(raw.get("wake_for_scheduled_recording", True))
         history.youtube_consented = bool(raw.get("youtube_consented", False))
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
@@ -403,6 +417,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "show_status_bar": history.show_status_bar,
             "ui_font_scale": history.ui_font_scale,
             "prevent_sleep": history.prevent_sleep,
+            "keep_awake_before_recording": history.keep_awake_before_recording,
+            "wake_for_scheduled_recording": history.wake_for_scheduled_recording,
             "youtube_consented": history.youtube_consented,
             "check_updates_on_startup": history.check_updates_on_startup,
             "last_update_check": history.last_update_check,

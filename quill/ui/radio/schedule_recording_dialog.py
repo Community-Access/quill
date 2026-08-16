@@ -158,6 +158,22 @@ class ScheduleRecordingDialog:
         root.Add(
             wx.StaticText(self._surface, label="&Scheduled recordings"), 0, wx.LEFT | wx.TOP, 10
         )
+        # The requirement nobody discovers until a recording starts three
+        # minutes late: a schedule is a thread inside a running app, so a
+        # sleeping computer simply is not asked. Quill Radio now holds standby
+        # off as the moment approaches and asks Windows to wake for it, and
+        # both can be turned off -- so the honest thing is to say the
+        # requirement out loud rather than imply it is handled.
+        requirement = wx.StaticText(
+            self._surface,
+            label=(
+                "Quill Radio must be running for a scheduled recording to start "
+                "(the system tray counts). It keeps this computer awake as the "
+                "time approaches, and can wake it if it is asleep."
+            ),
+        )
+        requirement.Wrap(520)
+        root.Add(requirement, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
         self._list = wx.ListBox(self._surface)
         self._list.SetName(
             "Scheduled recordings; Delete removes the selected one, Shift+F10 for actions"
