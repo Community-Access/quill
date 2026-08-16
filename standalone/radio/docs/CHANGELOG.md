@@ -9,11 +9,41 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 ## [3.0.0] - 2026-08-15
 
 Major: Browse Stations becomes a browsable directory rather than a list of
-sources, podcasts arrive keylessly, transcripts gain timings, and three
-long-standing silent faults are fixed. See `docs/release-notes-3.0.md`.
+sources, the whole station directory now ships inside the app and answers
+locally (the Station Catalog), podcasts arrive keylessly, transcripts gain
+timings, and three long-standing silent faults are fixed. See
+`docs/release-notes-3.0.md`.
 
 ### Added
 
+- **The Station Catalog** (`quill/core/radio/catalog/`): the full station
+  directory shipped in the app (~7.5 MB seed, hard 10 MB build gate) and
+  served locally -- 62k+ stations, SomaFM, and the Project Gutenberg audio
+  shelf, browsable offline in under a millisecond with per-folder counts.
+  (LibriVox stays live in v1: its 194,501 chapter rows alone measured 60 MB
+  against the 10 MB seed budget; seeding it behind a compact section format
+  is the named follow-up.) Refresh on startup / every 24 hours (configurable, off-able) /
+  Station > Update Station Catalog with a spoken summary. View > Station
+  Catalog Status shows the whole cached-versus-live boundary, including why
+  the live-only sources are live-only. Rankings stay live-first with an
+  "as of <age>"-labeled catalog fallback. Favorites and custom stations are
+  structurally outside the catalog (byte-identity tested across rebuilds).
+  Design and measurements: `docs/prd.md`, Section 11.
+
+- **Quill Radio no longer resumes the weather-alert watch at launch.** The
+  monitor config is shared across the family, so with monitoring enabled in
+  Quill Weather, Quill Radio also resumed the same watch and opened by
+  speaking a weather summary. The host that offers "Open the Quill Weather
+  App" now leaves the watch to it; Radio's Weather menu still works on
+  demand.
+- **The standalone apps escape the editor's release gate.** The `core.radio`
+  gate (public QUILL builds, upstream #1347) also fired inside Quill Radio,
+  which would have silently disabled the recording scheduler,
+  missed-recording reports, the pre-recording wake task, and every radio
+  palette command. Caught before release: the app now grants its own product
+  feature at startup (`FeatureManager.grant_product_features`, in-memory
+  only, safety locks still apply); the same fix covers Quill Cast's
+  episode-check monitor.
 - **Xiph hidden by default while its backend is down** -- dir.xiph.org is
   serving empty data on every path to every client (verified against browser
   user agents and Wayback history; it last served ~500 genres on Aug 13-14).

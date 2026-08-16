@@ -144,6 +144,11 @@ quill/native/**/*.pyd
 # first place optilab_adapter.find_adapter looks, so a checkout that has built
 # once is one where the end-to-end tests actually run) -- that copy is a build
 # artifact too, not something to commit.
+# The station-catalog seed is generated at release-build time by
+# scripts/build_radio_catalog.py and packaged, never committed (6-7 MB of
+# regenerated binary per release would bloat history for no benefit).
+quill/data/radio-catalog/
+
 quill/native/optilab/build/
 quill/native/optilab/quill-optilab
 quill/native/optilab/quill-optilab.exe

@@ -770,7 +770,13 @@ def is_expandable(node_id: str) -> bool:
     return kind in _HANDLERS or kind in _FLAT or kind in _GENRE_MODULES or kind == "favorites"
 
 
-def browse(node_id: str, *, safe_mode: bool = False, favorites: object = None) -> list[BrowseNode]:
+def browse(
+    node_id: str,
+    *,
+    safe_mode: bool = False,
+    favorites: object = None,
+    catalog: object = None,
+) -> list[BrowseNode]:
     """The children of *node_id*.
 
     Never raises for a source problem: a directory that is down, refusing in
@@ -779,24 +785,52 @@ def browse(node_id: str, *, safe_mode: bool = False, favorites: object = None) -
     folder is empty" from "this source could not be reached" by asking
     :func:`last_error_was_network`, or simply by saying the honest thing --
     see the dialog's empty-branch message.
+
+    ``catalog`` (a ``CatalogStore``) is consulted first for the kinds it can
+    answer -- one chokepoint here, not a branch per handler. ``None`` or a
+    decline runs the live path unchanged; rankings invert (live first,
+    catalog fallback labeled with its age).
     """
     kind, args = split_id(node_id)
+    if catalog is not None:
+        from quill.core.radio.catalog import read as catalog_read
+
+        if kind in catalog_read.AXIS_KINDS or kind in catalog_read.LIBRARY_KINDS:
+            served = catalog_read.serve(catalog, kind, args)  # type: ignore[arg-type]
+            if served is not None:
+                LAST_FAILURE.pop(_thread_key(), None)
+                return served
+        if kind == "catalogbook" and len(args) >= 2:
+            return catalog_read.book_sections(catalog, args[0], args[1])  # type: ignore[arg-type]
     try:
         if kind == "favorites":
             return _browse_favorites(args, safe_mode=safe_mode, favorites=favorites)
         if kind in _FLAT and not args:
-            return _stations(_FLAT[kind](safe_mode))
-        if kind in _GENRE_MODULES:
-            return _browse_genre_source(kind, args, safe_mode=safe_mode)
-        handler = _HANDLERS.get(kind)
-        if handler is None:
-            return []
-        result = handler(args, safe_mode=safe_mode)
+            result = _stations(_FLAT[kind](safe_mode))
+        elif kind in _GENRE_MODULES:
+            result = _browse_genre_source(kind, args, safe_mode=safe_mode)
+        else:
+            handler = _HANDLERS.get(kind)
+            if handler is None:
+                return []
+            result = handler(args, safe_mode=safe_mode)
     except Exception as error:  # noqa: BLE001 - every source has its own error type
         _remember_failure(error)
-        return []
+        return _rankings_rescue(kind, catalog) or []
     LAST_FAILURE.pop(_thread_key(), None)
     return result
+
+
+def _rankings_rescue(kind: str, catalog: object) -> list[BrowseNode] | None:
+    """Popular/Trending from the vote snapshot when live cannot answer,
+    labeled "as of <age>" (decision of 2026-08-15). Anything else: None."""
+    if catalog is None:
+        return None
+    from quill.core.radio.catalog import read as catalog_read
+
+    if kind not in catalog_read.RANKING_KINDS:
+        return None
+    return catalog_read.rankings_fallback(catalog, kind)  # type: ignore[arg-type]
 
 
 def resolve(node_id: str, *, safe_mode: bool = False) -> RadioStation | None:

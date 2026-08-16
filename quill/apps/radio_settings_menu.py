@@ -34,7 +34,12 @@ def build_settings_items(app: Any, station_menu: Any, wx: Any) -> tuple[Any, ...
     app.frame.Bind(
         wx.EVT_MENU, lambda _e: app.radio_browse_sources_visibility(), id=browse_sources_id
     )
-    return (sources_id, browse_sources_id)
+    # The station catalog: the manual half of "updates on demand or
+    # automagically" -- the automatic layers live on the minute tick.
+    update_catalog_id = wx.NewIdRef()
+    station_menu.Append(update_catalog_id, "Update Station Catalo&g")
+    app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_update_catalog(), id=update_catalog_id)
+    return (sources_id, browse_sources_id, update_catalog_id)
 
 
 def build_download_prefs_item(app: Any, station_menu: Any, wx: Any) -> tuple[Any, ...]:
@@ -49,3 +54,16 @@ def build_download_prefs_item(app: Any, station_menu: Any, wx: Any) -> tuple[Any
     station_menu.Append(download_prefs_id, "&Download Preferences...")
     app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_download_preferences(), id=download_prefs_id)
     return (download_prefs_id,)
+
+
+def build_catalog_status_item(app, view_menu, wx):
+    """Append Station Catalog Status... to the View menu, bound to *app*.
+
+    The complete cached-versus-live answer lives behind it: every source,
+    whether it is stored on this computer, how fresh it is, and why the
+    live-only ones are live-only.
+    """
+    status_id = wx.NewIdRef()
+    view_menu.Append(status_id, "Station Catalog &Status...")
+    app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_catalog_status(), id=status_id)
+    return (status_id,)

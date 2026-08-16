@@ -32,7 +32,7 @@ from quill.core.radio.recording_join import describe_reconnect
 from quill.core.radio.recording_schedule import RecordingScheduler
 from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
-from quill.ui.radio import quick_play, volume_commands
+from quill.ui.radio import quick_play
 from quill.ui.radio.add_station_dialog import AddStationDialog
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.player_controller import (
@@ -43,6 +43,14 @@ from quill.ui.radio.player_controller import (
 from quill.ui.radio.recording_settings_dialog import RecordingSettingsDialog
 from quill.ui.radio.schedule_recording_dialog import ScheduleRecordingDialog
 from quill.ui.radio.station_browser_dialog import StationBrowserDialog
+
+
+def _search_catalog(host: object) -> object | None:
+    """The catalog for Find Stations' instant lane, or None when off."""
+    from quill.ui.radio import catalog_ui
+
+    return catalog_ui.catalog_for(host)
+
 
 _SAFE_MODE_MESSAGE = "Internet Radio is disabled in Safe Mode. Restart QUILL normally to use it."
 _NO_FFMPEG_MESSAGE = (
@@ -178,6 +186,11 @@ class RadioMixin:
         # schedule may have been edited in another session. Deferred so a slow
         # schtasks call cannot hold up the window coming up.
         self._wx.CallAfter(self._refresh_radio_wake_task)
+        # Layer 1 of the station catalog: a startup check for updates, off the
+        # UI thread, skipped when fresh (6-hour floor) or toggled off.
+        from quill.ui.radio import catalog_ui as _catalog_ui
+
+        self._wx.CallAfter(_catalog_ui.refresh_on_startup, self)
 
     def _radio_minute_tick(self) -> None:
         """Once a minute: stamp last_seen, and re-ask about standby.
@@ -189,6 +202,12 @@ class RadioMixin:
         """
         self._stamp_radio_last_seen()
         self._update_sleep_inhibitor()
+        # Layer 2 of the station catalog: the staggered background refresh
+        # takes its step here when the cadence says one is due -- a trickle,
+        # never a burst, and never anything in Safe Mode or when switched off.
+        from quill.ui.radio import catalog_ui
+
+        catalog_ui.maybe_refresh_on_tick(self)
 
     def _shutdown_radio(self) -> None:
         """Tear down every radio subsystem and stamp last_seen (R2/11.6).
@@ -225,6 +244,11 @@ class RadioMixin:
         # Stamp that QUILL Radio was running now so the next launch can report
         # scheduled recordings missed while it was closed.
         self._stamp_radio_last_seen()
+        # Close the station catalog's read connection so the next refresh (or
+        # a rebuild) can collect this generation's file.
+        from quill.ui.radio import catalog_ui
+
+        catalog_ui.shutdown(self)
 
     # -- R3: resume across restart -------------------------------------------
 
@@ -1924,6 +1948,7 @@ class RadioMixin:
             windows=getattr(self, "_windows", None),
             spotify_client_provider=self._spotify_search_client,
             enabled_sources=self._radio_history.search_sources_enabled,
+            catalog=_search_catalog(self),
             source_facet=self._radio_history.search_source_facet,
             on_search_prefs_changed=self._radio_save_search_prefs,
         )
@@ -1939,6 +1964,7 @@ class RadioMixin:
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
             )
             return
+        from quill.ui.radio import catalog_ui
         from quill.ui.radio.browse_tree_dialog import BrowseTreeDialog
 
         dlg = BrowseTreeDialog(
@@ -1957,6 +1983,8 @@ class RadioMixin:
             download_host=self,
             # Which branches to show. None means "never set" -> the defaults.
             visible_sources=self._radio_history.browse_sources_enabled,
+            catalog=catalog_ui.catalog_for(self),
+            on_offline_catalog=lambda: catalog_ui.note_offline_serving(self),
         )
         dlg.show(initial_source=initial_source)
         self._refresh_statusbar()
@@ -2016,175 +2044,10 @@ class RadioMixin:
         )
 
     def _register_radio_commands(self) -> None:
-        for command_id, title, handler in (
-            ("radio.browse", "Internet Radio: Browse Stations...", self.open_internet_radio),
-            (
-                "radio.browse_sources",
-                "Internet Radio: Choose Browse Sources...",
-                self.radio_browse_sources_visibility,
-            ),
-            (
-                "radio.download_preferences",
-                "Internet Radio: Download Preferences...",
-                self.radio_download_preferences,
-            ),
-            ("radio.play_pause", "Internet Radio: Play/Pause", self.radio_toggle_play_pause),
-            ("radio.stop", "Internet Radio: Stop", self.radio_stop),
-            ("radio.mute_toggle", "Internet Radio: Mute/Unmute", self.radio_mute_toggle),
-            ("radio.volume_up", "Internet Radio: Volume Up", self.radio_volume_up),
-            ("radio.volume_down", "Internet Radio: Volume Down", self.radio_volume_down),
-            (
-                "radio.add_custom_station",
-                "Internet Radio: Add Custom Station...",
-                lambda: self._radio_open_add_custom(None),
-            ),
-            (
-                "radio.find_streams",
-                "Internet Radio: Find Streams from a Website...",
-                self._radio_open_link_finder,
-            ),
-            (
-                "radio.manage_favorites",
-                "Internet Radio: Manage Favorites...",
-                self.open_manage_radio_favorites,
-            ),
-            (
-                "radio.play_last",
-                "Internet Radio: Play Last Station",
-                self.radio_play_last,
-            ),
-            (
-                "radio.whats_playing",
-                "Internet Radio: What's Playing?",
-                self.radio_whats_playing,
-            ),
-            (
-                "radio.whats_playing_details",
-                "Internet Radio: What's Playing - Review and Copy...",
-                self.radio_whats_playing_details,
-            ),
-            (
-                "radio.copy_whats_playing",
-                "Internet Radio: Copy What's Playing",
-                self.radio_copy_whats_playing,
-            ),
-            (
-                "radio.add_youtube_playlist",
-                "Internet Radio: Add from YouTube Playlist...",
-                self.radio_add_youtube_playlist,
-            ),
-            (
-                "radio.song_history",
-                "Internet Radio: Song History...",
-                self.radio_song_history,
-            ),
-            (
-                "radio.toggle_global_volume",
-                volume_commands.command_title(self),
-                self.radio_toggle_global_volume,
-            ),
-            (
-                "radio.forget_station_volumes",
-                "Internet Radio: Forget Every Station's Own Volume...",
-                self.radio_forget_station_volumes,
-            ),
-            (
-                "radio.toggle_title_announcements",
-                self._radio_title_announce_command_title(),
-                self.radio_toggle_title_announcements,
-            ),
-            (
-                "radio.rewind",
-                "Internet Radio: Rewind 30 Seconds",
-                self.radio_rewind,
-            ),
-            (
-                "radio.forward",
-                "Internet Radio: Forward 30 Seconds",
-                self.radio_forward,
-            ),
-            (
-                "radio.jump_to_live",
-                "Internet Radio: Back to Live",
-                self.radio_jump_to_live,
-            ),
-            (
-                "radio.volume_boost",
-                "Internet Radio: Volume Boost On/Off",
-                self.radio_toggle_volume_boost,
-            ),
-            (
-                "radio.sound_enhancements",
-                "Internet Radio: Sound Enhancements...",
-                self.open_sound_enhancements,
-            ),
-            (
-                "media.sound_enhancements",
-                "Media: Sound Enhancements...",
-                self.open_media_sound_enhancements,
-            ),
-            (
-                "radio.record_toggle",
-                "Internet Radio: Record Now / Stop Recording",
-                self.radio_record_toggle,
-            ),
-            (
-                "radio.schedule_recording",
-                "Internet Radio: Schedule Recording...",
-                self._radio_open_schedule_recording,
-            ),
-            (
-                "radio.recording_settings",
-                "Internet Radio: Recording Settings...",
-                self._radio_open_recording_settings,
-            ),
-            (
-                "radio.recordings",
-                "Internet Radio: Recordings...",
-                self.open_radio_recordings,
-            ),
-            (
-                "radio.record_station",
-                "Internet Radio: Record Station...",
-                self.open_record_station_dialog,
-            ),
-            (
-                "radio.stop_all_recordings",
-                "Internet Radio: Stop All Recordings",
-                self.radio_stop_all_recordings,
-            ),
-            (
-                "radio.wake_timer",
-                "Internet Radio: Wake-Up Timer...",
-                self.open_wake_timer_dialog,
-            ),
-        ):
-            self.commands.try_register(
-                command_id, title, handler, self._binding_for(command_id), feature_id="core.radio"
-            )
-        # Quick-play the first ten favorites (default Ctrl+Alt+Shift+1..0, rebindable).
-        for slot in range(1, 11):
-            cmd = f"radio.play_favorite_{slot}"
-            self.commands.try_register(
-                cmd,
-                f"Internet Radio: Play Favorite {slot}",
-                lambda s=slot: self._radio_play_favorite_slot(s),
-                self._binding_for(cmd),
-                feature_id="core.radio",
-            )
-        # Spotify commands live behind future.spotify (experimental), so they
-        # disappear when the listener turns that feature off.
-        for command_id, title, handler in (
-            ("spotify.connect", "Spotify: Connect to Spotify...", self.open_spotify_connect),
-            ("spotify.browse", "Spotify: Browse Spotify...", self.open_spotify_browse),
-        ):
-            self.commands.try_register(
-                command_id,
-                title,
-                handler,
-                self._binding_for(command_id),
-                feature_id="future.spotify",
-            )
+        """Palette wiring lives in quill/ui/radio/palette_commands.py (GATE-11)."""
+        from quill.ui.radio.palette_commands import register_radio_commands
+
+        register_radio_commands(self)
 
     def open_spotify_connect(self) -> None:
         """Open the accessible Spotify sign-in dialog (Radio).
@@ -2221,6 +2084,18 @@ class RadioMixin:
         from quill.ui.radio import settings_commands
 
         settings_commands.download_preferences(self)
+
+    def radio_update_catalog(self) -> None:
+        """Station > Update Station Catalog: refresh every due source now."""
+        from quill.ui.radio import catalog_ui
+
+        catalog_ui.update_catalog_command(self)
+
+    def radio_catalog_status(self) -> None:
+        """View > Station Catalog Status... See catalog_status_dialog."""
+        from quill.ui.radio.catalog_status_dialog import show_catalog_status
+
+        show_catalog_status(self)
 
     def _radio_save_search_prefs(self, enabled: tuple[str, ...], facet: str) -> None:
         """Remember the source selection and the Source facet across sessions."""

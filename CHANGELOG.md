@@ -388,6 +388,51 @@ arithmetic is tested against an injected clock; GATE-11 forced two extractions
 (`apps/radio_preferences.py`, and the new logic out of the at-ceiling
 `recording_schedule.py`).
 
+### The Station Catalog: Quill Radio browses before the internet answers
+
+The whole working-station directory now ships inside Quill Radio and lives on
+the listener's computer (`quill/core/radio/catalog/`): 62k+ stations plus the
+Project Gutenberg audio shelf, in an FTS5-indexed SQLite store built as
+generations behind an atomically-replaced pointer file -- the design Windows
+forced, since `os.replace` over an open database raises PermissionError there
+(LibriVox stays live in v1: its 194,501 chapter rows measured 60 MB against
+the 10 MB seed budget; a compact section format is the named follow-up).
+Browse axes and the seeded audiobook shelf answer in under
+a millisecond offline, every folder carries its count, and Find Stations gets
+an instant local lane. Freshness is three switchable layers (startup check,
+staggered 24-hour default cadence, a manual command with a spoken summary)
+with field-derived rules: an empty answer from a populated source is an
+outage, not truth; tombstones with a 14-day grace; unchanged dumps write
+nothing; hidden sources are never contacted. The cached-versus-live boundary
+is a product surface -- a Status view naming why TuneIn/iHeart/Apple/Archive
+stay live-only, a per-branch provenance line, one offline sentence per
+session -- and user stations are structurally outside the store, proven by a
+byte-identity test across rebuilds. The seed builds at release time with a
+hard 10 MB gate (`scripts/build_radio_catalog.py`); the full plan with its
+measurements is `standalone/radio/docs/prd.md` (Section 11, the Station
+Catalog).
+
+### The standalone apps escape the editor's release gate
+
+The `core.radio` release gate (#1347, public QUILL builds) also fired inside
+Quill Radio itself: in a public build the recording scheduler, missed-recording
+reports, the pre-recording wake task, and all 44 radio palette commands were
+silently dead -- the app gated off its own reason for existing.
+`FeatureManager.grant_product_features` is the sanctioned escape: a companion
+app claims the feature it is built around at startup, in-memory only (never
+persisted by `save()`), with safety locks still applying on top. Quill Radio
+grants `core.radio`; Quill Cast grants `core.podcasts` (its episode-check
+monitor and palette had the same latent gate). Tests pin the grant semantics,
+non-persistence, and the per-app wiring.
+
+Related ownership fix: the weather-alert monitor config is shared across the
+family, so Quill Radio and Quill Weather both resumed the same watch at
+launch and the radio opened by speaking a weather summary.
+`start_weather_monitoring_if_enabled` now defers on any host with
+`_weather_offers_app_launch` -- the app that offers "Open the Quill Weather
+App" has declared the Weather app the watcher. On-demand weather in Radio's
+menu is unchanged; tests pin both host shapes.
+
 ### The browse tree is prunable, and the queue got its preferences
 
 Two models that shipped complete and reached nothing now have their surfaces,

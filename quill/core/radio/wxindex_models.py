@@ -107,3 +107,19 @@ def to_radio_station(s: WxStation) -> RadioStation:
         tags=("weather", "noaa"),
         source=_SOURCE,
     )
+
+
+def local_noaa_radio_station(
+    *, latitude: float, longitude: float, county: str = "", safe_mode: bool = False
+) -> RadioStation | None:
+    """Resolve the NOAA Weather Radio station nearest a location (pure, no wx).
+
+    Delegates to ``wxindex.local_stations`` -- county/SAME match first, else
+    nearest-by-coordinate over the bundled snapshot -- and adapts the first
+    hit to a playable ``RadioStation`` via ``to_radio_station``. None when
+    nothing resolves, so the caller can prompt instead of playing silence.
+    """
+    from quill.core.radio import wxindex  # local: wxindex imports this module
+
+    stations = wxindex.local_stations(latitude, longitude, county=county, safe_mode=safe_mode)
+    return to_radio_station(stations[0]) if stations else None

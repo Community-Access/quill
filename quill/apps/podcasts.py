@@ -49,6 +49,11 @@ class PodcastsAppFrame(
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
+        # This app IS the podcast manager: the editor's release gate on
+        # ``core.podcasts`` must not apply here, or the new-episode check
+        # monitor and every podcast palette command silently die in a public
+        # build. Safety locks still apply on top.
+        self.features.grant_product_features({"core.podcasts"})
         self._init_podcasts()
         # Quillins for Quill Cast (app id "cast"): load contributions before the
         # menu bar is built so contributed items appear in the &Quillins menu.

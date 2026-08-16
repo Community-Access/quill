@@ -196,6 +196,7 @@ class StationBrowserDialog:
         windows: object | None = None,
         spotify_client_provider: Callable[[], object | None] | None = None,
         enabled_sources: object = None,
+        catalog: object | None = None,
         source_facet: str = "",
         on_search_prefs_changed: Callable[[tuple[str, ...], str], None] | None = None,
     ) -> None:
@@ -219,6 +220,8 @@ class StationBrowserDialog:
         #: Which sources this search covers. Remembered across sessions: a
         #: preference you must re-set on every search is not a preference.
         self._enabled_sources = search_sources.normalize(enabled_sources)
+        #: The local station catalog, for the instant search lane. Optional.
+        self._catalog = catalog
         #: The remembered Source-facet choice, re-applied when the dialog opens.
         self._initial_source_facet = str(source_facet or "")
         self._on_search_prefs_changed = on_search_prefs_changed
@@ -1071,13 +1074,30 @@ class StationBrowserDialog:
         self._search_offset = 0
 
         def _do_search(**_kwargs: Any) -> tuple[list[RadioStation], list[RadioStation]]:
-            radio = (
-                radio_browser.search_stations(
-                    name, tag=tag, country=country, limit=_SEARCH_LIMIT, safe_mode=self._safe_mode
-                )
-                if self._source_on("radio_browser")
-                else []
+            # The catalog lane (quill/ui/radio/catalog_search.py): local FTS
+            # answers in ~1 ms, so an outage costs live rows, not the search.
+            from quill.ui.radio.catalog_search import catalog_search_rows
+
+            catalog_rows = catalog_search_rows(
+                getattr(self, "_catalog", None), name, limit=_SEARCH_LIMIT
             )
+            try:
+                radio = (
+                    radio_browser.search_stations(
+                        name,
+                        tag=tag,
+                        country=country,
+                        limit=_SEARCH_LIMIT,
+                        safe_mode=self._safe_mode,
+                    )
+                    if self._source_on("radio_browser")
+                    else []
+                )
+            except Exception:
+                if not catalog_rows:
+                    raise
+                radio = []  # offline: the catalog carries the search
+            radio = catalog_rows + radio
             # Blended in after the RadioBrowser page, each failure-tolerant so
             # one down source never blanks the list. Name/tag searches only:
             # these directories have no country field of their own, so a

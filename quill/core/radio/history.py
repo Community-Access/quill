@@ -23,6 +23,13 @@ _FILE_NAME = "radio_history.json"
 _MAX_ENTRIES = 15
 
 
+def _coerce_int(value: object, default: int) -> int:
+    try:
+        return int(str(value))
+    except (TypeError, ValueError):
+        return default
+
+
 def _coerce_float(value: object, default: float) -> float:
     if isinstance(value, bool):
         return default
@@ -106,6 +113,17 @@ class RadioHistory:
     #: registering a wake changes the machine, and somebody may reasonably want
     #: one and not the other.
     wake_for_scheduled_recording: bool = True
+    #: The local station catalog: browse answers from this computer, refreshed
+    #: from live data. Off restores 3.0.0 behavior exactly -- live browsing,
+    #: session caches, no catalog reads, no refresh of any layer.
+    catalog_enabled: bool = True
+    #: Check for station updates shortly after launch (skipped when the
+    #: catalog is younger than a floor, so a restart loop never hammers
+    #: anyone's directory).
+    catalog_refresh_on_startup: bool = True
+    #: Background refresh cadence in hours. 0 turns the timer off entirely.
+    #: Default 24 (Jeff, 2026-08-15).
+    catalog_refresh_hours: int = 24
     #: Silently check GitHub releases for a newer Quill Radio on launch (the
     #: same check Help > Check for Updates runs, just quiet unless a genuine
     #: update is found); on by default, one checkbox in Preferences (Ctrl+,)
@@ -293,6 +311,11 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.prevent_sleep = bool(raw.get("prevent_sleep", True))
         history.keep_awake_before_recording = bool(raw.get("keep_awake_before_recording", True))
         history.wake_for_scheduled_recording = bool(raw.get("wake_for_scheduled_recording", True))
+        history.catalog_enabled = bool(raw.get("catalog_enabled", True))
+        history.catalog_refresh_on_startup = bool(raw.get("catalog_refresh_on_startup", True))
+        history.catalog_refresh_hours = max(
+            0, min(24 * 14, _coerce_int(raw.get("catalog_refresh_hours"), 24))
+        )
         history.youtube_consented = bool(raw.get("youtube_consented", False))
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
@@ -419,6 +442,9 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "prevent_sleep": history.prevent_sleep,
             "keep_awake_before_recording": history.keep_awake_before_recording,
             "wake_for_scheduled_recording": history.wake_for_scheduled_recording,
+            "catalog_enabled": history.catalog_enabled,
+            "catalog_refresh_on_startup": history.catalog_refresh_on_startup,
+            "catalog_refresh_hours": history.catalog_refresh_hours,
             "youtube_consented": history.youtube_consented,
             "check_updates_on_startup": history.check_updates_on_startup,
             "last_update_check": history.last_update_check,

@@ -61,6 +61,8 @@ class BrowseTreeDialog:
         windows: object | None = None,
         download_host: object | None = None,
         visible_sources: object | None = None,
+        catalog: object | None = None,
+        on_offline_catalog: object | None = None,
     ) -> None:
         import wx
 
@@ -81,6 +83,10 @@ class BrowseTreeDialog:
         #: that is off is not in the tree at all, so it is never opened and
         #: therefore never contacted. ``None`` means never set -> the defaults.
         self._visible_sources = visible_sources
+        #: The local station catalog (CatalogStore) or None. Handed straight
+        #: to browse(); this window never queries it -- the one-chokepoint rule.
+        self._catalog = catalog
+        self._on_offline_catalog = on_offline_catalog
         self._announce = announce_cb or (lambda _m: None)
         self._on_favorites_changed = on_favorites_changed or (lambda: None)
         self._on_report_bad_station = on_report_bad_station
@@ -283,7 +289,13 @@ class BrowseTreeDialog:
 
     def _fetch_children(self, node_id: str) -> list[BrowseNode]:
         """Off-thread fetch for one node. All the knowledge lives in core."""
-        return browse_sources.browse(node_id, safe_mode=self._safe_mode, favorites=self._favorites)
+        return browse_sources.browse(
+            node_id,
+            safe_mode=self._safe_mode,
+            favorites=self._favorites,
+            # getattr: tests build this dialog with __new__ and no __init__.
+            catalog=getattr(self, "_catalog", None),
+        )
 
     # -- find in this folder (quill/ui/radio/browse_find.py, GATE-11) -----------
 
@@ -399,6 +411,12 @@ class BrowseTreeDialog:
         if self._safe_mode and browse_sources.needs_network(node_id):
             return f"{label} is disabled in Safe Mode."
         if failed:
+            if getattr(self, "_catalog", None) is not None and callable(
+                getattr(self, "_on_offline_catalog", None)
+            ):
+                # The once-per-session offline sentence (catalog UX, 6.5): the
+                # app being quietly fine without the internet is the feature.
+                self._on_offline_catalog()
             return f"{label} could not be reached. Close and reopen it to try again."
         if browse_sources.needs_network(node_id):
             return f"Nothing in {label}. It may be empty, or the source could not be reached."
@@ -548,6 +566,21 @@ class BrowseTreeDialog:
             # know the saved state before resolving.
             self._favorite_btn.Enable(True)
             self._favorite_btn.SetLabel("Add to &Favorites")
+        elif self._is_folder_data(data) and data is not None:
+            # A branch explains where its answers come from (catalog UX, 6.5):
+            # "Answers from your catalog, updated 2 hours ago." or "Asks the
+            # internet each time; nothing is stored." Detail-panel only --
+            # never a per-row suffix.
+            from quill.core.radio.browse_nodes import split_id
+            from quill.core.radio.catalog import read as catalog_read
+
+            kind, _args = split_id(str(data.get("node_id", "")))
+            sentence = catalog_read.provenance_sentence(getattr(self, "_catalog", None), kind)
+            label_text = str(data.get("label", ""))
+            self._details.SetValue(label_text + chr(10) + sentence)
+            self._play_btn.Enable(False)
+            self._play_btn.SetLabel("&Play")
+            self._favorite_btn.Enable(False)
         elif data is not None and data.get("is_action"):
             # An action row explains itself while merely highlighted, so nobody
             # has to press Enter to learn what Enter would do.
