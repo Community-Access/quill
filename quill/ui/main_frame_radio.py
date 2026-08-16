@@ -1380,10 +1380,20 @@ class RadioMixin:
             placeholder = sub.Append(wx.ID_ANY, "(none yet)")
             placeholder.Enable(False)
             return
-        for station in stations:
+        # A numbered accelerator per row (the house rule: every menu item shows
+        # a way to reach it). The list is data, so the keys are positional --
+        # the newest station is always Alt+Shift+1 -- rather than tied to a
+        # station that may not be in the list tomorrow. Nine rows, because nine
+        # is how many digits there are: a tenth row would be the only one in
+        # the menu with no way to reach it, and "the last nine you played" is
+        # what this menu is for anyway. The full history lives in the
+        # favorites tree and Find Stations.
+        for position, station in enumerate(stations[:9], start=1):
             item_id = wx.NewIdRef()
             favorite = self._radio_favorites.find(station.station_uuid or station.stream_url)
             label = favorite.display_label if favorite is not None else station.display_name
+            if position <= 9:
+                label = f"{label}\tAlt+Shift+{position}"
             sub.Append(item_id, label)
             sub.Bind(
                 wx.EVT_MENU,

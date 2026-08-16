@@ -515,8 +515,21 @@ Weather is still built into Quill Radio: the **Weather** menu appears whenever t
 
 ## Keyboard reference
 
+**Every menu item shows its own shortcut.** You never have to walk a menu to
+find out whether there is a faster way in -- if there is a key, the item says
+so, right there in the menu. And where an item has a shortcut you can change,
+the menu shows *the key you actually have bound*: rebind it in **Help >
+Keyboard Shortcuts...** and the menu updates to match. The table below is the
+short list of the ones worth memorising; the menus carry the rest.
+
 | Action | Key |
 | --- | --- |
+| Browse Stations | Ctrl+B |
+| Find Stations | Ctrl+F |
+| Manage Favorites | Ctrl+Shift+M |
+| Recordings | Ctrl+G |
+| Record Now / Stop Recording | Ctrl+R |
+| Schedule Recording | Ctrl+Shift+S |
 | Play / Stop | Ctrl+P |
 | Play Last Station | Ctrl+L |
 | Mute / Unmute | Ctrl+M |

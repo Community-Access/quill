@@ -235,6 +235,24 @@ monitoring enabled in Quill Weather, Quill Radio also resumed the same
 watch and opened by speaking a weather summary. The host that offers
 “Open the Quill Weather App” now leaves the watch to it; Radio’s Weather
 menu still works on demand.</p></li>
+<li><p><strong>Every menu item carries a unique, working
+accelerator</strong> (<code>keymap.APP_KEYMAPS</code>,
+<code>app_shell._apply_app_keymap</code>,
+<code>tests/unit/ui/test_menu_accelerators.py</code>). 115 items, 49 of
+which had no key; seven keys were claimed twice (one of each pair
+silently never fired) and two
+(<code>Ctrl+Shift+Plus</code>/<code>Minus</code>) were being rejected
+outright by wx. Command-backed items render through
+<code>_menu_label</code> so the label follows a rebinding. Browse
+Stations is Ctrl+B. App keys live apart from the editor’s (Ctrl+B is
+Bold in QUILL). Gate built from the real menu bar; disabled status
+readouts are the only exemption.</p></li>
+<li><p><strong>A Close button closes</strong>
+(<code>dialog_contract.bind_close_button</code>): <code>wx.Frame</code>
+gets no free <code>ID_CANCEL</code> handling, so the window model’s
+conversion left Browse Stations, Find Stations, Manage Favorites and
+Schedule Recording with Close buttons that did nothing (Escape worked).
+Source gate added.</p></li>
 <li><p><strong>Branch-smart Find + predictive prefetch</strong>
 (<code>core/radio/branch_find.py</code>,
 <code>ui/radio/browse_prefetch.py</code>): Find routes to the anchored

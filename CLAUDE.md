@@ -62,7 +62,9 @@ QUILL is a layered wxPython desktop application with strict import boundaries:
 
 **Safe Mode:** `QUILL_SAFE_MODE=1` (or `--safe-mode` flag) disables AI, watch folder, and Quillin contributions. Gated in `assistant_ai.py`, `main_frame.py`, and `main_frame_quillins.py`.
 
-**Dialogs:** All modal dialogs must go through `_show_modal_dialog` (in `MainFrame`) — never call `ShowModal()` directly. `apply_modal_ids` ensures keyboard contract. The dialog inventory gate (`dialog_inventory.py`) audits compliance.
+**Dialogs:** All modal dialogs must go through `_show_modal_dialog` (in `MainFrame`) — never call `ShowModal()` directly. `apply_modal_ids` ensures keyboard contract. The dialog inventory gate (`dialog_inventory.py`) audits compliance. A **Close/Cancel button must be bound via `dialog_contract.bind_close_button`**: `wx.Dialog` answers `ID_CANCEL` for free but `wx.Frame` does not, so a surface that can run modeless ships a button that does nothing without it (`test_close_button_contract.py`).
+
+**Menu accelerators (a rule, not a preference):** every enabled menu item — top level, submenu, and dynamic rows alike — must show a keyboard route in its label, and no two items in one menu bar may claim the same key. Walking a menu to discover there is no shortcut is a cost a screen-reader user pays on every visit, and a key claimed twice means one of the pair silently never fires. Prefer `self._menu_label(title, command_id)` over a literal, so the label renders whatever is *actually* bound and follows the user when they rebind it; per-app defaults live in `keymap.APP_KEYMAPS` (app keys, not editor keys: Ctrl+B is Browse in Quill Radio and Bold in QUILL). Only a *disabled* status readout is exempt. Enforced by `tests/unit/ui/test_menu_accelerators.py`, which also rejects keys `wx.AcceleratorEntry` cannot parse (`Ctrl+Shift+Plus` is silently dropped by wx, leaving the menu advertising a key that does nothing).
 
 **Network egress:** `network_egress_audit.py` inventories every outbound call site. New network calls require explicit consent and a new entry in the audit.
 

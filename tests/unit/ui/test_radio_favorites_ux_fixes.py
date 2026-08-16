@@ -53,10 +53,18 @@ def test_favorites_manager_offers_remove_all() -> None:
 
 def test_transport_button_does_not_claim_alt_s_or_alt_p() -> None:
     src = _read("quill/apps/radio.py")
-    # The button label carries no "&" mnemonic (would collide with the Station /
-    # Playback menu-bar mnemonics, #1208); it advertises the working Ctrl+P key.
-    assert 'wx.Button(panel, label="Play")' in src
-    assert 'button_label = "Stop" if stopping else "Play"' in src
-    assert "(Ctrl+P)" in src
+    # #1208: the button must not claim Alt+S or Alt+P, which the Station and
+    # Playback MENU BAR entries answer first -- pressing them opened a menu
+    # instead of stopping the radio. The original fix removed the mnemonic
+    # altogether, which left the button with no Alt key at all; it now takes
+    # free letters (Alt+L to play, Alt+T to stop) and still advertises Ctrl+P.
+    assert 'wx.Button(panel, label="P&lay")' in src
+    assert 'button_label = "S&top" if stopping else "P&lay"' in src
+    for forbidden in ('label="&Play"', 'label="&Stop"', 'button_label = "&Stop"'):
+        assert forbidden not in src, f"transport button claims a menu-bar key: {forbidden}"
+    # The Playback MENU item keeps its own mnemonic: a submenu mnemonic does
+    # not compete with the menu bar, only a control's does.
+    assert 'menu_label = "&Stop" if stopping else "&Play"' in src
+    assert "(Alt+L, or Ctrl+P)" in src
     # The Playback menu item keeps its accelerator.
     assert "Ctrl+P" in src

@@ -556,6 +556,30 @@ Any download of the QuillVille Runtime – from an installer or from the
 app’s own first launch – presents a progress bar that reports correctly
 to NVDA, JAWS, and Narrator and announces progress as a percentage; a
 silent or screen-reader-invisible download is a defect.</li>
+<li>A-11. <strong>Every menu item shows a keyboard route, and no key is
+claimed twice.</strong> Every enabled item – top level, submenu, and
+dynamic rows such as Recently Played – carries an accelerator in its
+label, because walking a menu to discover there is no shortcut is a cost
+paid on every visit, and a key claimed by two items means one of them
+silently never fires. Items backed by a registered command render
+through <code>_menu_label</code>, so the label shows what is
+<em>actually</em> bound and follows a rebinding in Keyboard Shortcuts;
+per-app defaults live in <code>keymap.APP_KEYMAPS</code> (app keys, not
+editor keys – Ctrl+B is Browse Stations here and Bold in QUILL). Only a
+disabled status readout is exempt. Enforced from the built menu bar by
+<code>tests/unit/ui/test_menu_accelerators.py</code>, which also rejects
+any key wx cannot bind. Measured before the rule landed: 49 of 115 items
+had no accelerator, seven keys were claimed twice, and two advertised
+keys (<code>Ctrl+Shift+Plus</code>/<code>Minus</code>) were being
+discarded by wx outright.</li>
+<li>A-12. <strong>A Close button closes.</strong> Surfaces that can run
+modeless (Browse Stations, Find Stations, Manage Favorites, Schedule
+Recording) bind theirs through
+<code>dialog_contract.bind_close_button</code>: <code>wx.Dialog</code>
+handles <code>ID_CANCEL</code> for free and <code>wx.Frame</code> does
+not, so the window model’s conversion left four Close buttons doing
+nothing, with only Escape working. A control that looks like the way out
+and is not is worse than no control.</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>

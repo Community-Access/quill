@@ -358,12 +358,18 @@ def test_recently_played_rebuild_reflects_history_newest_first_without_duplicati
     # History is newest-first already (the store moves replays to the front).
     frame._radio_history.stations = [news, jazz]
 
+    # Each row carries a positional accelerator (the newest is always
+    # Alt+Shift+1), so the names are compared without it.
+    def _names() -> list[str]:
+        return [i.label.split(chr(9))[0] for i in sub.items]
+
     RadioMixin._rebuild_recent_submenu(frame)  # type: ignore[arg-type]
-    assert [i.label for i in sub.items] == ["News 24", "Jazz FM"]
+    assert _names() == ["News 24", "Jazz FM"]
+    assert [i.label.split(chr(9))[1] for i in sub.items] == ["Alt+Shift+1", "Alt+Shift+2"]
 
     # A second rebuild replaces the items -- it never appends a stale second copy.
     RadioMixin._rebuild_recent_submenu(frame)  # type: ignore[arg-type]
-    assert [i.label for i in sub.items] == ["News 24", "Jazz FM"]
+    assert _names() == ["News 24", "Jazz FM"]
 
     # The bound handler plays that station.
     sub.binds[-1][1](None)

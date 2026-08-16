@@ -63,23 +63,23 @@ class WeatherMixin:
         # QUILL) offer this at the very top; the Quill Weather app itself does not.
         if getattr(self, "_weather_offers_app_launch", False):
             open_app_id = wx.NewIdRef()
-            menu.Append(open_app_id, "&Open the Quill Weather App")
+            menu.Append(open_app_id, "&Open the Quill Weather App\tCtrl+Alt+Shift+W")
             self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_app(), id=open_app_id)
             menu.AppendSeparator()
         now_id, quick_id, alerts_id, add_id, settings_id = (wx.NewIdRef() for _ in range(5))
         noaa_listen_id, noaa_update_id = (wx.NewIdRef() for _ in range(2))
         menu.Append(now_id, "&Weather Now...\tCtrl+Shift+W")
         menu.Append(quick_id, "&Quick Weather\tCtrl+Shift+Q")
-        menu.Append(alerts_id, "Active &Alerts...")
+        menu.Append(alerts_id, "Active &Alerts...\tCtrl+Shift+Alt+A")
         menu.AppendSeparator()
         test_id = wx.NewIdRef()
-        menu.Append(add_id, "&Add Location...")
-        menu.Append(settings_id, "&Settings...")
-        menu.Append(test_id, "&Test Alert (preview sound, tray, and dialog)")
+        menu.Append(add_id, "&Add Location...\tCtrl+Alt+Shift+L")
+        menu.Append(settings_id, "&Settings...\tCtrl+Alt+Shift+F")
+        menu.Append(test_id, "&Test Alert (preview sound, tray, and dialog)\tCtrl+Alt+Shift+T")
         if self._weather_area_enabled("noaa_radio"):
             menu.AppendSeparator()
-            menu.Append(noaa_listen_id, "&Listen to your Local NOAA Weather Radio")
-            menu.Append(noaa_update_id, "&Update NOAA Weather Radio Directory")
+            menu.Append(noaa_listen_id, "&Listen to your Local NOAA Weather Radio\tCtrl+Alt+N")
+            menu.Append(noaa_update_id, "&Update NOAA Weather Radio Directory\tCtrl+Alt+Shift+N")
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.listen_local_noaa_radio(), id=noaa_listen_id
             )
@@ -357,11 +357,15 @@ class WeatherMixin:
         """The toggle item's label, reflecting the current state. The chord
         stays on the label so the accelerator survives a relabel."""
         verb = "Stop" if self._weather_monitoring_active() else "Start"
-        return f"{verb} Weather &Monitoring\tCtrl+Shift+M"
+        return f"{verb} Weather &Monitoring\tCtrl+Alt+Shift+M"
 
     def _weather_monitor_pause_text(self) -> str:
         paused = getattr(self, "_weather_monitor_paused", False)
-        return "Resume Alert Chec&ks" if paused else "Pause Alert Chec&ks"
+        return (
+            "Resume Alert Chec&ks\tCtrl+Alt+Shift+P"
+            if paused
+            else "Pause Alert Chec&ks\tCtrl+Alt+Shift+P"
+        )
 
     def _refresh_weather_monitor_menu_item(self) -> None:
         item = getattr(self, "_weather_monitor_menu_item", None)
@@ -397,7 +401,7 @@ class WeatherMixin:
             self._announce("Weather alert checks paused. Choose Resume Alert Checks to continue.")
 
     def toggle_weather_monitoring(self) -> None:
-        """Weather > Start/Stop Weather Monitoring (also Ctrl+Shift+M)."""
+        """Weather > Start/Stop Weather Monitoring (also Ctrl+Alt+Shift+M)."""
         if self._weather_monitoring_active():
             self.stop_weather_monitoring()
         else:

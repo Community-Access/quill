@@ -798,7 +798,13 @@ def browse(
     except Exception as error:  # noqa: BLE001 - every source has its own error type
         _remember_failure(error)
         return _rankings_rescue(kind, catalog) or []
-    LAST_FAILURE.pop(_thread_key(), None)
+    if result:
+        # Only a listing that actually arrived clears the record. A handler
+        # whose cache layer swallowed an outage returns [] without raising
+        # (directory_cache never throws into a browse tree), and popping here
+        # unconditionally threw away the one signal that told "empty folder"
+        # from "source is down".
+        LAST_FAILURE.pop(_thread_key(), None)
     return result
 
 

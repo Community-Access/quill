@@ -49,7 +49,7 @@ class AdpMixin:
         menu.Append(ask_id, self._menu_label("&Ask ADP...", "adp.ask"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_ask_adp(), id=ask_id)
         settings_id = wx.NewIdRef()
-        menu.Append(settings_id, "ADP Se&ttings...")
+        menu.Append(settings_id, "ADP Se&ttings...	Ctrl+Alt+Shift+A")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_adp_settings(), id=settings_id)
         keep = getattr(self, "_keep_menu_ids", None)
         if keep is not None:

@@ -215,6 +215,17 @@ class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
         features = getattr(self, "features", None)
         return True if features is None else features.is_enabled(feature_id)
 
+    def _apply_app_keymap(self, app_id: str) -> None:
+        """Merge this app's own menu accelerators in as defaults (in memory).
+
+        App keys, not editor keys: Quill Radio has no bold, so Ctrl+B is
+        Browse Stations there while QUILL keeps it for formatting. The rule
+        for *which* defaults apply is pure and lives in ``core.keymap``.
+        """
+        from quill.core.app_keymaps import app_keymap_overrides
+
+        self.keymap.update(app_keymap_overrides(app_id, self.keymap))
+
     def _menu_label(self, title: str, command_id: str) -> str:
         binding = self._binding_for(command_id)
         # A comma means a chord binding; wx would misparse the text after the
@@ -399,15 +410,15 @@ class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
         """Add 'Open QUILL / Quill Radio / Quill Weather' items so the sibling
         apps are always one click apart -- each opens in its own window and tray.
         ``exclude`` is this app's own key, which is left off the list."""
-        from quill.core.app_launcher import APP_NAMES
+        from quill.ui.quillville_menu import append_sibling_items
 
-        for key in ("quill", "radio", "weather"):
-            if key == exclude:
-                continue
-            item_id = wx.NewIdRef()
-            menu.Append(item_id, f"Open {APP_NAMES[key]}")
-            menu.Bind(wx.EVT_MENU, lambda _e, k=key: self._launch_sibling(k), id=item_id)
-            self._keep_menu_ids(item_id)
+        append_sibling_items(
+            menu,
+            frame=menu,
+            exclude=exclude,
+            on_launch=self._launch_sibling,
+            retain=self._keep_menu_ids,
+        )
 
     def _launch_sibling(self, key: str) -> None:
         from quill.ui.companion_offer import try_open_or_offer

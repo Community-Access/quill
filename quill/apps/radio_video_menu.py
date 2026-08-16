@@ -39,7 +39,7 @@ def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[A
     # both are about recordings, which are the only thing Radio plays that has
     # somewhere to come back to.
     continue_id = wx.NewIdRef()
-    playback_menu.Append(continue_id, "&Continue Listening...")
+    playback_menu.Append(continue_id, "&Continue Listening...\tCtrl+Shift+Alt+C")
     frame.Bind(wx.EVT_MENU, lambda _e: _open_continue_listening(app), id=continue_id)
 
     chapters_id, next_ch_id, prev_ch_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
@@ -87,9 +87,9 @@ def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[A
     ) = (wx.NewIdRef() for _ in range(6))
     playback_menu.Append(show_video_id, "Show &Video	Ctrl+Shift+V")
     playback_menu.Append(captions_id, "&Captions	Ctrl+Shift+K")
-    playback_menu.Append(caption_settings_id, "Caption Se&ttings...")
+    playback_menu.Append(caption_settings_id, "Caption Se&ttings...\tCtrl+Shift+Alt+T")
     playback_menu.Append(video_info_id, "Video &Information	Ctrl+Shift+I")
-    playback_menu.Append(snapshot_id, "Take a Snaps&hot")
+    playback_menu.Append(snapshot_id, "Take a Snaps&hot\tCtrl+Shift+Alt+H")
     playback_menu.Append(full_screen_id, "F&ull Screen	F11")
     frame.Bind(wx.EVT_MENU, lambda _e: video_commands.toggle_video(app), id=show_video_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video_commands.toggle_captions(app), id=captions_id)
@@ -100,7 +100,12 @@ def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[A
 
     size_menu = wx.Menu()
     size_ids = []
-    for label, percent in (("&Fit", 100), ("&50%", 50), ("&100%", 100), ("&200%", 200)):
+    for label, percent in (
+        ("&Fit\tCtrl+Alt+4", 100),
+        ("&50%\tCtrl+Alt+5", 50),
+        ("&100%\tCtrl+Alt+6", 100),
+        ("&200%\tCtrl+Alt+7", 200),
+    ):
         size_id = wx.NewIdRef()
         size_ids.append(size_id)
         size_menu.Append(size_id, label)
@@ -121,9 +126,9 @@ def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[A
     playback_menu.Append(faster_id, "Play &Faster\tCtrl+Alt+Up")
     playback_menu.Append(slower_id, "Play Slo&wer\tCtrl+Alt+Down")
     playback_menu.Append(normal_id, "&Normal Speed\tCtrl+Alt+0")
-    playback_menu.Append(where_id, "Where &Am I?\tCtrl+Shift+P")
+    playback_menu.Append(where_id, "Where &Am I?\tCtrl+Alt+H")
     goto_pos_id = wx.NewIdRef()
-    playback_menu.Append(goto_pos_id, "&Go to Position...\tCtrl+Shift+J")
+    playback_menu.Append(goto_pos_id, "&Go to Position...\tCtrl+Alt+J")
     frame.Bind(wx.EVT_MENU, lambda _e: video.go_to_position(app), id=goto_pos_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video.speed_up(app), id=faster_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video.slow_down(app), id=slower_id)

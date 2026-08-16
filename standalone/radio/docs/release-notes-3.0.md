@@ -703,6 +703,39 @@ instead, and the label says so.
 browse tree, and it lands on the source you were last in -- Networks, TuneIn,
 iHeart, wherever -- instead of collapsed at the top with everything closed.
 
+### Every menu item tells you its key
+
+Open any menu in 3.0 and every item ends with the way to reach it from the
+keyboard. Browse Stations is **Ctrl+B**. Find Stations is **Ctrl+F**.
+Recordings is **Ctrl+G**. All 115 items, menus and submenus alike, down to the
+Recently Played list, where the newest station is always **Alt+Shift+1**.
+
+This was not a polish pass. Forty-nine items had no shortcut at all, which
+meant the only way to learn there was no faster route was to arrow through the
+whole menu and reach the end -- a cost paid on every visit. Seven keys were
+claimed by two different items, so one of each pair silently did nothing when
+you pressed it. And two items advertised keys the toolkit was quietly
+discarding as unparseable, which is the worst of the three: a menu promising a
+shortcut that could never fire.
+
+Where an item has a shortcut you can change, **the menu shows the key you
+actually have bound** -- rebind it in Keyboard Shortcuts and the menu says the
+new key, rather than confidently repeating a default you no longer use. A
+build check now fails if any menu item ships without a working, unique key, so
+this stays true.
+
+### The Close button closes
+
+In the standalone app, the Close button in Browse Stations did nothing. Only
+Escape worked. That is a peculiar kind of broken: the control that looks like
+the way out is right there, and pressing it just... doesn't. The cause was
+3.0's own window model -- these surfaces became real windows so they could
+carry the menu bar, and a real window, unlike a dialog, does not answer a
+Cancel button on its own. The same fault sat in **Find Stations**, **Manage
+Favorites**, and **Schedule Recording**. All four now close from the button,
+from Escape, and from the titlebar, and there is one shared piece of wiring
+behind them so a fifth window cannot quietly grow the same hole.
+
 ### Find became a search engine, and the tree reads ahead
 
 "Find in this folder" used to answer one way everywhere: walk the subtree

@@ -164,10 +164,12 @@ def resolve(
     if entry is not None and (entry.complete or not require_complete):
         if entry.is_fresh(max_age_seconds):
             return entry.payload, entry.age_seconds()
+    failure: BaseException | None = None
     try:
         payload = fetch()
     except Exception as error:  # noqa: BLE001 - every source has its own error type
         _LOG.debug("directory refresh failed for %s: %s", key, error)
+        failure = error
         payload = None  # type: ignore[assignment]
     if payload:
         is_complete = complete() if callable(complete) else complete
@@ -176,6 +178,15 @@ def resolve(
     stale = entry if entry is not None else load(key)
     if stale is not None and (stale.complete or not require_complete):
         return stale.payload, stale.age_seconds()
+    if failure is not None:
+        # Not raising is deliberate -- a browse branch that throws takes the
+        # window with it -- but swallowing the fact silently is what made a
+        # source *outage* read as "this folder is empty" (the Archive's search
+        # backend, down 2026-08-16, answered every collection that way). Record
+        # it so ``browse`` can still tell empty from broken.
+        from quill.core.radio.browse_failure import remember_failure
+
+        remember_failure(failure)
     return (empty if empty is not None else payload), None  # type: ignore[return-value]
 
 

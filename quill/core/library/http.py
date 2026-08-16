@@ -35,6 +35,7 @@ def fetch_bytes(
     accept: str = "",
     body: bytes | None = None,
     content_type: str = "",
+    timeout_s: float = _TIMEOUT_S,
 ) -> bytes:
     """Fetch ``url`` over verified HTTPS and return the (capped) response bytes.
 
@@ -53,7 +54,7 @@ def fetch_bytes(
     request = urllib.request.Request(url, data=body, headers=headers)
     context = ssl.create_default_context()
     try:
-        with urllib.request.urlopen(request, timeout=_TIMEOUT_S, context=context) as response:
+        with urllib.request.urlopen(request, timeout=timeout_s, context=context) as response:
             data = response.read(_MAX_BYTES + 1)
             return bytes(data[:_MAX_BYTES])
     except urllib.error.HTTPError as exc:

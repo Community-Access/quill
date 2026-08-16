@@ -49,9 +49,17 @@ def test_unreleased_apps_are_not_offered() -> None:
 
 def test_released_siblings_are_offered_and_self_is_excluded() -> None:
     labels = _build(exclude="radio")  # from Quill Radio
-    assert "Open QUILL" in labels
-    assert "Open Quill Weather" in labels
-    assert "Open Quill Radio" not in labels  # self excluded
+    # Every item carries a numbered accelerator (the house rule that a menu
+    # item always shows a way to reach it), so compare on the name alone.
+    names = [label.split(chr(9))[0] for label in labels]
+    assert "Open QUILL" in names
+    assert "Open Quill Weather" in names
+    assert "Open Quill Radio" not in names  # self excluded
+    # ...and the keys are there, numbered in menu order.
+    assert [label.split(chr(9))[1] for label in labels][:2] == [
+        "Ctrl+Alt+Shift+1",
+        "Ctrl+Alt+Shift+2",
+    ]
 
 
 def test_an_app_can_leave_a_sibling_off_its_own_menu(monkeypatch) -> None:

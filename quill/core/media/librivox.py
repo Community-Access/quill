@@ -53,10 +53,18 @@ class LibriVoxBook:
         return any(section.url for section in self.sections)
 
 
+#: LibriVox is a browse click, not a download, and its API is the one in this
+#: app most prone to sitting on a connection: when their origin is down,
+#: Cloudflare holds the request ~19.5 s and then answers 522 (measured
+#: 2026-08-16). The shared 20 s book-download budget makes an unreachable
+#: shelf feel like a hung app, so this path gets a browse-sized one.
+_BROWSE_TIMEOUT_S = 8.0
+
+
 def _default_fetch(url: str) -> bytes:
     from quill.core.library.http import fetch_bytes
 
-    return fetch_bytes(url, accept="application/json")
+    return fetch_bytes(url, accept="application/json", timeout_s=_BROWSE_TIMEOUT_S)
 
 
 def search(query: str, *, limit: int = 20, fetch: Fetch | None = None) -> list[LibriVoxBook]:

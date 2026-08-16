@@ -54,13 +54,31 @@ def last_error_was_network(error: BaseException | None = None) -> bool:
     failure = error if error is not None else LAST_FAILURE.get(_thread_key())
     if failure is None:
         return False
-    return isinstance(
-        failure,
+    transports = (
         urllib.error.URLError
         | TimeoutError
         | ssl.SSLError
         | socket.gaierror
         | http.client.HTTPException
         | ConnectionError
-        | OSError,
+        | OSError
     )
+    # Walk the cause chain, not just the top exception. Every source wraps a
+    # transport failure in its own coded error (``raise LibriVoxError(...) from
+    # exc``), and matching only the outermost type meant those all read as "this
+    # folder is empty" -- so LibriVox being *down* (Cloudflare 522, measured
+    # 2026-08-16) reported "no data in the folder", which is the exact confusion
+    # this function exists to prevent.
+    seen: set[int] = set()
+    current: BaseException | None = failure
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        if isinstance(current, transports):
+            return True
+        # A service that answers politely and says it is broken (the Archive
+        # returns HTTP 200 with {"error": "[BACKEND_ERROR] ..."}) is
+        # unreachable in every sense the listener cares about.
+        if getattr(current, "service_unreachable", False):
+            return True
+        current = current.__cause__ or current.__context__
+    return False

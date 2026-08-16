@@ -70,10 +70,18 @@ _OUTPUT_DEVICE_HELP = (
 #: escape hatch / insist options.
 _ENGINE_LABELS = ("Automatic (recommended)", "Windows Media (classic)", "mpv")
 _ENGINE_VALUES = ("auto", "wx", "mpv")
-_FAVORITES_SORT_LABELS = ("Ascending (A to Z)", "Descending (Z to A)", "Unsorted (manual order)")
+_FAVORITES_SORT_LABELS = (
+    "Ascending (A to Z)",
+    "Descending (Z to A)",
+    "Unsorted (manual order)",
+)
 _FAVORITES_SORT_VALUES = ("az", "za", "manual")
 #: View > Text Size choices: (menu label, font scale). Normal is the wx default.
-_TEXT_SIZE_SCALES = (("&Normal", 1.0), ("&Large", 1.25), ("La&rger", 1.5))
+_TEXT_SIZE_SCALES = (
+    ("&Normal\tCtrl+Alt+1", 1.0),
+    ("&Large\tCtrl+Alt+2", 1.25),
+    ("La&rger\tCtrl+Alt+3", 1.5),
+)
 _ENGINE_HELP = (
     "Which audio engine plays the radio. Automatic uses mpv when it is "
     "installed -- that is what enables the output device choice, pausing "
@@ -148,6 +156,9 @@ class RadioAppFrame(
         # missed-recording reports, and every radio palette command silently
         # die in a public build. Safety locks still apply on top.
         self.features.grant_product_features({"core.radio"})
+        # Radio's own menu accelerators (Ctrl+B for Browse, and the rest):
+        # every menu item shows the key that reaches it.
+        self._apply_app_keymap("radio")
         from quill.core.paths import app_data_dir
 
         self._app_features = load_app_features(app_data_dir(), "radio")
@@ -268,14 +279,14 @@ class RadioAppFrame(
         # mnemonics (the menu bar wins, so the button never fired) -- #1208. The
         # reliable transport key is the menu accelerator Ctrl+P, which the
         # accessible name now advertises so it is reported correctly.
-        self._play_stop_btn = wx.Button(panel, label="Play")
-        set_accessible_name(self._play_stop_btn, "Play (Ctrl+P)")
+        self._play_stop_btn = wx.Button(panel, label="P&lay")
+        set_accessible_name(self._play_stop_btn, "Play (Alt+L, or Ctrl+P)")
         self._play_stop_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_play_stop_button())
         buttons.Add(self._play_stop_btn, 0, wx.RIGHT, 6)
         # Favorite toggle for whatever is on right now: Add while listening
         # to something new (from ACB Media, Recently Played, a test...),
         # Remove when the playing station is already saved.
-        self._favorite_toggle_btn = wx.Button(panel, label="Add to Fa&vorites")
+        self._favorite_toggle_btn = wx.Button(panel, label="Add to &Favorites")
         set_accessible_name(self._favorite_toggle_btn, "Add the playing station to favorites")
         self._favorite_toggle_btn.Enable(False)
         self._favorite_toggle_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_favorite_toggle())
@@ -283,7 +294,7 @@ class RadioAppFrame(
         # The Record button doubles as the stop control: while a recording is
         # running it reads "Stop Recording" so it is obvious you are recording
         # (#1152 feedback), mirroring the single Play/Stop button above.
-        self._record_btn = wx.Button(panel, label="&Record")
+        self._record_btn = wx.Button(panel, label="Rec&ord")
         set_accessible_name(self._record_btn, "Record")
         self._record_btn.Bind(wx.EVT_BUTTON, lambda _e: self.radio_record_toggle())
         buttons.Add(self._record_btn, 0, wx.RIGHT, 6)
@@ -821,15 +832,18 @@ class RadioAppFrame(
 
         state = self._radio_controller.state.state
         stopping = state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
-        # Button label carries no "&" (see #1208); the Playback menu item keeps
-        # its in-menu mnemonic (safe -- submenu mnemonics don't collide with the
-        # menu bar) plus the working Ctrl+P accelerator.
-        button_label = "Stop" if stopping else "Play"
+        # A button mnemonic on a frame competes with the MENU BAR's, which is
+        # #1208: "&Record" on both meant Alt+R opened the menu and the button
+        # never fired. The answer is a free letter, not no letter -- Alt+P is
+        # the Playback menu, so the transport button takes Alt+L to play and
+        # Alt+T to stop, and Ctrl+P still toggles from anywhere.
+        button_label = "S&top" if stopping else "P&lay"
         menu_label = "&Stop" if stopping else "&Play"
         button = getattr(self, "_play_stop_btn", None)
         if button is not None and button.GetLabel() != button_label:
             button.SetLabel(button_label)
-            set_accessible_name(button, f"{button_label} (Ctrl+P)")
+            spoken = "Stop (Alt+T, or Ctrl+P)" if stopping else "Play (Alt+L, or Ctrl+P)"
+            set_accessible_name(button, spoken)
         menu_bar = self.frame.GetMenuBar()
         item_id = getattr(self, "_play_menu_item_id", None)
         if menu_bar is not None and item_id is not None:
@@ -844,7 +858,7 @@ class RadioAppFrame(
         if button is None:
             return
         recording = bool(getattr(self._radio_recorder, "is_recording", False))
-        label = "Stop &Recording" if recording else "&Record"
+        label = "St&op Recording" if recording else "Rec&ord"
         if button.GetLabel() != label:
             button.SetLabel(label)
             set_accessible_name(button, "Stop Recording" if recording else "Record")
@@ -856,13 +870,13 @@ class RadioAppFrame(
         station = self._radio_controller.state.station
         if station is None:
             button.Enable(False)
-            if button.GetLabel() != "Add to Fa&vorites":
-                button.SetLabel("Add to Fa&vorites")
+            if button.GetLabel() != "Add to &Favorites":
+                button.SetLabel("Add to &Favorites")
                 set_accessible_name(button, "Add the playing station to favorites")
             return
         button.Enable(True)
         saved = self._radio_favorites.contains(station)
-        label = "Remove from Fa&vorites" if saved else "Add to Fa&vorites"
+        label = "Remove from &Favorites" if saved else "Add to &Favorites"
         if button.GetLabel() != label:
             button.SetLabel(label)
             set_accessible_name(
@@ -914,22 +928,27 @@ class RadioAppFrame(
             wx.NewIdRef(),
             wx.NewIdRef(),
         )
-        station_menu.Append(browse_id, "&Browse Stations...")
+        station_menu.Append(browse_id, self._menu_label("&Browse Stations...", "radio.browse"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_browse_stations(), id=browse_id)
         rrs_update_id = wx.NewIdRef()
-        station_menu.Append(rrs_update_id, "Update Radio Reading &Services...")
+        station_menu.Append(rrs_update_id, "Update Radio Reading &Services...\tCtrl+Alt+Shift+R")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.update_reading_services_directory(),
             id=rrs_update_id,
         )
-        station_menu.Append(search_id, "&Search Stations...")
+        station_menu.Append(search_id, "&Search Stations...\tCtrl+F")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_internet_radio(focus_search=True), id=search_id
         )
-        station_menu.Append(add_id, "&Add Custom Station...")
+        station_menu.Append(
+            add_id, self._menu_label("&Add Custom Station...", "radio.add_custom_station")
+        )
         yt_playlist_id = wx.NewIdRef()
-        station_menu.Append(yt_playlist_id, "Add from &YouTube Playlist...")
+        station_menu.Append(
+            yt_playlist_id,
+            self._menu_label("Add from &YouTube Playlist...", "radio.add_youtube_playlist"),
+        )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.radio_add_youtube_playlist(), id=yt_playlist_id
         )
@@ -938,11 +957,13 @@ class RadioAppFrame(
         # next to the YouTube commands because that is where someone whose
         # YouTube links stopped working will look for it.
         yt_update_id = wx.NewIdRef()
-        station_menu.Append(yt_update_id, "&Update YouTube Support...")
+        station_menu.Append(yt_update_id, "&Update YouTube Support...\tCtrl+Alt+Y")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.radio_update_youtube_support(), id=yt_update_id
         )
-        station_menu.Append(find_id, "Find &Streams from a Website...")
+        station_menu.Append(
+            find_id, self._menu_label("Find &Streams from a Website...", "radio.find_streams")
+        )
         # Remembered-choice items live in radio_settings_menu (GATE-11); the
         # ids come back for pinning.
         from quill.apps.radio_settings_menu import build_download_prefs_item, build_settings_items
@@ -959,8 +980,8 @@ class RadioAppFrame(
         spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
         if self.features.is_enabled("future.spotify") and not self._safe_mode:
             station_menu.AppendSeparator()
-            station_menu.Append(spotify_connect_id, "Connect to S&potify...")
-            station_menu.Append(spotify_browse_id, "Bro&wse Spotify...")
+            station_menu.Append(spotify_connect_id, "Connect to S&potify...\tCtrl+Alt+P")
+            station_menu.Append(spotify_browse_id, "Bro&wse Spotify...\tCtrl+Alt+O")
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.open_spotify_connect(), id=spotify_connect_id
             )
@@ -968,27 +989,29 @@ class RadioAppFrame(
                 wx.EVT_MENU, lambda _e: self.open_spotify_browse(), id=spotify_browse_id
             )
         manage_id = wx.NewIdRef()
-        station_menu.Append(manage_id, "&Manage Favorites...")
+        station_menu.Append(
+            manage_id, self._menu_label("&Manage Favorites...", "radio.manage_favorites")
+        )
         new_folder_id = wx.NewIdRef()
         station_menu.Append(new_folder_id, "New F&older...\tCtrl+Shift+E")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_new_folder(), id=new_folder_id)
         import_id = wx.NewIdRef()
-        station_menu.Append(import_id, "&Import Stations from Playlist...")
+        station_menu.Append(import_id, "&Import Stations from Playlist...\tCtrl+I")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.import_stations_from_playlist(), id=import_id)
         # #1249: export favorites to an M3U playlist. Thin wiring lives in
         # playlist_export_ui (radio.py is at budget).
         from quill.ui.radio.playlist_export_ui import export_favorites_to_playlist
 
         export_id = wx.NewIdRef()
-        station_menu.Append(export_id, "&Export Favorites to Playlist...")
+        station_menu.Append(export_id, "&Export Favorites to Playlist...\tCtrl+Shift+X")
         self.frame.Bind(wx.EVT_MENU, lambda _e: export_favorites_to_playlist(self), id=export_id)
         # #1193: move your stations/settings/recordings to a new device or recover
         # after a reinstall. Thin wiring lives in backup_ui (radio.py is at budget).
         from quill.ui.radio.backup_ui import back_up_radio_data, restore_radio_data
 
         backup_id, restore_id = wx.NewIdRef(), wx.NewIdRef()
-        station_menu.Append(backup_id, "Back &Up Stations and Settings...")
-        station_menu.Append(restore_id, "&Restore from Backup...")
+        station_menu.Append(backup_id, "Back &Up Stations and Settings...\tCtrl+Shift+U")
+        station_menu.Append(restore_id, "&Restore from Backup...\tCtrl+Shift+R")
         self.frame.Bind(wx.EVT_MENU, lambda _e: back_up_radio_data(self), id=backup_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: restore_radio_data(self), id=restore_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_add_custom(None), id=add_id)
@@ -1014,7 +1037,9 @@ class RadioAppFrame(
             self.frame.Bind(wx.EVT_MENU_OPEN, self._on_station_menu_open)
             self._station_menu_open_bound = True
         self._resume_menu_item_id = wx.NewIdRef()
-        station_menu.AppendCheckItem(self._resume_menu_item_id, "Resume Last Station on Lau&nch")
+        station_menu.AppendCheckItem(
+            self._resume_menu_item_id, "Resume Last Station on Lau&nch\tCtrl+Alt+L"
+        )
         station_menu.Check(self._resume_menu_item_id, self._radio_history.resume_on_launch)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._toggle_resume_on_launch(), id=self._resume_menu_item_id
@@ -1022,7 +1047,9 @@ class RadioAppFrame(
         from quill.platform.windows import radio_startup
 
         self._startup_menu_item_id = wx.NewIdRef()
-        station_menu.AppendCheckItem(self._startup_menu_item_id, "Start Quill Radio with &Windows")
+        station_menu.AppendCheckItem(
+            self._startup_menu_item_id, "Start Quill Radio with &Windows\tCtrl+Alt+W"
+        )
         station_menu.Check(self._startup_menu_item_id, radio_startup.is_launch_at_startup_enabled())
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._toggle_launch_at_startup(), id=self._startup_menu_item_id
@@ -1035,7 +1062,7 @@ class RadioAppFrame(
         station_menu.AppendSeparator()
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         station_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
-        station_menu.Append(exit_id, "E&xit")
+        station_menu.Append(exit_id, "E&xit\tCtrl+Q")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
         # Explicit Exit must quit for real, not minimize-to-tray (#1193).
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._exit_application(), id=exit_id)
@@ -1092,7 +1119,8 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_song_history(), id=song_history_id)
         self._global_volume_item_id = wx.NewIdRef()
         playback_menu.AppendCheckItem(
-            self._global_volume_item_id, "Use One &Volume for All Stations"
+            self._global_volume_item_id,
+            self._menu_label("Use One &Volume for All Stations", "radio.toggle_global_volume"),
         )
         playback_menu.Check(self._global_volume_item_id, self._radio_history.use_global_volume)
         self.frame.Bind(
@@ -1101,19 +1129,27 @@ class RadioAppFrame(
             id=self._global_volume_item_id,
         )
         forget_volumes_id = wx.NewIdRef()
-        playback_menu.Append(forget_volumes_id, "Forget Every Station's Own Volu&me...")
+        playback_menu.Append(
+            forget_volumes_id,
+            self._menu_label(
+                "Forget Every Station's Own Volu&me...", "radio.forget_station_volumes"
+            ),
+        )
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.radio_forget_station_volumes(), id=forget_volumes_id
         )
         self._announce_titles_item_id = wx.NewIdRef()
-        playback_menu.AppendCheckItem(self._announce_titles_item_id, "Announce Trac&k Titles")
+        playback_menu.AppendCheckItem(
+            self._announce_titles_item_id,
+            self._menu_label("Announce Trac&k Titles", "radio.toggle_title_announcements"),
+        )
         playback_menu.Check(
             self._announce_titles_item_id, self._radio_history.announce_track_titles
         )
         sleep_id = wx.NewIdRef()
-        playback_menu.Append(sleep_id, "Sleep &Timer...")
+        playback_menu.Append(sleep_id, "Sleep &Timer...\tCtrl+Shift+Z")
         wake_id = wx.NewIdRef()
-        playback_menu.Append(wake_id, "Wake-U&p Timer...")
+        playback_menu.Append(wake_id, self._menu_label("Wake-U&p Timer...", "radio.wake_timer"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_wake_timer_dialog(), id=wake_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._on_play_stop_button(), id=self._play_menu_item_id
@@ -1146,14 +1182,24 @@ class RadioAppFrame(
         record_menu = wx.Menu()
         record_id, schedule_id, settings_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         recordings_id = wx.NewIdRef()
-        record_menu.Append(record_id, "&Record Now / Stop Recording")
+        record_menu.Append(
+            record_id, self._menu_label("&Record Now / Stop Recording", "radio.record_toggle")
+        )
         record_station_id = wx.NewIdRef()
-        record_menu.Append(record_station_id, "Record Statio&n...")
+        record_menu.Append(
+            record_station_id, self._menu_label("Record Statio&n...", "radio.record_station")
+        )
         stop_all_id = wx.NewIdRef()
-        record_menu.Append(stop_all_id, "Stop A&ll Recordings")
-        record_menu.Append(schedule_id, "&Schedule Recording...")
-        record_menu.Append(recordings_id, "Recordin&gs...")
-        record_menu.Append(settings_id, "Recording &Settings...")
+        record_menu.Append(
+            stop_all_id, self._menu_label("Stop A&ll Recordings", "radio.stop_all_recordings")
+        )
+        record_menu.Append(
+            schedule_id, self._menu_label("&Schedule Recording...", "radio.schedule_recording")
+        )
+        record_menu.Append(recordings_id, self._menu_label("Recordin&gs...", "radio.recordings"))
+        record_menu.Append(
+            settings_id, self._menu_label("Recording &Settings...", "radio.recording_settings")
+        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_record_toggle(), id=record_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_record_station_dialog(), id=record_station_id
@@ -1183,7 +1229,7 @@ class RadioAppFrame(
         # QUILL -- they share one unlock store). Undocumented until launch.
         adp_menu = self._build_adp_menu()
         if adp_menu is not None:
-            menu_bar.Append(adp_menu, "A&udio Description Project")
+            menu_bar.Append(adp_menu, "A&udio Description Project\tCtrl+Alt+A")
 
         help_menu = wx.Menu()
         palette_id, updates_id, about_id = (
@@ -1197,34 +1243,34 @@ class RadioAppFrame(
         # same already-accessible dialogs QUILL uses (KeymapEditorMixin /
         # GlobalHotkeysMixin), scoped to this app's own commands.
         shortcuts_id, hotkeys_id = wx.NewIdRef(), wx.NewIdRef()
-        help_menu.Append(shortcuts_id, "&Keyboard Shortcuts...")
-        help_menu.Append(hotkeys_id, "&Global Hotkeys...")
+        help_menu.Append(shortcuts_id, "&Keyboard Shortcuts...\tCtrl+Alt+K")
+        help_menu.Append(hotkeys_id, "&Global Hotkeys...\tCtrl+Alt+G")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
         bug_id = wx.NewIdRef()
-        help_menu.Append(bug_id, "Report a &Bug...")
+        help_menu.Append(bug_id, "Report a &Bug...\tCtrl+Alt+B")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.report_app_bug(source_app="Quill Radio", app_version=_VERSION),
             id=bug_id,
         )
         ffmpeg_id = wx.NewIdRef()
-        help_menu.Append(ffmpeg_id, "&Get FFmpeg...")
+        help_menu.Append(ffmpeg_id, "&Get FFmpeg...\tCtrl+Alt+F")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
         help_menu.AppendSeparator()
         guide_id, notes_id, prd_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        help_menu.Append(guide_id, "&User Guide")
-        help_menu.Append(notes_id, "&Release Notes")
-        help_menu.Append(prd_id, "&Product Requirements...")
+        help_menu.Append(guide_id, "&User Guide\tF1")
+        help_menu.Append(notes_id, "&Release Notes\tShift+F1")
+        help_menu.Append(prd_id, "&Product Requirements...\tCtrl+F1")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("userguide"), id=guide_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._open_radio_doc("release-notes-3.0"), id=notes_id
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("prd"), id=prd_id)
         help_menu.AppendSeparator()
-        help_menu.Append(updates_id, "Check for Up&dates...")
+        help_menu.Append(updates_id, "Check for Up&dates...\tCtrl+Alt+U")
         help_menu.AppendSeparator()
-        help_menu.Append(about_id, "&About Quill Radio")
+        help_menu.Append(about_id, "&About Quill Radio\tAlt+F1")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
@@ -1238,13 +1284,13 @@ class RadioAppFrame(
         # surface that has one (Browse Stations, Search Stations).
         view_menu = wx.Menu()
         show_details_id = wx.NewIdRef()
-        view_menu.AppendCheckItem(show_details_id, "Show Station &Details")
+        view_menu.AppendCheckItem(show_details_id, "Show Station &Details\tCtrl+D")
         view_menu.Check(show_details_id, self._radio_history.show_station_details)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._toggle_show_station_details(), id=show_details_id
         )
         self._status_bar_item_id = wx.NewIdRef()
-        view_menu.AppendCheckItem(self._status_bar_item_id, "Show Status &Bar")
+        view_menu.AppendCheckItem(self._status_bar_item_id, "Show Status &Bar\tCtrl+Shift+Alt+B")
         view_menu.Check(self._status_bar_item_id, self._radio_history.show_status_bar)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._toggle_show_status_bar(), id=self._status_bar_item_id
@@ -1254,7 +1300,11 @@ class RadioAppFrame(
         # radio items so it is one keystroke away and its current value is visible.
         sort_menu = wx.Menu()
         self._sort_item_ids = [wx.NewIdRef() for _ in _FAVORITES_SORT_VALUES]
-        sort_accels = ("\tCtrl+Shift+A", "\tCtrl+Shift+Z", "")
+        sort_accels = (
+            "\tCtrl+Alt+Shift+4",
+            "\tCtrl+Alt+Shift+5",
+            "\tCtrl+Alt+Shift+6",
+        )
         for item_id, label, value, accel in zip(
             self._sort_item_ids,
             _FAVORITES_SORT_LABELS,
@@ -1269,8 +1319,8 @@ class RadioAppFrame(
             )
         view_menu.AppendSubMenu(sort_menu, "Sort &Favorites")
         expand_id, collapse_id = wx.NewIdRef(), wx.NewIdRef()
-        view_menu.Append(expand_id, "&Expand All Folders")
-        view_menu.Append(collapse_id, "&Collapse All Folders")
+        view_menu.Append(expand_id, "&Expand All Folders\tCtrl+Alt+E")
+        view_menu.Append(collapse_id, "&Collapse All Folders\tCtrl+Alt+Shift+E")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(True), id=expand_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(False), id=collapse_id)
         view_menu.AppendSeparator()
@@ -1284,7 +1334,7 @@ class RadioAppFrame(
         self._keep_menu_ids(catalog_status_id)
         view_menu.AppendSeparator()
         features_id = wx.NewIdRef()
-        view_menu.Append(features_id, "&Customize Features...")
+        view_menu.Append(features_id, "&Customize Features...\tCtrl+Alt+C")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_app_features(), id=features_id)
         self._keep_menu_ids(features_id)
         view_menu.AppendSeparator()

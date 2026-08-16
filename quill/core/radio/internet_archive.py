@@ -91,6 +91,10 @@ class InternetArchiveError(CodedError):
     """An Internet Archive request failed (network, rate limit, or Safe Mode)."""
 
     code = "QUILL-RADIO-ARCHIVE-REQUEST"
+    #: Read by ``browse_failure.last_error_was_network``: the Archive can
+    #: answer HTTP 200 and still say its search backend is down, which is an
+    #: outage to the listener even though the transport succeeded.
+    service_unreachable = True
 
 
 @dataclass(frozen=True, slots=True)
@@ -195,9 +199,18 @@ def parse_search(json_text: str) -> tuple[int, list[ArchiveItem]]:
         data = json.loads(json_text)
     except (ValueError, TypeError):
         return 0, []
+    # The Archive answers a failed search with HTTP **200** and an error body
+    # ({"error": "[BACKEND_ERROR] Invalid or no response from Elasticsearch"},
+    # seen live 2026-08-16 across every collection). Parsed as "no docs", that
+    # made a whole outage look like an empty shelf: "Radio Programs" reported
+    # nothing there, with no way to tell it from a collection that really is
+    # empty and no reason to retry. Raise instead, so the browse tree marks the
+    # branch unreachable, says so, and lets the listener try again.
+    if isinstance(data, dict) and data.get("error"):
+        raise InternetArchiveError(f"The Internet Archive's search is down: {data['error']}")
     response = data.get("response") if isinstance(data, dict) else None
     if not isinstance(response, dict):
-        return 0, []
+        raise InternetArchiveError("The Internet Archive returned an unreadable search answer.")
     docs = response.get("docs")
     items: list[ArchiveItem] = []
     for doc in docs if isinstance(docs, list) else []:
@@ -331,9 +344,21 @@ def children(
     mediatype = "collection" if collections else "audio"
     query = f"collection:{collection.strip()} AND mediatype:{mediatype}"
     key = f"archive:{mediatype}:{collection.strip()}:{page}"
+
+    def _fetch_page() -> dict:
+        found = _as_json(parse_search(_fetch(_search_url(query, rows=PAGE_SIZE, page=page))))
+        # A collection the tree offers always has children, so zero of them is
+        # a symptom, not an answer -- and ``{"total": 0, "items": []}`` is a
+        # *truthy* dict, so it used to be cached as though it were the real
+        # listing. During the Archive's 2026-08-16 search outage that pinned
+        # "Radio Programs is empty" in place for hours after the service came
+        # back. Returning something falsy leaves the cache untouched and lets
+        # the next open try again.
+        return found if found.get("items") else {}
+
     payload, _age = directory_cache.resolve(
         key,
-        lambda: _as_json(parse_search(_fetch(_search_url(query, rows=PAGE_SIZE, page=page)))),
+        _fetch_page,
         max_age_seconds=_MAX_AGE_SECONDS,
         refresh=refresh,
         empty={"total": 0, "items": []},

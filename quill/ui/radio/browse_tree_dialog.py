@@ -14,9 +14,9 @@ a UI. Adding a source is one entry in ``ROOT_SOURCES`` and one handler there --
 not a new node-kind string plus edits in six places in this file, which is what
 the tenth source would have cost under the old shape.
 
-A "Find in this folder" box searches from the highlighted folder downward only
-(loading that subtree, bounded), so results stay scoped and small; Clear drops
-the results and puts the cursor back on the folder you searched from. Internet
+A "Find in this folder" box above the tree searches from the highlighted folder
+downward only (bounded), routed to that branch's own search engine where it has
+one; Escape drops the results and puts the cursor back on the folder. Internet
 sources load lazily on first open, off the UI thread, while Favorites is built
 instantly from local data. Enter (or the Play button) plays the highlighted
 station -- the Play button reads "Stop" while that station is the one playing. A
@@ -36,8 +36,8 @@ from quill.core.radio import browse_helpers, browse_sources
 from quill.core.radio.browse_nodes import BrowseNode
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
-from quill.ui.dialog_contract import apply_modal_ids
-from quill.ui.radio import browse_position
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.radio import browse_feedback, browse_position
 
 #: Item data for the "Loading..." child that makes a node look expandable.
 _PLACEHOLDER = {"kind": "placeholder"}
@@ -115,9 +115,8 @@ class BrowseTreeDialog:
         self._win.SetMinSize((560, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
-        # Find sits ABOVE the tree -- physically and in the tab order -- so it
-        # is one Shift+Tab away from the tree instead of a lap around the
-        # buttons (asked for by name, 2026-08-16).
+        # Above the tree, and one control rather than three: see
+        # browse_feedback for why the Find and Clear buttons went away.
         find_row = wx.BoxSizer(wx.HORIZONTAL)
         find_row.Add(
             wx.StaticText(self._surface, label="&Find in this folder:"),
@@ -127,15 +126,10 @@ class BrowseTreeDialog:
         )
         self._find_ctrl = wx.TextCtrl(self._surface, style=wx.TE_PROCESS_ENTER)
         self._find_ctrl.SetName(
-            "Find in the highlighted folder and everything below it; press Enter"
+            "Find in the highlighted folder and everything below it. "
+            "Enter searches; Escape clears the search and returns to the folder"
         )
-        find_row.Add(self._find_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
-        self._find_btn = wx.Button(self._surface, label="Find")
-        self._find_btn.SetName("Find in this folder")
-        self._find_clear_btn = wx.Button(self._surface, label="C&lear")
-        self._find_clear_btn.SetName("Clear the search and return to the folder")
-        find_row.Add(self._find_btn, 0, wx.RIGHT, 6)
-        find_row.Add(self._find_clear_btn, 0)
+        find_row.Add(self._find_ctrl, 1, wx.EXPAND)
         root.Add(find_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         root.Add(
@@ -153,11 +147,9 @@ class BrowseTreeDialog:
             "Shift+F10 opens all actions"
         )
         root.Add(self._tree, 1, wx.EXPAND | wx.ALL, 10)
-        # Tab order: Find box, tree, then the Find/Clear buttons -- so
-        # Shift+Tab from the tree lands directly on the Find box.
+        # Tab order: the Find box sits immediately before the tree, so
+        # Shift+Tab from the stations lands on it and Tab comes straight back.
         self._find_ctrl.MoveBeforeInTabOrder(self._tree)
-        self._find_btn.MoveAfterInTabOrder(self._tree)
-        self._find_clear_btn.MoveAfterInTabOrder(self._find_btn)
 
         self._details = wx.TextCtrl(
             self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
@@ -189,6 +181,9 @@ class BrowseTreeDialog:
         self._refresh_btn = wx.Button(self._surface, label="&Refresh")
         self._refresh_btn.SetName("Reload the highlighted source from the internet")
         close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
+        # A frame gets no free ID_CANCEL handling: wire it, or the
+        # button that looks like the way out does nothing.
+        bind_close_button(self._win, close_btn, modeless=self._modeless)
         close_btn.SetName("Close (playback continues)")
         btn_row.Add(self._play_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._favorite_btn, 0, wx.RIGHT, 6)
@@ -213,8 +208,9 @@ class BrowseTreeDialog:
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
         self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, self._on_mute)
         self._find_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_find)
-        self._find_btn.Bind(wx.EVT_BUTTON, self._on_find)
-        self._find_clear_btn.Bind(wx.EVT_BUTTON, self._clear_find)
+        # Tabbing in selects what is there: type to replace the last search,
+        # one Backspace to wipe it.
+        self._find_ctrl.Bind(wx.EVT_SET_FOCUS, lambda e: browse_feedback.on_find_focus(self, e))
 
         state = getattr(self._controller, "state", None)
         if state is not None:
@@ -249,10 +245,16 @@ class BrowseTreeDialog:
             and not event.AltDown()
             and event.GetKeyCode() == ord("F")
         ):
-            self._find_ctrl.SelectAll()
             self._find_ctrl.SetFocus()
+            self._find_ctrl.SelectAll()
             self._announce("Find in this folder")
             return
+        # Escape in the Find box clears the search (the old Clear button).
+        in_find = self._win.FindFocus() is self._find_ctrl
+        if event.GetKeyCode() == wx.WXK_ESCAPE and in_find:
+            if self._find_active or self._find_ctrl.GetValue():
+                self._clear_find()
+                return
         # A frame has no automatic Escape->Cancel; wire it to close.
         if self._modeless and event.GetKeyCode() == wx.WXK_ESCAPE:
             self._win.Close()
@@ -364,6 +366,7 @@ class BrowseTreeDialog:
         resolved before it can play -- rides along on the BrowseNode instead of
         needing a branch here.
         """
+        browse_feedback.stop_slow_load_notice(self)
         if not self._tree:  # dialog closed while children were being fetched
             return
         tree = self._tree
@@ -525,7 +528,9 @@ class BrowseTreeDialog:
             return
         if self._safe_mode and browse_sources.needs_network(node_id):
             self._details.SetValue("Browsing this source is disabled in Safe Mode.")
-        self._announce("Loading...")
+        label = self._tree.GetItemText(node).split("  (")[0]
+        self._announce(f"Loading {label}...")
+        browse_feedback.start_slow_load_notice(self, label)
 
         def _work(**_kwargs: Any) -> tuple[list[BrowseNode], bool]:
             children = self._fetch_children(node_id)

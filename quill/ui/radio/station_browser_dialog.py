@@ -44,7 +44,7 @@ from quill.core.radio.spotify_search import (
     spotify_search_stations,
     youtube_search_stations,
 )
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 from quill.ui.radio import library_search
 
 _FAVORITES = "Favorites"
@@ -436,6 +436,9 @@ class StationBrowserDialog:
             "list/stations, or the iHeart directory used by search"
         )
         close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
+        # A frame gets no free ID_CANCEL handling: wire it, or the
+        # button that looks like the way out does nothing.
+        bind_close_button(self._win, close_btn, modeless=self._modeless)
         close_btn.SetName("Close (playback continues)")
         btn_row.Add(self._play_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._favorite_btn, 0, wx.RIGHT, 6)

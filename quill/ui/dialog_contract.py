@@ -404,3 +404,34 @@ def show_message_box(
         if speak_transitions:
             announce(f"Exited {caption} dialog")
     return result
+
+
+def bind_close_button(window: object, button: object, *, modeless: bool) -> None:
+    """Make a Close/Cancel *button* actually close its *window*, either shape.
+
+    A ``wx.Dialog`` handles ``ID_CANCEL`` for free, so a Close button wired to
+    nothing still worked -- and every surface the radio window model converted
+    to a modeless ``wx.Frame`` (Browse Stations, Find Stations, Manage
+    Favorites, Schedule Recording) silently lost that, because a frame has no
+    such handling. The button did nothing; only Escape closed the window
+    (reported 2026-08-16). A button that looks like the way out and is not is
+    worse than no button, so this is the one way both shapes wire it:
+    ``Close()`` on a frame (its ``EVT_CLOSE`` does the teardown), ``EndModal``
+    on a dialog.
+    """
+    import wx
+
+    if button is None or window is None:
+        return
+
+    def _close(_event: object) -> None:
+        if modeless:
+            window.Close()  # type: ignore[attr-defined]
+            return
+        end_modal = getattr(window, "EndModal", None)
+        if callable(end_modal):
+            end_modal(wx.ID_CANCEL)
+        else:  # a frame passed as modal: closing is still the right answer
+            window.Close()  # type: ignore[attr-defined]
+
+    button.Bind(wx.EVT_BUTTON, _close)  # type: ignore[attr-defined]

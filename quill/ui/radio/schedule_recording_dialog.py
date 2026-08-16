@@ -12,7 +12,7 @@ from zoneinfo import available_timezones
 
 from quill.core.radio.recording_schedule import RecordingScheduleEntry, new_id, next_occurrence
 from quill.core.radio.wake_timer import parse_time_of_day
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 
 _WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
@@ -308,6 +308,9 @@ class ScheduleRecordingDialog:
         self._new_btn.SetName("Clear the form and stop editing")
         self._new_btn.Enable(False)
         close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
+        # A frame gets no free ID_CANCEL handling: wire it, or the
+        # button that looks like the way out does nothing.
+        bind_close_button(self._win, close_btn, modeless=self._modeless)
         btn_row.Add(self._add_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._new_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()

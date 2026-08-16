@@ -120,7 +120,12 @@ Get-ChildItem $LibmpvDir -File -Filter *.txt -ErrorAction SilentlyContinue |
 
 # -- stamp the version marker (installer's skip-if-present check reads this) ---
 $pyver = (& $Python -c "import platform; print(platform.python_version())").Trim()
-$build = Get-Date -Format "yyyy-MM-dd"
+# A sortable UTC stamp, not a bare date: the installer's skip-if-present check
+# compares this string, and two runtimes built on the SAME DAY are different
+# payloads (they carry the whole quill package). With date-only ids the second
+# build of a day looked identical to the first, so an update installed over it
+# was skipped and the app kept running yesterday's code.
+$build = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 & $Python -c "from pathlib import Path; from quill.core import runtime_marker as m; m.write_marker(Path(r'$dist'), python_version='$pyver', build_id='$build'); print('marker', m.read_marker(Path(r'$dist')))"
 
 Write-Host "Shared runtime ready: $dist (Python $pyver)"

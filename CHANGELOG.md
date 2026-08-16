@@ -412,6 +412,27 @@ hard 10 MB gate (`scripts/build_radio_catalog.py`); the full plan with its
 measurements is `standalone/radio/docs/prd.md` (Section 11, the Station
 Catalog).
 
+### Every menu item shows its key, and a Close button that closes
+
+Two accessibility faults, both structural. **Menus:** Quill Radio shipped 115
+menu items of which 49 advertised no keyboard route at all, seven keys were
+claimed by two items each (so one of each pair silently never fired), and two
+labels advertised `Ctrl+Shift+Plus`/`Minus`, which wx rejects outright --
+menus promising keys that could not work. Every item now carries a unique,
+parseable accelerator; command-backed items render through `_menu_label` so
+the label shows what is *actually* bound and follows a rebinding. Per-app
+defaults live in the new `keymap.APP_KEYMAPS` rather than the global table,
+because these are app keys: Ctrl+B is Browse Stations in Quill Radio and Bold
+in QUILL's editor. `tests/unit/ui/test_menu_accelerators.py` builds the real
+menu bar and fails on a missing key, a duplicate, or one wx cannot bind.
+**Close buttons:** `wx.Dialog` answers `ID_CANCEL` for free and `wx.Frame`
+does not, so converting the radio's heavy surfaces to modeless frames left
+Browse Stations, Find Stations, Manage Favorites and Schedule Recording each
+showing a Close button that did nothing -- only Escape closed them.
+`dialog_contract.bind_close_button` is now the one way both shapes wire it,
+with a source gate. Both rules are written into CLAUDE.md and the radio PRD
+(A-11, A-12).
+
 ### Radio Find became a search engine, the tree reads ahead, AudioPub arrives
 
 Find in this folder routes to the fastest honest channel per branch

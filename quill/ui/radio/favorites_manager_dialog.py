@@ -19,7 +19,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio.favorites import FavoriteStation, RadioFavoritesStore
-from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
 
 _TOP_LEVEL_CHOICE = "(Top level -- no folder)"
 _NEW_FOLDER_CHOICE = "(New folder...)"
@@ -219,6 +219,9 @@ class FavoritesManagerDialog:
         )
         row2.AddStretchSpacer()
         close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
+        # A frame gets no free ID_CANCEL handling: wire it, or the
+        # button that looks like the way out does nothing.
+        bind_close_button(self._win, close_btn, modeless=self._modeless)
         close_btn.SetName("Close the favorites manager")
         row2.Add(close_btn)
         root.Add(row2, 0, wx.EXPAND | wx.ALL, 10)
