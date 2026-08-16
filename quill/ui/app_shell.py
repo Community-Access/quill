@@ -825,14 +825,17 @@ class AppShellFrame(AnnounceCommandsMixin, KeybindingParseMixin):
     # -- per-app update check (Help > Check for Updates...) ------------------
 
     def _running_portable_build(self) -> bool:
-        """True when this frozen app is the extracted portable folder rather
-        than an Inno-installed copy (which always has unins000.exe beside the
-        exe). Dev runs report False and get the installer path, harmlessly."""
-        if not getattr(sys, "frozen", False):
-            return False
-        from pathlib import Path
+        """True when this is the extracted portable bundle, not an install.
 
-        return not (Path(sys.executable).resolve().parent / "unins000.exe").is_file()
+        Asked of the *app's* folder, not of ``sys.executable``: on the shared
+        runtime that is QuillVilleRuntime.exe in %LOCALAPPDATA%, which has no
+        uninstaller beside it, so every installed listener answered True and
+        was offered the portable .zip on every update (#1100; reported again
+        2026-08-16). See :mod:`quill.core.install_edition`.
+        """
+        from quill.core.install_edition import PORTABLE, detect
+
+        return detect() == PORTABLE
 
     def check_for_app_updates(
         self,

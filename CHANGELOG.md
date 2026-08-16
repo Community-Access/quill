@@ -412,6 +412,38 @@ hard 10 MB gate (`scripts/build_radio_catalog.py`); the full plan with its
 measurements is `standalone/radio/docs/prd.md` (Section 11, the Station
 Catalog).
 
+### An update offers back the edition you are running
+
+Reported twice -- #1100 ("what was downloaded was the portable version rather
+than the full installer") and again on 2026-08-16 ("whenever i update it shows
+me the portable"). #1100 was closed after fixing one axis; the complaint
+outlived it because three faults produced the same symptom:
+
+- `app_shell._running_portable_build` looked for `unins000.exe` beside
+  `sys.executable`. On the shared QuillVille Runtime that is
+  `%LOCALAPPDATA%\QuillVille\Runtime\QuillVilleRuntime.exe`, installed with
+  `uninsneveruninstall` -- so no uninstaller sits beside it and **every**
+  installed listener answered "portable" and was offered the portable zip.
+- `updates._pick_asset` chose among four published assets (full setup, thin
+  Lite setup, portable zip, Companion zip) by file extension, so an installed
+  listener got whichever `.exe` GitHub listed first and a Companion listener
+  got an `.exe` that cannot install their copy.
+- The uninstaller test knew only the literal `unins000`; Inno writes
+  `unins001`, `unins002`... when a copy is installed over an existing one, so
+  those installs read as portable too.
+
+The new wx-free `core/install_edition.py` answers the real question: a marker
+each installer writes (`quill-edition.txt`), falling back to folder shape for
+installs that predate it, with the uninstaller matched by pattern. Unknown
+installs resolve to the thin installer, which shares the full one's AppId and
+upgrades either. 15 tests, including one asserting each published asset
+matches exactly one edition.
+
+Also on the upgrade path: the three thin installers looked for the shared
+runtime under `Runtime\3.13\` while it installs to `Runtime\`, so the
+"already present?" test never fired and every thin install re-downloaded
+230 MB.
+
 ### Every menu item shows its key, and a Close button that closes
 
 Two accessibility faults, both structural. **Menus:** Quill Radio shipped 115

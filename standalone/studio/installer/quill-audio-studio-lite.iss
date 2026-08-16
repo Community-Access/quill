@@ -90,11 +90,11 @@ var
 
 // True when the shared runtime's version marker is absent -- i.e. no QuillVille
 // app has installed the runtime yet. Matches the launcher's location
-// (%LOCALAPPDATA%\QuillVille\Runtime\3.13).
+// (%LOCALAPPDATA%\QuillVille\Runtime).
 function RuntimeMissing(): Boolean;
 begin
   Result := not FileExists(
-    ExpandConstant('{localappdata}\QuillVille\Runtime\3.13\quillville-runtime.json'));
+    ExpandConstant('{localappdata}\QuillVille\Runtime\quillville-runtime.json'));
 end;
 
 function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;

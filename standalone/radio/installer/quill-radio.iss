@@ -2,7 +2,7 @@
 ;
 ; Promoted from the validation-only quill-radio-shared.iss (2026-07-24):
 ; every shipping QuillVille product now installs the shared QuillVille
-; Runtime once (at %LOCALAPPDATA%\QuillVille\Runtime\3.13\) and launches
+; Runtime once (at %LOCALAPPDATA%\QuillVille\Runtime\) and launches
 ; through it, instead of shipping a private Python inside its own
 ; onedir. The install-if-absent + reference-counting is owned by
 ; installer\shared-runtime.iss; this script's only job is to declare
@@ -123,6 +123,10 @@ Name: "docs"; Description: "Documentation (User Guide, Release Notes, Product Re
 ; itself lives in the shared runtime, installed by the fragment below.
 Source: "..\assets\quill-radio.ico"; DestDir: "{app}"; Components: main; Flags: ignoreversion
 Source: "..\dist\QuillRadio\QuillRadio.exe"; DestDir: "{app}"; Components: main; Flags: ignoreversion
+; Which edition this is, so Check for Updates offers THIS installer back
+; rather than guessing from a file extension (a user got the thin setup
+; after installing the full one; see core/install_edition.py).
+Source: "..\installer\edition-installer-full.txt"; DestDir: "{app}"; DestName: "quill-edition.txt"; Components: main; Flags: ignoreversion
 Source: "..\dist\QuillRadio\docs\*"; DestDir: "{app}\docs"; Components: docs; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "*.epub"
 
 ; The shared runtime (install-if-absent) + reference registration + orphan

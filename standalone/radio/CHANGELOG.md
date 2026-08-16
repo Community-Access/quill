@@ -17,6 +17,18 @@ Three of the changes below are fixes to things that had been quietly wrong for m
 - **Your stations are structurally safe**: favorites, custom stations, My Servers and YouTube channels live in their own files, no catalog code path touches them, and a byte-identity test proves a full catalog rebuild leaves them untouched. The catalog is derived data -- deletable and rebuildable from the shipped seed at any time (a Status-view button).
 - **Engineering shape**: SQLite + FTS5 generations behind an atomically-replaced pointer file (`os.replace` over an open database fails on Windows -- measured, and designed around); per-page refresh parsing (whole-dump loading measured 217 MB; pages cap it in the tens); merge refuses URL-only matches (7,135 stream URLs are shared by distinct stations within Radio Browser alone). Full design, measurements and decision log: `docs/prd.md`, Section 11.
 
+### Updating offers you the edition you actually installed
+
+Reported twice, and it took a third look to find why. **An update used to hand you the wrong download.** If you installed Quill Radio the normal way, Check for Updates offered you the *portable zip* -- not the installer you were running. That is what "what was downloaded was the portable version rather than the full installer" meant, and the earlier attempt at a fix missed the real cause.
+
+Three separate faults, all of them now closed:
+
+- **Everyone on the installer was being read as portable.** The app decided by looking for an uninstaller next to the running program -- but on the shared QuillVille Runtime the running program lives in your AppData folder, where no uninstaller ever sits. So every installed listener looked portable, and got offered the portable zip forever.
+- **A release publishes four downloads, and the choice was made by file extension.** Full installer, thin "Lite" installer, portable zip, Companion zip -- all narrowed to "the first .exe" or "a .zip". So a full-edition user could be handed the 2.6 MB thin setup, and a Companion user an .exe that cannot install their copy at all. Each installer now records which edition it is, and updates offer that same edition back.
+- **A copy installed over an existing one looked portable too**, because the check knew only the name `unins000` and Windows installers number them `unins001`, `unins002` as they accumulate.
+
+Two more upgrade fixes ride along: **the thin installer no longer re-downloads the 230 MB runtime every time** (it was looking for it in a folder that never existed, so it never found the copy already on your disk), and **an update actually replaces the program code** -- previously an update onto a machine that already had the same Python version skipped the copy entirely and reported success while leaving the old app in place.
+
 ### Every menu item now tells you its key, and Close closes
 
 - **Every menu item shows a keyboard shortcut.** All 115 of them -- menus, submenus, even the Recently Played list -- and Browse Stations is **Ctrl+B**. Before this, 49 items offered no shortcut at all, so the only way to learn there was no faster route was to walk the menu and find out. Where an item is backed by a command, the label shows *what is actually bound*, so rebinding it in Keyboard Shortcuts changes what the menu says.

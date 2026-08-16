@@ -36,6 +36,19 @@ timings, and three long-standing silent faults are fixed. See
   speaking a weather summary. The host that offers "Open the Quill Weather
   App" now leaves the watch to it; Radio's Weather menu still works on
   demand.
+- **Updates offer the edition you installed** (`core/install_edition.py`,
+  15 tests): `_pick_asset` chose among four published assets by file
+  extension, and `_running_portable_build` looked for `unins000.exe` beside
+  `sys.executable` -- which on the shared runtime is QuillVilleRuntime.exe in
+  %LOCALAPPDATA%, with no uninstaller beside it. Every installed listener was
+  therefore read as portable and offered the portable zip (#1100, reported
+  again 2026-08-16); those who got past that were handed the first `.exe`
+  regardless of edition. Each installer now writes a `quill-edition.txt`
+  marker; detection falls back to folder shape for existing installs, and the
+  uninstaller is matched by pattern (Inno writes unins001, unins002...).
+- **The thin installers stop re-downloading the 230 MB runtime**: all three
+  looked for the marker under `Runtime\3.13\`, which never exists -- it
+  installs to `Runtime\` -- so the "already present?" test was always false.
 - **Every menu item carries a unique, working accelerator** (`keymap.APP_KEYMAPS`,
   `app_shell._apply_app_keymap`, `tests/unit/ui/test_menu_accelerators.py`).
   115 items, 49 of which had no key; seven keys were claimed twice (one of each

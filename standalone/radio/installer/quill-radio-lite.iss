@@ -57,6 +57,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Files]
 Source: "..\assets\quill-radio.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dist\QuillRadio\QuillRadio.exe"; DestDir: "{app}"; Flags: ignoreversion
+; See quill-radio.iss: the updater reads this to offer the right edition.
+Source: "..\installer\edition-installer-lite.txt"; DestDir: "{app}"; DestName: "quill-edition.txt"; Flags: ignoreversion
 Source: "..\dist\QuillRadio\docs\*"; DestDir: "{app}\docs"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 
 [Icons]
@@ -80,7 +82,7 @@ var
 function RuntimeMissing(): Boolean;
 begin
   Result := not FileExists(
-    ExpandConstant('{localappdata}\QuillVille\Runtime\3.13\quillville-runtime.json'));
+    ExpandConstant('{localappdata}\QuillVille\Runtime\quillville-runtime.json'));
 end;
 
 function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;

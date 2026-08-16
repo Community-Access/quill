@@ -236,7 +236,12 @@ def running_portable() -> bool:
         if root is None:
             return False
         anchor = root.parent  # portable_root_dir() returns <app root>/data
-        return not ((anchor / "unins000.exe").is_file() or (anchor / "unins000.dat").is_file())
+        # Matched by pattern: Inno writes unins001, unins002... when a copy is
+        # installed over an existing one, and checking only unins000 read those
+        # installs as portable -- the "it downloaded the portable" report.
+        from quill.core.install_edition import is_inno_install
+
+        return not is_inno_install(anchor)
     except Exception:  # noqa: BLE001 - detection must never break update checks
         return False
 
@@ -271,6 +276,17 @@ def _pick_asset(assets: list, *, prefer_portable: bool | None = None) -> str:
         if name.endswith(_foreign_platform_suffixes()):
             continue
         usable.append((name, str(url)))
+    # The edition actually running wins over the extension rules below: four
+    # assets ship per release and they are not interchangeable (see
+    # core/install_edition.py). Falls through when this release published no
+    # asset for that edition, rather than leaving the listener with nothing.
+    from quill.core.install_edition import detect, matches_asset
+
+    edition = detect()
+    if edition:
+        for name, url in usable:
+            if matches_asset(edition, name):
+                return url
     # Portable installs: prefer the portable bundle .zip over the installer.
     if prefer_portable:
         for name, url in usable:
