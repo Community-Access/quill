@@ -805,6 +805,57 @@ opened.
 
 ---
 
+## A scheduled recording, and a computer that is actually awake for it
+
+This one came from a listener, not a bug report -- which is the only way it
+could have come. He scheduled a football pregame show for 11:00 and Quill Radio
+announced the recording at 11:03. Nothing had failed. Nothing said anything was
+wrong. He simply lost the first three minutes and had no way to find out why.
+
+Here is why. A schedule is a thread inside a running application, and a
+sleeping computer does not run threads. If Windows dozes off at 10:58 nobody
+asks the schedule anything until the machine wakes, and the recording starts
+then -- which from the outside is indistinguishable from the app losing track
+of the time. Quill Radio has always kept the machine awake *while* something is
+playing or recording. It did nothing at all about the quiet stretch beforehand,
+which is exactly when a machine with nothing to do decides to sleep.
+
+Three answers now, and they are meant to work together.
+
+**It says so.** The scheduling window states the requirement in a line, before
+you set anything: Quill Radio has to be running for a scheduled recording to
+start, and the system tray counts. A requirement you only discover by losing
+the first three minutes of a game is not a requirement, it is a trap.
+
+**It holds sleep off as the time approaches.** For the few minutes before a
+recording is due, Quill Radio asks Windows not to go to standby -- the same
+request it already makes while a recording is running, simply started earlier.
+This costs nothing when nothing is scheduled, and it covers the ordinary case
+of a machine that is awake now and would have dozed at the worst possible
+moment. (Your screen may still turn off. Only the computer has to stay up.)
+
+**And it can wake the machine.** If the computer is *already* asleep when the
+time comes, no amount of asking from inside a sleeping process will help --
+only the operating system can wake it. So Quill Radio registers a Windows task
+that does exactly that, a couple of minutes before the recording, then starts
+Quill Radio if it is not already running. It is one task, replaced each time
+your schedule changes and removed when nothing is scheduled, so Task Scheduler
+never fills up with dead entries.
+
+Both automatic parts are separate checkboxes in Preferences and both are on by
+default. They are separate deliberately: holding sleep off is a small local
+thing that needs no permissions, while waking the machine changes how your
+computer behaves. Somebody may reasonably want the first and not the second,
+and one switch would make that impossible to say.
+
+**One thing that was already right, and is worth knowing.** A recording that
+starts late does not run late at the other end. Quill Radio records the time
+that is *left* in the window, so an 11:00 to 2:00 recording that starts at
+11:03 still stops at 2:00 rather than overrunning into whatever you scheduled
+next. That is also why a late start costs you the beginning rather than the
+end -- and why, if you want a cushion before a show, the thing to do is start
+the schedule earlier **and** lengthen it by the same amount.
+
 ## Things that were quietly wrong, and are not now
 
 These are the ones worth reading even if none of the above interests you, because

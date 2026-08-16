@@ -14,6 +14,18 @@ long-standing silent faults are fixed. See `docs/release-notes-3.0.md`.
 
 ### Added
 
+- **Scheduled recordings keep the computer awake, and can wake it**
+  (`core/radio/schedule_wake.py`, `platform/windows/recording_wake_task.py`,
+  `ui/radio/schedule_wake_ui.py`). A schedule is a thread inside a running app,
+  so a sleeping machine is never asked and the recording starts whenever it
+  next wakes -- reported from the field as an 11:00 recording announcing itself
+  at 11:03. The scheduling window now states the requirement, standby is held
+  off for `IMMINENT_MINUTES` (5) before a recording is due, and a per-user Task
+  Scheduler entry with `WakeToRun` wakes the machine `WAKE_LEAD_MINUTES` (2)
+  beforehand. Two Preferences checkboxes, both default on and deliberately
+  separate. Best effort throughout: a blocked `schtasks` costs the wake, not
+  the app.
+
 - **Choose Browse Sources... (Station menu)** -- hide any branch of Browse
   Stations. A branch that is off is not in the tree at all and is never
   contacted (the Search Sources rule); rows speak their own state; hiding

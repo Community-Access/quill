@@ -130,6 +130,60 @@ def _enable_dev_build_for_tests() -> None:
     paths_mod._DEV_BUILD = True
 
 
+@pytest.fixture(autouse=True, scope="session")
+def _never_write_to_the_real_profile() -> None:
+    """Make the developer's own data directory read-only to the test suite.
+
+    ``_DEV_BUILD`` plus ``QUILL_DATA_DIR`` isolates a test that remembers to
+    ask for isolation. The failure mode is the test that *thinks* it did: patch
+    ``quill.core.paths.app_data_dir`` and any module that did
+    ``from quill.core.paths import app_data_dir`` still holds the original, so
+    its writes land in the real profile with nothing to notice them.
+
+    That is not hypothetical. A favorites test wrote its fixture stations --
+    "Zeta", "Alpha", "Mu" -- straight into a developer's real
+    ``radio_favorites.json``, replacing seven actual stations, and it went
+    unnoticed for days because the suite passed every time.
+
+    So the real directory is refused outright. Any write beneath it raises,
+    naming the test that tried, which turns a silent data loss into a failure
+    on the line that caused it.
+    """
+    import builtins
+    from pathlib import Path
+
+    # The profile the *app* would use, computed the way app_data_dir computes
+    # it -- deliberately not by calling app_data_dir(), which a test may have
+    # already redirected.
+    appdata = os.environ.get("APPDATA")
+    if not appdata:
+        yield
+        return
+    real = (Path(appdata) / "Quill").resolve()
+    original_open = builtins.open
+
+    def _guarded_open(file, mode="r", *args, **kwargs):  # type: ignore[no-untyped-def]
+        if any(flag in str(mode) for flag in ("w", "a", "x", "+")):
+            try:
+                target = Path(file).resolve()
+            except (TypeError, ValueError, OSError):
+                target = None
+            if target is not None and target.is_relative_to(real):
+                raise AssertionError(
+                    f"A test tried to write to the real QUILL profile: {target}. "
+                    "Isolate it with the quill_data_dir fixture (or patch "
+                    "app_data_dir in *every* module that imported the name), "
+                    "never the developer's own data."
+                )
+        return original_open(file, mode, *args, **kwargs)
+
+    builtins.open = _guarded_open
+    try:
+        yield
+    finally:
+        builtins.open = original_open
+
+
 @pytest.fixture(autouse=True)
 def _no_ambient_provider_api_keys(monkeypatch: pytest.MonkeyPatch) -> None:
     """Hide the developer's own provider API keys from every test.

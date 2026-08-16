@@ -170,10 +170,25 @@ class RadioMixin:
         self._radio_last_seen_timer = self._wx.Timer(self.frame)
         self.frame.Bind(
             self._wx.EVT_TIMER,
-            lambda _e: self._stamp_radio_last_seen(),
+            lambda _e: self._radio_minute_tick(),
             self._radio_last_seen_timer,
         )
         self._radio_last_seen_timer.Start(60_000)
+        # Re-asked at launch: a one-shot task is spent once it fires, and the
+        # schedule may have been edited in another session. Deferred so a slow
+        # schtasks call cannot hold up the window coming up.
+        self._wx.CallAfter(self._refresh_radio_wake_task)
+
+    def _radio_minute_tick(self) -> None:
+        """Once a minute: stamp last_seen, and re-ask about standby.
+
+        The sleep inhibitor is otherwise only recomputed when playback or
+        recording changes state -- and "a scheduled recording is now five
+        minutes away" is a change in neither, so without this tick the
+        approach of a recording would never reach it.
+        """
+        self._stamp_radio_last_seen()
+        self._update_sleep_inhibitor()
 
     def _shutdown_radio(self) -> None:
         """Tear down every radio subsystem and stamp last_seen (R2/11.6).
@@ -696,6 +711,19 @@ class RadioMixin:
             announce_cb=self._announce,
             windows=getattr(self, "_windows", None),
         ).show()
+        # The next occurrence is now a different moment, so the OS wake that
+        # was registered for the old one is wrong. Re-asked here rather than
+        # per add/remove/update callback, so every path through the dialog --
+        # including deleting the last entry -- lands on one refresh.
+        self._refresh_radio_wake_task()
+        self._update_sleep_inhibitor()
+
+    def _refresh_radio_wake_task(self) -> None:
+        """Re-register (or drop) the Windows wake for the next recording.
+        See :mod:`quill.ui.radio.schedule_wake_ui`."""
+        from quill.ui.radio import schedule_wake_ui
+
+        schedule_wake_ui.refresh_wake_task(self)
 
     def _on_radio_state_changed(self, state: RadioPlaybackState) -> None:
         from quill.core.settings import save_settings
@@ -734,7 +762,17 @@ class RadioMixin:
         )
         recorder = getattr(self, "_radio_recorder", None)
         recording = int(getattr(recorder, "active_count", 0) or 0) > 0
-        want = (playing or recording) and bool(getattr(self._radio_history, "prevent_sleep", True))
+        # A scheduled recording cannot fire on a sleeping machine, and until
+        # now nothing held standby off while merely *waiting* for one -- so a
+        # computer that dozed at 10:58 started an 11:00 recording whenever it
+        # next woke, which is indistinguishable from the app losing track of
+        # time. See quill/core/radio/schedule_wake.py.
+        from quill.ui.radio import schedule_wake_ui
+
+        imminent = schedule_wake_ui.recording_is_imminent(self)
+        want = (playing or recording or imminent) and bool(
+            getattr(self._radio_history, "prevent_sleep", True)
+        )
         if want == getattr(self, "_sleep_inhibited", False):
             return
         set_keep_awake(want)

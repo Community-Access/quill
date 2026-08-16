@@ -359,6 +359,35 @@ the track's own label. The live suite
 (`QUILL_YT_LIVE=1 pytest tests/integration/test_youtube_audio_tracks_live.py`)
 walks all fourteen videos and fails on any dishonest reading.
 
+### A scheduled recording now ensures the machine is awake for it
+
+Field-reported, and invisible from inside the app: a recording set for 11:00
+announced itself at 11:03, with nothing failing. `RecordingScheduler` polls
+every 20 seconds, so twenty seconds is the entire budget -- minutes mean the
+machine slept. Keep-awake was scoped to `(playing or recording)`, never to the
+stretch *before* a scheduled recording, which is precisely when an idle
+computer standbys.
+
+Three layers, weakest to strongest. The schedule dialog states the requirement
+out loud (the app must be running; the tray counts). `schedule_wake.is_imminent`
+holds standby off for the five minutes before a recording, consulted from
+`_update_sleep_inhibitor` and re-evaluated on the existing one-minute tick --
+"a recording is now five minutes away" is not a playback state change, so
+without that tick the approach would never reach the inhibitor.
+`platform/windows/recording_wake_task` registers a one-shot per-user Task
+Scheduler entry with `WakeToRun` (plus `DisallowStartIfOnBatteries` off, so a
+laptop still records), re-registered on every schedule change and at launch,
+removed when nothing is scheduled. Registered from XML because `schtasks
+/Create` has no switch for `WakeToRun`.
+
+Two `RadioHistory` flags, both default true and separate on purpose:
+`keep_awake_before_recording` is local and permission-free,
+`wake_for_scheduled_recording` changes the machine. Everything is best effort
+and never raises -- a locked-down machine keeps the other defences. The pure
+arithmetic is tested against an injected clock; GATE-11 forced two extractions
+(`apps/radio_preferences.py`, and the new logic out of the at-ceiling
+`recording_schedule.py`).
+
 ### The browse tree is prunable, and the queue got its preferences
 
 Two models that shipped complete and reached nothing now have their surfaces,
