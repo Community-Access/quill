@@ -36,6 +36,16 @@ timings, and three long-standing silent faults are fixed. See
   speaking a weather summary. The host that offers "Open the Quill Weather
   App" now leaves the watch to it; Radio's Weather menu still works on
   demand.
+- **YouTube subscriptions import** (`core/radio/youtube_takeout.py`,
+  `ui/radio/youtube_takeout_ui.py`, 11 parser tests): Station > Import YouTube
+  Subscriptions... reads Google Takeout's `subscriptions.csv` into the existing
+  `ChannelStore`. No OAuth, no API key, no Cloud project, no stored credential,
+  no network call -- chosen over the OAuth route because signing a real Google
+  account into an app that also runs yt-dlp extraction risks the account, not
+  just the feature. Parser is tolerant of a missing/reordered/localized header,
+  a BOM, quoted commas, a lost URL column (falls back to the channel id), and
+  junk rows. Premium benefits and watch-history sync are documented as
+  impossible (YouTube developer policy; `watchHistoryNotAccessible`).
 - **Updates offer the edition you installed** (`core/install_edition.py`,
   15 tests): `_pick_asset` chose among four published assets by file
   extension, and `_running_portable_build` looked for `unins000.exe` beside

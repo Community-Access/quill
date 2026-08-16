@@ -845,6 +845,40 @@ technically in the URL” is not consent. Add-from-playlist is its own
 explicit command.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
+<li><strong>YouTube subscriptions import, and the account question
+answered (3.0.0; <code>core/radio/youtube_takeout.py</code>,
+<code>ui/radio/youtube_takeout_ui.py</code>).</strong> A listener asked
+whether Quill Radio could sign in with a YouTube account and synchronise
+their history. Both were researched against Google’s own documentation
+and both are <strong>no</strong>: the <a
+href="https://developers.google.com/youtube/terms/developer-policies">Developer
+Policies</a> forbid a third-party client from <em>“separat[ing],
+isolat[ing], or modify[ing] the audio or video components”</em> (which
+audio-only playback is), from background players, and from downloading
+or offline storage – with <strong>no Premium exception</strong> – and
+watch history was removed from third-party reach years ago
+(<code>playlistItems.list</code> answers
+<code>watchHistoryNotAccessible</code>; Watch Later likewise). The
+answerable part of the question was “do not make me paste forty channel
+addresses”, and it is answered <strong>without an account</strong>:
+Google Takeout’s <code>subscriptions.csv</code> (Channel ID, Channel
+URL, Channel title) imports straight into the existing
+<code>ChannelStore</code>. <strong>The OAuth route was considered and
+refused, and the reason is the requirement</strong>: signing a
+listener’s real Google account into an app that also runs yt-dlp
+extraction puts the <em>account</em> at risk rather than merely the
+feature; it would additionally require every listener to create a Google
+Cloud project (seven console steps, since QUILL ships no shared
+identity) and add a credential to store, refresh and protect. The file
+route authenticates nothing, stores no credential, makes no API call –
+so none of YouTube’s API terms bind us – and works offline and in Safe
+Mode. Verified while deciding: our extraction passes no cookies and no
+credentials, so playback is anonymous today and this keeps it so. The
+parser is deliberately tolerant (missing, reordered or localized header;
+BOM; quoted commas; a lost URL column falling back to the channel id;
+junk rows skipped individually), because one mangled row must not cost
+the other ninety-nine. One-shot by design: no background sync, and
+re-importing skips what is already followed. 11 tests.</li>
 <li><strong>An update offers back the edition you are running (3.0.0;
 <code>core/install_edition.py</code>, <code>core/updates.py</code>,
 <code>ui/app_shell.py</code>, the <code>.iss</code> markers).</strong>

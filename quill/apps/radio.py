@@ -952,6 +952,16 @@ class RadioAppFrame(
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.radio_add_youtube_playlist(), id=yt_playlist_id
         )
+        yt_subs_id = wx.NewIdRef()
+        station_menu.Append(
+            yt_subs_id,
+            self._menu_label(
+                "&Import YouTube Subscriptions...", "radio.import_youtube_subscriptions"
+            ),
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.radio_import_youtube_subscriptions(), id=yt_subs_id
+        )
         # YouTube support is built in, so this is only ever needed when YouTube
         # changes how it serves audio and the bundled helper goes stale. It sits
         # next to the YouTube commands because that is where someone whose
@@ -1390,6 +1400,7 @@ class RadioAppFrame(
             sources_id,
             *video_menu_ids,
             yt_update_id,
+            yt_subs_id,
             spotify_connect_id,
             spotify_browse_id,
             browse_id,

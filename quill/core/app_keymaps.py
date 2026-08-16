@@ -25,6 +25,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "radio.browse": "Ctrl+B",
         "radio.add_custom_station": "Ctrl+N",
         "radio.add_youtube_playlist": "Ctrl+Shift+Y",
+        "radio.import_youtube_subscriptions": "Ctrl+Alt+Shift+Y",
         "radio.find_streams": "Ctrl+Alt+S",
         "radio.manage_favorites": "Ctrl+Shift+M",
         "radio.toggle_global_volume": "Ctrl+Alt+V",

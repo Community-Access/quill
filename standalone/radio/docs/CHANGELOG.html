@@ -235,6 +235,19 @@ monitoring enabled in Quill Weather, Quill Radio also resumed the same
 watch and opened by speaking a weather summary. The host that offers
 “Open the Quill Weather App” now leaves the watch to it; Radio’s Weather
 menu still works on demand.</p></li>
+<li><p><strong>YouTube subscriptions import</strong>
+(<code>core/radio/youtube_takeout.py</code>,
+<code>ui/radio/youtube_takeout_ui.py</code>, 11 parser tests): Station
+&gt; Import YouTube Subscriptions… reads Google Takeout’s
+<code>subscriptions.csv</code> into the existing
+<code>ChannelStore</code>. No OAuth, no API key, no Cloud project, no
+stored credential, no network call – chosen over the OAuth route because
+signing a real Google account into an app that also runs yt-dlp
+extraction risks the account, not just the feature. Parser is tolerant
+of a missing/reordered/localized header, a BOM, quoted commas, a lost
+URL column (falls back to the channel id), and junk rows. Premium
+benefits and watch-history sync are documented as impossible (YouTube
+developer policy; <code>watchHistoryNotAccessible</code>).</p></li>
 <li><p><strong>Updates offer the edition you installed</strong>
 (<code>core/install_edition.py</code>, 15 tests):
 <code>_pick_asset</code> chose among four published assets by file

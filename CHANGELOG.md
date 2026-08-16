@@ -412,6 +412,29 @@ hard 10 MB gate (`scripts/build_radio_catalog.py`); the full plan with its
 measurements is `standalone/radio/docs/prd.md` (Section 11, the Station
 Catalog).
 
+### YouTube subscriptions, imported from your own export rather than your account
+
+A listener asked whether Quill Radio could sign in with a YouTube account and
+sync their history. Researched against Google's documentation, both are no:
+Premium's benefits are tied to YouTube's own player (the developer policies
+forbid a third-party client from separating audio from video, from background
+playback, and from offline storage, with no Premium exception), and watch
+history was removed from third-party reach years ago -- `playlistItems.list`
+answers `watchHistoryNotAccessible`. What sat under the question was
+answerable: *do not make me paste forty channel addresses.*
+
+`core/radio/youtube_takeout.py` + `ui/radio/youtube_takeout_ui.py` do that from
+Google Takeout's `subscriptions.csv`, straight into the existing `ChannelStore`.
+The OAuth route was considered and refused: it would attach a real Google
+account to an app that also runs yt-dlp extraction (risking the account, not
+just the feature), require each listener to create a Google Cloud project, and
+add a credential to store. The file route authenticates nothing, stores
+nothing, calls no API, and works offline and in Safe Mode. Our extraction
+passes no cookies today, so nothing here attaches an identity to playback.
+Parser tolerates a missing or reordered header, a BOM, quoted commas, a lost
+URL column (falling back to the channel id), and junk rows -- one bad row must
+not cost the other ninety-nine. 11 tests.
+
 ### An update offers back the edition you are running
 
 Reported twice -- #1100 ("what was downloaded was the portable version rather

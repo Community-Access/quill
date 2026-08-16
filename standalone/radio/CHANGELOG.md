@@ -29,6 +29,12 @@ Three separate faults, all of them now closed:
 
 Two more upgrade fixes ride along: **the thin installer no longer re-downloads the 230 MB runtime every time** (it was looking for it in a folder that never existed, so it never found the copy already on your disk), and **an update actually replaces the program code** -- previously an update onto a machine that already had the same Python version skipped the copy entirely and reported success while leaving the old app in place.
 
+### Bring your YouTube subscriptions across, without a Google account
+
+- **Station > Import YouTube Subscriptions...** (Ctrl+Alt+Shift+Y) reads the subscriptions file you export from Google and follows every channel in it, so forty channels cost one file rather than forty pasted addresses. They land in the YouTube Channels branch you already have, and Quill Radio says what happened: "Imported 24 channels; 3 you already followed."
+- **Deliberately a file, not a "Sign in with Google" button.** This began as a listener asking whether Quill Radio could sign in with a YouTube account and sync their history. Signing in would attach a real Google account to an app that also extracts audio from YouTube pages -- putting the *account* at risk, not just the feature -- and would make you create your own Google Cloud project first, which is seven steps of developer console before you hear anything. Reading a file you exported yourself has none of that: nothing authenticates, no token is stored, no request reaches Google, and it works offline and in Safe Mode.
+- **The honest answer to the rest of that question**, now written into the user guide: Premium's benefits do not carry into Quill Radio (YouTube's developer terms forbid a third-party app from separating audio from video, from background playback, and from offline storage -- with no Premium exception), and watch history cannot be synchronised by any third-party app, because YouTube removed it from outside reach years ago. Subscriptions are the part that *can* come across, which is what this imports.
+
 ### A directory that is down says so, instead of looking empty
 
 - **"There is nothing here" and "this could not be reached" had quietly merged again.** LibriVox spent 2026-08-16 unreachable, and every one of its shelves reported *no data in the folder* -- so the honest response (try again later) looked like the wrong one (this branch is useless). Each source wraps its own network errors, and the check that tells the two apart only looked at the outermost one. It now looks all the way down.

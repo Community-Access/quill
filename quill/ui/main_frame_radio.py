@@ -1016,6 +1016,12 @@ class RadioMixin:
 
         add_youtube_playlist(self)
 
+    def radio_import_youtube_subscriptions(self) -> None:
+        """Import the channels you follow from your own Google Takeout export."""
+        from quill.ui.radio.youtube_takeout_ui import import_subscriptions
+
+        import_subscriptions(self)
+
     def radio_update_youtube_support(self) -> None:
         """Fetch a newer yt-dlp than the one bundled, when YouTube changes."""
         from quill.ui.radio.youtube_ui import update_youtube_support

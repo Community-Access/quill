@@ -620,6 +620,8 @@
   "quill/ui/radio/volume_commands.py::forget_station_volumes::wx.MessageBox": "native",
   "quill/ui/radio/wake_timer_dialog.py::WakeUpTimerDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/youtube_playlist_dialog.py::YouTubePlaylistDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/radio/youtube_takeout_ui.py::import_subscriptions::wx.FileDialog": "native",
+  "quill/ui/radio/youtube_takeout_ui.py::import_subscriptions::wx.MessageDialog": "native",
   "quill/ui/radio/youtube_ui.py::add_youtube_playlist::wx.TextEntryDialog": "native",
   "quill/ui/regex_helper_dialog.py::open_regex_helper::wx.Dialog": "hardened_custom",
   "quill/ui/remote_sites_dialog.py::RemoteSitesDialog::subclass:wx.Dialog": "hardened_custom",

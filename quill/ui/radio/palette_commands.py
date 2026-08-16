@@ -82,6 +82,11 @@ def register_radio_commands(host: Any) -> None:
             host.radio_add_youtube_playlist,
         ),
         (
+            "radio.import_youtube_subscriptions",
+            "Internet Radio: Import YouTube Subscriptions...",
+            host.radio_import_youtube_subscriptions,
+        ),
+        (
             "radio.song_history",
             "Internet Radio: Song History...",
             host.radio_song_history,

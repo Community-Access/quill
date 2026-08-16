@@ -687,6 +687,44 @@ does not try to be one enormous list -- it pages, and the **More...** row tells
 you there is more. Videos play, record and can be favorited exactly like a
 station.
 
+#### Bring the channels you already follow, without an account
+
+If you follow thirty channels on YouTube, adding them here one address at a
+time is the kind of chore that means you never do it. **Station > Import
+YouTube Subscriptions...** does it in one step: export your subscriptions from
+Google (takeout.google.com, YouTube and YouTube Music, narrowed to
+*subscriptions*), pick the `subscriptions.csv` out of the archive, and every
+channel lands in YouTube Channels. Quill Radio tells you what happened --
+"Imported 24 channels; 3 you already followed."
+
+**Why a file, and not a Sign in with Google button.** This came from a listener
+asking whether Quill Radio could sign in with their YouTube account and
+synchronise their history, and the honest answers are worth stating.
+
+Signing in would mean attaching your real Google account to an app that also
+extracts audio from YouTube pages -- something YouTube does not endorse -- so it
+is the *account*, not just the feature, that would be at risk. It would also
+require you to create your own Google Cloud project first: seven steps of
+developer console before you hear a single channel. Reading a file you exported
+yourself avoids all of it. Nothing authenticates, no password or token is
+stored, no request is made to Google at all, and it works offline and in Safe
+Mode. It is your data, exported by Google's own tool, handed to a program you
+chose.
+
+**On Premium and history, plainly.** Quill Radio cannot sign you in to YouTube
+Premium, and Premium's benefits do not carry into it. YouTube's developer terms
+specifically forbid a third-party app from separating audio from video -- which
+is what audio-only playback *is* -- from playing in a background player, and
+from storing anything for offline use. There is no Premium exception to ask
+for. Watch history cannot be synchronised either, by us or by anyone: YouTube
+removed watch history and Watch Later from outside reach years ago, and answers
+the request with "Watch history data cannot be retrieved through the API." Your
+subscriptions are the part that can come across, and now they do.
+
+It is a one-time import, deliberately: nothing keeps syncing, nothing runs in
+the background, and re-importing later skips what you already follow rather
+than duplicating it.
+
 #### Browse by network: the BBC, NPR, and broadcasters worldwide
 
 Browse Stations gains a **Networks** branch that gathers well-known broadcasters
