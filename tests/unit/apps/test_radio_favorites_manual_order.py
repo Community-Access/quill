@@ -18,6 +18,7 @@ from quill.apps.radio import RadioAppFrame
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.history import RadioHistory
 from quill.core.radio.models import RadioStation
+from quill.ui import main_frame_radio
 
 
 def _store_with_manual_order(names: list[str]) -> RadioFavoritesStore:
@@ -37,6 +38,12 @@ def test_force_manual_order_preserves_hand_arranged_order(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setattr(paths, "app_data_dir", lambda: tmp_path)
+    # ...and the *binding* main_frame_radio imported at module scope, which the
+    # line above does not touch. `_save_radio_favorites` there resolves
+    # `app_data_dir` from its own namespace, so patching only the paths module
+    # let this test write Zeta/Alpha/Mu straight into the developer's real
+    # radio_favorites.json -- which is exactly what it did, silently, for days.
+    monkeypatch.setattr(main_frame_radio, "app_data_dir", lambda: tmp_path)
     # Deliberately non-alphabetical hand-arranged order; A-Z would reorder it.
     store = _store_with_manual_order(["Zeta", "Alpha", "Mu"])
     history = RadioHistory()
@@ -61,6 +68,7 @@ def test_mark_and_move_drops_below_target_in_one_step(
     # #1190: mark a station, then Move Marked Below a destination drops it there
     # in one step (no Alt+Shift+Down 30 times) and clears the mark.
     monkeypatch.setattr(paths, "app_data_dir", lambda: tmp_path)
+    monkeypatch.setattr(main_frame_radio, "app_data_dir", lambda: tmp_path)
     store = _store_with_manual_order(["Alpha", "Beta", "Gamma"])
     history = RadioHistory()  # default manual
 
