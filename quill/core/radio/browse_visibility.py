@@ -92,7 +92,19 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         "networks", "Networks", "Well-known broadcasters as one-click nodes.", network=False
     ),
     BrowseSourceInfo("m3u", "Community M3U (Music Genres)", "A community per-genre catalog."),
-    BrowseSourceInfo("xiph", "Xiph / Icecast Directory", "The Icecast yellow pages."),
+    BrowseSourceInfo(
+        "xiph",
+        "Xiph / Icecast Directory",
+        "The Icecast yellow pages.",
+        # Off by default since 2026-08-15: the directory's beta backend is
+        # flapping -- it served ~500 genres on Aug 13-14 and serves nothing
+        # today, to every client, on every path (yp.xml included). Hidden for
+        # new profiles rather than removed: anyone who turns it on keeps it,
+        # and the branch's own empty-state stays honest while the source is
+        # down. Flip back to default-on when the backend holds steady;
+        # remove outright only after sixty dead days.
+        default_on=False,
+    ),
     BrowseSourceInfo(
         "myservers",
         "My Servers",

@@ -14,6 +14,12 @@ long-standing silent faults are fixed. See `docs/release-notes-3.0.md`.
 
 ### Added
 
+- **Xiph hidden by default while its backend is down** -- dir.xiph.org is
+  serving empty data on every path to every client (verified against browser
+  user agents and Wayback history; it last served ~500 genres on Aug 13-14).
+  `default_on=False` in `browse_visibility`; existing profiles that enabled
+  it keep it; reversal is one line when the source recovers.
+
 - **Scheduled recordings keep the computer awake, and can wake it**
   (`core/radio/schedule_wake.py`, `platform/windows/recording_wake_task.py`,
   `ui/radio/schedule_wake_ui.py`). A schedule is a thread inside a running app,
