@@ -54,13 +54,13 @@ $Python = Resolve-QuillPython -Preferred $Python -QuillRepo $QuillRepo
 $Iscc = Resolve-QuillIscc -Preferred $Iscc
 
 # -- station catalog seed (the whole directory, shipped) ----------------------
-# Builds quill\dataadio-catalog\seed.db.xz from the live directories with a
+# Builds quill\data\radio-catalog\seed.db.xz from the live directories with a
 # hard 10 MB size gate, so first launch browses 60k+ stations offline. A
 # release MUST ship a same-day seed; -SkipCatalog is for dev builds only.
 if (-not $SkipCatalog) {
-    & $Python (Join-Path $QuillRepo "scriptsuild_radio_catalog.py")
+    & $Python (Join-Path $QuillRepo "scripts\build_radio_catalog.py")
     if ($LASTEXITCODE -ne 0) { throw "Station catalog seed build failed (or over budget)." }
-} elseif (-not (Test-Path (Join-Path $QuillRepo "quill\dataadio-catalog\seed.db.xz"))) {
+} elseif (-not (Test-Path (Join-Path $QuillRepo "quill\data\radio-catalog\seed.db.xz"))) {
     Write-Host "No catalog seed present (-SkipCatalog): the build will browse live until its first refresh."
 }
 
