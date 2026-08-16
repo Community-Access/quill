@@ -213,6 +213,12 @@ and three long-standing silent faults are fixed. See
 <code>docs/release-notes-3.0.md</code>.</p>
 <h3 id="added">Added</h3>
 <ul>
+<li><p><strong>Xiph hidden by default while its backend is down</strong>
+– dir.xiph.org is serving empty data on every path to every client
+(verified against browser user agents and Wayback history; it last
+served ~500 genres on Aug 13-14). <code>default_on=False</code> in
+<code>browse_visibility</code>; existing profiles that enabled it keep
+it; reversal is one line when the source recovers.</p></li>
 <li><p><strong>Scheduled recordings keep the computer awake, and can
 wake it</strong> (<code>core/radio/schedule_wake.py</code>,
 <code>platform/windows/recording_wake_task.py</code>,
