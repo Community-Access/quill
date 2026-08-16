@@ -295,10 +295,12 @@ the launcher. That pattern is a common one for antivirus tools to flag,
 and some of them did – as a false positive, but an understandable one.
 That pattern is now completely gone. The result is an app that is far
 less likely to be mistaken for something it is not.</p>
-<p>Windows SmartScreen may still show a caution on first run because
-this release is not yet code-signed; choose “More info” then “Run
-anyway”. The build is exactly what this repository’s source
-produces.</p>
+<p>Releases are code-signed as of 3.0: the installers, the uninstallers,
+and the app itself carry a genuine Authenticode signature, so Windows
+can verify who built what you are running. If SmartScreen still shows a
+caution while a newly published release builds reputation, the signature
+is there to check – and the build is exactly what this repository’s
+source produces.</p>
 <h2 id="getting-started">Getting started</h2>
 <p>Launch Quill Radio from the Start Menu (or the portable folder’s
 <code>QuillRadio.exe</code>). The window opens with keyboard focus on
@@ -640,7 +642,11 @@ cursor on the first newly added station. iHeart and TuneIn add a small
 set of their most relevant, immediately-playable matches to each search
 (each iHeart/TuneIn result’s real stream is looked up on demand, so they
 are capped per search to keep one search from becoming dozens of network
-requests).
+requests). And since 3.0 the search starts at home: matches from the
+<strong>station catalog on your own computer</strong> appear the instant
+you press Enter – ordinary rows, labeled with the directory they came
+from – with the live directories layering in behind them, so a search
+answers immediately, and still answers when the internet does not.
 <ul>
 <li><p><strong>The libraries are searched too.</strong> Beside the radio
 directories, a search also asks <strong>LibriVox</strong>, the
@@ -905,6 +911,14 @@ off is not in the tree at all, and is never contacted</strong>, so this
 is a speed and privacy control as much as a tidiness one. Your choice is
 remembered, and a source added in a future version appears automatically
 unless you have hidden it.</li>
+<li><strong>Update Station Catalog</strong> – Quill Radio keeps a copy
+of the station directories on this computer, so browsing answers
+instantly and works offline. It updates itself quietly (shortly after
+launch, and on a schedule you set in Preferences – every 24 hours unless
+you change it), and this command updates it right now, then tells you
+exactly what happened: “Station catalog updated: 174 new stations, 431
+updated.” A directory that cannot be reached costs you its freshness,
+never your stations.</li>
 <li><strong>Download Preferences…</strong> – the standing rules for
 everything you save: which folder downloads go to (blank uses a Quill
 Radio folder inside your own Downloads), whether each podcast show and
@@ -950,10 +964,14 @@ while a station is playing or a recording is running, so the audio never
 cuts off mid-listen; your screen can still turn off, and the moment
 nothing is playing or recording the setting lets the computer sleep
 normally again. Turn it off if you would rather Quill Radio never touch
-your power settings. (Windows only.) And <strong>Winamp-style playback
-keys in the Recordings player</strong> (on by default) governs the
-classic-skin letter keys – X play, C pause, V stop, B next, Z previous,
-arrows to seek, T for elapsed or remaining, J to jump – in the
+your power settings. (Windows only.) The three <strong>Station
+catalog</strong> settings live here too: keep the local catalog at all
+(off restores live-only browsing with nothing stored), check for catalog
+updates at launch, and the update frequency – every 24 hours unless you
+choose 6 hours to 2 days, or Manually only. And <strong>Winamp-style
+playback keys in the Recordings player</strong> (on by default) governs
+the classic-skin letter keys – X play, C pause, V stop, B next, Z
+previous, arrows to seek, T for elapsed or remaining, J to jump – in the
 Recordings window; turn it off to type letters there for list typeahead
 instead. Ctrl+Up and Ctrl+Down still change the volume either way.</li>
 <li><strong>Send to Tray</strong> (Ctrl+W) – hide the window; playback
@@ -1521,6 +1539,15 @@ order you built with Move Up/Down.</li>
 <li><strong>Expand All Folders</strong> / <strong>Collapse All
 Folders</strong> – open or close every folder in the favorites tree at
 once.</li>
+<li><strong>Station Catalog Status…</strong> – the complete answer to
+“what is stored on this computer, and what is not.” Every source in one
+list: the stored ones with their station counts and freshness (“Radio
+Browser: 62,375 stations, updated 2 hours ago”), and the live-only ones
+with the honest reason (“iHeart: live only; its terms do not allow
+storing its listings”). Update Now runs a refresh; Rebuild From Shipped
+Snapshot restores the catalog that came with the app – and neither
+touches your favorites, custom stations, or servers, which live in their
+own files and are never part of any catalog operation.</li>
 <li><strong>Downloads…</strong> (Ctrl+Shift+J) – the download queue:
 what is waiting, downloading, saved and failed, with Open Containing
 Folder, per-row cancel and remove, Clear Finished, Clear All, and a
@@ -1586,6 +1613,76 @@ connected”, which otherwise look identical.</li>
 <li><strong>About Quill Radio</strong> – version, sync statement,
 project address.</li>
 </ul>
+<h2 id="the-station-catalog">The Station Catalog</h2>
+<p>Quill Radio 3.0 ships the whole working-station directory <em>inside
+the app</em> – more than 62,000 stations across 240 countries, plus
+SomaFM and the Project Gutenberg audio shelf, about seven and a half
+megabytes in the download – and keeps it in a catalog on your own
+computer. That one change is why browsing feels different in 3.0:</p>
+<ul>
+<li><strong>Browse answers instantly, online or off.</strong> By
+Country, By Language, By Genre and By Quality answer from your disk in
+under a millisecond. First launch on a machine with no internet at all
+is a complete radio.</li>
+<li><strong>Every folder announces its size before you open it</strong>
+– “France, 812 stations” – something the live directory could never
+afford, because counting used to cost a network round trip and now costs
+nothing.</li>
+<li><strong>Find Stations starts locally.</strong> Matches from the
+catalog appear the moment you search; the live directories layer in
+behind them.</li>
+<li><strong>If you are offline, the app says so exactly once</strong> –
+“You are offline. Browsing from your catalog, updated this morning.” –
+and then keeps working.</li>
+</ul>
+<h3 id="what-is-stored-and-what-is-not">What is stored, and what is
+not</h3>
+<p>The catalog covers the station directory itself: Radio Browser’s
+stations and every axis through them, SomaFM, and the Project Gutenberg
+audiobook shelf. The rest stays live and needs the internet, each for a
+stated reason: <strong>Apple Podcasts (iTunes)</strong> (charts are
+rankings, and Apple’s terms bar storing them), <strong>TuneIn</strong>
+(a remote tree that may not be stored), <strong>iHeart</strong> (its
+terms do not allow storing its listings), the <strong>Internet
+Archive</strong> (collections of half a million items),
+<strong>LibriVox</strong> (live for now – its chapter listing alone is
+bigger than the rest of the catalog combined), and the <strong>music
+charts</strong> (stale the moment they are stored). <strong>View &gt;
+Station Catalog Status…</strong> lays all of this out in plain
+sentences, source by source, with each one’s count and freshness. And
+the browse window tells you per branch: highlight one and the details
+panel says either “Answers from your catalog, updated 2 hours ago” or
+“Asks the internet each time; nothing is stored.”</p>
+<h3 id="how-it-stays-fresh">How it stays fresh</h3>
+<p>Three ways, each yours to switch off in Preferences:</p>
+<ul>
+<li><strong>Shortly after launch</strong>, a quick background check,
+skipped when the catalog is already fresh.</li>
+<li><strong>On a schedule</strong> – every 24 hours by default; choose 6
+hours to 2 days, or “Manually only”. One source at a time, a trickle
+rather than a burst.</li>
+<li><strong>On demand</strong> – <strong>Station &gt; Update Station
+Catalog</strong>, which always answers out loud: “Station catalog
+updated: 174 new stations, 431 updated.”</li>
+</ul>
+<p>A directory that is down costs you its freshness, never your
+stations: a source that suddenly answers with nothing is treated as an
+outage, not the truth, and a station that disappears is hidden at once
+but only forgotten after two weeks. <strong>Popular</strong> and
+<strong>Trending</strong> stay live-first; when the directory cannot
+answer, the catalog’s snapshot steps in, and every one of those rows
+says “as of 2 hours ago” so you always know what you are hearing.</p>
+<h3 id="your-stations-are-never-part-of-it">Your stations are never part
+of it</h3>
+<p>The catalog is a copy of public directories. Your favorites, custom
+stations, servers, and YouTube channels live in their own files, and no
+catalog operation reads or writes them. Rebuild the catalog from the
+shipped snapshot (a button in Station Catalog Status) and your stations
+are byte-for-byte untouched. Turning the catalog off entirely
+(Preferences) restores live-only browsing: nothing stored, no background
+requests of any kind. Safe Mode never refreshes the catalog, though
+reading it is allowed – it is local data, exactly like your
+favorites.</p>
 <h2 id="the-favorites-manager">The Favorites Manager</h2>
 <p>Station &gt; Manage Favorites… is a full organizer,
 keyboard-first:</p>

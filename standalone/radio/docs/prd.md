@@ -391,3 +391,940 @@ are explicitly open:
   reviewed podcast-directory and feed-reader egress sites (it adds no new egress),
   is Safe-Mode-guarded, and only ever returns the publisher's own public
   enclosure -- never Spotify audio.
+
+## 11. The Station Catalog - PRD and strategic plan (merged)
+
+Formerly `docs/station-catalog.md` (and before that the repo-root `ideas.md`); merged here 2026-08-15 so the radio
+PRD is one document. Internal section numbers (2b, 5.5, 6.5...) are
+preserved because code comments, changelogs and tests cite them.
+
+Status: plan of record, and as of 2026-08-15 **largely built** - Phases 1-3
+shipped together as the station-catalog feature branch (see the Delivery
+log at the end). Owner: Jeff. This document graduated here from a root
+working note the same day.
+
+One sentence: Quill Radio ships the station directories inside the app as a
+fast local catalog, keeps that catalog current from live data automatically and
+on demand, lets the listener turn every automatic behavior off, and never -
+under any circumstance - touches a station the listener added or saved.
+
+---
+
+### 1. Why this, and why now
+
+Browsing today is lazy: every branch of Browse Stations fetches from its
+source when expanded, softened by `directory_cache` (fresh -> live -> stale).
+That design shipped 3.0.0 well, but it has three costs the listener feels:
+
+- **First expansion waits on the network.** "By Country" on a slow connection
+  is a spinner, and on no connection it is an apology.
+- **The app's completeness depends on someone else's uptime.** A directory
+  outage makes Quill Radio look broken, even though nothing local changed.
+- **Search can only be as fast as the slowest source it asks.**
+
+The fix is not more caching of the same shape. It is inverting the default:
+**the local catalog is the source of truth for browsing; the network is the
+source of truth for freshness.** The app reads locally in milliseconds and
+reconciles with live data in the background - a shape this codebase already
+proved twice, in miniature: the NOAA `wxindex` bundled snapshot with a refresh
+tier, and the Radio Reading Services directory with its manual update command.
+This plan makes that the architecture for every source that permits it.
+
+### 2. What exists today (grounded inventory)
+
+Read before designing anything; all of this is on main.
+
+- `quill/core/radio/browse_sources.py` - one `browse(node_id)` contract, 28
+  root branches, per-source handlers, wx-free and tested without UI.
+- `quill/core/radio/directory_cache.py` - fresh -> live -> stale tiers; a
+  failed refresh keeps what was there; cached answers report their age.
+- `wxindex` - bundled NOAA snapshot + refreshed cache: the seed precedent.
+- Reading services - bundled list + "Update Radio Reading Services..." menu
+  command: the manual-refresh precedent.
+- Bundled already: networks catalog, ACB Media, NFB Radio, community M3U.
+- Live-only today: Radio Browser axes, iHeart, TuneIn tree, Xiph, SomaFM,
+  Apple Podcasts, the libraries (Archive/LibriVox/Gutenberg), free music.
+- User-owned stores, each its own file with atomic writes: favorites
+  (`radio_favorites.json`, with timestamped backups under
+  `backups/radio-favorites/`), My Servers, YouTube channels, schedule.
+- `core/radio/radiodns.py` + the approved `dnspython` dependency - identity
+  enrichment hook, currently underused.
+- House rules that constrain the design: wx-free strict-typed core; all JSON
+  via `write_json_atomic`; every egress site in the network audit; Safe Mode
+  refuses network per branch; browse-visibility rule ("a source that is off is
+  never contacted"); GATE-11 module budgets; GATE-EC coded errors.
+
+### 2b. Phase 0 findings - measured, 2026-08-15
+
+Phase 0 ran early: the real exports were pulled once and the store was
+prototyped against them (`local/catalog-proto/`). Numbers below are from this
+machine; every design amendment they forced is applied in the sections that
+follow.
+
+#### The data
+
+- Radio Browser full working-station dump: **62,377 stations, 77.7 MB raw
+  JSON**, fetched in 25 s across 7 paginated requests (`hidebroken=true`,
+  10k per page, 0.5 s politeness gaps). `/json/stations` without pagination
+  silently caps at 1,000 rows - paging is mandatory, not optional.
+- `stationuuid` coverage: **100 percent**. Key rule 1 covers the entire
+  source.
+- **7,135 normalized stream URLs are shared by more than one station**
+  (18,007 rows) *within Radio Browser alone* - relays, network feeds, and
+  multi-listed streams. A same-URL merge rule would wrongly collapse
+  thousands of real stations. Merge policy amended below.
+- **The Xiph directory is serving empty data right now**: `yp.xml` returns a
+  bare empty directory element and the beta `/genres` page is a 3 KB shell
+  with no genre links. Not a parser bug - the source itself is empty today.
+  Two consequences: Xiph cannot seed until it recovers, and the refresh
+  engine gains a rule it was always going to need - **a full fetch that
+  returns zero rows for a source that previously had thousands is an outage,
+  never truth**; the catalog keeps what it has and marks the source stale.
+- SomaFM channels.json: 51 KB. Trivial.
+- **iHeart terms read (Terms of Use, last updated 2025-03-12): bulk caching
+  is off the table.** Section 23 prohibits, verbatim, "reproduce, download,
+  license, publish, **enter into a database**, display, modify, create
+  derivative works from, transmit, post, **distribute**" - and a seeded
+  catalog shipped in the installer is precisely "enter into a database" plus
+  "distribute". Section 5 separately bars obtaining material "through any
+  means not intentionally made available", and Section 14 grants only a
+  "limited, revocable, license... for your private, non-commercial use".
+  Decision: **iHeart is Class B permanently, by policy, not by gap** -
+  live-drill browsing with the existing short-lived `directory_cache`, same
+  posture 3.0.0 already ships. It is never seeded, never persisted into the
+  catalog database, and - a rule this reading forced - **Layer 4
+  write-through applies to Class A sources only**, so an iHeart row fetched
+  live is never upserted into the catalog either. A transient session cache
+  for the listener's own browsing is a materially different act from
+  redistributing listings in a shipped database, and the design now keeps
+  that line bright.
+
+#### Apple Podcasts (iTunes) - why it is not measured for seeding
+
+Asked and answered rather than silently skipped. The Podcasts (Apple) branch
+rides the iTunes/Apple Marketing endpoints (`apple_podcasts.py`: genre tree,
+per-storefront charts, show lookup), and it is deliberately **not** a seeding
+candidate, for three reasons that stack:
+
+- **It is a content catalog, not a station directory.** The unit is a show
+  that resolves to its own RSS feed; the full corpus is millions of feeds
+  and unbundleable by nature. What the app actually browses - charts and
+  genre lists per storefront - is a ranking, and a shipped ranking is stale
+  by definition (the same reasoning that keeps Radio Browser's
+  popular/trending live-first).
+- **Terms.** Apple's marketing/search API posture permits client lookup and
+  search with short-lived caching, not entering listings into a
+  redistributed database - the same line the iHeart reading drew, applied
+  consistently: Class B, session cache only, never written through.
+- **It is already fast enough live**, measured today: the full genre tree in
+  0.8 s, a 100-show storefront chart in 1.7 s, both behind
+  `directory_cache`. There is no user-felt problem for the catalog to solve
+  here.
+
+So Apple stays exactly where Section 4 puts it: Class B, live-drill, with the
+existing honest empty-state when unreachable.
+
+#### The complete source sweep - every source, measured 2026-08-15
+
+Every source in the app was exercised live, not just the seeding candidates.
+Counts are what one fetch returns through our own modules unless noted.
+
+| Source | Measured | Bulk feasible? | Class | Note |
+| --- | --- | --- | --- | --- |
+| Radio Browser | 62,377 stations, 77.7 MB raw | Yes (paginated) | A | The seed's backbone |
+| SomaFM | 46 channels, 51 KB | Yes | A | Trivial |
+| Xiph | 0 today; ~500 genres on Aug 13-14 | Yes when up | A | Flapping - ruling below |
+| NOAA wxindex | 40 states with feeds | Already bundled | A | Existing snapshot joins the store |
+| Community M3U | 95 genres (~1,900 stations in first 5) | Already bundled | A | |
+| Networks / ACB / NFB / Reading | 6 groups / 10 / 1 / 21 | Already bundled | A | Curated, highest trust |
+| iHeart | 18 genres, 317 markets | Barred by terms | B | Section 2b terms reading |
+| TuneIn | 7 root categories | Barred by policy | B | Remote drill tree |
+| Apple Podcasts | 19 genres in 0.8 s; 100-show chart in 1.7 s | Barred by terms; rankings anyway | B | |
+| Internet Archive | oldtimeradio 8,853; librivoxaudio 21,747; 78rpm 310,899; netlabels 80,423; audio_music 522,283 items | No - millions of items | B | Numbers close the question |
+| LibriVox | ~22-24k books total; limit=1000 paging works (1,000 books = 1.31 MB, 1.9 s; API 404s past the end) | **Yes** (~30 MB raw, est. 3-4 MB compressed) | B today, **A2 candidate** | Public-domain data; see below |
+| Project Gutenberg audio | **1,124 records total** (gutendex count, audio/mpeg) | **Yes** (one fetch) | B today, **A2 candidate** | Tiny |
+| Wikidata axes | 400 stations per axis in 2.1 s | Yes (CC0) | B | Small derived joins; cache suffices |
+| Audius / Mixcloud / ccMixter | 59 trending / 38 categories / 16 tags | Rankings and charts | B | Stale by definition if seeded |
+
+**Class A2 - the library seed - is ADOPTED (2026-08-15), not parked.** The
+directive is to cache everything legally allowed, and LibriVox (~22-24k
+public-domain books, cleanly pageable) and Gutenberg audio (1,124 records)
+qualify without a caveat: finite, freely redistributable, together an
+estimated 3-4 MB compressed, inside the seed budget's reserve. They ship in
+the seed as their own tables (books and sections are not stations; forcing
+them into the stations schema would bend both), land in **Phase 3** right
+after the station machinery proves itself, and make the two audiobook
+branches browsable offline and instant. Wikidata's axis joins (CC0, 400 rows
+per axis) also become a seeded enrichment table rather than a live cache.
+Internet Archive stays live-drill permanently - the measured
+half-million-item collections end that discussion - and Apple, iHeart, and
+TuneIn stay out on terms, which is the directive's other half.
+
+#### The Xiph outage, diagnosed (2026-08-15)
+
+Troubleshot rather than shrugged at. Findings, in order:
+
+- Every fetch path is empty **server-side**: `/genres`, `/codecs`,
+  `/search?search_term=jazz` all return the same 3 KB page shell with zero
+  content links, and `yp.xml` returns a bare 23-byte empty directory
+  element.
+- **Not user-agent filtering**: byte-identical responses to a real browser
+  UA and to QUILL's own UA, on every path.
+- **Not our parser**: the same `xiph.py` code measured ~500 genres from this
+  site on 2026-08-13/14 during the 3.0 truncation fix; fixtures from those
+  runs still parse.
+- **Intermittent by history**: Wayback snapshots of `/genres` from 2026-07-09
+  and 2026-07-21 are *also* content-free shells, while our mid-August runs
+  saw full data - so the beta backend has been flapping for weeks, serving
+  either everything or nothing.
+- Every other source in the app answered a live health sweep today
+  (Radio Browser, SomaFM, M3U, iHeart, TuneIn, networks, reading services,
+  NOAA, Gutenberg, LibriVox, Archive, Apple). Xiph is the only outage.
+
+Consequences, all already in this plan: the empty-answer-is-an-outage rule
+(5.6) exists precisely for this; the `directory_cache` stale tier would have
+bridged it in the app had the local caches not been cleared today; and under
+the catalog design this whole class of outage becomes invisible - the
+listener browses the last-known-good Xiph data while the source is marked
+stale with its age. Worth doing besides: report the flapping backend
+upstream to Xiph, since the site presents no status page.
+
+**Ruling on "pull it out of the package" (2026-08-15): Xiph is not
+unrecoverable - it served ~500 genres to this codebase two days ago - so it
+stays in the code, and the tripwire has been EXECUTED rather than deferred:**
+`default_on=False` shipped the same day (PR #1401). New profiles do not see
+the branch; anyone who enables it in Choose Browse Sources keeps it; the
+honest empty-state still explains the outage for those who look; reversal is
+one line when the backend holds steady. Removal outright happens only if the
+source stays dead for sixty days (from 2026-08-15), at which point it exits
+`ROOT_SOURCES`, the seed builder, and the docs together.
+#### The store (built from the real dump)
+
+- SQLite with the PRD schema plus FTS5: **26.4 MB** after VACUUM for the full
+  62k stations. Import plus FTS build: 5.8 s (off-thread, once per full
+  refresh).
+- Compressed seed: **6.4 MB** at lzma preset 6 (21 s to compress at build
+  time), 5.7 MB at preset 9. Decompress on first run: **1.2 s**. The 20 MB
+  budget was generous by three times - **amended to 10 MB hard**.
+- Query medians (n=30):
+  - point lookup by key: 0.01 ms
+  - FTS "jazz": 1.2 ms; FTS prefix "bb": 0.5 ms
+  - states of a country: 2.9 ms
+  - stations by country ordered by votes: 41 ms bare, **0.53 ms** with a
+    `(country, votes DESC)` covering index. The index ships in the schema.
+  - countries GROUP BY: 7-13 ms (acceptable; can become a cached table if
+    the root branch ever needs better)
+- The JSON alternative, measured and rejected with numbers: loading the raw
+  dump takes **9.0 s and peaks at 217 MB of memory**; even once in memory, a
+  by-country filter costs 23 ms - slower than the indexed SQLite query
+  reading from disk.
+- Refresh memory amendment: parse and insert **per page** (10k rows), never
+  the whole dump at once; paging caps refresh peak in the tens of megabytes
+  where whole-dump loading measured 217 MB.
+
+#### The read path, end to end
+
+Catalog rows were materialized through the real `BrowseNode`/`RadioStation`
+types the tree consumes:
+
+- all 240 country folders, **each carrying its station count**, in 7.3 ms -
+  a per-folder count the live path cannot afford at all, and exactly what the
+  "folder announces its size" rule wants;
+- 2,000 fully constructed playable US station leaves in 41.7 ms, where the
+  cost is dataclass construction, not SQLite. Branches page far below 2,000
+  rows, so the 50 ms budget holds with a wide margin.
+
+#### Windows swap semantics (the trap the prototype caught)
+
+`os.replace` over a database an open SQLite connection holds **fails with
+PermissionError on Windows** - so the first draft's "stage then swap the .db"
+design cannot work while any reader exists. Verified fix, also prototyped:
+**generation files plus a pointer**. Refresh writes `catalog.<n>.db`, then
+atomically replaces a tiny `CURRENT` pointer file that readers consult on
+open; old generations are deleted once unreferenced (next launch at the
+latest). The pointer replace succeeded with the old generation still open.
+Section 5.1 is amended accordingly.
+
+### 3. Goals and non-goals
+
+#### Goals
+
+1. Browse Stations answers from local data instantly - target under 50 ms per
+   branch - for every source class that permits bulk data.
+2. The full supported directories ship inside the app as a compressed,
+   versioned seed, refreshed at release-build time, so first launch is
+   complete with no network at all.
+3. The catalog updates from live data three ways: on startup (toggleable),
+   on a timer (interval configurable, off-able), and on demand (menu command
+   with a spoken summary).
+4. Every automatic behavior has an off switch, and off means off: no fetch,
+   no probe, no "just checking".
+5. Custom and saved stations are structurally incapable of being damaged by
+   any catalog operation. Not "carefully avoided" - stored elsewhere.
+6. The listener can always answer: how old is my catalog, what changed last
+   time, and which sources are healthy.
+7. **Cache everything that is legally allowed, and nothing that is not.**
+   The standing directive (Jeff, 2026-08-15): every source whose license or
+   terms permit local storage joins the catalog; every source whose terms bar
+   it stays live-drill with a session cache only - and the boundary between
+   the two is visible in the product, not buried in this document.
+8. **The listener can always tell what is local and what is live** - per
+   branch, in the UX, without noise (Section 6.5).
+
+#### Non-goals (this program)
+
+- No telemetry, no usage upload, no server of ours. All reconciliation is
+  client-side against the sources' own endpoints.
+- No recommendations engine. "Similar stations" and taste modeling are a
+  later, separate conversation.
+- No SHOUTcast dependency. The stance from 3.0 stands: opportunistic,
+  optional, never load-bearing.
+- No scraping of sources whose terms do not permit bulk retrieval. TuneIn's
+  tree remains live-drill; Apple charts remain live; that is a compliance
+  posture, not a technical gap.
+- The libraries (Archive, LibriVox, Gutenberg, Apple Podcasts) are content
+  catalogs, not station directories; they keep today's lazy + cached model.
+
+### 4. Source classes - the load-bearing distinction
+
+Every source gets exactly one class, declared in code, and the class decides
+everything downstream: whether it is bundled, how it refreshes, what the
+refresh may touch.
+
+#### Class A - bundled and refreshed (the catalog proper)
+
+Bulk retrieval is permitted and practical. Shipped in the seed, refreshed
+live, served locally.
+
+- Radio Browser (full export; countries/states/languages/tags/codecs axes,
+  popular/trending rankings snapshotted for offline fallback)
+- Xiph / Icecast directory (yp listing)
+- SomaFM (channels.json)
+- (iHeart was a candidate here; the terms read moved it to Class B
+  permanently - see Section 2b.)
+- NOAA wxindex, community M3U, networks, ACB, NFB, reading services (already
+  bundled; they join the catalog store so one machine serves all of them)
+
+#### Class B - live-drill (cached, never bundled)
+
+Remote trees or terms-limited APIs. Today's behavior, unchanged:
+`directory_cache` in front, lazy expansion. TuneIn, **iHeart (by policy -
+its terms bar entering listings into a database or distributing them; see
+Section 2b)**, Apple Podcasts, the libraries, free music
+(Audius/Mixcloud/ccMixter), Wikidata, YouTube listings.
+
+#### Class C - user-owned (protected, never refreshed)
+
+Favorites, custom stations, My Servers, YouTube channels the listener added,
+imported playlists. These live in their existing stores, are never written by
+any catalog code path, and are overlaid at read time (Section 8).
+
+### 5. Architecture
+
+#### 5.1 The store: SQLite, not JSON
+
+The catalog is a single SQLite database per profile:
+
+    %APPDATA%\Quill\radio-catalog\catalog.db
+
+Why SQLite over the house JSON pattern: measured, not asserted (Section 2b).
+The full directory in SQLite answers an indexed browse query in **0.5 ms**;
+the same data as JSON costs a 9-second, 217 MB load before the first answer.
+The persistence rules hold in spirit via **generation files plus a pointer**:
+refresh builds `catalog.<n>.db` completely, then atomically replaces a tiny
+`CURRENT` pointer file naming it. Readers resolve the pointer on open. This
+shape is forced by a measured Windows fact: `os.replace` over a database an
+open connection holds raises PermissionError, so the classic stage-and-swap
+of the .db itself cannot coexist with readers. Old generations are removed
+once unreferenced (next launch at the latest). A crashed refresh leaves a
+garbage numbered file and an untouched pointer - always consistent.
+
+Crucially: **the catalog is derived data.** It can be deleted, rebuilt from
+the seed, or discarded on schema change with zero loss, because nothing the
+listener owns is in it. That single property removes the entire class of
+migration risk that makes databases scary.
+
+#### 5.2 Schema (DDL sketch)
+
+    CREATE TABLE catalog_meta(
+      key   TEXT PRIMARY KEY,       -- schema_version, seed_version,
+      value TEXT NOT NULL           -- seed_built_at, imported_at, app_version
+    );
+
+    CREATE TABLE sources(
+      id             TEXT PRIMARY KEY,   -- 'radio_browser', 'xiph', ...
+      class          TEXT NOT NULL,      -- 'bundled' | 'live' | 'user'
+      last_refresh   TEXT,               -- ISO UTC
+      last_status    TEXT,               -- 'ok'|'stale'|'rate_limited'|'error'
+      last_error     TEXT NOT NULL DEFAULT '',
+      station_count  INTEGER NOT NULL DEFAULT 0,
+      content_hash   TEXT NOT NULL DEFAULT ''   -- change detection
+    );
+
+    CREATE TABLE stations(
+      key              TEXT PRIMARY KEY, -- canonical key, Section 5.4
+      name             TEXT NOT NULL,
+      stream_url       TEXT NOT NULL,
+      homepage         TEXT NOT NULL DEFAULT '',
+      country          TEXT NOT NULL DEFAULT '',
+      state            TEXT NOT NULL DEFAULT '',
+      language         TEXT NOT NULL DEFAULT '',
+      tags             TEXT NOT NULL DEFAULT '',  -- normalized, comma-joined
+      codec            TEXT NOT NULL DEFAULT '',
+      bitrate          INTEGER NOT NULL DEFAULT 0,
+      votes            INTEGER NOT NULL DEFAULT 0, -- ranking snapshot
+      source_id        TEXT NOT NULL REFERENCES sources(id),
+      source_record_id TEXT NOT NULL DEFAULT '',
+      first_seen       TEXT NOT NULL,
+      last_seen        TEXT NOT NULL,
+      vanished_at      TEXT,             -- tombstone; Section 5.6
+      extra            TEXT NOT NULL DEFAULT '{}'  -- source-specific JSON
+    );
+    CREATE INDEX idx_st_geo  ON stations(country, state);
+    CREATE INDEX idx_st_lang ON stations(language);
+    CREATE INDEX idx_st_src  ON stations(source_id);
+
+    CREATE VIRTUAL TABLE stations_fts USING fts5(
+      name, tags, country, language, content='stations', content_rowid='rowid'
+    );
+
+    CREATE TABLE merges(          -- provenance when two sources are one station
+      canonical_key TEXT NOT NULL,
+      member_key    TEXT NOT NULL,
+      reason        TEXT NOT NULL,     -- 'same_url'|'radiodns'|'uuid'
+      PRIMARY KEY(canonical_key, member_key)
+    );
+
+#### 5.3 New modules (house conventions; every one wx-free unless named ui/)
+
+- `quill/core/radio/catalog/store.py` - open/query/atomic-swap/rebuild; the
+  only module that touches SQLite.
+- `quill/core/radio/catalog/keys.py` - canonical keying + URL normalization.
+  Pure. **Must use the same key rule favorites already use**
+  (`station_uuid or stream_url`) so overlay joins are exact.
+- `quill/core/radio/catalog/merge.py` - cross-source dedupe + provenance.
+  Pure functions over record lists; deterministic; heavily tested.
+- `quill/core/radio/catalog/refresh.py` - orchestration: which sources are
+  due, staggering, delta-vs-full, staging writes, swap. Fetchers injected so
+  tests never touch the network.
+- `quill/core/radio/catalog/summary.py` - the diff model and its spoken
+  sentences. Pure.
+- `quill/core/radio/catalog/seed.py` - locate the bundled seed, verify its
+  hash, import to the profile on first run / app update.
+- `quill/ui/radio/catalog_ui.py` - glue: minute-tick wiring, menu command,
+  announcements, settings plumbing (host-taking functions, like
+  `schedule_wake_ui`).
+- `quill/ui/radio/catalog_summary_dialog.py` - the review dialog (house
+  ListBox pattern; rows speak whole sentences).
+- `scripts/build_radio_catalog.py` - the release-time seed builder.
+
+Errors: `CatalogError(CodedError)` with `QUILL-RADIO-CATALOG-*` codes
+(`-CORRUPT`, `-SEED-MISSING`, `-REFRESH-FAILED`, `-SWAP-FAILED`).
+
+#### 5.4 Canonical keys and merge rules
+
+Key precedence, first match wins:
+
+1. Radio Browser `station_uuid` (stable, source-issued).
+2. Normalized stream URL: lowercase scheme+host, strip default ports, strip
+   known junk query params, keep path. One pure function in `keys.py`,
+   shared with nothing rewritten - favorites' existing key logic is the
+   reference behavior.
+3. RadioDNS service identity, when `radiodns.py` resolves one - as a merge
+   *link* between records, never as a primary key.
+
+Merge policy (deliberately modest for Phase 1):
+
+- Same key across sources -> one canonical row; the higher-trust source wins
+  field-by-field only where the other is empty; all member identities kept in
+  `merges` with a reason.
+- **A shared stream URL alone never merges.** Measured: 7,135 URLs are shared
+  by multiple distinct stations within Radio Browser alone (relays and
+  network feeds). URL-based merging additionally requires a case-insensitive
+  name match; anything less collapses real stations.
+- Trust order: user (never merged, always overlay) > bundled curated (ACB,
+  NFB, networks, reading services) > Radio Browser > Xiph > iHeart.
+- Ambiguity (same name+country, different URLs) is NOT merged. Two rows and
+  honesty beat one row and a guess. Fuzzy matching is Phase 4 material, if
+  ever.
+
+#### 5.5 The seed: building and shipping the whole directory
+
+`scripts/build_radio_catalog.py`:
+
+1. Runs the same Class-A fetchers the app uses (they are wx-free precisely so
+   this is possible), against live endpoints, with polite pacing.
+2. Normalizes, merges, writes a fresh `seed.db`.
+3. Compresses with `lzma` (stdlib; no new dependency) to `seed.db.xz`,
+   records SHA-256 + build date in a sidecar manifest.
+4. Emits a size report and **fails the build if the seed exceeds budget**
+   (Section 12) - a silently ballooning installer is a regression.
+
+Wired into `standalone/radio/scripts/build_release.ps1` exactly like docs
+rendering: a step before PyInstaller, with `-SkipCatalog` for dev builds, and
+the seed staged into `quill/data/radio-catalog/`. Both editions carry it
+(portable payload and shared runtime); the installer therefore works fully
+offline on first run.
+
+First-run import: `seed.py` extracts to staging, verifies the hash, swaps in.
+App update with a newer seed: if the profile catalog's `seed_version` lineage
+is older than the shipped seed, import the new seed and let the next live
+refresh replay any newer deltas. Simple, and correct because the catalog is
+derived data.
+
+#### 5.6 The refresh engine
+
+Layers, mirroring what shipped for scheduling elsewhere in the app:
+
+- **Layer 0 - release build.** Every release ships a seed built that day.
+- **Layer 1 - startup refresh** (setting: on by default, one checkbox to turn
+  off). Runs on the task manager after the window is up, never blocking
+  launch; skipped in Safe Mode; skipped when the catalog is younger than a
+  floor (6 hours) so a restart loop never hammers anyone's API.
+- **Layer 2 - periodic refresh** (setting: interval in hours, default 24;
+  0 = off). Driven from the existing radio minute-tick - no new timer.
+  Staggered per source (one source per tick window) so refresh is a trickle,
+  not a burst.
+- **Layer 3 - manual.** Station menu: "Update Station Catalog..." - refresh
+  all due sources now, announce the summary, offer the review dialog. Also
+  per-source refresh from the (Phase 3) catalog status view.
+- **Layer 4 - opportunistic write-through, Class A sources only.** When a
+  live fetch of a Class-A source happens anyway (a stream re-resolve,
+  federated search), the slice it returns upserts into the catalog.
+  Freshness for free, zero extra requests. Class B results are **never**
+  written through - for TuneIn and iHeart that is a terms obligation
+  (their listings may not be entered into a persistent database), and for
+  the rest it keeps the rule simple enough to audit: the catalog contains
+  Class A rows, only.
+
+Mechanics:
+
+- Delta where the source supports it (Radio Browser publishes change feeds);
+  full fetch + `content_hash` comparison where it does not; a full fetch
+  whose hash is unchanged writes nothing and counts as "no changes".
+- All fetches through the existing `http_client` identity, respecting
+  Retry-After, with per-source failure isolation: one source down = one
+  source stale, never a failed refresh.
+- **An empty answer from a previously populated source is an outage, not
+  truth** (learned from Xiph serving a bare directory today): the fetch is
+  recorded as failed, the catalog keeps what it has, and the source is
+  marked stale with its age.
+- Bulk fetches are parsed and upserted **per page** (10k rows), never as one
+  whole-dump load - measured whole-dump peak was 217 MB; paging caps it in
+  the tens.
+- Removal is a tombstone (`vanished_at`), not a delete; rows vanish from
+  browse immediately but are kept 14 days so a source hiccup that drops half
+  its records for an afternoon does not thrash the catalog. After the grace
+  window they are purged.
+- **The browse-visibility rule extends to refresh:** a source the listener
+  has hidden is not refreshed. Off means never contacted - same sentence,
+  same guarantee.
+
+#### 5.7 The read path: how browsing gets fast
+
+No UI changes at all in Phase 1 - the speed appears under the existing
+contract. Inside `browse_sources`, each Class-A handler gains a catalog-first
+branch:
+
+    countries      -> SELECT country, COUNT(*) ... GROUP BY country
+    states         -> SELECT state ... WHERE country=?
+    stations-by-X  -> indexed SELECT, ordered, instant
+    genres/tags    -> SELECT from the normalized tag column
+    popular        -> votes-ordered snapshot when offline; live when online
+                      (rankings are the one thing that should stay live-first)
+
+Fallback ladder per branch: catalog (if enabled and present) -> live fetch
+(which also write-throughs) -> `directory_cache` stale tier -> the existing
+honest empty-state messages. `last_error_was_network` semantics unchanged.
+
+Find Stations gains an FTS lane: local matches appear instantly as the first
+group, live-source groups append as they arrive - same UI, same source
+column, no second surface. Search-as-you-type against FTS must stay under
+30 ms.
+
+#### 5.8 RadioDNS and identity enrichment, baked in
+
+`core/radio/radiodns.py` and its approved `dnspython` dependency shipped in
+3.0.0 and are underused. Under the catalog they stop being a live lookup and
+become **build-time enrichment**:
+
+- The seed builder joins Wikidata's axis data (which carries broadcast
+  frequency and country - the inputs RadioDNS resolution needs) against the
+  station rows, performs the SRV/CNAME resolution **once, at build time, on
+  the build machine**, and writes the resolved service identities into an
+  `identities` table. The app then merges by identity with a plain local
+  join - zero DNS traffic from any listener's machine.
+- Refresh re-resolves only rows whose inputs changed, on the same staggered
+  cadence as everything else, and only when the catalog and refresh are
+  enabled.
+- Coverage honesty: this enriches the minority of stations that publish
+  broadcast parameters. It is a merge-quality upgrade, not a feature the UI
+  advertises; where it fires, two provider rows quietly become one, which is
+  the whole point.
+- RadioDNS **SPI service documents** (`SI.xml` - stations, logos, and stream
+  links that broadcasters publish themselves, an open standard built for
+  exactly this kind of consumption) are the natural next enrichment and are
+  listed in Appendix A for adoption.
+
+### 6. User-facing behavior
+
+#### 6.1 Settings (all in RadioHistory + the Preferences dialog)
+
+- `catalog_enabled` (default on) - master switch. Off restores today's
+  behavior exactly: live browsing, `directory_cache`, nothing read from or
+  written to the catalog, no refresh of any layer.
+- `catalog_refresh_on_startup` (default on) - Layer 1 toggle.
+- `catalog_refresh_hours` (default 24; 0 = off) - Layer 2 interval.
+- Per-source participation is NOT a new setting: it is the existing Choose
+  Browse Sources selection. One list, one rule, already shipped.
+
+Checkbox copy follows the house voice, for example: "Keep the station catalog
+updated automatically" / "Check for station updates when Quill Radio starts".
+
+#### 6.2 The summary, spoken and reviewable
+
+After any refresh (manual always; automatic only when something changed):
+
+    "Station catalog updated. 174 new, 62 repaired streams, 431 details
+    updated, 12 removed. Two sources could not be reached."
+
+Whole words, counts first, sources-by-name only in the review dialog. The
+dialog is the house ListBox pattern: one row per category, Enter expands to
+the per-source detail, read-only, Escape closes. "No changes" is announced
+for manual refresh and stays silent for automatic ones - an automatic process
+that talks when nothing happened is noise.
+
+#### 6.3 Status, on demand
+
+View menu: "Station Catalog Status..." (Phase 3) - catalog age, station
+count, per-source last-refresh and health, seed version, and three buttons:
+Update Now, Update This Source, Rebuild From Shipped Snapshot.
+
+#### 6.4 Offline and Safe Mode
+
+- Offline: everything Class A browses and searches normally from the catalog;
+  Class B branches show their existing could-not-reach messages. The app is
+  never empty.
+- Safe Mode: no refresh of any layer, ever. Reading the local catalog is
+  permitted - it is local data, exactly like favorites.
+
+#### 6.5 Telling the listener what is local and what is live
+
+The directive: the cached/live boundary must be visible in the experience,
+not just in this document. The rule for doing it without noise: **say it
+where the listener is already reading detail, never on every row.**
+
+- **The details panel** (already on every browse surface) gains one closing
+  line per branch: *"Answers from your catalog, updated 2 hours ago."* or
+  *"Asks the internet each time; nothing is stored."* Words, never a
+  timestamp; the age is spoken the way Continue Listening speaks positions.
+- **Choose Browse Sources** rows gain the same fact in their description -
+  "On. LibriVox Audiobooks. Public-domain audiobooks, by chapter. Stored on
+  this computer." versus "... Live from TuneIn." - so the place you decide
+  about a source is the place you learn how it behaves.
+- **Station Catalog Status** (6.3) is the complete answer: every source, its
+  class in plain words ("stored and kept current" / "live only" / "yours"),
+  its age, its health, and *why* a live-only source is live-only - one
+  sentence each, "iHeart's terms do not allow storing its listings", because
+  the honest reason reads better than an unexplained gap.
+- **The magical touch, kept quiet:** the first time a branch answers from
+  the catalog with the network down, one announcement - *"You are offline.
+  Browsing from your catalog, updated this morning."* - once per session,
+  never per branch. The app quietly being fine when the internet is not is
+  the whole feature; one sentence is how it takes credit without bragging.
+- Never a per-row badge, never a per-row suffix: 62,000 rows that each end
+  in "cached" is 62,000 interruptions for a fact that belongs to the branch.
+
+### 7. What "fast" means (budgets, enforced)
+
+- Open catalog + first branch query: < 50 ms on the dev machine, enforced by
+  a perf-marked test (RUN_PERF lane, like the existing budgets).
+- FTS search keystroke: < 30 ms.
+- Startup cost when refresh is off: zero added network, < 10 ms added CPU
+  (open is lazy - the store opens on first browse, not on launch).
+- Refresh memory: streaming parse, never a whole-directory list in RAM;
+  peak budget 150 MB during a full Radio Browser import.
+- UI thread: zero catalog I/O ever; store reads run on the task manager and
+  return via the existing call-ui-safely path... with one exception: point
+  reads under 5 ms (a single keyed SELECT) may run inline, measured, because
+  a CallAfter round-trip would cost more than the read.
+
+### 8. Protection of user stations (invariants, not intentions)
+
+1. **Separate files.** User data stays in its existing stores. The catalog
+   database contains zero user-owned rows. There is no code path from
+   `catalog/refresh.py` to any user store - enforced by an import-boundary
+   test (refresh modules may not import favorites/my_servers/youtube_channels
+   stores).
+2. **Overlay at read time.** When a browse row's canonical key matches a
+   favorite, the favorite's name and edits win in display, and the row is
+   marked saved. The catalog row is untouched.
+3. **Vanish never cascades.** A station disappearing from a source never
+   changes a favorite that points at it - favorites already serialize their
+   own full station record, and that stays the rule.
+4. **Rebuild is safe by construction.** "Rebuild From Shipped Snapshot"
+   deletes only `radio-catalog/`. A test asserts the favorites, My Servers,
+   YouTube channels, and schedule files are byte-identical across a rebuild.
+5. **Imports are user data.** A playlist import lands in favorites (Class C),
+   never in the catalog, so no refresh can ever "correct" it.
+6. The existing timestamped favorites backups continue independently.
+
+### 9. Accessibility requirements (gates, not aspirations)
+
+- Every new dialog through `_show_modal_dialog` + `apply_modal_ids`; ListBox
+  activation via `apply_listbox_activation` (GATE-13); rows speak state
+  first; dialog and accessible-name inventories regenerated.
+- Counts and ages in words ("about two hours old"), never bare timecodes.
+- Automatic refresh announces only outcomes that changed something; manual
+  refresh always answers.
+- The empty/broken distinction survives: catalog-served branches still say
+  "nothing in X" vs "X could not be reached" correctly, because the fallback
+  ladder preserves the failure flags.
+
+### 10. Compliance and egress
+
+- Every new endpoint (bulk exports, delta feeds) gets a reviewed entry in the
+  network egress audit before it is called.
+- The seed builder runs at release time from the build machine - it is not
+  app egress, but it is documented in the audit's build-tools section anyway.
+- iHeart terms were read 2026-08-15 (Section 2b): Class B permanently;
+  never seeded, never written through, live-drill with session caching only.
+- TuneIn: policy unchanged - live-drill only, never bulk, never seeded.
+- Attribution: sources that request credit (Radio Browser) get it in the
+  About/docs, and provenance is visible per-station in the details panel.
+
+### 11. Failure handling (the degradation matrix)
+
+| Failure | Behavior |
+| --- | --- |
+| Catalog file corrupt | Coded error logged once; auto-rebuild from seed; browse falls to live for that session; one calm announcement |
+| Seed missing/hash mismatch (tampered or truncated install) | Catalog disabled with a status message; live browsing unaffected; never import an unverified seed |
+| One source down during refresh | Source marked stale with its age; every other source refreshes; summary names it |
+| Rate limited | Honor Retry-After; back off that source for the day; count it in the summary as "waiting", not "failed" |
+| Disk full mid-refresh | Staging write fails; swap never happens; existing catalog intact; announced once |
+| Refresh interrupted (sleep, shutdown) | Staging discarded on next start; catalog is whatever was last swapped in - always consistent |
+
+### 12. Packaging and size budget
+
+- Seed budget: **10 MB compressed, hard-failed in the build** if exceeded.
+  Measured (Section 2b): the full 62,377-station Radio Browser catalog with
+  FTS compresses to **6.4 MB**; SomaFM is noise; Xiph is currently empty;
+  iHeart is out by policy. The realistic seed is roughly 7 MB - the budget
+  has a comfortable third in reserve.
+- If the measured seed lands over budget: split the seed and move the bulk to
+  the existing assets-on-demand release mechanism (the pattern speech engines
+  already use), keeping a minimal in-package seed (curated sources + top-N
+  per country) so first-launch is still complete-feeling offline.
+- The catalog directory is excluded from any sync mechanism (it is derived,
+  per-machine data, same reasoning as `local_paths`).
+
+### 13. Testing strategy
+
+- Pure units: keys (URL normalization table-driven), merge (every rule and
+  every refusal-to-merge), summary sentences, due/stagger arithmetic with an
+  injected clock.
+- Store: tmp-dir SQLite round-trips; swap atomicity (kill between stage and
+  swap -> old catalog intact); tombstone grace; FTS query shapes.
+- Refresh: fake fetchers (success/empty/hash-unchanged/rate-limited/raise);
+  assert per-source isolation and that a hidden source is never fetched.
+- Read-path parity: for each converted branch, catalog-served rows ==
+  live-served rows for the same fixture data (shape and ordering), so the UI
+  cannot tell which path answered.
+- Invariant tests from Section 8 (import boundary, rebuild byte-identity).
+- Perf lane: the 50 ms / 30 ms budgets as RUN_PERF tests.
+- The conftest real-profile write guard already protects the developer's own
+  catalog during all of this.
+
+### 14. Phased delivery (PR-sized, in order)
+
+#### Phase 0 - measure before promising - DONE 2026-08-15
+
+Findings are Section 2b; the prototype lives in `local/catalog-proto/`
+(fetchers, the built 26 MB catalog, the 6.4 MB seed, the benchmark scripts).
+Outcomes folded into this document: 10 MB seed budget, pointer-based swap,
+URL-merge tightening, empty-source outage rule, per-page refresh parsing,
+the `(country, votes DESC)` covering index, and mandatory pagination for the
+Radio Browser dump. The iHeart terms read closed Phase 0 entirely: iHeart is
+Class B by policy (Section 2b). Nothing remains open in this phase.
+
+#### Phase 1 - the catalog exists and browsing is instant (2-3 PRs)
+
+1. `catalog/` core: store, keys, merge, seed import, coded errors + tests.
+2. Seed builder script + release-script wiring + size gate + egress entries.
+3. Catalog-first read path for Radio Browser axes, Xiph, SomaFM (+ iHeart if
+   cleared), behind `catalog_enabled`; parity + perf tests; the master
+   checkbox in Preferences.
+
+Exit criteria: fresh install, network cable pulled, every Class-A branch
+browses instantly; suite green; installer size within budget.
+
+#### Phase 2 - it stays fresh, and says so (2 PRs)
+
+4. Refresh engine: startup toggle, interval, staggering, tombstones,
+   write-through; the two new Preferences checkboxes; minute-tick wiring.
+5. "Update Station Catalog..." command, summary model, spoken summary,
+   review dialog; inventories regenerated.
+
+Exit criteria: John's machine can sit for a week and the catalog is current;
+turning both toggles off produces zero background requests (verified by the
+egress-silent test lane).
+
+#### Phase 3 - visibility, search, and the adopted extensions (2-3 PRs)
+
+6. FTS lane in Find Stations (instant local group first).
+7. Catalog Status view: age, health, per-source refresh, rebuild button;
+   "what's new since last update" as a browse branch that reads the diff;
+   the cached-vs-live UX of Section 6.5 (details-panel line, Choose Browse
+   Sources descriptions, the once-per-session offline sentence).
+8. **The library seed (Class A2, adopted):** Gutenberg audio seeded and
+   served locally. LibriVox measured out of the v1 seed (see the delivery
+   log: 194,501 section rows = 60 MB against the whole 10 MB budget); its
+   branches stay live, and seeding it behind a compact section format is
+   the named follow-up.
+9. **RadioDNS enrichment at build time** (5.8): the identities table and the
+   Wikidata frequency join in the seed builder.
+
+#### Phase 4 - explicitly deferred until the above is proven
+
+- FMSTREAM as a new Class-A source (terms check first).
+- RadioDNS-driven merge links in the merge engine.
+- Trust badges in station details; "most improved"; nearby/local mix.
+- Fuzzy dedupe. Only with a corpus of real duplicates to test against.
+
+### 15. Risks
+
+| Risk | Mitigation |
+| --- | --- |
+| Seed bloats the installers | Hard size gate in the build; assets-on-demand split ready as the relief valve |
+| A source changes its export format | Per-source isolation + hash short-circuit; worst case one stale source, never a broken app |
+| SQLite on network/portable drives misbehaves with WAL | Portable edition detection already exists; fall back to journal mode DELETE on portable media; swap semantics unchanged |
+| Merge collapses two real stations into one | Refusal-to-merge on ambiguity; provenance table makes any merge inspectable and reversible on rebuild |
+| Scope creep toward the delight features before the engine is solid | Phase gates above; Phase 4 items are named and parked, not smuggled |
+
+### 16. Open questions for Jeff
+
+1. (Closed 2026-08-15: iHeart terms read; Class B permanently. See 2b.)
+2. Default periodic interval: 24 hours is proposed; 12 felt eager for a
+   directory that changes slowly. Preference?
+3. Should popular/trending fall back to the snapshot when offline (proposed:
+   yes, labeled "as of <age>"), or hide rather than show stale rankings?
+4. Seed in both editions, or portable-only with the installer relying on
+   first-run refresh? (Proposed: both; offline-first is the story.)
+
+### Appendix A - freely available sources for Jeff to consider
+
+Filtered hard by the standing rule: **if hoops are required - keys,
+registrations, partner agreements, terms that bar storage - forget it.**
+Everything below was checked on 2026-08-15; the two marked *verified live*
+were fetched and measured today.
+
+#### Include - no hoops, storage permitted
+
+- **laut.fm** (*verified live*): open keyless JSON API, `api.laut.fm` -
+  measured today at **15,956 stations, 36.8 MB, one request, no key**.
+  German community/web-radio platform; API is explicitly public. A genuine
+  Class A candidate on Radio Browser's scale, with unusually clean metadata.
+  Effort: one adapter, one seed table. The strongest add on this list.
+- **RadioDNS SPI documents (SI.xml)**: broadcasters self-publish station
+  lists, logos, and stream links in an open standard *designed* to be
+  consumed and cached. No key, no agreement - the standard exists so clients
+  do exactly this. Effort: an SPI parser plus the 5.8 enrichment hook.
+  Coverage is broadcaster-by-broadcaster (strong in Europe), so it enriches
+  rather than fills the tree.
+- **Openverse audio** (WordPress Foundation): CC-licensed audio catalog with
+  an open anonymous API (rate-limited, keyless at the tier the app would
+  use). A library-shelf source rather than radio; every record carries its
+  license, which fits the ccMixter licence-travels-with-the-file pattern.
+  Effort: moderate; consider only if a "CC music shelf" is wanted.
+
+#### Consider with one caution each
+
+- **FMSTREAM (fmstream.org)**: **ignored for now (Jeff, 2026-08-15).**
+  Large directory, no API, terms silent rather than permissive - and silent
+  is not yes. Revisit only with a clear answer from the maintainer.
+- **Podcast Index** (*verified live*): the full database is a genuinely
+  free, keyless public download - measured today at **1.8 GB** - but the
+  size makes it an on-demand asset at best (the assets-v1 pattern), never a
+  seed, and Cast is its natural home rather than Radio. Parked unless the
+  Radio/Cast boundary changes.
+- **Environment Canada Weatheradio**: the NOAA-shape counterpart for Canada;
+  public data, but the internet re-streams are third-party and would need
+  the same feed-by-feed vetting `wxindex` did for NOAA. Effort: a wxindex
+  sibling; worth it if Canadian listeners ask.
+- **Lit2Go** (University of South Florida): free public-domain audiobooks
+  with attribution terms; no API, so ingestion is page-walking - modest
+  hoops, honest ones. Only worth it if the A2 shelf proves popular.
+
+#### Excluded by the no-hoops rule - listed so the reasoning is visible
+
+- **Jamendo** (free but mandatory API key), **Free Music Archive** (API
+  discontinued; terms of the successor unclear), **radio.garden**
+  (unofficial API, terms not open), **Dirble** (dead), **vTuner/Streema/
+  radio-locator** (commercial/proprietary), **SHOUTcast** (partner-gated;
+  the 3.0 stance stands), **BBC and public-broadcaster direct streams**
+  (geo/terms per broadcaster; RadioDNS SPI is the legitimate path to the
+  same stations).
+
+### Delivery log
+
+- 2026-08-15: Phases 1-3 built in one pass on `feat/station-catalog`:
+  `quill/core/radio/catalog/` (store with pointer-swapped generations, keys,
+  refresh with the empty-guard and tombstones, seed import, spoken
+  summaries, the read path), the `browse()` chokepoint integration, the
+  Find Stations instant lane, three Preferences (master switch, startup
+  check, interval defaulting 24 hours), Station > Update Station Catalog,
+  View > Station Catalog Status (the complete cached-versus-live answer),
+  the once-per-session offline sentence, the seed builder with its hard
+  10 MB gate wired into the release script, the Gutenberg audio shelf, and
+  17 core tests pinning every measured rule.
+- **LibriVox is not in the v1 seed - the budget gate said so.** The full
+  shelf built: 8,978+ books carrying 194,501 section rows, a 70.3 MB
+  database compressing to 11.8 MB - over the 10 MB gate on chapter listings
+  alone (their API also caps `extended=1` pages at 800; `fetch_book_page`
+  uses 500 and stays for the follow-up). Decision: LibriVox branches keep
+  answering live exactly as 3.0 served them; seeding them behind a compact
+  section format is the named follow-up. The Status view says so honestly.
+- **Found while wiring Layer 1:** the startup refresh never fired in a
+  public-shaped run because the editor's `core.radio` release gate (#1347)
+  also killed `_init_radio`'s active block inside Quill Radio itself -
+  scheduler, wake task, missed reports, palette included. Fixed via
+  `FeatureManager.grant_product_features` (the app claims its own feature at
+  startup; in-memory, safety locks still apply), same treatment for Quill
+  Cast. The catalog's startup import is verified end-to-end in a real app
+  loop: seed imported, `CURRENT` + generation present, age 0.
+- FMSTREAM: ignored for now (Jeff, 2026-08-15).
+
+### 17. Decision log
+
+- 2026-08-15 (directive): cache-everything-legal adopted as Goal 7; Class A2
+  (LibriVox + Gutenberg audio) promoted from parked to Phase 3; Wikidata
+  becomes a seeded CC0 enrichment table; cached-vs-live made a first-class
+  UX requirement (6.5); RadioDNS moved from live lookup to build-time
+  enrichment (5.8); Xiph default_on=False executed same day (PR #1401);
+  Appendix A added with verified candidates (laut.fm 15,956 stations
+  keyless; Podcast Index dump 1.8 GB, parked on size) and the no-hoops
+  exclusion list.
+- 2026-08-15 (sweep): every source measured (table in 2b). LibriVox and
+  Gutenberg audio identified as Class A2 library-seed candidates for Phase 4
+  (~22-24k + 1,124 records, est. 3-4 MB compressed); Internet Archive
+  confirmed live-drill by the numbers (collections to 522k items). Xiph ruled
+  intermittent, not dead: kept with a release-cut tripwire (auto-hide via
+  `default_on=False` while empty; removal only after sixty dead days).
+- 2026-08-15 (latest): iHeart Terms of Use read (updated 2025-03-12).
+  Section 23's "enter into a database... distribute" bars seeding or
+  persisting iHeart listings; iHeart set to Class B permanently, and Layer 4
+  write-through narrowed to Class A sources only so the catalog database
+  provably contains nothing terms-encumbered.
+- 2026-08-15 (later, from the prototype): swap design changed to generation
+  files plus a pointer after `os.replace` over an open database failed on
+  Windows; seed budget halved to 10 MB on a measured 6.4 MB; URL-only merging
+  rejected on measured evidence (7,135 shared URLs); empty-source outage rule
+  added after finding the live Xiph directory empty; the JSON store
+  alternative rejected with measurements (9 s and 217 MB versus 0.5 ms).
+- 2026-08-15: SQLite chosen over sharded JSON for the catalog store; derived-
+  data principle adopted (rebuildable, never authoritative for user data);
+  TuneIn confirmed excluded from bulk; user-data protection expressed as
+  import-boundary + byte-identity tests rather than code review vigilance;
+  the earlier rubber-duck note this file held is superseded by this plan
+  (its delight items live in Phase 4, its "what not to do" list is absorbed
+  into Non-goals and Invariants).
