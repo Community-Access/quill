@@ -77,6 +77,11 @@ def register_radio_commands(host: Any) -> None:
             host.radio_copy_whats_playing,
         ),
         (
+            "radio.add_youtube_link",
+            "Internet Radio: Add YouTube Link...",
+            host.radio_add_youtube_link,
+        ),
+        (
             "radio.add_youtube_playlist",
             "Internet Radio: Add from YouTube Playlist...",
             host.radio_add_youtube_playlist,

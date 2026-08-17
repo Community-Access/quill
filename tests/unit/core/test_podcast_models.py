@@ -209,3 +209,25 @@ def test_show_feed_username_round_trips() -> None:
 def test_show_feed_username_defaults_empty_for_old_data() -> None:
     loaded = PodcastShow.from_dict({"id": "s1", "title": "T"})
     assert loaded is not None and loaded.feed_username == ""
+
+
+def test_settings_view_names_and_sort_mode_round_trip() -> None:
+    settings = PodcastSettings(
+        view_names={"inbox": "Triage"},
+        show_sort_mode="custom",
+    )
+    reloaded = PodcastSettings.from_dict(settings.to_dict())
+    assert reloaded.view_names == {"inbox": "Triage"}
+    assert reloaded.show_sort_mode == "custom"
+
+
+def test_settings_view_names_and_sort_mode_tolerate_junk() -> None:
+    # A settings file is somebody else's input: blanks drop out, an unknown
+    # sort mode reads as the default rather than reaching the tree.
+    reloaded = PodcastSettings.from_dict({
+        "view_names": {"inbox": "   ", "": "x", "favorites": " Best "},
+        "show_sort_mode": "by_vibes",
+    })
+    assert reloaded.view_names == {"favorites": "Best"}
+    assert reloaded.show_sort_mode == "title_az"
+    assert PodcastSettings.from_dict({"view_names": "nonsense"}).view_names == {}

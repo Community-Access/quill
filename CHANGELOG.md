@@ -6,6 +6,31 @@ The most recent work first: a reliability pass driven entirely by what people
 reported (a full disk that could lose a document, an editor doing too much work
 between keystrokes), then the release as originally scoped below.
 
+### A polish pass that reached the editor's shared surfaces (2026-08-17)
+
+Most of this batch shipped in Quill Radio and QUILL Cast (see their own
+changelogs), but the surfaces are shared, so QUILL's copies changed too:
+
+- **An emptied search field empties its results** (`quill/ui/search_reset.py`,
+  one rule bound on every search surface with a separate results list). In the
+  Book Library, the GitHub Items browser, the LibriVox picker, Search
+  Everywhere and Add Podcast, deleting your query used to leave the old
+  results sitting there looking current — stale matches for text that no
+  longer exists, indistinguishable from live ones to a screen reader arrowing
+  the list. Clearing the field now clears the list at once, exactly as that
+  surface's own blank-search path would.
+- **Show notes read as paragraphs.** The plain-text form of an episode's
+  notes ran paragraphs together with bare line breaks, which next-paragraph
+  navigation sails straight past. Blocks now contribute one blank line —
+  never more, however many empty tags a publisher stacks — everywhere notes
+  render: the Show Notes window, About This Episode, and text sent to the
+  editor.
+- **The Podcast Manager's show sorting grew two modes.** *Title Z-A* and
+  *Your custom order* — the hand-arranged order built in QUILL Cast with
+  Alt+Up/Alt+Down — and the dropdown now opens on whatever the shared library
+  is actually sorted by, instead of always on A-Z. Renamed pinned views
+  (Cast's F2 rename) show their personal names here too.
+
 ### Save said the word count twice, in two different ways (2026-08-17)
 
 Reported from the field: with NVDA running, every Ctrl+S announced the same

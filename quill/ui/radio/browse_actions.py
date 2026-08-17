@@ -217,8 +217,62 @@ def _add_channel(host: Any) -> None:
     host._task_manager.submit("radio-add-channel", _work, on_success=_ok, on_failure=_failed)
 
 
+def _add_playlist(host: Any) -> None:
+    from quill.core.radio import youtube_saved
+
+    if _refuse_in_safe_mode(host, "Adding a playlist"):
+        return
+    url = _ask(
+        host,
+        title="Add a Playlist",
+        prompt=(
+            "Address of the YouTube playlist, for example\n"
+            "https://www.youtube.com/playlist?list=..."
+        ),
+    )
+    if not url:
+        return
+    normalized = youtube_saved.normalize_playlist_url(url)
+    if not normalized:
+        host._announce(
+            "That does not look like a playlist link. It should carry list= in the address."
+        )
+        return
+    item = youtube_saved.SavedStore().add(youtube_saved.PLAYLIST, normalized)
+    if item is not None:
+        host._announce("Added the playlist. Open it under YouTube to hear it.")
+    _reload_branch(host, "youtube")
+
+
+def _add_video(host: Any) -> None:
+    from quill.core.radio import youtube_saved
+
+    if _refuse_in_safe_mode(host, "Adding a video"):
+        return
+    url = _ask(
+        host,
+        title="Add a Video",
+        prompt=("Address of the YouTube video, for example\nhttps://www.youtube.com/watch?v=..."),
+    )
+    if not url:
+        return
+    normalized = youtube_saved.normalize_video_url(url)
+    if not normalized:
+        host._announce(
+            "That does not look like a video link. A video page looks like "
+            "https://www.youtube.com/watch?v=... or https://youtu.be/..."
+        )
+        return
+    item = youtube_saved.SavedStore().add(youtube_saved.VIDEO, normalized)
+    if item is not None:
+        host._announce("Added the video. It is now a row under YouTube; Enter plays it.")
+    _reload_branch(host, "youtube")
+
+
 #: Action node id -> what it does. A new "Add..." row is one entry here.
 _ACTIONS: dict[str, Callable[[Any], None]] = {
     "addserver": _add_server,
     "addchannel": _add_channel,
+    "addplaylist": _add_playlist,
+    "addvideo": _add_video,
 }

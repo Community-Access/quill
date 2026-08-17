@@ -200,3 +200,16 @@ def test_sort_pairs_empty_list() -> None:
     library = PodcastLibrary()
     assert sort_pairs(library, [], view_mode="grouped") == []
     assert sort_pairs(library, [], view_mode="flat") == []
+
+
+def test_sort_shows_descending_and_custom() -> None:
+    from quill.core.podcasts.sorting import sort_shows
+
+    zebra = _show("s1", title="Zebra")
+    aard = _show("s2", title="Aardvark")
+    shows = [zebra, aard]
+    assert [s.title for s in sort_shows(shows, "title_za")] == ["Zebra", "Aardvark"]
+    # "custom" is the list's own order -- Move Up/Down reorders the library
+    # list in place, and the store preserves it.
+    assert sort_shows(shows, "custom") == [zebra, aard]
+    assert sort_shows(shows, "custom") is not shows  # a copy, like every mode

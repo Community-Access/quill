@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast User Guide</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -235,24 +234,39 @@ mirrored in the status bar and the Episode menu.</li>
 Manager shows – <strong>Favorites</strong>, <strong>New
 Episodes</strong>, <strong>Continue Listening</strong>,
 <strong>Inbox</strong> – above your nested library folders and the shows
-filed in them, each with a live unplayed-episode count. Enter on a show
-plays its next episode; Enter on a pinned view opens the Podcast Manager
-to that view. Delete unsubscribes a show (with confirmation) or
-dissolves a folder (your shows step safely to the top level – nothing is
-ever unsubscribed by deleting a folder). Shift+F10 opens the full
-context menu: Play/Stop, Add/Remove Favorites, Move to Folder,
+filed in them. A show wears its unplayed count in words – “(3 unheard)”
+– and a folder wears how many podcasts live under it, counting
+everything expanding it would reveal. Enter on a show plays its next
+episode; Enter on a pinned view opens the Podcast Manager to that view.
+Delete unsubscribes a show (with confirmation) or dissolves a folder
+(your shows step safely to the top level – nothing is ever unsubscribed
+by deleting a folder). Shift+F10 opens the full context menu: Play/Stop,
+Add/Remove Favorites, Move to Folder, <strong>Move Up / Move Down in
+Custom Order</strong> (Alt+Up / Alt+Down – see Sort Podcasts below),
 <strong>Download All Episodes</strong>, <strong>Remove All
 Episodes</strong>, <strong>Feed Credentials…</strong> (for private feeds
 – see below), Unsubscribe, New Folder, and Open Manager. On a folder the
-context menu offers <strong>Rename Folder…</strong>, <strong>Delete
+context menu offers <strong>Rename Folder… (F2)</strong>, <strong>Delete
 Folder…</strong>, New Folder…, and Open Manager.</li>
+<li><strong>The pinned views rename too.</strong> Press
+<strong>F2</strong> on Favorites, New Episodes, Continue Listening or
+the Inbox (or choose <strong>Rename…</strong> from its context menu) and
+give it your own name – it follows you into the Podcast Manager as well.
+A renamed view’s menu gains <strong>Reset Name</strong>; entering a
+blank, or the shipped name itself, also resets it. Shows and episodes
+deliberately refuse F2: their names come from the podcast’s own
+feed.</li>
 <li><strong>Episodes without leaving the main page.</strong> Every show
 in the tree can be expanded (Right Arrow) to reveal its episodes, newest
 first, right where the show sits – no detour through the Manager to
 reach one particular episode. Shows start collapsed so the tree reads as
 a list of shows rather than a wall of episodes. <strong>Enter on an
 episode plays that episode</strong>; Enter on the show itself still
-plays the show’s next unplayed episode.</li>
+plays the show’s next unplayed episode. An episode row’s context menu
+offers <strong>Play Episode</strong> (Stop, while it is the one playing)
+and <strong>Download Episode</strong> – the file lands under your
+Download location as <code>show-title\episode-title.mp3</code>, so it
+has a name that means something outside the app.</li>
 <li>Buttons: <strong>Play</strong> (becomes <strong>Pause</strong> while
 playing, <strong>Resume</strong> while paused – one transport control
 that is never dead), <strong>Stop</strong>, <strong>Add to
@@ -305,7 +319,16 @@ recent, how long, and how to sort, re-resolved live every time you open
 it). Edit Rules…, Rename (F2), and Delete round out each playlist’s own
 context menu.</li>
 <li><strong>Search Everywhere</strong> searches shows, episodes, your
-notes, and fetched transcripts at once and jumps to the result.</li>
+notes, and fetched transcripts at once and jumps to the result. Emptying
+the search box empties the results at once – stale matches for a query
+that is no longer there never sit around looking current. (Add Podcast’s
+search behaves the same way.)</li>
+<li><strong>“Sort shows”</strong> orders the podcasts within each
+folder: Title A-Z, Title Z-A, Most unheard first, Recently updated
+first, or <strong>Your custom order</strong> – the hand-arranged order
+from Sort Podcasts and Alt+Up/Alt+Down. The dropdown opens on whatever
+the library is actually sorted by, so the Manager and the main window
+never disagree.</li>
 <li><strong>Transcripts</strong>: when a feed provides one (Podcasting
 2.0; VTT/SRT/JSON), save it to a file or open it – cached for instant
 reopening. QUILL Cast never generates transcripts from audio; that stays
@@ -384,12 +407,22 @@ Feed Credentials….</p>
 <h3 id="subscriptions-alts">Subscriptions (Alt+S)</h3>
 <p>Open Podcast Manager… (Ctrl+M), Add Podcast…, Import OPML…, Export
 OPML…, New Folder… (creates a library folder without opening the
-Manager), Add Local Podcast…, Scan Watched Folders, Subscribe to ACB
-Media Podcasts, Podcast Settings…, <strong>Quick Actions…</strong>,
-<strong>Export My Data…</strong>, <strong>Delete All Podcast
-Data…</strong>, <strong>Resume Last Episode on Launch</strong> (check
-item – the appliance switch), <strong>Preferences…</strong> (Ctrl+,),
-Send to Tray (Ctrl+W), Exit.</p>
+Manager), <strong>Sort Podcasts</strong> (a submenu – see below), Add
+Local Podcast…, Scan Watched Folders, Subscribe to ACB Media Podcasts,
+Podcast Settings…, <strong>Quick Actions…</strong>, <strong>Export My
+Data…</strong>, <strong>Delete All Podcast Data…</strong>,
+<strong>Resume Last Episode on Launch</strong> (check item – the
+appliance switch), <strong>Preferences…</strong> (Ctrl+,), Send to Tray
+(Ctrl+W), Exit.</p>
+<p><strong>Sort Podcasts</strong> decides how your shows are ordered
+everywhere they are listed: <strong>Ascending (A to Z)</strong>,
+<strong>Descending (Z to A)</strong>, or <strong>Custom Order</strong>.
+Custom order is the one you build by hand: <strong>Alt+Up /
+Alt+Down</strong> on a show in the library tree (or Move Up/Down in
+Custom Order on its context menu) nudges it among its folder’s
+neighbours. The first move switches to custom automatically – starting
+from the order already on screen, so nothing jumps – and the radio items
+here always show which mode is live.</p>
 <p><strong>Preferences…</strong> (Ctrl+,) holds five checkboxes:</p>
 <ul>
 <li><strong>Resume Last Episode on Launch</strong> – pick up where you

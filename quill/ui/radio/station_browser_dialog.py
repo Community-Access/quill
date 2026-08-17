@@ -458,6 +458,9 @@ class StationBrowserDialog:
 
         self._name_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
         self._tag_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
+        from quill.ui.search_reset import bind_empty_query_reset
+
+        bind_empty_query_reset(self._name_ctrl, self._on_query_cleared, also=(self._tag_ctrl,))
         # Picking a tag or a country fires the search immediately (as well as
         # the Search button), so the dropdowns feel like filters.
         self._tag_ctrl.Bind(wx.EVT_COMBOBOX, self._on_search)
@@ -1039,6 +1042,21 @@ class StationBrowserDialog:
         selection = self._category_list.GetSelection()
         if selection != self._wx.NOT_FOUND:
             self._show_category(_CATEGORIES[selection])
+
+    def _on_query_cleared(self) -> None:
+        """Emptying the search boxes empties the Search Results list --
+        results for a query that is no longer in the fields must not keep
+        looking current (see quill/ui/search_reset.py)."""
+        if country_query(self._country_ctrl.GetStringSelection()):
+            return  # a country facet alone is still a live query
+        if self._category_list.GetSelection() != _CATEGORIES.index(_SEARCH_RESULTS):
+            return  # browsing a category, not looking at search results
+        if not (self._search_results or self._current_results):
+            return
+        self._search_results = []
+        self._more_btn.Enable(False)
+        self._fill_results([], status="Type a station name, tag, or country to search.")
+        self._announce("Search cleared.")
 
     def _on_search(self, event: object) -> None:
         # Whether the finished search should move focus into the results list.

@@ -268,3 +268,36 @@ def test_the_contents_vocabulary_only_names_real_branches() -> None:
 
     unknown = set(row_actions.FOLDER_CONTENTS) - set(browse_sources._HANDLERS)
     assert not unknown, f"{unknown} name no browsable kind"
+
+
+def test_a_root_source_can_be_hidden_in_place_and_reset() -> None:
+    """Hide This Source / Reset Sources to Default live on top-level branches
+    only -- the rows Choose Browse Sources governs."""
+    root = _ids(actions_for("popular", is_folder=True, folder_state=FolderState(root_source=True)))
+    assert row_actions.HIDE_SOURCE in root
+    assert row_actions.RESET_SOURCES in root
+    nested = _ids(actions_for("rbcountry", is_folder=True, folder_state=FolderState()))
+    assert row_actions.HIDE_SOURCE not in nested
+    assert row_actions.RESET_SOURCES not in nested
+
+
+def test_a_transcript_bearing_episode_offers_view_transcript() -> None:
+    # The podepisode node id carries the feed's transcript address, so the
+    # transcript is readable without playing the episode.
+    ids = _ids(actions_for("podepisode", station=_Row(is_recording=True)))
+    assert row_actions.VIEW_TRANSCRIPT in ids
+
+
+def test_a_youtube_row_offers_view_transcript_without_playing() -> None:
+    @dataclass
+    class _Video(_Row):
+        stream_url: str = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+    ids = _ids(actions_for("ytvideo", station=_Video(is_recording=True)))
+    assert row_actions.VIEW_TRANSCRIPT in ids
+    assert row_actions.REMOVE_SAVED in ids
+
+
+def test_an_ordinary_station_offers_no_transcript() -> None:
+    ids = _ids(actions_for("station", station=_Row()))
+    assert row_actions.VIEW_TRANSCRIPT not in ids

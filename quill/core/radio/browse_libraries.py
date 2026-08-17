@@ -31,11 +31,17 @@ def _browse_apple(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
         # listener comes back for, and before this folder existed a
         # subscription vanished into Quill Cast with no way to find it from
         # the app that made it ("how do I find those that are subscribed?").
+        # The badge is the follow count; the old explanatory note read as a
+        # sentence glued to the name on every visit ("Subscriptions (shows
+        # you follow, shared with Quill Cast) Closed") and is gone.
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts.subscriptions import load_library
+
+        followed = sum(1 for s in load_library(app_data_dir()).shows if s.feed_url)
         return [
             folder(
                 make_id("mypodcasts"),
-                "Subscriptions",
-                note="shows you follow, shared with Quill Cast",
+                f"Subscriptions ({followed})" if followed else "Subscriptions",
             ),
             *(folder(make_id("apple", code), name) for code, name in apple.DEFAULT_STOREFRONTS),
         ]
@@ -99,6 +105,14 @@ def _feed_episode_leaves(feed_url: str, *, safe_mode: bool, source: str) -> list
     for episode in info.episodes:
         if not episode.audio_url:
             continue
+        # An episode with a transcript gets a node id that carries the
+        # transcript's address and type, so View Transcript on the row can
+        # fetch it without playing anything (see browse_tree_menu).
+        node_id = (
+            make_id("podepisode", episode.transcript_url, episode.transcript_type or "")
+            if episode.transcript_url
+            else ""
+        )
         nodes.append(
             leaf(
                 RadioStation(
@@ -108,6 +122,7 @@ def _feed_episode_leaves(feed_url: str, *, safe_mode: bool, source: str) -> list
                     source=source,
                     is_recording=True,
                 ),
+                node_id=node_id,
                 note="transcript available" if episode.transcript_url else "",
             )
         )
@@ -139,11 +154,21 @@ def _browse_my_podcasts(args: list[str], *, safe_mode: bool) -> list[BrowseNode]
     publisher's feed with no directory in between.
     """
     from quill.core.paths import app_data_dir
+    from quill.core.podcasts.models import PodcastShow
+    from quill.core.podcasts.sorting import unheard_count
     from quill.core.podcasts.subscriptions import load_library
+
+    def label(show: PodcastShow) -> str:
+        # The unheard badge reads from the shared library's own episode
+        # state -- the same count Quill Cast shows -- so a show freshly
+        # followed here (no episodes synced yet) is simply unbadged.
+        name = show.title or show.feed_url
+        unheard = unheard_count(show)
+        return f"{name} ({unheard} unheard)" if unheard else name
 
     shows = load_library(app_data_dir()).shows
     return [
-        folder(make_id("mypodcastshow", show.feed_url), show.title or show.feed_url)
+        folder(make_id("mypodcastshow", show.feed_url), label(show))
         for show in sorted(shows, key=lambda s: (s.title or s.feed_url).casefold())
         if show.feed_url
     ]

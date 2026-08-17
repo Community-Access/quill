@@ -112,7 +112,10 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         group="Yours",
     ),
     BrowseSourceInfo(
-        "youtube", "YouTube Channels", "Channels you add yourself, as folders.", group="Yours"
+        "youtube",
+        "YouTube",
+        "Channels, playlists, and videos you add yourself.",
+        group="Yours",
     ),
     BrowseSourceInfo(
         "apple",

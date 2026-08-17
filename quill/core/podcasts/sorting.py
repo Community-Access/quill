@@ -24,7 +24,7 @@ EPISODE_SORT_MODES = (
     "unplayed_first",
 )
 
-SHOW_SORT_MODES = ("title_az", "unheard_first", "recently_updated")
+SHOW_SORT_MODES = ("title_az", "title_za", "unheard_first", "recently_updated", "custom")
 
 
 def _parse_published(published: str) -> float:
@@ -120,6 +120,12 @@ _unheard_count = unheard_count
 def sort_shows(shows: list[PodcastShow], mode: str) -> list[PodcastShow]:
     """Return a new list of *shows* sorted by *mode* (unknown modes fall back
     to ``title_az``)."""
+    if mode == "custom":
+        # The list's own order IS the custom order: Move Up/Down reorders
+        # ``PodcastLibrary.shows`` in place and the JSON store preserves it.
+        return list(shows)
+    if mode == "title_za":
+        return sorted(shows, key=lambda s: s.title.casefold(), reverse=True)
     if mode == "unheard_first":
         return sorted(shows, key=lambda s: (-_unheard_count(s), s.title.casefold()))
     if mode == "recently_updated":

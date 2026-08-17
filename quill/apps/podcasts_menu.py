@@ -49,6 +49,21 @@ class CastMenuBarMixin:
         subs_menu.Append(export_id, "&Export OPML...")
         folder_id = wx.NewIdRef()
         subs_menu.Append(folder_id, "New &Folder...")
+        # Sort Podcasts: how the library tree orders shows. Radio items so the
+        # current mode is always visible; "custom" is also entered implicitly
+        # by Alt+Up/Alt+Down on a show (see _on_library_move_show).
+        sort_menu = wx.Menu()
+        self._sort_mode_menu_ids: dict[str, object] = {}
+        for mode, label in (
+            ("title_az", "&Ascending (A to Z)"),
+            ("title_za", "&Descending (Z to A)"),
+            ("custom", "&Custom Order"),
+        ):
+            mode_id = wx.NewIdRef()
+            self._sort_mode_menu_ids[mode] = mode_id
+            sort_menu.AppendRadioItem(mode_id, label)
+            self.frame.Bind(wx.EVT_MENU, lambda _e, m=mode: self._set_show_sort_mode(m), id=mode_id)
+        subs_menu.AppendSubMenu(sort_menu, "So&rt Podcasts")
         local_id, watched_id, acb_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         subs_menu.Append(local_id, "Add &Local Podcast...")
         subs_menu.Append(watched_id, "Scan &Watched Folders")
@@ -363,4 +378,17 @@ class CastMenuBarMixin:
             about_id,
             shortcuts_id,
             hotkeys_id,
+            *self._sort_mode_menu_ids.values(),
         )
+        self._refresh_sort_mode_menu()
+
+    def _refresh_sort_mode_menu(self) -> None:
+        """Keep the Sort Podcasts radio group true to the live mode -- a
+        manual Move Up/Down switches to custom without touching the menu."""
+        ids = getattr(self, "_sort_mode_menu_ids", None)
+        menu_bar = self.frame.GetMenuBar() if ids else None
+        if not ids or menu_bar is None:
+            return
+        item_id = ids.get(self._podcast_library.settings.show_sort_mode)
+        if item_id is not None:
+            menu_bar.Check(int(item_id), True)

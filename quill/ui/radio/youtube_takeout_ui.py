@@ -114,12 +114,12 @@ def _summary(added: int, already_there: int) -> str:
     if added and already_there:
         return (
             f"Imported {added} channel{'s' if added != 1 else ''}; "
-            f"{already_there} you already followed. Find them under YouTube Channels."
+            f"{already_there} you already followed. Find them under YouTube in Browse Stations."
         )
     if added:
         return (
             f"Imported {added} channel{'s' if added != 1 else ''}. "
-            "Find them under YouTube Channels in Browse Stations."
+            "Find them under YouTube in Browse Stations."
         )
     return (
         f"Nothing new to import: you already follow all "

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast -- Product Requirements</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -1023,6 +1022,60 @@ those would leave playback at 4x forever. Repeats that stop arriving
 cannot fail that way; the key-up is still honoured when it comes, so the
 drop back is immediate rather than up to the grace window late. Losing
 the window and closing the app both end a scan too.</p>
+<h2 id="15-the-library-is-yours-to-arrange">15. The library is yours to
+arrange</h2>
+<p><strong>Per-episode download from the tree</strong>
+(<code>quill/apps/podcasts_library_actions.py</code>, the extracted
+<code>CastLibraryActionsMixin</code>). An expanded show’s episode rows
+carry Play Episode and Download Episode on their context menu; the
+download goes through the one shared
+<code>enqueue_episode_download</code> helper, so the private-feed
+Authorization rule (same-host only) can never be forgotten at a new call
+site. Files are named for humans –
+<code>&lt;download root&gt;/&lt;show slug&gt;/&lt;episode slug&gt;&lt;ext&gt;</code>
+– because a download whose name is a feed GUID is unfindable in
+Explorer.</p>
+<p><strong>Renamable pinned views</strong>
+(<code>PodcastSettings.view_names</code>;
+<code>virtual_views.view_label</code>/<code>set_view_name</code>/<code>reset_view_name</code>).
+The shipped views (Favorites, New Episodes, Continue Listening, Inbox)
+are the one kind of tree node the listener may rename – F2 or the
+context menu – because they belong to the app, not to a feed. Setting
+the shipped label or a blank IS the reset, so the settings file only
+ever stores genuine customizations; Reset Name appears on the menu only
+while a custom name exists. Shows and episodes refuse renaming with an
+explanation: an alias would silently stop matching what every other
+player, share link and search result calls them. The Manager reads the
+same names, so the two windows cannot drift.</p>
+<p><strong>Show ordering, including by hand</strong>
+(<code>PodcastSettings.show_sort_mode</code>;
+<code>PodcastLibrary.move_show</code>;
+<code>sorting.SHOW_SORT_MODES</code>). Ascending, descending, and
+<strong>custom</strong> – custom order is the <code>shows</code> list’s
+own order, maintained by one-step swaps among a show’s <em>folder
+siblings</em> only, so each folder keeps its own arrangement even though
+all shows live in one flat list. Taking manual control (Alt+Up/Down) is
+itself the act of choosing custom, and entering custom freezes the order
+currently on screen first – otherwise the first nudge would scramble
+everything visibly. The Subscriptions menu’s radio group and the
+Manager’s dropdown both reflect the live mode.</p>
+<p><strong>Counts that say what they count.</strong> A folder’s badge is
+its subtree’s podcast count; a show’s badge reads “(n unheard)” in
+words. Two bare numbers that read identically would make the listener
+remember which node kind they were on – the exact cost badges exist to
+remove.</p>
+<p><strong>Emptied search fields empty their results</strong>
+(<code>quill/ui/search_reset.py</code>). One shared binding backs every
+search surface with a separate results list, in Cast and across the
+family: when the query becomes empty (whitespace counts), the surface
+resets exactly as its own blank-search path would. A results list
+showing matches for text that no longer exists is stale state presented
+as current – invisible as such to a screen reader arrowing the list.</p>
+<p><strong>Show notes are paragraphs</strong>
+(<code>show_notes.html_to_plain_text</code>). Block elements now
+contribute a blank line, collapsed so empty tags can never stack more
+than one – a screen reader’s next-paragraph navigation needs a real
+boundary to land on, and a wall of single-spaced lines has none.</p>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
 </main>
 </body>

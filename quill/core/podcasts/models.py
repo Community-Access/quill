@@ -304,6 +304,17 @@ class PodcastSettings:
     #: id ("new_episodes", "continue_listening", "inbox", "favorites",
     #: "recently_expired") or "" for the top of the tree.
     default_launch_view: str = ""
+    #: How the library's shows are ordered everywhere they are listed -- one
+    #: of ``sorting.SHOW_SORT_MODES``. ``"custom"`` means the listener's own
+    #: hand-arranged order: ``PodcastLibrary.shows``' list order, maintained
+    #: with Move Up / Move Down.
+    show_sort_mode: str = "title_az"
+    #: Personal names for the pinned library views (Favorites, New Episodes,
+    #: ...): view id -> the listener's own label. Only the renamed views have
+    #: an entry; everything else keeps its shipped name (see
+    #: ``virtual_views.view_label``). Views only -- a show's or episode's name
+    #: belongs to its feed and is never renamable.
+    view_names: dict[str, str] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -355,6 +366,8 @@ class PodcastSettings:
             "continue_after_group": self.continue_after_group,
             "announce_show_name_first": self.announce_show_name_first,
             "default_launch_view": self.default_launch_view,
+            "show_sort_mode": self.show_sort_mode,
+            "view_names": dict(self.view_names),
         }
 
     @classmethod
@@ -362,6 +375,16 @@ class PodcastSettings:
         delete_policy = str(data.get("delete_files_on_remove", "ask"))
         view_mode = str(data.get("episode_list_view_mode", "grouped"))
         sort_mode = str(data.get("episode_sort_mode", "date_newest"))
+        raw_view_names = data.get("view_names")
+        view_names = (
+            {
+                str(key): str(value).strip()
+                for key, value in raw_view_names.items()
+                if str(key).strip() and str(value).strip()
+            }
+            if isinstance(raw_view_names, dict)
+            else {}
+        )
         return cls(
             playback_mode=str(data.get("playback_mode", "download")),
             retention=str(data.get("retention", "keep_all")),
@@ -431,6 +454,12 @@ class PodcastSettings:
             continue_after_group=bool(data.get("continue_after_group", False)),
             announce_show_name_first=bool(data.get("announce_show_name_first", False)),
             default_launch_view=str(data.get("default_launch_view", "")),
+            show_sort_mode=_one_of(
+                data.get("show_sort_mode"),
+                {"title_az", "title_za", "unheard_first", "recently_updated", "custom"},
+                "title_az",
+            ),
+            view_names=view_names,
         )
 
     @property

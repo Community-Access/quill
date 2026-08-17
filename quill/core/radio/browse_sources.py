@@ -171,7 +171,7 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("mixcloud", "Mixcloud (Shows & DJ Sets)"),
     ("ccmixter", "ccMixter (Creative Commons)"),
     ("myservers", "My Servers"),
-    ("youtube", "YouTube Channels"),
+    ("youtube", "YouTube"),
     ("wikidata", "Explore (Wikidata)"),
 )
 
@@ -483,15 +483,45 @@ def _browse_my_servers(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
 
 
 def _browse_youtube(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    """Channels the listener follows, with no Google account anywhere."""
+    """Everything YouTube the listener added, with no Google account anywhere.
+
+    Channels first (they expand into the most), then saved playlists, then
+    saved single videos as playable rows -- and one Add... action per kind, so
+    a pasted link of any shape has an obvious way in (QA: "I do not see how I
+    can add a YouTube link easily here without searching").
+    """
     from quill.core.radio import youtube_channels as yt
+    from quill.core.radio import youtube_saved
 
     if not (args and args[0]):
         nodes = [
             folder(make_id("youtubechannel", channel.url), channel.display_name)
             for channel in yt.ChannelStore().all()
         ]
+        saved = youtube_saved.SavedStore()
+        nodes += [
+            folder(make_id("ytplaylist", item.url, "1"), item.display_name)
+            for item in saved.all(youtube_saved.PLAYLIST)
+        ]
+        for item in saved.all(youtube_saved.VIDEO):
+            live = not item.url.startswith("https://www.youtube.com/watch")
+            nodes.append(
+                leaf(
+                    RadioStation(
+                        name=item.display_name,
+                        stream_url=item.url,
+                        homepage=item.url,
+                        source="YouTube",
+                        # A watch link is a finished video (seeks, resumes); a
+                        # channel-live page is a broadcast that is simply on.
+                        is_recording=not live,
+                    ),
+                    node_id=make_id("ytvideo", item.url),
+                )
+            )
         nodes.append(action("addchannel", "Add a Channel...", note="paste a channel address"))
+        nodes.append(action("addplaylist", "Add a Playlist...", note="paste a playlist link"))
+        nodes.append(action("addvideo", "Add a Video...", note="paste a video link"))
         return nodes
     return []
 
@@ -644,6 +674,9 @@ _HANDLERS: dict[str, Callable[..., list[BrowseNode]]] = {
     "youtube": _browse_youtube,
     "youtubechannel": _browse_youtube_channel,
     "youtubevideos": _browse_youtube_videos,
+    # A saved playlist enumerates exactly like a channel playlist; its own
+    # kind exists so the row can offer Remove from YouTube.
+    "ytplaylist": _browse_youtube_videos,
     "wikidata": _browse_wikidata,
     "wikidatadial": _browse_wikidata_dial,
     "networks": _browse_networks,

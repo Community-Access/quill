@@ -109,6 +109,24 @@ class PodcastLibrary:
         self.shows = [s for s in self.shows if s.id != show_id]
         return len(self.shows) != before
 
+    def move_show(self, show_id: str, offset: int) -> bool:
+        """Move a show one place up (*offset* -1) or down (+1) among the
+        shows of its own folder -- the Move Up/Down behind the ``"custom"``
+        show sort. Shows in other folders are untouched: swapping with the
+        adjacent *sibling* keeps every folder's own custom order intact even
+        though all shows live in one flat list. Returns False at the edge."""
+        show = self.find_show(show_id)
+        if show is None:
+            return False
+        siblings = [s for s in self.shows if s.folder_id == show.folder_id]
+        position = siblings.index(show) + offset
+        if offset not in (-1, 1) or not 0 <= position < len(siblings):
+            return False
+        other = siblings[position]
+        i, j = self.shows.index(show), self.shows.index(other)
+        self.shows[i], self.shows[j] = self.shows[j], self.shows[i]
+        return True
+
     def add_folder(self, name: str, *, parent_folder_id: str | None = None) -> PodcastFolder:
         folder = PodcastFolder(id=new_id(), name=name, parent_folder_id=parent_folder_id)
         self.folders.append(folder)

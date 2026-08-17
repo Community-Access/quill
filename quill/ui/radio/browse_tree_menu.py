@@ -44,6 +44,8 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
         expanded = bool(dialog._tree.IsExpanded(node))
     except Exception:  # noqa: BLE001 - a menu must never fail on a widget probe
         expanded = False
+    from quill.core.radio import browse_sources
+
     return row_actions.FolderState(
         loaded_stations=len(loaded),
         savable=len(savable),
@@ -51,6 +53,9 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
         subscribed=subscribed,
         is_followed_channel=row_actions.is_followed_channel(kind),
         expanded=expanded,
+        # A root branch's id IS its source id (no args); only those rows can
+        # be hidden in place.
+        root_source=not args and any(kind == nid for nid, _ in browse_sources.ROOT_SOURCES),
     )
 
 
@@ -94,10 +99,14 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
         if dialog._on_report_bad_station is not None:
             handlers[row_actions.REPORT_BAD] = lambda: dialog._on_report_bad_station(station)
     handlers[row_actions.DOWNLOAD_ALL] = lambda: _download_all(dialog, node, host)
+    handlers[row_actions.HIDE_SOURCE] = lambda: _hide_source(dialog, kind)
+    handlers[row_actions.RESET_SOURCES] = lambda: _reset_sources(dialog)
     handlers[row_actions.SUBSCRIBE_PODCAST] = lambda: _subscribe(dialog, node, kind, args)
     handlers[row_actions.UNSUBSCRIBE_PODCAST] = lambda: _unsubscribe(dialog, node, kind, args)
     handlers[row_actions.COPY_FEED] = lambda: _copy_feed(dialog, kind, args)
     handlers[row_actions.UNFOLLOW_CHANNEL] = lambda: _unfollow(dialog, node, args)
+    handlers[row_actions.REMOVE_SAVED] = lambda: _remove_saved(dialog, node, args)
+    handlers[row_actions.VIEW_TRANSCRIPT] = lambda: _view_transcript(dialog, kind, args, station)
     return handlers
 
 
@@ -295,6 +304,45 @@ def _copy_feed(dialog: Any, kind: str, args: list[str]) -> None:
     dialog._copy_text(feed)
 
 
+def _hide_source(dialog: Any, kind: str) -> None:
+    """Hide This Source: drop the branch from the tree, in place.
+
+    Same setting Choose Browse Sources edits (persisted through the dialog's
+    ``on_visible_sources_changed``), so the two surfaces can never disagree.
+    """
+    from quill.core.radio import browse_visibility
+
+    if not browse_visibility.is_enabled(dialog._visible_sources, kind):
+        return
+    updated = browse_visibility.toggle(dialog._visible_sources, kind)
+    _apply_visible_sources(
+        dialog,
+        updated,
+        f"{browse_visibility.label(kind)} hidden. Reset Sources to Default on any "
+        "source's menu, or Choose Browse Sources, brings it back.",
+    )
+
+
+def _reset_sources(dialog: Any) -> None:
+    """Reset Sources to Default: the standard branch set, hidden ones back."""
+    from quill.core.radio import browse_visibility
+
+    _apply_visible_sources(
+        dialog,
+        browse_visibility.default_enabled(),
+        "Browse sources reset to the standard set.",
+    )
+
+
+def _apply_visible_sources(dialog: Any, updated: tuple, spoken: str) -> None:
+    dialog._visible_sources = updated
+    callback = getattr(dialog, "_on_visible_sources_changed", None)
+    if callback is not None:
+        callback(updated)
+    dialog._rebuild_sources()
+    dialog._announce(spoken)
+
+
 def _unfollow(dialog: Any, node: Any, args: list[str]) -> None:
     """Stop following a channel, from the same menu that added it."""
     from quill.core.radio.youtube_channels import ChannelStore
@@ -305,3 +353,85 @@ def _unfollow(dialog: Any, node: Any, args: list[str]) -> None:
     name = dialog._tree.GetItemText(node).split("  (")[0]
     ChannelStore().remove(url)
     dialog._announce(f"Stopped following {name}. Refresh to update the list.")
+
+
+def _view_transcript(dialog: Any, kind: str, args: list[str], station: Any) -> None:
+    """View Transcript... on a row, without playing it (QA: the transcript and
+    show-notes experience is a high-value target).
+
+    Two shapes behind one menu item: a podcast episode's node id carries its
+    feed-declared transcript address directly; a YouTube row costs one resolve
+    (the same request playing it would make) to learn its caption track, and
+    an automatic track is announced as automatic in the reader's heading.
+    """
+    if dialog._safe_mode:
+        dialog._announce(
+            "Transcripts are disabled in Safe Mode. Restart Quill Radio normally to read them."
+        )
+        return
+    dialog._announce("Fetching transcript...")
+
+    def _work(**_kwargs: Any) -> tuple[bool, list]:
+        from quill.core.podcasts import transcripts as transcripts_module
+
+        if kind == "podepisode":
+            url = args[0] if args else ""
+            mime = args[1] if len(args) > 1 else ""
+            return False, transcripts_module.fetch_transcript_cues(url, mime)
+        from quill.core.radio.youtube import ensure_and_resolve
+
+        stream = ensure_and_resolve(str(getattr(station, "stream_url", "")))
+        if not stream.caption_url:
+            return False, []
+        cues = transcripts_module.fetch_transcript_cues(stream.caption_url, "application/json")
+        return stream.caption_is_automatic, cues
+
+    def _ok(_op: str, result: object) -> None:
+        is_automatic, cues = result if isinstance(result, tuple) else (False, [])
+        dialog._wx.CallAfter(_open_transcript_reader, dialog, station, cues, is_automatic)
+
+    def _failed(_op: str, error: BaseException) -> None:
+        dialog._wx.CallAfter(dialog._announce, f"The transcript could not be fetched. {error}")
+
+    dialog._task_manager.submit(
+        "radio-browse-transcript", _work, on_success=_ok, on_failure=_failed
+    )
+
+
+def _open_transcript_reader(dialog: Any, station: Any, cues: object, is_automatic: bool) -> None:
+    from quill.ui.transcript_reader import TranscriptReader
+
+    rows = list(cues) if isinstance(cues, list) else []
+    if not rows:
+        dialog._announce(
+            "No transcript could be read for this one. The publisher may not have "
+            "provided captions or a transcript file."
+        )
+        return
+    title = str(getattr(station, "display_name", "") or "") or "this recording"
+    # No position and no seek: nothing is playing, and jumping a live player
+    # to a row of something it is not playing would be worse than not offering it.
+    reader = TranscriptReader(
+        dialog._win,
+        title=title,
+        cues=rows,
+        position_ms=None,
+        seek_to_ms=None,
+        announce=dialog._announce,
+        show_modal_dialog=getattr(dialog, "_show_modal_dialog", None),
+        on_send_to_quill=None,
+        is_automatic=is_automatic,
+    )
+    reader.show()
+
+
+def _remove_saved(dialog: Any, node: Any, args: list[str]) -> None:
+    """Drop a saved YouTube playlist or video, from the same menu that plays it."""
+    from quill.core.radio.youtube_saved import SavedStore
+
+    url = args[0] if args else ""
+    if not url:
+        return
+    name = dialog._tree.GetItemText(node).split("  (")[0]
+    SavedStore().remove(url)
+    dialog._announce(f"Removed {name} from YouTube. Refresh to update the list.")

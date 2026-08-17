@@ -34,6 +34,9 @@ class LibraryDialog(wx.Dialog):
         self._query = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
         set_accessible_name(self._query, "Search LibriVox")
         self._query.Bind(wx.EVT_TEXT_ENTER, self._on_search)
+        from quill.ui.search_reset import bind_empty_query_reset
+
+        bind_empty_query_reset(self._query, self._reset_results)
         search_btn = wx.Button(self, label="&Search")
         search_btn.Bind(wx.EVT_BUTTON, self._on_search)
         row.Add(self._query, 1, wx.RIGHT, 6)
@@ -55,6 +58,14 @@ class LibraryDialog(wx.Dialog):
         apply_modal_ids(
             self, affirmative_id=wx.ID_OK, affirmative_label="&Play", cancel_id=wx.ID_CANCEL
         )
+
+    def _reset_results(self) -> None:
+        """Emptying the search field empties the results list (search_reset.py)."""
+        if not self._books:
+            return
+        self._books = []
+        self._results.Clear()
+        self._status.SetLabel("Type a title and press Search.")
 
     def _on_search(self, _event: wx.CommandEvent) -> None:
         query = self._query.GetValue().strip()

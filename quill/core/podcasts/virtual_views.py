@@ -17,6 +17,47 @@ VIRTUAL_VIEWS: tuple[tuple[str, str], ...] = (
     ("inbox", "Inbox"),
 )
 
+#: Every pinned view a listener can rename, id -> its shipped label. These
+#: ship with the app, so they are the one kind of tree node that is *yours*
+#: to personalize -- unlike shows and episodes, whose names belong to their
+#: feeds. ``recently_expired`` appears in the Podcast Manager only, but a
+#: rename still follows it there.
+DEFAULT_VIEW_LABELS: dict[str, str] = {
+    "favorites": "Favorites",
+    **dict(VIRTUAL_VIEWS),
+    "recently_expired": "Recently Expired",
+}
+
+
+def view_label(library: PodcastLibrary, view_id: str) -> str:
+    """What a pinned view is called right now: the listener's own name for it
+    when they set one (``PodcastSettings.view_names``), the shipped label
+    otherwise."""
+    custom = library.settings.view_names.get(view_id, "").strip()
+    return custom or DEFAULT_VIEW_LABELS.get(view_id, view_id)
+
+
+def set_view_name(library: PodcastLibrary, view_id: str, name: str) -> bool:
+    """Give a pinned view a personal name; returns True when anything changed.
+
+    Setting a view's shipped label (or a blank) is a reset, so the settings
+    file only ever stores genuine customizations.
+    """
+    if view_id not in DEFAULT_VIEW_LABELS:
+        return False
+    wanted = name.strip()
+    if not wanted or wanted == DEFAULT_VIEW_LABELS[view_id]:
+        return reset_view_name(library, view_id)
+    if library.settings.view_names.get(view_id) == wanted:
+        return False
+    library.settings.view_names[view_id] = wanted
+    return True
+
+
+def reset_view_name(library: PodcastLibrary, view_id: str) -> bool:
+    """Back to the shipped label; returns True when a custom name was removed."""
+    return library.settings.view_names.pop(view_id, None) is not None
+
 
 def favorite_shows(library: PodcastLibrary) -> list[PodcastShow]:
     """Every show with ``is_favorite`` set, regardless of its real folder --

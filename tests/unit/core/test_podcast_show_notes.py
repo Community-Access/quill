@@ -18,7 +18,10 @@ def test_html_to_plain_text_strips_tags() -> None:
 def test_html_to_plain_text_paragraphs_become_real_newlines() -> None:
     html = "<p>First paragraph.</p><p>Second paragraph.</p>"
     result = html_to_plain_text(html)
-    assert result == "First paragraph.\nSecond paragraph."
+    # A blank line BETWEEN paragraphs, not just a line break: a screen
+    # reader's next-paragraph navigation needs a real boundary to land on
+    # (2026-08-17: "spaced out a bit for better navigation").
+    assert result == "First paragraph.\n\nSecond paragraph."
 
 
 def test_html_to_plain_text_br_becomes_newline() -> None:
@@ -30,7 +33,7 @@ def test_html_to_plain_text_br_becomes_newline() -> None:
 def test_html_to_plain_text_list_items_become_lines() -> None:
     html = "<ul><li>First</li><li>Second</li></ul>"
     result = html_to_plain_text(html)
-    assert result.splitlines() == ["First", "Second"]
+    assert [line for line in result.splitlines() if line] == ["First", "Second"]
 
 
 def test_html_to_plain_text_links_become_text_with_url_in_parens() -> None:
@@ -48,7 +51,8 @@ def test_html_to_plain_text_link_without_href_has_no_parens() -> None:
 def test_html_to_plain_text_collapses_blank_line_runs() -> None:
     html = "<p>First</p><p></p><p></p><p>Second</p>"
     result = html_to_plain_text(html)
-    assert result == "First\nSecond"
+    # Empty paragraphs never stack: one blank line is the maximum spacing.
+    assert result == "First\n\nSecond"
 
 
 def test_html_to_plain_text_tolerates_malformed_markup() -> None:

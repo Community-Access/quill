@@ -106,6 +106,63 @@ def rename_folder_prompt(
     return True
 
 
+def rename_view_prompt(
+    parent: object,
+    library: PodcastLibrary,
+    view_id: str,
+    *,
+    announce: Callable[[str], None],
+) -> bool:
+    """Give a pinned library view (Favorites, New Episodes, ...) a personal
+    name. The shipped views are the app's, so the name is always resettable --
+    entering a blank, or the shipped label itself, IS the reset."""
+    import wx
+
+    from quill.core.podcasts import virtual_views
+
+    if view_id not in virtual_views.DEFAULT_VIEW_LABELS:
+        return False
+    shipped = virtual_views.DEFAULT_VIEW_LABELS[view_id]
+    current = virtual_views.view_label(library, view_id)
+    entry = wx.TextEntryDialog(
+        parent,
+        f"Your name for the {shipped} view (blank to use the standard name):",
+        "Rename View",
+        value=current,
+    )
+    try:
+        if entry.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+            return False
+        name = entry.GetValue()
+    finally:
+        entry.Destroy()
+    if not virtual_views.set_view_name(library, view_id, name):
+        return False
+    now = virtual_views.view_label(library, view_id)
+    if now == shipped:
+        announce(f"{current} is back to its standard name, {shipped}.")
+    else:
+        announce(f"{shipped} view renamed to {now}")
+    return True
+
+
+def reset_view_name_action(
+    library: PodcastLibrary,
+    view_id: str,
+    *,
+    announce: Callable[[str], None],
+) -> bool:
+    """Reset Name on a renamed pinned view: back to the shipped label."""
+    from quill.core.podcasts import virtual_views
+
+    current = virtual_views.view_label(library, view_id)
+    if not virtual_views.reset_view_name(library, view_id):
+        return False
+    shipped = virtual_views.view_label(library, view_id)
+    announce(f"{current} is back to its standard name, {shipped}.")
+    return True
+
+
 def delete_folder_prompt(
     parent: object,
     library: PodcastLibrary,

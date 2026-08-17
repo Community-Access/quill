@@ -82,3 +82,55 @@ def test_inbox_includes_only_unplayed_from_routed_shows() -> None:
     library.add_show(not_routed)
     pairs = virtual_view_pairs(library, "inbox")
     assert [(show.id, episode.guid) for show, episode in pairs] == [("s1", "e1")]
+
+
+# --- personal names for the pinned views (F2 rename / Reset Name) ------------
+
+
+def test_view_label_is_the_shipped_label_until_renamed() -> None:
+    from quill.core.podcasts.virtual_views import view_label
+
+    library = PodcastLibrary()
+    assert view_label(library, "favorites") == "Favorites"
+    assert view_label(library, "new_episodes") == "New Episodes"
+
+
+def test_set_view_name_persists_in_settings_and_label_follows() -> None:
+    from quill.core.podcasts.virtual_views import set_view_name, view_label
+
+    library = PodcastLibrary()
+    assert set_view_name(library, "inbox", "  Triage  ")
+    assert library.settings.view_names == {"inbox": "Triage"}
+    assert view_label(library, "inbox") == "Triage"
+
+
+def test_setting_the_shipped_label_or_blank_is_a_reset() -> None:
+    # The settings file only ever stores genuine customizations.
+    from quill.core.podcasts.virtual_views import set_view_name
+
+    library = PodcastLibrary()
+    assert set_view_name(library, "inbox", "Triage")
+    assert set_view_name(library, "inbox", "Inbox")
+    assert library.settings.view_names == {}
+    assert set_view_name(library, "inbox", "Triage")
+    assert set_view_name(library, "inbox", "   ")
+    assert library.settings.view_names == {}
+
+
+def test_reset_view_name_answers_whether_anything_changed() -> None:
+    from quill.core.podcasts.virtual_views import reset_view_name, set_view_name
+
+    library = PodcastLibrary()
+    assert not reset_view_name(library, "favorites")  # nothing custom yet
+    set_view_name(library, "favorites", "Best Ones")
+    assert reset_view_name(library, "favorites")
+    assert library.settings.view_names == {}
+
+
+def test_only_pinned_views_are_renamable() -> None:
+    # Shows and episodes keep their feed's names; an unknown id is refused.
+    from quill.core.podcasts.virtual_views import set_view_name
+
+    library = PodcastLibrary()
+    assert not set_view_name(library, "some_show_id", "Alias")
+    assert library.settings.view_names == {}

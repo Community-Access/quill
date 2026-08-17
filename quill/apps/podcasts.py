@@ -12,6 +12,7 @@ import sys
 
 import wx
 
+from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
 from quill.apps.podcasts_menu import APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
@@ -38,6 +39,7 @@ class PodcastsAppFrame(
     # (which the apps have) win over GlobalHotkeysMixin's send_to_tray-based copy.
     AppShellFrame,
     PodcastsMixin,
+    CastLibraryActionsMixin,
     CastMenuBarMixin,
     CastWinampKeysMixin,
     MediaSleepTimerMixin,
@@ -295,6 +297,7 @@ class PodcastsAppFrame(
         from quill.core.podcasts.virtual_views import (
             VIRTUAL_VIEWS,
             favorite_shows,
+            view_label,
             virtual_view_pairs,
         )
 
@@ -312,14 +315,29 @@ class PodcastsAppFrame(
                 select_item = item
 
         fav_count = len(favorite_shows(self._podcast_library))
-        fav_item = tree.AppendItem(root, f"Favorites ({fav_count})" if fav_count else "Favorites")
+        fav_label = view_label(self._podcast_library, "favorites")
+        fav_item = tree.AppendItem(root, f"{fav_label} ({fav_count})" if fav_count else fav_label)
         tag(fav_item, ("view", "favorites"))
-        for view_id, label in VIRTUAL_VIEWS:
+        for view_id, _default in VIRTUAL_VIEWS:
+            label = view_label(self._podcast_library, view_id)
             count = len(virtual_view_pairs(self._podcast_library, view_id))
             item = tree.AppendItem(root, f"{label} ({count})" if count else label)
             tag(item, ("view", view_id))
 
         folder_items: dict[str | None, object] = {None: root}
+
+        # Folder badges: how many podcasts live under each folder -- the whole
+        # subtree, matching what expanding the folder actually reveals.
+        direct_counts: dict[str | None, int] = {}
+        for show in self._podcast_library.shows:
+            direct_counts[show.folder_id] = direct_counts.get(show.folder_id, 0) + 1
+
+        def folder_show_count(folder_id: str | None) -> int:
+            total = direct_counts.get(folder_id, 0)
+            for child in self._podcast_library.folders:
+                if child.parent_folder_id == folder_id:
+                    total += folder_show_count(child.id)
+            return total
 
         def folder_item(folder_id: str | None) -> object:
             if folder_id in folder_items:
@@ -327,7 +345,9 @@ class PodcastsAppFrame(
             folder = self._podcast_library.find_folder(folder_id)
             if folder is None:
                 return root
-            item = tree.AppendItem(folder_item(folder.parent_folder_id), folder.name)
+            count = folder_show_count(folder.id)
+            label = f"{folder.name} ({count})" if count else folder.name
+            item = tree.AppendItem(folder_item(folder.parent_folder_id), label)
             tag(item, ("folder", folder_id or ""))
             folder_items[folder_id] = item
             return item
@@ -335,9 +355,14 @@ class PodcastsAppFrame(
         for folder in self._podcast_library.folders:
             folder_item(folder.id)
 
-        for show in sort_shows(self._podcast_library.shows, "title_az"):
+        for show in sort_shows(
+            self._podcast_library.shows, self._podcast_library.settings.show_sort_mode
+        ):
             count = unheard_count(show)
-            label = f"{show.title} ({count})" if count else show.title
+            # Say "unheard", now that folders wear a bare "(n)" for how many
+            # podcasts they hold -- two counts that read identically would
+            # force the listener to remember which node kind they are on.
+            label = f"{show.title} ({count} unheard)" if count else show.title
             item = tree.AppendItem(folder_item(show.folder_id), label)
             tag(item, ("show", show.id))
             # #1192: episodes hang under the show so it can be expanded in
@@ -424,6 +449,18 @@ class PodcastsAppFrame(
             return None
         return self._podcast_library.find_show(selected[1])
 
+    def _selected_episode(self):
+        """(show, episode) for the selected episode row, or None."""
+        selected = self._selected_tree_data()
+        if selected is None or selected[0] != "episode":
+            return None
+        show_id, _, guid = selected[1].partition("\x00")
+        show = self._podcast_library.find_show(show_id)
+        episode = show.find_episode(guid) if show is not None else None
+        if show is None or episode is None:
+            return None
+        return show, episode
+
     def _on_library_activated(self, event: wx.TreeEvent) -> None:
         selected = self._selected_tree_data()
         if selected is None:
@@ -442,8 +479,10 @@ class PodcastsAppFrame(
             self._announce("Opened the Podcast Manager, where the full episode list lives.")
             return
         if kind == "view":
+            from quill.core.podcasts.virtual_views import view_label
+
             self.open_podcast_manager()
-            label = key.replace("_", " ").title() if key != "favorites" else "Favorites"
+            label = view_label(self._podcast_library, key)
             self._announce(f"Opened Podcast Manager. Select {label} there.")
             return
         event.Skip()  # a folder: let the tree toggle it
@@ -456,162 +495,13 @@ class PodcastsAppFrame(
         if code in (wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE):
             self._on_library_remove()
             return
+        if code == wx.WXK_F2:
+            self._on_library_rename_key()
+            return
+        if code in (wx.WXK_UP, wx.WXK_DOWN) and event.AltDown():
+            self._on_library_move_show(-1 if code == wx.WXK_UP else 1)
+            return
         event.Skip()
-
-    def _on_library_context_menu(self, _event: object) -> None:
-        selected = self._selected_tree_data()
-        if selected is None:
-            return
-        kind, key = selected
-        entries: list[tuple[str, object]] = []
-        if kind == "show":
-            show = self._podcast_library.find_show(key)
-            if show is None:
-                return
-            playing = self._podcast_controller.state.show_id == show.id and (
-                self._podcast_controller.state.state.name not in ("STOPPED", "ERROR")
-            )
-            fav_label = "Remove from Fa&vorites" if show.is_favorite else "Add to Fa&vorites"
-            entries = [
-                ("&Stop" if playing else "&Play Next Episode", self._on_library_play_stop_context),
-                (fav_label, self._on_library_favorite_toggle_context),
-                ("&Move to Folder...", self._on_library_move_to_folder),
-                ("Download &All Episodes", self._on_library_download_all_episodes),
-                ("&Remove All Episodes...", self._on_library_remove_all_episodes),
-            ]
-            if show.feed_url:
-                entries.append(("Feed Cre&dentials...", self._on_library_feed_credentials))
-            entries += [
-                ("&Unsubscribe...\tDelete", self._on_library_remove),
-                ("New F&older...", self._on_library_new_folder),
-                ("Open &Manager...", lambda: self.open_podcast_manager()),
-            ]
-        elif kind == "folder":
-            entries = [
-                ("Rena&me Folder...", self._on_library_rename_folder),
-                ("&Delete Folder...\tDelete", self._on_library_remove),
-                ("New F&older...", self._on_library_new_folder),
-                ("Open &Manager...", lambda: self.open_podcast_manager()),
-            ]
-        else:
-            entries = [("Open &Manager...", lambda: self.open_podcast_manager())]
-        menu = wx.Menu()
-        id_refs = []
-        for label, handler in entries:
-            item_id = wx.NewIdRef()
-            id_refs.append(item_id)
-            menu.Append(item_id, label)
-            menu.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
-        self._keep_menu_ids(*id_refs)
-        self._shows_tree.PopupMenu(menu)
-        menu.Destroy()
-
-    def _on_library_play_stop_context(self) -> None:
-        show = self._selected_show()
-        if show is None:
-            return
-        state = self._podcast_controller.state
-        if state.show_id == show.id and state.state.name not in ("STOPPED", "ERROR"):
-            self.podcast_stop()
-        else:
-            self._play_show_next_episode(show.id)
-
-    def _on_library_favorite_toggle_context(self) -> None:
-        from quill.ui.podcasts.show_actions import toggle_favorite
-
-        show = self._selected_show()
-        if show is None:
-            return
-        toggle_favorite(self._podcast_library, show, announce=self._announce)
-        self._save_podcast_library()
-        self._refresh_transport_controls()
-
-    def _on_library_download_all_episodes(self) -> None:
-        from quill.ui.podcasts.show_actions import download_all_episodes
-
-        show = self._selected_show()
-        if show is None:
-            return
-        download_all_episodes(
-            self._podcast_download_queue,
-            self._podcast_download_root(),
-            show,
-            announce=self._announce,
-        )
-
-    def _on_library_remove_all_episodes(self) -> None:
-        from quill.ui.podcasts.show_actions import remove_all_episodes_prompt
-
-        show = self._selected_show()
-        if show is None:
-            return
-        if remove_all_episodes_prompt(
-            self.frame, self._podcast_download_queue, show, announce=self._announce
-        ):
-            self._save_podcast_library()
-
-    def _on_library_feed_credentials(self) -> None:
-        from quill.ui.podcasts.show_actions import feed_credentials_prompt
-
-        show = self._selected_show()
-        if show is None or not show.feed_url:
-            return
-        if feed_credentials_prompt(
-            self.frame, self._podcast_library, show, announce=self._announce
-        ):
-            self._save_podcast_library()
-
-    def _on_library_move_to_folder(self) -> None:
-        from quill.ui.podcasts.show_actions import move_show_to_folder
-
-        show = self._selected_show()
-        if show is None:
-            return
-        if move_show_to_folder(self.frame, self._podcast_library, show, announce=self._announce):
-            self._save_podcast_library()
-
-    def _on_library_rename_folder(self) -> None:
-        from quill.ui.podcasts.show_actions import rename_folder_prompt
-
-        selected = self._selected_tree_data()
-        if selected is None or selected[0] != "folder":
-            return
-        if rename_folder_prompt(
-            self.frame, self._podcast_library, selected[1], announce=self._announce
-        ):
-            self._save_podcast_library()
-
-    def _on_library_new_folder(self) -> None:
-        from quill.ui.podcasts.show_actions import create_folder_prompt
-
-        selected = self._selected_tree_data()
-        initial_parent = selected[1] if selected is not None and selected[0] == "folder" else None
-        if create_folder_prompt(
-            self.frame,
-            self._podcast_library,
-            announce=self._announce,
-            initial_parent_id=initial_parent,
-        ):
-            self._save_podcast_library()
-
-    def _on_library_remove(self) -> None:
-        from quill.ui.podcasts.show_actions import delete_folder_prompt, unsubscribe_show_prompt
-
-        selected = self._selected_tree_data()
-        if selected is None:
-            return
-        kind, key = selected
-        if kind == "show":
-            show = self._podcast_library.find_show(key)
-            if show is not None and unsubscribe_show_prompt(
-                self.frame, self._podcast_library, show, announce=self._announce
-            ):
-                self._save_podcast_library()
-        elif kind == "folder":
-            if delete_folder_prompt(
-                self.frame, self._podcast_library, key, announce=self._announce
-            ):
-                self._save_podcast_library()
 
     def _play_show_next_episode(self, show_id: str) -> None:
         from quill.core.podcasts.sorting import sort_episodes

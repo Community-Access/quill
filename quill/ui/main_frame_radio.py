@@ -1026,6 +1026,12 @@ class RadioMixin:
 
         add_youtube_playlist(self)
 
+    def radio_add_youtube_link(self) -> None:
+        """One prompt for any YouTube link; filed by what the link is."""
+        from quill.ui.radio.youtube_ui import add_youtube_link
+
+        add_youtube_link(self)
+
     def radio_import_youtube_subscriptions(self) -> None:
         """Import the channels you follow from your own Google Takeout export."""
         from quill.ui.radio.youtube_takeout_ui import import_subscriptions
@@ -2017,11 +2023,18 @@ class RadioMixin:
             download_host=self,
             # Which branches to show. None means "never set" -> the defaults.
             visible_sources=self._radio_history.browse_sources_enabled,
+            on_visible_sources_changed=self._set_browse_sources_enabled,
             catalog=catalog_ui.catalog_for(self),
             on_offline_catalog=lambda: catalog_ui.note_offline_serving(self),
         )
         dlg.show(initial_source=initial_source)
         self._refresh_statusbar()
+
+    def _set_browse_sources_enabled(self, updated: tuple[str, ...]) -> None:
+        """Persist a Hide This Source / Reset change made inside the browse
+        tree -- the same field Choose Browse Sources writes."""
+        self._radio_history.browse_sources_enabled = updated
+        self._save_radio_history()
 
     def _radio_open_add_custom(self, prefill: RadioStation | None) -> None:
         dlg = AddStationDialog(

@@ -950,6 +950,11 @@ class RadioAppFrame(
         station_menu.Append(
             add_id, self._menu_label("&Add Custom Station...", "radio.add_custom_station")
         )
+        yt_link_id = wx.NewIdRef()
+        station_menu.Append(
+            yt_link_id, self._menu_label("Add YouTube Lin&k...", "radio.add_youtube_link")
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_add_youtube_link(), id=yt_link_id)
         yt_playlist_id = wx.NewIdRef()
         station_menu.Append(
             yt_playlist_id,
@@ -1409,6 +1414,7 @@ class RadioAppFrame(
             *video_menu_ids,
             yt_update_id,
             yt_subs_id,
+            yt_link_id,
             spotify_connect_id,
             spotify_browse_id,
             browse_id,

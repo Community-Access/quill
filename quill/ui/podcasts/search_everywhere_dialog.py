@@ -65,6 +65,19 @@ class SearchEverywhereDialog:
         search_btn.Bind(wx.EVT_BUTTON, self._on_search_click)
         self._list.Bind(wx.EVT_LISTBOX_DCLICK, self._on_go)
         go_btn.Bind(wx.EVT_BUTTON, self._on_go)
+        from quill.ui.search_reset import bind_empty_query_reset
+
+        bind_empty_query_reset(self._query_ctrl, self._reset_results)
+
+    def _reset_results(self) -> None:
+        """Emptying the field empties the list -- results for text that is no
+        longer there must not linger looking current."""
+        if not self._results:
+            return
+        self._results = []
+        self._list.Clear()
+        self._status.SetLabel("")
+        self._announce("Search cleared.")
 
     def show(self) -> SearchResult | None:
         self.dialog.CentreOnParent()

@@ -43,7 +43,10 @@ class _PlainTextParser(HTMLParser):
             if href:
                 self._parts.append(f" ({href})")
         elif tag in _BLOCK_END_TAGS:
-            self._parts.append("\n")
+            # A blank line, not just a line break: paragraphs that touch read
+            # as one wall to a screen reader's line navigation, and the blank
+            # line is what makes "next paragraph" a real place to land.
+            self._parts.append("\n\n")
 
     def handle_data(self, data: str) -> None:
         self._parts.append(data)
@@ -63,11 +66,12 @@ def html_to_plain_text(html: str) -> str:
     parser.feed(html)
     parser.close()
     text = parser.text()
-    # Each paragraph/list-item/break already contributes its own newline;
-    # drop lines that are empty after stripping (an empty <p></p>, or a run of
-    # several) rather than rendering them as blank filler lines.
+    # One blank line between paragraphs, never more: block ends contribute
+    # "\n\n" apiece, so an empty <p></p> or nested blocks would otherwise
+    # stack into runs of blank filler lines.
     lines = [line.strip() for line in text.splitlines()]
-    return "\n".join(line for line in lines if line)
+    text = re.sub(r"\n{3,}", "\n\n", "\n".join(lines))
+    return text.strip()
 
 
 _IMG_TAG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)

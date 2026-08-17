@@ -545,4 +545,56 @@ forever. Repeats that stop arriving cannot fail that way; the key-up is still
 honoured when it comes, so the drop back is immediate rather than up to the
 grace window late. Losing the window and closing the app both end a scan too.
 
+## 15. The library is yours to arrange
+
+**Per-episode download from the tree**
+(`quill/apps/podcasts_library_actions.py`, the extracted
+`CastLibraryActionsMixin`). An expanded show's episode rows carry Play
+Episode and Download Episode on their context menu; the download goes
+through the one shared `enqueue_episode_download` helper, so the
+private-feed Authorization rule (same-host only) can never be forgotten at a
+new call site. Files are named for humans -- `<download root>/<show
+slug>/<episode slug><ext>` -- because a download whose name is a feed GUID
+is unfindable in Explorer.
+
+**Renamable pinned views** (`PodcastSettings.view_names`;
+`virtual_views.view_label`/`set_view_name`/`reset_view_name`). The shipped
+views (Favorites, New Episodes, Continue Listening, Inbox) are the one kind
+of tree node the listener may rename -- F2 or the context menu -- because
+they belong to the app, not to a feed. Setting the shipped label or a blank
+IS the reset, so the settings file only ever stores genuine customizations;
+Reset Name appears on the menu only while a custom name exists. Shows and
+episodes refuse renaming with an explanation: an alias would silently stop
+matching what every other player, share link and search result calls them.
+The Manager reads the same names, so the two windows cannot drift.
+
+**Show ordering, including by hand**
+(`PodcastSettings.show_sort_mode`; `PodcastLibrary.move_show`;
+`sorting.SHOW_SORT_MODES`). Ascending, descending, and **custom** -- custom
+order is the `shows` list's own order, maintained by one-step swaps among a
+show's *folder siblings* only, so each folder keeps its own arrangement even
+though all shows live in one flat list. Taking manual control (Alt+Up/Down)
+is itself the act of choosing custom, and entering custom freezes the order
+currently on screen first -- otherwise the first nudge would scramble
+everything visibly. The Subscriptions menu's radio group and the Manager's
+dropdown both reflect the live mode.
+
+**Counts that say what they count.** A folder's badge is its subtree's
+podcast count; a show's badge reads "(n unheard)" in words. Two bare
+numbers that read identically would make the listener remember which node
+kind they were on -- the exact cost badges exist to remove.
+
+**Emptied search fields empty their results**
+(`quill/ui/search_reset.py`). One shared binding backs every search surface
+with a separate results list, in Cast and across the family: when the query
+becomes empty (whitespace counts), the surface resets exactly as its own
+blank-search path would. A results list showing matches for text that no
+longer exists is stale state presented as current -- invisible as such to a
+screen reader arrowing the list.
+
+**Show notes are paragraphs** (`show_notes.html_to_plain_text`). Block
+elements now contribute a blank line, collapsed so empty tags can never
+stack more than one -- a screen reader's next-paragraph navigation needs a
+real boundary to land on, and a wall of single-spaced lines has none.
+
 See `CHANGELOG.md` for the full, versioned history.

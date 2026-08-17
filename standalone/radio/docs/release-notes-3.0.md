@@ -335,6 +335,19 @@ means it. How many episodes each show lists is one preference (25 newest by
 default) -- deliberately the only podcast setting Quill Radio has, because the
 rich side of podcasting belongs to QUILL Cast.
 
+**The Subscriptions folder counts itself, and each show says how much is
+waiting.** The folder reads "Subscriptions (3)" -- the badge is your follow
+count -- and each show beneath it wears "(2 unheard)", read from the shared
+library's own episode state, which is the same count QUILL Cast shows. What is
+waiting is visible from whichever app you happen to be in.
+
+**And a transcript is readable without playing anything.** An episode whose
+feed publishes a transcript says "transcript available" on its row, and its
+context menu offers **View Transcript...** -- one fetch, straight into the same
+transcript reader Playback > Transcript... uses, with no playback involved.
+YouTube rows offer the same (see the YouTube section); an automatic caption
+track says so in the reader's heading.
+
 **What you hear here is remembered there.** Play a subscribed show's episode in
 Quill Radio -- half of it over lunch, or all of it -- and QUILL Cast learns
 about it at its next launch: the episode stops presenting as brand new in the
@@ -714,7 +727,7 @@ entire audience this branch exists for. It is an address you typed yourself,
 nothing is sent but a request for the station list, and no password is ever
 attached to it.
 
-#### YouTube Channels: follow a channel like a station
+#### YouTube: channels, playlists, and single videos, no account anywhere
 
 Follow a channel without a Google account, without signing in to anything, and
 without a subscription that anybody else can see.
@@ -725,6 +738,27 @@ plus any playlists the channel publishes. A channel with four thousand videos
 does not try to be one enormous list -- it pages, and the **More...** row tells
 you there is more. Videos play, record and can be favorited exactly like a
 station.
+
+The branch is called **YouTube** now rather than YouTube Channels, because
+channels stopped being the only thing it holds. A playlist somebody handed you
+as a link, or one single video you want to keep, can be saved here too --
+**Add a Playlist...** and **Add a Video...** sit beside Add a Channel..., one
+way in per shape of link. A saved playlist opens as a folder of its videos; a
+saved video is a playable row, ready on Enter. Each offers **Remove from
+YouTube** on the same menu that plays it.
+
+And there is a one-command version that works out what you pasted: **Station >
+Add YouTube Link... (Ctrl+Alt+N)**. Paste anything YouTube -- it is filed by
+what the link is. A video link becomes a row, a playlist link a folder, a
+channel page a followed channel. The edges are read deliberately: `@name`
+follows the channel, while `@name/live` saves the broadcast, because that is
+what each of those links actually names.
+
+One more thing a YouTube row will do without playing: **View Transcript...**
+on its context menu resolves the video's caption track -- the same single
+request playing it would make -- and opens it in the transcript reader, with
+an automatic track announced as automatic. Reading what a video says no
+longer requires listening to it.
 
 #### Bring the channels you already follow, without an account
 
@@ -926,6 +960,12 @@ And the choice is stored as *your* choice, so a source added in a future
 version appears on its own for anyone who never touched the setting, instead
 of being frozen out by a list written before it existed.
 
+You do not have to leave the tree to prune it, either. Right-click any
+top-level branch and **Hide This Source** is on its menu -- the same setting,
+one keystroke from where the clutter actually is -- with **Reset Sources to
+Default** beside it, so the way back lives on the same menu that hid things.
+Nobody should have to remember which dialog restores the standard set.
+
 ### Finding your next favorite
 
 Browsing got kinder. Expanding a country or a genre in Browse Stations no longer
@@ -985,6 +1025,15 @@ Off** flips the row you are on and says what happened.
 **Your choices are remembered** -- both which sources are on and the Source
 filter in the results list. A preference you have to set again on every search
 is not really a preference. **Reset to Default** turns everything back on.
+
+**And emptying the search boxes empties the results.** Delete your query and
+the old matches used to sit there looking current -- stale rows for text that
+no longer exists, indistinguishable from live ones to a screen reader arrowing
+the list. Clearing the name and tag now clears the results at once and says
+so, exactly as a blank search would. A chosen country keeps them, because a
+country facet on its own is still a live query. The same rule now holds on
+every search surface in the family -- the book library, weather locations,
+Spotify, all of them.
 
 ### Find Stations reaches the libraries too
 

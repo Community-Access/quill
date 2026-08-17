@@ -141,6 +141,12 @@ try:  # pragma: no cover - wx present in the app, absent in some test envs
             )
             search_btn.Bind(wx.EVT_BUTTON, self._on_search)
             self._search.Bind(wx.EVT_TEXT_ENTER, self._on_search)
+            # Emptying the field must not leave the old query's results
+            # looking current; a blank search here means "your saved
+            # library", so clearing lands you back there (search_reset.py).
+            from quill.ui.search_reset import bind_empty_query_reset
+
+            bind_empty_query_reset(self._search, lambda: self._on_search(None))
             play_btn.Bind(wx.EVT_BUTTON, self._on_play_selected)
             self._list.Bind(wx.EVT_LISTBOX_DCLICK, self._on_play_selected)
             self._search.SetFocus()

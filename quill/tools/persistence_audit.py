@@ -188,6 +188,9 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # the entire reason the branch exists. Content, and small.
     "core/radio/my_servers.py::_write": "content",
     "core/radio/youtube_channels.py::_write": "content",
+    # Saved YouTube playlists and single videos (the YouTube branch's shelf),
+    # same shape and same reasoning as the channel store above it.
+    "core/radio/youtube_saved.py::_write": "content",
     # Browse levels, cached so opening a source does not re-download its whole
     # index every time (the Xiph genre page alone is 5 MB). Regenerable by
     # definition -- every entry has a live fetch behind it -- and each answer

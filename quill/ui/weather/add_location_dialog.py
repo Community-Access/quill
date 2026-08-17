@@ -96,6 +96,9 @@ class AddLocationDialog:
         self.dialog.SetSizer(root)
 
         self._query.Bind(wx.EVT_TEXT_ENTER, lambda _e: self._search())
+        from quill.ui.search_reset import bind_empty_query_reset
+
+        bind_empty_query_reset(self._query, self._reset_results)
         self._search_btn.Bind(wx.EVT_BUTTON, lambda _e: self._search())
         self._results_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_result_selected())
         self._results_list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._add_selected())
@@ -121,6 +124,15 @@ class AddLocationDialog:
         return self._added
 
     # -- search -----------------------------------------------------------------
+
+    def _reset_results(self) -> None:
+        """Emptying the search field empties the results list (search_reset.py)."""
+        if not self._results:
+            return
+        self._results = []
+        self._results_list.Set([])
+        self._add_btn.Enable(False)
+        self._status.SetLabel("")
 
     def _search(self) -> None:
         query = self._query.GetValue().strip()

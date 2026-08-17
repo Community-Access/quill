@@ -535,7 +535,13 @@ next time Cast opens. And it is findable right here too: the Podcasts
 branch leads with a <strong>Subscriptions</strong> folder, one folder
 per show you follow, each expanding to its newest episodes. On a show
 you already follow, the same menu slot reads <strong>Unsubscribe from
-This Podcast</strong> instead. How many episodes each show lists is a
+This Podcast</strong> instead. The Subscriptions folder wears your
+follow count as its badge – “Subscriptions (3)” – and each show beneath
+it wears “(2 unheard)”, the same count Quill Cast shows, so what is
+waiting is visible from either app. An episode whose feed publishes a
+transcript says “transcript available” on its row, and <strong>View
+Transcript…</strong> on its context menu opens it in the transcript
+reader without playing anything. How many episodes each show lists is a
 preference (<strong>Ctrl+,</strong> &gt; “Episodes listed per subscribed
 podcast”, 25 newest by default) – deliberately Quill Radio’s one podcast
 setting. Playback, downloads and per-episode actions work exactly as
@@ -651,14 +657,26 @@ It has 4 stations.” An address that answers with nothing is
 add it is nearly always a wrong address, usually a missing port number.
 Every mount then appears with what is playing on it right now, so you
 can hear what is on before you tune in.</p></li>
-<li><p><strong>YouTube Channels</strong> – follow a channel with no
-Google account and no sign-in. <strong>Add a Channel…</strong> takes a
-channel address (<code>https://www.youtube.com/@name</code>); Quill
-Radio reads it once to check it can before saving. Each channel opens
-into <strong>Uploads</strong> plus any playlists the channel publishes,
-and a channel with thousands of videos pages with <strong>More…</strong>
-rather than trying to be one enormous level. Videos play, record and can
-be favorited exactly like a station.</p></li>
+<li><p><strong>YouTube</strong> – channels, playlists and single videos,
+with no Google account and no sign-in anywhere. <strong>Add a
+Channel…</strong> takes a channel address
+(<code>https://www.youtube.com/@name</code>); Quill Radio reads it once
+to check it can before saving. Each channel opens into
+<strong>Uploads</strong> plus any playlists the channel publishes, and a
+channel with thousands of videos pages with <strong>More…</strong>
+rather than trying to be one enormous level. <strong>Add a
+Playlist…</strong> and <strong>Add a Video…</strong> sit beside it: a
+saved playlist opens as a folder of its videos, a saved video is a
+playable row, and either offers <strong>Remove from YouTube</strong> on
+the same menu that plays it. Videos play, record and can be favorited
+exactly like a station – and any YouTube row offers <strong>View
+Transcript…</strong>, which fetches the video’s captions and opens the
+transcript reader without playing anything (an automatic track says so
+in the heading). The quickest way in is <strong>Station &gt; Add YouTube
+Link… (Ctrl+Alt+N)</strong>: paste anything YouTube and it is filed by
+what the link is – <code>@name</code> follows the channel,
+<code>@name/live</code> saves the broadcast, a playlist link becomes a
+folder, a video link a row.</p></li>
 </ul></li>
 <li><strong>Find in this folder</strong> – above the tree (one Shift+Tab
 away from the stations) is a search box that searches <strong>from the
@@ -836,6 +854,14 @@ from the same single request that fetched the list – so you always know
 which playlist you are looking at. Playlists use the same built-in
 <code>yt-dlp</code> helper as any other YouTube link, and are
 unavailable in Safe Mode.</p></li>
+<li><p><strong>One command for any YouTube link.</strong>
+<strong>Station &gt; Add YouTube Link…</strong>
+(<strong>Ctrl+Alt+N</strong>) takes whatever you pasted and files it
+under Browse Stations &gt; YouTube by what the link is: a video becomes
+a playable row, a playlist a folder of its videos, a channel page a
+followed channel. <code>@name</code> follows the channel;
+<code>@name/live</code> saves the broadcast. If the link on your
+clipboard is a YouTube one, the box starts filled in.</p></li>
 <li><p><strong>Import the channels you already follow – with no account,
 no sign-in, and nothing sent anywhere.</strong> <strong>Station &gt;
 Import YouTube Subscriptions…</strong>
@@ -1043,7 +1069,11 @@ it. The same rule as Search Sources applies: <strong>a branch that is
 off is not in the tree at all, and is never contacted</strong>, so this
 is a speed and privacy control as much as a tidiness one. Your choice is
 remembered, and a source added in a future version appears automatically
-unless you have hidden it.</li>
+unless you have hidden it. You can also prune without opening this
+window at all: right-click any top-level branch in Browse Stations and
+choose <strong>Hide This Source</strong> – the same setting, applied in
+place – with <strong>Reset Sources to Default</strong> on the same menu,
+so the way back is never a dialog away.</li>
 <li><strong>Update Station Catalog</strong> – Quill Radio keeps a copy
 of the station directories on this computer, so browsing answers
 instantly and works offline. It updates itself quietly (shortly after

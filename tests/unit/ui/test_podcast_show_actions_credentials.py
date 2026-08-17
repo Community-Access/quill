@@ -30,7 +30,7 @@ def test_context_menus_offer_feed_credentials() -> None:
     # Manager's show menu became a Quick-Actions-ordered table in 1.1.0, so
     # its entry lives in manager_menus.py and calls the dialog's own handler.
     assert "Feed Cre&dentials..." in _read("ui/podcasts/show_actions.py")
-    assert "Feed Cre&dentials..." in _read("apps/podcasts.py")
+    assert "Feed Cre&dentials..." in _read("apps/podcasts_library_actions.py")
     menus = _read("ui/podcasts/manager_menus.py")
     assert "Feed Cre&dentials..." in menus
     assert "_on_feed_credentials(show)" in menus

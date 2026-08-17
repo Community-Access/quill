@@ -209,6 +209,9 @@ class LibraryDialog(wx.Dialog):
 
         self.search_btn.Bind(wx.EVT_BUTTON, self._on_search)
         self.query.Bind(wx.EVT_TEXT_ENTER, self._on_search)
+        from quill.ui.search_reset import bind_empty_query_reset
+
+        bind_empty_query_reset(self.query, self._reset_results)
         self.open_btn.Bind(wx.EVT_BUTTON, lambda _e: self._download(open_after=True))
         self.dl_btn.Bind(wx.EVT_BUTTON, lambda _e: self._download(open_after=False))
         self.bard_btn.Bind(wx.EVT_BUTTON, lambda _e: self._open_in_bard())
@@ -239,6 +242,16 @@ class LibraryDialog(wx.Dialog):
     def _selected_sources(self) -> tuple[str, ...]:
         idx = self.source.GetSelection()
         return _SOURCES[idx][1] if idx >= 0 else _SOURCES[0][1]
+
+    def _reset_results(self) -> None:
+        """Emptying the search field empties the results (search_reset.py)."""
+        if not self._results:
+            return
+        self._results = []
+        self._works = []
+        self._shown = []
+        self.results.Clear()
+        self._set_status("Search cleared.")
 
     def _on_search(self, _e) -> None:
         query = self.query.GetValue().strip()

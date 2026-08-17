@@ -50,7 +50,13 @@ _EPISODE_SORT_LABELS = (
     "Shortest first",
     "Unplayed first",
 )
-_SHOW_SORT_LABELS = ("Title A-Z", "Most unheard first", "Recently updated first")
+_SHOW_SORT_LABELS = (
+    "Title A-Z",
+    "Title Z-A",
+    "Most unheard first",
+    "Recently updated first",
+    "Your custom order",
+)
 _VIEW_MODE_LABELS = ("Flat list", "Grouped in list", "Folders per podcast")
 _VIEW_MODE_MODES = ("flat", "grouped", "folders")
 
@@ -192,7 +198,12 @@ class PodcastManagerDialog(
         )
         self._show_sort_choice = wx.Choice(self.dialog, choices=list(_SHOW_SORT_LABELS))
         self._show_sort_choice.SetName("How podcasts are ordered within each folder")
-        self._show_sort_choice.SetSelection(0)
+        # Open on the library's own mode (Subscriptions > Sort Podcasts /
+        # Alt+Up custom moves), so the Manager and the main tree agree.
+        library_mode = self._library.settings.show_sort_mode
+        self._show_sort_choice.SetSelection(
+            SHOW_SORT_MODES.index(library_mode) if library_mode in SHOW_SORT_MODES else 0
+        )
         show_sort_row.Add(self._show_sort_choice, 1, wx.EXPAND)
         tree_col.Add(show_sort_row, 0, wx.EXPAND | wx.BOTTOM, 4)
         self._tree = wx.TreeCtrl(

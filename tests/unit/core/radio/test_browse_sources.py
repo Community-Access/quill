@@ -235,9 +235,12 @@ def test_a_letter_node_id_carries_no_payload_so_it_survives_a_restart() -> None:
 # --- Apple ---------------------------------------------------------------------
 
 
-def test_apple_lists_storefronts_then_top_and_genres(monkeypatch) -> None:
+def test_apple_lists_storefronts_then_top_and_genres(monkeypatch, tmp_path) -> None:
     from quill.core.podcasts import apple_podcasts as apple
 
+    # The Subscriptions node now reads the shared library for its count
+    # badge; isolate so a developer's real follows cannot change the label.
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     monkeypatch.setattr(apple, "fetch_genres", lambda **_kw: [apple.AppleGenre("1301", "Arts")])
     roots = bs.browse("apple")
     # Subscriptions leads (the shows already followed are the ones a listener

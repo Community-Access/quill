@@ -98,6 +98,19 @@ class AddPodcastDialog:
         self._url_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_add_url)
         self._add_url_btn.Bind(wx.EVT_BUTTON, self._on_add_url)
         import_btn.Bind(wx.EVT_BUTTON, self._on_import_opml)
+        from quill.ui.search_reset import bind_empty_query_reset
+
+        bind_empty_query_reset(self._query_ctrl, self._reset_search_results)
+
+    def _reset_search_results(self) -> None:
+        """Emptying the search field empties the results list."""
+        if not self._search_results:
+            return
+        self._search_results = []
+        self._results.DeleteAllItems()
+        self._subscribe_btn.Enable(False)
+        self._status.SetLabel("")
+        self._announce("Search cleared.")
 
     def show(self) -> None:
         self.dialog.CentreOnParent()

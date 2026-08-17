@@ -326,3 +326,55 @@ def resolve_youtube_for_host(host: Any, page_url: str) -> Any:
             "Add it again from Add Custom Station to accept it."
         )
     return ensure_and_resolve(page_url)
+
+
+#: Prompt for the one add-anything command (QA: a pasted YouTube link had no
+#: obvious way in without searching). The link's shape decides where it lands.
+LINK_PROMPT = (
+    "Paste any YouTube link -- a video, a playlist, or a channel page.\n\n"
+    "Quill Radio files it under Browse Stations, YouTube: a video becomes a "
+    "playable row, a playlist becomes a folder of its videos, and a channel "
+    "is followed with its uploads and playlists."
+)
+
+LINK_TITLE = "Add YouTube Link"
+
+
+def add_youtube_link(host: Any) -> None:
+    """Station > Add YouTube Link...: one prompt, filed by what the link is."""
+    from quill.core.radio import youtube_saved
+    from quill.core.radio.youtube_channels import ChannelStore
+
+    wx = host._wx
+    if not ask_youtube_consent(host):
+        return
+    prefill = _clipboard_text(host)
+    if youtube_saved.classify_link(prefill)[0] == "":
+        prefill = ""
+    entry = wx.TextEntryDialog(host.frame, LINK_PROMPT, LINK_TITLE, value=prefill)
+    try:
+        if host._show_modal_dialog(entry, LINK_TITLE) != wx.ID_OK:
+            return
+        url = entry.GetValue().strip()
+    finally:
+        entry.Destroy()
+    if not url:
+        return
+    kind, canonical = youtube_saved.classify_link(url)
+    if not kind:
+        host._show_message_box(
+            "That does not look like a YouTube link.\n\n"
+            "A video looks like youtube.com/watch?v=... or youtu.be/..., a "
+            "playlist like youtube.com/playlist?list=..., and a channel like "
+            "youtube.com/@name.",
+            LINK_TITLE,
+            wx.ICON_INFORMATION | wx.OK,
+        )
+        return
+    if kind == "channel":
+        ChannelStore().add(canonical)
+        host._announce("Following that channel. Find it under Browse Stations, YouTube.")
+        return
+    youtube_saved.SavedStore().add(kind, canonical)
+    what = "playlist" if kind == youtube_saved.PLAYLIST else "video"
+    host._announce(f"Added the {what}. Find it under Browse Stations, YouTube.")

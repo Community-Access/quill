@@ -16,6 +16,25 @@ timings, and three long-standing silent faults are fixed. See
 
 ### Added
 
+- **The YouTube branch takes any link, and one command files it.** Saved
+  playlists and single videos now live beside followed channels — the branch
+  is simply **YouTube** — each shape with its own **Add a...** row, and each
+  saved row offering **Remove from YouTube** on the same menu that plays it.
+  **Station > Add YouTube Link... (Ctrl+Alt+N)** is the one-command version:
+  paste anything and it is filed by what the link is — a video becomes a
+  playable row, a playlist a folder of its videos, a channel page a followed
+  channel. `@name` follows the channel; `@name/live` saves the broadcast,
+  because that is what each of those links names.
+- **View Transcript, without playing anything.** A podcast episode whose feed
+  publishes a transcript, and any YouTube row, offer **View Transcript...**
+  on the context menu — one fetch (for YouTube, the same resolve playing
+  would make) straight into the shared transcript reader, an automatic
+  caption track announced as automatic in its heading.
+- **Hide a branch from the branch itself.** Right-click any top-level browse
+  source for **Hide This Source** — the same rule as Choose Browse Sources
+  (a hidden branch is not in the tree and is never contacted), one keystroke
+  from where the clutter is — with **Reset Sources to Default** on the same
+  menu, so the way back lives where the hiding happened.
 - **The Data Folder, from Preferences.** Preferences (Ctrl+,) gains a
   **Data Folder...** button: point the family-wide data location at a folder
   Dropbox, OneDrive, Google Drive, or iCloud already keeps in sync, and your
@@ -306,6 +325,19 @@ timings, and three long-standing silent faults are fixed. See
 
 ### Changed
 
+- **Subscriptions counts itself, and its shows say what is waiting.** The
+  node under Podcasts read "Subscriptions (shows you follow, shared with
+  Quill Cast)" — a sentence glued to the name, paid on every visit. It now
+  reads **"Subscriptions (3)"**: the badge is your follow count. Each show
+  beneath it wears **"(2 unheard)"**, read from the shared library's own
+  episode state — the same count Quill Cast shows.
+- **An emptied search field empties its results.** In the station browser —
+  and on every search surface across the family: the book library, weather
+  locations, Spotify, the GitHub browser — deleting your query used to leave
+  the old results sitting there looking current. Clearing the fields now
+  clears the list at once, exactly as a blank search would; the station
+  browser waits until the name, tag *and* country are all empty, because a
+  country facet alone is still a live query.
 - **The Weather menu is gone.** Weather stands alone in the **Quill Weather**
   app (one keystroke away on the QuillVille menu); Quill Radio no longer
   carries the forecast menu or resumes background alert monitoring at launch.

@@ -146,3 +146,34 @@ def test_save_and_load_round_trip(tmp_path: Path) -> None:
     assert reloaded_c.folder_id == folder.id
     assert len(reloaded.folders) == 1
     assert reloaded.folders[0].name == "News"
+
+
+def test_move_show_swaps_with_its_folder_sibling_only() -> None:
+    """Custom order: moving swaps with the adjacent sibling in the SAME
+    folder, leaving other folders' shows exactly where they were."""
+    library = PodcastLibrary()
+    folder = library.add_folder("News")
+    a = PodcastShow(id="a", title="A", is_local=True)
+    b = PodcastShow(id="b", title="B", folder_id=folder.id, is_local=True)
+    c = PodcastShow(id="c", title="C", is_local=True)
+    for show in (a, b, c):
+        library.add_show(show)
+
+    assert library.move_show("c", -1)  # up, over its top-level sibling a
+    assert [s.id for s in library.shows] == ["c", "b", "a"]
+    # b is alone in its folder: no sibling above or below to swap with.
+    assert not library.move_show("b", -1)
+    assert not library.move_show("b", 1)
+
+
+def test_move_show_refuses_edges_and_strangers() -> None:
+    library = PodcastLibrary()
+    a = PodcastShow(id="a", title="A", is_local=True)
+    b = PodcastShow(id="b", title="B", is_local=True)
+    library.add_show(a)
+    library.add_show(b)
+    assert not library.move_show("a", -1)  # already at the top
+    assert not library.move_show("b", 1)  # already at the bottom
+    assert not library.move_show("nope", 1)
+    assert not library.move_show("a", 2)  # only one-step moves exist
+    assert [s.id for s in library.shows] == ["a", "b"]

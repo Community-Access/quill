@@ -61,6 +61,7 @@ class BrowseTreeDialog:
         windows: object | None = None,
         download_host: object | None = None,
         visible_sources: object | None = None,
+        on_visible_sources_changed: Callable[[tuple[str, ...]], None] | None = None,
         catalog: object | None = None,
         on_offline_catalog: object | None = None,
     ) -> None:
@@ -83,6 +84,9 @@ class BrowseTreeDialog:
         #: that is off is not in the tree at all, so it is never opened and
         #: therefore never contacted. ``None`` means never set -> the defaults.
         self._visible_sources = visible_sources
+        #: Persists a Hide This Source / Reset Sources to Default change made
+        #: from the tree's own context menu (browse_tree_menu).
+        self._on_visible_sources_changed = on_visible_sources_changed
         #: The local station catalog (CatalogStore) or None. Handed straight
         #: to browse(); this window never queries it -- the one-chokepoint rule.
         self._catalog = catalog
@@ -311,6 +315,12 @@ class BrowseTreeDialog:
             )
             tree.SetItemData(empty, dict(_PLACEHOLDER))
         browse_position.restore_selection(tree, root)  # browse position memory
+
+    def _rebuild_sources(self) -> None:
+        """Rebuild the root list after a visibility change made from the
+        context menu (Hide This Source / Reset Sources to Default)."""
+        self._tree.DeleteAllItems()
+        self._populate_sources()
 
     def _fetch_children(self, node_id: str) -> list[BrowseNode]:
         """Off-thread fetch for one node. All the knowledge lives in core."""

@@ -359,6 +359,14 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
         self._upstream_btn.Bind(wx.EVT_BUTTON, self._on_view_upstream)
         self._search_btn.Bind(wx.EVT_BUTTON, self._on_search)
         self._search_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
+        # Emptying the search box drops back to the normal list right away,
+        # exactly as running an empty search does (search_reset.py).
+        from quill.ui.search_reset import bind_empty_query_reset
+
+        bind_empty_query_reset(
+            self._search_ctrl,
+            lambda: self._on_search(None) if self._search_query else None,
+        )
         self._quick_filter_ctrl.Bind(wx.EVT_TEXT, self._on_quick_filter_changed)
         self._diff_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_diff())
         self._summarize_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_summarize())

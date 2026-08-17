@@ -103,13 +103,39 @@ def test_a_server_lists_its_mounts_with_now_playing(monkeypatch) -> None:
 # --- YouTube channels ------------------------------------------------------------
 
 
-def test_youtube_offers_an_add_action(monkeypatch, tmp_path) -> None:
+def test_youtube_offers_an_add_action_per_kind(monkeypatch, tmp_path) -> None:
     from quill.core.radio import youtube_channels as yt
+    from quill.core.radio import youtube_saved
 
     real = yt.ChannelStore  # capture first: patching the name would recurse
     monkeypatch.setattr(yt, "ChannelStore", lambda *a, **k: real(tmp_path))
+    real_saved = youtube_saved.SavedStore
+    monkeypatch.setattr(youtube_saved, "SavedStore", lambda *a, **k: real_saved(tmp_path))
     nodes = bs.browse("youtube")
-    assert nodes[-1].is_action and nodes[-1].label == "Add a Channel..."
+    # One way in per link shape (QA: a pasted link had no obvious way in).
+    assert [n.label for n in nodes if n.is_action] == [
+        "Add a Channel...",
+        "Add a Playlist...",
+        "Add a Video...",
+    ]
+
+
+def test_youtube_lists_saved_playlists_and_videos(monkeypatch, tmp_path) -> None:
+    from quill.core.radio import youtube_channels as yt
+    from quill.core.radio import youtube_saved
+
+    real = yt.ChannelStore
+    monkeypatch.setattr(yt, "ChannelStore", lambda *a, **k: real(tmp_path))
+    real_saved = youtube_saved.SavedStore
+    monkeypatch.setattr(youtube_saved, "SavedStore", lambda *a, **k: real_saved(tmp_path))
+    real_saved(tmp_path).add(youtube_saved.PLAYLIST, "https://www.youtube.com/playlist?list=PL1x")
+    real_saved(tmp_path).add(youtube_saved.VIDEO, "https://youtu.be/dQw4w9WgXcQ")
+    nodes = bs.browse("youtube")
+    playlist = next(n for n in nodes if n.node_id.startswith("ytplaylist:"))
+    assert playlist.is_folder
+    video = next(n for n in nodes if n.node_id.startswith("ytvideo:"))
+    assert video.station is not None and video.station.is_recording
+    assert video.station.stream_url == "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 
 def test_a_channel_lists_uploads_then_its_playlists(monkeypatch) -> None:

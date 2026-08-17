@@ -57,6 +57,10 @@ REFRESH = "folder.refresh"
 SUBSCRIBE_PODCAST = "podcast.subscribe"
 UNSUBSCRIBE_PODCAST = "podcast.unsubscribe"
 UNFOLLOW_CHANNEL = "channel.unfollow"
+HIDE_SOURCE = "source.hide"
+RESET_SOURCES = "source.reset"
+REMOVE_SAVED = "youtube.remove_saved"
+VIEW_TRANSCRIPT = "view.transcript"
 
 
 @dataclass(frozen=True, slots=True)
@@ -87,6 +91,9 @@ class FolderState:
     is_followed_channel: bool = False
     #: Whether the tree row is currently expanded (Open reads as Close then).
     expanded: bool = False
+    #: A top-level source branch (Popular Stations, Podcasts, ...) -- the
+    #: rows that can be hidden in place instead of via Choose Browse Sources.
+    root_source: bool = False
 
 
 #: Node kinds that name a podcast show rather than a shelf of them.
@@ -111,6 +118,7 @@ FOLDER_CONTENTS: dict[str, str] = {
     "appleshow": "Episodes",
     "mypodcasts": "Shows",
     "mypodcastshow": "Episodes",
+    "ytplaylist": "Videos",
     "archive": "Recordings",
     "archiveitem": "Files",
     "audiopub": "Books",
@@ -223,6 +231,10 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
         # "&P", not "&C": an expanded channel's menu now leads with "&Close".
         actions.append(RowAction(UNFOLLOW_CHANNEL, "Sto&p Following This Channel"))
 
+    if kind == "ytplaylist":
+        # A saved playlist: removable from the same menu that plays it.
+        actions.append(RowAction(REMOVE_SAVED, "Remo&ve from YouTube"))
+
     # "&Add", not "to &Favorites": Copy Feed Address already claims F on a
     # podcast show, and that collision was live on the one menu this module
     # was written for. Only when something is actually loaded: with nothing
@@ -236,6 +248,15 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
 
     if state.savable:
         actions.append(RowAction(DOWNLOAD_ALL, f"&Download All {state.savable} Files..."))
+
+    if state.root_source:
+        # Hiding in place: the same rule as Choose Browse Sources (a hidden
+        # branch is not in the tree and never contacted), one right-click
+        # nearer. Reset rides along so the way back is on the same menu that
+        # hid things -- nobody should need to remember which dialog restores
+        # the defaults.
+        actions.append(RowAction(HIDE_SOURCE, "&Hide This Source"))
+        actions.append(RowAction(RESET_SOURCES, "Rese&t Sources to Default"))
     return actions
 
 
@@ -254,7 +275,7 @@ def actions_for(
 ) -> list[RowAction]:
     """Every action this row offers, in menu order."""
     if station is not None:
-        return station_actions(
+        actions = station_actions(
             playing=playing,
             saved=saved,
             has_homepage=bool(getattr(station, "homepage", "")),
@@ -263,6 +284,23 @@ def actions_for(
             is_recording=bool(getattr(station, "is_recording", False)),
             open_site_label=open_site_label,
         )
+        if kind == "podepisode":
+            # The row's node id carries the feed's transcript address, so the
+            # transcript is readable without playing the episode.
+            actions.append(RowAction(VIEW_TRANSCRIPT, "View Transcr&ipt..."))
+        else:
+            from quill.core.radio.youtube_urls import is_youtube_url
+
+            if is_youtube_url(str(getattr(station, "stream_url", ""))):
+                # A YouTube video's captions are its transcript; one resolve
+                # (the same request playing would make) fetches them, no
+                # playback required.
+                actions.append(RowAction(VIEW_TRANSCRIPT, "View Transcr&ipt..."))
+        if kind == "ytvideo":
+            # A saved single video: removable from the same menu, like a
+            # followed channel.
+            actions.append(RowAction(REMOVE_SAVED, "Remo&ve from YouTube"))
+        return actions
     if resolve_lazily:
         return lazy_leaf_actions(saved=saved)
     if is_folder:

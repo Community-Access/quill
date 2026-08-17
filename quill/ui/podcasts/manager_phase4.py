@@ -144,7 +144,10 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
         #: pinned view, auto-generated at every refresh (never persisted,
         #: never manually edited) -- key -> (view_id, show_id).
         self._tree_item_virtual_show: dict[int, tuple[str, str]] = {}
-        for view_id, label in _PINNED_VIEWS:
+        from quill.core.podcasts.virtual_views import view_label
+
+        for view_id, _default in _PINNED_VIEWS:
+            label = view_label(self._library, view_id)
             count = len(self._virtual_pairs(view_id))
             text = f"{label} ({count})" if count else label
             item = self._tree.AppendItem(root, text)
@@ -326,9 +329,10 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
         True when handled (the caller skips its normal show fill)."""
         view_id = self._selected_virtual_view()
         if view_id is not None:
-            labels = dict(_PINNED_VIEWS)
+            from quill.core.podcasts.virtual_views import view_label as pinned_view_label
+
             self._fill_episodes_from_pairs(
-                self._virtual_pairs(view_id), view_label=labels.get(view_id, view_id)
+                self._virtual_pairs(view_id), view_label=pinned_view_label(self._library, view_id)
             )
             return True
         inbox_folder_id = self._selected_inbox_folder_id()

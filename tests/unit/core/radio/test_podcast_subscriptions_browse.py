@@ -30,6 +30,7 @@ class _Episode:
     title: str
     audio_url: str
     transcript_url: str = ""
+    transcript_type: str = ""
 
 
 @dataclass
@@ -156,3 +157,40 @@ def test_subscribe_announcement_names_the_subscriptions_folder(data_dir) -> None
     again = follow_feed(data_dir, feed_url="https://a.example/feed", title="Aardvark Hour")
     assert "Subscriptions" in added.spoken
     assert "Subscriptions" in again.spoken and again.already
+
+
+def test_the_subscriptions_folder_wears_its_follow_count(data_dir) -> None:
+    # "Subscriptions (2)", not a sentence-long note glued to the name.
+    follow_feed(data_dir, feed_url="https://a.example/feed", title="A")
+    follow_feed(data_dir, feed_url="https://b.example/feed", title="B")
+    nodes = _browse_apple([], safe_mode=True)
+    assert nodes[0].label == "Subscriptions (2)"
+    assert not nodes[0].note
+
+
+def test_a_subscription_with_unplayed_episodes_wears_an_unheard_badge(data_dir) -> None:
+    from quill.core.podcasts.models import PodcastEpisode
+    from quill.core.podcasts.subscriptions import load_library, save_library
+
+    follow_feed(data_dir, feed_url="https://a.example/feed", title="Aardvark Hour")
+    library = load_library(data_dir)
+    show = library.find_show_by_feed_url("https://a.example/feed")
+    show.episodes = [
+        PodcastEpisode(guid="e1", title="One", audio_url="https://a.example/1.mp3"),
+        PodcastEpisode(guid="e2", title="Two", audio_url="https://a.example/2.mp3", played=True),
+    ]
+    save_library(data_dir, library)
+    nodes = _browse_my_podcasts([], safe_mode=True)
+    assert nodes[0].label == "Aardvark Hour (1 unheard)"
+
+
+def test_an_episode_with_a_transcript_carries_it_in_its_node_id(data_dir, monkeypatch) -> None:
+    # View Transcript on the row fetches this address without playing.
+    from quill.core.podcasts import feed_reader
+
+    feed = _feed_of(1)
+    feed.episodes[0].transcript_url = "https://pod.example/ep0.vtt"
+    monkeypatch.setattr(feed_reader, "fetch_and_parse_feed", lambda url, **_kw: feed)
+    nodes = _browse_my_podcast_show(["https://a.example/feed"], safe_mode=False)
+    assert nodes[0].node_id == "podepisode:https://pod.example/ep0.vtt\t"
+    assert nodes[0].note == "transcript available"

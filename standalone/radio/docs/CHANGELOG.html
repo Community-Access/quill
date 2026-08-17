@@ -213,6 +213,29 @@ transcripts gain timings, and three long-standing silent faults are
 fixed. See <code>docs/release-notes-3.0.md</code>.</p>
 <h3 id="added">Added</h3>
 <ul>
+<li><p><strong>The YouTube branch takes any link, and one command files
+it.</strong> Saved playlists and single videos now live beside followed
+channels — the branch is simply <strong>YouTube</strong> — each shape
+with its own <strong>Add a…</strong> row, and each saved row offering
+<strong>Remove from YouTube</strong> on the same menu that plays it.
+<strong>Station &gt; Add YouTube Link… (Ctrl+Alt+N)</strong> is the
+one-command version: paste anything and it is filed by what the link is
+— a video becomes a playable row, a playlist a folder of its videos, a
+channel page a followed channel. <code>@name</code> follows the channel;
+<code>@name/live</code> saves the broadcast, because that is what each
+of those links names.</p></li>
+<li><p><strong>View Transcript, without playing anything.</strong> A
+podcast episode whose feed publishes a transcript, and any YouTube row,
+offer <strong>View Transcript…</strong> on the context menu — one fetch
+(for YouTube, the same resolve playing would make) straight into the
+shared transcript reader, an automatic caption track announced as
+automatic in its heading.</p></li>
+<li><p><strong>Hide a branch from the branch itself.</strong>
+Right-click any top-level browse source for <strong>Hide This
+Source</strong> — the same rule as Choose Browse Sources (a hidden
+branch is not in the tree and is never contacted), one keystroke from
+where the clutter is — with <strong>Reset Sources to Default</strong> on
+the same menu, so the way back lives where the hiding happened.</p></li>
 <li><p><strong>The Data Folder, from Preferences.</strong> Preferences
 (Ctrl+,) gains a <strong>Data Folder…</strong> button: point the
 family-wide data location at a folder Dropbox, OneDrive, Google Drive,
@@ -575,6 +598,21 @@ capability rather than a status code.</p></li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
+<li><p><strong>Subscriptions counts itself, and its shows say what is
+waiting.</strong> The node under Podcasts read “Subscriptions (shows you
+follow, shared with Quill Cast)” — a sentence glued to the name, paid on
+every visit. It now reads <strong>“Subscriptions (3)”</strong>: the
+badge is your follow count. Each show beneath it wears <strong>“(2
+unheard)”</strong>, read from the shared library’s own episode state —
+the same count Quill Cast shows.</p></li>
+<li><p><strong>An emptied search field empties its results.</strong> In
+the station browser — and on every search surface across the family: the
+book library, weather locations, Spotify, the GitHub browser — deleting
+your query used to leave the old results sitting there looking current.
+Clearing the fields now clears the list at once, exactly as a blank
+search would; the station browser waits until the name, tag <em>and</em>
+country are all empty, because a country facet alone is still a live
+query.</p></li>
 <li><p><strong>The Weather menu is gone.</strong> Weather stands alone
 in the <strong>Quill Weather</strong> app (one keystroke away on the
 QuillVille menu); Quill Radio no longer carries the forecast menu or
