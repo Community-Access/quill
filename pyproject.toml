@@ -117,7 +117,7 @@ spellcheck = ["pyenchant>=3.3.0"]
 # includes, since the imports are lazy and the tracer misses them) — nothing
 # for end users to install. This extra covers source/pip installs on a Mac.
 # The code path still degrades to converted rich if the bridge is ever absent.
-mac = ["pyobjc-framework-Cocoa>=12.2.1; sys_platform == 'darwin'"]
+mac = ["pyobjc-framework-Cocoa>=12.2.2; sys_platform == 'darwin'"]
 # Direct GitHub issue submission for Report a Bug (#210): feedback_hub provides
 # the accessible FeedbackDialog driven by quill/core/schemas/feedback.json and
 # files the issue via the GitHub API. Ships in every build (this is the only
