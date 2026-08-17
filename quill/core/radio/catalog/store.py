@@ -24,6 +24,7 @@ import os
 import re
 import shutil
 import sqlite3
+import threading
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -220,7 +221,14 @@ class CatalogStore:
 
     def __init__(self, data_dir: Path | str) -> None:
         self._root = catalog_dir(data_dir)
-        self._con: sqlite3.Connection | None = None
+        # One connection PER THREAD. sqlite3 refuses a connection used from a
+        # thread other than the one that created it, and this store is opened
+        # on a task-manager worker (the startup refresh) and then read from the
+        # UI thread on every browse -- so a single shared connection raised
+        # ProgrammingError on every catalog-served branch and the tree quietly
+        # fell back to the network. Read-only, so per-thread costs nothing and
+        # needs no lock.
+        self._local = threading.local()
         self._generation: int | None = None
 
     # -- lifecycle ------------------------------------------------------------
@@ -233,8 +241,9 @@ class CatalogStore:
         return current_generation(self._root) is not None
 
     def _connect(self) -> sqlite3.Connection:
-        if self._con is not None:
-            return self._con
+        existing: sqlite3.Connection | None = getattr(self._local, "con", None)
+        if existing is not None:
+            return existing
         generation = current_generation(self._root)
         if generation is None:
             raise CatalogCorruptError("No catalog generation is present.")
@@ -251,22 +260,29 @@ class CatalogStore:
             con.close()
             # Derived data: a schema mismatch is a rebuild, never a migration.
             raise CatalogCorruptError("The catalog is from a different schema version.")
-        self._con = con
+        self._local.con = con
         self._generation = generation
         _collect_garbage(self._root, keep=generation)
         return con
 
     def close(self) -> None:
-        if self._con is not None:
+        """Close this thread's connection. Other threads close their own.
+
+        A connection can only be closed by its owning thread, so there is no
+        honest way to close them all from here; each is read-only and is
+        released when its thread ends or reopens on a newer generation.
+        """
+        con = getattr(self._local, "con", None)
+        if con is not None:
             try:
-                self._con.close()
+                con.close()
             finally:
-                self._con = None
+                self._local.con = None
                 self._generation = None
 
     def reopen_if_stale(self) -> None:
         """Pick up a newer generation after a refresh swapped the pointer."""
-        if self._con is None:
+        if getattr(self._local, "con", None) is None:
             return
         if current_generation(self._root) != self._generation:
             self.close()

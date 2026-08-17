@@ -462,10 +462,18 @@ installs resolve to the thin installer, which shares the full one's AppId and
 upgrades either. 15 tests, including one asserting each published asset
 matches exactly one edition.
 
-Also on the upgrade path: the three thin installers looked for the shared
-runtime under `Runtime\3.13\` while it installs to `Runtime\`, so the
-"already present?" test never fired and every thin install re-downloaded
-230 MB.
+Also on the upgrade path, and worse: **the runtime was installed where the
+launcher never looks.** `runtime_resolve.c` probes
+`%LOCALAPPDATA%\QuillVille\Runtime\<major>\quillville-runtime.json` --
+versioned, because the design keys runtimes by major so a future Python lands
+alongside rather than on top -- while `shared-runtime.iss` installed to the
+unversioned `Runtime\`. A fresh install therefore could not start at all:
+"Quill Radio could not find a Python runtime." `RuntimeDir()` now derives the
+major from `RuntimeVersion`; the thin installers, which had been probing the
+correct versioned path all along, keep it; and
+`test_shared_runtime_installer.py` pins the two halves together, so moving
+either side alone fails the build. Found by running the installed copy rather
+than by reading either file — each was perfectly reasonable on its own.
 
 ### Every menu item shows its key, and a Close button that closes
 

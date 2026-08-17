@@ -126,15 +126,3 @@ def test_the_installers_ship_their_edition_marker() -> None:
         assert f'DestName: "{edition.MARKER_NAME}"' in source, name
         marker = repo / "standalone" / "radio" / "installer" / f"edition-{expected}.txt"
         assert marker.read_text(encoding="utf-8").strip() == expected
-
-
-def test_no_thin_installer_looks_for_the_runtime_in_a_folder_that_never_exists() -> None:
-    """The thin installer's whole promise is "nothing large to fetch if you
-    already have the runtime". It looked under Runtime\\3.13\\ while the
-    runtime installs to Runtime\\, so the check was always false and it
-    re-downloaded 230 MB every single time."""
-    repo = Path(__file__).resolve().parents[3]
-    for path in repo.glob("standalone/*/installer/*-lite.iss"):
-        source = path.read_text(encoding="utf-8")
-        assert "Runtime\\3.13\\quillville-runtime.json" not in source, path.name
-        assert "Runtime\\quillville-runtime.json" in source, path.name

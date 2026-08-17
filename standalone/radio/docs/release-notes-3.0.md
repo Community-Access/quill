@@ -760,12 +760,21 @@ looked portable too, because Windows numbers the uninstallers it leaves behind
 and only the first name was recognised.
 
 Each installer now writes down which edition it is, and an update offers that
-same edition back. Two related repairs ship with it: the thin installer no
-longer re-downloads the 230 MB shared runtime every single time (it was
-looking for the copy you already have in a folder that never existed), and an
-update now actually replaces the program -- before this, updating a machine
-that already had the right Python version copied nothing at all and reported
-success.
+same edition back.
+
+Two related repairs ship with it, and the first is the most serious thing found
+all day: **a fresh install could fail to start at all.** The small program that
+launches Quill Radio looks for its shared Python engine in one folder; the
+installer was putting it in another. Install cleanly onto a machine that had
+never seen it, and the app answered "Quill Radio could not find a Python
+runtime" and closed. Both sides now agree on one location, and a build check
+holds them together so neither can drift again. It was found by *running* an
+installed copy rather than by reading the code -- each half looked perfectly
+sensible on its own, which is exactly how it survived.
+
+The second: an update now actually replaces the program. Before this, updating
+a machine that already had the right Python version copied nothing at all and
+reported success.
 
 ### Every menu item tells you its key
 

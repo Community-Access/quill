@@ -167,7 +167,12 @@ def test_the_dial_groups_by_band(monkeypatch) -> None:
     )
     bands = bs.browse("wikidatadial")
     assert [b.label for b in bands] == ["87 to 91 MHz", "91 to 95 MHz", "103 to 108 MHz"]
-    assert bands[0].child_count == 1
+    # The number is what WIKIDATA knows, and opening the band drops any station
+    # without a matching playable stream -- so it is stated as "known" in the
+    # note rather than promised as a child count. A band that announced 13 and
+    # opened to one row is the bug this wording replaced (2026-08-16).
+    assert bands[0].child_count is None
+    assert bands[0].note == "1 known; those with a stream can play"
 
 
 def test_wikidata_matches_call_signs_conservatively(monkeypatch) -> None:

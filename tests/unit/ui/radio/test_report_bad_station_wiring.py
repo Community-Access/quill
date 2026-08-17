@@ -22,8 +22,12 @@ def test_browse_tree_offers_report_bad_station_when_callback_present() -> None:
     # entry from it, and both halves are asserted so neither can drift away.
     dialog = _src("quill/ui/radio/browse_tree_dialog.py")
     menu = _src("quill/ui/radio/browse_tree_menu.py")
+    # What a row offers moved again, into wx-free core (row_actions.py), so the
+    # label lives there and the wiring here; both halves are still asserted.
+    actions = _src("quill/core/radio/row_actions.py")
     assert "on_report_bad_station" in dialog
-    assert "Report &Bad Station..." in menu
+    assert "Report &Bad Station..." in actions
+    assert "REPORT_BAD" in menu
     # Only offered when a callback was injected (embedded QUILL passes none).
     assert "if dialog._on_report_bad_station is not None:" in menu
 

@@ -225,15 +225,20 @@ def stations_for_axis(
 def groupings(stations: list[WikidataStation]) -> list[tuple[str, int]]:
     """The distinct groupings and how many stations each holds (pure).
 
-    Sorted by size then name, and groupings with a single station are kept --
-    a one-station city is still that city, and hiding it would make the axis
-    quietly incomplete.
+    **Sorted A to Z.** It was sorted by size first, which reads well on a
+    screen -- biggest cities at the top -- and badly by ear: a listener
+    hunting for Tucson in a hundred cities has to know how big Tucson is
+    before they know where to arrow to. Alphabetical is the order you can
+    predict without knowing the data, and the counts still ride along.
+
+    Groupings with a single station are kept: a one-station city is still that
+    city, and hiding it would make the axis quietly incomplete.
     """
     counts: dict[str, int] = {}
     for station in stations:
         if station.grouping:
             counts[station.grouping] = counts.get(station.grouping, 0) + 1
-    return sorted(counts.items(), key=lambda row: (-row[1], row[0]))
+    return sorted(counts.items(), key=lambda row: row[0].casefold())
 
 
 def band_of(frequency_mhz: float) -> str:

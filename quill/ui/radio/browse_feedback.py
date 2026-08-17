@@ -69,3 +69,23 @@ def select_find_text(host: Any) -> None:
     control = getattr(host, "_find_ctrl", None)
     if control is not None and control:
         control.SelectAll()
+
+
+def empty_row_text(*, unreachable: bool, override: str = "") -> str:
+    """What the single row inside an empty folder should say (pure).
+
+    A folder whose fetch returned nothing used to be left with NO children at
+    all: the "Loading..." placeholder was deleted and nothing replaced it, so
+    wx dropped the expander and the branch could neither be collapsed nor
+    reopened -- and said nothing about why it was empty (reported 2026-08-16).
+    One row fixes both: it keeps the folder navigable *and* answers the
+    question, distinguishing "there is nothing here" from "this could not be
+    reached, try again" -- the same distinction the browse contract makes
+    everywhere else.
+
+    *override* lets a branch say something better than the generic text;
+    Favorites uses it to point at where stations come from.
+    """
+    if override:
+        return override
+    return "Could not be reached. Open it again to try." if unreachable else "Nothing in here."

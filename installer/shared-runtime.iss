@@ -33,9 +33,33 @@ Filename: "{code:RuntimeExe}"; Parameters: "-m quill.core.runtime_cli register {
   StatusMsg: "Registering the shared runtime..."; Flags: runhidden waituntilterminated
 
 [Code]
+function RuntimeMajor(): string;
+var
+  Version: string;
+  Dot: Integer;
+begin
+  // "3.13.14" -> "3.13": the runtime is keyed by MAJOR, never overwritten in
+  // place, so a future Python major lands alongside rather than on top of it.
+  Version := '{#RuntimeVersion}';
+  Dot := Pos('.', Version);
+  if Dot = 0 then begin Result := Version; exit; end;
+  Result := Copy(Version, 1, Dot);
+  Version := Copy(Version, Dot + 1, Length(Version));
+  Dot := Pos('.', Version);
+  if Dot = 0 then Result := Result + Version
+  else Result := Result + Copy(Version, 1, Dot - 1);
+end;
+
 function RuntimeDir(Param: string): string;
 begin
-  Result := ExpandConstant('{localappdata}\QuillVille\Runtime');
+  // MUST match the launcher: quill/native/launcher/runtime_resolve.c probes
+  // %LOCALAPPDATA%\QuillVille\Runtime\<major>\quillville-runtime.json, and
+  // the design's side-by-side-by-major rule depends on that segment. This
+  // installed to the UNVERSIONED folder, so a fresh install laid the runtime
+  // somewhere the launcher never looks and the app could not start at all --
+  // "Quill Radio could not find a Python runtime" (found 2026-08-16).
+  // tests/unit/structure/test_shared_runtime_installer.py pins the agreement.
+  Result := ExpandConstant('{localappdata}\QuillVille\Runtime') + '\' + RuntimeMajor();
 end;
 
 function RuntimeExe(Param: string): string;

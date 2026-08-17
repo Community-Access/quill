@@ -79,7 +79,7 @@ var
 function RuntimeMissing(): Boolean;
 begin
   Result := not FileExists(
-    ExpandConstant('{localappdata}\QuillVille\Runtime\quillville-runtime.json'));
+    ExpandConstant('{localappdata}\QuillVille\Runtime\3.13\quillville-runtime.json'));
 end;
 
 function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;

@@ -670,8 +670,18 @@ def _browse_wikidata(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
         wanted = args[1]
         chosen = [s for s in stations if s.grouping == wanted]
         return _stations(wikidata.playable(chosen, country="", safe_mode=safe_mode))
+    # The count is what WIKIDATA knows, which is not what the folder will
+    # hold: opening it matches each station to a playable stream by call sign
+    # and drops the ones Radio Browser does not carry. Arizona announced "13"
+    # and opened to one row (reported 2026-08-16). So the number goes in the
+    # *note*, worded as what it is, rather than in child_count -- which the
+    # tree renders as a promise about the contents.
     return [
-        folder(make_id("wikidata", axis, grouping), grouping, child_count=count)
+        folder(
+            make_id("wikidata", axis, grouping),
+            grouping,
+            note=f"{count} known; those with a stream can play",
+        )
         for grouping, count in wikidata.groupings(stations)
     ]
 
@@ -692,7 +702,13 @@ def _browse_wikidata_dial(args: list[str], *, safe_mode: bool) -> list[BrowseNod
         if band:
             counts[band] = counts.get(band, 0) + 1
     return [
-        folder(make_id("wikidatadial", label), label, child_count=counts.get(label, 0))
+        # Same honesty as the axes above: the number is what Wikidata knows,
+        # and only stations with a matching stream can actually play.
+        folder(
+            make_id("wikidatadial", label),
+            label,
+            note=f"{counts.get(label, 0)} known; those with a stream can play",
+        )
         for label, _low, _high in wikidata.DIAL_BANDS
         if counts.get(label)
     ]

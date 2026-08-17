@@ -56,9 +56,17 @@ timings, and three long-standing silent faults are fixed. See
   regardless of edition. Each installer now writes a `quill-edition.txt`
   marker; detection falls back to folder shape for existing installs, and the
   uninstaller is matched by pattern (Inno writes unins001, unins002...).
-- **The thin installers stop re-downloading the 230 MB runtime**: all three
-  looked for the marker under `Runtime\3.13\`, which never exists -- it
-  installs to `Runtime\` -- so the "already present?" test was always false.
+- **The runtime was being installed where the launcher never looks**
+  (`installer/shared-runtime.iss`, `tests/unit/structure/test_shared_runtime_installer.py`):
+  `runtime_resolve.c` probes `Runtime\<major>\quillville-runtime.json` --
+  versioned, per the side-by-side-by-major design -- while the fragment
+  installed to the unversioned `Runtime\`. A fresh install therefore laid the
+  runtime somewhere the launcher never looks and the app exited with "could
+  not find a Python runtime". `RuntimeDir()` now derives the major from
+  `RuntimeVersion`, the thin installers keep probing that same versioned path,
+  and a gate pins launcher and installers together so either side moving alone
+  fails the build. Found by running the installed copy, not by reading either
+  file: each looked reasonable alone.
 - **Every menu item carries a unique, working accelerator** (`keymap.APP_KEYMAPS`,
   `app_shell._apply_app_keymap`, `tests/unit/ui/test_menu_accelerators.py`).
   115 items, 49 of which had no key; seven keys were claimed twice (one of each

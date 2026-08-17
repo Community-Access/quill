@@ -52,3 +52,47 @@ def test_the_runtime_build_id_carries_a_time_not_just_a_date() -> None:
     )
     assert "yyyy-MM-ddTHH:mm:ssZ" in build_script
     assert 'Get-Date -Format "yyyy-MM-dd"' not in build_script
+
+
+def test_the_installer_lays_the_runtime_where_the_launcher_looks_for_it() -> None:
+    """The two halves of "where does the runtime live" must agree.
+
+    They did not. The C launcher probes
+    ``%LOCALAPPDATA%/QuillVille/Runtime/<major>/quillville-runtime.json`` --
+    versioned, because the design keys runtimes by major so a future Python
+    lands *alongside* rather than on top of the current one -- while
+    ``shared-runtime.iss`` installed to the UNVERSIONED ``Runtime/``. A fresh
+    install therefore laid the runtime somewhere the launcher never looks, and
+    the app answered "Quill Radio could not find a Python runtime" and exited.
+    Found by running the installed copy rather than by reading either file
+    (2026-08-16); each side looked perfectly reasonable alone.
+
+    Pinned as *agreement between files*, because either side moving on its own
+    is the bug.
+    """
+    resolver = (REPO / "quill" / "native" / "launcher" / "runtime_resolve.c").read_text(
+        encoding="utf-8"
+    )
+    fragment = FRAGMENT.read_text(encoding="utf-8")
+    assert '"%s\\\\QuillVille\\\\Runtime", local' in resolver, "the launcher's base folder moved"
+    assert 'path_join(runtime_dir, sizeof(runtime_dir), base, "3.13")' in resolver, (
+        "the launcher no longer appends the major -- change the installer in lockstep"
+    )
+    assert "RuntimeMajor()" in fragment, (
+        "shared-runtime.iss installs to the unversioned folder again"
+    )
+    assert (
+        "ExpandConstant('{localappdata}\\QuillVille\\Runtime') + '\\' + RuntimeMajor()" in fragment
+    )
+
+
+def test_every_thin_installer_probes_that_same_versioned_path() -> None:
+    """A thin installer probing the wrong folder either re-downloads the
+    230 MB runtime on every install (a path that never exists) or skips one
+    that is genuinely absent."""
+    thin = list(REPO.glob("standalone/*/installer/*-lite.iss"))
+    assert thin, "expected to find the thin installers"
+    for path in thin:
+        assert "Runtime\\3.13\\quillville-runtime.json" in path.read_text(encoding="utf-8"), (
+            path.name
+        )

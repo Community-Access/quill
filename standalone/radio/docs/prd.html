@@ -908,13 +908,23 @@ apart resolves to the thin installer, which shares the full one’s AppId
 and upgrades either. 15 tests, including one asserting each published
 asset matches exactly <strong>one</strong> edition, so “first
 <code>.exe</code> wins” cannot return. Two more repairs on the same
-path: all three thin installers looked for the runtime under
-<code>Runtime\3.13\</code> while it installs to <code>Runtime\</code>,
-so the already-present test never fired and every thin install
-re-downloaded 230 MB; and the shared-runtime fragment skipped the
+path, the first the most serious defect found that day:
+<strong><code>shared-runtime.iss</code> installed the runtime where the
+launcher never looks.</strong> <code>runtime_resolve.c</code> probes
+<code>Runtime\&lt;major&gt;\quillville-runtime.json</code> – versioned,
+because the design keys runtimes by major so a future Python lands
+alongside rather than on top – while the fragment installed to the
+unversioned <code>Runtime\</code>, so a clean install could not start:
+“Quill Radio could not find a Python runtime”. <code>RuntimeDir()</code>
+now derives the major from <code>RuntimeVersion</code>; the thin
+installers had been probing the correct versioned path all along and
+keep it; and
+<code>tests/unit/structure/test_shared_runtime_installer.py</code> pins
+launcher and installers to each other, so either side moving alone fails
+the build. Found by running an installed copy, not by reading either
+file – each was reasonable alone. Second: the fragment skipped the
 payload copy whenever the CPython version matched, so an update
-installed cleanly and left the old code in place (both fixed here and in
-the sibling installer PR).</li>
+installed cleanly and left the old code in place.</li>
 <li><strong>Directories say when they are down, instead of looking empty
 (3.0.0; <code>core/radio/browse_failure.py</code>,
 <code>core/radio/directory_cache.py</code>,

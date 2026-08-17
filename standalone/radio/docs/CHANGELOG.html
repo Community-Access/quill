@@ -261,11 +261,20 @@ portable and offered the portable zip (#1100, reported again
 <code>quill-edition.txt</code> marker; detection falls back to folder
 shape for existing installs, and the uninstaller is matched by pattern
 (Inno writes unins001, unins002…).</p></li>
-<li><p><strong>The thin installers stop re-downloading the 230 MB
-runtime</strong>: all three looked for the marker under
-<code>Runtime\3.13\</code>, which never exists – it installs to
-<code>Runtime\</code> – so the “already present?” test was always
-false.</p></li>
+<li><p><strong>The runtime was being installed where the launcher never
+looks</strong> (<code>installer/shared-runtime.iss</code>,
+<code>tests/unit/structure/test_shared_runtime_installer.py</code>):
+<code>runtime_resolve.c</code> probes
+<code>Runtime\&lt;major&gt;\quillville-runtime.json</code> – versioned,
+per the side-by-side-by-major design – while the fragment installed to
+the unversioned <code>Runtime\</code>. A fresh install therefore laid
+the runtime somewhere the launcher never looks and the app exited with
+“could not find a Python runtime”. <code>RuntimeDir()</code> now derives
+the major from <code>RuntimeVersion</code>, the thin installers keep
+probing that same versioned path, and a gate pins launcher and
+installers together so either side moving alone fails the build. Found
+by running the installed copy, not by reading either file: each looked
+reasonable alone.</p></li>
 <li><p><strong>Every menu item carries a unique, working
 accelerator</strong> (<code>keymap.APP_KEYMAPS</code>,
 <code>app_shell._apply_app_keymap</code>,

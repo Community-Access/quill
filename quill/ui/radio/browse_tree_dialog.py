@@ -358,7 +358,14 @@ class BrowseTreeDialog:
             "note": child.note,
         }
 
-    def _add_children(self, node: Any, children: list[BrowseNode], *, failed: bool = False) -> None:
+    def _add_children(
+        self,
+        node: Any,
+        children: list[BrowseNode],
+        *,
+        failed: bool = False,
+        empty_text: str = "",
+    ) -> None:
         """Turn one node's children into tree rows.
 
         Two cases, and only two. Everything a source wants to say about a row --
@@ -378,14 +385,22 @@ class BrowseTreeDialog:
             # worth trying again, so it is not marked as loaded. One that is
             # genuinely empty is left alone -- re-fetching an empty folder on
             # every expand would be a network request for a known answer.
-            if failed or browse_sources.last_error_was_network():
+            unreachable = failed or browse_sources.last_error_was_network()
+            if unreachable:
                 self._forget_load(node)
+            # ...and it keeps ONE row saying which of the two it was, which is
+            # also what keeps the folder expandable (see browse_feedback).
+            says = browse_feedback.empty_row_text(unreachable=unreachable, override=empty_text)
+            tree.SetItemData(tree.AppendItem(node, says), dict(_PLACEHOLDER))
         for child in children:
             item = tree.AppendItem(node, self._row_label(child))
             tree.SetItemData(item, self._row_data(child))
             if child.is_folder:
                 tree.SetItemData(tree.AppendItem(item, "Loading..."), dict(_PLACEHOLDER))
-        count = tree.GetChildrenCount(node, False)
+        # Counted from what the SOURCE returned, not from the rows on screen:
+        # an empty folder now carries one explanatory row, and counting that
+        # would announce "1 item" for a folder holding nothing.
+        count = len(children)
         self._announce(self._children_summary(node, count, failed=failed))
         from quill.ui.radio import browse_prefetch
 
@@ -465,12 +480,11 @@ class BrowseTreeDialog:
         if not node.IsOk():
             return
         children = self._fetch_children("favorites")
-        self._add_children(node, children)
-        if not children:
-            empty = self._tree.AppendItem(
-                node, "No favorites yet -- add stations from any source below."
-            )
-            self._tree.SetItemData(empty, dict(_PLACEHOLDER))
+        # Favorites says its own thing when empty -- "add stations from any
+        # source below" is advice the generic row cannot give.
+        self._add_children(
+            node, children, empty_text="No favorites yet -- add stations from any source below."
+        )
         if not select:
             return
         first, _cookie = self._tree.GetFirstChild(node)
