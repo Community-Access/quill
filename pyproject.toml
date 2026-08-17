@@ -243,7 +243,7 @@ pages = ["keynote-parser>=1.14.5.0"]
 pdf-ocr = [
     "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.7",
     "pdfplumber>=0.11.10",
-    "pypdf>=6.15.0",
+    "pypdf>=6.16.1",
 ]
 # The lean half of pdf-ocr, and the half that actually ships (#1279). MarkItDown
 # is the better reader, but its dependency chain is not lean: magika (its stream
@@ -257,7 +257,7 @@ pdf-ocr = [
 # one-click download for anyone who wants it (Help > Download Optional Components).
 office-text = [
     "pdfplumber>=0.11.10",
-    "pypdf>=6.15.0",
+    "pypdf>=6.16.1",
     "openpyxl>=3.1.5",
 ]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
