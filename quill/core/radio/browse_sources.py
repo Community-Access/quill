@@ -51,7 +51,6 @@ Node id grammar, all opaque to the caller (see :mod:`browse_nodes`)::
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Any
 
 from quill.core.radio import (
     acb_media,
@@ -102,9 +101,6 @@ from quill.core.radio.browse_helpers import (
     wx_playable_stations,
     wx_state_folders,
 )
-
-# Whether an empty branch was empty or broken (GATE-11 extraction);
-# re-exported so callers import one name.
 from quill.core.radio.browse_libraries import (
     _browse_apple,
     _browse_apple_chart,
@@ -115,6 +111,20 @@ from quill.core.radio.browse_libraries import (
     _browse_gutenberg,
     _browse_gutenberg_lang,
     _browse_gutenberg_topic,
+)
+
+# Whether an empty branch was empty or broken (GATE-11 extraction);
+# re-exported so callers import one name.
+# LibriVox and its Internet Archive fallback (GATE-11 extraction).
+from quill.core.radio.browse_librivox import (
+    _browse_librivox,
+    _browse_librivox_authors,
+    _browse_librivox_book,
+    _browse_librivox_genres,
+    _browse_librivox_recent,
+)
+from quill.core.radio.browse_librivox import (
+    refuse_when_offline as refuse_when_offline,
 )
 from quill.core.radio.browse_nodes import (
     ARG_SEP,
@@ -439,143 +449,7 @@ def _browse_archive_item(args: list[str], *, safe_mode: bool) -> list[BrowseNode
     ]
 
 
-# --- LibriVox -----------------------------------------------------------------
-
-
-def _librivox_book_nodes(books: list) -> list[BrowseNode]:
-    """A book is a folder of sections; a single-section book is just playable."""
-    nodes: list[BrowseNode] = []
-    for book in books:
-        if not book.has_audio:
-            continue
-        if len(book.sections) == 1:
-            section = book.sections[0]
-            nodes.append(
-                leaf(
-                    RadioStation(
-                        name=book.title,
-                        stream_url=section.url,
-                        source="LibriVox",
-                        is_recording=True,
-                    ),
-                    note=book.authors,
-                )
-            )
-            continue
-        nodes.append(
-            folder(
-                make_id("librivoxbook", book.book_id),
-                book.title,
-                note=book.authors,
-                child_count=len(book.sections),
-            )
-        )
-    return nodes
-
-
-#: Books are fetched by axis and cached in-process for the session, so opening a
-#: book's sections does not re-query the whole genre. Keyed by book id.
-_LIBRIVOX_BOOKS: dict[str, Any] = {}
-
-
-def _remember_books(books: list) -> list:
-    for book in books:
-        _LIBRIVOX_BOOKS[book.book_id] = book
-    return books
-
-
-def _browse_librivox(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    """LibriVox's three working axes.
-
-    There is deliberately no "By Title": the API supports no title filter in any
-    form -- query string or path, with or without a caret -- while author, genre
-    and since all work. An axis that quietly 404s is worse than one not offered.
-    """
-    refuse_when_offline(safe_mode)
-    return [
-        folder("librivoxrecent", "Recently Added"),
-        folder("librivoxgenres", "By Genre"),
-        folder("librivoxauthors", "By Author"),
-    ]
-
-
-def _browse_librivox_recent(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    from quill.core.media import librivox
-
-    refuse_when_offline(safe_mode)
-    return _librivox_book_nodes(_remember_books(librivox.recent_books()))
-
-
-def _browse_librivox_genres(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    from quill.core.media import librivox
-
-    refuse_when_offline(safe_mode)
-    if args and args[0]:
-        return _librivox_book_nodes(_remember_books(librivox.books_by_genre(args[0])))
-    return [folder(make_id("librivoxgenres", g), g) for g in librivox.BROWSE_GENRES]
-
-
-def _browse_librivox_authors(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    from quill.core.media import librivox
-
-    refuse_when_offline(safe_mode)
-    if args and args[0] and len(args[0]) > 1:
-        return _librivox_book_nodes(_remember_books(librivox.books_by_author(args[0])))
-    authors = librivox.list_authors()
-    if not (args and args[0]):
-        return [
-            folder(make_id("librivoxauthors", group), group, child_count=len(rows))
-            for group, rows in letter_groups(authors, lambda a: a.last_name or a.first_name)
-        ]
-    wanted = args[0]
-    for group, rows in letter_groups(authors, lambda a: a.last_name or a.first_name):
-        if group == wanted:
-            return [
-                folder(make_id("librivoxauthors", author.last_name), author.display_name)
-                for author in rows
-                if author.last_name
-            ]
-    return []
-
-
-def _browse_librivox_book(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    from quill.core.media.librivox import LibriVoxBook
-
-    book = _LIBRIVOX_BOOKS.get(args[0]) if args else None
-    if not isinstance(book, LibriVoxBook):
-        return []
-    return [
-        leaf(
-            RadioStation(
-                name=section.title,
-                stream_url=section.url,
-                source="LibriVox",
-                is_recording=True,
-            ),
-            note=f"section {section.index + 1}",
-        )
-        for section in book.sections
-        if section.url
-    ]
-
-
 # --- Project Gutenberg --------------------------------------------------------
-
-
-def refuse_when_offline(safe_mode: bool) -> None:
-    """Refuse LibriVox in Safe Mode.
-
-    LibriVox reaches the network through the shared library egress chokepoint,
-    which carries no Safe Mode flag of its own, so the refusal is made here --
-    with LibriVox's own coded error rather than a bare RuntimeError, so it is
-    auditable like every other source's.
-    """
-    if safe_mode:
-        from quill.core.media.librivox import LibriVoxError
-
-        raise LibriVoxError(
-            "LibriVox is disabled in Safe Mode. Restart QUILL normally to browse it."
-        )
 
 
 # --- My Servers ----------------------------------------------------------------
@@ -669,13 +543,42 @@ def _browse_wikidata(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
     if len(args) > 1 and args[1]:
         wanted = args[1]
         chosen = [s for s in stations if s.grouping == wanted]
-        return _stations(wikidata.playable(chosen, country="", safe_mode=safe_mode))
+        rows = wikidata.playable(chosen, country="", safe_mode=safe_mode)
+        # Where Radio Browser can answer the axis itself it leads, because it
+        # answers from the set that can actually play; the call-sign matches
+        # then top up anything it did not carry. Owner has no equivalent field,
+        # so it stays on the call-sign route alone.
+        lead: list = []
+        if axis == "city":
+            lead = wikidata.stations_in_place(wanted, safe_mode=safe_mode)
+        elif axis == "format":
+            lead = wikidata.stations_with_format(wanted, safe_mode=safe_mode)
+        if lead:
+            seen = set()
+            merged = []
+            for station in [*lead, *rows]:
+                if station.stream_url in seen:
+                    continue
+                seen.add(station.stream_url)
+                merged.append(station)
+            rows = merged
+        return _stations(rows)
     # The count is what WIKIDATA knows, which is not what the folder will
     # hold: opening it matches each station to a playable stream by call sign
     # and drops the ones Radio Browser does not carry. Arizona announced "13"
     # and opened to one row (reported 2026-08-16). So the number goes in the
     # *note*, worded as what it is, rather than in child_count -- which the
     # tree renders as a promise about the contents.
+    # A place folder no longer holds "the ones Wikidata listed that happen to
+    # play" -- it holds what Radio Browser has for that place, which is usually
+    # more. Promising Wikidata's number there would be wrong in the other
+    # direction, so the place axis simply does not promise a number.
+    if axis in ("city", "format"):
+        note = "stations for this place" if axis == "city" else "stations with this format"
+        return [
+            folder(make_id("wikidata", axis, grouping), grouping, note=note)
+            for grouping, _count in wikidata.groupings(stations)
+        ]
     return [
         folder(
             make_id("wikidata", axis, grouping),
@@ -789,6 +692,13 @@ def browse(
     catalog fallback labeled with its age).
     """
     kind, args = split_id(node_id)
+    # This call's verdict is about THIS call. The marker used to be cleared only
+    # when a folder came back non-empty, so a genuinely empty folder opened
+    # straight after a broken one inherited the broken one's answer and said
+    # "could not be reached" about a source that had replied perfectly well.
+    # Clearing on entry keeps the signal (anything recorded below belongs to
+    # this call) without the staleness.
+    LAST_FAILURE.pop(_thread_key(), None)
     if catalog is not None:
         from quill.core.radio.catalog import read as catalog_read
 

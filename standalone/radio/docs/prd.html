@@ -1088,11 +1088,20 @@ metadata browse, and activating a show opens it in the listener’s
 browser; no stream extraction, and the row says so <em>before</em>
 activation, per Mixcloud’s widget terms. ccMixter: by tag, each row
 carrying its own licence.</li>
-<li><em>Explore (Wikidata).</em> By City, Owner, Network and Format
-(P131/P127/P449/P2360) plus On the Dial by FM band, matched
-conservatively against Radio Browser, which still supplies every stream.
-Labelled “from Wikidata” because the join is Quill Radio’s, not either
-source’s.</li>
+<li><em>Explore (Wikidata).</em> By City, Owner and Format
+(P131/P127/P415) plus On the Dial by FM band, matched conservatively
+against Radio Browser, which still supplies every stream. Labelled “from
+Wikidata” because the join is Quill Radio’s, not either source’s.
+<strong>A place and a format are asked of Radio Browser
+directly</strong> and topped up with Wikidata’s call-sign matches: the
+reverse order takes Wikidata’s capped, unordered slice as the universe,
+and Arizona opened to nothing while forty-eight of its stations were
+playable (reported 2026-08-16). <strong>By Network was removed and By
+Format moved off P2360</strong> in the same pass – P449 is recorded for
+two US radio stations and P2360 for none, so neither folder could ever
+list anything; same reasoning as the RadioDNS non-goal below, and found
+by opening every axis in one sweep rather than waiting for a
+report.</li>
 <li><em>My Servers and YouTube Channels, and the action-row contract
 they needed.</em> <code>core/radio/my_servers.py</code> enumerates
 Icecast (<code>/status-json.xsl</code>) and SHOUTcast

@@ -178,10 +178,12 @@ timings, and three long-standing silent faults are fixed. See
   `ui/radio/browse_actions.py`, one registry entry per action, so the window
   still learns nothing source-specific. Both actions run their network check on
   the task manager, never the UI thread, and refuse out loud in Safe Mode.
-- **Explore (Wikidata)** -- By City, By Owner, By Network, By Format and On the
-  Dial (FM band). Wikidata supplies the organisation, Radio Browser still
-  supplies every stream, and each row is labelled "from Wikidata" because the
-  join between the two is ours rather than either source's.
+- **Explore (Wikidata)** -- By City, By Owner, By Format and On the Dial (FM
+  band). Wikidata supplies the organisation, Radio Browser still supplies every
+  stream, and each row is labelled "from Wikidata" because the join between the
+  two is ours rather than either source's. A place folder is answered by Radio
+  Browser directly, so it opens to what can actually play rather than to the
+  handful of call signs Wikidata's capped query happened to return.
 - **Your place is kept in anything with an end** (`core/radio/resume.py`,
   `ui/radio/resume_playback.py`) -- a LibriVox chapter, an Archive episode, a
   podcast. Keyed on the normalised stream URL, since nothing here is a file. A
@@ -285,6 +287,52 @@ timings, and three long-standing silent faults are fixed. See
 
 ### Fixed
 
+- **Shift+F10 and the Applications key opened no context menu at all.** The
+  browse tree took its row from `EVT_TREE_ITEM_MENU`, which names its item by
+  hit-testing the *mouse*; a keyboard request has no mouse over a row, so wx
+  handed back an invalid item and the handler returned before building
+  anything. Right-click worked, the keyboard did not, on every row in the tree.
+  The menu now resolves its row from the event, then a hit-test, then the
+  selection, and `EVT_CONTEXT_MENU` is bound alongside so the Applications key
+  arrives even when no item event is generated. (`browse_tree_menu.target_node`,
+  six route tests.)
+- **Two context menus each claimed one access key twice.** "Station &Details"
+  collided with "&Download", and on a podcast show -- the menu the rich-menu
+  work existed to build -- "Copy &Feed Address" collided with "to &Favorites".
+  One item of each pair silently never fired. A sweep of every menu the tree
+  can build now runs as a test, so a third collision cannot ship.
+- **Thirty-nine of forty-one branches offered "Add All Stations to
+  Favorites"** -- on a LibriVox book, whose children are chapters; on a podcast
+  show, whose children are episodes; on a YouTube channel, whose children are
+  videos. Folders now name what they actually hold.
+- **A place folder in Explore could open to nothing while dozens of its
+  stations were playable.** Arizona announced twelve and opened to one, then to
+  none. The axis worked backwards: it took Wikidata's list of stations for a
+  place -- an arbitrary, unordered slice capped at 400 rows out of tens of
+  thousands -- and looked each one up in Radio Browser, which carried none of
+  that particular twelve. A place is now asked of Radio Browser directly, which
+  answers from the set that can actually play (Arizona: 48), and Wikidata's
+  call-sign matches top it up. **By Format** was rebuilt the same way against
+  Radio Browser's tags, which are lower case and matched exactly.
+- **"By Format" and "By Network" were empty folders that could never have
+  filled.** By Format grouped on P2360, "intended public", which no US radio
+  station carries; By Network on P449, carried by two. Both shipped because
+  nobody had opened every axis in one pass. By Format now uses P415 (28 real
+  formats, none of them empty) and **By Network has been removed** -- an axis
+  that opens to nothing costs the same keystrokes as one that works. The
+  grouping property is now *required* by the query rather than optional (that
+  is what let an axis return 400 stations and zero groups) and forms part of
+  the cache key, so correcting a property can never leave an install serving
+  the old empty answer.
+- **LibriVox went dead whenever librivox.org did.** Its API sat behind a
+  Cloudflare 522 for hours on 2026-08-16 and the whole branch was unusable --
+  while every one of those recordings sat reachable in the Internet Archive's
+  `librivoxaudio` collection, which is where LibriVox publishes them. LibriVox
+  and the Archive were never duplicate sources: one is the catalogue, the other
+  the warehouse. Recently Added, By Genre and a named author now fall back to
+  the Archive when the catalogue cannot answer, labelled "from the Internet
+  Archive" because the reader credits and section list do not come with it.
+  LibriVox is still preferred whenever it answers.
 - **The described-audio picker listed one track as three, and then three as
   one.** `audio_tracks.tracks_from_info` first identified a track by
   `format_note`, which carries a quality tier (`low`, `medium`, `high`), so an

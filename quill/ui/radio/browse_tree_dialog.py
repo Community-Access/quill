@@ -201,7 +201,9 @@ class BrowseTreeDialog:
         self._tree.Bind(wx.EVT_TREE_ITEM_EXPANDING, self._on_expanding)
         self._tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_activated)
         self._tree.Bind(wx.EVT_TREE_SEL_CHANGED, self._on_selected)
-        self._tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_context_menu)
+        # Right-click, Shift+F10 and the Applications key -- see target_node.
+        for context_event in (wx.EVT_TREE_ITEM_MENU, wx.EVT_CONTEXT_MENU):
+            self._tree.Bind(context_event, self._on_context_menu)
         self._play_btn.Bind(wx.EVT_BUTTON, lambda _e: self._play_selected())
         self._favorite_btn.Bind(wx.EVT_BUTTON, lambda _e: self._toggle_favorite())
         self._refresh_btn.Bind(wx.EVT_BUTTON, lambda _e: self._refresh_selected())
@@ -812,10 +814,8 @@ class BrowseTreeDialog:
 
         browse_refresh.refresh_selected(self)
 
-    # -- context menu (Shift+F10 / right-click) ---------------------------------
-
     def _on_context_menu(self, event: Any) -> None:
-        """The row's own menu. Built in ``browse_tree_menu`` (GATE-11)."""
+        """The row's menu, for right-click and keyboard alike (browse_tree_menu)."""
         from quill.ui.radio import browse_tree_menu
 
         browse_tree_menu.show_for_event(self, event)

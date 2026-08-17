@@ -140,3 +140,96 @@ def test_download_all_appears_only_when_something_is_savable() -> None:
 
 def test_a_row_that_is_neither_playable_nor_a_folder_offers_nothing() -> None:
     assert actions_for("placeholder") == []
+
+
+# --- every branch, not just the ones someone remembered ------------------------
+
+
+def _mnemonics(labels: list[str]) -> list[str]:
+    import re
+
+    return [m.group(1).lower() for label in labels if (m := re.search(r"&(.)", label))]
+
+
+def _every_menu() -> list[tuple[str, list]]:
+    """Each menu the browse tree can build, across every registered kind."""
+    from quill.core.radio import browse_sources
+
+    states = [
+        FolderState(),
+        FolderState(loaded_stations=5, savable=3),
+        FolderState(subscribed=True, loaded_stations=5, savable=3),
+        FolderState(is_podcast_show=True, is_followed_channel=True, loaded_stations=2),
+    ]
+    menus = [
+        (kind, row_actions.folder_actions(kind, state))
+        for kind in browse_sources._HANDLERS
+        for state in states
+    ]
+    for playing in (True, False):
+        for saved in (True, False):
+            for recording in (True, False):
+                menus.append((
+                    "station",
+                    row_actions.station_actions(
+                        playing=playing,
+                        saved=saved,
+                        has_homepage=True,
+                        can_download=True,
+                        can_report=True,
+                        is_recording=recording,
+                    ),
+                ))
+    menus.append(("lazy", row_actions.lazy_leaf_actions(saved=False)))
+    return menus
+
+
+def test_no_menu_claims_one_access_key_twice() -> None:
+    # Two items answering the same key means one of them silently never fires.
+    # "Station &Details" and "&Download" both claimed D, and on a podcast show
+    # "Copy &Feed Address" collided with "to &Favorites" -- the one menu the
+    # rich-menu work existed to build (found by sweeping all branches
+    # 2026-08-16, after Shift+F10 was reported dead on podcasts).
+    for kind, actions in _every_menu():
+        keys = _mnemonics([a.label for a in actions])
+        duplicates = {k for k in keys if keys.count(k) > 1}
+        assert not duplicates, f"{kind} claims {duplicates} twice: {[a.label for a in actions]}"
+
+
+def test_every_item_in_every_menu_offers_an_access_key() -> None:
+    for kind, actions in _every_menu():
+        for action in actions:
+            assert "&" in action.label, f"{kind}: {action.label!r} has no access key"
+
+
+def test_every_browsable_kind_gets_a_usable_folder_menu() -> None:
+    from quill.core.radio import browse_sources
+
+    for kind in browse_sources._HANDLERS:
+        ids = _ids(actions_for(kind, is_folder=True, folder_state=FolderState()))
+        assert row_actions.OPEN_FOLDER in ids, f"{kind} cannot be opened from its menu"
+        assert row_actions.REFRESH in ids, f"{kind} cannot be refreshed from its menu"
+
+
+def test_a_folder_menu_names_what_the_folder_actually_holds() -> None:
+    # "Add All Stations to Favorites" on a book, a show and a channel was the
+    # wording 39 of 41 branches shipped with.
+    def label_for(kind: str) -> str:
+        return _label(
+            actions_for(kind, is_folder=True, folder_state=FolderState(loaded_stations=4)),
+            row_actions.FAVORITE_FOLDER,
+        )
+
+    assert "Chapters" in label_for("librivoxbook")
+    assert "Episodes" in label_for("appleshow")
+    assert "Videos" in label_for("youtubechannel")
+    assert "Books" in label_for("gutenberg")
+    assert "Tracks" in label_for("audius")
+    assert "Stations" in label_for("rbcountry"), "a radio branch still says stations"
+
+
+def test_the_contents_vocabulary_only_names_real_branches() -> None:
+    from quill.core.radio import browse_sources
+
+    unknown = set(row_actions.FOLDER_CONTENTS) - set(browse_sources._HANDLERS)
+    assert not unknown, f"{unknown} name no browsable kind"

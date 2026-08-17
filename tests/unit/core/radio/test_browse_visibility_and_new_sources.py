@@ -188,3 +188,152 @@ def test_wikidata_matches_call_signs_conservatively(monkeypatch) -> None:
     )
     found = wikidata.playable([wikidata.WikidataStation("KJZZ", "KJZZ")])
     assert [s.stream_url for s in found] == ["https://right/1"], "a fragment match is not a match"
+
+
+def test_a_place_folder_lists_what_can_actually_play(monkeypatch) -> None:
+    # Arizona opened to nothing while KJZZ and forty-seven others were
+    # playable (reported 2026-08-16). Wikidata's list is a capped, unordered
+    # slice; Radio Browser's place lookup starts from the set that can play.
+    from quill.core.radio import radio_browser, wikidata
+
+    monkeypatch.setattr(
+        wikidata,
+        "stations_for_axis",
+        lambda axis, *a, **k: [wikidata.WikidataStation("KAAA", "KAAA", "Arizona")],
+    )
+    # Wikidata's one station is not carried; the place lookup has real ones.
+    monkeypatch.setattr(radio_browser, "search_stations", lambda *a, **k: [])
+    monkeypatch.setattr(
+        wikidata,
+        "stations_in_place",
+        lambda place, **k: [_station("KBAQ 89.5", "https://kbaq/1")] if place == "Arizona" else [],
+    )
+    rows = bs.browse(make_id("wikidata", "city", "Arizona"))
+    assert [n.label for n in rows] == ["KBAQ 89.5"]
+
+
+def test_a_place_folder_does_not_promise_wikidatas_number(monkeypatch) -> None:
+    # It usually holds more than Wikidata knows, so a count would be wrong in
+    # the other direction from the bug it replaced.
+    from quill.core.radio import wikidata
+
+    monkeypatch.setattr(
+        wikidata,
+        "stations_for_axis",
+        lambda axis, *a, **k: [wikidata.WikidataStation("KAAA", "KAAA", "Arizona")],
+    )
+    folders = bs.browse(make_id("wikidata", "city"))
+    assert folders[0].child_count is None
+    assert folders[0].note == "stations for this place"
+
+
+def test_a_place_row_is_never_listed_twice(monkeypatch) -> None:
+    from quill.core.radio import radio_browser, wikidata
+
+    same = _station("KBAQ 89.5", "https://kbaq/1")
+    monkeypatch.setattr(
+        wikidata,
+        "stations_for_axis",
+        lambda axis, *a, **k: [wikidata.WikidataStation("KBAQ", "KBAQ", "Arizona")],
+    )
+    monkeypatch.setattr(radio_browser, "search_stations", lambda *a, **k: [same])
+    monkeypatch.setattr(wikidata, "stations_in_place", lambda place, **k: [same])
+    assert len(bs.browse(make_id("wikidata", "city", "Arizona"))) == 1
+
+
+def test_a_place_falls_back_to_a_name_search_when_the_state_field_misses() -> None:
+    # Cities are not in Radio Browser's state field, so the second try matters.
+    from quill.core.radio import radio_browser, wikidata
+
+    calls: list[dict] = []
+
+    def fake(query="", **kwargs):
+        calls.append({"query": query, **kwargs})
+        return [] if kwargs.get("state") else [_station("Flagstaff FM", "https://f/1")]
+
+    original = radio_browser.search_stations
+    radio_browser.search_stations = fake  # type: ignore[assignment]
+    try:
+        found = wikidata.stations_in_place("Flagstaff")
+    finally:
+        radio_browser.search_stations = original  # type: ignore[assignment]
+    assert [s.name for s in found] == ["Flagstaff FM"]
+    assert calls[0].get("state") == "Flagstaff" and calls[1]["query"] == "Flagstaff"
+
+
+def test_an_unreachable_directory_empties_the_place_rather_than_raising() -> None:
+    from quill.core.radio import radio_browser, wikidata
+
+    def down(*_a, **_k):
+        raise OSError("radio browser is down")
+
+    original = radio_browser.search_stations
+    radio_browser.search_stations = down  # type: ignore[assignment]
+    try:
+        assert wikidata.stations_in_place("Arizona") == []
+    finally:
+        radio_browser.search_stations = original  # type: ignore[assignment]
+
+
+def test_no_axis_is_grouped_by_a_property_stations_do_not_carry() -> None:
+    """The failure this prevents shipped twice, silently.
+
+    "By Format" was grouped by P2360 ("intended public"), carried by *zero* US
+    radio stations, and "By Network" by P449 ("original broadcaster"), carried
+    by two. Both folders opened to nothing and nothing in the build noticed,
+    because an axis with no groups is indistinguishable from an axis whose
+    upstream is slow. These are the properties that were counted live against
+    Wikidata on 2026-08-16 and found to be populated.
+    """
+    from quill.core.radio import wikidata
+
+    populated = {"P131", "P127", "P415"}
+    for _key, label, prop in wikidata.AXES:
+        assert prop in populated, f"{label} groups by {prop}, which stations do not carry"
+
+
+def test_the_grouping_property_is_required_by_the_query() -> None:
+    # OPTIONAL is what let an axis return 400 stations and zero groups: the
+    # capped slice simply had no value for the property being grouped by.
+    from quill.core.radio import wikidata
+
+    query = wikidata._query("P415", "Q30")
+    assert "wdt:P415 ?group" in query
+    assert "OPTIONAL { ?station wdt:P415" not in query.replace("{{", "{")
+
+
+def test_changing_a_property_cannot_serve_the_old_cached_answer(monkeypatch) -> None:
+    # Correcting By Format's property would otherwise leave every existing
+    # install on the empty answer until the cache aged out.
+    from quill.core.radio import directory_cache, wikidata
+
+    keys: list[str] = []
+    monkeypatch.setattr(
+        directory_cache,
+        "resolve",
+        lambda key, produce, **kw: (keys.append(key), ([], 0))[1],
+    )
+    wikidata.stations_for_axis("format")
+    assert any("P415" in key for key in keys), keys
+
+
+def test_a_format_tag_is_asked_for_the_way_radio_browser_spells_it() -> None:
+    # Tags are lower case and matched exactly: "Christian" finds nothing where
+    # "christian" finds hundreds, and "Active rock" needs its last word.
+    from quill.core.radio import radio_browser, wikidata
+
+    asked: list[str] = []
+
+    def fake(query="", *, tag="", **_kw):
+        asked.append(tag)
+        return [_station("Rock FM")] if tag == "rock" else []
+
+    original = radio_browser.search_stations
+    radio_browser.search_stations = fake  # type: ignore[assignment]
+    try:
+        found = wikidata.stations_with_format("Active rock")
+    finally:
+        radio_browser.search_stations = original  # type: ignore[assignment]
+    assert [s.name for s in found] == ["Rock FM"]
+    assert asked[0] == "active rock", "the whole name is tried first"
+    assert "rock" in asked and all(t == t.lower() for t in asked)

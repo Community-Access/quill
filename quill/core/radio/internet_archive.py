@@ -308,7 +308,7 @@ def _rights_note(metadata: dict) -> str:
 # --- browse -------------------------------------------------------------------
 
 
-def _search_url(query: str, *, rows: int, page: int) -> str:
+def _search_url(query: str, *, rows: int, page: int, sort: str = "identifier asc") -> str:
     params = [
         ("q", query),
         ("fl[]", "identifier"),
@@ -319,7 +319,9 @@ def _search_url(query: str, *, rows: int, page: int) -> str:
         ("rows", str(rows)),
         ("page", str(page)),
         # A stable sort is what makes "page 2 does not repeat page 1" true.
-        ("sort[]", "identifier asc"),
+        # Callers that want newest-first (LibriVox's "Recently Added", served
+        # from here when librivox.org is down) pass their own.
+        ("sort[]", sort),
         ("output", "json"),
     ]
     return f"{_SEARCH_URL}?{urllib.parse.urlencode(params)}"
@@ -366,7 +368,13 @@ def children(
     return _from_json(payload)
 
 
-def search(query: str, *, limit: int = 40, safe_mode: bool = False) -> list[ArchiveItem]:
+def search(
+    query: str,
+    *,
+    limit: int = 40,
+    sort: str = "identifier asc",
+    safe_mode: bool = False,
+) -> list[ArchiveItem]:
     """Free-text search across the Archive's audio, for federated search.
 
     Same endpoint, same reviewed egress site and same parser as the browse tree
@@ -379,7 +387,9 @@ def search(query: str, *, limit: int = 40, safe_mode: bool = False) -> list[Arch
     if not wanted:
         return []
     _total, items = parse_search(
-        _fetch(_search_url(f"({wanted}) AND mediatype:audio", rows=max(1, limit), page=1))
+        _fetch(
+            _search_url(f"({wanted}) AND mediatype:audio", rows=max(1, limit), page=1, sort=sort)
+        )
     )
     return items
 

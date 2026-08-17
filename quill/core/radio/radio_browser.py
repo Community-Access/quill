@@ -187,6 +187,7 @@ def search_stations(
     *,
     tag: str = "",
     country: str = "",
+    state: str = "",
     limit: int = _DEFAULT_LIMIT,
     offset: int = 0,
     safe_mode: bool = False,
@@ -212,6 +213,8 @@ def search_stations(
         params["tag"] = tag
     if country:
         params["country"] = country
+    if state:
+        params["state"] = state
     path = f"/json/stations/search?{urllib.parse.urlencode(params)}"
     return stations_from_json(_http_json(path))
 

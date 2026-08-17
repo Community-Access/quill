@@ -108,9 +108,42 @@ def _download_all(dialog: Any, node: Any, host: Any) -> None:
         download_command.download_book(host, rows, title=dialog._tree.GetItemText(node))
 
 
+def target_node(dialog: Any, event: Any) -> Any:
+    """The row the menu is *about*, however the listener asked for it.
+
+    ``EVT_TREE_ITEM_MENU`` names its item by hit-testing the mouse. Press
+    Shift+F10 or the Applications key and there is no mouse over a row, so wx
+    hands back an invalid item -- and the menu that should have opened silently
+    did not (reported 2026-08-16: "shift+f10 on a podcast did not show a
+    context menu"). Keyboard context menus mean *the selected row*, which is
+    the row the listener is on. Right-click still hit-tests, so both routes
+    land on the row the user pointed at.
+    """
+    wx = dialog._wx
+    tree = dialog._tree
+    node = event.GetItem() if hasattr(event, "GetItem") else None
+    if node is not None and node.IsOk():
+        return node
+    # EVT_CONTEXT_MENU carries a screen position -- or (-1, -1) from the
+    # keyboard, which is the signal to use the selection rather than hit-test.
+    position = event.GetPosition() if hasattr(event, "GetPosition") else None
+    if position is not None and position != wx.DefaultPosition and position.x >= 0:
+        hit, _flags = tree.HitTest(tree.ScreenToClient(position))
+        if hit is not None and hit.IsOk():
+            return hit
+    selected = tree.GetSelection()
+    return selected if selected is not None and selected.IsOk() else None
+
+
 def show_for_event(dialog: Any, event: Any) -> None:
     wx = dialog._wx
-    node = event.GetItem()
+    # PopupMenu pumps events; without this a second context-menu event (the
+    # keyboard fallback firing after the tree's own) would stack a second menu.
+    if getattr(dialog, "_context_menu_open", False):
+        return
+    node = target_node(dialog, event)
+    if node is None:
+        return
     dialog._tree.SelectItem(node)
     data = dialog._node_data(node)
     if data is None or data.get("is_action"):
@@ -151,8 +184,12 @@ def show_for_event(dialog: Any, event: Any) -> None:
     # menu-bar Close id ref pinned in it, re-exposing the id-reuse bug where
     # a random menu item closes the window.
     dialog._context_menu_id_refs = id_refs  # pinned while the popup can fire
-    dialog._tree.PopupMenu(menu)
-    menu.Destroy()
+    dialog._context_menu_open = True
+    try:
+        dialog._tree.PopupMenu(menu)
+    finally:
+        dialog._context_menu_open = False
+        menu.Destroy()
 
 
 # --- the actions that needed somewhere to live --------------------------------

@@ -91,6 +91,49 @@ PODCAST_SHOW_KINDS = frozenset({"appleshow"})
 #: Node kinds that are a channel the listener follows.
 FOLLOWED_CHANNEL_KINDS = frozenset({"youtubechannel"})
 
+#: What a folder of each kind actually holds, for menu wording.
+#:
+#: Every folder used to offer "Add All Stations to Favorites" -- on a LibriVox
+#: book, whose children are chapters; on a podcast show, whose children are
+#: episodes; on a YouTube channel, whose children are videos (reported
+#: 2026-08-16, when a sweep of all 41 branches found 39 of them saying
+#: "Stations" and meaning something else). The menu should name what is
+#: actually there, because "Add All Stations" on a book is a sentence that
+#: makes a listener wonder what they are about to do.
+FOLDER_CONTENTS: dict[str, str] = {
+    "apple": "Shows",
+    "applechart": "Shows",
+    "applegenre": "Shows",
+    "appleshow": "Episodes",
+    "archive": "Recordings",
+    "archiveitem": "Files",
+    "audiopub": "Books",
+    "audiopubdiscover": "Books",
+    "audius": "Tracks",
+    "audiustrending": "Tracks",
+    "ccmixter": "Tracks",
+    "gutenberg": "Books",
+    "gutenberglang": "Books",
+    "gutenbergtopic": "Books",
+    "librivox": "Books",
+    "librivoxauthors": "Books",
+    "librivoxbook": "Chapters",
+    "librivoxgenres": "Books",
+    "librivoxrecent": "Books",
+    "mixcloud": "Shows",
+    "mixcloudcat": "Shows",
+    "mixcloudfmt": "Shows",
+    "wx": "Forecasts",
+    "youtube": "Channels",
+    "youtubechannel": "Videos",
+    "youtubevideos": "Videos",
+}
+
+
+def contents_noun(kind: str) -> str:
+    """What this folder holds, plural and capitalised. Defaults to stations."""
+    return FOLDER_CONTENTS.get(kind, "Stations")
+
 
 def is_podcast_show(kind: str) -> bool:
     return kind in PODCAST_SHOW_KINDS
@@ -121,7 +164,9 @@ def station_actions(
         RowAction(FAVORITE_REMOVE, "Remove from &Favorites")
         if saved
         else RowAction(FAVORITE_ADD, "Add to &Favorites"),
-        RowAction(DETAILS, "Station &Details..."),
+        # "De&tails", not "&Details": Download claims D, and two items in one
+        # popup answering the same key means one of them never fires.
+        RowAction(DETAILS, "Station De&tails..."),
         RowAction(COPY_LINK, "&Copy Link" if is_recording else "&Copy Stream Link"),
     ]
     if has_homepage:
@@ -164,10 +209,16 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
     if is_followed_channel(kind) or state.is_followed_channel:
         actions.append(RowAction(UNFOLLOW_CHANNEL, "Stop Following This &Channel"))
 
+    # "&Add", not "to &Favorites": Copy Feed Address already claims F on a
+    # podcast show, and that collision was live on the one menu this module
+    # was written for.
+    noun = contents_noun(kind)
     if state.loaded_stations:
-        actions.append(RowAction(FAVORITE_FOLDER, f"Add All {state.loaded_stations} to &Favorites"))
+        actions.append(
+            RowAction(FAVORITE_FOLDER, f"&Add All {state.loaded_stations} {noun} to Favorites")
+        )
     else:
-        actions.append(RowAction(FAVORITE_FOLDER, "Add All Stations to &Favorites"))
+        actions.append(RowAction(FAVORITE_FOLDER, f"&Add All {noun} to Favorites"))
 
     if state.savable:
         actions.append(RowAction(DOWNLOAD_ALL, f"&Download All {state.savable} Files..."))

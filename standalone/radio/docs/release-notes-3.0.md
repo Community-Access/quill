@@ -635,13 +635,25 @@ that lands, so do the branches.
 #### Explore: every station Wikidata knows about
 
 The branch with axes no station directory publishes: **By City**, **By Owner**,
-**By Network**, **By Format**, and **On the Dial**, which groups stations by the
-part of the FM band they sit in.
+**By Format**, and **On the Dial**, which groups stations by the part of the FM
+band they sit in.
 
-None of that is Radio Browser's data. Wikidata knows who owns a station, which
-network it belongs to and what city it licenses from; Radio Browser knows how to
-play it. Putting the two together is what makes "every station this company owns"
-a folder you can open.
+None of that is Radio Browser's data. Wikidata knows who owns a station and what
+city it licenses from; Radio Browser knows how to play it. Putting the two
+together is what makes "every station this company owns" a folder you can open.
+
+**Opening a place gives you the place, not a sample of it.** By City used to
+take Wikidata's list of stations for a city and look each one up, which sounds
+right and is backwards: that list is a capped, unordered slice of tens of
+thousands of stations, so Arizona could open to nothing at all while KJZZ, KBAQ
+and forty-seven others sat there playable. A place is now asked of Radio Browser
+directly -- the set that can actually play -- and Wikidata's call signs top it
+up. **By Format** works the same way, against Radio Browser's tags.
+
+There was a fifth axis, **By Network**, and it has been removed. Wikidata's
+"original broadcaster" is recorded for two US radio stations, so the folder
+could never have listed anything. An axis that opens to nothing costs a listener
+the same keystrokes as one that works, and only one of them pays off.
 
 It is labelled **from Wikidata** on every row, and it should be, because the join
 between the two is Quill Radio's own rather than something either source

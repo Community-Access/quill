@@ -7,9 +7,16 @@ ways in that no directory offers --
 
     By City                 -> stations licensed to that city
     By Owner                -> everything one company runs
-    By Network              -> a network's affiliates
     By Format               -> news, talk, classical, country
     On the Dial             -> by frequency band
+
+There was a fourth axis, **By Network**, and it is gone. Wikidata's
+"original broadcaster" (P449) is carried by *two* US radio stations, so the
+axis could never have listed anything; it shipped because nobody counted. An
+axis that opens to nothing is worse than one not offered -- the listener spends
+the keystrokes either way and only one of them can pay off (removed
+2026-08-16). "By Format" was pointed at P2360, "intended public", carried by
+*zero* stations; it now uses P415, "radio format", carried by 1,715.
 
 "On the Dial" is the one worth arguing for. Browsing by frequency is how radio
 worked for a century; it is absent from every internet radio client; and for a
@@ -67,8 +74,7 @@ _LIMIT = 400
 AXES: tuple[tuple[str, str, str], ...] = (
     ("city", "By City", "P131"),
     ("owner", "By Owner", "P127"),
-    ("network", "By Network", "P449"),
-    ("format", "By Format", "P2360"),
+    ("format", "By Format", "P415"),
 )
 
 #: FM band slices for "On the Dial", in MHz.
@@ -133,13 +139,20 @@ def _query(grouping_property: str, country_qid: str) -> str:
     ``wdt:P31/wdt:P279*`` walks the subclass tree so "radio station" catches the
     many specific kinds beneath it. Only stations with a call sign are taken --
     it is the identifier the conservative match depends on.
+
+    **The grouping property is required, not optional.** It was optional, and
+    because the query takes an arbitrary ``LIMIT`` slice of tens of thousands
+    of stations, most of that slice had no value for the property being grouped
+    by: "By Network" and "By Format" returned 400 stations and *zero* groups,
+    so both folders were simply empty (found 2026-08-16 while fixing the place
+    axis). A station with no network is not a station this axis can file.
     """
     return f"""
 SELECT ?callsign ?stationLabel ?groupLabel ?freq WHERE {{
   ?station wdt:P31/wdt:P279* wd:Q14350 ;
            wdt:P17 wd:{country_qid} ;
-           wdt:P2317 ?callsign .
-  OPTIONAL {{ ?station wdt:{grouping_property} ?group }}
+           wdt:P2317 ?callsign ;
+           wdt:{grouping_property} ?group .
   OPTIONAL {{ ?station wdt:P2144 ?freq }}
   SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en" }}
 }}
@@ -196,7 +209,11 @@ def stations_for_axis(
     if not prop:
         return []
     payload, _age = directory_cache.resolve(
-        f"wikidata:{axis}:{country_qid}",
+        # The property is part of the key: when "By Format" moved off P2360
+        # (which no station carries) onto P415, every existing install would
+        # otherwise have kept serving the empty answer until the cache aged
+        # out. Keyed this way, correcting a property invalidates it for free.
+        f"wikidata:{axis}:{prop}:{country_qid}",
         lambda: [
             {
                 "cs": s.call_sign,
@@ -247,6 +264,73 @@ def band_of(frequency_mhz: float) -> str:
         if low <= frequency_mhz < high:
             return label
     return ""
+
+
+def stations_in_place(
+    place: str, *, limit: int = 200, safe_mode: bool = False
+) -> list[RadioStation]:
+    """Every station Radio Browser files under *place*, most-listened first.
+
+    The place axis used to work the wrong way round: take Wikidata's list of
+    stations for a place, then look each one up. Wikidata's query is capped
+    (``_LIMIT``) and unordered, so that list is an arbitrary slice of tens of
+    thousands of stations -- and for Arizona the twelve it happened to return
+    were twelve Radio Browser does not carry, so the folder opened to nothing
+    while KJZZ, KBAQ and forty-seven others sat there playable (reported
+    2026-08-16: "Arizona is showing none that can be played while I know of at
+    least one").
+
+    Asking Radio Browser for the place directly starts from the set that can
+    actually play. ``state`` is the field US stations are filed under; when it
+    matches nothing -- a city, or a place Radio Browser spells differently --
+    the name search is the second try.
+    """
+    wanted = place.strip()
+    if not wanted:
+        return []
+    try:
+        found = radio_browser.search_stations(state=wanted, limit=limit, safe_mode=safe_mode)
+    except Exception:  # noqa: BLE001 - a miss here must not empty the folder
+        found = []
+    if found:
+        return found
+    try:
+        return radio_browser.search_stations(wanted, limit=limit, safe_mode=safe_mode)
+    except Exception:  # noqa: BLE001
+        return []
+
+
+def stations_with_format(
+    fmt: str, *, limit: int = 200, safe_mode: bool = False
+) -> list[RadioStation]:
+    """Stations Radio Browser tags with *fmt*.
+
+    Wikidata's format names ("Active rock", "Christian radio") and Radio
+    Browser's tags ("rock", "christian") are the same vocabulary spelled
+    differently, in two ways that both had to be handled: **Radio Browser's
+    tags are lower case and match exactly** -- "Christian" returns nothing
+    where "christian" returns hundreds -- and the useful word is sometimes the
+    last ("Active rock" -> "rock") and sometimes the first ("Christian radio"
+    -> "christian"). So the whole name is tried, then the last word, then the
+    first. Anything found tops up the call-sign matches rather than replacing
+    them.
+    """
+    wanted = fmt.strip()
+    if not wanted:
+        return []
+    words = [w.strip("-,") for w in wanted.casefold().split() if w.strip("-,")]
+    attempts: list[str] = []
+    for candidate in (wanted.casefold(), *(reversed(words) if words else ())):
+        if candidate and candidate not in attempts:
+            attempts.append(candidate)
+    for attempt in attempts:
+        try:
+            found = radio_browser.search_stations(tag=attempt, limit=limit, safe_mode=safe_mode)
+        except Exception:  # noqa: BLE001 - a miss must not empty the folder
+            continue
+        if found:
+            return found
+    return []
 
 
 def playable(

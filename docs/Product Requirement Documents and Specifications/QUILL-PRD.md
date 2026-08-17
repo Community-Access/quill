@@ -4429,10 +4429,16 @@ honoured per the Archive's automated-access rules, and a **More...** node that
 states how many rows it is hiding); **LibriVox** (`core/media/librivox.py`);
 **Project Gutenberg** (`core/radio/gutendex.py`); **Audius, Mixcloud and
 ccMixter** (`core/radio/free_music.py`); and **Wikidata**
-(`core/radio/wikidata.py`: By City / Owner / Network / Format via P131 / P127 /
-P449 / P2360, plus FM dial bands, joined conservatively against Radio Browser,
-which still supplies every stream — hence the "from Wikidata" label on every row,
-because the join is ours). Three standing decisions: **Podcast Index is out**
+(`core/radio/wikidata.py`: By City / Owner / Format via P131 / P127 / P415, plus
+FM dial bands, joined conservatively against Radio Browser, which still supplies
+every stream — hence the "from Wikidata" label on every row, because the join is
+ours; a place or a format is asked of Radio Browser *directly* and topped up
+with Wikidata's call signs, because the reverse order returns an arbitrary
+capped slice and Arizona opened to nothing while forty-eight stations played).
+**By Network was removed** (2026-08-16) and **By Format re-pointed off P2360**:
+P449 is recorded for two US radio stations and P2360 for none, so both folders
+were structurally incapable of listing anything — the same non-goal reasoning as
+RadioDNS below, found by opening every axis in one pass rather than by report. Three standing decisions: **Podcast Index is out**
 (2026-08-13, reversing the earlier plan — it needs a free key, and a key is
 something to configure, support and explain at the worst possible moment, while
 transcripts never came from a directory in the first place); **Mixcloud is Mode A

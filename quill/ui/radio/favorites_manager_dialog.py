@@ -235,7 +235,10 @@ class FavoritesManagerDialog:
         self._search_ctrl.Bind(wx.EVT_TEXT, lambda _e: self._refresh_tree())
         self._tree.Bind(wx.EVT_TREE_SEL_CHANGED, lambda _e: self._on_selection_changed())
         self._tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, lambda _e: self._on_play())
-        self._tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_context_menu)
+        # Right-click is the item event; Shift+F10 and the Applications key can
+        # arrive as a bare EVT_CONTEXT_MENU. Both must reach the same menu.
+        for context_event in (wx.EVT_TREE_ITEM_MENU, wx.EVT_CONTEXT_MENU):
+            self._tree.Bind(context_event, self._on_context_menu)
         self._tree.Bind(wx.EVT_KEY_DOWN, self._on_tree_key)
 
         self._refresh_tree()

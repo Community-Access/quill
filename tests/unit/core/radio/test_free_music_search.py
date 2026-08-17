@@ -129,3 +129,59 @@ def test_safe_mode_refuses_before_asking(search, offline) -> None:
     with pytest.raises(FreeMusicError):
         search("jazz", safe_mode=True)
     assert offline == []
+
+
+# --- ccMixter's oversized header ----------------------------------------------
+
+
+def test_a_giant_response_header_does_not_lose_the_body(monkeypatch) -> None:
+    """ccMixter echoes its whole JSON response back in an ``X-JSON`` header.
+
+    Measured at 90 KB for a 15-row page (2026-08-16). ``http.client`` refuses a
+    header line over 64 KB and raises ``LineTooLong`` *before* reading the body,
+    which is perfectly good -- so every ccMixter tag failed on a cold cache
+    while the same tag served fine from a warm one. That intermittency is why
+    it read as an upstream outage rather than a limit we set ourselves.
+    """
+    import http.client
+
+    from quill.core.radio import free_music
+
+    seen: dict = {}
+
+    class _Response:
+        status = 200
+
+        def read(self, _n=None):
+            seen["maxline"] = http.client._MAXLINE
+            return b'[{"upload_id": 1}]'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_a):
+            return False
+
+    monkeypatch.setattr(free_music.urllib.request, "urlopen", lambda *_a, **_k: _Response())
+    before = http.client._MAXLINE
+    body = free_music._fetch("https://ccmixter.org/api/query?f=json")
+    assert body == '[{"upload_id": 1}]'
+    assert seen["maxline"] >= 90_000, "the header ceiling was not raised for the read"
+    assert http.client._MAXLINE == before, "the ceiling was left raised afterwards"
+
+
+def test_the_header_ceiling_is_restored_even_when_the_fetch_fails(monkeypatch) -> None:
+    import http.client
+
+    from quill.core.radio import free_music
+
+    def boom(*_a, **_k):
+        raise http.client.LineTooLong("header line")
+
+    monkeypatch.setattr(free_music.urllib.request, "urlopen", boom)
+    before = http.client._MAXLINE
+    try:
+        free_music._fetch("https://ccmixter.org/api/query?f=json")
+    except free_music.FreeMusicError:
+        pass
+    assert http.client._MAXLINE == before

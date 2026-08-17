@@ -132,12 +132,26 @@ def refuse_in_safe_mode(safe_mode: bool) -> None:
         )
 
 
+#: ``http.client`` refuses a header line over 64 KB, and **ccMixter echoes its
+#: entire JSON response back in an ``X-JSON`` header** -- 90 KB for a 15-row
+#: page, measured 2026-08-16. The body it refuses to reach is perfectly good, so
+#: every ccMixter tag failed on a cold cache while the same tag served fine from
+#: a warm one, which is why this read as an intermittent outage for so long.
+#: Raising the ceiling for our own reads is the whole fix; it is a *limit*, so a
+#: larger value only ever permits more, and it stays bounded well under
+#: ``_MAX_BYTES`` so a hostile server cannot use it to spend memory.
+_MAX_HEADER_BYTES = 512_000
+
+
 def _fetch(url: str) -> str:
     """One HTTPS GET -- the single reviewed egress site for all three sources."""
     if not url.startswith("https://"):
         raise FreeMusicError("Only https:// URLs can be fetched.")
     request = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
     context = ssl.create_default_context()
+    previous_maxline = http.client._MAXLINE  # type: ignore[attr-defined]
+    if previous_maxline < _MAX_HEADER_BYTES:
+        http.client._MAXLINE = _MAX_HEADER_BYTES  # type: ignore[attr-defined]
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
             payload: bytes = resp.read(_MAX_BYTES)
@@ -153,6 +167,8 @@ def _fetch(url: str) -> str:
         http.client.HTTPException,
     ) as error:
         raise FreeMusicError(f"Could not reach that music directory: {error}") from error
+    finally:
+        http.client._MAXLINE = previous_maxline  # type: ignore[attr-defined]
     return payload.decode("utf-8", errors="replace")
 
 
