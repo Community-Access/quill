@@ -6,20 +6,94 @@ from quill.ui.window_menu import WindowManager
 
 
 class _FakeWx:
-    """Just enough wx for WindowManager.__init__ (only NewIdRef is used here)."""
+    """Just enough wx for WindowManager (ids, menus, accelerators)."""
 
     def __init__(self) -> None:
         self._n = 1000
+        self.ACCEL_CTRL = 1
+        self.ACCEL_SHIFT = 2
+        self.WXK_TAB = 9
+        self.ID_ANY = -1
+        self.ITEM_CHECK = 1
+        self.EVT_MENU = "EVT_MENU"
+        self.EVT_MENU_OPEN = "EVT_MENU_OPEN"
 
     def NewIdRef(self):  # noqa: N802 - wx shape
         self._n += 1
         return self._n
+
+    def Menu(self):  # noqa: N802
+        return _FakeMenu()
+
+    def AcceleratorEntry(self, *args):  # noqa: N802
+        return args
+
+    def AcceleratorTable(self, entries):  # noqa: N802
+        return entries
+
+
+class _FakeMenuItem:
+    def __init__(self, item_id: int, label: str) -> None:
+        self._id = item_id
+        self.label = label
+        self.checked = False
+
+    def GetId(self) -> int:  # noqa: N802
+        return self._id
+
+    def Check(self, value: bool = True) -> None:  # noqa: N802
+        self.checked = value
+
+
+class _FakeMenu:
+    """A wx.Menu: popup menus keep the empty default title."""
+
+    def __init__(self, title: str = "") -> None:
+        self._title = title
+        self._next_item_id = 5000
+        self.items: list[_FakeMenuItem] = []
+
+    def GetTitle(self) -> str:  # noqa: N802
+        return self._title
+
+    def GetMenuItems(self):  # noqa: N802
+        return list(self.items)
+
+    def Delete(self, item: _FakeMenuItem) -> None:  # noqa: N802
+        self.items.remove(item)
+
+    def Append(self, _item_id, label, _help="", _kind=None):  # noqa: N802
+        self._next_item_id += 1
+        item = _FakeMenuItem(self._next_item_id, label)
+        self.items.append(item)
+        return item
+
+
+class _FakeMenuBar:
+    def __init__(self) -> None:
+        self.menus: list[tuple[_FakeMenu, str]] = []
+
+    def Append(self, menu: _FakeMenu, title: str) -> None:  # noqa: N802
+        self.menus.append((menu, title))
+
+
+class _FakeMenuOpenEvent:
+    def __init__(self, menu: _FakeMenu) -> None:
+        self._menu = menu
+        self.skipped = False
+
+    def GetMenu(self) -> _FakeMenu:  # noqa: N802
+        return self._menu
+
+    def Skip(self) -> None:  # noqa: N802
+        self.skipped = True
 
 
 class _FakeFrame:
     def __init__(self, frame_id: int) -> None:
         self._id = frame_id
         self.calls: list[str] = []
+        self.menu_open_handler = None
 
     def GetId(self) -> int:  # noqa: N802 - wx shape
         return self._id
@@ -32,6 +106,13 @@ class _FakeFrame:
 
     def SetFocus(self) -> None:  # noqa: N802
         self.calls.append("SetFocus")
+
+    def SetAcceleratorTable(self, table) -> None:  # noqa: N802
+        pass
+
+    def Bind(self, event, handler, id=None) -> None:  # noqa: N802, A002
+        if event == "EVT_MENU_OPEN":
+            self.menu_open_handler = handler
 
 
 def _wm_with(*frames: _FakeFrame) -> WindowManager:
@@ -83,3 +164,37 @@ def test_unregister_renumbers_and_previous_key_for_close() -> None:
 def test_activate_unknown_key_is_safe() -> None:
     wm = _wm_with(_FakeFrame(1))
     assert wm.activate("999") is None
+
+
+def _installed_manager() -> tuple[WindowManager, _FakeFrame, _FakeMenuBar]:
+    wm = WindowManager(_FakeWx())
+    frame = _FakeFrame(1)
+    wm.register(frame, "Quill Radio")
+    bar = _FakeMenuBar()
+    wm.install(frame, bar)
+    assert frame.menu_open_handler is not None
+    return wm, frame, bar
+
+
+def test_menu_open_rebuilds_only_the_window_menu() -> None:
+    _wm, frame, bar = _installed_manager()
+    window_menu = bar.menus[0][0]
+    event = _FakeMenuOpenEvent(window_menu)
+    frame.menu_open_handler(event)
+    assert [item.label for item in window_menu.items] == ["&1 Quill Radio\tCtrl+1"]
+    assert window_menu.items[0].checked  # the current window is ticked
+    assert event.skipped
+
+
+def test_menu_open_leaves_popup_context_menus_alone() -> None:
+    # Regression: popup context menus report an empty title, and the old
+    # title-based match ("Window" or "") rebuilt them too -- Shift+F10 on the
+    # favorites tree showed the numbered window list instead of Play/Remove/....
+    _wm, frame, _bar = _installed_manager()
+    popup = _FakeMenu()  # a context menu: empty title, its own items
+    popup.Append(-1, "&Play")
+    popup.Append(-1, "&Remove...\tDelete")
+    event = _FakeMenuOpenEvent(popup)
+    frame.menu_open_handler(event)
+    assert [item.label for item in popup.items] == ["&Play", "&Remove...\tDelete"]
+    assert event.skipped

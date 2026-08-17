@@ -16,6 +16,13 @@ from __future__ import annotations
 from typing import Any
 
 
+def _open_data_folder(app: Any) -> None:
+    from quill.apps.radio import _TITLE
+    from quill.ui.data_folder_dialog import open_data_folder_dialog
+
+    open_data_folder_dialog(app, app_title=_TITLE)
+
+
 def open_preferences(app: Any) -> None:
     """Show Preferences, then apply every answer it came back with."""
     # The app module owns these display tables; imported at call time so this
@@ -63,6 +70,20 @@ def open_preferences(app: Any) -> None:
         )
     except ValueError:
         catalog_interval_index = 2
+    episode_limit_labels = [
+        "10 newest",
+        "25 newest (default)",
+        "50 newest",
+        "100 newest",
+        "All episodes",
+    ]
+    episode_limit_values = [10, 25, 50, 100, 0]
+    try:
+        episode_limit_index = episode_limit_values.index(
+            int(getattr(history, "subscription_episode_limit", 25))
+        )
+    except ValueError:
+        episode_limit_index = 1
     dialog = PreferencesDialog(
         app.frame,
         app_title=_TITLE,
@@ -183,6 +204,15 @@ def open_preferences(app: Any) -> None:
                 catalog_interval_labels,
                 catalog_interval_index,
             ),
+            PreferenceChoice(
+                "Ep&isodes listed per subscribed podcast:",
+                "How many of a show's newest episodes appear under Browse "
+                "Stations > Podcasts > Subscriptions. Quill Radio keeps this "
+                "simple on purpose; downloads, retention, and the full "
+                "archive live in Quill Cast.",
+                episode_limit_labels,
+                episode_limit_index,
+            ),
         ],
         texts=[
             PreferenceText(
@@ -202,6 +232,13 @@ def open_preferences(app: Any) -> None:
                 "Reset &All Stations' Sound Enhancements...",
                 "Reset all stations' Sound Enhancements to the shared default",
                 app._reset_all_sound_enhancements,
+            ),
+            PreferenceAction(
+                "Data Fol&der...",
+                "Where every Quill app stores settings, favorites, and "
+                "subscriptions. Choose a folder a service like Dropbox or "
+                "OneDrive keeps in sync to carry them between computers.",
+                lambda: _open_data_folder(app),
             ),
         ],
         announce_cb=app._announce,
@@ -243,6 +280,7 @@ def open_preferences(app: Any) -> None:
         app._radio_controller.set_output_device(chosen_device)
     chosen_sort = _FAVORITES_SORT_VALUES[choice_indices[3]]
     history.catalog_refresh_hours = catalog_interval_values[choice_indices[4]]
+    history.subscription_episode_limit = episode_limit_values[choice_indices[5]]
     if chosen_sort != history.favorites_sort:
         history.favorites_sort = chosen_sort
         app._reload_favorites_tree()

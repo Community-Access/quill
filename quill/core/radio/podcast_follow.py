@@ -40,9 +40,15 @@ class FollowResult:
     @property
     def spoken(self) -> str:
         if self.already:
-            return f"You already follow {self.title}. Find it in Quill Cast."
+            return (
+                f"You already follow {self.title}. "
+                "Find it under Podcasts, Subscriptions, and in Quill Cast."
+            )
         if self.added:
-            return f"Subscribed to {self.title}. It is waiting in Quill Cast."
+            return (
+                f"Subscribed to {self.title}. "
+                "Find it under Podcasts, Subscriptions, and in Quill Cast."
+            )
         return "That podcast could not be subscribed to."
 
 
@@ -78,6 +84,38 @@ def follow_feed(
         return FollowResult(added=False, title=name, already=True)
     save_library(data_dir, library)
     return FollowResult(added=True, title=name)
+
+
+@dataclass(frozen=True, slots=True)
+class UnfollowResult:
+    """What unsubscribing did, and what to say about it."""
+
+    #: True when the library lost the show.
+    removed: bool
+    #: The show's title, as it was stored.
+    title: str
+
+    @property
+    def spoken(self) -> str:
+        if self.removed:
+            return f"Unsubscribed from {self.title}."
+        return "That podcast was not in your subscriptions."
+
+
+def unfollow_feed(data_dir: Path, feed_url: str) -> UnfollowResult:
+    """Drop *feed_url* from the shared podcast library (the Unsubscribe half
+    of :func:`follow_feed`; idempotent the same way)."""
+    from quill.core.podcasts.subscriptions import load_library, save_library
+
+    url = (feed_url or "").strip()
+    if not url:
+        return UnfollowResult(removed=False, title="")
+    library = load_library(data_dir)
+    show = library.find_show_by_feed_url(url)
+    if show is None or not library.remove_show(show.id):
+        return UnfollowResult(removed=False, title=url)
+    save_library(data_dir, library)
+    return UnfollowResult(removed=True, title=show.title or url)
 
 
 def is_followed(data_dir: Path, feed_url: str) -> bool:

@@ -22,6 +22,7 @@ from quill.core.podcasts.subscriptions import (
     PodcastLibrary,
     load_library,
     merge_episodes,
+    save_library,
 )
 from quill.core.sound_events import SoundEvent
 from quill.ui.companion_cues import post_cue
@@ -58,6 +59,18 @@ class PodcastsMixin(
 
     def _init_podcasts(self) -> None:
         self._podcast_library: PodcastLibrary = load_library(app_data_dir())
+        # Catch up on what Quill Radio heard (positions and finished episodes
+        # from Browse Stations > Podcasts > Subscriptions) before anything
+        # reads episode state, so the Inbox and Continue Listening open
+        # already knowing. Quiet, like the maintenance pass below -- a launch
+        # summary would talk over the screen reader announcing the window.
+        from quill.core.podcasts.radio_listens import merge_radio_listens
+
+        # Plain save, not _save_podcast_library(): that helper reaches the
+        # download queue, which does not exist yet this early in init.
+        updated, _finished = merge_radio_listens(app_data_dir(), self._podcast_library)
+        if updated:
+            save_library(app_data_dir(), self._podcast_library)
         self._podcast_manager_dialog: PodcastManagerDialog | None = None
         self._podcast_ever_active = False
         self._podcast_current_chapters: list = []

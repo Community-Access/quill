@@ -35,7 +35,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from quill.core.paths import app_data_dir
+from quill.core.paths import machine_local_dir
 from quill.core.storage import read_json, write_json_atomic
 
 _LOG = logging.getLogger(__name__)
@@ -63,7 +63,9 @@ class CacheEntry:
 
 
 def _cache_dir() -> Path:
-    return app_data_dir() / _CACHE_DIRNAME
+    # machine_local_dir, not app_data_dir: a synced custom data folder must
+    # not carry per-machine directory caches back and forth (pure churn).
+    return machine_local_dir() / _CACHE_DIRNAME
 
 
 def _safe_name(key: str) -> str:

@@ -256,19 +256,49 @@ def parse_feed_url(json_text: str) -> str:
     Empty rather than an error for "no such id": a stale chart row degrades to
     "could not open that show" instead of a raised exception in a browse tree.
     """
+    return parse_show_details(json_text).feed_url
+
+
+@dataclass(frozen=True, slots=True)
+class ShowDetails:
+    """What one lookup row says about a show, beyond the feed itself.
+
+    Artwork and homepage exist so Subscribe can hand them to the shared
+    podcast library: a show followed from Quill Radio used to arrive in
+    Quill Cast as a bare title -- no tile, no site link -- because the
+    subscribe path threw these fields away. Field spellings mirror
+    ``itunes_search.PodcastSearchResult`` (artworkUrl600 first, homepage
+    from collectionViewUrl) so both apps describe a show the same way.
+    """
+
+    feed_url: str = ""
+    artwork_url: str = ""
+    homepage: str = ""
+
+
+def parse_show_details(json_text: str) -> ShowDetails:
+    """Feed, artwork and homepage from a lookup response (pure).
+
+    All-empty rather than an error for "no such id", for the same reason
+    :func:`parse_feed_url` answers ``""``.
+    """
     try:
         data = json.loads(json_text)
     except (ValueError, TypeError):
-        return ""
+        return ShowDetails()
     results = data.get("results") if isinstance(data, dict) else None
     if not isinstance(results, list):
-        return ""
+        return ShowDetails()
     for row in results:
         if isinstance(row, dict):
             feed = str(row.get("feedUrl", "")).strip()
             if feed.startswith(("http://", "https://")):
-                return feed
-    return ""
+                return ShowDetails(
+                    feed_url=feed,
+                    artwork_url=str(row.get("artworkUrl600") or row.get("artworkUrl100") or ""),
+                    homepage=str(row.get("collectionViewUrl", "")),
+                )
+    return ShowDetails()
 
 
 def genres_in(genres: list[AppleGenre], genre_id: str) -> AppleGenre | None:
@@ -417,6 +447,45 @@ def resolve_feed_url(collection_id: str, *, safe_mode: bool = False) -> str:
         empty="",
     )
     return str(payload or "")
+
+
+def resolve_show_details(collection_id: str, *, safe_mode: bool = False) -> ShowDetails:
+    """Feed, artwork and homepage behind a collection id (one keyless GET).
+
+    The same lookup request :func:`resolve_feed_url` makes, kept as its own
+    cache entry (``apple:show:``) so existing feed-only cache entries stay
+    valid. Subscribe uses this one: the extra two fields are what let the
+    shared library show a tile and a site link in Quill Cast.
+    """
+    refuse_in_safe_mode(safe_mode)
+    identifier = collection_id.strip()
+    if not identifier:
+        return ShowDetails()
+    params = urllib.parse.urlencode({"id": identifier, "entity": "podcast"})
+    payload, _age = directory_cache.resolve(
+        f"apple:show:{identifier}",
+        lambda: _details_as_dict(parse_show_details(_fetch(f"{_LOOKUP_URL}?{params}"))),
+        max_age_seconds=30 * 24 * 3600,
+        empty={},
+    )
+    data = payload if isinstance(payload, dict) else {}
+    return ShowDetails(
+        feed_url=str(data.get("feed", "")),
+        artwork_url=str(data.get("artwork", "")),
+        homepage=str(data.get("homepage", "")),
+    )
+
+
+def _details_as_dict(details: ShowDetails) -> dict:
+    if not details.feed_url:
+        # An unknown id answers the ``empty`` sentinel, exactly as the
+        # feed-only resolver answers "" -- not a 30-day cache of nothing.
+        return {}
+    return {
+        "feed": details.feed_url,
+        "artwork": details.artwork_url,
+        "homepage": details.homepage,
+    }
 
 
 # --- cache serialisation ------------------------------------------------------

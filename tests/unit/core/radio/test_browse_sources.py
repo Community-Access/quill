@@ -240,8 +240,11 @@ def test_apple_lists_storefronts_then_top_and_genres(monkeypatch) -> None:
 
     monkeypatch.setattr(apple, "fetch_genres", lambda **_kw: [apple.AppleGenre("1301", "Arts")])
     roots = bs.browse("apple")
-    assert roots[0].label == "United States"
-    level = bs.browse(roots[0].node_id)
+    # Subscriptions leads (the shows already followed are the ones a listener
+    # comes back for); the storefronts follow.
+    assert roots[0].label == "Subscriptions"
+    assert roots[1].label == "United States"
+    level = bs.browse(roots[1].node_id)
     assert [n.label for n in level] == ["Top Podcasts", "Top Episodes", "Arts"]
 
 

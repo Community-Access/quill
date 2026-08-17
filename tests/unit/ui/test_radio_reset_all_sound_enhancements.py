@@ -192,5 +192,9 @@ def test_open_preferences_passes_a_reset_all_action(monkeypatch: pytest.MonkeyPa
     RadioAppFrame._open_preferences(frame)
 
     actions = _FakePreferencesDialog.instances[0].kwargs["actions"]
-    assert len(actions) == 1
+    # Two utility buttons now: Reset All, and the Data Folder dialog
+    # (2026-08-17). This test owns the first; the exact count is pinned so a
+    # silently dropped action still fails here.
+    assert len(actions) == 2
     assert actions[0].on_click == frame._reset_all_sound_enhancements
+    assert "Data Fol" in actions[1].name

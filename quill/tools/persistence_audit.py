@@ -145,6 +145,12 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # only the recompute -- and it is deliberately invalidated whenever the
     # audio file's size or mtime changes, so it can never outlive its episode.
     "core/podcasts/chapter_inference.py::save_cached_inference": "cache",
+    # Radio -> Cast listening handoff: latest position/finished per episode,
+    # consumed by Cast at merge. Loss = Cast misses one session; harmless.
+    "core/podcasts/radio_listens.py::record_listen": "cache",
+    "core/podcasts/radio_listens.py::merge_radio_listens": "cache",
+    # Two-machines guard for synced data folders: {machine, pid, at}.
+    "core/profile_heartbeat.py::note_profile_use": "marker",
     "core/radio/wake_timer.py::save_wake_setting": "content",
     "core/radio/recording.py::save_recording_settings": "content",
     "core/radio/recording_schedule.py::save_schedule": "content",

@@ -363,6 +363,12 @@ def _find_ffmpeg() -> str | None:
 
 
 def main() -> int:
+    from quill.core.data_location import apply_pending_at_launch
+
+    # A queued Data Folder move/import applies before a single data file is
+    # read (mirrors quill.__main__.main -- the family shares one profile, so
+    # whichever app launches next must be the one to apply it).
+    apply_pending_at_launch()
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
     start_in_tray = "--tray" in sys.argv
     # Positional args are files to queue (the Explorer verb passes the selection).

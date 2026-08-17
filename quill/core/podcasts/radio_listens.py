@@ -1,0 +1,167 @@
+"""What Quill Radio heard, for Quill Cast to catch up on.
+
+Quill Radio can play a subscribed show's episodes (Browse Stations >
+Podcasts > Subscriptions), but the rich side of podcasting -- the Inbox,
+Continue Listening, played state -- lives in Quill Cast. Without this file,
+half an episode heard over lunch in Radio leaves Cast none the wiser: the
+episode still presents as brand new. This is the small pipe that fixes that.
+
+The shape is a *handoff*, deliberately, rather than Radio writing into
+Cast's stores: both apps load-and-save ``podcasts.json`` wholesale, so a
+Radio write while Cast is open would be a last-writer-wins clobber waiting
+to happen (the same reason weather monitoring hands off between apps
+instead of sharing a store). Radio only ever appends records here;
+Cast merges them into its own library at launch, when it is the one
+holder of that file, and consumes what it matched.
+
+Records that match nothing are kept for a while -- the episode may simply
+not have been fetched into Cast's library yet -- and dropped when stale,
+so the file cannot grow forever on a feed Cast never refreshes.
+
+wx-free, strict-typed. Loss of this file is harmless (worst case Cast does
+not learn about one listening session), so the persistence class is cache.
+"""
+
+from __future__ import annotations
+
+import json
+import time
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from quill.core.podcasts.models import PodcastEpisode
+
+if TYPE_CHECKING:
+    from quill.core.podcasts.subscriptions import PodcastLibrary
+
+#: ``RadioStation.source`` values that mean "a podcast episode played from a
+#: publisher's feed" -- the rows whose positions are worth telling Cast about.
+PODCAST_EPISODE_SOURCES = frozenset({"Apple Podcasts", "Subscribed Podcasts"})
+
+_FILE_NAME = "radio-listens.json"
+
+#: Newest records kept when the file is trimmed. A record is one heard
+#: episode, so hundreds is weeks of listening.
+_MAX_RECORDS = 500
+
+#: Unmatched records older than this are dropped at merge: if Cast has not
+#: fetched the episode in a month, the position is stale anyway.
+_MAX_UNMATCHED_AGE_SECONDS = 30 * 24 * 3600
+
+
+def _path(data_dir: Path) -> Path:
+    return data_dir / _FILE_NAME
+
+
+def _read(data_dir: Path) -> list[dict]:
+    try:
+        raw = json.loads(_path(data_dir).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return []
+    if not isinstance(raw, list):
+        return []
+    return [row for row in raw if isinstance(row, dict) and str(row.get("audio", "")).strip()]
+
+
+def record_listen(
+    data_dir: Path,
+    *,
+    feed_url: str,
+    audio_url: str,
+    title: str = "",
+    position_ms: int = 0,
+    finished: bool = False,
+) -> None:
+    """Note that Radio reached *position_ms* in (or finished) an episode.
+
+    One record per episode: a later save for the same audio URL replaces the
+    earlier one, so the file holds the latest word on each episode rather
+    than a keystroke log. Best effort; never raises -- losing a handoff
+    record must never cost the listener their playback.
+    """
+    feed = (feed_url or "").strip()
+    audio = (audio_url or "").strip()
+    if not feed or not audio:
+        return
+    try:
+        from quill.core.storage import write_json_atomic
+
+        records = [row for row in _read(data_dir) if row.get("audio") != audio]
+        records.append({
+            "feed": feed,
+            "audio": audio,
+            "title": (title or "").strip(),
+            "position_ms": max(0, int(position_ms)),
+            "finished": bool(finished),
+            "at": time.time(),
+        })
+        write_json_atomic(_path(data_dir), records[-_MAX_RECORDS:])
+    except Exception:  # noqa: BLE001 - a handoff is a courtesy, never a crash
+        return
+
+
+def merge_radio_listens(data_dir: Path, library: PodcastLibrary) -> tuple[int, int]:
+    """Fold Radio's listening records into *library* (Cast calls this).
+
+    Returns ``(episodes_updated, episodes_finished)``. Mutates *library* in
+    place; the caller decides whether to save (skip when both counts are
+    zero). Matched records are consumed; young unmatched ones are kept for a
+    later merge, stale ones dropped. Never raises.
+    """
+    try:
+        records = _read(data_dir)
+        if not records:
+            return (0, 0)
+        updated = finished_count = 0
+        kept: list[dict] = []
+        now = time.time()
+        for row in records:
+            episode = _find_episode(library, str(row.get("feed", "")), str(row.get("audio", "")))
+            if episode is None:
+                if now - float(row.get("at") or 0.0) <= _MAX_UNMATCHED_AGE_SECONDS:
+                    kept.append(row)
+                continue
+            if bool(row.get("finished")):
+                # Cast's own convention for a finished episode: played, and
+                # the place cleared so replaying starts at the top.
+                if not episode.played or episode.position_ms:
+                    episode.played = True
+                    episode.position_ms = 0
+                    updated += 1
+                    finished_count += 1
+            else:
+                position = max(0, int(row.get("position_ms") or 0))
+                if position and position != episode.position_ms and not episode.played:
+                    episode.position_ms = position
+                    updated += 1
+        from quill.core.storage import write_json_atomic
+
+        write_json_atomic(_path(data_dir), kept)
+        return (updated, finished_count)
+    except Exception:  # noqa: BLE001 - a failed merge must never block launch
+        return (0, 0)
+
+
+def merge_summary(updated: int, finished: int) -> str:
+    """What to announce after a merge, or ``""`` when there is nothing to say."""
+    if not updated:
+        return ""
+    if finished == updated:
+        plural = "s" if finished != 1 else ""
+        return f"Caught up from Quill Radio: {finished} episode{plural} finished."
+    plural = "s" if updated != 1 else ""
+    return f"Caught up from Quill Radio: {updated} episode{plural} updated."
+
+
+def _find_episode(library: PodcastLibrary, feed_url: str, audio_url: str) -> PodcastEpisode | None:
+    feed = (feed_url or "").strip()
+    audio = (audio_url or "").strip()
+    if not feed or not audio:
+        return None
+    show = library.find_show_by_feed_url(feed)
+    if show is None:
+        return None
+    for episode in show.episodes:
+        if episode.audio_url == audio:
+            return episode
+    return None

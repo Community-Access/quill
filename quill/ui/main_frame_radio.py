@@ -208,6 +208,16 @@ class RadioMixin:
         from quill.ui.radio import catalog_ui
 
         catalog_ui.maybe_refresh_on_tick(self)
+        # Two-machines guard: keep this machine's stamp fresh on a synced
+        # custom data folder (self-throttled to one small write every ten
+        # minutes; a no-op in appdata/portable mode).
+        from quill.core.profile_heartbeat import refresh_profile_use
+        from quill.core.storage_mode import load_storage_mode
+
+        if load_storage_mode() == "custom":
+            from quill.core.paths import app_data_dir
+
+            refresh_profile_use(app_data_dir())
 
     def _shutdown_radio(self) -> None:
         """Tear down every radio subsystem and stamp last_seen (R2/11.6).

@@ -103,9 +103,32 @@ def test_a_podcast_show_can_be_subscribed_to() -> None:
     assert row_actions.COPY_FEED in ids
 
 
-def test_an_already_followed_show_says_so_rather_than_offering_again() -> None:
+def test_an_already_followed_show_offers_unsubscribe_instead() -> None:
+    # "Already Subscribed" was a menu item whose only power was to repeat
+    # itself; subscribed, the slot is now a real Unsubscribe.
     actions = actions_for("appleshow", is_folder=True, folder_state=FolderState(subscribed=True))
-    assert "Already" in _label(actions, row_actions.SUBSCRIBE_PODCAST)
+    ids = _ids(actions)
+    assert row_actions.UNSUBSCRIBE_PODCAST in ids
+    assert row_actions.SUBSCRIBE_PODCAST not in ids
+    assert "Unsu" in _label(actions, row_actions.UNSUBSCRIBE_PODCAST)
+
+
+def test_a_subscribed_show_in_the_subscriptions_branch_is_a_show_too() -> None:
+    # Subscriptions rows carry the feed in the node id; the menu must offer
+    # the same show actions the Apple directory rows get.
+    ids = _ids(actions_for("mypodcastshow", is_folder=True, folder_state=FolderState()))
+    assert row_actions.SUBSCRIBE_PODCAST in ids  # unsubscribed until state says otherwise
+    assert row_actions.COPY_FEED in ids
+
+
+def test_an_expanded_folder_offers_close_rather_than_open() -> None:
+    collapsed = _ids(actions_for("rbcountry", is_folder=True, folder_state=FolderState()))
+    expanded = _ids(
+        actions_for("rbcountry", is_folder=True, folder_state=FolderState(expanded=True))
+    )
+    assert collapsed[0] == row_actions.OPEN_FOLDER
+    assert expanded[0] == row_actions.CLOSE_FOLDER
+    assert row_actions.OPEN_FOLDER not in expanded
 
 
 def test_an_ordinary_folder_offers_no_subscription() -> None:
@@ -125,6 +148,13 @@ def test_a_folder_counts_what_it_already_holds() -> None:
         "librivoxgenre", is_folder=True, folder_state=FolderState(loaded_stations=12)
     )
     assert "12" in _label(actions, row_actions.FAVORITE_FOLDER)
+
+
+def test_an_unloaded_folder_offers_no_add_all() -> None:
+    # With nothing under the row yet, "Add All Episodes to Favorites" adds
+    # nothing; the honest menu leaves it out until Open loads the rows.
+    ids = _ids(actions_for("appleshow", is_folder=True, folder_state=FolderState()))
+    assert row_actions.FAVORITE_FOLDER not in ids
 
 
 def test_download_all_appears_only_when_something_is_savable() -> None:
@@ -160,6 +190,11 @@ def _every_menu() -> list[tuple[str, list]]:
         FolderState(loaded_stations=5, savable=3),
         FolderState(subscribed=True, loaded_stations=5, savable=3),
         FolderState(is_podcast_show=True, is_followed_channel=True, loaded_stations=2),
+        # Expanded variants too: "&Close" claims a key the collapsed menus
+        # never showed, and it must not collide with anything (it did --
+        # "Stop Following This &Channel" also said C).
+        FolderState(expanded=True, loaded_stations=5, savable=3),
+        FolderState(expanded=True, subscribed=True, is_followed_channel=True, loaded_stations=2),
     ]
     menus = [
         (kind, row_actions.folder_actions(kind, state))

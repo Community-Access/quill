@@ -41,10 +41,13 @@ def catalog_for(host: Any) -> Any:
     if store is not None:
         return store
     try:
-        from quill.core.paths import app_data_dir
+        # machine_local_dir, not app_data_dir: the catalog is megabytes of
+        # regenerable rows, and a synced custom data folder should not carry
+        # it between machines -- each machine keeps (and refreshes) its own.
+        from quill.core.paths import machine_local_dir
         from quill.core.radio.catalog.store import CatalogStore
 
-        store = CatalogStore(app_data_dir())
+        store = CatalogStore(machine_local_dir())
         _ensure_seeded(store)
         host._radio_catalog = store
         return store

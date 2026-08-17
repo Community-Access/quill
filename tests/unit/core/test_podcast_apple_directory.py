@@ -144,6 +144,33 @@ def test_parse_feed_url_is_empty_for_an_unknown_id_not_an_error() -> None:
     assert apple.parse_feed_url("not json") == ""
 
 
+def test_parse_show_details_carries_artwork_and_homepage() -> None:
+    # What lets Subscribe hand Quill Cast a tile and a site link instead of a
+    # bare title. Spellings mirror itunes_search: artworkUrl600 preferred,
+    # homepage from collectionViewUrl.
+    payload = json.dumps({
+        "resultCount": 1,
+        "results": [
+            {
+                "feedUrl": "https://feeds.example/daily",
+                "artworkUrl100": "https://art.example/100.jpg",
+                "artworkUrl600": "https://art.example/600.jpg",
+                "collectionViewUrl": "https://podcasts.apple.com/us/podcast/id1",
+            }
+        ],
+    })
+    details = apple.parse_show_details(payload)
+    assert details.feed_url == "https://feeds.example/daily"
+    assert details.artwork_url == "https://art.example/600.jpg"
+    assert details.homepage == "https://podcasts.apple.com/us/podcast/id1"
+    # 100px fallback when 600 is absent; all-empty for junk, not an error.
+    smaller = json.dumps({
+        "results": [{"feedUrl": "https://f.example/x", "artworkUrl100": "https://art/1.jpg"}]
+    })
+    assert apple.parse_show_details(smaller).artwork_url == "https://art/1.jpg"
+    assert apple.parse_show_details("not json") == apple.ShowDetails()
+
+
 def test_resolve_feed_url_makes_one_request_then_caches(monkeypatch) -> None:
     calls: list[str] = []
 

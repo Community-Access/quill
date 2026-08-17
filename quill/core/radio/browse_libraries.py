@@ -27,7 +27,18 @@ def _browse_apple(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
     from quill.core.podcasts import apple_podcasts as apple
 
     if not (args and args[0]):
-        return [folder(make_id("apple", code), name) for code, name in apple.DEFAULT_STOREFRONTS]
+        # Subscriptions first: the shows already followed are the ones a
+        # listener comes back for, and before this folder existed a
+        # subscription vanished into Quill Cast with no way to find it from
+        # the app that made it ("how do I find those that are subscribed?").
+        return [
+            folder(
+                make_id("mypodcasts"),
+                "Subscriptions",
+                note="shows you follow, shared with Quill Cast",
+            ),
+            *(folder(make_id("apple", code), name) for code, name in apple.DEFAULT_STOREFRONTS),
+        ]
     storefront = args[0]
     # Both chart kinds Apple publishes: the top shows, and the top individual
     # episodes, which answers "what is everyone listening to right now" rather
@@ -79,21 +90,10 @@ def _browse_apple_genre(args: list[str], *, safe_mode: bool) -> list[BrowseNode]
     return nodes
 
 
-def _browse_apple_show(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    """A show's episodes, straight from its own RSS feed.
-
-    This is where Apple stops being involved: the collection id resolves to a
-    ``feedUrl`` and the publisher's feed supplies everything after it. No key at
-    any step, and nothing in the playback path depends on Apple.
-    """
-    from quill.core.podcasts import apple_podcasts as apple
+def _feed_episode_leaves(feed_url: str, *, safe_mode: bool, source: str) -> list[BrowseNode]:
+    """A show's episodes, straight from its own RSS feed."""
     from quill.core.podcasts.feed_reader import fetch_and_parse_feed
 
-    if not args or not args[0]:
-        return []
-    feed_url = apple.resolve_feed_url(args[0], safe_mode=safe_mode)
-    if not feed_url:
-        return []
     info = fetch_and_parse_feed(feed_url, safe_mode=safe_mode)
     nodes: list[BrowseNode] = []
     for episode in info.episodes:
@@ -105,13 +105,65 @@ def _browse_apple_show(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
                     name=episode.title,
                     stream_url=episode.audio_url,
                     homepage=feed_url,
-                    source="Apple Podcasts",
+                    source=source,
                     is_recording=True,
                 ),
                 note="transcript available" if episode.transcript_url else "",
             )
         )
     return nodes
+
+
+def _browse_apple_show(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
+    """A show's episodes, straight from its own RSS feed.
+
+    This is where Apple stops being involved: the collection id resolves to a
+    ``feedUrl`` and the publisher's feed supplies everything after it. No key at
+    any step, and nothing in the playback path depends on Apple.
+    """
+    from quill.core.podcasts import apple_podcasts as apple
+
+    if not args or not args[0]:
+        return []
+    feed_url = apple.resolve_feed_url(args[0], safe_mode=safe_mode)
+    if not feed_url:
+        return []
+    return _feed_episode_leaves(feed_url, safe_mode=safe_mode, source="Apple Podcasts")
+
+
+def _browse_my_podcasts(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
+    """The shows in the shared podcast library -- the ones Quill Cast has.
+
+    A purely local read: listing what you follow costs no network. Each show's
+    node carries the feed URL itself, so opening it goes straight to the
+    publisher's feed with no directory in between.
+    """
+    from quill.core.paths import app_data_dir
+    from quill.core.podcasts.subscriptions import load_library
+
+    shows = load_library(app_data_dir()).shows
+    return [
+        folder(make_id("mypodcastshow", show.feed_url), show.title or show.feed_url)
+        for show in sorted(shows, key=lambda s: (s.title or s.feed_url).casefold())
+        if show.feed_url
+    ]
+
+
+def _browse_my_podcast_show(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
+    """A subscribed show's episodes; the node id *is* the feed address.
+
+    Capped at the newest ``subscription_episode_limit`` (Preferences; 0 = all).
+    Feeds publish newest-first, so the slice is the recent ones -- deliberately
+    Radio's one podcast setting, with the full archive living in Quill Cast.
+    """
+    if not args or not args[0]:
+        return []
+    from quill.core.paths import app_data_dir
+    from quill.core.radio.history import load_history
+
+    limit = load_history(app_data_dir()).subscription_episode_limit
+    leaves = _feed_episode_leaves(args[0], safe_mode=safe_mode, source="Subscribed Podcasts")
+    return leaves[:limit] if limit > 0 else leaves
 
 
 # --- AudioPub (community audio) ----------------------------------------------

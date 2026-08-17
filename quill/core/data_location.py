@@ -153,6 +153,20 @@ def apply_pending_data_location_migration() -> None:
     _write_migration_notice(target, f"Quill's data is now stored at {target}.")
 
 
+def apply_pending_at_launch() -> None:
+    """Both deferred applies, in the order ``quill.__main__.main`` runs them.
+
+    One call for every standalone app's ``main()`` (Radio, Cast, Weather,
+    Studio, ...): the family shares one profile, so a move queued from any
+    app must be applied by whichever app launches next -- before that app
+    reads a single data file. Without this, only a QUILL launch applied the
+    move, and a Radio-only user's queued Data Folder change simply never
+    happened.
+    """
+    apply_pending_data_location_migration()
+    apply_pending_legacy_import()
+
+
 def pop_pending_migration_notice() -> str | None:
     """Read and clear the one-time migration status message, or return None.
 
@@ -323,6 +337,7 @@ def apply_pending_legacy_import() -> None:
 
 
 __all__ = [
+    "apply_pending_at_launch",
     "apply_pending_data_location_migration",
     "apply_pending_legacy_import",
     "decline_legacy_data_import",

@@ -39,20 +39,29 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
     if row_actions.is_podcast_show(kind):
         # Only from what is already stored -- resolving the feed is a network
         # call and belongs to the action, never to opening a menu.
-        subscribed = _known_subscribed(dialog, args)
+        subscribed = _known_subscribed(dialog, kind, args)
+    try:
+        expanded = bool(dialog._tree.IsExpanded(node))
+    except Exception:  # noqa: BLE001 - a menu must never fail on a widget probe
+        expanded = False
     return row_actions.FolderState(
         loaded_stations=len(loaded),
         savable=len(savable),
         is_podcast_show=row_actions.is_podcast_show(kind),
         subscribed=subscribed,
         is_followed_channel=row_actions.is_followed_channel(kind),
+        expanded=expanded,
     )
 
 
-def _known_subscribed(dialog: Any, args: list[str]) -> bool:
+def _known_subscribed(dialog: Any, kind: str, args: list[str]) -> bool:
     """Whether this show's feed is already followed, if we know it offline."""
-    cache = getattr(dialog, "_apple_feed_cache", None)
-    feed = (cache or {}).get(args[0] if args else "")
+    if kind == "mypodcastshow":
+        # The node id carries the feed itself -- no cache, no directory.
+        feed = args[0] if args else ""
+    else:
+        cache = getattr(dialog, "_apple_feed_cache", None)
+        feed = (cache or {}).get(args[0] if args else "")
     if not feed:
         return False
     from quill.core.paths import app_data_dir
@@ -74,6 +83,7 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
         row_actions.FAVORITE_REMOVE: dialog._toggle_favorite,
         row_actions.FAVORITE_FOLDER: lambda: dialog._favorite_folder(node),
         row_actions.OPEN_FOLDER: lambda: dialog._tree.Expand(node),
+        row_actions.CLOSE_FOLDER: lambda: dialog._tree.Collapse(node),
         row_actions.REFRESH: dialog._refresh_selected,
     }
     if station is not None:
@@ -84,8 +94,9 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
         if dialog._on_report_bad_station is not None:
             handlers[row_actions.REPORT_BAD] = lambda: dialog._on_report_bad_station(station)
     handlers[row_actions.DOWNLOAD_ALL] = lambda: _download_all(dialog, node, host)
-    handlers[row_actions.SUBSCRIBE_PODCAST] = lambda: _subscribe(dialog, node, args)
-    handlers[row_actions.COPY_FEED] = lambda: _copy_feed(dialog, args)
+    handlers[row_actions.SUBSCRIBE_PODCAST] = lambda: _subscribe(dialog, node, kind, args)
+    handlers[row_actions.UNSUBSCRIBE_PODCAST] = lambda: _unsubscribe(dialog, node, kind, args)
+    handlers[row_actions.COPY_FEED] = lambda: _copy_feed(dialog, kind, args)
     handlers[row_actions.UNFOLLOW_CHANNEL] = lambda: _unfollow(dialog, node, args)
     return handlers
 
@@ -195,8 +206,11 @@ def show_for_event(dialog: Any, event: Any) -> None:
 # --- the actions that needed somewhere to live --------------------------------
 
 
-def _resolve_feed(dialog: Any, args: list[str]) -> str:
+def _resolve_feed(dialog: Any, kind: str, args: list[str]) -> str:
     """The show's own RSS address, cached per window after the first ask."""
+    if kind == "mypodcastshow":
+        # A subscribed show's node id is the feed address already.
+        return args[0] if args else ""
     collection = args[0] if args else ""
     if not collection:
         return ""
@@ -215,10 +229,33 @@ def _resolve_feed(dialog: Any, args: list[str]) -> str:
     return feed
 
 
-def _subscribe(dialog: Any, node: Any, args: list[str]) -> None:
+def _subscribe(dialog: Any, node: Any, kind: str, args: list[str]) -> None:
     """Follow this show, into the library Quill Cast reads."""
     dialog._announce("Subscribing...")
-    feed = _resolve_feed(dialog, args)
+    # Artwork and homepage ride along where the directory offers them, so the
+    # show arrives in Quill Cast with a tile and a site link rather than a
+    # bare title. Same lookup request the feed alone would have cost.
+    artwork, homepage = "", ""
+    if kind == "mypodcastshow":
+        feed = _resolve_feed(dialog, kind, args)
+    else:
+        from quill.core.podcasts import apple_podcasts
+
+        try:
+            details = apple_podcasts.resolve_show_details(
+                args[0] if args else "", safe_mode=dialog._safe_mode
+            )
+        except Exception:  # noqa: BLE001 - a menu action reports, never crashes
+            details = apple_podcasts.ShowDetails()
+        feed = details.feed_url or _resolve_feed(dialog, kind, args)
+        artwork, homepage = details.artwork_url, details.homepage
+        if feed:
+            # Seed the per-window cache so the reopened menu can answer
+            # "already subscribed?" offline.
+            cache = getattr(dialog, "_apple_feed_cache", None)
+            if cache is None:
+                cache = dialog._apple_feed_cache = {}
+            cache.setdefault(args[0] if args else "", feed)
     if not feed:
         dialog._announce("That show's feed could not be found, so it was not subscribed.")
         return
@@ -226,12 +263,32 @@ def _subscribe(dialog: Any, node: Any, args: list[str]) -> None:
     from quill.core.radio.podcast_follow import follow_feed
 
     title = dialog._tree.GetItemText(node).split("  (")[0]
-    result = follow_feed(app_data_dir(), feed_url=feed, title=title)
+    result = follow_feed(
+        app_data_dir(), feed_url=feed, title=title, homepage=homepage, artwork_url=artwork
+    )
     dialog._announce(result.spoken)
 
 
-def _copy_feed(dialog: Any, args: list[str]) -> None:
-    feed = _resolve_feed(dialog, args)
+def _unsubscribe(dialog: Any, node: Any, kind: str, args: list[str]) -> None:
+    """Drop this show from the shared library, from the same menu slot that
+    subscribed it."""
+    feed = _resolve_feed(dialog, kind, args)
+    if not feed:
+        dialog._announce("That show's feed could not be found, so nothing was unsubscribed.")
+        return
+    from quill.core.paths import app_data_dir
+    from quill.core.radio.podcast_follow import unfollow_feed
+
+    result = unfollow_feed(app_data_dir(), feed)
+    spoken = result.spoken
+    if result.removed and kind == "mypodcastshow":
+        # The row under Subscriptions is stale until the branch reloads.
+        spoken += " Refresh to update the list."
+    dialog._announce(spoken)
+
+
+def _copy_feed(dialog: Any, kind: str, args: list[str]) -> None:
+    feed = _resolve_feed(dialog, kind, args)
     if not feed:
         dialog._announce("That show's feed address could not be found.")
         return

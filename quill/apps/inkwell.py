@@ -530,6 +530,9 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
 
 
 def main() -> int:
+    from quill.core.data_location import apply_pending_at_launch
+
+    apply_pending_at_launch()  # queued Data Folder move, before any data read
     safe_mode = bool(os.environ.get("QUILL_SAFE_MODE"))
     start_in_tray = "--tray" in sys.argv
     from quill.core.ipc import (

@@ -127,12 +127,9 @@ RADIO_AREAS: tuple[AppArea, ...] = (
         "The Record menu: record now, record a station, scheduled recordings, "
         "and the recordings library.",
     ),
-    AppArea(
-        "weather",
-        "Weather",
-        "The Weather menu: forecasts, alerts, background alert monitoring, and "
-        "NOAA Weather Radio. (Weather is also available as its own Quill Weather app.)",
-    ),
+    # No Weather area anymore (2026-08-17): weather stands alone in the Quill
+    # Weather app, reachable from the QuillVille menu. The NOAA Weather Radio
+    # *streams* stay -- they are radio, under Browse Stations > Weather / NOAA.
 )
 
 
@@ -162,10 +159,6 @@ class RadioAppFrame(
         from quill.core.paths import app_data_dir
 
         self._app_features = load_app_features(app_data_dir(), "radio")
-        # Radio hands weather off to its own app: the Weather menu offers "Open
-        # the Quill Weather App", and the two run side by side, each in its own
-        # window and tray, reachable from the other.
-        self._weather_offers_app_launch = True
         self._init_radio()
         from quill.ui.dialog_contract import set_transition_announcement_policy
 
@@ -224,9 +217,14 @@ class RadioAppFrame(
         # Deferred (CallAfter), not inline: this touches the network, and a
         # launch is not the place to do that before the window is even up.
         wx.CallAfter(self._maybe_check_updates_on_startup)
-        # Resume Weather Guardian's alert watch if the user left it on (also
-        # deferred: it polls the NWS off-thread).
-        wx.CallAfter(self.start_weather_monitoring_if_enabled)
+        # No Weather Guardian resume here anymore: the Weather menu left Quill
+        # Radio (2026-08-17), so background alert monitoring belongs to the
+        # Quill Weather app that owns its on/off switch.
+        # Data Folder surfacing: announce a move applied at this launch, and
+        # warn when a synced custom folder looks in use on another computer.
+        from quill.ui.data_folder_dialog import surface_data_folder_startup
+
+        wx.CallAfter(surface_data_folder_startup, self)
         # Missed-recording reporting + startup reconcile/resume live in
         # RadioMixin._init_radio now (R2/11.6 + R3), so both hosts get them once.
 
@@ -519,15 +517,23 @@ class RadioAppFrame(
                 ("&Stop" if playing else "&Play", self._on_play_stop_context),
                 ("Station &Details...", self._on_favorite_details),
                 ("Rena&me...\tF2", self._on_tree_rename),
+                # The chord already worked; the menu now says so. A shortcut
+                # only a document mentions is a shortcut most listeners never
+                # hear about.
+                ("Move &Up\tAlt+Shift+Up", lambda: self._move_selected_favorite(-1)),
+                ("Move Dow&n\tAlt+Shift+Down", lambda: self._move_selected_favorite(1)),
+                # "F&older"/"Fold&er": Move to Folder and New Folder both said
+                # &o, so one of the pair silently never answered its key.
                 ("Move to F&older...", self._on_tree_move_to_folder),
                 ("&Remove...\tDelete", self._on_tree_remove),
-                ("New F&older...\tCtrl+Shift+E", self._on_new_folder),
+                ("New Fold&er...\tCtrl+Shift+E", self._on_new_folder),
             ]
             # Mark-and-Move (#1190): pick a station up once, then drop it above
             # or below any destination in one step -- no Alt+Shift+Up/Down 30
-            # times. Mirrors the Favorites Manager's Mark for Move.
+            # times. Mirrors the Favorites Manager's Mark for Move. "Mar&k",
+            # not "&Mark": Rena&me already answers M in this menu.
             marked = getattr(self, "_marked_favorite_key", None)
-            entries.append(("&Mark for Move", self._on_mark_favorite))
+            entries.append(("Mar&k for Move", self._on_mark_favorite))
             if marked is not None and (favorite is None or marked != favorite.key):
                 entries.append(("Move Marked A&bove", lambda: self._on_move_marked_favorite(True)))
                 entries.append(("Move Marked Belo&w", lambda: self._on_move_marked_favorite(False)))
@@ -1222,13 +1228,11 @@ class RadioAppFrame(
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._radio_open_recording_settings(), id=settings_id
         )
-        # Recording and Weather are user-switchable areas (View > Customize
-        # Features...): when turned off, the whole menu is not built at all.
+        # Recording is a user-switchable area (View > Customize Features...):
+        # when turned off, the whole menu is not built at all. (The Weather
+        # menu is gone entirely -- weather lives in the Quill Weather app.)
         if self._app_area_enabled("recording"):
             menu_bar.Append(record_menu, "&Record")
-
-        if self._app_area_enabled("weather"):
-            self._append_weather_menu(menu_bar)
 
         # Pre-release top-level Audio Description Project menu. The typed Ask
         # ADP assistant (future.adp_assistant) is ON by default for testing, so
@@ -1873,9 +1877,7 @@ class RadioAppFrame(
     def _show_about(self) -> None:
         self._show_message_box(
             f"{_TITLE} {_VERSION}\n"
-            "Internet Radio from Quill, as a standalone app.\n\n"
-            "Runs the same radio feature code as QUILL itself and shares its "
-            "settings, favorites, and recordings.\n"
+            "Accessible internet radio, podcasts, and audio from Quill.\n\n"
             f"https://github.com/{_REPO}\n\n"
             "Credits and thanks:\n"
             "- Broadcast polish adapted from OptiLab Core by dgl1984 "
@@ -2040,6 +2042,12 @@ _IPC_SLOT = "radio"
 
 
 def main() -> int:
+    from quill.core.data_location import apply_pending_at_launch
+
+    # A queued Data Folder move/import applies before a single data file is
+    # read (mirrors quill.__main__.main -- the family shares one profile, so
+    # whichever app launches next must be the one to apply it).
+    apply_pending_at_launch()
     from quill.stability.safe_mode import should_enable_safe_mode
 
     safe_mode = should_enable_safe_mode(sys.argv[1:], os.environ)

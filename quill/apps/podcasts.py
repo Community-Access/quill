@@ -94,6 +94,11 @@ class PodcastsAppFrame(
         )
         self.frame.Bind(wx.EVT_HOTKEY, self._on_global_hotkey)
         self._reload_global_hotkeys()
+        # Data Folder surfacing: announce a move applied at this launch, and
+        # warn when a synced custom folder looks in use on another computer.
+        from quill.ui.data_folder_dialog import surface_data_folder_startup
+
+        wx.CallAfter(surface_data_folder_startup, self)
         self._refresh_statusbar()
         self.frame.Bind(wx.EVT_CLOSE, self._on_cast_app_close)
         # Alt+F4-to-tray (opt-in preference) is handled inside
@@ -728,12 +733,26 @@ class PodcastsAppFrame(
     def _open_preferences(self) -> None:
         from quill.core.paths import app_data_dir
         from quill.core.podcasts import history as podcast_history
-        from quill.ui.app_preferences_dialog import PreferenceCheckbox, PreferencesDialog
+        from quill.ui.app_preferences_dialog import (
+            PreferenceAction,
+            PreferenceCheckbox,
+            PreferencesDialog,
+        )
+        from quill.ui.data_folder_dialog import open_data_folder_dialog
 
         history = self._podcast_history
         dialog = PreferencesDialog(
             self.frame,
             app_title=_TITLE,
+            actions=[
+                PreferenceAction(
+                    "&Data Folder...",
+                    "Where every Quill app stores settings, favorites, and "
+                    "subscriptions. Choose a folder a service like Dropbox or "
+                    "OneDrive keeps in sync to carry them between computers.",
+                    lambda: open_data_folder_dialog(self, app_title=_TITLE),
+                ),
+            ],
             checkboxes=[
                 PreferenceCheckbox(
                     "Resume Last Episode on &Launch",
@@ -965,6 +984,12 @@ class PodcastsAppFrame(
 
 
 def main() -> int:
+    from quill.core.data_location import apply_pending_at_launch
+
+    # A queued Data Folder move/import applies before a single data file is
+    # read (mirrors quill.__main__.main -- the family shares one profile, so
+    # whichever app launches next must be the one to apply it).
+    apply_pending_at_launch()
     from quill.stability.safe_mode import should_enable_safe_mode
 
     safe_mode = should_enable_safe_mode(sys.argv[1:], os.environ)

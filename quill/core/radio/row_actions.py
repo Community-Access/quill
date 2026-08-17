@@ -52,8 +52,10 @@ DOWNLOAD_ALL = "download.all"
 REPORT_BAD = "report.bad"
 DETAILS = "details"
 OPEN_FOLDER = "folder.open"
+CLOSE_FOLDER = "folder.close"
 REFRESH = "folder.refresh"
 SUBSCRIBE_PODCAST = "podcast.subscribe"
+UNSUBSCRIBE_PODCAST = "podcast.unsubscribe"
 UNFOLLOW_CHANNEL = "channel.unfollow"
 
 
@@ -83,10 +85,12 @@ class FolderState:
     subscribed: bool = False
     #: A channel the listener chose to follow (so it can be unfollowed).
     is_followed_channel: bool = False
+    #: Whether the tree row is currently expanded (Open reads as Close then).
+    expanded: bool = False
 
 
 #: Node kinds that name a podcast show rather than a shelf of them.
-PODCAST_SHOW_KINDS = frozenset({"appleshow"})
+PODCAST_SHOW_KINDS = frozenset({"appleshow", "mypodcastshow"})
 
 #: Node kinds that are a channel the listener follows.
 FOLLOWED_CHANNEL_KINDS = frozenset({"youtubechannel"})
@@ -105,6 +109,8 @@ FOLDER_CONTENTS: dict[str, str] = {
     "applechart": "Shows",
     "applegenre": "Shows",
     "appleshow": "Episodes",
+    "mypodcasts": "Shows",
+    "mypodcastshow": "Episodes",
     "archive": "Recordings",
     "archiveitem": "Files",
     "audiopub": "Books",
@@ -193,32 +199,40 @@ def lazy_leaf_actions(*, saved: bool) -> list[RowAction]:
 
 def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
     """The menu for a folder, which depends on what kind of folder it is."""
-    actions = [RowAction(OPEN_FOLDER, "&Open"), RowAction(REFRESH, "&Refresh")]
+    # An expanded row's first action is the one that still does something:
+    # "Open" on an already-open folder read as either broken or a lie.
+    actions = [
+        RowAction(CLOSE_FOLDER, "&Close") if state.expanded else RowAction(OPEN_FOLDER, "&Open"),
+        RowAction(REFRESH, "&Refresh"),
+    ]
 
     if state.is_podcast_show or is_podcast_show(kind):
         # The one this module exists for: a show found while browsing should
         # be followable, and following it belongs in the shared podcast
-        # library so Quill Cast has it too.
+        # library so Quill Cast has it too. Subscribed, the same slot turns
+        # into a real Unsubscribe -- "Already Subscribed" was a menu item
+        # whose only power was to repeat itself.
         actions.append(
-            RowAction(SUBSCRIBE_PODCAST, "Already Subscri&bed")
+            RowAction(UNSUBSCRIBE_PODCAST, "Unsu&bscribe from This Podcast")
             if state.subscribed
             else RowAction(SUBSCRIBE_PODCAST, "Su&bscribe to This Podcast")
         )
         actions.append(RowAction(COPY_FEED, "Copy &Feed Address"))
 
     if is_followed_channel(kind) or state.is_followed_channel:
-        actions.append(RowAction(UNFOLLOW_CHANNEL, "Stop Following This &Channel"))
+        # "&P", not "&C": an expanded channel's menu now leads with "&Close".
+        actions.append(RowAction(UNFOLLOW_CHANNEL, "Sto&p Following This Channel"))
 
     # "&Add", not "to &Favorites": Copy Feed Address already claims F on a
     # podcast show, and that collision was live on the one menu this module
-    # was written for.
-    noun = contents_noun(kind)
+    # was written for. Only when something is actually loaded: with nothing
+    # under the row yet, "Add All Episodes to Favorites" adds nothing, and the
+    # honest menu leaves it out (Open loads the rows, and then it appears).
     if state.loaded_stations:
+        noun = contents_noun(kind)
         actions.append(
             RowAction(FAVORITE_FOLDER, f"&Add All {state.loaded_stations} {noun} to Favorites")
         )
-    else:
-        actions.append(RowAction(FAVORITE_FOLDER, f"&Add All {noun} to Favorites"))
 
     if state.savable:
         actions.append(RowAction(DOWNLOAD_ALL, f"&Download All {state.savable} Files..."))

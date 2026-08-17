@@ -404,14 +404,12 @@ class PreferencesMixin:
         (data_location.apply_pending_legacy_import). The notice is consumed
         once, so it is spoken/shown only on the launch that applied the change.
         """
-        try:
-            from quill.core.data_location import pop_pending_migration_notice
+        # Both notices (move/import result + the two-machines guard for
+        # synced custom folders) live in the shared surfacing helper the
+        # standalone apps use, so the wording can never drift per app.
+        from quill.ui.data_folder_dialog import surface_data_folder_startup
 
-            notice = pop_pending_migration_notice()
-        except Exception:
-            return
-        if notice:
-            self._announce_result(notice)
+        surface_data_folder_startup(self, announce=self._announce_result)
 
     def _maybe_offer_legacy_data_import(self) -> bool:
         """Offer to import data stranded in a prior install's location.

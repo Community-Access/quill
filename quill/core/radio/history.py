@@ -268,6 +268,12 @@ class RadioHistory:
     #: auto-resumes without prompting; ``"never"`` silently skips. Persisted so
     #: the user's "Always resume" / "Never resume" choice sticks across launches.
     recording_resume_choice: str = "ask"
+    #: How many of a subscribed show's newest episodes the Subscriptions branch
+    #: lists per show (Browse Stations > Podcasts > Subscriptions). 0 = every
+    #: episode the feed carries. Deliberately Radio's one podcast knob: the
+    #: rich per-show retention/inbox machinery lives in Quill Cast, and Radio
+    #: stays a player.
+    subscription_episode_limit: int = 25
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""
@@ -315,6 +321,9 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.catalog_refresh_on_startup = bool(raw.get("catalog_refresh_on_startup", True))
         history.catalog_refresh_hours = max(
             0, min(24 * 14, _coerce_int(raw.get("catalog_refresh_hours"), 24))
+        )
+        history.subscription_episode_limit = max(
+            0, _coerce_int(raw.get("subscription_episode_limit"), 25)
         )
         history.youtube_consented = bool(raw.get("youtube_consented", False))
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
@@ -445,6 +454,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "catalog_enabled": history.catalog_enabled,
             "catalog_refresh_on_startup": history.catalog_refresh_on_startup,
             "catalog_refresh_hours": history.catalog_refresh_hours,
+            "subscription_episode_limit": history.subscription_episode_limit,
             "youtube_consented": history.youtube_consented,
             "check_updates_on_startup": history.check_updates_on_startup,
             "last_update_check": history.last_update_check,

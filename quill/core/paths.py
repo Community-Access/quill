@@ -106,6 +106,33 @@ def app_data_dir() -> Path:
     return Path.home() / ".quill"
 
 
+def machine_local_dir() -> Path:
+    """Where machine-local, regenerable data (caches) belongs.
+
+    The same directory as :func:`app_data_dir` -- except when the data folder
+    is a *custom* location. Custom folders exist to be synced between machines
+    (the Setup Wizard's own tip is to pick a Dropbox/OneDrive/Google Drive
+    folder), and syncing the station catalog or the directory caches is pure
+    churn: megabytes of regenerable bytes that legitimately differ per
+    machine, re-uploaded on every refresh. Those stay in this machine's
+    default profile location instead, under ``machine-cache``.
+
+    Portable mode deliberately keeps everything on the stick -- self-contained
+    is the point there -- and appdata mode is already machine-local, so both
+    resolve to :func:`app_data_dir` unchanged. The dev override
+    (``QUILL_DATA_DIR``) also resolves to :func:`app_data_dir`, so tests stay
+    isolated in one directory.
+    """
+    override = os.environ.get("QUILL_DATA_DIR")
+    if override and _DEV_BUILD:
+        return app_data_dir()
+    if load_storage_mode() == "custom" and storage_mode.custom_path() is not None:
+        appdata = os.environ.get("APPDATA")
+        base = Path(appdata) / "Quill" if appdata else Path.home() / ".quill"
+        return base / "machine-cache"
+    return app_data_dir()
+
+
 def new_install_marker_path() -> Path | None:
     """Return the path of the installer's new-install marker file, or None.
 

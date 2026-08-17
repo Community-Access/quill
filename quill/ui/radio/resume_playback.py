@@ -76,18 +76,52 @@ def remember(host: Any) -> None:
     try:
         if not host.is_seekable():
             return
+        position_ms = int(host.position_ms())
+        duration_ms = int(host.duration_ms())
         _store().remember(
             getattr(station, "stream_url", ""),
-            int(host.position_ms()),
-            duration_ms=int(host.duration_ms()),
+            position_ms,
+            duration_ms=duration_ms,
             # The station's own name, so the recording can be listed in
             # Continue Listening rather than only recognised if it is opened
             # again -- the stored key is a normalised identity and says
             # nothing a person could read.
             label=str(getattr(station, "name", "") or ""),
         )
+        _handoff_to_cast(station, position_ms, duration_ms)
     except Exception:  # noqa: BLE001 - best effort, never fatal
         return
+
+
+def _handoff_to_cast(station: Any, position_ms: int, duration_ms: int) -> None:
+    """Tell Quill Cast what Radio heard, when the row is a podcast episode.
+
+    Same finished/at-the-start arithmetic the resume store applies, so the
+    two never disagree about what "done" means. Cast merges the record at
+    its next launch (:mod:`quill.core.podcasts.radio_listens`); an episode
+    heard here stops presenting as brand new over there.
+    """
+    from quill.core.podcasts.radio_listens import PODCAST_EPISODE_SOURCES, record_listen
+
+    if str(getattr(station, "source", "")) not in PODCAST_EPISODE_SOURCES:
+        return
+    from quill.core.paths import app_data_dir
+    from quill.core.radio.resume import END_MARGIN_MS, MIN_RESUME_MS
+
+    finished = duration_ms > 0 and position_ms >= duration_ms - END_MARGIN_MS
+    if position_ms < MIN_RESUME_MS and not finished:
+        return  # at the beginning: nothing worth telling anyone
+    record_listen(
+        app_data_dir(),
+        # A feed episode's homepage *is* its feed address (see
+        # browse_libraries._feed_episode_leaves), which is exactly the key
+        # Cast finds the show by.
+        feed_url=str(getattr(station, "homepage", "") or ""),
+        audio_url=str(getattr(station, "stream_url", "") or ""),
+        title=str(getattr(station, "name", "") or ""),
+        position_ms=position_ms,
+        finished=finished,
+    )
 
 
 def forget(host: Any, station: object | None = None) -> None:

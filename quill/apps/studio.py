@@ -2680,6 +2680,12 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
 
 
 def main() -> int:
+    from quill.core.data_location import apply_pending_at_launch
+
+    # A queued Data Folder move/import applies before a single data file is
+    # read (mirrors quill.__main__.main -- the family shares one profile, so
+    # whichever app launches next must be the one to apply it).
+    apply_pending_at_launch()
     from quill.stability.safe_mode import should_enable_safe_mode
 
     safe_mode = should_enable_safe_mode(sys.argv[1:], os.environ)

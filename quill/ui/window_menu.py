@@ -30,6 +30,12 @@ class WindowManager:
         self._wx = wx
         self._registry = WindowRegistry()
         self._frames: dict[str, Any] = {}
+        # The actual "&Window" wx.Menu per frame, so EVT_MENU_OPEN can identify
+        # it by object identity. Matching by title is wrong: popup context menus
+        # report an empty title, so a title check ("Window" or "") rebuilt THEM
+        # too -- Shift+F10 on the favorites tree showed the numbered window list
+        # instead of the item's actions.
+        self._window_menus: dict[str, Any] = {}
         # Stable command ids for the accelerators (created once, reused on every
         # frame's table + menu). Ctrl+Tab / Ctrl+Shift+Tab + Ctrl+1..9.
         self._next_id = wx.NewIdRef()
@@ -55,6 +61,7 @@ class WindowManager:
         """Drop *frame* from the shared window list (on close)."""
         key = self.key_for(frame)
         self._frames.pop(key, None)
+        self._window_menus.pop(key, None)
         self._registry.unregister(key)
 
     def __len__(self) -> int:
@@ -104,6 +111,7 @@ class WindowManager:
         wx = self._wx
         window_menu = wx.Menu()
         menu_bar.Append(window_menu, "&Window")
+        self._window_menus[self.key_for(frame)] = window_menu
         self._bind_accelerators(frame)
         # Rebuild the Window menu each time it opens (windows come and go).
         frame.Bind(
@@ -131,11 +139,13 @@ class WindowManager:
             )
 
     def _on_menu_open(self, event: Any, frame: Any) -> None:
+        # Identity, not title: EVT_MENU_OPEN also fires for popup context menus
+        # (whose GetTitle() is empty), and rebuilding one of those replaces the
+        # item's actions with the window list the instant it opens.
         menu = event.GetMenu() if hasattr(event, "GetMenu") else None
-        if menu is None or menu.GetTitle().replace("&", "") not in ("Window", ""):
+        if menu is None or menu is not self._window_menus.get(self.key_for(frame)):
             event.Skip()
             return
-        # Only rebuild our Window menu (identified by its numbered entries).
         self._rebuild_window_menu(menu, frame)
         event.Skip()
 
