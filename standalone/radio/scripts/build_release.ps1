@@ -212,18 +212,46 @@ if (Test-Path $optilabExe) {
     Write-Host "No OptiLab adapter in this build; exact OptiLab processing will be unavailable."
 }
 
+# -- Companion bundle (the runtime-less stick) --------------------------------
+# Same native launcher and docs, no embedded Python: it runs off the shared
+# QuillVille Runtime the launcher resolves at %LOCALAPPDATA%\QuillVille\Runtime,
+# offering to install it on first launch. ~0.8 MB against the portable's 210.
+#
+# build_portable.py has had --no-runtime since the distribution overhaul, but
+# nothing ever called it from here, so Quill-Radio-Companion-<ver>.zip was made
+# by hand -- and every release since shipped whichever copy happened to be left
+# in dist\ from the last time somebody remembered. The 3.0.0 zip was four hours
+# stale against its own payload when this was wired in. Same reasoning as the
+# site-docs sync above: mechanical, or it rots.
+$companionDir = Join-Path $repoRoot "dist\QuillRadio-Companion"
+& $Python (Join-Path $QuillRepo "standalone\studio\scripts\build_portable.py") `
+    --product radio `
+    --no-runtime `
+    --out $companionDir `
+    --source-root $QuillRepo `
+    --version $version
+if ($LASTEXITCODE -ne 0) { throw "Companion bundle build failed." }
+if (-not (Test-Path (Join-Path $companionDir "QuillRadio.exe"))) {
+    throw "Companion build did not produce the native QuillRadio.exe launcher."
+}
+
 # -- code signing (payload) ---------------------------------------------------
-# Sign every exe/dll in the shared runtime and the portable app BEFORE they are
+# Sign every exe/dll in the shared runtime and both app bundles BEFORE they are
 # zipped or embedded in the installer, so the signed binaries are what ships.
 # Opt-in via -Sign / QUILL_SIGN; a no-op otherwise.
 $signer = Join-Path $QuillRepo "scripts\code_signing.py"
-& $Python $signer sign-build $sharedRuntimeDist $appDir --label "radio payload"
+& $Python $signer sign-build $sharedRuntimeDist $appDir $companionDir --label "radio payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 
 $zipPath = Join-Path $repoRoot "dist\Quill-Radio-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Write-Host "Compressing portable bundle -> $zipPath ..."
 Compress-Archive -Path $appDir -DestinationPath $zipPath
+
+$companionZip = Join-Path $repoRoot "dist\Quill-Radio-Companion-$version.zip"
+if (Test-Path $companionZip) { Remove-Item $companionZip -Force }
+Write-Host "Compressing companion bundle -> $companionZip ..."
+Compress-Archive -Path $companionDir -DestinationPath $companionZip
 
 # -- installer (Inno signs Setup.exe + the uninstaller when signing is on) ----
 # When QUILL_SIGN=1, pass /DSign plus the /Squilltrusted sign-command mapping so
