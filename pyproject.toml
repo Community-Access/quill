@@ -309,7 +309,7 @@ ai-openai = ["openai-agents>=0.18.3"]
 # Build-time only: compile the optional Table Studio native UIA provider
 # (quill/native/table_uia -> _quill_table_uia.pyd). Also needs MSVC + the
 # Windows 10 SDK + CMake. Not required at runtime (MSAA fallback ships).
-native-build = ["pybind11>=3.0.4"]
+native-build = ["pybind11>=3.1.0"]
 # The dependency set the shared QuillVille Runtime ships
 # (standalone/runtime/build_runtime.ps1 -> quillville-runtime.spec), which every
 # companion app installs once and launches through.
