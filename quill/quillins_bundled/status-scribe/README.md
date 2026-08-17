@@ -24,7 +24,7 @@ Configure from **Preferences** (Ctrl+Comma) → **Status Scribe**:
 
 ### Optional voice announcement
 
-Optionally speak the count aloud after every save, at a configurable screen reader priority (quiet / normal / urgent).
+Off by default: the status bar cell updates silently. Turn on **Speak count after save** to hear the count after each Ctrl+S. QUILL already announces "Saved &lt;name&gt;" on every save, so this is additional speech, not a replacement.
 
 ### Lifecycle logging
 

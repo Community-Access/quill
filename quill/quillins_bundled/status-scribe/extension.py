@@ -49,9 +49,19 @@ def _get_count_cell_handler(api) -> None:
 
 
 def on_after_save(api, event: dict) -> None:
-    global _last_count
+    """Recount after a save. Speaks only when the user asked it to.
+
+    This deliberately does **not** call ``api.set_status``. The cell is already
+    fed by ``get_count_cell`` whenever the host renders the status bar, so the
+    push was redundant -- and on the editor host it also reached the spoken
+    channel, so every Ctrl+S said "Words: 386" no matter what
+    ``announce_on_save`` was set to. Paired with Journal Stamp (which announces
+    its own count after every save) that made QUILL say the same number twice,
+    in two different phrasings, on a single save. Same trap ``on_timer_refresh``
+    below already documents; ``announce_on_save`` is the one and only way this
+    Quillin speaks.
+    """
     _refresh_count(api)
-    api.set_status(_count_text(api))
     if api.get_setting("announce_on_save", False):
         api.announce(_count_text(api))
 

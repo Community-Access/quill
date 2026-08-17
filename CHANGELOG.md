@@ -7,6 +7,46 @@ by what people reported: a full disk that could lose a document, an editor that
 was doing too much work between keystrokes, and three smaller things that were
 already fixed in code nobody could run yet.
 
+### Save said the word count twice, in two different ways (2026-08-17)
+
+Reported from the field: with NVDA running, every Ctrl+S announced the same
+number twice in two phrasings — "386 words", then "Words: 386". Neither
+utterance was wrong on its own. They came from two *different* bundled Quillins
+that both subscribe to `document.after_save` and both ship enabled. Nobody
+designed the combination; it fell out of two defaults meeting, and because each
+handler runs in its own thread the two could even arrive in either order.
+
+- **Status Scribe was speaking with its voice switched off.** It pushed its
+  count into the status bar after every save via `api.set_status` — and on the
+  editor host that call landed on `MainFrame._set_status`, which *announces*.
+  So the count was spoken regardless of the Quillin's own "speak count after
+  save" preference, which is off by default. The push was redundant besides:
+  the cell is already fed by the `get_count_cell` handler whenever the host
+  renders the bar. This is the same trap the Quillin's five-minute timer had
+  been fixed for months earlier — the save path never got the same treatment.
+- **`api.set_status` is now display-only, as its documentation always claimed.**
+  It routes to `_set_status_quiet` (status bar, coalesced repaint, never
+  spoken). Quillins finally have a way to update a cell *silently*; the absence
+  of one is what produced the bug, because the only alternative was a method
+  that talks. `api.announce` remains the single way a Quillin speaks.
+- **Journal Stamp is quiet until you ask for a count.** Its `wordcount_mode`
+  default moves from "after every save" to "only when a daily goal is set", so
+  a plain Ctrl+S says nothing; set a goal and the running count (and the
+  remaining-words nudge) comes back. It also stopped prefixing "Saved.", since
+  the host announced "Saved &lt;name&gt;" a moment earlier — one save should
+  not open with the same word twice.
+- **Both host services now marshal onto the UI thread.** Quillin handlers are
+  dispatched into daemon threads, and both `announce` and the status update
+  repaint the status bar — wx work off the UI thread, a latent crash entirely
+  independent of the double-speak.
+- **A gate that walks every bundled Quillin subscribing to
+  `document.after_save`**, resolving each one's settings from its own manifest
+  defaults, and asserts a stock save speaks no count at all. A fourth Quillin
+  that starts narrating on save fails in CI rather than in somebody's ears.
+- Status Scribe's "announcement priority" preference (quiet / normal / urgent)
+  is **removed**: nothing ever read it, and `api.announce` takes no priority
+  argument. A setting that does nothing is worse than a missing one.
+
 ### The platform day: keys that fight stop fighting, settings apply now, and the gates watch the gates (2026-08-17)
 
 A same-day execution of the ranked platform review at `polish.md` (root; its

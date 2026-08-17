@@ -45,7 +45,11 @@ def on_document_created(api, event: dict) -> None:
 
 
 def on_after_save(api, event: dict) -> None:
-    mode = api.get_setting("wordcount_mode", "always")
+    # Default is "goal", not "always": with Status Scribe also bundled and
+    # on, an always-on count meant every save spoke the same number twice in
+    # two phrasings ("386 words" then "Words: 386"). Writers who want the
+    # running count set a daily goal, which opts back in.
+    mode = api.get_setting("wordcount_mode", "goal")
     if mode == "off":
         return
 
@@ -60,14 +64,17 @@ def on_after_save(api, event: dict) -> None:
     if mode == "goal" and goal <= 0:
         return
 
+    # No "Saved." prefix: the host already speaks "Saved <name>" from
+    # MainFrame.save_file before this event is dispatched, so repeating it
+    # made every save a two-sentence announcement that led with the same word.
     if goal > 0:
         remaining = max(0, goal - words)
         if remaining == 0:
-            api.announce(f"Saved. {words} words — goal reached!")
+            api.announce(f"{words} words — goal reached!")
         else:
-            api.announce(f"Saved. {words} words. {remaining} to go.")
+            api.announce(f"{words} words, {remaining} to go.")
     else:
-        api.announce(f"Saved. {words} words.")
+        api.announce(f"{words} words.")
 
 
 def on_session_restore(api, event: dict) -> None:

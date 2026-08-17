@@ -1139,7 +1139,7 @@ host. Methods raise `CapabilityError` if the required capability was not granted
 | `api.get_selection_range()` | `editor.read` | `dict` | Selection bounds as `{"start": int, "end": int}` character offsets; `start == end` when no selection |
 | `api.set_cursor(offset)` | `editor.write` | `None` | Move the cursor to a character offset |
 | `api.replace_range(start, end, text)` | `editor.write` | `None` | Replace the text between `start` and `end` offsets with `text` (undoable) |
-| `api.set_status(message)` | `ui.status` | `None` | Set the editor status bar text; no consent gate |
+| `api.set_status(message)` | `ui.status` | `None` | Set the editor status bar text; **display only, never spoken** — use `api.announce` to speak. No consent gate |
 | `api.show_choices(title, items)` | `ui.choices` | `str \| None` | Show a native single-choice dialog; returns the selected string or `None` if cancelled |
 | `api.get_storage(key)` | `storage` | `str \| None` | Get a persisted value for `key`; returns `None` if not set |
 | `api.set_storage(key, value)` | `storage` | `None` | Store `value` under `key`; both must be strings |
@@ -2481,7 +2481,7 @@ the trusted superset of `QuillExtensionApi`, filled in per wave as features move
 | Registration | `add_command`, `add_menu`, `add_context`, `add_hotkey` | Same grammar as `Contributions`; conflicts routed through `build_registry` |
 | Editor read | `get_text`, `get_selection`, `get_cursor`, `get_lines` | |
 | Editor write | `set_text`, `insert_text`, `replace_selection`, `undo_group(label)` | All writes go through core command + history (undoable) |
-| Announce | `announce`, `set_status` | The one announcement engine; never bypassed |
+| Announce | `announce` | The one announcement engine; never bypassed. `set_status` is display-only and does **not** speak — a status cell refresh must never hijack the screen reader |
 | Services | `settings`, `document`, `dialogs.show_web_form`, `workers`, `platform` | Rich, synchronous, in-process — the trusted breadth |
 
 Two design rules keep this honest:

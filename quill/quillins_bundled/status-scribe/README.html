@@ -204,8 +204,10 @@ spaces</li>
 <code>.</code>, <code>!</code>, <code>?</code> punctuation</li>
 </ul>
 <h3 id="optional-voice-announcement">Optional voice announcement</h3>
-<p>Optionally speak the count aloud after every save, at a configurable
-screen reader priority (quiet / normal / urgent).</p>
+<p>Off by default: the status bar cell updates silently. Turn on
+<strong>Speak count after save</strong> to hear the count after each
+Ctrl+S. QUILL already announces “Saved &lt;name&gt;” on every save, so
+this is additional speech, not a replacement.</p>
 <h3 id="lifecycle-logging">Lifecycle logging</h3>
 <p>Status Scribe uses <code>api.log()</code> to write developer messages
 to the QUILL Developer Console. Open it via <strong>Tools &gt; Developer

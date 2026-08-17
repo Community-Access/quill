@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>quillins</title>
+  <title>QUILL Quillins and scripting documentation</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,8 +238,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-quillins-and-scripting-documentation">QUILL Quillins and
 scripting documentation</h1>
 <p><em>Consolidated on 2026-06-13, last refreshed 2026-07-04 to point at
@@ -250,7 +270,8 @@ scripting contract section also governs the QUILL Developer Console
 inside the scripting-contract section below.</em></p>
 <hr />
 <!-- Source: docs/quillins.md -->
-<h1 id="quillin-tutorial-build-your-first-quillin">Quillin Tutorial —
+
+<h1 id="quillin-tutorial--build-your-first-quillin">Quillin Tutorial —
 build your first Quillin</h1>
 <p>This is a hands-on, build-it-from-scratch tutorial for Quillin
 contributors. By the end you will have authored, linted, tested, and
@@ -275,7 +296,7 @@ itself is <code>wx</code>-free, so <code>pip install -e .</code> is
 enough to lint.</p>
 </blockquote>
 <hr />
-<h2 id="what-youre-building">1. What you’re building</h2>
+<h2 id="1-what-youre-building">1. What you’re building</h2>
 <p>A Quillin called <strong>Word Count Tools</strong>
 (<code>com.example.wordcount</code>). It will:</p>
 <ol type="1">
@@ -288,7 +309,7 @@ in the selection and <strong>announces</strong> the result.</li>
 <strong>declare the minimum</strong> and <strong>announce every
 outcome</strong>.</p>
 <hr />
-<h2 id="anatomy-of-a-quillin">2. Anatomy of a Quillin</h2>
+<h2 id="2-anatomy-of-a-quillin">2. Anatomy of a Quillin</h2>
 <p>A Quillin is one directory:</p>
 <pre><code>word-count-tools/
   manifest.json     # the contract — required
@@ -314,8 +335,8 @@ bundled Quillins.</li>
 <code>MAJOR.MINOR.PATCH</code> and you bump it on every change.</li>
 </ul>
 <hr />
-<h2 id="step-1-a-layer-1-snippet-no-capabilities">3. Step 1 — a Layer 1
-snippet (no capabilities)</h2>
+<h2 id="3-step-1--a-layer-1-snippet-no-capabilities">3. Step 1 — a Layer
+1 snippet (no capabilities)</h2>
 <p>Create the directory and a manifest that contributes one snippet
 command. Snippets are declarative text with placeholders — <strong>no
 code runs</strong>, so a snippet-only Quillin needs <strong>no
@@ -354,10 +375,6 @@ so they can never collide with a built-in QUILL command.</li>
 </ul>
 <h3 id="snippet-placeholders">Snippet placeholders</h3>
 <table>
-<colgroup>
-<col style="width: 52%" />
-<col style="width: 47%" />
-</colgroup>
 <thead>
 <tr>
 <th>Placeholder</th>
@@ -384,12 +401,12 @@ capability)</td>
 </tr>
 <tr>
 <td><code>${filename}</code></td>
-<td>the current document’s file name (e.g. <code>notes.txt</code>)</td>
+<td>the current document’s file name (e.g. <code>notes.txt</code>)</td>
 </tr>
 <tr>
 <td><code>${title}</code></td>
-<td>the document’s file name stem without extension
-(e.g. <code>notes</code>)</td>
+<td>the document’s file name stem without extension (e.g.
+<code>notes</code>)</td>
 </tr>
 <tr>
 <td><code>${line_number}</code></td>
@@ -433,13 +450,13 @@ Layer 1.</strong></p>
 <p>You now have a complete, useful Quillin with zero code and zero
 capabilities. Most Quillins never need more than this.</p>
 <hr />
-<h2 id="step-2-a-layer-2-python-handler">4. Step 2 — a Layer 2 Python
+<h2 id="4-step-2--a-layer-2-python-handler">4. Step 2 — a Layer 2 Python
 handler</h2>
 <p>Now add real logic: count the words in the selection and announce the
 count. Handlers run <strong>out-of-process</strong>, behind QUILL’s
 capability + consent gate — see the accuracy note in §4b before you rely
 on that gate for anything security-sensitive.</p>
-<h3 id="a.-declare-what-you-need">4a. Declare what you need</h3>
+<h3 id="4a-declare-what-you-need">4a. Declare what you need</h3>
 <p>A handler command requires two things in the manifest: a top-level
 <code>main</code> module and the <code>ui.command</code> capability. To
 read the selection and announce a result you also need
@@ -469,7 +486,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb8-1"><a href="
 <code>editor.hasSelection</code>, <code>editor.hasText</code>, or
 <code>editor.empty</code>. Hotkey conflicts are
 <strong>rejected</strong>, never silently overridden.</p>
-<h3 id="b.-write-the-handler">4b. Write the handler</h3>
+<h3 id="4b-write-the-handler">4b. Write the handler</h3>
 <p><code>extension.py</code>:</p>
 <div class="sourceCode" id="cb9"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">&quot;&quot;&quot;Word Count Tools — a Layer 2 Quillin handler.&quot;&quot;&quot;</span></span>
@@ -511,15 +528,10 @@ sandbox later.</li>
 <em>and</em> the empty-selection case. A silent success is a bug under
 the Author Covenant.</li>
 </ul>
-<h3 id="c.-the-capability-surface-layer-2">4c. The capability surface
+<h3 id="4c-the-capability-surface-layer-2">4c. The capability surface
 (Layer 2)</h3>
 <p>The API you can call maps directly onto declared capabilities:</p>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 59%" />
-<col style="width: 15%" />
-</colgroup>
 <thead>
 <tr>
 <th>You call</th>
@@ -573,7 +585,7 @@ the Author Covenant.</li>
 <strong>every</strong> use. Design for a graceful, announced refusal —
 never assume access is granted.</p>
 <hr />
-<h2 id="test-your-quillin">5. Test your Quillin</h2>
+<h2 id="5-test-your-quillin">5. Test your Quillin</h2>
 <p>Mirror the bundled Quillin’s test (<a
 href="../tests/unit/core/test_quillins_bundled_markdown.py"><code>tests/unit/core/test_quillins_bundled_markdown.py</code></a>).
 A good Layer 2 test validates the manifest, builds a conflict-free
@@ -621,7 +633,8 @@ href="../tests/integration/test_quillins_host_integration.py"><code>tests/integr
 which exercises the actual worker process, capability gate, and consent
 flow.</p>
 <hr />
-<h2 id="lint-then-check-everything">6. Lint, then check everything</h2>
+<h2 id="6-lint-then-check-everything">6. Lint, then check
+everything</h2>
 <div class="sourceCode" id="cb11"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">quillin_lint</span> path\to\word-count-tools <span class="op">--</span>strict</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>pytest <span class="op">-</span>q path\to\your\test_word_count<span class="op">.</span><span class="fu">py</span></span></code></pre></div>
@@ -639,7 +652,7 @@ the loader enforces (this is what flags “a handler command requires
 consent-gated capability is surfaced for review.</li>
 </ol>
 <hr />
-<h2 id="submit">7. Submit</h2>
+<h2 id="7-submit">7. Submit</h2>
 <ol type="1">
 <li>Open the <strong>Quillin submission</strong> issue — its form
 scaffolds the <code>manifest.json</code> and records your Author
@@ -659,7 +672,7 @@ description).</p>
 <a
 href="quillin-submission.md"><code>quillin-submission.md</code></a>.</p>
 <hr />
-<h2 id="recap-the-rules-that-matter">8. Recap — the rules that
+<h2 id="8-recap--the-rules-that-matter">8. Recap — the rules that
 matter</h2>
 <ul>
 <li><strong>Start at Layer 1.</strong> Snippets cover most needs with
@@ -681,8 +694,9 @@ clean linter run is the bar.</li>
 <em>Quality, Usable, Inclusive, Lightweight, Literate.</em></p>
 <hr />
 <!-- Source: docs/quillins.md -->
-<h1 id="quill-scripting-quillins-design-implementation">QUILL Scripting
-&amp; Quillins — Design &amp; Implementation</h1>
+
+<h1 id="quill-scripting--quillins--design--implementation">QUILL
+Scripting &amp; Quillins — Design &amp; Implementation</h1>
 <p>Status: <strong>Implemented (framework foundation)</strong> · Branch:
 <code>edsharp</code></p>
 <p>This document is both the design rationale and the authoritative
@@ -696,7 +710,7 @@ the SEC-8 <code>core.third_party_plugins</code> feature flag
 (<code>locked_off</code>), so a shipping 1.0 build discovers and runs no
 third-party code while the framework, the Quillins Manager, and the full
 test bar are in place.</p>
-<h2 id="a.-implementation-status-module-map">0a. Implementation status
+<h2 id="0a-implementation-status-module-map">0a. Implementation status
 (module map)</h2>
 <p>Every design element below is backed by a shipping, wx-free
 <code>quill/core</code> module (plus one <code>quill/ui</code> mixin)
@@ -705,11 +719,6 @@ and a test. The neutral technical terms (<code>extension</code>,
 <code>QuillExtensionApi</code>) are the stable wire/code identifiers;
 the experience speaks of <strong>Quillins</strong>.</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Design element (this doc)</th>
@@ -874,7 +883,7 @@ unchanged in code, schemas, and APIs, so wire formats stay stable while
 the experience speaks of Quillins. Where this document describes schema
 or code, it uses the technical term; where it describes what a person
 sees or hears, it says Quillin.</p>
-<h2 id="provenance-and-inspiration">0. Provenance and inspiration</h2>
+<h2 id="0-provenance-and-inspiration">0. Provenance and inspiration</h2>
 <p>This capability is QUILL’s answer to the scripting/add-in model
 pioneered by earlier accessible, screen-reader-first Windows editors
 that exposed almost their entire object model to add-in code.</p>
@@ -885,7 +894,7 @@ language matched the platform object model and its class library. The
 faithful translation of that design for QUILL is to expose
 <strong>QUILL’s own object model</strong>, which is
 <strong>Python</strong> — see the language decision below.</p>
-<h2 id="goals-and-non-goals">1. Goals and non-goals</h2>
+<h2 id="1-goals-and-non-goals">1. Goals and non-goals</h2>
 <h3 id="goals">Goals</h3>
 <ul>
 <li>Let power users add <strong>menu items</strong>,
@@ -920,7 +929,8 @@ integration; Node.js is supported as an alternative handler runtime (see
 §9), but the rich bidirectional <code>QuillExtensionApi</code> (§5,
 §14.4) remains Python-only.</li>
 </ul>
-<h2 id="language-decision-resolved">2. Language decision (resolved)</h2>
+<h2 id="2-language-decision-resolved">2. Language decision
+(resolved)</h2>
 <p><strong>Two-layer model, with Python as the scripting language, not
 JavaScript.</strong></p>
 <p>Rationale: QUILL’s platform object model is Python, so scripting it
@@ -934,8 +944,8 @@ not outweigh that cost.</p>
 <p>A comparison of the options considered (Python, embedded JavaScript
 via QuickJS/V8, Lua via <code>lupa</code>, WASM via Extism,
 declarative-only) is retained in Appendix A.</p>
-<h2 id="architecture-three-layers">3. Architecture: three layers</h2>
-<h3 id="layer-1-declarative-manifest-safe-covers-the-common-70">Layer 1
+<h2 id="3-architecture-three-layers">3. Architecture: three layers</h2>
+<h3 id="layer-1--declarative-manifest-safe-covers-the-common-70">Layer 1
 — Declarative manifest (safe, covers the common ~70%)</h3>
 <p>A static, schema-validated manifest (JSON, validated like every other
 QUILL store under <code>quill/core/schemas/</code>) that
@@ -953,7 +963,7 @@ nothing except invoke commands QUILL already trusts and insert literal
 text. Most real “add a menu item / bind a key / add a right-click
 action” requests are satisfied here with effectively zero risk.</p>
 <h3
-id="layer-2-python-extension-api-real-logic-isolated-bidirectional">Layer
+id="layer-2--python-extension-api-real-logic-isolated-bidirectional">Layer
 2 — Python extension API (real logic, isolated, bidirectional)</h3>
 <p>For genuine custom logic, an extension ships a Python entry point
 that QUILL runs <strong>out-of-process</strong> (mirroring the existing
@@ -964,7 +974,7 @@ talks to a narrow, versioned API object and all UI effects are
 marshalled back onto the UI thread via <code>wx.CallAfter</code>.</p>
 <p>Set <code>"runtime": "python"</code> (the default when the field is
 absent) to use this path.</p>
-<h3 id="layer-3-node.js-extension-runtime-context-in-actions-out">Layer
+<h3 id="layer-3--nodejs-extension-runtime-context-in-actions-out">Layer
 3 — Node.js extension runtime (“context in, actions out”)</h3>
 <p>For teams more comfortable with TypeScript/JavaScript, a Quillin may
 set <code>"runtime": "node"</code> in its manifest. The
@@ -996,7 +1006,7 @@ extension authors.</p>
         |  marshals results via wx.CallAfter                     | user extension code
         v                                                        v
    core command dispatch                                  QuillExtensionApi (v1)</code></pre>
-<h2 id="manifest-schema-layer-1-sketch">4. Manifest schema (Layer 1
+<h2 id="4-manifest-schema-layer-1-sketch">4. Manifest schema (Layer 1
 sketch)</h2>
 <p>Stored per-extension under
 <code>%APPDATA%\Quill\extensions\&lt;id&gt;\manifest.json</code>,
@@ -1042,8 +1052,8 @@ mutations until menus are closed</strong>.</li>
 <li>A <code>command.run.snippet</code> with no <code>main</code> is pure
 Layer 1 (no code execution).</li>
 </ul>
-<h2 id="the-python-extension-api-layer-2-sketch">5. The Python extension
-API (Layer 2 sketch)</h2>
+<h2 id="5-the-python-extension-api-layer-2-sketch">5. The Python
+extension API (Layer 2 sketch)</h2>
 <p>A single, versioned, capability-checked facade — no direct widget
 access:</p>
 <div class="sourceCode" id="cb15"><pre
@@ -1074,7 +1084,7 @@ and <strong>no</strong> direct buffer handle.</li>
 changes ship a new version while old extensions keep working against the
 old facade.</li>
 </ul>
-<h2 id="security-consent-model">6. Security &amp; consent model</h2>
+<h2 id="6-security--consent-model">6. Security &amp; consent model</h2>
 <ul>
 <li><strong>Default deny.</strong> No capability ⇒ no filesystem, no
 network, no subprocess. Pure-snippet extensions need no capabilities at
@@ -1094,7 +1104,7 @@ content is ever logged</strong>.</li>
 <li><strong>Signing/trust (later).</strong> A future iteration may add
 signature/trust prompts and a per-extension audit log.</li>
 </ul>
-<h2 id="accessibility-of-the-authoring-experience">7. Accessibility of
+<h2 id="7-accessibility-of-the-authoring-experience">7. Accessibility of
 the authoring experience</h2>
 <ul>
 <li>Manifests are plain JSON and extensions are plain <code>.py</code> —
@@ -1109,7 +1119,7 @@ rules, and is registered in <code>dialogs.md</code>.</li>
 reviewable text (a read-only multiline control), never as transient-only
 message boxes.</li>
 </ul>
-<h2 id="packaging">8. Packaging</h2>
+<h2 id="8-packaging">8. Packaging</h2>
 <ul>
 <li>Bundled with the existing Windows distribution builder / Inno Setup
 component model. Layer 1 + Layer 2 (Python host) need <strong>no new
@@ -1119,14 +1129,14 @@ QUILL.</li>
 <em>only</em> item that adds a native dependency, which is why it is
 deferred and optional.</li>
 </ul>
-<h2 id="node.js-runtime-support-shipped-issue-158">9. Node.js runtime
+<h2 id="9-nodejs-runtime-support-shipped-issue-158">9. Node.js runtime
 support (shipped, issue #158)</h2>
 <p><strong>Status: implemented and tested.</strong> The
 <code>"runtime": "node"</code> field is in the manifest schema, the
 validator, and the loader.
 <code>quill/plugins/node_quillin_runner.py</code> drives node handlers
 through <code>external_engine.run_request</code>.</p>
-<h3 id="how-node.js-quillins-work">9.1 How Node.js Quillins work</h3>
+<h3 id="91-how-nodejs-quillins-work">9.1 How Node.js Quillins work</h3>
 <p>Set <code>"runtime": "node"</code> and point <code>"main"</code> at a
 <code>.js</code> file. QUILL sends a single JSONL request with the
 method (handler function name), the declared capabilities list, and a
@@ -1144,7 +1154,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb16-1"><a href=
 <p>Or on error:</p>
 <div class="sourceCode" id="cb17"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span><span class="dt">&quot;error&quot;</span><span class="fu">:</span> <span class="st">&quot;Something went wrong&quot;</span><span class="fu">}</span></span></code></pre></div>
-<h3 id="the-quillapi-package">9.2 The <code>@quill/api</code>
+<h3 id="92-the-quillapi-package">9.2 The <code>@quill/api</code>
 package</h3>
 <p>Published Quillins use the <code>@quill/api</code> npm package
 (<code>packages/@quill/api/</code>):</p>
@@ -1161,7 +1171,7 @@ class="sourceCode typescript"><code class="sourceCode typescript"><span id="cb18
 and <code>runtime.js</code> for the stdio event loop. Bundled Quillins
 may inline the shim for zero npm dependency (see
 <code>quill/quillins_bundled/word-count-node/extension.js</code>).</p>
-<h3 id="consent-and-security">9.3 Consent and security</h3>
+<h3 id="93-consent-and-security">9.3 Consent and security</h3>
 <p>Node Quillins go through the same <code>external_engine.py</code>
 consent gate as AI engines: the master external-engines switch must be
 on, and <code>node</code> must be on PATH (or a full path supplied). The
@@ -1172,8 +1182,8 @@ arbitrary programs.</p>
 <code>run_node_command</code> returns an <code>EngineResult</code> with
 <code>unavailable=True</code> and a plain-language error; QUILL
 announces it rather than crashing.</p>
-<h3 id="limitations-vs.-python-layer-2">9.4 Limitations vs. Python Layer
-2</h3>
+<h3 id="94-limitations-vs-python-layer-2">9.4 Limitations vs. Python
+Layer 2</h3>
 <ul>
 <li>No mid-execution API calls. The handler cannot call
 <code>get_text()</code> during execution; all read state is passed in
@@ -1187,13 +1197,13 @@ exit or the <code>external_engine</code> timeout fires.</li>
 </ul>
 <p>For anything interactive or that needs mid-execution reads, use
 <code>"runtime": "python"</code>.</p>
-<h3 id="quickjs-not-shipped-deferred">9.5 QuickJS (not shipped,
+<h3 id="95-quickjs-not-shipped-deferred">9.5 QuickJS (not shipped,
 deferred)</h3>
 <p>The earlier plan to embed QuickJS as a <code>.js</code> snippet
 evaluator was superseded by the Node subprocess model, which covers the
 TypeScript developer audience more directly without adding a native
 binary dependency.</p>
-<h2 id="phasing-milestones">10. Phasing / milestones</h2>
+<h2 id="10-phasing--milestones">10. Phasing / milestones</h2>
 <p>Status note: <strong>M1–M3 are implemented and tested</strong> (see
 §0a). M4 remains optional future work. Third-party execution stays gated
 off for 1.0 (SEC-8).</p>
@@ -1223,7 +1233,7 @@ runtime.</li>
 introspection and automation. Not yet implemented; see
 <code>docs/userguide.md</code> for the PRD.</li>
 </ol>
-<h2 id="testing-strategy">11. Testing strategy</h2>
+<h2 id="11-testing-strategy">11. Testing strategy</h2>
 <p>Status note: <strong>this strategy is implemented</strong> — the test
 files are listed in the §0a map. The bar below is what those tests
 enforce.</p>
@@ -1258,7 +1268,7 @@ integration). Two real-node integration tests are
 <code>skipif(shutil.which("node") is None)</code> so they run in
 environments with Node but never block CI that doesn’t have it.</li>
 </ul>
-<h2 id="open-questions-for-review">12. Open questions for review</h2>
+<h2 id="12-open-questions-for-review">12. Open questions for review</h2>
 <ol type="1">
 <li>Distribution: local folder install only for 2.0, or a curated
 gallery later?</li>
@@ -1266,7 +1276,7 @@ gallery later?</li>
 to QUILL feature profiles) in the first cut, or global enable/disable
 only?</li>
 <li>Hotkey precedence when an extension binding conflicts with a user
-rebinding — reject (proposed) vs. prompt-to-override?</li>
+rebinding — reject (proposed) vs. prompt-to-override?</li>
 <li>Should Layer 1 snippets support the existing snippet token system,
 unifying “snippets” and “extension snippets” into one engine?</li>
 <li>Minimum capability set for M2 — is <code>editor.read</code> +
@@ -1274,7 +1284,7 @@ unifying “snippets” and “extension snippets” into one engine?</li>
 deferring <code>fs</code>/<code>net</code> to M3?</li>
 </ol>
 <hr />
-<h2 id="manifest-json-schema-normative">13. Manifest JSON Schema
+<h2 id="13-manifest-json-schema-normative">13. Manifest JSON Schema
 (normative)</h2>
 <p>This is the authoritative, machine-validatable contract for
 <code>quill.extension/1</code> manifests. It is the schema that will
@@ -1503,19 +1513,13 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb19-1"><a href=
 <span id="cb19-219"><a href="#cb19-219" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
 <span id="cb19-220"><a href="#cb19-220" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
 <span id="cb19-221"><a href="#cb19-221" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<h2 id="extension-authoring-reference-humans-and-ai">14. Extension
+<h2 id="14-extension-authoring-reference-humans-and-ai">14. Extension
 authoring reference (humans and AI)</h2>
 <p>This section is the complete, self-contained reference an author
 needs. It is written so an LLM can produce a valid, working extension
 from this document alone, with no access to QUILL source.</p>
-<h3 id="capability-catalogue">14.1 Capability catalogue</h3>
+<h3 id="141-capability-catalogue">14.1 Capability catalogue</h3>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Capability</th>
@@ -1593,7 +1597,7 @@ session)</td>
 </table>
 <p>A pure snippet-only extension declares <strong>no</strong>
 capabilities.</p>
-<h3 id="contribution-reference">14.2 Contribution reference</h3>
+<h3 id="142-contribution-reference">14.2 Contribution reference</h3>
 <ul>
 <li><strong>commands</strong> — declare an <code>ext.*</code>-namespaced
 id + human title; <code>run</code> is either a <code>snippet</code>
@@ -1611,13 +1615,9 @@ grammar, including the QUILL Key chord prefix
 the same logic as user keymaps and <strong>rejected with an announced
 message</strong>.</li>
 </ul>
-<h3 id="snippet-placeholder-reference-layer-1">14.3 Snippet placeholder
-reference (Layer 1)</h3>
+<h3 id="143-snippet-placeholder-reference-layer-1">14.3 Snippet
+placeholder reference (Layer 1)</h3>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>Placeholder</th>
@@ -1667,8 +1667,8 @@ reference (Layer 1)</h3>
 </tr>
 </tbody>
 </table>
-<h3 id="python-api-reference-layer-2-quillextensionapi-v1">14.4 Python
-API reference (Layer 2, <code>QuillExtensionApi</code> v1)</h3>
+<h3 id="144-python-api-reference-layer-2-quillextensionapi-v1">14.4
+Python API reference (Layer 2, <code>QuillExtensionApi</code> v1)</h3>
 <p>Every extension’s entry module defines a top-level
 <code>register(api)</code> function. QUILL calls it once when the
 extension loads. All methods are synchronous from the extension’s
@@ -1676,12 +1676,6 @@ perspective; UI effects are marshalled onto the UI thread by the host.
 Methods raise <code>CapabilityError</code> if the required capability
 was not granted.</p>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Method</th>
@@ -1796,19 +1790,21 @@ offsets with <code>text</code> (undoable)</td>
 <td><code>api.set_status(message)</code></td>
 <td><code>ui.status</code></td>
 <td><code>None</code></td>
-<td>Set the editor status bar text; no consent gate</td>
+<td>Set the editor status bar text; <strong>display only, never
+spoken</strong> — use <code>api.announce</code> to speak. No consent
+gate</td>
 </tr>
 <tr>
 <td><code>api.show_choices(title, items)</code></td>
 <td><code>ui.choices</code></td>
-<td><code>str \| None</code></td>
+<td><code>str | None</code></td>
 <td>Show a native single-choice dialog; returns the selected string or
 <code>None</code> if cancelled</td>
 </tr>
 <tr>
 <td><code>api.get_storage(key)</code></td>
 <td><code>storage</code></td>
-<td><code>str \| None</code></td>
+<td><code>str | None</code></td>
 <td>Get a persisted value for <code>key</code>; returns
 <code>None</code> if not set</td>
 </tr>
@@ -1833,7 +1829,7 @@ typically reads, computes, and writes back.</p>
 <p>Error types an author may see: <code>CapabilityError</code>,
 <code>ConsentDeniedError</code>, <code>ConflictError</code>
 (hotkey/menu), <code>ApiVersionError</code>.</p>
-<h3 id="worked-example-a-snippet-only-no-capabilities-no-code">14.5
+<h3 id="145-worked-example-a--snippet-only-no-capabilities-no-code">14.5
 Worked example A — snippet-only (no capabilities, no code)</h3>
 <p><code>manifest.json</code>:</p>
 <div class="sourceCode" id="cb20"><pre
@@ -1851,7 +1847,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb20-1"><a href=
 <span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    <span class="dt">&quot;hotkeys&quot;</span><span class="fu">:</span> <span class="ot">[</span> <span class="fu">{</span> <span class="dt">&quot;command&quot;</span><span class="fu">:</span> <span class="st">&quot;ext.fence.wrap&quot;</span><span class="fu">,</span> <span class="dt">&quot;binding&quot;</span><span class="fu">:</span> <span class="st">&quot;Ctrl+Shift+Grave, F&quot;</span> <span class="fu">}</span> <span class="ot">]</span></span>
 <span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">}</span></span>
 <span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<h3 id="a-worked-example-a2-new-placeholders-in-action">14.5a Worked
+<h3 id="145a-worked-example-a2--new-placeholders-in-action">14.5a Worked
 example A2 — new placeholders in action</h3>
 <p>Demonstrates <code>${title}</code>, <code>${line_number}</code>,
 <code>${word_at_cursor}</code>, and <code>${uuid}</code>.</p>
@@ -1901,8 +1897,8 @@ file renders.</li>
 <li><code>${uuid}</code> — generates a different UUID4 on every
 invocation, so two calls always produce distinct anchors.</li>
 </ul>
-<h3 id="worked-example-b-python-handler">14.6 Worked example B — Python
-handler</h3>
+<h3 id="146-worked-example-b--python-handler">14.6 Worked example B —
+Python handler</h3>
 <p><code>manifest.json</code>:</p>
 <div class="sourceCode" id="cb22"><pre
 class="sourceCode json"><code class="sourceCode json"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
@@ -1932,8 +1928,8 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb23-1"><a h
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>        ctx.replace_selection(text.title())</span>
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>        ctx.announce(<span class="st">&quot;Title Case applied&quot;</span>)</span>
 <span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    api.register_command(<span class="st">&quot;title_case&quot;</span>, title_case)</span></code></pre></div>
-<h3 id="worked-example-c-node.js-handler-layer-3">14.7 Worked example C
-— Node.js handler (Layer 3)</h3>
+<h3 id="147-worked-example-c--nodejs-handler-layer-3">14.7 Worked
+example C — Node.js handler (Layer 3)</h3>
 <p>A Node.js Quillin sets <code>"runtime": "node"</code> and
 <code>"main"</code> to a <code>.js</code> file. QUILL sends a single
 JSONL request; the process writes one JSONL response with a list of
@@ -2003,7 +1999,7 @@ class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb26
 <span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>    ctx<span class="op">.</span><span class="fu">announce</span>(<span class="st">&#39;Selection converted to upper case&#39;</span>)<span class="op">;</span></span>
 <span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  }<span class="op">,</span></span>
 <span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
-<p><strong>Node.js vs. Python runtime — when to use each:</strong></p>
+<p><strong>Node.js vs. Python runtime — when to use each:</strong></p>
 <table>
 <thead>
 <tr>
@@ -2038,7 +2034,7 @@ class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb26
 </tr>
 </tbody>
 </table>
-<h2 id="ai-authoring-guide-deterministic-generation-contract">15. AI
+<h2 id="15-ai-authoring-guide--deterministic-generation-contract">15. AI
 authoring guide — deterministic generation contract</h2>
 <p>This section gives an AI agent an unambiguous procedure to generate a
 valid extension. Following it should yield a manifest that passes §13
@@ -2083,10 +2079,6 @@ actions only — no fs/net in Node handlers in v1).</li>
 </ol>
 <p><strong>Minimal-capability decision table:</strong></p>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>If the extension…</th>
@@ -2167,7 +2159,7 @@ RUNTIME:    process reads stdin, dispatches handler, writes stdout, exits 0
 DENY:       no mid-execution API calls; no fs/net in v1 Node handlers
 NAMESPACE:  same ext.* command id rules apply</code></pre>
 <hr />
-<h2 id="internal-modularization-core-as-a-framework">16. Internal
+<h2 id="16-internal-modularization--core-as-a-framework">16. Internal
 modularization — core as a framework</h2>
 <p>A deliberate, longer-horizon consequence of this design: the
 <strong>contribution grammar</strong> defined here (commands, menus,
@@ -2177,16 +2169,12 @@ natural blueprint for decomposing the
 <code>quill/ui/main_frame.py</code> “god object” into self-registering
 <strong>first-party feature modules</strong>, leaving
 <code>quill/core</code> as a genuine framework.</p>
-<h3 id="two-tiers-one-vocabulary">16.1 Two tiers, one vocabulary</h3>
+<h3 id="161-two-tiers-one-vocabulary">16.1 Two tiers, one
+vocabulary</h3>
 <p>There are <strong>two tiers of extension</strong>, sharing one
 contribution grammar but differing in <strong>trust level and API
 breadth</strong> — not in how they appear to users.</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th></th>
@@ -2230,7 +2218,7 @@ need rich, synchronous, in-process access; forcing them across the RPC
 bridge would be a severe downgrade in capability, latency (per-keystroke
 operations!), and complexity for zero security benefit, since the code
 is already trusted.</p>
-<h3 id="what-this-enables">16.2 What this enables</h3>
+<h3 id="162-what-this-enables">16.2 What this enables</h3>
 <ul>
 <li>An internal <code>register(host)</code> module interface, where
 <code>host</code> exposes the rich trusted API. Related commands
@@ -2242,7 +2230,7 @@ announcement engine.</li>
 <li>The contribution grammar (this document) becomes the single
 registration mechanism for both tiers.</li>
 </ul>
-<h3 id="honest-limits-do-not-over-rotate">16.3 Honest limits (do not
+<h3 id="163-honest-limits-do-not-over-rotate">16.3 Honest limits (do not
 over-rotate)</h3>
 <ul>
 <li><strong>Do not pluginize the editor surface or the accessibility /
@@ -2260,7 +2248,7 @@ benefit, so the refactor’s justification is
 <li>This is a <strong>2.0-scale effort</strong>, sequenced after
 user-facing wins.</li>
 </ul>
-<h3 id="the-migration-playbook">16.4 The migration playbook</h3>
+<h3 id="164-the-migration-playbook">16.4 The migration playbook</h3>
 <p>The concrete, sequenced procedure for moving first-party code off the
 <code>main_frame.py</code> god object and onto this contribution grammar
 — pilot selection, the <code>register(host)</code> module shape, the
@@ -2268,12 +2256,12 @@ host-facade surface, characterization-test discipline, and a
 wave-by-wave order — lives in a dedicated companion document:
 <strong><code>docs/quillins.md</code></strong>. Read this section for
 the <em>why</em>; read that document for the <em>how</em>.</p>
-<h2 id="seamless-use-transparent-governance">17. Seamless use,
+<h2 id="17-seamless-use-transparent-governance">17. Seamless use,
 transparent governance</h2>
 <p>Extensions should be <strong>indistinguishable from built-in features
 at the point of use</strong>, while remaining <strong>fully auditable
 and controllable</strong> in management.</p>
-<h3 id="seamless-at-the-point-of-use">17.1 Seamless at the point of
+<h3 id="171-seamless-at-the-point-of-use">17.1 Seamless at the point of
 use</h3>
 <p>A user should never be able to tell, while writing, whether a command
 came from core, a bundled module, or a third-party extension. All of
@@ -2289,8 +2277,8 @@ NVDA/JAWS/Narrator parity;</li>
 <p>That uniformity is exactly <em>why</em> both tiers share one
 contribution grammar (§16.1). No second-class citizens; no “bolted-on”
 feel.</p>
-<h3 id="transparent-where-it-matters-non-negotiable">17.2 Transparent
-where it matters (non-negotiable)</h3>
+<h3 id="172-transparent-where-it-matters-non-negotiable">17.2
+Transparent where it matters (non-negotiable)</h3>
 <p>Seamlessness hides the <em>seam</em>, never the
 <em>capabilities</em>. Consistent with QUILL’s “no silent network
 calls”, per-action consent, and DPAPI rules:</p>
@@ -2302,7 +2290,7 @@ disable, or revoke.</li>
 untrusted extension wants something sensitive (network, filesystem
 beyond the document, clipboard, running executables). Trusted
 first-party modules do not prompt; third-party ones do.</li>
-<li><strong>Provenance is visible on demand</strong> (e.g. in
+<li><strong>Provenance is visible on demand</strong> (e.g. in
 command-palette details or a “Where did this come from?” affordance),
 even though it is invisible by default.</li>
 </ul>
@@ -2312,14 +2300,14 @@ whether something is an extension during normal use, but must always be
 accessibility is at stake.</strong> Hiding the seam is a UX win; hiding
 capabilities or network access would violate QUILL’s privacy-first
 contract.</p>
-<h2 id="declarative-dialogs-accessibility-enforcement">18. Declarative
-dialogs &amp; accessibility enforcement</h2>
+<h2 id="18-declarative-dialogs--accessibility-enforcement">18.
+Declarative dialogs &amp; accessibility enforcement</h2>
 <p>Extensions may contribute <strong>dialogs</strong>, but they
 <strong>describe</strong> dialogs declaratively — they never instantiate
 a <code>wx</code> widget. QUILL renders them. This makes inaccessible or
 unsafe UI <strong>structurally impossible</strong> rather than merely
 discouraged.</p>
-<h3 id="the-mechanism">18.1 The mechanism</h3>
+<h3 id="181-the-mechanism">18.1 The mechanism</h3>
 <p>QUILL already has the right primitive: <code>show_web_form</code>
 (<code>quill/ui/web_form.py</code>) builds a dialog from a <strong>field
 spec</strong> using vetted stock controls (<code>wx.TextCtrl</code>,
@@ -2341,7 +2329,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb28-1"><a href=
 <p>…and receives back a plain dict
 (<code>{anchor, offset, unit}</code>). It never creates a control, sets
 a sizer, or manages focus.</p>
-<h3 id="why-this-enforces-accessibility-without-risk">18.2 Why this
+<h3 id="182-why-this-enforces-accessibility-without-risk">18.2 Why this
 enforces accessibility without risk</h3>
 <ul>
 <li><strong>Accessibility is structural, not requested.</strong> Every
@@ -2359,8 +2347,8 @@ renderer is central, contributed dialogs are enumerable and can be
 registered into the manual regression map the same way native dialogs
 are.</li>
 </ul>
-<h3 id="constrained-vocabulary-is-the-safety-property">18.3 Constrained
-vocabulary is the safety property</h3>
+<h3 id="183-constrained-vocabulary-is-the-safety-property">18.3
+Constrained vocabulary is the safety property</h3>
 <ul>
 <li>The field-type catalogue is intentionally <strong>finite</strong>:
 text, multiline read-only, number, choice, checkbox,
@@ -2375,7 +2363,8 @@ run executable) still passes through capability prompts (§6). An
 accessible dialog never bypasses consent.</li>
 </ul>
 <hr />
-<h2 id="design-principles-carried-from-the-editor-proposals-rtf.md">19.
+<h2
+id="19-design-principles-carried-from-the-editor-proposals-rtfmd">19.
 Design principles carried from the editor proposals (rtf.md)</h2>
 <p>The native-RTF, Compose-mode, keyword, and grammar proposals in
 <code>rtf.md</code> share a through-line: take a capability the rest of
@@ -2384,7 +2373,8 @@ the industry built for the eye and make QUILL the place where it finally
 principles apply, and applying them is what turns a competent plugin
 model into a delightful, screen-reader-first one. This section adapts
 those principles to Quillins.</p>
-<h3 id="spoken-first-every-quillin-action-announces-its-outcome">19.1
+<h3
+id="191-spoken-first-every-quillin-action-announces-its-outcome">19.1
 Spoken-first: every Quillin action announces its outcome</h3>
 <p>The defining rtf.md rule is that every action reports its consequence
 aloud, in the shared announcement grammar, so a blind user never has to
@@ -2408,8 +2398,8 @@ rtf.md “speak the consequence” rule.</li>
 <p>This is the single most important enhancement: a Quillin that cannot
 be heard is a second-class citizen, and QUILL’s promise is that there
 are none.</p>
-<h3 id="the-quillins-manager-as-an-accessible-tree">19.2 The Quillins
-Manager as an accessible tree</h3>
+<h3 id="192-the-quillins-manager-as-an-accessible-tree">19.2 The
+Quillins Manager as an accessible tree</h3>
 <p>rtf.md argues the outline <em>is</em> the document and that QUILL
 already ships the right primitive: the accessible tree-navigator
 (<code>_NavigatorNode</code> and <code>_show_tree_navigator</code> in
@@ -2432,18 +2422,13 @@ YAML structure editor and the rtf.md Compose preview place detail beside
 structure), showing the selected Quillin’s manifest, capabilities, and
 provenance.</li>
 </ul>
-<h3 id="a-rich-spoken-context-menu-on-the-manager-tree">19.3 A rich,
+<h3 id="193-a-rich-spoken-context-menu-on-the-manager-tree">19.3 A rich,
 spoken context menu on the manager tree</h3>
 <p>Following the rtf.md Compose-mode context menu, right-clicking a
 Quillin in the manager opens a structure menu where every item is
 keyboard reachable and every action announces its outcome and confirms
 only what is destructive:</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Menu item</th>
@@ -2498,8 +2483,8 @@ only what is destructive:</p>
 never prompt; capability revocation and removal confirm through a native
 accessible dialog, per the rtf.md “friction only where loss is possible”
 rule.</p>
-<h3 id="provenance-and-capabilities-as-spoken-objects">19.4 Provenance
-and capabilities as spoken objects</h3>
+<h3 id="194-provenance-and-capabilities-as-spoken-objects">19.4
+Provenance and capabilities as spoken objects</h3>
 <p>rtf.md reframes keywords from visual chips into spoken objects a user
 can hear, filter, and jump through. Quillins apply the same move to
 provenance and capabilities, which are otherwise the classic “colored
@@ -2520,7 +2505,7 @@ publisher and trust tier.</li>
 industry shows as a glanceable badge and make it something a blind power
 user can add up, audit, and act on by ear.</p>
 <h3
-id="the-adapter-discipline-quillins-behind-a-stable-swappable-seam">19.5
+id="195-the-adapter-discipline-quillins-behind-a-stable-swappable-seam">19.5
 The adapter discipline: Quillins behind a stable, swappable seam</h3>
 <p>rtf.md’s grammar design refuses to hand-roll an engine and instead
 wraps a real one (Harper) behind a pure <code>quill/core</code> adapter
@@ -2541,7 +2526,7 @@ surface, a keyword store) should be exposed to Quillins as additional
 capability-gated adapter methods, never as raw access, keeping the seam
 stable as QUILL grows.</li>
 </ul>
-<h3 id="honest-limits-stated-plainly">19.6 Honest limits, stated
+<h3 id="196-honest-limits-stated-plainly">19.6 Honest limits, stated
 plainly</h3>
 <p>rtf.md states its constraints rather than hiding them, and §16.3
 already does this well. Carrying the principle forward, three limits
@@ -2560,7 +2545,8 @@ of scope for a Quillin and must be a reviewed first-party module
 instead.</li>
 </ul>
 <hr />
-<h2 id="skill-quill-pack-.sqp-multi-step-ai-workflows-in-plain-text">20.
+<h2
+id="20-skill-quill-pack-sqp--multi-step-ai-workflows-in-plain-text">20.
 Skill Quill Pack (.sqp) — multi-step AI workflows in plain text</h2>
 <p>A <code>.sqp</code> (Skill Quill Pack) file is the natural extension
 of a <code>.pqp</code> prompt pack: instead of one static instruction, a
@@ -2572,7 +2558,8 @@ editable — by anyone who can use a text editor. There is no GUI skill
 builder, no node graph, no DSL reference card. You open the file in
 QUILL, read each step like a recipe, change any instruction, and save.
 That is the whole authoring loop.</p>
-<h3 id="file-format-quill.skill1">20.1 File format (quill.skill/1)</h3>
+<h3 id="201-file-format-quillskill1">20.1 File format
+(quill.skill/1)</h3>
 <p>A <code>.sqp</code> file is a Markdown document with a YAML front
 matter block followed by level-1 headings that define steps.</p>
 <div class="sourceCode" id="cb29"><pre
@@ -2682,18 +2669,15 @@ python -m quill.tools.sqp_validator path/to/skill.sqp
 python -m quill.tools.sqp_validator path/to/directory/ --strict</code></pre>
 <p>Exit 0 on clean; exit 1 on errors. <code>--strict</code> also warns
 about missing <code>description</code> and <code>author</code>.</p>
-<h3 id="quillin-distribution">20.8 Quillin distribution</h3>
+<h3 id="208-quillin-distribution">20.8 Quillin distribution</h3>
 <p>A Quillin may ship <code>.sqp</code> files alongside its manifest.
 QUILL discovers them the same way it discovers <code>prompts.json</code>
 — at Skill Library load time. The bundled <code>ai-writing-skills</code>
 Quillin ships four sample skills: Accessible Rewrite, Research and
 Draft, Meeting Notes to Action Items, Argument Strengthener.</p>
-<h3 id="schema-and-implementation">20.9 Schema and implementation</h3>
+<h3 id="209-schema-and-implementation">20.9 Schema and
+implementation</h3>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>File</th>
@@ -2722,15 +2706,9 @@ files</td>
 </tbody>
 </table>
 <hr />
-<h2 id="appendix-a-language-options-considered">Appendix A — Language
+<h2 id="appendix-a--language-options-considered">Appendix A — Language
 options considered</h2>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Option</th>
@@ -2780,7 +2758,7 @@ weak text-tooling stdlib</td>
 </tr>
 </tbody>
 </table>
-<h2 id="appendix-b-why-out-of-process">Appendix B — Why
+<h2 id="appendix-b--why-out-of-process">Appendix B — Why
 out-of-process</h2>
 <p>QUILL’s concurrency model already runs OCR in a separate worker
 process and marshals UI updates through <code>wx.CallAfter</code>.
@@ -2798,6 +2776,7 @@ side remains the sole owner of the editor buffer; the extension side
 only ever sends intents over the RPC bridge.</p>
 <hr />
 <!-- Source: docs/quillins.md -->
+
 <h1 id="submitting-a-quillin-1">Submitting a Quillin</h1>
 <p>This is the end-to-end guide for authoring a Quillin and submitting
 it to QUILL. It is the human companion to three machine-enforced
@@ -2815,7 +2794,7 @@ href="quillin-code-of-conduct.md">Quillin Author Covenant</a> — every
 submission attests to it — and the authoring reference in <a
 href="scripting.md"><code>scripting.md</code></a> (§13 schema, §14
 authoring reference, §15 the deterministic AI-authoring contract).</p>
-<h2 id="what-a-quillin-is">1. What a Quillin is</h2>
+<h2 id="1-what-a-quillin-is">1. What a Quillin is</h2>
 <p>A Quillin is a small, capability-declared extension described by a
 <code>manifest.json</code> (<code>schema: "quill.extension/1"</code>).
 It comes in two layers:</p>
@@ -2835,7 +2814,7 @@ module registers handler functions via
 capability and runs <strong>out-of-process</strong> behind QUILL’s
 capability + consent gate.</li>
 </ul>
-<h2 id="directory-layout">2. Directory layout</h2>
+<h2 id="2-directory-layout">2. Directory layout</h2>
 <p>A Quillin is one directory:</p>
 <pre><code>my-quillin/
   manifest.json     # required — the contract
@@ -2845,15 +2824,15 @@ capability + consent gate.</li>
 <p>The bundled <a
 href="../quill/quillins_bundled/markdown-helpers/"><code>quill/quillins_bundled/markdown-helpers/</code></a>
 is the canonical template — copy it.</p>
-<h2 id="author-the-manifest">3. Author the manifest</h2>
+<h2 id="3-author-the-manifest">3. Author the manifest</h2>
 <p>Minimum fields: <code>schema</code>, <code>id</code>,
 <code>name</code>, <code>version</code>. Strongly recommended for any
 submission: <code>author</code>, <code>description</code>,
 <code>license</code>, <code>min_quill_version</code>.</p>
 <ul>
-<li><strong><code>id</code></strong> — reverse-DNS you control,
-e.g. <code>com.example.mytool</code>. <code>com.quill.*</code> is
-reserved for first-party bundled Quillins.</li>
+<li><strong><code>id</code></strong> — reverse-DNS you control, e.g.
+<code>com.example.mytool</code>. <code>com.quill.*</code> is reserved
+for first-party bundled Quillins.</li>
 <li><strong><code>version</code></strong> —
 <code>MAJOR.MINOR.PATCH</code>, bumped on every change.</li>
 <li><strong><code>capabilities</code></strong> — declare the
@@ -2873,7 +2852,8 @@ never silently overridden). Command ids must be namespaced under
 top-level <code>main</code> module and the <code>ui.command</code>
 capability.</li>
 </ul>
-<h2 id="self-lint-before-you-submit">4. Self-lint before you submit</h2>
+<h2 id="4-self-lint-before-you-submit">4. Self-lint before you
+submit</h2>
 <p>Run the linter — the same tool CI runs — and fix everything:</p>
 <div class="sourceCode" id="cb40"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">quillin_lint</span> path\to\my-quillin <span class="op">--</span>strict</span></code></pre></div>
@@ -2883,22 +2863,22 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb40
 the published JSON Schema artifact (made executable inside the linter),
 so your errors match what editors and external tools see.</li>
 <li><strong>Manifest validation</strong> — the same contract validator
-the loader enforces, catching rules the schema does not encode
-(e.g. handler ⇒ <code>main</code> + <code>ui.command</code>).</li>
+the loader enforces, catching rules the schema does not encode (e.g.
+handler ⇒ <code>main</code> + <code>ui.command</code>).</li>
 <li><strong>Structure &amp; capability hygiene</strong> — confirms your
 <code>main</code> module exists, a README and license are present, and
 surfaces every consent-gated capability for deliberate review.</li>
 </ol>
 <p><code>--strict</code> (used by CI) treats warnings as failures. A
 clean <code>--strict</code> run is the bar for submission.</p>
-<h2 id="write-tests">5. Write tests</h2>
+<h2 id="5-write-tests">5. Write tests</h2>
 <p>Mirror the bundled Quillin’s test (<a
 href="../tests/unit/core/test_quillins_bundled_markdown.py"><code>tests/unit/core/test_quillins_bundled_markdown.py</code></a>):
 validate the manifest, build a conflict-free contribution registry,
 expand any snippet, and drive any handler. Handler Quillins should also
 be exercised through the real out-of-process host (see <a
 href="../tests/integration/test_quillins_host_integration.py"><code>tests/integration/test_quillins_host_integration.py</code></a>).</p>
-<h2 id="accept-the-author-covenant">6. Accept the Author Covenant</h2>
+<h2 id="6-accept-the-author-covenant">6. Accept the Author Covenant</h2>
 <p>Read <a
 href="quillin-code-of-conduct.md"><code>quillin-code-of-conduct.md</code></a>
 and confirm your Quillin keeps every promise: accessibility (announce
@@ -2906,7 +2886,7 @@ outcomes, keyboard-complete), capability minimization and honesty, no
 silent network or telemetry, privacy, security (no obfuscation, no
 attempts to exceed declared capabilities, no malware), licensing,
 namespace etiquette, and maintenance.</p>
-<h2 id="open-the-submission-pr">7. Open the submission PR</h2>
+<h2 id="7-open-the-submission-pr">7. Open the submission PR</h2>
 <ol type="1">
 <li>Add your Quillin directory to the submission area and stage
 <strong>only</strong> your own files (never
@@ -2917,7 +2897,7 @@ template and complete its checklist.</li>
 <code>quillin_lint --strict</code> over the Quillins your PR changes. A
 red check blocks merge; fix and push again.</li>
 </ol>
-<h2 id="review-and-acceptance">8. Review and acceptance</h2>
+<h2 id="8-review-and-acceptance">8. Review and acceptance</h2>
 <p>A maintainer reviews against this guide and the Covenant. Review
 focuses on what machines cannot fully judge:</p>
 <ul>
@@ -2936,7 +2916,7 @@ placement, tests present.</li>
 <strong>changes requested</strong>, or <strong>rejected</strong> with a
 reason. Security or accessibility violations are non-negotiable
 rejections.</p>
-<h2 id="updates-versioning-and-removal">9. Updates, versioning, and
+<h2 id="9-updates-versioning-and-removal">9. Updates, versioning, and
 removal</h2>
 <ul>
 <li><strong>Updates</strong> are new PRs that bump <code>version</code>
@@ -2949,22 +2929,23 @@ without notice per the Covenant’s enforcement section.</li>
 </ul>
 <h2 id="quick-checklist">Quick checklist</h2>
 <ul class="task-list">
-<li><label><input type="checkbox" /><code>manifest.json</code> valid:
+<li><p><label><input type="checkbox" /><code>manifest.json</code> valid:
 <code>python -m quill.tools.quillin_lint &lt;dir&gt; --strict</code> is
-green</label></li>
-<li><label><input type="checkbox" />Minimum capabilities declared;
-consent-gated use is justified and announced</label></li>
-<li><label><input type="checkbox" />Every command announces its outcome
-and is keyboard-operable</label></li>
-<li><label><input type="checkbox" /><code>README</code> and license
-present; <code>id</code> is reverse-DNS you control</label></li>
-<li><label><input type="checkbox" />Tests added (manifest + registry +
-snippet/handler; host round-trip for handlers)</label></li>
-<li><label><input type="checkbox" />Author Covenant upheld and attested
-in the PR</label></li>
+green</label></p></li>
+<li><p><label><input type="checkbox" />Minimum capabilities declared;
+consent-gated use is justified and announced</label></p></li>
+<li><p><label><input type="checkbox" />Every command announces its
+outcome and is keyboard-operable</label></p></li>
+<li><p><label><input type="checkbox" /><code>README</code> and license
+present; <code>id</code> is reverse-DNS you control</label></p></li>
+<li><p><label><input type="checkbox" />Tests added (manifest + registry
++ snippet/handler; host round-trip for handlers)</label></p></li>
+<li><p><label><input type="checkbox" />Author Covenant upheld and
+attested in the PR</label></p></li>
 </ul>
 <hr />
 <!-- Source: docs/quillins.md -->
+
 <h1 id="quillin-author-covenant">Quillin Author Covenant</h1>
 <p>This Covenant is the <strong>code of conduct for Quillin
 code</strong> — the technical and ethical promises every Quillin must
@@ -2980,7 +2961,7 @@ href="quillin-submission.md"><code>quillin-submission.md</code></a>) you
 attest that it upholds every promise below. Verification is partly
 automated (<code>python -m quill.tools.quillin_lint</code>) and partly
 human review; both must pass.</p>
-<h2 id="accessibility-is-non-negotiable">1. Accessibility is
+<h2 id="1-accessibility-is-non-negotiable">1. Accessibility is
 non-negotiable</h2>
 <ul>
 <li><strong>Announce every outcome.</strong> Every command reports its
@@ -2996,7 +2977,7 @@ relies on for accessibility.</li>
 focus unexpectedly or produce content that could trigger photosensitive
 reactions.</li>
 </ul>
-<h2 id="capability-honesty-and-minimization">2. Capability honesty and
+<h2 id="2-capability-honesty-and-minimization">2. Capability honesty and
 minimization</h2>
 <ul>
 <li><strong>Declare the minimum.</strong> Request only the capabilities
@@ -3012,7 +2993,7 @@ consent-gated.</strong> If you request filesystem or network access,
 expect every use to pass a per-action consent prompt, and design for a
 graceful, announced outcome when the user says no.</li>
 </ul>
-<h2 id="no-silent-network-no-telemetry">3. No silent network, no
+<h2 id="3-no-silent-network-no-telemetry">3. No silent network, no
 telemetry</h2>
 <ul>
 <li><strong>No silent network calls.</strong> Every outbound request is
@@ -3023,7 +3004,7 @@ any kind.</li>
 <li><strong>No document content leaves the device</strong> without an
 explicit, per-action consent gate the user can decline.</li>
 </ul>
-<h2 id="privacy-and-data-handling">4. Privacy and data handling</h2>
+<h2 id="4-privacy-and-data-handling">4. Privacy and data handling</h2>
 <ul>
 <li><strong>Treat document content as private.</strong> Never log it,
 never transmit it without consent, never persist it outside what the
@@ -3033,7 +3014,7 @@ credentials, tokens, or keys. Do not phone home for “activation”.</li>
 <li><strong>Be transparent about what you store</strong> and where, and
 keep it inside QUILL’s sanctioned storage conventions.</li>
 </ul>
-<h2 id="security-and-integrity">5. Security and integrity</h2>
+<h2 id="5-security-and-integrity">5. Security and integrity</h2>
 <ul>
 <li><strong>No obfuscation.</strong> Ship readable source. Minified,
 encoded, or deliberately obscured handler code will be rejected.</li>
@@ -3047,7 +3028,7 @@ the user or their data.</li>
 text — never a silent failure and never a crash that takes the editor
 down.</li>
 </ul>
-<h2 id="licensing-and-attribution">6. Licensing and attribution</h2>
+<h2 id="6-licensing-and-attribution">6. Licensing and attribution</h2>
 <ul>
 <li><strong>Declare a license</strong> (manifest <code>license</code>
 field and/or a <code>LICENSE</code> file) and ship a
@@ -3056,18 +3037,18 @@ field and/or a <code>LICENSE</code> file) and ship a
 dependencies you have the right to distribute, and attribute third-party
 material correctly.</li>
 </ul>
-<h2 id="naming-and-namespace-etiquette">7. Naming and namespace
+<h2 id="7-naming-and-namespace-etiquette">7. Naming and namespace
 etiquette</h2>
 <ul>
-<li><strong>Use a reverse-DNS <code>id</code></strong> you control
-(e.g. <code>com.example.mytool</code>); do not squat on
+<li><strong>Use a reverse-DNS <code>id</code></strong> you control (e.g.
+<code>com.example.mytool</code>); do not squat on
 <code>com.quill.*</code>, which is reserved for first-party bundled
 Quillins.</li>
 <li><strong>Namespace commands under <code>ext.</code></strong>
 (enforced) and choose clear, honest, Title-Case command names. No
 misleading or impersonating titles.</li>
 </ul>
-<h2 id="maintenance-and-good-citizenship">8. Maintenance and good
+<h2 id="8-maintenance-and-good-citizenship">8. Maintenance and good
 citizenship</h2>
 <ul>
 <li><strong>Version honestly</strong> using
@@ -3090,12 +3071,13 @@ opening an issue (for accessibility or conduct).</p>
 matters</strong>.</p>
 <hr />
 <!-- Source: docs/quillins.md -->
+
 <h1
-id="converting-quill-features-into-bundled-quillins-a-flexibility-proof">Converting
+id="converting-quill-features-into-bundled-quillins--a-flexibility-proof">Converting
 QUILL features into bundled Quillins — a flexibility proof</h1>
 <p>Status: <strong>Proposed roadmap (2.0-scale, demonstration- and
 maintainability-driven)</strong> · Companion to
-<code>docs/quillins.md</code> (esp. §6 security, §16 modularization) and
+<code>docs/quillins.md</code> (esp. §6 security, §16 modularization) and
 <code>docs/quillins.md</code> · Sample artifact: <a
 href="../examples/quillins/markdown-helpers/"><code>examples/quillins/markdown-helpers/</code></a></p>
 <blockquote>
@@ -3112,8 +3094,8 @@ core</strong>. If QUILL can host its own features through the same
 narrow door it offers strangers, the extension platform is real, not a
 brochure.</p>
 </blockquote>
-<h2 id="what-this-proves-and-why-it-is-worth-doing">1. What this proves,
-and why it is worth doing</h2>
+<h2 id="1-what-this-proves-and-why-it-is-worth-doing">1. What this
+proves, and why it is worth doing</h2>
 <p>The Quillins framework is fully built and tested
 (<code>quill/core/quillins/*</code>), but in QUILL 1.0 it runs
 <strong>zero</strong> real extensions: third-party execution is locked
@@ -3144,7 +3126,8 @@ adds no user-facing capability (the features already exist), so it is
 sequenced <strong>after</strong> 1.0 user-facing work and proceeds
 opportunistically — every step leaves the suite green and the
 accessibility contract intact, or it does not land.</p>
-<h2 id="three-trust-tiers-read-this-before-proposing-any-conversion">2.
+<h2
+id="2-three-trust-tiers-read-this-before-proposing-any-conversion">2.
 Three trust tiers (read this before proposing any conversion)</h2>
 <p>The migration plan established two tiers; this roadmap needs a third.
 Keeping them straight is the whole game.</p>
@@ -3186,16 +3169,11 @@ Tier C to “be pure” would wreck latency for zero gain — that belongs in
 Tier B.</p>
 </blockquote>
 <h2
-id="the-enabling-work-the-platform-needs-first-honest-prerequisites">3.
+id="3-the-enabling-work-the-platform-needs-first-honest-prerequisites">3.
 The enabling work the platform needs first (honest prerequisites)</h2>
 <p>Tier C does not exist yet. Wave 0 builds it. None of this weakens
 SEC-8.</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Prerequisite</th>
@@ -3251,7 +3229,7 @@ registers it as a component.</td>
 <tr>
 <td><strong>Latency budget</strong></td>
 <td>Measure cold-load + warm-invoke round-trip for an on-demand command;
-set a published budget (e.g. warm invoke &lt; 50 ms) below which Tier C
+set a published budget (e.g. warm invoke &lt; 50 ms) below which Tier C
 is acceptable.</td>
 <td>New perf test under <code>tests/perf</code>.</td>
 </tr>
@@ -3262,7 +3240,7 @@ is acceptable.</td>
 bundled Quillin, ships enabled in a build, appears in <strong>Tools ▸
 Quillins Manager</strong>, and runs end-to-end — with the third-party
 flag still <code>locked_off</code>.</p>
-<h2 id="candidate-selection-what-can-become-a-quillin">4. Candidate
+<h2 id="4-candidate-selection--what-can-become-a-quillin">4. Candidate
 selection — what can become a Quillin</h2>
 <p>A feature is a Tier C candidate iff <strong>all</strong> hold:</p>
 <ul>
@@ -3285,12 +3263,6 @@ before the move.</li>
 <h3 id="candidate-catalogue-grounded-in-todays-code">Candidate catalogue
 (grounded in today’s code)</h3>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Feature(s)</th>
@@ -3376,7 +3348,7 @@ ideal proving ground</strong> — many are already pure functions or one
 mixin method away from it, and several already passed through Tier B
 (<code>line_transforms.py</code>), so the path from inline → Tier B →
 Tier C is a graded, low-risk ramp.</p>
-<h2 id="the-conversion-procedure-per-feature-strangler-fig">5. The
+<h2 id="5-the-conversion-procedure-per-feature-strangler-fig">5. The
 conversion procedure (per feature, strangler-fig)</h2>
 <p>Mirrors <code>quillin-migration-plan.md</code> §5/§8 but the target
 is the <strong>Quillin path</strong>, and the algorithm <strong>moves
@@ -3392,7 +3364,7 @@ baseline.</li>
 install-tree home) with a <code>manifest.json</code>
 (<code>quill.extension/1</code>, <code>ext.*</code> ids, declared
 capabilities) and <code>extension.py</code>. <strong>Vendor the pure
-algorithm into the Quillin</strong> — move the wx-free helper (e.g. the
+algorithm into the Quillin</strong> — move the wx-free helper (e.g. the
 relevant function from <code>quill/core/html_to_markdown.py</code>) into
 a sibling module the Quillin imports, and move its unit tests alongside.
 “Thin core, fat Quillin”: core keeps a function only if other
@@ -3415,13 +3387,8 @@ green; public-surface fixture regenerated if a <code>MainFrame</code>
 method disappeared.</li>
 </ol>
 <p>Rollback at any step is a single-directory + single-PR revert.</p>
-<h2 id="wave-by-wave-sequencing">6. Wave-by-wave sequencing</h2>
+<h2 id="6-wave-by-wave-sequencing">6. Wave-by-wave sequencing</h2>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Wave</th>
@@ -3456,7 +3423,7 @@ menu homes match <code>menus.md</code>.</td>
 </tr>
 <tr>
 <td><strong>3 — Gated proof</strong></td>
-<td>Convert one <strong>consent-gated</strong> feature (e.g. an online
+<td>Convert one <strong>consent-gated</strong> feature (e.g. an online
 lookup over <code>net</code>, or a file-backed action over
 <code>fs.*</code>) to a bundled Quillin.</td>
 <td>The real shipped Quillin triggers the <strong>consent gate</strong>
@@ -3484,7 +3451,7 @@ the guardrail set (§2) explicitly <em>not</em> converted.</td>
 would have to cross a guardrail (§2) or a latency budget (§3) — that
 feature belongs in Tier A/B, and saying so is part of the honest
 result.</p>
-<h2 id="done-criteria-honest-limits">7. Done criteria &amp; honest
+<h2 id="7-done-criteria--honest-limits">7. Done criteria &amp; honest
 limits</h2>
 <p><strong>Done looks like:</strong> a Tier C mechanism shipping a
 handful of QUILL’s own text/insert/markdown features as <strong>bundled,
@@ -3519,12 +3486,13 @@ decides, not the aspiration.</li>
 </ul>
 <hr />
 <!-- Source: docs/quillins.md -->
+
 <h1
 id="migrating-quills-first-party-code-onto-the-quillins-contribution-grammar">Migrating
 QUILL’s first-party code onto the Quillins contribution grammar</h1>
 <p>Status: <strong>In progress — Wave 0 + Pilot 1 shipped; Host facade +
 Wave 2 line transforms landed</strong> · Companion to
-<code>docs/quillins.md</code> (esp. §16) and <code>menus.md</code> (§3.7
+<code>docs/quillins.md</code> (esp. §16) and <code>menus.md</code> (§3.7
 + Phase 5) · Scope: <strong>internal refactor, 2.0-scale,
 maintainability-driven</strong></p>
 <blockquote>
@@ -3536,8 +3504,8 @@ low-risk, reversible procedure for moving built-in features out of the
 context-menu entries) that Quillins already use — turning
 <code>quill/core</code> into a genuine framework.</p>
 </blockquote>
-<h2 id="the-one-insight-this-plan-rests-on">1. The one insight this plan
-rests on</h2>
+<h2 id="1-the-one-insight-this-plan-rests-on">1. The one insight this
+plan rests on</h2>
 <p>The Quillins framework already defines, validates, and wires a
 contribution vocabulary: a <strong>command</strong> (<code>id</code>,
 <code>title</code>, a handler), its placement in <strong>menus</strong>
@@ -3564,8 +3532,8 @@ out-of-process Quillin path.</strong> That path exists for
 <em>untrusted</em> code; forcing trusted per-keystroke built-ins across
 an RPC bridge would wreck latency and capability for zero security
 gain.</p>
-<h2 id="guardrails-what-must-not-be-migrated">2. Guardrails — what must
-NOT be migrated</h2>
+<h2 id="2-guardrails--what-must-not-be-migrated">2. Guardrails — what
+must NOT be migrated</h2>
 <p>These are load-bearing for QUILL’s identity. Decomposing them is how
 accessibility regresses (see §16.3):</p>
 <ul>
@@ -3586,8 +3554,8 @@ can’t pin its behavior, you can’t safely move it yet.</li>
 <strong>command-shaped</strong> — it has a stable id, a title, a
 handler, and (optionally) a menu/hotkey/context placement — and its
 handler can reach everything it needs through the host facade (§4).</p>
-<h2 id="target-shape-of-a-migrated-module">3. Target shape of a migrated
-module</h2>
+<h2 id="3-target-shape-of-a-migrated-module">3. Target shape of a
+migrated module</h2>
 <p>A first-party feature module is a small, self-contained file exposing
 one top-level <code>register(host)</code> that contributes its commands.
 It mirrors the Quillin <code>register(api)</code> shape so the mental
@@ -3624,7 +3592,8 @@ the Power Tools handlers already centralize their edits. (A module may
 still live under <code>quill/ui/</code> and use <code>wx</code> for
 genuinely bespoke UI, but that UI must pass A11Y-4 review — it is
 first-party, not a sandboxed extension.)</p>
-<h2 id="the-first-party-host-facade">4. The first-party host facade</h2>
+<h2 id="4-the-first-party-host-facade">4. The first-party host
+facade</h2>
 <p>This is the single piece of <em>new</em> core surface the migration
 introduces, and both halves have now <strong>landed</strong>. The
 registration half (Wave 0): <code>quill/core/contributions.py</code>
@@ -3643,11 +3612,6 @@ richer breadth below (more editor primitives, services) is the trusted
 superset of <code>QuillExtensionApi</code>, filled in per wave as
 features move:</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Group</th>
@@ -3677,8 +3641,10 @@ features move:</p>
 </tr>
 <tr>
 <td>Announce</td>
-<td><code>announce</code>, <code>set_status</code></td>
-<td>The one announcement engine; never bypassed</td>
+<td><code>announce</code></td>
+<td>The one announcement engine; never bypassed. <code>set_status</code>
+is display-only and does <strong>not</strong> speak — a status cell
+refresh must never hijack the screen reader</td>
 </tr>
 <tr>
 <td>Services</td>
@@ -3707,7 +3673,7 @@ settings/workers/platform/dialogs; <code>api</code> does not. That
 asymmetry <em>is</em> the trust boundary — there is no second
 registration mechanism, no second menu builder, no second keymap.</li>
 </ol>
-<h2 id="strategy-strangler-fig-behind-characterization-tests">5.
+<h2 id="5-strategy-strangler-fig-behind-characterization-tests">5.
 Strategy: strangler-fig, behind characterization tests</h2>
 <p>Never a big-bang “everything is a plugin” rewrite (§16.3). Each
 feature is moved in a self-contained, individually revertible step:</p>
@@ -3737,7 +3703,7 @@ PR.</li>
 </ol>
 <p>Rollback at any step is a single-file revert because each module is
 independent.</p>
-<h2 id="pilot-selection">6. Pilot selection</h2>
+<h2 id="6-pilot-selection">6. Pilot selection</h2>
 <p>Pick first movers that are <strong>already command-shaped and already
 extracted into a mixin</strong>, so the migration is mechanical and the
 risk is near zero. The codebase hands us an ideal pilot:</p>
@@ -3777,15 +3743,9 @@ under the <code>Format</code> menu.</p></li>
 <p>Defer: anything touching tab lifecycle, the watch service,
 AI/assistant flows, or shared mutable selection state until the facade
 has proven itself on Pilots 1–3.</p>
-<h2 id="wave-by-wave-sequencing-1">7. Wave-by-wave sequencing</h2>
+<h2 id="7-wave-by-wave-sequencing">7. Wave-by-wave sequencing</h2>
 <p>Status legend: ✅ shipped · ⏳ future.</p>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Wave</th>
@@ -3884,7 +3844,7 @@ convention (<code>power.number_lines</code> →
 <code>self.number_lines</code>), so the data and behavior cannot drift.
 Waves 2–N repeat this mechanically, one command group per PR.</p>
 </blockquote>
-<h2 id="per-feature-migration-checklist">8. Per-feature migration
+<h2 id="8-per-feature-migration-checklist">8. Per-feature migration
 checklist</h2>
 <p>For every feature moved:</p>
 <ul class="task-list">
@@ -3919,8 +3879,8 @@ green.</label></li>
 method disappeared, regenerate the public-surface fixture and review the
 diff.</label></li>
 </ul>
-<h2 id="worked-example-migrating-power.number_lines">9. Worked example —
-migrating <code>power.number_lines</code></h2>
+<h2 id="9-worked-example--migrating-powernumber_lines">9. Worked example
+— migrating <code>power.number_lines</code></h2>
 <p><strong>Before</strong> (conceptually, in
 <code>main_frame_power_tools_menu.py</code> +
 <code>PowerToolsActionsMixin</code>):</p>
@@ -3978,7 +3938,7 @@ plus a live <code>MainFrame</code> smoke test; the full suite stays
 green. The remaining Power Tools groups are mechanical repeats of this
 same move.</p>
 </blockquote>
-<h2 id="done-criteria-honest-limits-1">10. Done criteria &amp; honest
+<h2 id="10-done-criteria--honest-limits">10. Done criteria &amp; honest
 limits</h2>
 <p><strong>Done looks like:</strong> <code>quill/core</code> carries the
 document model, command registry, keymap, event bus, feature gating, the
@@ -3994,6 +3954,7 @@ sequenced <strong>after</strong> user-facing wins and proceeds
 green and the accessibility contract intact, or it does not land.</p>
 <hr />
 <!-- Source: docs/quillins.md -->
+
 <h1 id="the-quillin-hub">The Quillin Hub</h1>
 <p>The Quillin Hub (<code>hub.quillforall.org</code>; service code in
 <code>quillin-hub/</code>) is the community store and submission service
@@ -4001,11 +3962,6 @@ for <strong>every</strong> shareable QUILL artifact type, not just
 Quillin extensions. Seven artifact families are accepted for review and
 publication:</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Type id</th>
@@ -4088,7 +4044,7 @@ command,
 <code>python -m quill.tools.artifact_validate &lt;path&gt;</code>.</li>
 </ul>
 <h1
-id="new-in-0.6.0-insert-automation-contributions-quillin-preferences-and-per-quillin-settings">New
+id="new-in-060-insert-automation-contributions-quillin-preferences-and-per-quillin-settings">New
 in 0.6.0: Insert Automation contributions, Quillin Preferences, and
 per-Quillin settings</h1>
 <p>QUILL 0.6.0 extends the Quillin manifest with three new contribution
@@ -4185,14 +4141,19 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb49-1"><a href=
 <code>enabled_by_default</code>, <code>min_args</code>,
 <code>max_args</code>, <code>large_insert_threshold</code>,
 <code>file_extensions</code>.</p>
-<p>Rules: - Trigger names do not include <code>=</code>. They must be
-lowercase. - The <code>command</code> must reference a command
-contributed by this Quillin or a built-in command id. - Triggers
-activate only when the exact text appears alone on the current line and
-Enter is pressed. - Smart triggers from third-party Quillins require
-third-party Quillins to be enabled (the SEC-8 flag); bundled Quillins’
-triggers work whenever they are loaded. Each trigger also honours the
-Quillin’s own <code>enable_&lt;trigger&gt;</code> setting.</p>
+<p>Rules:</p>
+<ul>
+<li>Trigger names do not include <code>=</code>. They must be
+lowercase.</li>
+<li>The <code>command</code> must reference a command contributed by
+this Quillin or a built-in command id.</li>
+<li>Triggers activate only when the exact text appears alone on the
+current line and Enter is pressed.</li>
+<li>Smart triggers from third-party Quillins require third-party
+Quillins to be enabled (the SEC-8 flag); bundled Quillins’ triggers work
+whenever they are loaded. Each trigger also honours the Quillin’s own
+<code>enable_&lt;trigger&gt;</code> setting.</li>
+</ul>
 <h2 id="preferences-contributions">Preferences contributions</h2>
 <p>This is the headline new contribution type. A Quillin can declare its
 own preferences page, organized into tabs and sections, and QUILL
@@ -4312,12 +4273,6 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb51-1"><a href=
 <strong>planned</strong> pass validation but are not yet rendered; they
 are reserved for future releases.</p>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Type</th>
@@ -4441,10 +4396,6 @@ and can be reset to manifest defaults at any time from the preferences
 page. Uninstalling a Quillin prompts to keep or delete its data.</p>
 <h2 id="new-capabilities">New capabilities</h2>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>Capability</th>
@@ -4556,10 +4507,6 @@ declaring <code>document_events</code> in its manifest. Each entry names
 one lifecycle event and one Python handler function.</p>
 <h3 id="the-ten-available-events">The ten available events</h3>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>Event name</th>
@@ -4668,11 +4615,6 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb56-1"><a href=
 the handler. All specified conditions must match simultaneously (AND
 semantics).</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Field</th>
@@ -4684,7 +4626,7 @@ semantics).</p>
 <tr>
 <td><code>file_extension</code></td>
 <td>string</td>
-<td>Exact extension, e.g. <code>".txt"</code>, <code>".brf"</code></td>
+<td>Exact extension, e.g. <code>".txt"</code>, <code>".brf"</code></td>
 </tr>
 <tr>
 <td><code>file_path_pattern</code></td>
@@ -4702,9 +4644,12 @@ semantics).</p>
 <code>file_extension</code> for matching multiple extensions at once
 (<code>[".txt", ".log"]</code> means either).</p>
 <h3 id="the-capability-gate">The capability gate</h3>
-<p><code>document.events</code> requires: -
-<code>"document.events"</code> in <code>capabilities</code> - A
-<code>"main"</code> entry module that defines the handler functions</p>
+<p><code>document.events</code> requires:</p>
+<ul>
+<li><code>"document.events"</code> in <code>capabilities</code></li>
+<li>A <code>"main"</code> entry module that defines the handler
+functions</li>
+</ul>
 <p>Manifests that declare <code>document_events</code> without
 <code>document.events</code> fail validation and cannot be loaded.
 Manifests without a <code>main</code> module also fail. Both checks are
@@ -4733,10 +4678,6 @@ additionally contains <code>"trigger"</code> (the abbreviation text that
 was typed) and <code>"expansion"</code> (what it was replaced with).</p>
 <h3 id="what-events-make-possible">What events make possible</h3>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>Use case</th>
@@ -4816,7 +4757,7 @@ about to exit. The handler should complete quickly (under 200ms); the
 host enforces this with a deadline and kills any Quillin that overruns
 it.</li>
 <li><strong><code>settings.changed</code></strong> — fires when the user
-saves a change to any setting owned by this Quillin (i.e. any key
+saves a change to any setting owned by this Quillin (i.e. any key
 registered in the Quillin’s preferences contribution). The
 <code>event</code> dict carries <code>"key"</code> (the setting key),
 <code>"value"</code> (the new value), and <code>"old_value"</code> (the
@@ -4901,7 +4842,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb59-1"><a href=
 <span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
 <span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
 <span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
-<h3 id="example-extension.py">Example extension.py</h3>
+<h3 id="example-extensionpy">Example extension.py</h3>
 <div class="sourceCode" id="cb60"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> on_timer_refresh(api, event: <span class="bu">dict</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
 <span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> api.get_text()</span>
@@ -4916,7 +4857,7 @@ document with a matching extension opens, the Quillin’s handler fires
 automatically — a specialized form of <code>document.opened</code>
 scoped to one or more extensions.</p>
 <p>Each <code>file_types</code> entry lists <code>extensions</code>
-(lowercase, dot-prefixed, e.g. <code>.csv</code>, <code>.brf</code>), a
+(lowercase, dot-prefixed, e.g. <code>.csv</code>, <code>.brf</code>), a
 <code>handler</code>, and an optional <code>description</code>. Because
 the handler runs the same out-of-process code as a document event,
 <code>file_types</code> reuses the <code>document.events</code>
@@ -5105,10 +5046,12 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb69-1"><a h
 calls it on its schedule (on tab switch, after save, or on a timer). If
 the handler raises an exception, the host shows the last good value.</p>
 <h3 id="capability-requirements">Capability requirements</h3>
-<p><code>contributes.status_bar</code> requires: -
-<code>ui.status</code> capability (declared in
-<code>capabilities</code>) - a <code>main</code> module (the handler
-function lives there)</p>
+<p><code>contributes.status_bar</code> requires:</p>
+<ul>
+<li><code>ui.status</code> capability (declared in
+<code>capabilities</code>)</li>
+<li>a <code>main</code> module (the handler function lives there)</li>
+</ul>
 <p>Missing either causes validation to fail.</p>
 <hr />
 <h2 id="transcription-providers-cloud-speech-to-text">Transcription
@@ -5195,7 +5138,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb71-1"><a href=
 shown in the QUILL keyboard reference alongside the title and
 binding.</p>
 <hr />
-<h2 id="preferences-search-keywords">Preferences — search keywords</h2>
+<h2 id="preferences--search-keywords">Preferences — search keywords</h2>
 <p>Individual settings may carry extra words users might type to find
 the setting in the Preferences search box:</p>
 <div class="sourceCode" id="cb72"><pre
@@ -5212,7 +5155,7 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb72-1"><a href=
 synonyms and technical terms improves discoverability for users who may
 not know the setting’s label.</p>
 <hr />
-<h2 id="user-control-capabilities-consent-and-permissions">User control
+<h2 id="user-control--capabilities-consent-and-permissions">User control
 — capabilities, consent, and permissions</h2>
 <p>Understanding how users control Quillin behavior is essential for
 writing extensions that respect the user’s expectations.</p>
@@ -5223,7 +5166,7 @@ Quillin’s event handlers, commands, and status bar cells immediately.
 The Quillin’s settings data is preserved. The
 <code>quillin.disabled</code> event fires when this happens, giving the
 Quillin a chance to clean up gracefully before it goes quiet.</p>
-<h3 id="capability-enforcement-two-levels">Capability enforcement — two
+<h3 id="capability-enforcement--two-levels">Capability enforcement — two
 levels</h3>
 <p><strong>Level 1: declared capabilities.</strong> A Quillin may only
 call API methods that correspond to capabilities it declared in its
@@ -5282,7 +5225,7 @@ setting to silence something they did not ask for.</p>
 button, and check or uncheck individual event subscriptions. The state
 is persisted per-Quillin in <code>state.json</code> and respected at
 dispatch time.</p>
-<h3 id="bundled-vs.-third-party-quillins">Bundled vs. third-party
+<h3 id="bundled-vs-third-party-quillins">Bundled vs. third-party
 Quillins</h3>
 <p>QUILL ships with trusted, first-party bundled Quillins (Tier C).
 Bundled Quillins have their non-consent capabilities pre-granted so they
@@ -5297,7 +5240,7 @@ Quillins, when enabled, go through the same capability gate and consent
 flow as the runtime enforces — there is no shortcut for any code
 origin.</p>
 <hr />
-<h2 id="developer-logging-api.log">Developer logging
+<h2 id="developer-logging-apilog">Developer logging
 (<code>api.log</code>)</h2>
 <p>Quillins with the <code>ui.log</code> capability may call
 <code>api.log(message)</code> to write structured log lines to the QUILL
@@ -5335,10 +5278,6 @@ single command:</p>
 <pre><code>python -m quill.tools.quillin_new com.example.myquillin &quot;My Quillin&quot; --out src/quillins/myquillin</code></pre>
 <p>Options:</p>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>Flag</th>
@@ -5370,5 +5309,6 @@ handlers</td>
 author, description, and exact capabilities needed) and
 <code>extension.py</code> (implement your logic), then lint with
 <code>python -m quill.tools.quillin_lint &lt;dir&gt; --strict</code>.</p>
+</main>
 </body>
 </html>

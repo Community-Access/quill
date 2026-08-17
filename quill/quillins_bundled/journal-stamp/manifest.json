@@ -146,8 +146,8 @@
                     "key": "wordcount_mode",
                     "label": "Announce word count",
                     "type": "choice",
-                    "default": "always",
-                    "description": "When to speak the word count after a save.",
+                    "default": "goal",
+                    "description": "When to speak the word count after a save. Defaults to speaking only once you set a daily goal below, so a plain Ctrl+S stays quiet unless you asked for the count.",
                     "choices": [
                       { "value": "always", "label": "After every save" },
                       { "value": "goal", "label": "Only when a daily goal is set" },

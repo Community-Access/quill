@@ -10,9 +10,13 @@ The reference implementation of the `document_events` contribution model introdu
 
 When you create a new document inside a folder whose path contains `journal`, `diary`, or `notes` (configurable), Journal Stamp automatically inserts a formatted date header and announces it. The format is fully configurable: long English, ISO 8601, US style, or a custom strftime pattern.
 
-### Word count after every save
+### Word count on save
 
-After every save, Journal Stamp speaks your word count. If you have set a daily word goal, it tells you how many words remain. Set it to 0 to hear just the count. Set the mode to Off to silence it entirely.
+Journal Stamp can speak your word count after each save. **This is off until you set a daily word goal** — the default mode is "Only when a daily goal is set", so a plain Ctrl+S stays quiet. Once a goal is set, the announcement tells you how many words remain, and says "goal reached" when you get there.
+
+Prefer to hear the count on every save regardless of a goal? Set the mode to "After every save" in Preferences. If you do, consider turning off Status Scribe's status-bar cell refresh or its own announcement, so you do not hear the same number twice in two phrasings.
+
+QUILL itself already says "Saved <name>" on every save, so Journal Stamp does not repeat the word "Saved".
 
 ### Session restore notice
 

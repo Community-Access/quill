@@ -131,20 +131,6 @@
                     "type": "boolean",
                     "default": false,
                     "description": "In addition to updating the status bar, speak the count aloud after every save."
-                  },
-                  {
-                    "key": "announce_priority",
-                    "label": "Announcement priority",
-                    "type": "choice",
-                    "default": "quiet",
-                    "description": "Screen reader urgency channel for the spoken count. 'quiet' lets it queue behind other speech.",
-                    "search_keywords": ["speech priority", "screen reader urgency"],
-                    "choices": [
-                      { "value": "quiet", "label": "Quiet (queued)" },
-                      { "value": "normal", "label": "Normal" },
-                      { "value": "urgent", "label": "Urgent (interrupts)" }
-                    ],
-                    "enabled_when": { "setting": "announce_on_save", "equals": true }
                   }
                 ]
               }
