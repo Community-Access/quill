@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>roadmap</title>
+  <title>QUILL — Plan of Record (outstanding work)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,9 +173,30 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="quill-plan-of-record-outstanding-work">QUILL — Plan of Record
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill--plan-of-record-outstanding-work">QUILL — Plan of Record
 (outstanding work)</h1>
 <blockquote>
 <p><strong>The single planning document — it tracks only what is still
@@ -208,7 +228,7 @@ and surfaced in Download Optional Components; completed sections —
 Accessible Vault, Quillin Hub, libmpv hosting — removed from this
 file).</p>
 <hr />
-<h2 id="north-star">0. North star</h2>
+<h2 id="0-north-star">0. North star</h2>
 <p>QUILL is a screen-reader-first writing environment, becoming the home
 for a family of accessibility products that Blind Information Technology
 Solutions (BITS) and CSE Designs built as separate apps. Rather than
@@ -223,9 +243,9 @@ invariants (atomic storage, the dialog contract, the announcement
 grammar, Safe Mode, the network-egress audit), and leave behind anything
 superseded or off-mission.</p>
 <hr />
-<h2 id="open-workstreams">1. Open workstreams</h2>
+<h2 id="1-open-workstreams">1. Open workstreams</h2>
 <h3
-id="ai-footprint-optimization-remaining-wiring-buildhardware-sign-off">1.1
+id="11-ai-footprint--optimization--remaining-wiring--buildhardware-sign-off">1.1
 AI footprint &amp; optimization — remaining wiring + build/hardware
 sign-off</h3>
 <p>The measurement-first effort to make QUILL’s full AI + speech feature
@@ -268,12 +288,12 @@ href="footprint/phase0-live-signoff-checklist.md"><code>phase0-live-signoff-chec
 <code>whisper-cli</code>, or Faster Whisper as the mac default — the
 tracked cross-platform gap.</li>
 </ul>
-<h3 id="glow-open-remainder">1.2 GLOW — open remainder</h3>
+<h3 id="12-glow--open-remainder">1.2 GLOW — open remainder</h3>
 <p>GLOW shipped for 0.9.0 (canonical: PRD §5.92, user guide, release
 notes). Open: only the <em>extended</em> family — ACB large-print
 document audit (#528–#534) and the WATCH-8 watch action (#566) — see
 §5.</p>
-<h3 id="platform-distribution">1.3 Platform &amp; distribution</h3>
+<h3 id="13-platform--distribution">1.3 Platform &amp; distribution</h3>
 <ul>
 <li><strong>Copilot OAuth deploy nicety</strong>: register a GitHub
 OAuth App and provide its client id via
@@ -287,12 +307,13 @@ shipped; canonical docs: <code>docs/signing.md</code>,
 modern primary-menu <code>IExplorerCommand</code> pass (SHELL-3,
 #525).</li>
 </ul>
-<h3 id="docs-tutorials-content">1.4 Docs, tutorials &amp; content</h3>
+<h3 id="14-docs-tutorials--content">1.4 Docs, tutorials &amp;
+content</h3>
 <p>One <strong>Documentation &amp; Tutorials</strong> track: user-guide
 coverage, getting-started tutorials, the podcast/walkthrough series, and
 content-quality follow-ups (#535–#564, #505, #522). Long-horizon
 ecosystem (#590) and collaboration (#592) ideas park here.</p>
-<h3 id="table-studio-open-follow-ups">1.5 Table Studio — open
+<h3 id="15-table-studio--open-follow-ups">1.5 Table Studio — open
 follow-ups</h3>
 <p>Table Studio shipped as an experimental opt-in (canonical: PRD
 §5.4.14, user guide, release notes; a macOS NSAccessibility bridge
@@ -301,13 +322,14 @@ design note is preserved at
 make the CSV a first-class editable <em>document tab</em> (retire the
 legacy <code>CsvGridSurface</code>), and a real screen-reader validation
 pass on a packaged build.</p>
-<h3 id="elevenlabs-remaining-2.0-extras">1.6 ElevenLabs — remaining 2.0
-extras</h3>
+<h3 id="16-elevenlabs--remaining-20-extras">1.6 ElevenLabs — remaining
+2.0 extras</h3>
 <p>Everything 1.0-scoped shipped. What remains is 2.0-deferred — live
 streaming Read Aloud refinements, voice management, server-side
 pronunciation, Tier-3 surfaces — all in §5. Voice
 <strong>cloning</strong> stays deliberately descoped.</p>
-<h3 id="internet-radio-remaining">1.7 Internet Radio — remaining</h3>
+<h3 id="17-internet-radio--remaining">1.7 Internet Radio —
+remaining</h3>
 <p>Internet Radio shipped (PR #987), including stream recording and
 in-app scheduled recording (0.9.0 Beta 3; canonical: PRD §5.84f, user
 guide, CHANGELOG). Not being built right now, parked for later: an
@@ -324,7 +346,7 @@ with stdlib <code>xml.etree.ElementTree</code> (matching
 directories, publications, SIG info, voice control) is out of scope —
 this feed is the one piece directly relevant to Radio.</p>
 <hr />
-<h2 id="locked-hidden-features-register">2. Locked / hidden features
+<h2 id="2-locked--hidden-features-register">2. Locked / hidden features
 (register)</h2>
 <p>These features are gated <code>locked_off=True</code> in
 <code>quill/core/feature_catalog.py</code> and must <strong>not</strong>
@@ -384,7 +406,7 @@ now the flat <strong>Tools &gt; Speech</strong> menu and a plain
 “private, on-device speech suite,” with no brand to restore.</p>
 </blockquote>
 <hr />
-<h2 id="release-gap-list-path-to-green">3. Release gap list (path to
+<h2 id="3-release-gap-list-path-to-green">3. Release gap list (path to
 green)</h2>
 <p>What’s left between QUILL and a <strong>green, release-ready</strong>
 state is now just <strong>routine validation</strong>, handled in the
@@ -408,7 +430,7 @@ href="../qa/converter-bakeoff.md"><code>docs/qa/converter-bakeoff.md</code></a>.
 <p>Excluded per direction: all table work (§1.5 + the CSV-grid half of
 #514).</p>
 <hr />
-<h2 id="planned-phase-outcomes">4. Planned phase outcomes</h2>
+<h2 id="4-planned-phase-outcomes">4. Planned phase outcomes</h2>
 <p>What the user will notice as the remaining open work lands,
 screen-reader experience first.</p>
 <ul>
@@ -422,7 +444,7 @@ real hardware (§1.1), macOS offline-speech parity, better docs/tutorials
 platforms.</em></li>
 </ul>
 <hr />
-<h2 id="deferred-to-quill-2.0">5. Deferred to QUILL 2.0</h2>
+<h2 id="5-deferred-to-quill-20">5. Deferred to QUILL 2.0</h2>
 <p>Confirmed out of 1.0 scope. Recorded so the intent is not lost; items
 graduate into the open sections above when scheduled.</p>
 <ul>
@@ -493,7 +515,7 @@ speculative slice of the ~100 addenda (#405–#504) beyond the shipped
 core/UI/modes/anti-spam; the shipped design lives in <strong>PRD
 §5.91</strong>. Full backlog below.</li>
 </ul>
-<h3 id="verbosity-2.0-polish-backlog-consolidated">Verbosity 2.0 polish
+<h3 id="verbosity-20-polish-backlog-consolidated">Verbosity 2.0 polish
 backlog (consolidated)</h3>
 <p>The verbosity engine and its full 1.0 surface shipped (design in
 <strong>PRD §5.91</strong>). This is the consolidated reference for the
@@ -558,13 +580,9 @@ fight its settings): <strong>typing echo (#411)</strong>,
 (#450)</strong>, and <strong>punctuation / symbol profiles
 (#426)</strong>.</p>
 <hr />
-<h2 id="feature-ledger-open-work-by-workstream">6. Feature ledger (open
-work by workstream)</h2>
+<h2 id="6-feature-ledger-open-work-by-workstream">6. Feature ledger
+(open work by workstream)</h2>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>Workstream</th>
@@ -608,7 +626,7 @@ validation pass.</td>
 </tr>
 <tr>
 <td>Internet Radio (§1.7)</td>
-<td><strong>Shipped 0.9.0 Beta 3</strong> (incl. recording +
+<td><strong>Shipped 0.9.0 Beta 3</strong> (incl. recording +
 scheduling). Open: ACB Media events/meetings calendar feed.</td>
 </tr>
 <tr>
@@ -626,8 +644,8 @@ removed).</td>
 </tbody>
 </table>
 <hr />
-<h2 id="unified-github-management-deferred-items-2026-07-11">7. Unified
-GitHub Management — deferred items (2026-07-11)</h2>
+<h2 id="7-unified-github-management--deferred-items-2026-07-11">7.
+Unified GitHub Management — deferred items (2026-07-11)</h2>
 <p>The GHManage + fastgh unification review merged two tranches into the
 GitHub Items viewer in 0.9.0 Beta 3 (tranche 1: pinned repositories,
 favorites, full GitHub-search-syntax filtering, local git sync; tranche
@@ -655,5 +673,6 @@ snappiness.</li>
 <li><strong>Context sharing</strong> — let QUILL agents read the current
 view for coding tasks.</li>
 </ul>
+</main>
 </body>
 </html>

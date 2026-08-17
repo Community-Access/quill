@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>04-document-to-audiobook</title>
+  <title>Tutorial 4: From document to published audiobook — voices, Read
+Aloud, and the Audio Studio</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,10 +174,31 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
-id="tutorial-4-from-document-to-published-audiobook-voices-read-aloud-and-the-audio-studio">Tutorial
+id="tutorial-4-from-document-to-published-audiobook--voices-read-aloud-and-the-audio-studio">Tutorial
 4: From document to published audiobook — voices, Read Aloud, and the
 Audio Studio</h1>
 <p><strong>Goal:</strong> hear your document in the voice you want, then
@@ -187,7 +208,7 @@ book, fix its chapters by ear, and publish the result — plus DAISY for
 accessible book players.</p>
 <p>Everything here is keyboard-first and announced; a screen reader
 narrates every step, and nothing is applied without your review.</p>
-<h2 id="pick-a-voice">1. Pick a voice</h2>
+<h2 id="1-pick-a-voice">1. Pick a voice</h2>
 <p><strong>Tools &gt; Speech &gt; Speech and Dictation…</strong> opens
 the speech hub. QUILL’s voice lineup spans eras:</p>
 <ul>
@@ -206,7 +227,7 @@ catalog, including Edge’s online natural voices. QUILL states plainly
 that online browser voices synthesize in the vendor’s cloud.</li>
 </ul>
 <p>Every download is checksum-verified with visible progress.</p>
-<h2 id="read-aloud">2. Read aloud</h2>
+<h2 id="2-read-aloud">2. Read aloud</h2>
 <p>Select text (or just place the caret) and use <strong>Tools &gt;
 Reading &amp; Dictation &gt; Read Aloud</strong>. Stop on a key. Try the
 same paragraph in two or three engines — voices are a taste, and QUILL
@@ -219,7 +240,7 @@ hand-written tags — and plays natively on SAPI 5 and eSpeak NG.</p>
 in the background. WAV always works; with the <strong>ffmpeg</strong>
 helper installed (Help &gt; Download Optional Components), you also get
 <strong>MP3, M4A, M4B, OGG, Opus, FLAC</strong>.</p>
-<h2 id="open-the-audio-studio-and-pick-a-journey">3. Open the Audio
+<h2 id="3-open-the-audio-studio-and-pick-a-journey">3. Open the Audio
 Studio and pick a journey</h2>
 <p>For anything bigger than one file, <strong>Tools &gt; Speech &gt;
 Audio Studio…</strong> is the workshop (also in the command palette,
@@ -238,7 +259,7 @@ is announced (“Step 2 of 7: What should I read?”), <strong>Back</strong>
 and <strong>Next</strong> move between steps, and <strong>Skip to
 summary</strong> fast-forwards when a saved project profile already
 fills every page — a repeat run is three keystrokes.</p>
-<h2 id="journey-one-narrate-documents">4. Journey one: narrate
+<h2 id="4-journey-one-narrate-documents">4. Journey one: narrate
 documents</h2>
 <p>Point <strong>What should I read?</strong> at a folder of documents
 (Word, Markdown, HTML, text). Filters, subfolders, and a size cap keep
@@ -279,7 +300,7 @@ file</strong> (a portable <code>.quilljob</code> that pins the entire
 run — load it on the first page next time, or edit it in Notepad), and
 press <strong>Start</strong>. Progress is announced, per-file,
 cancelable, and minimizable to the status bar.</p>
-<h2 id="journey-two-combine-a-folder-of-recordings">5. Journey two:
+<h2 id="5-journey-two-combine-a-folder-of-recordings">5. Journey two:
 combine a folder of recordings</h2>
 <p>Recorded a memoir chapter per session? Point the combine journey at
 the folder: each file becomes a chapter titled from its name, and you
@@ -292,7 +313,7 @@ builds every subfolder as its own audiobook, unattended, each titled
 after its folder; and the <strong>watch action</strong> (“Build
 audiobook from the folder”) rebuilds a watched folder’s master
 automatically whenever new recordings land.</p>
-<h2 id="journey-three-the-chapter-workbench">6. Journey three: the
+<h2 id="6-journey-three-the-chapter-workbench">6. Journey three: the
 Chapter Workbench</h2>
 <p>Open any chaptered MP3 or M4B — or a chapterless three-hour
 recording, which opens as one big chapter, ready to carve.</p>
@@ -336,7 +357,7 @@ that the embedded QUILL workbench exposes only as the Mute button. Your
 library there is a tree (Favorites, In Progress, Recently Played, Inbox,
 plus your own folders), and the Studio can resume the last book at its
 saved position when you launch it.</p>
-<h2 id="publish-it">7. Publish it</h2>
+<h2 id="7-publish-it">7. Publish it</h2>
 <p>The Workbench’s <strong>Publish…</strong> button offers explicit,
 consent-first paths:</p>
 <ul>
@@ -362,14 +383,14 @@ Services</strong>.</li>
 </ul>
 <p>Build the episode, regenerate the feed, upload both — the entire show
 runs from QUILL.</p>
-<h2 id="daisy-talking-books">8. DAISY talking books</h2>
+<h2 id="8-daisy-talking-books">8. DAISY talking books</h2>
 <p><strong>File &gt; Export &gt; DAISY Talking Book</strong> writes a
 DAISY 2.02 text-only talking book — the standard for accessible book
 players and library services. Your headings become the DAISY navigation
 structure, so build a clean heading outline first (GLOW will happily
 check it: <a href="06-make-it-accessible-with-glow.md">tutorial
 6</a>).</p>
-<h2 id="round-trip-audio-in">9. Round trip: audio in</h2>
+<h2 id="9-round-trip-audio-in">9. Round trip: audio in</h2>
 <p>The same suite works in reverse — <code>Ctrl+F9</code> dictates
 offline via Whisper, and <strong>transcription</strong> turns a
 recording into a document privately. Feed a transcript to the
@@ -378,5 +399,6 @@ items, or a summary, reviewably. QUILL Cast episode 24 walks this whole
 tutorial by ear.</p>
 <p><strong>Next:</strong> <a href="05-start-a-vault.md">Start an
 Accessible Vault</a>.</p>
+</main>
 </body>
 </html>

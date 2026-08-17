@@ -205,31 +205,7 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
-<h2 id="unreleased">Unreleased</h2>
-<p>Landed after the 3.0.0 build of 2026-08-17; in the next build.</p>
-<h3 id="fixed">Fixed</h3>
-<ul>
-<li><strong>Quick-play keys 1–6 actually fire now.</strong> The
-QuillVille menu’s “Open <app>” rows claimed
-<strong>Ctrl+Alt+Shift+1–3</strong> and <strong>Sort Favorites</strong>
-claimed <strong>4–6</strong> — on top of the quick-play favorites those
-chords belong to, so one of each pair silently never fired. The
-launchers moved to <strong>Ctrl+Alt+Shift+F1–F3</strong> and Sort
-Favorites to <strong>F4–F6</strong>; quick-play keeps
-<strong>Ctrl+Alt+Shift+1–0</strong> exactly as documented. The conflict
-became visible the moment the Favorites submenu started advertising its
-real bindings, and the menu gate now tests a profile <em>with</em>
-favorites so this class cannot return.</li>
-<li><strong>The Favorite Stations submenu shows its keys.</strong> Its
-rows offered no keyboard route at all — the cost the menu rule exists to
-prevent, missed because the gate walked an empty profile. The first ten
-favorites (the quick-play slots, same order) now advertise their chords
-and follow your rebinding; past ten, a disabled readout names how many
-more live in Manage Favorites, one keystroke away. The nested-folder
-mirror this replaces looked richer and could not be <em>reached</em> —
-the full folder view remains in Manage Favorites and the main tree.</li>
-</ul>
-<h2 id="300---2026-08-15">[3.0.0] - 2026-08-15</h2>
+<h2 id="300---2026-08-17">[3.0.0] - 2026-08-17</h2>
 <p>Major: Browse Stations becomes a browsable directory rather than a
 list of sources, the whole station directory now ships inside the app
 and answers locally (the Station Catalog), podcasts arrive keylessly,
@@ -237,6 +213,48 @@ transcripts gain timings, and three long-standing silent faults are
 fixed. See <code>docs/release-notes-3.0.md</code>.</p>
 <h3 id="added">Added</h3>
 <ul>
+<li><p><strong>The Data Folder, from Preferences.</strong> Preferences
+(Ctrl+,) gains a <strong>Data Folder…</strong> button: point the
+family-wide data location at a folder Dropbox, OneDrive, Google Drive,
+or iCloud already keeps in sync, and your settings, favorites,
+subscriptions, and playback positions travel between computers — no
+account, no API; the sync client does the moving. Your existing data is
+moved for you on the next launch (a restart is offered), every Quill app
+applies a queued move at its own next start, the machine-heavy caches
+(like the Station Catalog) deliberately stay per computer, and a launch
+that finds the folder freshly in use on another machine says so instead
+of silently splitting the profile.</p></li>
+<li><p><strong>Subscriptions, findable at last.</strong> Subscribing to
+a podcast used to file it in the shared library and then have nowhere to
+show it — “It is waiting in Quill Cast” was the whole answer. The
+Podcasts branch now leads with a <strong>Subscriptions</strong> folder:
+one folder per show you follow, each expanding to its newest episodes,
+played and downloaded like anything else in the tree. One preference
+governs how many episodes each show lists (<strong>Ctrl+,</strong>, 25
+newest by default; the full archive and the rich machinery — automatic
+downloads, retention, the queue — stay Quill Cast’s job, on
+purpose).</p></li>
+<li><p><strong>Unsubscribe, from the same slot that subscribed.</strong>
+A show you already follow used to offer “Already Subscribed” — a menu
+item whose only power was to repeat itself. It now reads
+<strong>Unsubscribe from This Podcast</strong> and does exactly that, in
+the directory rows and the Subscriptions folder alike.</p></li>
+<li><p><strong>Subscribing now hands Quill Cast the show’s artwork and
+site link.</strong> A show followed from Radio used to arrive in Cast as
+a bare title; the same lookup that resolves the feed now carries the
+tile and homepage along.</p></li>
+<li><p><strong>What Radio heard, Cast now learns.</strong> Playing a
+subscribed show’s episode in Radio quietly records how far you got (and
+whether you finished); Quill Cast folds those records in at its next
+launch, so an episode heard over lunch in Radio stops presenting as
+brand new in Cast’s Inbox and shows its real place in Continue
+Listening. A handoff file, deliberately – Radio never writes Cast’s own
+stores, so nothing can be clobbered whichever app is open.</p></li>
+<li><p><strong>Move Up / Move Down joined the favorites context
+menu.</strong> The <strong>Alt+Shift+Up/Down</strong> reordering chords
+already worked, but a shortcut only a document mentions is a shortcut
+most listeners never hear about; the menu now carries both, and says the
+keys.</p></li>
 <li><p><strong>The Station Catalog</strong>
 (<code>quill/core/radio/catalog/</code>): the full station directory
 shipped in the app (~7.5 MB seed, hard 10 MB build gate) and served
@@ -557,48 +575,72 @@ capability rather than a status code.</p></li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
-<li><strong>Browse sources moved behind one contract</strong>
+<li><p><strong>The Weather menu is gone.</strong> Weather stands alone
+in the <strong>Quill Weather</strong> app (one keystroke away on the
+QuillVille menu); Quill Radio no longer carries the forecast menu or
+resumes background alert monitoring at launch. The radio part stays: the
+<strong>Weather / NOAA</strong> transmitter branch of Browse Stations is
+untouched.</p></li>
+<li><p><strong>Folder context menus tell the truth.</strong> An expanded
+folder’s first item now reads <strong>Close</strong> rather than a
+second, do-nothing “Open”; and “Add All … to Favorites” appears only
+when episodes are actually loaded under the row, instead of offering to
+add nothing.</p></li>
+<li><p><strong>Browse sources moved behind one contract</strong>
 (<code>quill/core/radio/browse_sources.py</code>). The Browse window no
 longer knows the shape of any source; it renders folders and leaves.
 Adding a source is one registry entry and one handler, not a node kind
 plus edits in six places. <code>browse_tree_dialog.py</code> is 199
 lines smaller while the tree it serves grew from thirteen root branches
 to twenty-eight, and its GATE-11 budget was <strong>ratcheted
-down</strong> to match.</li>
-<li><strong>An empty branch distinguishes “nothing here” from “could not
-be reached”</strong>, and Safe Mode says so per branch rather than
-showing an empty folder.</li>
-<li><strong>A folder announces its child count before it is
-opened</strong> where the source supplies one cheaply.</li>
-<li><strong>Xiph genres are offered in the directory’s own use
+down</strong> to match.</p></li>
+<li><p><strong>An empty branch distinguishes “nothing here” from “could
+not be reached”</strong>, and Safe Mode says so per branch rather than
+showing an empty folder.</p></li>
+<li><p><strong>A folder announces its child count before it is
+opened</strong> where the source supplies one cheaply.</p></li>
+<li><p><strong>Xiph genres are offered in the directory’s own use
 order</strong> (most-used first), filtered to plausible genres, and
-bounded to the top 120 rather than ~3,400 free-text strings.</li>
-<li><strong><code>browse_tree_helpers</code> moved from
+bounded to the top 120 rather than ~3,400 free-text strings.</p></li>
+<li><p><strong><code>browse_tree_helpers</code> moved from
 <code>quill/ui/radio/</code> to <code>quill/core/radio/</code></strong>
 as <code>browse_helpers</code>, since the (core) browse registry needs
-it and core must not import from the UI layer.</li>
-<li><strong>The NOAA Weather Radio user agent is derived from the
+it and core must not import from the UI layer.</p></li>
+<li><p><strong>The NOAA Weather Radio user agent is derived from the
 package version</strong> instead of a hard-coded <code>2.1.1</code> that
-had been stale for two releases.</li>
+had been stale for two releases.</p></li>
 </ul>
-<h3 id="removed">Removed</h3>
+<h3 id="fixed">Fixed</h3>
 <ul>
-<li><strong>Explore’s By Owner axis is gone</strong> (2026-08-17). It
-was the only remaining axis Radio Browser cannot answer for itself –
-ownership is not a field it carries – so an owner folder could be filled
-only by matching Wikidata’s call signs one at a time against the
-directory, and about three folders in four opened to nothing, or to a
-fraction of the company they named. The listener spends the same
-keystrokes whether the folder pays off or not, so an axis that pays off
-a quarter of the time is worse than one not offered. Same conclusion as
-<strong>By Network</strong> one level lower down: that one could be
-counted as empty before opening (P449: two US stations), this one
-counted fine and failed at the leaf. By City, By Format and On the Dial
-are unaffected, and no favorite, custom station or recording is touched
-– every stream always came from Radio Browser.</li>
-</ul>
-<h3 id="fixed-1">Fixed</h3>
-<ul>
+<li><p><strong>Shift+F10 on the favorites tree showed the window
+list.</strong> The shared Window menu rebuilt itself into any menu whose
+title was empty — and popup context menus have empty titles, so the
+favorites context menu opened and was instantly overwritten with “1
+Quill Radio…”. The Window menu is now matched by identity, and context
+menus keep their own items.</p></li>
+<li><p><strong>The About window stopped claiming radio plays inside
+QUILL.</strong> It no longer does; About says what Quill Radio is
+now.</p></li>
+<li><p><strong>Quick-play keys 1–6 actually fire now.</strong> The
+QuillVille menu’s “Open <app>” rows claimed
+<strong>Ctrl+Alt+Shift+1–3</strong> and <strong>Sort Favorites</strong>
+claimed <strong>4–6</strong> — on top of the quick-play favorites those
+chords belong to, so one of each pair silently never fired. The
+launchers moved to <strong>Ctrl+Alt+Shift+F1–F3</strong> and Sort
+Favorites to <strong>F4–F6</strong>; quick-play keeps
+<strong>Ctrl+Alt+Shift+1–0</strong> exactly as documented. The conflict
+became visible the moment the Favorites submenu started advertising its
+real bindings, and the menu gate now tests a profile <em>with</em>
+favorites so this class cannot return.</p></li>
+<li><p><strong>The Favorite Stations submenu shows its keys.</strong>
+Its rows offered no keyboard route at all — the cost the menu rule
+exists to prevent, missed because the gate walked an empty profile. The
+first ten favorites (the quick-play slots, same order) now advertise
+their chords and follow your rebinding; past ten, a disabled readout
+names how many more live in Manage Favorites, one keystroke away. The
+nested-folder mirror this replaces looked richer and could not be
+<em>reached</em> — the full folder view remains in Manage Favorites and
+the main tree.</p></li>
 <li><p><strong>Shift+F10 and the Applications key opened no context menu
 at all.</strong> The browse tree took its row from
 <code>EVT_TREE_ITEM_MENU</code>, which names its item by hit-testing the
@@ -770,6 +812,22 @@ states”.</p></li>
 genre</strong>, so filtering a chart by a top-level genre matched
 nothing until the filter was widened to the genre’s whole
 subtree.</p></li>
+</ul>
+<h3 id="removed">Removed</h3>
+<ul>
+<li><strong>Explore’s By Owner axis is gone</strong> (2026-08-17). It
+was the only remaining axis Radio Browser cannot answer for itself –
+ownership is not a field it carries – so an owner folder could be filled
+only by matching Wikidata’s call signs one at a time against the
+directory, and about three folders in four opened to nothing, or to a
+fraction of the company they named. The listener spends the same
+keystrokes whether the folder pays off or not, so an axis that pays off
+a quarter of the time is worse than one not offered. Same conclusion as
+<strong>By Network</strong> one level lower down: that one could be
+counted as empty before opening (P449: two US stations), this one
+counted fine and failed at the leaf. By City, By Format and On the Dial
+are unaffected, and no favorite, custom station or recording is touched
+– every stream always came from Radio Browser.</li>
 </ul>
 <h3 id="security">Security</h3>
 <ul>
@@ -1214,7 +1272,7 @@ entered them, and each row shows the stream’s host in brackets so two
 similar entries – or a duplicate still pointing at the original station
 – are easy to tell apart. (#1220)</li>
 </ul>
-<h4 id="fixed-2">Fixed</h4>
+<h4 id="fixed-1">Fixed</h4>
 <ul>
 <li><p><strong>Seeking a finished YouTube video no longer reports a live
 edge that does not exist.</strong> <strong>Rewind / Forward 30
@@ -1403,7 +1461,7 @@ button, so pressing Enter reflexively destroyed the thing. Enter is now
 always the safe answer and you choose Yes deliberately. A build check
 keeps it that way.</li>
 </ul>
-<h4 id="fixed-3">Fixed</h4>
+<h4 id="fixed-2">Fixed</h4>
 <ul>
 <li><strong>Launching Quill Radio no longer crashes on a stray
 keystroke.</strong> A key pressed at the wrong moment during launch
@@ -1448,7 +1506,7 @@ Releases are not yet code-signed (SmartScreen may caution on first run);
 signing is planned.</li>
 </ul>
 <h2 id="212">[2.1.2]</h2>
-<h3 id="fixed-4">Fixed</h3>
+<h3 id="fixed-3">Fixed</h3>
 <ul>
 <li>One-click updating works again (the update installer no longer
 rejects a legitimately app-sized download as a “decompression
@@ -1479,7 +1537,7 @@ searching every directory. Type a name, press Enter, and matches appear
 as a flat list under that folder; <strong>Clear</strong> puts you back
 where you started.</li>
 </ul>
-<h3 id="fixed-5">Fixed</h3>
+<h3 id="fixed-4">Fixed</h3>
 <ul>
 <li>The Source filter no longer hides a station carried by more than one
 directory.</li>
@@ -1498,7 +1556,7 @@ favorites, recordings, and settings.</li>
 <li>Reorder favorites from the keyboard (Alt+Shift+Up / Alt+Shift+Down)
 in manual order.</li>
 </ul>
-<h3 id="fixed-6">Fixed</h3>
+<h3 id="fixed-5">Fixed</h3>
 <ul>
 <li>Quill Radio no longer opens a second copy of itself. The Record
 button reads Stop Recording while recording. Volume changes are quiet
@@ -1519,12 +1577,12 @@ Limiter), adapted with credit from OptiLab Core by dgl1984
 <li>Favorites sort order (Ascending, Descending, Unsorted) with
 per-folder overrides. M3U/M3U8 playlist import.</li>
 </ul>
-<h3 id="fixed-7">Fixed</h3>
+<h3 id="fixed-6">Fixed</h3>
 <ul>
 <li>Channel mode Left/Right now plays in one ear only.</li>
 </ul>
 <h2 id="201">[2.0.1]</h2>
-<h3 id="fixed-8">Fixed</h3>
+<h3 id="fixed-7">Fixed</h3>
 <ul>
 <li>A recording no longer stops after a minute on a transient hiccup;
 only a genuinely terminal failure (full disk, HTTP 404/410/451) stops a
@@ -1610,7 +1668,7 @@ station search (up to 200 results).</li>
 second station directory (SomaFM). Automatic Check for Updates. A
 Preferences dialog. In-app documentation in the Help menu.</li>
 </ul>
-<h3 id="fixed-9">Fixed</h3>
+<h3 id="fixed-8">Fixed</h3>
 <ul>
 <li>Volume keys work from the Favorites tree, and volume stays put
 across play/pause.</li>

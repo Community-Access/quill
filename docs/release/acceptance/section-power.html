@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-power</title>
+  <title>Section — Power-user commands (`power.*`, 75 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,9 +173,30 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="section-power-user-commands-power.-75-commands">Section —
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="section--power-user-commands-power-75-commands">Section —
 Power-user commands (<code>power.*</code>, 75 commands)</h1>
 <p>The <strong>power tools</strong>: keyboard-first text surgery,
 encoding and HTML utilities, line transforms, abbreviation expansion,
@@ -212,428 +232,571 @@ onto the machine first): <code>plain.txt</code>,
 <code>compare-original.txt</code>.</p>
 <hr />
 <h2
-id="pow-01-insert-special-character-power.insert_special_character-shiftf2">POW-01
+id="pow-01--insert-special-character-powerinsert_special_character-shiftf2">POW-01
 — Insert Special Character (<code>power.insert_special_character</code>,
 Shift+F2)</h2>
 <p><em>What &amp; why.</em> Insert any Unicode character by its code
 point when you cannot type it — an em dash, a Greek letter, an
 arrow.</p>
-<p><strong>Before you start</strong> - <code>plain.txt</code> open; put
-the caret somewhere in the text. - Input: the code point
-<strong><code>2014</code></strong> (that is EM DASH,
-<code>—</code>).</p>
-<p><strong>Do this</strong> 1. Press <strong>Shift+F2</strong>, or
-<strong>Insert menu (Alt, I) ▸ Special Character…</strong>. 2. In the
-<strong>“Unicode code point (hex, d-prefix for decimal, or
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open; put the caret somewhere in the
+text.</li>
+<li>Input: the code point <strong><code>2014</code></strong> (that is EM
+DASH, <code>—</code>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Shift+F2</strong>, or <strong>Insert menu (Alt, I) ▸
+Special Character…</strong>.</li>
+<li>In the <strong>“Unicode code point (hex, d-prefix for decimal, or
 U+):”</strong> field type <strong><code>2014</code></strong>; press
-<strong>Enter</strong>.</p>
-<p><strong>You should see and hear</strong> - An em dash
-<strong><code>—</code></strong> is inserted at the caret and the
-status/announcement reads <strong>“Inserted U+2014”</strong>. Hex is the
-default; <code>d8212</code> (decimal) or <code>U+2014</code> are also
-accepted. A nonsense value is rejected with a spoken error, not a
-crash.</p>
+<strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>An em dash <strong><code>—</code></strong> is inserted at the caret
+and the status/announcement reads <strong>“Inserted U+2014”</strong>.
+Hex is the default; <code>d8212</code> (decimal) or <code>U+2014</code>
+are also accepted. A nonsense value is rejected with a spoken error, not
+a crash.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-02-insert-file-content-power.insert_file_content">POW-02 —
+<h2 id="pow-02--insert-file-content-powerinsert_file_content">POW-02 —
 Insert File Content (<code>power.insert_file_content</code>)</h2>
 <p><em>What &amp; why.</em> Drop the text of another file into the
 current document at the caret, without leaving the editor.</p>
-<p><strong>Before you start</strong> - A new empty document; caret at
-the start. - You will insert <strong><code>plain.txt</code></strong>
-from <code>qa-samples</code>.</p>
-<p><strong>Do this</strong> 1. <strong>Insert menu ▸ File
-Content…</strong>. 2. In the file dialog, choose
-<strong><code>plain.txt</code></strong>; press
-<strong>Enter</strong>.</p>
-<p><strong>You should see and hear</strong> - The three paragraphs of
-<code>plain.txt</code> appear at the caret; the announcement reads
-<strong>“Inserted contents of plain.txt”</strong>. QUILL auto-detects
-the text encoding (UTF-8 / UTF-16 / Latin-1 fallback), so accented text
-comes in readable.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A new empty document; caret at the start.</li>
+<li>You will insert <strong><code>plain.txt</code></strong> from
+<code>qa-samples</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Insert menu ▸ File Content…</strong>.</li>
+<li>In the file dialog, choose <strong><code>plain.txt</code></strong>;
+press <strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The three paragraphs of <code>plain.txt</code> appear at the caret;
+the announcement reads <strong>“Inserted contents of
+plain.txt”</strong>. QUILL auto-detects the text encoding (UTF-8 /
+UTF-16 / Latin-1 fallback), so accented text comes in readable.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-03-insert-table-of-contents-power.insert_table_of_contents">POW-03
+id="pow-03--insert-table-of-contents-powerinsert_table_of_contents">POW-03
 — Insert Table of Contents
 (<code>power.insert_table_of_contents</code>)</h2>
 <p><em>What &amp; why.</em> Build a table of contents straight from the
 document’s headings — no AI, always exactly matching the headings
 present.</p>
-<p><strong>Before you start</strong> - Open
-<strong><code>formatting.md</code></strong> (it has one heading of each
-level, H1–H6). Put the caret at the very top.</p>
-<p><strong>Do this</strong> 1. <strong>Insert menu ▸ Table of
-Contents</strong>.</p>
-<p><strong>You should see and hear</strong> - A TOC built from the six
-ATX headings is inserted; the announcement reads <strong>“Inserted table
-of contents (6 headings)”</strong>. On a document with no headings it
-does nothing and says <strong>“No headings were found to build a table
-of contents”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong> (it has one heading
+of each level, H1–H6). Put the caret at the very top.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Insert menu ▸ Table of Contents</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A TOC built from the six ATX headings is inserted; the announcement
+reads <strong>“Inserted table of contents (6 headings)”</strong>. On a
+document with no headings it does nothing and says <strong>“No headings
+were found to build a table of contents”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-04-insert-image-power.insert_image-ctrlalti">POW-04 — Insert
+<h2 id="pow-04--insert-image-powerinsert_image-ctrlalti">POW-04 — Insert
 Image… (<code>power.insert_image</code>, Ctrl+Alt+I)</h2>
 <p><em>What &amp; why.</em> Insert an image with <strong>mandatory alt
 text</strong> (or an explicit “decorative” choice) — the one insertion
 path built so no image ships unlabelled.</p>
-<p><strong>Before you start</strong> - <code>formatting.md</code> open
-(a Markdown document, so the result is Markdown image syntax). Caret on
-a blank line. Have any image file path ready (the
-<code>red-circle.png</code> reference from the samples is fine even if
-the binary is absent).</p>
-<p><strong>Do this</strong> 1. Press <strong>Ctrl+Alt+I</strong>, or
-<strong>Insert menu ▸ Image…</strong>. 2. In the dialog, choose an image
-file; type alt text <strong><code>Red circle</code></strong> in the
-Alt-text field (or tick <strong>Decorative</strong>); confirm.</p>
-<p><strong>You should see and hear</strong> - Every field is labelled
-and keyboard-reachable; the Alt-text field is required unless Decorative
-is ticked. On confirm, Markdown image markup with the alt text is
-inserted and the status reads <strong>“Image inserted (md).”</strong>
-(In an HTML document the dialog offers width/height/caption and the
-status reads <strong>“…(html).”</strong>) If an AI provider is
-connected, a <strong>Suggest alt text</strong> control may appear — that
-part is <strong>[GATED]</strong> on AI and may be marked
-<strong>Blocked</strong>; the manual path must still work.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open (a Markdown document, so the result
+is Markdown image syntax). Caret on a blank line. Have any image file
+path ready (the <code>red-circle.png</code> reference from the samples
+is fine even if the binary is absent).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+I</strong>, or <strong>Insert menu ▸
+Image…</strong>.</li>
+<li>In the dialog, choose an image file; type alt text
+<strong><code>Red circle</code></strong> in the Alt-text field (or tick
+<strong>Decorative</strong>); confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Every field is labelled and keyboard-reachable; the Alt-text field
+is required unless Decorative is ticked. On confirm, Markdown image
+markup with the alt text is inserted and the status reads <strong>“Image
+inserted (md).”</strong> (In an HTML document the dialog offers
+width/height/caption and the status reads <strong>“…(html).”</strong>)
+If an AI provider is connected, a <strong>Suggest alt text</strong>
+control may appear — that part is <strong>[GATED]</strong> on AI and may
+be marked <strong>Blocked</strong>; the manual path must still
+work.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-05-snippet-gallery-power.open_snippet_gallery-ctrlshiftgrave-then-shiftg">POW-05
+id="pow-05--snippet-gallery-poweropen_snippet_gallery-ctrlshiftgrave-then-shiftg">POW-05
 — Snippet Gallery… (<code>power.open_snippet_gallery</code>,
 Ctrl+Shift+Grave then Shift+G)</h2>
 <p><em>What &amp; why.</em> Browse reusable snippets contributed by
 Quillin extensions and insert one at the caret.</p>
-<p><strong>Before you start</strong> - Any document open. The chord is a
-two-step: press <strong>Ctrl+Shift+Grave</strong>, release, then
-<strong>Shift+G</strong>. (Grave is the backtick key, top-left.)</p>
-<p><strong>Do this</strong> 1. Open the command via the chord, or
-<strong>Insert menu ▸ Snippet Gallery…</strong>. 2. Arrow through the
-<strong>Gallery snippets</strong> list; read the
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open. The chord is a two-step: press
+<strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>Shift+G</strong>. (Grave is the backtick key, top-left.)</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the command via the chord, or <strong>Insert menu ▸ Snippet
+Gallery…</strong>.</li>
+<li>Arrow through the <strong>Gallery snippets</strong> list; read the
 <strong>Preview</strong>; press <strong>Insert</strong> (Enter) on one,
-or <strong>Escape</strong> to cancel.</p>
-<p><strong>You should see and hear</strong> - A dialog with a labelled
-snippet list, a read-only <strong>Preview</strong> pane, and
-<strong>Insert / Cancel</strong> buttons — all keyboard-reachable.
-Insert drops the snippet at the caret. If no Quillin contributes gallery
-snippets, the command says <strong>“No gallery snippets are
-available.”</strong> rather than opening an empty dialog (mark
-<strong>N/A</strong> for the gallery if your build ships none).</p>
+or <strong>Escape</strong> to cancel.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A dialog with a labelled snippet list, a read-only
+<strong>Preview</strong> pane, and <strong>Insert / Cancel</strong>
+buttons — all keyboard-reachable. Insert drops the snippet at the caret.
+If no Quillin contributes gallery snippets, the command says <strong>“No
+gallery snippets are available.”</strong> rather than opening an empty
+dialog (mark <strong>N/A</strong> for the gallery if your build ships
+none).</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-06-paste-html-as-markdown-power.paste_html_as_markdown-ctrlshiftgrave-then-m">POW-06
+id="pow-06--paste-html-as-markdown-powerpaste_html_as_markdown-ctrlshiftgrave-then-m">POW-06
 — Paste HTML as Markdown (<code>power.paste_html_as_markdown</code>,
 Ctrl+Shift+Grave then M)</h2>
 <p><em>What &amp; why.</em> Convert rich HTML on the clipboard (copied
 from a web page) into clean Markdown and paste it at the caret.</p>
-<p><strong>Before you start</strong> - Open a web page or
-<code>sample.html</code> in a browser and <strong>copy</strong> a chunk
-that includes a heading, a list, and a link, so the clipboard carries
-real HTML. - New empty Markdown document; caret at the start. Chord:
-<strong>Ctrl+Shift+Grave</strong>, release, then <strong>M</strong>.</p>
-<p><strong>Do this</strong> 1. Trigger the command via the chord, or
-<strong>Edit menu (Alt, E) ▸ Paste HTML as Markdown</strong>.</p>
-<p><strong>You should see and hear</strong> - The HTML is converted to
-Markdown (headings become <code>#</code>, lists become
-<code>-</code>/<code>1.</code>, links become <code>[text](url)</code>)
-and inserted at the caret; the status reads <strong>“Pasted HTML as
-Markdown”</strong>. If the clipboard has only plain text it is treated
-as HTML; an empty clipboard says <strong>“Clipboard is
-empty”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open a web page or <code>sample.html</code> in a browser and
+<strong>copy</strong> a chunk that includes a heading, a list, and a
+link, so the clipboard carries real HTML.</li>
+<li>New empty Markdown document; caret at the start. Chord:
+<strong>Ctrl+Shift+Grave</strong>, release, then
+<strong>M</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Trigger the command via the chord, or <strong>Edit menu (Alt, E) ▸
+Paste HTML as Markdown</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The HTML is converted to Markdown (headings become <code>#</code>,
+lists become <code>-</code>/<code>1.</code>, links become
+<code>[text](url)</code>) and inserted at the caret; the status reads
+<strong>“Pasted HTML as Markdown”</strong>. If the clipboard has only
+plain text it is treated as HTML; an empty clipboard says
+<strong>“Clipboard is empty”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-07-paste-markdown-as-html-power.paste_markdown_as_html">POW-07 —
+id="pow-07--paste-markdown-as-html-powerpaste_markdown_as_html">POW-07 —
 Paste Markdown as HTML (<code>power.paste_markdown_as_html</code>)</h2>
 <p><em>What &amp; why.</em> The reverse of POW-06: turn Markdown on the
 clipboard into an HTML body fragment and paste it.</p>
-<p><strong>Before you start</strong> - Copy a few lines of Markdown
-(e.g. <code># Title</code> and <code>- one</code>/<code>- two</code>) to
-the clipboard. New empty document; caret at the start.</p>
-<p><strong>Do this</strong> 1. <strong>Edit menu ▸ Paste Markdown as
-HTML</strong>.</p>
-<p><strong>You should see and hear</strong> - Rendered HTML
-(<code>&lt;h1&gt;</code>, <code>&lt;ul&gt;&lt;li&gt;…</code>) is
-inserted at the caret using the same renderer as preview/export; the
-status reads <strong>“Pasted Markdown as HTML”</strong>. An empty
-clipboard says <strong>“Clipboard is empty”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Copy a few lines of Markdown (e.g. <code># Title</code> and
+<code>- one</code>/<code>- two</code>) to the clipboard. New empty
+document; caret at the start.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Paste Markdown as HTML</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Rendered HTML (<code>&lt;h1&gt;</code>,
+<code>&lt;ul&gt;&lt;li&gt;…</code>) is inserted at the caret using the
+same renderer as preview/export; the status reads <strong>“Pasted
+Markdown as HTML”</strong>. An empty clipboard says <strong>“Clipboard
+is empty”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-08-new-document-from-clipboard-power.new_document_from_clipboard">POW-08
+id="pow-08--new-document-from-clipboard-powernew_document_from_clipboard">POW-08
 — New Document from Clipboard
 (<code>power.new_document_from_clipboard</code>)</h2>
 <p><em>What &amp; why.</em> Open whatever text is on the clipboard as a
 brand-new document.</p>
-<p><strong>Before you start</strong> - Copy any block of text to the
-clipboard.</p>
-<p><strong>Do this</strong> 1. <strong>File menu (Alt, F) ▸ New Document
-from Clipboard</strong> (it sits beside New), or the Command
-Palette.</p>
-<p><strong>You should see and hear</strong> - A new untitled document
-opens containing the clipboard text, with focus in the editor; the
-status reads <strong>“New document from clipboard”</strong>. If the
-clipboard was empty, an empty document opens and the status reads
-<strong>“New document (clipboard was empty)”</strong> — never an
-error.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Copy any block of text to the clipboard.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu (Alt, F) ▸ New Document from Clipboard</strong>
+(it sits beside New), or the Command Palette.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A new untitled document opens containing the clipboard text, with
+focus in the editor; the status reads <strong>“New document from
+clipboard”</strong>. If the clipboard was empty, an empty document opens
+and the status reads <strong>“New document (clipboard was
+empty)”</strong> — never an error.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-09-expand-abbreviation-power.expand_abbreviation">POW-09 —
+<h2 id="pow-09--expand-abbreviation-powerexpand_abbreviation">POW-09 —
 Expand Abbreviation (<code>power.expand_abbreviation</code>)</h2>
 <p><em>What &amp; why.</em> Emmet-style expansion: type a shorthand like
 <code>ul&gt;li*3</code> and expand it into full HTML (or CSS) in place.
 A fast way to scaffold markup.</p>
-<p><strong>Before you start</strong> - Open a new document and
-<strong>Save As <code>scratch.html</code></strong> (the
-<code>.html</code> suffix puts expansion in HTML mode; a
-<code>.css</code> file switches it to CSS mode). - Type the abbreviation
-<strong><code>ul&gt;li*3</code></strong> and leave the caret right after
-it.</p>
-<p><strong>Do this</strong> 1. <strong>Edit menu ▸ Expand
-Abbreviation</strong>.</p>
-<p><strong>You should see and hear</strong> - The abbreviation just
-before the caret is replaced with an unordered list containing three
-<code>&lt;li&gt;</code> items; the status reads <strong>“Abbreviation
-expanded”</strong>. An unrecognized abbreviation reports a clear message
-(e.g. a syntax error or <strong>“Unknown CSS abbreviation”</strong>) and
-changes nothing.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open a new document and <strong>Save As
+<code>scratch.html</code></strong> (the <code>.html</code> suffix puts
+expansion in HTML mode; a <code>.css</code> file switches it to CSS
+mode).</li>
+<li>Type the abbreviation <strong><code>ul&gt;li*3</code></strong> and
+leave the caret right after it.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Expand Abbreviation</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The abbreviation just before the caret is replaced with an unordered
+list containing three <code>&lt;li&gt;</code> items; the status reads
+<strong>“Abbreviation expanded”</strong>. An unrecognized abbreviation
+reports a clear message (e.g. a syntax error or <strong>“Unknown CSS
+abbreviation”</strong>) and changes nothing.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-10-preview-abbreviation-power.preview_abbreviation">POW-10 —
+<h2 id="pow-10--preview-abbreviation-powerpreview_abbreviation">POW-10 —
 Preview Abbreviation… (<code>power.preview_abbreviation</code>)</h2>
 <p><em>What &amp; why.</em> See what an abbreviation would expand to
 <strong>without</strong> touching the document — a safe dry run.</p>
-<p><strong>Before you start</strong> - Same <code>scratch.html</code>
-open. Input abbreviation:
-<strong><code>div.card&gt;h2+p</code></strong>.</p>
-<p><strong>Do this</strong> 1. <strong>Edit menu ▸ Preview
-Abbreviation…</strong>. 2. Type
-<strong><code>div.card&gt;h2+p</code></strong> in the
-<strong>Abbreviation:</strong> field; confirm.</p>
-<p><strong>You should see and hear</strong> - The expansion opens in a
-<strong>new untitled buffer</strong> titled <em>Abbreviation
-preview</em>; your original document is untouched. An empty entry says
-<strong>“Enter an abbreviation to preview”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same <code>scratch.html</code> open. Input abbreviation:
+<strong><code>div.card&gt;h2+p</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Preview Abbreviation…</strong>.</li>
+<li>Type <strong><code>div.card&gt;h2+p</code></strong> in the
+<strong>Abbreviation:</strong> field; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The expansion opens in a <strong>new untitled buffer</strong> titled
+<em>Abbreviation preview</em>; your original document is untouched. An
+empty entry says <strong>“Enter an abbreviation to
+preview”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-11-explain-abbreviation-power.explain_abbreviation">POW-11 —
+<h2 id="pow-11--explain-abbreviation-powerexplain_abbreviation">POW-11 —
 Explain Abbreviation… (<code>power.explain_abbreviation</code>)</h2>
 <p><em>What &amp; why.</em> Plain-language description of what an
 abbreviation means — a learning aid for the Emmet syntax.</p>
-<p><strong>Before you start</strong> - Same <code>scratch.html</code>
-open. Input: <strong><code>ul&gt;li*3</code></strong>.</p>
-<p><strong>Do this</strong> 1. <strong>Edit menu ▸ Explain
-Abbreviation…</strong>. 2. Type
-<strong><code>ul&gt;li*3</code></strong>; confirm.</p>
-<p><strong>You should see and hear</strong> - A new untitled buffer
-titled <em>Abbreviation explanation</em> opens describing the structure
-in words (an unordered list with three list items). Empty entry says
-<strong>“Enter an abbreviation to explain”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same <code>scratch.html</code> open. Input:
+<strong><code>ul&gt;li*3</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Edit menu ▸ Explain Abbreviation…</strong>.</li>
+<li>Type <strong><code>ul&gt;li*3</code></strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A new untitled buffer titled <em>Abbreviation explanation</em> opens
+describing the structure in words (an unordered list with three list
+items). Empty entry says <strong>“Enter an abbreviation to
+explain”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-12-rename-current-file-power.rename_current_file">POW-12 —
+<h2 id="pow-12--rename-current-file-powerrename_current_file">POW-12 —
 Rename Current File… (<code>power.rename_current_file</code>)</h2>
 <p><em>What &amp; why.</em> Rename the file on disk from inside QUILL,
 keeping the document open under its new name.</p>
-<p><strong>Before you start</strong> - Make a throwaway copy of
-<code>plain.txt</code> named <strong><code>rename-me.txt</code></strong>
-and open it (so you are not renaming a shared sample).</p>
-<p><strong>Do this</strong> 1. <strong>File menu ▸ Rename Current
-File…</strong>. 2. In <strong>New file name:</strong> type
-<strong><code>renamed.txt</code></strong>; confirm.</p>
-<p><strong>You should see and hear</strong> - The file is renamed on
-disk, the title bar updates, and the status reads <strong>“Renamed to
-renamed.txt”</strong>. If the target name already exists it refuses with
-<strong>“A file named renamed.txt already exists”</strong>. An
-unsaved/untitled document says <strong>“Save the document before
-renaming it”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Make a throwaway copy of <code>plain.txt</code> named
+<strong><code>rename-me.txt</code></strong> and open it (so you are not
+renaming a shared sample).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Rename Current File…</strong>.</li>
+<li>In <strong>New file name:</strong> type
+<strong><code>renamed.txt</code></strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The file is renamed on disk, the title bar updates, and the status
+reads <strong>“Renamed to renamed.txt”</strong>. If the target name
+already exists it refuses with <strong>“A file named renamed.txt already
+exists”</strong>. An unsaved/untitled document says <strong>“Save the
+document before renaming it”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-13-delete-current-file-power.delete_current_file">POW-13 —
+<h2 id="pow-13--delete-current-file-powerdelete_current_file">POW-13 —
 Delete Current File… (<code>power.delete_current_file</code>)</h2>
 <p><em>What &amp; why.</em> Delete the current file from disk and close
 its tab — guarded by a confirmation you can hear and cancel.</p>
-<p><strong>Before you start</strong> - Open the throwaway
-<strong><code>renamed.txt</code></strong> from POW-12 (or another
-disposable copy).</p>
-<p><strong>Do this</strong> 1. <strong>File menu ▸ Delete Current
-File…</strong>. 2. Read the warning <strong>“Delete renamed.txt from
-disk? This cannot be undone.”</strong>; choose <strong>No</strong> first
-(nothing happens), then repeat and choose <strong>Yes</strong>.</p>
-<p><strong>You should see and hear</strong> - <strong>No</strong>
-cancels with the file intact. <strong>Yes</strong> deletes the file,
-closes the tab, and the status reads <strong>“Deleted
-renamed.txt”</strong>. An unsaved document says <strong>“This document
-has not been saved to disk”</strong> instead of erroring. The
-<strong>No</strong> button is the safe default.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open the throwaway <strong><code>renamed.txt</code></strong> from
+POW-12 (or another disposable copy).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Delete Current File…</strong>.</li>
+<li>Read the warning <strong>“Delete renamed.txt from disk? This cannot
+be undone.”</strong>; choose <strong>No</strong> first (nothing
+happens), then repeat and choose <strong>Yes</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li><strong>No</strong> cancels with the file intact.
+<strong>Yes</strong> deletes the file, closes the tab, and the status
+reads <strong>“Deleted renamed.txt”</strong>. An unsaved document says
+<strong>“This document has not been saved to disk”</strong> instead of
+erroring. The <strong>No</strong> button is the safe default.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-14-send-as-email-power.send_as_email">POW-14 — Send as
+<h2 id="pow-14--send-as-email-powersend_as_email">POW-14 — Send as
 Email… (<code>power.send_as_email</code>)</h2>
 <p><em>What &amp; why.</em> Hand the selection (or whole document) to
 your mail client as the body of a new message.</p>
-<p><strong>Before you start</strong> - <code>plain.txt</code> open;
-select a sentence (or select nothing to send the whole document). A
-default mail client configured on the machine. If none, mark
-<strong>Blocked</strong>.</p>
-<p><strong>Do this</strong> 1. <strong>File menu ▸ Send as
-Email…</strong>.</p>
-<p><strong>You should see and hear</strong> - Your mail client opens a
-new message with the content as the body (rendered per the <em>content
-handoff format</em> setting) and the document name as the subject; the
-status reads <strong>“Opened your mail client with this content as the
-body.”</strong> An empty document says <strong>“Nothing to send: the
-document is empty.”</strong></p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open; select a sentence (or select nothing to
+send the whole document). A default mail client configured on the
+machine. If none, mark <strong>Blocked</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Send as Email…</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Your mail client opens a new message with the content as the body
+(rendered per the <em>content handoff format</em> setting) and the
+document name as the subject; the status reads <strong>“Opened your mail
+client with this content as the body.”</strong> An empty document says
+<strong>“Nothing to send: the document is empty.”</strong></li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-15-copy-as-email-body-power.copy_as_email_body">POW-15 —
+<h2 id="pow-15--copy-as-email-body-powercopy_as_email_body">POW-15 —
 Copy as Email Body (<code>power.copy_as_email_body</code>)</h2>
 <p><em>What &amp; why.</em> The practical alternative to POW-14 for long
 text: put the rendered content on the clipboard so you can paste it into
 a compose window (many clients truncate a long <code>mailto:</code>
 body).</p>
-<p><strong>Before you start</strong> - <code>plain.txt</code> open;
-select some text or nothing (whole document).</p>
-<p><strong>Do this</strong> 1. <strong>File menu ▸ Copy as Email
-Body</strong>.</p>
-<p><strong>You should see and hear</strong> - The rendered content lands
-on the clipboard and the status reads <strong>“Copied to the clipboard
-as an email body.”</strong> Paste into any editor to confirm. An empty
-document says <strong>“Nothing to copy: the document is
-empty.”</strong></p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open; select some text or nothing (whole
+document).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>File menu ▸ Copy as Email Body</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The rendered content lands on the clipboard and the status reads
+<strong>“Copied to the clipboard as an email body.”</strong> Paste into
+any editor to confirm. An empty document says <strong>“Nothing to copy:
+the document is empty.”</strong></li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-16-number-lines-power.number_lines-altshiftn">POW-16 —
+<h2 id="pow-16--number-lines-powernumber_lines-altshiftn">POW-16 —
 Number Lines… (<code>power.number_lines</code>, Alt+Shift+N)</h2>
 <p><em>What &amp; why.</em> Prefix each line with a running number —
 quick numbered output for a list or a log.</p>
-<p><strong>Before you start</strong> - New document; type five short
-lines (<code>alpha</code>, <code>bravo</code>, <code>charlie</code>,
-<code>delta</code>, <code>echo</code>), one per line. No selection
-numbers all lines; a selection numbers only the selected lines.</p>
-<p><strong>Do this</strong> 1. Press <strong>Alt+Shift+N</strong>, or
-<strong>Format menu (Alt, O) ▸ Number Lines…</strong>. 2. In
-<strong>Start numbering at:</strong> accept
-<strong><code>1</code></strong> (or type another start); confirm.</p>
-<p><strong>You should see and hear</strong> - Each line gains a running
-number starting at 1; the status reads <strong>“Numbered
-lines”</strong>. A non-numeric start says <strong>“Start value must be a
-whole number”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type five short lines (<code>alpha</code>,
+<code>bravo</code>, <code>charlie</code>, <code>delta</code>,
+<code>echo</code>), one per line. No selection numbers all lines; a
+selection numbers only the selected lines.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+N</strong>, or <strong>Format menu (Alt, O)
+▸ Number Lines…</strong>.</li>
+<li>In <strong>Start numbering at:</strong> accept
+<strong><code>1</code></strong> (or type another start); confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each line gains a running number starting at 1; the status reads
+<strong>“Numbered lines”</strong>. A non-numeric start says
+<strong>“Start value must be a whole number”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-17-number-lines-advanced-power.number_lines_advanced">POW-17
+<h2 id="pow-17--number-lines-advanced-powernumber_lines_advanced">POW-17
 — Number Lines (Advanced)…
 (<code>power.number_lines_advanced</code>)</h2>
 <p><em>What &amp; why.</em> Numbering with full control: start,
 increment, digits or Roman numerals, zero-padding, custom suffix, and
 left/right justification.</p>
-<p><strong>Before you start</strong> - Same five-line document as POW-16
-(undo the numbering first, or start fresh).</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Number Lines
-(Advanced)…</strong>. 2. In the form set <strong>Start = 1</strong>,
-<strong>Increment = 1</strong>, <strong>Number style = Roman
-numerals</strong>, <strong>Zero-pad = 0</strong>, <strong>Text after the
-number = <code>.</code></strong>, <strong>Justify = Left</strong>; press
-<strong>Number</strong>.</p>
-<p><strong>You should see and hear</strong> - A keyboard-navigable form
-with labelled fields; on confirm the lines are prefixed <code>I.</code>,
-<code>II.</code>, <code>III.</code>… and the status reads
-<strong>“Numbered lines”</strong>. Non-numeric Start/Increment/pad
-values say <strong>“Start, increment, and pad width must be whole
-numbers”</strong>. Cancel says <strong>“Number Lines (Advanced)
-cancelled”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same five-line document as POW-16 (undo the numbering first, or
+start fresh).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Number Lines (Advanced)…</strong>.</li>
+<li>In the form set <strong>Start = 1</strong>, <strong>Increment =
+1</strong>, <strong>Number style = Roman numerals</strong>,
+<strong>Zero-pad = 0</strong>, <strong>Text after the number =
+<code>. </code></strong>, <strong>Justify = Left</strong>; press
+<strong>Number</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A keyboard-navigable form with labelled fields; on confirm the lines
+are prefixed <code>I. </code>, <code>II. </code>, <code>III. </code>…
+and the status reads <strong>“Numbered lines”</strong>. Non-numeric
+Start/Increment/pad values say <strong>“Start, increment, and pad width
+must be whole numbers”</strong>. Cancel says <strong>“Number Lines
+(Advanced) cancelled”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-18-hard-wrap-lines-power.hard_wrap_lines">POW-18 — Hard-Wrap
+<h2 id="pow-18--hard-wrap-lines-powerhard_wrap_lines">POW-18 — Hard-Wrap
 Lines… (<code>power.hard_wrap_lines</code>)</h2>
 <p><em>What &amp; why.</em> Insert real line breaks so no line is wider
 than a chosen column — for plain-text email or fixed-width output.</p>
-<p><strong>Before you start</strong> - New document; type one long
-paragraph (one line, well over 40 characters).</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Hard-Wrap
-Lines…</strong>. 2. In <strong>Wrap width:</strong> type
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type one long paragraph (one line, well over 40
+characters).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Hard-Wrap Lines…</strong>.</li>
+<li>In <strong>Wrap width:</strong> type
 <strong><code>40</code></strong>; confirm. (The default offered is the
-widest line’s width.)</p>
-<p><strong>You should see and hear</strong> - The paragraph is broken
-into lines no wider than 40 characters; the status reads
-<strong>“Hard-wrapped at 40 characters”</strong>. Zero or negative width
-says <strong>“Wrap width must be greater than zero”</strong>;
-non-numeric says it must be a whole number.</p>
+widest line’s width.)</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The paragraph is broken into lines no wider than 40 characters; the
+status reads <strong>“Hard-wrapped at 40 characters”</strong>. Zero or
+negative width says <strong>“Wrap width must be greater than
+zero”</strong>; non-numeric says it must be a whole number.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-19-delete-paragraph-power.delete_paragraph">POW-19 — Delete
+<h2 id="pow-19--delete-paragraph-powerdelete_paragraph">POW-19 — Delete
 Paragraph (<code>power.delete_paragraph</code>)</h2>
 <p><em>What &amp; why.</em> Remove the whole paragraph the caret is in,
 in one stroke.</p>
-<p><strong>Before you start</strong> - <code>plain.txt</code> open
-(three paragraphs). Put the caret in the middle paragraph.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Delete
-Paragraph</strong>.</p>
-<p><strong>You should see and hear</strong> - The paragraph under the
-caret is removed; the status reads <strong>“Deleted paragraph”</strong>.
-The remaining two paragraphs stay intact and the caret lands
-sensibly.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open (three paragraphs). Put the caret in the
+middle paragraph.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Delete Paragraph</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The paragraph under the caret is removed; the status reads
+<strong>“Deleted paragraph”</strong>. The remaining two paragraphs stay
+intact and the caret lands sensibly.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-20..23-delete-to-bounds-power.delete_to_line_start-power.delete_to_line_end-power.delete_to_document_start-power.delete_to_document_end">POW-20..23
+id="pow-2023--delete-to-bounds-powerdelete_to_line_start-powerdelete_to_line_end-powerdelete_to_document_start-powerdelete_to_document_end">POW-20..23
 — Delete to bounds (<code>power.delete_to_line_start</code>,
 <code>power.delete_to_line_end</code>,
 <code>power.delete_to_document_start</code>,
@@ -641,20 +804,30 @@ id="pow-20..23-delete-to-bounds-power.delete_to_line_start-power.delete_to_line_
 <p><em>What &amp; why.</em> Four “delete from the caret to an edge”
 commands: to the start or end of the current line, or to the top or
 bottom of the document.</p>
-<p><strong>Before you start</strong> - <code>plain.txt</code> open.
-Before each, position the caret in the middle of a word (for the line
-variants) or in the middle paragraph (for the document variants).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open. Before each, position the caret in the
+middle of a word (for the line variants) or in the middle paragraph (for
+the document variants).</li>
+</ul>
 <p><strong>Do this</strong> (Format menu ▸ each item; run one, undo with
-<strong>Ctrl+Z</strong>, run the next) 1. <strong>Delete to Line
-Start</strong> — announces <strong>“Deleted to start of line”</strong>.
-2. <strong>Delete to Line End</strong> — announces <strong>“Deleted to
-end of line”</strong>. 3. <strong>Delete to Document Start</strong> —
-announces <strong>“Deleted to top of document”</strong>. 4.
-<strong>Delete to Document End</strong> — announces <strong>“Deleted to
-bottom of document”</strong>.</p>
-<p><strong>You should see and hear</strong> - Each removes exactly the
-text between the caret and the named edge and speaks the matching phrase
-above; <strong>Ctrl+Z</strong> restores it each time.</p>
+<strong>Ctrl+Z</strong>, run the next)</p>
+<ol type="1">
+<li><strong>Delete to Line Start</strong> — announces <strong>“Deleted
+to start of line”</strong>.</li>
+<li><strong>Delete to Line End</strong> — announces <strong>“Deleted to
+end of line”</strong>.</li>
+<li><strong>Delete to Document Start</strong> — announces
+<strong>“Deleted to top of document”</strong>.</li>
+<li><strong>Delete to Document End</strong> — announces <strong>“Deleted
+to bottom of document”</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each removes exactly the text between the caret and the named edge
+and speaks the matching phrase above; <strong>Ctrl+Z</strong> restores
+it each time.</li>
+</ul>
 <p><strong>Sign off (Delete to Line Start)</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -673,88 +846,117 @@ above; <strong>Ctrl+Z</strong> restores it each time.</p>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-24-update-outline-numbering-power.apply_auto_outline_numbering">POW-24
+id="pow-24--update-outline-numbering-powerapply_auto_outline_numbering">POW-24
 — Update Outline Numbering
 (<code>power.apply_auto_outline_numbering</code>)</h2>
 <p><em>What &amp; why.</em> Number every heading by its nesting level as
 literal text (1, 1.1, 1.2, 2 …) — a real outline you can read and
 search, driven by the <em>Auto Outline Style</em> setting (numeric or
 legal).</p>
-<p><strong>Before you start</strong> - Open
-<strong><code>formatting.md</code></strong> (headings H1–H6). This
-command always acts on the whole document.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Update Outline
-Numbering</strong>.</p>
-<p><strong>You should see and hear</strong> - Each heading gains a
-literal outline number matching its level; the status reads
-<strong>“Outline numbering updated.”</strong> A document with no
-headings says <strong>“No headings to number.”</strong> A read-only
-document says <strong>“Document is read-only”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong> (headings H1–H6).
+This command always acts on the whole document.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Update Outline Numbering</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each heading gains a literal outline number matching its level; the
+status reads <strong>“Outline numbering updated.”</strong> A document
+with no headings says <strong>“No headings to number.”</strong> A
+read-only document says <strong>“Document is read-only”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-25-remove-outline-numbering-power.remove_auto_outline_numbering">POW-25
+id="pow-25--remove-outline-numbering-powerremove_auto_outline_numbering">POW-25
 — Remove Outline Numbering
 (<code>power.remove_auto_outline_numbering</code>)</h2>
 <p><em>What &amp; why.</em> Strip the literal numbers POW-24 added,
 returning the headings to their bare text.</p>
-<p><strong>Before you start</strong> - <code>formatting.md</code> still
-showing the numbers from POW-24.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Remove Outline
-Numbering</strong>.</p>
-<p><strong>You should see and hear</strong> - The numbers are removed
-and the status reads <strong>“Outline numbering removed.”</strong> If
-there is nothing to remove it says <strong>“No outline numbering to
-remove.”</strong></p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> still showing the numbers from
+POW-24.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Remove Outline Numbering</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The numbers are removed and the status reads <strong>“Outline
+numbering removed.”</strong> If there is nothing to remove it says
+<strong>“No outline numbering to remove.”</strong></li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-26-shuffle-lines-power.shuffle_lines">POW-26 — Shuffle Lines
+<h2 id="pow-26--shuffle-lines-powershuffle_lines">POW-26 — Shuffle Lines
 (<code>power.shuffle_lines</code>)</h2>
 <p><em>What &amp; why.</em> Randomly reorder the lines of the selection
 (or document) — handy for randomizing a list.</p>
-<p><strong>Before you start</strong> - New document; type five distinct
-lines (<code>one</code> … <code>five</code>).</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Shuffle
-Lines</strong>.</p>
-<p><strong>You should see and hear</strong> - The same five lines come
-back in a random order (no lines added or lost); the status reads
-<strong>“Shuffled lines”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type five distinct lines (<code>one</code> …
+<code>five</code>).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Shuffle Lines</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The same five lines come back in a random order (no lines added or
+lost); the status reads <strong>“Shuffled lines”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-27..29-sort-lines-power.sort_lines_numeric-power.sort_lines_by_date-power.sort_lines_by_length">POW-27..29
+id="pow-2729--sort-lines-powersort_lines_numeric-powersort_lines_by_date-powersort_lines_by_length">POW-27..29
 — Sort lines (<code>power.sort_lines_numeric</code>,
 <code>power.sort_lines_by_date</code>,
 <code>power.sort_lines_by_length</code>)</h2>
 <p><em>What &amp; why.</em> Three sorts tuned for real data: by numeric
 value (not string order), by the date each line contains, and by line
 length.</p>
-<p><strong>Before you start</strong> - <strong>Numeric:</strong> type
-lines <code>10</code>, <code>2</code>, <code>33</code>, <code>4</code>.
-<strong>Date:</strong> type lines <code>2026-03-01</code>,
-<code>2025-12-25</code>, <code>2026-01-15</code>.
-<strong>Length:</strong> type lines <code>aaaa</code>, <code>a</code>,
-<code>aa</code>. (Run each on its own small document.)</p>
-<p><strong>Do this</strong> (Format menu ▸ each item) 1. <strong>Sort
-Lines Numerically</strong> → <strong>“Sorted lines
-numerically”</strong>. 2. <strong>Sort Lines by Date</strong> →
-<strong>“Sorted lines by date”</strong>. 3. <strong>Sort Lines by
-Length</strong> → <strong>“Sorted lines by length”</strong>.</p>
-<p><strong>You should see and hear</strong> - Numeric sort yields
-<code>2, 4, 10, 33</code> (numeric, so <code>10</code> is
-<strong>not</strong> before <code>2</code>). Date sort yields
-chronological order (day-first vs month-first follows your spell-check
-locale for ambiguous dates). Length sort yields
-<code>a, aa, aaaa</code>. Each speaks its matching phrase.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Numeric:</strong> type lines <code>10</code>,
+<code>2</code>, <code>33</code>, <code>4</code>. <strong>Date:</strong>
+type lines <code>2026-03-01</code>, <code>2025-12-25</code>,
+<code>2026-01-15</code>. <strong>Length:</strong> type lines
+<code>aaaa</code>, <code>a</code>, <code>aa</code>. (Run each on its own
+small document.)</li>
+</ul>
+<p><strong>Do this</strong> (Format menu ▸ each item)</p>
+<ol type="1">
+<li><strong>Sort Lines Numerically</strong> → <strong>“Sorted lines
+numerically”</strong>.</li>
+<li><strong>Sort Lines by Date</strong> → <strong>“Sorted lines by
+date”</strong>.</li>
+<li><strong>Sort Lines by Length</strong> → <strong>“Sorted lines by
+length”</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Numeric sort yields <code>2, 4, 10, 33</code> (numeric, so
+<code>10</code> is <strong>not</strong> before <code>2</code>). Date
+sort yields chronological order (day-first vs month-first follows your
+spell-check locale for ambiguous dates). Length sort yields
+<code>a, aa, aaaa</code>. Each speaks its matching phrase.</li>
+</ul>
 <p><strong>Sign off (Sort Numerically)</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -769,127 +971,171 @@ locale for ambiguous dates). Length sort yields
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-30-keep-unique-lines-power.keep_unique_lines-altshiftk">POW-30 —
+id="pow-30--keep-unique-lines-powerkeep_unique_lines-altshiftk">POW-30 —
 Keep Unique Lines (<code>power.keep_unique_lines</code>,
 Alt+Shift+K)</h2>
 <p><em>What &amp; why.</em> Remove duplicate lines, keeping the first
 occurrence of each (case-sensitive).</p>
-<p><strong>Before you start</strong> - New document; type
-<code>apple</code>, <code>banana</code>, <code>apple</code>,
-<code>cherry</code>, <code>banana</code> (five lines, two
-duplicates).</p>
-<p><strong>Do this</strong> 1. Press <strong>Alt+Shift+K</strong>, or
-<strong>Format menu ▸ Keep Unique Lines</strong>.</p>
-<p><strong>You should see and hear</strong> - Only <code>apple</code>,
-<code>banana</code>, <code>cherry</code> remain (first occurrences kept,
-in order); the status reads <strong>“Kept unique lines (removed
-duplicates)”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type <code>apple</code>, <code>banana</code>,
+<code>apple</code>, <code>cherry</code>, <code>banana</code> (five
+lines, two duplicates).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+K</strong>, or <strong>Format menu ▸ Keep
+Unique Lines</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Only <code>apple</code>, <code>banana</code>, <code>cherry</code>
+remain (first occurrences kept, in order); the status reads
+<strong>“Kept unique lines (removed duplicates)”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-31-delete-lines-containing-power.delete_lines_containing">POW-31
+id="pow-31--delete-lines-containing-powerdelete_lines_containing">POW-31
 — Delete Lines Containing…
 (<code>power.delete_lines_containing</code>)</h2>
 <p><em>What &amp; why.</em> Filter out every line matching a regular
 expression.</p>
-<p><strong>Before you start</strong> - New document; type
-<code>keep 1</code>, <code>drop this</code>, <code>keep 2</code>,
-<code>drop that</code>. Input regex:
-<strong><code>drop</code></strong>.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Delete Lines
-Containing…</strong>. 2. In <strong>Regular expression:</strong> type
-<strong><code>drop</code></strong>; confirm.</p>
-<p><strong>You should see and hear</strong> - The two <code>drop…</code>
-lines are removed, <code>keep 1</code>/<code>keep 2</code> remain; the
-status reads <strong>“Deleted lines containing pattern”</strong>. An
-invalid regex reports <strong>“Invalid pattern: …”</strong> and changes
-nothing.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type <code>keep 1</code>, <code>drop this</code>,
+<code>keep 2</code>, <code>drop that</code>. Input regex:
+<strong><code>drop</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Delete Lines Containing…</strong>.</li>
+<li>In <strong>Regular expression:</strong> type
+<strong><code>drop</code></strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The two <code>drop…</code> lines are removed,
+<code>keep 1</code>/<code>keep 2</code> remain; the status reads
+<strong>“Deleted lines containing pattern”</strong>. An invalid regex
+reports <strong>“Invalid pattern: …”</strong> and changes nothing.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-32-delete-lines-not-containing-power.delete_lines_not_containing">POW-32
+id="pow-32--delete-lines-not-containing-powerdelete_lines_not_containing">POW-32
 — Delete Lines Not Containing…
 (<code>power.delete_lines_not_containing</code>)</h2>
 <p><em>What &amp; why.</em> The inverse of POW-31: keep only lines that
 match, delete the rest.</p>
-<p><strong>Before you start</strong> - Same four-line document
-(<code>keep 1</code>, <code>drop this</code>, <code>keep 2</code>,
-<code>drop that</code>). Input regex:
-<strong><code>keep</code></strong>.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Delete Lines Not
-Containing…</strong>. 2. In the field (labelled <strong>“Regular
-expression (keep matching lines):”</strong>) type
-<strong><code>keep</code></strong>; confirm.</p>
-<p><strong>You should see and hear</strong> - Only the two
-<code>keep…</code> lines remain; the status reads <strong>“Kept only
-lines containing pattern”</strong>. An invalid regex reports
-<strong>“Invalid pattern: …”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Same four-line document (<code>keep 1</code>,
+<code>drop this</code>, <code>keep 2</code>, <code>drop that</code>).
+Input regex: <strong><code>keep</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Delete Lines Not Containing…</strong>.</li>
+<li>In the field (labelled <strong>“Regular expression (keep matching
+lines):”</strong>) type <strong><code>keep</code></strong>;
+confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Only the two <code>keep…</code> lines remain; the status reads
+<strong>“Kept only lines containing pattern”</strong>. An invalid regex
+reports <strong>“Invalid pattern: …”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-33-trim-blank-lines-power.trim_blank_lines-ctrlshiftenter">POW-33
+id="pow-33--trim-blank-lines-powertrim_blank_lines-ctrlshiftenter">POW-33
 — Trim Blank Lines (<code>power.trim_blank_lines</code>,
 Ctrl+Shift+Enter)</h2>
 <p><em>What &amp; why.</em> Collapse runs of blank lines so the document
 is tidy.</p>
-<p><strong>Before you start</strong> - New document; type three lines
-with <strong>two blank lines between</strong> each pair.</p>
-<p><strong>Do this</strong> 1. Press <strong>Ctrl+Shift+Enter</strong>,
-or <strong>Format menu ▸ Trim Blank Lines</strong>.</p>
-<p><strong>You should see and hear</strong> - Excess blank lines are
-removed; the status reads <strong>“Trimmed blank lines”</strong>. The
-three text lines survive.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type three lines with <strong>two blank lines
+between</strong> each pair.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Press <strong>Ctrl+Shift+Enter</strong>, or <strong>Format menu ▸
+Trim Blank Lines</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Excess blank lines are removed; the status reads <strong>“Trimmed
+blank lines”</strong>. The three text lines survive.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-34-strip-html-tags-power.strip_html_tags">POW-34 — Strip
+<h2 id="pow-34--strip-html-tags-powerstrip_html_tags">POW-34 — Strip
 HTML Tags (<code>power.strip_html_tags</code>)</h2>
 <p><em>What &amp; why.</em> Remove HTML markup, leaving the readable
 text.</p>
-<p><strong>Before you start</strong> - Open <code>sample.html</code> (or
-paste some HTML into a new document).</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Strip HTML
-Tags</strong>.</p>
-<p><strong>You should see and hear</strong> - Tags such as
-<code>&lt;h1&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;a&gt;</code>
-are gone and only the text remains; the status reads <strong>“Stripped
-HTML tags”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>sample.html</code> (or paste some HTML into a new
+document).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Strip HTML Tags</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Tags such as <code>&lt;h1&gt;</code>, <code>&lt;li&gt;</code>,
+<code>&lt;a&gt;</code> are gone and only the text remains; the status
+reads <strong>“Stripped HTML tags”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-35..36-html-entities-power.decode_html_entities-power.encode_html_entities">POW-35..36
+id="pow-3536--html-entities-powerdecode_html_entities-powerencode_html_entities">POW-35..36
 — HTML entities (<code>power.decode_html_entities</code>,
 <code>power.encode_html_entities</code>)</h2>
 <p><em>What &amp; why.</em> Convert between HTML entities and their
 characters — decode <code>&amp;amp;</code>/<code>&amp;lt;</code> back to
 <code>&amp;</code>/<code>&lt;</code>, or encode the reverse.</p>
-<p><strong>Before you start</strong> - <strong>Decode:</strong> type
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>Decode:</strong> type
 <code>Tom &amp;amp; Jerry &amp;lt;3</code>. <strong>Encode:</strong>
-type <code>Tom &amp; Jerry &lt;3</code>.</p>
-<p><strong>Do this</strong> (Format menu ▸ each item) 1. <strong>Decode
-HTML Entities</strong> → <strong>“Decoded HTML entities”</strong>. 2.
-<strong>Encode HTML Entities</strong> → <strong>“Encoded HTML
-entities”</strong>.</p>
-<p><strong>You should see and hear</strong> - Decode turns
-<code>&amp;amp;</code>→<code>&amp;</code> and
+type <code>Tom &amp; Jerry &lt;3</code>.</li>
+</ul>
+<p><strong>Do this</strong> (Format menu ▸ each item)</p>
+<ol type="1">
+<li><strong>Decode HTML Entities</strong> → <strong>“Decoded HTML
+entities”</strong>.</li>
+<li><strong>Encode HTML Entities</strong> → <strong>“Encoded HTML
+entities”</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Decode turns <code>&amp;amp;</code>→<code>&amp;</code> and
 <code>&amp;lt;</code>→<code>&lt;</code>. Encode turns
 <code>&amp;</code>→<code>&amp;amp;</code> and
 <code>&lt;</code>→<code>&amp;lt;</code>. Each speaks its matching
-phrase; running one then the other returns the original.</p>
+phrase; running one then the other returns the original.</li>
+</ul>
 <p><strong>Sign off (Decode HTML Entities)</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -900,189 +1146,252 @@ phrase; running one then the other returns the original.</p>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-37-convert-non-ascii-to-html-entities-power.encode_all_non_ascii">POW-37
+id="pow-37--convert-non-ascii-to-html-entities-powerencode_all_non_ascii">POW-37
 — Convert Non-ASCII to HTML Entities
 (<code>power.encode_all_non_ascii</code>)</h2>
 <p><em>What &amp; why.</em> Replace every non-ASCII character with its
 HTML entity so the file becomes pure ASCII — safe for systems that
 mangle Unicode.</p>
-<p><strong>Before you start</strong> - Open
-<strong><code>encoding-cp1252.txt</code></strong> as UTF-8 (it has
-<code>é</code>, <code>£</code>, <code>€</code>, etc.). Select all, or
-leave unselected for the whole document.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Convert Non-ASCII
-to HTML Entities</strong>.</p>
-<p><strong>You should see and hear</strong> - A brief progress
-announcement (this runs on a background thread so QUILL and the screen
-reader stay responsive), then every accented/currency character becomes
-a numeric or named HTML entity; the status reads <strong>“Converted
-non-ASCII characters to HTML entities”</strong>. A read-only document
-says <strong>“Document is read-only”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>encoding-cp1252.txt</code></strong> as UTF-8 (it
+has <code>é</code>, <code>£</code>, <code>€</code>, etc.). Select all,
+or leave unselected for the whole document.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Convert Non-ASCII to HTML
+Entities</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A brief progress announcement (this runs on a background thread so
+QUILL and the screen reader stay responsive), then every
+accented/currency character becomes a numeric or named HTML entity; the
+status reads <strong>“Converted non-ASCII characters to HTML
+entities”</strong>. A read-only document says <strong>“Document is
+read-only”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-38-show-non-ascii-characters-power.show_non_ascii">POW-38 —
+<h2 id="pow-38--show-non-ascii-characters-powershow_non_ascii">POW-38 —
 Show Non-ASCII Characters… (<code>power.show_non_ascii</code>)</h2>
 <p><em>What &amp; why.</em> Open a read-only report listing every
 non-ASCII character with its line and column — a map of what a legacy
 encoding cannot hold. Pairs with POW-39 and POW-40 to jump between the
 report and the source.</p>
-<p><strong>Before you start</strong> - Open
-<strong><code>encoding-cp1252.txt</code></strong> (read as UTF-8 so the
-accents are present).</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Show Non-ASCII
-Characters…</strong>.</p>
-<p><strong>You should see and hear</strong> - A <strong>new untitled
-buffer</strong> titled <em>Non-ASCII characters</em> opens, one entry
-per offending character in a <code>line:column</code> + character
-layout, keyboard-navigable and readable by the screen reader.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>encoding-cp1252.txt</code></strong> (read as
+UTF-8 so the accents are present).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Show Non-ASCII Characters…</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>new untitled buffer</strong> titled <em>Non-ASCII
+characters</em> opens, one entry per offending character in a
+<code>line:column</code> + character layout, keyboard-navigable and
+readable by the screen reader.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-39-jump-to-source-line-power.non_ascii_jump_to_source">POW-39 —
+id="pow-39--jump-to-source-line-powernon_ascii_jump_to_source">POW-39 —
 Jump to Source Line (<code>power.non_ascii_jump_to_source</code>)</h2>
 <p><em>What &amp; why.</em> From an entry in the Non-ASCII report, jump
 to that exact line in the original document.</p>
-<p><strong>Before you start</strong> - The report from POW-38 open; put
-the caret on one of its <code>line:column</code> entries.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Jump to Source
-Line</strong>.</p>
-<p><strong>You should see and hear</strong> - Focus switches to the
-source document’s tab and moves to the referenced line. If the current
-line is not a <code>line:column</code> entry it says so; if you have not
-run Show Non-ASCII it says <strong>“Run Show Non-ASCII Characters
-first.”</strong></p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>The report from POW-38 open; put the caret on one of its
+<code>line:column</code> entries.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Jump to Source Line</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Focus switches to the source document’s tab and moves to the
+referenced line. If the current line is not a <code>line:column</code>
+entry it says so; if you have not run Show Non-ASCII it says
+<strong>“Run Show Non-ASCII Characters first.”</strong></li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-40-jump-back-to-non-ascii-report-power.non_ascii_jump_to_report">POW-40
+id="pow-40--jump-back-to-non-ascii-report-powernon_ascii_jump_to_report">POW-40
 — Jump Back to Non-ASCII Report
 (<code>power.non_ascii_jump_to_report</code>)</h2>
 <p><em>What &amp; why.</em> The return trip: from the source document
 back to the report tab.</p>
-<p><strong>Before you start</strong> - Having just done POW-39, you are
-now in the source document.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Jump Back to
-Non-ASCII Report</strong>.</p>
-<p><strong>You should see and hear</strong> - Focus returns to the
-<em>Non-ASCII characters</em> report tab. If the report is closed it
-says <strong>“No Non-ASCII report is open. Run Show Non-ASCII Characters
-first.”</strong></p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Having just done POW-39, you are now in the source document.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Jump Back to Non-ASCII Report</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Focus returns to the <em>Non-ASCII characters</em> report tab. If
+the report is closed it says <strong>“No Non-ASCII report is open. Run
+Show Non-ASCII Characters first.”</strong></li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-41-analyze-encoding-requirements-power.analyze_encoding_requirements">POW-41
+id="pow-41--analyze-encoding-requirements-poweranalyze_encoding_requirements">POW-41
 — Analyze Encoding Requirements
 (<code>power.analyze_encoding_requirements</code>)</h2>
 <p><em>What &amp; why.</em> Report the document’s current encoding
 versus the <strong>minimum</strong> encoding that would still hold every
 character losslessly.</p>
-<p><strong>Before you start</strong> - Open
-<strong><code>encoding-cp1252.txt</code></strong> (has non-ASCII) or
-<code>plain.txt</code> (pure ASCII) to contrast the two.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Analyze Encoding
-Requirements</strong>.</p>
-<p><strong>You should see and hear</strong> - A <strong>new untitled
-buffer</strong> titled <em>Encoding requirements</em> opens describing
-the current encoding and the simplest encoding that would still be
-lossless (ASCII for <code>plain.txt</code>; a wider encoding for the
-accented file).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>encoding-cp1252.txt</code></strong> (has
+non-ASCII) or <code>plain.txt</code> (pure ASCII) to contrast the
+two.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Analyze Encoding Requirements</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>new untitled buffer</strong> titled <em>Encoding
+requirements</em> opens describing the current encoding and the simplest
+encoding that would still be lossless (ASCII for <code>plain.txt</code>;
+a wider encoding for the accented file).</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-42-save-using-minimum-required-encoding-power.save_minimum_encoding">POW-42
+id="pow-42--save-using-minimum-required-encoding-powersave_minimum_encoding">POW-42
 — Save Using Minimum Required Encoding…
 (<code>power.save_minimum_encoding</code>)</h2>
 <p><em>What &amp; why.</em> Write a copy in the simplest encoding that
 still holds all the text — the actionable follow-up to POW-41.</p>
-<p><strong>Before you start</strong> - <code>encoding-cp1252.txt</code>
-open.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Save Using Minimum
-Required Encoding…</strong>. 2. Choose a target path and name in the
-save dialog; confirm.</p>
-<p><strong>You should see and hear</strong> - QUILL picks the minimum
-lossless encoding, writes the copy, and the status reads <strong>“Saved
-copy using minimum required encoding (<label>) to <path>”</strong>.
-Cancel says <strong>“Save using minimum required encoding
-cancelled”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>encoding-cp1252.txt</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Save Using Minimum Required
+Encoding…</strong>.</li>
+<li>Choose a target path and name in the save dialog; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL picks the minimum lossless encoding, writes the copy, and the
+status reads <strong>“Saved copy using minimum required encoding
+(<label>) to <path>”</strong>. Cancel says <strong>“Save using minimum
+required encoding cancelled”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-43-re-encode-as-power.reencode_file">POW-43 — Re-encode As…
+<h2 id="pow-43--re-encode-as-powerreencode_file">POW-43 — Re-encode As…
 (<code>power.reencode_file</code>)</h2>
 <p><em>What &amp; why.</em> Save a copy of the document in an encoding
-<strong>you</strong> choose from a list (e.g. UTF-8, UTF-16,
+<strong>you</strong> choose from a list (e.g. UTF-8, UTF-16,
 Windows-1252).</p>
-<p><strong>Before you start</strong> - <code>encoding-cp1252.txt</code>
-open.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Re-encode
-As…</strong>. 2. Arrow the encoding list and pick one; confirm. Then
-choose a save path.</p>
-<p><strong>You should see and hear</strong> - A labelled,
-keyboard-navigable single-choice encoding list, then a save dialog; on
-success the status reads <strong>“Saved re-encoded copy (<label>) to
-<path>”</strong>. Cancelling either dialog says <strong>“Re-encode
-cancelled”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>encoding-cp1252.txt</code> open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Re-encode As…</strong>.</li>
+<li>Arrow the encoding list and pick one; confirm. Then choose a save
+path.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled, keyboard-navigable single-choice encoding list, then a
+save dialog; on success the status reads <strong>“Saved re-encoded copy
+(<label>) to <path>”</strong>. Cancelling either dialog says
+<strong>“Re-encode cancelled”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-44-remove-email-quote-markers-power.remove_email_quote_markers">POW-44
+id="pow-44--remove-email-quote-markers-powerremove_email_quote_markers">POW-44
 — Remove Email Quote Markers
 (<code>power.remove_email_quote_markers</code>)</h2>
 <p><em>What &amp; why.</em> Strip the leading <code>&gt;</code> quote
 characters that pile up in replied-to email text.</p>
-<p><strong>Before you start</strong> - New document; type lines like
-<code>&gt; &gt; quoted twice</code>, <code>&gt; quoted once</code>,
-<code>not quoted</code>.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Remove Email Quote
-Markers</strong>.</p>
-<p><strong>You should see and hear</strong> - The leading
-<code>&gt;</code> markers are removed, leaving the plain text; the
-status reads <strong>“Removed email quote markers”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type lines like <code>&gt; &gt; quoted twice</code>,
+<code>&gt; quoted once</code>, <code>not quoted</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Remove Email Quote Markers</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The leading <code>&gt;</code> markers are removed, leaving the plain
+text; the status reads <strong>“Removed email quote
+markers”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-45..46-strip-ascii-ranges-power.strip_low_ascii-power.strip_high_ascii">POW-45..46
+id="pow-4546--strip-ascii-ranges-powerstrip_low_ascii-powerstrip_high_ascii">POW-45..46
 — Strip ASCII ranges (<code>power.strip_low_ascii</code>,
 <code>power.strip_high_ascii</code>)</h2>
 <p><em>What &amp; why.</em> Remove control characters (low ASCII), or
 every non-ASCII character (high ASCII), when a file is polluted with
 them.</p>
-<p><strong>Before you start</strong> - <strong>High ASCII:</strong> open
-<code>encoding-cp1252.txt</code> (accents/currency are the high-ASCII
-characters to strip). <strong>Low ASCII:</strong> paste text that
-contains a stray control character if you have one; otherwise verify it
-leaves clean text untouched.</p>
-<p><strong>Do this</strong> (Format menu ▸ each item) 1. <strong>Strip
-Low ASCII Characters</strong> → <strong>“Stripped low ASCII control
-characters”</strong>. 2. <strong>Strip High ASCII Characters</strong> →
-<strong>“Stripped high ASCII (non-ASCII) characters”</strong>.</p>
-<p><strong>You should see and hear</strong> - Strip High removes
-<code>é</code>, <code>£</code>, <code>€</code>, etc., leaving only
-ASCII. Strip Low removes control characters and leaves ordinary text
-intact. Each speaks its matching phrase.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><strong>High ASCII:</strong> open <code>encoding-cp1252.txt</code>
+(accents/currency are the high-ASCII characters to strip). <strong>Low
+ASCII:</strong> paste text that contains a stray control character if
+you have one; otherwise verify it leaves clean text untouched.</li>
+</ul>
+<p><strong>Do this</strong> (Format menu ▸ each item)</p>
+<ol type="1">
+<li><strong>Strip Low ASCII Characters</strong> → <strong>“Stripped low
+ASCII control characters”</strong>.</li>
+<li><strong>Strip High ASCII Characters</strong> → <strong>“Stripped
+high ASCII (non-ASCII) characters”</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Strip High removes <code>é</code>, <code>£</code>, <code>€</code>,
+etc., leaving only ASCII. Strip Low removes control characters and
+leaves ordinary text intact. Each speaks its matching phrase.</li>
+</ul>
 <p><strong>Sign off (Strip Low ASCII)</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1092,41 +1401,56 @@ intact. Each speaks its matching phrase.</p>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-47-convert-to-hex-dump-power.hex_dump">POW-47 — Convert to
+<h2 id="pow-47--convert-to-hex-dump-powerhex_dump">POW-47 — Convert to
 Hex Dump (<code>power.hex_dump</code>)</h2>
 <p><em>What &amp; why.</em> View the bytes of the selection (or
 document) as a classic hex dump — for inspecting exactly what is in a
 file.</p>
-<p><strong>Before you start</strong> - <code>plain.txt</code> open (or
-select a short phrase).</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Convert to Hex
-Dump</strong>.</p>
-<p><strong>You should see and hear</strong> - A <strong>new untitled
-buffer</strong> titled <em>Hex dump</em> opens showing offset, hex
-bytes, and an ASCII gutter. The original document is untouched.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open (or select a short phrase).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Convert to Hex Dump</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>new untitled buffer</strong> titled <em>Hex dump</em>
+opens showing offset, hex bytes, and an ASCII gutter. The original
+document is untouched.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-48..49-oemansi-code-page-conversion-power.convert_oem_to_ansi-power.convert_ansi_to_oem">POW-48..49
+id="pow-4849--oemansi-code-page-conversion-powerconvert_oem_to_ansi-powerconvert_ansi_to_oem">POW-48..49
 — OEM/ANSI code-page conversion (<code>power.convert_oem_to_ansi</code>,
 <code>power.convert_ansi_to_oem</code>)</h2>
 <p><em>What &amp; why.</em> Convert text between the DOS OEM code page
 (437) and Windows ANSI (1252) — for old DOS text files whose box
 characters and accents look wrong.</p>
-<p><strong>Before you start</strong> - Open a short line with accented
-text (e.g. from <code>encoding-cp1252.txt</code>). Run one conversion,
-then the other to return.</p>
-<p><strong>Do this</strong> (Format menu ▸ each item) 1. <strong>Convert
-OEM (DOS) to ANSI</strong> → <strong>“Converted OEM (DOS) text to ANSI
-(Windows-1252)”</strong>. 2. <strong>Convert ANSI to OEM (DOS)</strong>
-→ <strong>“Converted ANSI (Windows-1252) text to OEM
-(DOS)”</strong>.</p>
-<p><strong>You should see and hear</strong> - Each remaps the high-byte
-characters between the two code pages and speaks its matching phrase;
-applying one then the reverse returns the original text.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open a short line with accented text (e.g. from
+<code>encoding-cp1252.txt</code>). Run one conversion, then the other to
+return.</li>
+</ul>
+<p><strong>Do this</strong> (Format menu ▸ each item)</p>
+<ol type="1">
+<li><strong>Convert OEM (DOS) to ANSI</strong> → <strong>“Converted OEM
+(DOS) text to ANSI (Windows-1252)”</strong>.</li>
+<li><strong>Convert ANSI to OEM (DOS)</strong> → <strong>“Converted ANSI
+(Windows-1252) text to OEM (DOS)”</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Each remaps the high-byte characters between the two code pages and
+speaks its matching phrase; applying one then the reverse returns the
+original text.</li>
+</ul>
 <p><strong>Sign off (OEM to ANSI)</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1137,27 +1461,35 @@ applying one then the reverse returns the original text.</p>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-50..51-line-drawing-characters-power.convert_box_drawing_to_ascii-power.strip_box_drawing">POW-50..51
+id="pow-5051--line-drawing-characters-powerconvert_box_drawing_to_ascii-powerstrip_box_drawing">POW-50..51
 — Line-drawing characters
 (<code>power.convert_box_drawing_to_ascii</code>,
 <code>power.strip_box_drawing</code>)</h2>
 <p><em>What &amp; why.</em> Handle the box/line-drawing characters
 (<code>│ ─ ┌ ┐ └ ┘</code>) from DOS-era tables: either convert them to
 plain ASCII <code>+ - |</code>, or strip them entirely.</p>
-<p><strong>Before you start</strong> - New document; type a couple of
-lines using box-drawing characters — insert them with POW-01 (e.g. code
-points <code>2502</code> <code>│</code>, <code>2500</code>
-<code>─</code>, <code>250C</code> <code>┌</code>) — around some
-text.</p>
-<p><strong>Do this</strong> (Format menu ▸ each item; undo between them)
-1. <strong>Convert Line-Drawing Characters to ASCII</strong> →
-<strong>“Converted line-drawing characters to +, -, and |”</strong>. 2.
-<strong>Strip Line-Drawing Characters</strong> → <strong>“Stripped
-line-drawing characters”</strong>.</p>
-<p><strong>You should see and hear</strong> - Convert replaces the box
-characters with <code>+</code>, <code>-</code>, <code>|</code>; Strip
-removes them outright, leaving the surrounding text. Each speaks its
-matching phrase.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type a couple of lines using box-drawing characters —
+insert them with POW-01 (e.g. code points <code>2502</code>
+<code>│</code>, <code>2500</code> <code>─</code>, <code>250C</code>
+<code>┌</code>) — around some text.</li>
+</ul>
+<p><strong>Do this</strong> (Format menu ▸ each item; undo between
+them)</p>
+<ol type="1">
+<li><strong>Convert Line-Drawing Characters to ASCII</strong> →
+<strong>“Converted line-drawing characters to +, -, and
+|”</strong>.</li>
+<li><strong>Strip Line-Drawing Characters</strong> → <strong>“Stripped
+line-drawing characters”</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Convert replaces the box characters with <code>+</code>,
+<code>-</code>, <code>|</code>; Strip removes them outright, leaving the
+surrounding text. Each speaks its matching phrase.</li>
+</ul>
 <p><strong>Sign off (Convert to ASCII)</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1168,113 +1500,160 @@ matching phrase.</p>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-52-select-markdown-profile-power.select_markdown_profile">POW-52
+id="pow-52--select-markdown-profile-powerselect_markdown_profile">POW-52
 — Select Markdown Profile…
 (<code>power.select_markdown_profile</code>)</h2>
 <p><em>What &amp; why.</em> Choose which Markdown flavour QUILL uses
 (Standard, GitHub-style, etc.) by a plain-language name.</p>
-<p><strong>Before you start</strong> - Any Markdown document open.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Select Markdown
-Profile…</strong>. 2. Arrow the list, pick a profile; confirm.</p>
-<p><strong>You should see and hear</strong> - A labelled single-choice
-list with the current profile pre-selected; on confirm the status
-describes the chosen profile. Cancel says <strong>“Markdown profile
-selection cancelled”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any Markdown document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Select Markdown Profile…</strong>.</li>
+<li>Arrow the list, pick a profile; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled single-choice list with the current profile pre-selected;
+on confirm the status describes the chosen profile. Cancel says
+<strong>“Markdown profile selection cancelled”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-53-preserve-single-line-breaks-power.toggle_preserve_line_breaks">POW-53
+id="pow-53--preserve-single-line-breaks-powertoggle_preserve_line_breaks">POW-53
 — Preserve Single Line Breaks
 (<code>power.toggle_preserve_line_breaks</code>)</h2>
 <p><em>What &amp; why.</em> Apply the “nl2br” transform so single line
 breaks in Markdown become real line breaks in the output (some Markdown
 flavours otherwise fold them).</p>
-<p><strong>Before you start</strong> - New document; type two lines with
-a single newline between them.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Preserve Single
-Line Breaks</strong>.</p>
-<p><strong>You should see and hear</strong> - The transform is applied
-to the selection (or document) and the status reads <strong>“Preserved
-single line breaks”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type two lines with a single newline between
+them.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Preserve Single Line Breaks</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The transform is applied to the selection (or document) and the
+status reads <strong>“Preserved single line breaks”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-54-read-markdown-processing-status-power.read_markdown_status">POW-54
+id="pow-54--read-markdown-processing-status-powerread_markdown_status">POW-54
 — Read Markdown Processing Status
 (<code>power.read_markdown_status</code>)</h2>
 <p><em>What &amp; why.</em> Announce which Markdown profile is active
 and which extensions it enables — a quick “where am I” check.</p>
-<p><strong>Before you start</strong> - Any document; ideally after
-POW-52 so you know what to expect.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Read Markdown
-Processing Status</strong>.</p>
-<p><strong>You should see and hear</strong> - The status/announcement
-names the active profile and its enabled extensions. No document change;
-nothing but the spoken report.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document; ideally after POW-52 so you know what to expect.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Read Markdown Processing Status</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The status/announcement names the active profile and its enabled
+extensions. No document change; nothing but the spoken report.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-55-select-citation-style-power.select_citation_style">POW-55
+<h2 id="pow-55--select-citation-style-powerselect_citation_style">POW-55
 — Select Citation Style… (<code>power.select_citation_style</code>)</h2>
 <p><em>What &amp; why.</em> Choose the default citation style
 (footnotes, MLA, Chicago, APA) used by Insert Citation.</p>
-<p><strong>Before you start</strong> - Any document open.</p>
-<p><strong>Do this</strong> 1. <strong>Format menu ▸ Select Citation
-Style…</strong>. 2. Arrow the list, pick a style; confirm.</p>
-<p><strong>You should see and hear</strong> - A labelled single-choice
-list with the current style pre-selected; on confirm the status reads
-<strong>“Citation style set to <style>”</strong>. Cancel says
-<strong>“Citation style selection cancelled”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Select Citation Style…</strong>.</li>
+<li>Arrow the list, pick a style; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A labelled single-choice list with the current style pre-selected;
+on confirm the status reads <strong>“Citation style set to
+<style>”</strong>. Cancel says <strong>“Citation style selection
+cancelled”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-56-go-to-percent-power.go_to_percent">POW-56 — Go to
+<h2 id="pow-56--go-to-percent-powergo_to_percent">POW-56 — Go to
 Percent… (<code>power.go_to_percent</code>)</h2>
 <p><em>What &amp; why.</em> Jump the caret to a position a given
 percentage through the document — fast, coarse navigation in a long
 file.</p>
-<p><strong>Before you start</strong> - Open <code>formatting.md</code>
-(long enough that 50% is clearly the middle).</p>
-<p><strong>Do this</strong> 1. <strong>Navigate menu (Alt, N) ▸ Go to
-Percent…</strong>. 2. In <strong>Document percentage (0-100):</strong>
-accept <strong><code>50</code></strong> (or type another); confirm.</p>
-<p><strong>You should see and hear</strong> - The caret moves to roughly
-the middle of the document (the jump is recorded so Back works) and the
-status reads <strong>“Moved to 50%”</strong>. A non-numeric value says
-<strong>“Percentage must be a number”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <code>formatting.md</code> (long enough that 50% is clearly the
+middle).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Navigate menu (Alt, N) ▸ Go to Percent…</strong>.</li>
+<li>In <strong>Document percentage (0-100):</strong> accept
+<strong><code>50</code></strong> (or type another); confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret moves to roughly the middle of the document (the jump is
+recorded so Back works) and the status reads <strong>“Moved to
+50%”</strong>. A non-numeric value says <strong>“Percentage must be a
+number”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-57..58-non-blank-navigation-power.move_to_first_non_blank-power.move_to_last_non_blank">POW-57..58
+id="pow-5758--non-blank-navigation-powermove_to_first_non_blank-powermove_to_last_non_blank">POW-57..58
 — Non-blank navigation (<code>power.move_to_first_non_blank</code>,
 <code>power.move_to_last_non_blank</code>)</h2>
 <p><em>What &amp; why.</em> Move the caret to the first or last
 non-blank character of the current line — quicker than Home/End when
 there is leading or trailing whitespace.</p>
-<p><strong>Before you start</strong> - New document; type a line with
-<strong>leading spaces</strong>, some words, and <strong>trailing
-spaces</strong>. Put the caret anywhere on that line.</p>
-<p><strong>Do this</strong> (Navigate menu ▸ each item) 1. <strong>First
-Non-Blank</strong> — moves to the first non-space character; announces
-the character there. 2. <strong>Last Non-Blank</strong> — moves to the
-last non-space character; announces the character there.</p>
-<p><strong>You should see and hear</strong> - The caret lands on the
-first/last visible character (skipping whitespace) and the screen reader
-speaks that character (or <strong>“End of line”</strong> at a line
-end).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type a line with <strong>leading spaces</strong>, some
+words, and <strong>trailing spaces</strong>. Put the caret anywhere on
+that line.</li>
+</ul>
+<p><strong>Do this</strong> (Navigate menu ▸ each item)</p>
+<ol type="1">
+<li><strong>First Non-Blank</strong> — moves to the first non-space
+character; announces the character there.</li>
+<li><strong>Last Non-Blank</strong> — moves to the last non-space
+character; announces the character there.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The caret lands on the first/last visible character (skipping
+whitespace) and the screen reader speaks that character (or <strong>“End
+of line”</strong> at a line end).</li>
+</ul>
 <p><strong>Sign off (First Non-Blank)</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1284,72 +1663,95 @@ end).</p>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-59-open-target-at-cursor-power.run_target_at_cursor">POW-59
+<h2 id="pow-59--open-target-at-cursor-powerrun_target_at_cursor">POW-59
 — Open Target at Cursor (<code>power.run_target_at_cursor</code>)</h2>
 <p><em>What &amp; why.</em> Open whatever the caret is sitting on — a
 URL in the browser, an email address in the mail client, or a file path
 in its default app.</p>
-<p><strong>Before you start</strong> - New document; type a line with a
-URL, e.g. <code>Visit https://example.com today</code>. Put the caret
-inside the URL. Network available for the URL case.</p>
-<p><strong>Do this</strong> 1. <strong>Navigate menu ▸ Open Target at
-Cursor</strong>.</p>
-<p><strong>You should see and hear</strong> - The URL opens in your
-browser and the status reads <strong>“Opened
-https://example.com”</strong>. For an email address it opens a
-<code>mailto:</code> compose and says <strong>“Opened email to
-…”</strong>. For a file path it opens the file; a missing path says
-<strong>“Path does not exist: …”</strong>; nothing runnable says
-<strong>“Nothing to run at the cursor”</strong> — never a silent
-no-op.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type a line with a URL, e.g.
+<code>Visit https://example.com today</code>. Put the caret inside the
+URL. Network available for the URL case.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Navigate menu ▸ Open Target at Cursor</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The URL opens in your browser and the status reads <strong>“Opened
+<a href="https://example.com">https://example.com</a>”</strong>. For an
+email address it opens a <code>mailto:</code> compose and says
+<strong>“Opened email to …”</strong>. For a file path it opens the file;
+a missing path says <strong>“Path does not exist: …”</strong>; nothing
+runnable says <strong>“Nothing to run at the cursor”</strong> — never a
+silent no-op.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-60-count-regular-expression-matches-power.count_regex_matches">POW-60
+id="pow-60--count-regular-expression-matches-powercount_regex_matches">POW-60
 — Count Regular Expression Matches…
 (<code>power.count_regex_matches</code>)</h2>
 <p><em>What &amp; why.</em> Count how many times a regex matches in the
 selection (or document).</p>
-<p><strong>Before you start</strong> - <code>formatting.md</code> open.
-Input regex: <strong><code>#</code></strong> (matches every heading
-marker).</p>
-<p><strong>Do this</strong> 1. <strong>Search menu (Alt, S) ▸ Count
-Regular Expression Matches…</strong>. 2. In <strong>Regular
-expression:</strong> type <strong><code>#</code></strong>; confirm.</p>
-<p><strong>You should see and hear</strong> - The announcement reads
-<strong>“N match(es)”</strong> with the correct count. An invalid regex
-is reported clearly and nothing is counted.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. Input regex:
+<strong><code>#</code></strong> (matches every heading marker).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Search menu (Alt, S) ▸ Count Regular Expression
+Matches…</strong>.</li>
+<li>In <strong>Regular expression:</strong> type
+<strong><code>#</code></strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The announcement reads <strong>“N match(es)”</strong> with the
+correct count. An invalid regex is reported clearly and nothing is
+counted.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-61-extract-regular-expression-matches-power.extract_regex_matches">POW-61
+id="pow-61--extract-regular-expression-matches-powerextract_regex_matches">POW-61
 — Extract Regular Expression Matches…
 (<code>power.extract_regex_matches</code>)</h2>
 <p><em>What &amp; why.</em> Pull every match of a regex out into a new
-document — e.g. harvest all the links or all the numbers.</p>
-<p><strong>Before you start</strong> - <code>formatting.md</code> open.
-Input regex: <strong><code>https?://\S+</code></strong> (matches
-URLs).</p>
-<p><strong>Do this</strong> 1. <strong>Search menu ▸ Extract Regular
-Expression Matches…</strong>. 2. Type
-<strong><code>https?://\S+</code></strong>; confirm.</p>
-<p><strong>You should see and hear</strong> - A <strong>new untitled
-buffer</strong> titled <em>Extracted matches</em> opens listing each
-match (the QUILL project link URL). An invalid regex is reported and
-nothing opens.</p>
+document — e.g. harvest all the links or all the numbers.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>formatting.md</code> open. Input regex:
+<strong><code>https?://\S+</code></strong> (matches URLs).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Search menu ▸ Extract Regular Expression
+Matches…</strong>.</li>
+<li>Type <strong><code>https?://\S+</code></strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>new untitled buffer</strong> titled <em>Extracted
+matches</em> opens listing each match (the QUILL project link URL). An
+invalid regex is reported and nothing opens.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-62..63-two-block-set-operations-power.set_lines_first_not_second-power.set_lines_common">POW-62..63
+id="pow-6263--two-block-set-operations-powerset_lines_first_not_second-powerset_lines_common">POW-62..63
 — Two-block set operations
 (<code>power.set_lines_first_not_second</code>,
 <code>power.set_lines_common</code>)</h2>
@@ -1357,20 +1759,28 @@ id="pow-62..63-two-block-set-operations-power.set_lines_first_not_second-power.s
 split at the caret</strong> and compare them: the lines only in the
 first block, or the lines common to both. Set algebra for line
 lists.</p>
-<p><strong>Before you start</strong> - New document; type block one
-(<code>apple</code>, <code>banana</code>, <code>cherry</code>), then
-block two (<code>banana</code>, <code>cherry</code>, <code>date</code>).
-Put the caret on the <strong>boundary</strong> — the start of the
-<code>banana</code> line that begins block two.</p>
-<p><strong>Do this</strong> (Search menu ▸ each item) 1. <strong>Lines
-in First Block Only</strong> → new buffer; status <strong>“N line(s) in
-first block only”</strong>. 2. <strong>Lines Common to Both
-Blocks</strong> → new buffer; status <strong>“N line(s) common to both
-blocks”</strong>.</p>
-<p><strong>You should see and hear</strong> - First-only yields
-<code>apple</code> (the one line unique to block one). Common yields
-<code>banana</code>, <code>cherry</code>. Each result opens in a new
-untitled buffer and the status reports the count.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type block one (<code>apple</code>,
+<code>banana</code>, <code>cherry</code>), then block two
+(<code>banana</code>, <code>cherry</code>, <code>date</code>). Put the
+caret on the <strong>boundary</strong> — the start of the
+<code>banana</code> line that begins block two.</li>
+</ul>
+<p><strong>Do this</strong> (Search menu ▸ each item)</p>
+<ol type="1">
+<li><strong>Lines in First Block Only</strong> → new buffer; status
+<strong>“N line(s) in first block only”</strong>.</li>
+<li><strong>Lines Common to Both Blocks</strong> → new buffer; status
+<strong>“N line(s) common to both blocks”</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>First-only yields <code>apple</code> (the one line unique to block
+one). Common yields <code>banana</code>, <code>cherry</code>. Each
+result opens in a new untitled buffer and the status reports the
+count.</li>
+</ul>
 <p><strong>Sign off (First Block Only)</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1380,261 +1790,351 @@ untitled buffer and the status reports the count.</p>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-64-multi-replace-power.multi_replace">POW-64 — Multi
+<h2 id="pow-64--multi-replace-powermulti_replace">POW-64 — Multi
 Replace… (<code>power.multi_replace</code>)</h2>
 <p><em>What &amp; why.</em> Apply up to four find/replace pairs in a
 single pass, with a case sensitivity switch.</p>
-<p><strong>Before you start</strong> - New document; type
-<code>red green blue red</code>. Plan: <strong>red→one</strong>,
-<strong>green→two</strong>, <strong>blue→three</strong>.</p>
-<p><strong>Do this</strong> 1. <strong>Search menu ▸ Multi
-Replace…</strong>. 2. In the form set <strong>Search 1 =
-<code>red</code> / Replace 1 = <code>one</code></strong>, <strong>Search
-2 = <code>green</code> / Replace 2 = <code>two</code></strong>,
-<strong>Search 3 = <code>blue</code> / Replace 3 =
-<code>three</code></strong>, leave the fourth pair blank, keep
-<strong>Case sensitive</strong> ticked; press
-<strong>Replace</strong>.</p>
-<p><strong>You should see and hear</strong> - All three replacements
-apply in one pass (empty search fields are skipped) giving
-<code>one two three one</code>; the status reads <strong>“Applied multi
-replace”</strong>. Cancel says <strong>“Multi Replace
-cancelled”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type <code>red green blue red</code>. Plan:
+<strong>red→one</strong>, <strong>green→two</strong>,
+<strong>blue→three</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Search menu ▸ Multi Replace…</strong>.</li>
+<li>In the form set <strong>Search 1 = <code>red</code> / Replace 1 =
+<code>one</code></strong>, <strong>Search 2 = <code>green</code> /
+Replace 2 = <code>two</code></strong>, <strong>Search 3 =
+<code>blue</code> / Replace 3 = <code>three</code></strong>, leave the
+fourth pair blank, keep <strong>Case sensitive</strong> ticked; press
+<strong>Replace</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>All three replacements apply in one pass (empty search fields are
+skipped) giving <code>one two three one</code>; the status reads
+<strong>“Applied multi replace”</strong>. Cancel says <strong>“Multi
+Replace cancelled”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-65-count-occurrences-power.count_occurrences">POW-65 — Count
+<h2 id="pow-65--count-occurrences-powercount_occurrences">POW-65 — Count
 Occurrences… (<code>power.count_occurrences</code>)</h2>
 <p><em>What &amp; why.</em> Count how many times a literal string
 appears (not a regex — plain text).</p>
-<p><strong>Before you start</strong> - New document; type
-<code>red green blue red green red</code>. Input:
-<strong><code>red</code></strong>.</p>
-<p><strong>Do this</strong> 1. <strong>Search menu ▸ Count
-Occurrences…</strong>. 2. In <strong>Text to count:</strong> type
-<strong><code>red</code></strong>; confirm.</p>
-<p><strong>You should see and hear</strong> - The status reads
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type <code>red green blue red green red</code>. Input:
+<strong><code>red</code></strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Search menu ▸ Count Occurrences…</strong>.</li>
+<li>In <strong>Text to count:</strong> type
+<strong><code>red</code></strong>; confirm.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The status reads
 <strong><code>Found 3 occurrences of "red"</code></strong> (singular
 “occurrence” when the count is 1). Empty input says <strong>“Enter text
-to count”</strong>.</p>
+to count”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-66-run-current-file-power.run_current_file">POW-66 — Run
+<h2 id="pow-66--run-current-file-powerrun_current_file">POW-66 — Run
 Current File (<code>power.run_current_file</code>)</h2>
 <p><em>What &amp; why.</em> Open the saved file with its
 operating-system default application — run a <code>.html</code> in the
 browser, a <code>.txt</code> in Notepad, etc. Guarded so it will not
 launch an executable or script.</p>
-<p><strong>Before you start</strong> - Save a copy of
-<code>sample.html</code> and keep it open (so the document has a
-path).</p>
-<p><strong>Do this</strong> 1. <strong>Tools menu (Alt, T) ▸ Advanced ▸
-Run Current File</strong>.</p>
-<p><strong>You should see and hear</strong> - QUILL saves first, then
-opens the file in its default app (the browser for HTML); the status
-reads <strong>“Running sample.html”</strong>. An unsaved document says
-<strong>“Save the document before running it”</strong>. An
-executable/script (<code>.exe</code>, <code>.bat</code>,
-<code>.ps1</code>…) is refused with <strong>“Refusing to launch an
-executable or script for safety”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Save a copy of <code>sample.html</code> and keep it open (so the
+document has a path).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu (Alt, T) ▸ Advanced ▸ Run Current
+File</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL saves first, then opens the file in its default app (the
+browser for HTML); the status reads <strong>“Running
+sample.html”</strong>. An unsaved document says <strong>“Save the
+document before running it”</strong>. An executable/script
+(<code>.exe</code>, <code>.bat</code>, <code>.ps1</code>…) is refused
+with <strong>“Refusing to launch an executable or script for
+safety”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-67-toggle-read-only-guard-power.toggle_read_only_guard">POW-67 —
+id="pow-67--toggle-read-only-guard-powertoggle_read_only_guard">POW-67 —
 Toggle Read-Only Guard (<code>power.toggle_read_only_guard</code>)</h2>
 <p><em>What &amp; why.</em> Lock the current document against edits (and
 remember the lock for that file across sessions) — protect a reference
 file from accidental typing.</p>
-<p><strong>Before you start</strong> - A <strong>saved</strong> document
-open (so the guard can be remembered by path), e.g.
-<code>plain.txt</code>.</p>
-<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Advanced ▸ Toggle
-Read-Only Guard</strong>. Try to type. Toggle again.</p>
-<p><strong>You should see and hear</strong> - First toggle announces
-<strong>“Document is read-only”</strong> and typing is blocked;
-transform commands report <strong>“Document is read-only”</strong>
-rather than changing text. Second toggle announces <strong>“Document is
-editable”</strong> and typing works again. The read-only state persists
-for that file when reopened.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A <strong>saved</strong> document open (so the guard can be
+remembered by path), e.g. <code>plain.txt</code>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Advanced ▸ Toggle Read-Only Guard</strong>. Try
+to type. Toggle again.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>First toggle announces <strong>“Document is read-only”</strong> and
+typing is blocked; transform commands report <strong>“Document is
+read-only”</strong> rather than changing text. Second toggle announces
+<strong>“Document is editable”</strong> and typing works again. The
+read-only state persists for that file when reopened.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-68-toggle-clipboard-collector-power.toggle_clipboard_collector">POW-68
+id="pow-68--toggle-clipboard-collector-powertoggle_clipboard_collector">POW-68
 — Toggle Clipboard Collector
 (<code>power.toggle_clipboard_collector</code>)</h2>
 <p><em>What &amp; why.</em> Turn the document into a running clipboard
 collector: anything you copy — <strong>in any program</strong> — is
 appended here automatically. A research scratchpad.</p>
-<p><strong>Before you start</strong> - A saved document open (so
-appended text is auto-saved). Have another app (a browser, Notepad)
-ready to copy from.</p>
-<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Advanced ▸ Toggle
-Clipboard Collector</strong>. 2. Switch to another app and
-<strong>copy</strong> a line; switch back. Toggle again to stop.</p>
-<p><strong>You should see and hear</strong> - Turning on announces
-<strong>“Clipboard collector on; anything you copy, in any program,
-appends to this document”</strong>. Each distinct copy is appended to
-the end (once per payload, not duplicated) and the status reads
-<strong>“Collected clipboard text”</strong>. Turning off announces
-<strong>“Clipboard collector off”</strong>.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A saved document open (so appended text is auto-saved). Have another
+app (a browser, Notepad) ready to copy from.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Advanced ▸ Toggle Clipboard
+Collector</strong>.</li>
+<li>Switch to another app and <strong>copy</strong> a line; switch back.
+Toggle again to stop.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Turning on announces <strong>“Clipboard collector on; anything you
+copy, in any program, appends to this document”</strong>. Each distinct
+copy is appended to the end (once per payload, not duplicated) and the
+status reads <strong>“Collected clipboard text”</strong>. Turning off
+announces <strong>“Clipboard collector off”</strong>.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-69-collect-clipboard-now-power.collect_clipboard_now">POW-69
+<h2 id="pow-69--collect-clipboard-now-powercollect_clipboard_now">POW-69
 — Collect Clipboard Now (<code>power.collect_clipboard_now</code>)</h2>
 <p><em>What &amp; why.</em> Append the clipboard’s current text to the
 document once, on demand, without leaving the collector running.</p>
-<p><strong>Before you start</strong> - A saved document open; copy a
-line to the clipboard.</p>
-<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Advanced ▸ Collect
-Clipboard Now</strong>.</p>
-<p><strong>You should see and hear</strong> - The clipboard text is
-appended to the end of the document and the status reads
-<strong>“Collected clipboard text”</strong>. An empty clipboard, a
-read-only document, or a repeat of the last-collected text is a quiet
-no-op (nothing duplicated).</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>A saved document open; copy a line to the clipboard.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Advanced ▸ Collect Clipboard Now</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The clipboard text is appended to the end of the document and the
+status reads <strong>“Collected clipboard text”</strong>. An empty
+clipboard, a read-only document, or a repeat of the last-collected text
+is a quiet no-op (nothing duplicated).</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-70-toggle-key-describer-power.toggle_key_describer">POW-70 —
+<h2 id="pow-70--toggle-key-describer-powertoggle_key_describer">POW-70 —
 Toggle Key Describer (<code>power.toggle_key_describer</code>)</h2>
 <p><em>What &amp; why.</em> A “what does this key do?” mode: while on,
 pressing a shortcut speaks the command it is bound to <strong>instead of
 running it</strong> — a safe way to learn the keymap.</p>
-<p><strong>Before you start</strong> - Any document open.</p>
-<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Advanced ▸ Toggle
-Key Describer</strong>. 2. Press a known shortcut,
-e.g. <strong>Ctrl+S</strong>. Toggle the mode off and press it
-again.</p>
-<p><strong>You should see and hear</strong> - Turning on announces
-<strong>“Key Describer on; press a key to hear its action”</strong>.
-While on, <strong>Ctrl+S</strong> is announced as its command label
-(e.g. “Ctrl+S: Save”) and is <strong>not</strong> executed; an unbound
-key says “<key>: no action”. Turning off announces <strong>“Key
-Describer off”</strong> and shortcuts run normally again.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Advanced ▸ Toggle Key Describer</strong>.</li>
+<li>Press a known shortcut, e.g. <strong>Ctrl+S</strong>. Toggle the
+mode off and press it again.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Turning on announces <strong>“Key Describer on; press a key to hear
+its action”</strong>. While on, <strong>Ctrl+S</strong> is announced as
+its command label (e.g. “Ctrl+S: Save”) and is <strong>not</strong>
+executed; an unbound key says “<key>: no action”. Turning off announces
+<strong>“Key Describer off”</strong> and shortcuts run normally
+again.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-71-toggle-indentation-announcements-power.toggle_indent_announce">POW-71
+id="pow-71--toggle-indentation-announcements-powertoggle_indent_announce">POW-71
 — Toggle Indentation Announcements
 (<code>power.toggle_indent_announce</code>)</h2>
 <p><em>What &amp; why.</em> Speak the indentation level as the caret
 moves between lines — for following the shape of indented code or
 outlines by ear.</p>
-<p><strong>Before you start</strong> - New document; type three lines at
-increasing indentation (0, then 4 spaces, then 8 spaces of leading
-whitespace).</p>
-<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Advanced ▸ Toggle
-Indentation Announcements</strong>. 2. Arrow up and down through the
-three lines. Toggle again to stop.</p>
-<p><strong>You should see and hear</strong> - Turning on announces
-<strong>“Indentation announcements on”</strong>; moving to a line at a
-different indent speaks the change (e.g. deeper/shallower). Turning off
-announces <strong>“Indentation announcements off”</strong> and movement
-is silent again.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type three lines at increasing indentation (0, then 4
+spaces, then 8 spaces of leading whitespace).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Advanced ▸ Toggle Indentation
+Announcements</strong>.</li>
+<li>Arrow up and down through the three lines. Toggle again to
+stop.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Turning on announces <strong>“Indentation announcements
+on”</strong>; moving to a line at a different indent speaks the change
+(e.g. deeper/shallower). Turning off announces <strong>“Indentation
+announcements off”</strong> and movement is silent again.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-72-infer-indentation-power.infer_indent">POW-72 — Infer
+<h2 id="pow-72--infer-indentation-powerinfer_indent">POW-72 — Infer
 Indentation… (<code>power.infer_indent</code>)</h2>
 <p><em>What &amp; why.</em> Detect whether a document indents with tabs
 or N spaces and offer to adopt that as the document’s indent
 setting.</p>
-<p><strong>Before you start</strong> - New document; type a few lines
-indented consistently with <strong>4 spaces</strong>.</p>
-<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Advanced ▸ Infer
-Indentation…</strong>. 2. Read the inferred result; choose
-<strong>Yes</strong> to adopt (or <strong>No</strong> to just hear
-it).</p>
-<p><strong>You should see and hear</strong> - QUILL describes the
-inferred unit (e.g. “4 spaces”) and asks <strong>“Adopt it for this
-document?”</strong> with Yes/No. <strong>Yes</strong> applies it and
-announces <strong>“Adopted indentation: …”</strong>; <strong>No</strong>
-just re-states the inference. If it cannot infer a unit, it reports that
-via the status bar with no prompt.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>New document; type a few lines indented consistently with <strong>4
+spaces</strong>.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Advanced ▸ Infer Indentation…</strong>.</li>
+<li>Read the inferred result; choose <strong>Yes</strong> to adopt (or
+<strong>No</strong> to just hear it).</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>QUILL describes the inferred unit (e.g. “4 spaces”) and asks
+<strong>“Adopt it for this document?”</strong> with Yes/No.
+<strong>Yes</strong> applies it and announces <strong>“Adopted
+indentation: …”</strong>; <strong>No</strong> just re-states the
+inference. If it cannot infer a unit, it reports that via the status bar
+with no prompt.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="pow-73-line-statistics-power.compute_line_statistics">POW-73 —
+<h2 id="pow-73--line-statistics-powercompute_line_statistics">POW-73 —
 Line Statistics (<code>power.compute_line_statistics</code>)</h2>
 <p><em>What &amp; why.</em> Open a report of line-level statistics
 (counts, lengths, blanks) for the selection or whole document.</p>
-<p><strong>Before you start</strong> - <code>plain.txt</code> open (or a
-selection).</p>
-<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Advanced ▸ Line
-Statistics</strong>.</p>
-<p><strong>You should see and hear</strong> - A <strong>new untitled
-buffer</strong> titled <em>Line statistics</em> opens with the computed
-figures; the original document is untouched.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>plain.txt</code> open (or a selection).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Advanced ▸ Line Statistics</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A <strong>new untitled buffer</strong> titled <em>Line
+statistics</em> opens with the computed figures; the original document
+is untouched.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-74-describe-character-at-cursor-power.describe_character">POW-74
+id="pow-74--describe-character-at-cursor-powerdescribe_character">POW-74
 — Describe Character at Cursor
 (<code>power.describe_character</code>)</h2>
 <p><em>What &amp; why.</em> The screen-reader descendant of “Reveal
 Codes”: name the exact character under the caret — its Unicode name,
 code point, and notes for invisibles (no-break space, zero-width
 characters, smart quotes, line endings).</p>
-<p><strong>Before you start</strong> - Use POW-01 to insert an em dash
-(<code>U+2014</code>), then put the caret <strong>on</strong> it. (Any
-character works; an unusual one makes the description obvious.)</p>
-<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Advanced ▸ Describe
-Character at Cursor</strong>.</p>
-<p><strong>You should see and hear</strong> - A short summary in the
-status bar <strong>and</strong> an accessible read-only dialog titled
-<strong>“Character at Cursor”</strong> giving the character’s Unicode
-name, code point (e.g. U+2014 EM DASH), category, and any plain-language
-note. The dialog is read in one pass and closes with Escape, returning
-focus to the editor.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Use POW-01 to insert an em dash (<code>U+2014</code>), then put the
+caret <strong>on</strong> it. (Any character works; an unusual one makes
+the description obvious.)</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Advanced ▸ Describe Character at
+Cursor</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A short summary in the status bar <strong>and</strong> an accessible
+read-only dialog titled <strong>“Character at Cursor”</strong> giving
+the character’s Unicode name, code point (e.g. U+2014 EM DASH),
+category, and any plain-language note. The dialog is read in one pass
+and closes with Escape, returning focus to the editor.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-75-describe-image-at-cursor-power.describe_image_at_cursor">POW-75
+id="pow-75--describe-image-at-cursor-powerdescribe_image_at_cursor">POW-75
 — Describe Image at Cursor
 (<code>power.describe_image_at_cursor</code>)</h2>
 <p><em>What &amp; why.</em> Read out the details of an image reference
 at the caret — its alt text, whether it is decorative, and its source —
 without any AI.</p>
-<p><strong>Before you start</strong> - Open
-<strong><code>formatting.md</code></strong> and move the caret onto the
-image reference (alt text <strong>“Red circle”</strong>). (This is the
-offline, markup-reading command; the AI vision description is a separate
-Tools/AI feature.)</p>
-<p><strong>Do this</strong> 1. <strong>Tools menu ▸ Advanced ▸ Describe
-Image at Cursor</strong>.</p>
-<p><strong>You should see and hear</strong> - The status/announcement
-describes the image at the caret — its alt text <strong>“Red
-circle”</strong> and source path. With the caret not on an image it says
-<strong>“No image at the cursor.”</strong></p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>Open <strong><code>formatting.md</code></strong> and move the caret
+onto the image reference (alt text <strong>“Red circle”</strong>). (This
+is the offline, markup-reading command; the AI vision description is a
+separate Tools/AI feature.)</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Tools menu ▸ Advanced ▸ Describe Image at
+Cursor</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The status/announcement describes the image at the caret — its alt
+text <strong>“Red circle”</strong> and source path. With the caret not
+on an image it says <strong>“No image at the cursor.”</strong></li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -1652,5 +2152,6 @@ circle”</strong> and source path. With the caret not on an image it says
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

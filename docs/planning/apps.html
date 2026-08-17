@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>apps</title>
+  <title>Standalone Companion Apps — Planning</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,9 +173,30 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="standalone-companion-apps-planning">Standalone Companion Apps —
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="standalone-companion-apps--planning">Standalone Companion Apps —
 Planning</h1>
 <p>Status: planning / not yet scoped for a release. No code changes
 yet.</p>
@@ -196,14 +216,14 @@ feasible than it sounds</h2>
 <p>Checked the current module layout before writing this. The split
 QUILL already has is doing most of the work for us:</p>
 <ul>
-<li><strong>Core logic is already wx-free and reusable.</strong>
+<li><p><strong>Core logic is already wx-free and reusable.</strong>
 <code>quill/core/radio/</code>, <code>quill/core/podcasts/</code>, and
 <code>quill/core/speech/</code> (Audio Studio’s engine) contain zero
 <code>wx</code> imports. They’re plain Python: feed readers, download
 queues, recording schedulers, ffmpeg wrappers, catalog/credits tracking.
-Nothing here is coupled to <code>MainFrame</code>.</li>
-<li><strong>The UI pieces are already parent-agnostic
-dialogs/controllers</strong>, not MainFrame internals:
+Nothing here is coupled to <code>MainFrame</code>.</p></li>
+<li><p><strong>The UI pieces are already parent-agnostic
+dialogs/controllers</strong>, not MainFrame internals:</p>
 <ul>
 <li><code>quill/ui/radio/</code> — <code>StationBrowserDialog</code>,
 <code>AddStationDialog</code>, <code>RadioPlayerController</code>,
@@ -216,24 +236,24 @@ dialogs/controllers</strong>, not MainFrame internals:
 and its page panels, <code>AudioEngine</code>/<code>MpvEngine</code>,
 <code>PlayerPanel</code>.</li>
 </ul>
-Every one of these takes a <code>wx.Window</code> as <code>parent</code>
-and otherwise only touches its own core module.
+<p>Every one of these takes a <code>wx.Window</code> as
+<code>parent</code> and otherwise only touches its own core module.
 <code>RadioPlayerController(self.frame, ...)</code> in
 <code>main_frame_radio.py:51-55</code> treats <code>self.frame</code> as
 nothing more than a parent window for child controls and modal
-dialogs.</li>
-<li><strong><code>main_frame_radio.py</code> /
+dialogs.</p></li>
+<li><p><strong><code>main_frame_radio.py</code> /
 <code>main_frame_podcasts.py</code> are thin glue</strong>, not where
 the feature logic lives: menu item registration, keymap commands,
 status-bar mini-player, system tray integration, safe-mode gating.
 That’s exactly the layer a standalone shell needs to reimplement in
-miniature — and only that layer.</li>
+miniature — and only that layer.</p></li>
 </ul>
 <p>Net effect: we are not extracting features out of a monolith. We’re
 wrapping already-decoupled features in a second, smaller frame.</p>
 <h2 id="proposed-shared-component-appshellframe">Proposed shared
 component: <code>AppShellFrame</code></h2>
-<p>A new small module, e.g. <code>quill/ui/app_shell.py</code>,
+<p>A new small module, e.g. <code>quill/ui/app_shell.py</code>,
 providing a reusable base for any standalone companion app:</p>
 <ul>
 <li>Builds a <code>wx.Frame</code> + <code>wx.MenuBar</code> from a
@@ -282,7 +302,7 @@ macOS.</li>
 per-feature builders — <code>_build_radio_tray_menu</code>
 (<code>main_frame_radio.py:234</code>) and
 <code>_build_podcast_tray_menu</code> — each of which only touches that
-feature’s own controller (e.g. radio’s shows a disabled “Radio: playing
+feature’s own controller (e.g. radio’s shows a disabled “Radio: playing
 <station>” line plus the same play/pause/stop items as the status-bar
 mini-player). These builders are essentially already “the standalone
 app’s tray menu” — extracting them out of <code>MainFrame</code> into
@@ -295,7 +315,7 @@ job is running and the user has switched away; tray icon there could
 just show job progress and a “Show” action. Lower priority than
 Radio/Podcasts.</li>
 </ul>
-<h2 id="menu-bar-going-beyond-the-bare-minimum">Menu bar — going beyond
+<h2 id="menu-bar--going-beyond-the-bare-minimum">Menu bar — going beyond
 the bare minimum</h2>
 <p>The per-app sketches below are a starting skeleton, not the ceiling.
 Once each app has its own frame instead of living under
@@ -308,7 +328,7 @@ pattern already used in the tray submenu, surfaced in the menu bar too
 so sighted and screen-reader users both get it without opening the
 tray.</li>
 <li><strong>Favorites/subscriptions surfaced directly in the
-menu</strong>, not just behind a “Browse…” dialog launch — e.g. Radio’s
+menu</strong>, not just behind a “Browse…” dialog launch — e.g. Radio’s
 Station menu lists favorite stations inline for one-key switching;
 Podcasts’ Subscriptions menu lists subscribed shows with
 unplayed-episode counts.</li>
@@ -325,7 +345,7 @@ Projects; Podcasts gets Recently Played.</li>
 store, and the download queue already hold the data these richer menus
 would just be reading.</p>
 <h2 id="per-app-sketch">Per-app sketch</h2>
-<h3 id="radio-player-pilot-candidate-smallest-surface">Radio Player
+<h3 id="radio-player-pilot-candidate--smallest-surface">Radio Player
 (pilot candidate — smallest surface)</h3>
 <ul>
 <li>Entry point: <code>python -m quill.apps.radio</code> (packaged as
@@ -388,7 +408,7 @@ feedback says the double-open in v1 is actually annoying.</li>
 </ol>
 <p>Recommend starting with v1 and treating v2 as a follow-up, not a
 blocker.</p>
-<h2 id="packaging-distribution">Packaging / distribution</h2>
+<h2 id="packaging--distribution">Packaging / distribution</h2>
 <ul>
 <li>New Start Menu shortcuts per app via the Inno Setup script
 (generator, not the checked-in <code>.iss</code> — see
@@ -456,5 +476,6 @@ managers already track. Main unknowns are packaging/installer plumbing
 and how much dialog-inventory/UIA test coverage each new top-level frame
 needs — both answerable during the Radio Player pilot rather than
 needing more research up front.</p>
+</main>
 </body>
 </html>

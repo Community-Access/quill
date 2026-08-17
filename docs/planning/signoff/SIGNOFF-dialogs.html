@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>SIGNOFF-dialogs</title>
+  <title>QUILL 1.0.0 Sign-off — Dialog surfaces (A11Y-4
+registry)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,17 +174,38 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="quill-1.0.0-sign-off-dialog-surfaces-a11y-4-registry">QUILL
-1.0.0 Sign-off — Dialog surfaces (A11Y-4 registry)</h1>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-100-sign-off--dialog-surfaces-a11y-4-registry">QUILL 1.0.0
+Sign-off — Dialog surfaces (A11Y-4 registry)</h1>
 <p><strong>647 dialog call-sites</strong> from
 <code>tests/unit/ui/fixtures/dialog_inventory.json</code>. Each: opens,
 keyboard-complete, correct accessible name/role, Escape/Close contract,
 announces outcome. <code>native</code>=stock OS dialog,
 <code>hardened_custom</code>=QUILL dialog, <code>web</code>=HTML-form
 dialog.</p>
-<h2 id="core-editor-485-native279-hardened_custom199-web7">CORE-EDITOR
+<h2 id="core-editor-485--native279-hardened_custom199-web7">CORE-EDITOR
 (485) — native:279, hardened_custom:199, web:7</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
@@ -1652,7 +1673,8 @@ Regex Helper 2.0, #1328]</strong></label></li>
 <code>quill/ui/work_persona_dialog.py::WorkPersonaDialog._on_shortcut::wx.DirDialog</code>
 <em>(native)</em></label></li>
 </ul>
-<h2 id="other-app-studio-gated-43-native33-hardened_custom10">OTHER-APP:
+<h2
+id="other-app-studio-gated-43--native33-hardened_custom10">OTHER-APP:
 studio (gated) (43) — native:33, hardened_custom:10</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
@@ -1785,7 +1807,7 @@ studio (gated) (43) — native:33, hardened_custom:10</h2>
 <code>quill/ui/audio_studio/wizard.py::AudioStudioWizard::subclass:wx.Dialog</code>
 <em>(hardened_custom)</em></label></li>
 </ul>
-<h2 id="radio-public-36-native21-hardened_custom15">RADIO (public) (36)
+<h2 id="radio-public-36--native21-hardened_custom15">RADIO (public) (36)
 — native:21, hardened_custom:15</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
@@ -1897,7 +1919,7 @@ studio (gated) (43) — native:33, hardened_custom:10</h2>
 <code>quill/ui/radio/wake_timer_dialog.py::WakeUpTimerDialog.__init__::wx.Dialog</code>
 <em>(hardened_custom)</em></label></li>
 </ul>
-<h2 id="core-podcasts-gated-app-35-native22-hardened_custom13">CORE
+<h2 id="core-podcasts-gated-app-35--native22-hardened_custom13">CORE
 (podcasts, gated app) (35) — native:22, hardened_custom:13</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
@@ -2006,7 +2028,8 @@ studio (gated) (43) — native:33, hardened_custom:10</h2>
 <code>quill/ui/podcasts/skip_settings_dialog.py::SkipSettingsDialog.__init__::wx.Dialog</code>
 <em>(hardened_custom)</em></label></li>
 </ul>
-<h2 id="other-app-beacon-gated-30-hardened_custom20-native10">OTHER-APP:
+<h2
+id="other-app-beacon-gated-30--hardened_custom20-native10">OTHER-APP:
 beacon (gated) (30) — hardened_custom:20, native:10</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
@@ -2100,7 +2123,7 @@ beacon (gated) (30) — hardened_custom:20, native:10</h2>
 <code>quill/apps/beacon/dialogs.py::TrailStepDialog::subclass:wx.Dialog</code>
 <em>(hardened_custom)</em></label></li>
 </ul>
-<h2 id="other-app-player-gated-9-native7-hardened_custom2">OTHER-APP:
+<h2 id="other-app-player-gated-9--native7-hardened_custom2">OTHER-APP:
 player (gated) (9) — native:7, hardened_custom:2</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
@@ -2131,7 +2154,7 @@ player (gated) (9) — native:7, hardened_custom:2</h2>
 <code>quill/ui/media/library_dialog.py::LibraryDialog::subclass:wx.Dialog</code>
 <em>(hardened_custom)</em></label></li>
 </ul>
-<h2 id="weather-public-4-hardened_custom3-native1">WEATHER (public) (4)
+<h2 id="weather-public-4--hardened_custom3-native1">WEATHER (public) (4)
 — hardened_custom:3, native:1</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
@@ -2147,7 +2170,7 @@ player (gated) (9) — native:7, hardened_custom:2</h2>
 <code>quill/ui/weather/weather_center_dialog.py::WeatherCenterDialog.__init__::wx.Dialog</code>
 <em>(hardened_custom)</em></label></li>
 </ul>
-<h2 id="other-app-converter-gated-3-native3">OTHER-APP: converter
+<h2 id="other-app-converter-gated-3--native3">OTHER-APP: converter
 (gated) (3) — native:3</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
@@ -2160,5 +2183,6 @@ player (gated) (9) — native:7, hardened_custom:2</h2>
 <code>quill/apps/converter.py::QuillConverterFrame._on_browse::wx.DirDialog</code>
 <em>(native)</em></label></li>
 </ul>
+</main>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>plan</title>
+  <title>QUILL Next Generation: Pocket, Sync, and the Platform</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,14 +173,35 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-next-generation-pocket-sync-and-the-platform">QUILL Next
 Generation: Pocket, Sync, and the Platform</h1>
 <p>Vision document, 2026-07-04. Nothing here is committed work. It
 sketches the three big moves after 0.9.0: an iOS companion app, a
 GitHub-style sync layer, and where QUILL goes as a platform.</p>
-<h2 id="quill-pocket-ios">1. QUILL Pocket (iOS)</h2>
+<h2 id="1-quill-pocket-ios">1. QUILL Pocket (iOS)</h2>
 <h3 id="why-the-phone-and-why-now">Why the phone, and why now</h3>
 <p>For a large share of blind and low-vision users, the iPhone is the
 primary computer. VoiceOver is arguably the most-used screen reader on
@@ -259,8 +279,8 @@ channel.</li>
 <li>Free tier is genuinely useful (capture + read + sync via BYO
 storage), consistent with the “free AI for everyone” ethos.</li>
 </ul>
-<h2 id="quill-sync-github-like-sync-for-your-whole-setup">2. QUILL Sync:
-GitHub-like sync for your whole setup</h2>
+<h2 id="2-quill-sync-github-like-sync-for-your-whole-setup">2. QUILL
+Sync: GitHub-like sync for your whole setup</h2>
 <h3 id="the-model-your-configuration-is-a-repository">The model: your
 configuration is a repository</h3>
 <p>QUILL already stores everything as schema-validated,
@@ -324,8 +344,8 @@ Studio binder state.</li>
 </ol>
 <p>Scope 1 alone justifies the feature; scopes 2-3 are what make Pocket
 sing.</p>
-<h2 id="the-next-generation-quill-as-a-platform">3. The next generation:
-QUILL as a platform</h2>
+<h2 id="3-the-next-generation-quill-as-a-platform">3. The next
+generation: QUILL as a platform</h2>
 <p>Where this all points:</p>
 <ul>
 <li>One Companion, every surface. The desktop Companion agent, Hey QUILL
@@ -361,5 +381,6 @@ sync.</li>
 <li>Platform bets: collaboration, Quillin exchange, hosted sync - in
 whatever order real users pull hardest.</li>
 </ol>
+</main>
 </body>
 </html>

@@ -1,11 +1,10 @@
 # Changelog
 
-## Unreleased
+## 1.0.0
 
-Landed since 1.0.0, not yet released. This is a reliability pass driven entirely
-by what people reported: a full disk that could lose a document, an editor that
-was doing too much work between keystrokes, and three smaller things that were
-already fixed in code nobody could run yet.
+The most recent work first: a reliability pass driven entirely by what people
+reported (a full disk that could lose a document, an editor doing too much work
+between keystrokes), then the release as originally scoped below.
 
 ### Save said the word count twice, in two different ways (2026-08-17)
 
@@ -1456,7 +1455,9 @@ never be confused with the downloads you chose to keep.
   episode with fifty notes read as having none. A confident wrong number is
   worse than an absent one (rule A-10). (`quill/ui/podcasts/player_info_source.py`)
 
-## 1.0.0
+---
+
+Everything below is the release as originally scoped.
 
 ### New
 

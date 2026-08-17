@@ -131,6 +131,101 @@ scrubbed for tokens and keys before they are written.
 
 ---
 
+## The final pass: reliability, driven by what people reported
+
+The last stretch before this release was a reliability pass shaped entirely by
+field reports, and it belongs in these notes because it changed what saving,
+typing, and dictating feel like. (The changelog carries every technical detail;
+these are the parts you will notice.)
+
+**A full disk can no longer close QUILL with your document unsaved (#1390).**
+The serious one. Choosing **Save** on the close prompt, on a disk with no space
+left, closed QUILL *without saving*: the save path wrote a backup copy first,
+the backup write was the one write outside the failure guard, and the close
+path swallowed the escaping error as "the prompt misbehaved, close anyway."
+Four changes now stand between you and that: a backup can never stop a save (it
+degrades to "Could not write a backup; saving anyway"); backups are written
+atomically and always as UTF-8, so an interrupted backup can never be what you
+restore and a BRF braille file's backup no longer aborts on an accented
+character; the error says what to do ("The disk is full. QUILL could not save
+notes.md. Free some space and try again -- your text is still open and
+unsaved."); and a failed save is not consent to close -- the first close after
+one is cancelled with an explanation, while a second close still proceeds, so
+the window can never be trapped. Autosave, likewise, now *says* when a full
+disk pauses it -- once per failure streak, quiet again the moment it succeeds
+(#1386) -- because a safety net that vanishes silently is not a safety net.
+
+**Typing is faster, and the screen reader keeps up (#1346).** "Long pauses
+between text entry and reporting from either NVDA and JAWS... sometimes the
+space is not intercepted, so words run together" turned out to be QUILL's own
+work per keystroke: three or four complete copies of the document pulled from
+the edit control per character -- a megabyte of copying per keystroke on a
+200 KB file -- plus a full-text comparison, all before the next key could be
+handled. The buffer is now read once per keystroke; only the three things that
+must be true before the next key stay synchronous; previews, spell-check
+hints, prediction, and the rest run behind a 120 ms timer in the gap after the
+character has already reached the screen reader; and the periodic autosave
+write left the UI thread. A build check asserts the one-read-per-keystroke
+budget so the regression cannot quietly return. In the same spirit, **Save no
+longer announces its word count twice** with NVDA running.
+
+**Dictation stops making things up.** Silence, breath, and background noise no
+longer come back as invented words -- the model's confidence is finally
+honored instead of its guesses.
+
+**The platform day.** A ranked review of the platform, executed in one pass:
+keyboard chords that silently fought each other were separated (a key claimed
+twice means one claimant never fires -- the menu gate now walks a populated
+profile so the class cannot return); four settings that only took effect after
+a restart now apply the moment you save them; and the CI gates got a gate of
+their own, so a dead check can no longer pass by being dead.
+
+**Menus and dialogs, held to the rule.** Every enabled menu item advertises a
+real, unique, parseable key -- rendered from what is *actually* bound, so a
+rebinding follows you -- and every Close button closes, enforced at the source
+by the shared dialog contract. These are family-wide rules with their own
+tests now, not per-window habits.
+
+**Updates offer back the edition you are running.** Reported twice: updating a
+full install offered the portable download. Three separate faults produced
+that one symptom; all three are fixed, and the updater now answers with your
+own edition.
+
+**Pages files open again.** The compatibility patch that once *prevented* a
+crash on unknown `.pages` archives had itself become the crash against current
+keynote-parser; the fallback is gone and `.pages` documents open.
+
+**Your place follows you between machines.** The QuillSync engine could
+already commit, push, and pull encrypted records; the missing adapter now
+moves reading and playback positions through it, so the paragraph you stopped
+at on one machine is where you resume on another.
+
+**Everything you started, in one list.** Continue Listening gathers the
+podcast, the streamed recording, and the local file into one newest-first
+list, each row naming its provider, Resume offered only where it can actually
+work, and Forget a first-class button. And while you listen, **the Media
+Player reads your notes back as you reach them**: a bookmark with a note
+speaks it at its moment (on by default, **Playback > Read My Notes Aloud as I
+Reach Them**); a plain bookmark stays silent, because a place to jump to has
+nothing to say.
+
+**Smaller things you will feel.** The Command Palette now says which way every
+toggle is set -- "(currently On)" -- refreshed each time it opens (#1383).
+Sound Enhancements finally has its key in full QUILL (**Ctrl+E**), routing to
+the player you can actually hear. The Media Player answers to the same classic
+Winamp transport keys as the rest of the family. "Show in Explorer" selects
+the file instead of opening Documents. The two Italian Piper voices gained
+preview clips like the other 37. Transient network failures (a 503, a timeout)
+are retried before anything is declared dead -- so one busy moment can never
+be the reason a live subscription is offered for deletion. Persistent undo is
+bounded by size as well as count, so a hundred snapshots of a large manuscript
+no longer cost 100 MB and a rewrite every few seconds. Find Chapters works for
+every episode (a one-word identifier mismatch had it answering "cannot be
+identified" universally), and Player Information counts your notes instead of
+confidently reporting zero.
+
+---
+
 ## How QUILL Talks to You
 
 Before any individual feature, it is worth describing the layer underneath all of them,

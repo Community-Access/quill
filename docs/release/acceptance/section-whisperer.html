@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>section-whisperer</title>
+  <title>Section — BITS Whisperer (`whisperer.*`, 12 commands)
+[GATED]</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,9 +174,30 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="section-bits-whisperer-whisperer.-12-commands-gated">Section —
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="section--bits-whisperer-whisperer-12-commands-gated">Section —
 BITS Whisperer (<code>whisperer.*</code>, 12 commands) [GATED]</h1>
 <p>BITS Whisperer is QUILL’s phased speech-to-text management surface:
 it stages Whisper speech models, checks the local faster-whisper engine,
@@ -192,7 +213,7 @@ first.</p>
 scenario layout and the Pass/Fail/Blocked/N-A +
 Works/Surface-exact/Accessible boxes.</p>
 <blockquote>
-<h2 id="this-entire-section-is-gated-behind-core.bw_whisperer">This
+<h2 id="this-entire-section-is-gated-behind-corebw_whisperer">This
 entire section is GATED behind <code>core.bw_whisperer</code></h2>
 <p>On a <strong>public QUILL 1.0 build these commands do not
 exist</strong>: the <strong>Tools ▸ BITS Whisperer</strong> submenu is
@@ -237,171 +258,219 @@ the <strong>Command Palette</strong>.</li>
 </ul>
 <hr />
 <h2
-id="whis-01-speech-model-manager-whisperer.model_manager-no-default-shortcut-gated-core.bw_whisperer">WHIS-01
+id="whis-01--speech-model-manager-whisperermodel_manager-no-default-shortcut-gated-corebw_whisperer">WHIS-01
 — Speech Model Manager… (<code>whisperer.model_manager</code>, no
 default shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> The guided front door for speech models:
 pick the recommended model, browse every model, download or remove one,
 and set your default — all by keyboard, with the machine’s own
 capability guidance shown up front.</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled (Help ▸ Redeem Unlock Code…; see the section note). - Any
-document open.</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools menu (Alt, T) ▸ BITS
-Whisperer ▸ Speech Models ▸ Model Manager…</strong>, or Command Palette
-→ “BITS Whisperer Speech Model Manager”. 2. Read the first dialog (“BITS
-Whisperer Speech Setup”). Arrow to <strong>Choose model
-manually</strong> and press <strong>Enter</strong>. 3. In the model list
-(“BITS Whisperer Speech Models”), arrow through the entries; each shows
-its family and any <code>[downloaded]</code> /
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled (Help ▸ Redeem Unlock Code…;
+see the section note).</li>
+<li>Any document open.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools menu (Alt, T) ▸ BITS Whisperer ▸ Speech Models ▸
+Model Manager…</strong>, or Command Palette → “BITS Whisperer Speech
+Model Manager”.</li>
+<li>Read the first dialog (“BITS Whisperer Speech Setup”). Arrow to
+<strong>Choose model manually</strong> and press
+<strong>Enter</strong>.</li>
+<li>In the model list (“BITS Whisperer Speech Models”), arrow through
+the entries; each shows its family and any <code>[downloaded]</code> /
 <code>[recommended]</code> markers. Pick one and press
-<strong>Enter</strong>. 4. In the per-model action dialog, read the size
-and minimum-RAM detail, arrow to <strong>Set as default</strong>, and
-press <strong>Enter</strong>. (Escape at any step cancels.)</p>
-<p><strong>You should see and hear</strong> - The first dialog opens
-with the machine-capability guidance line spoken, then a four-item list:
-<strong>Use recommended model</strong>, <strong>Choose model
-manually</strong>, <strong>Show model status</strong>, <strong>Check
-faster-whisper engine</strong>. It is a single-choice list navigable by
-arrows. - The model list announces each model name, family, and markers.
-The action dialog announces the model name, description, <strong>Approx
+<strong>Enter</strong>.</li>
+<li>In the per-model action dialog, read the size and minimum-RAM
+detail, arrow to <strong>Set as default</strong>, and press
+<strong>Enter</strong>. (Escape at any step cancels.)</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The first dialog opens with the machine-capability guidance line
+spoken, then a four-item list: <strong>Use recommended model</strong>,
+<strong>Choose model manually</strong>, <strong>Show model
+status</strong>, <strong>Check faster-whisper engine</strong>. It is a
+single-choice list navigable by arrows.</li>
+<li>The model list announces each model name, family, and markers. The
+action dialog announces the model name, description, <strong>Approx
 size: N.NN GB</strong>, and <strong>Minimum RAM: N GB</strong>, offering
 <strong>Set as default</strong>, <strong>Download model</strong> (or
 <strong>Remove downloaded model</strong> if already present), and
-<strong>Show status</strong>. - Choosing <strong>Set as default</strong>
-confirms aloud: “Manual mode active. Default speech model set to <name>”
-and updates the status bar. <strong>Download model</strong> first
-refuses with a spoken warning if there is not enough disk space;
-otherwise it starts a background download (see WHIS-05). Nothing happens
-without your Enter.</p>
+<strong>Show status</strong>.</li>
+<li>Choosing <strong>Set as default</strong> confirms aloud: “Manual
+mode active. Default speech model set to <name>” and updates the status
+bar. <strong>Download model</strong> first refuses with a spoken warning
+if there is not enough disk space; otherwise it starts a background
+download (see WHIS-05). Nothing happens without your Enter.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-02-speech-model-status-whisperer.model_status-no-default-shortcut-gated-core.bw_whisperer">WHIS-02
+id="whis-02--speech-model-status-whisperermodel_status-no-default-shortcut-gated-corebw_whisperer">WHIS-02
 — Speech Model Status (<code>whisperer.model_status</code>, no default
 shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> A read-only snapshot of your speech-model
 setup: which mode is active, which model is the default, what’s
 recommended right now, how many models are installed, and whether the
 engine is ready.</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled.</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools ▸ BITS Whisperer ▸
-Speech Models ▸ Model Status</strong>, or Command Palette → “BITS
-Whisperer Speech Model Status”. 2. Read the whole dialog with your
-screen reader’s review cursor; press <strong>Enter</strong> or
-<strong>Escape</strong> on OK to close.</p>
-<p><strong>You should see and hear</strong> - A message dialog titled
-<strong>BITS Whisperer Speech Models</strong> whose text begins “BITS
-Whisperer Speech Model Status” and lists, in order: the
-machine-capability guidance, <strong>Selection mode:</strong>
-(recommended/manual), <strong>Configured default:</strong> <model>,
-<strong>Recommended now:</strong> <model>, <strong>Installed models: N
-of M</strong>, and <strong>faster-whisper engine: Ready / Not
-installed</strong> with an engine detail line. It ends with a note that
-this is a phased rollout. - Closing returns focus to where you were.
-Status bar: “BITS Whisperer speech model status shown”.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools ▸ BITS Whisperer ▸ Speech Models ▸ Model
+Status</strong>, or Command Palette → “BITS Whisperer Speech Model
+Status”.</li>
+<li>Read the whole dialog with your screen reader’s review cursor; press
+<strong>Enter</strong> or <strong>Escape</strong> on OK to close.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A message dialog titled <strong>BITS Whisperer Speech
+Models</strong> whose text begins “BITS Whisperer Speech Model Status”
+and lists, in order: the machine-capability guidance, <strong>Selection
+mode:</strong> (recommended/manual), <strong>Configured
+default:</strong> <model>, <strong>Recommended now:</strong> <model>,
+<strong>Installed models: N of M</strong>, and <strong>faster-whisper
+engine: Ready / Not installed</strong> with an engine detail line. It
+ends with a note that this is a phased rollout.</li>
+<li>Closing returns focus to where you were. Status bar: “BITS Whisperer
+speech model status shown”.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-03-use-recommended-speech-model-whisperer.model_recommend-no-default-shortcut-gated-core.bw_whisperer">WHIS-03
+id="whis-03--use-recommended-speech-model-whisperermodel_recommend-no-default-shortcut-gated-corebw_whisperer">WHIS-03
 — Use Recommended Speech Model (<code>whisperer.model_recommend</code>,
 no default shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> One-tap “just pick the best model for this
 machine.” Switches you to recommended mode and selects the model QUILL
 recommends for your hardware.</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled. Optionally set a manual default first (WHIS-01) so the switch
-back to recommended is observable.</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools ▸ BITS Whisperer ▸
-Speech Models ▸ Use Recommended Model</strong>, or Command Palette →
-“BITS Whisperer Use Recommended Speech Model”.</p>
-<p><strong>You should see and hear</strong> - No dialog. The selection
-mode flips to <strong>recommended</strong> and the default model is set
-to the recommended id; the change is saved. Spoken/status: “Recommended
-mode active. Selected speech model: <model id>”. Re-running WHIS-02 now
-shows <strong>Selection mode: recommended</strong> and the configured
-default equal to the recommended model.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled. Optionally set a manual
+default first (WHIS-01) so the switch back to recommended is
+observable.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools ▸ BITS Whisperer ▸ Speech Models ▸ Use
+Recommended Model</strong>, or Command Palette → “BITS Whisperer Use
+Recommended Speech Model”.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>No dialog. The selection mode flips to <strong>recommended</strong>
+and the default model is set to the recommended id; the change is saved.
+Spoken/status: “Recommended mode active. Selected speech model:
+<model id>”. Re-running WHIS-02 now shows <strong>Selection mode:
+recommended</strong> and the configured default equal to the recommended
+model.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-04-check-faster-whisper-engine-whisperer.check_faster_whisper-no-default-shortcut-gated-core.bw_whisperer">WHIS-04
+id="whis-04--check-faster-whisper-engine-whisperercheck_faster_whisper-no-default-shortcut-gated-corebw_whisperer">WHIS-04
 — Check faster-whisper Engine
 (<code>whisperer.check_faster_whisper</code>, no default shortcut)
 [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> Tells you whether the local
 <strong>faster-whisper</strong> transcription engine is installed and
 usable, so you know before you rely on offline speech.</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled.</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools ▸ BITS Whisperer ▸
-Speech Models ▸ Check faster-whisper Engine</strong>, or Command Palette
-→ “BITS Whisperer Check faster-whisper Engine”. 2. Read the dialog;
-close with OK.</p>
-<p><strong>You should see and hear</strong> - A message dialog titled
-<strong>faster-whisper Engine</strong> containing a plain status detail
-line. When the engine is present it uses an information icon and the
-status bar says “faster-whisper engine ready”; when absent it uses a
-<strong>warning</strong> icon and the status bar says “faster-whisper
-not installed” — never a silent result and never a crash when the engine
-is missing.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools ▸ BITS Whisperer ▸ Speech Models ▸ Check
+faster-whisper Engine</strong>, or Command Palette → “BITS Whisperer
+Check faster-whisper Engine”.</li>
+<li>Read the dialog; close with OK.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A message dialog titled <strong>faster-whisper Engine</strong>
+containing a plain status detail line. When the engine is present it
+uses an information icon and the status bar says “faster-whisper engine
+ready”; when absent it uses a <strong>warning</strong> icon and the
+status bar says “faster-whisper not installed” — never a silent result
+and never a crash when the engine is missing.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-05-download-queue-whisperer.download_queue-no-default-shortcut-gated-core.bw_whisperer">WHIS-05
+id="whis-05--download-queue-whispererdownload_queue-no-default-shortcut-gated-corebw_whisperer">WHIS-05
 — Download Queue… (<code>whisperer.download_queue</code>, no default
 shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> Manage in-flight and past model downloads:
 jump to the live status page, retry a failed download, or clear finished
 history. Model downloads are user-initiated and covered by the network
 egress audit.</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled. To exercise <strong>Retry</strong>, first trigger a download
-that fails (e.g. start a model download from WHIS-01 with the network
-off), so a failed entry exists. - Note: if the <strong>Safe Mode
-Lock</strong> badge is showing in the Speech Models menu, downloads and
-retries are intentionally blocked (see the projected outcome).</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools ▸ BITS Whisperer ▸
-Speech Models ▸ Download Queue…</strong>, or Command Palette → “BITS
-Whisperer Download Queue”. 2. In the “BITS Whisperer Download Queue”
-list, arrow through <strong>Open live status page</strong>,
-<strong>Retry failed download</strong>, <strong>Clear completed and
-failed download history</strong>. Choose <strong>Open live status
-page</strong> and press <strong>Enter</strong>. 3. Repeat and choose
-<strong>Retry failed download</strong>; in the follow-up list pick a
-failed model and press <strong>Enter</strong>. 4. Repeat and choose
-<strong>Clear completed and failed download history</strong>.</p>
-<p><strong>You should see and hear</strong> - The three-item action list
-is arrow-navigable. <strong>Open live status page</strong> opens the
-Help ▸ Status Page (live download/speech status). <strong>Retry failed
-download</strong> opens a second list of failed models and restarts the
-chosen one as a background download; if there are none it says “No
-failed BITS Whisperer downloads to retry”. <strong>Clear…</strong>
-removes completed/failed entries (keeping any still running) and says
-“Cleared completed and failed BITS Whisperer download history”. - If the
-<strong>safe mode lock</strong> is enabled, Retry is refused with a
-spoken message pointing you to <strong>Preferences ▸ General</strong>,
-and status “BITS Whisperer safe mode lock blocked download retry” — it
-does not silently do nothing.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled. To exercise
+<strong>Retry</strong>, first trigger a download that fails (e.g. start
+a model download from WHIS-01 with the network off), so a failed entry
+exists.</li>
+<li>Note: if the <strong>Safe Mode Lock</strong> badge is showing in the
+Speech Models menu, downloads and retries are intentionally blocked (see
+the projected outcome).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools ▸ BITS Whisperer ▸ Speech Models ▸ Download
+Queue…</strong>, or Command Palette → “BITS Whisperer Download
+Queue”.</li>
+<li>In the “BITS Whisperer Download Queue” list, arrow through
+<strong>Open live status page</strong>, <strong>Retry failed
+download</strong>, <strong>Clear completed and failed download
+history</strong>. Choose <strong>Open live status page</strong> and
+press <strong>Enter</strong>.</li>
+<li>Repeat and choose <strong>Retry failed download</strong>; in the
+follow-up list pick a failed model and press
+<strong>Enter</strong>.</li>
+<li>Repeat and choose <strong>Clear completed and failed download
+history</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>The three-item action list is arrow-navigable. <strong>Open live
+status page</strong> opens the Help ▸ Status Page (live download/speech
+status). <strong>Retry failed download</strong> opens a second list of
+failed models and restarts the chosen one as a background download; if
+there are none it says “No failed BITS Whisperer downloads to retry”.
+<strong>Clear…</strong> removes completed/failed entries (keeping any
+still running) and says “Cleared completed and failed BITS Whisperer
+download history”.</li>
+<li>If the <strong>safe mode lock</strong> is enabled, Retry is refused
+with a spoken message pointing you to <strong>Preferences ▸
+General</strong>, and status “BITS Whisperer safe mode lock blocked
+download retry” — it does not silently do nothing.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-06-provider-center-whisperer.provider_center-no-default-shortcut-gated-core.bw_whisperer">WHIS-06
+id="whis-06--provider-center-whispererprovider_center-no-default-shortcut-gated-corebw_whisperer">WHIS-06
 — Provider Center… (<code>whisperer.provider_center</code>, no default
 shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> A guided hub for transcription
@@ -409,168 +478,218 @@ shortcut) [GATED core.bw_whisperer]</h2>
 speech-to-text): pick the recommended one, choose manually, see status,
 switch local-first / cloud-first, or toggle whether cloud providers are
 even visible.</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled.</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools ▸ BITS Whisperer ▸
-Providers ▸ Provider Center…</strong>, or Command Palette → “BITS
-Whisperer Provider Center”. 2. Arrow through the six actions:
-<strong>Use recommended provider</strong>, <strong>Select provider
-manually</strong>, <strong>Show provider status</strong>, <strong>Switch
-to local-first mode</strong>, <strong>Switch to cloud-first
-mode</strong>, <strong>Toggle cloud provider visibility</strong>. Pick
-<strong>Switch to local-first mode</strong> and press
-<strong>Enter</strong>. 3. Re-open and try <strong>Toggle cloud provider
-visibility</strong>.</p>
-<p><strong>You should see and hear</strong> - A single-choice dialog
-titled <strong>BITS Whisperer Provider Center</strong> with the six
-actions, arrow-navigable. Each action either delegates (recommended →
-WHIS-08, manual → WHIS-09, status → WHIS-07) or applies and announces a
-setting: “Provider mode set to local-first” / “…cloud-first”, and “Cloud
-provider visibility enabled/disabled”. Each choice is saved. Escape
-cancels with no change.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools ▸ BITS Whisperer ▸ Providers ▸ Provider
+Center…</strong>, or Command Palette → “BITS Whisperer Provider
+Center”.</li>
+<li>Arrow through the six actions: <strong>Use recommended
+provider</strong>, <strong>Select provider manually</strong>,
+<strong>Show provider status</strong>, <strong>Switch to local-first
+mode</strong>, <strong>Switch to cloud-first mode</strong>,
+<strong>Toggle cloud provider visibility</strong>. Pick <strong>Switch
+to local-first mode</strong> and press <strong>Enter</strong>.</li>
+<li>Re-open and try <strong>Toggle cloud provider
+visibility</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A single-choice dialog titled <strong>BITS Whisperer Provider
+Center</strong> with the six actions, arrow-navigable. Each action
+either delegates (recommended → WHIS-08, manual → WHIS-09, status →
+WHIS-07) or applies and announces a setting: “Provider mode set to
+local-first” / “…cloud-first”, and “Cloud provider visibility
+enabled/disabled”. Each choice is saved. Escape cancels with no
+change.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-07-provider-status-whisperer.provider_status-no-default-shortcut-gated-core.bw_whisperer">WHIS-07
+id="whis-07--provider-status-whispererprovider_status-no-default-shortcut-gated-corebw_whisperer">WHIS-07
 — Provider Status (<code>whisperer.provider_status</code>, no default
 shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> A read-only readout of the provider plan:
 current mode, which provider is configured vs recommended, whether it is
 ready, and the concrete next steps to make it ready.</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled.</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools ▸ BITS Whisperer ▸
-Providers ▸ Provider Status</strong>, or Command Palette → “BITS
-Whisperer Provider Status”. 2. Read the whole dialog; close with OK.</p>
-<p><strong>You should see and hear</strong> - A message dialog titled
-<strong>BITS Whisperer Providers</strong> beginning “BITS Whisperer
-Provider Status” and listing: mode guidance, <strong>Provider mode:
-Local-first / Cloud-first</strong>, <strong>Cloud providers visible:
-Yes/No</strong>, <strong>Configured provider:</strong> and
-<strong>Recommended provider:</strong> by name, a <strong>Readiness:
-Ready / Needs setup</strong> line with a summary, and a bulleted
-<strong>Next steps:</strong> list. It ends noting that runtime provider
-routing remains gated in this phase. Status bar: “BITS Whisperer
-provider status shown”.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools ▸ BITS Whisperer ▸ Providers ▸ Provider
+Status</strong>, or Command Palette → “BITS Whisperer Provider
+Status”.</li>
+<li>Read the whole dialog; close with OK.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A message dialog titled <strong>BITS Whisperer Providers</strong>
+beginning “BITS Whisperer Provider Status” and listing: mode guidance,
+<strong>Provider mode: Local-first / Cloud-first</strong>, <strong>Cloud
+providers visible: Yes/No</strong>, <strong>Configured
+provider:</strong> and <strong>Recommended provider:</strong> by name, a
+<strong>Readiness: Ready / Needs setup</strong> line with a summary, and
+a bulleted <strong>Next steps:</strong> list. It ends noting that
+runtime provider routing remains gated in this phase. Status bar: “BITS
+Whisperer provider status shown”.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-08-use-recommended-provider-whisperer.provider_recommend-no-default-shortcut-gated-core.bw_whisperer">WHIS-08
+id="whis-08--use-recommended-provider-whispererprovider_recommend-no-default-shortcut-gated-corebw_whisperer">WHIS-08
 — Use Recommended Provider (<code>whisperer.provider_recommend</code>,
 no default shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> One-tap “pick the best provider for me,”
 honoring your local-first / cloud-first preference.</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled.</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools ▸ BITS Whisperer ▸
-Providers ▸ Use Recommended Provider</strong>, or Command Palette →
-“BITS Whisperer Use Recommended Provider”.</p>
-<p><strong>You should see and hear</strong> - No dialog. The recommended
-provider (computed from your local-first/cloud-first mode) is selected
-and saved; spoken/status: “Recommended provider selected:
-<provider name>”. Re-running WHIS-07 shows that provider as the
-configured one.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools ▸ BITS Whisperer ▸ Providers ▸ Use Recommended
+Provider</strong>, or Command Palette → “BITS Whisperer Use Recommended
+Provider”.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>No dialog. The recommended provider (computed from your
+local-first/cloud-first mode) is selected and saved; spoken/status:
+“Recommended provider selected: <provider name>”. Re-running WHIS-07
+shows that provider as the configured one.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-09-select-provider-whisperer.provider_select-no-default-shortcut-gated-core.bw_whisperer">WHIS-09
+id="whis-09--select-provider-whispererprovider_select-no-default-shortcut-gated-corebw_whisperer">WHIS-09
 — Select Provider… (<code>whisperer.provider_select</code>, no default
 shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> Manually choose which provider to stage for
 upcoming phases, from the providers currently visible (local only, or
 local + cloud, per your visibility setting).</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled. If you want cloud options to appear, enable cloud provider
-visibility first (WHIS-06 ▸ Toggle cloud provider visibility).</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools ▸ BITS Whisperer ▸
-Providers ▸ Select Provider…</strong>, or Command Palette → “BITS
-Whisperer Select Provider”. 2. Arrow the provider list; each entry shows
-the provider name and its type. Pick one and press
-<strong>Enter</strong>.</p>
-<p><strong>You should see and hear</strong> - A single-choice dialog
-titled <strong>BITS Whisperer Provider Selection</strong> listing each
-provider as “<name> (<type>)”. On confirm the choice is saved and
-spoken/status: “Selected provider: <name>”. If no providers are visible
-for the current visibility settings, it says so (“No providers available
-for current provider visibility settings”) instead of opening an empty
-dialog. Escape cancels with no change.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled. If you want cloud options to
+appear, enable cloud provider visibility first (WHIS-06 ▸ Toggle cloud
+provider visibility).</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools ▸ BITS Whisperer ▸ Providers ▸ Select
+Provider…</strong>, or Command Palette → “BITS Whisperer Select
+Provider”.</li>
+<li>Arrow the provider list; each entry shows the provider name and its
+type. Pick one and press <strong>Enter</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A single-choice dialog titled <strong>BITS Whisperer Provider
+Selection</strong> listing each provider as “<name> (<type>)”. On
+confirm the choice is saved and spoken/status: “Selected provider:
+<name>”. If no providers are visible for the current visibility
+settings, it says so (“No providers available for current provider
+visibility settings”) instead of opening an empty dialog. Escape cancels
+with no change.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-10-readiness-check-whisperer.readiness_check-no-default-shortcut-gated-core.bw_whisperer">WHIS-10
+id="whis-10--readiness-check-whispererreadiness_check-no-default-shortcut-gated-corebw_whisperer">WHIS-10
 — Readiness Check (<code>whisperer.readiness_check</code>, no default
 shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> One combined diagnostic across providers
 <strong>and</strong> speech models: mode, configured vs recommended
 provider, provider readiness, speech mode and model, safe mode lock,
 installed model count, engine state, and next steps.</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled.</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools ▸ BITS Whisperer ▸
-Rollout ▸ Readiness Check</strong>, or Command Palette → “BITS Whisperer
-Readiness Check”. 2. Read the whole dialog; close with OK.</p>
-<p><strong>You should see and hear</strong> - A message dialog titled
-<strong>BITS Whisperer Readiness</strong> beginning “BITS Whisperer
-Readiness Check” and listing, in order: machine guidance,
-<strong>Provider mode</strong>, <strong>Configured provider</strong>,
-<strong>Recommended provider</strong>, <strong>Provider readiness: Ready
-/ Needs setup</strong> with summary, <strong>Speech mode</strong>,
-<strong>Configured speech model</strong>, <strong>Safe mode lock:
-Enabled/Disabled</strong>, <strong>Downloaded whisper models: N of
-M</strong>, <strong>faster-whisper engine: Ready / Not
-installed</strong> with detail, then a bulleted <strong>Next
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools ▸ BITS Whisperer ▸ Rollout ▸ Readiness
+Check</strong>, or Command Palette → “BITS Whisperer Readiness
+Check”.</li>
+<li>Read the whole dialog; close with OK.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A message dialog titled <strong>BITS Whisperer Readiness</strong>
+beginning “BITS Whisperer Readiness Check” and listing, in order:
+machine guidance, <strong>Provider mode</strong>, <strong>Configured
+provider</strong>, <strong>Recommended provider</strong>,
+<strong>Provider readiness: Ready / Needs setup</strong> with summary,
+<strong>Speech mode</strong>, <strong>Configured speech model</strong>,
+<strong>Safe mode lock: Enabled/Disabled</strong>, <strong>Downloaded
+whisper models: N of M</strong>, <strong>faster-whisper engine: Ready /
+Not installed</strong> with detail, then a bulleted <strong>Next
 steps:</strong> list. Status bar: “BITS Whisperer readiness check
-complete”.</p>
+complete”.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-11-capability-matrix-whisperer.capability_matrix-no-default-shortcut-gated-core.bw_whisperer">WHIS-11
+id="whis-11--capability-matrix-whisperercapability_matrix-no-default-shortcut-gated-corebw_whisperer">WHIS-11
 — Capability Matrix (<code>whisperer.capability_matrix</code>, no
 default shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> A table of which BITS Whisperer capabilities
 are live now vs gated for a later phase, so a tester can see at a glance
 what is expected to work in 1.0.</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled.</p>
-<p><strong>Do this</strong> 1. Open <strong>Tools ▸ BITS Whisperer ▸
-Rollout ▸ Capability Matrix</strong>, or Command Palette → “BITS
-Whisperer Capability Matrix”. 2. Tab to the table and arrow through its
-rows; then read the snapshot text below it. Close with
-<strong>Close</strong> (OK) or <strong>Escape</strong>.</p>
-<p><strong>You should see and hear</strong> - A resizable dialog titled
-<strong>BITS Whisperer Capability Matrix</strong> with a real ListCtrl
-(report view) whose columns are <strong>Capability</strong>,
-<strong>Phase</strong>, <strong>Status</strong>, <strong>Notes</strong>.
-Rows include <strong>Whisper model acquisition</strong> (Phase 1),
-<strong>Provider onboarding</strong> (Phase 1), <strong>Dynamic status
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open <strong>Tools ▸ BITS Whisperer ▸ Rollout ▸ Capability
+Matrix</strong>, or Command Palette → “BITS Whisperer Capability
+Matrix”.</li>
+<li>Tab to the table and arrow through its rows; then read the snapshot
+text below it. Close with <strong>Close</strong> (OK) or
+<strong>Escape</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A resizable dialog titled <strong>BITS Whisperer Capability
+Matrix</strong> with a real ListCtrl (report view) whose columns are
+<strong>Capability</strong>, <strong>Phase</strong>,
+<strong>Status</strong>, <strong>Notes</strong>. Rows include
+<strong>Whisper model acquisition</strong> (Phase 1), <strong>Provider
+onboarding</strong> (Phase 1), <strong>Dynamic status
 monitoring</strong> (Phase 1, Ready), and <strong>Runtime provider
 routing</strong> (Phase 2, <strong>Gated</strong>). Below the table a
 read-only snapshot shows provider mode, configured provider,
 speech-model mode, configured speech model, and downloaded-model count.
 Focus lands in the table; every column is announced by the screen
-reader. Status bar: “Opened BITS Whisperer capability matrix”.</p>
+reader. Status bar: “Opened BITS Whisperer capability matrix”.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="whis-12-about-bits-whisperer-whisperer.about-no-default-shortcut-gated-core.bw_whisperer">WHIS-12
+id="whis-12--about-bits-whisperer-whispererabout-no-default-shortcut-gated-corebw_whisperer">WHIS-12
 — About BITS Whisperer (<code>whisperer.about</code>, no default
 shortcut) [GATED core.bw_whisperer]</h2>
 <p><em>What &amp; why.</em> The roadmap/orientation page: what BITS
@@ -578,20 +697,27 @@ Whisperer is, the phased plan for absorbing its patterns into QUILL, and
 the guiding principles. It is <strong>not</strong> in the BITS Whisperer
 submenu — it lives in the Command Palette (its content was also folded
 into the About Quill dialog).</p>
-<p><strong>Before you start</strong> - <code>core.bw_whisperer</code>
-enabled.</p>
-<p><strong>Do this</strong> 1. Open the <strong>Command Palette</strong>
-(see Part 0 for its shortcut), type <strong>About BITS
-Whisperer</strong>, and press <strong>Enter</strong>. 2. Tab across the
-three tabs (<strong>Overview</strong>, <strong>Roadmap</strong>,
-<strong>Principles</strong>); read the Roadmap and Principles tables
-with your review cursor. Close with <strong>Close</strong> (OK) or
-<strong>Escape</strong>.</p>
-<p><strong>You should see and hear</strong> - A resizable tabbed dialog
-titled <strong>About BITS Whisperer</strong> with a notebook named
-“About sections” and three tabs. <strong>Overview</strong> is a
-read-only multi-line text describing the phased plan and three next
-steps. <strong>Roadmap</strong> is a ListCtrl with columns
+<p><strong>Before you start</strong></p>
+<ul>
+<li><code>core.bw_whisperer</code> enabled.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li>Open the <strong>Command Palette</strong> (see Part 0 for its
+shortcut), type <strong>About BITS Whisperer</strong>, and press
+<strong>Enter</strong>.</li>
+<li>Tab across the three tabs (<strong>Overview</strong>,
+<strong>Roadmap</strong>, <strong>Principles</strong>); read the Roadmap
+and Principles tables with your review cursor. Close with
+<strong>Close</strong> (OK) or <strong>Escape</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>A resizable tabbed dialog titled <strong>About BITS
+Whisperer</strong> with a notebook named “About sections” and three
+tabs. <strong>Overview</strong> is a read-only multi-line text
+describing the phased plan and three next steps.
+<strong>Roadmap</strong> is a ListCtrl with columns
 <strong>Capability</strong>, <strong>Whisperer Source</strong>,
 <strong>Phase</strong>, <strong>Quill Plan</strong> (five rows across
 Phases 1–3). <strong>Principles</strong> is a ListCtrl with columns
@@ -599,7 +725,8 @@ Phases 1–3). <strong>Principles</strong> is a ListCtrl with columns
 (Accessibility first, Offline-friendly, Safe rollout, Transparent
 status). Focus lands on the first control of the visible tab, not the
 tab strip; tab order and the Close button honor the keyboard contract.
-Status bar: “Opened About BITS Whisperer”.</p>
+Status bar: “Opened About BITS Whisperer”.</li>
+</ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
@@ -617,5 +744,6 @@ Status bar: “Opened About BITS Whisperer”.</p>
 <li>Result: Pass / Pass-with-notes / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

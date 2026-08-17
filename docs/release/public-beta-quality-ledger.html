@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>public-beta-quality-ledger</title>
+  <title>QUILL Public Beta Quality Ledger</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-public-beta-quality-ledger">QUILL Public Beta Quality
 Ledger</h1>
 <p>Living record of the public-beta quality pass. The product name is
@@ -202,51 +222,59 @@ naming the wave) to drive the next wave.</p>
 <p><strong>Role.</strong> Act as principal Python/wxPython engineer and
 accessibility specialist for <strong>QUILL</strong>. Investigate, fix,
 test, and document — do not just produce a report.</p>
-<p><strong>Hard constraints.</strong> - The product name is
-<strong>QUILL</strong>. Do <strong>not</strong> rename anything to
-TINDRA or assume that rename; leave existing QUILL identifiers, paths,
-and brand strings. - Work on a feature branch, never commit to
-<code>main</code>. Make small, logical, attributable commits; do not
-push, tag, or merge unless explicitly asked. - Do not weaken a fix to
-satisfy a test, broaden <code>except</code>, or silence a gate. When a
-test double is incomplete (e.g. a <code>_Fake*</code> missing a method
-the real widget has), fix the double, not the production change. -
-Respect the existing architecture and import boundaries (core/io are
-wx-free and strict-typed; ui is gradual-typed).</p>
-<p><strong>Pick a bounded focus area</strong> (one wave): e.g. dialog
+<p><strong>Hard constraints.</strong></p>
+<ul>
+<li>The product name is <strong>QUILL</strong>. Do <strong>not</strong>
+rename anything to TINDRA or assume that rename; leave existing QUILL
+identifiers, paths, and brand strings.</li>
+<li>Work on a feature branch, never commit to <code>main</code>. Make
+small, logical, attributable commits; do not push, tag, or merge unless
+explicitly asked.</li>
+<li>Do not weaken a fix to satisfy a test, broaden <code>except</code>,
+or silence a gate. When a test double is incomplete (e.g. a
+<code>_Fake*</code> missing a method the real widget has), fix the
+double, not the production change.</li>
+<li>Respect the existing architecture and import boundaries (core/io are
+wx-free and strict-typed; ui is gradual-typed).</li>
+</ul>
+<p><strong>Pick a bounded focus area</strong> (one wave): e.g. dialog
 accessible-naming, initial-focus quality, label/field associations,
 keyboard traps, startup init-order, a call-site/attribute audit of one
 subsystem. Do not attempt the whole repo at once; depth over
 breadth.</p>
-<p><strong>Method.</strong> 1. Establish the wave baseline by running
-the relevant existing gates rather than inventing new ones:
-<code>ruff check .</code>, <code>ruff format --check .</code>,
+<p><strong>Method.</strong></p>
+<ol type="1">
+<li>Establish the wave baseline by running the relevant existing gates
+rather than inventing new ones: <code>ruff check .</code>,
+<code>ruff format --check .</code>,
 <code>mypy quill/core quill/io</code> (always scoped — never unscoped),
 and the targeted pytest suites + tool gates (dialog-inventory,
 dialog-button-contract, dialog-zorder, announce-gap/GATE-12,
 a11y-regions, module-size/GATE-11, network-egress, docs-parity). The
 accessibility infrastructure is strong and gate-backed; aim at what the
 gates do <strong>not</strong> check (accessible names, initial focus,
-focus restoration, label associations, verbosity). 2. For each finding,
-determine intent before changing: is it a real defect, an intentional
-cross-tool pragma, a tested automation handle, or expected behavior?
-Record reviewed-but-intentional items too. 3. Make the minimal correct
-fix. Prefer native, accessible wx controls and human-readable accessible
-names (screen readers speak <code>SetName</code> verbatim — never
-snake_case identifiers). 4. Run the smallest useful tests after each
-change; add a regression test where one can be written cleanly (skip
-brittle full-wx-modal harnesses — record as needs-live-validation
-instead). 5. If a change trips GATE-11 module-size, first try to make
-the edit net-neutral or extract; only rebaseline with a dated
+focus restoration, label associations, verbosity).</li>
+<li>For each finding, determine intent before changing: is it a real
+defect, an intentional cross-tool pragma, a tested automation handle, or
+expected behavior? Record reviewed-but-intentional items too.</li>
+<li>Make the minimal correct fix. Prefer native, accessible wx controls
+and human-readable accessible names (screen readers speak
+<code>SetName</code> verbatim — never snake_case identifiers).</li>
+<li>Run the smallest useful tests after each change; add a regression
+test where one can be written cleanly (skip brittle full-wx-modal
+harnesses — record as needs-live-validation instead).</li>
+<li>If a change trips GATE-11 module-size, first try to make the edit
+net-neutral or extract; only rebaseline with a dated
 <code>_rebaseline_&lt;date&gt;</code> justification comment in
 <code>module_size_budgets.json</code> when growth is genuinely
-warranted. 6. Regenerate docs artifacts for any changed
-<code>docs/**/*.md</code>
+warranted.</li>
+<li>Regenerate docs artifacts for any changed <code>docs/**/*.md</code>
 (<code>pandoc &lt;f&gt;.md -f gfm -t html5 -s -o &lt;f&gt;.html</code>
 and <code>-t epub3 -o &lt;f&gt;.epub</code>), and keep this ledger
 current: running totals, finding IDs
 (<code>A11Y-</code>/<code>FOCUS-</code>/<code>KEY-</code>/<code>CALL-</code>/<code>PERF-</code>/<code>SEC-</code>/<code>DOC-</code>/<code>TEST-</code>/<code>RELEASE-</code>),
-severity, root cause, resolution, validation, status.</p>
+severity, root cause, resolution, validation, status.</li>
+</ol>
 <p><strong>Honesty.</strong> Never represent unfinished work as
 complete. Distinguish code-reviewed-against-expected-SR-behavior from
 live NVDA/JAWS testing. Keep an explicit “Deferred / next wave” list.
@@ -261,7 +289,7 @@ deferred); the commands run and their results.</p>
 QUILL. It is a living document: the “Lessons learned” subsection grows
 as we discover what works, so each pass is a little better than the
 last. Follow it for every change.</p>
-<h3 id="before-you-change-code">1. Before you change code</h3>
+<h3 id="1-before-you-change-code">1. Before you change code</h3>
 <ul>
 <li>Branch first; never work on <code>main</code>. Read the files you
 will touch and state a one or two sentence plan.</li>
@@ -271,7 +299,7 @@ in <code>mypy</code> scope); <code>ui</code> is gradual-typed wxPython;
 <code>platform</code>/<code>stability</code>/<code>tools</code> have
 their own gates. Keep imports within the layer boundaries.</li>
 </ul>
-<h3 id="write-the-test-at-the-right-level">2. Write the test at the
+<h3 id="2-write-the-test-at-the-right-level">2. Write the test at the
 right level</h3>
 <ul>
 <li>Prefer the smallest real boundary. Pure logic -&gt; a
@@ -291,12 +319,12 @@ was the bug.)</li>
 assertion with a vague one to make a test pass. Do not regenerate
 fixtures/snapshots blindly — confirm the behavioral change is intended
 first.</li>
-<li>For wx-modal behavior that needs a shown window (e.g. asserting
+<li>For wx-modal behavior that needs a shown window (e.g. asserting
 which control holds focus after <code>ShowModal</code>), prefer
 recording it as “needs live validation” over a brittle full-wx harness.
 Test the wx-free seam where one exists.</li>
 </ul>
-<h3 id="run-the-right-checks-smallest-first">3. Run the right checks,
+<h3 id="3-run-the-right-checks-smallest-first">3. Run the right checks,
 smallest first</h3>
 <ul>
 <li>The single most relevant test:
@@ -311,31 +339,36 @@ stall.</li>
 <li>Quillin changes:
 <code>python -m quill.tools.quillin_lint &lt;dir&gt; --strict</code>.</li>
 </ul>
-<h3 id="the-qa-gates-all-must-be-green-to-merge">4. The QA gates (all
+<h3 id="4-the-qa-gates-all-must-be-green-to-merge">4. The QA gates (all
 must be green to merge)</h3>
 <p>These run in pre-commit and CI; treat a red gate as a real defect,
-not a nuisance: - <code>ruff</code> (lint + format) and scoped
-<code>mypy</code>. - GATE-11 module-size budget
-(<code>module_size_budgets.json</code>): a ratchet. Prefer net-neutral
-edits or extraction; only <strong>rebaseline</strong> when growth is
-warranted, and always add a dated
-<code>_rebaseline_&lt;date&gt;_&lt;slug&gt;</code> note explaining why.
-- GATE-12 announce-gap: every status-bar update needs a screen-reader
-announce. - Dialog gates: <code>dialog_inventory</code> (every modal
-routes through <code>_show_modal_dialog</code>),
+not a nuisance:</p>
+<ul>
+<li><code>ruff</code> (lint + format) and scoped <code>mypy</code>.</li>
+<li>GATE-11 module-size budget (<code>module_size_budgets.json</code>):
+a ratchet. Prefer net-neutral edits or extraction; only
+<strong>rebaseline</strong> when growth is warranted, and always add a
+dated <code>_rebaseline_&lt;date&gt;_&lt;slug&gt;</code> note explaining
+why.</li>
+<li>GATE-12 announce-gap: every status-bar update needs a screen-reader
+announce.</li>
+<li>Dialog gates: <code>dialog_inventory</code> (every modal routes
+through <code>_show_modal_dialog</code>),
 <code>dialog_button_contract</code> (OK/escape ids via
-<code>apply_modal_ids</code>), <code>dialog_zorder</code>. -
-<code>network_egress_audit</code>: every new
+<code>apply_modal_ids</code>), <code>dialog_zorder</code>.</li>
+<li><code>network_egress_audit</code>: every new
 <code>urlopen</code>/<code>urlretrieve</code> needs a reviewed entry;
 subprocess/library egress (pip, PyGithub) is documented in a manual
-comment block. - Docs parity: any changed <code>docs/**/*.md</code> must
-ship regenerated <code>.html</code> + <code>.epub</code>
+comment block.</li>
+<li>Docs parity: any changed <code>docs/**/*.md</code> must ship
+regenerated <code>.html</code> + <code>.epub</code>
 (<code>pandoc &lt;f&gt;.md -f gfm -t html5 -s -o &lt;f&gt;.html</code>
-and <code>-t epub3 -o &lt;f&gt;.epub</code>). - Structure
-(<code>test_repo_layout</code>): no stray root modules; root Markdown is
-allow-listed. - Version consistency (GATE-VC) for release-affecting
-changes.</p>
-<h3 id="commit-and-record">5. Commit and record</h3>
+and <code>-t epub3 -o &lt;f&gt;.epub</code>).</li>
+<li>Structure (<code>test_repo_layout</code>): no stray root modules;
+root Markdown is allow-listed.</li>
+<li>Version consistency (GATE-VC) for release-affecting changes.</li>
+</ul>
+<h3 id="5-commit-and-record">5. Commit and record</h3>
 <ul>
 <li>Small, logical, attributable commits; let pre-commit run (do not
 bypass hooks). If a hook auto-formats a file, re-stage and re-commit — a
@@ -349,7 +382,7 @@ severity, root cause, resolution, validation, status. Keep an explicit
 Distinguish code-reviewed-against-expected-behavior from live
 screen-reader/keyboard testing.</li>
 </ul>
-<h3 id="definition-of-done-for-a-wave">6. Definition of done for a
+<h3 id="6-definition-of-done-for-a-wave">6. Definition of done for a
 wave</h3>
 <p>A wave is done when: its findings are fixed or explicitly deferred
 with a reason; the relevant tests + all gates are green; a regression
@@ -382,11 +415,6 @@ commit — re-stage and re-commit rather than assuming it landed.</li>
 <p>Captured on the current branch (<code>main</code>), dev environment,
 Python 3.12.</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 33%" />
-<col style="width: 33%" />
-</colgroup>
 <thead>
 <tr>
 <th>Gate</th>
@@ -443,10 +471,6 @@ failures (after the TEST-002 fix, confirmed by a full re-run without
 </table>
 <h2 id="running-totals">Running totals</h2>
 <table>
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <thead>
 <tr>
 <th>Metric</th>
@@ -520,7 +544,7 @@ install)</td>
 </table>
 <h2 id="findings">Findings</h2>
 <h3
-id="release-001-faster-whisper-engine-had-no-path-for-packaged-users">RELEASE-001
+id="release-001--faster-whisper-engine-had-no-path-for-packaged-users">RELEASE-001
 — Faster Whisper engine had no path for packaged users</h3>
 <ul>
 <li>Severity: Medium. Category: Packaging / feature completeness.</li>
@@ -548,7 +572,7 @@ cases).</li>
 (a real pip-into-target install and engine activation).</li>
 </ul>
 <h3
-id="release-002-vosk-engine-unreachable-for-packaged-users">RELEASE-002
+id="release-002--vosk-engine-unreachable-for-packaged-users">RELEASE-002
 — Vosk engine unreachable for packaged users</h3>
 <ul>
 <li>Severity: Low. Category: Packaging / accessibility reach.</li>
@@ -558,7 +582,7 @@ now in the installer’s base dependency groups
 box; its ~40 MB model still downloads on first use.</li>
 <li>Status: Fixed. Needs manual validation on a packaged build.</li>
 </ul>
-<h3 id="sec-001-pip-subprocess-egress-faster-whisper-install">SEC-001 —
+<h3 id="sec-001--pip-subprocess-egress-faster-whisper-install">SEC-001 —
 pip subprocess egress (Faster Whisper install)</h3>
 <ul>
 <li>Severity: Low (informational). Category: Network egress /
@@ -573,7 +597,7 @@ Safe Mode; wheel-only.</li>
 <li>Status: Verified / documented.</li>
 </ul>
 <h3
-id="l-001-three-noqa-dialog_button_contract-directives-warn-under-ruff">L-001
+id="l-001--three--noqa-dialog_button_contract-directives-warn-under-ruff">L-001
 — Three <code># noqa: dialog_button_contract</code> directives warn
 under ruff</h3>
 <ul>
@@ -590,7 +614,7 @@ a future pass does not “fix” it blindly.</li>
 <li>Status: Intentional behavior.</li>
 </ul>
 <h3
-id="test-001-parakeet-provider-test-triggers-a-slow-transformers-import-in-dev">TEST-001
+id="test-001--parakeet-provider-test-triggers-a-slow-transformers-import-in-dev">TEST-001
 — Parakeet provider test triggers a slow <code>transformers</code>
 import in dev</h3>
 <ul>
@@ -605,7 +629,7 @@ removed from QUILL entirely — the provider, catalog entries, optional
 <code>test_parakeet_provider.py</code> are gone — so the slow import can
 no longer occur.</li>
 </ul>
-<h2 id="accessibility-audit-wave-1-dialogs-tab-groups">Accessibility
+<h2 id="accessibility-audit--wave-1-dialogs--tab-groups">Accessibility
 audit — wave 1 (dialogs / tab groups)</h2>
 <p>Baseline: the repo’s accessibility gates are strong and green — 38
 tests across dialog-inventory (ShowModal compliance),
@@ -614,7 +638,7 @@ announce-gap (GATE-12: every status update has a screen-reader
 announcement), and a11y-region keyboard-trap tracking. The audit
 therefore targeted what those gates do not check: accessible names.</p>
 <h3
-id="a11y-001-notebook-tab-groups-announced-generically-no-accessible-name">A11Y-001
+id="a11y-001--notebook-tab-groups-announced-generically-no-accessible-name">A11Y-001
 — Notebook tab groups announced generically (no accessible name)</h3>
 <ul>
 <li>Severity: Medium. Category: Accessibility (screen-reader
@@ -639,7 +663,7 @@ the test double was incomplete).</li>
 (NVDA/JAWS).</li>
 </ul>
 <h3
-id="a11y-002-accessible-names-set-to-snake_case-identifiers-spoken-verbatim">A11Y-002
+id="a11y-002--accessible-names-set-to-snake_case-identifiers-spoken-verbatim">A11Y-002
 — Accessible names set to snake_case identifiers (spoken verbatim)</h3>
 <ul>
 <li>Severity: Medium. Category: Accessibility (screen-reader
@@ -662,7 +686,7 @@ name is its title, not the window name, so these are not literal-readout
 defects.</li>
 <li>Status: Fixed (controls) / Intentional (dialog handles).</li>
 </ul>
-<h2 id="accessibility-audit-wave-2-initial-focus-quality">Accessibility
+<h2 id="accessibility-audit--wave-2-initial-focus-quality">Accessibility
 audit — wave 2 (initial-focus quality)</h2>
 <p>Audited which control receives focus when a dialog opens and whether
 focus is restored on close.</p>
@@ -675,14 +699,14 @@ content control — not the OK button — via
 comprehensive <code>_PREFERRED_FOCUS_CLASSES</code> list (lists, trees,
 dataviews, text, search, combo, choice, spin, radio, checkbox, slider).
 It honors a construction-time <code>SetFocus()</code> and the
-<code>_quill_keep_initial_focus</code> opt-out (e.g. crash recovery,
+<code>_quill_keep_initial_focus</code> opt-out (e.g. crash recovery,
 where the primary button should hold focus). On close it restores focus
 to the editor by default (<code>restore_editor_focus</code>), and
 dialogs that should not pass <code>restore_editor_focus=False</code>.
 Native dialogs are deliberately left to manage their own focus. The
 dialog-inventory gate ensures dialogs route through this path.</p>
 <h3
-id="focus-001-wx.html-fallback-dialog-opened-on-the-close-button-not-its-content">FOCUS-001
+id="focus-001--wxhtml-fallback-dialog-opened-on-the-close-button-not-its-content">FOCUS-001
 — wx.html fallback dialog opened on the Close button, not its
 content</h3>
 <ul>
@@ -713,7 +737,7 @@ a brittle test.</li>
 <li>Status: Fixed. Needs live NVDA/JAWS confirmation.</li>
 </ul>
 <h2
-id="accessibility-audit-wave-3-labelfield-associations">Accessibility
+id="accessibility-audit--wave-3-labelfield-associations">Accessibility
 audit — wave 3 (label/field associations)</h2>
 <p>wxPython does not associate a <code>StaticText</code> label with the
 following control the way HTML <code>&lt;label for&gt;</code> does; on
@@ -722,7 +746,7 @@ without a name. The reliable fix is an explicit <code>SetName</code> on
 each input. Audited input-control naming coverage across the UI and
 fixed the clearest gaps.</p>
 <h3
-id="a11y-003-input-controls-labeled-only-by-an-adjacent-statictext">A11Y-003
+id="a11y-003--input-controls-labeled-only-by-an-adjacent-statictext">A11Y-003
 — Input controls labeled only by an adjacent StaticText</h3>
 <ul>
 <li>Severity: Medium. Category: Accessibility (screen-reader field
@@ -757,10 +781,10 @@ structural; no behavioral test added.</li>
 dialogs.</li>
 </ul>
 <h2
-id="accessibility-audit-wave-4-keyboard-traps-tab-order">Accessibility
+id="accessibility-audit--wave-4-keyboard-traps--tab-order">Accessibility
 audit — wave 4 (keyboard traps / tab order)</h2>
 <h3
-id="key-001-wx.te_process_tab-on-prose-multiline-fields-trapped-tab">KEY-001
+id="key-001--wxte_process_tab-on-prose-multiline-fields-trapped-tab">KEY-001
 — <code>wx.TE_PROCESS_TAB</code> on prose multiline fields trapped
 Tab</h3>
 <ul>
@@ -795,39 +819,45 @@ and does not Skip. Recorded as intentional but flagged: confirm keyboard
 users can still reach the dialog’s buttons (via Escape/Enter or an
 explicit focus path) — needs live keyboard verification.</li>
 </ul>
-<h2 id="accessibility-audit-wave-6-editor-surface">Accessibility audit —
-wave 6 (editor surface)</h2>
+<h2 id="accessibility-audit--wave-6-editor-surface">Accessibility audit
+— wave 6 (editor surface)</h2>
 <p>Audited the core editing surface — the highest-risk area — element by
 element. It is already comprehensively accessible; no defect was found,
 so no code was changed (the QA discipline is to not make superficial
-edits to inflate a count). What was checked and confirmed: -
-<strong>Editor control</strong>: a native multiline
+edits to inflate a count). What was checked and confirmed:</p>
+<ul>
+<li><strong>Editor control</strong>: a native multiline
 <code>wx.TextCtrl</code> (<code>TE_RICH2 | TE_NOHIDESEL</code> so the
 selection stays visible when focus leaves), named “Document”, with the
 macOS AX role pinned to a real text area. Tab is <strong>not</strong>
 trapped (no <code>TE_PROCESS_TAB</code>), so keyboard users can leave
-the editor. - <strong>Layout splitters</strong>: named “Document area”
-and “Editor area”. - <strong>Side preview</strong>: the
-<code>SidePreview</code> HtmlWindow is named “Preview” and is focusable
-via the <code>view.focus_preview</code> command, with a return-to-editor
-path. - <strong>Document tabs</strong>: named “Open documents” (wave 1);
+the editor.</li>
+<li><strong>Layout splitters</strong>: named “Document area” and “Editor
+area”.</li>
+<li><strong>Side preview</strong>: the <code>SidePreview</code>
+HtmlWindow is named “Preview” and is focusable via the
+<code>view.focus_preview</code> command, with a return-to-editor
+path.</li>
+<li><strong>Document tabs</strong>: named “Open documents” (wave 1);
 native notebook announces each tab’s document name on arrow navigation;
-Enter/Space focuses the editor and announces “Focused document <name>”.
-- <strong>Status bar</strong>: exemplary — each cell is a named button
+Enter/Space focuses the editor and announces “Focused document
+<name>”.</li>
+<li><strong>Status bar</strong>: exemplary — each cell is a named button
 (<code>SetName</code>) that announces “Status bar, <label>, <value>” on
 focus, with Tab navigation between cells and a “Returned to editor” cue;
-gated by GATE-12 (announce-gap). - Status: Audited, no defect. Manual
-confirmation cases added to the screen-reader test plan
-(TC-EDIT-001..004).</p>
+gated by GATE-12 (announce-gap).</li>
+<li>Status: Audited, no defect. Manual confirmation cases added to the
+screen-reader test plan (TC-EDIT-001..004).</li>
+</ul>
 <h2
-id="accessibility-audit-wave-5-error-to-field-association">Accessibility
+id="accessibility-audit--wave-5-error-to-field-association">Accessibility
 audit — wave 5 (error-to-field association)</h2>
 <p>When a dialog rejects invalid input, focus should move to the
 offending field (not stay on the button) and the error should be
 announced. QUILL announces status messages via GATE-12, so the
 announcement half is covered; the audit targeted the focus half.</p>
 <h3
-id="a11y-004-in-dialog-validation-did-not-move-focus-to-the-bad-field">A11Y-004
+id="a11y-004--in-dialog-validation-did-not-move-focus-to-the-bad-field">A11Y-004
 — in-dialog validation did not move focus to the bad field</h3>
 <ul>
 <li>Severity: Medium. Category: Accessibility (error recovery).</li>
@@ -848,12 +878,12 @@ gap.</li>
 needs live keyboard/SR confirmation.</li>
 </ul>
 <h2
-id="correctness-sweep-wave-c1-attributecall-contracts-mutable-defaults">Correctness
+id="correctness-sweep--wave-c1-attributecall-contracts-mutable-defaults">Correctness
 sweep — wave C1 (attribute/call contracts, mutable defaults)</h2>
 <p>Whole-package AST audits for two bug classes the master brief flags.
 Recorded even though clean, so the check is on the record and
 repeatable.</p>
-<h3 id="call-001-calls-to-never-defined-methods-self.method">CALL-001 —
+<h3 id="call-001--calls-to-never-defined-methods-selfmethod">CALL-001 —
 calls to never-defined methods (<code>self.method()</code>)</h3>
 <ul>
 <li>Audited every <code>self.&lt;name&gt;(...)</code> call against all
@@ -878,7 +908,7 @@ the historical Settings crash.</li>
 <li>Status: Clean (no defect) and now regression-proofed.</li>
 </ul>
 <h3
-id="bug-mutable-defaults-mutable-default-arguments">BUG-mutable-defaults
+id="bug-mutable-defaults--mutable-default-arguments">BUG-mutable-defaults
 — mutable default arguments</h3>
 <ul>
 <li>Audited every function/method default and keyword-default in
@@ -888,7 +918,7 @@ id="bug-mutable-defaults-mutable-default-arguments">BUG-mutable-defaults
 defect).</li>
 </ul>
 <h3
-id="bug-file-handles-open-calls-outside-a-with-leak-risk">BUG-file-handles
+id="bug-file-handles--open-calls-outside-a-with-leak-risk">BUG-file-handles
 — <code>open()</code> calls outside a <code>with</code> (leak risk)</h3>
 <ul>
 <li>Audited every <code>open()</code>/<code>.open()</code> call in
@@ -904,7 +934,7 @@ closed on every error path and released at process exit).</li>
 defect).</li>
 </ul>
 <h3
-id="exc-001-silently-swallowed-exceptions-except-...-pass-in-coreio">EXC-001
+id="exc-001--silently-swallowed-exceptions-except--pass-in-coreio">EXC-001
 — silently-swallowed exceptions (<code>except ...: pass</code>) in
 core/io</h3>
 <ul>
@@ -928,7 +958,7 @@ behavior change; tests pass (62).</li>
 intentional.</li>
 </ul>
 <h3
-id="bug-thread-daemon-non-daemon-threads-shutdown-hang-risk">BUG-thread-daemon
+id="bug-thread-daemon--non-daemon-threads-shutdown-hang-risk">BUG-thread-daemon
 — non-daemon threads (shutdown-hang risk)</h3>
 <ul>
 <li>Audited every <code>threading.Thread(...)</code> construction in
@@ -953,7 +983,7 @@ sweep (drive detectable failures to zero)</h2>
 <p>Running the whole <code>tests/unit tests/stability</code> suite (4896
 tests; the Parakeet test referenced under TEST-001 has since been
 removed) surfaced exactly one failure, now fixed.</p>
-<h3 id="test-002-flaky-watchdog-re-dump-test-timing-dependent">TEST-002
+<h3 id="test-002--flaky-watchdog-re-dump-test-timing-dependent">TEST-002
 — flaky watchdog re-dump test (timing-dependent)</h3>
 <ul>
 <li>Severity: Medium. Category: Test reliability.</li>
@@ -986,7 +1016,7 @@ mechanically-detectable surface is at zero known failures. This is the
 honest meaning of “zero” here: all gates and the full test suite are
 green; it is not a proof that no latent bug exists.</p>
 <h2
-id="deferred-next-wave-not-yet-done-do-not-represent-as-complete">Deferred
+id="deferred--next-wave-not-yet-done--do-not-represent-as-complete">Deferred
 / next wave (not yet done — do not represent as complete)</h2>
 <p>The master quality-pass scope is repository-wide and multi-session.
 Not yet performed in this pass:</p>
@@ -1024,5 +1054,6 @@ pass</h2>
 15 passed.</li>
 <li><code>scripts/check_docs_artifacts.py</code>: pass.</li>
 </ul>
+</main>
 </body>
 </html>

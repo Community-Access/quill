@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>06-make-it-accessible-with-glow</title>
+  <title>Tutorial 6: Make a document accessible with GLOW</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="tutorial-6-make-a-document-accessible-with-glow">Tutorial 6:
 Make a document accessible with GLOW</h1>
 <p><strong>Goal:</strong> take a real document from “probably fine” to
@@ -185,7 +205,7 @@ accessibility review system.</p>
 compliance dashboard: it explains each finding in plain language and
 only applies fixes you approve. Everything is under <strong>Tools &gt;
 GLOW</strong>.</p>
-<h2 id="switch-it-on-glow-is-experimental">0. Switch it on (GLOW is
+<h2 id="0-switch-it-on-glow-is-experimental">0. Switch it on (GLOW is
 experimental)</h2>
 <p>GLOW ships as an experimental feature, off by default while it
 matures:</p>
@@ -201,21 +221,21 @@ skipped in the tab order).</li>
 </ol>
 <p>Experimental means still maturing, not unsafe: every GLOW action
 below keeps the review-first, never-touch-the-original contract.</p>
-<h2 id="audit-what-you-are-writing">1. Audit what you are writing</h2>
+<h2 id="1-audit-what-you-are-writing">1. Audit what you are writing</h2>
 <ol type="1">
 <li>Open any Markdown or HTML document you have written.</li>
 <li><strong>Tools &gt; GLOW &gt; GLOW Audit Current
 Document.</strong></li>
 <li>The report opens as a normal tab. Arrow through it. Each finding
 gives: the rule, the severity, the location, and a plain-language
-suggestion — e.g. heading levels that jump (H1 straight to H4), links
+suggestion — e.g. heading levels that jump (H1 straight to H4), links
 that just say “click here”, images without alt text, HTML missing
 <code>lang</code>, tables without header cells, paragraphs too dense to
 listen to.</li>
 </ol>
 <p>For just the section you are working on, use <strong>GLOW Audit
 Selection / Paragraph</strong> instead.</p>
-<h2 id="fix-with-your-eyes-open">2. Fix — with your eyes open</h2>
+<h2 id="2-fix--with-your-eyes-open">2. Fix — with your eyes open</h2>
 <ol type="1">
 <li><strong>GLOW Fix Current Document.</strong> QUILL opens the repaired
 text as a <em>named preview tab</em> and immediately starts a
@@ -230,8 +250,8 @@ and nothing happened. Never a silent rewrite.</li>
 missing alt attributes, trailing whitespace) are marked
 <code>[auto-fix]</code> in the audit; judgment calls (link text, dense
 paragraphs) stay yours.</p>
-<h2 id="grade-the-file-you-are-about-to-send">3. Grade the file you are
-about to send</h2>
+<h2 id="3-grade-the-file-you-are-about-to-send">3. Grade the file you
+are about to send</h2>
 <p>The headline capability: GLOW audits <strong>structured files on
 disk</strong> — Word, PowerPoint, Excel, PDF, EPUB.</p>
 <ol type="1">
@@ -246,7 +266,7 @@ it. The audit runs in the background and returns a <strong>score out of
 and opens the post-fix audit so you can verify the improvement.
 <strong>The original file is never modified.</strong></li>
 </ol>
-<h2 id="keep-the-engine-fresh-only-when-you-ask">4. Keep the engine
+<h2 id="4-keep-the-engine-fresh-only-when-you-ask">4. Keep the engine
 fresh (only when you ask)</h2>
 <p><strong>Help &gt; Check for GLOW Updates…</strong> checks for a newer
 accessibility engine. The check runs only on your command, the download
@@ -255,7 +275,7 @@ checksum-verified, and a failed install rolls back automatically. The
 engine’s optional networked helpers (AI alt-text, PII redaction) are off
 until you explicitly consent, per use — the default GLOW workflow is
 entirely on-device.</p>
-<h2 id="the-routine-worth-adopting">5. The routine worth adopting</h2>
+<h2 id="5-the-routine-worth-adopting">5. The routine worth adopting</h2>
 <p>Draft → <strong>Audit Current Document</strong> → fix the judgment
 calls yourself → <strong>Fix Current Document</strong> for the
 mechanical ones (accept from the compare) → export → <strong>Audit
@@ -264,5 +284,6 @@ documents more accessible than most sighted authors produce.</p>
 <p><em>Want an ambitious pass beyond the deterministic rules? The AI
 menu’s <strong>Accessibility Tune-Up</strong> agent drafts a broader
 improvement plan — reviewable like everything else.</em></p>
+</main>
 </body>
 </html>

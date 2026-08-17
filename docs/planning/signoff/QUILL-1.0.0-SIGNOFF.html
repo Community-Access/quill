@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL-1.0.0-SIGNOFF</title>
+  <title>QUILL 1.0.0 — Release Sign-off Test Plan (master)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,9 +173,30 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="quill-1.0.0-release-sign-off-test-plan-master">QUILL 1.0.0 —
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-100--release-sign-off-test-plan-master">QUILL 1.0.0 —
 Release Sign-off Test Plan (master)</h1>
 <p><strong>Purpose:</strong> verify <strong>every feature in
 QUILL</strong> — the editor plus the two public companion apps
@@ -197,36 +217,45 @@ public editor surfaces (§G) — do <strong>not</strong> sign them off as
 public editor features. (The standalone Quill Radio and Quill Weather
 apps are unaffected and are signed off in full in §C/§D.)</p>
 <h2 id="how-to-use-this-pack">How to use this pack</h2>
-<p>Each checklist item is verified on three axes: - <strong>[ ]
-Works</strong> — the action does what it says, no error/crash. -
-<strong>[ ] Surface-exact</strong> — label, shortcut, and menu path
+<p>Each checklist item is verified on three axes:</p>
+<ul>
+<li><strong>[ ] Works</strong> — the action does what it says, no
+error/crash.</li>
+<li><strong>[ ] Surface-exact</strong> — label, shortcut, and menu path
 exactly match the reference inventory (<code>signoff/inventory/</code>),
-and the accessible name is correct. - <strong>[ ] A11y</strong> —
-keyboard-reachable, focus correct, and the outcome is
-<strong>announced</strong> (speech + braille), no silent state
-change.</p>
+and the accessible name is correct.</li>
+<li><strong>[ ] A11y</strong> — keyboard-reachable, focus correct, and
+the outcome is <strong>announced</strong> (speech + braille), no silent
+state change.</li>
+</ul>
 <p>Run the <strong>entire pass once per environment</strong> in §A. A
 feature is “signed off” only when it passes on <strong>every applicable
 environment</strong>.</p>
-<p>Files in this pack: - <code>QUILL-1.0.0-SIGNOFF.md</code> — this
-master (harness + cross-cutting matrices + readiness summary). -
-<code>signoff/SIGNOFF-editor.md</code> — every editor
-menu/command/dialog (generated). - <code>signoff/SIGNOFF-radio.md</code>
-· <code>signoff/SIGNOFF-weather.md</code> — the public companion apps. -
-<code>signoff/SIGNOFF-dialogs.md</code> — every dialog surface
-(generated from the A11Y-4 registry). -
-<code>signoff/SIGNOFF-install-matrix.md</code> — the portable/system
-scenario deep-dive. - <code>../release/qa-core-journeys.md</code> — the
-hand-held, rigorous <strong>core-journey</strong> test plan
-(open/heading nav, table cell nav, Save-As fidelity, Insert Equation,
-Improve Reading Order, Find/Replace + Regex, Read Aloud, open-from-URL).
-A required companion (see §0). - <code>../release/qa-samples/</code> —
-the <strong>QA sample-document corpus</strong> the journeys open
-(known-content inputs for manual QA); manifest in
-<code>../release/qa-samples/README.md</code>.</p>
+<p>Files in this pack:</p>
+<ul>
+<li><code>QUILL-1.0.0-SIGNOFF.md</code> — this master (harness +
+cross-cutting matrices + readiness summary).</li>
+<li><code>signoff/SIGNOFF-editor.md</code> — every editor
+menu/command/dialog (generated).</li>
+<li><code>signoff/SIGNOFF-radio.md</code> ·
+<code>signoff/SIGNOFF-weather.md</code> — the public companion
+apps.</li>
+<li><code>signoff/SIGNOFF-dialogs.md</code> — every dialog surface
+(generated from the A11Y-4 registry).</li>
+<li><code>signoff/SIGNOFF-install-matrix.md</code> — the portable/system
+scenario deep-dive.</li>
+<li><code>../release/qa-core-journeys.md</code> — the hand-held,
+rigorous <strong>core-journey</strong> test plan (open/heading nav,
+table cell nav, Save-As fidelity, Insert Equation, Improve Reading
+Order, Find/Replace + Regex, Read Aloud, open-from-URL). A required
+companion (see §0).</li>
+<li><code>../release/qa-samples/</code> — the <strong>QA sample-document
+corpus</strong> the journeys open (known-content inputs for manual QA);
+manifest in <code>../release/qa-samples/README.md</code>.</li>
+</ul>
 <hr />
-<h2 id="how-to-run-this-sign-off-the-hand-held-procedure">§0. How to run
-this sign-off — the hand-held procedure</h2>
+<h2 id="0-how-to-run-this-sign-off--the-hand-held-procedure">§0. How to
+run this sign-off — the hand-held procedure</h2>
 <p>This pack is more than a checklist: it is an <strong>ordered
 process</strong>. Run it in the sequence below, on every §A environment.
 Do not treat the companion QA plans as optional reading — they are part
@@ -297,21 +326,13 @@ sample inputs — not from memory or a glance. A box is checked only when
 the outcome happened in front of you, announced out loud, on the build
 under test.</p>
 <hr />
-<h2 id="a.-environment-matrix-run-the-whole-pack-in-each">§A.
+<h2 id="a-environment-matrix--run-the-whole-pack-in-each">§A.
 Environment matrix — run the whole pack in EACH</h2>
 <p>Because install-mode behavior is governed by <strong>three
 independent “portable” signals that can disagree</strong> (data-dir,
 secrets/<code>QUILL_PORTABLE</code>, update-asset), each must be
 exercised, per OS.</p>
-<table style="width:100%;">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-<col style="width: 16%" />
-</colgroup>
+<table>
 <thead>
 <tr>
 <th>#</th>
@@ -388,13 +409,13 @@ E4 [ ] E5 [ ] E6</label></li>
 in E3, confirm <code>keys.enc</code> lands where product intent expects
 (it follows the <em>resolved data dir</em>, so an appdata data-dir +
 <code>QUILL_PORTABLE=1</code> writes
-<code>%APPDATA%\Quill\keys.enc</code>). Record actual
-vs. intended.</label></li>
+<code>%APPDATA%\Quill\keys.enc</code>). Record actual vs.
+intended.</label></li>
 </ul>
 <p>Full per-scenario cases:
 <strong><code>signoff/SIGNOFF-install-matrix.md</code></strong>.</p>
 <hr />
-<h2 id="b.-editor-featurecommandsurface-sign-off">§B. Editor —
+<h2 id="b-editor--featurecommandsurface-sign-off">§B. Editor —
 feature/command/surface sign-off</h2>
 <p>Every editor menu (File · Edit · View · Insert · Format · Navigate ·
 Search · Tools · AI · [ADP] · Window · QuillVille · Help) with each leaf
@@ -402,7 +423,7 @@ item and dialog. See
 <strong><code>signoff/SIGNOFF-editor.md</code></strong> (generated from
 the command registry + menu tree + dialog registry). Section is complete
 when every item there is triple-checked across §A environments.</p>
-<h2 id="c.-quill-radio-public-sign-off">§C. Quill Radio (public) —
+<h2 id="c-quill-radio-public--sign-off">§C. Quill Radio (public) —
 sign-off</h2>
 <p>Station · Playback · [Record] · [Weather] · [ADP] · View · QuillVille
 · Quillins · Help. Every item + all 15 Radio custom dialogs (+21
@@ -410,7 +431,7 @@ native). See <strong><code>signoff/SIGNOFF-radio.md</code></strong>.
 Include: playback survives dropped connection, scheduled recording
 fires, favorites order preserved, backup/restore round-trip, autostart,
 missed-recording report.</p>
-<h2 id="d.-quill-weather-public-sign-off">§D. Quill Weather (public) —
+<h2 id="d-quill-weather-public--sign-off">§D. Quill Weather (public) —
 sign-off</h2>
 <p>File · Weather · Options · [ADP] · QuillVille · Help. Every item +
 WeatherCenter/AddLocation/Settings dialogs. See
@@ -418,14 +439,14 @@ WeatherCenter/AddLocation/Settings dialogs. See
 background Scheduled-Task alert check (no process running),
 severe-weather poll tightening, alert sounder options, Test Alert,
 “already-told-you” dedupe across live + background.</p>
-<h2 id="e.-dialogs-every-surface">§E. Dialogs — every surface</h2>
+<h2 id="e-dialogs--every-surface">§E. Dialogs — every surface</h2>
 <p>All 227 custom + 376 native + 7 web-form dialogs, grouped by area,
 each verified: opens, keyboard-complete, accessible name/role,
 Escape/Close contract, announces its outcome. See
 <strong><code>signoff/SIGNOFF-dialogs.md</code></strong>
 (generated).</p>
 <hr />
-<h2 id="f.-cross-cutting-accessibility-applies-to-every-item-above">§F.
+<h2 id="f-cross-cutting--accessibility-applies-to-every-item-above">§F.
 Cross-cutting — accessibility (applies to every item above)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />Every focusable control has an
@@ -448,34 +469,43 @@ path).</label></li>
 <strong>VoiceOver</strong> (macOS).</label></li>
 </ul>
 <h2
-id="g.-gating-verification-non-public-apps-must-be-absent-from-public-surfaces">§G.
+id="g-gating-verification--non-public-apps-must-be-absent-from-public-surfaces">§G.
 Gating verification — non-public apps MUST be absent from public
 surfaces</h2>
 <p>With the release/dev flag OFF (default public build), confirm these
-are <strong>not reachable</strong>: - [ ] <strong>QuillVille
-menu</strong> lists only Open QUILL / Quill Radio / Quill Weather (Cast,
-Studio, Converter, Beacon hidden — <code>RELEASED_APPS</code>). - [ ]
-<strong>Tools ▸ Media ▸ Media Player</strong>
-(<code>app.open_media_player</code>) is hidden/gated. - [ ] The
-<strong>standalone Audio Studio</strong> launcher (QuillVille) is gated.
-<em>(Note: <code>Tools ▸ Speech ▸ Audiobook &amp; Batch Speech…</code> /
+are <strong>not reachable</strong>:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>QuillVille menu</strong>
+lists only Open QUILL / Quill Radio / Quill Weather (Cast, Studio,
+Converter, Beacon hidden — <code>RELEASED_APPS</code>).</label></li>
+<li><label><input type="checkbox" /><strong>Tools ▸ Media ▸ Media
+Player</strong> (<code>app.open_media_player</code>) is
+hidden/gated.</label></li>
+<li><label><input type="checkbox" />The <strong>standalone Audio
+Studio</strong> launcher (QuillVille) is gated. <em>(Note:
+<code>Tools ▸ Speech ▸ Audiobook &amp; Batch Speech…</code> /
 <code>tools.speech_batch_export</code> is the editor-embedded batch
 document-to-speech wizard, NOT the standalone app — it stays. It was
-relabelled from “Audio Studio…” to remove the name clash.)</em> - [ ]
-<strong>Quill Cast / Converter / Beacon</strong> launchers,
-command-palette commands, Explorer “Convert with Quill” shell verb, and
-build products are gated. - [ ] Command palette does not surface
-gated-app commands. - [ ] <strong>Podcasts
+relabelled from “Audio Studio…” to remove the name
+clash.)</em></label></li>
+<li><label><input type="checkbox" /><strong>Quill Cast / Converter /
+Beacon</strong> launchers, command-palette commands, Explorer “Convert
+with Quill” shell verb, and build products are gated.</label></li>
+<li><label><input type="checkbox" />Command palette does not surface
+gated-app commands.</label></li>
+<li><label><input type="checkbox" /><strong>Podcasts
 (<code>core.podcasts</code>)</strong> is absent from the editor: no
 <code>Tools ▸ Media ▸ Podcasts</code> items, no <code>podcasts.*</code>
 commands in the command palette, no Podcasts status-bar cell or tray
 section, no Podcasts entries in <code>Tools ▸ Global Hotkeys</code>, no
 Podcasts chords on the QUILL-key cheat sheet, and no Podcasts row in
 <code>Manage Individual Features</code>. The background new-episode
-check never runs. (<code>QUILL_DEV_BUILD=1</code> restores all of it.) -
-[ ] <strong>Internet Radio (<code>core.radio</code>)</strong> and
-<strong>Book Library (<code>core.library</code>)</strong> are absent
-from the editor: no <code>Tools ▸ Media ▸ Internet Radio</code> or
+check never runs. (<code>QUILL_DEV_BUILD=1</code> restores all of
+it.)</label></li>
+<li><label><input type="checkbox" /><strong>Internet Radio
+(<code>core.radio</code>)</strong> and <strong>Book Library
+(<code>core.library</code>)</strong> are absent from the editor: no
+<code>Tools ▸ Media ▸ Internet Radio</code> or
 <code>Tools ▸ Media ▸ Book Library</code> items, no
 <code>radio.*</code>/<code>library.*</code> commands in the command
 palette, no Radio status-bar mini-player or tray radio controls, and no
@@ -485,9 +515,11 @@ entirely</strong> in a public build — confirm it is not shown.
 (<code>QUILL_DEV_BUILD=1</code> restores all of it.) The
 <strong>standalone Quill Radio and Quill Weather apps are
 unaffected</strong> and remain launchable via the QuillVille switcher
-(see the check above). - [ ] Automated test asserts gated apps are
-absent from public surfaces when the flag is off (Phase 2
-deliverable).</p>
+(see the check above).</label></li>
+<li><label><input type="checkbox" />Automated test asserts gated apps
+are absent from public surfaces when the flag is off (Phase 2
+deliverable).</label></li>
+</ul>
 <p>Already-gated (verify still correct): Podcasts
 (<code>core.podcasts</code>, unreleased in public builds — see above),
 ADP (<code>future.adp_assistant</code>, default ON — decide for 1.0),
@@ -496,7 +528,7 @@ Publishing send half (<code>future.publishing</code>), Spotify
 Whisperer (<code>core.bw_whisperer</code>), third-party Quillins
 (locked; bundled load regardless).</p>
 <hr />
-<h2 id="h.-readiness-summary-fill-as-sections-complete">§H. Readiness
+<h2 id="h-readiness-summary-fill-as-sections-complete">§H. Readiness
 summary (fill as sections complete)</h2>
 <table>
 <thead>
@@ -546,5 +578,6 @@ summary (fill as sections complete)</h2>
 </table>
 <p><strong>1.0.0 is ready to test when every box in §A–§G is checked and
 this table is all ✅.</strong></p>
+</main>
 </body>
 </html>

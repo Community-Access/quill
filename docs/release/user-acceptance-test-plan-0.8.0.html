@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>user-acceptance-test-plan-0.8.0</title>
+  <title>QUILL 0.8.0 Beta - User Acceptance Test Runbook (Step by
+Step)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,10 +174,31 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
-id="quill-0.8.0-beta---user-acceptance-test-runbook-step-by-step">QUILL
+id="quill-080-beta---user-acceptance-test-runbook-step-by-step">QUILL
 0.8.0 Beta - User Acceptance Test Runbook (Step by Step)</h1>
 <p>One continuous, numbered checklist for the public-beta sign-off.
 Every action and every validation is a single numbered step with its own
@@ -256,8 +277,8 @@ and the data dirs; it prints “Clean.”</label></li>
 <code>"$env:LOCALAPPDATA\Quill"</code>. EXPECT: every one returns False.
 RELEASE BLOCKER for the upgrade test if not clean.</label></li>
 </ul>
-<h2 id="part-b---install-the-0.5.0-baseline-and-create-real-state">Part
-B - Install the 0.5.0 baseline and create real state</h2>
+<h2 id="part-b---install-the-050-baseline-and-create-real-state">Part B
+- Install the 0.5.0 baseline and create real state</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>6.</strong> Run
 <code>Quill-Setup-0.5.0.exe</code>; accept the per-user defaults;
@@ -273,7 +294,7 @@ document, type a known paragraph, and Save it to a path you record.
 EXPECT: file saved; note the exact text for later
 comparison.</label></li>
 <li><label><input type="checkbox" /><strong>10.</strong> Change one
-visible setting (e.g. a speech voice or verbosity level). EXPECT: the
+visible setting (e.g. a speech voice or verbosity level). EXPECT: the
 change is accepted and persists.</label></li>
 <li><label><input type="checkbox" /><strong>11.</strong> Open the Keymap
 editor and remap one command; save. EXPECT: remap saved.</label></li>
@@ -291,8 +312,8 @@ EXPECT: you have the listing saved.</label></li>
 fully; confirm no <code>quill.exe</code>/<code>pythonw.exe</code>
 remains in Task Manager. EXPECT: process gone.</label></li>
 </ul>
-<h2 id="part-c---upgrade-0.5.0---0.7.0-the-critical-migration-step">Part
-C - Upgrade 0.5.0 -&gt; 0.7.0 (the critical migration step)</h2>
+<h2 id="part-c---upgrade-050---070-the-critical-migration-step">Part C -
+Upgrade 0.5.0 -&gt; 0.7.0 (the critical migration step)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>15.</strong> Run
 <code>Quill-for-All-Setup-0.7.0.Beta.1.exe</code> WITHOUT uninstalling
@@ -342,7 +363,7 @@ loss.</label></li>
 13 snapshot command to capture a 0.7.0 baseline. EXPECT: saved for the
 next diff. Close QUILL fully.</label></li>
 </ul>
-<h2 id="part-d---upgrade-0.7.0---0.8.0">Part D - Upgrade 0.7.0 -&gt;
+<h2 id="part-d---upgrade-070---080">Part D - Upgrade 0.7.0 -&gt;
 0.8.0</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>28.</strong> Run
@@ -384,8 +405,8 @@ whisper.cpp binary + dlls, Vosk/Kokoro/OCR/spellcheck wheels). EXPECT:
 all present.</label></li>
 </ul>
 <hr />
-<h2 id="part-f---first-run-trust-safe-mode-on-the-upgraded-0.8.0">Part F
-- First run, trust, Safe Mode (on the upgraded 0.8.0)</h2>
+<h2 id="part-f---first-run-trust-safe-mode-on-the-upgraded-080">Part F -
+First run, trust, Safe Mode (on the upgraded 0.8.0)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" /><strong>36.</strong> [unit-backed]
 Launch with <code>--safe-mode</code>. EXPECT: AI, watch folder, and
@@ -1140,13 +1161,6 @@ dead Start Menu shortcut remains under <code>Quill</code> or
 <p>Record every Fail/Blocked here so nothing is lost between
 sessions.</p>
 <table>
-<colgroup>
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-<col style="width: 20%" />
-</colgroup>
 <thead>
 <tr>
 <th>Step</th>
@@ -1186,5 +1200,6 @@ sessions.</p>
 <li>Overall: Pass / Pass-with-known-issues / Fail</li>
 <li>Notes:</li>
 </ul>
+</main>
 </body>
 </html>

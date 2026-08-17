@@ -324,6 +324,24 @@ charts for six hours, and a resolved feed address for a month. Wandering the tre
 costs almost nothing after the first visit, and nobody's directory is hammered
 for the privilege.
 
+**Subscribe -- and then actually find what you subscribed to.** Shift+F10 on a
+show offers **Subscribe to This Podcast**, which files it in the shared podcast
+library -- the same library QUILL Cast reads, so the show is simply *there* the
+next time Cast opens, artwork and site link included. And it is findable right
+here too: the Podcasts branch leads with a **Subscriptions** folder, one folder
+per show you follow, each expanding to its newest episodes. On a show you
+already follow, the same menu slot reads **Unsubscribe from This Podcast** and
+means it. How many episodes each show lists is one preference (25 newest by
+default) -- deliberately the only podcast setting Quill Radio has, because the
+rich side of podcasting belongs to QUILL Cast.
+
+**What you hear here is remembered there.** Play a subscribed show's episode in
+Quill Radio -- half of it over lunch, or all of it -- and QUILL Cast learns
+about it at its next launch: the episode stops presenting as brand new in the
+Inbox, and Continue Listening knows your real place. Neither app ever writes
+the other's files; a small handoff record carries the news, so nothing can be
+lost whichever app is open.
+
 ---
 
 ## Keep it: the things you are allowed to keep
@@ -1545,20 +1563,43 @@ story -- background alert monitoring, the customizable alert sounder, Test Alert
 the hour-by-hour forecast, the moon almanac, worldwide forecasts, and the rest --
 now lives in the **Quill Weather release notes and user guide**, not here.
 
-And the hand-off is real: the alert watch itself belongs to Quill Weather.
-Quill Radio no longer resumes background alert monitoring at launch -- one
-watcher, not two, and the radio opens talking about radio. Its Weather menu
-still answers on demand whenever you ask.
-
-It is still right where you expect it inside Quill Radio, too. The **Weather** menu
-is present whenever the **Weather** feature is enabled (**View > Customize
-Features...**), and it now leads with an **Open the Quill Weather App** item so you
-can hand the watch off to the standalone app in one step. Turn Weather off in
-Customize Features and the menu disappears entirely -- perfect if you only want the
-radio.
+And the hand-off is complete: Quill Radio has no Weather menu at all anymore.
+Forecasts, alerts, and background alert monitoring live in Quill Weather, one
+keystroke away on the QuillVille menu -- one watcher, not two, and the radio
+opens talking about radio. What stays in Quill Radio is the radio part of
+weather: the **Weather / NOAA** branch of Browse Stations, every NOAA Weather
+Radio transmitter with an internet feed, searchable by call sign, SAME code, or
+"County, ST".
 
 And on the radio side, **Station > Start Quill Radio with Windows** launches Quill
 Radio automatically when you sign in.
+
+## Your Quill, on every computer: the Data Folder
+
+Everything the Quill family remembers about you -- settings, favorites and
+their hand-arranged order, podcast subscriptions, playback positions -- lives
+in one shared data folder. New in this release, you can choose *where* that
+folder is, right from Quill Radio: **Preferences (Ctrl+,) > Data Folder...**.
+
+The reason to move it is sync. Point the data folder at a folder that Dropbox,
+OneDrive, Google Drive, or iCloud already keeps in sync, and your whole Quill
+setup follows you from desk to laptop -- the favorites you curated for years,
+the shows you follow, the place you stopped in last night's episode. There is
+no Quill account, no API, no sign-in, and nothing new talking to the network:
+Quill just writes to the folder, and the sync client you already run does the
+carrying. Every app in the family reads the same folder, so moving it once
+moves it for all of them.
+
+It is careful in the ways that matter. The move itself happens at the next
+launch (a restart is offered) so nothing shifts under a running app, and your
+existing data is carried over for you -- whichever Quill app starts next
+applies it. The heavyweight, regenerable machinery -- the Station Catalog, the
+directory caches -- deliberately stays on each computer instead of churning
+megabytes through your sync service for data the other machine would rebuild
+anyway. And the one rule a sync client cannot enforce, Quill watches for: run
+Quill against the same folder from two computers at once and the next launch
+tells you plainly -- "this data folder was in use on LAPTOP-X two minutes ago"
+-- instead of letting two machines quietly fight over one profile.
 
 ## A scheduled recording, and a computer that is actually awake for it
 

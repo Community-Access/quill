@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>keybinding-standard</title>
+  <title>QUILL Keybinding Standard</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,14 +173,36 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-keybinding-standard">QUILL Keybinding Standard</h1>
 <p>This document is the canonical reference for the keybinding rules
 QUILL follows. The gate that enforces these rules lives in
 <code>quill/tools/menu_lint.py</code> (GATE-12). Any change to this
 document must be reflected in the gate and vice versa.</p>
-<h2 id="the-quill-key-chord-space">§10.1 The QUILL-key chord space</h2>
+<h2 id="101-the-quill-key-chord-space">§10.1 The QUILL-key chord
+space</h2>
 <p>Most editor commands bind to one of two kinds of chord:</p>
 <ol type="1">
 <li><strong>A standard modifier chord</strong> (<code>Ctrl+X</code>,
@@ -210,7 +231,7 @@ the brand itself is <code>QUILL_KEY_LABEL</code> in
 stored grammar so it can serve as the canonical reference for the
 keymap; the user-facing surfaces use the display form.</p>
 </blockquote>
-<h2 id="the-ctrlalt-policy-revised-0.7.0">§10.2 The Ctrl+Alt+ policy
+<h2 id="102-the-ctrlalt-policy-revised-070">§10.2 The Ctrl+Alt+ policy
 (revised 0.7.0)</h2>
 <p><code>Ctrl+Alt+</code> is screen-reader-hostile because NVDA, JAWS,
 and Windows Speech Recognition intercept most of those chords
@@ -226,14 +247,9 @@ comment <code># §edsharp-ok — &lt;justification&gt;</code>.</li>
 <p>The rename from <code>_CTRL_ALT_ALLOWED</code> to
 <code>_CTRL_ALT_DOCUMENTED</code> makes the narrower scope explicit: the
 allowlist is now “documented exceptions,” not a free pass.</p>
-<h3 id="documented-bindings-allowlist-as-of-0.7.0">Documented bindings
+<h3 id="documented-bindings-allowlist-as-of-070">Documented bindings
 (allowlist, as of 0.7.0)</h3>
 <table>
-<colgroup>
-<col style="width: 32%" />
-<col style="width: 19%" />
-<col style="width: 48%" />
-</colgroup>
 <thead>
 <tr>
 <th>Command id</th>
@@ -347,13 +363,13 @@ collided with the selection bindings <code>edit.start_selection</code> /
 <code>edit.complete_selection</code> / <code>edit.reselect</code>. The
 chord class is documented as a reservation so future AI / compare work
 reuses the modifier stack instead of inventing a new one.</p>
-<h3 id="the-edsharp-ok-escape-hatch">The <code># §edsharp-ok</code>
+<h3 id="the--edsharp-ok-escape-hatch">The <code># §edsharp-ok</code>
 escape hatch</h3>
 <p>A <code>Ctrl+Alt+</code> binding outside the allowlist passes the
 gate if the line ends with the comment <code># §edsharp-ok</code>. The
-comment must name the screen-reader binding the chord overrides
-(e.g. “overrides NVDA review-cursor”). This is the path for one-off
-bindings that need a documented exception without growing the global
+comment must name the screen-reader binding the chord overrides (e.g.
+“overrides NVDA review-cursor”). This is the path for one-off bindings
+that need a documented exception without growing the global
 allowlist.</p>
 <h3 id="process-for-adding-a-new-ctrlalt-binding">Process for adding a
 new <code>Ctrl+Alt+</code> binding</h3>
@@ -372,13 +388,13 @@ covering the new allowlist entry or the inline escape-hatch path.</li>
 <li>Document the new chord in
 <code>docs/CONTROL_REFERENCE.md</code>.</li>
 </ol>
-<h2 id="tools-menu-clusters">§10.3 Tools-menu clusters</h2>
+<h2 id="103-tools-menu-clusters">§10.3 Tools-menu clusters</h2>
 <p>The Tools menu is organised into the nine clusters listed in
 <code>_REQUIRED_CLUSTER_LABELS</code> in <code>menu_lint.py</code>.
 Every cluster name must appear as a menu label in
 <code>main_frame_menu.py</code>; a missing cluster name fails the
 gate.</p>
-<h2 id="two-level-cap">§10.4 Two-level cap</h2>
+<h2 id="104-two-level-cap">§10.4 Two-level cap</h2>
 <p>No Tools-menu item may be more than two submenu levels deep. The gate
 rejects any <code>wx.Menu()</code> variable that is itself a child of a
 submenu <em>and</em> has <code>AppendSubMenu</code> calls of its own
@@ -388,11 +404,6 @@ submenu <em>and</em> has <code>AppendSubMenu</code> calls of its own
 <code>merge_keymaps</code> so a user with a saved pre-0.7.0 keymap is
 silently routed to the new chord without losing muscle memory:</p>
 <table>
-<colgroup>
-<col style="width: 33%" />
-<col style="width: 36%" />
-<col style="width: 30%" />
-</colgroup>
 <thead>
 <tr>
 <th>Legacy chord</th>
@@ -425,5 +436,6 @@ silently routed to the new chord without losing muscle memory:</p>
 </table>
 <p>See <code>docs/release notes/release0.7.0.md</code> for the per-PR
 changelog.</p>
+</main>
 </body>
 </html>

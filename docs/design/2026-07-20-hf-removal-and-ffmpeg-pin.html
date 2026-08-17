@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-20-hf-removal-and-ffmpeg-pin</title>
+  <title>Self-hosting: HuggingFace removal + ffmpeg pin (prepared,
+activate on upload)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,10 +174,31 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
-id="self-hosting-huggingface-removal-ffmpeg-pin-prepared-activate-on-upload">Self-hosting:
+id="self-hosting-huggingface-removal--ffmpeg-pin-prepared-activate-on-upload">Self-hosting:
 HuggingFace removal + ffmpeg pin (prepared, activate on upload)</h1>
 <p>Status: code prepared and merged; inert until assets are uploaded.
 2026-07-20.</p>
@@ -207,7 +228,7 @@ real 64-hex digest). A blank/placeholder SHA is ignored.</li>
 <p>No fallback needed once pinned: a pinned mirror is a single
 self-hosted URL, SHA verified, like the eSpeak/Tesseract installers.</p>
 <h2
-id="whisper.cpp-faster-whisper-the-two-huggingface_hub-library-call-sites">whisper.cpp
+id="whispercpp--faster-whisper-the-two-huggingface_hub-library-call-sites">whisper.cpp
 + Faster Whisper (the two <code>huggingface_hub</code> library call
 sites)</h2>
 <p>The only two library uses of <code>huggingface_hub</code> are
@@ -241,14 +262,14 @@ in <code>catalog.py</code>, so you can reuse it).</li>
 </ul></li>
 <li>Add a <code>MirrorAsset(filename, sha256[, archive_member])</code>
 entry to <code>_MIRRORS</code>. For a Faster Whisper zip set
-<code>archive_member</code> (e.g. <code>"model.bin"</code>) so a
+<code>archive_member</code> (e.g. <code>"model.bin"</code>) so a
 malformed archive is caught.</li>
 </ol>
 <p>whisper.cpp SHAs are already known (in <code>catalog.py</code>);
 Faster Whisper zip SHAs must be computed from the archives you build and
 upload.</p>
 <h3
-id="final-cut-over-once-every-whisper.cpp-fw-model-is-mirrored-and-proven">Final
+id="final-cut-over-once-every-whispercpp--fw-model-is-mirrored-and-proven">Final
 cut-over (once every whisper.cpp + FW model is mirrored and proven)</h3>
 <ol type="1">
 <li>Remove the Hugging Face fallback branch in
@@ -279,5 +300,6 @@ download into one helper, and route it through
 <code>fetch_mirror_archive</code>. Deferred here because it is
 UI-duplicated code and adds checksums that do not exist today; the
 mechanism already supports it.</p>
+</main>
 </body>
 </html>

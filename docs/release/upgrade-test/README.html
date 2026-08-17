@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>README</title>
+  <title>QUILL update-process rehearsal harness</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="quill-update-process-rehearsal-harness">QUILL update-process
 rehearsal harness</h1>
 <p>A simple, repeatable way to verify QUILL’s in-app self-update
@@ -234,7 +254,7 @@ alone).</li>
 <li><code>status.cmd</code> - show the current/persisted override and
 whether QUILL is installed.</li>
 </ul>
-<h2 id="what-this-validates-vs.-not">What this validates vs. not</h2>
+<h2 id="what-this-validates-vs-not">What this validates vs. not</h2>
 <p>Validates the real production path: GitHub Releases discovery,
 version ordering (0.8.1 Beta 1 &gt; 0.8.0 Beta 1), platform
 <code>.exe</code> asset selection, download from
@@ -243,5 +263,6 @@ upgrade (data in <code>%APPDATA%\Quill</code> preserved, first-run
 wizard re-runs). It does <strong>not</strong> exercise the
 signed-manifest feed (needs <code>QUILL_UPDATE_MANIFEST_KEY</code>) or
 the app_updater delta path.</p>
+</main>
 </body>
 </html>

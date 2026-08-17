@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>SIGNOFF-editor</title>
+  <title>QUILL 1.0.0 Sign-off — Editor commands</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,9 +173,30 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="quill-1.0.0-sign-off-editor-commands">QUILL 1.0.0 Sign-off —
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-100-sign-off--editor-commands">QUILL 1.0.0 Sign-off —
 Editor commands</h1>
 <p><strong>645 core-editor commands</strong> (of 718 total). Legend per
 item: <strong>W</strong>=Works · <strong>S</strong>=Surface-exact
@@ -187,7 +207,7 @@ every §A environment in the master plan.</p>
 <p><code>[GATED ...]</code> = only present when its feature flag is on;
 scope in/out of the pass explicitly.</p>
 </blockquote>
-<h2 id="tools.-159"><code>tools.*</code> (159)</h2>
+<h2 id="tools-159"><code>tools.*</code> (159)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>tools.ai_accessibility_agent</code> — Accessibility
@@ -620,7 +640,7 @@ Monitoring</label></li>
 <code>tools.writing_instructions</code> — Open Writing Instructions
 <strong>[GATED future.ai]</strong></label></li>
 </ul>
-<h2 id="edit.-86"><code>edit.*</code> (86)</h2>
+<h2 id="edit-86"><code>edit.*</code> (86)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>edit.clear_all_tray_slots</code> — Clear All Tray
@@ -860,7 +880,7 @@ Mode</label></li>
 <code>edit.word_prediction</code> — Word Prediction…
 <code>Ctrl+.</code></label></li>
 </ul>
-<h2 id="power.-75"><code>power.*</code> (75)</h2>
+<h2 id="power-75"><code>power.*</code> (75)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>power.analyze_encoding_requirements</code> — Analyze Encoding
@@ -1073,7 +1093,7 @@ Guard</label></li>
 <code>power.trim_blank_lines</code> — Trim Blank Lines
 <code>Ctrl+Shift+Enter</code></label></li>
 </ul>
-<h2 id="format.-56"><code>format.*</code> (56)</h2>
+<h2 id="format-56"><code>format.*</code> (56)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>format.auto_indent_newline</code> — Auto-Indent
@@ -1221,7 +1241,7 @@ Cursor Move</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>format.upper_case</code> — Upper Case</label></li>
 </ul>
-<h2 id="braille.-45"><code>braille.*</code> (45)</h2>
+<h2 id="braille-45"><code>braille.*</code> (45)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>braille.add_proofing_note</code> — Add Proofing Note to Current
@@ -1352,7 +1372,7 @@ in Status</label></li>
 <code>braille.warnings_summary</code> — Braille Layout Warnings
 Summary</label></li>
 </ul>
-<h2 id="file.-29"><code>file.*</code> (29)</h2>
+<h2 id="file-29"><code>file.*</code> (29)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>file.choose_encoding</code> — Choose Encoding…</label></li>
@@ -1425,7 +1445,7 @@ Manager…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>file.toggle_line_endings</code> — Toggle Line Endings</label></li>
 </ul>
-<h2 id="navigate.-28"><code>navigate.*</code> (28)</h2>
+<h2 id="navigate-28"><code>navigate.*</code> (28)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>navigate.back_location</code> — Back Location
@@ -1503,7 +1523,7 @@ Anything)</label></li>
 <code>navigate.speak_window_title</code> — Speak Window Title
 <code>Ctrl+Shift+Grave, F</code></label></li>
 </ul>
-<h2 id="vault.-22"><code>vault.*</code> (22)</h2>
+<h2 id="vault-22"><code>vault.*</code> (22)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>vault.backlinks</code> — Show Backlinks</label></li>
@@ -1552,7 +1572,7 @@ future.publishing]</strong></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>vault.unlinked_mentions</code> — Unlinked Mentions</label></li>
 </ul>
-<h2 id="help.-21"><code>help.*</code> (21)</h2>
+<h2 id="help-21"><code>help.*</code> (21)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>help.about_quill</code> — About Quill</label></li>
@@ -1609,7 +1629,7 @@ Feature?</label></li>
 <code>help.why_unavailable</code> — Why Is This Unavailable?
 <code>Alt+F1</code></label></li>
 </ul>
-<h2 id="github.-17"><code>github.*</code> (17)</h2>
+<h2 id="github-17"><code>github.*</code> (17)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>github.browse_organization</code> — GitHub: Browse Organization
@@ -1663,7 +1683,7 @@ Notifications…</label></li>
 <code>github.view_security_alerts</code> — GitHub: Security
 Alerts…</label></li>
 </ul>
-<h2 id="view.-16"><code>view.*</code> (16)</h2>
+<h2 id="view-16"><code>view.*</code> (16)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>view.announce_contrast</code> — Announce Contrast Ratio
@@ -1713,7 +1733,7 @@ You Type</label></li>
 <code>view.toggle_tab_control</code> — Toggle Tab Control
 <code>Ctrl+Shift+Grave, Shift+T</code></label></li>
 </ul>
-<h2 id="window.-14"><code>window.*</code> (14)</h2>
+<h2 id="window-14"><code>window.*</code> (14)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>window.close_other_documents</code> — Close Other Documents
@@ -1758,7 +1778,7 @@ You Type</label></li>
 <code>window.previous_document</code> — Previous Document
 <code>Ctrl+Shift+Tab</code></label></li>
 </ul>
-<h2 id="whisperer.-12"><code>whisperer.*</code> (12)</h2>
+<h2 id="whisperer-12"><code>whisperer.*</code> (12)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>whisperer.about</code> — About BITS Whisperer <strong>[GATED
@@ -1797,7 +1817,7 @@ Status</label></li>
 <code>whisperer.readiness_check</code> — BITS Whisperer Readiness
 Check</label></li>
 </ul>
-<h2 id="localgit.-12"><code>localgit.*</code> (12)</h2>
+<h2 id="localgit-12"><code>localgit.*</code> (12)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>localgit.bisect_reset</code> — Local Git: End Bisect</label></li>
@@ -1834,7 +1854,7 @@ Changes…</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>localgit.worktrees</code> — Local Git: Worktrees…</label></li>
 </ul>
-<h2 id="publishing.-11"><code>publishing.*</code> (11)</h2>
+<h2 id="publishing-11"><code>publishing.*</code> (11)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>publishing.browse_content</code> — Browse Publishing Content…
@@ -1870,7 +1890,7 @@ Content… <strong>[GATED future.publishing]</strong></label></li>
 <code>publishing.verify_connection</code> — Verify Current Publishing
 Connection <strong>[GATED future.publishing_read]</strong></label></li>
 </ul>
-<h2 id="app.-10"><code>app.*</code> (10)</h2>
+<h2 id="app-10"><code>app.*</code> (10)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>app.announcement_self_test</code> — Announcement
@@ -1899,7 +1919,7 @@ Announcement</label></li>
 <code>app.report_editor_surface</code> — Report Editor
 Surface</label></li>
 </ul>
-<h2 id="verbosity.-8"><code>verbosity.*</code> (8)</h2>
+<h2 id="verbosity-8"><code>verbosity.*</code> (8)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>verbosity.history</code> — Announcement History</label></li>
@@ -1918,7 +1938,7 @@ Surface</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>verbosity.where_am_i</code> — Where Am I</label></li>
 </ul>
-<h2 id="table.-8"><code>table.*</code> (8)</h2>
+<h2 id="table-8"><code>table.*</code> (8)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>table.cell_above</code> — Table: Cell Above
@@ -1945,7 +1965,7 @@ Surface</label></li>
 <code>table.row_start</code> — Table: First Cell in Row
 <code>Alt+Home</code></label></li>
 </ul>
-<h2 id="notes.-5"><code>notes.*</code> (5)</h2>
+<h2 id="notes-5"><code>notes.*</code> (5)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>notes.add_inline_note</code> — Add Inline Note
@@ -1962,7 +1982,7 @@ to edit) <code>Alt+Shift+H</code></label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>notes.sticky_browser</code> — Sticky Notes Browser…</label></li>
 </ul>
-<h2 id="reveal.-4"><code>reveal.*</code> (4)</h2>
+<h2 id="reveal-4"><code>reveal.*</code> (4)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>reveal.go_to_pair</code> — Reveal Codes: Go to Matching
@@ -1976,7 +1996,7 @@ Code</label></li>
 <code>reveal.toggle_speak</code> — Reveal Codes: Speak Codes
 Aloud</label></li>
 </ul>
-<h2 id="adp.-2"><code>adp.*</code> (2)</h2>
+<h2 id="adp-2"><code>adp.*</code> (2)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A <code>adp.ask</code> —
 ADP: Ask about Described Movies and TV… <strong>[GATED
@@ -1985,7 +2005,7 @@ future.adp_assistant]</strong></label></li>
 <code>adp.settings</code> — ADP: Settings… <strong>[GATED
 future.adp_assistant]</strong></label></li>
 </ul>
-<h2 id="media.-2"><code>media.*</code> (2)</h2>
+<h2 id="media-2"><code>media.*</code> (2)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>media.cancel_sleep_timer</code> — Media: Cancel Sleep
@@ -1993,22 +2013,23 @@ Timer</label></li>
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>media.sleep_timer</code> — Media: Sleep Timer…</label></li>
 </ul>
-<h2 id="ai.-1"><code>ai.*</code> (1)</h2>
+<h2 id="ai-1"><code>ai.*</code> (1)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>ai.suggest_metadata</code> — Suggest Document Metadata…
 <strong>[GATED future.ai]</strong></label></li>
 </ul>
-<h2 id="document.-1"><code>document.*</code> (1)</h2>
+<h2 id="document-1"><code>document.*</code> (1)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>document.summary</code> — Document Summary
 <code>Alt+I</code></label></li>
 </ul>
-<h2 id="sync.-1"><code>sync.*</code> (1)</h2>
+<h2 id="sync-1"><code>sync.*</code> (1)</h2>
 <ul class="task-list">
 <li><label><input type="checkbox" />W [ ] S [ ] A
 <code>sync.sync_folder</code> — Sync Folder with GitHub…</label></li>
 </ul>
+</main>
 </body>
 </html>

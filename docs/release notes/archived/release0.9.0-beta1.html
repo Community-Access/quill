@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>release0.9.0-beta1</title>
+  <title>QUILL 0.9.0 - The Last Feature Beta: Everything We Promised, By
+Ear</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,13 +174,34 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
-id="quill-0.9.0---the-last-feature-beta-everything-we-promised-by-ear">QUILL
+id="quill-090---the-last-feature-beta-everything-we-promised-by-ear">QUILL
 0.9.0 - The Last Feature Beta: Everything We Promised, By Ear</h1>
 <h3
-id="the-screen-reader-first-writing-studio-built-by-the-people-who-depend-on-it.">The
+id="the-screen-reader-first-writing-studio-built-by-the-people-who-depend-on-it">The
 screen-reader-first writing studio, built by the people who depend on
 it.</h3>
 <p><em>From Community Access. Free. Optional by design. Private by
@@ -431,17 +452,21 @@ kept rather than silently lost.</p>
 <h3 id="three-classic-editor-power-tools">Three classic-editor power
 tools</h3>
 <p>In the WordPerfect Editor tradition, all unbound by default (assign
-keys in the Keymap Editor): - <strong>Repeat Next Command</strong> - set
-a count, and the next command runs that many times (down twenty lines,
-delete ten words, insert forty dashes) in one gesture. - <strong>Restore
-Deleted Text</strong> - QUILL keeps the last three blocks removed by its
-structured delete commands; re-insert any of them at the cursor
-(distinct from Undo, which only reverts in place). - <strong>Describe
-Character at Cursor</strong> - names the exact character under the caret
-(Unicode name, code point, category, and notes for invisibles), the
-screen-reader descendant of “Reveal Codes”. <strong>Why it
-matters:</strong> the precise, repeatable, eyes-free moves that
-long-time editor users have been asking QUILL to bring forward.</p>
+keys in the Keymap Editor):</p>
+<ul>
+<li><strong>Repeat Next Command</strong> - set a count, and the next
+command runs that many times (down twenty lines, delete ten words,
+insert forty dashes) in one gesture.</li>
+<li><strong>Restore Deleted Text</strong> - QUILL keeps the last three
+blocks removed by its structured delete commands; re-insert any of them
+at the cursor (distinct from Undo, which only reverts in place).</li>
+<li><strong>Describe Character at Cursor</strong> - names the exact
+character under the caret (Unicode name, code point, category, and notes
+for invisibles), the screen-reader descendant of “Reveal Codes”.
+<strong>Why it matters:</strong> the precise, repeatable, eyes-free
+moves that long-time editor users have been asking QUILL to bring
+forward.</li>
+</ul>
 <h3 id="re-read-anything-quill-just-said---the-spoken-echo">Re-read
 anything QUILL just said - the Spoken Echo</h3>
 <p>The last twenty announcements are kept and shown newest-first in a
@@ -509,8 +534,10 @@ the top of the element’s file, so editing the form and editing the file
 are the same bytes. Blank fields are dropped, and anything already in
 the file that Story Studio does not recognise is kept untouched.
 <strong>Why it matters:</strong> structure without a database and
-without learning any markup - and your notes stay in plain, portable
-text you own.</p>
+without learning any markup</p>
+<ul>
+<li>and your notes stay in plain, portable text you own.</li>
+</ul>
 <h3 id="compile-the-manuscript-then-export-it-your-way">Compile the
 manuscript, then export it your way</h3>
 <p>Press <strong>Compile manuscript…</strong> and Story Studio stitches
@@ -669,12 +696,15 @@ transcript on the website, and an RSS feed lets you subscribe in any
 podcast app.</p>
 <p><strong>Why it matters:</strong> some people learn by reading, some
 by doing, some by listening on a walk. Now all three of them get a
-first-class path into QUILL - and the audio path is proof-by-existence
-of what the speech suite can do.</p>
+first-class path into QUILL</p>
+<ul>
+<li>and the audio path is proof-by-existence of what the speech suite
+can do.</li>
+</ul>
 <hr />
 <h2
-id="import-convert-document---rescue-for-locked-away-documents">Import /
-Convert Document - rescue for locked-away documents</h2>
+id="import--convert-document---rescue-for-locked-away-documents">Import
+/ Convert Document - rescue for locked-away documents</h2>
 <p>Everyone with a screen reader knows the feeling: someone hands you a
 PDF and it turns out to be a photograph of a page. Nothing to read,
 nothing to search, nothing to fix. This beta ships QUILL’s answer - a
@@ -1114,9 +1144,10 @@ slope/distance/midpoint formulas, difference of squares, and a circle’s
 area and circumference) - pick one and it lands correctly typeset,
 nothing to type at all. And while writing ordinary prose, a library of
 Math AutoCorrect-style shortcuts seeded from the DAISY-published Word
-list - <code>\alpha</code>, <code>\sqrt</code>, <code>\ne</code>,
-<code>\pi</code>, and dozens more - expands the moment you type the code
-and a space, muscle-memory compatible with anyone coming from Word.</p>
+list - <code>\alpha </code>, <code>\sqrt </code>, <code>\ne </code>,
+<code>\pi </code>, and dozens more - expands the moment you type the
+code and a space, muscle-memory compatible with anyone coming from
+Word.</p>
 <h3 id="see-it-or-step-through-it">See it, or step through it</h3>
 <p><strong>View &gt; Browser Preview…</strong> and HTML export now
 render every equation as real typeset math - stacked fractions, drawn
@@ -1278,26 +1309,31 @@ that from us in exactly those words.</p>
 <h3 id="download-only-what-you-need">Download only what you need</h3>
 <p>The base installer is smaller because the heavy, optional pieces now
 download on demand - checksum-verified, with a cancelable progress bar,
-disabled in Safe Mode: - <strong>Pandoc</strong> - the engine behind
-Word, ODT, EPUB, and RTF import/export was the single largest bundled
-component (~220 MB unpacked). The first time a conversion needs it,
-QUILL offers the official, pinned build right there (~45 MB) - roughly
-halving the installer on its own. - The <strong>braille translation
-pack</strong> - the liblouis tables and BRF profiles behind the
-Translation submenu and embossing export (~68 MB unpacked; a ~9 MB
-download when you first reach for them). Reading with a braille display
-never needed them - that is your screen reader - and now the installer
-does not carry them either. - The <strong>offline speech engine</strong>
-(whisper.cpp), <strong>Kokoro</strong> neural voices, and the classic
-<strong>eSpeak NG</strong> and <strong>DECtalk</strong> voices. - The
-<strong>Vosk</strong> speech engine - a tiny, very-low-resource
+disabled in Safe Mode:</p>
+<ul>
+<li><strong>Pandoc</strong> - the engine behind Word, ODT, EPUB, and RTF
+import/export was the single largest bundled component (~220 MB
+unpacked). The first time a conversion needs it, QUILL offers the
+official, pinned build right there (~45 MB) - roughly halving the
+installer on its own.</li>
+<li>The <strong>braille translation pack</strong> - the liblouis tables
+and BRF profiles behind the Translation submenu and embossing export
+(~68 MB unpacked; a ~9 MB download when you first reach for them).
+Reading with a braille display never needed them - that is your screen
+reader - and now the installer does not carry them either.</li>
+<li>The <strong>offline speech engine</strong> (whisper.cpp),
+<strong>Kokoro</strong> neural voices, and the classic <strong>eSpeak
+NG</strong> and <strong>DECtalk</strong> voices.</li>
+<li>The <strong>Vosk</strong> speech engine - a tiny, very-low-resource
 dictation and transcription engine for older or low-memory machines with
 no graphics card. Get it from <strong>Tools &gt; Speech &gt; Download
-Vosk</strong> or the Optional Components dialog below. -
-<strong>Spell-check dictionaries for other languages</strong> - pick
+Vosk</strong> or the Optional Components dialog below.</li>
+<li><strong>Spell-check dictionaries for other languages</strong> - pick
 <strong>Spanish</strong> or <strong>French</strong> under <strong>Tools
 &gt; Spell Check Language</strong> and QUILL fetches the dictionary the
-first time. - And the audio-export helper, <strong>FFmpeg</strong>.</p>
+first time.</li>
+<li>And the audio-export helper, <strong>FFmpeg</strong>.</li>
+</ul>
 <p><strong>Upgrading from a release that bundled Pandoc or the braille
 pack?</strong> Your existing copies are kept and keep working - nothing
 to re-download.</p>
@@ -1318,12 +1354,16 @@ CPU-only machines</h3>
 <p>Two new settings under <strong>Settings &gt; Performance and
 Memory</strong> let QUILL fit its full AI and speech features onto
 machines with limited memory - never by turning anything off, only by
-being careful with memory: - <strong>Unload idle models after</strong> a
-few minutes frees an AI or speech model you have stopped using; the next
-time you need it, it simply reloads. - <strong>Low-resource
-mode</strong> keeps only one model loaded at a time and prefers the
-smallest one that fits. On a machine with very little memory it turns on
-automatically and tells you once, out loud.</p>
+being careful with memory:</p>
+<ul>
+<li><strong>Unload idle models after</strong> a few minutes frees an AI
+or speech model you have stopped using; the next time you need it, it
+simply reloads.</li>
+<li><strong>Low-resource mode</strong> keeps only one model loaded at a
+time and prefers the smallest one that fits. On a machine with very
+little memory it turns on automatically and tells you once, out
+loud.</li>
+</ul>
 <p><strong>Why it matters:</strong> the whole feature set - dictation,
 read-aloud, and AI - stays usable on an older, CPU-only laptop, because
 QUILL holds one model in memory at a time instead of several. You trade
@@ -1744,7 +1784,7 @@ Formats” and “Choosing a conversion engine”) and specified in the PRD
 (section 5.3a.1.1a), enforced by io-layer tests rather than UI
 convention. Caroline: thank you. Eight lines went a very long way.</p>
 <hr />
-<h2 id="the-road-to-1.0---what-happens-now">The road to 1.0 - what
+<h2 id="the-road-to-10---what-happens-now">The road to 1.0 - what
 happens now</h2>
 <p><strong>This is the feature freeze.</strong> From this beta forward,
 nothing new goes in. Every commit between here and QUILL 1.0 is a bug
@@ -1819,5 +1859,6 @@ complete and heading to 1.0. Install the beta. Write something real with
 it. Tell us what creaks.</p>
 <p>We will fix it. That is the whole job now.</p>
 <p><em>- The QUILL team at Community Access</em></p>
+</main>
 </body>
 </html>

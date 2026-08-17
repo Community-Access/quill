@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>09-internet-radio</title>
+  <title>Tutorial 9: Internet Radio</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="tutorial-9-internet-radio">Tutorial 9: Internet Radio</h1>
 <p><strong>Goal:</strong> find a station, play it in the background
 while you keep writing, save your favorites, and control it without ever
@@ -183,7 +203,7 @@ opening a dialog.</p>
 <p>Internet Radio needs a network connection and is disabled entirely in
 Safe Mode. Everything below lives under <strong>Tools &gt; Media &gt;
 Internet Radio</strong>.</p>
-<h2 id="play-something-right-away">1. Play something right away</h2>
+<h2 id="1-play-something-right-away">1. Play something right away</h2>
 <ol type="1">
 <li><strong>Tools &gt; Media &gt; Internet Radio &gt; Browse
 Stations…</strong></li>
@@ -196,7 +216,7 @@ Live365 stations, bundled directly into QUILL. Arrow to one and press
 Stations never stops playback, the same way closing a document doesn’t
 stop Read Aloud.</li>
 </ol>
-<h2 id="search-a-real-directory">2. Search a real directory</h2>
+<h2 id="2-search-a-real-directory">2. Search a real directory</h2>
 <p>Back in Browse Stations, use the <strong>Search RadioBrowser</strong>
 row above the category list: type a station name (try <code>jazz</code>
 or a city you know has a station), optionally narrow by tag/genre or
@@ -209,7 +229,7 @@ so you know what you’re about to hear before you press Play.</p>
 <p>Found one you’ll want again? <strong>Add to Favorites</strong> saves
 it; the button relabels to <strong>Remove from Favorites</strong> once
 it’s there.</p>
-<h2 id="add-a-station-radiobrowser-doesnt-have">3. Add a station
+<h2 id="3-add-a-station-radiobrowser-doesnt-have">3. Add a station
 RadioBrowser doesn’t have</h2>
 <p>Two more buttons in Browse Stations cover the rest:</p>
 <ul>
@@ -234,7 +254,7 @@ point), each with a plain-language reason. Select one,
 the guessed name and URL straight into Add Custom Station. This reads
 the one page you typed — it does not open a browser inside QUILL.</li>
 </ul>
-<h2 id="control-it-without-opening-a-dialog">4. Control it without
+<h2 id="4-control-it-without-opening-a-dialog">4. Control it without
 opening a dialog</h2>
 <p>Once something is playing, three ways to reach it without Browse
 Stations:</p>
@@ -258,15 +278,15 @@ QUILL Key chord.</li>
 <p>Try it now: start a station, switch back to your document, and press
 Ctrl+Shift+Grave, then 9 — the music mutes without you ever leaving the
 paragraph you were editing.</p>
-<h2 id="set-the-volume-once-and-forget-it">5. Set the volume once and
+<h2 id="5-set-the-volume-once-and-forget-it">5. Set the volume once and
 forget it</h2>
 <p>Browse Stations has its own <strong>Radio volume</strong> slider and
 <strong>Mute</strong> button. This is entirely separate from your
 Windows system volume and from your screen reader’s own speech volume —
 turn the music down (or mute it) without ever touching how loud your
 screen reader talks.</p>
-<h2 id="record-a-station-live-or-scheduled">6. Record a station, live or
-scheduled</h2>
+<h2 id="6-record-a-station-live-or-scheduled">6. Record a station, live
+or scheduled</h2>
 <p>Recording needs ffmpeg installed (<strong>Tools &gt; Download
 Optional Components</strong> if <code>Tools &gt; Media</code> doesn’t
 show a Record item at all — it’s hidden outright rather than shown
@@ -284,7 +304,7 @@ weekly recording — station, start time, and duration — that fires
 automatically while QUILL is open. It does not wake your computer or run
 if QUILL is closed at the scheduled time.</li>
 </ul>
-<h2 id="sleep-timer">7. Sleep timer</h2>
+<h2 id="7-sleep-timer">7. Sleep timer</h2>
 <p><strong>Tools &gt; Media &gt; Sleep Timer…</strong> stops whatever’s
 playing — Radio or a podcast episode — after a preset or custom number
 of minutes, fading the volume down gently over the last moments rather
@@ -304,5 +324,6 @@ see <a href="10-podcasts.md">Tutorial 10</a>.</p>
 new, the status bar or tray for everyday control, and QUILL Key chords
 when you’d rather not leave the keyboard at all. Closing any dialog
 never stops the music.</p>
+</main>
 </body>
 </html>

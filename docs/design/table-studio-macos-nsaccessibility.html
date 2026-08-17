@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>table-studio-macos-nsaccessibility</title>
+  <title>Table Studio on macOS: the NSAccessibility bridge (design
+spike)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,8 +239,29 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="table-studio-on-macos-the-nsaccessibility-bridge-design-spike">Table
 Studio on macOS: the NSAccessibility bridge (design spike)</h1>
@@ -254,7 +275,7 @@ real grid semantics when Table Studio comes to macOS. The cross-platform
 principle at the bottom is the contract the shipped Windows bridge
 already follows.</p>
 </blockquote>
-<h2 id="status-spike-design-not-yet-built">Status: Spike design / not
+<h2 id="status-spike-design--not-yet-built">Status: Spike design / not
 yet built</h2>
 <h2 id="what-this-will-do">What this will do</h2>
 <p>Expose the <code>wx.grid.Grid</code> widget as a proper
@@ -307,11 +328,15 @@ available as a safety net.</p>
 <h2 id="testing">Testing</h2>
 <p>Test with VoiceOver (VO+F3 for item chooser, VO+Right to navigate
 cells) and <code>Accessibility Inspector.app</code>.</p>
-<p>Key VoiceOver behaviors to verify: - VO announces “Grid, N rows, M
-columns” on entry. - VO announces column header on horizontal movement.
-- VO announces row header on vertical movement. - VO correctly says
-“blank” for empty cells. - VO enters and exits edit mode on VO+Space. -
-Braille display shows row/col coordinates.</p>
+<p>Key VoiceOver behaviors to verify:</p>
+<ul>
+<li>VO announces “Grid, N rows, M columns” on entry.</li>
+<li>VO announces column header on horizontal movement.</li>
+<li>VO announces row header on vertical movement.</li>
+<li>VO correctly says “blank” for empty cells.</li>
+<li>VO enters and exits edit mode on VO+Space.</li>
+<li>Braille display shows row/col coordinates.</li>
+</ul>
 <h2 id="build">Build</h2>
 <pre><code># Requires Xcode Command Line Tools + Python headers
 clang++ -std=c++17 -arch x86_64 -arch arm64 \   # universal binary
@@ -330,5 +355,6 @@ class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a hr
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>        _native_mac <span class="op">=</span> _quill_table_nsaccess</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> <span class="pp">ImportError</span>:</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        _native_mac <span class="op">=</span> <span class="va">None</span>   <span class="co"># fall back to wx.Accessible</span></span></code></pre></div>
+</main>
 </body>
 </html>

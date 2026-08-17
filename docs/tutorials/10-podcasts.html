@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>10-podcasts</title>
+  <title>Tutorial 10: Podcasts</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="tutorial-10-podcasts">Tutorial 10: Podcasts</h1>
 <p><strong>Goal:</strong> subscribe to a show, organize your library
 into folders, download an episode for offline listening, and control
@@ -185,7 +205,7 @@ href="09-internet-radio.md">Internet Radio</a>.</p>
 <p>Podcasts need a network connection to subscribe and download, and are
 disabled entirely in Safe Mode. Everything below lives under
 <strong>Tools &gt; Media &gt; Podcasts…</strong>.</p>
-<h2 id="subscribe-to-a-show">1. Subscribe to a show</h2>
+<h2 id="1-subscribe-to-a-show">1. Subscribe to a show</h2>
 <ol type="1">
 <li><strong>Tools &gt; Media &gt; Podcasts…</strong> opens the Podcast
 Manager: an empty folder tree on the left, an empty episode list on the
@@ -207,7 +227,7 @@ step.</li>
 Manager’s tree, and its episodes fill the list on the right when you
 select it.</li>
 </ol>
-<h2 id="organize-into-folders">2. Organize into folders</h2>
+<h2 id="2-organize-into-folders">2. Organize into folders</h2>
 <p>Press <strong>New Folder…</strong> to create one, nested under
 whatever’s selected in the tree — select a folder first, then New Folder
 again, to nest one inside it. There’s no drag-and-drop yet; moving a
@@ -219,7 +239,7 @@ Menu/Shift+F10) and choose <strong>Pause Downloads for This
 Podcast</strong> — it stays in your library, episodes and all, but QUILL
 stops fetching or downloading anything new for it until you choose
 <strong>Resume Downloads for This Podcast</strong> later.</p>
-<h2 id="download-an-episode-for-offline-listening">3. Download an
+<h2 id="3-download-an-episode-for-offline-listening">3. Download an
 episode for offline listening</h2>
 <p>Select an episode in the list and press <strong>Download</strong>, or
 reach the same action from its right-click context menu. Downloads run
@@ -242,7 +262,7 @@ thrown away.</li>
 <p>Try it: start downloading a longer episode, then immediately pause
 just that one episode. Its status column shows “Paused.” Resume it and
 watch the status move back through “Downloading” to “Downloaded.”</p>
-<h2 id="play-an-episode-and-control-speed">4. Play an episode, and
+<h2 id="4-play-an-episode-and-control-speed">4. Play an episode, and
 control speed</h2>
 <p>Select an episode and press <strong>Play/Pause</strong>, double-click
 it, or use its context menu. Starting a different episode always
@@ -258,8 +278,8 @@ rate for whichever podcast you currently have selected, from 0.75x up to
 2.0x. It’s remembered per show, so a fast-talking interview show and a
 slow, dense lecture series can each have their own comfortable
 speed.</p>
-<h2 id="chapters-sorting-and-show-notes">5. Chapters, sorting, and show
-notes</h2>
+<h2 id="5-chapters-sorting-and-show-notes">5. Chapters, sorting, and
+show notes</h2>
 <p>If a show publishes Podcasting 2.0 chapters (or the episode has ID3
 chapters once downloaded), a <strong>Chapters…</strong> button appears
 on the player row — opens a list of chapter titles and start times;
@@ -276,14 +296,14 @@ links shown as <code>text (url)</code> rather than raw markup, or switch
 to a rich view if you’d rather see it formatted. <strong>Send Show Notes
 to Editor</strong> copies that same plain text into a new document tab,
 if you want to keep or annotate it.</p>
-<h2 id="podcast-settings">6. Podcast Settings</h2>
+<h2 id="6-podcast-settings">6. Podcast Settings</h2>
 <p><strong>Podcast Settings…</strong> on the Podcast Manager toolbar
-sets the defaults every show starts from: stream vs. download, retention
+sets the defaults every show starts from: stream vs. download, retention
 (keep everything, keep the last N, or delete after playing), download
 location, and what happens to downloaded files when you unsubscribe from
 a show — <strong>ask each time</strong> (the default), <strong>always
 delete them</strong>, or <strong>never delete them</strong>.</p>
-<h2 id="control-it-without-opening-the-dialog">7. Control it without
+<h2 id="7-control-it-without-opening-the-dialog">7. Control it without
 opening the dialog</h2>
 <ul>
 <li><strong>The status bar.</strong> A <strong>Podcasts</strong> cell
@@ -299,7 +319,7 @@ toggles play/pause; then <strong>7</strong> stops. Deliberately parked
 right next to Radio’s N/0/9 chords, not on top of them. Remap either in
 <strong>Preferences &gt; Keyboard Shortcuts</strong>.</li>
 </ul>
-<h2 id="take-your-library-with-you">8. Take your library with you</h2>
+<h2 id="8-take-your-library-with-you">8. Take your library with you</h2>
 <p><strong>Export OPML…</strong> on the Podcast Manager writes your
 whole subscription list — folder structure included — to a standard
 <code>.opml</code> file that any other podcast app can read. Bring it
@@ -323,5 +343,6 @@ closed a dialog. Right-click nearly anything for the full set of
 actions, and reach the essentials — play, pause, stop — from the status
 bar, the tray, or the keyboard without ever opening the Podcast Manager
 at all.</p>
+</main>
 </body>
 </html>

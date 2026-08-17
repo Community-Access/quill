@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>formatting</title>
+  <title>Heading One — Formatting Sample</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -239,15 +238,36 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="heading-one-formatting-sample">Heading One — Formatting
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="heading-one--formatting-sample">Heading One — Formatting
 Sample</h1>
 <p>This paragraph exercises inline styles. The word
 <strong>bold</strong> is bold, the word <em>italic</em> is italic, the
 word <u>underline</u> is underlined via an HTML tag, and the word
 <del>strike</del> is struck through.</p>
-<h2 id="heading-two-lists">Heading Two — Lists</h2>
+<h2 id="heading-two--lists">Heading Two — Lists</h2>
 <p>An unordered list:</p>
 <ul>
 <li>Apples</li>
@@ -260,23 +280,21 @@ word <u>underline</u> is underlined via an HTML tag, and the word
 <li>Second</li>
 <li>Third</li>
 </ol>
-<h3 id="heading-three-blockquote">Heading Three — Blockquote</h3>
+<h3 id="heading-three--blockquote">Heading Three — Blockquote</h3>
 <blockquote>
 <p>The quick brown fox jumps over the lazy dog.</p>
 </blockquote>
-<h4 id="heading-four-code">Heading Four — Code</h4>
+<h4 id="heading-four--code">Heading Four — Code</h4>
 <p>Inline code looks like <code>print("hello")</code>. A fenced code
 block follows:</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> greet(name):</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="ss">f&quot;Hello, </span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">&quot;</span></span></code></pre></div>
-<h5 id="heading-five-link">Heading Five — Link</h5>
+<h5 id="heading-five--link">Heading Five — Link</h5>
 <p>Visit the <a href="https://example.com/quill">QUILL project</a> for
 details.</p>
-<h6 id="heading-six-image">Heading Six — Image</h6>
-<figure>
-<img src="red-circle.png" alt="Red circle" />
-<figcaption aria-hidden="true">Red circle</figcaption>
-</figure>
+<h6 id="heading-six--image">Heading Six — Image</h6>
+<p><img src="red-circle.png" alt="Red circle" /></p>
+</main>
 </body>
 </html>

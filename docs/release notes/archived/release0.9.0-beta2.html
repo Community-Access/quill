@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>release0.9.0-beta2</title>
+  <title>QUILL 0.9.0 Beta 2</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,11 +173,32 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="quill-0.9.0-beta-2">QUILL 0.9.0 Beta 2</h1>
-<h2 id="built-with-you.-polished-for-all-of-us.">Built with you.
-Polished for all of us.</h2>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-090-beta-2">QUILL 0.9.0 Beta 2</h1>
+<h2 id="built-with-you-polished-for-all-of-us">Built with you. Polished
+for all of us.</h2>
 <p><em>From Community Access. Free. Optional by design. Private by
 default. Yours to make quiet — and yours to help shape.</em></p>
 <p>This release is what happens when a community does more than test
@@ -314,7 +334,7 @@ feels more alive</h2>
 <p>These are the changes you can feel immediately: clearer navigation,
 stronger document accessibility, smarter printing, less friction, and
 more ways to make QUILL fit the way you work.</p>
-<h3 id="a-page-number-honestly-presented">A page number — honestly
+<h3 id="a-page-number--honestly-presented">A page number — honestly
 presented</h3>
 <p>A tester asked directly: “Are we going to be able to see proper page
 numbers with QUILL?” Now every document shows one, in the status bar, on
@@ -842,7 +862,7 @@ open documents landed on a toolbar button instead of switching (macOS
 reserves that combination) — document switching on macOS is now
 Cmd+Shift+]/[.</p></li>
 <li><p>**macOS: the QUILL key answers to a real
-Ctrl+Shift+<code>press.** macOS reports the Cmd key, not the physical Control key, through the check QUILL was using — so a literal Ctrl+Shift+</code>
+Ctrl+Shift+<code> press.** macOS reports the Cmd key, not the physical Control key, through the check QUILL was using — so a literal Ctrl+Shift+</code>
 press went unrecognized. It’s recognized now. (Cmd+Shift+` is macOS’s
 own “cycle windows” shortcut and will keep going to the OS first;
 reassign it in System Settings &gt; Keyboard Shortcuts if you’d rather
@@ -1120,8 +1140,8 @@ difference: in the Offline Edition, every bundled piece shows as
 there’s nothing left to fetch. The regular, smaller installer and
 portable download you already know are unchanged and remain the default
 choice for everyone else.</p>
-<h3 id="a-simpler-installer-and-a-lighter-one">A simpler installer — and
-a lighter one</h3>
+<h3 id="a-simpler-installer--and-a-lighter-one">A simpler installer —
+and a lighter one</h3>
 <ul>
 <li><p><strong>No more component checkboxes.</strong> Beta 1’s installer
 asked you to pick optional parts — several of which did nothing, because
@@ -1274,7 +1294,7 @@ the exact cause. Every one of QUILL’s internal error types now has
 one.</p></li>
 </ul>
 <hr />
-<h2 id="with-gratitude-and-with-momentum">With gratitude — and with
+<h2 id="with-gratitude--and-with-momentum">With gratitude — and with
 momentum</h2>
 <p>Beta 2 is a community release in the truest sense. <strong>Elena
 Brescacin</strong> (<a
@@ -1291,5 +1311,6 @@ become more useful, more humane, and more joyful with every pass.</p>
 <p><strong>This is how QUILL grows: openly, thoughtfully, stubbornly,
 and together. Built by the community. Built for the community. Built for
 every one of us.</strong></p>
+</main>
 </body>
 </html>

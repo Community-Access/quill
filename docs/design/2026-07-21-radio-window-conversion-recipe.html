@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>2026-07-21-radio-window-conversion-recipe</title>
+  <title>Radio surface conversion recipe: modal dialog -&gt; modeless
+frame</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +174,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1
 id="radio-surface-conversion-recipe-modal-dialog---modeless-frame">Radio
 surface conversion recipe: modal dialog -&gt; modeless frame</h1>
@@ -199,8 +220,7 @@ raise/show/focus).</li>
 -&gt; entry onboarding (accessible names + region/announce + Show +
 focus first control).</li>
 </ul>
-<h2 id="one-time-app-wiring-radio.py">One-time app wiring
-(radio.py)</h2>
+<h2 id="one-time-app-wiring-radiopy">One-time app wiring (radio.py)</h2>
 <ol type="1">
 <li>Create one manager: <code>self._windows = WindowManager(wx)</code>
 in the app frame’s init (the main window and every surface share
@@ -217,7 +237,7 @@ title bar is updated so the <code>&amp;Window</code> entry tracks
 it.</li>
 </ol>
 <h2
-id="per-surface-conversion-worked-example-browse_tree_dialog.py">Per-surface
+id="per-surface-conversion-worked-example-browse_tree_dialogpy">Per-surface
 conversion (worked example: browse_tree_dialog.py)</h2>
 <ol type="1">
 <li><p><strong>Dialog -&gt; Frame.</strong> Replace
@@ -283,11 +303,12 @@ accessible names -&gt; <code>accessible_name</code> audit).</li>
 bars add lines -&gt; rebaseline with a dated note),
 banned-patterns.</li>
 </ul>
-<h2 id="order-validation">Order + validation</h2>
+<h2 id="order--validation">Order + validation</h2>
 <p>Convert Browse first (this example), validate with NVDA/JAWS: menu
 bar present, Alt reaches it, Ctrl+Tab / Ctrl+1..9 move between the main
 window and Browse, Escape closes and returns focus. Only then replicate
 to Station Browser, Favorites Manager, Schedule Recording, and Weather
 (same six steps).</p>
+</main>
 </body>
 </html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>03-rescue-a-scanned-pdf</title>
+  <title>Tutorial 3: Rescue a scanned PDF</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="tutorial-3-rescue-a-scanned-pdf">Tutorial 3: Rescue a scanned
 PDF</h1>
 <p><strong>Goal:</strong> turn a scanned, image-only PDF (or a photo of
@@ -188,7 +208,7 @@ converter for born-digital files, then free on-device <strong>Tesseract
 OCR</strong> for scans. There is no cloud step, no account, and no cost.
 QUILL always asks before running OCR, and never opens an empty result
 silently.</p>
-<h2 id="one-time-setup-install-the-ocr-engine">1. One-time setup:
+<h2 id="1-one-time-setup-install-the-ocr-engine">1. One-time setup:
 install the OCR engine</h2>
 <ol type="1">
 <li><strong>Tools &gt; Reading &amp; Dictation &gt; Install Local OCR
@@ -200,7 +220,7 @@ and checks it byte-for-byte.</li>
 normal install. (If Tesseract is already on your machine, or installed
 via Homebrew on a Mac, skip this: QUILL finds it automatically.)</li>
 </ol>
-<h2 id="convert-the-document">2. Convert the document</h2>
+<h2 id="2-convert-the-document">2. Convert the document</h2>
 <ol type="1">
 <li><strong>File &gt; Import &gt; Import / Convert Document
 (OCR)…</strong> and pick your PDF.</li>
@@ -217,7 +237,7 @@ with page boundaries kept as searchable
 </ol>
 <p>Photos work too: point the same command at a <code>.png</code> or
 <code>.jpg</code> of a page and it goes straight to OCR.</p>
-<h2 id="judge-the-result">3. Judge the result</h2>
+<h2 id="3-judge-the-result">3. Judge the result</h2>
 <p>QUILL reports recognition <strong>confidence</strong> out of 100.
 Above ~80 on a clean scan, expect near-perfect text. When QUILL warns
 that confidence is low:</p>
@@ -228,7 +248,7 @@ names, and poor contrast regions.</li>
 <li>Run a spell check (<code>palette &gt; spell</code>) — OCR errors
 light up fast.</li>
 </ul>
-<h2 id="finish-the-job">4. Finish the job</h2>
+<h2 id="4-finish-the-job">4. Finish the job</h2>
 <ul>
 <li>Save as Markdown or plain text, or <strong>File &gt; Export</strong>
 to Word.</li>
@@ -246,5 +266,6 @@ the engine’s install status. A consent-gated cloud tier for the hardest
 documents is planned; the free local tiers always run first.</p>
 <p><strong>Next:</strong> <a href="04-document-to-audiobook.md">Turn a
 document into an audiobook</a>.</p>
+</main>
 </body>
 </html>

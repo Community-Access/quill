@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>persistence-and-migration</title>
+  <title>Persistence and migration contract</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,8 +173,29 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
 <h1 id="persistence-and-migration-contract">Persistence and migration
 contract</h1>
 <p>How QUILL stores user state so that upgrades “just work” release to
@@ -211,12 +231,6 @@ written, so it survives upgrades verbatim.</li>
 </ul>
 <h2 id="the-stores">The stores</h2>
 <table>
-<colgroup>
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-<col style="width: 25%" />
-</colgroup>
 <thead>
 <tr>
 <th>Store</th>
@@ -309,8 +323,8 @@ be force-set once the same way. Both are applied at startup by
 settings and keymap load, share the
 <code>apply_recommended_keymap_updates</code> opt-out, and record
 applied ids in <code>settings.applied_recommended_updates</code>.</p>
-<h2 id="recipe-rename-retype-split-a-field-schema-bump">Recipe: rename /
-retype / split a field (schema bump)</h2>
+<h2 id="recipe-rename--retype--split-a-field-schema-bump">Recipe: rename
+/ retype / split a field (schema bump)</h2>
 <p>When a change cannot be expressed as a default change (a field is
 renamed, retyped, or split), bump the store’s version and transform the
 old shape inside <code>parse</code> (or a dedicated ordered migration
@@ -385,5 +399,6 @@ defaults. Legacy v1 files are backed up and converted on load.</li>
 <li>Keymap moved from a full snapshot to a delta +
 <code>_defaults_epoch</code> for the same reason.</li>
 </ul>
+</main>
 </body>
 </html>
