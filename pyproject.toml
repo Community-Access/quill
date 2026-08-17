@@ -232,7 +232,7 @@ kokoro = [
     # ONNX voice path importing a missing 'babel'. Keep in sync with [dev].
     "Babel>=2.18.0",
 ]
-pages = ["keynote-parser>=1.14.4.0"]
+pages = ["keynote-parser>=1.14.5.0"]
 # Free-first PDF/Office text extraction (quill/io/docconvert.py Tier 1 +
 # quill/io/pdf.py): MarkItDown for Office + PDF, pdfplumber/pypdf as the PDF
 # text floor. Was briefly a base dependency (#909 fixed a build that shipped
