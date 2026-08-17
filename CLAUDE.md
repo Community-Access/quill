@@ -8,11 +8,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Install
 pip install -e ".[ui,dev]"
 
+# Install, fast (uv resolves/installs the same extras in seconds; dev-only
+# tooling — releases still build with pip + the pinned system Python)
+uv pip install -e ".[ui,dev]"
+
 # Run the app
 python -m quill
 
 # Tests (standard)
 pytest -q
+
+# Tests, parallel (~5.5 min vs ~9; wx/UI tests stay on one worker — see
+# tests/conftest.py pytest_collection_modifyitems for why loadgroup)
+pytest -q -n 8 --dist loadgroup
 
 # Fast smoke subset (high-signal core checks; seconds, not minutes)
 pytest -m smoke -q
@@ -35,6 +43,9 @@ python -m quill.tools.quillin_lint <dir> --strict
 
 # Agent standards lint (default: bundled agents dir; pass a path to lint one)
 python -m quill.tools.agent_lint quill/core/ai/agents --strict
+
+# Every gate at once, as one accessible scorecard (exit != 0 on any failure)
+python -m quill.tools.platform_report
 
 # App icons (regenerate all; --check fails on drift, --preview writes 256/16 PNGs)
 python scripts/build_app_icons.py

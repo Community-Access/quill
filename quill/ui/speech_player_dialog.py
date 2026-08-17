@@ -73,7 +73,11 @@ def show_speech_player(controller: Any, voice: Any, text: str, *, title: str = "
             except Exception:  # noqa: BLE001 - playback errors must not crash the UI
                 pass
 
-        new_thread = threading.Thread(target=worker, daemon=True)
+        new_thread = threading.Thread(  # GATE-40-OK: per-dialog preview synth; the
+            # state dict serializes against the prior worker.
+            target=worker,
+            daemon=True,
+        )
         state["thread"] = new_thread
         new_thread.start()
 
@@ -114,7 +118,9 @@ def show_speech_player(controller: Any, voice: Any, text: str, *, title: str = "
             except Exception as exc:  # noqa: BLE001
                 wx.CallAfter(announce, f"Could not save: {exc}")
 
-        threading.Thread(target=worker, daemon=True).start()
+        threading.Thread(  # GATE-40-OK: one-shot save; CallAfter announces the outcome
+            target=worker, daemon=True
+        ).start()
         announce("Saving...")
 
     pause_btn.Bind(wx.EVT_BUTTON, on_pause)

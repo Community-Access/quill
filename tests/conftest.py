@@ -69,6 +69,37 @@ def _session_basetemp() -> Path:
     return root / token
 
 
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    """Make ``-n auto --dist loadgroup`` safe: wx/UI tests share one worker.
+
+    The suite parallelizes cleanly except for ``tests/unit/ui``: those tests
+    drive real wx widgets against per-machine global resources — the Windows
+    clipboard, ``RegisterHotKey``, the screen-reader COM bridges — and eight
+    workers doing that concurrently produced native worker crashes (observed
+    2026-08-17: a worker died around the clipboard-backed clip-library dialog
+    tests, taking its queued tests with it). Serializing only the UI tests onto
+    a single worker keeps them exactly as ordered and isolated as a serial run
+    while everything else fans out.
+
+    Mechanics: with ``--dist loadgroup`` xdist schedules by ``xdist_group``
+    mark. Every non-UI test gets its *file* as its group (preserving loadfile's
+    file-affinity for module-scoped fixtures); every UI test gets the one
+    shared ``wx-ui`` group. Serial runs are unaffected — the marks are inert
+    without xdist.
+
+    The fast path is therefore:  ``pytest -q -n 8 --dist loadgroup``
+    (measured 2026-08-17: 8:58 serial -> 5:36, complete and zero-flake; the
+    UI group's serial tail is the floor, accepted deliberately over the
+    worker crashes that splitting it produced).
+    """
+    for item in items:
+        if item.get_closest_marker("xdist_group") is not None:
+            continue
+        path = str(item.fspath).replace("\\", "/")
+        group = "wx-ui" if "/tests/unit/ui/" in path else path
+        item.add_marker(pytest.mark.xdist_group(group))
+
+
 def _prune_stale_runs(root: Path, *, max_age_seconds: float = 6 * 60 * 60) -> None:
     """Delete run directories left behind by long-finished sessions.
 

@@ -31,6 +31,23 @@ def radio_menu_bar():
     from quill.ui.dialog_contract import set_transition_announcement_policy
 
     frame = RadioAppFrame()
+    # The gate must walk a menu bar with DATA in it, not the empty-profile
+    # default: the Favorites submenu is only appended when favorites exist, so
+    # an empty fixture shipped rows with no keyboard route while this gate
+    # stayed green (found 2026-08-17 — the blind spot polish.md called P0.2).
+    # Twelve favorites (one foldered) exercise the ten quick-play slots AND the
+    # disabled overflow readout; the menu bar is then rebuilt so the walk sees
+    # what a real user's menu shows.
+    from quill.core.radio.models import RadioStation
+
+    favorites = frame._radio_favorites
+    for index in range(1, 13):
+        station = RadioStation(
+            name=f"Gate Station {index}",
+            stream_url=f"http://example.invalid/{index}",
+        )
+        favorites.add(station, folder="Morning" if index == 12 else "")
+    frame._build_menu_bar()
     yield frame.frame.GetMenuBar()
     # Building the app installs a process-global dialog-transition policy;
     # leaving it set leaks this app's preference into every later test.

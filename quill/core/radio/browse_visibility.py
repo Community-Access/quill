@@ -151,7 +151,7 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
     BrowseSourceInfo(
         "wikidata",
         "Explore (Wikidata)",
-        "By city, owner, network, format or dial position.",
+        "By city, format or dial position.",
         default_on=False,
         group="Explore",
     ),

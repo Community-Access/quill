@@ -98,18 +98,12 @@ class SpeechCommandsMixin:
         return self._speech_provider()
 
     def _dictation_provider(self) -> object:
-        """Cached speech provider for dictation so a loaded model persists across
-        sessions (and a startup prewarm stays warm). _speech_registry() builds a
-        fresh provider each call, which would reload the model every dictation.
-        Rebuilt when the chosen engine changes."""
-        chosen = str(getattr(self.settings, "speech_provider", "") or "")
-        cached = getattr(self, "_dictation_provider_cache", None)
-        if cached is not None and getattr(self, "_dictation_provider_key", None) == chosen:
-            provider = cached
-        else:
-            provider = self._speech_provider()
-            self._dictation_provider_cache = provider
-            self._dictation_provider_key = chosen
+        """The cached dictation engine via the preference ladder (an installed
+        Parakeet 3 outranks whisper.cpp; an explicit choice always wins —
+        cache + ladder live in dictation_transcription)."""
+        from quill.ui.dictation_transcription import resolve_dictation_provider
+
+        provider = resolve_dictation_provider(self)
         # Track for the idle-unload / low-resource policy. note_loaded registers or
         # re-touches (so it re-tracks after an idle sweep). unload() frees the model;
         # the cached provider object persists and reloads on the next dictation.
@@ -161,7 +155,11 @@ class SpeechCommandsMixin:
             except Exception:  # noqa: BLE001 - prewarm must never break startup
                 pass
 
-        threading.Thread(target=_work, daemon=True, name="quill-dictation-prewarm").start()
+        threading.Thread(  # GATE-40-OK: prewarm; a model load would starve pooled jobs
+            target=_work,
+            daemon=True,
+            name="quill-dictation-prewarm",
+        ).start()
 
     def prewarm_kokoro_model(self) -> None:
         """Warm the Kokoro ONNX model in the background so the first preview or
@@ -181,7 +179,9 @@ class SpeechCommandsMixin:
             except Exception:  # noqa: BLE001 - prewarm must never break startup
                 pass
 
-        threading.Thread(target=_work, daemon=True, name="quill-kokoro-prewarm").start()
+        threading.Thread(  # GATE-40-OK: prewarm, same reasoning as above
+            target=_work, daemon=True, name="quill-kokoro-prewarm"
+        ).start()
 
     # -- transcription ---------------------------------------------------- #
 

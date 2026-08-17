@@ -6,9 +6,16 @@ import quill.core.speech.guided_setup as gs
 def test_offline_speech_engine_options_lists_both_recommended_first() -> None:
     opts = gs.offline_speech_engine_options()
     ids = [o.engine_id for o in opts]
-    # The three always-listed engines lead, recommended first; Nemotron may be
-    # appended after them when its model asset is hosted (see the gate tests).
-    assert ids[:3] == ["whispercpp", "fasterwhisper", "vosk"]
+    # whisper.cpp leads (the friendly, zero-big-download default). Parakeet 3
+    # sits second when its mirror is pinned — it is the engine dictation itself
+    # prefers once installed, so the picker surfaces it right after the
+    # default. The other always-listed engines follow in their fixed order;
+    # Nemotron may be appended when its asset is hosted (see the gate tests).
+    assert ids[0] == "whispercpp"
+    without_mirror_gated = [i for i in ids if i not in ("parakeet", "nemotron")]
+    assert without_mirror_gated == ["whispercpp", "fasterwhisper", "vosk"]
+    if "parakeet" in ids:
+        assert ids[1] == "parakeet"
     # whisper.cpp is the friendly default and always installable (release asset).
     whispercpp = opts[0]
     assert whispercpp.recommended is True
@@ -177,3 +184,16 @@ def test_setup_status_ready_and_default_can_test_but_not_reset_default() -> None
     assert st.is_default
     assert st.can_test and not st.can_set_default
     assert "default" in st.headline.lower()
+
+
+def test_parakeet_is_offered_with_catalog_capability_text() -> None:
+    """P4.2: the guided picker's Parakeet summary carries the catalog's own
+    capability sentence, so setup and the model manager can never disagree
+    about what the engine does. (Parakeet's mirror is pinned, so it is
+    offered.)"""
+    opts = gs.offline_speech_engine_options()
+    parakeet = next((o for o in opts if o.engine_id == "parakeet"), None)
+    assert parakeet is not None
+    assert "never invents text from silence" in parakeet.summary
+    assert "detects the spoken language" in parakeet.summary
+    assert parakeet.tagline

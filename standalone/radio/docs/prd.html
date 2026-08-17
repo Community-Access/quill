@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio -- Product Requirements</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -1088,20 +1087,26 @@ metadata browse, and activating a show opens it in the listener’s
 browser; no stream extraction, and the row says so <em>before</em>
 activation, per Mixcloud’s widget terms. ccMixter: by tag, each row
 carrying its own licence.</li>
-<li><em>Explore (Wikidata).</em> By City, Owner and Format
-(P131/P127/P415) plus On the Dial by FM band, matched conservatively
-against Radio Browser, which still supplies every stream. Labelled “from
-Wikidata” because the join is Quill Radio’s, not either source’s.
-<strong>A place and a format are asked of Radio Browser
-directly</strong> and topped up with Wikidata’s call-sign matches: the
-reverse order takes Wikidata’s capped, unordered slice as the universe,
-and Arizona opened to nothing while forty-eight of its stations were
-playable (reported 2026-08-16). <strong>By Network was removed and By
-Format moved off P2360</strong> in the same pass – P449 is recorded for
-two US radio stations and P2360 for none, so neither folder could ever
-list anything; same reasoning as the RadioDNS non-goal below, and found
-by opening every axis in one sweep rather than waiting for a
-report.</li>
+<li><em>Explore (Wikidata).</em> By City and By Format (P131/P415) plus
+On the Dial by FM band, matched conservatively against Radio Browser,
+which still supplies every stream. Labelled “from Wikidata” because the
+join is Quill Radio’s, not either source’s. <strong>A place and a format
+are asked of Radio Browser directly</strong> and topped up with
+Wikidata’s call-sign matches: the reverse order takes Wikidata’s capped,
+unordered slice as the universe, and Arizona opened to nothing while
+forty-eight of its stations were playable (reported 2026-08-16).
+<strong>By Network was removed and By Format moved off P2360</strong> in
+the same pass – P449 is recorded for two US radio stations and P2360 for
+none, so neither folder could ever list anything; same reasoning as the
+RadioDNS non-goal below, and found by opening every axis in one sweep
+rather than waiting for a report. <strong>By Owner (P127) was removed
+2026-08-17</strong>, and it is the rule the axis set now follows: <em>an
+axis stays only if Radio Browser can answer it directly</em>. Ownership
+is not a field Radio Browser carries, so an owner folder had no lead
+query and fell back to call-sign matching alone – it counted correctly
+and then opened to nothing, or to a fraction of the named company, about
+three times in four. Empty-before-opening (By Network) and
+empty-at-the-leaf (By Owner) are the same defect at two depths.</li>
 <li><em>My Servers and YouTube Channels, and the action-row contract
 they needed.</em> <code>core/radio/my_servers.py</code> enumerates
 Icecast (<code>/status-json.xsl</code>) and SHOUTcast

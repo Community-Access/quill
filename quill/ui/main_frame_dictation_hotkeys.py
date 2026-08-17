@@ -119,70 +119,12 @@ class _LiveDictationServices:
             pass
 
     def transcribe(self, session: Any) -> None:
-        frame = self._frame
-        controller = frame._live_dictation
-        provider = frame._dictation_provider()
-        installed = provider.list_installed_models()  # type: ignore[attr-defined]
-        if not installed:
-            controller.transcription_failed(session.session_id, "No speech model installed.")
-            return
-        model_id = frame._default_model_id(installed)
-        audio_path = Path(session.audio_path) if session.audio_path else None
-        session_id = session.session_id
+        # The whole worker — silence pre-pass, engine call, profile
+        # replacements, controller callbacks — lives in its own module
+        # (GATE-11 extraction; the pipeline order is documented there).
+        from quill.ui.dictation_transcription import start_transcription
 
-        from quill.core.speech.dictation_profile import load_profile
-        from quill.core.speech.provider import TranscriptionRequest
-
-        # Dictation profile: vocabulary -> initial_prompt; spoken -> written below.
-        profile = load_profile()
-        prompt = profile.initial_prompt() or None
-        request = TranscriptionRequest(
-            source_path=audio_path, model_id=model_id, initial_prompt=prompt
-        )
-        asize = audio_path.stat().st_size if (audio_path and audio_path.exists()) else -1
-        logger.info("dictation: transcribe model=%s audio size=%d bytes", model_id, asize)
-
-        import threading
-
-        from quill.core.speech.provider import SpeechError
-        from quill.ui.ai_transcribe_dialog import AIProgressDialog
-
-        wx = frame._wx
-        cancel = threading.Event()
-        progress = AIProgressDialog(
-            frame.frame,
-            "Transcribing dictation",
-            "Transcribing your dictation...",
-            on_cancel=cancel.set,
-            # Quiet mirroring so a minimized run isn't chatty; the controller's
-            # state feedback announces the start and the inserted word count.
-            status_fn=frame._set_status_quiet,
-        )
-        progress.show()
-
-        def _on_progress(fraction: float, message: str) -> None:
-            if cancel.is_set():
-                raise SpeechError("Transcription cancelled.")
-            percent = int(max(0.0, min(1.0, fraction)) * 100)
-            progress.set_progress(percent, f"{message} {percent}%")
-
-        def _run() -> None:
-            try:
-                result = provider.transcribe_file(request, _on_progress)  # type: ignore[attr-defined]
-                text = (getattr(result, "full_text", "") or "").strip()
-                text = profile.apply_replacements(text)
-                logger.info("dictation: transcription ok, %d chars: %r", len(text), text[:120])
-            except Exception as exc:  # noqa: BLE001 - report failure to the controller
-                logger.warning("dictation: transcription failed: %s", exc)
-                wx.CallAfter(progress.close)
-                wx.CallAfter(controller.transcription_failed, session_id, str(exc))
-                return
-            wx.CallAfter(progress.close)
-            wx.CallAfter(controller.transcription_succeeded, session_id, text)
-
-        threading.Thread(  # GATE-40-OK: dictation transcription worker.
-            target=_run, daemon=True
-        ).start()
+        start_transcription(self._frame, session)
 
     def insert(self, session: Any, text: str) -> bool:
         frame = self._frame
@@ -229,6 +171,11 @@ class DictationHotkeysMixin:
             self._live_dictation = DictationController(
                 self._dictation_services, self._dictation_config()
             )
+        else:
+            # Config is a cheap snapshot; rebuilding it on every access means a
+            # Preferences change (spacing, fillers, vocabulary, language) takes
+            # effect on the *next* dictation rather than the next restart.
+            self._live_dictation.config = self._dictation_config()
         return self._live_dictation
 
     def _dictation_config(self) -> Any:
@@ -241,7 +188,25 @@ class DictationHotkeysMixin:
             stop_on_focus_loss=getattr(settings, "dictation_stop_on_focus_loss", True),
             intelligent_spacing=getattr(settings, "dictation_intelligent_spacing", True),
             min_hold_seconds=getattr(settings, "dictation_min_hold_seconds", 0.0),
+            # Transcript refinement (PRD §17 addendum): vocabulary + fillers,
+            # composed core-side by refine_transcript. The vocabulary comes
+            # from the dictation profile — the same list that biases Whisper's
+            # initial_prompt now also drives the fuzzy corrector, so engines
+            # with no prompt support (Parakeet 3) still learn the user's terms.
+            # The language setting doubles as the filler gated-tier evidence.
+            custom_vocabulary=self._dictation_profile_vocabulary(),
+            remove_fillers=bool(getattr(settings, "dictation_remove_fillers", False)),
+            language=str(getattr(settings, "dictation_language", "") or ""),
         )
+
+    def _dictation_profile_vocabulary(self) -> tuple:
+        """The profile's vocabulary terms, or () when unreadable (best-effort)."""
+        try:
+            from quill.core.speech.dictation_profile import load_profile
+
+            return tuple(load_profile().vocabulary)
+        except Exception:  # noqa: BLE001 - a bad profile must never block dictation
+            return ()
 
     def _register_dictation_hotkey_commands(self) -> None:
         handlers = {
@@ -328,8 +293,20 @@ class DictationHotkeysMixin:
         s.dictation_max_locked_seconds = result.max_locked_seconds
         s.dictation_stop_on_focus_loss = result.stop_on_focus_loss
         s.dictation_intelligent_spacing = result.intelligent_spacing
+        s.dictation_remove_fillers = result.remove_fillers
         if result.reset_onboarding:
             s.dictation_onboarding_shown = False
+        if result.open_vocabulary:
+            # "Edit My Dictation Words...": settings were captured (OK
+            # semantics), now open the dictation.md profile in QUILL itself —
+            # created from its template on first use so the user lands in a
+            # documented file, not an empty buffer.
+            try:
+                from quill.core.speech.dictation_profile import ensure_profile_file
+
+                self.open_file(ensure_profile_file())
+            except Exception as exc:  # noqa: BLE001 - opening the profile must not lose the save
+                self._set_status(f"Could not open the dictation profile: {exc}")
         try:
             save_settings(s)
         except Exception:  # noqa: BLE001 - persistence is best-effort

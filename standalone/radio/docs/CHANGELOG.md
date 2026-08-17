@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
 
+## Unreleased
+
+Landed after the 3.0.0 build of 2026-08-17; in the next build.
+
+### Fixed
+
+- **Quick-play keys 1–6 actually fire now.** The QuillVille menu's "Open
+  <app>" rows claimed **Ctrl+Alt+Shift+1–3** and **Sort Favorites** claimed
+  **4–6** — on top of the quick-play favorites those chords belong to, so one
+  of each pair silently never fired. The launchers moved to
+  **Ctrl+Alt+Shift+F1–F3** and Sort Favorites to **F4–F6**; quick-play keeps
+  **Ctrl+Alt+Shift+1–0** exactly as documented. The conflict became visible
+  the moment the Favorites submenu started advertising its real bindings, and
+  the menu gate now tests a profile *with* favorites so this class cannot
+  return.
+- **The Favorite Stations submenu shows its keys.** Its rows offered no
+  keyboard route at all — the cost the menu rule exists to prevent, missed
+  because the gate walked an empty profile. The first ten favorites (the
+  quick-play slots, same order) now advertise their chords and follow your
+  rebinding; past ten, a disabled readout names how many more live in Manage
+  Favorites, one keystroke away. The nested-folder mirror this replaces
+  looked richer and could not be *reached* — the full folder view remains in
+  Manage Favorites and the main tree.
+
 ## [3.0.0] - 2026-08-15
 
 Major: Browse Stations becomes a browsable directory rather than a list of
@@ -178,12 +202,15 @@ timings, and three long-standing silent faults are fixed. See
   `ui/radio/browse_actions.py`, one registry entry per action, so the window
   still learns nothing source-specific. Both actions run their network check on
   the task manager, never the UI thread, and refuse out loud in Safe Mode.
-- **Explore (Wikidata)** -- By City, By Owner, By Format and On the Dial (FM
-  band). Wikidata supplies the organisation, Radio Browser still supplies every
+- **Explore (Wikidata)** -- By City, By Format and On the Dial (FM band).
+  Wikidata supplies the organisation, Radio Browser still supplies every
   stream, and each row is labelled "from Wikidata" because the join between the
   two is ours rather than either source's. A place folder is answered by Radio
   Browser directly, so it opens to what can actually play rather than to the
-  handful of call signs Wikidata's capped query happened to return.
+  handful of call signs Wikidata's capped query happened to return. **By Owner
+  and By Network are not offered**, for the same reason at two different depths:
+  the axes that survive are the ones Radio Browser can answer itself. See
+  Removed.
 - **Your place is kept in anything with an end** (`core/radio/resume.py`,
   `ui/radio/resume_playback.py`) -- a LibriVox chapter, an Archive episode, a
   podcast. Keyed on the normalised stream URL, since nothing here is a file. A
@@ -284,6 +311,21 @@ timings, and three long-standing silent faults are fixed. See
   not import from the UI layer.
 - **The NOAA Weather Radio user agent is derived from the package version**
   instead of a hard-coded `2.1.1` that had been stale for two releases.
+
+### Removed
+
+- **Explore's By Owner axis is gone** (2026-08-17). It was the only remaining
+  axis Radio Browser cannot answer for itself -- ownership is not a field it
+  carries -- so an owner folder could be filled only by matching Wikidata's call
+  signs one at a time against the directory, and about three folders in four
+  opened to nothing, or to a fraction of the company they named. The listener
+  spends the same keystrokes whether the folder pays off or not, so an axis that
+  pays off a quarter of the time is worse than one not offered. Same conclusion
+  as **By Network** one level lower down: that one could be counted as empty
+  before opening (P449: two US stations), this one counted fine and failed at
+  the leaf. By City, By Format and On the Dial are unaffected, and no favorite,
+  custom station or recording is touched -- every stream always came from Radio
+  Browser.
 
 ### Fixed
 

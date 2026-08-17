@@ -7,6 +7,132 @@ by what people reported: a full disk that could lose a document, an editor that
 was doing too much work between keystrokes, and three smaller things that were
 already fixed in code nobody could run yet.
 
+### The platform day: keys that fight stop fighting, settings apply now, and the gates watch the gates (2026-08-17)
+
+A same-day execution of the ranked platform review at `polish.md` (root; its
+header is the ledger). What a user feels first:
+
+- **Six keyboard chords stopped silently fighting.** The QuillVille menu's
+  "Open <app>" rows claimed **Ctrl+Alt+Shift+1–3** and Quill Radio's Sort
+  Favorites claimed **4–6** — the same chords the quick-play favorites
+  (`radio.play_favorite_1..10`) and QUILL's own previous-heading navigation
+  already owned, so in every affected window one of each pair never fired. The
+  launchers moved to **Ctrl+Alt+Shift+F1–F3** and Sort Favorites to
+  **F4–F6**; quick-play and heading navigation keep the digits they were
+  documented with. Found the honest way: the Favorites submenu began
+  *advertising* its real bindings (below) and the strengthened gate saw the
+  double claims immediately.
+- **The Favorite Stations submenu finally shows its keys.** Its rows carried no
+  keyboard route at all — the exact cost the menu rule exists to prevent. The
+  first ten favorites now advertise their quick-play chords (following any
+  rebinding), and anything past ten is a disabled readout naming the count.
+  The gate that should have caught this was walking an *empty* profile; it now
+  seeds favorites, so a data-driven submenu can never ship silent again.
+- **Announcement, verbosity, and watch-folder settings apply immediately.**
+  Three long-lived controllers snapshotted their settings at first use and
+  never looked again, so braille style, dedupe hold-back, interrupt
+  severities, verbosity profiles, and watch-monitor cadence quietly meant
+  "after the next restart" while Preferences implied "now". All of them (and
+  the model-lifecycle limits) re-derive from one seam on every settings apply
+  (`announce_wiring.refresh_live_policies`), with tests pinning the wiring.
+- **Whisper large-v3 is formally de-supported.** At ~3.1 GB it exceeds the
+  2 GiB mirror limit, so it lived in an unexplained manual-install limbo; the
+  pickers no longer offer it, while an installed copy keeps its identity, size
+  estimates, and removal path. Medium and Parakeet 3 are the better answers.
+
+Under the hood, the footing work:
+
+- **A gate that was never wired in, now is.** GATE-40 (no raw
+  `threading.Thread` in the UI layer without an audited exemption) had been
+  written, documented, and unit-tested — and never dispatched, so fifteen
+  unmarked thread sites accumulated while it slept. It runs in the
+  banned-patterns gate now, and every site carries a specific, reviewed
+  marker.
+- **One scorecard over every gate** (`python -m quill.tools.platform_report`):
+  all the ratchets — budgets, egress, dialogs, error codes, docs artifacts,
+  inventories, and the rest — run as one accessible report. Its roster
+  cross-check found **eleven more gates** nobody had listed anywhere on its
+  very first run; the scorecard now reads 21 of 21.
+- **The runtime inventory gate grew a portable layout** and guards
+  `build_portable.py`'s tree-copy the way it guards the shared runtime
+  (Quill Radio's baseline is committed; other apps adopt by writing theirs) —
+  closing the remaining path of the drift class that once shipped 82 MB of
+  undeclared payload.
+- **A startup-import gate**: QUILL's core import measures ~83 ms because every
+  heavy library loads lazily; nothing enforced that. A deterministic test now
+  fails if the core import ever pulls wx, numpy, requests, or any of the
+  known-heavy set — the regression is caught as a *fact*, not a flaky timing.
+- **The test suite runs in half the time**: `pytest -q -n 8 --dist loadgroup`
+  (8:58 → ~4–5:30, complete and zero-flake). All wx/UI tests share one worker
+  by design — the Windows clipboard, global hotkeys, and screen-reader
+  bridges are machine-global, and eight workers fighting over them crashed
+  workers outright. Serial `pytest -q` behaves exactly as before.
+- **Base runtime is Python 3.13.15 on Inno Setup 7.1**, with every installer
+  now a 64-bit Setup; the ones embedding the near-identical ffmpeg/ffprobe
+  pair use a 128 MB LZMA dictionary that dedupes it (−27 MB measured on Quill
+  Radio — the same investigation that explained a 31 MB installer-size
+  mystery and produced the inventory gates). The published site's copies of
+  Quill Radio's docs are now synced mechanically at build time instead of
+  rotting by hand.
+- **Optional, never required:** `quill[rapidfuzz]` accelerates the dictation
+  vocabulary corrector ~50–100× when installed; the stdlib implementation
+  remains the behavioural contract and a parity test holds the two together.
+
+### Dictation stops making things up (2026-08-17)
+
+Five changes, one aim: what lands in your document is what you said — no more,
+no less. Studied against the Handy project's production dictation experience
+(MIT; the failure catalogue transferred almost verbatim) before a line was
+written.
+
+- **Parakeet 3, a new offline engine — and dictation prefers it once you
+  install it.** NVIDIA's `parakeet-tdt-0.6b-v3` via sherpa-onnx: 25 languages,
+  automatic language detection, CPU-only, no torch, ~650 MB, CC-BY-4.0,
+  SHA-pinned on QUILL's own assets-v1 mirror like every model. The reason it
+  outranks Whisper for dictation is structural: a transducer emits tokens only
+  for audio evidence, so **it cannot invent text from silence** — the phantom
+  "thank you" after a thinking pause is a Whisper-family behaviour Parakeet is
+  simply incapable of. whisper.cpp remains the default (it works before any big
+  download); the preference ladder (`service.preferred_dictation_provider_id`)
+  promotes Parakeet only after you install its model, and an explicitly chosen
+  engine always wins. Every row in Manage Speech Models now states its
+  capabilities in plain words — "detects the spoken language; never invents
+  text from silence" — *before* you download, not after.
+- **A silence pre-pass in front of every engine** (`speech_vad.py`). Quiet
+  lead-ins and tails are trimmed from the captured take before transcription
+  (pure RMS, no model needed, same calibration as the Hey-QUILL turn
+  detector), and an all-quiet recording short-circuits straight to the honest
+  "no speech" answer — the engine is never even asked. Installing Parakeet
+  upgrades the same decision to Silero VAD (the ~0.6 MB neural detector ships
+  inside the model bundle), which may only ever *narrow* what the RMS tier
+  found.
+- **Your vocabulary now corrects every engine** (`speech/vocabulary.py`). The
+  `dictation.md` profile's term list has always biased Whisper's
+  `initial_prompt`; it now also drives a post-transcription fuzzy corrector —
+  Soundex plus Levenshtein over 1–3-word spans, with a 25 % length gate so
+  "openaigpt" can never collapse into "openai" — so engines that take no
+  prompt (Parakeet) still learn your names, and "charge b" comes back
+  "ChargeBee" in exactly your casing. One list, one file, both mechanisms.
+- **Optional, language-honest filler removal** (`speech/fillers.py`, off by
+  default). Two tiers: universal hesitations ("uh", "hmm") always qualify;
+  ambiguous ones are removed only with language evidence, because "um" is a
+  real word in Portuguese and German and deleting a user's words is worse than
+  transcribing their hesitations. A custom list replaces both tiers; the
+  toggle is `dictation_remove_fillers`.
+- **The streaming contract, landed before the streaming engine**
+  (`speech/streaming.py`). Live transcription, when it arrives, must be an
+  append-only *committed* prefix plus a volatile *tentative* tail, and speech
+  and braille announce only newly committed text, exactly once. Announcing
+  repainted partials makes a screen reader speak the same words repeatedly as
+  the decoder rewrites its tail; the `StreamAnnouncer` contract makes that
+  structurally impossible, and survives a misbehaving provider without
+  double-speaking. Adopted now, with tests, so the future streaming provider
+  is built into it rather than retrofitted onto it.
+
+All five pieces are in the shared `quill` package: QUILL's Locked Dictation
+gets all of them, and QUILL Audio Studio's offline transcription sees Parakeet 3
+in its engine chooser with the same honest capability labels.
+
 ### Radio browse becomes a place you can wander, and one contract underneath it
 
 All of this lives in the shared `quill` package, so it is QUILL's as much as
@@ -41,8 +167,10 @@ tree walked to any depth with `Retry-After` honoured and a **More...** node that
 states how much it is hiding; **LibriVox**; **Project Gutenberg** audiobooks;
 **Audius**, **Mixcloud** (Mode A, metadata only -- no stream extraction, and the
 row says it opens in a browser *before* you activate it) and **ccMixter**; and
-**Explore (Wikidata)** -- By City, Owner, Network, Format and On the Dial, joined
-conservatively against Radio Browser, which still supplies every stream.
+**Explore (Wikidata)** -- By City, Format and On the Dial, joined
+conservatively against Radio Browser, which still supplies every stream. (By
+Network and By Owner were offered and then removed: an axis stays only if Radio
+Browser can answer it directly, and neither of those could fill a folder.)
 
 Three decisions inside that are worth keeping. **Podcast Index is out**
 (2026-08-13), reversing the earlier plan: it needs a free key, and a key is

@@ -149,7 +149,9 @@ class FasterWhisperProvider:
     # -- models ----------------------------------------------------------- #
 
     def list_supported_models(self) -> list[SpeechModelInfo]:
-        return list(catalog.FASTER_WHISPER_MODELS)
+        # offered() filters de-supported entries (large-v3: unmirrorable at
+        # ~3 GB fp16); an installed copy still resolves by id.
+        return catalog.offered(catalog.FASTER_WHISPER_MODELS)
 
     def list_installed_models(self) -> list[InstalledSpeechModel]:
         return [m for m in models.load_installed_models() if m.provider_id == PROVIDER_ID]

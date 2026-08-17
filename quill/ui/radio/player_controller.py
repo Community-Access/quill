@@ -1058,7 +1058,9 @@ class RadioPlayerController:
         station = self._state.station
         if station is not None and station.station_uuid and self._on_register_click:
             uuid = station.station_uuid
-            threading.Thread(target=self._on_register_click, args=(uuid,), daemon=True).start()
+            threading.Thread(  # GATE-40-OK: fire-and-forget click-count etiquette ping
+                target=self._on_register_click, args=(uuid,), daemon=True
+            ).start()
 
     def _on_finished(self) -> None:
         """Playback reached an end. What that means is ``track_end``'s job."""

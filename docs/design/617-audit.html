@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>617-audit</title>
+  <title>Offline Speech / Dictation Stack Audit (#617, #663,
+#669)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -41,7 +42,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -174,10 +174,31 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
 </head>
 <body>
-<h1 id="offline-speech-dictation-stack-audit-617-663-669">Offline Speech
-/ Dictation Stack Audit (#617, #663, #669)</h1>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="offline-speech--dictation-stack-audit-617-663-669">Offline
+Speech / Dictation Stack Audit (#617, #663, #669)</h1>
 <p><em>Audit date: 2026-08-04. Read-only assessment of the offline
 speech/dictation stack, with follow-up work driven from the
 recommendations. Items marked <strong>[done 2026-08-04]</strong> were
@@ -197,7 +218,7 @@ auto-endpointing and the “Hey QUILL” wake word are both wired, but only
 into Conversation Mode / always-listening — not into dictation. The main
 gaps are dead scaffold, stale catalog data, and a near-total end-user
 documentation gap.</p>
-<h2 id="fully-wired-working-usable-today">Fully wired &amp; working
+<h2 id="fully-wired--working-usable-today">Fully wired &amp; working
 (usable today)</h2>
 <ul>
 <li><strong>Locked Dictation (Ctrl+F9)</strong> — the real #617 feature.
@@ -255,7 +276,7 @@ HF fields and the “left to fill in” module docstring are stale.</li>
 (<code>settings.py:215-218</code>) are consumed only by the legacy Win+H
 path; the real dictation uses <code>speech_default_model_id</code>.</li>
 </ul>
-<h2 id="bugs-inconsistencies">Bugs / inconsistencies</h2>
+<h2 id="bugs--inconsistencies">Bugs / inconsistencies</h2>
 <ol type="1">
 <li><strong>Three overlapping dictation systems</strong> — legacy Win+H
 (<code>core/dictation.py</code>, still instantiated and key-routed),
@@ -345,5 +366,56 @@ command aliases. Wired into Locked Dictation and
 catalog cleanup (#5), wake-word VAD (#6 part 2), the two coverage seams
 (#7), the large-v3 surfacing (#8), and the three-systems consolidation
 (#4).</p>
+<h2
+id="follow-up-landed-2026-08-17-the-dictation-reliability-pass">Follow-up
+landed 2026-08-17: the dictation reliability pass</h2>
+<p>Studied against the Handy project (<code>D:\code\handy</code>, MIT —
+an offline dictation app whose production failure catalogue maps almost
+one-to-one onto ours) and landed as one change set. Full rationale in
+the PRD (§5.25 dictation addendum); architecture notes here:</p>
+<ul>
+<li><strong>Parakeet 3</strong>
+(<code>providers/parakeet_onnx.py</code>): NVIDIA
+<code>parakeet-tdt-0.6b-v3</code> int8 on sherpa-onnx’s
+<code>OfflineRecognizer</code>
+(<code>model_type="nemo_transducer"</code>) — the <em>batch</em> sibling
+of the Nemotron streaming provider, which is exactly the shape the
+dictation flow wants today (capture a WAV, transcribe the file). It
+reuses <code>nemotron_onnx.resolve_model_files</code> (same bundle
+layout) and the same assets-v1 mirror discipline. <strong>Dictation
+preference ladder</strong> in
+<code>service.preferred_dictation_provider_id</code>: explicit choice
+&gt; installed Parakeet &gt; whisper.cpp default. The transducer’s
+silence-safety (no token without audio evidence) is the reliability
+argument; CPU-only sidesteps whisper.cpp’s GPU crash class.</li>
+<li><strong>Silence pre-pass</strong> (<code>speech_vad.py</code>): RMS
+tier always (reuses the <code>vad.py</code> turn-taking calibration),
+Silero tier when the Parakeet bundle’s <code>silero_vad.onnx</code> is
+installed; neural may only narrow the RMS span. Wired in the dictation
+transcribe worker; all-silent takes skip the engine and route to
+NO_SPEECH. This retires the whisper silence-hallucination class for
+batch dictation and partially addresses audit recommendation #6.</li>
+<li><strong>Transcript refinement</strong>
+(<code>dictation/refine.py</code> composing
+<code>speech/vocabulary.py</code> + <code>speech/fillers.py</code>):
+vocabulary first (so a filler pass can never eat half of a user’s term),
+fillers second, both pure. The vocabulary source is the existing
+<code>dictation.md</code> profile — one authoring surface feeding both
+the Whisper <code>initial_prompt</code> bias and the fuzzy corrector,
+rather than a second competing word list.</li>
+<li><strong>Streaming contract</strong>
+(<code>speech/streaming.py</code>): committed/tentative snapshot
+<ul>
+<li><code>StreamAnnouncer</code> (announce-once). This is the contract
+the S2–S3 streaming work must emit; it exists now so that work is built
+into it.</li>
+</ul></li>
+<li><strong>Capability metadata</strong>
+(<code>SpeechModelInfo.capabilities</code>, spoken by
+<code>describe_models</code>): the catalog states what a model can do
+before download — addressing the honesty half of recommendation #8’s
+“surface limitations in the picker”.</li>
+</ul>
+</main>
 </body>
 </html>

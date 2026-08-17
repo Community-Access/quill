@@ -64,7 +64,7 @@ class GitHubRemoteMixin:
         provider = GitHubRemoteProvider(token=token or None)
         self._set_status_quiet("Connecting to GitHub...")
         self._announce("Connecting to GitHub")
-        threading.Thread(
+        threading.Thread(  # GATE-40-OK: one-shot read-only GET; safe to abandon on exit
             target=self._github_fetch_identity_for_browse,
             args=(provider,),
             daemon=True,
@@ -110,7 +110,7 @@ class GitHubRemoteMixin:
         )
         self._set_status_quiet("Connecting to GitHub...")
         self._announce("Connecting to GitHub")
-        threading.Thread(
+        threading.Thread(  # GATE-40-OK: one-shot read-only GET; safe to abandon on exit
             target=self._github_fetch_identity_for_url,
             args=(provider, pseudo_result),
             daemon=True,
@@ -163,7 +163,7 @@ class GitHubRemoteMixin:
         token = load_github_token()
         has_token = bool(token)
         if token:
-            threading.Thread(
+            threading.Thread(  # GATE-40-OK: one-shot read-only GET; abandon-safe
                 target=self._github_fetch_identity_for_manage,
                 args=(token, has_token),
                 daemon=True,

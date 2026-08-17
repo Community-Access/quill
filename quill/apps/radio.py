@@ -1310,10 +1310,14 @@ class RadioAppFrame(
         # radio items so it is one keystroke away and its current value is visible.
         sort_menu = wx.Menu()
         self._sort_item_ids = [wx.NewIdRef() for _ in _FAVORITES_SORT_VALUES]
+        # F-keys, not digits (2026-08-17): Ctrl+Alt+Shift+4/5/6 are the
+        # quick-play favorites' chords (radio.play_favorite_4..6), which these
+        # literals were silently fighting — see SIBLING_APP_ACCELERATORS for
+        # the twin conflict and how it was found.
         sort_accels = (
-            "\tCtrl+Alt+Shift+4",
-            "\tCtrl+Alt+Shift+5",
-            "\tCtrl+Alt+Shift+6",
+            "\tCtrl+Alt+Shift+F4",
+            "\tCtrl+Alt+Shift+F5",
+            "\tCtrl+Alt+Shift+F6",
         )
         for item_id, label, value, accel in zip(
             self._sort_item_ids,

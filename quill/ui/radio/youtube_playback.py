@@ -82,7 +82,12 @@ def begin_youtube_play(
             resolved, error = "", str(exc)
         wx.CallAfter(apply_youtube_result, controller, station, token, resolved, error, stream)
 
-    threading.Thread(target=work, name="quill-youtube-resolve", daemon=True).start()
+    threading.Thread(  # GATE-40-OK: one-shot yt-dlp resolve; CallAfter applies, stale
+        # results are dropped by the token check.
+        target=work,
+        name="quill-youtube-resolve",
+        daemon=True,
+    ).start()
 
 
 def apply_youtube_result(

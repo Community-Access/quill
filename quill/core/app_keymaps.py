@@ -50,10 +50,17 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
 
 #: The QuillVille menu's sibling launchers, numbered in menu order. Kept here
 #: with the rest of the app-key data rather than inline in the menu builder.
+#:
+#: F-keys, not digits (2026-08-17): Ctrl+Alt+Shift+1..0 belong to Quill Radio's
+#: quick-play favorites (``radio.play_favorite_1..10``), and these launcher
+#: rows claimed 1-3 on top of them — so in the radio app one of each pair
+#: silently never fired. The conflict was invisible until the Favorites
+#: submenu began advertising its real bindings and the menu-accelerator gate
+#: (now walking a profile WITH favorites) caught the double claim.
 SIBLING_APP_ACCELERATORS: tuple[str, ...] = (
-    "Ctrl+Alt+Shift+1",
-    "Ctrl+Alt+Shift+2",
-    "Ctrl+Alt+Shift+3",
+    "Ctrl+Alt+Shift+F1",
+    "Ctrl+Alt+Shift+F2",
+    "Ctrl+Alt+Shift+F3",
 )
 
 

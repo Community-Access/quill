@@ -101,14 +101,14 @@ def _assert_bundled_token_nonempty(site_packages: Path) -> None:
 
 # Pinned Windows embeddable Python. Bumping these values is the only
 # thing needed to ship on a new Python point release.
-EMBEDDED_PYTHON_VERSION = "3.13.14"
+EMBEDDED_PYTHON_VERSION = "3.13.15"
 EMBEDDED_PYTHON_URL = (
     f"https://www.python.org/ftp/python/{EMBEDDED_PYTHON_VERSION}/"
     f"python-{EMBEDDED_PYTHON_VERSION}-embed-amd64.zip"
 )
 # SHA-256 of the official embeddable zip. If python.org rotates the file
 # the build will fail loudly rather than ship an unverified runtime.
-EMBEDDED_PYTHON_SHA256 = "90b4e5b9898b72d744650524bff92377c367f44bd5fbd09e3148656c080ad907"
+EMBEDDED_PYTHON_SHA256 = "d1f04d990aee1253d8569e8e5104e30fa9f5fa830899f14843448872d936a2cf"
 
 DECTALK_RELEASE_ZIP_URL = (
     "https://github.com/dectalk/dectalk/releases/download/2023-10-30/vs2022.zip"
@@ -1069,6 +1069,11 @@ def build_inno_setup_script(
             if offline_edition
             else f"OutputBaseFilename=Quill-for-All-Setup-{version}"
         ),
+        "; 64-bit Setup (Inno 7) for parity across the family (and high-entropy ASLR).",
+        "; No enlarged dictionary: QUILL fetches ffmpeg on demand rather than bundling",
+        "; the near-identical ffmpeg/ffprobe pair, so there is no big twin to dedupe",
+        "; and a large dictionary would only tax the installing machine's memory.",
+        "SetupArchitecture=x64",
         "Compression=lzma2/ultra",
         "SolidCompression=yes",
         "WizardStyle=modern",

@@ -348,6 +348,30 @@ whether a cue stands in for speech while Quiet Mode is on, and which
 severities interrupt speech. The Studio’s own Preferences dialog stays
 the short list it has always been; these live in the settings store the
 Studio shares with QUILL, so setting them in QUILL applies here too.</p>
+<h2 id="a-transcription-engine-that-cannot-make-things-up">A
+transcription engine that cannot make things up</h2>
+<p>Whisper — the engine most offline transcription runs on, the Studio’s
+included — has one famous flaw: fed silence, it sometimes
+<em>invents</em> text. A pause in a recording can come back as a phantom
+“thank you” or a subtitle credit that nobody said, because under the
+hood Whisper is a language model guessing at what silence “should”
+say.</p>
+<p>The Studio now offers <strong>Parakeet 3</strong>, an NVIDIA model
+that works the other way round: it only writes down words it actually
+heard, so silence produces nothing — which matters for exactly the
+material a studio transcribes, long recordings full of pauses. It covers
+25 languages and detects which one is being spoken, runs on any CPU with
+no graphics card and no heavy libraries, and downloads (about 650 MB,
+checksum-verified from QUILL’s own mirror) from the same model manager
+as every other engine. Every engine and model in that manager now also
+states its capabilities in plain language — “detects the spoken
+language; never invents text from silence” — <em>before</em> you
+download, so choosing is no longer guesswork.</p>
+<p>Alongside it, a silence pre-pass now trims the quiet lead-in and tail
+from captured audio before any engine hears it, and your custom
+vocabulary (names, product words, jargon) is fuzzy-matched into finished
+transcripts so a name the engine mangles still comes back spelled your
+way.</p>
 <h2 id="built-from-quills-own-source">Built from QUILL’s own source</h2>
 <p>The Studio used to be assembled from a copy of QUILL’s audio code
 kept in a separate repository and re-synced by hand. It is now built

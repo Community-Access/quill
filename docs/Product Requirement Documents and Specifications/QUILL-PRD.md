@@ -2409,6 +2409,60 @@ providers".
 > the startup-recovery prompt). Locked Dictation has distinct earcons and a
 > one-time onboarding hint. File synthesis runs with no console-window flash and a
 > timeout.
+>
+> **Dictation reliability pass (2026-08-17).** Five changes landed together, studied
+> against the Handy project's production dictation experience (an MIT-licensed
+> offline speech app whose design notes and failure catalogue proved directly
+> transferable; local clone at `D:\code\handy`). The through-line is *reliability
+> a listener can hear*, not accuracy percentages:
+>
+> - **Parakeet 3, and an engine preference ladder.** NVIDIA `parakeet-tdt-0.6b-v3`
+>   (25 languages, automatic language detection, ~650 MB int8, CC-BY-4.0) joins
+>   the engine set as `providers/parakeet_onnx.py` on sherpa-onnx — CPU-only,
+>   torch-free, mirrored SHA-pinned on assets-v1 like every model. Dictation now
+>   resolves its engine through `service.preferred_dictation_provider_id`: an
+>   explicit engine choice always wins; otherwise an *installed* Parakeet
+>   outranks the whisper.cpp default. The reasoning is structural, not taste: a
+>   transducer emits tokens only for audio evidence, so it **cannot hallucinate
+>   text from silence** — the Whisper-family failure ("thank you" typed into the
+>   document after a quiet pause) that dictation, all short utterances and
+>   pauses, meets constantly. whisper.cpp stays the default because it works
+>   before any large download; the ladder promotes Parakeet only after the user
+>   installs it, an explicit and reversible act. Every model row in Manage
+>   Speech Models now speaks its **capabilities** ("detects the spoken
+>   language; never invents text from silence") *before* download — the catalog
+>   is the manifest of truth and the picker promises only what it lists.
+> - **A silence pre-pass** (`speech_vad.py`) between recorder and engine: a pure
+>   stdlib RMS tier trims quiet lead-in/out from every captured WAV (calibrated
+>   identically to the Hey-QUILL turn detector), and an all-quiet recording
+>   short-circuits to the honest NO_SPEECH feedback without paying for a
+>   transcription that could only invent. When the Parakeet bundle is installed
+>   its `silero_vad.onnx` (shipped inside the model zip) refines the same
+>   decision neurally — best-effort, and only ever *narrowing* the RMS span.
+> - **Transcript refinement** (`dictation/refine.py`, PRD §17 addendum), two
+>   pure passes in fixed order, both wx-free and unit-tested. *Custom
+>   vocabulary* (`speech/vocabulary.py`): the `dictation.md` profile's term list
+>   — already biasing Whisper's `initial_prompt` — now also drives a fuzzy
+>   corrector (Soundex + Levenshtein + 1–3-word n-grams, a 25 % length gate,
+>   ASCII-only fallback) so engines with no prompt support, Parakeet included,
+>   still learn the user's names and jargon, and split renderings ("charge b")
+>   rejoin to the user's exact casing ("ChargeBee"). *Filler removal*
+>   (`speech/fillers.py`), **off by default**: a universal tier ("uh", "hmm")
+>   plus a language-gated tier that removes "um" only with language evidence —
+>   because "um" is Portuguese for "a/an" and German for "at/around", and a
+>   filler pass that deletes real words is worse than none. A custom list
+>   replaces both tiers. Settings: `dictation_remove_fillers`; evidence comes
+>   from the existing `dictation_language`.
+> - **The streaming contract, ahead of need** (`speech/streaming.py`). When a
+>   streaming engine lands, live text must be two fields: an **append-only
+>   committed prefix** and a volatile tentative tail — and speech/braille
+>   announce *only newly committed text, exactly once*. Repainting partials
+>   through a screen reader speaks the same words repeatedly as the decoder
+>   rewrites its tail; this contract makes that impossible by construction
+>   (same single-speaker discipline as Reveal Codes). `StreamAnnouncer`
+>   enforces it and survives a misbehaving provider without double-speaking.
+>   Landed now, with tests, so the future streaming provider is built into the
+>   contract rather than retrofitted.
 
 ### 5.25f AI footprint, on-demand acquisition, and optimization
 
@@ -4429,7 +4483,7 @@ honoured per the Archive's automated-access rules, and a **More...** node that
 states how many rows it is hiding); **LibriVox** (`core/media/librivox.py`);
 **Project Gutenberg** (`core/radio/gutendex.py`); **Audius, Mixcloud and
 ccMixter** (`core/radio/free_music.py`); and **Wikidata**
-(`core/radio/wikidata.py`: By City / Owner / Format via P131 / P127 / P415, plus
+(`core/radio/wikidata.py`: By City / Format via P131 / P415, plus
 FM dial bands, joined conservatively against Radio Browser, which still supplies
 every stream — hence the "from Wikidata" label on every row, because the join is
 ours; a place or a format is asked of Radio Browser *directly* and topped up
@@ -4438,7 +4492,12 @@ capped slice and Arizona opened to nothing while forty-eight stations played).
 **By Network was removed** (2026-08-16) and **By Format re-pointed off P2360**:
 P449 is recorded for two US radio stations and P2360 for none, so both folders
 were structurally incapable of listing anything — the same non-goal reasoning as
-RadioDNS below, found by opening every axis in one pass rather than by report. Three standing decisions: **Podcast Index is out**
+RadioDNS below, found by opening every axis in one pass rather than by report.
+**By Owner (P127) was removed** (2026-08-17), which fixes the rule: *an axis
+stays only if Radio Browser can answer it directly.* Ownership is not a field
+Radio Browser carries, so that folder had no lead query and depended on
+call-sign matching alone — it counted correctly and opened to nothing, or to a
+fraction of the named company, roughly three times in four. Three standing decisions: **Podcast Index is out**
 (2026-08-13, reversing the earlier plan — it needs a free key, and a key is
 something to configure, support and explain at the worst possible moment, while
 transcripts never came from a directory in the first place); **Mixcloud is Mode A

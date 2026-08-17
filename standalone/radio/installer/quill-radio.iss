@@ -44,7 +44,7 @@
 ; runtime.state.json. It MUST stay "radio" forever -- renaming it
 ; would orphan the previous reference and double-count, leaving a
 ; phantom install that the uninstaller cannot reclaim.
-#define RuntimeVersion "3.13.14"
+#define RuntimeVersion "3.13.15"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "radio"
 
@@ -87,7 +87,15 @@ MinVersion=10.0
 ; PyInstaller bootloader), drop the -Shared so Radio and the other
 ; products' installers line up.
 OutputBaseFilename=Quill-Radio-Setup-Shared-{#AppVersion}
+; A 64-bit Setup (Inno 7) so the LZMA dictionary can exceed the 32-bit cap.
+; 128 MB reaches across ffmpeg.exe -> ffprobe.exe (97 MB of near-identical
+; bytes the 32 MB ultra dictionary could never dedupe): 208.7 -> 181.8 MB
+; measured on the 3.0.0 payload (2026-08-17). Costs the end user a 128 MB
+; decompression buffer during install; the x64compatible line above already
+; restricts installs to machines that have it.
+SetupArchitecture=x64
 Compression=lzma2/ultra
+LZMADictionarySize=131072
 SolidCompression=yes
 WizardStyle=modern
 CloseApplications=force

@@ -52,6 +52,21 @@ def test_catalog_has_recommended_small_model() -> None:
     assert catalog.model_by_id("nope") is None
 
 
+def test_large_v3_is_desupported_but_not_erased() -> None:
+    """De-supported 2026-08-17: never offered (it exceeds GitHub's 2 GiB
+    asset limit, so it could not join the SHA-pinned mirror and lived in an
+    unexplained manual-install limbo) — yet an installed copy keeps its
+    catalog identity for size estimates and removal."""
+    assert "large-v3" in catalog.DESUPPORTED_MODEL_IDS
+    offered_ids = {m.id for m in catalog.offered(catalog.WHISPER_CPP_MODELS)}
+    assert "large-v3" not in offered_ids
+    assert "small" in offered_ids  # the filter removes only the de-supported
+    fw_offered = {m.id for m in catalog.offered(catalog.FASTER_WHISPER_MODELS)}
+    assert "large-v3" not in fw_offered
+    assert "distil-large-v3" in fw_offered  # a different model, untouched
+    assert catalog.model_by_id("large-v3") is not None  # installed copies resolve
+
+
 def test_catalog_models_have_non_decreasing_size() -> None:
     sizes = [m.approximate_size_mb for m in catalog.WHISPER_CPP_MODELS]
     assert sizes == sorted(sizes)

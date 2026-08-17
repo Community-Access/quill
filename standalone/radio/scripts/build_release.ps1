@@ -67,6 +67,13 @@ if (-not $SkipCatalog) {
 # -- render docs (html + epub from the markdown source) -----------------------
 & (Join-Path $PSScriptRoot "render_docs.ps1")
 
+# -- refresh the published site's copies of these docs ------------------------
+# docs/site/docs/radio-*.html are mirrors of the renders above; unsynced they
+# rot (the 2026-08-17 sweep found the site serving pre-3.0 docs). Mechanical
+# now, so a release cannot ship current docs and publish stale ones.
+& $Python (Join-Path $QuillRepo "scripts\sync_site_radio_docs.py")
+if ($LASTEXITCODE -ne 0) { throw "Site radio-docs sync failed (see above)." }
+
 # -- bundled feedback token (Report a Bug for users with no GitHub setup) -----
 # A public release must embed the issues-only token; -SkipToken builds a private
 # copy whose Report a Bug falls back to opening GitHub manually (same posture as

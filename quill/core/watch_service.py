@@ -87,6 +87,17 @@ class WatchService:
     def is_running(self) -> bool:
         return self._running
 
+    def refresh_policy(self, settings: object) -> None:
+        """Re-resolve the monitor policy from *settings* and adopt it live.
+
+        The policy was snapshotted at construction, so the watch folder's
+        shared monitor controls (cadence, tick sound, interrupt) were
+        restart-only — the P0.3 staleness class. Called from the settings-apply
+        path; the manager's pollers pick the new values up on their next loop.
+        """
+        self._policy = resolve_monitor_policy(settings, MONITOR_WATCH_FOLDER)
+        self.manager.set_policy(self._policy)
+
     @property
     def policy(self) -> MonitorPolicy:
         """The ambient-monitor policy for watched folders.

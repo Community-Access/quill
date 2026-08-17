@@ -53,12 +53,12 @@ from pathlib import Path
 # Pinned embeddable CPython -- kept in lockstep with
 # scripts/build_windows_distribution.py::EMBEDDED_PYTHON_* so every QuillVille
 # product ships the identical interpreter.
-EMBEDDED_PYTHON_VERSION = "3.13.14"
+EMBEDDED_PYTHON_VERSION = "3.13.15"
 EMBEDDED_PYTHON_URL = (
     f"https://www.python.org/ftp/python/{EMBEDDED_PYTHON_VERSION}/"
     f"python-{EMBEDDED_PYTHON_VERSION}-embed-amd64.zip"
 )
-EMBEDDED_PYTHON_SHA256 = "90b4e5b9898b72d744650524bff92377c367f44bd5fbd09e3148656c080ad907"
+EMBEDDED_PYTHON_SHA256 = "d1f04d990aee1253d8569e8e5104e30fa9f5fa830899f14843448872d936a2cf"
 GET_PIP_URL = "https://bootstrap.pypa.io/get-pip.py"
 
 _DEV_CACHE_IGNORE = shutil.ignore_patterns(
@@ -493,6 +493,25 @@ def main() -> int:
         raise RuntimeError(
             f"Bundled runtime failed to import {product.module}:\n" + (check.stderr or "")
         )
+    # Inventory drift gate (P1.2): the source tree-copy sweeps whatever sits in
+    # quill/data on the build machine, exactly the class that put 82 MB of
+    # undeclared payload in the 2026-08-15 runtime installers. A product with a
+    # committed baseline fails the build on drift; one without prints how to
+    # adopt (incremental, per app, like every other ratchet here).
+    manifest = source_root / "standalone" / product.key / "portable-inventory.json"
+    if manifest.is_file():
+        gate = subprocess.run(
+            [sys.executable, str(source_root / "scripts" / "check_runtime_inventory.py"),
+             str(out_dir), "--layout", "portable", "--manifest", str(manifest)],
+            capture_output=True, text=True,
+        )
+        print("      inventory gate:", (gate.stdout or gate.stderr).strip().splitlines()[-1])
+        if gate.returncode != 0:
+            print(gate.stdout)
+            raise RuntimeError("Portable inventory drift -- see above (rebaseline with --write).")
+    else:
+        print(f"      inventory gate: no baseline at {manifest.name}; adopt with "
+              f"check_runtime_inventory.py {out_dir} --layout portable --manifest ... --write")
 
     print(f"\nPortable bundle ready: {out_dir}")
     print(f"(zip as: {product.zip_name.format(ver=args.version)})")

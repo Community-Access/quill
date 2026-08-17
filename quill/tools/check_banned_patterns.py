@@ -807,6 +807,7 @@ def find_violations() -> list[Violation]:
         violations.extend(_check_checklistbox(ui_files))
         violations.extend(_check_dead_region_attrs(ui_files))
         violations.extend(_check_non_daemon_thread(ui_files))
+        violations.extend(_check_threading_thread(ui_files))  # unwired until 2026-08-17 (P0.4)
         violations.extend(_check_wx_messagebox(package_files))
         violations.extend(_check_show_modal_wrapper(ui_files))
         violations.extend(_check_accept_focus_from_keyboard(ui_files))

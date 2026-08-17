@@ -1527,39 +1527,47 @@ class RadioMixin:
     # copies only duplicated that and drifted stale, so they were removed.
 
     def _append_radio_favorites_submenu(self, menu: object) -> None:
+        """The Favorite Stations submenu: the first ten, each showing its key.
+
+        The rows are the quick-play slots — the same ``favorites_in_display_order``
+        list ``quick_play.play_favorite_slot`` indexes — so each of the first ten
+        advertises its already-bound ``radio.play_favorite_N`` chord
+        (Ctrl+Alt+Shift+1..9, 0) via ``_menu_label`` and follows the user's
+        rebinding. This replaced a nested-folder mirror whose rows carried *no*
+        keyboard route at all (the exact cost the menu-accelerator rule exists
+        to prevent — found by its own gate once the gate learned to test a
+        profile that has favorites). Ten rows, because ten is how many digit
+        chords there are; the full nested view is one keystroke away in Manage
+        Favorites, and anything past ten is a *disabled* readout naming the
+        count — a status line, exempt from the rule, never a dead action.
+        """
         wx = self._wx
         favorites = getattr(self, "_radio_favorites", None)
         if favorites is None or not favorites.favorites:
             return
         sub = wx.Menu()
-        # Mirror the Favorites Manager's nested folders: each folder path
-        # ("News/Morning") becomes a nested submenu, stations appended to
-        # their folder's menu in store order.
-        folder_menus: dict[str, object] = {"": sub}
-
-        def folder_menu(path: str) -> object:
-            existing = folder_menus.get(path)
-            if existing is not None:
-                return existing
-            parent_path, _, name = path.rpartition("/")
-            parent = folder_menu(parent_path)
-            child = wx.Menu()
-            parent.AppendSubMenu(child, name)
-            folder_menus[path] = child
-            return child
-
-        for favorite in favorites.favorites_in_display_order(
+        ordered = favorites.favorites_in_display_order(
             self._radio_history.favorites_sort, self._radio_history.folder_sort_orders
-        ):
+        )
+        for slot, favorite in enumerate(ordered[:10], start=1):
             station = favorite.station
             item_id = wx.NewIdRef()
-            folder_menu(favorite.folder).Append(item_id, favorite.display_label)
+            sub.Append(
+                item_id,
+                self._menu_label(favorite.display_label, f"radio.play_favorite_{slot}"),
+            )
             sub.Bind(
                 wx.EVT_MENU,
                 lambda _e, s=station: self._radio_controller.play_station(s),
                 id=item_id,
             )
             self._retain_radio_menu_ids(item_id)
+        if len(ordered) > 10:
+            overflow = sub.Append(
+                wx.ID_ANY,
+                f"({len(ordered) - 10} more in Manage Favorites)",
+            )
+            overflow.Enable(False)
         menu.AppendSubMenu(sub, "Favorite Stations")
 
     # -- system tray ----------------------------------------------------------

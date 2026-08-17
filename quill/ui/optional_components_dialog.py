@@ -184,7 +184,11 @@ def show_optional_components_picker(
                 comps = []
             wx.CallAfter(_populate, comps, select_id)
 
-        threading.Thread(target=_work, daemon=True).start()
+        threading.Thread(  # GATE-40-OK: one-shot component inventory for this dialog;
+            # CallAfter-marshalled, discarded when the dialog closes.
+            target=_work,
+            daemon=True,
+        ).start()
 
     def _sync_controls() -> None:
         comp = _selected()

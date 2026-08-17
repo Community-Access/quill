@@ -124,15 +124,8 @@ def policy_modes_from_settings(settings: Any) -> PolicyModes:
     )
 
 
-def build_announcement_service(host: Any) -> AnnouncementService:
-    """Assemble the service for *host* from whatever mechanisms it has.
-
-    Sink order is the delivery order, and it is not arbitrary: the earcon leads
-    (a cue arriving after the speech is noise, not confirmation), speech and
-    braille follow, and the recording channels come last so a capture failure
-    can never delay what the user is waiting to hear.
-    """
-    settings = getattr(host, "settings", None)
+def policy_from_settings(settings: Any) -> AnnouncementPolicy:
+    """The announcement policy the current *settings* describe (pure)."""
     modes = policy_modes_from_settings(settings)
     dedupe = None
     seconds = getattr(settings, "announcement_braille_dedupe_seconds", None)
@@ -142,7 +135,81 @@ def build_announcement_service(host: Any) -> AnnouncementService:
 
         dedupe = dict(DEDUPE_SECONDS)
         dedupe[Channel.BRAILLE] = float(seconds)
-    service = AnnouncementService(policy=AnnouncementPolicy(modes, dedupe_seconds=dedupe))
+    return AnnouncementPolicy(modes, dedupe_seconds=dedupe)
+
+
+def refresh_announcement_policy(host: Any) -> None:
+    """Re-derive the cached service's policy from *host*'s current settings.
+
+    The service is built lazily once and held for the life of the shell, with
+    its policy snapshotted from settings at that moment — so until this hook
+    existed, every announcement setting (braille style, dedupe hold-back,
+    which severities interrupt) silently required a restart while the
+    Preferences panel implied it applied (the config-snapshot staleness class,
+    polish.md P0.3). Called from the settings-apply path; a host whose service
+    was never built has nothing to refresh.
+    """
+    service = getattr(host, "_announcement_service", None)
+    if service is None:
+        return
+    service.set_policy(policy_from_settings(getattr(host, "settings", None)))
+
+
+def refresh_live_policies(host: Any) -> None:
+    """Re-derive every long-lived policy snapshot from *host*'s settings.
+
+    The P0.3 staleness class in one place: controllers built lazily snapshot
+    their config and hold it for the life of the shell, so a Preferences change
+    silently meant "after the next restart". The settings-apply path calls this
+    once; each refresh is individually best-effort because a settings apply
+    must never raise.
+    """
+    try:
+        refresh_announcement_policy(host)
+    except Exception:  # noqa: BLE001 - a settings-apply side effect must never raise
+        pass
+    try:
+        ctrl = getattr(host, "_verbosity_controller", None)
+        if ctrl is not None:
+            ctrl.apply_settings(host.settings)
+    except Exception:  # noqa: BLE001 - a settings-apply side effect must never raise
+        pass
+    try:
+        watch = getattr(host, "_watch_service", None)
+        if watch is not None:
+            watch.refresh_policy(host.settings)
+    except Exception:  # noqa: BLE001 - a settings-apply side effect must never raise
+        pass
+    # Model-lifecycle limits (Low-resource mode / Unload idle models after):
+    # not a lazy snapshot like the three above, but the same contract — a
+    # settings-derived runtime policy that must track the dialog.
+    try:
+        from quill.core import lifecycle_service
+        from quill.core.speech.service import detect_total_ram_gb
+
+        settings = getattr(host, "settings", None)
+        lifecycle_service.configure(
+            low_resource_mode=bool(getattr(settings, "low_resource_mode", False)),
+            idle_unload_minutes=int(getattr(settings, "idle_unload_minutes", 10)),
+            total_ram_gb=detect_total_ram_gb(),
+        )
+        sweep = getattr(host, "_start_lifecycle_sweep_timer", None)
+        if callable(sweep):
+            sweep()
+    except Exception:  # noqa: BLE001 - a settings-apply side effect must never raise
+        pass
+
+
+def build_announcement_service(host: Any) -> AnnouncementService:
+    """Assemble the service for *host* from whatever mechanisms it has.
+
+    Sink order is the delivery order, and it is not arbitrary: the earcon leads
+    (a cue arriving after the speech is noise, not confirmation), speech and
+    braille follow, and the recording channels come last so a capture failure
+    can never delay what the user is waiting to hear.
+    """
+    settings = getattr(host, "settings", None)
+    service = AnnouncementService(policy=policy_from_settings(settings))
 
     engine = getattr(host, "_announcement_engine", None)
     if engine is not None:

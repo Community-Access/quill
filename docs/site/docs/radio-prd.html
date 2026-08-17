@@ -198,7 +198,7 @@
 <main id="main-content">
 <h1 id="quill-radio--product-requirements">Quill Radio – Product
 Requirements</h1>
-<p>Version 2.2.0</p>
+<p>Version 3.0.0</p>
 <h2 id="1-product-statement">1. Product statement</h2>
 <p>Quill Radio is QUILL’s internet radio, shipped as its own small
 Windows app for people who want the radio on without loading a full
@@ -555,6 +555,46 @@ Any download of the QuillVille Runtime – from an installer or from the
 app’s own first launch – presents a progress bar that reports correctly
 to NVDA, JAWS, and Narrator and announces progress as a percentage; a
 silent or screen-reader-invisible download is a defect.</li>
+<li>A-11. <strong>Every menu item shows a keyboard route, and no key is
+claimed twice.</strong> Every enabled item – top level, submenu, and
+dynamic rows such as Recently Played – carries an accelerator in its
+label, because walking a menu to discover there is no shortcut is a cost
+paid on every visit, and a key claimed by two items means one of them
+silently never fires. Items backed by a registered command render
+through <code>_menu_label</code>, so the label shows what is
+<em>actually</em> bound and follows a rebinding in Keyboard Shortcuts;
+per-app defaults live in <code>keymap.APP_KEYMAPS</code> (app keys, not
+editor keys – Ctrl+B is Browse Stations here and Bold in QUILL). Only a
+disabled status readout is exempt. Enforced from the built menu bar by
+<code>tests/unit/ui/test_menu_accelerators.py</code>, which also rejects
+any key wx cannot bind. Measured before the rule landed: 49 of 115 items
+had no accelerator, seven keys were claimed twice, and two advertised
+keys (<code>Ctrl+Shift+Plus</code>/<code>Minus</code>) were being
+discarded by wx outright.</li>
+<li>A-12. <strong>A Close button closes.</strong> Surfaces that can run
+modeless (Browse Stations, Find Stations, Manage Favorites, Schedule
+Recording) bind theirs through
+<code>dialog_contract.bind_close_button</code>: <code>wx.Dialog</code>
+handles <code>ID_CANCEL</code> for free and <code>wx.Frame</code> does
+not, so the window model’s conversion left four Close buttons doing
+nothing, with only Escape working. A control that looks like the way out
+and is not is worse than no control.</li>
+<li>A-13. <strong>Every control on a window has an Alt key, and it is a
+letter the menu bar has not claimed.</strong> A button mnemonic on a
+frame competes with the menu bar’s: when the transport button claimed
+Alt+S / Alt+P those keys opened the Station and Playback menus instead
+of stopping the radio (#1208), and the fix at the time removed the
+button’s mnemonic entirely – trading a broken key for no key. Two
+buttons kept colliding ones until 2026-08-16 (Add to Fa&amp;vorites vs
+&amp;View; &amp;Record vs &amp;Record), both silently dead. The rule is
+a <em>free</em> letter, never no letter: P&amp;lay/S&amp;top (Alt+L /
+Alt+T), Add to &amp;Favorites, Rec&amp;ord, &amp;Browse Stations, plus
+Ctrl+Alt+P as an unconditional stop beside Ctrl+P’s toggle. Status-bar
+cells are exempt – they are a read-out reached with F6 and arrows (A-6),
+and spending six letters on them would starve the actions that need
+them. Enforced by <code>tests/unit/ui/test_button_mnemonics.py</code>,
+which checks both halves (a key exists; the menu bar does not answer it
+first).</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
@@ -648,18 +688,1140 @@ Enhancements’ local relay, §8, is loopback-only and never reaches the
 network itself – it filters the same stream this section already
 covers.)</li>
 <li>N-2. Safe Mode disables the radio’s network surfaces along with the
-feature.</li>
+feature, <strong>per branch</strong> rather than as one app-wide switch:
+<code>browse_sources.LOCAL_SOURCES</code> names the branches that need
+no network at all (Favorites, ACB Media, NFB Radio, the Networks
+catalogue), and every other branch refuses out loud with its own words
+rather than showing an empty folder.</li>
+<li>N-3. <strong>The cost rule.</strong> No integration may create a
+recurring financial obligation – no paid API subscription, per-request
+or per-stream charge, commercial SDK licence, required premium or paid
+developer account, revenue share, paid proxy, or paid metadata service –
+for BITS, for Quill Radio, or for the listener, for anything a listener
+needs. Optional provider functionality that independently costs money
+must never be required for the core integration.</li>
+<li>N-4. <strong>The access rule, which is stricter than the cost rule
+and is what actually governed the 3.0 sources.</strong> A source must
+need <strong>no API key, no account, no developer registration, and no
+business relationship</strong>. This is why Apple Podcasts is the
+podcast directory and Podcast Index is not (2026-08-13): Podcast Index’s
+key is free, and a free key is still a key to configure, to support, and
+to explain to somebody at the worst possible moment.</li>
+<li>N-5. <strong>No provider is load-bearing.</strong> Every source can
+be switched off and the app is whole without it; a source that is off is
+never contacted, so the toggles govern egress rather than display. If a
+provider changes its terms, its adapter can be disabled through
+configuration, Quill Radio keeps working, no automatic paid upgrade can
+occur, and no listener can unexpectedly incur a charge.</li>
+<li>N-6. <strong>Release gate.</strong> Before every release, each
+provider integration is re-checked against N-3 and N-4. A provider whose
+required API, SDK, playback mechanism, directory access, or basic
+listener functionality has acquired a mandatory recurring cost is
+removed or disabled rather than shipped.</li>
+<li>N-7. <strong>Provenance is not optional.</strong> Every result names
+the provider it came from, in the row text and not only in a details
+pane – including a row whose data is joined from two sources, which is
+why the Wikidata branch labels its rows “from Wikidata” while Radio
+Browser still supplies the stream.</li>
+<li>N-8. <strong>Caching, in three tiers plus the browse cache.</strong>
+Short for searches and trending, medium for item metadata, persistent
+for favorites, history and resume positions;
+<code>core/radio/directory_cache.py</code> adds the browse-level tier
+(fresh -&gt; live -&gt; stale, with a reportable age). Audio itself is
+never cached unless a download was explicitly requested. The Internet
+Archive adapter’s cache is not optional – the Archive’s automated-access
+policy asks for caching, a descriptive User-Agent, restrained
+concurrency, and <code>Retry-After</code> on HTTP 429, and all four are
+honoured.</li>
 </ul>
+<h2 id="6a-accessibility-rules-every-browse-branch-inherits">6a.
+Accessibility rules every browse branch inherits</h2>
+<p>Standing requirements, not a description of finished work: a new
+source in the Browse Stations tree meets all of these or it does not
+ship. They were learned one at a time from real faults, which is why
+each says what goes wrong rather than only what to do.</p>
+<p>Most of these the dialog already honours. They are written down so
+the nine new providers inherit them rather than each rediscovering
+them.</p>
+<ul>
+<li><strong>The count is announced on expand, and the cursor does not
+move.</strong> Already the rule (#1188). A source that supplies
+<code>child_count</code> announces <em>before</em> the fetch as
+well.</li>
+<li><strong>A folder that is empty says why</strong>, and distinguishes
+“this genre has no stations” from “this source could not be reached”.
+The current <code>_add_children</code> announces a count of zero; that
+is not enough, and a source that is down must not read as a source that
+is empty.</li>
+<li><strong>A lazily-resolved leaf says what will happen before it
+happens.</strong> A Mixcloud leaf says it opens in your browser. A
+TuneIn or Apple leaf says it resolves first. Nothing surprises the
+listener after Enter.</li>
+<li><strong>Loading is announced once, on the node, never on a
+timer</strong>, and a slow branch does not block the tree. Already
+true.</li>
+<li><strong>Every bound is spoken.</strong> Find-in-folder already
+reports when a depth, result, or fetch budget cut a search short. The
+<strong>More…</strong> node is the same principle applied to pagination:
+a truncated tree must never look complete.</li>
+<li><strong>Refresh works on every branch</strong>, and says what it
+refreshed.</li>
+<li><strong>Safe Mode refuses out loud, per branch.</strong> Local
+branches – Favorites, ACB Media, NFB Radio – keep working, which is the
+current behaviour and worth preserving deliberately.</li>
+<li><strong>A provider that is switched off is not in the tree at
+all</strong>, and makes no request. Same rule as
+<code>search_sources.py</code>: the toggles govern egress, not
+display.</li>
+<li><strong>Browse-position memory survives the new sources.</strong>
+<code>browse_position.py</code> keys on the tree path; opaque
+<code>node_id</code>s must be stable across sessions for this to keep
+working, which is a real constraint on providers that might be tempted
+to embed a cursor or a timestamp in an id. They must not.</li>
+</ul>
+<hr />
 <h2 id="7-non-goals">7. Non-goals</h2>
 <p>macOS/Linux standalone builds (upstream QUILL covers macOS; the tray
 pattern does not exist there), auto-updating in place, telemetry. A full
 DSP effects rack (reverb, tempo/pitch, spatial audio) – Sound
 Enhancements (§8) is a small, purpose-built three-band EQ and
 compressor, not a general effects rack.</p>
+<p><strong>YouTube search and browse (decided 2026-08-12).</strong>
+yt-dlp’s <code>ytsearch:</code> works, needs no key, and is
+<strong>against YouTube’s Terms of Service</strong>. The sanctioned
+route is the Data API v3, which needs a key and carries a quota. Radio’s
+other directories (RadioBrowser, SomaFM) are open APIs built to be
+consumed this way; YouTube is not, and the difference is the whole
+argument. <strong>No search branch</strong> – paste a link or a
+playlist. Revisit only via the Data API with the <em>listener’s own</em>
+key, which is the shape the Spotify integration already uses.</p>
+<p><strong>Commercial and relationship-gated directories (closed
+2026-08-14).</strong> Quill Radio will not pursue, license, or integrate
+a station directory that requires a commercial agreement, a paid tier, a
+partner approval, or a per-application developer key. That closes the
+whole pile that had been kept open as a “worth an email” list:
+<strong>airable</strong>, <strong>vTuner</strong>,
+<strong>myTuner</strong>, <strong>Radioplayer</strong>,
+<strong>Radio.net</strong>, <strong>Online Radio Box</strong>,
+<strong>Streema</strong>, and the <strong>SHOUTcast</strong> developer
+directory. <strong>Broadcastify</strong> was already out on its own
+terms (as of June 2026 the feed-catalog API is USD 2,500 per month and
+they decline to license new consumer-facing scanner applications).</p>
+<p>Three reasons, and the third is the one that settles it:</p>
+<ol type="1">
+<li><strong>N-3 and N-4.</strong> A recurring cost is forbidden
+outright, and even a <em>free</em> key is a key to configure, to
+support, and to explain to somebody at the worst possible moment. That
+is the same reasoning that put Podcast Index out.</li>
+<li><strong>The premise expired.</strong> vTuner’s selling point was its
+Location / Genre / Language / Quality classification – and Quill Radio
+3.0 builds Country, State, Language, Genre, Quality, Trending and
+Recently-Changed browse from data it already fetches, for nothing. A
+commercial catalogue moved from “the thing that unlocks browse” to “a
+second opinion on a catalogue we can already browse”, which is a very
+weak reason to accept anybody’s terms.</li>
+<li><strong>It is a standing dependency on somebody else’s
+goodwill.</strong> Every branch in the tree today can be switched off
+and the app is whole; none of them can be revoked. A licensed catalogue
+can be, and building the discovery experience of an accessibility
+product on something revocable is the wrong trade at any price.</li>
+</ol>
+<p>The SHOUTcast API request sent on 2026-08-12 is abandoned rather than
+awaited, and the two commitments made in it (a spoken source label, and
+per-source recording suppression on request) lapse with it – nothing was
+ever built on them. <strong>SHOUTcast streams remain fully
+supported</strong>; it is only the directory that is out, and
+<code>My Servers</code> browses an individual SHOUTcast or Icecast
+server with no directory involved at all. <strong>Radio Garden</strong>
+stays out as a directory for the same reason (undocumented API, no
+terms); its appeal is largely covered by the Wikidata axes and Browse by
+Country.</p>
+<p>Reopening any of this needs a new reason, not a new email.</p>
+<p><strong>A watch link carrying <code>&amp;list=</code> is not a
+playlist.</strong> The listener asked for that video. Quietly expanding
+it into fifty stations would be a nasty surprise, and “it was
+technically in the URL” is not consent. Add-from-playlist is its own
+explicit command.</p>
 <h2 id="8-since-10">8. Since 1.0</h2>
 <ul>
-<li><strong>Since 2.2.0 (unreleased; upstream
-<code>core/radio/youtube.py</code>, <code>core/radio/live365.py</code>,
+<li><strong>YouTube subscriptions import, and the account question
+answered (3.0.0; <code>core/radio/youtube_takeout.py</code>,
+<code>ui/radio/youtube_takeout_ui.py</code>).</strong> A listener asked
+whether Quill Radio could sign in with a YouTube account and synchronise
+their history. Both were researched against Google’s own documentation
+and both are <strong>no</strong>: the <a
+href="https://developers.google.com/youtube/terms/developer-policies">Developer
+Policies</a> forbid a third-party client from <em>“separat[ing],
+isolat[ing], or modify[ing] the audio or video components”</em> (which
+audio-only playback is), from background players, and from downloading
+or offline storage – with <strong>no Premium exception</strong> – and
+watch history was removed from third-party reach years ago
+(<code>playlistItems.list</code> answers
+<code>watchHistoryNotAccessible</code>; Watch Later likewise). The
+answerable part of the question was “do not make me paste forty channel
+addresses”, and it is answered <strong>without an account</strong>:
+Google Takeout’s <code>subscriptions.csv</code> (Channel ID, Channel
+URL, Channel title) imports straight into the existing
+<code>ChannelStore</code>. <strong>The OAuth route was considered and
+refused, and the reason is the requirement</strong>: signing a
+listener’s real Google account into an app that also runs yt-dlp
+extraction puts the <em>account</em> at risk rather than merely the
+feature; it would additionally require every listener to create a Google
+Cloud project (seven console steps, since QUILL ships no shared
+identity) and add a credential to store, refresh and protect. The file
+route authenticates nothing, stores no credential, makes no API call –
+so none of YouTube’s API terms bind us – and works offline and in Safe
+Mode. Verified while deciding: our extraction passes no cookies and no
+credentials, so playback is anonymous today and this keeps it so. The
+parser is deliberately tolerant (missing, reordered or localized header;
+BOM; quoted commas; a lost URL column falling back to the channel id;
+junk rows skipped individually), because one mangled row must not cost
+the other ninety-nine. One-shot by design: no background sync, and
+re-importing skips what is already followed. 11 tests.</li>
+<li><strong>An update offers back the edition you are running (3.0.0;
+<code>core/install_edition.py</code>, <code>core/updates.py</code>,
+<code>ui/app_shell.py</code>, the <code>.iss</code> markers).</strong>
+Reported twice – #1100 (“what was downloaded was the portable version
+rather than the full installer”) and again 2026-08-16 (“whenever i
+update it shows me the portable”). #1100 was closed after fixing one
+axis, and the complaint outlived it because <strong>three</strong>
+faults produce the same symptom. (1)
+<code>_running_portable_build</code> looked for
+<code>unins000.exe</code> beside <code>sys.executable</code>; on the
+shared QuillVille Runtime that is
+<code>%LOCALAPPDATA%\QuillVille\Runtime\QuillVilleRuntime.exe</code>,
+installed <code>uninsneveruninstall</code>, so no uninstaller sits
+beside it and <em>every</em> installed listener answered “portable” –
+the root cause both reports describe. (2) <code>_pick_asset</code> chose
+among four published assets by file extension, so an installed listener
+got whichever <code>.exe</code> GitHub listed first (the 2.6 MB thin
+setup even when running the 240 MB full edition) and a Companion
+listener got an <code>.exe</code> that cannot install a zip-based copy.
+(3) The uninstaller test knew only the literal <code>unins000</code>,
+while Inno writes <code>unins001</code>, <code>unins002</code>… when a
+copy is installed over an existing one. The fix gives the app a real
+identity: each installer stages a <code>quill-edition.txt</code> marker,
+detection falls back to folder shape for installs that predate it, and
+the uninstaller is matched by pattern; an install that cannot be told
+apart resolves to the thin installer, which shares the full one’s AppId
+and upgrades either. 15 tests, including one asserting each published
+asset matches exactly <strong>one</strong> edition, so “first
+<code>.exe</code> wins” cannot return. Two more repairs on the same
+path, the first the most serious defect found that day:
+<strong><code>shared-runtime.iss</code> installed the runtime where the
+launcher never looks.</strong> <code>runtime_resolve.c</code> probes
+<code>Runtime\&lt;major&gt;\quillville-runtime.json</code> – versioned,
+because the design keys runtimes by major so a future Python lands
+alongside rather than on top – while the fragment installed to the
+unversioned <code>Runtime\</code>, so a clean install could not start:
+“Quill Radio could not find a Python runtime”. <code>RuntimeDir()</code>
+now derives the major from <code>RuntimeVersion</code>; the thin
+installers had been probing the correct versioned path all along and
+keep it; and
+<code>tests/unit/structure/test_shared_runtime_installer.py</code> pins
+launcher and installers to each other, so either side moving alone fails
+the build. Found by running an installed copy, not by reading either
+file – each was reasonable alone. Second: the fragment skipped the
+payload copy whenever the CPython version matched, so an update
+installed cleanly and left the old code in place.</li>
+<li><strong>Directories say when they are down, instead of looking empty
+(3.0.0; <code>core/radio/browse_failure.py</code>,
+<code>core/radio/directory_cache.py</code>,
+<code>core/radio/internet_archive.py</code>,
+<code>core/media/librivox.py</code>,
+<code>ui/radio/browse_feedback.py</code>).</strong> The
+empty-versus-broken distinction the browse contract promises was leaking
+in two places. Every source wraps transport failures in its own coded
+error and the classifier matched only the outermost type, so LibriVox
+being unreachable for a day (Cloudflare 522 after a ~19.5 s hold)
+reported “no data in the folder” on every shelf; it now walks the
+<code>__cause__</code>/<code>__context__</code> chain. And the Internet
+Archive answers a failed search with <strong>HTTP 200</strong> plus
+<code>{"error": "[BACKEND_ERROR] ..."}</code>, which parsed to zero docs
+– Radio Programs reported itself empty, and because that empty payload
+was a truthy dict it was <strong>cached</strong>, outliving the outage;
+the error body now raises (<code>service_unreachable</code>), empty
+listings are never cached, and <code>directory_cache</code> records a
+swallowed refresh failure so <code>browse</code> can still tell empty
+from broken without the cache layer having to raise into a tree.
+LibriVox browse also drops from the 20 s book-download budget to 8 s,
+and a branch names itself while loading and speaks up if it passes three
+seconds, because slow and hung are the same experience in silence.</li>
+<li><strong>AudioPub as a Community Audio source, v1 = Discover only
+(3.0.0; <code>core/radio/audiopub.py</code>, handlers in
+<code>core/radio/browse_libraries.py</code>).</strong> AudioPub
+(audiopub.site) is an open-source (AGPL-3.0) platform whose agreement
+says uploads are publicly streamable and downloadable. Its own client
+code implements one JSON endpoint –
+<code>GET /quickfeed/api?page=N</code>, 50 items per page, deliberately
+randomized server-side – so v1 is exactly that: a
+<strong>Discover</strong> shelf (a random fifty, different every time,
+with a “More to discover” row), each row playable with a timeline and
+carrying its creator and play count. Two boundaries, both deliberate:
+(1) the software being open source does not make the <em>audio</em>
+freely licensed – uploaders keep their rights, so AudioPub is live-only,
+excluded from the station catalog, and the Status view says why; (2)
+newest/popular/search/live-streams all exist server-side but have no
+public API, and the plan of record is to <strong>ask the AudioPub
+developer to bless a small read-only API</strong> for them rather than
+screen-scrape an internal one that can change. Live Now (Icecast at
+live.audiopub.site:8000, mount = user id) is the most interesting v2
+branch once blessed – playback is infrastructure Quill Radio already
+speaks.</li>
+<li><strong>Find became branch-smart, and the tree learned to read ahead
+(3.0.0; <code>core/radio/branch_find.py</code>,
+<code>ui/radio/browse_prefetch.py</code>, scoped filters on
+<code>catalog.store.search</code>).</strong> <em>Find in this
+folder</em> used to answer one way everywhere: crawl the subtree and
+match labels – which anchored on Podcasts meant crawling chart pages and
+never asking Apple’s search engine (how a show as findable as Double Tap
+came back “no matches”, reported 2026-08-16). Find now routes to the
+fastest honest channel for the anchor: the Podcasts branch asks the real
+iTunes Search API and answers with show <em>folders</em> that expand
+into episodes; a catalog-served Radio Browser axis answers from the
+local FTS index, scoped to the anchored
+country/state/language/genre/codec – instant and offline; LibriVox, the
+Internet Archive, Project Gutenberg, SomaFM, TuneIn, iHeart, NOAA,
+Audius, Mixcloud and ccMixter each route to their own search engine
+(books and Archive items as drillable folders, TuneIn rows
+stream-resolved); only engine-less branches keep the bounded crawl, and
+an unreachable directory reports itself rather than posing as “no
+matches”. Ctrl+F focuses the box from anywhere in the window. Every
+answer states its origin out loud (“Searched the whole podcast
+directory”, “From your catalog”). The Find box moved
+<strong>above</strong> the tree – one Shift+Tab away – and the tree got
+<strong>predictive prefetch</strong>: highlighting a collapsed folder
+starts its fetch immediately and a just-opened folder’s first child
+folders fetch behind it, so expands the listener was about to make open
+instantly. Prefetch is driven only by where the cursor actually is:
+hidden sources stay uncontacted, Safe Mode fetches nothing. Related fix:
+a Find Stations result that is a <em>work</em> rather than a stream (an
+Apple show, a LibriVox book) used to hand the player an empty URL and
+silently do nothing; Play now resolves it off-thread and starts the
+show’s latest episode or the book’s first section, announced by
+name.</li>
+<li><strong>Browse as a contract, not a window (3.0.0; upstream
+<code>core/radio/browse_nodes.py</code>,
+<code>core/radio/browse_sources.py</code>,
+<code>core/radio/browse_visibility.py</code>,
+<code>core/radio/directory_cache.py</code>,
+<code>ui/radio/browse_tree_dialog.py</code>).</strong> The Browse
+Stations window knew the shape of all thirteen sources in it: adding
+iHeart had cost three internal node-kind strings and edits in six
+places, and <em>Find in this folder</em> carried a
+<strong>second</strong> copy of the same knowledge, hand-synchronised –
+so a source added to the display and forgotten there was silently
+unsearchable, with no error to notice. <code>BrowseNode</code> is now
+the whole contract (folder / leaf / action, plus <code>note</code> and
+an optional <code>child_count</code>), every source answers exactly one
+question – <em>what is inside this folder</em> – through one registry
+(<code>ROOT_SOURCES</code> plus one handler), and the dialog knows only
+that a row is something to open or something to play. Adding a source is
+one registry entry and one function, both testable with no wx at all.
+The window ended <strong>199 lines smaller while the tree it serves grew
+from thirteen root branches to twenty-eight</strong>, and its GATE-11
+budget was ratcheted down to hold that: a change that puts a
+source-specific branch back inside it fails the build. Three behaviours
+came with the refactor: an empty branch distinguishes “this genre has no
+stations” from “that directory could not be reached” (they used to be
+indistinguishable, which is how a listener concludes a working source is
+broken); a folder announces its size with its name where the source can
+say cheaply; and <code>directory_cache</code> adds the fourth cache tier
+(fresh -&gt; live -&gt; stale) so a level survives a session, a failed
+refresh keeps what was there rather than blanking a working branch, and
+a cached answer reports its own age instead of implying it is current.
+<code>LOCAL_SOURCES</code> is what Safe Mode reads, per branch, rather
+than a single app-wide switch.</li>
+<li><strong>Nine new browse branches, none of them needing a key (3.0.0;
+upstream <code>core/radio/radio_browser.py</code>,
+<code>core/podcasts/apple_podcasts.py</code>,
+<code>core/radio/internet_archive.py</code>,
+<code>core/media/librivox.py</code>,
+<code>core/radio/gutendex.py</code>,
+<code>core/radio/free_music.py</code>,
+<code>core/radio/wikidata.py</code>).</strong> The access rule is the
+organising principle: no API key, no account, no developer registration,
+no business relationship.
+<ul>
+<li><em>Four axes the directory already published.</em> <strong>By
+Country</strong> -&gt; state/region (the
+<code>/json/states/{country}/</code> <strong>trailing slash is
+required</strong> – without it the API answers “this country has no
+states” rather than an error, which is a fault no unit test would have
+caught), <strong>By Language</strong>, <strong>Trending Now</strong>
+(<code>topclick</code>, genuinely distinct from <code>topvote</code>
+behind Popular Stations), and <strong>Recently Added or
+Changed</strong>. No new egress host: this is data Quill Radio was
+already downloading to fill two dropdowns.</li>
+<li><em>Apple Podcasts, keyless.</em> Storefront -&gt; genre tree -&gt;
+subgenre -&gt; charts -&gt; lazy <code>lookup</code> -&gt;
+<code>feedUrl</code>. Genre tree cached a week, charts six hours, feed
+URLs a month; one chart request serves every genre in a storefront.
+<strong>A chart row is tagged with its leaf genre and never its
+ancestors</strong>, so filtering the US top 100 by Arts returned zero –
+<code>genre_id_set</code> expands a genre to its subtree. Apple is
+discovery only: a show resolves to the publisher’s own RSS and
+everything after that (episodes, audio, transcripts) comes from the
+feed, so the branch is switchable off at no cost to playback.
+<strong>Podcast Index is out</strong> – decision 2026-08-13, reversing
+the earlier plan: it needs a free key, which means a key to configure,
+to support, and to explain to somebody at the worst moment, and
+transcripts never came from a directory in the first place.</li>
+<li><em>Internet Archive.</em> The collection tree walked to any depth
+(every item declares its parents, so one query shape walks all of it),
+<code>Retry-After</code> honoured on HTTP 429 per the Archive’s
+automated-access rules, a <strong>More…</strong> node that states how
+many rows it is hiding rather than silently showing the first hundred of
+eight thousand, and rights metadata shown only where the item publishes
+it.</li>
+<li><em>LibriVox, Project Gutenberg, Audius, Mixcloud, ccMixter.</em>
+LibriVox: Recently Added, By Genre (43), By Author A-Z (~7,000);
+<strong>no By Title</strong>, because the catalogue supports no title
+filter in any form – four were tried and all answer 404 or 400 while
+author works from the same address, and an axis that quietly finds
+nothing is worse than one not offered. Gutenberg: the 1,124 records
+carrying human-read audio, by topic and language. Audius: trending
+overall and within 27 genres, gated tracks dropped rather than listed
+and refused at play time. <strong>Mixcloud is Mode A only</strong> –
+metadata browse, and activating a show opens it in the listener’s
+browser; no stream extraction, and the row says so <em>before</em>
+activation, per Mixcloud’s widget terms. ccMixter: by tag, each row
+carrying its own licence.</li>
+<li><em>Explore (Wikidata).</em> By City and By Format (P131/P415) plus
+On the Dial by FM band, matched conservatively against Radio Browser,
+which still supplies every stream. Labelled “from Wikidata” because the
+join is Quill Radio’s, not either source’s. <strong>A place and a format
+are asked of Radio Browser directly</strong> and topped up with
+Wikidata’s call-sign matches: the reverse order takes Wikidata’s capped,
+unordered slice as the universe, and Arizona opened to nothing while
+forty-eight of its stations were playable (reported 2026-08-16).
+<strong>By Network was removed and By Format moved off P2360</strong> in
+the same pass – P449 is recorded for two US radio stations and P2360 for
+none, so neither folder could ever list anything; same reasoning as the
+RadioDNS non-goal below, and found by opening every axis in one sweep
+rather than waiting for a report. <strong>By Owner (P127) was removed
+2026-08-17</strong>, and it is the rule the axis set now follows: <em>an
+axis stays only if Radio Browser can answer it directly</em>. Ownership
+is not a field Radio Browser carries, so an owner folder had no lead
+query and fell back to call-sign matching alone – it counted correctly
+and then opened to nothing, or to a fraction of the named company, about
+three times in four. Empty-before-opening (By Network) and
+empty-at-the-leaf (By Owner) are the same defect at two depths.</li>
+<li><em>My Servers and YouTube Channels, and the action-row contract
+they needed.</em> <code>core/radio/my_servers.py</code> enumerates
+Icecast (<code>/status-json.xsl</code>) and SHOUTcast
+(<code>/stat</code>, <code>/7.html</code>) mounts with now-playing text
+on each; <code>core/radio/youtube_channels.py</code> pages a channel’s
+uploads and playlists with no Google account. Both are branches you add
+to yourself, which needed the one node kind nothing had ever handled:
+<code>BrowseNode.is_action</code> existed and
+<code>browse_tree_dialog</code> ignored it, so “Add a Server…” and “Add
+a Channel…” were rows that did nothing on Enter – precisely the failure
+<code>bounded_playback_ui</code>’s house rule exists to prevent.
+Dispatch is now <code>ui/radio/browse_actions.py</code>, one registry
+entry per action, so the window still learns nothing source-specific and
+the next “Add…” row costs a function. Three rules the actions share: the
+address is <strong>probed before it is stored</strong>
+(<code>my_servers.probe</code>, or the same shallow listing request the
+branch itself would make), and one that answers with nothing is refused
+rather than kept as a dead row; the probe runs on the task manager,
+never the UI thread, because a small box on a slow link can take the
+full twelve-second timeout; and Safe Mode refuses out loud, per action,
+before anything is asked. <strong><code>my_servers</code> is the one
+deliberate plain-<code>http</code> exception in the app</strong>: a
+large share of small Icecast boxes are http on a high port and always
+have been, refusing them would refuse the whole audience the branch
+exists for, the address is one the listener typed, only a GET is sent,
+and no credential is ever attached. Written down rather than quietly
+made.</li>
+<li><em>Song Details (upstream
+<code>ui/radio/song_facts.py</code>).</em>
+<code>core/radio/musicbrainz.py</code> had been written and called by
+nothing; it is now the <strong>Song Details</strong> button in the Song
+History window – release, year and length for the selected song, which
+is the difference between a list of titles and a history somebody can
+act on. Deliberately a button: automatic enrichment would issue a
+network request per row and spend a listener’s connection on curiosity
+they never expressed. On the task manager, self-rate-limited to
+MusicBrainz’s one request per second (the module keeps the interval
+itself rather than trusting callers), and <strong>degrading to “nothing
+more is known”</strong> rather than to an HTTP message – somebody asking
+what album a song is from is not served by a status code. Injected into
+the dialog as a callable, matching the existing Background lookup, so
+the window keeps one injection style.</li>
+<li><em>RadioDNS is a non-goal (2026-08-14), and the module was
+<strong>removed</strong> rather than left as dead code.</em> It resolves
+a broadcaster’s own service document from the <strong>broadcast</strong>
+parameters – frequency, PI code, ECC – and Quill Radio has no source of
+PI codes; wiring it would have meant a form asking a listener for a
+value nobody has, which is the same failure as an axis that quietly
+finds nothing. Its egress entry went with it, and <code>dnspython</code>
+was dropped from the dependencies, nothing else needing it.</li>
+</ul></li>
+<li><strong>Playlist formats, and the M3U8 ambiguity (3.0.0; upstream
+<code>core/radio/playlist_formats.py</code>,
+<code>core/radio/playlist_export.py</code>).</strong> PLS, XSPF and ASX
+join M3U on import, and favorites export to all four – each asserted to
+round-trip through its own parser rather than merely to serialise. ASX
+is read twice, strictly and then forgivingly, because in the wild it is
+frequently not valid XML at all. XSPF and ASX go through
+<code>safe_xml</code>, so a billion-laughs playlist is refused rather
+than opened. <code>classify_m3u</code> settles the real bug: an
+<code>.m3u8</code> is either a station list or an HLS manifest, the two
+share an extension <em>and</em> a first line, and handing the second to
+the importer produced a list of two-second “stations” – content wins
+over extension, because a server naming a live stream <code>.m3u</code>
+is common, and every sniff outcome is speakable.</li>
+<li><strong>Where you stopped, for anything with an end (3.0.0; upstream
+<code>core/radio/resume.py</code>,
+<code>ui/radio/resume_playback.py</code>).</strong> Deliberately
+separate from <code>core/media/positions.py</code>, which Cast and the
+Media Player use: that store keys on a <em>file</em> by name and size,
+and nothing Quill Radio plays here is a file. These key on the stream
+URL, normalised so a session token or a changed scheme still finds the
+place. A position under <code>MIN_RESUME_MS</code> is not a position and
+saving one <em>clears</em> the entry; within <code>END_MARGIN_MS</code>
+of the end counts as finished and clears it too; every failure degrades
+to “no saved position” and never reaches the player. Which rows have a
+timeline at all is <code>RadioStation.is_recording</code>, declared by
+the source that produced the row – a live station has no position worth
+remembering. Extracted to its own module rather than grown inside
+<code>player_controller.py</code>, which is at its GATE-11 ceiling.</li>
+<li><strong>Timed transcript cues (3.0.0; upstream
+<code>core/podcasts/transcripts.py</code>).</strong>
+<code>TranscriptCue</code>, <code>parse_transcript_cues</code>,
+<code>cues_to_text</code> and a binary-search <code>cue_at</code>, over
+WebVTT, SRT, Podcasting 2.0 JSON and YouTube <code>json3</code> – the
+last arriving free with every YouTube resolve and previously discarded.
+<code>parse_transcript</code> is redefined as the timed form with
+timings removed, so there is one reader rather than two that drift;
+Cast’s existing tests are the regression gate and pass untouched. This
+is the foundation for follow-playback, jump-to-line and spoken
+positions; the reading surface itself is not built.</li>
+<li><strong>Three silent faults (3.0.0; upstream
+<code>core/radio/xiph.py</code>,
+<code>core/radio/tunein.py</code>).</strong> Xiph’s genre index had
+outgrown the page-size cap and was being truncated mid-file, losing 412
+genres and a <em>different</em> number on every refresh, in perfect
+silence – the reader is deliberately forgiving of mangled markup, which
+is right for a website tweak and exactly wrong for a size limit.
+Truncation now raises; the cap fits the page. The same list was also
+being sorted alphabetically, destroying the directory’s own popularity
+order (it opened on <code>00</code>, <code>00s</code>,
+<code>100.1</code>); source order is kept, obvious non-genres are
+filtered, and the branch offers the top 120. TuneIn’s stream choice was
+a <em>filter</em> (first thing that is not TuneIn’s own un-followable
+redirect) rather than a <em>ranking</em>, so it could hand back
+<code>http://</code> while an <code>https://</code> sat beside it; it
+now ranks not-a-redirect first, then encrypted over unencrypted, while
+still preferring a plain address that plays over an encrypted one that
+does not.</li>
+<li><strong>The download queue, its filing rules, and books that play
+back (3.0.0; upstream <code>core/radio/download_queue.py</code>,
+<code>core/radio/download_prefs.py</code>,
+<code>core/radio/downloaded_books.py</code>,
+<code>ui/radio/download_runner.py</code>,
+<code>ui/radio/download_queue_dialog.py</code>,
+<code>ui/radio/download_menu.py</code>,
+<code>ui/radio/book_playback.py</code>,
+<code>ui/radio/track_end.py</code>).</strong> Saving one file needs no
+queue; saving a forty-chapter book while listening to something else is
+the real shape. <strong>One transfer at a time, in the order
+asked</strong> – not a pool: every source here is a free library on
+donations, parallel fetches are a worse citizen for no audible gain, and
+order is what makes a part-finished book a <em>playable prefix</em>. The
+pump is re-entrant-safe by construction (each completion schedules the
+next from the UI thread’s own callback), so there is no lock because
+there is no concurrency to guard. <strong>View &gt; Downloads…
+(Ctrl+Shift+J)</strong> is the monitor; finished rows persist until
+cleared, because “did that actually download?” is the question asked
+most and a self-tidying list cannot answer it.
+Cancel/remove/clear-finished/clear-all all preserve what is on disk; the
+running row cannot be removed from under its own transfer. Closing the
+window honours <code>keep_going_in_background</code> and <strong>states
+the outcome either way</strong> – silence in both directions is equally
+surprising.
+<ul>
+<li><em>Filing is a design decision, not a preference dump.</em>
+<code>plan_destination</code> puts a podcast under its show and a book
+in its own folder, and adds an <strong>author</strong> folder only once
+a second book by that author exists – an author folder holding one book
+is a folder you open and immediately leave, and the right answer depends
+on what is already on disk, which is why the function is given the
+library it files into. <code>safe_segment</code> handles Windows
+reserved names and trailing dots, since a silently-renamed folder merges
+two books into one.</li>
+<li><em>A downloaded book is read back off the disk, not indexed.</em>
+<code>downloaded_books</code> sorts naturally (2 before 10 – a book that
+plays its tenth chapter second is worse than one that will not play),
+admits only audio (the licence note beside a CC track is not a chapter),
+and understands both filing shapes. The folder <strong>is</strong> the
+record: no database, no startup scan, so a chapter moved by hand simply
+changes the book. <code>book_playback.handle_finished</code>
+auto-advances, announcing position-first (“4 of 40”), and says when a
+book ends rather than leaving silence that is indistinguishable from a
+fault. It plays each chapter as an <strong>ordinary station</strong>, so
+resume, Sound Enhancements, the Winamp keys and Continue Listening all
+apply without earning them twice. <code>track_end.py</code> is the
+GATE-11 extraction that made room and is better for it: an
+end-of-playback is three different events (dropped live stream / chapter
+finishing / recording genuinely ending) and the order they are asked in
+<em>is</em> the logic.</li>
+</ul></li>
+<li><strong>Continue Listening spans local files (3.0.0; upstream
+<code>core/media/local_paths.py</code>,
+<code>core/media/continue_listening.py</code>).</strong>
+<code>PositionStore</code> keys on file <em>contents</em> so a place
+survives moving, renaming and a different OS – which is why it stores no
+path, and why local files could never appear in a resume list. A
+<strong>local-only sidecar</strong> records where each media id was last
+seen. Deliberately not a field on the synced record: a path is a fact
+about one machine, putting one in a travelling record leaks a folder
+layout to every device, and two machines disagreeing about a location is
+two correct answers rather than a conflict to merge. A stale hint is
+skipped rather than offered-and-failed; the position itself is untouched
+and is recovered the next time the file plays. Classified
+<code>cache</code> in the persistence audit, which is exactly what it
+is.</li>
+<li><strong>Download, and the rights rule that governs it (3.0.0;
+upstream <code>core/radio/downloadable.py</code>,
+<code>core/radio/media_download.py</code>,
+<code>ui/radio/download_command.py</code>,
+<code>ui/radio/browse_tree_menu.py</code>).</strong> Quill Radio
+surfaced a great deal of freely-licensed material it could play and not
+save. The feature is small; the <strong>policy</strong> is the design.
+<code>downloadable.can_download</code> is a pure, unit-tested predicate
+over an <strong>affirmative allow-list</strong> (LibriVox, Project
+Gutenberg, Internet Archive, ccMixter, podcast enclosures), so an
+unrecognised source is refused rather than guessed at – N-7’s provenance
+discipline applied to writing files instead of reading them. Four
+refusals carry their own sentence, because a missing menu item is
+indistinguishable from a bug and the reasons differ in kind:
+<strong>live</strong> (no file exists; named Record Station as the
+command that does apply), <strong>Spotify</strong> (DRM),
+<strong>YouTube</strong> (a decision the PRD already records, restated
+rather than silently enforced), <strong>Audius</strong> (downloadability
+is the artist’s choice and is absent from the listing, so no guess is
+made). The check runs at the transfer boundary as well as in the menu,
+so no path reaches the network without it. <code>media_download</code>
+fetches in bounded chunks with a <code>.part</code> file and a Range
+header, so a long transfer resumes and a cancel lands
+<strong>inside</strong> a file rather than between files;
+<code>download_book</code> walks chapters <strong>in order</strong> (a
+part-finished book is a playable prefix), isolates a failure to one
+chapter, and reports progress in chapters rather than bytes. A Creative
+Commons licence is written beside the audio – saving the work and
+discarding its terms strips the one thing the licence exists to carry.
+One new reviewed egress entry; no new hosts, since every address comes
+from a directory the browse tree already reached.
+<code>browse_tree_menu.py</code> is the GATE-11 extraction that made
+room for the menu item, and <code>network_egress_entries.py</code> is
+the extraction that made room for the audit entry.</li>
+<li><strong>Federated search across the libraries (3.0.0; upstream
+<code>core/radio/federated_search.py</code>,
+<code>ui/radio/library_search.py</code>,
+<code>ui/radio/search_paging.py</code>).</strong> 3.0 grew fifteen
+browse branches while Find Stations searched the same eight radio
+directories, so a listener could <em>walk</em> to a LibriVox book by
+author and could not <em>find</em> it by typing the title. Now LibriVox,
+Internet Archive, Project Gutenberg and Apple Podcasts are queried
+alongside the directories. <strong>Not a new window</strong>: rows land
+in the existing results list carrying their own
+<code>RadioStation.source</code>, which the Source column already
+renders and the Source dropdown already filters, and the existing
+cross-directory merge de-duplicates them unchanged – a second search
+surface would be a second thing to learn for no gain. <strong>No new
+egress hosts</strong>: <code>internet_archive.search</code> adds a query
+shape to the scrape endpoint the tree already uses, and
+<code>gutendex.audiobooks</code> gained a <code>query</code> parameter
+that maps to Gutendex’s own <code>search</code>. Four rules. <strong>No
+cross-provider ranking</strong> – each source’s own order is preserved
+within its group, because a relevance score comparing a LibriVox chapter
+with an Archive recording is a research project pretending to be a
+feature and a wrong one is worse than an honest concatenation.
+<strong>One task per source</strong>, so a slow library never holds up
+the others or the stations, with results appended as they land and the
+listener’s cursor preserved mid-read
+(<code>_show_category_for_library_results</code>). <strong>One
+announcement, when the last source reports</strong> – the pending
+counter exists solely to make “last” knowable, because a list that
+announces itself five times cannot be read. And <strong>a source that
+cannot be searched says so</strong> – <code>search=None</code> plus a
+written reason, named once in the summary, since “no results from
+Mixcloud” and “Mixcloud cannot be searched” are different facts and only
+one means try different words. <strong>No source is in that
+state.</strong> Audius, Mixcloud and ccMixter shipped declared
+unsearchable (“trending only”, “categories”, “tags”) and all three
+publish a keyword search; verified against the live services 2026-08-14
+and wired the same day (<code>free_music.audius_search</code> /
+<code>mixcloud_search</code> / <code>ccmixter_search</code>,
+<code>/v1/tracks/search</code>, <code>/search/?type=cloudcast</code>,
+and <code>api/query</code> with <code>search=</code> instead of
+<code>tags=</code>). The parsers needed no change at all, because a
+search result and a trending result are the same object from the same
+service – which is the measure of how small the gap was, and of how
+easily a shelf becomes a believed limit. <strong>Mixcloud stays Mode
+A</strong>: search changes how a row is found and nothing about what it
+is, so no stream URL is extracted and the row still opens the show’s
+page in the browser, labelled before Enter. The unsearchable machinery
+is kept for the next source that genuinely lacks a search; having
+nowhere honest to record that is what let three wrong claims stand for a
+release.</li>
+<li><strong>Video, and the accessibility specification it is built
+against (3.0.0; upstream <code>core/radio/video_formats.py</code>,
+<code>core/radio/caption_style.py</code>,
+<code>ui/radio/video_window.py</code>,
+<code>ui/radio/video_commands.py</code>,
+<code>ui/radio/video_output.py</code>,
+<code>ui/radio/mpv_video_mixin.py</code>,
+<code>ui/radio/caption_settings_dialog.py</code>,
+<code>apps/radio_video_menu.py</code>).</strong> Quill Radio could play
+a YouTube link and could not show it – video was off in three separate
+places, none of them a bug, all of them the right first version. The
+consequence had become wrong: a lecture with slides or a livestream with
+an on-screen crawl was a partial product, <strong>low-vision listeners
+were excluded from a feature nominally for them</strong>, and a blind
+listener could not share what they were hearing with a sighted person in
+the room.
+<ul>
+<li><em>The design, in one sentence.</em> <strong>Video is a view onto
+playback, never a mode of playback.</strong> <code>attach_video</code>
+sets mpv’s <code>wid</code> to the panel’s handle and flips
+<code>vid</code> from <code>no</code> to <code>auto</code>;
+<code>None</code> reverses both. mpv accepts both at runtime, so
+<strong>showing and hiding the picture never restarts the stream and
+never costs the listener their place</strong> – which is the property
+that makes video safe to offer at all. Never opening the window leaves
+3.0’s behaviour byte for byte.</li>
+<li><em>Two URLs, not a merge.</em> YouTube serves adaptive video and
+audio separately. Having yt-dlp merge them means downloading the whole
+video before a frame plays – not streaming, and impossible for a live
+broadcast. <code>pick_video_stream</code> therefore chooses a
+<strong>video-only</strong> format (tallest to
+<code>MAX_HEIGHT = 1080</code>, then bitrate, then frame rate; combined
+formats are skipped, since the single-URL path already handles them and
+pairing one with a separate audio file would play the programme twice)
+and the audio is handed to mpv’s <code>audio-files</code>. This is what
+mpv’s own <code>ytdl_hook</code> does internally. A live HLS manifest
+carries both, so the existing path is unchanged and
+<code>pick_video_stream</code> answers with nothing.</li>
+<li><em>The surface, which is where video players fail.</em> An
+mpv-rendered child window is, to assistive technology, an unnamed handle
+containing nothing. The panel carries an accessible
+<strong>name</strong> (the video’s title, updated silently on change –
+it is for somebody navigating there, not an announcement for somebody
+listening), a <strong>description</strong> stating what it is and where
+the controls are, is in the tab order <strong>exactly once</strong> with
+no trap, and <strong>never takes focus by itself</strong> except
+deliberately once, on open. A top-level <code>wx.Frame</code> rather
+than a docked panel: the main window’s tab order is screen-reader-tested
+and must not be perturbed, a frame can be moved to a second monitor, and
+one window with one Close is unambiguous. <strong>No on-screen
+buttons</strong> – every command is a menu item, a palette entry and a
+rebindable key, because duplicating them into an unlabelled strip is how
+video players become inaccessible. The status line is <strong>not a live
+region</strong>; a self-announcing position display is the commonest way
+a media player becomes unusable. <strong>The close handler opens no
+modal</strong>, which is a repository-specific hazard already hit once
+on wxMSW.</li>
+<li><em>Section 508 503.4 shapes the menu.</em> Captions and
+Audio-and-Described-Audio are Playback items beside Volume because the
+rule requires user controls for captions and for audio description at
+the same menu level as volume. Read as a design instruction rather than
+a checkbox, it produces a better menu for free.</li>
+<li><em>Captions (503.4.1, WCAG 1.4.3 and 1.4.4).</em> External caption
+file via <code>sub-add</code>; <code>CaptionStyle</code> -&gt;
+<code>mpv_properties</code> is the only place that knows mpv’s caption
+properties. <strong>Opaque background by default</strong> – caption text
+sits over arbitrary moving pictures, so no colour can be guaranteed to
+contrast with what is behind it, and a solid box is the only honest
+answer. Sizes are percentages of the player’s own default (so they scale
+with the window) up to <strong>300%</strong>, because 1.4.4 asks for
+200% and a floor is not a target. Three text colours and three
+backgrounds rather than a colour picker: a free choice invites a
+combination that fails silently. Every stored value is clamped, because
+a settings file is somebody else’s input. An <strong>automatic</strong>
+caption track is announced as automatic, once.</li>
+<li><em>Photosensitivity (WCAG 2.3.1), answered honestly.</em> A stream
+cannot be analysed for flashing before it plays, so the claim is not
+made. Instead: video never starts on its own, the picture can be
+<strong>dimmed</strong> through mpv’s <code>brightness</code>, and
+<strong>hiding it is one keystroke from anywhere in the app</strong> –
+escape from an unpleasant image must not require finding the right
+window first.</li>
+<li><em>Keyboard only (WCAG 2.1.1, 2.1.2).</em> Every capability has a
+command, resize and full screen included; no new command takes a bare
+letter or number, which would collide with station-list type-ahead; full
+screen has two documented exits and <strong>speaks both on
+entry</strong>, because a way out that is true but unstated is not
+usable.</li>
+<li><em>Deliberately not built.</em> <strong>No YouTube web player or
+IFrame API</strong> – it would bring a WebView, its accessibility, its
+adverts and its tracking into an app whose house position (recorded in
+<code>link_finder.py</code>) is to prefer the user’s real browser for
+anything accessibility-sensitive. <strong>No video downloading</strong>:
+the resolve stays <code>download=False</code> and recording still
+captures audio. <strong>Video is not the default</strong> and never
+becomes it.</li>
+<li><em>Consent.</em> <code>YOUTUBE_CONSENT</code> promised only “the
+audio stream behind the page”, which stopped being the whole truth; it
+now says audio <em>or</em> video and states the rights reminder more
+firmly. The consent <strong>flag does not reset</strong> – somebody who
+consented to YouTube has consented to YouTube, and asking twice for a
+superset is friction rather than ethics – so the change is stated
+plainly in the release notes for everyone who already agreed.</li>
+</ul></li>
+<li><strong>Described audio (3.0.0; upstream
+<code>core/radio/audio_tracks.py</code>,
+<code>ui/radio/audio_track_dialog.py</code>,
+<code>ui/radio/track_selection.py</code>,
+<code>apps/radio_video_menu.py</code>).</strong> <strong>The product’s
+reason for existing, and the strongest single differentiator in the
+app.</strong> A described audio track is a second narration saying what
+a sighted viewer can see. Broadcasters publish them; YouTube carries
+them on a growing number of videos; and the desktop-player state of the
+art is an audio-track menu reading “Track 1 / Track 2 / Track 3”, which
+for a blind listener is not a control but a puzzle solved by playing
+each in turn. <strong>Playback &gt; Audio and Described Audio…
+(Ctrl+Shift+A)</strong> and <strong>Play Described Audio
+(Ctrl+Alt+D)</strong>. <code>tracks_from_info</code> reads the
+renditions yt-dlp already reports on every resolve (audio-only,
+deduplicated, URL kept); <code>is_described</code> is a <strong>pure,
+unit-tested</strong> predicate, generous about form and strict about
+meaning – “English (Audio Description)”, “descriptive”, “eng-desc”,
+“English AD”, and the BCP 47 <code>x-description</code> /
+<code>x-desc</code> / <code>x-ad</code> subtags – so the heuristic can
+improve as publishers change their labelling without touching a line of
+UI. <code>describe_track</code> <strong>names</strong> each rendition
+(“English (described)”) and drops yt-dlp’s own quality notes
+(<code>medium</code>, <code>DRC</code>), which describe the encoding and
+not the content. Four product decisions: the described track is listed
+<strong>first with the cursor on it</strong> and its availability stated
+<em>above</em> the list, because that is the one fact the listener
+opened the window to learn; it is <strong>ordered, never
+filtered</strong>, so somebody who did not ask for description is never
+surprised by it; <strong>selection keeps the position</strong>
+(<code>track_selection.play_audio_track</code> reads
+<code>position_ms</code> before the reload and restores it through
+<code>_pending_resume_ms</code>, because a rendition is a separate URL
+rather than a channel of one stream, and losing an hour of a film to
+enable description would defeat the feature exactly where it matters);
+and <strong>absence is reported with what the video does have</strong>
+(<code>summarise</code>), never as a disabled command – “no described
+audio” alone leaves the listener unable to tell a video’s omission from
+an app’s limitation. <strong>And the feature announces itself</strong>
+(<code>track_selection.announce_described_if_new</code>, called from
+<code>_on_radio_state_changed</code>): a video carrying a described
+track says so <strong>once</strong>, keyed on the station so a repeat is
+impossible within a session, naming the key. This is the part that
+decides whether the feature reaches anybody – a command you must already
+know about only serves the people who least need it, and essentially
+nobody expects a desktop radio player to offer described audio.
+<code>_selected_audio_track</code> is cleared on every
+<code>play_station</code>, so a choice made for one video never silently
+carries to the next.</li>
+<li><strong>Transcripts, end to end (3.0.0; upstream
+<code>quill/ui/transcript_reader.py</code>,
+<code>ui/radio/transcript_command.py</code>,
+<code>apps/radio_video_menu.py</code>,
+<code>core/podcasts/transcripts.py</code>).</strong> <strong>Playback
+&gt; Transcript… (Ctrl+Shift+T)</strong> on a finished video. The
+caption track was already being captured by every YouTube resolve and
+discarded; <code>PlayerController.caption_track()</code> exposes it and
+<code>fetch_transcript_cues</code> parses YouTube’s <code>json3</code>
+through the same cue reader Cast uses. The window is <strong>shared with
+Quill Cast</strong>, not Radio’s own – two transcript readers would
+drift apart the day after the second was written – and it is a read-only
+<code>wx.TextCtrl</code> rather than a custom list, so arrow keys, word
+and line movement, selection, the review cursor and Find all behave
+exactly as they do everywhere else. <code>line_starts</code> and
+<code>cue_index_for_offset</code> map character offsets to cues and
+back, which is what lets Enter seek correctly however the caret got
+there. <strong>Follow the audio is off by default</strong> (while
+somebody is reading, playback must not move their caret) and silent
+while on (a position per line would be unusable); every position is
+spoken as words through <code>spoken_duration</code>; Save As keeps the
+timings via <code>cues_to_vtt</code> / <code>cues_to_srt</code>, both
+asserted to round-trip through the parser rather than merely to
+serialise; and an <strong>automatic</strong> caption track is announced
+as automatic in the heading, because a machine transcript presented as a
+human one is exactly the confident wrong answer rule A-10 exists to
+prevent. Four refusals, each with words: a live stream has no
+transcript, a video with no published captions says so, Safe Mode
+refuses before any request, and an unparseable file is reported. The
+fetch is on the task manager, never the UI thread.
+<code>apps/radio_video_menu.py</code> is the GATE-11 extraction that
+made room for the menu item, and it returns its id refs so
+<code>radio.py</code> can still pin them.</li>
+<li><strong>A dropped live stream reconnects, in two layers (3.0.0;
+upstream <code>ui/radio/mpv_radio_engine.py</code>,
+<code>ui/radio/live_reconnect.py</code>,
+<code>ui/radio/player_controller.py</code>,
+<code>core/radio/iheart.py</code>).</strong> Reported against KFI Los
+Angeles: “plays for about 20 seconds and then stopping”, plus a second
+station replaying its last five seconds. Root cause, confirmed by live
+capture: iHeart’s <code>secure_hls_stream</code> answers 302 to a
+<strong>per-listener</strong> host carrying <code>rj-ttl=5</code> and a
+session cookie, and the media playlist behind it holds three segments at
+<code>EXT-X-TARGETDURATION:10</code> – a thirty-second window refilled
+every ten seconds. A single failed playlist refresh or segment fetch
+therefore drains the buffer and ends the stream twenty to thirty seconds
+later, which is the reported symptom exactly; the replayed five seconds
+is the same fault caught a step earlier, where a silently re-established
+connection re-serves what it already sent. The code gap was total:
+<code>MpvRadioEngine</code> set <strong>no ffmpeg reconnect
+options</strong>, so one transient read error was terminal, and
+<code>_on_finished</code> treated EOF on a live station as the end of
+the stream. The one retry path that existed,
+<code>_attempt_engine_fallback</code>, is gated on
+<code>CONNECTING</code> and never fires mid-stream. Three parts. (1)
+<code>stream-lavf-o</code> now carries
+<code>reconnect=1,reconnect_streamed=1,reconnect_on_network_error=1,reconnect_delay_max=30</code>
+– <code>reconnect_streamed</code> is the load-bearing one, since without
+it ffmpeg refuses to reconnect a non-seekable stream, which describes
+every live station – and <code>_NETWORK_TIMEOUT_SECONDS</code> rose 15
+-&gt; 30, which was tight against a playlist that only advances every
+ten seconds. (2) <code>ui/radio/live_reconnect.py</code> (extracted, not
+grown inside the controller, which was at its GATE-11 ceiling) retries a
+dropped <strong>live</strong> station <code>MAX_ATTEMPTS = 3</code>
+times at 2 s / 5 s / 15 s, announcing each attempt with its number and
+the outcome either way; a <strong>bounded</strong> source is excluded
+via <code>is_seekable</code>, because a recording reaching its end has
+ended and reconnecting would replay it; a retry whose
+<code>_play_token</code> has moved on is dropped, so Stop or another
+station cancels it; and “Reconnected” is said only from
+<code>_on_loaded</code>, never from the scheduling side, so no success
+is claimed that was not observed. The one wx call it needs is
+<code>PlayerController._schedule_later</code>, injected, which keeps the
+module wx-free and lets tests drive the retry synchronously. (3)
+<code>_STREAM_KEYS</code> now prefers
+<code>secure_shoutcast_stream</code> over
+<code>secure_hls_stream</code>: one long HTTP body, no segment window,
+no per-refresh token, no per-listener session to lose. Parts 1 and 2
+harden every station; part 3 removes the failure mode for iHeart
+specifically. <strong>Also verified and recorded:</strong> a separate
+report of “KNBR does not play in Quill” was <strong>not a bug</strong> –
+the URL supplied was the station’s homepage, whose player is built in
+JavaScript, and <code>link_finder.py</code> deliberately never runs
+JavaScript, so finding nothing there is correct behaviour. The playable
+feed resolves through Triton’s provisioning API
+(<code>station=KNBRAM</code>).</li>
+<li><strong>TuneIn stream choice prefers progressive over HLS,
+host-scoped (3.0.0; upstream
+<code>core/radio/tunein.py</code>).</strong> The same failure mode as
+<code>iheart._STREAM_KEYS</code>, reached through a different directory.
+Reported against <strong>96.5 The Fan, Kansas City</strong> – the Chiefs
+flagship, TuneIn guide id <code>s28141</code>, absent from Radio Browser
+entirely and not addressable through the Triton provisioning endpoint
+under any call-letter mount tried, which is why the first pass could not
+identify it. <code>Tune.ashx</code> returns two addresses for it: an HLS
+manifest on <code>live.amperwave.net</code> and a progressive MP3 on
+<code>ais-sa40.cdnstream1.com</code>, and rank-first took the manifest.
+<strong>The restriction is the design.</strong> Those two hosts are
+different companies, and the MP3’s own query string carries
+<code>aw_0_1st.stationId=s324671</code>, <code>class=music</code> and a
+music <code>genre_id</code> where the station is sports – so it is very
+possibly not the same programme at all, and a blind progressive
+preference could hand a listener a different broadcaster. That is a
+materially worse failure than a dropout, which the engine’s reconnect
+options and <code>ui/radio/live_reconnect</code> already cover. So
+<code>best_stream</code> demotes HLS <strong>only when a progressive URL
+on the same host is available</strong>, which is exactly the shape of
+the iHeart case (<code>.../zc177</code> beside
+<code>.../zc177/hls.m3u8</code>) and a strong signal of one stream in
+two deliveries. <code>_is_hls</code> matches the path only, because
+TuneIn’s URLs carry heavy tracking query strings and matching those
+would demote ordinary MP3s. Probed 2026-08-14: both forms captured clean
+here (60.0 s, 59/59 unique one-second windows on the HLS form; 25.0 s
+clean on the MP3), confirming the fault is timing- and route-dependent
+rather than reproducible on demand.</li>
+<li><strong>A capture that recorded nothing is a failure, not a
+recording (3.0.0; upstream <code>core/radio/recording_outcome.py</code>,
+<code>core/radio/recording.py</code>,
+<code>ui/main_frame_radio.py</code>).</strong> Reported alongside the
+dropout above (John, 2026-08-14, against 96.5 The Fan Kansas City):
+Record gave no confirmation of a start or a stop and left an empty
+recordings folder. Two defects met. ffmpeg writes the output container
+the instant it opens the file, <strong>so file existence was never
+evidence that any audio arrived</strong> – and <code>_monitor</code>
+fired <code>on_state_changed(False, landed, ...)</code> for a job that
+produced zero bytes, which the frame announces as “Recording saved:
+<name>”. <code>recording_outcome.py</code> now owns the whole “how did
+this capture end” verdict: <code>captured_nothing</code> (missing, or
+under <code>MIN_USEFUL_CAPTURE_BYTES</code> = 8 KiB – deliberately
+generous, since deleting audio somebody wanted is far worse than keeping
+a very short file), <code>empty_capture_reason</code> (read from
+ffmpeg’s own last stderr lines, most recent match first, falling back to
+an honest admission rather than a guess),
+<code>discard_empty_capture</code>, and the <code>FATAL_STDERR_RE</code>
+/ <code>RECOVERY_STDERR_RE</code> classifiers that moved with them
+because they answer the same question. <code>RadioRecorder</code> gained
+<code>on_capture_failed(station, reason)</code> – <strong>separate from
+<code>on_state_changed</code> on purpose</strong>, because the two say
+opposite things: one reports a file that exists, the other reports that
+there is none – and the frame speaks it on
+<code>RADIO_STREAM_ERROR</code>, never the saved cue. A listener-stopped
+capture is exempt: stopping two seconds in is a choice, not a fault.
+GATE-11 was held by extraction throughout:
+<code>recording_outcome.py</code> is new,
+<code>probe_capture_extension</code> moved to
+<code>recording_commands.py</code> (beside the probe command it runs and
+the parser it feeds), and <code>ui/radio/recording_markers.py</code>
+took the resume-marker helpers out of
+<code>main_frame_radio.py</code>.</li>
+<li><strong>A probe per service (3.0.0;
+<code>S:\radio-probes\</code>).</strong> Quill Radio depends on eighteen
+services it does not control, and the historical way to learn one had
+moved was that something stopped working for somebody. Thirty-seven
+probes, each asserting something specific (“that station id came back
+with a playable address”, not “the server answered”). Writing them found
+three real faults before release – the Apple genre filter, the Radio
+Browser states endpoint, and a bulk endpoint whose answer changed with
+the fields requested – two of which would have looked like “that feature
+just doesn’t find anything”.</li>
+<li><strong>YouTube metadata and playlists (2.2.0; upstream
+<code>core/radio/youtube.py</code>,
+<code>tools/network_egress_audit.py</code>).</strong>
+<ul>
+<li><em>The metadata was already being paid for.</em>
+<code>_default_resolver</code> called <code>extract_info</code> and kept
+four fields – <code>stream_url</code>, <code>page_url</code>,
+<code>title</code>, <code>is_live</code> – out of a response that also
+carried duration, the uploader’s own chapter markers, subtitle and
+automatic-caption tracks, uploader, and description. All of it is now
+captured on the same request, so the cost is zero: no extra fetch, no
+extra latency. The parsing is split into pure functions
+(<code>stream_from_info</code>, <code>parse_chapters</code>,
+<code>pick_caption_track</code>,
+<code>playlist_entries_from_info</code>) so every field is testable
+against a fixture dict without touching YouTube; 22 tests do exactly
+that, and the pipeline was additionally verified end-to-end against a
+real 12-chapter video. Caption selection prefers a human-written track
+over an automatic one, accepts only <em>timed</em> formats (a plain-text
+dump carries no positions, making it useless for both seeking and the
+podcast chapter segmenter), and refuses a non-HTTPS URL.
+<code>duration_ms</code> is 0 for a live broadcast, which is not a
+failure but the honest answer: a broadcast has no timeline.</li>
+<li><em>Playlists, listed flat.</em>
+<code>resolve_youtube_playlist</code> uses
+<code>extract_flat="in_playlist"</code>, so a fifty-video playlist costs
+one request rather than fifty, and no entry’s audio is resolved until
+that entry is played – which then goes through the normal resolver with
+its re-resolve-on-every-play rule, because YouTube’s stream addresses
+expire. A new reviewed egress site. A watch link carrying
+<code>&amp;list=</code> is deliberately <strong>not</strong> treated as
+a playlist: the listener asked for that video, and silently expanding it
+into fifty stations would be a surprise, so only a genuine
+<code>/playlist</code> address expands.</li>
+<li><em>Deliberately not built: search and browse.</em> yt-dlp’s
+<code>ytsearch:</code> works without a key and is against YouTube’s
+Terms of Service; the sanctioned route is the Data API v3, which needs a
+key and carries a quota. Radio’s other directories (RadioBrowser,
+SomaFM, Xiph) are open APIs built to be consumed this way – YouTube is
+not, and the same rights posture that keeps the Live365 rewrite a pure
+string transform applies here. Decision 2026-08-12: no search branch;
+paste a link or a playlist. If it is revisited, it should be through the
+Data API with the listener’s own client credentials, the shape Spotify
+already uses.</li>
+<li><em>A finished video is not a station – delivered.</em> Seek,
+absolute position and 0.25-4x speed live in
+<code>ui/audio/mpv_engine.py</code>; <code>MpvRadioEngine</code> stubbed
+all three because live radio has no timeline. The obstacle was ordering,
+not capability: <code>_select_engine()</code> runs before
+<code>_resolve_playback_url()</code>, while live-versus-finished is only
+known after the resolve. The answer was <strong>not</strong> the engine
+swap first sketched here – rebuilding the play path to choose an engine
+later would have meant restructuring the most sensitive code in the
+radio stack for a capability the engine could simply be <em>told
+about</em>. <code>MpvRadioEngine.set_bounded()</code> instead receives
+the fact immediately after the load
+(<code>_declare_source_shape</code>), inside the existing one-play-token
+discipline, and gates
+<code>seek</code>/<code>length_ms</code>/<code>set_rate</code> on it;
+everything that is not a resolved, finished video is untouched. On top
+of that: the uploader’s chapters,
+<code>Play Faster/Slower/Normal</code>, <code>Where Am I?</code>, and
+<code>Go to Position...</code> (Ctrl+Shift+J), which reuses the Media
+Player’s accessible H/M/S dialog rather than a second prompt.
+<strong>The last gap closed was the transport keys themselves:</strong>
+Rewind/Forward 30 Seconds still ran the live-DVR cache seek for a
+finished video and announced a distance behind a live edge that does not
+exist – a fabricated measurement. <code>_radio_seek_bounded</code> now
+picks the operation the source deserves, which is also what finally
+reaches
+<code>bounded_playback_ui.skip_back</code>/<code>skip_forward</code>
+(written for exactly this, previously with no caller). No scrub
+<em>slider</em> was added: this is a keyboard-and-speech surface, and Go
+to Position plus the skip keys are the accessible form of the same
+capability.</li>
+</ul></li>
+<li><strong>Song History and one volume for every station (2.2.0;
+upstream <code>core/radio/song_history.py</code>,
+<code>ui/radio/song_history_dialog.py</code>,
+<code>ui/radio/song_history_commands.py</code>,
+<code>ui/radio/volume_commands.py</code>,
+<code>core/radio/favorites.py</code>,
+<code>core/commands.py</code>).</strong>
+<ul>
+<li><em>Song history (Playback &gt; Song History, Ctrl+Shift+H).</em>
+<code>core/radio/song_history.py</code> is a wx-free, strict-typed
+per-station log recorded at <code>_radio_apply_track_title</code> – the
+single choke point every route to a title (ICY, the engine, the
+station’s status endpoint) already funnels through, and where the “this
+is a new song” signal already exists, so the thirty-second poll gains a
+memory without gaining a timer. Four rules keep the log readable and are
+directly unit-tested: a repeat of the song already at the front folds
+into that entry with a <code>play_count</code> rather than appearing six
+times per track; each station is capped independently
+(<code>MAX_PER_STATION</code>) so one station left playing all day
+cannot evict another’s afternoon; stations are capped separately,
+least-recently-active dropped first; and titles that are the station’s
+own name, “Live”, or an advert marker are rejected as noise. Recording
+is wrapped so it can never raise – it runs immediately before the What’s
+Playing announcement, and anything thrown would silence it – and both
+the enabled flag and Safe Mode are read through <code>getattr</code>, so
+a host predating the preference degrades to logging rather than crashing
+the announcement path. The dialog offers Copy, Send to Clip Library (via
+the existing <code>ClipLibrary</code>/<code>Fragment</code> API), and
+<strong>Background</strong>: one provider-neutral
+<code>ProviderChatBackend</code> call off the UI thread whose answer is
+always prefixed with <code>BACKGROUND_DISCLAIMER</code>, because
+model-written text sits inches from the station’s own metadata in the
+same window. Refused in Safe Mode, and the prompt explicitly instructs
+the model to admit when it does not know the song. Persistence is
+classified <code>cache</code> in the persistence audit: an observed log
+with no default whose meaning could silently change. Off switch:
+<code>RadioHistory.song_history_enabled</code>.</li>
+<li><em>One volume for every station (Playback &gt; Use One Volume for
+All Stations).</em> <code>RadioHistory.use_global_volume</code> (default
+off, so behaviour is unchanged until switched on) makes
+<code>volume_percent</code> the single level
+<code>_radio_resolve_volume</code> returns for every station,
+deliberately outranking a favorite’s own remembered level – which is the
+entire point, since that level winning outright is what left twenty
+favorites with twenty places to turn the volume down.
+<code>_radio_track_history_and_volume</code> stops writing a per-station
+copy while it is on, or it would quietly rebuild the very levels the
+setting bypasses. Per-station levels are <strong>kept, never
+erased</strong>, so switching back off restores them exactly;
+<code>forget_station_volumes</code> is the deliberate, confirm-first way
+to be rid of them and uses the new
+<code>RadioFavoritesStore.clear_volume</code> rather than
+<code>set_volume(-1)</code> – the latter clamps to 0-100 and would set
+every station to <em>silent</em> instead of clearing it. Both behaviours
+are pinned by tests.</li>
+<li><em>Toggle state in the Command Palette (#1383).</em> The palette
+lists <code>Command.title</code> verbatim and has no checkmark, so
+“Announce Track Titles On/Off” read identically whichever way the switch
+was set. New <code>CommandRegistry.set_title</code> retitles a command
+in place (keeping handler, keybinding and feature id), and the
+track-title and global-volume toggles now carry “(currently
+On)”/“(currently Off)” and retitle themselves as they flip. The
+global-volume menu checkmark is synced the same way, since the palette
+and a rebound chord reach the handler without wx updating the item.</li>
+</ul></li>
+<li><strong>Since 2.2.0 (upstream <code>core/radio/youtube.py</code>,
+<code>core/radio/live365.py</code>,
 <code>core/radio/playlist_export.py</code>,
 <code>core/radio/bad_station_report.py</code>,
 <code>core/radio/directory_registry.py</code>,
@@ -1190,6 +2352,33 @@ char-hook on the (modal) Recordings dialog drives the shared
 controller’s volume, so a played-back recording is adjustable like a
 live stream.</li>
 </ul></li>
+<li><strong>A play queue for the Recordings list (2.2.0; upstream
+<code>core/radio/play_queue.py</code>,
+<code>ui/radio/recordings_queue.py</code>).</strong>
+<code>winamp_keys.py</code> deliberately left <code>R</code> (shuffle),
+<code>S</code> (repeat) and <code>Ctrl+V</code> (stop after current)
+unbound, because all three describe a play queue the recordings list did
+not have and a key that only appears to work is worse than one that is
+not offered. <code>PlayQueue</code> is that queue: wx-free,
+strict-typed, and normative on three points. <strong>Shuffle is a fixed
+permutation, regenerated only when the set of rows changes</strong> –
+“random next” would replay items before others had played at all and,
+decisively for this audience, would leave <code>Z</code> unable to
+return to what was just heard; the list also refreshes on a two-second
+timer, so <code>set_rows_if_changed</code> compares as a <em>set</em> to
+stop the order being reshuffled underneath the listener.
+<strong>Repeat-one applies to a natural end, not to Next</strong>, or
+Next reads as broken. <strong>Stop-after-current outranks repeat, clears
+itself when it fires, and is not persisted</strong> – a one-shot
+surviving a restart would halt playback for a reason nobody could
+remember requesting. Shuffle and repeat persist on
+<code>RadioHistory</code> (<code>recordings_shuffle</code>,
+<code>recordings_repeat</code>, normalized on load so a mode from a
+later build cannot strand the queue). Auto-advance is driven from the
+dialog’s existing refresh timer rather than the controller’s single
+<code>on_state_changed</code>, which belongs to the app frame and which
+a modal dialog would have to hand back on every exit path, including the
+exceptional ones.</li>
 <li><strong>Recordings reliability overhaul (2.0.0, upstream
 <code>quill/core/radio/*</code>; R1-R4).</strong> The headline of 2.0.0:
 a reported round of recording bugs closed and the one missing piece
@@ -1254,27 +2443,89 @@ ICY side-tap gets nothing or the stream is HLS); and
 <code>core/audio_enhance.py</code>,
 <code>ui/sound_enhance_dialog.py</code>).</strong> One-touch
 broadcast-processing modes in Sound Enhancements, adapted from OptiLab
-Core by dgl1984 (github.com/dgl1984/optilab, Apache-2.0). OptiLab is a
-GUI-only plugin (JSFX/CLAP/Winamp DSP) with no library API and a
-Windows-64-only binary, so rather than hosting the binary the modes
-reproduce the <em>shape</em> of its three chains – Podcast Leveler (HPF
--&gt; speechnorm -&gt; acompressor -&gt; 65 Hz tame -&gt; alimiter),
-Stream Polish (dynaudnorm -&gt; acompressor -&gt; presence -&gt;
-alimiter), Smooth Limiter (acompressor -&gt; alimiter) – as ffmpeg
-filter chains appended last in <code>build_filter_graph</code> (their
-lookahead limiter guards the output), so they ride the same three
-delivery paths (mpv-native live, relay, recordings) and work
-cross-platform. Controls map OptiLab’s onto ffmpeg: Mode picks the
-chain, Input is a front-end <code>volume</code> trim (0 dB default, per
-product choice), Auto-Adapt (0-100%) leans the leveling/density more
-assertive. A bypass checkbox (<code>optilab_enabled</code>) keeps the
-chosen mode remembered while off. Stored on <code>RadioHistory</code>
-and, as of 2.0.2, also per-station on <code>FavoriteStation</code>,
-carried by
+Core by Lanes Audio / dgl1984 (github.com/dgl1984/optilab; Apache-2.0
+with the Commons Clause from upstream v1.3.0). <strong>Correction
+(2026-08-13):</strong> this entry originally justified the adaptation by
+calling OptiLab “a GUI-only plugin with no library API and a
+Windows-64-only binary”. All three claims were false – upstream’s
+native/API.md documents <code>optilab-core</code>, a
+framework-independent C++17 static library shipped since v1.2.0, and
+only the CLAP and Winamp <em>wrapper</em> targets are platform-gated.
+The adaptation below is still what ships for the built-in chain, and it
+is a reasonable design (it needs no native component and previews live),
+but it was never the only option available. See the exact-processing
+entry that follows. The modes reproduce the <em>shape</em> of its three
+chains – Podcast Leveler (HPF -&gt; speechnorm -&gt; acompressor -&gt;
+65 Hz tame -&gt; alimiter), Stream Polish (dynaudnorm -&gt; acompressor
+-&gt; presence -&gt; alimiter), Smooth Limiter (acompressor -&gt;
+alimiter) – as ffmpeg filter chains appended last in
+<code>build_filter_graph</code> (their lookahead limiter guards the
+output), so they ride the same three delivery paths (mpv-native live,
+relay, recordings) and work cross-platform. Controls map OptiLab’s onto
+ffmpeg: Mode picks the chain, Input is a front-end <code>volume</code>
+trim (0 dB default, per product choice), Auto-Adapt (0-100%) leans the
+leveling/density more assertive. A bypass checkbox
+(<code>optilab_enabled</code>) keeps the chosen mode remembered while
+off. Stored on <code>RadioHistory</code> and, as of 2.0.2, also
+per-station on <code>FavoriteStation</code>, carried by
 <code>RadioPlayerController.set_sound_options</code>/<code>preview_enhancements</code>
 and resolved per stream by <code>ResolvedEnhancement</code>. A faithful
 adaptation, not a bit-for-bit port; credited in release notes, the About
 box, and the third-party notices.</li>
+<li><strong>Exact OptiLab processing (2026-08-13;
+<code>quill/native/optilab/</code>,
+<code>quill/core/audio/exact_optilab.py</code>,
+<code>quill/core/optilab_adapter.py</code>,
+<code>scripts/build_native_optilab.py</code>).</strong> The three
+broadcast-polish modes above are a faithful <em>adaptation</em> of
+<strong>OptiLab Core by Lanes Audio / dgl1984</strong>, rebuilt as
+ffmpeg filter chains. The engine itself is now vendored unmodified at
+v1.4.0 under <code>quill/native/optilab/upstream/</code> (with its
+LICENSE and NOTICE) and linked into an adapter QUILL owns – upstream is
+explicit that its C++ API is “not a stable C ABI” and that consumers
+should “wrap this C++ class in a small adapter owned by your project”,
+so QUILL does, and that adapter contains no DSP. It is a
+<strong>process</strong>, not a Python extension, for the same reason
+ffmpeg is: the offline audio paths already drive an external program
+through <code>safe_subprocess</code> with an argv list and never a
+shell. <strong>One setting, three states</strong>
+(<code>RadioHistory.optilab_exact</code> /
+<code>optilab_exact_live</code>, per-station overridable, both off by
+default): off, saved files, or saved files and live. <strong>Saved
+files</strong> (<code>RadioRecorder</code> post-pass and
+<code>core/audio/convert.py</code>) are the recommended state – a
+finished recording is processed <em>after</em> it finishes and after any
+dropped-and-resumed parts are joined, writing a temp file that replaces
+the original only on success, so no failure mode can cost somebody a
+recording; a raw capture is never post-processed, because re-encoding it
+is precisely what raw capture exists to avoid. <strong>Live</strong>
+routes the stream through <code>EnhanceRelay</code>’s three-process form
+(decode | engine | encode | loopback URL) on <em>both</em> engines, mpv
+included, and clears mpv’s native filter graph so the audio is never
+processed twice. It is opt-in because it costs what the mpv-native path
+exists to provide: a slower start, an MP3 re-encode generation, more
+CPU, and a reconnect on every settings change (the engine is prepared
+with a mode and a sample rate at start-up and cannot be re-parameterised
+mid-stream). The rejected alternatives are recorded in
+<code>quill/native/optilab/README.md</code>: a custom libavfilter, an
+in-process extension over an ABI upstream does not offer, and an mpv
+CLAP host (mpv has none). Whichever state is chosen, the OptiLab
+<em>filters</em> leave the graph whenever the real engine will run.
+Honest differences, stated rather than implied: the chain has none of
+upstream’s gated AGC, six-band density, adaptive bass and top control,
+stereo processing or hybrid final stage; its Podcast and Limiter
+ceilings are -1.5 and -2.0 dBFS where upstream delivers to -0.1; its
+Input default is 0 dB where upstream’s <code>inputDriveDb</code> is 3.5;
+and the limiter feedback loop (easing the lift while final limiting runs
+heavy) cannot be expressed in a feed-forward graph at all – which is the
+one difference that can be claimed with confidence. Entirely optional:
+with no adapter built <code>available()</code> is False, every surface
+says why in words, and every caller stays on the chain. Licence
+<strong>Apache-2.0 with the Commons Clause v1.0</strong>; upstream’s
+NOTICE separately grants royalty-free commercial use of OptiLab Core as
+a tool for processing or broadcasting audio, and both LICENSE and NOTICE
+ship beside the executable in the installer and the portable
+bundle.</li>
 <li><strong>Live Sound Enhancements preview + fully per-station (2.0.2,
 upstream <code>ui/sound_enhance_dialog.py</code>,
 <code>ui/radio/player_controller.py</code>).</strong> Every control in
@@ -1341,20 +2592,23 @@ its own home now that Quill Weather is a standalone app: see
 &gt; Customize Features…), and that menu offers <strong>Open the Quill
 Weather App</strong> to hand off to the standalone watcher. The two are
 separate, independently-distributed apps that run side by side.</p>
-<h2 id="10-spotify-integration-experimental-ships-dark">10. Spotify
-integration (experimental, ships dark)</h2>
+<h2 id="10-spotify-integration-experimental">10. Spotify integration
+(experimental)</h2>
 <p>Quill Radio (music) and QUILL Cast (podcasts) can play directly from
-Spotify. The capability is <strong>complete in code but ships
-dark</strong>: it is gated behind the <code>future.spotify</code>
-feature flag, which is <code>locked_off</code> in
-<code>quill/core/feature_catalog.py</code>. While locked off, its
-commands and Help-menu items are hidden and nothing reaches Spotify’s
-servers, so a default build shows no sign of it. This section is the
-design of record and the honest statement of what is left before general
-availability. As with every radio feature (R-1), all of it lives in the
-shared <code>quill</code> package – <code>quill/core/spotify/*</code>
-and <code>quill/ui/spotify/*</code> – and nothing is vendored into this
-wrapper.</p>
+Spotify. The capability is <strong>experimental and ships in the
+app</strong>. It is gated behind the <code>future.spotify</code> feature
+flag in <code>quill/core/feature_catalog.py</code> – no longer
+<code>locked_off</code>, and no longer behind an unlock code, since that
+mechanism was withdrawn. The flag remains so a listener who does not
+want Spotify can switch it off in Manage Individual Features and have
+its menu items disappear. Nothing reaches Spotify’s servers until an
+account is deliberately connected, behind a one-time network-access
+consent, and the whole feature is refused in Safe Mode. This section is
+the design of record and the honest statement of what is left before
+general availability. As with every radio feature (R-1), all of it lives
+in the shared <code>quill</code> package –
+<code>quill/core/spotify/*</code> and <code>quill/ui/spotify/*</code> –
+and nothing is vendored into this wrapper.</p>
 <h3 id="101-design">10.1 Design</h3>
 <ul>
 <li><strong>Sign-in: OAuth 2.0 Authorization Code with PKCE, no client
@@ -1431,9 +2685,8 @@ DRM CDN, which the AST egress scanner cannot see and which is therefore
 documented manually there.</li>
 </ul>
 <h3 id="102-enablement-checklist">10.2 Enablement checklist</h3>
-<p>Lighting Spotify up requires all four of the following. Missing any
-one means the Help-menu items never appear (first two conditions gate
-the menu directly) or playback never starts.</p>
+<p>Playing from Spotify requires all three of the following. Missing any
+one means playback never starts.</p>
 <table>
 <thead>
 <tr>
@@ -1442,13 +2695,6 @@ the menu directly) or playback never starts.</p>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td>Unlock <code>future.spotify</code></td>
-<td>Redeem a signed unlock code via <strong>Help &gt; Redeem Unlock
-Code…</strong> (the existing offline, verified-on-machine unlock path;
-one code covers QUILL, Quill Radio, and QUILL Cast). While locked off
-the feature is fully hidden.</td>
-</tr>
 <tr>
 <td>Spotify Premium account</td>
 <td>The Web Playback SDK only streams audio for Premium; the requested
@@ -1469,13 +2715,13 @@ already warms WebView2 at startup.</td>
 </tr>
 </tbody>
 </table>
-<p>Once unlocked and out of Safe Mode, the standalone app frames
-(<code>quill/apps/radio.py</code>, <code>quill/apps/podcasts.py</code>)
-add <strong>Connect to Spotify…</strong> and <strong>Browse
-Spotify…</strong> (Radio) / <strong>Browse Spotify Podcasts…</strong>
-(Cast) to the Help menu; the accessible dialogs are
-<code>quill/ui/spotify/connect_dialog.py</code> and
-<code>quill/ui/spotify/browse_dialog.py</code>.</p>
+<p>Whenever the feature is on and the app is out of Safe Mode, the
+standalone frames (<code>quill/apps/radio.py</code>,
+<code>quill/apps/podcasts.py</code>) add <strong>Connect to
+Spotify…</strong> and <strong>Browse Spotify…</strong> (Radio) /
+<strong>Browse Spotify Podcasts…</strong> (Cast) to the Help menu; the
+accessible dialogs are <code>quill/ui/spotify/connect_dialog.py</code>
+and <code>quill/ui/spotify/browse_dialog.py</code>.</p>
 <h3 id="103-what-remains-before-general-availability">10.3 What remains
 before general availability</h3>
 <p>The offline-testable core and the wx state machine are done and
@@ -1499,6 +2745,1203 @@ menu item or button in QUILL Cast. It reuses the existing reviewed
 podcast-directory and feed-reader egress sites (it adds no new egress),
 is Safe-Mode-guarded, and only ever returns the publisher’s own public
 enclosure – never Spotify audio.</li>
+</ul>
+<h2 id="11-the-station-catalog---prd-and-strategic-plan-merged">11. The
+Station Catalog - PRD and strategic plan (merged)</h2>
+<p>Formerly <code>docs/station-catalog.md</code> (and before that the
+repo-root <code>ideas.md</code>); merged here 2026-08-15 so the radio
+PRD is one document. Internal section numbers (2b, 5.5, 6.5…) are
+preserved because code comments, changelogs and tests cite them.</p>
+<p>Status: plan of record, and as of 2026-08-15 <strong>largely
+built</strong> - Phases 1-3 shipped together as the station-catalog
+feature branch (see the Delivery log at the end). Owner: Jeff. This
+document graduated here from a root working note the same day.</p>
+<p>One sentence: Quill Radio ships the station directories inside the
+app as a fast local catalog, keeps that catalog current from live data
+automatically and on demand, lets the listener turn every automatic
+behavior off, and never - under any circumstance - touches a station the
+listener added or saved.</p>
+<hr />
+<h3 id="1-why-this-and-why-now">1. Why this, and why now</h3>
+<p>Browsing today is lazy: every branch of Browse Stations fetches from
+its source when expanded, softened by <code>directory_cache</code>
+(fresh -&gt; live -&gt; stale). That design shipped 3.0.0 well, but it
+has three costs the listener feels:</p>
+<ul>
+<li><strong>First expansion waits on the network.</strong> “By Country”
+on a slow connection is a spinner, and on no connection it is an
+apology.</li>
+<li><strong>The app’s completeness depends on someone else’s
+uptime.</strong> A directory outage makes Quill Radio look broken, even
+though nothing local changed.</li>
+<li><strong>Search can only be as fast as the slowest source it
+asks.</strong></li>
+</ul>
+<p>The fix is not more caching of the same shape. It is inverting the
+default: <strong>the local catalog is the source of truth for browsing;
+the network is the source of truth for freshness.</strong> The app reads
+locally in milliseconds and reconciles with live data in the background
+- a shape this codebase already proved twice, in miniature: the NOAA
+<code>wxindex</code> bundled snapshot with a refresh tier, and the Radio
+Reading Services directory with its manual update command. This plan
+makes that the architecture for every source that permits it.</p>
+<h3 id="2-what-exists-today-grounded-inventory">2. What exists today
+(grounded inventory)</h3>
+<p>Read before designing anything; all of this is on main.</p>
+<ul>
+<li><code>quill/core/radio/browse_sources.py</code> - one
+<code>browse(node_id)</code> contract, 28 root branches, per-source
+handlers, wx-free and tested without UI.</li>
+<li><code>quill/core/radio/directory_cache.py</code> - fresh -&gt; live
+-&gt; stale tiers; a failed refresh keeps what was there; cached answers
+report their age.</li>
+<li><code>wxindex</code> - bundled NOAA snapshot + refreshed cache: the
+seed precedent.</li>
+<li>Reading services - bundled list + “Update Radio Reading Services…”
+menu command: the manual-refresh precedent.</li>
+<li>Bundled already: networks catalog, ACB Media, NFB Radio, community
+M3U.</li>
+<li>Live-only today: Radio Browser axes, iHeart, TuneIn tree, Xiph,
+SomaFM, Apple Podcasts, the libraries (Archive/LibriVox/Gutenberg), free
+music.</li>
+<li>User-owned stores, each its own file with atomic writes: favorites
+(<code>radio_favorites.json</code>, with timestamped backups under
+<code>backups/radio-favorites/</code>), My Servers, YouTube channels,
+schedule.</li>
+<li><code>core/radio/radiodns.py</code> + the approved
+<code>dnspython</code> dependency - identity enrichment hook, currently
+underused.</li>
+<li>House rules that constrain the design: wx-free strict-typed core;
+all JSON via <code>write_json_atomic</code>; every egress site in the
+network audit; Safe Mode refuses network per branch; browse-visibility
+rule (“a source that is off is never contacted”); GATE-11 module
+budgets; GATE-EC coded errors.</li>
+</ul>
+<h3 id="2b-phase-0-findings---measured-2026-08-15">2b. Phase 0 findings
+- measured, 2026-08-15</h3>
+<p>Phase 0 ran early: the real exports were pulled once and the store
+was prototyped against them (<code>local/catalog-proto/</code>). Numbers
+below are from this machine; every design amendment they forced is
+applied in the sections that follow.</p>
+<h4 id="the-data">The data</h4>
+<ul>
+<li>Radio Browser full working-station dump: <strong>62,377 stations,
+77.7 MB raw JSON</strong>, fetched in 25 s across 7 paginated requests
+(<code>hidebroken=true</code>, 10k per page, 0.5 s politeness gaps).
+<code>/json/stations</code> without pagination silently caps at 1,000
+rows - paging is mandatory, not optional.</li>
+<li><code>stationuuid</code> coverage: <strong>100 percent</strong>. Key
+rule 1 covers the entire source.</li>
+<li><strong>7,135 normalized stream URLs are shared by more than one
+station</strong> (18,007 rows) <em>within Radio Browser alone</em> -
+relays, network feeds, and multi-listed streams. A same-URL merge rule
+would wrongly collapse thousands of real stations. Merge policy amended
+below.</li>
+<li><strong>The Xiph directory is serving empty data right now</strong>:
+<code>yp.xml</code> returns a bare empty directory element and the beta
+<code>/genres</code> page is a 3 KB shell with no genre links. Not a
+parser bug - the source itself is empty today. Two consequences: Xiph
+cannot seed until it recovers, and the refresh engine gains a rule it
+was always going to need - <strong>a full fetch that returns zero rows
+for a source that previously had thousands is an outage, never
+truth</strong>; the catalog keeps what it has and marks the source
+stale.</li>
+<li>SomaFM channels.json: 51 KB. Trivial.</li>
+<li><strong>iHeart terms read (Terms of Use, last updated 2025-03-12):
+bulk caching is off the table.</strong> Section 23 prohibits, verbatim,
+“reproduce, download, license, publish, <strong>enter into a
+database</strong>, display, modify, create derivative works from,
+transmit, post, <strong>distribute</strong>” - and a seeded catalog
+shipped in the installer is precisely “enter into a database” plus
+“distribute”. Section 5 separately bars obtaining material “through any
+means not intentionally made available”, and Section 14 grants only a
+“limited, revocable, license… for your private, non-commercial use”.
+Decision: <strong>iHeart is Class B permanently, by policy, not by
+gap</strong> - live-drill browsing with the existing short-lived
+<code>directory_cache</code>, same posture 3.0.0 already ships. It is
+never seeded, never persisted into the catalog database, and - a rule
+this reading forced - <strong>Layer 4 write-through applies to Class A
+sources only</strong>, so an iHeart row fetched live is never upserted
+into the catalog either. A transient session cache for the listener’s
+own browsing is a materially different act from redistributing listings
+in a shipped database, and the design now keeps that line bright.</li>
+</ul>
+<h4
+id="apple-podcasts-itunes---why-it-is-not-measured-for-seeding">Apple
+Podcasts (iTunes) - why it is not measured for seeding</h4>
+<p>Asked and answered rather than silently skipped. The Podcasts (Apple)
+branch rides the iTunes/Apple Marketing endpoints
+(<code>apple_podcasts.py</code>: genre tree, per-storefront charts, show
+lookup), and it is deliberately <strong>not</strong> a seeding
+candidate, for three reasons that stack:</p>
+<ul>
+<li><strong>It is a content catalog, not a station directory.</strong>
+The unit is a show that resolves to its own RSS feed; the full corpus is
+millions of feeds and unbundleable by nature. What the app actually
+browses - charts and genre lists per storefront - is a ranking, and a
+shipped ranking is stale by definition (the same reasoning that keeps
+Radio Browser’s popular/trending live-first).</li>
+<li><strong>Terms.</strong> Apple’s marketing/search API posture permits
+client lookup and search with short-lived caching, not entering listings
+into a redistributed database - the same line the iHeart reading drew,
+applied consistently: Class B, session cache only, never written
+through.</li>
+<li><strong>It is already fast enough live</strong>, measured today: the
+full genre tree in 0.8 s, a 100-show storefront chart in 1.7 s, both
+behind <code>directory_cache</code>. There is no user-felt problem for
+the catalog to solve here.</li>
+</ul>
+<p>So Apple stays exactly where Section 4 puts it: Class B, live-drill,
+with the existing honest empty-state when unreachable.</p>
+<h4
+id="the-complete-source-sweep---every-source-measured-2026-08-15">The
+complete source sweep - every source, measured 2026-08-15</h4>
+<p>Every source in the app was exercised live, not just the seeding
+candidates. Counts are what one fetch returns through our own modules
+unless noted.</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Measured</th>
+<th>Bulk feasible?</th>
+<th>Class</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Radio Browser</td>
+<td>62,377 stations, 77.7 MB raw</td>
+<td>Yes (paginated)</td>
+<td>A</td>
+<td>The seed’s backbone</td>
+</tr>
+<tr>
+<td>SomaFM</td>
+<td>46 channels, 51 KB</td>
+<td>Yes</td>
+<td>A</td>
+<td>Trivial</td>
+</tr>
+<tr>
+<td>Xiph</td>
+<td>0 today; ~500 genres on Aug 13-14</td>
+<td>Yes when up</td>
+<td>A</td>
+<td>Flapping - ruling below</td>
+</tr>
+<tr>
+<td>NOAA wxindex</td>
+<td>40 states with feeds</td>
+<td>Already bundled</td>
+<td>A</td>
+<td>Existing snapshot joins the store</td>
+</tr>
+<tr>
+<td>Community M3U</td>
+<td>95 genres (~1,900 stations in first 5)</td>
+<td>Already bundled</td>
+<td>A</td>
+<td></td>
+</tr>
+<tr>
+<td>Networks / ACB / NFB / Reading</td>
+<td>6 groups / 10 / 1 / 21</td>
+<td>Already bundled</td>
+<td>A</td>
+<td>Curated, highest trust</td>
+</tr>
+<tr>
+<td>iHeart</td>
+<td>18 genres, 317 markets</td>
+<td>Barred by terms</td>
+<td>B</td>
+<td>Section 2b terms reading</td>
+</tr>
+<tr>
+<td>TuneIn</td>
+<td>7 root categories</td>
+<td>Barred by policy</td>
+<td>B</td>
+<td>Remote drill tree</td>
+</tr>
+<tr>
+<td>Apple Podcasts</td>
+<td>19 genres in 0.8 s; 100-show chart in 1.7 s</td>
+<td>Barred by terms; rankings anyway</td>
+<td>B</td>
+<td></td>
+</tr>
+<tr>
+<td>Internet Archive</td>
+<td>oldtimeradio 8,853; librivoxaudio 21,747; 78rpm 310,899; netlabels
+80,423; audio_music 522,283 items</td>
+<td>No - millions of items</td>
+<td>B</td>
+<td>Numbers close the question</td>
+</tr>
+<tr>
+<td>LibriVox</td>
+<td>~22-24k books total; limit=1000 paging works (1,000 books = 1.31 MB,
+1.9 s; API 404s past the end)</td>
+<td><strong>Yes</strong> (~30 MB raw, est. 3-4 MB compressed)</td>
+<td>B today, <strong>A2 candidate</strong></td>
+<td>Public-domain data; see below</td>
+</tr>
+<tr>
+<td>Project Gutenberg audio</td>
+<td><strong>1,124 records total</strong> (gutendex count,
+audio/mpeg)</td>
+<td><strong>Yes</strong> (one fetch)</td>
+<td>B today, <strong>A2 candidate</strong></td>
+<td>Tiny</td>
+</tr>
+<tr>
+<td>Wikidata axes</td>
+<td>400 stations per axis in 2.1 s</td>
+<td>Yes (CC0)</td>
+<td>B</td>
+<td>Small derived joins; cache suffices</td>
+</tr>
+<tr>
+<td>Audius / Mixcloud / ccMixter</td>
+<td>59 trending / 38 categories / 16 tags</td>
+<td>Rankings and charts</td>
+<td>B</td>
+<td>Stale by definition if seeded</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Class A2 - the library seed - is ADOPTED (2026-08-15), not
+parked.</strong> The directive is to cache everything legally allowed,
+and LibriVox (~22-24k public-domain books, cleanly pageable) and
+Gutenberg audio (1,124 records) qualify without a caveat: finite, freely
+redistributable, together an estimated 3-4 MB compressed, inside the
+seed budget’s reserve. They ship in the seed as their own tables (books
+and sections are not stations; forcing them into the stations schema
+would bend both), land in <strong>Phase 3</strong> right after the
+station machinery proves itself, and make the two audiobook branches
+browsable offline and instant. Wikidata’s axis joins (CC0, 400 rows per
+axis) also become a seeded enrichment table rather than a live cache.
+Internet Archive stays live-drill permanently - the measured
+half-million-item collections end that discussion - and Apple, iHeart,
+and TuneIn stay out on terms, which is the directive’s other half.</p>
+<h4 id="the-xiph-outage-diagnosed-2026-08-15">The Xiph outage, diagnosed
+(2026-08-15)</h4>
+<p>Troubleshot rather than shrugged at. Findings, in order:</p>
+<ul>
+<li>Every fetch path is empty <strong>server-side</strong>:
+<code>/genres</code>, <code>/codecs</code>,
+<code>/search?search_term=jazz</code> all return the same 3 KB page
+shell with zero content links, and <code>yp.xml</code> returns a bare
+23-byte empty directory element.</li>
+<li><strong>Not user-agent filtering</strong>: byte-identical responses
+to a real browser UA and to QUILL’s own UA, on every path.</li>
+<li><strong>Not our parser</strong>: the same <code>xiph.py</code> code
+measured ~500 genres from this site on 2026-08-13/14 during the 3.0
+truncation fix; fixtures from those runs still parse.</li>
+<li><strong>Intermittent by history</strong>: Wayback snapshots of
+<code>/genres</code> from 2026-07-09 and 2026-07-21 are <em>also</em>
+content-free shells, while our mid-August runs saw full data - so the
+beta backend has been flapping for weeks, serving either everything or
+nothing.</li>
+<li>Every other source in the app answered a live health sweep today
+(Radio Browser, SomaFM, M3U, iHeart, TuneIn, networks, reading services,
+NOAA, Gutenberg, LibriVox, Archive, Apple). Xiph is the only
+outage.</li>
+</ul>
+<p>Consequences, all already in this plan: the empty-answer-is-an-outage
+rule (5.6) exists precisely for this; the <code>directory_cache</code>
+stale tier would have bridged it in the app had the local caches not
+been cleared today; and under the catalog design this whole class of
+outage becomes invisible - the listener browses the last-known-good Xiph
+data while the source is marked stale with its age. Worth doing besides:
+report the flapping backend upstream to Xiph, since the site presents no
+status page.</p>
+<p><strong>Ruling on “pull it out of the package” (2026-08-15): Xiph is
+not unrecoverable - it served ~500 genres to this codebase two days ago
+- so it stays in the code, and the tripwire has been EXECUTED rather
+than deferred:</strong> <code>default_on=False</code> shipped the same
+day (PR #1401). New profiles do not see the branch; anyone who enables
+it in Choose Browse Sources keeps it; the honest empty-state still
+explains the outage for those who look; reversal is one line when the
+backend holds steady. Removal outright happens only if the source stays
+dead for sixty days (from 2026-08-15), at which point it exits
+<code>ROOT_SOURCES</code>, the seed builder, and the docs together.</p>
+<h4 id="the-store-built-from-the-real-dump">The store (built from the
+real dump)</h4>
+<ul>
+<li>SQLite with the PRD schema plus FTS5: <strong>26.4 MB</strong> after
+VACUUM for the full 62k stations. Import plus FTS build: 5.8 s
+(off-thread, once per full refresh).</li>
+<li>Compressed seed: <strong>6.4 MB</strong> at lzma preset 6 (21 s to
+compress at build time), 5.7 MB at preset 9. Decompress on first run:
+<strong>1.2 s</strong>. The 20 MB budget was generous by three times -
+<strong>amended to 10 MB hard</strong>.</li>
+<li>Query medians (n=30):
+<ul>
+<li>point lookup by key: 0.01 ms</li>
+<li>FTS “jazz”: 1.2 ms; FTS prefix “bb”: 0.5 ms</li>
+<li>states of a country: 2.9 ms</li>
+<li>stations by country ordered by votes: 41 ms bare, <strong>0.53
+ms</strong> with a <code>(country, votes DESC)</code> covering index.
+The index ships in the schema.</li>
+<li>countries GROUP BY: 7-13 ms (acceptable; can become a cached table
+if the root branch ever needs better)</li>
+</ul></li>
+<li>The JSON alternative, measured and rejected with numbers: loading
+the raw dump takes <strong>9.0 s and peaks at 217 MB of memory</strong>;
+even once in memory, a by-country filter costs 23 ms - slower than the
+indexed SQLite query reading from disk.</li>
+<li>Refresh memory amendment: parse and insert <strong>per page</strong>
+(10k rows), never the whole dump at once; paging caps refresh peak in
+the tens of megabytes where whole-dump loading measured 217 MB.</li>
+</ul>
+<h4 id="the-read-path-end-to-end">The read path, end to end</h4>
+<p>Catalog rows were materialized through the real
+<code>BrowseNode</code>/<code>RadioStation</code> types the tree
+consumes:</p>
+<ul>
+<li>all 240 country folders, <strong>each carrying its station
+count</strong>, in 7.3 ms - a per-folder count the live path cannot
+afford at all, and exactly what the “folder announces its size” rule
+wants;</li>
+<li>2,000 fully constructed playable US station leaves in 41.7 ms, where
+the cost is dataclass construction, not SQLite. Branches page far below
+2,000 rows, so the 50 ms budget holds with a wide margin.</li>
+</ul>
+<h4 id="windows-swap-semantics-the-trap-the-prototype-caught">Windows
+swap semantics (the trap the prototype caught)</h4>
+<p><code>os.replace</code> over a database an open SQLite connection
+holds <strong>fails with PermissionError on Windows</strong> - so the
+first draft’s “stage then swap the .db” design cannot work while any
+reader exists. Verified fix, also prototyped: <strong>generation files
+plus a pointer</strong>. Refresh writes
+<code>catalog.&lt;n&gt;.db</code>, then atomically replaces a tiny
+<code>CURRENT</code> pointer file that readers consult on open; old
+generations are deleted once unreferenced (next launch at the latest).
+The pointer replace succeeded with the old generation still open.
+Section 5.1 is amended accordingly.</p>
+<h3 id="3-goals-and-non-goals">3. Goals and non-goals</h3>
+<h4 id="goals">Goals</h4>
+<ol type="1">
+<li>Browse Stations answers from local data instantly - target under 50
+ms per branch - for every source class that permits bulk data.</li>
+<li>The full supported directories ship inside the app as a compressed,
+versioned seed, refreshed at release-build time, so first launch is
+complete with no network at all.</li>
+<li>The catalog updates from live data three ways: on startup
+(toggleable), on a timer (interval configurable, off-able), and on
+demand (menu command with a spoken summary).</li>
+<li>Every automatic behavior has an off switch, and off means off: no
+fetch, no probe, no “just checking”.</li>
+<li>Custom and saved stations are structurally incapable of being
+damaged by any catalog operation. Not “carefully avoided” - stored
+elsewhere.</li>
+<li>The listener can always answer: how old is my catalog, what changed
+last time, and which sources are healthy.</li>
+<li><strong>Cache everything that is legally allowed, and nothing that
+is not.</strong> The standing directive (Jeff, 2026-08-15): every source
+whose license or terms permit local storage joins the catalog; every
+source whose terms bar it stays live-drill with a session cache only -
+and the boundary between the two is visible in the product, not buried
+in this document.</li>
+<li><strong>The listener can always tell what is local and what is
+live</strong> - per branch, in the UX, without noise (Section 6.5).</li>
+</ol>
+<h4 id="non-goals-this-program">Non-goals (this program)</h4>
+<ul>
+<li>No telemetry, no usage upload, no server of ours. All reconciliation
+is client-side against the sources’ own endpoints.</li>
+<li>No recommendations engine. “Similar stations” and taste modeling are
+a later, separate conversation.</li>
+<li>No SHOUTcast dependency. The stance from 3.0 stands: opportunistic,
+optional, never load-bearing.</li>
+<li>No scraping of sources whose terms do not permit bulk retrieval.
+TuneIn’s tree remains live-drill; Apple charts remain live; that is a
+compliance posture, not a technical gap.</li>
+<li>The libraries (Archive, LibriVox, Gutenberg, Apple Podcasts) are
+content catalogs, not station directories; they keep today’s lazy +
+cached model.</li>
+</ul>
+<h3 id="4-source-classes---the-load-bearing-distinction">4. Source
+classes - the load-bearing distinction</h3>
+<p>Every source gets exactly one class, declared in code, and the class
+decides everything downstream: whether it is bundled, how it refreshes,
+what the refresh may touch.</p>
+<h4 id="class-a---bundled-and-refreshed-the-catalog-proper">Class A -
+bundled and refreshed (the catalog proper)</h4>
+<p>Bulk retrieval is permitted and practical. Shipped in the seed,
+refreshed live, served locally.</p>
+<ul>
+<li>Radio Browser (full export; countries/states/languages/tags/codecs
+axes, popular/trending rankings snapshotted for offline fallback)</li>
+<li>Xiph / Icecast directory (yp listing)</li>
+<li>SomaFM (channels.json)</li>
+<li>(iHeart was a candidate here; the terms read moved it to Class B
+permanently - see Section 2b.)</li>
+<li>NOAA wxindex, community M3U, networks, ACB, NFB, reading services
+(already bundled; they join the catalog store so one machine serves all
+of them)</li>
+</ul>
+<h4 id="class-b---live-drill-cached-never-bundled">Class B - live-drill
+(cached, never bundled)</h4>
+<p>Remote trees or terms-limited APIs. Today’s behavior, unchanged:
+<code>directory_cache</code> in front, lazy expansion. TuneIn,
+<strong>iHeart (by policy - its terms bar entering listings into a
+database or distributing them; see Section 2b)</strong>, Apple Podcasts,
+the libraries, free music (Audius/Mixcloud/ccMixter), Wikidata, YouTube
+listings.</p>
+<h4 id="class-c---user-owned-protected-never-refreshed">Class C -
+user-owned (protected, never refreshed)</h4>
+<p>Favorites, custom stations, My Servers, YouTube channels the listener
+added, imported playlists. These live in their existing stores, are
+never written by any catalog code path, and are overlaid at read time
+(Section 8).</p>
+<h3 id="5-architecture">5. Architecture</h3>
+<h4 id="51-the-store-sqlite-not-json">5.1 The store: SQLite, not
+JSON</h4>
+<p>The catalog is a single SQLite database per profile:</p>
+<pre><code>%APPDATA%\Quill\radio-catalog\catalog.db</code></pre>
+<p>Why SQLite over the house JSON pattern: measured, not asserted
+(Section 2b). The full directory in SQLite answers an indexed browse
+query in <strong>0.5 ms</strong>; the same data as JSON costs a
+9-second, 217 MB load before the first answer. The persistence rules
+hold in spirit via <strong>generation files plus a pointer</strong>:
+refresh builds <code>catalog.&lt;n&gt;.db</code> completely, then
+atomically replaces a tiny <code>CURRENT</code> pointer file naming it.
+Readers resolve the pointer on open. This shape is forced by a measured
+Windows fact: <code>os.replace</code> over a database an open connection
+holds raises PermissionError, so the classic stage-and-swap of the .db
+itself cannot coexist with readers. Old generations are removed once
+unreferenced (next launch at the latest). A crashed refresh leaves a
+garbage numbered file and an untouched pointer - always consistent.</p>
+<p>Crucially: <strong>the catalog is derived data.</strong> It can be
+deleted, rebuilt from the seed, or discarded on schema change with zero
+loss, because nothing the listener owns is in it. That single property
+removes the entire class of migration risk that makes databases
+scary.</p>
+<h4 id="52-schema-ddl-sketch">5.2 Schema (DDL sketch)</h4>
+<pre><code>CREATE TABLE catalog_meta(
+  key   TEXT PRIMARY KEY,       -- schema_version, seed_version,
+  value TEXT NOT NULL           -- seed_built_at, imported_at, app_version
+);
+
+CREATE TABLE sources(
+  id             TEXT PRIMARY KEY,   -- &#39;radio_browser&#39;, &#39;xiph&#39;, ...
+  class          TEXT NOT NULL,      -- &#39;bundled&#39; | &#39;live&#39; | &#39;user&#39;
+  last_refresh   TEXT,               -- ISO UTC
+  last_status    TEXT,               -- &#39;ok&#39;|&#39;stale&#39;|&#39;rate_limited&#39;|&#39;error&#39;
+  last_error     TEXT NOT NULL DEFAULT &#39;&#39;,
+  station_count  INTEGER NOT NULL DEFAULT 0,
+  content_hash   TEXT NOT NULL DEFAULT &#39;&#39;   -- change detection
+);
+
+CREATE TABLE stations(
+  key              TEXT PRIMARY KEY, -- canonical key, Section 5.4
+  name             TEXT NOT NULL,
+  stream_url       TEXT NOT NULL,
+  homepage         TEXT NOT NULL DEFAULT &#39;&#39;,
+  country          TEXT NOT NULL DEFAULT &#39;&#39;,
+  state            TEXT NOT NULL DEFAULT &#39;&#39;,
+  language         TEXT NOT NULL DEFAULT &#39;&#39;,
+  tags             TEXT NOT NULL DEFAULT &#39;&#39;,  -- normalized, comma-joined
+  codec            TEXT NOT NULL DEFAULT &#39;&#39;,
+  bitrate          INTEGER NOT NULL DEFAULT 0,
+  votes            INTEGER NOT NULL DEFAULT 0, -- ranking snapshot
+  source_id        TEXT NOT NULL REFERENCES sources(id),
+  source_record_id TEXT NOT NULL DEFAULT &#39;&#39;,
+  first_seen       TEXT NOT NULL,
+  last_seen        TEXT NOT NULL,
+  vanished_at      TEXT,             -- tombstone; Section 5.6
+  extra            TEXT NOT NULL DEFAULT &#39;{}&#39;  -- source-specific JSON
+);
+CREATE INDEX idx_st_geo  ON stations(country, state);
+CREATE INDEX idx_st_lang ON stations(language);
+CREATE INDEX idx_st_src  ON stations(source_id);
+
+CREATE VIRTUAL TABLE stations_fts USING fts5(
+  name, tags, country, language, content=&#39;stations&#39;, content_rowid=&#39;rowid&#39;
+);
+
+CREATE TABLE merges(          -- provenance when two sources are one station
+  canonical_key TEXT NOT NULL,
+  member_key    TEXT NOT NULL,
+  reason        TEXT NOT NULL,     -- &#39;same_url&#39;|&#39;radiodns&#39;|&#39;uuid&#39;
+  PRIMARY KEY(canonical_key, member_key)
+);</code></pre>
+<h4
+id="53-new-modules-house-conventions-every-one-wx-free-unless-named-ui">5.3
+New modules (house conventions; every one wx-free unless named ui/)</h4>
+<ul>
+<li><code>quill/core/radio/catalog/store.py</code> -
+open/query/atomic-swap/rebuild; the only module that touches
+SQLite.</li>
+<li><code>quill/core/radio/catalog/keys.py</code> - canonical keying +
+URL normalization. Pure. <strong>Must use the same key rule favorites
+already use</strong> (<code>station_uuid or stream_url</code>) so
+overlay joins are exact.</li>
+<li><code>quill/core/radio/catalog/merge.py</code> - cross-source dedupe
++ provenance. Pure functions over record lists; deterministic; heavily
+tested.</li>
+<li><code>quill/core/radio/catalog/refresh.py</code> - orchestration:
+which sources are due, staggering, delta-vs-full, staging writes, swap.
+Fetchers injected so tests never touch the network.</li>
+<li><code>quill/core/radio/catalog/summary.py</code> - the diff model
+and its spoken sentences. Pure.</li>
+<li><code>quill/core/radio/catalog/seed.py</code> - locate the bundled
+seed, verify its hash, import to the profile on first run / app
+update.</li>
+<li><code>quill/ui/radio/catalog_ui.py</code> - glue: minute-tick
+wiring, menu command, announcements, settings plumbing (host-taking
+functions, like <code>schedule_wake_ui</code>).</li>
+<li><code>quill/ui/radio/catalog_summary_dialog.py</code> - the review
+dialog (house ListBox pattern; rows speak whole sentences).</li>
+<li><code>scripts/build_radio_catalog.py</code> - the release-time seed
+builder.</li>
+</ul>
+<p>Errors: <code>CatalogError(CodedError)</code> with
+<code>QUILL-RADIO-CATALOG-*</code> codes (<code>-CORRUPT</code>,
+<code>-SEED-MISSING</code>, <code>-REFRESH-FAILED</code>,
+<code>-SWAP-FAILED</code>).</p>
+<h4 id="54-canonical-keys-and-merge-rules">5.4 Canonical keys and merge
+rules</h4>
+<p>Key precedence, first match wins:</p>
+<ol type="1">
+<li>Radio Browser <code>station_uuid</code> (stable,
+source-issued).</li>
+<li>Normalized stream URL: lowercase scheme+host, strip default ports,
+strip known junk query params, keep path. One pure function in
+<code>keys.py</code>, shared with nothing rewritten - favorites’
+existing key logic is the reference behavior.</li>
+<li>RadioDNS service identity, when <code>radiodns.py</code> resolves
+one - as a merge <em>link</em> between records, never as a primary
+key.</li>
+</ol>
+<p>Merge policy (deliberately modest for Phase 1):</p>
+<ul>
+<li>Same key across sources -&gt; one canonical row; the higher-trust
+source wins field-by-field only where the other is empty; all member
+identities kept in <code>merges</code> with a reason.</li>
+<li><strong>A shared stream URL alone never merges.</strong> Measured:
+7,135 URLs are shared by multiple distinct stations within Radio Browser
+alone (relays and network feeds). URL-based merging additionally
+requires a case-insensitive name match; anything less collapses real
+stations.</li>
+<li>Trust order: user (never merged, always overlay) &gt; bundled
+curated (ACB, NFB, networks, reading services) &gt; Radio Browser &gt;
+Xiph &gt; iHeart.</li>
+<li>Ambiguity (same name+country, different URLs) is NOT merged. Two
+rows and honesty beat one row and a guess. Fuzzy matching is Phase 4
+material, if ever.</li>
+</ul>
+<h4 id="55-the-seed-building-and-shipping-the-whole-directory">5.5 The
+seed: building and shipping the whole directory</h4>
+<p><code>scripts/build_radio_catalog.py</code>:</p>
+<ol type="1">
+<li>Runs the same Class-A fetchers the app uses (they are wx-free
+precisely so this is possible), against live endpoints, with polite
+pacing.</li>
+<li>Normalizes, merges, writes a fresh <code>seed.db</code>.</li>
+<li>Compresses with <code>lzma</code> (stdlib; no new dependency) to
+<code>seed.db.xz</code>, records SHA-256 + build date in a sidecar
+manifest.</li>
+<li>Emits a size report and <strong>fails the build if the seed exceeds
+budget</strong> (Section 12) - a silently ballooning installer is a
+regression.</li>
+</ol>
+<p>Wired into <code>standalone/radio/scripts/build_release.ps1</code>
+exactly like docs rendering: a step before PyInstaller, with
+<code>-SkipCatalog</code> for dev builds, and the seed staged into
+<code>quill/data/radio-catalog/</code>. Both editions carry it (portable
+payload and shared runtime); the installer therefore works fully offline
+on first run.</p>
+<p>First-run import: <code>seed.py</code> extracts to staging, verifies
+the hash, swaps in. App update with a newer seed: if the profile
+catalog’s <code>seed_version</code> lineage is older than the shipped
+seed, import the new seed and let the next live refresh replay any newer
+deltas. Simple, and correct because the catalog is derived data.</p>
+<h4 id="56-the-refresh-engine">5.6 The refresh engine</h4>
+<p>Layers, mirroring what shipped for scheduling elsewhere in the
+app:</p>
+<ul>
+<li><strong>Layer 0 - release build.</strong> Every release ships a seed
+built that day.</li>
+<li><strong>Layer 1 - startup refresh</strong> (setting: on by default,
+one checkbox to turn off). Runs on the task manager after the window is
+up, never blocking launch; skipped in Safe Mode; skipped when the
+catalog is younger than a floor (6 hours) so a restart loop never
+hammers anyone’s API.</li>
+<li><strong>Layer 2 - periodic refresh</strong> (setting: interval in
+hours, default 24; 0 = off). Driven from the existing radio minute-tick
+- no new timer. Staggered per source (one source per tick window) so
+refresh is a trickle, not a burst.</li>
+<li><strong>Layer 3 - manual.</strong> Station menu: “Update Station
+Catalog…” - refresh all due sources now, announce the summary, offer the
+review dialog. Also per-source refresh from the (Phase 3) catalog status
+view.</li>
+<li><strong>Layer 4 - opportunistic write-through, Class A sources
+only.</strong> When a live fetch of a Class-A source happens anyway (a
+stream re-resolve, federated search), the slice it returns upserts into
+the catalog. Freshness for free, zero extra requests. Class B results
+are <strong>never</strong> written through - for TuneIn and iHeart that
+is a terms obligation (their listings may not be entered into a
+persistent database), and for the rest it keeps the rule simple enough
+to audit: the catalog contains Class A rows, only.</li>
+</ul>
+<p>Mechanics:</p>
+<ul>
+<li>Delta where the source supports it (Radio Browser publishes change
+feeds); full fetch + <code>content_hash</code> comparison where it does
+not; a full fetch whose hash is unchanged writes nothing and counts as
+“no changes”.</li>
+<li>All fetches through the existing <code>http_client</code> identity,
+respecting Retry-After, with per-source failure isolation: one source
+down = one source stale, never a failed refresh.</li>
+<li><strong>An empty answer from a previously populated source is an
+outage, not truth</strong> (learned from Xiph serving a bare directory
+today): the fetch is recorded as failed, the catalog keeps what it has,
+and the source is marked stale with its age.</li>
+<li>Bulk fetches are parsed and upserted <strong>per page</strong> (10k
+rows), never as one whole-dump load - measured whole-dump peak was 217
+MB; paging caps it in the tens.</li>
+<li>Removal is a tombstone (<code>vanished_at</code>), not a delete;
+rows vanish from browse immediately but are kept 14 days so a source
+hiccup that drops half its records for an afternoon does not thrash the
+catalog. After the grace window they are purged.</li>
+<li><strong>The browse-visibility rule extends to refresh:</strong> a
+source the listener has hidden is not refreshed. Off means never
+contacted - same sentence, same guarantee.</li>
+</ul>
+<h4 id="57-the-read-path-how-browsing-gets-fast">5.7 The read path: how
+browsing gets fast</h4>
+<p>No UI changes at all in Phase 1 - the speed appears under the
+existing contract. Inside <code>browse_sources</code>, each Class-A
+handler gains a catalog-first branch:</p>
+<pre><code>countries      -&gt; SELECT country, COUNT(*) ... GROUP BY country
+states         -&gt; SELECT state ... WHERE country=?
+stations-by-X  -&gt; indexed SELECT, ordered, instant
+genres/tags    -&gt; SELECT from the normalized tag column
+popular        -&gt; votes-ordered snapshot when offline; live when online
+                  (rankings are the one thing that should stay live-first)</code></pre>
+<p>Fallback ladder per branch: catalog (if enabled and present) -&gt;
+live fetch (which also write-throughs) -&gt;
+<code>directory_cache</code> stale tier -&gt; the existing honest
+empty-state messages. <code>last_error_was_network</code> semantics
+unchanged.</p>
+<p>Find Stations gains an FTS lane: local matches appear instantly as
+the first group, live-source groups append as they arrive - same UI,
+same source column, no second surface. Search-as-you-type against FTS
+must stay under 30 ms.</p>
+<h4 id="58-radiodns-and-identity-enrichment-baked-in">5.8 RadioDNS and
+identity enrichment, baked in</h4>
+<p><code>core/radio/radiodns.py</code> and its approved
+<code>dnspython</code> dependency shipped in 3.0.0 and are underused.
+Under the catalog they stop being a live lookup and become
+<strong>build-time enrichment</strong>:</p>
+<ul>
+<li>The seed builder joins Wikidata’s axis data (which carries broadcast
+frequency and country - the inputs RadioDNS resolution needs) against
+the station rows, performs the SRV/CNAME resolution <strong>once, at
+build time, on the build machine</strong>, and writes the resolved
+service identities into an <code>identities</code> table. The app then
+merges by identity with a plain local join - zero DNS traffic from any
+listener’s machine.</li>
+<li>Refresh re-resolves only rows whose inputs changed, on the same
+staggered cadence as everything else, and only when the catalog and
+refresh are enabled.</li>
+<li>Coverage honesty: this enriches the minority of stations that
+publish broadcast parameters. It is a merge-quality upgrade, not a
+feature the UI advertises; where it fires, two provider rows quietly
+become one, which is the whole point.</li>
+<li>RadioDNS <strong>SPI service documents</strong> (<code>SI.xml</code>
+- stations, logos, and stream links that broadcasters publish
+themselves, an open standard built for exactly this kind of consumption)
+are the natural next enrichment and are listed in Appendix A for
+adoption.</li>
+</ul>
+<h3 id="6-user-facing-behavior">6. User-facing behavior</h3>
+<h4 id="61-settings-all-in-radiohistory--the-preferences-dialog">6.1
+Settings (all in RadioHistory + the Preferences dialog)</h4>
+<ul>
+<li><code>catalog_enabled</code> (default on) - master switch. Off
+restores today’s behavior exactly: live browsing,
+<code>directory_cache</code>, nothing read from or written to the
+catalog, no refresh of any layer.</li>
+<li><code>catalog_refresh_on_startup</code> (default on) - Layer 1
+toggle.</li>
+<li><code>catalog_refresh_hours</code> (default 24; 0 = off) - Layer 2
+interval.</li>
+<li>Per-source participation is NOT a new setting: it is the existing
+Choose Browse Sources selection. One list, one rule, already
+shipped.</li>
+</ul>
+<p>Checkbox copy follows the house voice, for example: “Keep the station
+catalog updated automatically” / “Check for station updates when Quill
+Radio starts”.</p>
+<h4 id="62-the-summary-spoken-and-reviewable">6.2 The summary, spoken
+and reviewable</h4>
+<p>After any refresh (manual always; automatic only when something
+changed):</p>
+<pre><code>&quot;Station catalog updated. 174 new, 62 repaired streams, 431 details
+updated, 12 removed. Two sources could not be reached.&quot;</code></pre>
+<p>Whole words, counts first, sources-by-name only in the review dialog.
+The dialog is the house ListBox pattern: one row per category, Enter
+expands to the per-source detail, read-only, Escape closes. “No changes”
+is announced for manual refresh and stays silent for automatic ones - an
+automatic process that talks when nothing happened is noise.</p>
+<h4 id="63-status-on-demand">6.3 Status, on demand</h4>
+<p>View menu: “Station Catalog Status…” (Phase 3) - catalog age, station
+count, per-source last-refresh and health, seed version, and three
+buttons: Update Now, Update This Source, Rebuild From Shipped
+Snapshot.</p>
+<h4 id="64-offline-and-safe-mode">6.4 Offline and Safe Mode</h4>
+<ul>
+<li>Offline: everything Class A browses and searches normally from the
+catalog; Class B branches show their existing could-not-reach messages.
+The app is never empty.</li>
+<li>Safe Mode: no refresh of any layer, ever. Reading the local catalog
+is permitted - it is local data, exactly like favorites.</li>
+</ul>
+<h4 id="65-telling-the-listener-what-is-local-and-what-is-live">6.5
+Telling the listener what is local and what is live</h4>
+<p>The directive: the cached/live boundary must be visible in the
+experience, not just in this document. The rule for doing it without
+noise: <strong>say it where the listener is already reading detail,
+never on every row.</strong></p>
+<ul>
+<li><strong>The details panel</strong> (already on every browse surface)
+gains one closing line per branch: <em>“Answers from your catalog,
+updated 2 hours ago.”</em> or <em>“Asks the internet each time; nothing
+is stored.”</em> Words, never a timestamp; the age is spoken the way
+Continue Listening speaks positions.</li>
+<li><strong>Choose Browse Sources</strong> rows gain the same fact in
+their description - “On. LibriVox Audiobooks. Public-domain audiobooks,
+by chapter. Stored on this computer.” versus “… Live from TuneIn.” - so
+the place you decide about a source is the place you learn how it
+behaves.</li>
+<li><strong>Station Catalog Status</strong> (6.3) is the complete
+answer: every source, its class in plain words (“stored and kept
+current” / “live only” / “yours”), its age, its health, and <em>why</em>
+a live-only source is live-only - one sentence each, “iHeart’s terms do
+not allow storing its listings”, because the honest reason reads better
+than an unexplained gap.</li>
+<li><strong>The magical touch, kept quiet:</strong> the first time a
+branch answers from the catalog with the network down, one announcement
+- <em>“You are offline. Browsing from your catalog, updated this
+morning.”</em> - once per session, never per branch. The app quietly
+being fine when the internet is not is the whole feature; one sentence
+is how it takes credit without bragging.</li>
+<li>Never a per-row badge, never a per-row suffix: 62,000 rows that each
+end in “cached” is 62,000 interruptions for a fact that belongs to the
+branch.</li>
+</ul>
+<h3 id="7-what-fast-means-budgets-enforced">7. What “fast” means
+(budgets, enforced)</h3>
+<ul>
+<li>Open catalog + first branch query: &lt; 50 ms on the dev machine,
+enforced by a perf-marked test (RUN_PERF lane, like the existing
+budgets).</li>
+<li>FTS search keystroke: &lt; 30 ms.</li>
+<li>Startup cost when refresh is off: zero added network, &lt; 10 ms
+added CPU (open is lazy - the store opens on first browse, not on
+launch).</li>
+<li>Refresh memory: streaming parse, never a whole-directory list in
+RAM; peak budget 150 MB during a full Radio Browser import.</li>
+<li>UI thread: zero catalog I/O ever; store reads run on the task
+manager and return via the existing call-ui-safely path… with one
+exception: point reads under 5 ms (a single keyed SELECT) may run
+inline, measured, because a CallAfter round-trip would cost more than
+the read.</li>
+</ul>
+<h3 id="8-protection-of-user-stations-invariants-not-intentions">8.
+Protection of user stations (invariants, not intentions)</h3>
+<ol type="1">
+<li><strong>Separate files.</strong> User data stays in its existing
+stores. The catalog database contains zero user-owned rows. There is no
+code path from <code>catalog/refresh.py</code> to any user store -
+enforced by an import-boundary test (refresh modules may not import
+favorites/my_servers/youtube_channels stores).</li>
+<li><strong>Overlay at read time.</strong> When a browse row’s canonical
+key matches a favorite, the favorite’s name and edits win in display,
+and the row is marked saved. The catalog row is untouched.</li>
+<li><strong>Vanish never cascades.</strong> A station disappearing from
+a source never changes a favorite that points at it - favorites already
+serialize their own full station record, and that stays the rule.</li>
+<li><strong>Rebuild is safe by construction.</strong> “Rebuild From
+Shipped Snapshot” deletes only <code>radio-catalog/</code>. A test
+asserts the favorites, My Servers, YouTube channels, and schedule files
+are byte-identical across a rebuild.</li>
+<li><strong>Imports are user data.</strong> A playlist import lands in
+favorites (Class C), never in the catalog, so no refresh can ever
+“correct” it.</li>
+<li>The existing timestamped favorites backups continue
+independently.</li>
+</ol>
+<h3 id="9-accessibility-requirements-gates-not-aspirations">9.
+Accessibility requirements (gates, not aspirations)</h3>
+<ul>
+<li>Every new dialog through <code>_show_modal_dialog</code> +
+<code>apply_modal_ids</code>; ListBox activation via
+<code>apply_listbox_activation</code> (GATE-13); rows speak state first;
+dialog and accessible-name inventories regenerated.</li>
+<li>Counts and ages in words (“about two hours old”), never bare
+timecodes.</li>
+<li>Automatic refresh announces only outcomes that changed something;
+manual refresh always answers.</li>
+<li>The empty/broken distinction survives: catalog-served branches still
+say “nothing in X” vs “X could not be reached” correctly, because the
+fallback ladder preserves the failure flags.</li>
+</ul>
+<h3 id="10-compliance-and-egress">10. Compliance and egress</h3>
+<ul>
+<li>Every new endpoint (bulk exports, delta feeds) gets a reviewed entry
+in the network egress audit before it is called.</li>
+<li>The seed builder runs at release time from the build machine - it is
+not app egress, but it is documented in the audit’s build-tools section
+anyway.</li>
+<li>iHeart terms were read 2026-08-15 (Section 2b): Class B permanently;
+never seeded, never written through, live-drill with session caching
+only.</li>
+<li>TuneIn: policy unchanged - live-drill only, never bulk, never
+seeded.</li>
+<li>Attribution: sources that request credit (Radio Browser) get it in
+the About/docs, and provenance is visible per-station in the details
+panel.</li>
+</ul>
+<h3 id="11-failure-handling-the-degradation-matrix">11. Failure handling
+(the degradation matrix)</h3>
+<table>
+<thead>
+<tr>
+<th>Failure</th>
+<th>Behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Catalog file corrupt</td>
+<td>Coded error logged once; auto-rebuild from seed; browse falls to
+live for that session; one calm announcement</td>
+</tr>
+<tr>
+<td>Seed missing/hash mismatch (tampered or truncated install)</td>
+<td>Catalog disabled with a status message; live browsing unaffected;
+never import an unverified seed</td>
+</tr>
+<tr>
+<td>One source down during refresh</td>
+<td>Source marked stale with its age; every other source refreshes;
+summary names it</td>
+</tr>
+<tr>
+<td>Rate limited</td>
+<td>Honor Retry-After; back off that source for the day; count it in the
+summary as “waiting”, not “failed”</td>
+</tr>
+<tr>
+<td>Disk full mid-refresh</td>
+<td>Staging write fails; swap never happens; existing catalog intact;
+announced once</td>
+</tr>
+<tr>
+<td>Refresh interrupted (sleep, shutdown)</td>
+<td>Staging discarded on next start; catalog is whatever was last
+swapped in - always consistent</td>
+</tr>
+</tbody>
+</table>
+<h3 id="12-packaging-and-size-budget">12. Packaging and size budget</h3>
+<ul>
+<li>Seed budget: <strong>10 MB compressed, hard-failed in the
+build</strong> if exceeded. Measured (Section 2b): the full
+62,377-station Radio Browser catalog with FTS compresses to <strong>6.4
+MB</strong>; SomaFM is noise; Xiph is currently empty; iHeart is out by
+policy. The realistic seed is roughly 7 MB - the budget has a
+comfortable third in reserve.</li>
+<li>If the measured seed lands over budget: split the seed and move the
+bulk to the existing assets-on-demand release mechanism (the pattern
+speech engines already use), keeping a minimal in-package seed (curated
+sources + top-N per country) so first-launch is still complete-feeling
+offline.</li>
+<li>The catalog directory is excluded from any sync mechanism (it is
+derived, per-machine data, same reasoning as
+<code>local_paths</code>).</li>
+</ul>
+<h3 id="13-testing-strategy">13. Testing strategy</h3>
+<ul>
+<li>Pure units: keys (URL normalization table-driven), merge (every rule
+and every refusal-to-merge), summary sentences, due/stagger arithmetic
+with an injected clock.</li>
+<li>Store: tmp-dir SQLite round-trips; swap atomicity (kill between
+stage and swap -&gt; old catalog intact); tombstone grace; FTS query
+shapes.</li>
+<li>Refresh: fake fetchers
+(success/empty/hash-unchanged/rate-limited/raise); assert per-source
+isolation and that a hidden source is never fetched.</li>
+<li>Read-path parity: for each converted branch, catalog-served rows ==
+live-served rows for the same fixture data (shape and ordering), so the
+UI cannot tell which path answered.</li>
+<li>Invariant tests from Section 8 (import boundary, rebuild
+byte-identity).</li>
+<li>Perf lane: the 50 ms / 30 ms budgets as RUN_PERF tests.</li>
+<li>The conftest real-profile write guard already protects the
+developer’s own catalog during all of this.</li>
+</ul>
+<h3 id="14-phased-delivery-pr-sized-in-order">14. Phased delivery
+(PR-sized, in order)</h3>
+<h4 id="phase-0---measure-before-promising---done-2026-08-15">Phase 0 -
+measure before promising - DONE 2026-08-15</h4>
+<p>Findings are Section 2b; the prototype lives in
+<code>local/catalog-proto/</code> (fetchers, the built 26 MB catalog,
+the 6.4 MB seed, the benchmark scripts). Outcomes folded into this
+document: 10 MB seed budget, pointer-based swap, URL-merge tightening,
+empty-source outage rule, per-page refresh parsing, the
+<code>(country, votes DESC)</code> covering index, and mandatory
+pagination for the Radio Browser dump. The iHeart terms read closed
+Phase 0 entirely: iHeart is Class B by policy (Section 2b). Nothing
+remains open in this phase.</p>
+<h4
+id="phase-1---the-catalog-exists-and-browsing-is-instant-2-3-prs">Phase
+1 - the catalog exists and browsing is instant (2-3 PRs)</h4>
+<ol type="1">
+<li><code>catalog/</code> core: store, keys, merge, seed import, coded
+errors + tests.</li>
+<li>Seed builder script + release-script wiring + size gate + egress
+entries.</li>
+<li>Catalog-first read path for Radio Browser axes, Xiph, SomaFM (+
+iHeart if cleared), behind <code>catalog_enabled</code>; parity + perf
+tests; the master checkbox in Preferences.</li>
+</ol>
+<p>Exit criteria: fresh install, network cable pulled, every Class-A
+branch browses instantly; suite green; installer size within budget.</p>
+<h4 id="phase-2---it-stays-fresh-and-says-so-2-prs">Phase 2 - it stays
+fresh, and says so (2 PRs)</h4>
+<ol start="4" type="1">
+<li>Refresh engine: startup toggle, interval, staggering, tombstones,
+write-through; the two new Preferences checkboxes; minute-tick
+wiring.</li>
+<li>“Update Station Catalog…” command, summary model, spoken summary,
+review dialog; inventories regenerated.</li>
+</ol>
+<p>Exit criteria: John’s machine can sit for a week and the catalog is
+current; turning both toggles off produces zero background requests
+(verified by the egress-silent test lane).</p>
+<h4
+id="phase-3---visibility-search-and-the-adopted-extensions-2-3-prs">Phase
+3 - visibility, search, and the adopted extensions (2-3 PRs)</h4>
+<ol start="6" type="1">
+<li>FTS lane in Find Stations (instant local group first).</li>
+<li>Catalog Status view: age, health, per-source refresh, rebuild
+button; “what’s new since last update” as a browse branch that reads the
+diff; the cached-vs-live UX of Section 6.5 (details-panel line, Choose
+Browse Sources descriptions, the once-per-session offline
+sentence).</li>
+<li><strong>The library seed (Class A2, adopted):</strong> Gutenberg
+audio seeded and served locally. LibriVox measured out of the v1 seed
+(see the delivery log: 194,501 section rows = 60 MB against the whole 10
+MB budget); its branches stay live, and seeding it behind a compact
+section format is the named follow-up.</li>
+<li><strong>RadioDNS enrichment at build time</strong> (5.8): the
+identities table and the Wikidata frequency join in the seed
+builder.</li>
+</ol>
+<h4 id="phase-4---explicitly-deferred-until-the-above-is-proven">Phase 4
+- explicitly deferred until the above is proven</h4>
+<ul>
+<li>FMSTREAM as a new Class-A source (terms check first).</li>
+<li>RadioDNS-driven merge links in the merge engine.</li>
+<li>Trust badges in station details; “most improved”; nearby/local
+mix.</li>
+<li>Fuzzy dedupe. Only with a corpus of real duplicates to test
+against.</li>
+</ul>
+<h3 id="15-risks">15. Risks</h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Seed bloats the installers</td>
+<td>Hard size gate in the build; assets-on-demand split ready as the
+relief valve</td>
+</tr>
+<tr>
+<td>A source changes its export format</td>
+<td>Per-source isolation + hash short-circuit; worst case one stale
+source, never a broken app</td>
+</tr>
+<tr>
+<td>SQLite on network/portable drives misbehaves with WAL</td>
+<td>Portable edition detection already exists; fall back to journal mode
+DELETE on portable media; swap semantics unchanged</td>
+</tr>
+<tr>
+<td>Merge collapses two real stations into one</td>
+<td>Refusal-to-merge on ambiguity; provenance table makes any merge
+inspectable and reversible on rebuild</td>
+</tr>
+<tr>
+<td>Scope creep toward the delight features before the engine is
+solid</td>
+<td>Phase gates above; Phase 4 items are named and parked, not
+smuggled</td>
+</tr>
+</tbody>
+</table>
+<h3 id="16-open-questions-for-jeff">16. Open questions for Jeff</h3>
+<ol type="1">
+<li>(Closed 2026-08-15: iHeart terms read; Class B permanently. See
+2b.)</li>
+<li>Default periodic interval: 24 hours is proposed; 12 felt eager for a
+directory that changes slowly. Preference?</li>
+<li>Should popular/trending fall back to the snapshot when offline
+(proposed: yes, labeled “as of <age>”), or hide rather than show stale
+rankings?</li>
+<li>Seed in both editions, or portable-only with the installer relying
+on first-run refresh? (Proposed: both; offline-first is the story.)</li>
+</ol>
+<h3
+id="appendix-a---freely-available-sources-for-jeff-to-consider">Appendix
+A - freely available sources for Jeff to consider</h3>
+<p>Filtered hard by the standing rule: <strong>if hoops are required -
+keys, registrations, partner agreements, terms that bar storage - forget
+it.</strong> Everything below was checked on 2026-08-15; the two marked
+<em>verified live</em> were fetched and measured today.</p>
+<h4 id="include---no-hoops-storage-permitted">Include - no hoops,
+storage permitted</h4>
+<ul>
+<li><strong>laut.fm</strong> (<em>verified live</em>): open keyless JSON
+API, <code>api.laut.fm</code> - measured today at <strong>15,956
+stations, 36.8 MB, one request, no key</strong>. German
+community/web-radio platform; API is explicitly public. A genuine Class
+A candidate on Radio Browser’s scale, with unusually clean metadata.
+Effort: one adapter, one seed table. The strongest add on this
+list.</li>
+<li><strong>RadioDNS SPI documents (SI.xml)</strong>: broadcasters
+self-publish station lists, logos, and stream links in an open standard
+<em>designed</em> to be consumed and cached. No key, no agreement - the
+standard exists so clients do exactly this. Effort: an SPI parser plus
+the 5.8 enrichment hook. Coverage is broadcaster-by-broadcaster (strong
+in Europe), so it enriches rather than fills the tree.</li>
+<li><strong>Openverse audio</strong> (WordPress Foundation): CC-licensed
+audio catalog with an open anonymous API (rate-limited, keyless at the
+tier the app would use). A library-shelf source rather than radio; every
+record carries its license, which fits the ccMixter
+licence-travels-with-the-file pattern. Effort: moderate; consider only
+if a “CC music shelf” is wanted.</li>
+</ul>
+<h4 id="consider-with-one-caution-each">Consider with one caution
+each</h4>
+<ul>
+<li><strong>FMSTREAM (fmstream.org)</strong>: <strong>ignored for now
+(Jeff, 2026-08-15).</strong> Large directory, no API, terms silent
+rather than permissive - and silent is not yes. Revisit only with a
+clear answer from the maintainer.</li>
+<li><strong>Podcast Index</strong> (<em>verified live</em>): the full
+database is a genuinely free, keyless public download - measured today
+at <strong>1.8 GB</strong> - but the size makes it an on-demand asset at
+best (the assets-v1 pattern), never a seed, and Cast is its natural home
+rather than Radio. Parked unless the Radio/Cast boundary changes.</li>
+<li><strong>Environment Canada Weatheradio</strong>: the NOAA-shape
+counterpart for Canada; public data, but the internet re-streams are
+third-party and would need the same feed-by-feed vetting
+<code>wxindex</code> did for NOAA. Effort: a wxindex sibling; worth it
+if Canadian listeners ask.</li>
+<li><strong>Lit2Go</strong> (University of South Florida): free
+public-domain audiobooks with attribution terms; no API, so ingestion is
+page-walking - modest hoops, honest ones. Only worth it if the A2 shelf
+proves popular.</li>
+</ul>
+<h4
+id="excluded-by-the-no-hoops-rule---listed-so-the-reasoning-is-visible">Excluded
+by the no-hoops rule - listed so the reasoning is visible</h4>
+<ul>
+<li><strong>Jamendo</strong> (free but mandatory API key), <strong>Free
+Music Archive</strong> (API discontinued; terms of the successor
+unclear), <strong>radio.garden</strong> (unofficial API, terms not
+open), <strong>Dirble</strong> (dead), <strong>vTuner/Streema/
+radio-locator</strong> (commercial/proprietary),
+<strong>SHOUTcast</strong> (partner-gated; the 3.0 stance stands),
+<strong>BBC and public-broadcaster direct streams</strong> (geo/terms
+per broadcaster; RadioDNS SPI is the legitimate path to the same
+stations).</li>
+</ul>
+<h3 id="delivery-log">Delivery log</h3>
+<ul>
+<li>2026-08-15: Phases 1-3 built in one pass on
+<code>feat/station-catalog</code>:
+<code>quill/core/radio/catalog/</code> (store with pointer-swapped
+generations, keys, refresh with the empty-guard and tombstones, seed
+import, spoken summaries, the read path), the <code>browse()</code>
+chokepoint integration, the Find Stations instant lane, three
+Preferences (master switch, startup check, interval defaulting 24
+hours), Station &gt; Update Station Catalog, View &gt; Station Catalog
+Status (the complete cached-versus-live answer), the once-per-session
+offline sentence, the seed builder with its hard 10 MB gate wired into
+the release script, the Gutenberg audio shelf, and 17 core tests pinning
+every measured rule.</li>
+<li><strong>LibriVox is not in the v1 seed - the budget gate said
+so.</strong> The full shelf built: 8,978+ books carrying 194,501 section
+rows, a 70.3 MB database compressing to 11.8 MB - over the 10 MB gate on
+chapter listings alone (their API also caps <code>extended=1</code>
+pages at 800; <code>fetch_book_page</code> uses 500 and stays for the
+follow-up). Decision: LibriVox branches keep answering live exactly as
+3.0 served them; seeding them behind a compact section format is the
+named follow-up. The Status view says so honestly.</li>
+<li><strong>Found while wiring Layer 1:</strong> the startup refresh
+never fired in a public-shaped run because the editor’s
+<code>core.radio</code> release gate (#1347) also killed
+<code>_init_radio</code>’s active block inside Quill Radio itself -
+scheduler, wake task, missed reports, palette included. Fixed via
+<code>FeatureManager.grant_product_features</code> (the app claims its
+own feature at startup; in-memory, safety locks still apply), same
+treatment for Quill Cast. The catalog’s startup import is verified
+end-to-end in a real app loop: seed imported, <code>CURRENT</code> +
+generation present, age 0.</li>
+<li>FMSTREAM: ignored for now (Jeff, 2026-08-15).</li>
+</ul>
+<h3 id="17-decision-log">17. Decision log</h3>
+<ul>
+<li>2026-08-15 (directive): cache-everything-legal adopted as Goal 7;
+Class A2 (LibriVox + Gutenberg audio) promoted from parked to Phase 3;
+Wikidata becomes a seeded CC0 enrichment table; cached-vs-live made a
+first-class UX requirement (6.5); RadioDNS moved from live lookup to
+build-time enrichment (5.8); Xiph default_on=False executed same day (PR
+#1401); Appendix A added with verified candidates (laut.fm 15,956
+stations keyless; Podcast Index dump 1.8 GB, parked on size) and the
+no-hoops exclusion list.</li>
+<li>2026-08-15 (sweep): every source measured (table in 2b). LibriVox
+and Gutenberg audio identified as Class A2 library-seed candidates for
+Phase 4 (~22-24k + 1,124 records, est. 3-4 MB compressed); Internet
+Archive confirmed live-drill by the numbers (collections to 522k items).
+Xiph ruled intermittent, not dead: kept with a release-cut tripwire
+(auto-hide via <code>default_on=False</code> while empty; removal only
+after sixty dead days).</li>
+<li>2026-08-15 (latest): iHeart Terms of Use read (updated 2025-03-12).
+Section 23’s “enter into a database… distribute” bars seeding or
+persisting iHeart listings; iHeart set to Class B permanently, and Layer
+4 write-through narrowed to Class A sources only so the catalog database
+provably contains nothing terms-encumbered.</li>
+<li>2026-08-15 (later, from the prototype): swap design changed to
+generation files plus a pointer after <code>os.replace</code> over an
+open database failed on Windows; seed budget halved to 10 MB on a
+measured 6.4 MB; URL-only merging rejected on measured evidence (7,135
+shared URLs); empty-source outage rule added after finding the live Xiph
+directory empty; the JSON store alternative rejected with measurements
+(9 s and 217 MB versus 0.5 ms).</li>
+<li>2026-08-15: SQLite chosen over sharded JSON for the catalog store;
+derived- data principle adopted (rebuildable, never authoritative for
+user data); TuneIn confirmed excluded from bulk; user-data protection
+expressed as import-boundary + byte-identity tests rather than code
+review vigilance; the earlier rubber-duck note this file held is
+superseded by this plan (its delight items live in Phase 4, its “what
+not to do” list is absorbed into Non-goals and Invariants).</li>
 </ul>
 </main>
 </body>

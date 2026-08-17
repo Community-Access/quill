@@ -148,7 +148,9 @@ class ImageAltMixin:
             except Exception as exc:  # pragma: no cover - network/runtime guard
                 outcome["result"] = (None, f"AI description failed: {exc}")
 
-        thread = threading.Thread(target=_worker, daemon=True)
+        # GATE-40-OK below: one-shot describe with its own modal progress; the
+        # outcome dict is polled on the UI thread and the dialog is the cancel.
+        thread = threading.Thread(target=_worker, daemon=True)  # GATE-40-OK: see above
         progress = wx.ProgressDialog(
             "Describing image",
             "Asking AI to describe this image...",

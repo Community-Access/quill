@@ -336,18 +336,15 @@ class PreferencesMixin:
         )
         self._apply_ai_menu_enabled()
         self._refresh_ai_status()
-        # Re-apply the model-lifecycle policy in case the Performance settings
-        # (Low-resource mode / Unload idle models after) changed.
+        # Every long-lived, settings-derived runtime policy re-derives here —
+        # announcement policy, verbosity controller, watch monitor policy, and
+        # the model-lifecycle limits — in one helper (announce_wiring), because
+        # each of the first three was found applying only after a restart (the
+        # P0.3 staleness class).
         try:
-            from quill.core import lifecycle_service
-            from quill.core.speech.service import detect_total_ram_gb
+            from quill.ui.announce_wiring import refresh_live_policies
 
-            lifecycle_service.configure(
-                low_resource_mode=bool(getattr(self.settings, "low_resource_mode", False)),
-                idle_unload_minutes=int(getattr(self.settings, "idle_unload_minutes", 10)),
-                total_ram_gb=detect_total_ram_gb(),
-            )
-            self._start_lifecycle_sweep_timer()
+            refresh_live_policies(self)
         except Exception:  # noqa: BLE001 - a settings-apply side effect must never raise
             pass
         self._apply_soft_wrap(self.settings.soft_wrap)

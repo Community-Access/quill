@@ -277,7 +277,9 @@ class WhisperCppProvider:
     # -- models ----------------------------------------------------------- #
 
     def list_supported_models(self) -> list[SpeechModelInfo]:
-        return list(catalog.WHISPER_CPP_MODELS)
+        # offered() filters de-supported entries (large-v3: unmirrorable at
+        # ~3.1 GB); an installed copy still resolves via model_by_id.
+        return catalog.offered(catalog.WHISPER_CPP_MODELS)
 
     def list_installed_models(self) -> list[InstalledSpeechModel]:
         recorded = [m for m in models.load_installed_models() if m.provider_id == PROVIDER_ID]

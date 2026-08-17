@@ -51,7 +51,12 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 OutputBaseFilename=QUILL-Cast-Setup-{#AppVersion}
+; 64-bit Setup (Inno 7) + 128 MB LZMA dictionary: the payload embeds the
+; near-identical ffmpeg/ffprobe pair, which only a large dictionary can
+; dedupe in the solid stream (-27 MB measured on Quill Radio, 2026-08-17).
+SetupArchitecture=x64
 Compression=lzma2/ultra
+LZMADictionarySize=131072
 SolidCompression=yes
 WizardStyle=modern
 CloseApplications=force

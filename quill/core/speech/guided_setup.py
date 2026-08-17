@@ -58,6 +58,27 @@ _NEMOTRON_SUMMARY = (
     "sherpa-onnx — very accurate and fast, with no graphics card required. A "
     "larger download than Vosk; a strong choice for English dictation."
 )
+_PARAKEET_TAGLINE = "most reliable for dictation; 25 languages, CPU-only"
+
+
+def _parakeet_summary() -> str:
+    """Parakeet's summary, with its capability sentence drawn from the catalog.
+
+    The catalog is the manifest of truth for what a model can do; composing the
+    sentence from it (the same ``capability_sentence`` the model-manager rows
+    speak) means this picker can never promise something the catalog does not.
+    """
+    from quill.core.speech import catalog
+    from quill.core.speech.service import capability_sentence
+
+    info = catalog.parakeet_model_by_id(catalog.PARAKEET_RECOMMENDED_MODEL_ID)
+    extra = capability_sentence(info) if info is not None else ""
+    return (
+        "NVIDIA's Parakeet 3 run on the CPU via sherpa-onnx — 25 languages, no "
+        "graphics card or torch, and once its model is installed dictation "
+        "prefers it automatically. Unlike Whisper it cannot type a phantom "
+        "phrase over a silent pause." + extra
+    )
 
 
 def _safe(predicate) -> bool:  # type: ignore[no-untyped-def]
@@ -110,6 +131,14 @@ def _nemotron_install_supported() -> bool:
     return nemotron_install_supported()
 
 
+def _parakeet_model_available() -> bool:
+    """True only when the Parakeet 3 model is hosted+pinned on assets-v1
+    (same offer-nothing-you-cannot-finish rule as Nemotron below)."""
+    from quill.core.speech import catalog, model_mirrors
+
+    return model_mirrors.mirror_for("parakeet", catalog.PARAKEET_RECOMMENDED_MODEL_ID) is not None
+
+
 def _nemotron_model_available() -> bool:
     """True only when the Nemotron model is hosted+pinned on the assets-v1 release.
 
@@ -159,8 +188,24 @@ def offline_speech_engine_options() -> list[OfflineSpeechEngineOption]:
             install_supported=_safe(_vosk_install_supported),
         ),
     ]
-    # Nemotron appears only once its model asset is hosted+pinned (see
-    # _nemotron_model_available); until then it is fully inert and unlisted.
+    # Parakeet 3 and Nemotron appear only once their model assets are
+    # hosted+pinned (mirror-gated); until then each is fully inert and
+    # unlisted. Both ride the same sherpa-onnx runtime, so Nemotron's
+    # installed/installable detectors answer for Parakeet too. Parakeet sits
+    # right after the recommended default because it is the engine dictation
+    # itself prefers once installed.
+    if _safe(_parakeet_model_available):
+        options.insert(
+            1,
+            OfflineSpeechEngineOption(
+                engine_id="parakeet",
+                name="Parakeet 3 (NVIDIA)",
+                tagline=_PARAKEET_TAGLINE,
+                summary=_parakeet_summary(),
+                installed=_safe(_nemotron_installed),
+                install_supported=_safe(_nemotron_install_supported),
+            ),
+        )
     if _safe(_nemotron_model_available):
         options.append(
             OfflineSpeechEngineOption(

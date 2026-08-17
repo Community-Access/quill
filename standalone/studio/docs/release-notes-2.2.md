@@ -59,6 +59,30 @@ Behind that, speech, braille, sound, and the status line are now delivered by on
 
 New shared accessibility settings control the braille style (the full spoken string, or a compact position-first form), how long an identical braille message is held back, whether an error sticks on the display instead of flashing past, whether the companion apps play sound cues, whether a cue stands in for speech while Quiet Mode is on, and which severities interrupt speech. The Studio's own Preferences dialog stays the short list it has always been; these live in the settings store the Studio shares with QUILL, so setting them in QUILL applies here too.
 
+## A transcription engine that cannot make things up
+
+Whisper — the engine most offline transcription runs on, the Studio's
+included — has one famous flaw: fed silence, it sometimes *invents* text. A
+pause in a recording can come back as a phantom "thank you" or a subtitle
+credit that nobody said, because under the hood Whisper is a language model
+guessing at what silence "should" say.
+
+The Studio now offers **Parakeet 3**, an NVIDIA model that works the other way
+round: it only writes down words it actually heard, so silence produces
+nothing — which matters for exactly the material a studio transcribes, long
+recordings full of pauses. It covers 25 languages and detects which one is
+being spoken, runs on any CPU with no graphics card and no heavy libraries,
+and downloads (about 650 MB, checksum-verified from QUILL's own mirror) from
+the same model manager as every other engine. Every engine and model in that
+manager now also states its capabilities in plain language — "detects the
+spoken language; never invents text from silence" — *before* you download,
+so choosing is no longer guesswork.
+
+Alongside it, a silence pre-pass now trims the quiet lead-in and tail from
+captured audio before any engine hears it, and your custom vocabulary (names,
+product words, jargon) is fuzzy-matched into finished transcripts so a name
+the engine mangles still comes back spelled your way.
+
 ## Built from QUILL's own source
 
 The Studio used to be assembled from a copy of QUILL's audio code kept in a separate repository and re-synced by hand. It is now built directly from QUILL itself. Nothing changes in what you see, but the standalone Studio and QUILL's built-in Audio Studio can no longer drift apart, and a fix made upstream is in the next Studio build with nothing to copy across.

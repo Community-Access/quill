@@ -55,6 +55,15 @@ class SpeechModelInfo:
     # fetched via ``huggingface_hub.hf_hub_download`` (whisper.cpp GGML models).
     # Repo-snapshot models (Faster Whisper) leave this empty.
     hf_filename: str = ""
+    # What this model can actually do, stated *before* download so the picker
+    # promises honestly (the same principle as Handy's GGUF-header capability
+    # probe, adapted: QUILL's catalog is its manifest of truth, so capabilities
+    # are declared here and rendered as plain text in Manage Speech Models).
+    # Known values: "language-detect", "streaming", "translate",
+    # "speaker-turns", "word-timestamps", "silence-safe" (a transducer that
+    # emits nothing for silent audio, where Whisper-family decoders can
+    # hallucinate text). An empty tuple simply renders no capability line.
+    capabilities: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

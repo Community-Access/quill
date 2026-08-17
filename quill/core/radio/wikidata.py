@@ -6,16 +6,19 @@ network it takes, its format, and the frequency it sits on. Joining the two give
 ways in that no directory offers --
 
     By City                 -> stations licensed to that city
-    By Owner                -> everything one company runs
     By Format               -> news, talk, classical, country
     On the Dial             -> by frequency band
 
-There was a fourth axis, **By Network**, and it is gone. Wikidata's
-"original broadcaster" (P449) is carried by *two* US radio stations, so the
-axis could never have listed anything; it shipped because nobody counted. An
-axis that opens to nothing is worse than one not offered -- the listener spends
-the keystrokes either way and only one of them can pay off (removed
-2026-08-16). "By Format" was pointed at P2360, "intended public", carried by
+**Two axes have been removed, for the same reason in two forms.** Wikidata's
+"original broadcaster" (P449) is carried by *two* US radio stations, so **By
+Network** could never have listed anything; it shipped because nobody counted
+(removed 2026-08-16). **By Owner** (P127) counted fine and still failed at the
+leaf: unlike a place or a format, ownership is not a field Radio Browser
+carries, so an owner folder has no way in except matching call signs one at a
+time -- and roughly three folders in four opened to nothing or to a fraction of
+what they named. An axis that pays off a quarter of the time is worse than one
+not offered: the listener spends the keystrokes every time (removed
+2026-08-17). "By Format" was pointed at P2360, "intended public", carried by
 *zero* stations; it now uses P415, "radio format", carried by 1,715.
 
 "On the Dial" is the one worth arguing for. Browsing by frequency is how radio
@@ -73,7 +76,6 @@ _LIMIT = 400
 #: The axes offered, as ``(id, label, the Wikidata property behind it)``.
 AXES: tuple[tuple[str, str, str], ...] = (
     ("city", "By City", "P131"),
-    ("owner", "By Owner", "P127"),
     ("format", "By Format", "P415"),
 )
 

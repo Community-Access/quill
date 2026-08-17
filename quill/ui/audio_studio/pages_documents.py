@@ -15,6 +15,7 @@ from pathlib import Path
 import wx
 
 from quill.core.i18n import _
+from quill.ui.audio_studio.background import run_one_shot
 from quill.ui.audio_studio.pages_base import StudioPage, set_accessible_name
 from quill.ui.audio_studio.request import (
     ALL_EXTENSIONS,
@@ -164,7 +165,7 @@ class DocSourcePage(StudioPage):
 
     def start_count(self) -> None:
         """Count matching documents and words off the UI thread; announce when settled."""
-        import threading
+        from quill.ui.audio_studio.background import run_one_shot
 
         folder_text = self.source.GetValue().strip()
         extensions = self.selected_extensions()
@@ -207,7 +208,7 @@ class DocSourcePage(StudioPage):
 
             wx.CallAfter(apply)
 
-        threading.Thread(target=work, name="audio-studio-count", daemon=True).start()
+        run_one_shot(work, "audio-studio-count")
 
     def selected_extensions(self) -> tuple[str, ...]:
         exts: list[str] = []
@@ -699,7 +700,6 @@ class ChaptersPage(StudioPage):
 
     def start_title_preview(self) -> None:
         """List the first 20 chapter titles the level choice would carve, off-thread."""
-        import threading
 
         if self._source_provider is None:
             return
@@ -744,7 +744,7 @@ class ChaptersPage(StudioPage):
 
             wx.CallAfter(apply)
 
-        threading.Thread(target=work, name="audio-studio-preview", daemon=True).start()
+        run_one_shot(work, "audio-studio-preview")
 
     def collect(self, req: BatchSpeechRequest) -> None:
         idx = self.mode.GetSelection()

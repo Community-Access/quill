@@ -145,8 +145,23 @@ def test_a_channel_url_is_normalised_from_what_people_paste() -> None:
 
 def test_wikidata_offers_its_axes_including_the_dial() -> None:
     labels = [n.label for n in bs.browse("wikidata")]
-    assert "By City" in labels and "By Owner" in labels
+    assert "By City" in labels and "By Format" in labels
     assert "On the Dial" in labels
+
+
+def test_wikidata_offers_no_axis_radio_browser_cannot_answer() -> None:
+    """By Owner counted fine and opened to nothing about three times in four.
+
+    Ownership is not a field Radio Browser carries, so the folder could only be
+    filled by matching call signs one at a time -- the same failure that took
+    By Network out, arriving one level lower down (removed 2026-08-17).
+    """
+    from quill.core.radio import wikidata
+
+    assert "owner" not in {key for key, _label, _prop in wikidata.AXES}
+    assert "By Owner" not in [n.label for n in bs.browse("wikidata")]
+    # A stale saved position under the retired axis opens empty rather than raising.
+    assert bs.browse(make_id("wikidata", "owner", "iHeartMedia")) == []
 
 
 def test_wikidata_rows_say_they_are_derived() -> None:

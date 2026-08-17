@@ -24,6 +24,11 @@ from pathlib import Path
 from typing import Protocol
 
 from quill.core.speech.dictation.insertion import normalize_for_insertion
+from quill.core.speech.dictation.refine import (
+    RefinePolicy,
+    effective_language,
+    refine_transcript,
+)
 from quill.core.speech.dictation.session import DictationSession, InsertionContext
 from quill.core.speech.dictation.states import (
     ACTIVE_RECORDING_STATES,
@@ -66,6 +71,15 @@ class DictationConfig:
     stop_on_focus_loss: bool = True  # PRD §10.3 default
     intelligent_spacing: bool = True  # PRD §17
     min_hold_seconds: float = 0.0  # PRD §20.2 "Ignore accidental taps"
+    # Transcript refinement (PRD §17 addendum): the user's own vocabulary
+    # (always applied when non-empty — typing words in *is* the opt-in) and
+    # the two-tier filler pass (off by default; language is the evidence its
+    # gated tier requires and comes from the dictation-language setting).
+    # Applied by refine_transcript() before normalize_for_insertion, so
+    # refinement never sees document context and spacing rules stay last.
+    custom_vocabulary: tuple[str, ...] = ()
+    remove_fillers: bool = False
+    language: str = ""
 
 
 class DictationServices(Protocol):
@@ -269,8 +283,15 @@ class DictationController:
 
     # -- transcription callbacks (from the worker thread) ------------------ #
 
-    def transcription_succeeded(self, session_id: str, text: str) -> None:
-        """Worker reported a transcript. Insert it or defer to review."""
+    def transcription_succeeded(
+        self, session_id: str, text: str, detected_language: str = ""
+    ) -> None:
+        """Worker reported a transcript. Insert it or defer to review.
+
+        ``detected_language`` is the engine's own detection when it has one
+        (Parakeet 3 reports per utterance); it outranks the configured language
+        as filler-gate evidence, and "auto"/"" fall back honestly.
+        """
         with self._lock:
             session = self._session
             if session is None or session.session_id != session_id:
@@ -278,6 +299,18 @@ class DictationController:
             if self._state is not DictationState.TRANSCRIBING:
                 return
             cleaned = (text or "").strip()
+            if cleaned:
+                # Vocabulary first, fillers second (refine.py owns the order and
+                # why). A transcript that was *all* filler refines to "" and is
+                # honestly reported as no speech rather than inserting nothing.
+                cleaned = refine_transcript(
+                    cleaned,
+                    RefinePolicy(
+                        custom_vocabulary=self._config.custom_vocabulary,
+                        remove_fillers=self._config.remove_fillers,
+                        language=effective_language(detected_language, self._config.language),
+                    ),
+                )
             if not cleaned:
                 session.transcription_state = "empty"
                 self._services.feedback(FeedbackEvent.NO_SPEECH, session)

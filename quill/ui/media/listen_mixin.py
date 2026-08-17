@@ -120,7 +120,11 @@ class MediaListenMixin:
                 return
             wx.CallAfter(self._finish_listen, transcript, "")
 
-        threading.Thread(target=_work, daemon=True).start()
+        threading.Thread(  # GATE-40-OK: one-shot capture+transcribe; CallAfter result;
+            # _on_listen_timeout is the watchdog.
+            target=_work,
+            daemon=True,
+        ).start()
 
     def _on_listen_timeout(self) -> None:
         if self._listening:

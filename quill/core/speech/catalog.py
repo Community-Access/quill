@@ -122,6 +122,22 @@ WHISPER_CPP_MODELS: tuple[SpeechModelInfo, ...] = (
 )
 
 
+#: Models no longer *offered* for download (formally de-supported 2026-08-17),
+#: while remaining in the catalog so an already-installed copy keeps its
+#: metadata, size estimates, and removal path. large-v3 (~3.1 GB) exceeds
+#: GitHub's 2 GiB release-asset limit, so it could never join the SHA-pinned
+#: assets-v1 mirror every other model uses; offering a download QUILL cannot
+#: mirror meant a third-party fetch path and a "manual install only" state the
+#: picker never explained. Better value now exists at every size: Medium for
+#: local quality, and Parakeet 3 for silence-safe multilingual dictation.
+DESUPPORTED_MODEL_IDS: frozenset[str] = frozenset({"large-v3"})
+
+
+def offered(models: tuple[SpeechModelInfo, ...]) -> list[SpeechModelInfo]:
+    """The catalog entries the pickers may offer (de-supported ones filtered)."""
+    return [model for model in models if model.id not in DESUPPORTED_MODEL_IDS]
+
+
 def model_by_id(model_id: str) -> SpeechModelInfo | None:
     """Look up a catalog model by id."""
     for model in WHISPER_CPP_MODELS:
@@ -312,6 +328,43 @@ NEMOTRON_MODELS: tuple[SpeechModelInfo, ...] = (
 def nemotron_model_by_id(model_id: str) -> SpeechModelInfo | None:
     """Look up a Nemotron ONNX catalog model by id."""
     for model in NEMOTRON_MODELS:
+        if model.id == model_id:
+            return model
+    return None
+
+
+# --------------------------------------------------------------------------- #
+# Parakeet 3 ONNX (sherpa-onnx offline transducer). The multilingual sibling of
+# Nemotron above, and the engine dictation *prefers* once installed (see
+# service.preferred_dictation_provider_id for the ladder and its reasoning).
+# Same runtime, same bundle shape, same assets-v1 mirror discipline.
+# --------------------------------------------------------------------------- #
+
+PARAKEET_RECOMMENDED_MODEL_ID = "parakeet-tdt-0.6b-v3"
+
+PARAKEET_MODELS: tuple[SpeechModelInfo, ...] = (
+    SpeechModelInfo(
+        id="parakeet-tdt-0.6b-v3",
+        display_name="Parakeet 3 (25 languages, NVIDIA)",
+        language_mode="multilingual",
+        approximate_size_mb=650,
+        accuracy_tier="high",
+        speed_tier="fast",
+        recommended_use=(
+            "The most reliable offline dictation engine: 25 European languages "
+            "with automatic language detection, CPU-only, and — unlike Whisper — "
+            "it never invents text from silence. Once installed, dictation "
+            "prefers it automatically."
+        ),
+        license_name="CC-BY-4.0",
+        capabilities=("language-detect", "silence-safe"),
+    ),
+)
+
+
+def parakeet_model_by_id(model_id: str) -> SpeechModelInfo | None:
+    """Look up a Parakeet ONNX catalog model by id."""
+    for model in PARAKEET_MODELS:
         if model.id == model_id:
             return model
     return None

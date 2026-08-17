@@ -12,6 +12,19 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 ### Added
 
+- **Parakeet 3 in the transcription engine chooser.** The shared speech stack
+  gained NVIDIA's Parakeet 3 (25 languages, automatic language detection,
+  CPU-only, ~650 MB, downloaded SHA-verified from QUILL's own mirror), and
+  Audio Studio's offline transcription sees it wherever engines are offered.
+  Unlike Whisper-family engines it cannot invent text from silence — a
+  transducer only emits words it actually heard — which matters for exactly
+  the long, pause-heavy recordings a studio transcribes. Every model row in
+  the manager now states its capabilities in plain language ("detects the
+  spoken language; never invents text from silence") *before* you download,
+  and a silence pre-pass trims quiet lead-ins and tails from captured audio in
+  the shared dictation flow. Full story: QUILL's changelog, "Dictation stops
+  making things up".
+
 - **QUILL Audio Studio has its own icon.** It used to ship a byte-identical copy of Quill Radio's broadcast-wave icon, carried over when the standalone shell was scaffolded, so two products wore one face in the taskbar, in Alt+Tab and in the tray. Audio Studio's icon is now a three-bar waveform on a slate tile -- the same rounded shape and amber accent as the rest of the QuillVille family, with its own silhouette and its own colour. The waveform was re-cut once before shipping: at 16x16 five bars merged into a solid slab, so there are three, with real gaps between them, which is what makes a waveform read as bars rather than as a block.
 
 - **The QuillVille Runtime -- install Python once, and every Quill app starts instantly.** Every QuillVille app (QUILL, Quill Radio, Quill Weather, and QUILL Audio Studio) now shares one Python runtime, the QuillVille Runtime, installed once per user and reused by all of them. Install it a single time and every app you add afterward launches immediately. The runtime is reference-counted: it is removed only when the last app that needs it is uninstalled. Alongside the existing full portable and full installer builds, two new lightweight editions arrive that ride the shared runtime:

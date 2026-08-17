@@ -352,6 +352,16 @@ class WatchManager:
         """The ambient-monitor policy these pollers run under."""
         return self._policy
 
+    def set_policy(self, policy: MonitorPolicy) -> None:
+        """Adopt a new policy live (a settings change; P0.3 staleness class).
+
+        Safe mid-run: pollers read ``self._policy`` per decision — the poll
+        cadence on each loop, the tick sound on each check — so the next
+        decision simply uses the new values. Running pollers are neither
+        stopped nor restarted.
+        """
+        self._policy = policy
+
     def poll_seconds_for(self, profile: WatchProfile) -> float:
         """The cadence *profile* actually polls at, under the current policy."""
         interval = int(profile.poll_interval_seconds)

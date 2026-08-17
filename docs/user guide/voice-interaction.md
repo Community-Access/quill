@@ -200,8 +200,12 @@ save everything => file.save_all
 
 - **Vocabulary** — names, jargon, and acronyms you use. QUILL passes these to the
   speech engine as a hint (Whisper's *initial prompt*), so it spells them your way
-  — "wxPython", not "w x python". (Engines that don't accept a hint simply ignore
-  this; the other two sections still work.)
+  — "wxPython", not "w x python". Since 2026-08-17 the same list also powers a
+  **fuzzy correction pass on the finished transcript**: near-misses are matched
+  by spelling *and* sound across up to three words, so "charge b" is repaired to
+  "ChargeBee" in exactly your casing, and "r and d" matches an "R&D" entry. That
+  means engines that take no hint — **Parakeet 3** included — still learn your
+  words; nothing is corrected unless it is genuinely close to one of your terms.
 - **Replacements** — spoken-to-written fixes applied to the finished transcript,
   one per line as `spoken => written`. Use `\n` for a new line. Great for
   punctuation macros and names the engine keeps mishearing.
@@ -220,6 +224,12 @@ can install and choose:
   people**: *Tiny* (~75 MB) and *Base* (~145 MB) are fast and ideal for short
   voice commands; *Small* (~465 MB) is the recommended all-round choice. Larger
   models (Medium, Large) are more accurate but slower and much bigger.
+- **Parakeet 3** (NVIDIA, via sherpa-onnx) — **the most reliable choice for
+  dictation**, and once its ~650 MB model is installed, dictation prefers it
+  automatically (your explicit engine choice still wins). It covers 25
+  languages, detects which one you are speaking, runs on any CPU, and — unlike
+  Whisper — never invents text from silence, so a thinking pause can never
+  become a phantom "thank you" in your document.
 - **Nemotron** (NVIDIA, via sherpa-onnx) — a strong offline English engine that
   runs without heavy dependencies.
 - **Vosk** and **Faster Whisper** — additional offline options.

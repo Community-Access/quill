@@ -11,6 +11,14 @@
 # correct resolution logic; this file is that logic extracted once so the other
 # five scripts stop drifting from it.
 #
+# HISTORICAL NOTE (2026-08-17): "S:" and "D:" in old logs are the SAME machine.
+# The primary checkout's drive was re-lettered S: -> D:, which is why stale
+# .pyc tracebacks can print S:\QUILL paths and why S:\installs deletions sit in
+# D:'s recycle bin. The checkout's broken .venv (Python 3.13.11; PyInstaller
+# crashed on malformed metadata; the "stale venv silently changed what
+# shipped" hazard Resolve-QuillPython exists to avoid) was deleted the same
+# day. Release builds use the newest system CPython -- never a checkout venv.
+#
 # Dot-source it from a build script:
 #   . (Join-Path $quillRepo "scripts\BuildEnv.ps1")
 # following the same pattern render_docs.ps1 uses for scripts\DocRender.ps1.
@@ -223,12 +231,21 @@ function Resolve-QuillIscc {
     <#
     .SYNOPSIS
     Locate the Inno Setup compiler without hardcoding a drive.
+    .DESCRIPTION
+    Inno Setup 7 first, 6 as the fallback (2026-08-17): the 64-bit v7 compiler
+    is what allows LZMADictionarySize above 64 MB, which the shared installers
+    rely on to deduplicate ffmpeg/ffprobe (-27 MB on Quill Radio alone), and
+    both editions compile the v6-era scripts unchanged. The two can coexist;
+    pass -Iscc explicitly to build with a specific one.
     #>
     param([string]$Preferred = "")
 
     $tried = @()
     if ($Preferred) { $tried += $Preferred }
     $tried += @(
+        (Join-Path $env:LOCALAPPDATA "Programs\Inno Setup 7\ISCC.exe"),
+        (Join-Path ${env:ProgramFiles(x86)} "Inno Setup 7\ISCC.exe"),
+        (Join-Path $env:ProgramFiles "Inno Setup 7\ISCC.exe"),
         (Join-Path $env:LOCALAPPDATA "Programs\Inno Setup 6\ISCC.exe"),
         (Join-Path ${env:ProgramFiles(x86)} "Inno Setup 6\ISCC.exe"),
         (Join-Path $env:ProgramFiles "Inno Setup 6\ISCC.exe")

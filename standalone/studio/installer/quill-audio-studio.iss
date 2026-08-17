@@ -35,7 +35,7 @@
 ; runtime.state.json. It MUST stay "studio" forever -- renaming it
 ; would orphan the previous reference and double-count, leaving a
 ; phantom install that the uninstaller cannot reclaim.
-#define RuntimeVersion "3.13.14"
+#define RuntimeVersion "3.13.15"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "studio"
 
@@ -75,7 +75,12 @@ MinVersion=10.0
 ; The -Shared suffix matches the per-app pattern; drop once the
 ; shared-runtime install is the only shipping layout.
 OutputBaseFilename=QUILL-Audio-Studio-Setup-Shared-{#AppVersion}
+; Kept in step with quill-radio.iss (2026-08-17): 64-bit Setup (Inno 7) +
+; 128 MB LZMA dictionary, which dedupes the embedded runtime's near-identical
+; ffmpeg.exe/ffprobe.exe pair in the solid stream (-27 MB measured on Radio).
+SetupArchitecture=x64
 Compression=lzma2/ultra
+LZMADictionarySize=131072
 SolidCompression=yes
 WizardStyle=modern
 CloseApplications=force

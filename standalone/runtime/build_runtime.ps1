@@ -105,6 +105,7 @@ Get-ChildItem $internal -Recurse -Include *.chm, *.pdb -ErrorAction SilentlyCont
 Get-ChildItem $internal -Filter "libx265*.dll" -ErrorAction SilentlyContinue |
     ForEach-Object { Remove-Item -Force $_.FullName; Write-Host "pruned $($_.Name)" }
 
+
 # -- stage shared binaries into the runtime's tools\ --------------------------
 # Apps resolve these via QUILL_APP_ROOT, which (when frozen) is the runtime dir.
 $toolsFfmpeg = Join-Path $dist "tools\ffmpeg"
@@ -127,5 +128,18 @@ $pyver = (& $Python -c "import platform; print(platform.python_version())").Trim
 # was skipped and the app kept running yesterday's code.
 $build = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 & $Python -c "from pathlib import Path; from quill.core import runtime_marker as m; m.write_marker(Path(r'$dist'), python_version='$pyver', build_id='$build'); print('marker', m.read_marker(Path(r'$dist')))"
+
+# -- the swept contents must match the declared inventory ---------------------
+# check_build_env above guards the floor (everything [runtime] needs is
+# importable); this guards the ceiling. Analysis follows every optional import,
+# so an extra package on the build machine ships silently: the 2026-08-15
+# installers carried 81.8 MB of undeclared payload (pymupdf, a second OpenBLAS,
+# pydantic, curl_cffi...) and the only symptom was 31 MB of installer size.
+# Runs last, once the dist is complete (tools staged, marker stamped), so the
+# inventory describes exactly what an installer will embed.
+& $Python (Join-Path $quillRepo "scripts\check_runtime_inventory.py") $dist
+if ($LASTEXITCODE -ne 0) {
+    throw "Runtime inventory drift -- see above. Rebaseline (--write) only for intentional changes."
+}
 
 Write-Host "Shared runtime ready: $dist (Python $pyver)"

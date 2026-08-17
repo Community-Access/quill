@@ -51,6 +51,10 @@ MinVersion=10.0
 ; exe, which quill-beacon.spec stamps from the same file.
 SetupIconFile=..\assets\quill-beacon.ico
 OutputBaseFilename=Quill-Beacon-Setup-{#AppVersion}
+; 64-bit Setup (Inno 7) for parity across the family (and high-entropy
+; ASLR). No enlarged dictionary: this payload has no ffmpeg twin to
+; dedupe, so a big dictionary would only tax the installing machine.
+SetupArchitecture=x64
 Compression=lzma2/ultra
 SolidCompression=yes
 WizardStyle=modern

@@ -544,10 +544,12 @@ def _browse_wikidata(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
         wanted = args[1]
         chosen = [s for s in stations if s.grouping == wanted]
         rows = wikidata.playable(chosen, country="", safe_mode=safe_mode)
-        # Where Radio Browser can answer the axis itself it leads, because it
-        # answers from the set that can actually play; the call-sign matches
-        # then top up anything it did not carry. Owner has no equivalent field,
-        # so it stays on the call-sign route alone.
+        # Radio Browser leads, because it answers from the set that can actually
+        # play; the call-sign matches then top up anything it did not carry.
+        # Every axis offered here is one Radio Browser can answer -- By Owner is
+        # gone precisely because ownership is not a field it carries, leaving the
+        # call-sign route alone to fill the folder, which it managed about a
+        # quarter of the time (removed 2026-08-17).
         lead: list = []
         if axis == "city":
             lead = wikidata.stations_in_place(wanted, safe_mode=safe_mode)
@@ -563,29 +565,16 @@ def _browse_wikidata(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
                 merged.append(station)
             rows = merged
         return _stations(rows)
-    # The count is what WIKIDATA knows, which is not what the folder will
-    # hold: opening it matches each station to a playable stream by call sign
-    # and drops the ones Radio Browser does not carry. Arizona announced "13"
-    # and opened to one row (reported 2026-08-16). So the number goes in the
-    # *note*, worded as what it is, rather than in child_count -- which the
-    # tree renders as a promise about the contents.
-    # A place folder no longer holds "the ones Wikidata listed that happen to
-    # play" -- it holds what Radio Browser has for that place, which is usually
-    # more. Promising Wikidata's number there would be wrong in the other
-    # direction, so the place axis simply does not promise a number.
-    if axis in ("city", "format"):
-        note = "stations for this place" if axis == "city" else "stations with this format"
-        return [
-            folder(make_id("wikidata", axis, grouping), grouping, note=note)
-            for grouping, _count in wikidata.groupings(stations)
-        ]
+    # No number here, in either direction. Wikidata's count is not what the
+    # folder holds -- Arizona announced "13" and opened to one row (reported
+    # 2026-08-16) -- and now that a place or a format is asked of Radio Browser
+    # directly, the folder usually holds *more* than Wikidata listed. child_count
+    # reads as a promise about the contents, so neither figure earns it; the note
+    # says what the folder is instead.
+    note = "stations for this place" if axis == "city" else "stations with this format"
     return [
-        folder(
-            make_id("wikidata", axis, grouping),
-            grouping,
-            note=f"{count} known; those with a stream can play",
-        )
-        for grouping, count in wikidata.groupings(stations)
+        folder(make_id("wikidata", axis, grouping), grouping, note=note)
+        for grouping, _count in wikidata.groupings(stations)
     ]
 
 

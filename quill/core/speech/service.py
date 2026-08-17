@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from json import JSONDecodeError
 
 from quill.core.paths import app_data_dir
-from quill.core.speech.provider import SpeechToTextProvider
+from quill.core.speech.provider import SpeechModelInfo, SpeechToTextProvider
 from quill.core.speech.registry import SpeechProviderRegistry
 from quill.core.storage import read_json, write_json_atomic
 
@@ -81,6 +81,15 @@ def default_registry(executable_path: str | None = None) -> SpeechProviderRegist
     except Exception:  # noqa: BLE001 - an optional engine must never break the registry
         pass
 
+    try:
+        from quill.core.speech.providers.parakeet_onnx import ParakeetOnnxProvider
+
+        parakeet = ParakeetOnnxProvider()
+        if parakeet.is_available():
+            registry.register(parakeet)
+    except Exception:  # noqa: BLE001 - an optional engine must never break the registry
+        pass
+
     # Cloud providers contributed by enabled Quillins (network-backed; the offline
     # transcribe paths skip them). Empty in Safe Mode or with no provider Quillins.
     try:
@@ -92,6 +101,37 @@ def default_registry(executable_path: str | None = None) -> SpeechProviderRegist
         pass
 
     return registry
+
+
+def preferred_dictation_provider_id(registry: SpeechProviderRegistry, chosen: str = "") -> str:
+    """Which engine dictation should use — the reliability ladder (2026-08-17).
+
+    1. **The user's explicit choice always wins.** ``chosen`` (from
+       ``settings.speech_provider``) is honoured verbatim when that provider is
+       registered — preferring anything over an explicit setting would make the
+       engine radio a lie.
+    2. **Parakeet 3, when its model is installed.** A transducer emits tokens
+       only for audio evidence, so it never invents text from silence — the
+       Whisper failure a dictation user actually meets ("thank you" typed into
+       the document after a quiet pause). It also detects its own language
+       across 25, and avoids whisper.cpp's documented GPU crash class by being
+       CPU-only. This was studied against the Handy project's production
+       experience (D:\\code\\handy) before the switch was made.
+    3. **whisper.cpp**, the bundled default: works before any large download.
+
+    The ladder promotes Parakeet only after the user has *installed* its model
+    — an explicit, reversible act — so a fresh install still dictates with
+    whisper.cpp immediately, and nobody is surprised by a 650 MB download.
+    """
+    if chosen and registry.get(chosen) is not None:
+        return chosen
+    try:
+        parakeet = registry.get("parakeet")
+        if parakeet is not None and parakeet.list_installed_models():
+            return "parakeet"
+    except Exception:  # noqa: BLE001 - a probing failure must never block dictation
+        pass
+    return DEFAULT_PROVIDER_ID
 
 
 @dataclass(frozen=True, slots=True)
@@ -108,6 +148,30 @@ class ModelRow:
     gpu_note: str = ""
     license_name: str = ""
     model_card_url: str = ""
+
+
+#: Catalog capability ids -> the ear-first phrase every picker speaks for them.
+#: One map, shared by the model manager rows and the guided setup, so the same
+#: capability can never be described two different ways.
+_CAPABILITY_SPOKEN: dict[str, str] = {
+    "language-detect": "detects the spoken language",
+    "silence-safe": "never invents text from silence",
+    "streaming": "streams live text while you speak",
+    "translate": "can translate to English",
+    "speaker-turns": "marks speaker turns",
+    "word-timestamps": "word-level timestamps",
+}
+
+
+def capability_sentence(info: SpeechModelInfo) -> str:
+    """The spoken capability sentence for a catalog model ("" when it has none).
+
+    Leading space included so callers append it directly after prose.
+    """
+    if not info.capabilities:
+        return ""
+    phrases = [_CAPABILITY_SPOKEN.get(c, c) for c in info.capabilities]
+    return " Capabilities: " + "; ".join(phrases) + "."
 
 
 def _size_text(mb: int) -> str:
@@ -271,13 +335,18 @@ def describe_models(
         rec_note = " Recommended for your computer." if recommended else ""
         license_name = info.license_name or ""
         license_note = f" {license_name} licensed." if license_name else ""
+        # Capabilities, spoken plainly *before* download so the picker promises
+        # honestly (the catalog is QUILL's manifest of truth; same principle as
+        # probing a model header before offering it). Rendered as a sentence,
+        # not chips, because this row is read by ear.
+        capability_note = capability_sentence(info)
         # Lead with the install state so a screen reader announces "Installed" /
         # "Not installed" before the long descriptor (#669 follow-up): users were
         # not registering the buried mid-label state.
         label = (
             f"{state}: {info.display_name} — {_size_text(info.approximate_size_mb)} "
             f"download — {info.accuracy_tier} accuracy, {info.speed_tier} speed. "
-            f"{info.recommended_use} {ram_note}"
+            f"{info.recommended_use}{capability_note} {ram_note}"
             f"{(' ' + gpu_note) if gpu_note else ''}{rec_note}{license_note}"
         )
         rows.append(

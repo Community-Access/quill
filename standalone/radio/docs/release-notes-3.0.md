@@ -634,13 +634,14 @@ that lands, so do the branches.
 
 #### Explore: every station Wikidata knows about
 
-The branch with axes no station directory publishes: **By City**, **By Owner**,
-**By Format**, and **On the Dial**, which groups stations by the part of the FM
-band they sit in.
+The branch with axes no station directory publishes: **By City**, **By Format**,
+and **On the Dial**, which groups stations by the part of the FM band they sit
+in.
 
-None of that is Radio Browser's data. Wikidata knows who owns a station and what
-city it licenses from; Radio Browser knows how to play it. Putting the two
-together is what makes "every station this company owns" a folder you can open.
+None of that is Radio Browser's data. Wikidata knows what city a station
+licenses from and what format it runs; Radio Browser knows how to play it.
+Putting the two together is what makes "every classical station in Tucson" a
+folder you can open.
 
 **Opening a place gives you the place, not a sample of it.** By City used to
 take Wikidata's list of stations for a city and look each one up, which sounds
@@ -650,10 +651,18 @@ and forty-seven others sat there playable. A place is now asked of Radio Browser
 directly -- the set that can actually play -- and Wikidata's call signs top it
 up. **By Format** works the same way, against Radio Browser's tags.
 
-There was a fifth axis, **By Network**, and it has been removed. Wikidata's
-"original broadcaster" is recorded for two US radio stations, so the folder
-could never have listed anything. An axis that opens to nothing costs a listener
-the same keystrokes as one that works, and only one of them pays off.
+**Two axes have been removed, and the rule they leave behind is a good one: an
+axis stays only if the station directory can answer it.** **By Network** went
+first -- Wikidata's "original broadcaster" is recorded for two US radio
+stations, so the folder could never have listed anything. **By Owner** went next,
+and it is the more interesting of the two, because it counted perfectly well and
+still did not work. Radio Browser does not record who owns a station, so unlike a
+city or a format there was no way to ask it for one; the folder had to be built
+call sign by call sign from Wikidata's capped slice, and roughly three owner
+folders in four opened to nothing, or to three stations out of a company's
+several hundred. A listener spends the same keystrokes on a folder whether it
+pays off or not, so an axis that pays off a quarter of the time is worse than an
+axis not offered.
 
 It is labelled **from Wikidata** on every row, and it should be, because the join
 between the two is Quill Radio's own rather than something either source

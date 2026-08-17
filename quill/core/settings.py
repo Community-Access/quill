@@ -250,6 +250,14 @@ class Settings:
     dictation_intelligent_spacing: bool = True  # conservative insertion spacing
     dictation_onboarding_shown: bool = False  # one-time first-use dictation hint shown
     dictation_min_hold_seconds: float = 0.0  # ignore accidental F9 taps below this
+    # Filler-word removal (PRD §17 addendum, 2026-08-17): the two-tier,
+    # language-honest pass in speech.fillers. Off by default to keep §17's
+    # conservative-normalization promise. Its language evidence is the
+    # ``dictation_language`` field above; the fuzzy custom-vocabulary pass has
+    # no setting here on purpose — the dictation profile (dictation.md) is the
+    # one authoring surface for the user's terms, and its list feeds both the
+    # Whisper initial_prompt bias and the fuzzy corrector.
+    dictation_remove_fillers: bool = False
     # Speak the formatting delta as the caret moves (hidden-codes interrogation);
     # off by default so navigation stays quiet (Describe Formatting is on-demand).
     announce_formatting_on_move: bool = False
@@ -879,6 +887,7 @@ class Settings:
         dictation_stop_on_focus_loss = bool(data.get("dictation_stop_on_focus_loss", True))
         dictation_intelligent_spacing = bool(data.get("dictation_intelligent_spacing", True))
         dictation_onboarding_shown = bool(data.get("dictation_onboarding_shown", False))
+        dictation_remove_fillers = bool(data.get("dictation_remove_fillers", False))
         announce_formatting_on_move = bool(data.get("announce_formatting_on_move", False))
         find_use_quill_dialog = bool(data.get("find_use_quill_dialog", False))
         announce_dialog_transitions = bool(data.get("announce_dialog_transitions", False))
@@ -1457,6 +1466,7 @@ class Settings:
             dictation_max_locked_seconds=dictation_max_locked_seconds,
             dictation_stop_on_focus_loss=dictation_stop_on_focus_loss,
             dictation_intelligent_spacing=dictation_intelligent_spacing,
+            dictation_remove_fillers=dictation_remove_fillers,
             announce_formatting_on_move=announce_formatting_on_move,
             find_use_quill_dialog=find_use_quill_dialog,
             announce_dialog_transitions=announce_dialog_transitions,

@@ -25,7 +25,7 @@
 #define AppURL "https://github.com/Community-Access/quill-radio"
 
 ; -- shared runtime parameters (read by installer\shared-runtime.iss) ----------
-#define RuntimeVersion "3.13.14"
+#define RuntimeVersion "3.13.15"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "radio"
 
@@ -53,7 +53,11 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 OutputBaseFilename=Quill-Radio-Setup-Shared-{#AppVersion}
+; Kept in step with quill-radio.iss: 64-bit Setup + 128 MB dictionary to
+; dedupe ffmpeg/ffprobe in the solid stream (-27 MB, measured 2026-08-17).
+SetupArchitecture=x64
 Compression=lzma2/ultra
+LZMADictionarySize=131072
 SolidCompression=yes
 WizardStyle=modern
 CloseApplications=force

@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Quill Radio 2.0 -- Release Notes</title>
+  <title>Quill Radio 3.0 Release Notes</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -196,111 +196,1543 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
-<h1 id="quill-radio-20--release-notes">Quill Radio 2.0 – Release
-Notes</h1>
-<p>Quill Radio 2.0 is about one thing done thoroughly: recordings you
-can trust. Version 1.1.0 rebuilt the sound – a new playback engine,
-every stream format, live rewind, richer Sound Enhancements. 2.0 turns
-that same care on the recorder, closing a reported round of recording
-bugs and adding the one piece that was always missing: a recording that
-survives a restart. If you schedule shows, leave long recordings running
-unattended, or have ever come back to find a capture cut short or gone
-entirely, this release is for you.</p>
-<p>It also widens the net for finding stations: <strong>iHeart and
-TuneIn now join the search</strong>, so two of the biggest directories
-on the internet are searchable and playable right inside Browse
-Stations. More on that below.</p>
-<p>As always, everything below also lands in QUILL itself. Quill Radio
-and QUILL share one codebase and one data store, so these fixes arrive
-in both at once – nothing here is vendored into the Quill Radio
-wrapper.</p>
-<h2
-id="the-headline-the-quillville-runtime-and-downloads-that-finally-travel-light">The
-headline: the QuillVille Runtime, and downloads that finally travel
-light</h2>
-<p>This is the big change in how Quill Radio is delivered, and it is the
-headline of this release. Quill Radio, QUILL, Quill Weather, and QUILL
-Audio Studio now share <strong>one</strong> Python engine – the
-<strong>QuillVille Runtime</strong> – installed just once per user and
-reused by every app in the family. Install any one of them, and every
-app you add afterward starts instantly, because the engine it needs is
-already there. No second copy, no second long download. The runtime is
-reference-counted, so it is removed only when the last app that relies
-on it is uninstalled; uninstalling Quill Radio while Quill Weather is
-still around leaves the shared engine in place for Weather.</p>
-<p>That shared engine unlocks two brand-new, much smaller ways to get
-Quill Radio, alongside the two full downloads you already knew:</p>
+<h1 id="quill-radio-30-release-notes">Quill Radio 3.0 Release Notes</h1>
+<p>Quill Radio has always been able to play a station you can name. This
+is the release where it becomes somewhere you can
+<strong>wander</strong> – and where it starts doing several things no
+other radio app on your desktop does at all.</p>
+<p>Here is the shape of it, in the order you are most likely to
+care:</p>
 <ul>
-<li><strong>Companion edition (new)</strong> –
-<code>Quill-Radio-Companion-&lt;version&gt;.zip</code>, about <strong>3
-MB</strong>. Just the app and its docs, running on the shared runtime.
-The first time you launch it, if the runtime is not already installed,
-Quill Radio offers to download and install it once (about 230 MB) with a
-fully accessible progress bar. After that first time, this app and every
-other QuillVille app start instantly. Three megabytes instead of three
-hundred.</li>
-<li><strong>Thin installer (new)</strong> – the small “Lite” setup. It
-installs the app and downloads the shared runtime only if it is not
-already present. If you already run another QuillVille app, there is
-nothing large to fetch.</li>
-<li><strong>Full portable zip</strong> –
-<code>Quill-Radio-Portable-&lt;version&gt;.zip</code>, about <strong>311
-MB</strong>. Unchanged and still the one for a USB stick: fully
-self-contained, runs with no installation and no internet, carrying its
-own genuine, unmodified copy of Python plus the bundled ffmpeg and mpv
-engines.</li>
-<li><strong>Full installer</strong> –
-<code>Quill-Radio-Setup-Shared-&lt;version&gt;.exe</code>. The
-recommended path for most people: it installs the shared runtime (unless
-another QuillVille app already put it there) plus the app.</li>
+<li><strong>It finds described audio for you, and tells you it is
+there.</strong> The narration that says what is happening on screen –
+and no other desktop player will point you at it.</li>
+<li><strong>YouTube and Live365 become stations.</strong> Paste a link
+and it plays, records, favorites and schedules like anything else –
+chapters, playlists and all.</li>
+<li><strong>It plays podcasts with no key, no account and no
+sign-in</strong>, walking Apple’s entire directory from any country in
+the world.</li>
+<li><strong>You can keep things.</strong> A public-domain book, a
+chapter, an episode: saved to your own disk, a whole book at a time,
+while you carry on listening.</li>
+<li><strong>Browse Stations grew from thirteen branches to
+twenty-eight</strong>, and you can now <em>type a title</em> and have
+every one of those libraries answer.</li>
+<li><strong>The whole station directory ships inside the app</strong> –
+62,000+ stations browsable from your own disk, instantly, with or
+without the internet, and it quietly keeps itself fresh.</li>
+<li><strong>It shows video, reads transcripts back, and remembers your
+place</strong> in anything that has an end.</li>
+<li><strong>The app grows up around you.</strong> Real backups,
+favorites that keep the order you built, one volume when you want one,
+Winamp’s keys in the Recordings player, windows that stay put, braille
+for everything it says.</li>
+<li><strong>And the broadcast processor is the real one now</strong>,
+not an impression of it.</li>
 </ul>
-<p><strong>Accessible progress, every time.</strong> Whenever the
-runtime is downloaded – by an installer or by the Companion edition’s
-own first launch – Quill Radio shows a progress bar that works with
-NVDA, JAWS, and Narrator, announcing progress as a percentage the whole
-way.</p>
-<p><strong>Friendlier to antivirus.</strong> Quill Radio’s launcher is
-now a genuine, tiny native program, and the Python it runs is the
-official, unmodified build. Earlier versions used a renamed and modified
-copy of Python’s own <code>pythonw.exe</code> as the launcher – a
-pattern some antivirus tools flagged as a false positive. That pattern
-is completely gone, so the app is far less likely to be mistaken for
-something it is not. (Releases are still not code-signed, so SmartScreen
-may caution on first run; choose More info, then Run anyway. Signing is
-planned.)</p>
-<p>The full picture, edition by edition, is in the
-<strong>Installing</strong> chapter of the Quill Radio User Guide.</p>
-<h2 id="update-220">Update 2.2.0</h2>
-<p>Quill Radio 2.2.0 is the release where the app grows up around you.
-Windows stop wandering off. Your stations learn to look after themselves
-– backed up, kept in the order you left them, recoverable when a finger
-slips. And the Weather menu quietly becomes a guardian: something that
-watches the sky for you and speaks up the moment it matters, even after
-you have closed the app and walked away. Everything here lives in the
-shared <code>quill</code> package, so QUILL gains it too.</p>
-<h3 id="the-windows-finally-stay-where-you-put-them">The windows finally
-stay where you put them</h3>
-<p>For a while, opening Browse Stations, Search Stations, Manage
-Favorites, Schedule Recording, or the Weather Center could make the menu
-bar seem to vanish into thin air – because those screens were dialogs,
-and a dialog cannot carry a menu bar – and the modal ones locked you out
-of the main window entirely. They are proper <strong>windows</strong>
-now. Each one carries the full menu bar, so the menus are always a
-single <strong>Alt</strong> away no matter where you are, and none of
-them holds the main window hostage; you can keep several open at once. A
-new <strong>Window</strong> menu lists everything you have open,
-numbered in the order you opened it, and you move between them the way
-you already do everywhere else: <strong>Ctrl+Tab</strong> for the next,
-<strong>Ctrl+Shift+Tab</strong> for the previous,
-<strong>Ctrl+1</strong> through <strong>Ctrl+9</strong> to leap straight
-to one. Each window opens only when you ask, and closing it sets you
-gently back where you came from, announced as you land. The menus are
-there from the very first keystroke, too: pressing <strong>Alt</strong>
-right after launch used to summon the window’s own Minimize/Maximize
-menu, because focus had not settled inside yet – focus lands in the
-window immediately now, so Alt opens Radio’s own menu bar the instant
-the app appears.</p>
-<h3 id="your-stations-yours-to-keep">Your stations, yours to keep</h3>
+<p>Everything below is in that order: what changes most about what you
+can do, first.</p>
+<blockquote>
+<p><strong>This is the whole release in one document.</strong> It is
+long because 3.0 is large: alongside the new work, a body of features
+that was finished and documented – and then never put in anybody’s hands
+– ships for the first time here. If you are coming from 2.1.2, and
+everyone is, all of it is new to you.</p>
+</blockquote>
+<hr />
+<h2 id="described-audio-and-a-way-to-actually-find-it">Described audio,
+and a way to actually find it</h2>
+<p><strong>This is the one to read.</strong></p>
+<p>A <em>described</em> audio track is a second narration mixed into a
+programme that says what a sighted viewer can see: who came into the
+room, what the caption on screen says, where the scene moved to.
+Broadcasters publish them as a matter of course. YouTube carries them on
+a growing number of videos.</p>
+<p>And essentially no desktop media player lets a blind listener find
+one. The better ones expose an audio-track menu; what it contains is
+“Track 1, Track 2, Track 3”. Which of those narrates the picture? The
+only way to find out is to play each in turn and listen. That is not a
+feature, it is a puzzle, and it is the exact shape of the problem this
+app was built to stop.</p>
+<p>Quill Radio names them.</p>
+<p><strong>Playback &gt; Audio and Described Audio…
+(Ctrl+Shift+A)</strong> lists every audio track a video publishes –
+“English”, “Spanish”, “English (described) – narrates what is on screen”
+– with the described one <strong>first</strong>, the cursor already on
+it, and a line above the list that says, before anything else you hear,
+<em>“Described audio is available for this video.”</em></p>
+<p><strong>Playback &gt; Play Described Audio (Ctrl+Alt+D)</strong>
+skips the list entirely and switches straight to it. One keystroke, for
+anybody who always wants description and should not have to go looking
+each time.</p>
+<p><strong>And it tells you, without being asked.</strong> When you play
+a video that carries a described track, Quill Radio says so once:
+<em>“Described audio is available for this video. Press Ctrl+Alt+D to
+hear the narration of what is on screen.”</em> Once per video, never
+repeated, never interrupting.</p>
+<p>That sentence is the feature. A command you have to know about only
+helps people who already know it exists – and those are exactly the
+people who least need telling. Almost nobody expects a desktop radio
+player to have described audio at all, so the app has to be the one to
+mention it.</p>
+<p>Three things about it are deliberate.</p>
+<p><strong>Switching keeps your place.</strong> A described track is a
+separate stream rather than a channel inside one, so changing to it
+means reconnecting – and Quill Radio puts you back where you were.
+Losing your position an hour into a film to turn description on would
+make the feature useless in precisely the case it matters most.</p>
+<p><strong>Nothing is promoted behind your back.</strong> The described
+track is listed first and named; the ordinary track is still right
+there, still labelled. Somebody who did not ask for description never
+gets it by surprise.</p>
+<p><strong>When there is none, it says so, and says what there is
+instead.</strong> The command is never greyed out. You get <em>“This
+video has one audio track, English. No described audio was
+published.”</em> – because “no described audio” on its own leaves you
+wondering whether the video is missing it or the app cannot find it, and
+those are completely different things to know.</p>
+<p>The detection is deliberately generous, because publishers label
+these tracks half a dozen ways – “English (Audio Description)”,
+“descriptive”, “eng-desc”, “English AD” – and all of them mean the same
+thing to somebody who needs one.</p>
+<p><strong>And on YouTube, finding these tracks took a fight that is
+worth telling.</strong> Most described content there is a separate
+upload with the narration mixed in – Apple’s and Microsoft’s
+accessibility films both work that way, and they play perfectly, because
+the description simply <em>is</em> the audio. But some videos publish a
+real selectable descriptive track: Emily Graslie’s <em>ART LAB</em>
+series, several of Adam Savage’s <em>Tested</em> builds, two Apple
+films. Ask YouTube for those the ordinary way and it names the
+renditions – <em>“English original”</em>, <em>“English descriptive”</em>
+– then hands over only the original, keeping the described track’s
+address for its own player. Quill Radio now asks a second way at the
+same time, as YouTube’s own iOS player, which is given every rendition
+with a playable address. So the described track is <em>there</em>,
+named, first in the list, one keystroke away – on a platform where the
+player in your browser makes you find a settings gear inside a submenu
+to learn it exists at all.</p>
+<p><strong>The same door opened every dubbed track.</strong> A
+multi-language video now lists all of its renditions by name – one
+popular video offers twenty-four, from Hindi and Tamil to Japanese and
+Polish – each spoken as a language, never as a code or a track number,
+with the original marked and nothing switched behind your back.</p>
+<h2 id="two-new-kinds-of-station-youtube-and-live365">Two new kinds of
+station: YouTube and Live365</h2>
+<h3 id="youtube-plays-and-records-like-any-other-station">YouTube plays
+and records like any other station</h3>
+<p>Paste a YouTube link into <strong>Add Custom Station</strong> – an
+ordinary video link, a <code>youtu.be</code> short link, or a channel’s
+live page – and it becomes a station: it plays through the same player,
+sits in Favorites, records with Record Now, and can be captured by a
+scheduled recording. Quill Radio saves the <em>page</em> address, never
+a stream address, and re-finds the audio each time you play or record,
+so a recording you schedule today still works next week. Off in Safe
+Mode. A private, removed, region-blocked, or not-yet-live video says so
+in plain words.</p>
+<h3 id="it-works-out-of-the-box">It works out of the box</h3>
+<p>The <code>yt-dlp</code> helper that finds the audio behind a link is
+built into Quill Radio, so your first YouTube link simply plays – no
+download, no consent prompt, nothing to agree to before you have heard
+anything. It costs about 3 MB in the installer, which is a better trade
+than a dialog standing between you and the thing you asked for. The
+helper is bundled only in the apps that can actually use it – Quill
+Radio, Audio Studio, and Audio Converter – so Weather, Cast, Social,
+Beacon, and Inkwell do not carry it.</p>
+<h3 id="update-youtube-support-for-when-youtube-changes">Update YouTube
+Support, for when YouTube changes</h3>
+<p><strong>Station &gt; Update YouTube Support…</strong> fetches a newer
+<code>yt-dlp</code> than the one your copy of Quill Radio was built
+with. YouTube changes how it serves audio every so often, and when it
+does the helper needs updating – so this exists to keep you from waiting
+for the next Quill Radio release to get YouTube working again. An update
+installed this way takes precedence over the built-in copy from then on.
+It tells you which version you ended up with, asks before it reaches the
+network, and is off in Safe Mode. You should not need it otherwise.</p>
+<h3 id="a-youtube-station-knows-what-it-is-playing">A YouTube station
+knows what it is playing</h3>
+<p>Finding the audio behind a link takes one request, and that request
+answers with far more than an audio address. Quill Radio keeps all of
+it: the video’s <strong>length</strong>, its <strong>uploader</strong>,
+its <strong>description</strong>, the <strong>chapters the uploader
+published</strong>, and whether a <strong>caption track</strong> exists.
+None of it costs an extra moment or an extra connection – it rides the
+request the app was making anyway.</p>
+<p>A live broadcast reports no length at all, which is the honest answer
+– it has no timeline to sit on.</p>
+<h3 id="a-finished-video-has-a-timeline-so-you-can-move-around-it">A
+finished video has a timeline, so you can move around it</h3>
+<p>This is the part a live broadcast can never offer, and it is where a
+YouTube station stops being “radio that happens to come from YouTube”
+and starts being a player. Everything below is on the
+<strong>Playback</strong> menu and works on any finished video:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl+Shift+C</td>
+<td><strong>Chapters…</strong> – the uploader’s own chapter list; Enter
+jumps to one</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Right</td>
+<td>Next chapter</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Left</td>
+<td>Previous chapter, or back to the start of this one</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Right</td>
+<td>Forward 30 seconds</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Left</td>
+<td>Back 30 seconds</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Up</td>
+<td>Play faster</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Down</td>
+<td>Play slower</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+0</td>
+<td>Normal speed</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+P</td>
+<td><strong>Where am I?</strong> – position, length, and the chapter you
+are in</td>
+</tr>
+</tbody>
+</table>
+<p>The chapter list reads each entry as a whole sentence – “3.
+Introducing layers, starts at 5 minutes 31 seconds” – and marks the one
+playing now. Speed steps through round, speakable values (0.25x to 4x)
+rather than drifting by a multiplier, and the speed you choose is
+remembered for the next video.</p>
+<p><strong>Every one of these says why when it declines.</strong> Point
+any of them at a live stream and you hear “This is a live stream, so
+there is no timeline to move along”, not silence. A slider that cannot
+move and a “next chapter” that quietly does nothing are worse than not
+offering them at all, because you cannot tell a broken control from a
+stream that has no timeline. Ask for chapters on a video whose uploader
+published none and it says that too.</p>
+<p><strong>Go to Position… (Ctrl+Shift+J)</strong> is the other half of
+having a timeline. Skipping thirty seconds at a time gets you near; this
+gets you exactly where you meant. It opens the same accessible dialog
+the Quill Media Player uses – three labelled Hours / Minutes / Seconds
+spin controls as the primary input, plus a timecode field if you would
+rather type <code>1:23:45</code> – rather than growing a second, lesser
+prompt of its own. Ask for a point past the end and it says so and takes
+you to the end instead of failing.</p>
+<p><strong>And a fix that belongs here.</strong> Rewind / Forward 30
+Seconds always ran the <em>live-stream</em> seek, which moves inside
+mpv’s rolling buffer and reports how far behind the live edge you now
+are. On a finished video there is no live edge, so that number was
+invented – exactly the kind of confident wrong measurement this app
+refuses to make anywhere else. The keys now pick the operation the
+source actually deserves: a video moves along its own timeline and says
+“3 minutes 10 seconds of 18 minutes 40 seconds”; a live stream behaves
+precisely as before.</p>
+<h3 id="add-from-youtube-playlist">Add from YouTube Playlist</h3>
+<p>On the Station menu. Paste a <code>playlist?list=...</code> link –
+already filled in for you if it is on your clipboard – and Quill Radio
+lists the videos in the uploader’s own running order, never re-sorted,
+because a series is meant to be worked through in order.</p>
+<p>Each row reads as a whole sentence: “3. Introducing layers, 5 minutes
+31 seconds, 3Blue1Brown”. Everything about a video is in the line your
+screen reader speaks, so there are no columns to arrow across. Times are
+spelled out in words on purpose – “5:31” read aloud is ambiguous unless
+you already know it is a time.</p>
+<p>Arrow the list, select what you want with Shift or Ctrl, and choose
+<strong>Add Selected</strong> – or take the lot with <strong>Add
+All</strong>. Each becomes an ordinary station you can play, favorite,
+and record. Quill Radio says how many it added and how many were already
+in your favorites, so adding fifty videos never leaves you wondering
+whether the button worked.</p>
+<p>The listing itself is deliberately shallow: one request for the whole
+playlist rather than one per video, and no video’s audio is fetched
+until you play it.</p>
+<p>The window is headed with the playlist’s own name, read from the same
+request that fetched the list, so you always know which playlist you are
+looking at.</p>
+<p>A <em>watch</em> link that happens to carry a <code>list=</code> in
+it is still just that one video. You asked for the video; quietly
+turning it into fifty stations would be a nasty surprise.</p>
+<p><strong>What this is, and what it is not.</strong> Adding a playlist
+is an <strong>import</strong>, not a subscription and not a play queue.
+The videos you pick become ordinary favorites – each plays, records, and
+schedules exactly like a station – and they sit in your favorites list
+alongside everything else rather than in a folder of their own. Nothing
+plays through them in order: playing one video plays that video, and
+Quill Radio does not move on when it ends. Nothing re-checks the
+playlist later, so videos added upstream after your import are not
+picked up – run the command again on the same link to collect them, and
+anything already in your favorites is skipped rather than duplicated.
+Playing a playlist as a queue, and keeping one in step with its source,
+are separate pieces of work; saying so is better than letting “playlist
+support” imply either.</p>
+<h3 id="search-youtube-from-find-stations">Search YouTube from Find
+Stations</h3>
+<p>Type a search and YouTube videos appear alongside the radio
+directories, each one an ordinary station you can play, favorite and
+record. No key, no account, no setup – it uses the same yt-dlp that
+already plays your YouTube links, so there is nothing to configure.</p>
+<p>Rows read “title, uploader”, and the search is deliberately shallow:
+one request for the whole result set, and no video’s audio is fetched
+until you actually play it.</p>
+<p>A note on how this works, because it matters for what to expect.
+Quill Radio does not use YouTube’s official Data API, which would
+require every listener to create a Google Cloud project and paste an API
+key in before searching. It uses yt-dlp’s keyless extraction – the same
+approach FreeTube, NewPipe and Invidious all take. The trade-off is that
+YouTube occasionally changes how its site works and extraction breaks
+until upstream fixes it. That is exactly what <strong>Station &gt;
+Update YouTube Support…</strong> is for: it fetches a newer yt-dlp
+without waiting for the next Quill Radio release.</p>
+<h3 id="paste-a-live365-link-and-it-just-plays">Paste a Live365 link and
+it just plays</h3>
+<p>The Live365 link you actually have is almost never the stream – it is
+the station page or the web player, and both of those are web pages,
+which no player can play. Add Custom Station recognizes any Live365
+station page, player link, or bare station id and rewrites it to that
+station’s real stream address, telling you it did. It is a pure text
+rewrite: no network lookup, nothing sent anywhere, and a link that is
+not Live365 is passed through exactly as you typed it.</p>
+<h2 id="podcasts-and-not-a-single-key-anywhere">Podcasts, and not a
+single key anywhere</h2>
+<p>Open <strong>Podcasts (Apple)</strong>.</p>
+<p>Choose a country. You get that storefront’s top shows, and Apple’s
+entire podcast genre tree – Arts, and inside it Books, Design, Fashion
+&amp; Beauty, Food, Performing Arts; Comedy; Education; Fiction; and the
+rest, with their subgenres beneath them. Open a show and you get its
+episodes. Press Enter on an episode and it plays.</p>
+<p>There is no key, no account, no registration and no sign-in at any
+point in that chain. There is no “connect your account” step and nothing
+to configure in Preferences before it works.</p>
+<p>Two things about it are worth knowing.</p>
+<p><strong>The top podcasts in Ireland, or Japan, or Brazil are one
+folder away.</strong> Apple publishes its charts per storefront, so the
+country you pick at the top is a real axis rather than a label. Almost
+no desktop podcast client offers this, and for anyone who follows
+broadcasting outside their own country it is the whole point.</p>
+<p><strong>Apple stops being involved as soon as you open a
+show.</strong> A show resolves to its own RSS feed, published by whoever
+makes the show, and everything after that – the episode list, the audio,
+the transcripts – comes from them. Apple is a way to <em>find</em> the
+feed and nothing more. If this branch were switched off tomorrow you
+would lose a way to discover shows and you would not lose a single thing
+you already subscribe to or play.</p>
+<p><strong>And you can just type the name.</strong> Podcasts are
+searched from Find Stations alongside everything else, so a show you can
+name does not need a walk through the genre tree at all. Shows arrive in
+their own <strong>Podcasts</strong> group in the results.</p>
+<p><strong>A note on a bug worth knowing about, because you may have hit
+it.</strong> Apple tags a charting show with its <em>leaf</em> genre and
+never with the genres above it – a show filed under Books carries Books
+and not Arts. Filtering a storefront’s top hundred by Arts therefore
+returned nothing at all, which looks exactly like an empty chart.
+Choosing a genre now includes everything beneath it, so Arts means Arts
+<em>and</em> Books, Design, Food and the rest.</p>
+<p><strong>It is gentle with Apple, deliberately.</strong> One chart
+request serves every genre in a storefront rather than one per genre,
+the genre tree is kept for a week, charts for six hours, and a resolved
+feed address for a month. Wandering the tree costs almost nothing after
+the first visit, and nobody’s directory is hammered for the
+privilege.</p>
+<hr />
+<h2 id="keep-it-the-things-you-are-allowed-to-keep">Keep it: the things
+you are allowed to keep</h2>
+<p>Quill Radio plays a great deal that is genuinely yours –
+public-domain audiobooks, old-time radio, Creative Commons music,
+podcast episodes published for exactly this purpose. Until now it could
+play all of that and save none of it.</p>
+<p><strong>Download…</strong> on a row’s menu saves it to a folder you
+choose. <strong>Download All Files…</strong> on a book’s folder saves
+the whole thing, chapter by chapter, in order, while you carry on
+listening to something else.</p>
+<p><strong>A whole book is the case this was built for.</strong> A
+LibriVox novel is forty chapters and forty separate addresses – an hour
+of transferring over a connection that will hiccup at least once. So
+chapters are fetched <strong>in order</strong>, which means a
+part-finished book is the first twelve chapters, something you can start
+listening to, rather than a scattering you cannot. A part-finished
+<em>file</em> picks up where it stopped instead of starting again. One
+bad address costs <strong>one chapter</strong>, never the book, and the
+summary names which one. And progress is counted the way a person
+counts: <em>“12 of 40”</em>, spoken every few chapters, rather than a
+percentage of a number nobody actually has.</p>
+<p><strong>Stopping keeps what arrived.</strong> Stop takes effect
+inside a chapter rather than at the end of a 90 MB one, and everything
+already saved stays saved.</p>
+<p><strong>And it will not save what is not yours to save.</strong> This
+is worth being plain about, because getting it wrong means an app
+writing you a file it had no right to write. A source has to be
+<strong>affirmatively allowed</strong>; anything unrecognised is refused
+rather than guessed at. Where Download is not offered, asking for it
+anyway tells you which of four quite different things is true:</p>
+<table>
+<thead>
+<tr>
+<th>Why it is not offered</th>
+<th>What Quill Radio tells you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>It is a live station</td>
+<td>There is no file to save – a broadcast has no end. <strong>Record
+Station</strong> is the command you actually want, and it says so.</td>
+</tr>
+<tr>
+<td>Spotify</td>
+<td>Copy-protected. No app can save it, including this one.</td>
+</tr>
+<tr>
+<td>YouTube</td>
+<td>A decision, not a limitation. Quill Radio plays and records;
+downloading from YouTube is not something it does.</td>
+</tr>
+<tr>
+<td>Audius</td>
+<td>Whether a track may be downloaded is the artist’s choice, and the
+listing does not say. Quill Radio will not guess on their behalf.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>And it queues.</strong> Say yes to four books while you carry
+on listening to a fifth. <strong>View &gt; Downloads…</strong>
+(Ctrl+Shift+J) is the queue: what is waiting, what is going, what
+arrived, and what failed – each row a sentence with its state last,
+because when you are arrowing a list you already know what the items are
+and what you are looking for is where each has got to.</p>
+<p>Finished rows <strong>stay</strong> until you clear them, because
+<em>“did that actually download?”</em> is the question people ask most
+and a list that tidies itself away cannot answer it. <strong>Open
+Containing Folder</strong> takes you to a saved file; a download you
+cannot find is a download that did not really happen. Cancel one, remove
+one from the list, clear the finished, or clear the lot – and every one
+of those keeps whatever is already on disk.</p>
+<p><strong>Close the window and it keeps going</strong>, if that is what
+you asked for. Either way Quill Radio says which: a queue that silently
+keeps running is exactly as surprising as one that silently stops, and
+which happens is a preference you set once and will not remember at the
+moment it matters.</p>
+<p><strong>Where things land is arranged for you – and every rule is
+yours.</strong> A podcast goes under its show; a book gets a folder of
+its own, because a book <em>is</em> a folder. And when you have more
+than one book by somebody, the author gets a folder too – but not before
+then, since an author folder holding exactly one book is a folder you
+open and immediately leave.</p>
+<p><strong>Station &gt; Download Preferences…</strong> is where those
+rules live: the downloads folder itself (blank means a Quill Radio
+folder inside your own Downloads), a switch for each filing rule,
+whether closing to the tray keeps the queue going, and an <em>ask me
+where</em> mode that asks <strong>once per book, never once per
+chapter</strong> – and if you cancel the ask, nothing is queued, said
+out loud, rather than quietly filed somewhere you just declined. A live
+sentence at the bottom of the window always answers the only question
+that matters there: <em>what will happen to the next thing I save?</em>
+The same window is one button away inside View &gt; Downloads, because
+that is where the question occurs to people.</p>
+<p><strong>A downloaded book plays like a book.</strong> Chapters are in
+order – 2 before 10, which is obvious to a person and wrong in every
+naive sort – and when one ends the next begins, announcing itself
+briefly: <em>“4 of 40, The Dead Hand.”</em> The end of a book says so
+rather than falling silent, because silence after fourteen hours is
+indistinguishable from something breaking.</p>
+<p><strong>A Creative Commons licence travels with the file.</strong>
+Save a ccMixter track and its terms are written into a small text file
+beside the audio – because saving somebody’s work under a licence and
+dropping the licence strips exactly the information it exists to
+carry.</p>
+<h2 id="the-catalog-the-radio-that-works-before-the-internet-does">The
+catalog: the radio that works before the internet does</h2>
+<p>3.0 changes not just where you can wander but <strong>when</strong>:
+now. Before the network is up. On the train. During the outage. The
+whole station directory ships inside the app and lives on your computer,
+and the internet’s new job is keeping it fresh rather than answering
+every question.</p>
+<h3 id="sixty-two-thousand-stations-zero-waiting">Sixty-two thousand
+stations, zero waiting</h3>
+<p>Open Browse Stations and expand By Country. It answers instantly –
+not “fast”, instantly, under a millisecond – because the answer comes
+from a catalog on your own disk: the full working-station directory,
+more than 62,000 stations across 240 countries, every genre, every
+language, every codec, plus SomaFM and the complete Project Gutenberg
+audio shelf. All of it arrives with the app. First launch on a machine
+with no internet at all is a complete radio.</p>
+<p>And every folder now tells you its size before you open it – “France,
+812 stations” – something the live directory could never afford to say,
+because counting used to cost a network round trip and now costs
+nothing.</p>
+<p>Find Stations gains the same superpower: local matches appear the
+moment you search, with the live directories layering in behind them.
+Pull the network cable mid-search and you still get results.</p>
+<h3 id="what-is-offline-and--just-as-plainly--what-is-not">What is
+offline, and – just as plainly – what is not</h3>
+<p>The catalog covers the station directory itself: Radio Browser’s
+62,000+ stations and every axis through them, SomaFM, and the Project
+Gutenberg audiobook shelf. These branches answer with no internet at
+all.</p>
+<p>The rest stays live, each for a stated reason:</p>
+<ul>
+<li><strong>Apple Podcasts (iTunes)</strong> – charts are rankings, and
+Apple’s terms bar storing them. Browsing and playing podcasts needs the
+internet.</li>
+<li><strong>TuneIn</strong> – its directory is a remote tree that may
+not be stored.</li>
+<li><strong>iHeart</strong> – its terms do not allow storing its
+listings.</li>
+<li><strong>Internet Archive</strong> – its collections run to half a
+million items; a copy would dwarf the app.</li>
+<li><strong>LibriVox</strong> – live <em>for now</em>: its full chapter
+listing alone is bigger than everything else in the catalog combined,
+and it deserves a compact format of its own rather than a squeezed-in
+copy.</li>
+<li><strong>The music charts (Audius, Mixcloud, ccMixter)</strong> –
+charts are stale the moment they are stored.</li>
+</ul>
+<p>None of this is buried in a manual. View &gt; Station Catalog Status
+lays it out in plain sentences: what is stored on this computer and how
+fresh it is, source by source – and what is not stored and why. The same
+honesty runs through the browse window itself: highlight any branch and
+the details panel says either “Answers from your catalog, updated 2
+hours ago” or “Asks the internet each time; nothing is stored.”</p>
+<p>And if you are offline, the app says so exactly once: “You are
+offline. Browsing from your catalog, updated this morning.” Then it gets
+out of the way and keeps working, because quietly working is the
+feature.</p>
+<h3 id="it-keeps-itself-fresh-and-tells-you-what-changed">It keeps
+itself fresh, and tells you what changed</h3>
+<p>A catalog that ages into a lie would be worse than no catalog. So it
+updates three ways, each yours to switch off:</p>
+<ul>
+<li><strong>Shortly after launch</strong>, a quick background check –
+skipped when the catalog is already fresh, so a restart never hammers
+anyone’s directory.</li>
+<li><strong>On a schedule</strong>, every 24 hours by default (choose 6
+hours to 2 days, or “Manually only”), one source at a time, a trickle
+rather than a burst.</li>
+<li><strong>On demand</strong>: Station &gt; Update Station Catalog,
+which always answers out loud – “Station catalog updated: 174 new
+stations, 431 updated. Xiph could not be reached; keeping what you
+have.”</li>
+</ul>
+<p>That last sentence is the whole philosophy. A directory that is down
+costs you its freshness, never your stations. A source that answers with
+nothing when it had thousands yesterday is treated as an outage, not as
+the truth. A station that disappears is hidden at once but only truly
+forgotten after two weeks, so one bad afternoon at a directory cannot
+hollow out your catalog.</p>
+<h3 id="popular-and-trending-stay-honest-too">Popular and Trending stay
+honest too</h3>
+<p>Rankings are statements about <em>now</em>, so they stay live-first.
+When the directory cannot answer, the catalog steps in with its vote
+snapshot – and every one of those rows says “as of 2 hours ago” out
+loud, because an unlabeled stale ranking is a small lie and a labeled
+one is a rescue.</p>
+<h3 id="your-stations-were-never-part-of-the-deal">Your stations were
+never part of the deal</h3>
+<p>Everything above concerns the catalog, and the catalog is a copy of
+public directories. Your favorites, your custom stations, your servers,
+your YouTube channels – those live in their own files, and no catalog
+operation reads or writes them. Not carefully avoided: structurally
+elsewhere. Rebuild the catalog from scratch and your stations are
+byte-for-byte untouched, and there is a test that proves exactly
+that.</p>
+<h3 id="the-fine-print-that-is-actually-good-news">The fine print that
+is actually good news</h3>
+<ul>
+<li>The whole catalog adds about seven and a half megabytes to the
+download.</li>
+<li>Turning the catalog off (Preferences) restores live-only browsing
+exactly: nothing stored, no background requests of any kind.</li>
+<li>Safe Mode never refreshes; reading the local catalog is allowed,
+because it is local data, exactly like your favorites.</li>
+<li>A branch you hide in Choose Browse Sources is not refreshed either.
+Off means off – not in the tree, never contacted.</li>
+</ul>
+<h2 id="somewhere-to-wander-browse-stations">Somewhere to wander: Browse
+Stations</h2>
+<p>Open <strong>Browse Stations</strong> and there are far more ways in
+than there used to be. Four are axes the station directory always had
+and nobody had ever exposed; seven are whole libraries that simply were
+not there.</p>
+<h3 id="four-new-ways-through-the-station-directory">Four new ways
+through the station directory</h3>
+<p>Open <strong>Browse Stations</strong> and there are four branches
+that were not there before. None of them required a new service, a new
+account, or anyone’s permission. Every one of them is data the station
+directory has always published and Quill Radio was already
+downloading.</p>
+<h4 id="browse-by-country-then-by-state-or-region">Browse by country,
+then by state or region</h4>
+<p>The most-asked-for way to find a station anywhere, and the one Quill
+Radio was closest to having without knowing it. Radio Browser records
+the country and the region of every station it lists. Quill Radio used
+that to fill one dropdown in the Search dialog and nothing else.</p>
+<p>Now: open <strong>By Country</strong>, choose a country, and you get
+its states or regions. Open one of those and you get its stations,
+most-listened first. A country with no regional breakdown – and there
+are many – gives you its stations directly rather than making you open
+an empty folder to find out that it has none.</p>
+<h4 id="browse-by-language">Browse by language</h4>
+<p>The same data on a different axis, and the one that is genuinely hard
+to find anywhere else. Most radio apps organise the world by where a
+station is. If the radio you want is not in the language of the country
+you happen to be sitting in – which is an ordinary situation for a great
+many people – that organisation is the wrong one. <strong>By
+Language</strong> is the right one.</p>
+<h4 id="browse-what-is-trending-now">Browse what is trending now</h4>
+<p>Not the same thing as <strong>Popular Stations</strong>, which has
+been there for a while. Popular ranks by votes: what people once thought
+was good, accumulated over years. <strong>Trending Now</strong> ranks by
+what is being listened to <em>today</em>. The two lists disagree far
+more than you would expect, and offering only the first was missing the
+livelier half of the directory.</p>
+<h4 id="browse-stations-recently-added-or-changed">Browse stations
+recently added or changed</h4>
+<p>New stations, and stations whose address was just repaired. Cheap to
+offer, and it is the branch that makes a directory feel alive rather
+than archival.</p>
+<hr />
+<h3 id="seven-more-places-to-wander">Seven more places to wander</h3>
+<p>Everything above is a station directory rearranged. These are new
+libraries.</p>
+<h4 id="internet-archive-old-time-radio-and-live-music">Internet
+Archive: old-time radio and live music</h4>
+<p>Open it and you get Old Time Radio, Audiobooks &amp; Poetry, the Live
+Music Archive, Radio Programs, News &amp; Public Affairs, and more. Open
+one of those and you get its series; open a series and you get its
+episodes; open an episode and you get its files. The depth is not
+something we built – the Archive genuinely is a tree, every item
+declares its parents, and one query shape walks the whole thing. Old
+Time Radio alone holds 8,710 recordings across 114 series.</p>
+<p>A folder that holds more than a page says <strong>More…</strong> and
+tells you how much it is hiding, because a tree that quietly shows the
+first hundred of eight thousand is lying. And an item with no published
+rights information says exactly that, rather than letting you
+assume.</p>
+<h4 id="librivox-public-domain-audiobooks">LibriVox: public-domain
+audiobooks</h4>
+<p>Recently Added, By Genre across 43 genres, and By Author grouped A-Z
+through some seven thousand of them. A book with chapters is a folder of
+chapters; a book that is a single reading is simply playable.</p>
+<p>There is deliberately no <strong>By Title</strong>. LibriVox’s own
+catalogue can be browsed by author, by genre and by date, and not by
+title – there is simply no such list to ask it for. Offering the branch
+anyway would give you a folder that always came back empty, and a branch
+that quietly finds nothing is worse than one that is not there.</p>
+<h4 id="project-gutenberg-human-read-audiobooks">Project Gutenberg:
+human-read audiobooks</h4>
+<p>The 1,124 Gutenberg records that carry human-read audio, by topic and
+by language. Complementary to LibriVox rather than a duplicate of it.
+Every topic and language pages through its whole shelf with a “More
+audiobooks” row – a list that stops at the first thirty-two and says
+nothing would read as the whole answer, which is the kind of quiet lie
+this app does not tell. (With the catalog on, All Audiobooks answers
+from your own disk, instantly.)</p>
+<h4 id="audius-mixcloud-and-ccmixter-three-music-libraries">Audius,
+Mixcloud and ccMixter: three music libraries</h4>
+<p><strong>Audius</strong> – independent music, trending overall and
+trending within 27 genres. No key; the app identifies itself by name.
+Gated tracks are dropped rather than listed and then refused when you
+press Enter.</p>
+<p><strong>Mixcloud</strong> – 28 music categories and 10 talk
+categories of DJ sets and radio shows. Browsing is metadata only: Quill
+Radio never extracts a Mixcloud stream, and activating a show opens it
+on Mixcloud in your own browser. <strong>The row says so before you
+press Enter</strong>, not after.</p>
+<p><strong>ccMixter</strong> – Creative Commons music by tag, and every
+row carries its licence in the row itself. For material offered under
+terms, showing the terms is the whole courtesy. (And the rows
+<em>play</em>: ccMixter’s file host refuses any player that does not
+arrive with a Referer from ccmixter.org – measured, not guessed – so
+Quill Radio sends exactly that header for ccMixter and nothing else, in
+playback and in Record Now alike.)</p>
+<h4 id="audiopub-audio-people-made-and-want-you-to-hear">AudioPub: audio
+people made, and want you to hear</h4>
+<p>AudioPub is a community where people publicly share audio they
+created – its whole philosophy is that uploads are there for anyone to
+stream. Quill Radio’s new <strong>AudioPub (Community Audio)</strong>
+branch opens with a <strong>Discover</strong> shelf: a random fifty,
+different every single time you open it, each row telling you who made
+it and how often it has been played, and each one playable with a full
+timeline, like any recording. A “More to discover” row keeps the
+surprises coming.</p>
+<p>Two honest boundaries. Nothing from AudioPub is stored on your
+computer – the platform is open source, but the <em>audio</em> belongs
+to the people who uploaded it, and Station Catalog Status says exactly
+that. And Discover is deliberately the only branch for now: newest,
+popular, search, and live broadcasts all exist on AudioPub’s side, and
+rather than scrape its internals, we are asking its developer to bless a
+small public API – when that lands, so do the branches.</p>
+<h4 id="explore-every-station-wikidata-knows-about">Explore: every
+station Wikidata knows about</h4>
+<p>The branch with axes no station directory publishes: <strong>By
+City</strong>, <strong>By Format</strong>, and <strong>On the
+Dial</strong>, which groups stations by the part of the FM band they sit
+in.</p>
+<p>None of that is Radio Browser’s data. Wikidata knows what city a
+station licenses from and what format it runs; Radio Browser knows how
+to play it. Putting the two together is what makes “every classical
+station in Tucson” a folder you can open.</p>
+<p><strong>Opening a place gives you the place, not a sample of
+it.</strong> By City used to take Wikidata’s list of stations for a city
+and look each one up, which sounds right and is backwards: that list is
+a capped, unordered slice of tens of thousands of stations, so Arizona
+could open to nothing at all while KJZZ, KBAQ and forty-seven others sat
+there playable. A place is now asked of Radio Browser directly – the set
+that can actually play – and Wikidata’s call signs top it up. <strong>By
+Format</strong> works the same way, against Radio Browser’s tags.</p>
+<p><strong>Two axes have been removed, and the rule they leave behind is
+a good one: an axis stays only if the station directory can answer
+it.</strong> <strong>By Network</strong> went first – Wikidata’s
+“original broadcaster” is recorded for two US radio stations, so the
+folder could never have listed anything. <strong>By Owner</strong> went
+next, and it is the more interesting of the two, because it counted
+perfectly well and still did not work. Radio Browser does not record who
+owns a station, so unlike a city or a format there was no way to ask it
+for one; the folder had to be built call sign by call sign from
+Wikidata’s capped slice, and roughly three owner folders in four opened
+to nothing, or to three stations out of a company’s several hundred. A
+listener spends the same keystrokes on a folder whether it pays off or
+not, so an axis that pays off a quarter of the time is worse than an
+axis not offered.</p>
+<p>It is labelled <strong>from Wikidata</strong> on every row, and it
+should be, because the join between the two is Quill Radio’s own rather
+than something either source publishes. Nothing here changes how a
+station plays, records or is favorited – the stream is still Radio
+Browser’s, exactly as it is everywhere else in the tree.</p>
+<h4 id="my-servers-your-own-icecast-or-shoutcast">My Servers: your own
+Icecast or Shoutcast</h4>
+<p>The branch no directory can give you.</p>
+<p>TuneIn never listed the community station three towns over. Radio
+Browser never indexed the church, the school, or the reading service
+that runs its own box. But almost all of them run Icecast or SHOUTcast,
+and both publish – with no key and no registration – a complete list of
+what they are serving right now.</p>
+<p>So you supply the address once and browse it forever after. Open
+<strong>My Servers</strong>, choose <strong>Add a Server…</strong>,
+paste the address (already filled in for you if it is on your
+clipboard), and Quill Radio checks it before saving it: “Added <a
+href="http://stream.example.org:8000">http://stream.example.org:8000</a>.
+It has 4 stations.” An address that answers with nothing is deliberately
+<strong>not</strong> saved – a branch that is empty the day you add it
+is nearly always a wrong address, most often a missing port number, and
+keeping it would just leave a row that never does anything.</p>
+<p>Every stream on the server then appears with <strong>what is playing
+on it right now</strong>, so you can tell what is on before you tune in.
+Refresh brings it up to date.</p>
+<p>One honest note: a great many small Icecast boxes are plain
+<code>http</code> on a high port and always have been. Quill Radio
+accepts those here rather than refusing the entire audience this branch
+exists for. It is an address you typed yourself, nothing is sent but a
+request for the station list, and no password is ever attached to
+it.</p>
+<h4 id="youtube-channels-follow-a-channel-like-a-station">YouTube
+Channels: follow a channel like a station</h4>
+<p>Follow a channel without a Google account, without signing in to
+anything, and without a subscription that anybody else can see.</p>
+<p><strong>Add a Channel…</strong> takes a channel address; Quill Radio
+reads it once to check that it can before saving it. After that the
+channel is a folder: <strong>Uploads</strong>, plus any playlists the
+channel publishes. A channel with four thousand videos does not try to
+be one enormous list – it pages, and the <strong>More…</strong> row
+tells you there is more. Videos play, record and can be favorited
+exactly like a station.</p>
+<h4 id="bring-the-channels-you-already-follow-without-an-account">Bring
+the channels you already follow, without an account</h4>
+<p>If you follow thirty channels on YouTube, adding them here one
+address at a time is the kind of chore that means you never do it.
+<strong>Station &gt; Import YouTube Subscriptions…</strong> does it in
+one step: export your subscriptions from Google (takeout.google.com,
+YouTube and YouTube Music, narrowed to <em>subscriptions</em>), pick the
+<code>subscriptions.csv</code> out of the archive, and every channel
+lands in YouTube Channels. Quill Radio tells you what happened –
+“Imported 24 channels; 3 you already followed.”</p>
+<p><strong>Why a file, and not a Sign in with Google button.</strong>
+This came from a listener asking whether Quill Radio could sign in with
+their YouTube account and synchronise their history, and the honest
+answers are worth stating.</p>
+<p>Signing in would mean attaching your real Google account to an app
+that also extracts audio from YouTube pages – something YouTube does not
+endorse – so it is the <em>account</em>, not just the feature, that
+would be at risk. It would also require you to create your own Google
+Cloud project first: seven steps of developer console before you hear a
+single channel. Reading a file you exported yourself avoids all of it.
+Nothing authenticates, no password or token is stored, no request is
+made to Google at all, and it works offline and in Safe Mode. It is your
+data, exported by Google’s own tool, handed to a program you chose.</p>
+<p><strong>On Premium and history, plainly.</strong> Quill Radio cannot
+sign you in to YouTube Premium, and Premium’s benefits do not carry into
+it. YouTube’s developer terms specifically forbid a third-party app from
+separating audio from video – which is what audio-only playback
+<em>is</em> – from playing in a background player, and from storing
+anything for offline use. There is no Premium exception to ask for.
+Watch history cannot be synchronised either, by us or by anyone: YouTube
+removed watch history and Watch Later from outside reach years ago, and
+answers the request with “Watch history data cannot be retrieved through
+the API.” Your subscriptions are the part that can come across, and now
+they do.</p>
+<p>It is a one-time import, deliberately: nothing keeps syncing, nothing
+runs in the background, and re-importing later skips what you already
+follow rather than duplicating it.</p>
+<h4 id="browse-by-network-the-bbc-npr-and-broadcasters-worldwide">Browse
+by network: the BBC, NPR, and broadcasters worldwide</h4>
+<p>Browse Stations gains a <strong>Networks</strong> branch that gathers
+well-known broadcasters into one-click lists, grouped by type: public
+broadcasters (BBC, CBC, ABC Australia, RTE, RNZ, NHK, Deutsche Welle,
+Deutschlandfunk, Radio France, and more), US news and talk (NPR, Fox
+News Radio, CNN, Bloomberg), US public radio, sports, and music. Each
+list is drawn live from the Radio Browser directory, so there is nothing
+new to keep up to date and no new place your searches go. Syndication
+services that have no single stream of their own – Westwood One, NBC
+News Radio, ABC News Radio – open a search across their local affiliate
+stations instead, and the label says so.</p>
+<p><strong>Browse Stations also remembers where you were.</strong> Play
+a station and reopen the browse tree, and it lands on the source you
+were last in – Networks, TuneIn, iHeart, wherever – instead of collapsed
+at the top with everything closed.</p>
+<h3 id="updating-gives-you-back-the-edition-you-installed">Updating
+gives you back the edition you installed</h3>
+<p>If you have ever chosen Check for Updates and been handed the
+<em>portable zip</em> when you installed Quill Radio properly – this is
+the release where that stops. It was reported twice, and the second
+report is the one that found it: the app decided whether you were
+“portable” by looking for an uninstaller next to the running program,
+and on the shared runtime the running program lives in your AppData
+folder, where an uninstaller never sits. So essentially every installed
+listener looked portable, forever.</p>
+<p>Underneath that were two more: a release publishes four different
+downloads – full installer, thin installer, portable zip, Companion zip
+– and the choice between them was made by file extension, so a
+full-edition listener could be handed the two-megabyte thin setup and a
+Companion listener an installer that cannot install their copy at all.
+And a copy installed over an existing one looked portable too, because
+Windows numbers the uninstallers it leaves behind and only the first
+name was recognised.</p>
+<p>Each installer now writes down which edition it is, and an update
+offers that same edition back.</p>
+<p>Two related repairs ship with it, and the first is the most serious
+thing found all day: <strong>a fresh install could fail to start at
+all.</strong> The small program that launches Quill Radio looks for its
+shared Python engine in one folder; the installer was putting it in
+another. Install cleanly onto a machine that had never seen it, and the
+app answered “Quill Radio could not find a Python runtime” and closed.
+Both sides now agree on one location, and a build check holds them
+together so neither can drift again. It was found by <em>running</em> an
+installed copy rather than by reading the code – each half looked
+perfectly sensible on its own, which is exactly how it survived.</p>
+<p>The second: an update now actually replaces the program. Before this,
+updating a machine that already had the right Python version copied
+nothing at all and reported success.</p>
+<h3 id="every-menu-item-tells-you-its-key">Every menu item tells you its
+key</h3>
+<p>Open any menu in 3.0 and every item ends with the way to reach it
+from the keyboard. Browse Stations is <strong>Ctrl+B</strong>. Find
+Stations is <strong>Ctrl+F</strong>. Recordings is
+<strong>Ctrl+G</strong>. All 115 items, menus and submenus alike, down
+to the Recently Played list, where the newest station is always
+<strong>Alt+Shift+1</strong>.</p>
+<p>This was not a polish pass. Forty-nine items had no shortcut at all,
+which meant the only way to learn there was no faster route was to arrow
+through the whole menu and reach the end – a cost paid on every visit.
+Seven keys were claimed by two different items, so one of each pair
+silently did nothing when you pressed it. And two items advertised keys
+the toolkit was quietly discarding as unparseable, which is the worst of
+the three: a menu promising a shortcut that could never fire.</p>
+<p>Where an item has a shortcut you can change, <strong>the menu shows
+the key you actually have bound</strong> – rebind it in Keyboard
+Shortcuts and the menu says the new key, rather than confidently
+repeating a default you no longer use. A build check now fails if any
+menu item ships without a working, unique key, so this stays true.</p>
+<h3 id="and-every-button-on-the-main-window-has-an-alt-key">And every
+button on the main window has an Alt key</h3>
+<p><strong>Alt+L</strong> plays, <strong>Alt+T</strong> stops,
+<strong>Alt+F</strong> adds the playing station to your favorites,
+<strong>Alt+O</strong> records, <strong>Alt+B</strong> opens Browse
+Stations. Plus <strong>Ctrl+Alt+P</strong> to stop outright, next to
+Ctrl+P’s play/stop toggle.</p>
+<p>The transport button had no Alt key at all before this, and the
+reason is worth knowing, because it explains why Play is not Alt+P. A
+button’s Alt key competes with the <em>menu bar’s</em>: Alt+P is the
+Playback menu, Alt+S is Station. When the button claimed those letters,
+pressing them opened a menu instead of stopping the radio – so the
+earlier fix removed the button’s key entirely, which traded a broken key
+for no key. Two other buttons kept theirs and stayed broken: Add to
+Fa<strong>v</strong>orites fought the <strong>V</strong>iew menu, and
+<strong>R</strong>ecord fought the <strong>R</strong>ecord menu. Every
+button now uses a letter the menu bar has not claimed, and a build check
+refuses any that does.</p>
+<h3 id="the-close-button-closes">The Close button closes</h3>
+<p>In the standalone app, the Close button in Browse Stations did
+nothing. Only Escape worked. That is a peculiar kind of broken: the
+control that looks like the way out is right there, and pressing it
+just… doesn’t. The cause was 3.0’s own window model – these surfaces
+became real windows so they could carry the menu bar, and a real window,
+unlike a dialog, does not answer a Cancel button on its own. The same
+fault sat in <strong>Find Stations</strong>, <strong>Manage
+Favorites</strong>, and <strong>Schedule Recording</strong>. All four
+now close from the button, from Escape, and from the titlebar, and there
+is one shared piece of wiring behind them so a fifth window cannot
+quietly grow the same hole.</p>
+<h3 id="find-became-a-search-engine-and-the-tree-reads-ahead">Find
+became a search engine, and the tree reads ahead</h3>
+<p>“Find in this folder” used to answer one way everywhere: walk the
+subtree and match what the tree happened to have loaded. Honest, bounded
+– and on the Podcasts branch, useless: it crawled chart pages and never
+once asked Apple’s search engine, so a show as findable as Double Tap
+came back “no matches”. No more. Find now takes the fastest honest route
+for wherever you are standing:</p>
+<ul>
+<li><strong>On the Podcasts branch</strong>, it asks the real podcast
+search API. Type “double tap”, press Enter, and the show is the first
+row – as a folder you expand straight into its episodes.</li>
+<li><strong>On a catalog-served branch</strong> – By Country, By
+Language, By Genre, By Quality – it answers from the catalog on your own
+disk, scoped to where you are: Find “jazz” while on France and you get
+France’s jazz stations, instantly, internet or not.</li>
+<li><strong>On any branch with a search engine of its own, it uses
+it.</strong> LibriVox answers with books as folders of chapters; the
+Internet Archive with items you can drill into; TuneIn with stations
+already resolved to their streams; iHeart from its station index; NOAA
+by call sign, SAME code or county; Project Gutenberg, SomaFM, Audius,
+Mixcloud and ccMixter with their own catalogs.</li>
+<li><strong>Only where no engine exists</strong>, the bounded crawl
+still works exactly as before – and a directory that cannot be reached
+says so, instead of posing as “no matches.”</li>
+</ul>
+<p>And every answer tells you where it came from – “Searched the whole
+podcast directory.” or “From your catalog.” – because a fast answer
+whose origin is stated beats a fast answer you might mistake for a
+complete one.</p>
+<p>The Find box also moved <strong>above the tree</strong>: one
+Shift+Tab from the stations and you are typing, instead of tabbing a lap
+around the buttons – and <strong>Ctrl+F</strong> jumps straight to it
+from anywhere in the Browse window.</p>
+<p>The tree itself got quicker in a way you will feel rather than see:
+<strong>predictive prefetch</strong>. Land on a collapsed folder and
+Quill Radio starts fetching its contents immediately, in the background,
+so the expand that usually follows opens instantly; open a folder and
+its first few child folders fetch behind it, so walking downward stays
+ahead of you. It is driven entirely by where your cursor actually is – a
+source you hide is still never contacted, and Safe Mode still fetches
+nothing.</p>
+<h3 id="and-the-tree-is-yours-to-prune">And the tree is yours to
+prune</h3>
+<p>Twenty-eight branches is a good problem and still a problem: if you
+only ever open your local stations and ACB Media, every branch you never
+use is not clutter, it is <em>distance</em> – something to arrow past,
+every time, forever.</p>
+<p><strong>Station &gt; Choose Browse Sources…</strong> fixes that the
+same way Search Sources does. Every branch can be hidden, each row in
+the chooser says its own state out loud – <em>“On. LibriVox Audiobooks.
+Public-domain audiobooks, by chapter.”</em> – and one button flips the
+branch you are on, with Turn On All and Reset to Default beside it. The
+rule is the one that matters: <strong>a branch that is off is not in the
+tree at all, and is never contacted.</strong> Not hidden-but-fetched;
+gone. So this is a speed and a privacy control as much as a tidiness
+one.</p>
+<p>Two details are deliberate. Hide everything and Browse Stations does
+not open onto a blank window – one row tells you exactly how to get your
+sources back. And the choice is stored as <em>your</em> choice, so a
+source added in a future version appears on its own for anyone who never
+touched the setting, instead of being frozen out by a list written
+before it existed.</p>
+<h3 id="finding-your-next-favorite">Finding your next favorite</h3>
+<p>Browsing got kinder. Expanding a country or a genre in Browse
+Stations no longer flings your cursor down into the station list; it
+stays on the folder you opened – you still hear its count – so you step
+into the stations when <em>you</em> decide to. The search source picker
+now reads <strong>Radio Browser</strong> as two clear words (run
+together, a screen reader could make the option sound as though it had
+gone missing), and there is a <strong>Radio Browser (by Genre)</strong>
+branch so you can wander that enormous directory by genre instead of
+only searching it. And after you update in place, new categories –
+iHeart, Radio Reading Services – show up right away: Browse used to keep
+serving the previous version’s cached directory until it expired, and it
+now recognizes when the app itself ships a newer one, while still
+respecting a directory you refreshed by hand.</p>
+<h2 id="type-a-title-and-everything-answers">Type a title, and
+everything answers</h2>
+<p>Browsing is how you find something you could not have named. Search
+is how you get to something you can – and in 3.0 it reaches everything,
+not just the radio directories.</p>
+<p>And what it finds, it plays. A podcast or an audiobook in the results
+is a <em>work</em>, not a stream – there is no single address to hand
+the player – and pressing Play on one used to do exactly nothing. Now it
+does the obvious thing by itself: an Apple Podcasts show fetches its
+feed and plays the <strong>latest episode</strong>, a LibriVox book
+plays its <strong>first section</strong>, each announced by name, and an
+Internet Archive collection says plainly that it opens on its own
+site.</p>
+<h3 id="choose-what-find-stations-searches">Choose what Find Stations
+searches</h3>
+<p>Quill Radio now searches eight places, which is wonderful when you
+are hunting for something and noise when you already know what you want.
+<strong>Station &gt; Search Sources…</strong> lets you switch any of
+them off:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Radio Browser</td>
+<td>The community directory behind most results</td>
+</tr>
+<tr>
+<td>TuneIn</td>
+<td>TuneIn’s station directory</td>
+</tr>
+<tr>
+<td>iHeart</td>
+<td>iHeartRadio’s stations</td>
+</tr>
+<tr>
+<td>SomaFM</td>
+<td>SomaFM’s listener-supported channels</td>
+</tr>
+<tr>
+<td>NOAA Weather Radio</td>
+<td>US weather radio by SAME code, callsign, county or state</td>
+</tr>
+<tr>
+<td>Radio Reading Service</td>
+<td>Services broadcasting newspapers and magazines aloud</td>
+</tr>
+<tr>
+<td>Spotify</td>
+<td>Songs, shows and episodes; needs a connected account</td>
+</tr>
+<tr>
+<td>YouTube</td>
+<td>Videos, added as stations</td>
+</tr>
+</tbody>
+</table>
+<p><strong>A source that is off is never contacted.</strong> This is not
+a filter applied to results that were fetched anyway – turning off
+iHeart means those network requests do not happen. So switching sources
+off makes searching genuinely faster and quieter, not just tidier.</p>
+<p>Each row says its own state and what the source is: “On. YouTube.
+Videos, added as stations you can play and record.” There are no
+checkboxes, because checkbox state inside a list is announced
+inconsistently across NVDA, JAWS and Narrator – and on/off is the one
+thing this dialog exists to tell you. <strong>Turn On or Off</strong>
+flips the row you are on and says what happened.</p>
+<p><strong>Your choices are remembered</strong> – both which sources are
+on and the Source filter in the results list. A preference you have to
+set again on every search is not really a preference. <strong>Reset to
+Default</strong> turns everything back on.</p>
+<h3 id="find-stations-reaches-the-libraries-too">Find Stations reaches
+the libraries too</h3>
+<p>Type a title and the results list gets <strong>LibriVox books,
+Internet Archive recordings, Project Gutenberg audiobooks and
+podcasts</strong> alongside the radio stations – each row labelled with
+where it came from, so a book and a station are never confused, and the
+existing <strong>Source</strong> dropdown narrows to one of them if you
+want.</p>
+<p>The libraries answer <strong>separately from the stations and appear
+as they arrive</strong>, so one slow library never holds up the rest,
+and you are told once when they have all reported rather than five times
+as they land. If you are already arrowing the station results when a
+library answers, your place is kept.</p>
+<p><strong>And the music libraries answer too.</strong> Audius, Mixcloud
+and ccMixter were nearly shipped as “browse only” – the tree offers them
+as trending, categories and tags, and that had quietly become a belief
+that the services could not be asked a question at all. They can, all
+three, and they always could. Type a title and their results arrive with
+everything else.</p>
+<p>The three behave slightly differently once found, and each row says
+which it is. An <strong>Audius</strong> track and a
+<strong>ccMixter</strong> upload play here, and a ccMixter row carries
+its Creative Commons licence in the row itself, because for material
+somebody released on those terms, showing the terms is the whole
+courtesy. A <strong>Mixcloud</strong> row is the show’s page and opens
+in your browser – Quill Radio never takes a stream from Mixcloud – and
+it tells you that before you press Enter rather than after.</p>
+<h2 id="see-the-picture-when-you-want-it">See the picture, when you want
+it</h2>
+<p>Quill Radio could play a YouTube link and could not show it. It can
+now – <strong>Playback &gt; Show Video (Ctrl+Shift+V)</strong> – and the
+design is one sentence:</p>
+<p><strong>Video is a view onto what is playing, never a mode of
+playing.</strong></p>
+<p>Closing the video window, or never opening it, leaves Quill Radio
+behaving exactly as it always has. Opening it costs nothing and
+interrupts nothing: the picture attaches to a stream that is already
+playing, so showing it does not restart anything and <strong>cannot cost
+you your place</strong>. Hiding it again is the same keystroke, and the
+audio does not so much as stutter.</p>
+<p>Why this matters even in an app built for blind listeners: somebody
+with usable residual vision, who uses Quill Radio precisely because
+YouTube’s own site is hostile with a screen reader, was getting audio
+only. So was anybody wanting to share what they are listening to with a
+sighted person in the room. Neither is a group to exclude from a feature
+that is nominally for them.</p>
+<p><strong>The picture reports itself properly.</strong> This is where
+video players usually fail: the image is an unnamed window that a screen
+reader lands on and calls “graphic”, if it says anything at all. Here it
+has a real name – <em>“Video: The Adventures of Sherlock Holmes, part
+4”</em> – and a description that says what it is and where the controls
+are. It is in the tab order exactly once, Tab always leaves it, and it
+never grabs focus by itself.</p>
+<p><strong>There are no on-screen buttons, on purpose.</strong> Every
+command is on the Playback menu, on the Command Palette, and on a key
+you can change. An unlabelled strip of picture buttons is how video
+players become unusable, and this window does not have one. The status
+line beneath the picture is text you read when you want it, not
+something that announces itself – a position display that speaks
+constantly is the single most common way a media player becomes
+intolerable.</p>
+<p>What you get:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Show Video</td>
+<td>Ctrl+Shift+V</td>
+<td>Shows or hides the picture. “Video shown, 1280 by 720.” / “Video
+hidden. Audio is still playing.”</td>
+</tr>
+<tr>
+<td>Captions</td>
+<td>Ctrl+Shift+K</td>
+<td>On and off. Says plainly when the captions are automatic.</td>
+</tr>
+<tr>
+<td>Caption Settings…</td>
+<td>–</td>
+<td>Size to 300%, text and background colour, opacity, top or
+bottom.</td>
+</tr>
+<tr>
+<td>Video Information</td>
+<td>Ctrl+Shift+I</td>
+<td>Size, frame rate, codec, and whether captions and described audio
+exist.</td>
+</tr>
+<tr>
+<td>Take a Snapshot</td>
+<td>–</td>
+<td>The current frame as a picture file – for a slide you want to read
+with OCR or send to somebody.</td>
+</tr>
+<tr>
+<td>Full Screen</td>
+<td>F11</td>
+<td>And it tells you both ways out on the way in.</td>
+</tr>
+<tr>
+<td>Video Size</td>
+<td>–</td>
+<td>Fit, 50%, 100%, 200% – from the keyboard, because everything here
+is.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Captions default to solid white on solid black.</strong> Not
+the semi-transparent grey most players use, and the reason is simple:
+caption text sits over arbitrary moving pictures, so no colour can be
+guaranteed to contrast with whatever is behind it. An opaque box is the
+only honest default. They scale to 300%, because the standard asks for
+200% and a floor is not a target.</p>
+<p><strong>And the picture can be dimmed.</strong> Nothing can tell
+whether a video contains flashing before it plays, so promising it does
+not would be a lie. What can be offered is control: the picture can be
+dimmed for light sensitivity, and the keystroke that removes it entirely
+works from anywhere in the app – so getting away from an unpleasant
+image never means finding the right window first.</p>
+<p>Two things deliberately not built: <strong>no YouTube web
+player</strong> (it would bring a browser engine, its accessibility, its
+adverts and its tracking into an app that exists to avoid all four), and
+<strong>no video downloading</strong>. Recording still captures
+audio.</p>
+<p><strong>The YouTube notice changed.</strong> It used to say Quill
+Radio contacts YouTube “to find the audio stream behind the page”. That
+stopped being the whole truth, so it now says audio <em>or video</em>,
+and says the rights reminder more firmly, because video raises more of
+those questions. Anybody who already agreed is not asked again –
+consenting to YouTube is consenting to YouTube, and asking twice for a
+superset of the same thing is friction rather than ethics – which is
+exactly why it is written down here.</p>
+<h2 id="transcripts-learned-to-keep-time">Transcripts learned to keep
+time</h2>
+<p>A finished video’s captions, and a podcast episode’s published
+transcript, could already be fetched and opened as a QUILL document to
+annotate or braille. What they could not do was connect to the audio,
+because reading them threw the timings away – exactly right for “open
+this as a document” and useless for anything that follows along.</p>
+<p>Transcripts and captions are now read into <strong>timed
+lines</strong>, and there is a window that uses them. <strong>Playback
+&gt; Transcript…</strong> (Ctrl+Shift+T) on a finished video opens
+it.</p>
+<p>It is an ordinary read-only text box, deliberately: arrow keys, word
+and line movement, selection and your screen reader’s own review cursor
+all work exactly the way they work everywhere else, which a custom list
+would have taken away and replaced with nothing you asked for. What the
+timings add is everything around the edges:</p>
+<ul>
+<li><strong>Follow the audio.</strong> Turn it on and the cursor moves
+to the line being spoken. It is <strong>off</strong> by default, and
+that is the important half: while you are reading, playback never moves
+your cursor. You are reading; the audio can wait.</li>
+<li><strong>Play from here.</strong> Press Enter on any line and
+playback jumps to the moment that line was spoken – “Playing from 4
+minutes 12 seconds.”</li>
+<li><strong>Find, with the position spoken.</strong> Ctrl+F searches,
+and each hit is announced as <em>“Found at 12 minutes 8 seconds”</em>
+rather than just moving the cursor. That is the thing a transcript in a
+text file can never do for you.</li>
+<li><strong>Copy</strong> the selection, or the whole transcript when
+nothing is selected.</li>
+<li><strong>Save As</strong> in plain text, <strong>WebVTT</strong> or
+<strong>SubRip</strong> – the timed forms, because somebody keeping a
+transcript usually wants one another player can follow.</li>
+<li><strong>Open in QUILL</strong> as a document, exactly as
+before.</li>
+</ul>
+<p><strong>An automatic caption track says so, in the heading</strong>,
+every time. Machine transcripts are useful and they are not accurate;
+presenting one as if a person wrote it would be the sort of confident
+wrong answer this app refuses to give.</p>
+<p>Two details:</p>
+<p><strong>YouTube captions stopped being thrown away.</strong> Every
+time Quill Radio resolved a YouTube link it also received that video’s
+caption track, and discarded it. That format is now understood alongside
+WebVTT, SubRip and Podcasting 2.0’s own format, so a YouTube video’s
+transcript costs nothing extra to obtain – it had already been
+downloaded and dropped on the floor.</p>
+<p><strong>Nothing you already relied on changed.</strong> The
+plain-text form of a transcript is now <em>defined</em> as the timed
+form with the timings removed, so there is one reader rather than two
+that drift apart, and every transcript Cast could read before reads
+identically today.</p>
+<hr />
+<h2 id="pick-up-where-you-left-off">Pick up where you left off</h2>
+<p>A live station has no place to come back to: you tune in and you are
+where everybody else is. Anything with an <strong>end</strong> is the
+opposite, and losing your place in a fourteen-hour book is the
+difference between a library and a shelf you cannot reach.</p>
+<h3 id="everything-you-started-in-one-list">Everything you started, in
+one list</h3>
+<p><strong>Playback &gt; Continue Listening…</strong> shows every
+recording you began and did not finish, newest first, with how far in
+you are: “The Moonstone, chapter 4, recording, 10 minutes in, 8%
+through”. A live station never appears – you tune in and you are where
+everyone else is, so there is nothing to come back to – and neither does
+anything you finished.</p>
+<p><strong>Resume</strong> starts the highlighted one where you left
+off, through exactly the path Browse uses, so nothing about how it
+resumes is special-cased. <strong>Forget This One</strong> drops the
+saved place and takes the row out, because a resume list you cannot
+clear fills up with things you abandoned on purpose and stops being
+worth opening.</p>
+<p><strong>Files on this computer are in the list too</strong> – a
+downloaded book, an imported recording, anything played from disk. Your
+place in a file is remembered by the file’s <em>contents</em> rather
+than its name, so it survives moving and renaming; where the file
+actually sits is kept separately and never leaves this machine. A file
+that has moved is quietly left out of the list rather than offered and
+then failing, and your place in it is not lost: it is found again the
+next time you play it.</p>
+<p>Recordings you left before this release are still resumed when you
+open them again; they simply cannot be <em>listed</em> here, because the
+older saved places kept only a position and no name to show. Anything
+you play from now on appears.</p>
+<h3 id="your-place-is-kept-where-a-place-makes-sense">Your place is
+kept, where a place makes sense</h3>
+<p>A live station has no position worth remembering. You tune in and you
+are where everybody else is, and a radio that offered to “resume” a live
+stream would be offering nonsense.</p>
+<p>A recording is the opposite. A LibriVox chapter, an Old Time Radio
+episode, a podcast episode – losing your place in a four-hour recording
+is the difference between a library and a shelf you cannot reach. Quill
+Radio now keeps your place in anything that has an end, and offers it
+back the next time you play it.</p>
+<p>Two deliberate refusals inside that. <strong>Four seconds in is not a
+position</strong>, so saving one clears the entry rather than leaving a
+prompt to dismiss for no gain. And <strong>finishing clears it
+too</strong>, so replaying something starts at the start rather than at
+the closing credits.</p>
+<hr />
+<h2 id="know-what-is-playing-and-hold-onto-it">Know what is playing, and
+hold onto it</h2>
+<p><strong>Ctrl+T</strong> does more than speak now. “What’s Playing?”
+opens a small window with the current title and artist in a field you
+can arrow through character by character and copy – to catch a spelling,
+or paste a song into a search – and it still speaks the title, still
+falls back to speaking when a stream has not sent its track yet. Any
+favorite gives you the same reviewable readout through <strong>Station
+Details…</strong> on its context menu: source, stream, format, country.
+More stations actually have a title to show, as well: a batch of streams
+– some HLS, and a handful others could read but Quill Radio could not –
+tuck the current song into the player’s metadata rather than the main
+title field, and Quill Radio now reads that too, so names and artists
+appear where they used to be blank. And there is a new way to reach the
+volume: a <strong>Volume</strong> slider right in the Tab order, so you
+can tab to it mid-song and arrow it up or down – however you change the
+volume, the slider, the status bar, and Ctrl+Up/Down all stay in perfect
+agreement.</p>
+<p><strong>Report Bad Station.</strong> A station that plays for the
+directory but not for you is something only you can flag. <strong>Report
+Bad Station…</strong> on any station’s context menu (in Browse Stations
+and Search Stations) opens the normal Report a Bug flow pre-filled with
+that station’s details – name, stream, source, country – so the report
+is complete on the first try. It carries station information only; never
+your name, email, or file paths.</p>
+<h2 id="song-history-what-that-station-played-earlier">Song History:
+what that station played earlier</h2>
+<p><strong>What’s Playing</strong> tells you the song on right now, and
+then it is gone. <strong>Song History</strong> (Playback menu,
+<strong>Ctrl+Shift+H</strong>) is the memory behind it: a per-station
+list of every track change Quill Radio noticed, newest first, with the
+time you heard it. Pick a station at the top, arrow the list, and each
+entry reads as a whole sentence – “Your Song by Elton John, heard 10:04,
+played twice”.</p>
+<p>From any song you can <strong>Copy</strong> it, <strong>Send to Clip
+Library</strong> to keep it with your other saved snippets, or ask for
+<strong>Background</strong>: a short, friendly note about the song and
+artist from whichever AI provider you have set up. That answer is always
+introduced as written by an AI model rather than by the station, because
+it sits inches from the station’s own information and the two must never
+be confused. It needs no setup beyond the AI you may already have
+configured, it is never available in Safe Mode, and if you have no
+provider set up the window simply says so.</p>
+<p>The log is yours and stays on your machine. It keeps up to 200 songs
+per station, one station’s listening never pushes out another’s, and
+<strong>Clear…</strong> empties one station or all of them. If you would
+rather Quill Radio not keep the list at all, turn off <strong>Keep a
+song history for each station</strong> in Preferences; existing entries
+stay until you clear them.</p>
+<p>Quiet touches that make the list worth reading: a song still playing
+when the poll comes round again folds into the entry already there (with
+a play count) rather than filling the list with the same title six
+times, and stations that broadcast their own name, “Live”, or an advert
+marker instead of a track are left out.</p>
+<h3 id="song-history-can-tell-you-more-than-the-title">Song History can
+tell you more than the title</h3>
+<p><strong>Song Details</strong>, on any song in the Song History
+window. Quill Radio has always recorded the artist and title a station
+broadcast, which makes a list of titles. This answers the two questions
+people actually ask about something they just heard: <strong>which
+release it came from, what year it is, and how long it
+runs.</strong></p>
+<p>It uses MusicBrainz, which needs no key and no account, and it is
+deliberately a button rather than something that happens by itself. A
+history window that quietly made a network request for every row would
+be spending your connection on curiosity you never expressed. It never
+holds up playback, and when nothing is known it says exactly that –
+“MusicBrainz has nothing more about that song” – rather than showing you
+an error about a server.</p>
+<h2 id="one-volume-for-every-station">One volume for every station</h2>
+<p>Quill Radio remembers a volume for each favorite. That is lovely when
+stations are mastered at wildly different levels, and maddening when you
+simply want everything quieter – because the per-station level won
+outright, twenty favorites meant twenty places to turn the volume
+down.</p>
+<p><strong>Playback &gt; Use One Volume for All Stations</strong> fixes
+that. Tick it and a single level answers for every station, so
+<strong>Ctrl+Up</strong> and <strong>Ctrl+Down</strong> turn
+<em>everything</em> up or down instead of only the station you happen to
+be on. Ticking it adopts whatever you are hearing at that moment, so
+nothing lurches.</p>
+<p>Your per-station levels are not thrown away. Untick it and every
+station goes straight back to its own remembered volume, exactly as it
+was – so trying this out costs you nothing. If you would rather be rid
+of them properly, <strong>Forget Every Station’s Own Volume…</strong>
+does that deliberately: it tells you how many stations have one, asks
+first, and leaves your stations, folders, and every other setting
+untouched.</p>
+<p>It is off unless you turn it on, and the menu’s checkmark follows the
+setting however you change it – from the menu, the Command Palette, or a
+shortcut you rebound yourself.</p>
+<h2 id="broadcast-polish-and-the-real-engine-behind-it">Broadcast
+polish, and the real engine behind it</h2>
+<p>Broadcast polish is the processing that stops a quiet programme and a
+loud one from being two different listening experiences. Quill Radio has
+had it for a while. Two things changed here, and the second is the one
+worth reading.</p>
+<p>Everything in this section is built on <strong>OptiLab Core</strong>,
+the free accessible broadcast and mastering engine by <strong>Lanes
+Audio / dgl1984</strong> (<a
+href="https://github.com/dgl1984/optilab">https://github.com/dgl1984/optilab</a>),
+used here with thanks and under its Apache-2.0 with Commons Clause
+licence.</p>
+<h3 id="the-built-in-chain-got-better">The built-in chain got
+better</h3>
+<p><strong>Broadcast polish follows OptiLab Core.</strong> If you use
+<strong>Stream Polish</strong> for music, its Auto-Adapt slider behaves
+better now, particularly at the top.</p>
+<p>Previously, raising Auto-Adapt pushed every stage harder at once –
+the leveler, the compressor and the limiter all leaned in together – and
+that is what produced the occasional volume lurch when the material
+changed. Following upstream, each stage now fades in over its own part
+of the slider using OptiLab’s own smoothing curve, so there is no point
+where something switches on. The leveler actually <em>eases off</em> as
+you raise Auto-Adapt, and a separate slow loudness lift takes over
+instead.</p>
+<p>That lift only responds to real program material: silence, low-level
+hiss and rumble no longer cause it to build gain, which is the other
+half of what made the old behaviour unpredictable. Bright,
+high-frequency moments get firmer control as the slider rises rather
+than the flat presence boost the chain used to apply at every setting,
+the limiter looks further ahead toward the top of the range, and the
+whole chain now delivers to OptiLab’s -0.1 dBFS target – so high
+settings give you more sustained loudness rather than more
+processing.</p>
+<p><strong>Podcast Leveler</strong> and <strong>Smooth Limiter</strong>
+are untouched: this release’s Auto-Adapt work is specific to Stream
+Polish.</p>
+<p>This built-in version reproduces the <em>shape</em> of OptiLab’s
+three modes – <strong>Podcast Leveler</strong>, <strong>Stream
+Polish</strong> and <strong>Smooth Limiter</strong> – as audio filters
+rather than running the engine itself. That is why it works on any
+machine, needs nothing compiled, and previews live as you move a
+control: every slider is audible instantly, with no gap and no
+reconnect.</p>
+<p>The next section is about running the real engine instead.</p>
+<h3 id="and-now-the-real-thing">And now the real thing</h3>
+<p>Reproducing the shape of those modes has one honest limit, and it is
+worth stating plainly. OptiLab eases its lift and pulls back bass
+assistance <em>while</em> its final limiter is working hard. A filter
+chain cannot do that: nothing in it can see how hard a later stage is
+working, so there is no way to react to it. Faking the effect would have
+meant guessing, and a guess dressed as a feature is worse than an
+absence. There are smaller differences too – the chain has none of
+OptiLab’s gated automatic gain control, its six-band density processing,
+its adaptive bass, or its hybrid final stage, and Quill Radio’s Podcast
+and Limiter modes deliver to their own ceilings rather than
+OptiLab’s.</p>
+<p>So Quill Radio can now run the <strong>actual</strong> OptiLab
+engine. Lanes Audio’s processing code is included in the build and does
+the work itself, rather than being imitated – which means the feedback
+loop above simply happens, and what you get is what OptiLab would have
+produced.</p>
+<p>One new choice in Sound Enhancements, <strong>Exact OptiLab
+processing</strong>, says where:</p>
+<ul>
+<li><strong>Off</strong> – the built-in chain everywhere, exactly as
+before. This is the default, and nothing changes unless you change
+it.</li>
+<li><strong>When saving</strong> – recordings and converted files go
+through the real engine. Recommended.</li>
+<li><strong>When saving and while listening</strong> – everything does,
+including the stream you are listening to right now.</li>
+</ul>
+<p><strong>Why listening is the option with a cost.</strong> The engine
+is a separate program, and Quill Radio’s live playback never hands audio
+to anything else: it tells the player what to apply and the player does
+it, which is exactly why every slider you move is audible instantly,
+with no gap and no reconnect. Running the real engine while you listen
+means routing the stream <em>through</em> that program – decode,
+process, re-encode – so the station takes a moment longer to start, uses
+more of your processor, and, most noticeably, <strong>needs a moment to
+reconnect every time you change a setting</strong>. The engine is set up
+with its mode when it starts and cannot be re-tuned in mid-flight. It is
+a genuine trade, so it is a choice you make, not one made for you.</p>
+<p>Saving has none of those costs: a recording is processed once,
+<em>after</em> it finishes, where taking a little longer costs nothing.
+And because it happens afterwards, nothing that goes wrong in the engine
+can ever affect the recording itself – the original is only replaced
+once a good processed copy exists.</p>
+<p>Everything else – the equalizer, Even Out Volume, channel mode, night
+mode – still applies exactly as it does today, whichever setting you
+choose. What changes is only which piece of software does the broadcast
+polish.</p>
+<p>It is entirely optional. If your build does not include the OptiLab
+component the option is disabled and tells you so, and everything else
+works exactly as before.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Built-in chain</th>
+<th>Exact OptiLab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Where it can run</td>
+<td>Everywhere – live, relayed, recorded</td>
+<td>Everywhere, but live costs a reconnect on each change</td>
+</tr>
+<tr>
+<td>Hear changes as you make them</td>
+<td>Yes, instantly</td>
+<td>Only on saved files; live needs a moment</td>
+</tr>
+<tr>
+<td>Limiter feedback loop</td>
+<td>Absent – the chain cannot react to its own limiter</td>
+<td>Present</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Sound Enhancements answers Ctrl+E.</strong> The three-band
+equalizer – Bass, Mid and Treble, each freely adjustable from -12 to +12
+dB, with Flat, Bass Boost, Voice Clarity, Podcast, Small Speakers and
+Late Night as starting points – along with the compressor, channel mode,
+night mode and broadcast polish, has been in Quill Radio since 1.0.2.
+What it never had was a key of its own; you went through the Playback
+menu every time. <strong>Ctrl+E</strong> now opens it. Everything inside
+still previews live as you move a slider, and is still remembered per
+station as well as shared.</p>
+<h2 id="the-playlist-formats-the-internet-actually-uses">The playlist
+formats the internet actually uses</h2>
+<p>Quill Radio understood M3U. That covers a lot of the web, and not the
+part you usually have in your hand.</p>
+<p>A “Listen Live” link is at least as likely to be a
+<strong><code>.pls</code></strong> – the standard SHOUTcast and Icecast
+listen link – or an <strong><code>.xspf</code></strong>, which is what
+the Xiph directory itself serves, or an
+<strong><code>.asx</code></strong>, which is still what several radio
+reading services publish. All three now open.</p>
+<p>ASX deserves a note: in the wild it is frequently not valid XML at
+all – unclosed tags, mixed case, no declaration. It is read twice, once
+properly and once forgivingly for when the file will not parse, because
+for that format the second case is the common one rather than the
+exception.</p>
+<p><strong>A live stream can no longer be imported as a list of
+stations.</strong> An <code>.m3u8</code> file is either a playlist of
+stations or a live stream’s manifest, and the two share an extension
+<em>and</em> a first line. Handing the second to the playlist importer
+produced a list of two-second fragments presented to you as stations,
+which is a genuinely baffling thing to be shown. They are now told apart
+before anything else happens – and what is inside the file wins over
+what the file is called, because a server naming a live stream
+<code>.m3u</code> is common.</p>
+<p><strong>Favorites export in four formats now</strong> – M3U, PLS,
+XSPF and ASX – and every one of them reads back in. A station name
+containing an ampersand survives the round trip, which is not true of
+most playlist writers.</p>
+<p><strong>A playlist file can no longer attack you.</strong> XSPF and
+ASX are XML from strangers, so they are read with entity expansion
+switched off. A small crafted file that would expand to gigabytes of
+memory is refused out loud instead of opened.</p>
+<hr />
+<h2 id="your-stations-yours-to-keep">Your stations, yours to keep</h2>
 <p>Here is the piece many of you asked for: a real backup you can carry
 to a new machine. <strong>Station &gt; Back Up Stations and
 Settings…</strong> gathers your favorites, settings, wake timer, and
@@ -312,11 +1744,19 @@ fresh Windows. Made for exactly the day you switch devices.</p>
 quietly snapshots the previous version aside – the <strong>last 20 are
 kept</strong> – so a bad edit or an accidental delete is never final;
 you can step back. That safety net is what makes the Favorites Manager’s
-new <strong>Remove All…</strong> button safe to offer: clear every
-station at once (your folders stay) behind a plain confirmation, and if
-you change your mind, your list is still there to bring back.</p>
-<h3 id="favorites-exactly-the-way-you-arranged-them">Favorites, exactly
-the way you arranged them</h3>
+<strong>Remove All…</strong> button safe to offer: clear every station
+at once (your folders stay) behind a plain confirmation, and if you
+change your mind, your list is still there to bring back. This is the
+“delete all my favorites so I can import a fresh list in a different
+order” request, answered.</p>
+<p><strong>Export Favorites to Playlist</strong> (Station menu) saves
+your stations to an M3U playlist you can hand to any media player,
+share, or keep as a plain-text backup outside Quill Radio. It is the
+twin of Import Stations from Playlist, and the two round-trip – so
+exporting, re-ordering the file elsewhere, clearing your list, and
+importing it back is now a complete, supported journey.</p>
+<h2 id="favorites-exactly-the-way-you-arranged-them">Favorites, exactly
+the way you arranged them</h2>
 <p>If you have ever hand-sorted thirty stations into the order that
 makes sense to <em>you</em>, this part is a love letter. Moving a
 favorite up or down from a sorted A-to-Z view no longer quietly
@@ -338,40 +1778,40 @@ your list right away instead of looking as though nothing happened. And
 <strong>TuneIn</strong> stations – which only work out their stream when
 you play them – can finally be added to Favorites straight from Browse,
 stream and all.</p>
-<h3 id="know-what-is-playing-and-hold-onto-it">Know what is playing, and
-hold onto it</h3>
-<p><strong>Ctrl+T</strong> does more than speak now. “What’s Playing?”
-opens a small window with the current title and artist in a field you
-can arrow through character by character and copy – to catch a spelling,
-or paste a song into a search – and it still speaks the title, still
-falls back to speaking when a stream has not sent its track yet. Any
-favorite gives you the same reviewable readout through <strong>Station
-Details…</strong> on its context menu: source, stream, format, country.
-More stations actually have a title to show, as well: a batch of streams
-– some HLS, and a handful others could read but Quill Radio could not –
-tuck the current song into the player’s metadata rather than the main
-title field, and Quill Radio now reads that too, so names and artists
-appear where they used to be blank. And there is a new way to reach the
-volume: a <strong>Volume</strong> slider right in the Tab order, so you
-can tab to it mid-song and arrow it up or down – however you change the
-volume, the slider, the status bar, and Ctrl+Up/Down all stay in perfect
-agreement.</p>
-<h3 id="finding-your-next-favorite">Finding your next favorite</h3>
-<p>Browsing got kinder. Expanding a country or a genre in Browse
-Stations no longer flings your cursor down into the station list; it
-stays on the folder you opened – you still hear its count – so you step
-into the stations when <em>you</em> decide to. The search source picker
-now reads <strong>Radio Browser</strong> as two clear words (run
-together, a screen reader could make the option sound as though it had
-gone missing), and there is a new <strong>Radio Browser (by
-Genre)</strong> branch so you can wander that enormous directory by
-genre instead of only searching it. And after you update in place, new
-categories – iHeart, Radio Reading Services – show up right away: Browse
-used to keep serving the previous version’s cached directory until it
-expired, and it now recognizes when the app itself ships a newer one,
-while still respecting a directory you refreshed by hand.</p>
-<h3 id="the-view-menu-a-dashboard-you-can-read">The View menu: a
-dashboard you can read</h3>
+<h3 id="quick-play-your-favorites">Quick-play your favorites</h3>
+<p>Ten commands – <em>Play Favorite 1</em> through <em>Play Favorite
+10</em> – play the first ten stations in your favorites list directly,
+without opening anything. They default to
+<strong>Ctrl+Alt+Shift+1</strong> through
+<strong>Ctrl+Alt+Shift+0</strong> (the plain number keys are already
+used by window switching, headings, and the copy tray), and like every
+command they are rebindable in <strong>Keyboard Shortcuts</strong> – set
+them to Alt+1 through Alt+0 if you prefer – and appear on the Command
+Palette.</p>
+<h2 id="the-windows-finally-stay-where-you-put-them">The windows finally
+stay where you put them</h2>
+<p>For a while, opening Browse Stations, Search Stations, Manage
+Favorites, Schedule Recording, or the Weather Center could make the menu
+bar seem to vanish into thin air – because those screens were dialogs,
+and a dialog cannot carry a menu bar – and the modal ones locked you out
+of the main window entirely. They are proper <strong>windows</strong>
+now. Each one carries the full menu bar, so the menus are always a
+single <strong>Alt</strong> away no matter where you are, and none of
+them holds the main window hostage; you can keep several open at once. A
+new <strong>Window</strong> menu lists everything you have open,
+numbered in the order you opened it, and you move between them the way
+you already do everywhere else: <strong>Ctrl+Tab</strong> for the next,
+<strong>Ctrl+Shift+Tab</strong> for the previous,
+<strong>Ctrl+1</strong> through <strong>Ctrl+9</strong> to leap straight
+to one. Each window opens only when you ask, and closing it sets you
+gently back where you came from, announced as you land. The menus are
+there from the very first keystroke, too: pressing <strong>Alt</strong>
+right after launch used to summon the window’s own Minimize/Maximize
+menu, because focus had not settled inside yet – focus lands in the
+window immediately now, so Alt opens Radio’s own menu bar the instant
+the app appears.</p>
+<h2 id="the-view-menu-a-dashboard-you-can-read">The View menu: a
+dashboard you can read</h2>
 <p>A new <strong>View</strong> menu gathers several comforts in one
 place. <strong>Show Station Details</strong> turns the read-only details
 box in Browse and Search on or off, and every station screen honors your
@@ -393,6 +1833,650 @@ Unsorted) up out of Preferences, adds <strong>Expand All</strong> and
 once, and offers <strong>Text Size</strong> (Normal, Large, Larger) to
 enlarge everything on the main window together. Every choice here is
 remembered between sessions.</p>
+<p><strong>Customize Features</strong> (View menu) turns whole areas of
+Quill Radio on or off – the <strong>Recording</strong> and
+<strong>Weather</strong> menus, each with a description. Uncheck one and
+its whole menu (and every command under it) is left out the next time
+the app opens, so you can trim Quill Radio to just what you use.
+Everything is on until you turn it off.</p>
+<h2 id="everything-quill-radio-says-now-reaches-braille">Everything
+Quill Radio says now reaches braille</h2>
+<p>Everything Quill Radio speaks – What’s Playing, a finished refresh, a
+recording starting – is now also written to a connected braille display,
+not only spoken. Nothing is truncated, an identical message inside two
+seconds does not steal the display twice, and braille never costs
+speech: an unplugged display or a reader that refuses the call degrades
+to “spoke but did not braille”, never to silence. Turn it off with
+<strong>Show announcements in braille</strong> in Preferences &gt;
+Accessibility. A <em>burst</em> of different messages no longer flickers
+across the display either – the first message of a quiet period writes
+instantly and anything landing within the next 150 ms settles to the
+newest, with errors always writing through at once.</p>
+<p>Speech is gone the moment it finishes, so <strong>Repeat Last
+Announcement</strong> (Command Palette) brings the last thing Quill
+Radio said back. <strong>Announcement Self-Test…</strong> announces a
+phrase and then tells you which channels actually delivered it and
+through which backend, so “braille is broken” and “no display is
+connected” stop looking the same. Quill Radio also gains its own sound
+cues, all of which can be turned off or replaced from a sound pack.</p>
+<h2 id="reach-quill-radio-from-anywhere-with-one-global-hotkey">Reach
+Quill Radio from anywhere with one global hotkey</h2>
+<p>A new system-wide hotkey shows or hides Quill Radio without your
+having to find its window first. Press <strong>Ctrl+Alt+Shift+R</strong>
+from inside any program – your browser, your editor, wherever you happen
+to be working – and Quill Radio tucks itself into the system tray,
+saying “hidden to the tray”; the music (or a recording in progress)
+never stops, and the tray icon keeps it a keystroke away. Press the same
+keys again and the window comes right back and takes focus, announced
+with “shown”. It is the fastest way to glance at what is playing, or to
+step away and back, without leaving what you are doing. Windows only,
+and courteous about it: if another app has already claimed
+Ctrl+Alt+Shift+R, Quill Radio leaves that chord alone and never grabs it
+– no error, nothing broken, and the tray icon and the Alt+F4-to-tray
+preference still show and hide the window exactly as before. Every app
+in the family gets its own chord so they never collide: QUILL is
+Ctrl+Alt+Shift+Q, and Quill Weather is Ctrl+Alt+Shift+W.</p>
+<h2 id="the-quillville-menu-and-weather-as-its-own-app">The QuillVille
+menu, and Weather as its own app</h2>
+<p>Quill Radio, QUILL, and Quill Weather each carry the same top-level
+<strong>QuillVille</strong> menu (<strong>Alt+Q</strong>) listing every
+family member, so you can jump to any of them from the same place
+everywhere. Opening an app that is already running just brings it
+forward.</p>
+<p>The weather work that grew up in this release has moved into a home
+of its own: <strong>Quill Weather</strong>, a small, standalone,
+tray-resident app that watches your location for official alerts, speaks
+each new warning the moment it is issued, can start with Windows, and
+will even keep watch with no window open at all. Its full story –
+background alert monitoring, the customizable alert sounder, Test Alert,
+the hour-by-hour forecast, the moon almanac, worldwide forecasts, and
+the rest – now lives in the <strong>Quill Weather release notes and user
+guide</strong>, not here.</p>
+<p>And the hand-off is real: the alert watch itself belongs to Quill
+Weather. Quill Radio no longer resumes background alert monitoring at
+launch – one watcher, not two, and the radio opens talking about radio.
+Its Weather menu still answers on demand whenever you ask.</p>
+<p>It is still right where you expect it inside Quill Radio, too. The
+<strong>Weather</strong> menu is present whenever the
+<strong>Weather</strong> feature is enabled (<strong>View &gt; Customize
+Features…</strong>), and it now leads with an <strong>Open the Quill
+Weather App</strong> item so you can hand the watch off to the
+standalone app in one step. Turn Weather off in Customize Features and
+the menu disappears entirely – perfect if you only want the radio.</p>
+<p>And on the radio side, <strong>Station &gt; Start Quill Radio with
+Windows</strong> launches Quill Radio automatically when you sign
+in.</p>
+<h2
+id="a-scheduled-recording-and-a-computer-that-is-actually-awake-for-it">A
+scheduled recording, and a computer that is actually awake for it</h2>
+<p>This one came from a listener, not a bug report – which is the only
+way it could have come. He scheduled a football pregame show for 11:00
+and Quill Radio announced the recording at 11:03. Nothing had failed.
+Nothing said anything was wrong. He simply lost the first three minutes
+and had no way to find out why.</p>
+<p>Here is why. A schedule is a thread inside a running application, and
+a sleeping computer does not run threads. If Windows dozes off at 10:58
+nobody asks the schedule anything until the machine wakes, and the
+recording starts then – which from the outside is indistinguishable from
+the app losing track of the time. Quill Radio has always kept the
+machine awake <em>while</em> something is playing or recording. It did
+nothing at all about the quiet stretch beforehand, which is exactly when
+a machine with nothing to do decides to sleep.</p>
+<p>Three answers now, and they are meant to work together.</p>
+<p><strong>It says so.</strong> The scheduling window states the
+requirement in a line, before you set anything: Quill Radio has to be
+running for a scheduled recording to start, and the system tray counts.
+A requirement you only discover by losing the first three minutes of a
+game is not a requirement, it is a trap.</p>
+<p><strong>It holds sleep off as the time approaches.</strong> For the
+few minutes before a recording is due, Quill Radio asks Windows not to
+go to standby – the same request it already makes while a recording is
+running, simply started earlier. This costs nothing when nothing is
+scheduled, and it covers the ordinary case of a machine that is awake
+now and would have dozed at the worst possible moment. (Your screen may
+still turn off. Only the computer has to stay up.)</p>
+<p><strong>And it can wake the machine.</strong> If the computer is
+<em>already</em> asleep when the time comes, no amount of asking from
+inside a sleeping process will help – only the operating system can wake
+it. So Quill Radio registers a Windows task that does exactly that, a
+couple of minutes before the recording, then starts Quill Radio if it is
+not already running. It is one task, replaced each time your schedule
+changes and removed when nothing is scheduled, so Task Scheduler never
+fills up with dead entries.</p>
+<p>Both automatic parts are separate checkboxes in Preferences and both
+are on by default. They are separate deliberately: holding sleep off is
+a small local thing that needs no permissions, while waking the machine
+changes how your computer behaves. Somebody may reasonably want the
+first and not the second, and one switch would make that impossible to
+say.</p>
+<p><strong>One thing that was already right, and is worth
+knowing.</strong> A recording that starts late does not run late at the
+other end. Quill Radio records the time that is <em>left</em> in the
+window, so an 11:00 to 2:00 recording that starts at 11:03 still stops
+at 2:00 rather than overrunning into whatever you scheduled next. That
+is also why a late start costs you the beginning rather than the end –
+and why, if you want a cushion before a show, the thing to do is start
+the schedule earlier <strong>and</strong> lengthen it by the same
+amount.</p>
+<h2 id="recording-made-sturdier-in-three-ways">Recording, made sturdier
+in three ways</h2>
+<p><strong>An interrupted recording ends up as one file.</strong> When a
+stream drops mid-recording, Quill Radio reconnects and continues into a
+“(part 2)” file – and now, when the recording finishes, it stitches the
+pieces back into a single recording under the name you expected. A show
+that dropped twice no longer leaves you three files to find and play in
+order. The join is a straight copy, so nothing is re-encoded and even a
+long capture takes seconds, and it is done in an order that cannot lose
+your audio: the joined file is written, verified, and only then put in
+place, and the parts are removed only once that has demonstrably worked.
+Anything that goes wrong – a missing part, parts in different formats,
+an FFmpeg error – leaves every part exactly where it is. You are told
+either way: “Joined 3 parts into one recording”, or “Kept 3 separate
+parts” and the reason.</p>
+<p><strong>A recording that stops recording is now noticed</strong>,
+even when nothing reports a problem. A stalled stream can leave FFmpeg
+alive and apparently healthy while the file stops growing, so the
+recording looked fine and captured nothing. Quill Radio now watches the
+recording file’s size as a second, independent check: if it has not
+gained a byte across four checks in a row – about a minute – the
+recording is treated exactly like a dropped connection, so it reconnects
+and continues or stops and saves what it captured. It is patient enough
+that a slow network or a station’s own rebuffering is never mistaken for
+a dead one, and it is never applied to a recording you have just asked
+to stop.</p>
+<p><strong>The scheduled-recordings list is ordered by when each
+recording next occurs</strong>, soonest first, rather than the order you
+entered them, and each row shows the stream’s host in brackets so two
+similar entries – or a duplicate still pointing at the original station
+– are easy to tell apart.</p>
+<h2 id="winamps-keys-in-the-recordings-player">Winamp’s keys, in the
+Recordings player</h2>
+<p>If you came to Windows audio through Winamp, its classic-skin keys
+never really left your fingers. Until now the Recordings window answered
+to exactly two of them – Ctrl+Up and Ctrl+Down for volume – and nothing
+else. There was no play, no pause, no stop, no seek, nothing to move
+between recordings. The whole transport set is now there, on the letter
+keys you already know, with no modifier to reach for:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X</td>
+<td>Play the selected recording, or resume a paused one</td>
+</tr>
+<tr>
+<td>C</td>
+<td>Pause / unpause</td>
+</tr>
+<tr>
+<td>V</td>
+<td>Stop</td>
+</tr>
+<tr>
+<td>Shift+V</td>
+<td>Stop (Winamp’s fade-out; this player has no fade, so it stops
+cleanly)</td>
+</tr>
+<tr>
+<td>B</td>
+<td>Next recording – moves down the list and plays it</td>
+</tr>
+<tr>
+<td>Z</td>
+<td>Previous recording</td>
+</tr>
+<tr>
+<td>Left / Right</td>
+<td>Back / forward 5 seconds</td>
+</tr>
+<tr>
+<td>Shift+Left / Shift+Right</td>
+<td>Back / forward 30 seconds</td>
+</tr>
+<tr>
+<td>R</td>
+<td>Shuffle on / off</td>
+</tr>
+<tr>
+<td>S</td>
+<td>Repeat: off, then all recordings, then this recording</td>
+</tr>
+<tr>
+<td>Ctrl+V</td>
+<td>Stop after the current recording</td>
+</tr>
+<tr>
+<td>T</td>
+<td>Elapsed time, or time remaining – press again to swap</td>
+</tr>
+<tr>
+<td>J</td>
+<td>Jump to a recording: type any part of its name</td>
+</tr>
+<tr>
+<td>Ctrl+J</td>
+<td>Jump to a time: type <code>90</code>, <code>1:30</code>, or
+<code>1:02:03</code></td>
+</tr>
+<tr>
+<td>L</td>
+<td>Open (the same as Play)</td>
+</tr>
+<tr>
+<td>Ctrl+Up / Ctrl+Down</td>
+<td>Volume up / down</td>
+</tr>
+</tbody>
+</table>
+<p>Every one of them says what it did. A transport key whose result you
+cannot hear is not a working transport key, so “Playing”, “Paused”,
+“Back 5 seconds” and the rest are spoken – and brailled as well.</p>
+<p>There are two places this deliberately parts company with Winamp, and
+both are the better answer here rather than an oversight:</p>
+<ul>
+<li><strong>Ctrl+T stays What’s Playing.</strong> Winamp puts the
+elapsed/remaining toggle there; in a radio app, knowing what is on the
+air is worth more. The time toggle is on plain <strong>T</strong>, which
+nothing else was using.</li>
+<li><strong>Up and Down still move through the list.</strong> In Winamp
+those are volume in the main window but list navigation in the Playlist
+Editor – and the recordings list <em>is</em> a playlist editor by any
+other name. Volume stays on Ctrl+Up and Ctrl+Down, exactly where it
+already was.</li>
+</ul>
+<h3 id="and-the-last-three-keys-which-needed-a-queue-first">And the last
+three keys, which needed a queue first</h3>
+<p><strong>R</strong>, <strong>S</strong> and <strong>Ctrl+V</strong>
+were held back on purpose. All three – shuffle, repeat,
+stop-after-current – describe a play queue, and the recordings list did
+not have one. Binding them to something that only looked like it worked
+would have been worse than leaving them unbound, because you cannot tell
+a key that does nothing from an app that is broken.</p>
+<p>The list has a queue now, so they are bound.</p>
+<p><strong>Shuffle (R) is a fixed order, not a fresh roll each
+time.</strong> That distinction is the whole feature. “Pick one at
+random on every Next” eventually plays the same recording twice before
+it plays some others at all – and, far worse here, <strong>Z</strong>
+cannot take you back to what you just heard, because nothing recorded
+where you had been. Shuffle instead reorders the whole list once: every
+recording plays exactly once before any repeats, and previous is the
+exact inverse of next.</p>
+<p><strong>Repeat (S)</strong> cycles off, then all recordings, then
+this recording, saying which each time. Repeat-one applies when a
+recording <em>finishes on its own</em> – pressing <strong>B</strong>
+still moves you on, because a Next that refused to move would look
+broken rather than deliberate.</p>
+<p><strong>Stop after current (Ctrl+V)</strong> is a one-shot. It
+outranks repeat, because it is the thing you asked for a moment ago
+rather than a standing preference; it clears itself the instant it
+fires; and it is deliberately <em>not</em> remembered between sessions.
+A stop that survived a restart would halt playback for a reason nobody
+could remember asking for.</p>
+<p>A recording that reaches its end is now followed by whatever the
+queue says is next, rather than simply stopping. Shuffle and repeat are
+remembered; the one-shot is not.</p>
+<p>Seeking needs something with a timeline, which means a finished
+recording on the mpv engine; on a live stream, or with the classic
+Windows Media engine, the seek keys say why they cannot move rather than
+silently doing nothing. A letter typed into a text field is never
+swallowed. And if you would rather have the letters for list typeahead,
+<strong>Winamp-style playback keys in the Recordings player</strong> in
+Preferences turns them off – volume is unaffected either way.</p>
+<p>The map itself lives in one small shared module with no wx in it, so
+anything else in the family that grows a transport can adopt exactly
+these keys instead of a second, subtly different set.</p>
+<h2 id="quillins-in-quill-radio">Quillins in Quill Radio</h2>
+<p>Quill Radio can run Quillins – QUILL’s small, sandboxed,
+permission-gated add-ons – from its own Quillins menu. A Quillin
+declares which apps it is for, so only add-ons written for the radio
+appear. One thing a radio Quillin can do is contribute an extra station
+directory, which then shows up alongside RadioBrowser and the others
+when you search. Off in Safe Mode; third-party Quillins stay disabled in
+this release.</p>
+<h2 id="spotify-experimental">Spotify (experimental)</h2>
+<p>Quill Radio can search Spotify, browse your library and playlists,
+and play through Spotify’s own playback engine. It is
+<strong>experimental</strong>, and it needs setting up – so here is the
+whole thing, plainly.</p>
+<h3 id="does-a-free-spotify-account-work">Does a free Spotify account
+work?</h3>
+<p><strong>Yes for finding things, no for playing them inside Quill
+Radio.</strong> The distinction is worth being precise about, because it
+is easy to hear “Premium required” and conclude a free account is
+useless here. It is not.</p>
+<p><strong>What works on a free account:</strong></p>
+<ul>
+<li>Searching Spotify from inside Quill Radio.</li>
+<li>Browsing your saved shows, episodes, tracks, and playlists.</li>
+<li>Everything else in Quill Radio, which is untouched by any of
+this.</li>
+</ul>
+<p><strong>What does not:</strong></p>
+<ul>
+<li>Audio starting <em>inside Quill Radio</em>. A track you choose here
+will not sound.</li>
+</ul>
+<p><strong>Why – and what this is not.</strong> This is
+<strong>not</strong> “free accounts cannot play Spotify music”. Of
+course they can, and millions of people do every day, in Spotify’s own
+app, where the advertising that funds the free tier lives. The
+restriction is about <strong>where</strong> the audio plays, not whether
+you are allowed to listen. Spotify does not license other people’s apps
+to stream free-tier audio, and it says so plainly in its own developer
+documentation. There are exactly two ways another app could play a
+Spotify track, and both are closed to free accounts:</p>
+<ul>
+<li>The Web Playback SDK, which “requires a Spotify Premium subscription
+(mobile only types of premium subscriptions are excluded)”.</li>
+<li>The Start/Resume Playback web endpoint, of which Spotify says: “This
+API only works for users who have Spotify Premium.”</li>
+</ul>
+<p>So with a free account, use Quill Radio to <em>find</em> things –
+which is the part that is genuinely hard with a screen reader – and play
+them in the Spotify app. Quill Radio now tells you which kind of account
+you signed in with, immediately, rather than letting you discover it
+when a track silently refuses to start.</p>
+<h3 id="spotify-in-find-stations">Spotify in Find Stations</h3>
+<p>Because searching Spotify works on <strong>every</strong> account
+tier, Spotify results now appear in <strong>Find Stations</strong>
+alongside the radio directories, once you have connected your account.
+Search once and you see stations, shows, and tracks together, instead of
+remembering which of two search boxes holds which kind of thing.</p>
+<ul>
+<li>Songs read as “title, artist”, so a list of results is still usable
+when several share a name.</li>
+<li>Shows read as “show, publisher”.</li>
+<li>Every Spotify row is labelled <strong>Spotify</strong> in the Source
+column, and there is a <strong>Spotify</strong> entry in the Source
+filter if you want only those – or want them out of the way.</li>
+</ul>
+<p>On a Spotify row, Shift+F10 offers <strong>Open in Spotify</strong>,
+which opens it in the Spotify app. That is deliberately not called “Open
+Website”: on a free account it is not a footnote about a station’s home
+page, it is <em>how you play the thing</em>. Premium subscribers can
+simply press Enter and hear it here.</p>
+<p>If you have never connected Spotify, nothing changes – no Spotify
+rows appear, and Find Stations behaves exactly as before. Off in Safe
+Mode. If Spotify is slow or unreachable, the rest of your results still
+arrive.</p>
+<p>For the same reason, a Spotify selection can never be
+<strong>recorded</strong> or <strong>downloaded</strong> on any account,
+unlike every other station in the app: the audio is copy-protected.</p>
+<h3 id="what-you-need">What you need</h3>
+<ol type="1">
+<li><strong>A Spotify account</strong> – free or Premium, per
+above.</li>
+<li><strong>Your own Spotify Client ID.</strong> Quill Radio ships no
+shared identity, so nothing of yours passes through anyone else’s
+account.</li>
+<li><strong>Windows with the Edge WebView2 runtime</strong>, which
+current Windows already has – it arrives with Microsoft Edge.</li>
+</ol>
+<h3 id="getting-your-client-id-step-by-step">Getting your Client ID,
+step by step</h3>
+<ol type="1">
+<li><p>Go to the <strong>Spotify Developer Dashboard</strong> at
+<code>https://developer.spotify.com/dashboard</code> and sign in with
+your ordinary Spotify account. There is no charge, and this works with a
+free account.</p></li>
+<li><p>Choose <strong>Create app</strong>.</p></li>
+<li><p>Give it any <strong>App name</strong> and <strong>App
+description</strong> you like – they are just for you. “Quill Radio” is
+fine.</p></li>
+<li><p>In <strong>Redirect URI</strong>, enter exactly this, then press
+<strong>Add</strong>:</p>
+<p><code>http://127.0.0.1:43217/callback</code></p>
+<p>It must match character for character, including the port number.
+This is how Spotify hands the finished sign-in back to your own
+computer; it never leaves your machine.</p></li>
+<li><p>Under <strong>Which API/SDKs are you planning to use?</strong>,
+tick <strong>Web API</strong> and <strong>Web Playback
+SDK</strong>.</p></li>
+<li><p>Accept the terms and choose <strong>Save</strong>.</p></li>
+<li><p>Open your new app’s <strong>Settings</strong>. Your
+<strong>Client ID</strong> is shown there – copy it.</p>
+<p>You will also see a <strong>Client secret</strong>. <strong>You do
+not need it</strong>, and you should not paste it anywhere. Quill Radio
+signs in with the modern PKCE flow, which is designed precisely for apps
+that cannot keep a secret.</p></li>
+</ol>
+<h3 id="where-to-put-it-in-quill-radio">Where to put it in Quill
+Radio</h3>
+<ol type="1">
+<li><strong>Station &gt; Connect to Spotify…</strong></li>
+<li>Paste your Client ID into the <strong>Client ID</strong> field.</li>
+<li>Choose <strong>Connect</strong>. Your browser opens Spotify’s own
+approval page: you are signing in to Spotify, and your password is never
+typed into this app.</li>
+<li>Approve access. Spotify returns you to a small address on your own
+machine (<code>127.0.0.1</code>) that Quill Radio listens on for that
+one moment.</li>
+<li>Your sign-in is stored in the <strong>Windows Credential
+Manager</strong> – never in a plain file, never in a log – alongside
+your Client ID, so the whole connection lives in one place and clears
+together.</li>
+</ol>
+<p>You do this once. Afterwards, <strong>Station &gt; Browse
+Spotify…</strong> opens a search box and a results list you can arrow
+through and play with Enter.</p>
+<p>Nothing reaches Spotify until you deliberately connect an account,
+and the whole feature is refused in Safe Mode. If you would rather not
+see it at all, turn <strong>Spotify</strong> off in Manage Individual
+Features and its menu items disappear.</p>
+<h2 id="the-quillville-runtime-downloads-that-finally-travel-light">The
+QuillVille Runtime: downloads that finally travel light</h2>
+<p>This is the big change in how Quill Radio is delivered. Quill Radio,
+QUILL, Quill Weather, and QUILL Audio Studio now share
+<strong>one</strong> Python engine – the <strong>QuillVille
+Runtime</strong> – installed just once per user and reused by every app
+in the family. Install any one of them, and every app you add afterward
+starts instantly, because the engine it needs is already there. No
+second copy, no second long download. The runtime is reference-counted,
+so it is removed only when the last app that relies on it is
+uninstalled; uninstalling Quill Radio while Quill Weather is still
+around leaves the shared engine in place for Weather.</p>
+<p>That shared engine unlocks two brand-new, much smaller ways to get
+Quill Radio, alongside the two full downloads you already knew:</p>
+<ul>
+<li><strong>Companion edition (new)</strong> –
+<code>Quill-Radio-Companion-&lt;version&gt;.zip</code>, about <strong>3
+MB</strong>. Just the app and its docs, running on the shared runtime.
+The first time you launch it, if the runtime is not already installed,
+Quill Radio offers to download and install it once (about 230 MB) with a
+fully accessible progress bar. After that first time, this app and every
+other QuillVille app start instantly. Three megabytes instead of three
+hundred.</li>
+<li><strong>Thin installer (new)</strong> – the small “Lite” setup. It
+installs the app and downloads the shared runtime only if it is not
+already present. If you already run another QuillVille app, there is
+nothing large to fetch.</li>
+<li><strong>Full portable zip</strong> –
+<code>Quill-Radio-Portable-&lt;version&gt;.zip</code>, about <strong>200
+MB</strong>. Still the one for a USB stick: fully self-contained, runs
+with no installation and no internet, carrying its own genuine,
+unmodified copy of Python plus the bundled ffmpeg and mpv engines.</li>
+<li><strong>Full installer</strong> –
+<code>Quill-Radio-Setup-Shared-&lt;version&gt;.exe</code>. The
+recommended path for most people: it installs the shared runtime (unless
+another QuillVille app already put it there) plus the app.</li>
+</ul>
+<p><strong>Accessible progress, every time.</strong> Whenever the
+runtime is downloaded – by an installer or by the Companion edition’s
+own first launch – Quill Radio shows a progress bar that works with
+NVDA, JAWS, and Narrator, announcing progress as a percentage the whole
+way.</p>
+<p><strong>Friendlier to antivirus.</strong> Quill Radio’s launcher is
+now a genuine, tiny native program, and the Python it runs is the
+official, unmodified build. Earlier versions used a renamed and modified
+copy of Python’s own <code>pythonw.exe</code> as the launcher – a
+pattern some antivirus tools flagged as a false positive. That pattern
+is completely gone, so the app is far less likely to be mistaken for
+something it is not. And as of 3.0, releases are
+<strong>code-signed</strong>: the installers, the uninstallers, and the
+app itself carry a genuine Authenticode signature, so SmartScreen and
+antivirus tools can verify exactly who built what you are running.</p>
+<p>The full picture, edition by edition, is in the
+<strong>Installing</strong> chapter of the Quill Radio User Guide.</p>
+<h2 id="an-icon-of-its-own--and-one-for-every-app-in-the-family">An icon
+of its own – and one for every app in the family</h2>
+<p>Quill Radio’s icon was never the problem. The problem was that it was
+also <strong>Quill Inkwell’s icon, Quill Weather’s icon, and QUILL Audio
+Studio’s icon</strong> – byte-identical copies of the same file, not
+similar drawings. On a desktop with more than one Quill app installed,
+four different products wore one face in the taskbar, in Alt+Tab, in the
+Start menu and in the notification area. Nobody chose that; each new app
+was built from the last one’s template, and an icon is easy not to
+notice.</p>
+<p>Every app in the family now has its own, and they are still
+recognisably a set: one rounded tile shape, one gold accent, one bold
+picture. What separates them is deliberate on two axes at once – a
+distinct silhouette <em>and</em> a distinct colour that differs in
+lightness as well as hue, because a set separated only by hue is a set
+that some colour-blind users cannot tell apart, and colour is the first
+thing to go at small sizes.</p>
+<p>Radio keeps the design it always had – a source with waves leaving
+it, on a deep indigo tile – redrawn for the size that actually matters.
+At 16 by 16 pixels, which is the notification area and the small icons
+in a file list, the old three thin arcs merged into a single smear.
+There are now two, thicker and further apart.</p>
+<h2 id="things-that-were-quietly-wrong-and-are-not-now">Things that were
+quietly wrong, and are not now</h2>
+<p>These are the ones worth reading even if none of the above interests
+you, because every one of them was broken, and not one announced
+itself.</p>
+<h3 id="the-xiph-genre-list-was-losing-412-genres-every-single-time">The
+Xiph genre list was losing 412 genres, every single time</h3>
+<p>The Xiph directory’s genre index had grown past a size limit Quill
+Radio applies when reading any web page. So the page was being cut off
+part way through.</p>
+<p>The reader is deliberately forgiving of a mangled page – which is the
+right behaviour when a website tweaks its markup, and precisely the
+wrong behaviour for a size limit. It degraded in perfect silence: no
+error, no warning, just fewer genres, and a <em>different</em> number of
+them on every refresh depending on where the cut landed.</p>
+<p>The limit now fits the page, and a page that ever outgrows it again
+says so rather than dropping entries.</p>
+<h3 id="the-xiph-genre-list-was-also-sorted-into-uselessness">The Xiph
+genre list was also sorted into uselessness</h3>
+<p>Xiph publishes its genres in order of how many stations use them:
+various, Pop, Rock, Dance, 80s, House, Oldies, Electronic, Hits,
+Jazz.</p>
+<p>Quill Radio sorted that alphabetically. So the list opened on
+<code>00</code>, then <code>00s</code>, then <code>00s Dance</code>,
+then <code>100.1</code>, then <code>104.5</code> – and Jazz was some
+three thousand rows further down.</p>
+<p>The directory’s own order is now kept. Entries that are plainly not
+genres are dropped, and the branch offers the 120 most-used rather than
+every free-text string that three thousand broadcasters have ever typed
+into a field.</p>
+<h3 id="a-station-that-hiccuped-once-was-dead">A station that hiccuped
+once was dead</h3>
+<p>This one came in as a report while 3.0 was being finished, and it is
+the most consequential fix in the release.</p>
+<blockquote>
+<p><em>“Some stations such as KFI in Los Angeles play for about 20
+seconds and then stop. JAWS says stop, which is how I know the station
+is not playing any more. Something similar is happening with another
+station where they talk for about 30 seconds and then the last five
+seconds repeat over again.”</em></p>
+</blockquote>
+<p>The twenty seconds turned out to be exactly the shape of the problem.
+iHeart serves its stations as HLS: a playlist of three ten-second
+segments – a <strong>thirty-second window</strong> – behind a redirect
+to a per-listener address carrying a token that expires in <strong>five
+seconds</strong>, topped up every ten. So the player is permanently
+living on half a minute of buffered audio that has to be refilled
+constantly.</p>
+<p>Miss <strong>one</strong> refill and nothing appears to be wrong. The
+audio already in hand keeps playing for twenty to thirty seconds, and
+then it simply runs out. Quill Radio saw the stream reach its end,
+concluded the stream had ended, and said “Stopped”. The repeated five
+seconds is the same fault caught a moment earlier: a connection silently
+re-established replays what it already sent.</p>
+<p>That is now fixed in three places, and it is worth saying what each
+one does, because they are three different answers to the same
+failure.</p>
+<p><strong>The connection heals itself.</strong> The player was given no
+instruction to reconnect a dropped read at all, so a single transient
+failure was final. It now reconnects at that level, which is where the
+great majority of these belong – nothing is announced, because nothing
+was lost.</p>
+<p><strong>A dropped station is reconnected, out loud.</strong> When the
+connection is genuinely gone rather than briefly interrupted, Quill
+Radio now tries to get it back instead of stopping: three attempts, two
+seconds apart, then five, then fifteen, each one announced with its
+number – “Reconnecting to KFI AM 640. Attempt 1 of 3.” When it works you
+hear “Reconnected to KFI AM 640.” When it does not, you are told that
+plainly, with the honest guess that the station may be off the air.
+Nothing here retries silently, because a player that retries in silence
+is indistinguishable from one that has hung.</p>
+<p>A recording is deliberately excluded. A LibriVox chapter or an
+Archive episode reaching its end has <em>ended</em>, and reconnecting
+would replay it. And pressing Stop, or playing something else, cancels a
+retry that was waiting rather than letting it seize playback a few
+seconds later.</p>
+<p><strong>iHeart stations use their steadier stream.</strong> Given the
+choice, Quill Radio now asks iHeart for the progressive form of a
+station rather than the HLS form: one long connection with no segment
+window, no five-second token and no per-listener session to lose. It
+removes the failure mode rather than recovering from it, and it streamed
+cleanly for a solid minute in testing where the HLS form is the one that
+fails intermittently in the field. HLS remains the fallback for stations
+that publish nothing else.</p>
+<p>A note on the third part, because the obvious version of it is wrong.
+It would be tempting to always prefer the steadier stream format
+wherever a station offers both. But some directories list two addresses
+for one station that turn out to be served by two entirely different
+companies – and on at least one station, the second one carries a
+different station id and a music genre where the station is sports.
+Quietly playing you a different broadcaster would be far worse than a
+dropout. So the steadier form is preferred only when both addresses come
+from the same place, which is a good sign they are two deliveries of one
+stream. Where they are not, the reconnection above does the work
+instead.</p>
+<p>There is also a fourth, smaller change: the network timeout moved
+from fifteen seconds to thirty. Fifteen was tight for a playlist that
+only advances every ten seconds, and ordinary jitter could brush against
+it.</p>
+<h3 id="a-recording-that-captured-nothing-said-nothing">A recording that
+captured nothing said nothing</h3>
+<p>Reported alongside the dropout above: pressing Record on a station
+that would not stay connected gave no confirmation that a recording had
+started, none that it had stopped, and left the recordings folder empty.
+Nothing told you anything had gone wrong.</p>
+<p>Two things were true at once. A recording file is created the moment
+recording begins – before a single second of audio arrives – so “the
+file is there” never meant “something was recorded”. And when a capture
+ended having recorded nothing, Quill Radio treated it exactly like a
+finished one.</p>
+<p>Now a capture that saved nothing is reported as what it is, in words,
+with the reason: <em>“Recording of 96.5 The Fan saved nothing: the
+connection failed. No file was kept.”</em> The empty file is removed
+rather than left for you to find and wonder about, and the message uses
+the error sound rather than the saved sound, so the two outcomes can
+never be mistaken for each other. Where the station said why – it
+refused the connection, the address is gone, the disk is full, the
+folder could not be written to – you are told that instead of a generic
+failure.</p>
+<p>If the reason genuinely is not knowable, it says that too, rather
+than inventing one.</p>
+<h3 id="tunein-could-hand-you-an-unencrypted-stream">TuneIn could hand
+you an unencrypted stream</h3>
+<p>When a TuneIn station returned several addresses, Quill Radio took
+the first one that was not TuneIn’s own un-followable redirect. That is
+not the same as taking the best one, and on at least one station in a
+sample of forty it meant choosing a plain <code>http://</code> address
+while an <code>https://</code> one was sitting right there.</p>
+<p>Stream choice is now ranked rather than filtered: not-a-redirect
+first, then encrypted over unencrypted. It still prefers a working plain
+address over an encrypted one that nothing can play, because an address
+that plays beats an address that is merely tidy.</p>
+<hr />
 <h3 id="it-looks-after-itself-now">It looks after itself now</h3>
 <p>A cluster of quiet reliability wins. Quill Radio <strong>keeps your
 computer awake</strong> while a station plays or a recording runs, so
@@ -417,662 +2501,164 @@ finishes. And you can <strong>schedule a recording in hours and
 minutes</strong> now – separate Hours and Minutes boxes, so three hours
 is simply “3” and “0”, no arithmetic (your existing schedules are
 unchanged).</p>
-<h3 id="reach-quill-radio-from-anywhere--one-global-hotkey">Reach Quill
-Radio from anywhere – one global hotkey</h3>
-<p>A new system-wide hotkey shows or hides Quill Radio without your
-having to find its window first. Press <strong>Ctrl+Alt+Shift+R</strong>
-from inside any program – your browser, your editor, wherever you happen
-to be working – and Quill Radio tucks itself into the system tray,
-saying “hidden to the tray”; the music (or a recording in progress)
-never stops, and the tray icon keeps it a keystroke away. Press the same
-keys again and the window comes right back and takes focus, announced
-with “shown”. It is the fastest way to glance at what is playing, or to
-step away and back, without leaving what you are doing. Windows only,
-and courteous about it: if another app has already claimed
-Ctrl+Alt+Shift+R, Quill Radio leaves that chord alone and never grabs it
-– no error, nothing broken, and the tray icon and the Alt+F4-to-tray
-preference still show and hide the window exactly as before. Every app
-in the family gets its own chord so they never collide: QUILL is
-Ctrl+Alt+Shift+Q, and Quill Weather is Ctrl+Alt+Shift+W.</p>
-<h3 id="weather-is-now-its-own-app">Weather is now its own app</h3>
-<p>The weather work that grew up in this release has moved into a home
-of its own: <strong>Quill Weather</strong>, a small, standalone,
-tray-resident app that watches your location for official alerts, speaks
-each new warning the moment it is issued, can start with Windows, and
-will even keep watch with no window open at all. Its full story –
-background alert monitoring, the customizable alert sounder, Test Alert,
-the hour-by-hour forecast, the moon almanac, worldwide forecasts, and
-the rest – now lives in the <strong>Quill Weather release notes and user
-guide</strong>, not here.</p>
-<p>It is still right where you expect it inside Quill Radio, too. The
-<strong>Weather</strong> menu is present whenever the
-<strong>Weather</strong> feature is enabled (<strong>View &gt; Customize
-Features…</strong>), and it now leads with an <strong>Open the Quill
-Weather App</strong> item so you can hand the watch off to the
-standalone app in one step. Turn Weather off in Customize Features and
-the menu disappears entirely – perfect if you only want the radio.
-Weather and Quill Radio are separate apps that run side by side, each in
-its own window and tray, reachable from the other.</p>
-<p>And on the radio side, <strong>Station &gt; Start Quill Radio with
-Windows</strong> launches Quill Radio automatically when you sign
-in.</p>
-<h3 id="coming-play-from-spotify-experimental">Coming: play from Spotify
-(experimental)</h3>
-<p>Groundwork has landed for playing music straight from Spotify inside
-Quill Radio. It is <strong>experimental and off by default</strong> – it
-ships hidden behind a feature flag, so you will not see it on a normal
-install, and turning it on takes a signed unlock code, a Spotify
-<strong>Premium</strong> account, and your own Spotify Client ID
-(Spotify only lets an app stream its audio for Premium subscribers, and
-its audio can never be recorded or downloaded). The full story – what
-you need, how to connect, and how to browse and play – is in the new
-<strong>“Spotify (experimental)”</strong> section of the Quill Radio
-User Guide.</p>
-<h2 id="update-212">Update 2.1.2</h2>
-<p>Quill Radio 2.1.2 is a quick fix-up for three things you reported –
-two of them from 2.1.1 itself. Thank you for the fast, specific
-feedback; it is exactly what makes these turnarounds possible.</p>
+<p><strong>Output Device on the Playback menu (Ctrl+Shift+D).</strong>
+Switch the radio to another sound card or USB headset in one keystroke
+instead of opening Preferences. It changes the device immediately and
+remembers the choice, exactly like the Preferences setting it
+shortcuts.</p>
+<h3 id="smaller-fixes">Smaller fixes</h3>
 <ul>
-<li><strong>One-click updating works again.</strong> If you chose
-<strong>Install and restart</strong> on 2.1.1, it could fail with a
-“decompression bomb” error and send you off to update by hand. The
-update installer carries a safety guard against absurdly large archives,
-sized for documents – but a whole Quill Radio (Python, ffmpeg, and the
-mpv engine, all bundled) legitimately unpacks past that limit, so the
-guard was turning away the real update. It now allows a full app-sized
-download while still refusing a genuinely abnormal one, so Install and
-restart applies the update and relaunches, keeping your favorites,
-recordings, and settings.</li>
-<li><strong>Favorites keep the order you gave them.</strong> A few of
-you updated and found a lovingly hand-sorted list snapped into A-Z on
-the next launch – understandably frustrating after sorting thirty-plus
-stations by hand. The sort-order setting introduced in 2.0.2 was reading
-an older, orderless favorites file as “Ascending.” Quill Radio now reads
-a pre-2.0.2 file as <strong>Unsorted</strong>, so your order carries
-across the upgrade untouched. And if an earlier update already
-rearranged you, the original order is still there underneath: choose
-<strong>Unsorted</strong> in Preferences and it comes right back.</li>
-<li><strong>A shared Speech Hub crash is fixed and
-regression-locked.</strong> Opening Dictation (Offline) in the Speech
-Hub could crash on an older build; it was already fixed, and it now has
-a test standing guard so it cannot come back.</li>
+<li><strong>Quill Radio remembers your volume, and Ctrl+Up/Down works
+from anywhere.</strong> The player started every session at 100% unless
+the station was a favorite with its own remembered level, so a
+non-favorite station came back at full blast on the next launch. The
+last level you set is now saved and restored (a favorite’s own level
+still wins), and saving it no longer reloads the favorites list or
+re-announces the station. Separately, <strong>Ctrl+Up</strong> and
+<strong>Ctrl+Down</strong> only worked while the favorites tree had
+focus; they now work from any focus in the window – except inside a text
+field, where Ctrl+arrow still edits text.</li>
+<li><strong>“Copy What’s Playing” and “What’s Playing - Review and Copy”
+always answer you.</strong> With a station playing, both commands could
+come back having done nothing at all – no window, no copy, no message –
+while with nothing playing they spoke a sensible message, which made the
+bug look inverted. Now, if a station is on, both fetch the title first
+(“Checking what’s playing…”), then copy it or open the review window; a
+stream that sends no titles says so and still opens a window naming the
+station; a failed lookup is reported instead of silently swallowed; and
+the copy confirmation names what it copied.</li>
+<li><strong>The Command Palette now says which way every toggle is
+currently set.</strong> Two people asked for this about <strong>Announce
+Track Titles</strong>: the palette has no checkmark, so the entry read
+the same whichever way the switch actually was – you had to throw it to
+find out. It now reads <strong>“Announce Track Titles (currently
+On)”</strong> or <strong>“(currently Off)”</strong> and updates the
+moment you toggle it. That was never one entry’s problem, though, so the
+fix was generalised: <em>every</em> on/off command in the palette now
+carries its own state, refreshed each time the palette opens.</li>
+<li><strong>Recording filenames follow the computer’s current time
+zone.</strong> Change the computer’s time zone (or ride a
+daylight-saving shift) while Quill Radio is running and new recordings
+are named with the new local time straight away – no restart. Filenames
+used to keep stamping the zone that was in force when the app
+launched.</li>
+<li><strong>Launching Quill Radio no longer crashes on a stray
+keystroke.</strong> A key pressed at the wrong moment during launch
+could take the app down before its window appeared.</li>
+<li><strong>Every destructive question now defaults to No.</strong>
+Remove Favorite, Delete Folder, Remove Recording, Remove All Favorites,
+and Reset Sound Enhancements all used to open with Yes as the default
+button, so pressing Enter reflexively destroyed the thing. Enter is now
+always the safe answer and you choose Yes deliberately. A build check
+keeps it that way.</li>
 </ul>
-<h2 id="update-211">Update 2.1.1</h2>
-<p>Quill Radio 2.1.1 is about weather radio done properly, and about a
-kind of station that matters enormously to this community and has never
-been easy to find: the radio reading service.</p>
-<ul>
-<li><strong>NOAA Weather Radio, from an authoritative
-directory.</strong> The <strong>Weather / NOAA</strong> branch in Browse
-Stations no longer guesses at stations by searching for a name; it is
-powered by the <strong>WeatherIndex</strong> directory of actual NWR
-transmitters. Open it and you get the states; open a state and you get
-its real transmitters, each named with its call sign and frequency –
-“KHB36 162.550 MHz Manassas” – and Enter plays the best available
-internet re-stream. Favorite them, record them, schedule them like any
-other station.</li>
-<li><strong>Search speaks weather-radio.</strong> Type a <strong>SAME
-code</strong> (the 6-digit county code your weather-alert radio uses), a
-<strong>call sign</strong>, or a <strong>“County, ST”</strong> into
-station search and the authoritative directory answers with exact
-transmitters, blended right into the normal results.</li>
-<li><strong>Your local transmitter, one keypress.</strong>
-<strong>Weather menu &gt; Listen to your Local NOAA Weather
-Radio</strong> uses the Weather location you already saved – its county
-first, then the nearest covering transmitter by coordinates – and just
-plays it. No location set? It tells you how to add one.</li>
-<li><strong>It works offline, and it outlives the API.</strong> Every
-NOAA feature stands on three tiers: the live directory, a cache of the
-last successful pull, and a <strong>complete bundled snapshot – 1,035
-transmitters across every state and territory</strong> – inside the app
-itself. A machine with no internet still browses, searches, and finds
-your local transmitter. <strong>Weather menu &gt; Update NOAA Weather
-Radio Directory</strong> pulls the newest data whenever you ask; the
-bundled snapshot is never overwritten, so there is always a floor.</li>
-<li><strong>Radio Reading Services – the human newspaper.</strong> For
-decades, radio reading services have had volunteers read newspapers,
-magazines, and grocery ads aloud over closed-circuit radio for people
-who are blind or print-disabled – and finding their internet streams has
-always been word-of-mouth. A new <strong>Radio Reading Services</strong>
-branch in Browse Stations gathers them: WRBH 88.3 Reading Radio in New
-Orleans, Sun Sounds of Arizona, CRIS Radio and the Connecticut Radio
-Information System, the KPBS and WKAR reading services, ACB Media 1-5,
-the NFB Radio Network, Voice Corps, and more. <strong>20 vetted services
-are bundled</strong> so the branch is never empty, even offline; they
-show up in station <strong>Search</strong> by name, tag, or state; and
-<strong>Station &gt; Update Radio Reading Services</strong> refreshes
-the list on demand from the community RadioBrowser directory. Play them,
-favorite them, record your evening paper.</li>
-</ul>
-<p>Both directories follow the same rules as every other source: live
-pulls are off in Safe Mode, every network call is in the egress audit,
-and a bundled snapshot keeps the feature honest when the network is not
-there.</p>
-<p>Two more from live feedback:</p>
-<ul>
-<li><strong>iHeart, now something you can browse.</strong> iHeart was
-searchable but you could not wander it. The Browse Stations tree gains
-an <strong>iHeart</strong> branch that opens into
-<strong>genres</strong>, and each genre into an <strong>A-Z</strong>
-sub-directory, all loading lazily as you open them – so you can flip to
-Country, then to the letter K, then play, without typing a thing. (The
-XML sitemap iHeart search uses carries no genre, so browse quietly uses
-iHeart’s free, keyless content API instead; each station arrives with
-its stream already attached, so a genre opens in a single request.)</li>
-<li><strong>The Source filter stops hiding SomaFM stations.</strong> A
-SomaFM channel that RadioBrowser also lists was folded into one search
-result, and picking <strong>SomaFM</strong> in the Source dropdown could
-then hide it. Search now remembers every directory a merged station came
-from, so “Groove Salad” answers to the SomaFM, RadioBrowser, and TuneIn
-filters alike, while the result row still names the directory it played
-from.</li>
-</ul>
-<h2 id="update-210">Update 2.1.0</h2>
-<p>Quill Radio 2.1.0 adds a top-level <strong>Weather</strong> menu, a
-whole new way to <strong>browse stations</strong>, <strong>one-click
-updating</strong>, and a round of fixes from live feedback – all in the
-shared <code>quill</code> package, so QUILL gets them too.</p>
-<ul>
-<li><p><strong>A whole new Weather menu – official weather as
-delightful, spoken text.</strong> A top-level <strong>Weather</strong>
-menu on free, no-account sources: the <strong>National Weather
-Service</strong> for conditions, the forecast, and alerts;
-<strong>Open-Meteo</strong> for the extended outlook and air quality;
-and <strong>OpenStreetMap</strong> for search. <strong>Search</strong> a
-location by ZIP code, city, county, or address and pick the right match
-from a list – so the several Springfields are easy to tell apart – then
-open <strong>Weather Now</strong>. It reads, as plain arrow-navigable
-and copyable text:</p>
-<ul>
-<li>any active <strong>watches, warnings, and advisories</strong> first,
-with the full official instructions;</li>
-<li>a complete, warm paragraph of <strong>current conditions</strong> –
-temperature, feels-like, sky, humidity, dew point, wind and gusts, cloud
-cover, barometric pressure, visibility, chance of precipitation,
-sunrise, sunset, the ultraviolet index, and air quality;</li>
-<li>the <strong>National Weather Service forecast</strong>, period by
-period; and</li>
-<li>an <strong>extended daily outlook</strong> of <strong>up to 16
-days</strong> (10 by default), further than the Weather Service’s own
-7-day forecast.</li>
-</ul>
-<p>Every value is written out for speech – “the wind is blowing from the
-west-northwest at 5 miles per hour”, not “WNW 5 mph” – and observation
-times show in the location’s own time zone. <strong>Each
-current-conditions detail can be turned on or off in Settings.</strong>
-Manage places with <strong>Add Location</strong> and <strong>Remove
-Location</strong> (or the Delete key). <strong>Quick Weather</strong>
-speaks a one-line summary without opening a window, and <strong>Active
-Alerts</strong> jumps straight to the alerts. Text only for now – spoken
-weather with its own voices comes in a later phase – and, as the app
-says, it is an additional accessible tool, never a replacement for a
-NOAA Weather Radio, Wireless Emergency Alerts, or local emergency
-instructions.</p></li>
-<li><p><strong>A whole new way to browse – one unified tree of every
-source.</strong> You asked (thanks, Kelly) to be able to pick a source
-like SomaFM and just see its stations, without typing a search first. So
-<strong>Browse Stations</strong> is now its own dedicated, search-free
-window: a single tree whose branches are the sources. You expand a
-branch and its stations appear on the spot; press <strong>Enter</strong>
-to play the highlighted one, and <strong>Shift+F10</strong> (or
-right-click) opens a full menu – Play/Stop, Add or Remove Favorite, Copy
-the stream link, Open the station’s website – with a
-<strong>Refresh</strong> to re-pull a source. It reads like a media
-library you wander, not a form you fill in. <strong>Search
-Stations…</strong> stays a separate window with the familiar
-name/tag/country box. The branches are:</p>
-<ul>
-<li><strong>Favorites</strong>, at the very top – your own saved folders
-and streams, built instantly, so you can jump straight to one.
-Right-click a source folder for <strong>Add All Stations to
-Favorites</strong>, and note the <strong>Play button reads
-“Stop”</strong> while the highlighted station is playing.</li>
-<li><strong>Popular Stations</strong> – the most-listened stations on
-the internet right now (from the community RadioBrowser directory), a
-great “what’s good?” start with nothing to type.</li>
-<li><strong>Weather / NOAA</strong> – <strong>NOAA Weather Radio
-(NWR)</strong> internet re-streams: the actual transmitters, named with
-their call sign and frequency (“NOAA Weather Radio KHB36 Manassas
-162.550 MHz”). NOAA has no audio API of its own (NWR is over-air VHF),
-so these are the online re-streams listeners share; Quill Radio finds
-the genuine ones by name.</li>
-<li><strong>ACB Media</strong> and <strong>NFB Radio</strong> – the
-bundled accessibility-community streams, ready to play.</li>
-<li><strong>SomaFM</strong> – SomaFM’s whole channel lineup at once, so
-you can arrow through every channel instead of guessing a name.</li>
-<li><strong>TuneIn</strong> – TuneIn’s own directory as a real
-<strong>folder tree</strong>: Music, Talk, Sports, Local Radio, By
-Location, By Language, and more. Open a folder to reveal its sub-folders
-and stations, and press <strong>Enter</strong> on one to play it.</li>
-<li><strong>Community M3U (Music Genres)</strong> – a big community
-catalog sorted by genre (jazz, classical, 80s, country, ambient, and
-dozens more), fetched live from the public
-<strong>m3u-radio-music-playlists</strong> collection by
-<strong>junguler</strong> (<a
-href="https://github.com/junguler/m3u-radio-music-playlists">https://github.com/junguler/m3u-radio-music-playlists</a>)
-– with our thanks. Nothing is bundled; the lists are read on the
-spot.</li>
-<li><strong>Xiph / Icecast Directory</strong> – the long-running,
-keyless Icecast “yellow pages” at <strong>dir.xiph.org</strong>, browsed
-by genre and refreshable the same on-the-spot way.</li>
-</ul></li>
-<li><p><strong>Browsing and searching are now clearly separate.</strong>
-The Station menu splits the two: <strong>Browse Stations…</strong> opens
-the unified source tree above, while <strong>Search Stations…</strong>
-opens the field-based window with your cursor already in the search box.
-No more one screen that tried to be both.</p></li>
-<li><p><strong>SomaFM search ignores spacing and punctuation
-too.</strong> “GrooveSalad”, “groove-salad”, or “salad groove” all find
-“Groove Salad”, where before only an exact run of letters
-matched.</p></li>
-<li><p><strong>Reorder your favorites straight from the
-keyboard.</strong> When your favorites are in <strong>manual
-(Unsorted)</strong> order, press <strong>Alt+Shift+Up</strong> or
-<strong>Alt+Shift+Down</strong> on the main Favorites list to move the
-selected station up or down within its folder – the same gesture you’d
-use to move an item in Microsoft Teams. Quill Radio speaks where it
-landed, naming the neighbor: “Moved down, now above WABC.” (The Manage
-Favorites dialog’s Move Up / Move Down buttons still do the same thing
-with the mouse.)</p></li>
-<li><p><strong>Update in one click – Quill Radio installs it and
-restarts itself.</strong> When an update is available, choose Download,
-then <strong>Install and restart now</strong>. Quill Radio applies the
-update for you – extracting the new portable files over your current
-folder, or running the installer silently – and relaunches
-automatically, keeping every favorite, recording, and setting exactly as
-it was. No more closing the app, hunting for the zip, unzipping it, and
-swapping folders by hand. This is shared across every Quill app, so
-QUILL, QUILL Cast, and Audio Studio update the same easy way.</p></li>
-<li><p><strong>Quill Radio no longer opens a second copy of
-itself.</strong> If Quill Radio was already running – even minimized to
-the system tray – launching it again used to start a whole second
-instance. Now the copy already running simply comes to the front, and
-the second launch bows out. (#1152)</p></li>
-<li><p><strong>The Record button tells you when you are
-recording.</strong> Once a recording begins, the Record button on the
-main window changes to <strong>Stop Recording</strong>, and changes back
-to <strong>Record</strong> when it stops – so it is obvious at a glance
-(and to a screen reader) that a capture is running. (Recording has no
-pause, so this is a Record/Stop toggle.)</p></li>
-<li><p><strong>Volume changes are quiet again with a screen
-reader.</strong> Holding Ctrl+Up or Ctrl+Down on a station you have
-saved used to speak the station’s name – and sometimes a track title –
-on <em>every</em> step, so “turn it up three notches” became a wall of
-chatter. That was the app re-saving the station’s remembered volume by
-rebuilding the whole favorites list underneath you. It now saves the new
-level quietly, so you hear just “Radio volume 60”, “Radio volume 70”.
-(#1154)</p></li>
-<li><p><strong>The Country list in Browse Stations stays put while you
-arrow through it.</strong> Moving to the Country dropdown and pressing
-Down used to fire a search that immediately threw your focus into the
-results list – so you could never actually arrow down the list of
-countries. A search now jumps to the results only when you ask for one
-(the Search button, or pressing Enter in a search box); arrowing through
-Country or Tag just narrows the list and leaves your focus
-alone.</p></li>
-<li><p><strong>The Raw stream recording format no longer shows a
-bitrate.</strong> A raw stream is saved exactly as the station sends it,
-with no re-encoding, so a “Quality (bitrate)” setting does nothing for
-it – it was just a confusing extra control. Recording Settings now hides
-the bitrate control for the Raw stream format (and for the lossless FLAC
-and WAV formats) and shows it only for MP3 and OGG, where it actually
-applies. (#1155)</p></li>
-<li><p><strong>Station search finds more stations by their branding and
-call sign.</strong> A station listed under a short name – “103.1 Austin”
-for “103.1 Austin’s 80s Station” – used to be unfindable if you searched
-with the dot, and its station id did nothing. iHeart search now ignores
-punctuation and matches a station’s name, its page address, and its
-numeric id, so “103.1 Austin”, “1031 Austin”, and “8403” all land on it.
-(#1156)</p></li>
-<li><p><strong>“Impossible to exit after recording” – confirmed
-fixed.</strong> A report of Quill Radio becoming completely unresponsive
-after a recording, with no way to exit (#1153), was the Alt+F4/Exit
-freeze that 2.0.1 already fixed: closing while a confirmation prompt is
-up no longer stacks a second one, and every shutdown step on the way out
-runs without blocking. This release adds a regression test so that exit
-path can never silently break again. If you ever meet an unresponsive
-exit, please send the exact steps.</p></li>
-</ul>
-<h2 id="update-202">Update 2.0.2</h2>
-<p>Adds concurrent recording, live Sound Enhancements preview, OptiLab
-broadcast polish, fixes the 2.0.1 channel mode, and adds two favorites
-features people asked for:</p>
-<ul>
-<li><strong>Sound Enhancements preview live, and every setting is
-per-station.</strong> You asked for the sliders to work while something
-is playing – they do now. Move any control in Playback &gt; Sound
-Enhancements (the EQ sliders, Even Out Volume, Channel mode, Night mode,
-or the new broadcast polish) and you hear it on what’s playing
-immediately, no OK required: live and uninterrupted on the default
-engine, and on the Windows Media engine it reconnects once the change
-settles. <strong>OK</strong> keeps and saves it; <strong>Cancel</strong>
-or <strong>Escape</strong> puts everything back exactly as it was when
-you opened the dialog. And – as you also asked – <em>every</em> setting
-in that dialog is now remembered per station as well as shared, not just
-the EQ and channel mode: open it while a favorite is playing to give
-that station its own night mode or broadcast polish too, or open it with
-nothing playing to set the shared default every other station
-follows.</li>
-<li><strong>Broadcast polish (OptiLab).</strong> Sound Enhancements
-gained a one-touch broadcast-polish section: pick a
-<strong>mode</strong> – <strong>Podcast Leveler</strong> for speech,
-<strong>Stream Polish</strong> for music, or <strong>Smooth
-Limiter</strong> for clean peak control – set an optional
-<strong>Input</strong> trim (0 dB by default) and an
-<strong>Auto-Adapt</strong> amount, and there’s a checkbox to bypass it
-while keeping your chosen mode. It levels, adds density, and limits, so
-a run of stations at wildly different loudness sits at a steadier,
-fuller level – especially nice for talk streams and unattended
-recordings. This is adapted, with thanks and full credit, from
-<strong>OptiLab Core by dgl1984</strong> (<a
-href="https://github.com/dgl1984/optilab">github.com/dgl1984/optilab</a>,
-Apache-2.0). OptiLab itself is a GUI-only plugin (JSFX/CLAP/Winamp DSP)
-with no library to call, so rather than embedding its Windows-only
-binary we reproduce the shape of its three modes as ffmpeg filter chains
-that ride the same pipeline as the rest of Sound Enhancements – so it
-previews live on the default engine, applies to recordings, and works
-cross-platform. It’s a faithful adaptation, not a bit-for-bit port of
-OptiLab’s custom DSP; if you want the exact plugin, grab it from
-dgl1984’s repository.</li>
-<li><strong>Record as many stations at once as you want.</strong> Until
-now the recorder held exactly one recording at a time. If you scheduled
-two shows that overlapped, the first one won and the rest were quietly
-dropped; and Record Station refused to start while anything else was
-recording. That limit is gone. Every recording now runs on its own –
-overlapping scheduled shows all record, and you can start one Record
-Station capture after another while listening to something else
-entirely. Each recording is fully independent: its own connection, its
-own reconnect-on-a-hiccup handling, its own crash-resume marker, so one
-recording dropping, finishing, or being stopped never disturbs the
-others.
-<ul>
-<li><strong>A limit if you want one.</strong> Recording Settings gained
-<strong>Maximum simultaneous recordings</strong>. Zero means unlimited –
-the default, so everything you ask for records. Set a number to cap it
-on a slower machine or a metered connection; when the cap is reached, a
-scheduled recording is held pending and retried within its window
-instead of being lost.</li>
-<li><strong>Record Now follows what you’re listening to.</strong> Press
-Record Now and it records the station you’re on; press it again on that
-same station and it stops <em>that</em> recording. A background
-recording of a different station is never stopped by accident – to stop
-one of those, use the Recordings window.</li>
-<li><strong>Stop Recording, and Stop All Recordings.</strong> The
-Recordings window’s <strong>Stop Recording</strong> button stops the one
-recording you’ve selected. <strong>Stop All Recordings</strong> – in the
-Record menu, the tray/status menu, and as a button that appears in the
-Recordings window when two or more are running – stops every recording
-at once.</li>
-<li><strong>The Recordings window shows them all.</strong> Each
-recording in progress is its own row with its own live elapsed time, and
-the status bar and tray tooltip read “(2 recording)” when several are
-running together.</li>
-<li><strong>Crash-resume covers every one.</strong> Each recording
-writes its own resume marker, so after an unexpected close Quill Radio
-offers to resume all of them – a single prompt for one interrupted
-recording, and one batched “Resume all?” prompt when there were several,
-rather than a stack of dialogs to click through.</li>
-</ul></li>
-<li><strong>Channel mode Left/Right now plays in one ear only.</strong>
-In 2.0.1, choosing “Left only” or “Right only” accidentally played the
-audio in <em>both</em> ears. It now sends the whole stereo mix – nothing
-lost – to just the one ear you chose and silences the other, so you
-really can keep the radio in one ear while your screen reader uses the
-other. Mono and Stereo are unchanged.</li>
-<li><strong>Sort your favorites: Ascending, Descending, or
-Unsorted.</strong> Preferences (Ctrl+,) gained a <strong>Favorites sort
-order</strong> that orders your folders and stations by name (Ascending
-A to Z, or Descending Z to A) and re-sorts the moment you add one.
-<strong>Unsorted</strong> keeps the hand-arranged order you build with
-Move Up/Down – and that order is never thrown away, so you can flip back
-to it any time. Any folder can carry its own sort from its context menu,
-overriding the default just for that folder’s stations.</li>
-<li><strong>Import stations from an M3U/M3U8 playlist.</strong> Station
-&gt; <strong>Import Stations from Playlist…</strong> reads a playlist
-file into a folder you pick – an existing one, or a brand-new path you
-type at any depth like <code>News/Local</code> – and, when some of the
-stations are already favorites, asks whether to skip those or import
-everything. Station names come from the playlist’s <code>#EXTINF</code>
-lines; a bare URL is named after its host.</li>
-</ul>
-<h2 id="update-201">Update 2.0.1</h2>
-<p>A fast follow-up from the first round of live feedback, folded into
-this same release:</p>
-<ul>
-<li><strong>A recording no longer stops after a minute on a transient
-hiccup.</strong> With “continue recording while re-establishing a
-connection” on, a momentary <code>403 Forbidden</code> (an expiring or
-rotating stream token) or other brief 4xx used to be treated as a
-permanent failure, so the recording ended instead of reconnecting. Now
-only genuinely-terminal outcomes – a full disk, or an HTTP 404/410/451
-that means the stream is truly gone – stop a recording; a transient drop
-reconnects as it should, and an error ffmpeg already recovered from can
-no longer strand a later, unrelated drop.</li>
-<li><strong>It is now obvious when recording has begun.</strong>
-Pressing Record Now (or scheduling Record Station) announces “Recording
-started: <station>” – a clear spoken confirmation, not the old
-label-like “Recording <station>”.</li>
-<li><strong>Review and copy What’s Playing.</strong> A new
-<strong>What’s Playing - Review and Copy…</strong> command opens a small
-accessible dialog with the current title and artist in a read-only,
-selectable field you can arrow through character by character to catch
-the spelling – with a Copy button to paste it into a lyrics or store
-search. A separate <strong>Copy What’s Playing</strong> command copies
-it straight to the clipboard.</li>
-<li><strong>Channel mode: Stereo, Mono, Left only, or Right
-only.</strong> The old “Combine channels into mono” checkbox in Sound
-Enhancements is now a Channel mode choice. Left or Right sends the whole
-stereo mix (nothing lost) to just that one ear and silences the other,
-so you can listen to the radio in one ear while your screen reader uses
-the other. It works as your shared default and, like the equalizer, as a
-per-station setting that’s remembered for that station.</li>
-<li><strong>Turn a recording down while it plays back.</strong> Ctrl+Up
-and Ctrl+Down now change the volume from inside the Recordings window,
-the same as they do for live radio.</li>
-</ul>
-<h2 id="the-headline-recordings-you-can-trust">The headline: recordings
-you can trust</h2>
-<h3
-id="a-recording-in-progress-now-survives-a-restart--and-quill-radio-asks-before-resuming">A
-recording in progress now survives a restart – and Quill Radio asks
-before resuming</h3>
-<p>This is the one that hurt. You set a recording going, the app quits
-or crashes (or Windows does), and the recording is just gone – the
-FFmpeg process it had started keeps writing to a temp file nobody would
-ever find.</p>
-<p>Quill Radio now remembers an in-progress recording. It writes a small
-marker when a recording starts and clears it on a clean stop, so a crash
-leaves a breadcrumb. On the next launch it first tidies the temp folder
-– any finished orphan file is moved into your recordings folder where
-you’ll actually find it, while a file still being written is left
-untouched – and then, if a recording was in progress and is still within
-a 10-minute grace window, it asks you, once, in a proper accessible
-dialog:</p>
-<blockquote>
-<p>A recording of WQXR was in progress until 9:00 AM. Resume it for the
-remaining 12 minute(s)?</p>
-</blockquote>
-<p><strong>Resume</strong> (Enter) restarts the recording for the
-remaining minutes only – not a fresh full duration.
-<strong>Skip</strong> (Escape) leaves it as it is. A <strong>Don’t ask
-me again</strong> checkbox remembers your choice – always resume, or
-never ask – and you can change it later in Preferences. Nothing happens
-when nothing was in progress, and a marker file that has gone corrupt is
-thrown away rather than driving a bogus resume.</p>
-<h3
-id="scheduled-recordings-fire-reliably-throughout-their-window-not-just-at-the-exact-minute">Scheduled
-recordings fire reliably throughout their window, not just at the exact
-minute</h3>
-<p>The scheduler used to match the exact start minute. So a recording
-set for 8:00 that Quill Radio only reached at 8:01 – a slow launch, a
-brief stall, the tray icon taking a moment – silently never fired, and a
-start that failed still burned the whole occurrence for the day.</p>
-<p>The scheduler now treats an entry as due from its start time through
-the end of its duration, so a late arrival starts with the remaining
-minutes and catch-up on launch is free. Last-fired is stamped only on a
-successful start (a failure retries on the next poll while the window is
-still open), one-time entries auto-disable once they’ve fired, and when
-two schedules are due in the same minute while the recorder is busy, the
-second is held and announced instead of being burned. The scheduler
-thread itself is now lock-guarded and wrapped so it can no longer die
-silently.</p>
-<h3 id="the-recordings-list-stops-flickering-and-keeps-your-place">The
-Recordings list stops flickering and keeps your place</h3>
-<p>The Recordings list used to rebuild itself on every refresh, snapping
-a screen reader back to the top and losing whatever you’d selected. It
-now updates rows in place, keyed by file path: a no-op when nothing has
-changed, and when something has, your selection, focus, and scroll
-position are all preserved instead of the list rebuilding under you
-mid-read.</p>
-<p>The counts are honest now, too. The active recording is counted from
-the recorder itself, so a recording writing to a temp folder is no
-longer invisible in the list; a firing schedule is no longer
-double-counted; and completed one-time entries drop out of the scheduled
-count. The active row shows a live elapsed time, scheduled entries show
-their zone-labeled times, and the tray tooltip carries “(recording)”
-while a capture is running.</p>
-<h3
-id="recordings-harden-against-dropped-connections-dead-streams-and-a-crashed-host">Recordings
-harden against dropped connections, dead streams, and a crashed
-host</h3>
-<p>Four pipeline fixes that together make a long unattended recording
-far more likely to come out whole.</p>
-<ul>
-<li><strong>A reconnect records only the remaining time</strong>, not a
-fresh full duration. A 60-minute show that drops at minute 50 records a
-roughly 10-minute continuation, not another 60.</li>
-<li><strong>Filenames are never silently overwritten.</strong> The old
-unconditional overwrite is gone; a filename pattern that would produce
-the same name twice gets <code>" (2)"</code>, <code>" (3)"</code>
-appended instead of clobbering an earlier recording, and continuation
-parts keep the original start timestamp in their name so they group
-together.</li>
-<li><strong>A drop is classified before any reconnect attempt is
-spent.</strong> A <em>fatal</em> failure – your disk is full, or the
-server took the stream down with an HTTP 4xx such as a 404 or 410 –
-stops trying, because the stream is gone and reconnecting would only
-spam continuation files. A <em>transient</em> drop (a network hiccup or
-a 5xx) is retried as before.</li>
-<li><strong>A crashed host no longer strands a recording.</strong> On
-Windows the FFmpeg child is tied to Quill Radio’s lifetime through a job
-object, so a crashed or killed Quill Radio takes it down with it instead
-of leaving a bare FFmpeg writing to your temp folder. And the
-stop-and-wait fallback moved off the UI thread, so closing the window
-never hangs on a slow FFmpeg shutdown.</li>
-</ul>
-<h2 id="more-stations-to-find-iheart-and-tunein-now-in-the-search">More
-stations to find: iHeart and TuneIn now in the search</h2>
-<p>Browse Stations used to search the community RadioBrowser directory
-and the free SomaFM directory. 2.0 adds two of the largest directories
-on the internet – <strong>iHeart</strong> and <strong>TuneIn</strong> –
-blended into the same results list, so a search for a call sign, a city,
-or a show now reaches far more of the stations people actually ask for.
-Every result is labeled with where it came from (iHeart, TuneIn,
-RadioBrowser, SomaFM), and you play it the same way you always have.</p>
-<p>Both are keyless and need no account. iHeart is read straight from
-its public station sitemap – a two-request directory index – and a
-station’s real stream is resolved on demand from its own page the moment
-you play it, never by bulk-fetching thousands of pages. TuneIn goes
-through RadioTime’s open OPML directory (the same service TuneIn’s own
-web player uses): search returns matching stations and the stream
-address is looked up only for the ones about to play. To keep a single
-search from turning into dozens of network round trips, iHeart and
-TuneIn each resolve a small, capped handful of the most relevant matches
-per search – enough to add immediately-playable results without slowing
-the list down – while RadioBrowser keeps paging as before. A
-<strong>Refresh</strong> button re-fetches the iHeart directory index
-(it is cached once per Browse Stations session; TuneIn and RadioBrowser
-are always live).</p>
-<p>With four directories in one list, Browse Stations gained the
-controls to steer it. A <strong>Source</strong> dropdown lets you narrow
-the search to just one directory – All sources, RadioBrowser, iHeart,
-TuneIn, SomaFM, ACB Media, or Website – when you already know where a
-station lives. And the old free-text tag and country boxes are now
-proper dropdowns: a <strong>Tag/genre</strong> list and a
-<strong>Country</strong> list, filled in from the directory itself, so
-you pick “jazz” or “United Kingdom” from a list instead of guessing the
-exact spelling, and choosing one runs the search right away.</p>
-<p>TuneIn also feeds <strong>Find Streams from a Website</strong>: paste
-a TuneIn station page and Quill Radio resolves its real playable stream,
-the same on-demand lookup the directory search uses. Find Streams now
-also recognizes an iHeart or TuneIn page directly rather than handing
-back a page address that will not play.</p>
-<p>Like every other network feature, iHeart and TuneIn are off in Safe
-Mode, HTTPS-only, and inventoried in QUILL’s network-egress audit. This
-lands in the shared <code>quill</code> package
-(<code>core/radio/iheart.py</code>, <code>core/radio/tunein.py</code>,
-<code>core/radio/directory_search.py</code>), so QUILL and QUILL Cast
-gain the same reach.</p>
-<h2 id="scheduling-recordings-gained-real-editing">Scheduling recordings
-gained real editing</h2>
-<p>The Schedule Recording dialog was capture-and-forget: add an entry,
-and your only other move was to delete it. 2.0 makes the schedule
-something you can actually manage.</p>
-<ul>
-<li><strong>Edit</strong> an existing entry – change its station, time,
-or duration without deleting and re-adding it.</li>
-<li><strong>Duplicate</strong> an entry – a fast way to set up the same
-show on another day, or a second time slot for the same station.</li>
-<li><strong>Enable or disable</strong> an entry without losing it – turn
-a weekly recording off for a week and back on, instead of deleting and
-rebuilding it. A disabled entry reads as “(disabled)” in the list and
-simply does not fire.</li>
-<li><strong>Type the time your way</strong> – “7:30 PM” or “19:30”,
-whichever you think in; both are understood.</li>
-<li><strong>Pin an entry to a time zone</strong> – each schedule entry
-carries its own zone (defaulting to your local time), so a show quoted
-in Eastern records at the right moment wherever you are, and the list
-shows each entry’s time with its zone.</li>
-</ul>
-<h2 id="whats-playing-reaches-more-stations">What’s Playing reaches more
-stations</h2>
-<p>When a station will not answer the usual title request – and after
-Quill Radio has already tried the playback engine’s own title channel –
-it now takes one more step: it reads the station’s own public “now
-playing” status page (the Icecast or SHOUTcast status endpoint the
-stream’s own server publishes) and pulls the current title from there.
-It only ever talks to the same server you are already listening to, and
-it is off in Safe Mode. The practical result is a real “Now playing” on
-a batch of stations that used to answer with silence.</p>
 <h2
-id="for-troubleshooting-verbose-logging-and-a-log-folder-you-choose">For
-troubleshooting: verbose logging and a log folder you choose</h2>
-<p>Two additions for when something needs diagnosing. Preferences
-(Ctrl+,) gained a <strong>Verbose logging</strong> checkbox that turns
-on detailed debug logging live, without a restart, and a <strong>Log
-folder</strong> setting so you can point the log somewhere easy to find
-(and hand to a bug report). Recording problems now capture the
-recorder’s own error output into that log as well, so a failed capture
-leaves a trail instead of a mystery.</p>
-<h2 id="built-on-the-110-base">Built on the 1.1.0 base</h2>
-<p>2.0 stands on everything 1.1.0 delivered, and none of it changes:</p>
+id="underneath-the-browse-tree-why-the-next-source-will-be-easy">Underneath
+the browse tree: why the next source will be easy</h2>
+<p>This part is invisible and it is the reason the rest of this release
+exists.</p>
+<p>The Browse window used to have to know how every single source
+worked. Adding one meant teaching it a new special case in half a dozen
+places, and the search-within-a-folder box needed a second copy of the
+same knowledge kept in step by hand – which is how a source could end up
+visible in the tree and silently unsearchable, with nothing to tell
+you.</p>
+<p>Every source now answers exactly one question: <em>what is inside
+this folder</em>. The Browse window knows only that a row is something
+you can open or something you can play, and nothing else. Fifteen new
+branches arrived that way in a single release, and the window ended up
+<strong>smaller</strong> than it was.</p>
+<p>That is why this section exists in release notes you would otherwise
+have no reason to read: it is the difference between “we added a few
+sources” and “the next one costs an afternoon”.</p>
+<p>Three smaller things came with it:</p>
 <ul>
-<li><strong>The mpv playback engine</strong>, used automatically, with
-the classic Windows Media engine one Preferences setting away.</li>
-<li><strong>Every stream format in real-world use</strong> – MP3, AAC
-and HE-AAC (AAC+), Ogg Vorbis, Opus, FLAC streams, and HLS (m3u8).</li>
-<li><strong>A second sound card for the radio</strong>, live pause and
-rewind of the stream, and <strong>Volume Boost</strong>.</li>
-<li><strong>Sound Enhancements</strong> as a full listening toolkit –
-three-band EQ, compressor, mono downmix, night mode, per-station
-memories – applying live on the mpv engine.</li>
-<li><strong>Alt+F4 to the tray</strong>, automatic update checks,
-Preferences, the unified station finder, and file logging.</li>
+<li><p><strong>An empty branch tells you which kind of empty it
+is.</strong> “There are no stations in this genre” and “that directory
+could not be reached” used to look identical. That is how a listener
+concludes a working source is broken – or, worse, decides a broken one
+is simply empty and stops checking.</p>
+<p>Two ways that distinction was still slipping through, both closed
+here. Every source wraps its own network errors in its own error type,
+and the check that told the two apart only examined the outermost one –
+so when LibriVox went down for a day, every one of its shelves said
+<em>no data in this folder</em> rather than <em>could not be
+reached</em>. And the Internet Archive answers a failed search with a
+<strong>success</strong> code carrying an error message inside it, which
+read as “zero results”: Radio Programs reported itself empty, and
+because an empty answer looked like a real one it was
+<strong>cached</strong>, so it kept reporting empty long after the
+Archive recovered. Empty answers are no longer stored, and an error
+inside a success is treated as the outage it is.</p></li>
+<li><p><strong>A slow branch says it is still working.</strong> It names
+what it is loading – “Loading Old Time Radio…” – and if it passes three
+seconds it says so out loud, because slow and stuck are the same
+experience in silence. LibriVox also gives up in eight seconds now
+rather than twenty: a browse click was using the timeout meant for
+downloading an entire book.</p></li>
+<li><p><strong>A folder says how big it is before you open it.</strong>
+Where a source can tell us cheaply, the size is announced with the name,
+so you can decide whether to spend the wait before you have spent
+it.</p></li>
+<li><p><strong>Browse levels are remembered between sessions.</strong>
+Opening a source used to fetch its whole index again every single time,
+and some of those are very large. They are kept now, so a branch opens
+straight away; a refresh that fails leaves you with what you had rather
+than an empty branch, and anything shown from memory can tell you how
+old it is instead of quietly implying it is current.</p></li>
 </ul>
-<p>See <code>release-notes-1.0.md</code> for the 1.0 and 1.1.0 story in
-full, and <code>CHANGELOG.md</code> for the complete versioned
-history.</p>
-<h2 id="known-notes-for-this-release">Known notes for this release</h2>
-<ul>
-<li>Releases are not yet code-signed: Windows SmartScreen may warn on
-first run. Choose More info, then Run anyway. Signing is planned.</li>
-</ul>
-<h2 id="not-a-fork--a-guarantee">Not a fork – a guarantee</h2>
-<p>Quill Radio runs the exact same radio feature code as QUILL, from the
-same upstream package. The recordings overhaul in this release lands
-once, in the shared <code>quill</code> package, and reaches QUILL, Quill
-Radio, and QUILL Cast together. This repository carries only the
-wrapper, the installer, the icon, and these docs.</p>
+<hr />
+<h2 id="knowing-when-someone-elses-service-moves">Knowing when someone
+else’s service moves</h2>
+<p>Quill Radio depends on eighteen services it does not control.
+Historically the way we learned that one of them had changed was that
+something stopped working for somebody.</p>
+<p>Each of them is now checked automatically, thirty-seven checks in
+all, and each one asks a real question rather than “did the server
+answer”. Not <em>is it there</em> but <em>did asking for that station
+give back an address that actually plays</em>.</p>
+<p>Building those checks found three faults before any of this reached
+you: a podcast category that came back completely empty when it should
+have held dozens of shows, a country list that quietly reported having
+no regions at all, and a directory that gave a different answer half an
+hour later.</p>
+<p>All three would have shipped. Two would have looked like “that part
+just doesn’t find anything”, which is the hardest kind of problem to
+report and the easiest to put up with.</p>
+<hr />
+<h2 id="what-is-not-in-30-and-why-saying-so-matters">What is not in 3.0,
+and why saying so matters</h2>
+<p>“Not mentioned” and “not built” look identical from the outside, so
+here is the rest.</p>
+<p><strong>Live streams still have no transcript.</strong> The reader
+described above works on a finished video’s captions and on a published
+transcript, both of which exist as a document before you open them. A
+live broadcast has no such document, and producing one would mean
+transcribing audio as it arrives – a different feature with different
+costs, not a missing corner of this one.</p>
+<p><strong>Quill Radio itself has no sync setup.</strong> Where you got
+to in a recording is remembered on the computer you were using. The full
+QUILL application can carry those places to another machine through a
+shared folder; the standalone app does not offer that window, so on its
+own, a place stays where it was made.</p>
+<p>None of this is blocked; it is listed because you should not have to
+guess.</p>
+<h2 id="compatibility">Compatibility</h2>
+<p>Nothing in this release changes where your favorites, history,
+recordings or settings are stored, and nothing needs migrating. Every
+new branch can be ignored entirely; if you never open Browse Stations,
+Quill Radio 3.0 behaves exactly as the version you are coming from did,
+minus the three faults above.</p>
+<p>Safe Mode continues to disable every network source and to say so per
+branch, while Favorites, ACB Media, NFB Radio and the Networks catalogue
+keep working offline as before.</p>
+<hr />
+<h2 id="where-the-notes-for-20-and-21-live">Where the notes for 2.0 and
+2.1 live</h2>
+<p>The 2.0 and 2.1 releases – recordings you can trust, iHeart and
+TuneIn in the search, weather radio and radio reading services – have
+their own document, <code>release-notes-2.0</code>, which ships in the
+<code>docs</code> folder beside this one.</p>
 </main>
 </body>
 </html>

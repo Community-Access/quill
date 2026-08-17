@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -206,6 +205,30 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
+<h2 id="unreleased">Unreleased</h2>
+<p>Landed after the 3.0.0 build of 2026-08-17; in the next build.</p>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li><strong>Quick-play keys 1–6 actually fire now.</strong> The
+QuillVille menu’s “Open <app>” rows claimed
+<strong>Ctrl+Alt+Shift+1–3</strong> and <strong>Sort Favorites</strong>
+claimed <strong>4–6</strong> — on top of the quick-play favorites those
+chords belong to, so one of each pair silently never fired. The
+launchers moved to <strong>Ctrl+Alt+Shift+F1–F3</strong> and Sort
+Favorites to <strong>F4–F6</strong>; quick-play keeps
+<strong>Ctrl+Alt+Shift+1–0</strong> exactly as documented. The conflict
+became visible the moment the Favorites submenu started advertising its
+real bindings, and the menu gate now tests a profile <em>with</em>
+favorites so this class cannot return.</li>
+<li><strong>The Favorite Stations submenu shows its keys.</strong> Its
+rows offered no keyboard route at all — the cost the menu rule exists to
+prevent, missed because the gate walked an empty profile. The first ten
+favorites (the quick-play slots, same order) now advertise their chords
+and follow your rebinding; past ten, a disabled readout names how many
+more live in Manage Favorites, one keystroke away. The nested-folder
+mirror this replaces looked richer and could not be <em>reached</em> —
+the full folder view remains in Manage Favorites and the main tree.</li>
+</ul>
 <h2 id="300---2026-08-15">[3.0.0] - 2026-08-15</h2>
 <p>Major: Browse Stations becomes a browsable directory rather than a
 list of sources, the whole station directory now ships inside the app
@@ -415,13 +438,16 @@ prevent. Dispatch lives in <code>ui/radio/browse_actions.py</code>, one
 registry entry per action, so the window still learns nothing
 source-specific. Both actions run their network check on the task
 manager, never the UI thread, and refuse out loud in Safe Mode.</p></li>
-<li><p><strong>Explore (Wikidata)</strong> – By City, By Owner, By
-Format and On the Dial (FM band). Wikidata supplies the organisation,
-Radio Browser still supplies every stream, and each row is labelled
-“from Wikidata” because the join between the two is ours rather than
-either source’s. A place folder is answered by Radio Browser directly,
-so it opens to what can actually play rather than to the handful of call
-signs Wikidata’s capped query happened to return.</p></li>
+<li><p><strong>Explore (Wikidata)</strong> – By City, By Format and On
+the Dial (FM band). Wikidata supplies the organisation, Radio Browser
+still supplies every stream, and each row is labelled “from Wikidata”
+because the join between the two is ours rather than either source’s. A
+place folder is answered by Radio Browser directly, so it opens to what
+can actually play rather than to the handful of call signs Wikidata’s
+capped query happened to return. <strong>By Owner and By Network are not
+offered</strong>, for the same reason at two different depths: the axes
+that survive are the ones Radio Browser can answer itself. See
+Removed.</p></li>
 <li><p><strong>Your place is kept in anything with an end</strong>
 (<code>core/radio/resume.py</code>,
 <code>ui/radio/resume_playback.py</code>) – a LibriVox chapter, an
@@ -555,7 +581,23 @@ it and core must not import from the UI layer.</li>
 package version</strong> instead of a hard-coded <code>2.1.1</code> that
 had been stale for two releases.</li>
 </ul>
-<h3 id="fixed">Fixed</h3>
+<h3 id="removed">Removed</h3>
+<ul>
+<li><strong>Explore’s By Owner axis is gone</strong> (2026-08-17). It
+was the only remaining axis Radio Browser cannot answer for itself –
+ownership is not a field it carries – so an owner folder could be filled
+only by matching Wikidata’s call signs one at a time against the
+directory, and about three folders in four opened to nothing, or to a
+fraction of the company they named. The listener spends the same
+keystrokes whether the folder pays off or not, so an axis that pays off
+a quarter of the time is worse than one not offered. Same conclusion as
+<strong>By Network</strong> one level lower down: that one could be
+counted as empty before opening (P449: two US stations), this one
+counted fine and failed at the leaf. By City, By Format and On the Dial
+are unaffected, and no favorite, custom station or recording is touched
+– every stream always came from Radio Browser.</li>
+</ul>
+<h3 id="fixed-1">Fixed</h3>
 <ul>
 <li><p><strong>Shift+F10 and the Applications key opened no context menu
 at all.</strong> The browse tree took its row from
@@ -1172,7 +1214,7 @@ entered them, and each row shows the stream’s host in brackets so two
 similar entries – or a duplicate still pointing at the original station
 – are easy to tell apart. (#1220)</li>
 </ul>
-<h4 id="fixed-1">Fixed</h4>
+<h4 id="fixed-2">Fixed</h4>
 <ul>
 <li><p><strong>Seeking a finished YouTube video no longer reports a live
 edge that does not exist.</strong> <strong>Rewind / Forward 30
@@ -1361,7 +1403,7 @@ button, so pressing Enter reflexively destroyed the thing. Enter is now
 always the safe answer and you choose Yes deliberately. A build check
 keeps it that way.</li>
 </ul>
-<h4 id="fixed-2">Fixed</h4>
+<h4 id="fixed-3">Fixed</h4>
 <ul>
 <li><strong>Launching Quill Radio no longer crashes on a stray
 keystroke.</strong> A key pressed at the wrong moment during launch
@@ -1406,7 +1448,7 @@ Releases are not yet code-signed (SmartScreen may caution on first run);
 signing is planned.</li>
 </ul>
 <h2 id="212">[2.1.2]</h2>
-<h3 id="fixed-3">Fixed</h3>
+<h3 id="fixed-4">Fixed</h3>
 <ul>
 <li>One-click updating works again (the update installer no longer
 rejects a legitimately app-sized download as a “decompression
@@ -1437,7 +1479,7 @@ searching every directory. Type a name, press Enter, and matches appear
 as a flat list under that folder; <strong>Clear</strong> puts you back
 where you started.</li>
 </ul>
-<h3 id="fixed-4">Fixed</h3>
+<h3 id="fixed-5">Fixed</h3>
 <ul>
 <li>The Source filter no longer hides a station carried by more than one
 directory.</li>
@@ -1456,7 +1498,7 @@ favorites, recordings, and settings.</li>
 <li>Reorder favorites from the keyboard (Alt+Shift+Up / Alt+Shift+Down)
 in manual order.</li>
 </ul>
-<h3 id="fixed-5">Fixed</h3>
+<h3 id="fixed-6">Fixed</h3>
 <ul>
 <li>Quill Radio no longer opens a second copy of itself. The Record
 button reads Stop Recording while recording. Volume changes are quiet
@@ -1477,12 +1519,12 @@ Limiter), adapted with credit from OptiLab Core by dgl1984
 <li>Favorites sort order (Ascending, Descending, Unsorted) with
 per-folder overrides. M3U/M3U8 playlist import.</li>
 </ul>
-<h3 id="fixed-6">Fixed</h3>
+<h3 id="fixed-7">Fixed</h3>
 <ul>
 <li>Channel mode Left/Right now plays in one ear only.</li>
 </ul>
 <h2 id="201">[2.0.1]</h2>
-<h3 id="fixed-7">Fixed</h3>
+<h3 id="fixed-8">Fixed</h3>
 <ul>
 <li>A recording no longer stops after a minute on a transient hiccup;
 only a genuinely terminal failure (full disk, HTTP 404/410/451) stops a
@@ -1568,7 +1610,7 @@ station search (up to 200 results).</li>
 second station directory (SomaFM). Automatic Check for Updates. A
 Preferences dialog. In-app documentation in the Help menu.</li>
 </ul>
-<h3 id="fixed-8">Fixed</h3>
+<h3 id="fixed-9">Fixed</h3>
 <ul>
 <li>Volume keys work from the Favorites tree, and volume stays put
 across play/pause.</li>

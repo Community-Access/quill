@@ -418,8 +418,11 @@ class _PageHost:
                 return
 
         self._server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _Handler)
-        self._thread = threading.Thread(
-            target=self._server.serve_forever, name="QuillSpotifyPlayerHost", daemon=True
+        self._thread = threading.Thread(  # GATE-40-OK: long-lived local HTTP host;
+            # shut down explicitly in close(), not a pooled task.
+            target=self._server.serve_forever,
+            name="QuillSpotifyPlayerHost",
+            daemon=True,
         )
 
     @property

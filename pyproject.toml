@@ -167,7 +167,16 @@ vosk = ["vosk>=0.3.45"]
 # sherpa-onnx (#669 follow-up). 600M Cache-Aware FastConformer-RNNT run int8 on
 # the CPU — no torch/CUDA (sherpa-onnx bundles its own native onnxruntime). The
 # model downloads from QUILL's assets-v1 release via Manage Speech Models.
-nemotron = ["sherpa-onnx>=1.10.0", "numpy>=2.5.2"]
+# Floor raised 1.10 -> 1.13 (2026-08-17): the Parakeet 3 provider's
+# OfflineRecognizer(model_type="nemo_transducer") and the Silero
+# VoiceActivityDetector tier (speech_vad.py) rely on API fixes newer than 1.10.
+nemotron = ["sherpa-onnx>=1.13.0", "numpy>=2.5.2"]
+# Optional C++ accelerator for the dictation vocabulary corrector
+# (speech/vocabulary.py). NEVER required: the stdlib implementation is the
+# behavioural contract and always present; this extra only makes the same
+# answers faster, which matters when batch transcription runs the corrector
+# over hour-long files. Small MIT wheel, no transitive deps, no torch.
+rapidfuzz = ["rapidfuzz>=3.14.0"]
 # MP3 chapter markers for batch document-to-speech (§4.8): mutagen writes the
 # ID3v2.3 CHAP/CTOC frames. Imported lazily in quill/core/speech/chapters.py.
 mp3 = ["mutagen>=1.48.1"]
@@ -376,6 +385,13 @@ packaging = [
   # a stale copy silently drops data files from the frozen tree.
   "pyinstaller-hooks-contrib>=2026.6",
 ]
+# NOTE on PEP 735 [dependency-groups] (evaluated 2026-08-17, deliberately not
+# adopted yet): dev tooling would naturally live there, but duplicating this
+# list into a group means two sources of truth until groups can *include* an
+# extra, and pip's `--group` flow is still younger than every script and doc
+# that says `pip install -e ".[ui,dev]"`. uv already resolves the extras form
+# in seconds (see CLAUDE.md), which was the actual pain. Revisit when the
+# packaging ecosystem lets one list serve both spellings.
 dev = [
   "pytest>=9.1.1",
   "pytest-xdist>=3.8.0",

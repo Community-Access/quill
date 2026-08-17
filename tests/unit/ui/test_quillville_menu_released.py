@@ -55,10 +55,13 @@ def test_released_siblings_are_offered_and_self_is_excluded() -> None:
     assert "Open QUILL" in names
     assert "Open Quill Weather" in names
     assert "Open Quill Radio" not in names  # self excluded
-    # ...and the keys are there, numbered in menu order.
+    # ...and the keys are there, numbered in menu order. F-keys, not digits:
+    # Ctrl+Alt+Shift+digits are Quill Radio's quick-play favorites, and these
+    # launcher rows silently fought them until 2026-08-17 (see
+    # SIBLING_APP_ACCELERATORS).
     assert [label.split(chr(9))[1] for label in labels][:2] == [
-        "Ctrl+Alt+Shift+1",
-        "Ctrl+Alt+Shift+2",
+        "Ctrl+Alt+Shift+F1",
+        "Ctrl+Alt+Shift+F2",
     ]
 
 

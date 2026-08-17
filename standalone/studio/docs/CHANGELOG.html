@@ -216,6 +216,19 @@ offered in the QuillVille menu, and there is no 2.2.0 download page.
 Everything below is in the build.</p>
 <h3 id="added">Added</h3>
 <ul>
+<li><p><strong>Parakeet 3 in the transcription engine chooser.</strong>
+The shared speech stack gained NVIDIA’s Parakeet 3 (25 languages,
+automatic language detection, CPU-only, ~650 MB, downloaded SHA-verified
+from QUILL’s own mirror), and Audio Studio’s offline transcription sees
+it wherever engines are offered. Unlike Whisper-family engines it cannot
+invent text from silence — a transducer only emits words it actually
+heard — which matters for exactly the long, pause-heavy recordings a
+studio transcribes. Every model row in the manager now states its
+capabilities in plain language (“detects the spoken language; never
+invents text from silence”) <em>before</em> you download, and a silence
+pre-pass trims quiet lead-ins and tails from captured audio in the
+shared dictation flow. Full story: QUILL’s changelog, “Dictation stops
+making things up”.</p></li>
 <li><p><strong>QUILL Audio Studio has its own icon.</strong> It used to
 ship a byte-identical copy of Quill Radio’s broadcast-wave icon, carried
 over when the standalone shell was scaffolded, so two products wore one

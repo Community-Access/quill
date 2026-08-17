@@ -126,3 +126,40 @@ audit's #1 recommendation and the surrounding work called for:
 Still open from the recommendations: dead-scaffold removal (#2, #3), catalog
 cleanup (#5), wake-word VAD (#6 part 2), the two coverage seams (#7), the large-v3
 surfacing (#8), and the three-systems consolidation (#4).
+
+## Follow-up landed 2026-08-17: the dictation reliability pass
+
+Studied against the Handy project (`D:\code\handy`, MIT — an offline dictation
+app whose production failure catalogue maps almost one-to-one onto ours) and
+landed as one change set. Full rationale in the PRD (§5.25 dictation addendum);
+architecture notes here:
+
+- **Parakeet 3** (`providers/parakeet_onnx.py`): NVIDIA `parakeet-tdt-0.6b-v3`
+  int8 on sherpa-onnx's `OfflineRecognizer` (`model_type="nemo_transducer"`) —
+  the *batch* sibling of the Nemotron streaming provider, which is exactly the
+  shape the dictation flow wants today (capture a WAV, transcribe the file). It
+  reuses `nemotron_onnx.resolve_model_files` (same bundle layout) and the same
+  assets-v1 mirror discipline. **Dictation preference ladder** in
+  `service.preferred_dictation_provider_id`: explicit choice > installed
+  Parakeet > whisper.cpp default. The transducer's silence-safety (no token
+  without audio evidence) is the reliability argument; CPU-only sidesteps
+  whisper.cpp's GPU crash class.
+- **Silence pre-pass** (`speech_vad.py`): RMS tier always (reuses the
+  `vad.py` turn-taking calibration), Silero tier when the Parakeet bundle's
+  `silero_vad.onnx` is installed; neural may only narrow the RMS span. Wired in
+  the dictation transcribe worker; all-silent takes skip the engine and route
+  to NO_SPEECH. This retires the whisper silence-hallucination class for batch
+  dictation and partially addresses audit recommendation #6.
+- **Transcript refinement** (`dictation/refine.py` composing
+  `speech/vocabulary.py` + `speech/fillers.py`): vocabulary first (so a filler
+  pass can never eat half of a user's term), fillers second, both pure. The
+  vocabulary source is the existing `dictation.md` profile — one authoring
+  surface feeding both the Whisper `initial_prompt` bias and the fuzzy
+  corrector, rather than a second competing word list.
+- **Streaming contract** (`speech/streaming.py`): committed/tentative snapshot
+  + `StreamAnnouncer` (announce-once). This is the contract the S2–S3 streaming
+  work must emit; it exists now so that work is built into it.
+- **Capability metadata** (`SpeechModelInfo.capabilities`, spoken by
+  `describe_models`): the catalog states what a model can do before download —
+  addressing the honesty half of recommendation #8's "surface limitations in
+  the picker".

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Voice Interaction in QUILL</title>
   <style>
@@ -41,7 +41,6 @@
       body {
         background-color: transparent;
         color: black;
-        font-size: 12pt;
       }
       p, h2, h3 {
         orphans: 3;
@@ -572,8 +571,13 @@ class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><
 <li><strong>Vocabulary</strong> — names, jargon, and acronyms you use.
 QUILL passes these to the speech engine as a hint (Whisper’s <em>initial
 prompt</em>), so it spells them your way — “wxPython”, not “w x python”.
-(Engines that don’t accept a hint simply ignore this; the other two
-sections still work.)</li>
+Since 2026-08-17 the same list also powers a <strong>fuzzy correction
+pass on the finished transcript</strong>: near-misses are matched by
+spelling <em>and</em> sound across up to three words, so “charge b” is
+repaired to “ChargeBee” in exactly your casing, and “r and d” matches an
+“R&amp;D” entry. That means engines that take no hint — <strong>Parakeet
+3</strong> included — still learn your words; nothing is corrected
+unless it is genuinely close to one of your terms.</li>
 <li><strong>Replacements</strong> — spoken-to-written fixes applied to
 the finished transcript, one per line as
 <code>spoken =&gt; written</code>. Use <code>\n</code> for a new line.
@@ -596,6 +600,13 @@ Speech Models</strong> you can install and choose:</p>
 commands; <em>Small</em> (~465 MB) is the recommended all-round choice.
 Larger models (Medium, Large) are more accurate but slower and much
 bigger.</li>
+<li><strong>Parakeet 3</strong> (NVIDIA, via sherpa-onnx) — <strong>the
+most reliable choice for dictation</strong>, and once its ~650 MB model
+is installed, dictation prefers it automatically (your explicit engine
+choice still wins). It covers 25 languages, detects which one you are
+speaking, runs on any CPU, and — unlike Whisper — never invents text
+from silence, so a thinking pause can never become a phantom “thank you”
+in your document.</li>
 <li><strong>Nemotron</strong> (NVIDIA, via sherpa-onnx) — a strong
 offline English engine that runs without heavy dependencies.</li>
 <li><strong>Vosk</strong> and <strong>Faster Whisper</strong> —

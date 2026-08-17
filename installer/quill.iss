@@ -49,6 +49,11 @@ MinVersion=10.0
 ; tell Windows to refresh association/icon caches after install.
 ChangesAssociations=yes
 OutputBaseFilename=Quill-for-All-Setup-1.0.0
+; 64-bit Setup (Inno 7) for parity across the family (and high-entropy ASLR).
+; No enlarged dictionary: QUILL fetches ffmpeg on demand rather than bundling
+; the near-identical ffmpeg/ffprobe pair, so there is no big twin to dedupe
+; and a large dictionary would only tax the installing machine's memory.
+SetupArchitecture=x64
 Compression=lzma2/ultra
 SolidCompression=yes
 WizardStyle=modern

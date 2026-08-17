@@ -29,6 +29,10 @@ _SANCTIONED_ROOT_MARKDOWN = frozenset({
     "CLAUDE.md",
     "README.md",
     "REPO-GUIDE.md",
+    # The ranked platform-review worklist (2026-08-17), kept at the root by
+    # explicit request so it stays in view while its items are worked off;
+    # graduate it under docs/ when the list is spent.
+    "polish.md",
 })
 
 

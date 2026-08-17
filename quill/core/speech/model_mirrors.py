@@ -312,6 +312,22 @@ _MIRRORS: dict[str, MirrorAsset] = {
         "1fd10e7d6d5c8d37274eec4942f47447482b374043aae0f72a2eb363030c1132",
         archive_member="tokens.txt",
     ),
+    # Parakeet 3 (NVIDIA parakeet-tdt-0.6b-v3, int8) for the sherpa-onnx
+    # dictation engine: the multilingual offline transducer dictation prefers
+    # once installed. Same packaging discipline as Nemotron above (test_wavs
+    # removed; NOTICE.txt records provenance and the CC-BY-4.0 license).
+    # Source: the k2-fsa/sherpa-onnx "asr-models" release
+    # (sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8.tar.bz2, upstream sha256
+    # 5793d0fd397c5778d2cf2126994d58e9d56b1be7c04d13c7a15bb1b4eafb16bf);
+    # repackaged and re-hosted on QUILL's assets-v1 release 2026-08-17.
+    # The bundle also carries silero_vad.onnx (~0.6 MB, sherpa-onnx's export),
+    # so installing Parakeet upgrades the dictation VAD pre-pass from the RMS
+    # tier to Silero for free (speech_vad.py resolves it from the model dir).
+    "parakeet:parakeet-tdt-0.6b-v3": MirrorAsset(
+        "sherpa-onnx-parakeet-tdt-0.6b-v3-int8.zip",
+        "7f2419d522a797c26d0da32daaee9aaedf17a6621874e1b2d1f57361fbb13d3b",
+        archive_member="tokens.txt",
+    ),
 }
 
 

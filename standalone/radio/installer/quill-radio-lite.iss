@@ -42,6 +42,11 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 OutputBaseFilename=Quill-Radio-Lite-Setup-{#AppVersion}
+; 64-bit Setup for parity with the full installer (and high-entropy ASLR).
+; Deliberately NO enlarged LZMADictionarySize here: the payload is ~3 MB, and
+; a large dictionary is a buffer the end user's machine must allocate during
+; install for no compression gain at this size.
+SetupArchitecture=x64
 Compression=lzma2/ultra
 SolidCompression=yes
 WizardStyle=modern
