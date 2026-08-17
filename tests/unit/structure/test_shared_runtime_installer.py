@@ -35,14 +35,44 @@ def test_the_skip_test_compares_the_payload_build_against_the_installed_one() ->
     assert "quillville-runtime.json" in source and "dontcopy" in source
 
 
+#: The installers that ship the shared QuillVille Runtime, and must therefore
+#: carry the fragment. Adding or removing one is a deliberate edit here.
+#:
+#: Not every app is on this list, and that is correct: the ``-lite`` variants
+#: download the runtime rather than shipping it, and Beacon/Cast/Social do not
+#: use it at all (no ``QuillVilleRuntime`` reference anywhere in their .iss).
+SHARED_RUNTIME_INSTALLERS = {
+    "standalone/inkwell/installer/quill-inkwell.iss",
+    "standalone/radio/installer/quill-radio.iss",
+    "standalone/studio/installer/quill-audio-studio.iss",
+    "standalone/weather/installer/quill-weather.iss",
+}
+
+
 def test_every_app_that_includes_the_fragment_gets_the_fix() -> None:
-    """One fragment, five installers: the fix cannot be half-applied."""
-    including = sorted(
+    """One fragment, one named installer per app: the fix cannot be half-applied.
+
+    This used to assert ``len(including) >= 5`` over a glob. It counted *files*,
+    and the fifth was ``quill-radio-shared.iss`` -- a validation-only prototype,
+    superseded on 2026-07-24, that included the fragment for the same app as
+    ``quill-radio.iss``. So Radio was counted twice and the floor was met by a
+    duplicate rather than by coverage; deleting the dead file broke a test that
+    had been green for the wrong reason. Four apps ship the shared runtime, and
+    naming them means a *removal* fails loudly instead of being absorbed by
+    whatever else happens to match the glob.
+    """
+    including = {
         path.relative_to(REPO).as_posix()
         for path in REPO.glob("standalone/*/installer/*.iss")
         if "shared-runtime.iss" in path.read_text(encoding="utf-8")
+    }
+    missing = SHARED_RUNTIME_INSTALLERS - including
+    assert not missing, f"these ship the shared runtime but omit the fragment: {sorted(missing)}"
+    unexpected = including - SHARED_RUNTIME_INSTALLERS
+    assert not unexpected, (
+        "these include the fragment but are not declared above -- add them to "
+        f"SHARED_RUNTIME_INSTALLERS if that is intended: {sorted(unexpected)}"
     )
-    assert len(including) >= 5, f"expected every app's installer to include it, found {including}"
 
 
 def test_the_runtime_build_id_carries_a_time_not_just_a_date() -> None:

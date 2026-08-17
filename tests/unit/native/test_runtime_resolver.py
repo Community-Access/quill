@@ -234,7 +234,13 @@ def test_private_runtime_pyinstaller_layout(tmp_path: Path) -> None:
     (internal / "python.exe").write_bytes(b"MZ")
     (self_dir / "QuillRadio.exe").write_bytes(b"MZ")
 
-    result = ql_resolve_runtime(str(self_dir / "QuillRadio.exe"))
+    # local_appdata="" so the shared-runtime branch cannot match: it is probed
+    # first (by design), and on a machine where any QuillVille app is actually
+    # installed the real %LOCALAPPDATA%\QuillVille\Runtime wins and this test
+    # fails with the shared exe. Every other test here already isolates it;
+    # these three did not, so they passed only on machines that had never
+    # installed a QuillVille app -- including CI, which is why nobody saw it.
+    result = ql_resolve_runtime(str(self_dir / "QuillRadio.exe"), local_appdata="")
     assert result.python == str(internal / "python.exe")
     assert result.data_dir == str(self_dir)
 
@@ -246,7 +252,7 @@ def test_private_runtime_flat_layout(tmp_path: Path) -> None:
     (self_dir / "python.exe").write_bytes(b"MZ")
     (self_dir / "quill.exe").write_bytes(b"MZ")
 
-    result = ql_resolve_runtime(str(self_dir / "quill.exe"))
+    result = ql_resolve_runtime(str(self_dir / "quill.exe"), local_appdata="")
     assert result.python == str(self_dir / "python.exe")
 
 
@@ -257,7 +263,7 @@ def test_private_runtime_pythonw_legacy_fallback(tmp_path: Path) -> None:
     (self_dir / "pythonw.exe").write_bytes(b"MZ")
     (self_dir / "quill.exe").write_bytes(b"MZ")
 
-    result = ql_resolve_runtime(str(self_dir / "quill.exe"))
+    result = ql_resolve_runtime(str(self_dir / "quill.exe"), local_appdata="")
     assert result.python == str(self_dir / "pythonw.exe")
 
 
