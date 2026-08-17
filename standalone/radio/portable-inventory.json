@@ -22,8 +22,6 @@
     "libffi-8.dll",
     "libssl-3.dll",
     "license.txt",
-    "optilabcore-license.txt",
-    "optilabcore-notice.txt",
     "pyexpat.pyd",
     "python.cat",
     "python.exe",
@@ -32,7 +30,6 @@
     "python313.dll",
     "python313.zip",
     "pythonw.exe",
-    "quill-optilab.exe",
     "quillradio.exe",
     "readme-quillradio.md",
     "scripts",
@@ -130,5 +127,10 @@
   "tools": [
     "ffmpeg",
     "mpv"
+  ],
+  "optional": [
+    "optilabcore-license.txt",
+    "optilabcore-notice.txt",
+    "quill-optilab.exe"
   ]
 }
