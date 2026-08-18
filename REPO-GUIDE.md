@@ -55,7 +55,13 @@ accurate summary of the architecture).
   pack builds, macOS build/signing, docs artifact parity checks, and the
   generators for the interactive sign-off checklists
   (`gen_signoff_html.py`) and the interactive acceptance runner
-  (`gen_acceptance_html.py`).
+  (`gen_acceptance_html.py`). The shared-runtime guardrails live here too:
+  `check_build_env.py` (floor), `check_runtime_inventory.py` (ceiling),
+  `check_runtime_imports.py` (runs the finished bundle and imports it),
+  `StageMediaTools.ps1` (opt-in ffmpeg/libmpv staging per app declaration),
+  `build_fingerprint.py` (capture/compare two build machines — see
+  `docs/build-machine-sync.md`), and `build_spell_assets.py` (dictionary
+  release assets from pinned LibreOffice sources).
 - `installer/` — the Inno Setup installer sources (`quill.iss` is generated;
   edit the generator, not the .iss).
 - `standalone/` — self-contained build wrappers for the companion apps

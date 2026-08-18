@@ -3,254 +3,230 @@
 [![Contributors](https://contrib.rocks/image?repo=Community-Access/quill)](https://github.com/Community-Access/quill/graphs/contributors)
 
 **QUILL for All** is an open-source, accessibility-focused editor from
-Community Access.
-
-QUILL for All helps people write, edit, convert, compare, and publish
+Community Access. It helps people write, edit, convert, compare, and publish
 documents in a screen-reader-friendly environment.
 
-**QUILL** stands for **Quality, Usable, Inclusive, Lightweight, Literate**.
-
-**QUILL for All: A quality, usable, inclusive, lightweight, and literate editor built for everyone who writes, codes, learns, and creates.**
-
-New to the repository? **[REPO-GUIDE.md](REPO-GUIDE.md)** is the map: what
-every folder is for, where the documentation lives, and how to run the
-release acceptance tests.
-
-## The Quillin Hub
-
-Expand your editor's powers with the [Quillin Hub](https://hub.quillforall.org). Discover a curated gallery of community-created extensions -- from research tools to accessibility auditors -- all verified for security and WCAG 2.2 AA compliance.
-
-## What Quill is
-
-Quill is a screen-reader-first writing and document environment for **Windows and macOS**, focused on practical keyboard workflows, stable editing, and accessible diagnostics/support flows.
-
-Quill is designed to stay focused and useful:
+**QUILL** stands for **Quality, Usable, Inclusive, Lightweight, Literate**:
 
 - **Quality** -- dependable, polished, and serious enough for real work.
-- **Usable** -- built around practical keyboard, screen reader, and low-friction editing needs.
-- **Inclusive** -- designed from the beginning for blind users, screen reader users, keyboard users, and people with different skill levels.
-- **Lightweight** -- fast, focused, not bloated, and friendly to people who just want to write or edit.
-- **Literate** -- about words, code, Markdown, documents, learning, and thoughtful communication.
+- **Usable** -- built around practical keyboard, screen reader, and
+  low-friction editing needs.
+- **Inclusive** -- designed from the beginning for blind users, screen reader
+  users, keyboard users, and people with different skill levels.
+- **Lightweight** -- fast, focused, not bloated, and friendly to people who
+  just want to write or edit.
+- **Literate** -- about words, code, Markdown, documents, learning, and
+  thoughtful communication.
 
-## Current release line
+New to the repository? This README covers getting started; **[REPO-GUIDE.md](REPO-GUIDE.md)**
+is the complete map of every folder, and **[CHANGELOG.md](CHANGELOG.md)** is
+what shipped, release by release.
 
-Current release line: **0.7.0**
+## One repository, a family of apps
 
-Highlights since 0.5.0 include:
+The current release line is **QUILL 1.0.0**. This repository builds the
+editor and a family of companion apps -- together, **QuillVille**:
 
-- Universal Audio Converter — convert audio (and extract audio from video) between formats with presets and an Advanced DSP catalog, offline through the bundled ffmpeg. Reach it from Audio Studio (**Voices → Convert Audio…**), the standalone **Quill Converter** app, the headless `quill convert` command, a right-click **"Convert with Quill"** entry in Explorer, or **Convert from URL…** (on-demand `yt-dlp`, consent-gated).
-- Insert menu with searchable Markdown/HTML insertion.
-- Word Prediction with `Ctrl+.` plus HTML/Markdown tag IntelliSense.
-- New snippet system with `Ctrl+Shift+Grave, S` insertion, trigger expansion, and starter packs.
-- Release-safety default: Word and CSV open in the normal plain-text editor surface.
-- Structured Word view and CSV grid code paths remain in-repo behind an internal gate for continued verification.
-- Expanded structured intake for `.doc`/`.docx`, `.ppt`/`.pptx`, `.xlsx`/`.xls`, `.pages`, and low-confidence PDF fallback via MarkItDown when available.
-- Writing Assistant shell with prompt presets, generated tool suggestions, and a restricted Python runner (import allowlist, resource limits, confirmation required — not a security boundary; see the user guide).
-- AI Connection workflow from both Preferences and the AI menu, with provider-aware host defaults.
-- Verify Connection, List Models, and Recommend Model actions in AI Connection settings.
-- AI menu status line with plain-language detail (`Ready` or `Needs attention`) and immediate accessible feedback.
-- BITS Whisperer rollout surfaces for provider onboarding, readiness checks, status-page live updates, and guarded download queue controls.
-- General Preferences controls for AI enable state, BW Safe Mode Lock, auto-open status behavior, and refresh cadence.
-- Optional Ollama cloud key mode over HTTPS (no local Ollama required for cloud endpoint access).
-- In-App Preview and Side-by-Side Preview with a dedicated Focus Preview command.
-- Heading styling tools to apply font family, size, and alignment to current-level or all headings in Markdown/HTML.
-- Heading Organizer (`Ctrl+Shift+Grave, O` — shown to users as `QUILL Key + O`) with keyboard-driven heading level changes, section reordering, and accessibility validation.
-- QUILL Quick Nav mode (browse-style cursor navigation) activated with the QUILL key (`Ctrl+Shift+Grave` — shown to users as `QUILL Key`), with mnemonic single-key movement for links, lists, list items, tables, block quotes, bookmarks, code blocks, table of contents, headings, heading levels (`1` through `6`), paragraphs, sentences, and blocks.
-- Watch Folder automation under **Tools -> Dictation** to auto-open newly dropped supported files.
-- Unified first-run **Personalise QUILL** wizard (re-runnable from **Help -> Personalise QUILL**) covering keyboard pack, feature profile, remote access, AI, reading/accessibility, writing tools, and startup behaviour.
-- Search menu simplification with replace-all inside the Replace dialog.
-- Unified diagnostics-backed support flow under **Help -> Report a Bug**.
-- Menu IA refinement, including **Insert** before **View** and **Search** after **View**.
-- Documentation refresh with regenerated Markdown/HTML/EPUB artifacts.
+| App | What it is |
+|---|---|
+| QUILL (the editor) | The full writing and document environment, for Windows and macOS |
+| Quill Radio | Internet radio with a 60k-station offline catalog, recording, and weather |
+| QUILL Cast | An accessible podcast player with downloads, queue, and notes |
+| QUILL Audio Studio | Audiobook and audio production: chapters, captions, publishing |
+| Quill Weather | Forecasts, hourly detail, moon phases, US alert monitoring |
+| Quill Inkwell | Text expansion |
+| Quill Beacon | Encrypted sync beacon |
+| QUILL Social | Accessible social reading (RSS today; a NetworkAdapter contract for more) |
 
-AI quick start:
+The companion apps share one **QuillVille Runtime** -- a single Python
+runtime (about 294 MB) installed once at
+`%LOCALAPPDATA%\QuillVille\Runtime\3.13` and reused by every app, so a
+person who installs three apps downloads the shared engine once. Media
+tools (ffmpeg, libmpv, about 304 MB) ride only with the apps that declare
+them: Radio, Cast, and Audio Studio. Everything an installer ships works
+offline the moment installation finishes; larger optional components
+(dictation engines, neural voices, extra spell-check languages) are offered
+in-app as consented, SHA-256-verified downloads.
 
-1. Open `AI -> AI Connection...`.
-2. Choose provider (`Ollama (local)`, `Ollama Cloud (API key)`, or `Custom HTTP`).
-3. Enter host/model/key as needed.
-4. Save settings; Quill auto-verifies and updates the AI status line.
-5. Use **List Models** to choose a provider-returned model.
+The [Quillin Hub](https://hub.quillforall.org) hosts community-created
+extensions (Quillins) -- from research tools to accessibility auditors --
+verified for security and WCAG 2.2 AA compliance.
 
-Ollama Cloud onboarding is available in this same flow. If you have an API key, Ollama Cloud offers a free personal-use tier with lower usage limits.
+## Running from source
 
-Snippet workflow quick start:
+You need **Python 3.13** on Windows (the version releases are built and
+tested against; 3.12 is the floor) or macOS.
 
-1. Press `Ctrl+Shift+Grave, S` to open **Insert Snippet**.
-2. Type to filter by snippet name, trigger, or body text.
-3. Use arrow keys to choose, press Enter to insert, and fill placeholders when prompted.
+```powershell
+# 1. Clone, then install the editor with UI and dev tooling
+pip install -e ".[ui,dev]"
 
-Related commands:
+# ...or the same install in seconds with uv (dev only; releases use pip)
+uv pip install -e ".[ui,dev]"
 
-- `Ctrl+.`: Word Prediction (words, HTML tags, Markdown tags).
-- `Ctrl+Shift+Grave, Shift+S`: Manage snippets (create, edit, delete, import/export, starter packs).
-- `Preferences -> Install Starter Snippet Packs`: install sample packs for writing, developer flow, and accessibility/support notes.
+# 2. Run the editor
+python -m quill          # pythonw -m quill for no console window
 
-Watch Folder quick start:
+# Companion apps run from the same checkout
+python -m quill.apps.radio
+python -m quill.apps.podcasts    # QUILL Cast
+python -m quill.apps.studio
+python -m quill.apps.weather
+```
 
-1. Open `Preferences -> Watch Folder Automation`.
-2. Choose a folder where you will drop supported Quill files.
-3. Enable watch folder monitoring.
-4. Turn on auto-start if you want it running every launch.
-5. Drop supported files into the folder; Quill opens them automatically.
+Notes for a working developer setup:
 
-QUILL Quick Nav quick start:
+- **Optional extras** are opt-in and named in `pyproject.toml`: `ai`
+  (on-device llama.cpp assistant), `spellcheck`, `speech`, `dictation`,
+  `ocr`, `glow` (document accessibility engine), and more. The everything
+  set a release runtime ships is `pip install -e ".[runtime,packaging]"`.
+- **Vendored wheels**: a few first-party dependencies (the GLOW engine,
+  feedback-hub) are not yet on PyPI and live in `vendor/wheels`. Installs
+  that need them take `--find-links vendor/wheels`.
+- **Useful launch flags**: `--safe-mode` (disables AI, watch folder, and
+  extensions), `--version`, `--diagnostics`, `--new-window`,
+  `--line N --column M`. Safe mode is also `QUILL_SAFE_MODE=1`.
+- Running from source uses your real `%APPDATA%\Quill` data folder unless a
+  `data\` folder with a portable marker sits next to the app; developers can
+  point `QUILL_DATA_DIR` somewhere else (honoured only with
+  `QUILL_DEV_BUILD=1`).
 
-1. Press `Ctrl+Shift+Grave` to enter QUILL Quick Nav mode.
-2. Press `H` for next heading, or `Shift+H` for previous heading.
-3. Press `1` through `6` for next heading at that level, or `Shift+1` through `Shift+6` for previous heading at that level.
-4. Press `A` for links, `L` for lists, `I` for list items, `T` for tables, `Q` for block quotes, `B` for bookmarks, and `'` for code blocks.
-5. Press `C` to open table of contents, `P` for paragraphs, `S` for sentences, and `Tab` for blocks. Use `Shift` with any movement key to reverse direction.
-6. Press `]` to jump to the first line after the current list or table. Press `[` to jump to the line above it.
-7. In `Preferences -> General`, use **Preload QUILL browse cache in background**. It is on by default; if off, Quill builds the cache the first time you use Quick Nav.
-8. Press `Esc` to leave QUILL Quick Nav mode.
+## Repository structure
 
-How tracking works for Markdown and HTML:
+The short version (the full map is [REPO-GUIDE.md](REPO-GUIDE.md)):
 
-- Quill builds a per-document navigation index in memory and reuses it while the text and markup type stay unchanged.
-- Headings are indexed from parsed Markdown and HTML heading structures.
-- List-item anchors are indexed from Markdown list syntax and from HTML `<li>` tags.
-- Paragraph anchors are indexed by blank-line paragraph boundaries for text/Markdown and by block-level tags in HTML (`p`, `li`, `blockquote`, `pre`, `h1` to `h6`, `td`, `th`).
-- Sentence anchors are indexed from sentence-ending punctuation boundaries.
-- The index is invalidated on document edits, full-text replacements, and tab switches.
-- Quick Nav movement is cursor-only and non-editing by design.
+- `quill/` -- the application package, layered with strict import
+  boundaries: `core/` (pure domain logic, no wx, strict-typed), `io/`
+  (format readers/writers, no wx, strict-typed), `ui/` (the wxPython
+  shell), `platform/` (Windows and macOS bridges), `stability/` (crash
+  reporting, safe subprocess, safe mode), `tools/` (the shipped CI gates),
+  `apps/` (the companion apps' source), `quillins_bundled/` (built-in
+  extensions).
+- `tests/` -- unit, stability, integration, UIA, and repository-structure
+  suites; `tests/unit/` mirrors the package layout.
+- `docs/` -- all documentation: the PRD, user guides, release runbooks, QA
+  books, planning, the published site. Every Markdown file has generated
+  `.html`/`.epub` siblings, and CI enforces that parity.
+- `scripts/` -- build and release tooling (see the next section).
+- `standalone/` -- per-app build wrappers (installer scripts, specs, icons,
+  app docs) plus `standalone/runtime/`, the shared QuillVille Runtime build.
+- `installer/` -- QUILL's own Inno Setup sources (generated; edit the
+  generator).
+- `vendor/wheels/` -- vendored wheels for dependencies not yet published.
+- `packages/`, `examples/` -- the Node Quillin runtime API and example
+  extensions.
 
-## Platforms and on-device AI
+Anything else you see at the root after building (`dist/`, `build/`,
+`local/`, `data/`) is gitignored output and safe to delete.
 
-- **Cross-platform.** Quill runs on **Windows and macOS** from one codebase. The macOS build ships as a signed, notarized `.app`; screen-reader announcements route to **VoiceOver** on macOS and to NVDA/JAWS/Narrator (via Prism) on Windows.
-- **Ask Quill chat.** An on-device AI chat (**AI -> Ask Quill Chat**) rendered as a fully accessible WebView document: each turn is a heading you can navigate, new replies are announced, the message box lives in-page, and Escape closes it. Verified in **NVDA, JAWS, and VoiceOver**.
-- **On-device AI, no cloud required.** macOS uses **Apple Foundation Models** (Apple Intelligence); Windows/Linux use **llama.cpp** (CPU, GGUF). You can optionally connect **Ollama (local)**, **Ollama Cloud (API key)**, or a custom HTTP endpoint. The assistant defaults to answering in chat and never edits your document without approval.
-- **Accessible WebView, preview, and dialogs** are built on the open-source [`wx-accessible-webview`](https://github.com/Community-Access/wx-accessible-webview) library (extracted from Quill), which also powers the live Markdown/HTML preview, the About dialog, and the update/consent dialogs.
-- **Train Writing Style** (**AI -> Train Writing Style...**) conditions the assistant on your own writing.
+## The build process
 
-## Project layout
+Everything releasable lands under `dist/` subtrees, and a local build is
+laid out identically to a CI build.
 
-- `quill/` -- application code.
-  - `quill/core/` -- core logic and document operations.
-  - `quill/ui/` -- wxPython interface and dialogs.
-  - `quill/platform/windows/` -- Windows integration points.
-  - `quill/platform/macos/` -- macOS integration (VoiceOver announcements, Keychain, high-contrast, screen-reader detection).
-  - `quill/core/ai/` -- on-device assistant backends (Apple Foundation Models, llama.cpp) and the Ask Quill agent.
-- `docs/` -- product docs and generated artifacts.
-  - `QUILL-PRD.md` (+ `.html`, `.epub`)
-  - `userguide.md` (+ `.html`, `.epub`)
-  - `announcement.md` (+ `.html`, `.epub`) -- the 0.5.0 product announcement
-  - `engineering.md`, `planning.md`, `accessibility.md`, `features.md`, `qa.md` -- consolidated reference docs (each `+ .html`, `.epub`)
-- `tests/` -- unit/integration/accessibility/performance tests.
-- `scripts/` -- release, validation, and maintenance helpers.
+**The shared runtime.** `standalone\runtime\build_runtime.ps1` (no
+arguments) builds the QuillVille Runtime with PyInstaller from
+`quillville-runtime.spec`. What ships is *declared*, not inherited from
+whatever the build machine has installed, and three gates hold that
+promise:
 
-## Run Quill locally
+1. `scripts/check_build_env.py` -- the floor: everything `[runtime]` needs
+   is installed.
+2. `scripts/check_runtime_inventory.py` -- the ceiling: nothing undeclared
+   appeared and nothing declared vanished (baseline:
+   `standalone/runtime/runtime-inventory.json`).
+3. `scripts/check_runtime_imports.py` -- the proof: runs the finished
+   bundle and imports every optional piece, so present-but-broken can
+   never ship silently.
 
-Runs on **Windows and macOS** (Python 3.12).
+**Per-app installers.** Each app's `standalone\<app>\scripts\build_release.ps1`
+builds the runtime (or reuses it with `-SkipSharedRuntime`), stages exactly
+the media tools the app declares in its `REQUIRED_COMPONENTS` (via
+`scripts\StageMediaTools.ps1`, from pinned SHA-256-verified assets --
+never from PATH), renders the app's docs, and compiles the Inno Setup
+installer plus a portable zip. Code signing is opt-in (`-Sign`, see
+`docs/code-signing.md`); a plain build is unchanged.
 
-1. Install Python 3.12.
-2. Install dependencies:
-   - `pip install -e ".[ui,dev]"`
-   - On-device AI for Ask Quill: add `ai` on Windows/Linux (`pip install -e ".[ui,ai]"`, pulls llama.cpp). macOS uses Apple Foundation Models — no extra needed.
-   - Tip: `llama-cpp-python` has prebuilt CPU wheels but no Windows wheel on PyPI itself; if `pip` starts a slow source build, force the wheel with `pip install --only-binary=llama-cpp-python ...` (the project's extra index already points at the CPU wheels).
-   - Offline speech (**Tools > Speech > Whisperer**): no Python package is required — the whisper.cpp engine ships with the Windows installer (the *offline speech engine* component) or you can drop it under `tools/speech/whispercpp`. To transcribe non-WAV audio/video (mp3, m4a, mp4, mov, ...), install **ffmpeg** and put it on your PATH (for example `winget install Gyan.FFmpeg`); QUILL invokes a system/user-installed ffmpeg and does **not** bundle it (ffmpeg is GPL/LGPL). For the optional GPU-accelerated engine, add `pip install faster-whisper`.
-3. Launch:
-   - `python -m quill`  (on Windows, `pythonw -m quill` for no console window)
+**QUILL's own installers.** `python scripts/build_windows_distribution.py`
+builds the editor's portable bundle and installer into `dist/windows/`;
+`--bundle-offline` builds the **Offline Edition** into
+`dist/windows-offline/` -- everything bundled, zero downloads ever, for
+machines the internet cannot reach.
 
-To build a signed, notarized macOS app, see `scripts/build_macos.sh` and `docs/QUILL-PRD.md`.
+**When two build machines disagree**,
+`python scripts/build_fingerprint.py capture` records what a machine
+really is (interpreter, every package, staged-binary hashes, artifact
+sizes) and `compare --fail-on-drift` names exactly what differs. The
+procedure is `docs/build-machine-sync.md`.
 
-Optional launch flags:
+## Tests and quality gates
 
-- `--safe-mode`
-- `--reset-profile`
-- `--version` (prints version and exits without launching UI)
-- `--line N --column M` (place cursor for the first startup file)
-- `--new-window` (force a new process instead of forwarding to existing instance)
-- `--wait` (when forwarding to an existing instance, wait until it exits)
-- `--diagnostics`
-- `--dump-stacks`
+```powershell
+pytest -m smoke -q               # high-signal core checks, seconds
+pytest -q                        # the full suite (~9 minutes)
+pytest -q -n 8 --dist loadgroup  # parallel (~5.5 minutes)
 
-Examples:
+ruff check .                     # lint
+ruff format --check .            # formatting
+mypy quill\core quill\io         # type-check (always scoped)
 
-- `python -m quill --version`
-- `python -m quill notes.md --line 120 --column 1`
-- `python -m quill --new-window notes.md`
+python -m quill.tools.platform_report   # every gate, one scorecard
+```
 
-## Development checks
-
-- Lint: `ruff check .`
-- Tests: `pytest tests/unit/ tests/stability/ -q`
+Beyond the usual suite, the repository enforces its own rules with
+internal gates: module size budgets (a ratchet -- budgets only decrease),
+a banned-pattern gate, a dialog inventory and keyboard contract, menu
+accelerator checks (every enabled menu item shows a keyboard route; no
+duplicate keys), a network egress audit (every outbound call site is
+inventoried and consented), and error-code discipline (every custom
+exception carries a `QUILL-*` code). `CLAUDE.md` is the shortest accurate
+summary of these invariants; `python -m quill.tools.platform_report` runs
+them all and exits non-zero on any failure.
 
 ## Documentation workflow
 
-Generate docs artifacts from `docs/*.md` with Pandoc:
-
-- HTML: `pandoc docs\\<name>.md -f gfm -t html5 -s -o docs\\<name>.html`
-- EPUB: `pandoc docs\\<name>.md -f gfm -t epub3 -o docs\\<name>.epub`
-
-Artifact parity guard:
-
-- `python scripts/check_docs_artifacts.py`
-
-This fails when a `docs/*.md` source changed but matching `.html`/`.epub` files were not updated.
-The installer ships the user-facing guides, while the GitHub Pages docs hub exposes the
-PRD and engineering docs for anyone who wants the deeper implementation detail.
-
-## One-command release readiness
-
-Run the full release readiness flow:
-
-- `python scripts/release_readiness.py`
-
-This runs:
-
-1. Lint (`ruff check .`)
-2. Dependency audit (`pip-audit --strict`)
-3. Tests (`pytest -q`)
-4. Docs rebuild for `docs/*.md` (HTML + EPUB)
-5. Docs artifact parity check
-6. Release corpus verification
-
-## CI and release automation
-
-- CI workflow: `.github/workflows/accessibility-ci.yml`
-- Security workflow: `.github/workflows/security-ci.yml`
-- Windows release workflow: `.github/workflows/windows-release.yml`
-- Docs site workflow: `.github/workflows/github-pages.yml` (publishes the docs hub and updates feed)
+Every `docs/**/*.md` ships with rendered `.html` and `.epub` siblings,
+built deterministically (pinned epoch, stable EPUB identifiers, an
+accessible HTML template with `lang`, a skip link, and a `main` landmark).
+Render through the project's tooling -- `python scripts/release_readiness.py`
+rebuilds the `docs/` tree as part of the release flow -- rather than
+calling pandoc by hand, and `scripts/check_docs_artifacts.py` fails any
+commit that changes a Markdown source without its regenerated siblings.
 
 ## Support and issue reporting
 
-Use **Help -> Report a Bug** inside Quill. The flow supports diagnostics bundle generation, report preview, clipboard copy, and browser handoff to support submission.
+Use **Help -> Report a Bug** inside any of the apps: it generates a
+diagnostics bundle (secrets scrubbed), previews the report, and submits
+it -- with a clipboard-and-browser fallback for users with no GitHub setup.
+On GitHub, use Discussions for questions and ideas, Issues for confirmed
+bugs and scoped requests.
 
 ## Contributing
 
 Community contributions are welcome.
 
-- Read **[CONTRIBUTING.md](docs/CONTRIBUTING.md)** for setup, workflow, and PR expectations.
-- Read **[CODE_OF_CONDUCT.md](docs/CODE_OF_CONDUCT.md)** before participating.
-- Read **[SECURITY.md](docs/SECURITY.md)** for private vulnerability reporting.
-- Read **[PRIVACY.md](docs/legal/PRIVACY.md)** for data handling and retention behavior.
-- Read **[RESPONSIBLE_AI_USE.md](docs/legal/RESPONSIBLE_AI_USE.md)** for ethical and accountable AI use requirements.
-- Read **[GOVERNANCE.md](docs/GOVERNANCE.md)** for project decision model.
-- Read **[MAINTAINERS.md](docs/MAINTAINERS.md)** for maintainer responsibilities.
-- Contributor graph: **[contrib.rocks / QUILL](https://contrib.rocks/image?repo=Community-Access/quill)**
-
-## Community discussions
-
-- Use GitHub Discussions for Q&A and feature ideation.
-- Use GitHub Issues for confirmed bugs and scoped feature requests.
-
-## Release governance
-
-- Release process and branch policy: **[RELEASE.md](docs/release/RELEASE.md)**
-- Security advisory runbook: **[docs/QUILL-PRD.md](docs/QUILL-PRD.md)**
+- **[CONTRIBUTING.md](docs/CONTRIBUTING.md)** -- setup, workflow, and PR
+  expectations.
+- **[CODE_OF_CONDUCT.md](docs/CODE_OF_CONDUCT.md)** -- before participating.
+- **[SECURITY.md](docs/SECURITY.md)** -- private vulnerability reporting.
+- **[PRIVACY.md](docs/legal/PRIVACY.md)** -- data handling and retention.
+- **[RESPONSIBLE_AI_USE.md](docs/legal/RESPONSIBLE_AI_USE.md)** -- ethical
+  and accountable AI use.
+- **[GOVERNANCE.md](docs/GOVERNANCE.md)** and
+  **[MAINTAINERS.md](docs/MAINTAINERS.md)** -- how decisions get made.
+- Release process and branch policy: **[RELEASE.md](docs/release/RELEASE.md)**.
 
 ## License
 
 MIT. See `LICENSE`.
 
-## Legal and Trademark Notices
+## Legal and trademark notices
 
 QUILL for All is an independent open-source project by Community Access.
-It is not affiliated with, sponsored by, or endorsed by Quill.js,
-QuillBot, Quill.org, or any other similarly named product, project,
-company, or organisation.
-
-All trademarks are the property of their respective owners.
+It is not affiliated with, sponsored by, or endorsed by Quill.js, QuillBot,
+Quill.org, or any other similarly named product, project, company, or
+organisation. All trademarks are the property of their respective owners.
 
 See [TRADEMARKS.md](docs/legal/TRADEMARKS.md), [NOTICE](NOTICE), and
-[THIRD_PARTY_NOTICES.md](docs/legal/THIRD_PARTY_NOTICES.md) for more information.
+[THIRD_PARTY_NOTICES.md](docs/legal/THIRD_PARTY_NOTICES.md) for more
+information.
