@@ -247,10 +247,9 @@ def _candidate_removable_path(component_id: str) -> Path | None:
 
             return pdf_ocr_pack_dir()
         if component_id.startswith("spell-"):
-            from quill.core.spellcheck import managed_hunspell_dir
+            from quill.core.spell_languages import managed_hunspell_dir
 
-            lang = component_id[len("spell-") :]
-            return managed_hunspell_dir() / f"{lang}.dic"
+            return managed_hunspell_dir() / f"{component_id[len('spell-') :]}.dic"
         if component_id == "git":
             # git and gh share one vendor directory (quill.core.git_binaries); the
             # "cmd" subfolder is git's own top-level entry within it, distinct from
@@ -994,7 +993,9 @@ def _dictionary_components() -> list[OptionalComponent]:
         from quill.core import spellcheck
     except Exception:  # noqa: BLE001
         return []
-    installed = set(_safe_list(spellcheck.installed_languages))
+    # downloaded_, not installed_: Install and Remove are both meaningless for the
+    # 22 in-payload enchant dictionaries that installed_languages also reports.
+    installed = set(_safe_list(spellcheck.downloaded_languages))
     available = set(_safe_list(spellcheck.installable_languages))
     # English ships inside pyenchant and is never a separate download; omit it.
     installed.discard("en_US")
@@ -1012,8 +1013,7 @@ def _dictionary_components() -> list[OptionalComponent]:
                 "A Hunspell dictionary so the spell checker can validate this language.",
                 DICTIONARY,
                 lang in installed,
-                # A representative estimate: Hunspell language packs are a few MB.
-                # (Exact per-language sizes are a future refinement, see the design.)
+                # Representative; exact per-language sizes are a future refinement.
                 "~4 MB",
             )
         )
