@@ -2579,6 +2579,49 @@ instead of only announcing it.</li>
 <li><strong>In-app documentation</strong>: Help &gt; User Guide /
 Release Notes / Product Requirements open the bundled docs in your
 browser.</li>
+<li><strong>The browse tree’s rows grew up (2026-08-17;
+<code>core/radio/youtube_saved.py</code>,
+<code>core/radio/row_actions.py</code>,
+<code>ui/radio/browse_tree_menu.py</code>,
+<code>ui/radio/browse_actions.py</code>,
+<code>quill/ui/search_reset.py</code>).</strong> Five related
+requirements, all landed together after a QA pass:
+<ul>
+<li><em>The YouTube branch takes any link shape.</em> Saved playlists
+and single videos join followed channels
+(<code>youtube_saved.SavedStore</code>, its own small JSON store with a
+persistence-audit entry; node kinds
+<code>ytplaylist</code>/<code>ytvideo</code> exist so the rows can offer
+<strong>Remove from YouTube</strong>). One action row per shape in the
+branch, and <strong>Station &gt; Add YouTube Link… (Ctrl+Alt+N)</strong>
+classifying by <code>classify_link</code> – precedence is deliberate: an
+explicit <code>/playlist</code> link is a playlist, anything playable
+(watch, <code>youtu.be</code>, shorts, <code>/live</code>) is a video, a
+bare channel page is a channel, so <code>@name</code> follows the
+channel while <code>@name/live</code> saves the broadcast.</li>
+<li><em>Transcripts without playback.</em> A feed episode’s transcript
+address rides in its node id
+(<code>podepisode:&lt;url&gt;\t&lt;type&gt;</code>), so <strong>View
+Transcript…</strong> costs one fetch; a YouTube row costs the resolve
+playing would have made (<code>ensure_and_resolve</code> for the caption
+track). Both open the shared reader with no follow and no jump-to-line –
+nothing is playing, and seeking a live player to a different recording’s
+line would be worse than not offering it.</li>
+<li><em>Hide in place.</em> <code>FolderState.root_source</code> marks
+top-level rows; <strong>Hide This Source</strong> / <strong>Reset
+Sources to Default</strong> edit the same
+<code>browse_sources_enabled</code> field Choose Browse Sources
+persists, through the dialog’s <code>on_visible_sources_changed</code>
+callback, so the two surfaces cannot disagree.</li>
+<li><em>Badges that read from the shared library.</em> “Subscriptions
+(N)” and per-show “(n unheard)” come from the podcast library’s own
+episode state – the same counts Quill Cast shows.</li>
+<li><em>An emptied search field empties its results</em>
+(<code>search_reset.bind_empty_query_reset</code>, family-wide). The
+station browser guards on the country facet: name and tag empty with a
+country chosen is still a live query. Any new search surface with a
+separate results list binds the same helper.</li>
+</ul></li>
 </ul>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
 <h2 id="9-weather--now-its-own-product">9. Weather – now its own

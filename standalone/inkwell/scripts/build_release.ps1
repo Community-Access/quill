@@ -136,6 +136,22 @@ if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Write-Host "Compressing portable bundle -> $zipPath ..."
 Compress-Archive -Path $appDir -DestinationPath $zipPath
 
+# -- strip staged media tools from the runtime payload -----------------------
+# Inkwell declares no media components, but the shared runtime dist is a
+# COMMUNAL work area: a media app's build (Radio, Studio, Cast) stages
+# ffmpeg/libmpv into its tools\ and leaves them there. Packed wholesale,
+# they cost this installer 304 MB for tools Inkwell can never call -- the
+# 2026-08-18 rebuild shipped exactly that because it ran after Radio's.
+# Stripping here makes build order irrelevant; a media app's own build
+# re-stages what it declares every time.
+foreach ($tool in @("ffmpeg", "mpv")) {
+    $staged = Join-Path $sharedRuntimeDist "tools\$tool"
+    if (Test-Path $staged) {
+        Remove-Item $staged -Recurse -Force
+        Write-Host "Stripped staged $tool from the runtime payload (Inkwell declares no media tools)."
+    }
+}
+
 # -- installer (Inno signs Setup.exe + the uninstaller when signing is on) ----
 # When QUILL_SIGN=1, pass /DSign plus the /Squilltrusted sign-command mapping so
 # the .iss SignTool/SignedUninstaller directives activate ($q -> ", $f -> file).
@@ -146,6 +162,24 @@ if ($env:QUILL_SIGN -eq "1") {
 }
 & $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-inkwell.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
+
+# -- Lite + Companion flavors (2026-08-18) ------------------------------------
+# The Lite installer and Companion zip carry the launcher WITHOUT the
+# embedded interpreter, so they need a launcher-only payload dir -- the
+# portable $appDir above deliberately contains a full Python.
+$launcherDir = Join-Path $repoRoot "dist\QuillInkwell-shared"
+& $Python (Join-Path $QuillRepo "scripts\build_native_launcher.py") --product inkwell --out $launcherDir
+if ($LASTEXITCODE -ne 0) { throw "Native launcher build failed." }
+New-Item -ItemType Directory -Force (Join-Path $launcherDir "docs") | Out-Null
+Copy-Item (Join-Path $appDir "docs\*") (Join-Path $launcherDir "docs") -Recurse -Force
+& $Python $signer sign-build $launcherDir --label "inkwell lite payload"
+if ($LASTEXITCODE -ne 0) { throw "Code signing (lite payload) failed." }
+& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-inkwell-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
+if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
+$companionZip = Join-Path $repoRoot "dist\Quill-Inkwell-Companion-$version.zip"
+if (Test-Path $companionZip) { Remove-Item $companionZip -Force }
+Copy-Item (Join-Path $repoRoot "assets\quill-inkwell.ico") $launcherDir -Force
+Compress-Archive -Path (Join-Path $launcherDir "*") -DestinationPath $companionZip
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"

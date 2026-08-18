@@ -127,6 +127,27 @@ PRODUCTS: dict[str, Product] = {
         icon_dir="inkwell",
         icon_name="quill-inkwell",
     ),
+    "beacon": Product(
+        key="beacon",
+        name="QuillBeacon",
+        display="Quill Beacon",
+        module="quill.apps.beacon",
+        version_from="beacon",  # a package: quill/apps/beacon/__init__.py
+        icon_dir="beacon",
+        icon_name="quill-beacon",
+    ),
+    # Social's application package lives at standalone/social/quill_social and
+    # ships inside the shared runtime as the quill-social wheel; the launcher
+    # runs it as `-m quill_social`.
+    "social": Product(
+        key="social",
+        name="QuillSocial",
+        display="QUILL Social",
+        module="quill_social",
+        version_from="standalone/social/quill_social/__init__.py",
+        icon_dir="social",
+        icon_name="quill-social",
+    ),
     # Main QUILL: the launcher sits at the portable bundle root as quill.exe,
     # which is also the name storage_mode's portable detection looks for.
     "quill": Product(
@@ -257,10 +278,19 @@ def product_version(product: Product) -> str:
     to ``quill.__version__``.
     """
     if product.version_from:
-        source = _REPO_ROOT / "quill" / "apps" / f"{product.version_from}.py"
-        if source.is_file():
+        # ``<x>.py`` for module apps; ``<x>/__init__.py`` for package apps
+        # (Beacon); an explicit repo-relative path for apps whose code lives
+        # outside quill/apps entirely (Social's quill_social package).
+        candidates = [
+            _REPO_ROOT / "quill" / "apps" / f"{product.version_from}.py",
+            _REPO_ROOT / "quill" / "apps" / product.version_from / "__init__.py",
+            _REPO_ROOT / product.version_from,
+        ]
+        for source in candidates:
+            if not source.is_file():
+                continue
             match = re.search(
-                r'^_VERSION\s*=\s*["\']([0-9][0-9A-Za-z.\-]*)["\']',
+                r'^(?:_VERSION|__version__)\s*=\s*["\']([0-9][0-9A-Za-z.\-]*)["\']',
                 source.read_text(encoding="utf-8"),
                 re.MULTILINE,
             )

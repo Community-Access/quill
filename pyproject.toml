@@ -378,6 +378,12 @@ runtime = [
   # PyGithub). In the shipped runtime and working; declared so it stays that
   # way on every build machine.
   "quill[github]",
+  # QUILL Social's application package. The runtime spec has collected
+  # quill_social since the shared-runtime design landed -- silently
+  # collecting nothing, because the package was never installed on any build
+  # machine. Declared (wheel vendored beside glow/feedback-hub), the
+  # collection is finally real and the runtime can launch `-m quill_social`.
+  "quill-social>=0.3.0",
   "quill[office-text]",
   "quill[pdf-ocr]",
   "quill[youtube]",

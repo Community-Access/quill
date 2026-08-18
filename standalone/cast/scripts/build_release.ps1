@@ -166,16 +166,39 @@ Compress-Archive -Path $appDir -DestinationPath $zipPath
 # installed copy into portable mode), so remove it before the installer runs.
 Remove-Item $dataDir -Recurse -Force
 
-# -- installer ----------------------------------------------------------------
-# When QUILL_SIGN=1, pass /DSign plus the /Squilltrusted sign-command mapping so
-# the .iss SignTool/SignedUninstaller directives activate ($q -> ", $f -> file).
-# Inno then signs both the compiled Setup.exe and the embedded uninstaller.
+# -- shared-runtime flavors: Setup-Shared + Lite + Companion ------------------
+# Cast now consumes the shared QuillVille Runtime like Radio, Weather, Studio
+# and Inkwell (2026-08-18). Setup-Shared supersedes the old self-contained
+# Setup -- same AppId, so it upgrades it in place. The onedir above remains
+# the Portable zip's payload.
 $innoSign = @()
 if ($env:QUILL_SIGN -eq "1") {
     $innoSign = @("/DSign", "/Squilltrusted=`$q$Python`$q `$q$signer`$q sign `$f")
 }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast.iss") "/O$(Join-Path $repoRoot 'dist')"
-if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
+# Cast declares ffmpeg only (already staged above). The runtime dist is a
+# communal work area, so strip any libmpv another app's build left there --
+# 110 MB Cast never calls (playback is wx.media).
+$stagedMpv = Join-Path $sharedRuntimeDist "tools\mpv"
+if (Test-Path $stagedMpv) {
+    Remove-Item $stagedMpv -Recurse -Force
+    Write-Host "Stripped staged mpv from the runtime payload (Cast declares ffmpeg only)."
+}
+$launcherDir = Join-Path $repoRoot "dist\QuillCast-shared"
+& $Python (Join-Path $QuillRepo "scripts\build_native_launcher.py") --product cast --out $launcherDir
+if ($LASTEXITCODE -ne 0) { throw "Native launcher build failed." }
+New-Item -ItemType Directory -Force (Join-Path $launcherDir "docs") | Out-Null
+Copy-Item (Join-Path $appDir "docs\*") (Join-Path $launcherDir "docs") -Recurse -Force
+& $Python $signer sign-build $sharedRuntimeDist $launcherDir --label "cast shared payload"
+if ($LASTEXITCODE -ne 0) { throw "Code signing (shared payload) failed." }
+& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
+if ($LASTEXITCODE -ne 0) { throw "ISCC (Setup-Shared) failed with exit code $LASTEXITCODE" }
+& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
+if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
+# Companion: the runtime-less stick (launcher + icon + docs, ~1 MB).
+$companionZip = Join-Path $repoRoot "dist\QUILL-Cast-Companion-$version.zip"
+if (Test-Path $companionZip) { Remove-Item $companionZip -Force }
+Copy-Item (Join-Path $repoRoot "assets\quill-cast.ico") $launcherDir -Force
+Compress-Archive -Path (Join-Path $launcherDir "*") -DestinationPath $companionZip
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"

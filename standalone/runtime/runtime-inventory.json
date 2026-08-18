@@ -63,6 +63,8 @@
     "python313.dll",
     "pywin32_system32",
     "quill",
+    "quill-social",
+    "quill_social",
     "regex",
     "select.pyd",
     "setuptools",

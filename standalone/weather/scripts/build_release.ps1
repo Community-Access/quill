@@ -136,6 +136,22 @@ if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Write-Host "Compressing portable bundle -> $zipPath ..."
 Compress-Archive -Path $appDir -DestinationPath $zipPath
 
+# -- strip staged media tools from the runtime payload -----------------------
+# Weather declares no media components, but the shared runtime dist is a
+# COMMUNAL work area: a media app's build (Radio, Studio, Cast) stages
+# ffmpeg/libmpv into its tools\ and leaves them there. Packed wholesale,
+# they would cost this installer 304 MB for tools Weather can never call --
+# Weather only avoided it on 2026-08-18 because it happened to build first.
+# Stripping here makes build order irrelevant; a media app's own build
+# re-stages what it declares every time.
+foreach ($tool in @("ffmpeg", "mpv")) {
+    $staged = Join-Path $sharedRuntimeDist "tools\$tool"
+    if (Test-Path $staged) {
+        Remove-Item $staged -Recurse -Force
+        Write-Host "Stripped staged $tool from the runtime payload (Weather declares no media tools)."
+    }
+}
+
 # -- installer (Inno signs Setup.exe + the uninstaller when signing is on) ----
 # When QUILL_SIGN=1, pass /DSign plus the /Squilltrusted sign-command mapping so
 # the .iss SignTool/SignedUninstaller directives activate ($q -> ", $f -> file).

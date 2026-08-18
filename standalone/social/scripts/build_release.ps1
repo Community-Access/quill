@@ -108,16 +108,50 @@ Compress-Archive -Path $appDir -DestinationPath $zipPath
 # installed copy into portable mode), so remove it before the installer runs.
 Remove-Item $dataDir -Recurse -Force
 
-# -- installer ----------------------------------------------------------------
-# When QUILL_SIGN=1, pass /DSign plus the /Squilltrusted sign-command mapping so
-# the .iss SignTool/SignedUninstaller directives activate ($q -> ", $f -> file).
-# Inno then signs both the compiled Setup.exe and the embedded uninstaller.
+# -- shared-runtime flavors: Setup-Shared + Lite + Companion ------------------
+# Social now consumes the shared QuillVille Runtime like Radio, Weather,
+# Studio and Inkwell (2026-08-18): its quill_social package ships inside the
+# runtime (the quill-social wheel declared in pyproject [runtime]), so the
+# installed app is a native launcher + docs. Setup-Shared supersedes the old
+# self-contained Setup -- same AppId, so it upgrades it in place. The onedir
+# above remains the Portable zip's payload.
 $innoSign = @()
 if ($env:QUILL_SIGN -eq "1") {
     $innoSign = @("/DSign", "/Squilltrusted=`$q$Python`$q `$q$signer`$q sign `$f")
 }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-social.iss") "/O$(Join-Path $repoRoot 'dist')"
-if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
+$sharedRuntimeDist = Join-Path $repoRoot "..\runtime\dist\QuillVilleRuntime"
+if (-not (Test-Path (Join-Path $sharedRuntimeDist "QuillVilleRuntime.exe"))) {
+    Push-Location (Join-Path $repoRoot "..\runtime")
+    try {
+        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") -Python $Python
+        if ($LASTEXITCODE -ne 0) { throw "Shared QuillVille Runtime build failed." }
+    } finally { Pop-Location }
+}
+# Social declares no media components; the runtime dist is a communal work
+# area, so strip anything a media app's build left staged there.
+foreach ($tool in @("ffmpeg", "mpv")) {
+    $staged = Join-Path $sharedRuntimeDist "tools\$tool"
+    if (Test-Path $staged) {
+        Remove-Item $staged -Recurse -Force
+        Write-Host "Stripped staged $tool from the runtime payload (Social declares no media tools)."
+    }
+}
+$launcherDir = Join-Path $repoRoot "dist\QuillSocial-shared"
+& $Python (Join-Path $QuillRepo "scripts\build_native_launcher.py") --product social --out $launcherDir
+if ($LASTEXITCODE -ne 0) { throw "Native launcher build failed." }
+New-Item -ItemType Directory -Force (Join-Path $launcherDir "docs") | Out-Null
+Copy-Item (Join-Path $appDir "docs\*") (Join-Path $launcherDir "docs") -Recurse -Force
+& $Python $signer sign-build $sharedRuntimeDist $launcherDir --label "social shared payload"
+if ($LASTEXITCODE -ne 0) { throw "Code signing (shared payload) failed." }
+& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-social-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
+if ($LASTEXITCODE -ne 0) { throw "ISCC (Setup-Shared) failed with exit code $LASTEXITCODE" }
+& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-social-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
+if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
+# Companion: the runtime-less stick (launcher + icon + docs, ~1 MB).
+$companionZip = Join-Path $repoRoot "dist\QUILL-Social-Companion-$version.zip"
+if (Test-Path $companionZip) { Remove-Item $companionZip -Force }
+Copy-Item (Join-Path $repoRoot "assets\quill-social.ico") $launcherDir -Force
+Compress-Archive -Path (Join-Path $launcherDir "*") -DestinationPath $companionZip
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"
