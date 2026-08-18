@@ -31,6 +31,12 @@ param(
     # instead of rebuilding it (a full PyInstaller onedir, ~10 min). The installer
     # still needs it to exist.
     [switch]$SkipSharedRuntime,
+    # Build the Offline Edition installer as well: stages the pinned, verified
+    # whisper.cpp engine + starter model into the runtime payload (fetched from
+    # the same vault the in-app download uses), compiles a second Setup.exe
+    # named -Offline-, then ALWAYS unstages -- a later app build packs the same
+    # runtime dist and must not inherit hundreds of MB of speech models.
+    [switch]$Offline,
     [switch]$Sign
 )
 
@@ -166,6 +172,21 @@ if ($env:QUILL_SIGN -eq "1") {
 }
 & $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-audio-studio.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
+
+# -- Offline Edition installer (optional second flavor) -----------------------
+if ($Offline) {
+    $stager = Join-Path $QuillRepo "scripts\stage_offline_speech.py"
+    & $Python $stager --root $sharedRuntimeDist
+    if ($LASTEXITCODE -ne 0) { throw "Offline speech staging failed." }
+    try {
+        & $Iscc @innoSign "/DOffline" "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-audio-studio.iss") "/O$(Join-Path $repoRoot 'dist')"
+        if ($LASTEXITCODE -ne 0) { throw "ISCC (Offline Edition) failed with exit code $LASTEXITCODE" }
+    } finally {
+        # Unstage unconditionally: the shared runtime dist is packed by every
+        # other app's build, and none of them may inherit the speech stack.
+        & $Python $stager --root $sharedRuntimeDist --remove
+    }
+}
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"

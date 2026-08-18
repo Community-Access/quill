@@ -115,6 +115,18 @@ PRODUCTS: dict[str, Product] = {
         icon_dir="cast",
         icon_name="quill-cast",
     ),
+    # Inkwell's build_release.ps1 has always asked for this product; until
+    # 2026-08-18 the entry did not exist, so Inkwell's portable bundle could
+    # not build on any machine.
+    "inkwell": Product(
+        key="inkwell",
+        name="QuillInkwell",
+        display="Quill Inkwell",
+        module="quill.apps.inkwell",
+        version_from="inkwell",
+        icon_dir="inkwell",
+        icon_name="quill-inkwell",
+    ),
     # Main QUILL: the launcher sits at the portable bundle root as quill.exe,
     # which is also the name storage_mode's portable detection looks for.
     "quill": Product(

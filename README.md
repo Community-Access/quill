@@ -52,6 +52,40 @@ The [Quillin Hub](https://hub.quillforall.org) hosts community-created
 extensions (Quillins) -- from research tools to accessibility auditors --
 verified for security and WCAG 2.2 AA compliance.
 
+## The editions: four ways to install one app
+
+Each app ships in up to four flavors, so nobody pays for delivery they
+don't need:
+
+| Edition | What it carries | Who it is for |
+|---|---|---|
+| Setup | The app plus the shared runtime and the app's declared media tools; works offline from first launch | Most people |
+| Portable | The same, self-contained in a zip with its own `data` folder; travels on a stick | No-install machines, USB workflows |
+| Lite | A 2-3 MB installer: just the native launcher and docs | Machines that already have (or will share) the runtime |
+| Offline | Setup plus the app's on-demand components pre-bundled -- engines, models, dictionaries; zero downloads ever | People the internet cannot reach |
+
+**How a Lite install obtains the shared runtime:** the Lite installer
+checks for the runtime at `%LOCALAPPDATA%\QuillVille\Runtime\3.13`. If it
+is already there (any QuillVille app installed it), nothing downloads and
+the install is seconds. If not, it downloads `QuillVille-Runtime-Setup.exe`
+from this repository's latest GitHub release -- through Inno Setup's
+built-in download page, a standard progress bar and status text that
+NVDA/JAWS/Narrator read -- and runs it. Decline or lose the connection and
+the app itself offers the download again on first launch. The Lite and
+full installers share one AppId per app, so either upgrades the other, and
+the standalone runtime installer ships the *base* runtime only (no media
+tools -- a Weather user should never download 300 MB of them; media apps'
+full installers carry their own, and a Lite install offers them as
+verified on-demand downloads).
+
+The runtime installer is built by
+`standalone\runtime\build_runtime_installer.ps1`; the Offline flavor by
+each app's `build_release.ps1 -Offline`, which stages the app's declared
+on-demand components from the same pinned, SHA-256-verified vault the
+in-app downloads use -- one truth about what a component is, delivered two
+ways. Apps with no on-demand components (Weather, Inkwell, Beacon) need no
+separate Offline flavor: their Setup already is one.
+
 ## Running from source
 
 You need **Python 3.13** on Windows (the version releases are built and
