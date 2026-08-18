@@ -38,12 +38,17 @@ def test_the_skip_test_compares_the_payload_build_against_the_installed_one() ->
 #: The installers that ship the shared QuillVille Runtime, and must therefore
 #: carry the fragment. Adding or removing one is a deliberate edit here.
 #:
-#: Not every app is on this list, and that is correct: the ``-lite`` variants
-#: download the runtime rather than shipping it, and Beacon/Cast/Social do not
-#: use it at all (no ``QuillVilleRuntime`` reference anywhere in their .iss).
+#: Not every installer is on this list, and that is correct: the ``-lite``
+#: variants download the runtime rather than shipping it. Beacon, Cast and
+#: Social joined on 2026-08-18, when the last three self-contained apps were
+#: promoted to the shared-runtime layout (their ``-shared`` installers
+#: supersede the old onedir ones under the same AppIds).
 SHARED_RUNTIME_INSTALLERS = {
+    "standalone/beacon/installer/quill-beacon-shared.iss",
+    "standalone/cast/installer/quill-cast-shared.iss",
     "standalone/inkwell/installer/quill-inkwell.iss",
     "standalone/radio/installer/quill-radio.iss",
+    "standalone/social/installer/quill-social-shared.iss",
     "standalone/studio/installer/quill-audio-studio.iss",
     "standalone/weather/installer/quill-weather.iss",
 }

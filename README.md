@@ -302,7 +302,7 @@ Community contributions are welcome.
 
 MIT. See `LICENSE`.
 
-## Legal and trademark notices
+## Legal and Trademark Notices
 
 QUILL for All is an independent open-source project by Community Access.
 It is not affiliated with, sponsored by, or endorsed by Quill.js, QuillBot,

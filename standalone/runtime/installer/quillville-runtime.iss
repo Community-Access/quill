@@ -63,6 +63,7 @@ WizardStyle=modern
 ; retry loop a screen-reader user has to fight through.
 CloseApplications=force
 UninstallDisplayName={#AppName} {#AppVersion}
+SetupIconFile=..\assets\quillville-runtime.ico
 SetupLogging=yes
 
 [Languages]

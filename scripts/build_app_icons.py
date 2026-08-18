@@ -213,6 +213,22 @@ def _social(background):
     return image
 
 
+def _runtime(background):
+    """A hub with three spokes to smaller nodes: one shared engine, many apps
+    drawing from it. The QuillVille Runtime is the only "app" here that is
+    infrastructure, and the only glyph built around connection itself."""
+    image, drawer = _tile(background)
+    for angle in (90, 210, 330):
+        radian = math.radians(angle)
+        x = 512 + math.cos(radian) * 300
+        y = 512 + math.sin(radian) * 300
+        drawer.line([(512, 512), (x, y)], fill=AMBER, width=64)
+        drawer.ellipse([x - 108, y - 108, x + 108, y + 108], fill=WHITE)
+    drawer.ellipse([368, 368, 656, 656], fill=WHITE)
+    drawer.ellipse([440, 440, 584, 584], fill=AMBER)
+    return image
+
+
 _GLYPHS = {
     "radio": _radio,
     "cast": _cast,
@@ -222,6 +238,7 @@ _GLYPHS = {
     "weather": _weather,
     "beacon": _beacon,
     "social": _social,
+    "runtime": _runtime,
 }
 
 
@@ -275,6 +292,12 @@ APPS: tuple[App, ...] = (
         "standalone/social/assets/quill-social.ico",
         (124, 40, 110, 255),
         "two overlapping speech bubbles",
+    ),
+    App(
+        "runtime",
+        "standalone/runtime/assets/quillville-runtime.ico",
+        (94, 110, 30, 255),
+        "a hub with spokes to smaller nodes: one shared engine, many apps",
     ),
 )
 
