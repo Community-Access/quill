@@ -475,11 +475,11 @@ class PodcastManagerDialog(
         self._sync_episode_sort_choice()
 
     def _unheard_count_for_folder(self, folder_id: str) -> int:
-        total = sum(1 for e in _shows_episodes(self._library, folder_id) if not e.played)
-        for folder in self._library.folders:
-            if folder.parent_folder_id == folder_id:
-                total += self._unheard_count_for_folder(folder.id)
-        return total
+        # One shared implementation with Radio's Subscriptions branch, so the
+        # two apps can never disagree about what a folder's number means.
+        from quill.core.podcasts.sorting import unheard_count_for_folder
+
+        return unheard_count_for_folder(self._library, folder_id)
 
     def refresh_tree(self) -> None:
         self._tree.DeleteAllItems()

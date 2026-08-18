@@ -113,6 +113,20 @@ def unheard_count(show: PodcastShow) -> int:
     return sum(1 for e in show.episodes if not e.played)
 
 
+def unheard_count_for_folder(library: PodcastLibrary, folder_id: str) -> int:
+    """Unplayed episodes in every show under *folder_id*, subfolders included.
+
+    One implementation for every folder badge -- Quill Cast's manager tree and
+    Quill Radio's Subscriptions branch -- so the two apps can never disagree
+    about what a folder's number means.
+    """
+    total = sum(unheard_count(show) for show in library.shows if show.folder_id == folder_id)
+    for child in library.folders:
+        if child.parent_folder_id == folder_id:
+            total += unheard_count_for_folder(library, child.id)
+    return total
+
+
 # Backward-compat private alias (pre-Phase-4 internal name).
 _unheard_count = unheard_count
 

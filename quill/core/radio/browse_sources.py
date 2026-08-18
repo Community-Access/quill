@@ -34,7 +34,7 @@ Node id grammar, all opaque to the caller (see :mod:`browse_nodes`)::
     apple | apple:<storefront>      Apple Podcasts, keyless
     applegenre:<storefront>\\t<genre-id>
     appleshow:<collection-id>       ...then that show's episodes
-    mypodcasts | mypodcastshow:<feed-url>
+    mypodcasts | mypodcastfolder:<folder-id> | mypodcastshow:<feed-url>
                                     Subscriptions (the shared podcast library)
     archive | archive:<collection>  Internet Archive, nested to any depth
     archiveitem:<identifier>        ...then that item's files
@@ -113,6 +113,7 @@ from quill.core.radio.browse_libraries import (
     _browse_gutenberg,
     _browse_gutenberg_lang,
     _browse_gutenberg_topic,
+    _browse_my_podcast_folder,
     _browse_my_podcast_show,
     _browse_my_podcasts,
 )
@@ -686,6 +687,7 @@ _HANDLERS: dict[str, Callable[..., list[BrowseNode]]] = {
     "applegenre": _browse_apple_genre,
     "appleshow": _browse_apple_show,
     "mypodcasts": _browse_my_podcasts,
+    "mypodcastfolder": _browse_my_podcast_folder,
     "mypodcastshow": _browse_my_podcast_show,
     "audiopub": _browse_audiopub,
     "audiopubdiscover": _browse_audiopub_discover,

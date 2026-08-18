@@ -36,10 +36,17 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
     loaded = dialog._loaded_stations_under(node)
     savable = [row for row in loaded if download_command.can_download(row)]
     subscribed = False
+    unheard = 0
     if row_actions.is_podcast_show(kind):
         # Only from what is already stored -- resolving the feed is a network
         # call and belongs to the action, never to opening a menu.
         subscribed = _known_subscribed(dialog, kind, args)
+        if subscribed and kind == "mypodcastshow":
+            # Drives Mark All as Played's dimmed state; a local read.
+            from quill.core.paths import app_data_dir
+            from quill.core.radio.podcast_follow import unheard_for_feed
+
+            unheard = unheard_for_feed(app_data_dir(), args[0] if args else "")
     try:
         expanded = bool(dialog._tree.IsExpanded(node))
     except Exception:  # noqa: BLE001 - a menu must never fail on a widget probe
@@ -56,6 +63,7 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
         # A root branch's id IS its source id (no args); only those rows can
         # be hidden in place.
         root_source=not args and any(kind == nid for nid, _ in browse_sources.ROOT_SOURCES),
+        unheard=unheard,
     )
 
 
@@ -107,6 +115,24 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     handlers[row_actions.UNFOLLOW_CHANNEL] = lambda: _unfollow(dialog, node, args)
     handlers[row_actions.REMOVE_SAVED] = lambda: _remove_saved(dialog, node, args)
     handlers[row_actions.VIEW_TRANSCRIPT] = lambda: _view_transcript(dialog, kind, args, station)
+    # The subscription-library verbs (folders, OPML, Mark All as Played) live
+    # in browse_podcast_actions -- one concern, one module (GATE-11).
+    from quill.ui.radio import browse_podcast_actions as podcast_acts
+
+    handlers[row_actions.NEW_PODCAST_FOLDER] = lambda: podcast_acts.new_podcast_folder(
+        dialog, kind, args
+    )
+    handlers[row_actions.RENAME_PODCAST_FOLDER] = lambda: podcast_acts.rename_podcast_folder(
+        dialog, args
+    )
+    handlers[row_actions.DELETE_PODCAST_FOLDER] = lambda: podcast_acts.delete_podcast_folder(
+        dialog, args
+    )
+    handlers[row_actions.MOVE_SHOW_TO_FOLDER] = lambda: podcast_acts.move_show_to_folder(
+        dialog, args
+    )
+    handlers[row_actions.MARK_ALL_PLAYED] = lambda: podcast_acts.mark_all_played(dialog, args)
+    handlers[row_actions.IMPORT_OPML] = lambda: podcast_acts.import_opml(dialog)
     return handlers
 
 
@@ -198,7 +224,9 @@ def show_for_event(dialog: Any, event: Any) -> None:
             continue
         item_id = wx.NewIdRef()
         id_refs.append(item_id)
-        menu.Append(item_id, action.label)
+        item = menu.Append(item_id, action.label)
+        if not action.enabled:
+            item.Enable(False)
         menu.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
     # A SEPARATE attribute: assigning dialog._menu_id_refs here would drop the
     # menu-bar Close id ref pinned in it, re-exposing the id-reuse bug where

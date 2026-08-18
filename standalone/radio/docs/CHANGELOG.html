@@ -213,6 +213,34 @@ transcripts gain timings, and three long-standing silent faults are
 fixed. See <code>docs/release-notes-3.0.md</code>.</p>
 <h3 id="added">Added</h3>
 <ul>
+<li><p><strong>Subscriptions grew folders, and they are Quill Cast’s
+folders.</strong> The Subscriptions branch now shows the shared
+library’s folder tree – a folder made in Cast (or arriving inside an
+imported OPML file) is a folder here, with an unheard badge counting its
+whole subtree. On the rows themselves: <strong>New Folder…</strong> on
+Subscriptions, <strong>New Folder Inside… / Rename Folder… / Delete
+Folder…</strong> on a folder (delete promotes its contents – it can
+never unsubscribe anything), and <strong>Move to Folder…</strong> on a
+show, using the same picker Cast’s manager opens. Every change is
+written to the one shared store, so the two apps can never
+disagree.</p></li>
+<li><p><strong>Import Podcasts from OPML, on the Podcasts branch
+itself.</strong> Right-click the Podcasts branch, pick a file, and every
+feed in it becomes a subscription – folders in the file become library
+folders, duplicates (including the http/https twins old exports are full
+of) are counted rather than doubled, and the whole import runs off the
+UI thread. A 1,307-entry Downcast export was the acceptance
+test.</p></li>
+<li><p><strong>The unheard badges are finally real from Radio’s
+side.</strong> Browsing a subscribed show’s episodes now folds that
+fetch into the shared library (new episodes only; your played state is
+never touched), so “(3 unheard)” appears on shows and folders without
+ever opening Cast – which is where those counts used to come from, and
+why a Radio-followed show never showed one.</p></li>
+<li><p><strong>Mark All as Played, on the show’s own row.</strong> The
+same verb and the same shared state as Cast’s Episode menu, always on a
+subscribed show’s context menu and dimmed when nothing is unheard – in
+both apps.</p></li>
 <li><p><strong>The YouTube branch takes any link, and one command files
 it.</strong> Saved playlists and single videos now live beside followed
 channels — the branch is simply <strong>YouTube</strong> — each shape

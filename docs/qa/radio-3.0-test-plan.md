@@ -246,6 +246,100 @@ offers on a podcast episode row is **View Transcript...** (next section) and
 the ordinary station actions. If you need People/Funding/Chapters tabs
 verified, run that check in Cast against the same three feeds.
 
+### T-4.4 Subscriptions shows Cast's folders, with unheard badges
+
+Setup: in **QUILL Cast**, create a folder (Manager > New Folder), move one
+subscribed show into it, and leave at least one of its episodes unplayed.
+
+1. In Radio, open **Browse Stations**, expand **Podcasts**, then
+   **Subscriptions**.
+   - **Expect:** the folder appears **first**, before the loose shows, and
+     its label carries the subtree count: *"News (2 unheard)"*.
+2. Expand the folder.
+   - **Expect:** its shows (and any subfolders) inside, each show badged
+     with its own count -- or unbadged when everything is played.
+3. Play one of those episodes to the end, then Refresh the branch.
+   - **Expect:** the counts went down by one, in Radio **and** in Cast's
+     manager tree -- one shared library, one truth.
+
+### T-4.5 The unheard badge appears without ever opening Cast
+
+1. Subscribe to a show **from Radio** (browse an Apple storefront, context
+   menu, Subscribe to This Podcast) -- pick one you have never opened in
+   Cast.
+2. Open the show under Subscriptions once (this is the sync: browsing its
+   episodes folds them into the shared library).
+3. Collapse Subscriptions and expand it again.
+   - **Expect:** the show now carries its *"(N unheard)"* badge. Before
+     this build, a Radio-followed show stayed unbadged forever until Cast
+     refreshed its feed -- that was the bug.
+
+### T-4.6 Folders are made, renamed, filled, and deleted from Radio
+
+All on the Browse tree's context menu (Applications key / Shift+F10):
+
+1. On **Subscriptions**: choose **New Folder...**, type `Tech`, OK.
+   - **Listen for:** *"Created folder Tech. It is shared with Quill
+     Cast."* -- and the branch refreshes to show it.
+2. On a **show row**: choose **Move to Folder...**.
+   - **Expect:** the same folder picker Cast's manager opens (search box,
+     tree, inline New Folder). Pick `Tech`.
+   - **Listen for:** *"Moved <show> to Tech. Refresh Podcasts to update."*
+3. On the **Tech folder row**: **Rename Folder...** to `Technology`.
+   - **Listen for:** *"Renamed Tech to Technology. Refresh Podcasts to
+     update."*
+4. On the folder row: **Delete Folder...**.
+   - **Expect** a confirmation that says what deletion means: contents
+     move up a level, **nothing is unsubscribed**.
+   - **Listen for:** *"Deleted folder Technology. Its podcasts moved up a
+     level; nothing was unsubscribed."*
+5. Open Cast's manager.
+   - **Expect:** every one of those changes is simply there.
+
+### T-4.7 Import Podcasts from OPML
+
+Test file: any OPML export (`D:\downcast.opml`, a real 1,307-entry Downcast
+export, was the acceptance file for this feature).
+
+1. In Browse Stations, put the cursor on the **Podcasts** branch itself
+   (the top-level row, not Subscriptions) and open its context menu.
+   - **Expect** the item: **Import Podcasts from OPML...** -- on this row
+     and only this row.
+2. Choose it, pick the file.
+   - **Listen for:** *"Importing podcasts..."* -- and the tree stays
+     usable; a two-thousand-line file must not freeze it.
+   - **Listen for**, when it finishes: *"Imported N podcasts, M already
+     followed... Find them under Podcasts, Subscriptions, and in Quill
+     Cast. Refresh Podcasts to see them."*
+3. Import the **same file again**.
+   - **Expect:** *"Imported 0 podcasts"* with everything counted as
+     already followed -- never duplicates. (http/https twins of one feed
+     count as one feed.)
+4. If the file contains folder outlines, expand Subscriptions.
+   - **Expect:** the folders arrived as real folders with their shows
+     filed inside.
+5. Quit Radio entirely, reopen, expand Subscriptions.
+   - **Expect:** everything is still there -- the import is written to the
+     shared store, not a session.
+6. In **Safe Mode**: the same menu item answers *"Importing is disabled in
+   Safe Mode. Restart Quill Radio normally."*
+
+### T-4.8 Mark All as Played, dimmed when it is done
+
+1. On a subscribed show row **with** unheard episodes, open the context
+   menu.
+   - **Expect:** **Mark All as Played...** is enabled. Choose it.
+   - **Expect** a confirmation naming the show and the count; accept it.
+   - **Listen for:** *"Marked N episodes of <show> as played. Refresh
+     Podcasts to update."*
+2. Reopen the same row's menu after refreshing.
+   - **Expect:** the item is still **there** but **dimmed** -- the verb
+     belongs to the row; its state is "done". A vanished item is a FAIL.
+3. In **QUILL Cast**: the Episode menu's Mark All as Played and the
+   manager tree's context item now dim the same way when the show has
+   nothing unheard.
+4. Back in Radio, check the show's badge: gone, in both apps.
+
 ---
 
 ## 5. Transcripts

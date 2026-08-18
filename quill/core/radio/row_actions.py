@@ -61,14 +61,27 @@ HIDE_SOURCE = "source.hide"
 RESET_SOURCES = "source.reset"
 REMOVE_SAVED = "youtube.remove_saved"
 VIEW_TRANSCRIPT = "view.transcript"
+NEW_PODCAST_FOLDER = "podcastfolder.new"
+RENAME_PODCAST_FOLDER = "podcastfolder.rename"
+DELETE_PODCAST_FOLDER = "podcastfolder.delete"
+MOVE_SHOW_TO_FOLDER = "podcast.move_to_folder"
+MARK_ALL_PLAYED = "podcast.mark_all_played"
+IMPORT_OPML = "podcast.import_opml"
 
 
 @dataclass(frozen=True, slots=True)
 class RowAction:
-    """One menu item: what it is, and what it should read as."""
+    """One menu item: what it is, and what it should read as.
+
+    ``enabled`` is the one sanctioned departure from "a row that cannot do a
+    thing has no item for it": Mark All as Played with nothing unheard is a
+    *state* of a verb the row genuinely owns, and a dimmed item teaches that
+    state -- where a vanishing one would read as the feature coming and going.
+    """
 
     id: str
     label: str
+    enabled: bool = True
 
 
 @dataclass(frozen=True, slots=True)
@@ -94,6 +107,10 @@ class FolderState:
     #: A top-level source branch (Popular Stations, Podcasts, ...) -- the
     #: rows that can be hidden in place instead of via Choose Browse Sources.
     root_source: bool = False
+    #: Unplayed episodes in this subscribed show, from the shared library
+    #: (a local read). Drives Mark All as Played's enabled state: the verb
+    #: is always on a subscribed show's menu, dimmed when nothing is unheard.
+    unheard: int = 0
 
 
 #: Node kinds that name a podcast show rather than a shelf of them.
@@ -117,6 +134,7 @@ FOLDER_CONTENTS: dict[str, str] = {
     "applegenre": "Shows",
     "appleshow": "Episodes",
     "mypodcasts": "Shows",
+    "mypodcastfolder": "Shows",
     "mypodcastshow": "Episodes",
     "ytplaylist": "Videos",
     "archive": "Recordings",
@@ -226,6 +244,32 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
             else RowAction(SUBSCRIBE_PODCAST, "Su&bscribe to This Podcast")
         )
         actions.append(RowAction(COPY_FEED, "Copy &Feed Address"))
+
+    if kind == "mypodcastshow" and state.subscribed:
+        # Filing lives where the shows live: the same shared folders Quill
+        # Cast's manager edits, from the row a listener is already on.
+        actions.append(RowAction(MOVE_SHOW_TO_FOLDER, "Mo&ve to Folder..."))
+        # Always present, dimmed when there is nothing unheard: the same verb
+        # Quill Cast's Episode menu carries, acting on the same shared state.
+        actions.append(
+            RowAction(MARK_ALL_PLAYED, "Mark All as Pla&yed...", enabled=state.unheard > 0)
+        )
+
+    if kind == "mypodcasts":
+        # The Subscriptions root organizes the library in place.
+        actions.append(RowAction(NEW_PODCAST_FOLDER, "New Fo&lder..."))
+
+    if kind == "apple" and state.root_source:
+        # On the Podcasts branch itself: a whole OPML file's worth of shows
+        # becomes subscriptions, folders included, shared with Quill Cast.
+        actions.append(RowAction(IMPORT_OPML, "I&mport Podcasts from OPML..."))
+
+    if kind == "mypodcastfolder":
+        # The same verbs Cast's manager offers on a folder, on the folder.
+        # Delete promotes contents -- it can never silently unsubscribe.
+        actions.append(RowAction(NEW_PODCAST_FOLDER, "New Fo&lder Inside..."))
+        actions.append(RowAction(RENAME_PODCAST_FOLDER, "R&ename Folder..."))
+        actions.append(RowAction(DELETE_PODCAST_FOLDER, "Dele&te Folder..."))
 
     if is_followed_channel(kind) or state.is_followed_channel:
         # "&P", not "&C": an expanded channel's menu now leads with "&Close".

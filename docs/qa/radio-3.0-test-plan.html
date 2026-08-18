@@ -576,6 +576,153 @@ lightweight listener and does not carry it. What Radio offers on a
 podcast episode row is <strong>View Transcript…</strong> (next section)
 and the ordinary station actions. If you need People/Funding/Chapters
 tabs verified, run that check in Cast against the same three feeds.</p>
+<h3
+id="t-44-subscriptions-shows-casts-folders-with-unheard-badges">T-4.4
+Subscriptions shows Cast’s folders, with unheard badges</h3>
+<p>Setup: in <strong>QUILL Cast</strong>, create a folder (Manager &gt;
+New Folder), move one subscribed show into it, and leave at least one of
+its episodes unplayed.</p>
+<ol type="1">
+<li>In Radio, open <strong>Browse Stations</strong>, expand
+<strong>Podcasts</strong>, then <strong>Subscriptions</strong>.
+<ul>
+<li><strong>Expect:</strong> the folder appears <strong>first</strong>,
+before the loose shows, and its label carries the subtree count:
+<em>“News (2 unheard)”</em>.</li>
+</ul></li>
+<li>Expand the folder.
+<ul>
+<li><strong>Expect:</strong> its shows (and any subfolders) inside, each
+show badged with its own count – or unbadged when everything is
+played.</li>
+</ul></li>
+<li>Play one of those episodes to the end, then Refresh the branch.
+<ul>
+<li><strong>Expect:</strong> the counts went down by one, in Radio
+<strong>and</strong> in Cast’s manager tree – one shared library, one
+truth.</li>
+</ul></li>
+</ol>
+<h3 id="t-45-the-unheard-badge-appears-without-ever-opening-cast">T-4.5
+The unheard badge appears without ever opening Cast</h3>
+<ol type="1">
+<li>Subscribe to a show <strong>from Radio</strong> (browse an Apple
+storefront, context menu, Subscribe to This Podcast) – pick one you have
+never opened in Cast.</li>
+<li>Open the show under Subscriptions once (this is the sync: browsing
+its episodes folds them into the shared library).</li>
+<li>Collapse Subscriptions and expand it again.
+<ul>
+<li><strong>Expect:</strong> the show now carries its <em>“(N
+unheard)”</em> badge. Before this build, a Radio-followed show stayed
+unbadged forever until Cast refreshed its feed – that was the bug.</li>
+</ul></li>
+</ol>
+<h3
+id="t-46-folders-are-made-renamed-filled-and-deleted-from-radio">T-4.6
+Folders are made, renamed, filled, and deleted from Radio</h3>
+<p>All on the Browse tree’s context menu (Applications key /
+Shift+F10):</p>
+<ol type="1">
+<li>On <strong>Subscriptions</strong>: choose <strong>New
+Folder…</strong>, type <code>Tech</code>, OK.
+<ul>
+<li><strong>Listen for:</strong> <em>“Created folder Tech. It is shared
+with Quill Cast.”</em> – and the branch refreshes to show it.</li>
+</ul></li>
+<li>On a <strong>show row</strong>: choose <strong>Move to
+Folder…</strong>.
+<ul>
+<li><strong>Expect:</strong> the same folder picker Cast’s manager opens
+(search box, tree, inline New Folder). Pick <code>Tech</code>.</li>
+<li><strong>Listen for:</strong> <em>“Moved <show> to Tech. Refresh
+Podcasts to update.”</em></li>
+</ul></li>
+<li>On the <strong>Tech folder row</strong>: <strong>Rename
+Folder…</strong> to <code>Technology</code>.
+<ul>
+<li><strong>Listen for:</strong> <em>“Renamed Tech to Technology.
+Refresh Podcasts to update.”</em></li>
+</ul></li>
+<li>On the folder row: <strong>Delete Folder…</strong>.
+<ul>
+<li><strong>Expect</strong> a confirmation that says what deletion
+means: contents move up a level, <strong>nothing is
+unsubscribed</strong>.</li>
+<li><strong>Listen for:</strong> <em>“Deleted folder Technology. Its
+podcasts moved up a level; nothing was unsubscribed.”</em></li>
+</ul></li>
+<li>Open Cast’s manager.
+<ul>
+<li><strong>Expect:</strong> every one of those changes is simply
+there.</li>
+</ul></li>
+</ol>
+<h3 id="t-47-import-podcasts-from-opml">T-4.7 Import Podcasts from
+OPML</h3>
+<p>Test file: any OPML export (<code>D:\downcast.opml</code>, a real
+1,307-entry Downcast export, was the acceptance file for this
+feature).</p>
+<ol type="1">
+<li>In Browse Stations, put the cursor on the <strong>Podcasts</strong>
+branch itself (the top-level row, not Subscriptions) and open its
+context menu.
+<ul>
+<li><strong>Expect</strong> the item: <strong>Import Podcasts from
+OPML…</strong> – on this row and only this row.</li>
+</ul></li>
+<li>Choose it, pick the file.
+<ul>
+<li><strong>Listen for:</strong> <em>“Importing podcasts…”</em> – and
+the tree stays usable; a two-thousand-line file must not freeze it.</li>
+<li><strong>Listen for</strong>, when it finishes: <em>“Imported N
+podcasts, M already followed… Find them under Podcasts, Subscriptions,
+and in Quill Cast. Refresh Podcasts to see them.”</em></li>
+</ul></li>
+<li>Import the <strong>same file again</strong>.
+<ul>
+<li><strong>Expect:</strong> <em>“Imported 0 podcasts”</em> with
+everything counted as already followed – never duplicates. (http/https
+twins of one feed count as one feed.)</li>
+</ul></li>
+<li>If the file contains folder outlines, expand Subscriptions.
+<ul>
+<li><strong>Expect:</strong> the folders arrived as real folders with
+their shows filed inside.</li>
+</ul></li>
+<li>Quit Radio entirely, reopen, expand Subscriptions.
+<ul>
+<li><strong>Expect:</strong> everything is still there – the import is
+written to the shared store, not a session.</li>
+</ul></li>
+<li>In <strong>Safe Mode</strong>: the same menu item answers
+<em>“Importing is disabled in Safe Mode. Restart Quill Radio
+normally.”</em></li>
+</ol>
+<h3 id="t-48-mark-all-as-played-dimmed-when-it-is-done">T-4.8 Mark All
+as Played, dimmed when it is done</h3>
+<ol type="1">
+<li>On a subscribed show row <strong>with</strong> unheard episodes,
+open the context menu.
+<ul>
+<li><strong>Expect:</strong> <strong>Mark All as Played…</strong> is
+enabled. Choose it.</li>
+<li><strong>Expect</strong> a confirmation naming the show and the
+count; accept it.</li>
+<li><strong>Listen for:</strong> <em>“Marked N episodes of <show> as
+played. Refresh Podcasts to update.”</em></li>
+</ul></li>
+<li>Reopen the same row’s menu after refreshing.
+<ul>
+<li><strong>Expect:</strong> the item is still <strong>there</strong>
+but <strong>dimmed</strong> – the verb belongs to the row; its state is
+“done”. A vanished item is a FAIL.</li>
+</ul></li>
+<li>In <strong>QUILL Cast</strong>: the Episode menu’s Mark All as
+Played and the manager tree’s context item now dim the same way when the
+show has nothing unheard.</li>
+<li>Back in Radio, check the show’s badge: gone, in both apps.</li>
+</ol>
 <hr />
 <h2 id="5-transcripts">5. Transcripts</h2>
 <p>Radio reads two kinds of transcript through <strong>one shared reader

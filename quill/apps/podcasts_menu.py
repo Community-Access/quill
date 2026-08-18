@@ -160,6 +160,13 @@ class CastMenuBarMixin:
         mark_all_id = wx.NewIdRef()
         episode_menu.Append(mark_all_id, "Mark All as Play&ed...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_mark_all_played(), id=mark_all_id)
+        # Dimmed when the current show has nothing unheard (in-memory check;
+        # EVT_UPDATE_UI fires far too often for a disk read).
+        self.frame.Bind(
+            wx.EVT_UPDATE_UI,
+            lambda e: e.Enable(self.podcast_current_show_unheard() > 0),
+            id=mark_all_id,
+        )
         keep_id = wx.NewIdRef()
         episode_menu.Append(keep_id, "&Keep This Episode")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_keep_episode(), id=keep_id)

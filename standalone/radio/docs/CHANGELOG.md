@@ -16,6 +16,31 @@ timings, and three long-standing silent faults are fixed. See
 
 ### Added
 
+- **Subscriptions grew folders, and they are Quill Cast's folders.** The
+  Subscriptions branch now shows the shared library's folder tree -- a
+  folder made in Cast (or arriving inside an imported OPML file) is a
+  folder here, with an unheard badge counting its whole subtree. On the
+  rows themselves: **New Folder...** on Subscriptions, **New Folder
+  Inside... / Rename Folder... / Delete Folder...** on a folder (delete
+  promotes its contents -- it can never unsubscribe anything), and **Move
+  to Folder...** on a show, using the same picker Cast's manager opens.
+  Every change is written to the one shared store, so the two apps can
+  never disagree.
+- **Import Podcasts from OPML, on the Podcasts branch itself.** Right-click
+  the Podcasts branch, pick a file, and every feed in it becomes a
+  subscription -- folders in the file become library folders, duplicates
+  (including the http/https twins old exports are full of) are counted
+  rather than doubled, and the whole import runs off the UI thread. A
+  1,307-entry Downcast export was the acceptance test.
+- **The unheard badges are finally real from Radio's side.** Browsing a
+  subscribed show's episodes now folds that fetch into the shared library
+  (new episodes only; your played state is never touched), so
+  "(3 unheard)" appears on shows and folders without ever opening Cast --
+  which is where those counts used to come from, and why a Radio-followed
+  show never showed one.
+- **Mark All as Played, on the show's own row.** The same verb and the
+  same shared state as Cast's Episode menu, always on a subscribed show's
+  context menu and dimmed when nothing is unheard -- in both apps.
 - **The YouTube branch takes any link, and one command files it.** Saved
   playlists and single videos now live beside followed channels — the branch
   is simply **YouTube** — each shape with its own **Add a...** row, and each

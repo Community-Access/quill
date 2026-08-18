@@ -245,6 +245,12 @@ class PodcastSessionMixin:
     def podcast_speed_reset(self) -> None:
         self._podcast_apply_speed(1.0)
 
+    def podcast_current_show_unheard(self) -> int:
+        """Unplayed count of the playing show; in-memory (EVT_UPDATE_UI-safe)."""
+        controller = getattr(self, "_podcast_controller", None)
+        show = self._podcast_library.find_show(controller.state.show_id) if controller else None
+        return sum(1 for e in show.episodes if not e.played) if show is not None else 0
+
     def podcast_mark_all_played(self, show: object | None = None) -> None:
         """Mark every episode of one show played, always confirmed by name
         and count. Dismisses them from the Inbox as a side effect, because
