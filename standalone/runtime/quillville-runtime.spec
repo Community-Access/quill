@@ -123,6 +123,21 @@ a = Analysis(
         # shadow the pack silently. Same class of accident as `winrt` vanishing
         # from a release: what ships must not depend on what one laptop has.
         "sherpa_onnx",
+        # --- present-but-broken in the 2026-08-18 probe ----------------------
+        # weasyprint needs GTK native libraries (libgobject, pango) that no
+        # wheel provides and the bundle never carried: it raises OSError the
+        # moment anything imports it. Nothing first-party imports it; it was
+        # swept in as a transitive extra of the documents stack.
+        "weasyprint",
+        # tomli is deliberately NOT excluded, though the 2026-08-18 probe found
+        # it broken too (a mypyc-compiled dist whose hashed runtime module never
+        # shipped). PyInstaller's setuptools hook aliases the vendored
+        # setuptools tomli onto that name, and an exclude collides with the
+        # alias ("Target module tomli already imported as ExcludedModule").
+        # The declared [runtime] closure does not install the mypyc dist, so a
+        # clean build machine ships the working vendored copy; a stray mypyc
+        # tomli install is exactly the drift build_fingerprint.py compare
+        # reports.
     ],
     noarchive=False,
 )
