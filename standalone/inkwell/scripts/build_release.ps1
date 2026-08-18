@@ -23,11 +23,11 @@
 # runnable on exactly one computer.
 param(
     [string]$Python = "",
-    # Inkwell's own payload bundles neither ffmpeg nor mpv, but the shared
-    # QuillVille Runtime it builds bundles both, and build_runtime.ps1 requires
-    # a vetted directory for each. Declared here so -FfmpegDir/-LibmpvDir can be
-    # passed through; without them this script silently absorbed the arguments
-    # into $args and failed inside build_runtime.ps1 with a confusing error.
+    # Inkwell's own payload bundles neither ffmpeg nor mpv, and the shared
+    # QuillVille Runtime no longer bundles them either -- the apps that declare
+    # them (Radio, Cast, Studio) stage them in themselves. Both switches are
+    # still accepted so an existing build command keeps working; they are simply
+    # unused here, which is exactly the 304 MB Inkwell stops installing.
     [string]$FfmpegDir = "",
     [string]$LibmpvDir = "",
     [string]$TokenFile = "",
@@ -79,43 +79,26 @@ if (-not $SkipToken) {
 # -- shared QuillVille Runtime (the onedir the per-app installer ships) -----
 # The shared runtime at ..\..\runtime\dist\QuillVilleRuntime\ is what the
 # per-app installer (quill-inkwell.iss) installs into
-# %LOCALAPPDATA%\QuillVille\Runtime\3.13\ on first use. Inkwell is small
-# (no ffmpeg, no mpv), so the build_runtime.ps1 invocation is just for
-# the runtime itself -- ffmpeg/mpv staging is a no-op for Inkwell.
+# %LOCALAPPDATA%\QuillVille\Runtime\3.13\ on first use. It no longer carries
+# ffmpeg or libmpv, so this is a plain runtime build with nothing to stage.
 $sharedRuntimeDist = Join-Path $repoRoot "..\runtime\dist\QuillVilleRuntime"
 if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVilleRuntime.exe"))) {
     Write-Host "Reusing existing shared runtime at $sharedRuntimeDist (--SkipSharedRuntime)."
 } else {
-    # build_runtime.ps1 bundles ffmpeg and libmpv into the shared runtime and
-    # refuses PATH/%APPDATA% auto-discovery for both, so it needs an explicit
-    # vetted directory for each -- even though Inkwell's own payload ships
-    # neither. Passing only -Python made every Inkwell build fail unless another
-    # app had already produced the runtime, which is an ordering dependency
-    # nothing documented. Stage the pinned, SHA-256-verified packs when the
-    # caller gave none, exactly as Quill Radio does, so a fresh clone builds
-    # Inkwell on its own.
-    if (-not $FfmpegDir) {
-        Write-Host "Staging ffmpeg from QUILL's pinned release assets..."
-        & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only ffmpeg
-        if ($LASTEXITCODE -ne 0) { throw "Could not stage ffmpeg (see scripts/fetch_build_deps.py)." }
-        $FfmpegDir = Join-Path $QuillRepo "build\deps\ffmpeg"
-    }
-    if (-not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
-        throw "ffmpeg.exe not found in -FfmpegDir '$FfmpegDir'."
-    }
-    if (-not $LibmpvDir) {
-        Write-Host "Staging libmpv from QUILL's pinned release assets..."
-        & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only libmpv
-        if ($LASTEXITCODE -ne 0) { throw "Could not stage libmpv (see scripts/fetch_build_deps.py)." }
-        $LibmpvDir = Join-Path $QuillRepo "build\deps\mpv"
-    }
-    if (-not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
-        throw "libmpv-2.dll not found in -LibmpvDir '$LibmpvDir'."
-    }
+    # Nothing is staged into the runtime here, and that is the point. Inkwell
+    # declares no components, so it contributes no ffmpeg, no ffprobe and no
+    # libmpv -- 304 MB, 41% of what this installer used to carry, for tools it
+    # can never call. Staging is opt-in (scripts\StageMediaTools.ps1), so there
+    # is no per-app exclusion list to keep in step.
+    #
+    # This also retires an ordering dependency nothing documented: build_runtime
+    # used to refuse to run without a vetted ffmpeg AND libmpv directory, so
+    # every Inkwell build failed unless some other app had already produced the
+    # runtime, and the -FfmpegDir the caller reached for was silently swallowed
+    # into $args.
     Push-Location (Join-Path $repoRoot "..\runtime")
     try {
-        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") `
-            -Python $Python -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
+        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") -Python $Python
         if ($LASTEXITCODE -ne 0) { throw "Shared QuillVille Runtime build failed." }
     } finally {
         Pop-Location

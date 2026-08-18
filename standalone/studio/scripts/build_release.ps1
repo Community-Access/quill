@@ -105,12 +105,19 @@ if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVille
 } else {
     Push-Location (Join-Path $repoRoot "..\runtime")
     try {
-        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") -Python $Python -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
+        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") -Python $Python
         if ($LASTEXITCODE -ne 0) { throw "Shared QuillVille Runtime build failed." }
     } finally {
         Pop-Location
     }
 }
+# The runtime build no longer stages ffmpeg/mpv -- the app that needs them
+# contributes them, which is what keeps 304 MB out of Weather, Inkwell, Beacon
+# and Social. Studio stages both: ffmpeg for recording (which is all its
+# REQUIRED_COMPONENTS declares) and libmpv for the player preview, which this
+# build has always shipped. Studio's own installer payload is unchanged.
+. (Join-Path $QuillRepo "scripts\StageMediaTools.ps1")
+Stage-QuillMediaTools -RuntimeDist $sharedRuntimeDist -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
 
 # -- portable bundle (self-contained "Lean" edition) --------------------------
 # The portable is NOT a PyInstaller onedir and NOT a stamped pythonw.exe. It is

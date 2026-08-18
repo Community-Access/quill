@@ -142,18 +142,26 @@ if (-not (Test-Path (Join-Path $LibmpvDir "libmpv-2.dll"))) {
 # stays tiny -- the C launcher + docs only. The portable zip below
 # still gets its own ffmpeg/mpv copy at $appDir\tools\ so the stick
 # is self-contained.
+#
+# The runtime build itself no longer stages ffmpeg/mpv: Radio declares them
+# (quill.apps.radio.REQUIRED_COMPONENTS = ("ffmpeg", "mpv")) and so Radio
+# contributes them, which is what keeps the same 304 MB out of Weather,
+# Inkwell, Beacon and Social. Radio's installer payload is unchanged, so it
+# still plays the instant it finishes installing with no internet.
 $sharedRuntimeDist = Join-Path $repoRoot "..\runtime\dist\QuillVilleRuntime"
 if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVilleRuntime.exe"))) {
     Write-Host "Reusing existing shared runtime at $sharedRuntimeDist (--SkipSharedRuntime)."
 } else {
     Push-Location (Join-Path $repoRoot "..\runtime")
     try {
-        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") -Python $Python -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
+        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") -Python $Python
         if ($LASTEXITCODE -ne 0) { throw "Shared QuillVille Runtime build failed." }
     } finally {
         Pop-Location
     }
 }
+. (Join-Path $QuillRepo "scripts\StageMediaTools.ps1")
+Stage-QuillMediaTools -RuntimeDist $sharedRuntimeDist -FfmpegDir $FfmpegDir -LibmpvDir $LibmpvDir
 
 # -- portable bundle (self-contained, genuine embeddable runtime) -------------
 # NOT a PyInstaller onedir and NOT a stamped pythonw.exe. See build_portable.py
@@ -264,6 +272,17 @@ if ($env:QUILL_SIGN -eq "1") {
 }
 & $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-radio.iss") "/O$(Join-Path $repoRoot 'dist')"
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
+
+# -- Lite installer (the thin edition, same payload minus the runtime) --------
+# Both editions are shipped, and Check for Updates offers whichever one the user
+# installed back to them (installer\edition-installer-*.txt, core\install_edition.py),
+# so a release that compiles only the full setup leaves the thin edition
+# pointing at a stale download. quill-radio-lite.iss was being compiled by hand
+# -- same failure the Companion zip had above, same fix: build it here or it
+# rots. It embeds only the launcher + docs already staged in dist\QuillRadio,
+# so it costs seconds and needs nothing the full installer did not.
+& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-radio-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
+if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"
