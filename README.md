@@ -46,7 +46,10 @@ tools (ffmpeg, libmpv, about 304 MB) ride only with the apps that declare
 them: Radio, Cast, and Audio Studio. Everything an installer ships works
 offline the moment installation finishes; larger optional components
 (dictation engines, neural voices, extra spell-check languages) are offered
-in-app as consented, SHA-256-verified downloads.
+in-app as consented, SHA-256-verified downloads. How the runtime got this
+small -- and the three silently broken speech engines found on the way --
+is told in plain English in
+[the runtime layering retrospective](docs/engineering/2026-08-18-runtime-layering-retrospective.md).
 
 The [Quillin Hub](https://hub.quillforall.org) hosts community-created
 extensions (Quillins) -- from research tools to accessibility auditors --
