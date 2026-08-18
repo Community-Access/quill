@@ -171,7 +171,10 @@ def show_find_results(
 
 
 def clear_find(host: Any) -> None:
-    host._find_ctrl.SetValue("")
+    # ChangeValue, not SetValue: this also runs from the empty-query reset
+    # (typing then erasing the field), and SetValue would fire EVT_TEXT back
+    # into that binding (see search_reset.bind_empty_query_reset's contract).
+    host._find_ctrl.ChangeValue("")
     node = host._find_return_node
     host._find_return_node = None
     was_active = host._find_active

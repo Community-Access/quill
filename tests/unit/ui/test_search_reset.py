@@ -56,6 +56,29 @@ def test_whitespace_counts_as_empty(wx_app):
         frame.Destroy()
 
 
+def test_a_changevalue_reset_does_not_refire(wx_app):
+    # The browse tree's clear path writes the field back to "" as part of
+    # resetting (browse_find.clear_find). ChangeValue fires no EVT_TEXT, so
+    # binding that path here must produce exactly one reset, not a loop.
+    frame = wx.Frame(None)
+    try:
+        ctrl = wx.TextCtrl(frame)
+        fired: list[int] = []
+
+        def _reset() -> None:
+            fired.append(1)
+            ctrl.ChangeValue("")
+
+        bind_empty_query_reset(ctrl, _reset)
+        ctrl.SetValue("jazz")
+        _pump()
+        ctrl.SetValue("")
+        _pump()
+        assert fired == [1]
+    finally:
+        frame.Destroy()
+
+
 def test_reset_waits_for_every_bound_field_to_empty(wx_app):
     # The station browser binds name AND tag: results stay while either
     # still holds a query.

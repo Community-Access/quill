@@ -214,6 +214,9 @@ class BrowseTreeDialog:
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
         self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, self._on_mute)
         self._find_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_find)
+        from quill.ui.search_reset import bind_empty_query_reset
+
+        bind_empty_query_reset(self._find_ctrl, self._clear_find)  # erase == Clear
         # Tabbing in selects what is there: type to replace the last search,
         # one Backspace to wipe it.
         self._find_ctrl.Bind(wx.EVT_SET_FOCUS, lambda e: browse_feedback.on_find_focus(self, e))
@@ -256,8 +259,7 @@ class BrowseTreeDialog:
             self._announce("Find in this folder")
             return
         # Escape in the Find box clears the search (the old Clear button).
-        in_find = self._win.FindFocus() is self._find_ctrl
-        if event.GetKeyCode() == wx.WXK_ESCAPE and in_find:
+        if event.GetKeyCode() == wx.WXK_ESCAPE and self._win.FindFocus() is self._find_ctrl:
             if self._find_active or self._find_ctrl.GetValue():
                 self._clear_find()
                 return
