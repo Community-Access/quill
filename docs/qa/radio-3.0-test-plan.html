@@ -210,10 +210,15 @@ what failed, and what finally worked, so the next run does not have to
 rediscover it.</p>
 <h2 id="how-to-use-this">How to use this</h2>
 <p>Work top to bottom or dip in by section – each is self-contained.
-Every scenario has a <strong>Do</strong>, an <strong>Expect</strong>,
-and where it matters a <strong>Listen for</strong>, because for this
-audience the spoken result <em>is</em> the result: a thing that happens
-silently has not happened.</p>
+Every scenario is a numbered walkthrough with a test id
+(<strong>T-1.1</strong>, <strong>T-9.3</strong>, …) so a run can be
+recorded as a list of ids marked PASS or FAIL. Each one tells you
+exactly what to press, what should happen, and – where it matters – the
+<strong>exact words</strong> you should hear, because for this audience
+the spoken result <em>is</em> the result: a thing that happens silently
+has not happened. Quoted announcements are the literal strings in the
+shipping code; if what you hear differs, write down both versions – the
+difference is the finding.</p>
 <p>Three settings worth knowing before you start:</p>
 <ul>
 <li><strong>Downloads land</strong> in
@@ -230,30 +235,8 @@ optional.</li>
 <hr />
 <h2 id="1-live-radio-the-ordinary-path">1. Live radio: the ordinary
 path</h2>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Find Stations -&gt; type <code>BBC World Service</code> -&gt;
-Enter</td>
-<td>Plays. Row says where it came from.</td>
-</tr>
-<tr>
-<td>Playback &gt; Stop, then Play again</td>
-<td>Resumes the same station.</td>
-</tr>
-<tr>
-<td>Ctrl+E (Sound Enhancements), move a slider</td>
-<td>Audible <strong>immediately</strong> – no gap, no reconnect.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Stations verified live:</strong></p>
+<p><strong>Stations verified live</strong> (for reference and for
+pasting directly):</p>
 <table>
 <thead>
 <tr>
@@ -276,147 +259,206 @@ Enter</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Listen for:</strong> a station that drops should say it is
-reconnecting, with an attempt number, and either “Reconnected” or an
-honest failure. It must <strong>not</strong> go silent. (Three attempts,
-at roughly 2, 5 and 15 seconds.)</p>
+<h3 id="t-11-search-play-stop-resume">T-1.1 Search, play, stop,
+resume</h3>
+<ol type="1">
+<li>Press <strong>Ctrl+F</strong> (Station &gt; Search Stations…). Focus
+lands in the search box.</li>
+<li>Type <code>BBC World Service</code> and press
+<strong>Enter</strong>.
+<ul>
+<li><strong>Expect:</strong> result rows arrive; each row says which
+source it came from.</li>
+</ul></li>
+<li>Press <strong>Enter</strong> on the BBC World Service row.
+<ul>
+<li><strong>Expect:</strong> it plays within a few seconds; the
+announcement names the station. PASS only if you both hear audio and
+hear the name.</li>
+</ul></li>
+<li>Open <strong>Playback &gt; Stop</strong>, wait two seconds, then
+<strong>Playback &gt; Play</strong>.
+<ul>
+<li><strong>Expect:</strong> the <strong>same</strong> station resumes –
+no re-search, no prompt.</li>
+</ul></li>
+</ol>
+<h3 id="t-12-sound-enhancements-are-live-not-queued">T-1.2 Sound
+Enhancements are live, not queued</h3>
+<ol type="1">
+<li>With a station playing, press <strong>Ctrl+E</strong> (Playback &gt;
+Sound Enhancements…).</li>
+<li>Move any slider a large step.
+<ul>
+<li><strong>Expect:</strong> the change is audible
+<strong>immediately</strong> – no gap, no silence, no reconnect. A
+stream that stutters or restarts here is a FAIL: enhancements apply to
+the running audio.</li>
+</ul></li>
+<li>Escape closes the dialog; playback is untouched.</li>
+</ol>
+<h3 id="t-13-a-dropped-stream-says-so">T-1.3 A dropped stream says
+so</h3>
+<p>Hard to stage on demand; if a drop happens during any test, this is
+the contract to check:</p>
+<ul>
+<li><strong>Listen for:</strong> the app saying it is
+<strong>reconnecting, with an attempt number</strong>, then either
+<em>“Reconnected”</em> or an honest failure.</li>
+<li>Three attempts come at roughly 2, 5 and 15 seconds.</li>
+<li>The one FAIL that matters most: the stream going <strong>silent with
+no announcement at all</strong>.</li>
+</ul>
 <hr />
 <h2 id="2-browse-stations-loading-and-the-two-kinds-of-empty">2. Browse
 Stations: loading, and the two kinds of empty</h2>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-<th>Listen for</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Open Browse Stations, expand <strong>Internet Archive</strong></td>
-<td>A “Loading…” row appears, then real rows</td>
-<td>“Loading…”, then a count: “24 items.”</td>
-</tr>
-<tr>
-<td>Expand a branch, then collapse and expand again</td>
-<td>Instant – it is not re-fetched</td>
-<td>The count again, no second “Loading…”</td>
-</tr>
-<tr>
-<td>Expand any network branch with the network <strong>off</strong></td>
-<td>The placeholder clears; the branch does not sit on “Loading…”
-forever</td>
-<td>“Nothing in X. It may be empty, or the source could not be
-reached.”</td>
-</tr>
-<tr>
-<td>Same branch again after reconnecting</td>
-<td>It <strong>retries</strong> – a branch that failed is not stuck</td>
-<td>Real rows this time</td>
-</tr>
-<tr>
-<td>Run in Safe Mode, expand <strong>TuneIn</strong></td>
-<td>Refuses by name</td>
-<td>“TuneIn is disabled in Safe Mode.”</td>
-</tr>
-<tr>
-<td>Pull the network, expand a fresh branch</td>
-<td>The decisive message, not the hedge</td>
-<td>“X could not be reached. Close and reopen it to try again.”</td>
-</tr>
-</tbody>
-</table>
-<p>This is the async-loading behaviour: the tree never blocks, every
-fetch is off the UI thread, and a failed branch can be retried by
-closing and reopening it.</p>
-<h3 id="choosing-which-branches-exist-at-all">Choosing which branches
-exist at all</h3>
-<p>Station &gt; Ch&amp;oose Browse Sources… The rule under test: a
-branch that is off is <strong>not in the tree and is never
-contacted</strong> – not hidden-but-fetched.</p>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Arrow the list</td>
-<td>Every row speaks its own state first: “On. LibriVox Audiobooks.
-Public-domain audiobooks, by chapter.” – with the group named on the
-first row of each run</td>
-</tr>
-<tr>
-<td>Turn LibriVox off, close, open Browse Stations</td>
-<td>No LibriVox branch anywhere; everything else untouched</td>
-</tr>
-<tr>
-<td>Turn Off everything, open Browse Stations</td>
-<td>One row only: “All sources are hidden. Choose Browse Sources from
-the menu to show some.”</td>
-</tr>
-<tr>
-<td>Reset to Default</td>
-<td>The summary line says the count; Explore (Wikidata) stays off by
-default, everything else on</td>
-</tr>
-<tr>
-<td>Restart the app</td>
-<td>The choice survived</td>
-</tr>
-<tr>
-<td>Find in this folder, on a ccMixter branch</td>
-<td>Each result row keeps its note – the licence rides along into search
-results</td>
-</tr>
-</tbody>
-</table>
+<p>The behaviour under test: the tree never blocks, every fetch runs off
+the UI thread, and a branch that failed can be retried by closing and
+reopening it.</p>
+<h3 id="t-21-loading-rows-and-the-cache">T-2.1 Loading rows, and the
+cache</h3>
+<ol type="1">
+<li>Open <strong>Browse Stations</strong> (Station &gt; Browse
+Stations…, or the Browse Stations… button on the main window).</li>
+<li>Arrow to <strong>Internet Archive</strong> and press <strong>Right
+arrow</strong> to expand.
+<ul>
+<li><strong>Listen for:</strong> a <em>“Loading…”</em> row first, then
+real rows and a count, e.g. <em>“24 items.”</em></li>
+</ul></li>
+<li>Collapse the branch (Left arrow), then expand it again.
+<ul>
+<li><strong>Expect:</strong> instant – the branch is
+<strong>not</strong> re-fetched.</li>
+<li><strong>Listen for:</strong> the count again, and <strong>no
+second</strong> “Loading…”.</li>
+</ul></li>
+</ol>
+<h3 id="t-22-the-two-kinds-of-empty">T-2.2 The two kinds of empty</h3>
+<ol type="1">
+<li>Disable your network (airplane mode, or pull the cable), then expand
+a branch you have <strong>not</strong> opened yet.
+<ul>
+<li><strong>Expect:</strong> the placeholder clears – the branch must
+never sit on “Loading…” forever.</li>
+<li><strong>Listen for</strong>, one of the two honest messages:
+<ul>
+<li>the hedge, when the tree cannot tell: <em>“Nothing in X. It may be
+empty, or the source could not be reached.”</em></li>
+<li>the decisive one, when it can: <em>“X could not be reached. Close
+and reopen it to try again.”</em></li>
+</ul></li>
+</ul></li>
+<li>Restore the network. Collapse and re-expand the same branch.
+<ul>
+<li><strong>Expect:</strong> it <strong>retries</strong> and real rows
+arrive – a failed branch is never stuck.</li>
+</ul></li>
+<li>Quit, restart with <code>--safe-mode</code>, open Browse Stations,
+expand <strong>TuneIn</strong>.
+<ul>
+<li><strong>Listen for:</strong> the refusal <strong>by name</strong>:
+<em>“TuneIn is disabled in Safe Mode.”</em></li>
+</ul></li>
+</ol>
+<h3 id="t-23-choosing-which-branches-exist-at-all">T-2.3 Choosing which
+branches exist at all</h3>
+<p>Open <strong>Station &gt; Choose Browse Sources…
+(Ctrl+Shift+Alt+O)</strong>. The rule under test: a branch that is off
+is <strong>not in the tree and is never contacted</strong> – not
+hidden-but-fetched.</p>
+<ol type="1">
+<li>Arrow down the list without toggling anything.
+<ul>
+<li><strong>Listen for:</strong> every row speaks its own state
+<strong>first</strong>: <em>“On. LibriVox Audiobooks. Public-domain
+audiobooks, by chapter.”</em> – and the group is named on the first row
+of each run.</li>
+</ul></li>
+<li>Turn <strong>LibriVox</strong> off (Space), press OK, open Browse
+Stations.
+<ul>
+<li><strong>Expect:</strong> no LibriVox branch anywhere; every other
+branch untouched.</li>
+</ul></li>
+<li>Reopen the dialog, turn <strong>everything</strong> off, OK, open
+Browse Stations.
+<ul>
+<li><strong>Expect:</strong> exactly one row: <em>“All sources are
+hidden. Choose Browse Sources from the menu to show some.”</em></li>
+</ul></li>
+<li>Reopen the dialog and press <strong>Reset to Default</strong>.
+<ul>
+<li><strong>Expect:</strong> the summary line states the count;
+<strong>Explore (Wikidata) stays off</strong> by default; everything
+else comes back on.</li>
+</ul></li>
+<li>Quit Quill Radio entirely and restart it, then reopen the dialog.
+<ul>
+<li><strong>Expect:</strong> your choices survived the restart.</li>
+</ul></li>
+<li>In Browse Stations, put the cursor on a <strong>ccMixter</strong>
+branch and use <strong>Find in this folder</strong> for any word.
+<ul>
+<li><strong>Expect:</strong> each result row keeps its note – the
+licence rides along into search results.</li>
+</ul></li>
+<li>Backspace the Find field to empty.
+<ul>
+<li><strong>Listen for:</strong> <em>“Search cleared. Back on …”</em>
+with the folder name – erasing the text is the same as clearing, the
+folder gets its normal children back, and your cursor returns to it.
+(New in this build; before it, erased text left stale results in the
+tree.)</li>
+</ul></li>
+</ol>
 <hr />
-<h2 id="3-find-stations-reaches-the-libraries">3. Find Stations reaches
-the libraries</h2>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Find Stations -&gt; <code>Middlemarch</code></td>
-<td>Radio stations first, then <strong>LibriVox</strong> rows as they
-arrive</td>
-</tr>
-<tr>
-<td>Find Stations -&gt; <code>Sherlock</code></td>
-<td><strong>Project Gutenberg</strong> audiobook rows appear</td>
-</tr>
-<tr>
-<td>Find Stations -&gt; <code>Johnny Dollar</code></td>
-<td><strong>Internet Archive</strong> recordings appear</td>
-</tr>
-<tr>
-<td>Find Stations -&gt; <code>The Rest Is History</code></td>
-<td>A <strong>Podcasts</strong> group appears</td>
-</tr>
-<tr>
-<td>Find Stations -&gt; <code>jazz</code></td>
-<td><strong>Audius</strong>, <strong>ccMixter</strong> and
-<strong>Mixcloud</strong> rows appear</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Listen for:</strong> libraries answer <em>after</em> the
-stations and you are told <strong>once</strong> when they have all
-reported – not five times. If you are already arrowing the results when
-one lands, your place must be kept.</p>
-<p><strong>The music three are the regression case.</strong> They
-shipped declared “cannot be searched”; all three publish a keyword
-search. A ccMixter row carries its licence in the row. A Mixcloud row
-says <em>“opens on Mixcloud in your browser”</em>
-<strong>before</strong> you press Enter.</p>
+<h2 id="3-search-stations-reaches-the-libraries">3. Search Stations
+reaches the libraries</h2>
+<h3 id="t-31-five-searches-five-sources">T-3.1 Five searches, five
+sources</h3>
+<p>For each row below: press <strong>Ctrl+F</strong>, type the query,
+press <strong>Enter</strong>, and wait for the late arrivals.</p>
+<ol type="1">
+<li><code>Middlemarch</code> – radio stations answer first, then
+<strong>LibriVox</strong> audiobook rows arrive.</li>
+<li><code>Sherlock</code> – <strong>Project Gutenberg</strong> audiobook
+rows appear.</li>
+<li><code>Johnny Dollar</code> – <strong>Internet Archive</strong>
+recordings appear.</li>
+<li><code>The Rest Is History</code> – a <strong>Podcasts</strong> group
+appears.</li>
+<li><code>jazz</code> – <strong>Audius</strong>,
+<strong>ccMixter</strong> and <strong>Mixcloud</strong> rows
+appear.</li>
+</ol>
+<ul>
+<li><strong>Listen for:</strong> the libraries answer <em>after</em> the
+stations, and you are told <strong>once</strong> when they have all
+reported – never five separate times.</li>
+<li><strong>Expect:</strong> if you are already arrowing the results
+when a late group lands, <strong>your place is kept</strong> – the
+cursor must not jump.</li>
+</ul>
+<h3 id="t-32-the-music-three-the-regression-case">T-3.2 The music three
+(the regression case)</h3>
+<p>These sources shipped declared “cannot be searched”; all three
+publish a keyword search, and the rows must carry their own truths:</p>
+<ol type="1">
+<li>On the <code>jazz</code> results, arrow to a
+<strong>ccMixter</strong> row.
+<ul>
+<li><strong>Expect:</strong> the licence is spoken <strong>in the
+row</strong> itself.</li>
+</ul></li>
+<li>Arrow to a <strong>Mixcloud</strong> row – <em>before</em> pressing
+anything.
+<ul>
+<li><strong>Expect:</strong> the row already says <em>“opens on Mixcloud
+in your browser”</em>. Being told after Enter is too late; the row is
+the consent.</li>
+</ul></li>
+</ol>
 <hr />
 <h2 id="4-podcasts-with-and-without-transcripts">4. Podcasts, with and
 without transcripts</h2>
@@ -550,7 +592,7 @@ Transcript… (Ctrl+Shift+T)</strong>.</li>
 <h3 id="t-51-opening-a-feed-transcript-without-playing-anything">T-5.1
 Opening a feed transcript without playing anything</h3>
 <ol type="1">
-<li>Reach a <em>Podcasting 2.0</em> episode row as in T-4.1 (Find
+<li>Reach a <em>Podcasting 2.0</em> episode row as in T-4.1 (Search
 Stations or the Browse tree – both carry the same context menu).</li>
 <li>Press the <strong>Applications key</strong> (or Shift+F10) on the
 episode row.</li>
@@ -1049,106 +1091,119 @@ described audio track could not be played.”</em> – never silence.</li>
 </ol>
 <h2 id="7-youtube-channels-and-playlists">7. YouTube channels and
 playlists</h2>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Link</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Browse Stations -&gt; YouTube Channels -&gt; Add a channel</td>
-<td><code>https://www.youtube.com/@TED</code></td>
-<td>Channel’s recent videos appear as rows</td>
-</tr>
-<tr>
-<td>Station &gt; Add from YouTube Playlist</td>
-<td><code>https://www.youtube.com/playlist?list=PLbpi6ZahtOH6Blw3RGYpWkSByi_T7Rygb</code></td>
-<td><strong>19 entries</strong> added as stations (verified count)</td>
-</tr>
-<tr>
-<td>Play one, then Ctrl+Shift+I</td>
-<td>–</td>
-<td>Size, frame rate, codec, and whether captions and described audio
-exist</td>
-</tr>
-</tbody>
-</table>
+<h3 id="t-71-following-a-channel">T-7.1 Following a channel</h3>
+<ol type="1">
+<li>Open <strong>Browse Stations</strong>, expand <strong>YouTube
+Channels</strong>, choose its Add action.</li>
+<li>Paste <code>https://www.youtube.com/@TED</code> and confirm.
+<ul>
+<li><strong>Expect:</strong> the channel’s recent videos appear as rows
+under the branch, each playable with Enter.</li>
+</ul></li>
+</ol>
+<h3 id="t-72-a-playlist-becomes-stations">T-7.2 A playlist becomes
+stations</h3>
+<ol type="1">
+<li>Open <strong>Station &gt; Add from YouTube Playlist…</strong></li>
+<li>Paste
+<code>https://www.youtube.com/playlist?list=PLbpi6ZahtOH6Blw3RGYpWkSByi_T7Rygb</code>
+and confirm.
+<ul>
+<li><strong>Expect:</strong> <strong>19 entries</strong> added as
+stations (that is the verified count for this playlist). More or fewer
+is a finding.</li>
+</ul></li>
+</ol>
+<h3 id="t-73-what-am-i-hearing-stream-facts">T-7.3 What Am I Hearing
+(stream facts)</h3>
+<ol type="1">
+<li>Play any of the added videos, then press
+<strong>Ctrl+Shift+I</strong>.
+<ul>
+<li><strong>Expect:</strong> size, frame rate, codec – and whether
+captions and described audio exist. This is also the quickest way to
+note your position before a track switch (T-6.5).</li>
+</ul></li>
+</ol>
 <hr />
 <h2 id="8-playlists-the-internet-actually-uses">8. Playlists the
 internet actually uses</h2>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Link</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Import a <code>.pls</code></td>
-<td><code>https://somafm.com/groovesalad.pls</code></td>
-<td>3 entries (verified); each playable</td>
-</tr>
-<tr>
-<td>Export favorites as M3U, re-import</td>
-<td>–</td>
-<td>Same stations, same order</td>
-</tr>
-<tr>
-<td>Paste a Live365 station page</td>
-<td>any <code>live365.com/station/...</code></td>
-<td>Rewritten to the real stream, and it says it did</td>
-</tr>
-</tbody>
-</table>
+<h3 id="t-81-import-a-pls">T-8.1 Import a .pls</h3>
+<ol type="1">
+<li>Download <code>https://somafm.com/groovesalad.pls</code> (a browser
+will save it as a small text file).</li>
+<li>Open <strong>Station &gt; Import Stations from Playlist…
+(Ctrl+I)</strong> and pick the file.
+<ul>
+<li><strong>Expect:</strong> <strong>3 entries</strong> (verified), each
+playable with Enter.</li>
+</ul></li>
+</ol>
+<h3 id="t-82-the-m3u-round-trip">T-8.2 The M3U round trip</h3>
+<ol type="1">
+<li>With a few favorites saved, open <strong>Station &gt; Export
+Favorites to Playlist… (Ctrl+Shift+X)</strong> and save an
+<code>.m3u</code>.</li>
+<li>Import that same file back with <strong>Ctrl+I</strong>.
+<ul>
+<li><strong>Expect:</strong> the same stations, in the same order.
+Anything lost or reordered is a FAIL.</li>
+</ul></li>
+</ol>
+<h3 id="t-83-live365-pages-become-streams">T-8.3 Live365 pages become
+streams</h3>
+<ol type="1">
+<li>Paste any <code>live365.com/station/...</code> <strong>page</strong>
+address where a stream URL is accepted (Search Stations, or Add
+Station).
+<ul>
+<li><strong>Expect:</strong> the page address is rewritten to the real
+stream, <strong>and the app says it did so</strong> – the correction is
+announced, not silent.</li>
+</ul></li>
+</ol>
 <hr />
 <h2 id="9-downloads--the-new-one-test-it-hardest">9. Downloads – the new
 one, test it hardest</h2>
-<h3 id="9-pre-download-preferences">9-pre. Download Preferences</h3>
-<p>Station &gt; &amp;Download Preferences… (also the &amp;Preferences…
-button inside View &gt; Downloads).</p>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Open it and just listen</td>
-<td>Focus lands in the folder field; its name says what blank means and
-where the default is</td>
-</tr>
-<tr>
-<td>Toggle any checkbox</td>
-<td>The sentence at the bottom updates – it always answers “what will
-happen to the next thing I save?”</td>
-</tr>
-<tr>
-<td>Turn on “Ask where to save”, OK, then Download a whole book</td>
-<td><strong>One</strong> folder prompt for the whole book – never one
-per chapter</td>
-</tr>
-<tr>
-<td>Cancel that prompt</td>
-<td>“Download cancelled. Nothing was queued.” – declining the ask never
-files things anyway</td>
-</tr>
-<tr>
-<td>Change the downloads folder, OK, download one file</td>
-<td>It lands under the new folder immediately – no restart</td>
-</tr>
-<tr>
-<td>Cancel the dialog after editing</td>
-<td>Nothing changed; the old rules still apply</td>
-</tr>
-</tbody>
-</table>
+<h3 id="t-90-download-preferences">T-9.0 Download Preferences</h3>
+<p>Open <strong>Station &gt; Download Preferences…
+(Ctrl+Alt+Shift+D)</strong> – also reachable via the
+<strong>Preferences…</strong> button inside View &gt; Downloads.</p>
+<ol type="1">
+<li>Open it and just listen, touching nothing.
+<ul>
+<li><strong>Expect:</strong> focus lands in the <strong>folder
+field</strong>, and its accessible name explains what blank means and
+where the default is.</li>
+</ul></li>
+<li>Toggle any checkbox.
+<ul>
+<li><strong>Expect:</strong> the summary sentence at the bottom updates
+– it always answers “what will happen to the next thing I save?”</li>
+</ul></li>
+<li>Turn on <strong>“Ask where to save each download instead of filing
+it automatically”</strong>, press OK, then queue a whole book (T-9.2).
+<ul>
+<li><strong>Expect:</strong> <strong>one</strong> folder prompt for the
+whole book – never one per chapter.</li>
+</ul></li>
+<li>Cancel that folder prompt.
+<ul>
+<li><strong>Listen for:</strong> <em>“Download cancelled. Nothing was
+queued.”</em> – declining the ask never files things anyway.</li>
+</ul></li>
+<li>Change the downloads folder, OK, download one file.
+<ul>
+<li><strong>Expect:</strong> it lands under the new folder
+<strong>immediately</strong> – no restart needed.</li>
+</ul></li>
+<li>Reopen the dialog, change things, then press
+<strong>Cancel</strong>.
+<ul>
+<li><strong>Expect:</strong> nothing changed; the old rules still
+apply.</li>
+</ul></li>
+</ol>
 <p><strong>Books verified live:</strong></p>
 <table>
 <thead>
@@ -1173,372 +1228,347 @@ files things anyway</td>
 </table>
 <p><strong>Music with a licence:</strong> ccMixter
 <code>Xtended Chords -- Javolenus</code>, licence <em>Attribution
-Noncommercial (4.0)</em> – search <code>jazz</code> in Find
-Stations.</p>
-<h3 id="9a-what-may-and-may-not-be-saved">9a. What may and may not be
-saved</h3>
-<table>
-<thead>
-<tr>
-<th>Row</th>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>A LibriVox chapter</td>
-<td>Right-click -&gt; Download…</td>
-<td>Queued; saved under <code>Books\</code></td>
-</tr>
-<tr>
-<td>A live station (BBC)</td>
-<td>Right-click</td>
-<td><strong>No</strong> Download item. Via the palette: <em>“A live
-station… has no end… Use Record Station”</em></td>
-</tr>
-<tr>
-<td>A Mixcloud row</td>
-<td>Right-click</td>
-<td>No Download. Refusal names Mixcloud and the browser</td>
-</tr>
-<tr>
-<td>A YouTube video</td>
-<td>Right-click</td>
-<td>No Download. <em>“deliberately does not download from
-YouTube”</em></td>
-</tr>
-<tr>
-<td>An Audius track</td>
-<td>Right-click</td>
-<td>No Download. <em>“the artist’s choice… does not guess”</em></td>
-</tr>
-<tr>
-<td>A ccMixter track</td>
-<td>Download</td>
-<td>Saved <strong>plus</strong> a <code>.licence.txt</code> beside
-it</td>
-</tr>
-</tbody>
-</table>
-<h3 id="9b-a-whole-book-and-the-queue">9b. A whole book, and the
+Noncommercial (4.0)</em> – search <code>jazz</code> in Search Stations
+(Ctrl+F).</p>
+<h3 id="t-91-what-may-and-may-not-be-saved">T-9.1 What may and may not
+be saved</h3>
+<p>For each row kind, open its context menu (Applications key or
+Shift+F10) and look for <strong>Download…</strong>:</p>
+<ol type="1">
+<li><strong>A LibriVox chapter</strong> (search
+<code>Middlemarch</code>, expand the book): Download is offered. Choose
+it.
+<ul>
+<li><strong>Expect:</strong> queued, and the file lands under
+<code>Books\</code>.</li>
+</ul></li>
+<li><strong>A live station</strong> (the BBC row): the menu has
+<strong>no Download item at all</strong>. Ask through the command
+palette instead and the refusal explains: <em>“A live station… has no
+end… Use Record Station”</em>.</li>
+<li><strong>A Mixcloud row</strong>: no Download; the refusal names
+Mixcloud and the browser.</li>
+<li><strong>A YouTube video</strong>: no Download; the refusal says
+Quill Radio <em>“deliberately does not download from YouTube”</em>.</li>
+<li><strong>An Audius track</strong>: no Download; the refusal cites
+<em>“the artist’s choice”</em> and says the app <em>“does not
+guess”</em>.</li>
+<li><strong>A ccMixter track</strong> (search <code>jazz</code>):
+Download is offered.
+<ul>
+<li><strong>Expect:</strong> the audio file saved <strong>plus a
+<code>.licence.txt</code> beside it</strong> – the licence travels with
+the music.</li>
+</ul></li>
+</ol>
+<h3 id="t-92-a-whole-book-and-the-queue">T-9.2 A whole book, and the
 queue</h3>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-<th>Listen for</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Open Middlemarch’s folder in Browse, right-click the folder</td>
-<td><strong>Download All 86 Files…</strong></td>
-<td>–</td>
-</tr>
-<tr>
-<td>Choose it</td>
-<td>One folder prompt, not 86</td>
-<td>“Queued Middlemarch… You can carry on listening.”</td>
-</tr>
-<tr>
-<td>Start a station playing while it runs</td>
-<td>Playback is unaffected</td>
-<td>–</td>
-</tr>
-<tr>
-<td><strong>View &gt; Downloads…</strong> (Ctrl+Shift+J)</td>
-<td>Queue window; rows read as sentences with state last</td>
-<td>“Chapter 4, Middlemarch, downloading now”</td>
-</tr>
-<tr>
-<td>Let several finish</td>
-<td>Finished rows <strong>stay</strong></td>
-<td>A heartbeat every few chapters: “12 of 86.”</td>
-</tr>
-<tr>
-<td>Select a finished row -&gt; Open Containing Folder</td>
-<td>Explorer opens <strong>on that file</strong></td>
-<td>–</td>
-</tr>
-<tr>
-<td>Select a waiting row -&gt; Cancel This One</td>
-<td>Cancelled; anything saved is kept</td>
-<td>–</td>
-</tr>
-<tr>
-<td>Remove From List on the <strong>running</strong> row</td>
-<td>Refused</td>
-<td>“That one is downloading now. Cancel it first.”</td>
-</tr>
-<tr>
-<td>Clear Finished, then Clear All</td>
-<td>List empties; disk untouched</td>
-<td>–</td>
-</tr>
-<tr>
-<td>Alt+F4 with downloads outstanding</td>
-<td>Per preference: keeps going <strong>or</strong> stops</td>
-<td>Either way it <strong>says which</strong> – this is the point</td>
-</tr>
-</tbody>
-</table>
-<h3 id="9c-where-things-land">9c. Where things land</h3>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Download one book by George Eliot</td>
-<td><code>Books\Middlemarch\</code> – <strong>no</strong> author
-folder</td>
-</tr>
-<tr>
-<td>Download a second by the same author</td>
-<td>The second goes in <code>Books\George Eliot\...</code></td>
-</tr>
-<tr>
-<td>Download a podcast episode</td>
-<td><code>Podcasts\&lt;show name&gt;\</code></td>
-</tr>
-<tr>
-<td>Download a ccMixter track</td>
-<td><code>Music\</code></td>
-</tr>
-<tr>
-<td>Turn off “folder per book”</td>
-<td>Chapters land directly in <code>Books\</code></td>
-</tr>
-</tbody>
-</table>
-<h3 id="9d-interruption">9d. Interruption</h3>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Start a book, kill the network mid-chapter</td>
-<td>That chapter fails; the <strong>next one still runs</strong></td>
-</tr>
-<tr>
-<td>Restore the network, download the same book again</td>
-<td>Part-finished files <strong>resume</strong> rather than restart</td>
-</tr>
-<tr>
-<td>Cancel mid-chapter</td>
-<td>Stops within seconds, not at the end of a 90 MB file</td>
-</tr>
-</tbody>
-</table>
+<ol type="1">
+<li>In Browse Stations, open Middlemarch’s folder (LibriVox), put the
+cursor <strong>on the folder</strong>, and open its context menu.
+<ul>
+<li><strong>Expect</strong> the item: <strong>Download All 86
+Files…</strong></li>
+</ul></li>
+<li>Choose it.
+<ul>
+<li><strong>Expect:</strong> at most <strong>one</strong> folder prompt
+(per T-9.0), never 86.</li>
+<li><strong>Listen for:</strong> <em>“Queued Middlemarch… You can carry
+on listening.”</em></li>
+</ul></li>
+<li>Start a live station playing while the book downloads.
+<ul>
+<li><strong>Expect:</strong> playback is completely unaffected.</li>
+</ul></li>
+<li>Open <strong>View &gt; Downloads… (Ctrl+Shift+J)</strong> and arrow
+the rows.
+<ul>
+<li><strong>Listen for:</strong> rows that read as sentences with the
+state <strong>last</strong>: <em>“Chapter 4, Middlemarch, downloading
+now”</em>.</li>
+</ul></li>
+<li>Let several chapters finish.
+<ul>
+<li><strong>Expect:</strong> finished rows <strong>stay</strong> in the
+list.</li>
+<li><strong>Listen for:</strong> a heartbeat every few chapters: <em>“12
+of 86.”</em></li>
+</ul></li>
+<li>Select a <strong>finished</strong> row and choose <strong>Open
+Containing Folder</strong>.
+<ul>
+<li><strong>Expect:</strong> Explorer opens <strong>with that file
+selected</strong> – not just the folder.</li>
+</ul></li>
+<li>Select a <strong>waiting</strong> row and choose <strong>Cancel This
+One</strong>.
+<ul>
+<li><strong>Expect:</strong> cancelled; anything already saved is
+kept.</li>
+</ul></li>
+<li>Try <strong>Remove From List</strong> on the
+<strong>running</strong> row.
+<ul>
+<li><strong>Listen for</strong> the refusal: <em>“That one is
+downloading now. Cancel it first.”</em></li>
+</ul></li>
+<li><strong>Clear Finished</strong>, then <strong>Clear All</strong>.
+<ul>
+<li><strong>Expect:</strong> the list empties; <strong>nothing on disk
+is touched</strong>.</li>
+</ul></li>
+<li>Press <strong>Alt+F4</strong> while downloads are still outstanding.
+<ul>
+<li><strong>Expect:</strong> per your preference, downloads keep going
+<strong>or</strong> stop – and either way the app <strong>says
+which</strong>. The saying is the point.</li>
+</ul></li>
+</ol>
+<h3 id="t-93-where-things-land">T-9.3 Where things land</h3>
+<p>Check the folder after each of these (default root:
+<code>Downloads\Quill Radio</code>):</p>
+<ol type="1">
+<li>Download one book by George Eliot.
+<ul>
+<li><strong>Expect:</strong> <code>Books\Middlemarch\</code> –
+<strong>no</strong> author folder yet.</li>
+</ul></li>
+<li>Download a second book by the same author.
+<ul>
+<li><strong>Expect:</strong> the second goes under
+<code>Books\George Eliot\...</code> – the author folder appears only
+when it disambiguates.</li>
+</ul></li>
+<li>Download a podcast episode: lands in
+<code>Podcasts\&lt;show name&gt;\</code>.</li>
+<li>Download a ccMixter track: lands in <code>Music\</code>.</li>
+<li>Turn <strong>off</strong> “folder per book” in Download Preferences,
+download a chapter: it lands <strong>directly</strong> in
+<code>Books\</code>.</li>
+</ol>
+<h3 id="t-94-interruption">T-9.4 Interruption</h3>
+<ol type="1">
+<li>Start a whole-book download, then kill the network mid-chapter.
+<ul>
+<li><strong>Expect:</strong> that chapter fails – and the <strong>next
+one still runs</strong>.</li>
+</ul></li>
+<li>Restore the network and download the same book again.
+<ul>
+<li><strong>Expect:</strong> part-finished files <strong>resume</strong>
+rather than restart from zero.</li>
+</ul></li>
+<li>Cancel a download mid-chapter.
+<ul>
+<li><strong>Expect:</strong> it stops within seconds – not at the end of
+a 90 MB file.</li>
+</ul></li>
+</ol>
 <hr />
 <h2 id="10-a-downloaded-book-plays-as-a-book">10. A downloaded book
 plays as a book</h2>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-<th>Listen for</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Play chapter 1 of a downloaded book</td>
-<td>Plays</td>
-<td>–</td>
-</tr>
-<tr>
-<td>Let it run to the end</td>
-<td><strong>Chapter 2 starts on its own</strong></td>
-<td>“2 of 86, …” – position first</td>
-</tr>
-<tr>
-<td>Check ordering on a book with 10+ chapters</td>
-<td>Chapter 2 comes before chapter 10</td>
-<td>–</td>
-</tr>
-<tr>
-<td>Play the <strong>last</strong> chapter to its end</td>
-<td>Stops, and says so</td>
-<td>“That was the last chapter of Middlemarch.”</td>
-</tr>
-<tr>
-<td>Rename a chapter file by hand, reopen</td>
-<td>The book simply reflects the change</td>
-<td>–</td>
-</tr>
-<tr>
-<td>Let a <strong>live station</strong> run and drop</td>
-<td>Reconnects – never treated as a book</td>
-<td>–</td>
-</tr>
-</tbody>
-</table>
+<p>Use the Middlemarch download from T-9.2.</p>
+<h3 id="t-101-chapters-chain-in-the-right-order">T-10.1 Chapters chain,
+in the right order</h3>
+<ol type="1">
+<li>Play chapter 1 of the downloaded book. It plays.</li>
+<li>Let it run to its end, hands off.
+<ul>
+<li><strong>Expect:</strong> <strong>chapter 2 starts on its
+own.</strong></li>
+<li><strong>Listen for:</strong> <em>“2 of 86, …”</em> – the position
+comes <strong>first</strong>.</li>
+</ul></li>
+<li>On a book with ten or more chapters, confirm chapter 2 plays before
+chapter 10 – numeric order, not text order.</li>
+<li>Play the <strong>last</strong> chapter to its end.
+<ul>
+<li><strong>Expect:</strong> playback stops, and says so.</li>
+<li><strong>Listen for:</strong> <em>“That was the last chapter of
+Middlemarch.”</em></li>
+</ul></li>
+</ol>
+<h3 id="t-102-the-book-is-just-the-folder">T-10.2 The book is just the
+folder</h3>
+<ol type="1">
+<li>Rename one chapter file by hand in Explorer, then reopen the book.
+<ul>
+<li><strong>Expect:</strong> the book simply reflects the change – no
+error, no ghost of the old name.</li>
+</ul></li>
+<li>Let a <strong>live station</strong> play and (if it happens) drop.
+<ul>
+<li><strong>Expect:</strong> it reconnects (T-1.3) – a live stream is
+<strong>never</strong> treated as a book with a next chapter.</li>
+</ul></li>
+</ol>
 <hr />
 <h2 id="11-continue-listening">11. Continue Listening</h2>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Get 20 minutes into a podcast episode, stop</td>
-<td>Appears in the list</td>
-</tr>
-<tr>
-<td>Get 10 minutes into a LibriVox chapter, stop</td>
-<td>Appears, labelled <strong>recording</strong></td>
-</tr>
-<tr>
-<td>Get 10 minutes into a downloaded file, stop</td>
-<td>Appears, labelled <strong>file on this computer</strong></td>
-</tr>
-<tr>
-<td>Open <strong>Continue Listening…</strong></td>
-<td>Newest first; every row names its kind and how far in</td>
-</tr>
-<tr>
-<td>Resume a row</td>
-<td>Starts where you left off</td>
-</tr>
-<tr>
-<td>Forget This One</td>
-<td>Row goes; the episode stays <strong>unplayed</strong></td>
-</tr>
-<tr>
-<td>Move a downloaded file, reopen the list</td>
-<td>That row is quietly <strong>absent</strong> – not offered and then
-failing</td>
-</tr>
-<tr>
-<td>Play the moved file again from its new place, stop</td>
-<td>It comes back</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Listen for:</strong> “2 things you did not finish, across
-recordings, podcasts.” A row this app cannot play (a radio recording
-inside Cast) must have Resume disabled and say which app has it.</p>
+<h3 id="t-111-three-kinds-of-unfinished-thing">T-11.1 Three kinds of
+unfinished thing</h3>
+<ol type="1">
+<li>Play a podcast episode for a couple of minutes, then
+<strong>Stop</strong>.</li>
+<li>Play a LibriVox chapter (streaming, not downloaded) for a minute,
+then Stop.</li>
+<li>Play a <strong>downloaded</strong> file for a minute, then
+Stop.</li>
+<li>Open <strong>Playback &gt; Continue Listening…
+(Ctrl+Shift+Alt+C)</strong>.
+<ul>
+<li><strong>Expect:</strong> all three appear, <strong>newest
+first</strong>, and every row names its <strong>kind</strong> and
+<strong>how far in</strong> you were – the streamed chapter labelled as
+a recording source, the downloaded one as a <em>file on this
+computer</em>.</li>
+<li><strong>Listen for</strong>, on opening: a summary like <em>“2
+things you did not finish, across recordings, podcasts.”</em></li>
+</ul></li>
+</ol>
+<h3 id="t-112-resume-forget-and-the-missing-file">T-11.2 Resume, forget,
+and the missing file</h3>
+<ol type="1">
+<li><strong>Resume</strong> a row.
+<ul>
+<li><strong>Expect:</strong> playback starts <strong>where you left
+off</strong> – not from zero.</li>
+</ul></li>
+<li>On another row choose <strong>Forget This One</strong>.
+<ul>
+<li><strong>Expect:</strong> the row goes; the episode itself stays
+<strong>unplayed</strong> – forgetting is not marking-as-done.</li>
+</ul></li>
+<li>Move a downloaded file somewhere else in Explorer, reopen the list.
+<ul>
+<li><strong>Expect:</strong> that row is quietly <strong>absent</strong>
+– never offered and then failing.</li>
+</ul></li>
+<li>Play the moved file from its new location for a minute, stop,
+reopen.
+<ul>
+<li><strong>Expect:</strong> it comes back, pointing at the new
+place.</li>
+</ul></li>
+<li>If the list offers something only another app can play (a radio
+recording that lives in Cast):
+<ul>
+<li><strong>Expect:</strong> Resume is disabled on that row, and the row
+<strong>says which app</strong> has it.</li>
+</ul></li>
+</ol>
 <hr />
 <h2 id="12-recording">12. Recording</h2>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Record a live station for 30 seconds, stop</td>
-<td>File exists <strong>and</strong> the stop is announced</td>
-</tr>
-<tr>
-<td>Record a station that produces no audio</td>
-<td>Reported as capturing nothing, and the empty file is deleted</td>
-</tr>
-<tr>
-<td>Schedule a recording in hours and minutes</td>
-<td>Separate Hours/Minutes boxes; “3” and “0” means three hours</td>
-</tr>
-</tbody>
-</table>
+<p>The Record button on the main window doubles as the stop control:
+while recording it reads <strong>“Stop Recording”</strong>, and returns
+to <strong>“Record”</strong> when recordings stop – so the button’s own
+label always tells you the state.</p>
+<h3 id="t-121-a-thirty-second-capture">T-12.1 A thirty-second
+capture</h3>
+<ol type="1">
+<li>Play a live station. Press the <strong>Record</strong> button (or
+Recording &gt; Record Now / Stop Recording).
+<ul>
+<li><strong>Expect:</strong> the button now reads <strong>Stop
+Recording</strong>.</li>
+</ul></li>
+<li>Wait about thirty seconds and press it again.
+<ul>
+<li><strong>Expect:</strong> the file exists (Recording &gt; Recordings…
+lists it), <strong>and the stop is announced</strong> – a silent stop is
+a FAIL.</li>
+</ul></li>
+</ol>
+<h3 id="t-122-honesty-about-empty-captures">T-12.2 Honesty about empty
+captures</h3>
+<ol type="1">
+<li>Record a station that is producing no audio (a dead stream).
+<ul>
+<li><strong>Expect:</strong> reported as capturing nothing, and the
+<strong>empty file is deleted</strong> – no zero-byte souvenirs.</li>
+</ul></li>
+</ol>
+<h3 id="t-123-scheduling-in-hours-and-minutes">T-12.3 Scheduling in
+hours and minutes</h3>
+<ol type="1">
+<li>Open <strong>Recording &gt; Schedule Recording…</strong>
+<ul>
+<li><strong>Expect:</strong> separate <strong>Hours</strong> and
+<strong>Minutes</strong> boxes – entering “3” and “0” means three hours,
+never three minutes.</li>
+</ul></li>
+</ol>
 <hr />
 <h2 id="13-safe-mode">13. Safe Mode</h2>
-<p>Run with <code>--safe-mode</code>.</p>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Expand any network branch</td>
-<td>Refuses <strong>by name</strong>, per branch</td>
-</tr>
-<tr>
-<td>Favorites, ACB Media, NFB Radio, Networks</td>
-<td>Still work – they need no network</td>
-</tr>
-<tr>
-<td>Try a download</td>
-<td>Refused before any request</td>
-</tr>
-<tr>
-<td>Find Stations</td>
-<td>Refuses; no request leaves the machine</td>
-</tr>
-</tbody>
-</table>
+<p>Quit and restart with <code>--safe-mode</code>.</p>
+<h3 id="t-131-refusals-are-per-branch-and-by-name">T-13.1 Refusals are
+per-branch and by name</h3>
+<ol type="1">
+<li>Open Browse Stations and expand any network branch.
+<ul>
+<li><strong>Expect:</strong> it refuses <strong>by name</strong>, per
+branch (T-2.2 step 3).</li>
+</ul></li>
+<li>Try Favorites, <strong>ACB Media</strong>, <strong>NFB
+Radio</strong>, and <strong>Networks</strong>.
+<ul>
+<li><strong>Expect:</strong> all still work – they need no network, and
+Safe Mode must not take them hostage.</li>
+</ul></li>
+<li>Try to download anything.
+<ul>
+<li><strong>Expect:</strong> refused <strong>before</strong> any request
+is made.</li>
+</ul></li>
+<li>Press Ctrl+F and search.
+<ul>
+<li><strong>Expect:</strong> refuses; no request leaves the
+machine.</li>
+</ul></li>
+</ol>
 <hr />
 <h2 id="14-spotify-optional-experimental">14. Spotify (optional,
 experimental)</h2>
 <p>Skip unless you have Premium and a Client ID. Nothing else in this
 plan depends on it.</p>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Search with Spotify enabled</td>
-<td>Rows appear alongside stations</td>
-</tr>
-<tr>
-<td>Try to download a Spotify row</td>
-<td><em>“copy-protected and cannot be saved by any app, including this
-one.”</em></td>
-</tr>
-<tr>
-<td>Try to record one</td>
-<td>Same refusal</td>
-</tr>
-</tbody>
-</table>
+<h3 id="t-141-rows-and-the-two-refusals">T-14.1 Rows, and the two
+refusals</h3>
+<ol type="1">
+<li>With Spotify enabled, search for an artist.
+<ul>
+<li><strong>Expect:</strong> Spotify rows appear alongside
+stations.</li>
+</ul></li>
+<li>Try to <strong>download</strong> a Spotify row.
+<ul>
+<li><strong>Listen for:</strong> <em>“copy-protected and cannot be saved
+by any app, including this one.”</em></li>
+</ul></li>
+<li>Try to <strong>record</strong> one: the same refusal.</li>
+</ol>
 <hr />
 <h2 id="15-the-quillville-menu">15. The QuillVille menu</h2>
-<table>
-<thead>
-<tr>
-<th>Do</th>
-<th>Expect</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Open the QuillVille menu</td>
-<td><strong>QUILL</strong> and <strong>Quill Weather</strong></td>
-</tr>
-<tr>
-<td>Look for Inkwell</td>
-<td><strong>Not there</strong> – deliberately off Radio’s menu for
-3.0</td>
-</tr>
-</tbody>
-</table>
+<h3 id="t-151-who-is-on-the-menu">T-15.1 Who is on the menu</h3>
+<ol type="1">
+<li>Open the <strong>QuillVille</strong> menu.
+<ul>
+<li><strong>Expect:</strong> <strong>QUILL</strong> and <strong>Quill
+Weather</strong>.</li>
+</ul></li>
+<li>Look for Inkwell.
+<ul>
+<li><strong>Expect:</strong> <strong>not there</strong> – deliberately
+off Radio’s menu for 3.0.</li>
+</ul></li>
+</ol>
 <hr />
 <h2 id="what-to-report">What to report</h2>
-<p>For anything that fails, the useful report is: what you did, what was
-<strong>said</strong>, and what you expected to hear. A silent failure
-is the most serious kind here – if something simply did nothing, that is
-worth reporting even when nothing looks broken.</p>
+<p>For anything that fails, the useful report is three things: the
+<strong>test id</strong> (T-9.2 step 8, say), what was
+<strong>said</strong> word for word, and what you expected to hear. A
+silent failure is the most serious kind here – if something simply did
+nothing, that is worth reporting even when nothing looks broken. A green
+run is the list of every T-number with PASS beside it.</p>
 </main>
 </body>
 </html>
