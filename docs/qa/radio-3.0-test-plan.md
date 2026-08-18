@@ -105,7 +105,14 @@ you press Enter.
 
 ## 4. Podcasts, with and without transcripts
 
-Three feeds that **do** publish Podcasting 2.0 tags (verified):
+Every step below was written against the shipping code: menu labels, key
+presses, and quoted announcements are the literal strings Quill Radio speaks.
+If what you hear differs from what is quoted, that difference **is the
+finding** -- write down both versions.
+
+### The test material
+
+Three feeds that **do** publish Podcasting 2.0 tags (verified live):
 
 | Show | Feed | Carries |
 | --- | --- | --- |
@@ -113,7 +120,8 @@ Three feeds that **do** publish Podcasting 2.0 tags (verified):
 | Buzzcast | `https://feeds.buzzsprout.com/1538779.rss` | transcript (HTML), chapters, people, funding |
 | No Agenda | `https://feed.nashownotes.com/rss.xml` | transcript (SRT), chapters, funding |
 
-Three that **do not** -- the "without" cases, equally important:
+Three that **do not** -- the "without" cases, equally important, because the
+honest absence message is as much a feature as the transcript:
 
 | Show | Feed |
 | --- | --- |
@@ -121,26 +129,133 @@ Three that **do not** -- the "without" cases, equally important:
 | 99% Invisible | `https://feeds.simplecast.com/BqbsxVfO` |
 | Radiolab | `https://feeds.simplecast.com/EmVW7VGp` |
 
-| Do | Expect |
-| --- | --- |
-| Browse Stations -> Podcasts (Apple) -> pick a country -> a genre -> a show | Episodes list; Enter plays |
-| Choose the **Arts** genre in a country's top chart | Results include Books, Design, Food -- **not** empty (this was the leaf-genre bug) |
-| Open an episode from a feed in the first table -> **About This Episode...** | Tabs for People, and Support; no empty tabs |
-| Same on a feed from the second table | Says plainly that the podcast published no extra details |
+The feed addresses are for reference (paste one into a browser to see exactly
+what the publisher declares); inside Quill Radio you reach these shows by
+name, as walked below.
+
+### T-4.1 Reaching a show and playing an episode
+
+1. Start Quill Radio normally (not Safe Mode).
+2. Press **Ctrl+F** (Station > Search Stations... -- the menu's own label;
+   older revisions of this plan call it "Find Stations"), type
+   `Podcasting 2.0`, press **Enter**.
+3. Wait for the results. Radio stations answer first; a **Podcasts** group
+   arrives after them, announced once when the libraries have all reported.
+4. Arrow to the *Podcasting 2.0* show row and press **Enter** or expand it.
+   - **Expect:** an episodes list, newest first. Each row reads as the
+     episode title.
+5. Press **Enter** on an episode.
+   - **Expect:** it plays. PASS if audio starts and the row/now-playing
+     announcement names the episode. FAIL if silence with no announcement.
+
+Repeat once with `The Rest Is History` (a no-tags feed) -- playing must be
+identical; the difference only appears in the transcript steps below.
+
+### T-4.2 The Apple browse path and the leaf-genre check
+
+1. Open **Browse Stations** from the Station menu.
+2. Expand **Podcasts (Apple)**, then a country (United States is fine).
+3. Expand the **Arts** genre in that country's top chart.
+   - **Expect:** rows for its sub-areas -- Books, Design, Food -- appear.
+   - **FAIL (this was a shipped bug):** the branch reads as empty. Arts is a
+     "leaf genre" upstream, and the old code showed nothing for it.
+4. Expand any show and press **Enter** on an episode: plays, as in T-4.1.
+
+### T-4.3 Where episode extras actually live (a correction)
+
+An earlier revision of this plan told you to open **About This Episode...**
+here. That window belongs to **QUILL Cast** (its Episode menu); Quill Radio
+deliberately stays the lightweight listener and does not carry it. What Radio
+offers on a podcast episode row is **View Transcript...** (next section) and
+the ordinary station actions. If you need People/Funding/Chapters tabs
+verified, run that check in Cast against the same three feeds.
 
 ---
 
 ## 5. Transcripts
 
-| Do | Expect | Listen for |
-| --- | --- | --- |
-| An episode from **Podcasting 2.0** -> Read Transcript... | Opens as a read-only text box | Arrow keys, word/line movement and your review cursor all behave normally |
-| Turn **Follow the audio** on | Caret tracks the spoken line | Nothing spoken per line -- silence here is correct |
-| Turn it off, arrow around | Playback never moves your caret | -- |
-| Enter on any line | Plays from there | "Playing from 4 minutes 12 seconds" -- words, never `4:12` |
-| Find a word | Jumps and says where | "Found at 12 minutes 8 seconds" |
-| Save As -> WebVTT, reopen it | Timings survive the round trip | -- |
-| An episode with no transcript | Says so; does not open an empty window | -- |
+Radio reads two kinds of transcript through **one shared reader window** (the
+same one Cast uses, on purpose, so they can never drift apart):
+
+- a **podcast episode's** transcript, declared in its feed -- readable
+  **without playing the episode**, from the episode row's context menu:
+  **View Transcript...**;
+- the **playing item's** transcript (a YouTube video's captions, or the
+  playing episode) -- from **Playback > Transcript... (Ctrl+Shift+T)**.
+
+### T-5.1 Opening a feed transcript without playing anything
+
+1. Reach a *Podcasting 2.0* episode row as in T-4.1 (Find Stations or the
+   Browse tree -- both carry the same context menu).
+2. Press the **Applications key** (or Shift+F10) on the episode row.
+3. Arrow to **View Transcript...** and press Enter.
+   - **Listen for**, immediately: *"Fetching transcript..."*
+   - **Expect:** the reader window opens with focus in a read-only text box,
+     one caption line per row. Nothing is playing -- fetching a transcript
+     must not start playback.
+4. Read around with arrow keys, word movement, and your screen reader's
+   review cursor.
+   - **Expect:** a completely ordinary text box. Any dead navigation key is
+     a FAIL.
+
+### T-5.2 The reader's controls, one by one
+
+Open a transcript via T-5.1 (or Ctrl+Shift+T while an episode plays), then:
+
+1. **Tab** to the checkbox labelled **"Follow the audio as it plays"** and
+   press Space to turn it on while the episode is playing.
+   - **Listen for:** *"Following the audio."*
+   - **Expect:** the caret moves to the line being spoken, re-synced about
+     twice a second. **Nothing is spoken per line -- silence here is
+     correct**; the transcript follows quietly and your screen reader only
+     speaks when *you* move.
+2. Turn the checkbox **off** and arrow around while playback continues.
+   - **Expect:** your caret never moves on its own. Reading always wins.
+3. Put the caret on any line and press **Enter**.
+   - **Listen for:** *"Playing from 4 minutes 12 seconds."* -- the position
+     of *that* line, **always words, never** `4:12`.
+   - **Expect:** the audio audibly jumps there.
+4. Use the reader's **Find** for a word you saw later in the text.
+   - **Listen for:** *"Found at 12 minutes 8 seconds."* (again: words), and
+     the caret lands on the match.
+5. Press the **Save As...** button. The format list offers, in this order:
+   **Plain text (.txt), WebVTT (.vtt), SubRip (.srt)**.
+   - Save as **WebVTT**, then open the saved file (Quill, or any editor).
+   - **Expect:** cue timings match what the reader spoke -- the round trip
+     loses nothing.
+
+### T-5.3 The honest absences
+
+Each of these must be a spoken sentence, never a silent nothing and never an
+empty window:
+
+1. **A feed with no transcript.** On a *Radiolab* or *99% Invisible* episode
+   row, the context menu simply **has no View Transcript... item** -- the
+   feed declares none, so the menu does not offer one. If the item appears
+   and opens an empty reader, FAIL.
+2. **A fetch that comes back empty.** If a feed declares a transcript that
+   cannot be read, the announcement is: *"No transcript could be read for
+   this one. The publisher may not have provided captions or a transcript
+   file."*
+3. **A live stream**, with Ctrl+Shift+T while a live station plays:
+   *"This is a live stream, so there is no transcript to read."*
+4. **A video with no captions**, Ctrl+Shift+T: *"This video has no captions
+   published, so there is no transcript."*
+5. **Safe Mode** (start with `--safe-mode`), View Transcript... on any row:
+   *"Transcripts are disabled in Safe Mode. Restart Quill Radio normally to
+   read them."* No request leaves the machine.
+6. **An unparsable transcript**: *"That transcript could not be read. It may
+   be in a form Quill cannot parse."*
+
+### T-5.4 Automatic captions are labelled automatic
+
+1. Play a YouTube video that has only automatic captions (most ordinary
+   uploads; the verified table in section 6 lists *human*-captioned ones, so
+   pick any casual video outside it).
+2. Press **Ctrl+Shift+T**.
+   - **Expect:** the reader opens, and its **heading says the transcript is
+     automatically generated**. A machine transcript presented as a human
+     one is a confident wrong answer -- the label is the feature.
 
 ---
 
@@ -160,14 +275,56 @@ bug described below. The MrBeast video is the multi-language check: every one
 of its twenty-four rows must read as a language name ("Tamil", "Bangla"), never
 a code ("ta"), a mangled fragment ("ta (mil)"), or a duplicate.
 
-| Do | Expect | Listen for |
-| --- | --- | --- |
-| Play one, then Ctrl+Shift+V | Picture appears **without restarting** the audio | "Video shown, 1280 by 720." |
-| Ctrl+Shift+V again | Picture goes; audio continues | "Video hidden. Audio is still playing." |
-| Ctrl+Shift+K | Captions on/off | Says plainly if they are automatic |
-| Caption Settings -> 300% | Text scales; background is **opaque** by default | -- |
-| F11 | Full screen | **Both** ways out stated on entry |
-| Ctrl+Shift+A (Audio and Described Audio) | Lists every track by name | -- |
+All of these commands live in the **Playback** menu; the keys quoted are the
+menu's own accelerators.
+
+### T-6.1 Showing the picture without losing the sound
+
+1. Play the TED talk from the table (paste its URL into Search Stations
+   (Ctrl+F), or Station > Add from YouTube). Let the audio establish for a
+   few seconds.
+2. Press **Ctrl+Shift+V** (Playback > Show Video).
+   - **Listen for:** *"Video shown, 1280 by 720."* (the numbers are the
+     video's real size).
+   - **Expect:** the picture appears and the audio **does not restart or
+     hiccup**. Any gap or position jump is a FAIL.
+   - The video window's own status line offers: *"Press Ctrl+Shift+T for
+     the transcript."*
+3. Press **Ctrl+Shift+V** again.
+   - **Listen for:** *"Video hidden. Audio is still playing."*
+   - **Expect:** exactly that -- audio continues.
+4. With the video shown, press **F11**.
+   - **Expect:** full screen, and the entry announcement states **both**
+     ways out -- do not accept an entry that only mentions one.
+
+### T-6.2 Captions
+
+1. With the TED talk playing and video shown, press **Ctrl+Shift+K**
+   (Playback > Captions).
+   - **Expect:** captions appear; the announcement says plainly when a
+     track is automatic (the TED talk's are human, so no such warning
+     here).
+2. Open **Playback > Caption Settings... (Ctrl+Shift+Alt+T)** and set the
+   size to 300%.
+   - **Expect:** the caption text visibly scales, and its background stays
+     **opaque** by default -- readable over any scene.
+3. Press **Ctrl+Shift+K** again: captions go, said out loud.
+
+### T-6.3 The track picker speaks the truth (Ctrl+Shift+A)
+
+1. Still on the TED talk, press **Ctrl+Shift+A** (Playback > Audio and
+   Described Audio...).
+   - **Expect:** the window **opens** -- it is never greyed out. Its list is
+     named *"Audio tracks for this video; a described track narrates what
+     is on screen"*, and above the list stands the heading: *"No described
+     audio was published for this video."*
+   - **Expect exactly one row**, "English". Four-to-six would mean the
+     codec/bitrate *formats* are leaking through as tracks again (the first
+     fixed bug below); zero or a duplicate row is the collapse bug.
+2. Escape out. Play the **MrBeast** video and press **Ctrl+Shift+A**.
+   - **Expect:** **twenty-four rows**, every one a language *name* --
+     "Tamil", "Bangla", "Japanese" -- never a code ("ta"), a fragment, or a
+     duplicate -- under the same honest heading: none of them is described.
 
 ### Described audio -- read this part
 
@@ -234,15 +391,23 @@ for both, and should never claim description on the plain one.
 | *Accessibility drives...* -- `https://www.youtube.com/watch?v=koAhcSTn-uU` | `https://www.youtube.com/watch?v=l3qRka9mECI` |
 | *Introduction to Disability and Accessibility* -- `https://www.youtube.com/watch?v=GGB_xreE3OU` | `https://www.youtube.com/watch?v=Kl4CT4DaypM` |
 
-#### Testing the absence path, which is the common case
+#### T-6.4 Testing the absence path, which is the common case
 
-| Do | Expect |
-| --- | --- |
-| Ctrl+Shift+A on the TED talk or Big Buck Bunny | Window **opens** (never greyed out): *"This video has one audio track, English. No described audio was published."* |
-| Ctrl+Alt+D on the same video | The same honest answer -- not silence |
-| Ctrl+Shift+A on the MrBeast video | All twenty-four dubbed tracks, each named as a language, and the same closing honesty: none of them is described |
-| Ctrl+Shift+A on a **described upload** from the table above | The same honest answer, and it is **correct**: the description is baked in, so there is genuinely one track. The picker must not invent a second |
-| Play a described upload through | Plays normally; description is simply the audio |
+1. Play the TED talk or Big Buck Bunny, press **Ctrl+Shift+A**.
+   - **Expect:** the window opens (never greyed out), heading *"No
+     described audio was published for this video."*, one row: English.
+2. Press **Ctrl+Alt+D** (Playback > Play Described Audio) on the same
+   video.
+   - **Expect:** the same honest answer spoken -- **never silence**.
+3. Press **Ctrl+Alt+D** while a **live station** plays.
+   - **Listen for:** *"This is a live stream, so it has no described audio
+     track to choose."*
+4. Press **Ctrl+Shift+A** on any **described upload** from the table above.
+   - **Expect:** the *absence* heading, and it is **correct**: for these
+     uploads the description is mixed into the only track. The picker must
+     not invent a second row.
+5. Play a described upload end to end.
+   - **Expect:** plays normally; the description simply *is* the audio.
 
 #### The presence path: videos with a real descriptive track, all verified
 
@@ -297,22 +462,35 @@ returns.
 **Worth re-checking on several videos** that the count is right in both
 directions: never a duplicate row, never a missing one.
 
-#### Walking the presence path
+#### T-6.5 Walking the presence path, step by step
 
-On each video in the presence table above, expect:
+Use the *ART LAB* introduction (`https://www.youtube.com/watch?v=UusppshIAio`)
+for the first full pass, then spot-check two or three others from the
+presence table.
 
-- On starting the video, **once**: *"Described audio is available for this
-  video. Press Ctrl+Alt+D to hear the narration of what is on screen."*
-- In Ctrl+Shift+A, the described track listed **first**, cursor already on it,
-  and a line **above** the list: *"Described audio is available for this
-  video."*
-- Ctrl+Alt+D switches straight to it, and the narration is audibly there -- on
-  the *ART LAB* introduction it begins over the opening titles.
-- Switching **keeps your position** -- it is a separate stream, and losing an
-  hour of a film to turn description on would defeat the feature exactly where
-  it matters most.
-- The ordinary track still listed and still labelled, so nobody who did not ask
-  for description is surprised by it.
+1. Play the video and just listen for a moment.
+   - **Listen for, exactly once:** *"Described audio is available for this
+     video. Press Ctrl+Alt+D to hear the narration of what is on screen."*
+   - FAIL if it repeats, and FAIL if it never comes.
+2. Press **Ctrl+Shift+A**.
+   - **Expect:** the heading above the list is *"Described audio is
+     available for this video."*, the **described track is listed first**,
+     and the **cursor is already on it** -- the user who came for
+     description does not hunt for it.
+   - **Expect:** the ordinary track is still listed and still labelled, so
+     nobody who did not ask for description gets surprised by it.
+3. Choose the described track (Enter), or Escape and press **Ctrl+Alt+D**.
+   - **Listen for:** *"Playing the described audio track."*
+   - **Expect:** the narration is audibly there -- on *ART LAB* it begins
+     over the opening titles. If the audio is indistinguishable from the
+     ordinary track, the wrong stream is playing: FAIL.
+4. Before switching, note your position (Ctrl+Shift+I reads it). Switch
+   tracks and check the position again.
+   - **Expect:** the position **survives the switch**. Losing an hour of a
+     film to turn description on would defeat the feature exactly where it
+     matters most.
+5. If the stream cannot be fetched, the honest failure is: *"The described
+   audio track could not be played."* -- never silence.
 
 ## 7. YouTube channels and playlists
 
