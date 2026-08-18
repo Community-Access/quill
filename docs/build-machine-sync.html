@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Getting two build machines to agree</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="getting-two-build-machines-to-agree">Getting two build machines
+to agree</h1>
+<p>Two checkouts at the same commit can produce installers tens of
+megabytes apart, and nothing in the build output says why. This is the
+procedure for finding the difference and closing it.</p>
+<p>Read this when: the same app builds to a different size on two
+machines, a release is unexpectedly larger than the last one, or you are
+setting up a new build machine and want it to produce byte-comparable
+output.</p>
+<h2 id="why-builds-drift">Why builds drift</h2>
+<p><code>standalone/runtime/quillville-runtime.spec</code> builds with
+<code>collect_all("quill")</code>. PyInstaller’s <code>Analysis</code>
+then follows every optional import the <code>quill</code> package makes
+and bundles whatever it finds <strong>importable on that
+machine</strong>. A package that is installed but undeclared ships
+silently; a package that is declared but missing silently stops
+shipping. Both cases exit 0.</p>
+<p>This is not hypothetical. Two recorded incidents:</p>
+<ul>
+<li>2026-08-15: Radio installers carried 81.8 MB of undeclared payload —
+pymupdf, a second OpenBLAS, pydantic, curl_cffi, pyphen, winrt, even
+hypothesis — swept out of one machine’s site-packages. The next build on
+a leaner machine came out 31 MB smaller with no code change.</li>
+<li>2026-08-09: Windows OCR (the <code>winrt-*</code> packages) shipped
+in that release and then silently vanished from the next one the same
+way.</li>
+</ul>
+<p>Four gates now cover this, and it helps to know which answers which
+question:</p>
+<table>
+<thead>
+<tr>
+<th>Gate</th>
+<th>Question it answers</th>
+<th>Runs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>scripts/check_build_env.py</code></td>
+<td>Is everything <code>[runtime]</code> needs installed? (the
+floor)</td>
+<td>before PyInstaller</td>
+</tr>
+<tr>
+<td><code>scripts/check_runtime_inventory.py</code></td>
+<td>Did a top-level package appear or vanish? (the ceiling)</td>
+<td>after the dist is complete</td>
+</tr>
+<tr>
+<td><code>scripts/check_runtime_imports.py</code></td>
+<td>Does everything in the box actually <em>work</em>?</td>
+<td>after the inventory gate</td>
+</tr>
+<tr>
+<td><code>scripts/build_fingerprint.py</code></td>
+<td><strong>What exactly differs between these two
+machines?</strong></td>
+<td>on demand</td>
+</tr>
+</tbody>
+</table>
+<p>The first three protect one machine from itself. The fourth is the
+one to reach for when two machines disagree, because it records sizes
+and versions, not just names.</p>
+<p>The import gate is the newest and answers a question the other two
+structurally cannot. They compare <em>names</em>; it runs the finished
+bundle and imports things. On 2026-08-17 that caught three speech
+engines that were present, resolved through <code>find_spec</code>, and
+raised the moment anything imported them — <code>vosk</code> (its engine
+DLL loads via cffi, which PyInstaller cannot see, so only its support
+libraries shipped), <code>faster_whisper</code> (needs <code>av</code>,
+a deliberate exclude) and <code>kokoro_onnx</code> (needs
+<code>onnxruntime</code>, likewise). Every build carrying them exited 0.
+It also enforces the rule that came out of that: a module installed on
+demand into <code>engine-packs</code> must never be frozen into the
+runtime, because the frozen copy shadows the pack permanently and cannot
+be overridden.</p>
+<h2 id="the-procedure">The procedure</h2>
+<h3 id="1-capture-on-both-machines">1. Capture on both machines</h3>
+<p>At the checkout root on each machine:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>python scripts\build_fingerprint<span class="op">.</span><span class="fu">py</span> capture <span class="op">--</span>label work <span class="op">-</span>o work<span class="op">.</span><span class="fu">json</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>python scripts\build_fingerprint<span class="op">.</span><span class="fu">py</span> capture <span class="op">--</span>label home <span class="op">-</span>o home<span class="op">.</span><span class="fu">json</span></span></code></pre></div>
+<p><code>capture</code> is read-only. It never installs, builds, or
+modifies anything, and anything it cannot find (no built runtime, no
+staged ffmpeg, no git) is recorded as absent rather than failing — so it
+works on a fresh clone.</p>
+<p>The JSON is small and safe to email or drop on a stick. It contains:
+the git commit/branch/dirty state, the interpreter path and version,
+every installed distribution and its version, the SHA-256 of each staged
+binary dependency, the byte size of every top-level item in the built
+runtime, and the size of every release artifact — the standalone apps’
+<code>standalone/*/dist</code> plus the main QUILL editor’s
+<code>dist/windows*</code> portable zips and compiled
+<code>Setup.exe</code>.</p>
+<p>For the contents comparison to mean anything, both machines should
+have built the shared runtime at least once:</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\standalone\runtime\build_runtime<span class="op">.</span><span class="fu">ps1</span></span></code></pre></div>
+<p>That is the whole command now. The runtime build no longer stages
+ffmpeg or libmpv and no longer takes <code>-FfmpegDir</code> /
+<code>-LibmpvDir</code>; the media apps add those to their own
+installers afterwards (<code>scripts\StageMediaTools.ps1</code>). If you
+are comparing two machines, build the shared runtime
+<strong>without</strong> staging on both, so you are comparing the same
+thing — a base runtime is 335 MB, one with the media tools added is 640
+MB, and mixing the two makes the report unreadable.</p>
+<p>If one side has no built runtime the report says so and still
+compares everything else.</p>
+<h3 id="2-compare-with-both-files-in-one-place">2. Compare, with both
+files in one place</h3>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>python scripts\build_fingerprint<span class="op">.</span><span class="fu">py</span> <span class="fu">compare</span> work<span class="op">.</span><span class="fu">json</span> home<span class="op">.</span><span class="fu">json</span></span></code></pre></div>
+<p><code>compare</code> always exits 0 so a drifted report can be read
+in peace. Add <code>--fail-on-drift</code> to exit 1 when anything that
+can change what a build ships differs — interpreter version, packages,
+staged binaries, runtime contents, artifact sizes — which lets a CI job
+or release script gate on it. Machine identity (commit, branch, dirty
+state, interpreter path, OS) is reported but never counted: two machines
+legitimately differ there. The final “Drift” section states the count
+either way.</p>
+<p>The report is plain text, one fact per line, in five sections:</p>
+<ul>
+<li><strong>Checkout and interpreter</strong> — commit, branch, dirty
+flag, Python version and path. Any difference here explains everything
+below it, so fix this first.</li>
+<li><strong>Release artifacts</strong> — every installer and zip, with
+the size delta. This is the symptom you started from.</li>
+<li><strong>Staged binary dependencies</strong> — ffmpeg, ffprobe,
+libmpv with SHA-256. These are ~300 MB of the payload and no
+import-based gate can see them.</li>
+<li><strong>Installed packages</strong> — present only on one side, or
+at different versions. This is where the answer usually is.</li>
+<li><strong>Built shared runtime</strong> — total size plus a per-item
+size delta for <code>_internal</code> and <code>tools</code>, sorted by
+how much each differs. <code>tools</code> is normally empty now; if it
+is populated on one side only, that side ran a media app’s release
+script rather than the plain runtime build.</li>
+</ul>
+<h3 id="3-fix-what-it-found">3. Fix what it found</h3>
+<p><strong>A package on one side only.</strong> Decide which machine is
+right.</p>
+<ul>
+<li>Genuinely needed: add it to the appropriate extra in
+<code>pyproject.toml</code>, make sure it is reachable from
+<code>[runtime]</code>, install it on the other machine, then
+rebaseline:
+<code>python scripts\check_runtime_inventory.py &lt;dist&gt; --write</code>.</li>
+<li>A stray: <code>pip uninstall &lt;name&gt;</code> on the machine that
+has it. Check what depends on it first — a stray is often a transitive
+dependency of a dev tool you installed into the same interpreter, which
+is an argument for keeping release builds on a clean system Python
+rather than a working venv.</li>
+</ul>
+<p><strong>Different versions.</strong> Usually harmless for size,
+occasionally not (a duplicated package ships its native libraries twice
+— <code>check_runtime_inventory.py</code> has a dedicated check for
+exactly that). Bring both to the pyproject floor:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m pip install <span class="op">-</span>e <span class="st">&quot;.[runtime,packaging]&quot;</span></span></code></pre></div>
+<p><strong>A staged-binary SHA mismatch.</strong> One machine is not
+building from the pinned, verified asset. Re-stage it:</p>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>python scripts\fetch_build_deps<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>only ffmpeg <span class="op">--</span>force</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>python scripts\fetch_build_deps<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>only libmpv <span class="op">--</span>force</span></code></pre></div>
+<p>Never pass <code>-FfmpegDir</code> pointing at a hand-assembled
+directory for a release — <code>build_release.ps1</code> refuses PATH
+auto-discovery on purpose, and the pinned asset is the stronger
+guarantee.</p>
+<p><strong>A runtime item that differs in size but not in name.</strong>
+This is the subtle one: same package, different payload. The pyenchant
+case below is the worked example.</p>
+<h3 id="4-lock-it-in">4. Lock it in</h3>
+<p>Once both machines agree, commit the rebaselined
+<code>standalone/runtime/runtime-inventory.json</code>. From then on the
+ceiling gate fails the build on either machine the moment the drift
+returns, naming the package.</p>
+<h2 id="which-interpreter-a-release-build-uses">Which interpreter a
+release build uses</h2>
+<p><code>scripts/BuildEnv.ps1</code> resolves the newest
+<em>installable</em> system CPython — never a checkout venv. A venv
+whose base interpreter moved still has a <code>python.exe</code> that
+fails several minutes into the build with a misleading error, and a
+drifted venv silently changes what ships. An
+<code>EXTERNALLY-MANAGED</code> interpreter (uv- or distro-managed) is
+skipped, because the build must be able to <code>pip install</code> the
+<code>[runtime]</code> closure into it.</p>
+<p>If two machines report different <code>executable</code> paths, that
+alone can account for a large size difference: they are two different
+package sets.</p>
+<h2 id="what-is-actually-in-the-box">What is actually in the box</h2>
+<p>The shared runtime is <strong>335.2 MB</strong> as of 2026-08-18,
+down from 734.9 MB. If your machine builds a number far from that, the
+fingerprint compare will say why.</p>
+<p>Top items, measured, real bytes:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>MB</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>quill</td>
+<td>56</td>
+<td>code + data (catalog seed, dictionaries, voice previews)</td>
+</tr>
+<tr>
+<td>pymupdf</td>
+<td>37.7</td>
+<td>documents; leaves every app but QUILL in Stage 3</td>
+</tr>
+<tr>
+<td>enchant</td>
+<td>26.8</td>
+<td>after the prune below; 20.2 MB of it is dictionaries</td>
+</tr>
+<tr>
+<td>wx</td>
+<td>23.1</td>
+<td></td>
+</tr>
+<tr>
+<td>numpy.libs</td>
+<td>20.0</td>
+<td></td>
+</tr>
+<tr>
+<td>PIL</td>
+<td>12.8</td>
+<td></td>
+</tr>
+<tr>
+<td>yt_dlp</td>
+<td>9.5</td>
+<td></td>
+</tr>
+<tr>
+<td>hf_xet</td>
+<td>9.1</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>A media app’s release script then adds <code>tools\ffmpeg</code> (194
+MB, ffmpeg + ffprobe) and <code>tools\mpv</code> (110 MB), SHA-256
+pinned, to its own installer — Radio takes both, Cast and Studio ffmpeg.
+Those 304 MB used to be in the runtime itself, so every app installed
+them; that is the single largest change here.</p>
+<p>Gone since the 3.0.0 measurement, and worth knowing so their absence
+does not read as drift: <code>ctranslate2</code> (59 MB),
+<code>vosk</code> (26 MB), <code>kokoro_onnx</code>,
+<code>phonemizer-fork</code>, <code>tokenizers</code> and
+<code>rdflib</code>. All are engine-pack-owned and were frozen in by
+accident; three of them did not work. See the import gate above.</p>
+<p>Radio itself imports almost none of the speech and spellcheck stack.
+The dead <code>standalone/radio/quill-radio.spec</code> still documents
+this — it excludes <code>faster_whisper</code>, <code>vosk</code>,
+<code>kokoro_onnx</code>, <code>onnxruntime</code>, <code>torch</code>,
+<code>PIL</code>, <code>pdfminer</code>, <code>pypdfium2</code> and
+<code>lxml</code> by name, with the note that QUILL uses them “only for
+features Radio never touches”.</p>
+<p>That spec is no longer built. Since the 3.0 shared-runtime switch,
+Radio’s installer is the delivery vehicle for a runtime deliberately
+sized as the union of every QuillVille app’s needs, QUILL included. That
+is the design: one runtime installed once at
+<code>%LOCALAPPDATA%\QuillVille\Runtime\3.13</code>, reused by Radio,
+Cast, Weather, Studio, Social and Inkwell. The per-app install stays
+tiny — <code>C:\qr</code> is a 24 KB native launcher, an icon, and
+docs.</p>
+<p>So the goal is not “make the runtime Radio-shaped”. It is “make the
+runtime contain nothing that no app can call”.</p>
+<h3 id="the-pyenchant-case-64-mb">The pyenchant case (~64 MB)</h3>
+<p><code>pyenchant</code>’s Windows wheel does not vendor libenchant and
+its dependencies — it vendors a slice of an MSYS2/mingw64
+<code>bin</code> directory. As shipped it carried Tcl/Tk, a second
+CPython (<code>libpython3.10.dll</code>), GNU readline and ncurses, the
+GCC support libraries (<code>libisl</code>, <code>libgmp</code>,
+<code>libmpfr</code>, <code>libmpc</code>, <code>libquadmath</code>),
+gettext’s translation <em>toolchain</em>, a private OpenSSL, SQLite, and
+34 MB of ICU. That is 67.6 MB of <code>bin</code> against the 20.2 MB of
+hunspell dictionaries that are the actual point.</p>
+<p>None of it is reachable from libenchant, and a PyInstaller
+<code>excludes</code> entry cannot drop any of it — to PyInstaller it is
+not code, it is package <em>data</em> swept in by
+<code>collect_all</code>.</p>
+<p><code>scripts/prune_enchant_payload.py</code> fixes this by computing
+the answer rather than hardcoding it: it parses the PE import table of
+<code>libenchant-2.dll</code> and each kept provider, walks the import
+graph transitively, and keeps exactly that closure. A future wheel
+linked against different libraries prunes correctly with no list to
+maintain. Link-only artefacts (<code>*.a</code>, <code>*.dll.a</code>,
+<code>*.la</code>) go too.</p>
+<p>It keeps the hunspell provider and drops nuspell, which is a second,
+unused spelling engine — every dictionary shipped is hunspell format —
+and is the only thing in the payload that pulls ICU. Dropping the
+provider drops 34 MB of ICU with it.</p>
+<p>Dictionaries are deliberately untouched. They are the payload, and 20
+MB is a fair price for spell checking that works in en_ZA.</p>
+<p>Result: 91.0 MB to 27.1 MB, verified end to end — identical
+<code>check()</code> results, identical <code>suggest()</code> output,
+<code>en_GB</code> and <code>en_ZA</code> still resolving. It runs as
+part of <code>build_runtime.ps1</code>, beside the existing prunes for
+<code>Pythonwin</code>, <code>*.chm</code>, <code>*.pdb</code> and
+<code>libx265*.dll</code>.</p>
+<h3 id="settled-since-this-was-written">Settled since this was
+written</h3>
+<ul>
+<li><strong><code>vosk\libstdc++-6.dll</code>, 25.4 MB.</strong> Moot,
+and the reason is worth keeping. It was one of three mingw support DLLs
+beside a <code>libvosk.dll</code> <strong>that was never in the bundle
+at all</strong> — the wheel loads its engine through cffi, which
+PyInstaller cannot follow. So there was nothing to test a smaller
+libstdc++ against. All 27.6 MB left with the <code>vosk</code>
+exclude.</li>
+<li><strong>Moving <code>fasterwhisper</code> / <code>vosk</code> /
+<code>kokoro</code> out of the runtime.</strong> Done, and it was not a
+trade-off after all: all three were already broken in the bundle and
+were shadowing the working on-demand engine packs. Excluding them cost
+no capability and restored three that had silently stopped working.
+About 96 MB.</li>
+</ul>
+<h3 id="still-on-the-table">Still on the table</h3>
+<ul>
+<li><strong>English dictionary variants, ~19 MB.</strong> 24 of the 48
+hunspell files are English locales (en_AG, en_BS, en_BW, en_BZ, en_DK,
+en_GH, en_HK, en_JM, en_NA, en_NG, en_PH, en_SG, en_TT, en_ZW and so on)
+at 0.84 MB each, most with identical word lists. Deduplicating them
+would break any user whose locale resolves to one of the dropped names,
+so it needs a mapping layer rather than a delete. The better move is the
+Stage 3 spell-check layer split: only QUILL the editor uses the spell
+checker, yet all eight apps ship its 27 MB.</li>
+<li><strong><code>ffprobe</code>, 97 MB.</strong> Genuinely used, for
+M4B/M4A chapter marks and track durations, so it cannot simply be
+dropped. A shared-library ffmpeg build could plausibly halve the 194 MB
+pair, but it needs building and testing first.</li>
+</ul>
+<h2 id="related">Related</h2>
+<ul>
+<li><code>scripts/build_fingerprint.py</code> — capture and compare</li>
+<li><code>scripts/check_build_env.py</code> — the floor</li>
+<li><code>scripts/check_runtime_inventory.py</code> — the ceiling</li>
+<li><code>scripts/check_runtime_imports.py</code> — does the box
+actually work</li>
+<li><code>scripts/StageMediaTools.ps1</code> — ffmpeg/libmpv into a
+media app’s installer</li>
+<li><code>scripts/prune_enchant_payload.py</code> — the enchant closure
+prune</li>
+<li><code>scripts/fetch_build_deps.py</code> — pinned ffmpeg / libmpv
+staging</li>
+<li><code>scripts/BuildEnv.ps1</code> — interpreter, ISCC and token
+resolution</li>
+<li><code>scripts/footprint_report.py</code> — a different question: the
+size of an <em>installed build tree</em>, release over release. Use that
+one for “is QUILL getting fatter?”; use
+<code>build_fingerprint.py</code> for “why do these two machines
+disagree?”</li>
+</ul>
+</main>
+</body>
+</html>
