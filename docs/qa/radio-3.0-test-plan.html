@@ -768,8 +768,9 @@ failed branch on this step is the old bug come back.</li>
 <li>The same-host rule applies: credentials are only ever sent to the
 feed’s own host, never to a redirect elsewhere.</li>
 </ol>
-<h3 id="t-411-the-shows-speed-follows-the-show">T-4.11 The show’s speed
-follows the show</h3>
+<h3
+id="t-411-the-shows-speed-follows-the-show--and-radio-remembers-yours">T-4.11
+The show’s speed follows the show – and Radio remembers yours</h3>
 <p>Setup: in Cast, set a show’s speed to 1.5x (Settings for This
 Podcast).</p>
 <ol type="1">
@@ -781,22 +782,51 @@ it.</li>
 </ul></li>
 <li>Press <strong>Ctrl+Alt+Up</strong> (Play Faster).
 <ul>
-<li><strong>Expect:</strong> speed steps up from 1.5x and is announced –
-the session control always wins over the saved speed.</li>
+<li><strong>Listen for:</strong> <em>“1.75 times speed. Remembered for
+this show.”</em> – the session control always wins over the saved speed,
+and from this press on, the speed you chose is <strong>Radio’s own
+memory for this show</strong>, kept separately from Cast’s setting.</li>
 </ul></li>
 <li>Play a different, ordinary station, then return to the show’s
 episode.
 <ul>
-<li><strong>Expect:</strong> 1.5x again (a fresh play with an untouched
-session rate re-reads the show’s speed).</li>
+<li><strong>Expect:</strong> <strong>1.75x</strong> – the speed
+<em>you</em> chose in Radio, not Cast’s 1.5x. Your choice in Radio
+outranks the Cast setting for this show, and Cast’s own setting is
+untouched (check it: still 1.5x there).</li>
 </ul></li>
 <li>While a session speed is active (say you pressed Play Faster on the
-previous item), play the 1.5x show’s episode.
+previous item), play the show’s episode.
 <ul>
 <li><strong>Expect:</strong> your <strong>session speed is kept</strong>
-– the saved speed only applies when you have not chosen one.</li>
+– a saved speed only applies when you have not chosen one this
+session.</li>
+</ul></li>
+<li>Press <strong>Ctrl+Alt+0</strong> (Normal Speed) while the episode
+plays.
+<ul>
+<li><strong>Listen for:</strong> <em>“Normal speed. This show will play
+at normal speed.”</em> – normal is the default, so the memory is
+forgotten rather than storing 1.0. The show now falls back to Cast’s
+setting (1.5x) on its next fresh play.</li>
+</ul></li>
+<li>Adjust speed while an ordinary station or video plays.
+<ul>
+<li><strong>Listen for:</strong> exactly the old announcement, with
+<strong>no</strong> “Remembered” suffix – only podcast episodes carry a
+show to remember for.</li>
 </ul></li>
 </ol>
+<p><strong>The engine rule (why a saved speed sometimes waits):</strong>
+a <em>downloaded</em> episode always auto-applies its saved speed – a
+local file has no network to fall behind. A <em>streamed</em> episode
+auto-applies it only on the mpv engine; on the Windows Media Player
+fallback engine (used when mpv is not available), rates on network
+streams are unreliable, so the saved speed <strong>stays saved</strong>
+and the episode starts at normal speed – Play Faster is still one
+keypress away, and your memory is intact for the next mpv or downloaded
+play. A speed starting silently wrong-and-stuttering would be worse than
+starting normal; this rule is that judgment written down.</p>
 <h3 id="t-412-podcasting-20-chapters-on-the-player">T-4.12 Podcasting
 2.0 chapters on the player</h3>
 <p>Use a chaptered feed from the section-4 table (Podcasting 2.0 and No

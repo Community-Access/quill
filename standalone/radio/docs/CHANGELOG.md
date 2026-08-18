@@ -54,6 +54,16 @@ timings, and three long-standing silent faults are fixed. See
 - **The show's speed follows the show.** A show set to 1.5x in Cast plays
   at 1.5x here, with no new settings surface -- and Play Faster/Slower
   always wins over it, exactly like the player's own speed re-apply.
+- **Radio remembers the speed you choose, per show.** Press Play Faster
+  while a podcast episode plays and the announcement adds *"Remembered
+  for this show."* -- that show's episodes start at your speed from then
+  on, outranking the Cast setting without ever writing to it. Normal
+  Speed forgets the memory out loud (*"This show will play at normal
+  speed."*); ordinary stations and videos speak exactly as before. A
+  saved speed auto-applies to downloaded episodes always, and to streamed
+  ones on the mpv engine; on the Windows Media Player fallback -- which
+  handles rate changes unreliably on network streams -- it stays saved
+  rather than stuttering, and Play Faster is still one keypress away.
 - **Podcast chapters on the player.** An episode whose feed publishes
   Podcasting 2.0 chapters gets them on the same chapter commands videos
   and audiobooks already have -- fetched in the background, publisher's

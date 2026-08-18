@@ -145,16 +145,23 @@ def test_an_ordinary_recording_never_touches_the_library(
 # -- the player-side application ----------------------------------------------
 
 
-def _host(station: RadioStation | None, *, rate: float = 1.0) -> SimpleNamespace:
+def _host(station: RadioStation | None, *, rate: float = 1.0, mpv: bool = True) -> SimpleNamespace:
+    engine = object()
     host = SimpleNamespace(
         _state=SimpleNamespace(station=station),
         _playback_rate=rate,
         _play_token=7,
         _youtube_stream=None,
         is_seekable=lambda: True,
+        # The saved-speed gate compares the live engine against the mpv one;
+        # mpv=False models the WMP fallback driving a network stream.
+        _engine=engine,
+        _mpv_engine=engine if mpv else None,
     )
     host.speed_calls = []
-    host.set_speed = lambda rate: host.speed_calls.append(rate)
+    # The controller's real method name -- an earlier stub called it
+    # set_speed and green-washed an AttributeError in shipped code.
+    host.set_playback_rate = lambda rate: host.speed_calls.append(rate)
     return host
 
 
@@ -174,6 +181,76 @@ def test_apply_profile_sets_the_shows_speed_once(
     chosen = _host(_episode_station(), rate=2.0)
     ep.apply_profile(chosen)
     assert chosen.speed_calls == []
+
+
+def test_saved_speed_stays_saved_on_the_wmp_fallback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A streamed episode on the WMP engine keeps normal speed: that engine
+    honours rates unreliably on network streams, so the saved speed waits
+    for mpv (or a downloaded file) instead of stuttering."""
+    _seed(tmp_path, speed=1.5)
+    from quill.core import paths
+
+    monkeypatch.setattr(paths, "app_data_dir", lambda: tmp_path)
+    host = _host(_episode_station(), mpv=False)
+    ep.apply_profile(host)
+    assert host.speed_calls == []
+
+
+def test_a_downloaded_file_applies_speed_on_any_engine(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core import paths
+    from quill.core.podcasts.radio_listens import remember_show_speed
+
+    monkeypatch.setattr(paths, "app_data_dir", lambda: tmp_path)
+    local = RadioStation(
+        name="Episode 1",
+        stream_url=r"C:\Users\me\Downloads\Quill Radio\Podcasts\show\ep1.mp3",
+        homepage=FEED,
+        source="Subscribed Podcasts",
+        is_recording=True,
+    )
+    remember_show_speed(tmp_path, FEED, 1.75)
+    host = _host(local, mpv=False)  # even on the WMP fallback
+    ep.apply_profile(host)
+    assert host.speed_calls == [1.75]
+
+
+def test_radios_remembered_speed_wins_over_casts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _seed(tmp_path, speed=1.5)  # Cast says 1.5x...
+    from quill.core import paths
+    from quill.core.podcasts.radio_listens import remember_show_speed
+
+    monkeypatch.setattr(paths, "app_data_dir", lambda: tmp_path)
+    remember_show_speed(tmp_path, FEED, 2.0)  # ...but the listener chose 2x here.
+    host = _host(_episode_station())
+    ep.apply_profile(host)
+    assert host.speed_calls == [2.0]
+
+
+def test_remember_speed_choice_round_trips_and_forgets_normal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core import paths
+    from quill.core.podcasts.radio_listens import remembered_show_speed
+
+    monkeypatch.setattr(paths, "app_data_dir", lambda: tmp_path)
+    host = _host(_episode_station(), rate=1.5)
+
+    assert ep.remember_speed_choice(host) == " Remembered for this show."
+    assert remembered_show_speed(tmp_path, FEED) == 1.5
+
+    host._playback_rate = 1.0
+    assert ep.remember_speed_choice(host) == " This show will play at normal speed."
+    assert remembered_show_speed(tmp_path, FEED) == 0.0
+
+    # An ordinary station adds nothing to the announcement and stores nothing.
+    live = _host(RadioStation(name="Jazz FM", stream_url="https://ice/x"), rate=2.0)
+    assert ep.remember_speed_choice(live) == ""
 
 
 def test_apply_profile_ignores_ordinary_stations(monkeypatch: pytest.MonkeyPatch) -> None:

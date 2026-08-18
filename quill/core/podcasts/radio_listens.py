@@ -237,3 +237,69 @@ def feed_credentials(data_dir: Path, feed_url: str) -> tuple[str, str]:
         return feed_auth.auth_for_url(show, show.feed_url)
     except Exception:  # noqa: BLE001 - no credentials is the safe answer
         return ("", "")
+
+
+# -- per-show speed, remembered on Radio's side --------------------------------
+# A speed the listener sets IN RADIO while a show's episode plays. Kept in
+# Radio's own small store rather than written into the shared library, for the
+# same clobber reason as the listen records above; Cast's own per-show speed
+# stays Cast's, and Radio's remembered speed wins locally when both exist.
+
+_SPEEDS_FILE = "radio-show-speeds.json"
+
+#: Shows kept when the speeds file is trimmed; a speed is one line, so this is
+#: effectively "every show anyone actually adjusts".
+_MAX_SPEEDS = 200
+
+
+def _speeds_path(data_dir: Path) -> Path:
+    return data_dir / _SPEEDS_FILE
+
+
+def _read_speeds(data_dir: Path) -> dict[str, float]:
+    try:
+        raw = json.loads(_speeds_path(data_dir).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    speeds: dict[str, float] = {}
+    for key, value in raw.items():
+        try:
+            speeds[str(key)] = float(value)
+        except (TypeError, ValueError):
+            continue
+    return speeds
+
+
+def remember_show_speed(data_dir: Path, feed_url: str, speed: float) -> None:
+    """Persist the speed *feed_url*'s episodes should play at in Radio.
+
+    ``speed == 1.0`` forgets the entry -- normal is the default, not a
+    preference. Never raises: losing a speed must never cost a playback.
+    """
+    feed = (feed_url or "").strip()
+    if not feed:
+        return
+    try:
+        speeds = _read_speeds(data_dir)
+        if float(speed) == 1.0:
+            speeds.pop(feed, None)
+        else:
+            speeds[feed] = float(speed)
+        if len(speeds) > _MAX_SPEEDS:
+            for stale in list(speeds)[: len(speeds) - _MAX_SPEEDS]:
+                speeds.pop(stale, None)
+        from quill.core.storage import write_json_atomic
+
+        write_json_atomic(_speeds_path(data_dir), speeds)
+    except Exception:  # noqa: BLE001 - best effort, never fatal
+        return
+
+
+def remembered_show_speed(data_dir: Path, feed_url: str) -> float:
+    """The speed Radio remembered for *feed_url*, or 0.0 when none is set."""
+    try:
+        return float(_read_speeds(data_dir).get((feed_url or "").strip(), 0.0))
+    except Exception:  # noqa: BLE001 - no memory is the safe answer
+        return 0.0

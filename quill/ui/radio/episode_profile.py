@@ -11,7 +11,12 @@ Radio write can never clobber Cast's open store:
   plays that show's episodes it is applied -- but only while the session rate
   is untouched (1.0), so Play Faster/Slower always wins, exactly like the
   controller's own silent speed re-apply after a load. Radio grows no
-  settings UI: the setting simply follows the show.
+  settings UI: the setting simply follows the show. On top of the Cast
+  setting, a speed the listener chooses *in Radio* while an episode plays is
+  remembered per show (:func:`remember_speed_choice`, a Radio-side store that
+  never touches the shared library) and wins over Cast's; auto-apply is gated
+  by :func:`_speed_applies_here` so a network stream on the WMP fallback
+  engine is never asked to time-stretch.
 * **Podcasting 2.0 chapters.** The feed's chapters file is fetched in the
   background (the play token guards against a stale fetch) and served through
   the same ``chapters()`` surface YouTube chapters use, so chapter
@@ -43,20 +48,71 @@ def apply_profile(host: Any) -> None:
     if station is None or str(getattr(station, "source", "")) not in PODCAST_EPISODE_SOURCES:
         return
     from quill.core.paths import app_data_dir
-    from quill.core.podcasts.radio_listens import episode_playback_profile
+    from quill.core.podcasts.radio_listens import episode_playback_profile, remembered_show_speed
 
+    feed_url = str(getattr(station, "homepage", "") or "")
     profile = episode_playback_profile(
         app_data_dir(),
-        feed_url=str(getattr(station, "homepage", "") or ""),
+        feed_url=feed_url,
         audio_url=str(getattr(station, "stream_url", "") or ""),
     )
-    # The show's saved speed, unless the listener already chose a session
-    # speed -- Play Faster/Slower always wins, and re-applying a chosen state
-    # silently is this controller's own precedent (_declare_source_shape).
-    if profile.speed != 1.0 and float(getattr(host, "_playback_rate", 1.0)) == 1.0:
-        host.set_speed(profile.speed)
+    # The speed this show should play at: a speed the listener set IN RADIO
+    # (remembered per show, Radio-side store) wins over Cast's library
+    # setting; either applies only while the session rate is untouched --
+    # Play Faster/Slower always wins, matching the controller's own silent
+    # speed re-apply precedent.
+    speed = remembered_show_speed(app_data_dir(), feed_url) or profile.speed
+    if (
+        speed != 1.0
+        and float(getattr(host, "_playback_rate", 1.0)) == 1.0
+        and _speed_applies_here(host, station)
+    ):
+        host.set_playback_rate(speed)
     if profile.chapters_url:
         _fetch_chapters_async(host, profile.chapters_url, profile.chapters_auth_header)
+
+
+def _speed_applies_here(host: Any, station: Any) -> bool:
+    """Whether a saved speed should auto-apply to this playback.
+
+    Always for a downloaded episode (a local file has no network to fall
+    behind), and for streamed episodes only on the mpv engine, which
+    time-stretches a bounded remote file cleanly. The WMP fallback engine
+    honours rates unreliably on network streams, so there the saved speed
+    stays saved and Play Faster remains one keypress away -- never a
+    stuttering surprise.
+    """
+    stream_url = str(getattr(station, "stream_url", "") or "")
+    if not stream_url.lower().startswith(("http://", "https://")):
+        return True  # a downloaded file: speed is purely local arithmetic
+    engine = getattr(host, "_engine", None)
+    mpv = getattr(host, "_mpv_engine", None)
+    return engine is not None and engine is mpv
+
+
+def remember_speed_choice(host: Any) -> str:
+    """Persist a listener's speed change for the playing show, per show.
+
+    Called by the Play Faster/Slower/Normal Speed commands. Returns the
+    suffix to append to their announcement -- "" when the playing row is not
+    a podcast episode, so ordinary videos and recordings speak exactly as
+    before. Setting normal speed forgets the entry: normal is the default,
+    not a preference worth storing.
+    """
+    state = getattr(host, "_state", None)
+    station = getattr(state, "station", None)
+    from quill.core.podcasts.radio_listens import PODCAST_EPISODE_SOURCES
+
+    if station is None or str(getattr(station, "source", "")) not in PODCAST_EPISODE_SOURCES:
+        return ""
+    from quill.core.paths import app_data_dir
+    from quill.core.podcasts.radio_listens import remember_show_speed
+
+    rate = float(getattr(host, "_playback_rate", 1.0))
+    remember_show_speed(app_data_dir(), str(getattr(station, "homepage", "") or ""), rate)
+    if rate == 1.0:
+        return " This show will play at normal speed."
+    return " Remembered for this show."
 
 
 def _fetch_chapters_async(host: Any, url: str, auth_header: str) -> None:
