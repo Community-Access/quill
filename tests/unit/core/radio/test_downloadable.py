@@ -41,6 +41,21 @@ def test_every_allowed_source_can_be_saved_and_says_on_what_basis(source: str) -
     assert decision.basis
 
 
+def test_every_surface_that_lists_podcast_episodes_can_download_them() -> None:
+    # The same episode reaches the menu under different source names depending
+    # on where it was found: "Podcasts (Apple)" from search results,
+    # "Apple Podcasts" from the browse tree, "Subscribed Podcasts" from
+    # Subscriptions. The allowlist knew only the first, so Download silently
+    # vanished from the tree (reported 2026-08-18). PODCAST_EPISODE_SOURCES is
+    # the canonical set of tree-side names -- pin the whole thing so a renamed
+    # source breaks here instead of dropping the menu item.
+    from quill.core.podcasts.radio_listens import PODCAST_EPISODE_SOURCES
+
+    for source in sorted(PODCAST_EPISODE_SOURCES) + ["Podcasts (Apple)"]:
+        decision = can_download(_row(source))
+        assert decision.allowed is True, f"Download missing for source {source!r}"
+
+
 def test_a_live_station_is_refused_and_pointed_at_the_command_that_works() -> None:
     # Not a rights refusal: a broadcast has no end, so there is no file. Wanting
     # to keep it is reasonable, and Record Station is how.

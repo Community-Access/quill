@@ -46,8 +46,13 @@ def rename_podcast_folder(dialog: Any, args: list[str]) -> None:
         name = entry.GetValue()
     from quill.core.paths import app_data_dir
     from quill.core.radio.podcast_follow import rename_podcast_folder as rename_op
+    from quill.ui.radio import browse_reveal
 
-    dialog._announce(rename_op(app_data_dir(), args[0], name) + " Refresh Podcasts to update.")
+    spoken = rename_op(app_data_dir(), args[0], name)
+    if browse_reveal.refetch_and_reveal(dialog, folder_id=args[0]):
+        dialog._announce(spoken)
+    else:
+        dialog._announce(spoken + " Refresh Podcasts to update.")
 
 
 def delete_podcast_folder(dialog: Any, args: list[str]) -> None:
@@ -69,8 +74,14 @@ def delete_podcast_folder(dialog: Any, args: list[str]) -> None:
         return
     from quill.core.paths import app_data_dir
     from quill.core.radio.podcast_follow import delete_podcast_folder as delete_op
+    from quill.ui.radio import browse_reveal
 
-    dialog._announce(delete_op(app_data_dir(), args[0]) + " Refresh Podcasts to update.")
+    spoken = delete_op(app_data_dir(), args[0])
+    # The folder is gone; reloading the branch is the whole reveal.
+    if browse_reveal.refetch_subscriptions(dialog):
+        dialog._announce(spoken)
+    else:
+        dialog._announce(spoken + " Refresh Podcasts to update.")
 
 
 def move_show_to_folder(dialog: Any, args: list[str]) -> None:
@@ -94,33 +105,126 @@ def move_show_to_folder(dialog: Any, args: list[str]) -> None:
     result = picker.show()
     if not result.confirmed:
         return
-    dialog._announce(
-        move_op(app_data_dir(), args[0], result.folder_id) + " Refresh Podcasts to update."
-    )
+    spoken = move_op(app_data_dir(), args[0], result.folder_id)
+    from quill.ui.radio import browse_reveal
+
+    # Reload the branch and walk the cursor to the show in its new folder --
+    # the tree showing the move IS the confirmation. The spoken fallback only
+    # fires if the selection somehow left the Subscriptions subtree.
+    if browse_reveal.refetch_and_reveal(dialog, feed_url=args[0]):
+        dialog._announce(spoken)
+    else:
+        dialog._announce(spoken + " Refresh Podcasts to update.")
 
 
 def mark_all_played(dialog: Any, args: list[str]) -> None:
-    """Mark All as Played..., confirmed -- the same verb and the same shared
-    state as Quill Cast's Episode menu, so the badge clears in both apps."""
-    wx = dialog._wx
+    """Mark All as Played... -- the same verb and the same shared state as
+    Quill Cast's Episode menu, so the badge clears in both apps.
+
+    Confirmed by name and count, until the listener checks Don't ask me again
+    (a shared preference: answered once, quiet in both apps). Afterwards the
+    branch reloads with the cursor kept on the show, so the badges clear on
+    screen the moment the verb speaks."""
     if not args:
         return
     from quill.core.paths import app_data_dir
     from quill.core.radio.podcast_follow import mark_show_played, unheard_for_feed
-    from quill.ui.dialog_contract import show_message_box
+    from quill.ui.podcasts.mark_played_confirm_dialog import confirm_mark_all_played
+    from quill.ui.radio import browse_reveal
 
     count = unheard_for_feed(app_data_dir(), args[0])
     name = dialog._tree.GetItemText(dialog._tree.GetSelection()).split(" (")[0]
+    if not confirm_mark_all_played(
+        dialog._win,
+        message=f"Mark all {count} unplayed episode(s) of {name} as played?",
+        announce=dialog._announce,
+    ):
+        return
+    spoken = mark_show_played(app_data_dir(), args[0])
+    if browse_reveal.refetch_and_reveal(dialog, feed_url=args[0]):
+        dialog._announce(spoken)
+    else:
+        dialog._announce(spoken + " Refresh Podcasts to update.")
+
+
+def mark_episode_played(dialog: Any, station: Any, *, played: bool) -> None:
+    """Mark one episode played or unplayed, from the episode's own row."""
+    from quill.core.paths import app_data_dir
+    from quill.core.radio.podcast_follow import mark_episode_played as mark_op
+    from quill.ui.radio import browse_reveal
+
+    feed = str(getattr(station, "homepage", "") or "")
+    audio = str(getattr(station, "stream_url", "") or "")
+    spoken = mark_op(app_data_dir(), feed, audio, played=played)
+    # Reload so the show's badge tells the new truth; the cursor comes back
+    # to the show row (its episode rows reload under it). Best effort -- the
+    # library edit itself already happened either way.
+    browse_reveal.refetch_and_reveal(dialog, feed_url=feed)
+    dialog._announce(spoken)
+
+
+def download_all_episodes(dialog: Any, args: list[str]) -> None:
+    """Queue every episode the library holds for this show, filed per show.
+
+    The same queue single downloads use (one at a time, resumable, spoken
+    progress) -- this only feeds it the whole list, with the show's title as
+    the folder group so everything lands under Podcasts\\<Show>\\.
+    """
+    if not args:
+        return
+    from quill.core.paths import app_data_dir
+    from quill.core.podcasts.subscriptions import load_library
+    from quill.core.radio.models import RadioStation
+    from quill.ui.radio import download_command
+
+    show = load_library(app_data_dir()).find_show_by_feed_url(args[0])
+    if show is None:
+        dialog._announce("That show is not in your subscriptions.")
+        return
+    rows = [
+        RadioStation(
+            name=episode.title or "Episode",
+            stream_url=episode.audio_url,
+            homepage=show.feed_url,
+            source="Subscribed Podcasts",
+            is_recording=True,
+        )
+        for episode in show.episodes
+        if episode.audio_url
+    ]
+    if not rows:
+        dialog._announce("The library has no episodes for this show yet. Open the show first.")
+        return
+    host = getattr(dialog, "_download_host", dialog)
+    download_command.download_book(host, rows, title=show.title or "Podcast")
+
+
+def remove_all_downloads(dialog: Any, args: list[str]) -> None:
+    """Delete this show's downloaded files, confirmed; the library is untouched."""
+    wx = dialog._wx
+    if not args:
+        return
+    from quill.core.paths import app_data_dir
+    from quill.core.radio import download_cleanup
+    from quill.core.radio.podcast_follow import show_facts_for_feed
+    from quill.ui.dialog_contract import show_message_box
+
+    _unheard, _episodes, title = show_facts_for_feed(app_data_dir(), args[0])
+    count = download_cleanup.downloaded_file_count(app_data_dir(), title)
+    if not count:
+        dialog._announce("There is nothing downloaded for that show.")
+        return
     answer = show_message_box(
-        f"Mark all {count} unplayed episode(s) of {name} as played?",
-        "Mark All as Played",
+        f"Remove {count} downloaded file(s) for {title or 'this show'}? "
+        "Your subscription and played state are untouched.",
+        "Remove All Downloads",
         wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
         dialog._win,
         announce=dialog._announce,
     )
     if answer != wx.YES:
         return
-    dialog._announce(mark_show_played(app_data_dir(), args[0]) + " Refresh Podcasts to update.")
+    dialog._announce(download_cleanup.remove_show_downloads(app_data_dir(), title))
 
 
 def import_opml(dialog: Any) -> None:

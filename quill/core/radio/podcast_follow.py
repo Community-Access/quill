@@ -217,15 +217,75 @@ def mark_show_played(data_dir: Path, feed_url: str) -> str:
 
 
 def unheard_for_feed(data_dir: Path, feed_url: str) -> int:
-    """Unplayed episodes for a followed feed, 0 when unknown (a local read)."""
+    """Unplayed episodes for a followed feed, 0 when unknown (a local read).
+
+    Counts through Radio's own finished-listen overlay, the same way the tree
+    badges do (see browse_libraries) -- so Mark All as Played's dimmed state
+    and its "all N" count never disagree with the badge beside the row.
+    """
     try:
+        from quill.core.podcasts.radio_listens import finished_audio_urls
         from quill.core.podcasts.sorting import unheard_count
         from quill.core.podcasts.subscriptions import load_library
 
         show = load_library(data_dir).find_show_by_feed_url((feed_url or "").strip())
-        return unheard_count(show) if show is not None else 0
+        if show is None:
+            return 0
+        return unheard_count(show, exclude_audio=finished_audio_urls(data_dir))
     except Exception:  # noqa: BLE001 - a menu must never fail on a library read
         return 0
+
+
+def show_facts_for_feed(data_dir: Path, feed_url: str) -> tuple[int, int, str]:
+    """``(unheard, episodes, title)`` for a followed feed, all from one read.
+
+    The context menu needs all three (Mark All's dimmed state, Download All
+    Episodes' count, and the downloads folder name); answering them from one
+    ``load_library`` keeps opening a menu at one file read. ``(0, 0, "")``
+    when unknown. Never raises.
+    """
+    try:
+        from quill.core.podcasts.radio_listens import finished_audio_urls
+        from quill.core.podcasts.sorting import unheard_count
+        from quill.core.podcasts.subscriptions import load_library
+
+        show = load_library(data_dir).find_show_by_feed_url((feed_url or "").strip())
+        if show is None:
+            return (0, 0, "")
+        unheard = unheard_count(show, exclude_audio=finished_audio_urls(data_dir))
+        episodes = sum(1 for e in show.episodes if e.audio_url)
+        return (unheard, episodes, show.title or "")
+    except Exception:  # noqa: BLE001 - a menu must never fail on a library read
+        return (0, 0, "")
+
+
+def mark_episode_played(data_dir: Path, feed_url: str, audio_url: str, *, played: bool) -> str:
+    """Set one episode's played flag in the shared library, and save.
+
+    The same explicit-verb precedent as :func:`mark_show_played`: a deliberate
+    Mark as Played is a library edit in either app, distinct from the
+    append-only listening handoff. Marking played also clears the position,
+    Cast's own convention for a finished episode; marking unplayed leaves the
+    position alone (part-heard is a true state). Returns the announcement.
+    """
+    from quill.core.podcasts.subscriptions import load_library, save_library
+
+    library = load_library(data_dir)
+    show = library.find_show_by_feed_url((feed_url or "").strip())
+    if show is None:
+        return "That show is not in your subscriptions."
+    audio = (audio_url or "").strip()
+    episode = next((e for e in show.episodes if e.audio_url == audio), None)
+    if episode is None:
+        return "That episode is not in the library yet. Refresh the show first."
+    if bool(episode.played) == played:
+        return f"Already marked {'played' if played else 'unplayed'}."
+    episode.played = played
+    if played:
+        episode.position_ms = 0
+    save_library(data_dir, library)
+    title = episode.title or "Episode"
+    return f"Marked {title} as {'played' if played else 'unplayed'}."
 
 
 def move_show_to_folder(data_dir: Path, feed_url: str, folder_id: str | None) -> str:

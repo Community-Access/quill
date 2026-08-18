@@ -283,16 +283,23 @@ All on the Browse tree's context menu (Applications key / Shift+F10):
      Cast."* -- and the branch refreshes to show it.
 2. On a **show row**: choose **Move to Folder...**.
    - **Expect:** the same folder picker Cast's manager opens (search box,
-     tree, inline New Folder). Pick `Tech`.
-   - **Listen for:** *"Moved <show> to Tech. Refresh Podcasts to update."*
+     tree, inline New Folder). Arrow to `Tech` **and press Enter** -- Enter
+     in the folder tree confirms the move, exactly like the Move Here
+     button. (Enter doing nothing here was a reported bug; it is a FAIL.)
+   - **Listen for:** *"Moved <show> to Tech."* -- with **no** "Refresh
+     Podcasts" instruction, because the tree does it: the branch reloads
+     itself and **the cursor lands on the show inside its new folder**,
+     already visible. Having to refresh by hand, or finding the cursor
+     dumped somewhere else, is a FAIL.
 3. On the **Tech folder row**: **Rename Folder...** to `Technology`.
-   - **Listen for:** *"Renamed Tech to Technology. Refresh Podcasts to
-     update."*
+   - **Listen for:** *"Renamed Tech to Technology."* -- and the tree shows
+     the new name at once, cursor on the renamed folder.
 4. On the folder row: **Delete Folder...**.
    - **Expect** a confirmation that says what deletion means: contents
      move up a level, **nothing is unsubscribed**.
    - **Listen for:** *"Deleted folder Technology. Its podcasts moved up a
-     level; nothing was unsubscribed."*
+     level; nothing was unsubscribed."* -- and the folder is gone from the
+     tree without a refresh.
 5. Open Cast's manager.
    - **Expect:** every one of those changes is simply there.
 
@@ -329,16 +336,27 @@ export, was the acceptance file for this feature).
 1. On a subscribed show row **with** unheard episodes, open the context
    menu.
    - **Expect:** **Mark All as Played...** is enabled. Choose it.
-   - **Expect** a confirmation naming the show and the count; accept it.
-   - **Listen for:** *"Marked N episodes of <show> as played. Refresh
-     Podcasts to update."*
-2. Reopen the same row's menu after refreshing.
+   - **Expect** a confirmation naming the show and the count, with a
+     **"Don't ask me again" checkbox** (leave it unchecked for now) and
+     **Mark Played** as the default button. Accept it.
+   - **Listen for:** *"Marked N episodes of <show> as played."* -- and the
+     branch reloads by itself: **the show's unheard badge is gone on
+     screen immediately**, its folder's badge shrank to match, and the
+     cursor is back on the show. A "Refresh Podcasts" chore here is a
+     FAIL.
+2. Reopen the same row's menu.
    - **Expect:** the item is still **there** but **dimmed** -- the verb
      belongs to the row; its state is "done". A vanished item is a FAIL.
-3. In **QUILL Cast**: the Episode menu's Mark All as Played and the
-   manager tree's context item now dim the same way when the show has
-   nothing unheard.
-4. Back in Radio, check the show's badge: gone, in both apps.
+3. Mark another show, and this time **check "Don't ask me again"** before
+   accepting.
+   - **Expect:** from now on Mark All as Played runs with no question --
+     in Radio **and in QUILL Cast**: one answer, both apps, because it is
+     the same verb over the same library. (Cancelling with the box checked
+     must change nothing -- the question returns next time.)
+4. In **QUILL Cast**: the Episode menu's Mark All as Played and the
+   manager tree's context item dim the same way when the show has nothing
+   unheard, and honor the same don't-ask answer.
+5. Back in Radio, check the show's badge: gone, in both apps.
 
 ### T-4.9 A Cast position continues in Radio (and the furthest point wins)
 
@@ -428,6 +446,102 @@ Agenda both publish chapters).
    - **Expect:** the chapter commands answer exactly as they do on an
      unchaptered video -- the honest "no chapters" path, never an invented
      marker.
+
+### T-4.13 Downloading episodes: one, all, and taking them back
+
+1. On any **podcast episode row** (Search Stations or the Browse tree),
+   open the context menu.
+   - **Expect:** **Download...** is on the menu. (Its absence on browse
+     and subscription episodes was a reported bug -- the menu offered it
+     only on search results. A missing Download here is that bug back.)
+2. Choose it, then when the queue reports the save, find the file.
+   - **Expect** it filed as `Downloads\Quill Radio\Podcasts\<Show>\<Episode>`
+     -- under its **show's own folder**, exactly where Download All puts
+     things. A bare file under `Recordings\` is the old filing bug.
+3. On a **subscribed show row**: open the context menu.
+   - **Expect:** **Download All N Episodes...** with the library's own
+     count -- offered even if you have never expanded the show, because
+     the library already knows the list. Dimmed only when the library has
+     no episodes yet.
+4. Choose it.
+   - **Listen for:** the queue summary ("Queued ... You can carry on
+     listening.") -- downloads run one at a time in the background, and
+     everything lands under the show's folder.
+5. Same row: **Remove All Downloads...**.
+   - **Expect:** present always, **dimmed** when nothing is downloaded.
+     With files present it confirms with the real file count and says the
+     part that matters: *"Your subscription and played state are
+     untouched."*
+   - **Listen for**, after accepting: *"Removed N downloaded files."* --
+     and the files are gone from the show's folder, while the show, its
+     episodes, and every badge stay exactly as they were.
+6. In **QUILL Cast**, right-click the same show in the library tree.
+   - **Expect:** **Download All Episodes** (already there) now has its
+     counterpart **Remove All Downloads...** beside it, honoring Keep
+     This Episode: protected episodes are skipped and the announcement
+     says how many were kept.
+
+### T-4.14 Marking one episode, and badges that believe your ears
+
+1. On a **subscribed** show's episode row, open the context menu.
+   - **Expect:** **Mark Episode as Played** on an unplayed episode, or
+     **Mark Episode as Unplayed** on a played one -- one direction at a
+     time, never both.
+2. Choose Mark Episode as Played.
+   - **Listen for:** *"Marked <episode> as played."* -- the branch reloads
+     and the show's unheard badge is one lower, immediately.
+3. Now play a different episode of the show **to the end** (or use the
+   seek commands to reach the last seconds and let it finish).
+   - **Expect:** back in the tree, the show's badge is **already one
+     lower** -- without opening Quill Cast, without refreshing by hand.
+     Radio counts its own finished listening the moment it happens; the
+     shared library still learns it at Cast's next launch, exactly as
+     before. (A badge that keeps counting an episode you just finished
+     was the reported bug.)
+4. Episode rows of a show you are **not** subscribed to carry no mark
+   item at all -- there is no library state to edit.
+
+### T-4.15 Search: everything at once, or one source intelligently
+
+1. Open Browse Stations (Ctrl+B).
+   - **Expect:** the **first row of the tree** is **Search All
+     Sources...** -- above Favorites, always present (hiding sources
+     never hides it).
+2. Press **Enter** on it.
+   - **Expect:** the Search Stations window opens with focus in the
+     search box and the Source filter on **All sources** -- one query,
+     every provider's own search engine (Radio Browser, iHeart, TuneIn,
+     Podcasts, YouTube, Spotify...), results interleaved with their
+     source named on each row. This is the same window as Station >
+     Search Stations; the tree row is simply the door from inside.
+3. Now open the context menu on a **top-level source** that has a search
+   engine -- **Podcasts (Apple)**, **iHeart**, **TuneIn**, **YouTube**.
+   - **Expect:** **Search This Source...** on the menu.
+4. Choose it on **Podcasts (Apple)** and search something.
+   - **Expect:** the same search window, but the Source filter is already
+     on **Podcasts** -- standing on podcasts searches podcasts. The facet
+     is preset for this opening only; your own remembered filter comes
+     back next time you open search normally.
+5. Sources with no search engine of their own (Weather / NOAA, NFB
+   Radio...) have no Search This Source item -- a search that could not
+   actually be scoped would be a lying menu row.
+
+### T-4.16 The row's own verbs: record it, schedule it, rename it
+
+1. On any **live station row** in the browse tree, open the context menu.
+   - **Expect:** **Record This Station...** and **Schedule Recording...**
+     -- the same two commands the Record menu carries, pre-filled with
+     *this row's* station instead of whatever is playing.
+2. Choose Record This Station...
+   - **Expect:** the Record Station dialog opens with the row's station
+     already chosen; a machine without ffmpeg gets the usual honest
+     refusal instead.
+3. On a station you have **added to Favorites**, reopen the menu.
+   - **Expect:** **Rename Favorite...** -- the same custom-name prompt the
+     Favorites manager offers, in place. Blank restores the directory's
+     own name.
+4. Episode and chapter rows (recordings) offer **no** Record items --
+   a recording is downloaded, not recorded; both verbs stay honest.
 
 ---
 

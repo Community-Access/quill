@@ -67,6 +67,40 @@ DELETE_PODCAST_FOLDER = "podcastfolder.delete"
 MOVE_SHOW_TO_FOLDER = "podcast.move_to_folder"
 MARK_ALL_PLAYED = "podcast.mark_all_played"
 IMPORT_OPML = "podcast.import_opml"
+DOWNLOAD_ALL_EPISODES = "podcast.download_all_episodes"
+REMOVE_DOWNLOADS = "podcast.remove_downloads"
+MARK_EPISODE_PLAYED = "podcast.mark_episode_played"
+MARK_EPISODE_UNPLAYED = "podcast.mark_episode_unplayed"
+RECORD_STATION = "station.record"
+SCHEDULE_RECORDING = "station.schedule_recording"
+RENAME_FAVORITE = "favorite.rename"
+SEARCH_SOURCE = "source.search"
+
+#: Root sources whose contents Find Stations can search with the provider's
+#: own engine, mapped to the Source facet the search dialog opens on. This is
+#: what makes "Search This Source..." intelligent: standing on Podcasts
+#: searches podcasts, standing on iHeart searches iHeart -- each through the
+#: same federated search window the Station menu opens, pre-narrowed.
+SEARCHABLE_SOURCES: dict[str, str] = {
+    "popular": "Radio Browser",
+    "trending": "Radio Browser",
+    "recent": "Radio Browser",
+    "rbcountry": "Radio Browser",
+    "rblang": "Radio Browser",
+    "rbgenre": "Radio Browser",
+    "rbcodec": "Radio Browser",
+    "acb": "ACB Media",
+    "soma": "SomaFM",
+    "tunein": "TuneIn",
+    "iheart": "iHeart",
+    "apple": "Podcasts",
+    "youtube": "YouTube",
+    # These two must equal the modules' CATEGORY_LABELs -- the facet dropdown
+    # is built from those constants, and a mismatched string opens the dialog
+    # on "All sources" silently.
+    "m3u": "Community M3U",
+    "xiph": "Xiph",
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -111,6 +145,14 @@ class FolderState:
     #: (a local read). Drives Mark All as Played's enabled state: the verb
     #: is always on a subscribed show's menu, dimmed when nothing is unheard.
     unheard: int = 0
+    #: Episodes the shared library holds for this subscribed show (a local
+    #: read). Lets Download All Episodes appear before the branch is ever
+    #: expanded -- the library already knows the list.
+    library_episodes: int = 0
+    #: Files sitting in this show's downloads folder on disk (a local read).
+    #: Drives Remove All Downloads: always on a subscribed show's menu,
+    #: dimmed when there is nothing to remove -- same rule as Mark All.
+    downloaded_files: int = 0
 
 
 #: Node kinds that name a podcast show rather than a shelf of them.
@@ -184,12 +226,20 @@ def station_actions(
     can_report: bool,
     is_recording: bool,
     open_site_label: str = "Open &Website",
+    can_record: bool = False,
+    episode_played: bool | None = None,
 ) -> list[RowAction]:
     """The menu for a playable row.
 
     *is_recording* is what separates a podcast episode or a book chapter from
     a live station: a recording has a beginning and an end, so "Download" is a
-    sensible thing to offer and "Report Bad Station" is not.
+    sensible thing to offer and "Report Bad Station" is not. The reverse also
+    holds: a live station has no end, so *recording* it is the sensible verb
+    (*can_record*), where Download honestly is not (downloadable.LIVE_REASON
+    says exactly this when asked). *episode_played* is three-valued: ``None``
+    for a row that is not a subscribed podcast episode (no mark item at all),
+    else the episode's played state, which picks which direction of the
+    toggle the menu offers.
     """
     actions = [
         RowAction(STOP, "&Stop") if playing else RowAction(PLAY, "&Play"),
@@ -201,10 +251,24 @@ def station_actions(
         RowAction(DETAILS, "Station De&tails..."),
         RowAction(COPY_LINK, "&Copy Link" if is_recording else "&Copy Stream Link"),
     ]
+    if saved:
+        # The same custom-name prompt the Favorites manager offers, from the
+        # row that is already saved -- blank restores the directory's name.
+        actions.append(RowAction(RENAME_FAVORITE, "Rena&me Favorite..."))
     if has_homepage:
         actions.append(RowAction(OPEN_SITE, open_site_label))
     if can_download:
         actions.append(RowAction(DOWNLOAD, "&Download..."))
+    if can_record and not is_recording:
+        # Record answers the want Download cannot on a live stream: keep it.
+        actions.append(RowAction(RECORD_STATION, "&Record This Station..."))
+        actions.append(RowAction(SCHEDULE_RECORDING, "Schedule Recordin&g..."))
+    if episode_played is not None:
+        actions.append(
+            RowAction(MARK_EPISODE_UNPLAYED, "Mark Episode as Unpla&yed")
+            if episode_played
+            else RowAction(MARK_EPISODE_PLAYED, "Mark Episode as Pla&yed")
+        )
     if can_report and not is_recording:
         # A recording that will not play is not a "bad station"; the report
         # form asks about a stream, and answering it about an episode would
@@ -254,6 +318,25 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
         actions.append(
             RowAction(MARK_ALL_PLAYED, "Mark All as Pla&yed...", enabled=state.unheard > 0)
         )
+        # The download pair, same shape as Quill Cast's show menu. The count
+        # comes from the shared library, so the verb works without ever
+        # expanding the branch; both dim rather than vanish (state of a verb
+        # the row owns, like Mark All above).
+        count = state.library_episodes
+        actions.append(
+            RowAction(
+                DOWNLOAD_ALL_EPISODES,
+                f"Download All {count} Episo&des..." if count else "Download All Episo&des...",
+                enabled=count > 0,
+            )
+        )
+        actions.append(
+            RowAction(
+                REMOVE_DOWNLOADS,
+                "Remove All Do&wnloads...",
+                enabled=state.downloaded_files > 0,
+            )
+        )
 
     if kind == "mypodcasts":
         # The Subscriptions root organizes the library in place.
@@ -290,8 +373,16 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
             RowAction(FAVORITE_FOLDER, f"&Add All {state.loaded_stations} {noun} to Favorites")
         )
 
-    if state.savable:
+    if state.savable and kind != "mypodcastshow":
+        # A subscribed show's menu already carries Download All Episodes
+        # (library-counted, above); a second download-all row for the same
+        # files would be the menu disagreeing with itself about the count.
         actions.append(RowAction(DOWNLOAD_ALL, f"&Download All {state.savable} Files..."))
+
+    if state.root_source and kind in SEARCHABLE_SOURCES:
+        # The provider's own search, pre-narrowed to this source -- the
+        # intelligent half of the tree-top Search All Sources row.
+        actions.append(RowAction(SEARCH_SOURCE, "&Search This Source..."))
 
     if state.root_source:
         # Hiding in place: the same rule as Choose Browse Sources (a hidden
@@ -316,6 +407,8 @@ def actions_for(
     is_folder: bool = False,
     resolve_lazily: bool = False,
     folder_state: FolderState | None = None,
+    can_record: bool = False,
+    episode_played: bool | None = None,
 ) -> list[RowAction]:
     """Every action this row offers, in menu order."""
     if station is not None:
@@ -327,6 +420,8 @@ def actions_for(
             can_report=can_report,
             is_recording=bool(getattr(station, "is_recording", False)),
             open_site_label=open_site_label,
+            can_record=can_record,
+            episode_played=episode_played,
         )
         if kind == "podepisode":
             # The row's node id carries the feed's transcript address, so the

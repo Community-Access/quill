@@ -300,8 +300,11 @@ class BrowseTreeDialog:
     # -- tree population --------------------------------------------------------
 
     def _populate_sources(self) -> None:
+        from quill.ui.radio import browse_actions
+
         tree = self._tree
         root = tree.AddRoot("Sources")
+        browse_actions.add_search_row(tree, root)  # Search All Sources..., always first
         roots = browse_sources.visible_roots(self._visible_sources)
         for node_id, label in roots:
             node = tree.AppendItem(root, label)
@@ -401,7 +404,9 @@ class BrowseTreeDialog:
             # every expand would be a network request for a known answer.
             unreachable = failed or browse_sources.last_error_was_network()
             if unreachable:
-                self._forget_load(node)
+                from quill.ui.radio import browse_refresh
+
+                browse_refresh.forget_load(self, node)
             # ...and it keeps ONE row saying which of the two it was, which is
             # also what keeps the folder expandable (see browse_feedback).
             says = browse_feedback.empty_row_text(unreachable=unreachable, override=empty_text)
@@ -424,19 +429,11 @@ class BrowseTreeDialog:
             self, [c.node_id for c in children if c.is_folder and not c.is_action]
         )
         # #1188: leave the cursor on the just-expanded node -- do NOT jump it
-        # into the station list. The count announcement says what is inside; the
-        # listener arrows down to enter the list when ready.
+        # into the station list. One exception: a pending reveal, where the
+        # cursor following the just-edited row IS the feature (browse_reveal).
+        from quill.ui.radio import browse_reveal
 
-    def _forget_load(self, node: Any) -> None:
-        """Let a branch be fetched again next time it is opened.
-
-        ``loaded`` is set *before* the fetch, so without this a branch that
-        failed could never be retried by closing and reopening it -- the one
-        gesture anybody would try.
-        """
-        data = self._node_data(node)
-        if data is not None:
-            data["loaded"] = False
+        browse_reveal.on_children_added(self, node)
 
     def _row_label(self, child: BrowseNode) -> str:
         """The text of one row. See :func:`browse_helpers.row_label`."""
@@ -586,7 +583,9 @@ class BrowseTreeDialog:
             something unexpected, and the honest response is to let it be tried
             again.
             """
-            self._forget_load(node)
+            from quill.ui.radio import browse_refresh
+
+            browse_refresh.forget_load(self, node)
             self._add_children(node, [], failed=True)
 
         self._task_manager.submit("radio-browse-tree", _work, on_success=_ok, on_failure=_failed)

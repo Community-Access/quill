@@ -43,9 +43,16 @@ ALLOWED_SOURCES: dict[str, str] = {
     # Creative Commons, and the licence travels with the file (see `licence_note`).
     "ccMixter": "Creative Commons, licence shown on the row",
     # A podcast enclosure is the publisher's own file, offered for download by
-    # every podcast client there has ever been. This is the normal case.
+    # every podcast client there has ever been. This is the normal case. The
+    # same episode reaches the menu under different source names depending on
+    # where it was found -- search results, the browse tree's Podcasts branch,
+    # and Subscriptions each stamp their own -- and every one of them must be
+    # here, or Download silently vanishes from that surface (reported
+    # 2026-08-18: no Download on a subscription episode row).
     "Podcasts (Apple)": "the publisher's own episode file",
     "Podcast": "the publisher's own episode file",
+    "Apple Podcasts": "the publisher's own episode file",
+    "Subscribed Podcasts": "the publisher's own episode file",
 }
 
 #: Sources that are refused with a specific sentence rather than the generic one.

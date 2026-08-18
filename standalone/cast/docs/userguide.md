@@ -41,7 +41,7 @@ The Manager (Ctrl+M) is where episode-level life happens, and it is the same Man
 - **Filter episodes by "In progress"** -- the ones you have started but not finished -- alongside All, Unplayed, Played, Downloaded, and Not downloaded.
 - **Local podcasts**: turn folders of your own audio into shows, with optional watched folders that pick up dropped files.
 - **Always Sync**, **auto-trim silence**, **normalize loudness**, and a live **volume boost** that respects the Sleep Timer's restore volume.
-- **Download All Episodes / Remove All Episodes** on a show's context menu: Download All queues everything not already downloaded or in progress, no extra confirmation needed. Remove All Episodes confirms first, then -- only if the show has downloaded files -- asks separately whether to delete those too; the show itself stays subscribed either way.
+- **Download All Episodes / Remove All Downloads / Remove All Episodes** on a show's context menu: Download All queues everything not already downloaded or in progress, no extra confirmation needed. **Remove All Downloads** is its symmetric counterpart -- it deletes the show's downloaded files and only the files (episodes, played state, and positions stay; anything marked Keep This Episode is skipped and the announcement says how many were kept). Remove All Episodes confirms first, then -- only if the show has downloaded files -- asks separately whether to delete those too; the show itself stays subscribed either way.
 
 ## Private feeds (username and password)
 
@@ -112,7 +112,7 @@ A live now-playing line, **Player Information...**, **Continue Listening...**, *
 
 **Stop After This Episode** is a one-off: it stops instead of auto-advancing, clears itself when it fires, and never survives a restart. What normally follows an episode is set by the two "When an episode finishes" switches in Podcast Settings -- with both off, playback simply stops at the end of the episode you started.
 
-**Mark All as Played...** clears a podcast you have given up on. It always confirms, naming the show and the count; the episodes stay in your library, downloaded files are untouched, and they leave the Inbox because the Inbox is unplayed episodes.
+**Mark All as Played...** clears a podcast you have given up on. It confirms, naming the show and the count; the episodes stay in your library, downloaded files are untouched, and they leave the Inbox because the Inbox is unplayed episodes. The confirmation carries a **"Don't ask me again"** checkbox, and the answer is shared with Quill Radio -- check it in either app and both stop asking (cancelling with the box ticked changes nothing).
 
 **Sleep Timer...** gained two things. **End of this episode** is now one of the choices, and it follows the episode rather than a clock -- seek forward and the timer moves with you instead of stopping you early. It is offered only when a podcast episode is loaded, because a live radio stream has no end to stop at. **Extend 5 Minutes** sits on the timer dialog while it counts down, and on this menu; extending also undoes any fade already in progress, since the point of extending is that you are still listening.
 

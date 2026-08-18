@@ -35,7 +35,14 @@ more honest in return:
 - **Mark All as Played knows when it is done.** The Episode-menu and
   manager-menu items now dim when the show has nothing unheard, instead of
   offering to do nothing -- and Radio carries the same verb, on the show's
-  own row, over the same shared state.
+  own row, over the same shared state. Its confirmation now carries a
+  **"Don't ask me again"** checkbox, and the answer is shared: check it in
+  either app and both stop asking.
+- **Remove All Downloads, beside Download All Episodes.** The library
+  tree's show menu gains the symmetric verb: delete a show's downloaded
+  files -- and only the files. Episodes, played state, and positions stay;
+  episodes marked **Keep This Episode** are skipped and the announcement
+  says how many were kept.
 - **Your position, your speed, and your credentials follow the show.** An
   episode part-heard here resumes at the same spot when played from
   Radio's Subscriptions (and the furthest point wins in both directions);

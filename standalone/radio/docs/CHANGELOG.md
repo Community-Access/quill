@@ -68,6 +68,44 @@ timings, and three long-standing silent faults are fixed. See
   Podcasting 2.0 chapters gets them on the same chapter commands videos
   and audiobooks already have -- fetched in the background, publisher's
   own titles, no new UI.
+- **Search All Sources, from the top of the tree.** The first row of
+  Browse Stations now opens one search across every provider's own
+  engine -- podcasts by podcast search, iHeart by iHeart, TuneIn by
+  TuneIn, YouTube by YouTube -- results interleaved and labelled. And
+  each searchable source's own row offers **Search This Source...**,
+  opening the same window pre-narrowed: standing on Podcasts searches
+  podcasts. Sources with no search engine honestly offer nothing.
+- **Download finally lives on every episode row.** A rights-allowlist
+  knew podcast episodes by one name while the browse tree used two
+  others, so Download... appeared on search results and silently
+  vanished from browsed and subscribed episodes -- and when it did work,
+  a single episode filed bare under Recordings. Both fixed: every
+  episode row offers Download..., and the file lands under
+  `Podcasts\<Show>\` like Download All's do.
+- **Download All Episodes and Remove All Downloads, on the show.** A
+  subscribed show's menu offers the whole list (counted from the shared
+  library, no expanding needed) and the way back -- Remove All Downloads
+  deletes the files and only the files: subscription, played state, and
+  positions untouched. Quill Cast's show menu gains the same Remove All
+  Downloads, honoring Keep This Episode.
+- **The tree keeps up with you.** Move to Folder now reloads the branch
+  and lands the cursor on the show inside its new folder (and Enter in
+  the folder picker confirms the move -- it used to do nothing). Rename
+  and Delete Folder refresh in place. Mark All as Played clears the
+  badges on screen the moment it speaks -- no more "Refresh Podcasts to
+  update" homework.
+- **Badges that believe your ears.** Finish an episode in Radio and the
+  show's unheard count drops immediately -- Radio now counts its own
+  finished listening instead of waiting for Quill Cast's next launch to
+  learn what you just heard. And a new **Mark Episode as
+  Played/Unplayed** on subscribed episode rows edits one episode at a
+  time, both apps agreeing.
+- **Mark All as Played can stop asking.** The confirmation gains a
+  "Don't ask me again" checkbox -- shared with Quill Cast, so one answer
+  quiets the question in both apps.
+- **The row's own verbs.** Live station rows offer **Record This
+  Station...** and **Schedule Recording...** pre-filled with that row's
+  station; favorited rows offer **Rename Favorite...** in place.
 - **The YouTube branch takes any link, and one command files it.** Saved
   playlists and single videos now live beside followed channels — the branch
   is simply **YouTube** — each shape with its own **Add a...** row, and each

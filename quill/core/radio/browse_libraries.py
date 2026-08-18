@@ -169,8 +169,16 @@ def _my_podcast_level(library: PodcastLibrary, folder_id: str | None) -> list[Br
     same library. Folder badges count the whole subtree, show badges the show;
     both use the shared counters, so the two apps can never disagree.
     """
+    from quill.core.paths import app_data_dir
     from quill.core.podcasts.models import PodcastShow
+    from quill.core.podcasts.radio_listens import finished_audio_urls
     from quill.core.podcasts.sorting import unheard_count, unheard_count_for_folder
+
+    # Radio's own finished listens, subtracted from every badge on this level:
+    # an episode heard to the end HERE is finished now, even though the shared
+    # library only learns it at Cast's next merge (the clobber-safe handoff).
+    # Without this, finishing an episode left its show counting it unheard.
+    heard_here = finished_audio_urls(app_data_dir())
 
     def show_label(show: PodcastShow) -> str:
         # The unheard badge reads from the shared library's own episode
@@ -178,7 +186,7 @@ def _my_podcast_level(library: PodcastLibrary, folder_id: str | None) -> list[Br
         # here syncs that state (see _browse_my_podcast_show), so the badge
         # appears without ever opening Cast.
         name = show.title or show.feed_url
-        unheard = unheard_count(show)
+        unheard = unheard_count(show, exclude_audio=heard_here)
         return f"{name} ({unheard} unheard)" if unheard else name
 
     nodes: list[BrowseNode] = []
@@ -187,7 +195,7 @@ def _my_podcast_level(library: PodcastLibrary, folder_id: str | None) -> list[Br
         key=lambda f: f.name.casefold(),
     )
     for child in subfolders:
-        unheard = unheard_count_for_folder(library, child.id)
+        unheard = unheard_count_for_folder(library, child.id, exclude_audio=heard_here)
         nodes.append(
             folder(
                 make_id("mypodcastfolder", child.id),

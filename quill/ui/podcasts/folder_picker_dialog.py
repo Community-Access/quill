@@ -153,6 +153,11 @@ class FolderPickerDialog:
         self._delete_btn.Bind(wx.EVT_BUTTON, self._on_delete)
         move_btn.Bind(wx.EVT_BUTTON, self._on_move)
         self._tree.Bind(wx.EVT_TREE_SEL_CHANGED, self._on_selection_changed)
+        # Enter with focus in the tree: on wxMSW a TreeCtrl consumes the key
+        # as "activate", so it never reaches the default Move Here button --
+        # the dialog's one affirmative action looked broken from its main
+        # control. Activate IS the move.
+        self._tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_move)
 
         self._rebuild_tree()
         self._search_ctrl.SetFocus()

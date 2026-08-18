@@ -36,17 +36,23 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
     loaded = dialog._loaded_stations_under(node)
     savable = [row for row in loaded if download_command.can_download(row)]
     subscribed = False
-    unheard = 0
+    unheard = library_episodes = downloaded_files = 0
     if row_actions.is_podcast_show(kind):
         # Only from what is already stored -- resolving the feed is a network
         # call and belongs to the action, never to opening a menu.
         subscribed = _known_subscribed(dialog, kind, args)
         if subscribed and kind == "mypodcastshow":
-            # Drives Mark All as Played's dimmed state; a local read.
+            # One library read answers all three menu facts (Mark All's dimmed
+            # state, Download All Episodes' count, the downloads-folder name),
+            # plus one local directory listing for Remove All Downloads.
             from quill.core.paths import app_data_dir
-            from quill.core.radio.podcast_follow import unheard_for_feed
+            from quill.core.radio import download_cleanup
+            from quill.core.radio.podcast_follow import show_facts_for_feed
 
-            unheard = unheard_for_feed(app_data_dir(), args[0] if args else "")
+            unheard, library_episodes, title = show_facts_for_feed(
+                app_data_dir(), args[0] if args else ""
+            )
+            downloaded_files = download_cleanup.downloaded_file_count(app_data_dir(), title)
     try:
         expanded = bool(dialog._tree.IsExpanded(node))
     except Exception:  # noqa: BLE001 - a menu must never fail on a widget probe
@@ -64,7 +70,56 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
         # be hidden in place.
         root_source=not args and any(kind == nid for nid, _ in browse_sources.ROOT_SOURCES),
         unheard=unheard,
+        library_episodes=library_episodes,
+        downloaded_files=downloaded_files,
     )
+
+
+def _episode_played(dialog: Any, station: Any) -> bool | None:
+    """The played state of a subscribed podcast episode, or ``None``.
+
+    ``None`` (no mark item) for anything that is not a subscribed episode --
+    the library is only consulted for rows whose source says it could know.
+    """
+    if station is None:
+        return None
+    from quill.core.podcasts.radio_listens import PODCAST_EPISODE_SOURCES
+
+    if str(getattr(station, "source", "")) not in PODCAST_EPISODE_SOURCES:
+        return None
+    try:
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts.subscriptions import load_library
+
+        library = load_library(app_data_dir())
+        show = library.find_show_by_feed_url(str(getattr(station, "homepage", "") or ""))
+        if show is None:
+            return None
+        audio = str(getattr(station, "stream_url", "") or "")
+        episode = next((e for e in show.episodes if e.audio_url == audio), None)
+        return bool(episode.played) if episode is not None else None
+    except Exception:  # noqa: BLE001 - a menu must never fail on a library read
+        return None
+
+
+def _show_group(dialog: Any, node: Any, station: Any) -> str:
+    """The show a podcast episode belongs to, for the per-show download folder.
+
+    The parent row's text minus its unheard badge -- the same name Download
+    All uses, so single and bulk downloads land in the same folder. "" for
+    everything else, which files exactly as before.
+    """
+    from quill.core.podcasts.radio_listens import PODCAST_EPISODE_SOURCES
+
+    if str(getattr(station, "source", "")) not in PODCAST_EPISODE_SOURCES:
+        return ""
+    try:
+        parent = dialog._tree.GetItemParent(node)
+        if parent is not None and parent.IsOk():
+            return dialog._tree.GetItemText(parent).split(" (")[0]
+    except Exception:  # noqa: BLE001 - a widget probe must never break Download
+        pass
+    return ""
 
 
 def _known_subscribed(dialog: Any, kind: str, args: list[str]) -> bool:
@@ -103,7 +158,15 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
         handlers[row_actions.COPY_LINK] = lambda: dialog._copy_text(station.stream_url)
         handlers[row_actions.DETAILS] = lambda: _speak_details(dialog, station)
         handlers[row_actions.OPEN_SITE] = lambda: dialog._open_url(station.homepage)
-        handlers[row_actions.DOWNLOAD] = lambda: download_command.download_station(host, station)
+        handlers[row_actions.DOWNLOAD] = lambda: download_command.download_station(
+            # The show's name rides along so a podcast episode files under
+            # Podcasts\<Show>\ like Download All's do -- without it the
+            # single download landed bare in the root (group="" skips the
+            # per-show folder in download_prefs.plan_destination).
+            host,
+            station,
+            group=_show_group(dialog, node, station),
+        )
         if dialog._on_report_bad_station is not None:
             handlers[row_actions.REPORT_BAD] = lambda: dialog._on_report_bad_station(station)
     handlers[row_actions.DOWNLOAD_ALL] = lambda: _download_all(dialog, node, host)
@@ -133,7 +196,48 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     )
     handlers[row_actions.MARK_ALL_PLAYED] = lambda: podcast_acts.mark_all_played(dialog, args)
     handlers[row_actions.IMPORT_OPML] = lambda: podcast_acts.import_opml(dialog)
+    handlers[row_actions.DOWNLOAD_ALL_EPISODES] = lambda: podcast_acts.download_all_episodes(
+        dialog, args
+    )
+    handlers[row_actions.REMOVE_DOWNLOADS] = lambda: podcast_acts.remove_all_downloads(dialog, args)
+    if station is not None:
+        handlers[row_actions.MARK_EPISODE_PLAYED] = lambda: podcast_acts.mark_episode_played(
+            dialog, station, played=True
+        )
+        handlers[row_actions.MARK_EPISODE_UNPLAYED] = lambda: podcast_acts.mark_episode_played(
+            dialog, station, played=False
+        )
+        handlers[row_actions.RENAME_FAVORITE] = lambda: _rename_favorite(dialog, station)
+        if hasattr(host, "open_record_station_dialog"):
+            handlers[row_actions.RECORD_STATION] = lambda: host.open_record_station_dialog(
+                station=station
+            )
+            handlers[row_actions.SCHEDULE_RECORDING] = lambda: host._radio_open_schedule_recording(
+                station=station
+            )
+    if hasattr(host, "open_internet_radio"):
+        handlers[row_actions.SEARCH_SOURCE] = lambda: host.open_internet_radio(
+            focus_search=True,
+            source_facet=row_actions.SEARCHABLE_SOURCES.get(kind, ""),
+        )
     return handlers
+
+
+def _rename_favorite(dialog: Any, station: Any) -> None:
+    """Rename Favorite... on a saved row: the manager's own prompt, in place."""
+    from quill.ui.radio import favorite_actions
+
+    key = str(getattr(station, "station_uuid", "") or "") or str(
+        getattr(station, "stream_url", "") or ""
+    )
+    favorite = dialog._favorites.find(key)
+    if favorite is None:
+        dialog._announce("That station is not in your favorites.")
+        return
+    if favorite_actions.rename_favorite(
+        dialog._win, dialog._favorites, favorite, announce=dialog._announce
+    ):
+        dialog._on_favorites_changed()
 
 
 def _speak_details(dialog: Any, station: Any) -> None:
@@ -198,6 +302,7 @@ def show_for_event(dialog: Any, event: Any) -> None:
     station = data.get("station")
     from quill.ui.radio import download_command
 
+    host = getattr(dialog, "_download_host", dialog)
     entries = row_actions.actions_for(
         kind,
         station=station,
@@ -211,6 +316,10 @@ def show_for_event(dialog: Any, event: Any) -> None:
         folder_state=_folder_state(dialog, node, kind, args)
         if dialog._is_folder_data(data)
         else None,
+        # Record verbs need the frame (recorder, scheduler); an embedded test
+        # dialog without one simply offers no record items.
+        can_record=hasattr(host, "open_record_station_dialog"),
+        episode_played=_episode_played(dialog, station),
     )
     if not entries:
         return

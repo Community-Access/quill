@@ -269,10 +269,44 @@ def _add_video(host: Any) -> None:
     _reload_branch(host, "youtube")
 
 
+# --- Search --------------------------------------------------------------------
+
+
+def add_search_row(tree: Any, root: Any) -> None:
+    """Put Search All Sources... at the top of the browse tree.
+
+    An action row, not a folder -- there is nothing to expand; Enter *does*
+    the thing (:func:`_search_all`). Above the sources and outside Choose
+    Browse Sources on purpose: hiding every source should not also hide the
+    way to search across them.
+    """
+    row = tree.AppendItem(root, "Search All Sources...")
+    tree.SetItemData(
+        row, {"node_id": "searchall", "label": "Search All Sources...", "is_action": True}
+    )
+
+
+def _search_all(host: Any) -> None:
+    """The tree-top Search All Sources... row: one federated search window.
+
+    Every provider is searched by its own engine (podcasts by podcast search,
+    iHeart by iHeart, TuneIn by TuneIn, YouTube by YouTube) and the results
+    interleave -- the same window the Station menu's Search Stations opens,
+    reached from inside the tree. The frame owns that window; a bare test
+    dialog without a frame refuses out loud rather than doing nothing.
+    """
+    frame = getattr(host, "_download_host", None)
+    if frame is None or not hasattr(frame, "open_internet_radio"):
+        host._announce("Search is not available in this window.")
+        return
+    frame.open_internet_radio(focus_search=True, source_facet="")
+
+
 #: Action node id -> what it does. A new "Add..." row is one entry here.
 _ACTIONS: dict[str, Callable[[Any], None]] = {
     "addserver": _add_server,
     "addchannel": _add_channel,
     "addplaylist": _add_playlist,
     "addvideo": _add_video,
+    "searchall": _search_all,
 }

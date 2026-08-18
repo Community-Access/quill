@@ -143,6 +143,23 @@ def merge_radio_listens(data_dir: Path, library: PodcastLibrary) -> tuple[int, i
         return (0, 0)
 
 
+def finished_audio_urls(data_dir: Path) -> frozenset[str]:
+    """Audio URLs Radio has heard to the end, still awaiting Cast's merge.
+
+    Read by Radio's own unheard badges (browse_libraries) so an episode
+    finished five minutes ago stops counting as unheard *now*, without Radio
+    ever writing the shared library -- the records here are the handoff, and
+    Cast consumes them at its next launch, at which point the library itself
+    says played and this set says nothing. Never raises.
+    """
+    try:
+        return frozenset(
+            str(row.get("audio", "")) for row in _read(data_dir) if bool(row.get("finished"))
+        )
+    except Exception:  # noqa: BLE001 - an empty overlay is the safe answer
+        return frozenset()
+
+
 def merge_summary(updated: int, finished: int) -> str:
     """What to announce after a merge, or ``""`` when there is nothing to say."""
     if not updated:

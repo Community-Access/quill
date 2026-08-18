@@ -548,7 +548,22 @@ setting. Playback, downloads and per-episode actions work exactly as
 anywhere else in the tree; the rich side of podcasting – automatic
 downloads, retention, the play queue, the full archive – is
 <strong>Quill Cast</strong>’s job, and that is where a serious podcast
-habit belongs.</p></li>
+habit belongs.</p>
+<p><strong>The show’s own menu does the housekeeping.</strong> A
+subscribed show’s context menu carries <strong>Move to Folder…</strong>
+(Enter in the picker confirms; the tree reloads and the cursor lands on
+the show in its new home), <strong>Mark All as Played…</strong> (dimmed
+when nothing is unheard; its confirmation has a “Don’t ask me again”
+checkbox shared with Quill Cast, and the badges clear on screen the
+moment it speaks), <strong>Download All N Episodes…</strong> (counted
+from the shared library, so it works without expanding the show), and
+<strong>Remove All Downloads…</strong> (files gone, subscription and
+played state untouched; dimmed when nothing is downloaded). Episode rows
+of a subscribed show add <strong>Mark Episode as Played</strong> /
+<strong>as Unplayed</strong>, one direction at a time. And the badges
+believe your ears: finish an episode here and the show’s unheard count
+drops immediately, without waiting for Quill Cast’s next
+launch.</p></li>
 <li><p><strong>Internet Archive</strong> – Old Time Radio, Audiobooks
 &amp; Poetry, the Live Music Archive, Radio Programs, News &amp; Public
 Affairs and more. Open a collection for its series, a series for its
@@ -725,6 +740,24 @@ the first few folders inside it fetch behind you. The expand you were
 about to make opens instantly. This follows your cursor only – a source
 you hid in Choose Browse Sources is still never contacted, and Safe Mode
 still fetches nothing.</li>
+<li><strong>Search All Sources…</strong> – the first row of the tree,
+always. Press Enter on it and the full Search Stations window opens with
+focus in the search box: one query, every provider’s own search engine,
+results interleaved and labelled. It is the same window as
+<strong>Station &gt; Search Stations…</strong>; this row is simply the
+door from inside the tree. And each searchable top-level source –
+Podcasts (Apple), iHeart, TuneIn, YouTube and the rest – offers
+<strong>Search This Source…</strong> on its context menu, which opens
+that same window with the Source filter already narrowed to it: standing
+on podcasts searches podcasts. A source with no search engine of its own
+(Weather / NOAA, NFB Radio) honestly offers nothing.</li>
+<li><strong>Every live station row can be captured from where you found
+it.</strong> A station’s context menu offers <strong>Record This
+Station…</strong> and <strong>Schedule Recording…</strong>, pre-filled
+with that row’s station rather than whatever is playing – the same two
+commands the Record menu carries. A row you have favorited also offers
+<strong>Rename Favorite…</strong> in place (blank restores the
+directory’s own name).</li>
 <li><strong>Search Stations…</strong> – the full station search: search
 across four directories at once – <strong>RadioBrowser</strong>,
 <strong>SomaFM</strong>, <strong>iHeart</strong>, and
@@ -776,11 +809,14 @@ tells you before you press Enter. If a library ever genuinely cannot be
 searched, Quill Radio names it rather than leaving you to wonder why
 nothing came back from it.</p></li>
 <li><p><strong>Source</strong> – a dropdown to narrow the search to one
-directory (All sources, RadioBrowser, iHeart, TuneIn, SomaFM, ACB Media,
-or Website) when you already know where a station lives. When the same
-station is carried by more than one directory (a SomaFM channel
-RadioBrowser also lists, say), it appears under each of those
-directories’ filters, not just the one whose copy you happened to
+directory (All sources, Radio Browser, iHeart, TuneIn, Podcasts, SomaFM,
+ACB Media, Community M3U, Xiph, Spotify, YouTube, or Website) when you
+already know where a station lives. <strong>Podcasts</strong> gathers
+every podcast result whichever exact directory stamped it, and it is the
+filter <strong>Search This Source…</strong> on the Podcasts branch opens
+on. When the same station is carried by more than one directory (a
+SomaFM channel RadioBrowser also lists, say), it appears under each of
+those directories’ filters, not just the one whose copy you happened to
 play.</p></li>
 <li><p><strong>Tag/genre</strong> and <strong>Country</strong> – these
 are now proper dropdown lists, filled in from the directory itself, so

@@ -74,11 +74,23 @@ def test_never_set_shows_the_defaults(_app: wx.App) -> None:
 
 
 def test_everything_hidden_says_the_way_back(_app: wx.App) -> None:
+    # Search All Sources... is deliberately outside Choose Browse Sources
+    # (hiding every SOURCE should not also hide the way to search), so with
+    # everything hidden the tree is exactly: search, and the way back.
     dlg = _make(())
     try:
         labels = _root_labels(dlg)
-        assert len(labels) == 1
-        assert "Choose Browse Sources" in labels[0]
+        assert len(labels) == 2
+        assert labels[0] == "Search All Sources..."
+        assert "Choose Browse Sources" in labels[1]
+    finally:
+        dlg._win.Destroy()
+
+
+def test_the_search_row_leads_the_tree(_app: wx.App) -> None:
+    dlg = _make(None)
+    try:
+        assert _root_labels(dlg)[0] == "Search All Sources..."
     finally:
         dlg._win.Destroy()
 

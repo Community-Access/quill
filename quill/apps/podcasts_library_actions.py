@@ -61,6 +61,10 @@ class CastLibraryActionsMixin:
                 ("Move Up in &Custom Order\tAlt+Up", lambda: self._on_library_move_show(-1)),
                 ("Move Do&wn in Custom Order\tAlt+Down", lambda: self._on_library_move_show(1)),
                 ("Download &All Episodes", self._on_library_download_all_episodes),
+                # The symmetric verb: files gone, episodes and played state
+                # kept. Distinct from Remove All Episodes below, which empties
+                # the list itself.
+                ("Remove All Down&loads...", self._on_library_remove_all_downloads),
                 ("&Remove All Episodes...", self._on_library_remove_all_episodes),
             ]
             if show.feed_url:
@@ -149,6 +153,17 @@ class CastLibraryActionsMixin:
             show,
             announce=self._announce,
         )
+
+    def _on_library_remove_all_downloads(self) -> None:
+        from quill.ui.podcasts.show_downloads import remove_all_downloads_prompt
+
+        show = self._selected_show()
+        if show is None:
+            return
+        if remove_all_downloads_prompt(
+            self.frame, self._podcast_library, show, announce=self._announce
+        ):
+            self._save_podcast_library()
 
     def _on_library_remove_all_episodes(self) -> None:
         from quill.ui.podcasts.show_actions import remove_all_episodes_prompt

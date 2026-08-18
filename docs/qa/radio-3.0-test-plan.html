@@ -634,15 +634,22 @@ with Quill Cast.”</em> – and the branch refreshes to show it.</li>
 Folder…</strong>.
 <ul>
 <li><strong>Expect:</strong> the same folder picker Cast’s manager opens
-(search box, tree, inline New Folder). Pick <code>Tech</code>.</li>
-<li><strong>Listen for:</strong> <em>“Moved <show> to Tech. Refresh
-Podcasts to update.”</em></li>
+(search box, tree, inline New Folder). Arrow to <code>Tech</code>
+<strong>and press Enter</strong> – Enter in the folder tree confirms the
+move, exactly like the Move Here button. (Enter doing nothing here was a
+reported bug; it is a FAIL.)</li>
+<li><strong>Listen for:</strong> <em>“Moved <show> to Tech.”</em> – with
+<strong>no</strong> “Refresh Podcasts” instruction, because the tree
+does it: the branch reloads itself and <strong>the cursor lands on the
+show inside its new folder</strong>, already visible. Having to refresh
+by hand, or finding the cursor dumped somewhere else, is a FAIL.</li>
 </ul></li>
 <li>On the <strong>Tech folder row</strong>: <strong>Rename
 Folder…</strong> to <code>Technology</code>.
 <ul>
-<li><strong>Listen for:</strong> <em>“Renamed Tech to Technology.
-Refresh Podcasts to update.”</em></li>
+<li><strong>Listen for:</strong> <em>“Renamed Tech to Technology.”</em>
+– and the tree shows the new name at once, cursor on the renamed
+folder.</li>
 </ul></li>
 <li>On the folder row: <strong>Delete Folder…</strong>.
 <ul>
@@ -650,7 +657,8 @@ Refresh Podcasts to update.”</em></li>
 means: contents move up a level, <strong>nothing is
 unsubscribed</strong>.</li>
 <li><strong>Listen for:</strong> <em>“Deleted folder Technology. Its
-podcasts moved up a level; nothing was unsubscribed.”</em></li>
+podcasts moved up a level; nothing was unsubscribed.”</em> – and the
+folder is gone from the tree without a refresh.</li>
 </ul></li>
 <li>Open Cast’s manager.
 <ul>
@@ -708,19 +716,33 @@ open the context menu.
 <li><strong>Expect:</strong> <strong>Mark All as Played…</strong> is
 enabled. Choose it.</li>
 <li><strong>Expect</strong> a confirmation naming the show and the
-count; accept it.</li>
+count, with a <strong>“Don’t ask me again” checkbox</strong> (leave it
+unchecked for now) and <strong>Mark Played</strong> as the default
+button. Accept it.</li>
 <li><strong>Listen for:</strong> <em>“Marked N episodes of <show> as
-played. Refresh Podcasts to update.”</em></li>
+played.”</em> – and the branch reloads by itself: <strong>the show’s
+unheard badge is gone on screen immediately</strong>, its folder’s badge
+shrank to match, and the cursor is back on the show. A “Refresh
+Podcasts” chore here is a FAIL.</li>
 </ul></li>
-<li>Reopen the same row’s menu after refreshing.
+<li>Reopen the same row’s menu.
 <ul>
 <li><strong>Expect:</strong> the item is still <strong>there</strong>
 but <strong>dimmed</strong> – the verb belongs to the row; its state is
 “done”. A vanished item is a FAIL.</li>
 </ul></li>
+<li>Mark another show, and this time <strong>check “Don’t ask me
+again”</strong> before accepting.
+<ul>
+<li><strong>Expect:</strong> from now on Mark All as Played runs with no
+question – in Radio <strong>and in QUILL Cast</strong>: one answer, both
+apps, because it is the same verb over the same library. (Cancelling
+with the box checked must change nothing – the question returns next
+time.)</li>
+</ul></li>
 <li>In <strong>QUILL Cast</strong>: the Episode menu’s Mark All as
-Played and the manager tree’s context item now dim the same way when the
-show has nothing unheard.</li>
+Played and the manager tree’s context item dim the same way when the
+show has nothing unheard, and honor the same don’t-ask answer.</li>
 <li>Back in Radio, check the show’s badge: gone, in both apps.</li>
 </ol>
 <h3
@@ -848,6 +870,154 @@ is the feature.</li>
 do on an unchaptered video – the honest “no chapters” path, never an
 invented marker.</li>
 </ul></li>
+</ol>
+<h3 id="t-413-downloading-episodes-one-all-and-taking-them-back">T-4.13
+Downloading episodes: one, all, and taking them back</h3>
+<ol type="1">
+<li>On any <strong>podcast episode row</strong> (Search Stations or the
+Browse tree), open the context menu.
+<ul>
+<li><strong>Expect:</strong> <strong>Download…</strong> is on the menu.
+(Its absence on browse and subscription episodes was a reported bug –
+the menu offered it only on search results. A missing Download here is
+that bug back.)</li>
+</ul></li>
+<li>Choose it, then when the queue reports the save, find the file.
+<ul>
+<li><strong>Expect</strong> it filed as
+<code>Downloads\Quill Radio\Podcasts\&lt;Show&gt;\&lt;Episode&gt;</code>
+– under its <strong>show’s own folder</strong>, exactly where Download
+All puts things. A bare file under <code>Recordings\</code> is the old
+filing bug.</li>
+</ul></li>
+<li>On a <strong>subscribed show row</strong>: open the context menu.
+<ul>
+<li><strong>Expect:</strong> <strong>Download All N Episodes…</strong>
+with the library’s own count – offered even if you have never expanded
+the show, because the library already knows the list. Dimmed only when
+the library has no episodes yet.</li>
+</ul></li>
+<li>Choose it.
+<ul>
+<li><strong>Listen for:</strong> the queue summary (“Queued … You can
+carry on listening.”) – downloads run one at a time in the background,
+and everything lands under the show’s folder.</li>
+</ul></li>
+<li>Same row: <strong>Remove All Downloads…</strong>.
+<ul>
+<li><strong>Expect:</strong> present always, <strong>dimmed</strong>
+when nothing is downloaded. With files present it confirms with the real
+file count and says the part that matters: <em>“Your subscription and
+played state are untouched.”</em></li>
+<li><strong>Listen for</strong>, after accepting: <em>“Removed N
+downloaded files.”</em> – and the files are gone from the show’s folder,
+while the show, its episodes, and every badge stay exactly as they
+were.</li>
+</ul></li>
+<li>In <strong>QUILL Cast</strong>, right-click the same show in the
+library tree.
+<ul>
+<li><strong>Expect:</strong> <strong>Download All Episodes</strong>
+(already there) now has its counterpart <strong>Remove All
+Downloads…</strong> beside it, honoring Keep This Episode: protected
+episodes are skipped and the announcement says how many were kept.</li>
+</ul></li>
+</ol>
+<h3
+id="t-414-marking-one-episode-and-badges-that-believe-your-ears">T-4.14
+Marking one episode, and badges that believe your ears</h3>
+<ol type="1">
+<li>On a <strong>subscribed</strong> show’s episode row, open the
+context menu.
+<ul>
+<li><strong>Expect:</strong> <strong>Mark Episode as Played</strong> on
+an unplayed episode, or <strong>Mark Episode as Unplayed</strong> on a
+played one – one direction at a time, never both.</li>
+</ul></li>
+<li>Choose Mark Episode as Played.
+<ul>
+<li><strong>Listen for:</strong> <em>“Marked <episode> as played.”</em>
+– the branch reloads and the show’s unheard badge is one lower,
+immediately.</li>
+</ul></li>
+<li>Now play a different episode of the show <strong>to the end</strong>
+(or use the seek commands to reach the last seconds and let it finish).
+<ul>
+<li><strong>Expect:</strong> back in the tree, the show’s badge is
+<strong>already one lower</strong> – without opening Quill Cast, without
+refreshing by hand. Radio counts its own finished listening the moment
+it happens; the shared library still learns it at Cast’s next launch,
+exactly as before. (A badge that keeps counting an episode you just
+finished was the reported bug.)</li>
+</ul></li>
+<li>Episode rows of a show you are <strong>not</strong> subscribed to
+carry no mark item at all – there is no library state to edit.</li>
+</ol>
+<h3
+id="t-415-search-everything-at-once-or-one-source-intelligently">T-4.15
+Search: everything at once, or one source intelligently</h3>
+<ol type="1">
+<li>Open Browse Stations (Ctrl+B).
+<ul>
+<li><strong>Expect:</strong> the <strong>first row of the tree</strong>
+is <strong>Search All Sources…</strong> – above Favorites, always
+present (hiding sources never hides it).</li>
+</ul></li>
+<li>Press <strong>Enter</strong> on it.
+<ul>
+<li><strong>Expect:</strong> the Search Stations window opens with focus
+in the search box and the Source filter on <strong>All sources</strong>
+– one query, every provider’s own search engine (Radio Browser, iHeart,
+TuneIn, Podcasts, YouTube, Spotify…), results interleaved with their
+source named on each row. This is the same window as Station &gt; Search
+Stations; the tree row is simply the door from inside.</li>
+</ul></li>
+<li>Now open the context menu on a <strong>top-level source</strong>
+that has a search engine – <strong>Podcasts (Apple)</strong>,
+<strong>iHeart</strong>, <strong>TuneIn</strong>,
+<strong>YouTube</strong>.
+<ul>
+<li><strong>Expect:</strong> <strong>Search This Source…</strong> on the
+menu.</li>
+</ul></li>
+<li>Choose it on <strong>Podcasts (Apple)</strong> and search something.
+<ul>
+<li><strong>Expect:</strong> the same search window, but the Source
+filter is already on <strong>Podcasts</strong> – standing on podcasts
+searches podcasts. The facet is preset for this opening only; your own
+remembered filter comes back next time you open search normally.</li>
+</ul></li>
+<li>Sources with no search engine of their own (Weather / NOAA, NFB
+Radio…) have no Search This Source item – a search that could not
+actually be scoped would be a lying menu row.</li>
+</ol>
+<h3 id="t-416-the-rows-own-verbs-record-it-schedule-it-rename-it">T-4.16
+The row’s own verbs: record it, schedule it, rename it</h3>
+<ol type="1">
+<li>On any <strong>live station row</strong> in the browse tree, open
+the context menu.
+<ul>
+<li><strong>Expect:</strong> <strong>Record This Station…</strong> and
+<strong>Schedule Recording…</strong> – the same two commands the Record
+menu carries, pre-filled with <em>this row’s</em> station instead of
+whatever is playing.</li>
+</ul></li>
+<li>Choose Record This Station…
+<ul>
+<li><strong>Expect:</strong> the Record Station dialog opens with the
+row’s station already chosen; a machine without ffmpeg gets the usual
+honest refusal instead.</li>
+</ul></li>
+<li>On a station you have <strong>added to Favorites</strong>, reopen
+the menu.
+<ul>
+<li><strong>Expect:</strong> <strong>Rename Favorite…</strong> – the
+same custom-name prompt the Favorites manager offers, in place. Blank
+restores the directory’s own name.</li>
+</ul></li>
+<li>Episode and chapter rows (recordings) offer <strong>no</strong>
+Record items – a recording is downloaded, not recorded; both verbs stay
+honest.</li>
 </ol>
 <hr />
 <h2 id="5-transcripts">5. Transcripts</h2>

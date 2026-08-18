@@ -104,6 +104,7 @@ _SOURCE_FACETS = (
     "Radio Browser",
     "iHeart",
     "TuneIn",
+    "Podcasts",  # every podcast source name answers here (station_source_labels)
     "SomaFM",
     "ACB Media",
     m3u_catalog.CATEGORY_LABEL,

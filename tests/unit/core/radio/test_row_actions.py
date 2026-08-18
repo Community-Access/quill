@@ -301,3 +301,110 @@ def test_a_youtube_row_offers_view_transcript_without_playing() -> None:
 def test_an_ordinary_station_offers_no_transcript() -> None:
     ids = _ids(actions_for("station", station=_Row()))
     assert row_actions.VIEW_TRANSCRIPT not in ids
+
+
+# -- the 2026-08-18 round: downloads on the show, record on the row, search --
+
+
+def test_a_subscribed_show_offers_the_download_pair_from_the_library() -> None:
+    """Download All Episodes counts from the shared library, so it works
+    before the branch is ever expanded; Remove All Downloads dims (never
+    vanishes) when the downloads folder is empty -- same rule as Mark All."""
+    actions = actions_for(
+        "mypodcastshow",
+        is_folder=True,
+        folder_state=FolderState(
+            is_podcast_show=True, subscribed=True, library_episodes=12, downloaded_files=0
+        ),
+    )
+    ids = _ids(actions)
+    assert row_actions.DOWNLOAD_ALL_EPISODES in ids
+    assert "12" in _label(actions, row_actions.DOWNLOAD_ALL_EPISODES)
+    remove = next(a for a in actions if a.id == row_actions.REMOVE_DOWNLOADS)
+    assert remove.enabled is False  # nothing on disk yet: dimmed, present
+
+    with_files = actions_for(
+        "mypodcastshow",
+        is_folder=True,
+        folder_state=FolderState(
+            is_podcast_show=True, subscribed=True, library_episodes=12, downloaded_files=3
+        ),
+    )
+    assert next(a for a in with_files if a.id == row_actions.REMOVE_DOWNLOADS).enabled is True
+
+
+def test_a_subscribed_show_never_carries_two_download_all_rows() -> None:
+    """The loaded-rows Download All is suppressed on a show: the library-backed
+    Download All Episodes already owns the verb, and two rows would disagree
+    about the count."""
+    ids = _ids(
+        actions_for(
+            "mypodcastshow",
+            is_folder=True,
+            folder_state=FolderState(
+                is_podcast_show=True, subscribed=True, library_episodes=5, savable=5
+            ),
+        )
+    )
+    assert row_actions.DOWNLOAD_ALL_EPISODES in ids
+    assert row_actions.DOWNLOAD_ALL not in ids
+
+
+def test_searchable_roots_offer_search_this_source_and_others_do_not() -> None:
+    podcasts = _ids(
+        actions_for("apple", is_folder=True, folder_state=FolderState(root_source=True))
+    )
+    assert row_actions.SEARCH_SOURCE in podcasts
+    # NOAA has no search engine to hand the query to: no lying menu row.
+    noaa = _ids(actions_for("wx", is_folder=True, folder_state=FolderState(root_source=True)))
+    assert row_actions.SEARCH_SOURCE not in noaa
+
+
+def test_every_searchable_source_maps_to_a_real_facet() -> None:
+    """A facet string that drifts from the search dialog's dropdown opens the
+    dialog silently on All sources -- pin the vocabulary."""
+    known = {
+        "Radio Browser",
+        "iHeart",
+        "TuneIn",
+        "Podcasts",
+        "SomaFM",
+        "ACB Media",
+        "Community M3U",
+        "Xiph",
+        "YouTube",
+    }
+    assert set(row_actions.SEARCHABLE_SOURCES.values()) <= known
+
+
+def test_a_live_station_offers_record_and_schedule_when_the_host_can() -> None:
+    ids = _ids(
+        actions_for("rbgenre", station=_Row(), can_record=True),
+    )
+    assert row_actions.RECORD_STATION in ids
+    assert row_actions.SCHEDULE_RECORDING in ids
+    # A recording has an end: Download is its verb, Record is not.
+    episode = _ids(actions_for("appleshow", station=_Row(is_recording=True), can_record=True))
+    assert row_actions.RECORD_STATION not in episode
+
+
+def test_a_saved_row_offers_rename_favorite() -> None:
+    saved = _ids(actions_for("soma", station=_Row(), saved=True))
+    assert row_actions.RENAME_FAVORITE in saved
+    unsaved = _ids(actions_for("soma", station=_Row(), saved=False))
+    assert row_actions.RENAME_FAVORITE not in unsaved
+
+
+def test_a_subscribed_episode_offers_the_played_toggle_one_way_at_a_time() -> None:
+    unplayed = _ids(
+        actions_for("podepisode", station=_Row(is_recording=True), episode_played=False)
+    )
+    assert row_actions.MARK_EPISODE_PLAYED in unplayed
+    assert row_actions.MARK_EPISODE_UNPLAYED not in unplayed
+    played = _ids(actions_for("podepisode", station=_Row(is_recording=True), episode_played=True))
+    assert row_actions.MARK_EPISODE_UNPLAYED in played
+    assert row_actions.MARK_EPISODE_PLAYED not in played
+    # Not a subscribed episode: no mark item in either direction.
+    plain = _ids(actions_for("archiveitem", station=_Row(is_recording=True)))
+    assert row_actions.MARK_EPISODE_PLAYED not in plain
+    assert row_actions.MARK_EPISODE_UNPLAYED not in plain

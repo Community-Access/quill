@@ -252,10 +252,10 @@ class PodcastSessionMixin:
         return sum(1 for e in show.episodes if not e.played) if show is not None else 0
 
     def podcast_mark_all_played(self, show: object | None = None) -> None:
-        """Mark every episode of one show played, always confirmed by name
-        and count. Dismisses them from the Inbox as a side effect, because
-        the Inbox is unplayed episodes and these are no longer that."""
-        wx = self._wx
+        """Mark every episode of one show played, confirmed by name and count
+        until Don't ask me again is checked. Dismisses them from the Inbox as
+        a side effect, because the Inbox is unplayed episodes and these are
+        no longer that."""
         if show is None:
             controller = getattr(self, "_podcast_controller", None)
             show_id = controller.state.show_id if controller is not None else None
@@ -267,17 +267,16 @@ class PodcastSessionMixin:
         if not unplayed:
             self._announce(f"Every episode of {show.title} is already played.")
             return
-        from quill.ui.dialog_contract import show_message_box
+        from quill.ui.podcasts.mark_played_confirm_dialog import confirm_mark_all_played
 
-        answer = show_message_box(
-            f"Mark all {len(unplayed)} unplayed episode(s) of {show.title} as played? "
-            "They stay in your library; downloaded files are not deleted.",
-            "Mark All as Played",
-            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
+        if not confirm_mark_all_played(
             self.frame,
+            message=(
+                f"Mark all {len(unplayed)} unplayed episode(s) of {show.title} as played? "
+                "They stay in your library; downloaded files are not deleted."
+            ),
             announce=self._announce,
-        )
-        if answer != wx.YES:
+        ):
             return
         for episode in unplayed:
             episode.played = True

@@ -6,7 +6,7 @@ directly on whatever list it already has in hand. wx-free, strict-typed.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Collection
 from email.utils import parsedate_to_datetime
 from typing import TYPE_CHECKING, Any
 
@@ -107,23 +107,39 @@ def _most_recent_episode_timestamp(show: PodcastShow) -> float:
     return max(_parse_published(e.published) for e in show.episodes)
 
 
-def unheard_count(show: PodcastShow) -> int:
+def unheard_count(show: PodcastShow, *, exclude_audio: Collection[str] = ()) -> int:
     """Unplayed episodes in *show* -- shared by tree labels, sorting, and the
-    Status page's podcast rows (status_report.py)."""
-    return sum(1 for e in show.episodes if not e.played)
+    Status page's podcast rows (status_report.py).
+
+    *exclude_audio* subtracts episodes by audio URL without touching their
+    stored state. Quill Radio passes its own finished-listen records here
+    (radio_listens.finished_audio_urls): an episode heard to the end in Radio
+    is finished *now*, but the shared library only learns that at Quill
+    Cast's next merge -- the handoff exists so Radio never writes the
+    library. Until then the badge would call a finished episode unheard,
+    which reads as the listen having been lost. Cast passes nothing and is
+    unchanged.
+    """
+    return sum(1 for e in show.episodes if not e.played and e.audio_url not in exclude_audio)
 
 
-def unheard_count_for_folder(library: PodcastLibrary, folder_id: str) -> int:
+def unheard_count_for_folder(
+    library: PodcastLibrary, folder_id: str, *, exclude_audio: Collection[str] = ()
+) -> int:
     """Unplayed episodes in every show under *folder_id*, subfolders included.
 
     One implementation for every folder badge -- Quill Cast's manager tree and
     Quill Radio's Subscriptions branch -- so the two apps can never disagree
     about what a folder's number means.
     """
-    total = sum(unheard_count(show) for show in library.shows if show.folder_id == folder_id)
+    total = sum(
+        unheard_count(show, exclude_audio=exclude_audio)
+        for show in library.shows
+        if show.folder_id == folder_id
+    )
     for child in library.folders:
         if child.parent_folder_id == folder_id:
-            total += unheard_count_for_folder(library, child.id)
+            total += unheard_count_for_folder(library, child.id, exclude_audio=exclude_audio)
     return total
 
 

@@ -730,9 +730,10 @@ class RadioMixin:
         save_recording_settings(app_data_dir(), updated)
         self._announce("Recording settings saved")
 
-    def _radio_open_schedule_recording(self) -> None:
-        controller = getattr(self, "_radio_controller", None)
-        station = controller.state.station if controller is not None else None
+    def _radio_open_schedule_recording(self, *, station: Any = None) -> None:
+        if station is None:
+            controller = getattr(self, "_radio_controller", None)
+            station = controller.state.station if controller is not None else None
         ScheduleRecordingDialog(
             self.frame,
             entries=self._radio_scheduler.entries,
@@ -1317,8 +1318,13 @@ class RadioMixin:
 
     # -- record a different station ---------------------------------------------
 
-    def open_record_station_dialog(self) -> None:
-        """Record Station...: record B while listening to A (or to nothing)."""
+    def open_record_station_dialog(self, *, station: Any = None) -> None:
+        """Record Station...: record B while listening to A (or to nothing).
+
+        *station* pre-fills the dialog with a specific station -- the browse
+        tree's Record This Station... passes the row it was asked about,
+        which otherwise would have to be found again inside the dialog.
+        """
         from quill.ui.radio.record_station_dialog import RecordStationDialog
 
         if not ffmpeg_available():
@@ -1334,7 +1340,9 @@ class RadioMixin:
         dialog = RecordStationDialog(
             self.frame,
             favorites=self._radio_favorites,
-            now_playing=controller.state.station if controller is not None else None,
+            now_playing=station
+            if station is not None
+            else (controller.state.station if controller is not None else None),
             default_duration_minutes=min(60, self._radio_recording_settings.max_duration_minutes),
             announce_cb=self._announce,
         )
@@ -1966,8 +1974,15 @@ class RadioMixin:
         self._refresh_statusbar()
 
     def open_internet_radio(
-        self, *, initial_category: str | None = None, focus_search: bool = False
+        self,
+        *,
+        initial_category: str | None = None,
+        focus_search: bool = False,
+        source_facet: str | None = None,
     ) -> None:
+        """*source_facet* pre-narrows the Source filter for this opening only
+        (Search This Source... from the browse tree); the listener's own
+        remembered facet is untouched unless they change it in the dialog."""
         if self._safe_mode:
             self._show_message_box(
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
@@ -1989,7 +2004,9 @@ class RadioMixin:
             spotify_client_provider=self._spotify_search_client,
             enabled_sources=self._radio_history.search_sources_enabled,
             catalog=_search_catalog(self),
-            source_facet=self._radio_history.search_source_facet,
+            source_facet=source_facet
+            if source_facet is not None
+            else self._radio_history.search_source_facet,
             on_search_prefs_changed=self._radio_save_search_prefs,
         )
         dlg.show(initial_category=initial_category, focus_search=focus_search)
