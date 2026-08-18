@@ -69,6 +69,11 @@ a = Analysis(
         "matplotlib",
         "scipy",
         "mypy",
+        # hypothesis is a property-based TEST library. It reached the sweep the
+        # same way mypy did -- installed in the build interpreter, reachable
+        # through some collected package's optional import -- and a test
+        # framework has no business in a shipped runtime whatever its size.
+        "hypothesis",
         "lxml",
         # Additional dead weight dragged in transitively that NO QuillVille app
         # imports (verified: no `import speech_recognition|onnxruntime|av|imageio`
@@ -82,6 +87,42 @@ a = Analysis(
         "av",
         "imageio",
         "imageio_ffmpeg",
+        # --- engine-pack-owned modules: MUST NOT be frozen in -----------------
+        # These are installed on demand into %APPDATA%\Quill\engine-packs\ by
+        # quill.core.speech.engine_install, which puts the pack on sys.path.
+        # A frozen copy does not merely duplicate the pack -- it SHADOWS it and
+        # cannot be overridden, because PyInstaller's FrozenImporter sits ahead
+        # of PathFinder on sys.meta_path (the reason yt-dlp needs the explicit
+        # meta-path finder in engine_pack_imports.py to be updatable at all).
+        #
+        # Freezing them silently broke all three, verified in the 2026-08-17
+        # build by importing each one inside the shipped runtime:
+        #   vosk         -> OSError: cannot load libvosk.dll (0x7e). The wheel's
+        #                   26 MB libvosk.dll is not a PyInstaller-visible
+        #                   dependency, so only its three mingw support DLLs
+        #                   (27.6 MB) shipped -- the engine itself never did.
+        #   faster_whisper -> ModuleNotFoundError: 'av' (excluded above, and
+        #                   build_runtime.ps1 then prunes libx265, so `av` can
+        #                   never come back). ctranslate2's 59 MB shipped for a
+        #                   module that cannot import.
+        #   kokoro_onnx  -> ModuleNotFoundError: 'onnxruntime' (excluded above).
+        # Worse than the wasted weight: is_vosk_available() and friends use
+        # find_spec(), which finds the broken frozen module, so QUILL reported
+        # all three as installed and never offered the working engine pack.
+        # Excluding them costs no capability -- none of the three could run --
+        # and restores the on-demand path that already exists, is SHA-256
+        # verified, and is refcounted in the shared component store.
+        "vosk",
+        "faster_whisper",
+        "ctranslate2",
+        "kokoro_onnx",
+        # Not installed on the 2026-08-17 build machine, so it has never shipped
+        # -- which is exactly why it belongs here. sherpa-onnx backs the Nemotron
+        # and Parakeet providers and the VAD, all engine-pack-installed, so on a
+        # build machine that happens to have it the sweep would freeze it in and
+        # shadow the pack silently. Same class of accident as `winrt` vanishing
+        # from a release: what ships must not depend on what one laptop has.
+        "sherpa_onnx",
     ],
     noarchive=False,
 )
