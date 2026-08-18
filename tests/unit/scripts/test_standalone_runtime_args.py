@@ -31,10 +31,11 @@ _STAGER = Path("scripts") / "StageMediaTools.ps1"
 _STAGE_CALL = "Stage-QuillMediaTools"
 
 #: App build script -> whether that app declares any media component.
-#: Radio declares ("ffmpeg", "mpv"); Cast and Studio declare ("ffmpeg",) -- and
-#: Studio also stages libmpv for its player preview, which its build has always
-#: shipped. Weather, Inkwell, Beacon, Social, Converter and Player declare none.
+#: Radio and Studio declare ("ffmpeg", "mpv") -- Studio's libmpv backs the
+#: player preview its build has always shipped. Cast declares ("ffmpeg",).
+#: Weather, Inkwell, Beacon, Social, Converter and Player declare none.
 _DECLARES_MEDIA: dict[str, bool] = {
+    "cast": True,
     "radio": True,
     "studio": True,
     "weather": False,

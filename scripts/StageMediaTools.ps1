@@ -8,8 +8,8 @@
 #
 # The 2026-07-20 runtime/component plan (S2) puts the media tools beside the
 # runtime, not inside it, and the app layer already declares who needs what:
-#   quill.apps.radio.REQUIRED_COMPONENTS = ("ffmpeg", "mpv")
-#   quill.apps.podcasts / quill.apps.studio          = ("ffmpeg",)
+#   quill.apps.radio / .studio REQUIRED_COMPONENTS = ("ffmpeg", "mpv")
+#   quill.apps.podcasts                             = ("ffmpeg",)
 #   weather, inkwell, beacon, social, converter, player: nothing.
 # So each media app's own build_release.ps1 stages exactly what it declares,
 # after the shared runtime is built. An app that declares nothing calls nothing
@@ -42,7 +42,9 @@ function Stage-QuillMediaTools {
         # A vetted directory holding ffmpeg.exe (and optionally ffprobe.exe).
         [string]$FfmpegDir = "",
         # A vetted directory holding libmpv-2.dll. Omit for apps that declare
-        # only ffmpeg (Cast, Studio) -- 110 MB they have no use for.
+        # only ffmpeg (Cast) -- 110 MB they have no use for. Radio and Studio
+        # both declare mpv: Radio as its playback engine, Studio for the
+        # player preview its build has always bundled.
         [string]$LibmpvDir = ""
     )
 
