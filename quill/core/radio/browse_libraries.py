@@ -264,10 +264,14 @@ def _browse_my_podcast_show(args: list[str], *, safe_mode: bool) -> list[BrowseN
         return []
     from quill.core.paths import app_data_dir
     from quill.core.podcasts.feed_reader import fetch_and_parse_feed
+    from quill.core.podcasts.radio_listens import feed_credentials
     from quill.core.radio.history import load_history
 
     limit = load_history(app_data_dir()).subscription_episode_limit
-    info = fetch_and_parse_feed(args[0], safe_mode=safe_mode)
+    # The same same-host credentials Quill Cast attaches: a private feed that
+    # works there must list its episodes here, not read as broken.
+    username, password = feed_credentials(app_data_dir(), args[0])
+    info = fetch_and_parse_feed(args[0], username=username, password=password, safe_mode=safe_mode)
     _sync_subscribed_episodes(args[0], info.episodes)
     leaves = _episode_leaves(info, args[0], source="Subscribed Podcasts")
     return leaves[:limit] if limit > 0 else leaves

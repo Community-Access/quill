@@ -340,6 +340,74 @@ export, was the acceptance file for this feature).
    nothing unheard.
 4. Back in Radio, check the show's badge: gone, in both apps.
 
+### T-4.9 A Cast position continues in Radio (and the furthest point wins)
+
+Setup: in **QUILL Cast**, play a subscribed episode for at least two
+minutes, then stop. Note the position (Cast's player shows it).
+
+1. In Radio, open the same show under **Subscriptions** and press **Enter**
+   on the same episode.
+   - **Listen for:** the resume announcement with **Cast's** position:
+     *"Resuming at 2 minutes 10 seconds."* -- the same wording recordings
+     already use; only the number is new. (Its verbosity follows the same
+     Preferences setting: spoken, brief, or silent.)
+2. Listen a few minutes further in Radio, stop, and go back to Cast.
+   - **Expect:** Cast learns Radio's position at its next launch (the
+     handoff), and the **furthest** point wins -- neither app ever drags
+     you backwards.
+3. Play an ordinary LibriVox chapter.
+   - **Expect:** exactly the old behaviour -- its resume comes from Radio's
+     own store; the podcast library is never consulted for it.
+
+### T-4.10 A private feed works in Radio too
+
+Needs a podcast with feed credentials saved in Cast (Add Podcast >
+authenticated feed). If you have none, note this as Not Run rather than
+skipping silently.
+
+1. In Radio, open that show under Subscriptions.
+   - **Expect:** its episodes list, exactly like a public feed. Before this
+     build the fetch went out with no credentials, so a private feed that
+     worked in Cast read as broken here -- an empty or failed branch on
+     this step is the old bug come back.
+2. The same-host rule applies: credentials are only ever sent to the
+   feed's own host, never to a redirect elsewhere.
+
+### T-4.11 The show's speed follows the show
+
+Setup: in Cast, set a show's speed to 1.5x (Settings for This Podcast).
+
+1. In Radio, play one of that show's episodes from Subscriptions.
+   - **Expect:** it plays at **1.5x** -- audibly faster. The setting
+     followed the show; Radio grew no settings UI for it.
+2. Press **Ctrl+Alt+Up** (Play Faster).
+   - **Expect:** speed steps up from 1.5x and is announced -- the session
+     control always wins over the saved speed.
+3. Play a different, ordinary station, then return to the show's episode.
+   - **Expect:** 1.5x again (a fresh play with an untouched session rate
+     re-reads the show's speed).
+4. While a session speed is active (say you pressed Play Faster on the
+   previous item), play the 1.5x show's episode.
+   - **Expect:** your **session speed is kept** -- the saved speed only
+     applies when you have not chosen one.
+
+### T-4.12 Podcasting 2.0 chapters on the player
+
+Use a chaptered feed from the section-4 table (Podcasting 2.0 and No
+Agenda both publish chapters).
+
+1. Play an episode from Subscriptions and give it a few seconds (the
+   chapters file is fetched in the background; playback never waits on
+   it).
+2. Use Radio's chapter commands -- the same ones that work on chaptered
+   videos and audiobooks (next/previous chapter, and the chapter readout).
+   - **Expect:** the publisher's own chapter titles, announced exactly as
+     video chapters are. Same commands, no new UI -- that is the feature.
+3. Play an episode from a feed with no chapters.
+   - **Expect:** the chapter commands answer exactly as they do on an
+     unchaptered video -- the honest "no chapters" path, never an invented
+     marker.
+
 ---
 
 ## 5. Transcripts

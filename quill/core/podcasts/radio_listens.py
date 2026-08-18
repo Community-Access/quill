@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -165,3 +166,74 @@ def _find_episode(library: PodcastLibrary, feed_url: str, audio_url: str) -> Pod
         if episode.audio_url == audio:
             return episode
     return None
+
+
+@dataclass(frozen=True, slots=True)
+class EpisodePlaybackProfile:
+    """What the shared library knows that should shape playing one episode.
+
+    Read by Quill Radio when a subscription episode starts (the reverse
+    direction of the handoff above -- and read-only on purpose: positions
+    written FROM Radio still travel through the append-only records so a
+    Radio write can never clobber Cast's open library).
+    """
+
+    #: Where Quill Cast (or a merged listen) left this episode. 0 = start.
+    position_ms: int = 0
+    #: The show's effective playback speed (its own setting, or the library
+    #: default). 1.0 = normal.
+    speed: float = 1.0
+    #: The episode's Podcasting 2.0 chapters file, when the feed declared one.
+    chapters_url: str = ""
+    #: Ready ``Authorization`` header for this show's private resources
+    #: (same-host rule applied by feed_auth), or "".
+    chapters_auth_header: str = ""
+
+
+def episode_playback_profile(
+    data_dir: Path, *, feed_url: str, audio_url: str
+) -> EpisodePlaybackProfile:
+    """The library's knowledge about one subscribed episode, or defaults.
+
+    Never raises, and answers defaults for an unfollowed feed -- an Apple
+    row played before subscribing is an ordinary recording, not an error.
+    """
+    try:
+        from quill.core.podcasts import feed_auth
+        from quill.core.podcasts.subscriptions import load_library
+
+        library = load_library(data_dir)
+        show = library.find_show_by_feed_url((feed_url or "").strip())
+        if show is None:
+            return EpisodePlaybackProfile()
+        episode = _find_episode(library, feed_url, audio_url)
+        chapters_url = str(getattr(episode, "chapters_url", "") or "")
+        return EpisodePlaybackProfile(
+            position_ms=max(0, int(getattr(episode, "position_ms", 0) or 0)),
+            speed=float(library.effective_settings(show).speed or 1.0),
+            chapters_url=chapters_url,
+            chapters_auth_header=(
+                feed_auth.auth_header_for_url(show, chapters_url) if chapters_url else ""
+            ),
+        )
+    except Exception:  # noqa: BLE001 - a broken profile must never break playback
+        return EpisodePlaybackProfile()
+
+
+def feed_credentials(data_dir: Path, feed_url: str) -> tuple[str, str]:
+    """``(username, password)`` for fetching *feed_url* itself, or ``("", "")``.
+
+    The same same-host gate Cast applies (feed_auth.auth_for_url against the
+    feed's own address), so a private feed that works in Cast lists its
+    episodes in Radio instead of reading as broken.
+    """
+    try:
+        from quill.core.podcasts import feed_auth
+        from quill.core.podcasts.subscriptions import load_library
+
+        show = load_library(data_dir).find_show_by_feed_url((feed_url or "").strip())
+        if show is None:
+            return ("", "")
+        return feed_auth.auth_for_url(show, show.feed_url)
+    except Exception:  # noqa: BLE001 - no credentials is the safe answer
+        return ("", "")

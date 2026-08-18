@@ -50,16 +50,42 @@ def is_recording(station: object | None) -> bool:
 def saved_position_ms(station: object | None) -> int:
     """Where *station* was left, or 0.
 
-    Never raises: a profile that cannot be read should cost you your place, not
-    your playback.
+    For a podcast episode, the furthest of two answers wins: Radio's own
+    resume store, and the shared library's ``position_ms`` -- which is how
+    twenty minutes heard in Quill Cast continues here on the same row. The
+    library read is the safe direction (Radio's own positions still travel
+    to Cast through the append-only handoff below, never a library write).
+
+    Never raises: a profile that cannot be read should cost you your place,
+    not your playback.
     """
     if not is_recording(station):
         return 0
     try:
         point = _store().position_for(getattr(station, "stream_url", ""))
     except Exception:  # noqa: BLE001 - a lost position is not a lost stream
+        point = None
+    own = point.position_ms if point is not None else 0
+    return max(own, _library_position_ms(station))
+
+
+def _library_position_ms(station: object | None) -> int:
+    """The shared library's saved position for a podcast episode, or 0."""
+    from quill.core.podcasts.radio_listens import PODCAST_EPISODE_SOURCES
+
+    if str(getattr(station, "source", "")) not in PODCAST_EPISODE_SOURCES:
         return 0
-    return point.position_ms if point is not None else 0
+    try:
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts.radio_listens import episode_playback_profile
+
+        return episode_playback_profile(
+            app_data_dir(),
+            feed_url=str(getattr(station, "homepage", "") or ""),
+            audio_url=str(getattr(station, "stream_url", "") or ""),
+        ).position_ms
+    except Exception:  # noqa: BLE001 - a lost position is not a lost stream
+        return 0
 
 
 def remember(host: Any) -> None:

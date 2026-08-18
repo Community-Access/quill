@@ -414,6 +414,12 @@ class RadioPlayerController:
             # Re-apply the chosen speed: load() resets mpv's speed so a video
             # left at 2x cannot carry that into the next live station.
             self._engine.set_rate(self._playback_rate)
+        if bounded:
+            # The shared library's knowledge for a podcast episode: the show's
+            # saved speed, and its Podcasting 2.0 chapters (episode_profile).
+            from quill.ui.radio import episode_profile
+
+            episode_profile.apply_profile(self)
 
     # -- resume: where you stopped in a recording -------------------------------
     # The logic lives in quill/ui/radio/resume_playback.py; this module is at its
@@ -511,13 +517,13 @@ class RadioPlayerController:
     def chapters(self) -> list[Any]:
         """The published chapters of what is playing, or an empty list.
 
-        These are the uploader's own markers, captured during the resolve at
-        no extra cost -- never guessed.
+        A video's own markers, or a podcast episode's Podcasting 2.0
+        chapters -- both published by the source, never guessed. The two
+        shapes are unified in quill/ui/radio/episode_profile.py.
         """
-        stream = self._youtube_stream
-        if stream is None or not self.is_seekable():
-            return []
-        return list(getattr(stream, "chapters", ()) or ())
+        from quill.ui.radio import episode_profile
+
+        return episode_profile.chapters_for(self)
 
     def audio_tracks(self) -> list[Any]:
         """Every selectable audio rendition of what is playing.

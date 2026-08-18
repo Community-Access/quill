@@ -41,6 +41,23 @@ timings, and three long-standing silent faults are fixed. See
 - **Mark All as Played, on the show's own row.** The same verb and the
   same shared state as Cast's Episode menu, always on a subscribed show's
   context menu and dimmed when nothing is unheard -- in both apps.
+- **An episode continues where Quill Cast left it.** Twenty minutes into
+  an episode over there, Enter on the same row here, and the familiar
+  "Resuming at..." announcement carries Cast's position. The furthest
+  point always wins between the two apps, and the read is one-way on
+  purpose -- Radio's own positions still travel to Cast through the
+  existing handoff, so neither app can ever clobber the other's library.
+- **Private feeds work here too.** A show with saved feed credentials in
+  Cast now lists its episodes in Radio -- the fetch attaches the same
+  same-host credentials Cast uses, where before it went out bare and a
+  private feed read as broken.
+- **The show's speed follows the show.** A show set to 1.5x in Cast plays
+  at 1.5x here, with no new settings surface -- and Play Faster/Slower
+  always wins over it, exactly like the player's own speed re-apply.
+- **Podcast chapters on the player.** An episode whose feed publishes
+  Podcasting 2.0 chapters gets them on the same chapter commands videos
+  and audiobooks already have -- fetched in the background, publisher's
+  own titles, no new UI.
 - **The YouTube branch takes any link, and one command files it.** Saved
   playlists and single videos now live beside followed channels — the branch
   is simply **YouTube** — each shape with its own **Add a...** row, and each

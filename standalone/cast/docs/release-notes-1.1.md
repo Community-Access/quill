@@ -36,6 +36,13 @@ more honest in return:
   manager-menu items now dim when the show has nothing unheard, instead of
   offering to do nothing -- and Radio carries the same verb, on the show's
   own row, over the same shared state.
+- **Your position, your speed, and your credentials follow the show.** An
+  episode part-heard here resumes at the same spot when played from
+  Radio's Subscriptions (and the furthest point wins in both directions);
+  a show's saved playback speed applies there too; and a private feed's
+  credentials now travel with it, so the feed lists its episodes in both
+  apps. Episodes with Podcasting 2.0 chapters get chapter navigation on
+  Radio's player as well.
 
 ## Your queue looks after itself
 
