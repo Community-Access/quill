@@ -38,6 +38,14 @@ more honest in return:
   own row, over the same shared state. Its confirmation now carries a
   **"Don't ask me again"** checkbox, and the answer is shared: check it in
   either app and both stop asking.
+- **The tree helps you start, and grows from anywhere.** An empty library
+  now shows three rows that act on Enter -- Add a Podcast by URL, Import
+  Podcasts from OPML, Search for a Podcast -- and they vanish the moment
+  anything is subscribed. **Add Podcast...** also joined the tree's own
+  context menu, on folders and the background (never on shows or
+  episodes). The same trio greets an empty Subscriptions branch in Quill
+  Radio, which can now add a feed by pasted URL too, with a fix-naming
+  sentence for every kind of wrong address.
 - **Remove All Downloads, beside Download All Episodes.** The library
   tree's show menu gains the symmetric verb: delete a show's downloaded
   files -- and only the files. Episodes, played state, and positions stay;

@@ -25,6 +25,10 @@ Here is the shape of it, in the order you are most likely to care:
 - **The app grows up around you.** Real backups, favorites that keep the order
   you built, one volume when you want one, Winamp's keys in the Recordings
   player, windows that stay put, braille for everything it says.
+- **It introduces itself now.** A first launch that has never seen Quill Radio
+  gets three short screens instead of an empty list -- and an installation that
+  has lost one of its media tools says so, in one sentence, instead of quietly
+  doing less.
 - **And the broadcast processor is the real one now**, not an impression of it.
 
 Everything below is in that order: what changes most about what you can do,
@@ -1150,14 +1154,22 @@ the way they work everywhere else, which a custom list would have taken away and
 replaced with nothing you asked for. What the timings add is everything around
 the edges:
 
-- **Follow the audio.** Turn it on and the cursor moves to the line being spoken.
-  It is **off** by default, and that is the important half: while you are
-  reading, playback never moves your cursor. You are reading; the audio can wait.
+- **Your cursor is yours.** Playback never moves it. You are reading; the audio
+  can wait. (A "Follow the audio as it plays" checkbox shipped here at first and
+  was removed: a cursor that moves while you are reading is a cursor you are
+  fighting, and everything it offered is better served by Find, which takes you
+  to a moment you chose rather than the one that happens to be playing.)
 - **Play from here.** Press Enter on any line and playback jumps to the moment
   that line was spoken -- "Playing from 4 minutes 12 seconds."
-- **Find, with the position spoken.** Ctrl+F searches, and each hit is announced
-  as *"Found at 12 minutes 8 seconds"* rather than just moving the cursor. That is
-  the thing a transcript in a text file can never do for you.
+- **Find, with the position spoken.** Ctrl+F searches, the cursor lands on the
+  match, and the hit is announced as *"Found at 12 minutes 8 seconds. Enter
+  plays from here."* -- so the verb that acts on what you just found is the next
+  key you press. With nothing playing, the offer of a jump is simply left off.
+  That is the thing a transcript in a text file can never do for you.
+- **Links.** A Links... button (Ctrl+Shift+L) lists every web address in the
+  transcript -- name and address on each row -- and opens one in your browser or
+  copies it to the clipboard. Reading an address out of a read-only box and
+  retyping it is not a way to follow a link.
 - **Copy** the selection, or the whole transcript when nothing is selected.
 - **Save As** in plain text, **WebVTT** or **SubRip** -- the timed forms, because
   somebody keeping a transcript usually wants one another player can follow.
@@ -2004,10 +2016,280 @@ Every app in the family now has its own, and they are still recognisably a set: 
 
 Radio keeps the design it always had -- a source with waves leaving it, on a deep indigo tile -- redrawn for the size that actually matters. At 16 by 16 pixels, which is the notification area and the small icons in a file list, the old three thin arcs merged into a single smear. There are now two, thicker and further apart.
 
+## One player, and every window can reach it
+
+Quill Radio has only ever had one player. What it did not have was one
+*keyboard*. Speed, skip and chapters were menu items on the main window, and a
+menu accelerator only fires for the window that owns the menu bar -- so standing
+in Browse Stations you could hear a podcast and be unable to change its speed.
+The window you were standing in decided which half of the player existed.
+
+That is fixed at the root. Every transport verb is now one row in one table --
+an id, a label, a key, and two honesty flags -- and the menus, the accelerators,
+the Command Palette and the player's own buttons are all built from it. Four
+doors, one implementation.
+
+Ten windows answer to the whole transport now: Browse Stations, Find Stations,
+Manage Favorites, the Recordings list, Song History, the chapter list, Now
+Playing, the download queue, Find Streams from a Website, and the player panel
+itself.
+
+**Four keys moved, and it matters why.** Speed and chapters used to sit on
+Ctrl+Alt+arrow. That block belongs to JAWS's and NVDA's table navigation, so
+those verbs worked everywhere *except* while somebody was reading a table --
+the kind of fault that never gets reported with a reproduction because it looks
+like the screen reader's doing. They are now Ctrl+Shift+Up and Ctrl+Shift+Down
+for speed, Ctrl+Shift+comma and Ctrl+Shift+period for chapters, and a build
+check fails if anything lands back on that block. Where Am I is Ctrl+Shift+W.
+
+### Go to Player (Ctrl+Shift+G)
+
+> *"should the player be its own window? Can we make that magical some how?"*
+
+A permanent player window buys one obvious place and costs a third citizen in
+the Alt+Tab rotation -- which was the thing being complained about in the first
+place. So the player has no window. It has a **summons**.
+
+Press Ctrl+Shift+G from anywhere and a compact panel opens *over the window you
+are already in*: the whole transport as buttons, plus a readout of what is
+playing, where you are in it, the speed and the volume. Close it and focus
+returns to the exact control you came from -- not the top of the list you were
+halfway down. It is modal to the window that summoned it, so it never becomes
+something to manage in Alt+Tab.
+
+The keys work inside the panel too, and every one of them re-reads the readout,
+so a key and a button leave the panel saying the same thing. Press Ctrl+Shift+G
+while it is already open and it says "You are already in the player." rather
+than stacking a second panel on the first.
+
+### The Command Palette, from every window, and it can work the player
+
+Both Quill Radio and Quill Cast already had a palette -- on the Help menu, which
+is to say reachable only from the main window, the same shape the transport had.
+And it could change a setting but could not pause what was playing.
+
+Both halves are fixed. **Ctrl+Shift+P opens it from every window**, and the
+whole transport is in it. Each entry runs the same dispatcher the keys and the
+menus run, so a palette entry, a keystroke, a menu item and a button are four
+doors into one implementation, refusals included -- and no verb is listed twice,
+because two identical-sounding rows in a list somebody arrows through is worse
+than the gap it filled.
+
+### Every key now says what it did
+
+The rule was already written down: a key that cannot act says why, because a
+silent key is indistinguishable from one that is not bound. The refusal path
+honoured it. The success path did not -- Play/Pause, Stop and Mute all did their
+job and said nothing at all in every window but the main one.
+
+Mute was the worst of the three. Silence is what muting is *for*, so with no
+word there was no way to tell muting apart from the stream dropping out. All
+three speak now: "Playing.", "Paused.", "Stopped.", "Muted.", "Unmuted."
+
+### One volume, one distance, one sentence
+
+Volume had drifted into three different behaviours depending on which window
+had focus:
+
+- It moved **10** through the menus and **5** through the shared keyboard.
+- It said **"Radio volume 45"** in the main window and Find Stations,
+  **"Volume 45"** in the Recordings list, and **"Volume 45 percent."**
+  everywhere else -- the Recordings list dropping the unit entirely, so you had
+  to already know the scale.
+- And Volume Up **while muted** announced a level you could not hear: the level
+  changed, the mute did not lift, and nothing came out.
+
+One implementation now, one distance (10), one sentence ("Volume 60 percent.",
+"Volume off.", "Muted."), and a deliberate volume change always lifts mute.
+
+## Delete leaves your cursor somewhere real
+
+Two lists, the same moment, two different wrong answers.
+
+Deleting a **recording** left the list with no selection and no focused row at
+all -- the refresh restored the selection by identity, and a deleted row has no
+identity left -- so arrowing began again from the top. Deleting a **favorite**
+jumped to the *first* item in the tree, which with forty favorites and focus
+still in the list meant you lost your place entirely.
+
+Both now land on the row that took the deleted one's place, or on the new last
+row when the one you deleted was last. Delete the only thing in the list and it
+says so -- "No recordings left.", "No favorites left." -- rather than going
+quiet. Deleting a folder lands on the first station that stepped out of it,
+beside the content you were looking at.
+
+## Everything Quill Radio says now ends as a sentence
+
+Seventy-one announcements ended without a full stop -- "Playing WNYC", "Radio
+stopped", "Removed recording X". A screen reader applies sentence-final prosody
+on a full stop, the pitch drop that marks a finished thought, and Quill Radio
+fires announcements in quick succession. Without it, "Playing WNYC" ran straight
+into "Volume 60 percent." as one long run-on.
+
+The pattern was inconsistent inside single files, which is the tell that it was
+never a decision. All of them now end as sentences, and a build check reads the
+source of every Radio module so it cannot drift back.
+
+## The first minute, for somebody who has never used this
+
+Quill Radio browses twenty-eight branches of station directory, records on a
+schedule, rewinds live audio, and remembers a volume for every station
+separately. A new listener met all of that as an **empty favorites tree**.
+
+That is an accurate picture of having no favorites. It is also an answer to none
+of the questions somebody actually arrives with: *where are the stations, how do
+I play one, and how do I keep it?*
+
+So the first launch now shows three screens. Not seven -- three.
+
+1. **Welcome to Quill Radio.** What it is, that it is built for listening with a
+   screen reader, that nothing here needs an account and nothing you listen to
+   leaves your computer, and the one key that carries most of the app.
+2. **Find something to listen to.** The three ways in -- Browse Stations, Search
+   All Sources at the top of that tree, and Add Station for an address you
+   already have.
+3. **Keep the ones you like.** How favorites work, that the first ten answer a
+   key each, and that Radio keeps playing while you work.
+
+Four things about it are deliberate:
+
+- **Skip is a real button**, sitting with Back and Next, and skipping counts as
+  done. Somebody who already knows what an internet radio is should be able to
+  leave in one keystroke, and making that awkward is a way of insisting they
+  read something they do not need.
+- **It never runs for somebody who already has favorites** -- an imported
+  station list, a restored backup, an upgrade from any earlier Quill Radio.
+  Explaining how to find a first station to somebody with forty is a way of
+  saying nobody checked.
+- **Every key it teaches is the key you have.** The screens are rendered against
+  your live keymap, so if you rebound Browse Stations in the Keyboard Manager it
+  names *your* key. A screen that teaches a default somebody has already changed
+  is worse than one that teaches nothing.
+- **The words are in a text box you can arrow through**, not a wall of labels.
+  Somebody who missed a sentence can go back over it at their own pace, and copy
+  it, instead of asking the app to say it all again.
+
+On the second and third screens there is a **Browse Stations Now...** button, so
+you can leave the welcome and go straight to finding something. Taking it counts
+as finished: somebody who went and found a station has been onboarded, whatever
+screen they were on.
+
+### Tips: one sentence, once each
+
+There is a checkbox on the welcome screen -- **Show me a tip now and then** --
+and behind it six things worth knowing that no button label can tell you:
+
+- that live radio can be paused and rewound,
+- that Radio remembers a volume for each station separately,
+- that a recording can be scheduled for a programme that has not started yet,
+  and will wake the computer to catch it,
+- that Sound Enhancements can be set for one station rather than all of them,
+- that Browse Stations reopens where you left it,
+- that Song History keeps every track a station announced while you listened.
+
+Each appears **once, ever**, the first time you reach somewhere it would help.
+None of them takes the keyboard or interrupts what you are doing -- they ride the
+same announcement path as everything else, so they reach speech and braille and
+then they are gone. Unchecking the box switches all of them off permanently.
+
+---
+
+## When a media tool goes missing, Quill Radio says so
+
+Two programs do the heavy lifting inside Quill Radio: **mpv**, which plays, and
+**FFmpeg**, which records. Both ship inside every installer. Neither is supposed
+to be able to go missing.
+
+They can, though -- antivirus quarantine and a half-finished update are the two
+usual ways -- and until now Quill Radio's answer to that was **silence**.
+
+The playback engine setting defaults to "automatic", which means "use mpv when
+it is there". When it was not there, the app quietly fell back to Windows Media
+and said nothing. There *was* a message about it, but only somebody who had gone
+into Preferences and demanded mpv by name would ever hear it. Everybody else got
+a radio that had lost:
+
+- live pause and rewind,
+- choosing which sound card plays,
+- Volume Boost,
+- Sound Enhancements without the local relay,
+- track titles from the stream,
+- knowing when a stream has stalled,
+- and every Ogg Vorbis, Opus and HLS station outright
+
+with nothing anywhere saying why. You would try a station, hear nothing, and
+have no route to the reason.
+
+Now a damaged installation says so, **once**, at launch: one plain sentence
+naming which tool is gone, what it costs you, and what to do. It is spoken
+rather than shown in a box you have to dismiss, because a launch is not the
+moment to grab focus a screen reader has not settled yet.
+
+Three details that matter more than they look:
+
+- **A healthy installation says nothing at all.** An app that reports "all is
+  well" on every launch is an app nobody can listen past.
+- **It does not nag.** It remembers *which* tools were missing, not merely that
+  it has spoken. So it stays quiet on the next launch -- and speaks up again if a
+  *second* tool goes missing later, because that is new information.
+- **A station that cannot play at all now says why.** An Ogg, Opus or HLS
+  station on an installation without mpv used to report "that stream could not
+  be opened" -- true, and useless, because the station was fine. It now names the
+  format, the missing engine and the fix. Deliberately narrowly: an ordinary MP3
+  station that is simply off the air is never blamed on a missing component.
+
+Either way, **reinstalling Quill Radio restores both tools**, and **Help > Get
+FFmpeg...** fetches FFmpeg on its own.
+
+---
+
+## The status line stopped saying "playing" through silence
+
+Two things a stream does had nowhere to be said.
+
+**Buffering.** When a live stream runs out of audio, mpv pauses itself to refill.
+Quill Radio said "Buffering..." and left its playback state at *playing* -- so the
+status bar's Now playing cell and the tray tooltip both went on claiming
+playback through dead air. That is the one thing a listener can already tell is
+false. Buffering is now its own state: the line reads **"Radio: buffering
+WQXR..."** for as long as the stall lasts and returns to playing when the audio
+does. The recovery deliberately makes no sound -- a stream that stutters ten
+times is playing ten times, and ten chimes is not information.
+
+**Reconnecting.** When a stream drops and Quill Radio goes to get it back, the
+status used to read *connecting* -- which is what a station **you just chose**
+does. Somebody who pressed nothing is owed a different word. It now reads
+**"Radio: Reconnecting to KFI AM 640. Attempt 2 of 3."**
+
+Splitting those two out of "playing" and "connecting" turned out to touch
+fifteen places that had each been asking, in their own words, whether a stream
+was on the air: the Stop/Play button, the favorites context menu, the
+now-playing badge in three browse windows, the thing that keeps the computer
+awake, the guard that asks before closing on live audio. Every one of them now
+asks a single shared question instead of carrying its own copy -- which is why a
+stalled stream no longer makes Stop turn back into Play, and why a sleep timer
+that comes due mid-stall still stops the radio instead of leaving it playing all
+night.
+
+---
+
 ## Things that were quietly wrong, and are not now
 
 These are the ones worth reading even if none of the above interests you, because
 every one of them was broken, and not one announced itself.
+
+### A reconnect counted its attempts out loud, to nobody
+
+Quill Radio has retried a dropped live station three times since this release
+was first written, and the code that does it composes exactly the right
+sentence: *"Reconnecting to KFI AM 640. Attempt 1 of 3."* It writes that
+sentence into a field that nothing spoke and nothing displayed.
+
+So what a listener actually got, when a station dropped, was one sound and then
+up to twenty-two seconds of silence while three attempts came and went -- which
+is indistinguishable from the app having hung. The module's own notes said each
+attempt "is announced with its number". It never was. It is now: spoken once per
+attempt, and shown in the status line at the same time.
 
 ### The Xiph genre list was losing 412 genres, every single time
 

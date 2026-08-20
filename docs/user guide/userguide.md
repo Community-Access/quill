@@ -205,6 +205,20 @@ The Simple File Open dialog has:
 
 The status line below the list announces the current directory, the number of visible entries, and any errors. Permission-denied and not-a-directory errors keep the dialog open so you can correct the path and try again.
 
+### When a file is not where it was
+
+Files move. A OneDrive or SharePoint file can be a placeholder whose contents were never downloaded to this PC; a file opened from **File > Open Recent** may have been renamed or deleted since; a file on a USB stick or a network share is simply not there when the drive is not connected.
+
+QUILL says so in one sentence, in the status bar and out loud:
+
+> *Bingo3.html is no longer there. It may have been moved, renamed, or deleted, or it may live on a drive that is not connected.*
+
+Nothing else happens — no crash, no dialog to dismiss, and QUILL stays exactly where it was, so you can press **Ctrl+O** and pick something else. Choosing a *folder* where a file was expected says that instead, rather than failing halfway through reading it.
+
+**Your Recent list is left alone on purpose.** A file that is missing today may be a USB stick you plug back in tomorrow, so QUILL does not quietly forget it when an open fails.
+
+There is an opt-in tidy for people who would rather not keep dead entries: `recent_files_auto_clear_missing` in your settings file, off by default and not yet exposed in Preferences. Even switched on it only removes entries on this PC's own fixed drives — files on removable and network drives are never even checked, because "not connected" is not the same as "gone".
+
 ## Command-Line Launching
 
 Quill supports command-line startup options for scripted workflows and direct navigation.

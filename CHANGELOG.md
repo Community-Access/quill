@@ -6,6 +6,170 @@ The most recent work first: a reliability pass driven entirely by what people
 reported (a full disk that could lose a document, an editor doing too much work
 between keystrokes), then the release as originally scoped below.
 
+### Radio says what it is doing, and what it cannot do (2026-08-20)
+
+Five things, and the first two are the same bug seen from opposite ends: the app
+knew something and did not say it.
+
+**A stalled stream claimed to be playing.** mpv pauses itself to refill its
+cache when a live stream runs out of audio. Quill Radio announced "Buffering..."
+and left the playback state at PLAYING, so the focusable status bar's Now
+Playing cell and the tray tooltip both went on claiming playback through dead
+air -- the one thing a listener can already tell is false. Buffering is a state
+now, and the engine reports both edges of a stall rather than only its start, so
+the line goes back to "playing" when the audio does. The recovery is deliberately
+not cued: a stream that stalls ten times is playing ten times, and ten chimes is
+the noise this app spends real effort avoiding.
+
+**A reconnect was never announced, despite the code that composed the sentence.**
+`live_reconnect` has always written "Reconnecting to KFI AM 640. Attempt 1 of 3."
+-- and written it into a field nothing spoke and the status line ignored. What a
+listener actually got was one earcon and up to twenty-two seconds of silence,
+indistinguishable from a hung player. Each attempt is now spoken once, with its
+number, and a reconnect reads as *reconnecting* rather than *connecting*:
+"connecting" is what a station you just chose does, and somebody who pressed
+nothing is owed a different word.
+
+Splitting two states out of one carried a risk worth naming, because it is the
+kind that ships quietly. "Is a stream on the air?" was spelled
+`state in (PLAYING, CONNECTING)` in **fifteen places** -- the Stop/Play button
+label, the favorites context menu, three browse dialogs' now-playing badge, the
+sleep inhibitor, the close guard. Adding two members without naming that rule
+would have broken every one of them: Stop turning back into Play mid-stall, the
+machine allowed to sleep during a reconnect, a sleep timer that came due while
+the stream was rebuffering leaving the radio on all night, and Play/Pause
+*restarting* a stalled station instead of pausing it. Three named sets replace
+all fifteen. A state model with fifteen private copies of its own membership
+rule is not a state model.
+
+**An installation missing its playback engine said nothing.** Quill Radio's
+engine preference defaults to "auto", and on "auto" a missing `libmpv-2.dll`
+fell through to Windows Media in silence -- the one spoken line about it was
+reachable only by somebody who had opened Preferences and named mpv explicitly.
+Everyone else got a radio that had quietly lost live pause and rewind,
+output-device choice, Volume Boost, Sound Enhancements without a relay, track
+titles from the stream, stall detection, and every Ogg Vorbis, Opus and HLS
+station. This is the other half of the lesson from the runtime work three days
+earlier -- *"is it present?" is not "does it work?"* -- and the half nobody had
+written down: **absent is not the same as announced.** A degraded installation
+now says one plain sentence at launch naming what is missing, what it cost and
+what to do. A healthy one says nothing, because a launch that reports "all is
+well" every time is a launch nobody can listen past.
+
+**A first minute.** Quill Radio browses eight directories, records on a
+schedule, rewinds live audio and remembers a volume per station, and a new
+listener met all of it as an empty favorites tree. Three screens now -- welcome,
+find something to listen to, keep the ones you like -- the same shape QUILL Cast
+has used for months. It does not run for anybody who already has favorites,
+however they got there, because explaining how to find a first station to
+somebody with forty is a way of saying nobody checked. Skip leaves in one
+keystroke and counts as done. Every key it teaches is resolved through the live
+keymap, so a key you rebound is the key it names.
+
+### Every app declares what it needs (2026-08-20)
+
+The shared runtime is the union of every app's Python dependencies, and the
+union is dominated by the editor. Measured, not estimated: **113.1 MB of the
+284.1 MB Python payload -- 39.8% -- is reachable by exactly one app of ten.**
+Quill Weather ships a PDF renderer, an image library, Windows OCR and a spell
+checker to read out a forecast.
+
+Building the split is real engineering and is not started. What landed is its
+prerequisite, and it earns its place on its own:
+`standalone/runtime/app-profiles.json` is the first place in the repository that
+says, in a form a test can read, which app requires what. Eleven checks keep it
+honest -- most importantly that each row's components match that app module's own
+declaration, because if the build-side truth and the runtime truth both exist
+they drift, and a declaration that can be wrong is worse than none.
+
+It found three things on its first day. **Quill Converter** calls `find_ffmpeg()`
+and offers exactly one output format without it: an audio converter that can
+only write WAV, declaring no components and staging none. **Quill Media Player**
+announces "Audio effects need the libmpv engine" and declares nothing. **Quill
+Beacon** documents an opt-in libmpv backend and declares nothing. All three are
+recorded rather than changed -- adding a component to an app changes what its
+installer must stage, which is a packaging decision.
+
+`scripts/runtime_layer_report.py` measures a built runtime against the
+declaration and names what nobody owns yet. It never fails a build: gating the
+split while 100.9 MB is unattributed would gate a guess. The measurements and
+the five decisions this needs are in
+`docs/design/2026-08-20-documents-layer-scope.md`.
+
+### One command per product, and one folder for the results (2026-08-19)
+
+Eleven products, eleven build scripts, each in its own folder with its own
+flags: building Quill Radio meant remembering
+`standalone\radio\scripts\build_release.ps1`, that the shared runtime had to
+exist first, and that the interesting six lines of a 500,000-line PyInstaller
+log would scroll past unrecoverably. The root of the checkout now carries a
+build command for every product — `build-radio`, `build-runtime`,
+`build-runtime-installer`, `build-quill`, `build-cast`, `build-weather`,
+`build-studio`, `build-inkwell`, `build-beacon`, `build-social`, and
+`build-all` — each a shim over `build.ps1`, which resolves the real script and
+runs it. **No build logic moved**: the per-product scripts remain the single
+source of truth, and every option they accept still passes through unchanged.
+
+Three things the wrapper adds, each earning its place:
+
+- **Logs are teed, not dumped.** Every build writes
+  `local\build-logs\<product>-<timestamp>.log` and leaves the terminal holding
+  the summary — script, log path, artifacts copied, elapsed time.
+- **Artifacts collect in `\installs`.** The path is written with no drive
+  letter on purpose, so it resolves against the root of whatever drive the
+  checkout is on and needs no configuration on a second build machine. Only
+  files the current run produced are copied, matched on modification time: a
+  product's `dist` keeps older versions around, and a naive copy would quietly
+  refill `\installs` with releases nobody asked for.
+- **`build-all` encodes the order that keeps artifacts honest** — runtime,
+  runtime installer, then apps. A media app stages the tools it declares
+  (ffmpeg and libmpv, 306 MB) into the shared runtime dist after the runtime
+  is built and nothing unstages them, while
+  `QuillVille-Runtime-Setup.exe` is compiled from whatever is sitting in that
+  dist and is meant to carry the base runtime *only*. Straight after a fresh
+  runtime build is the one moment that dist is clean, and that is now where
+  the runtime installer gets compiled.
+
+A failure in `build-all` is recorded rather than fatal: the remaining products
+still build, the failures are named together at the end, and the run exits
+non-zero. Documented under "The build process" in `README.md` and in the root
+files section of `REPO-GUIDE.md`.
+
+### Three community crash reports, closed (2026-08-19)
+
+All three came from the shipped 0.9.0 build. Two were already fixed on `main`
+and were missing only the check that keeps them fixed; one was genuinely open.
+
+- **Opening a file that is no longer there is a sentence, not a crash report**
+  (`quill/io/open_read.py`, `quill/ui/open_guard.py`, #1423). A OneDrive
+  placeholder that was never downloaded, a file renamed since it went into
+  Recent, a disconnected drive: all three raised `FileNotFoundError` out of the
+  read and into the crash handler, so QUILL showed a *crash report* for a file
+  that was simply gone. The office, PDF and large-file reads already went
+  through the background task runner, whose worker catches and surfaces
+  whatever the read raises; the cheap synchronous read of a small `.txt`,
+  `.md` or `.html` had no such path. It now fails at the one funnel every open
+  goes through, with a coded `DocumentUnavailableError` and a sentence naming
+  the file — said in the status bar *and* out loud. A folder picked where a
+  file was expected says that instead. **Recent is deliberately untouched**: a
+  file missing today may be a USB stick plugged back in tomorrow, and the
+  existing opt-in tidy already owns that decision under rules this path cannot
+  see (fixed drives only).
+- **The Speech Hub cannot lose an argument again** (#1422, #1417, #1395).
+  `SpeechSetupDialog` grew two required keyword-only parameters (`kokoro_ok`,
+  `kokoro_can_install`) and the frame that builds its arguments was updated in
+  the same change — but nothing tied the two together, so the window between
+  them shipped. A missing keyword-only argument is a `TypeError` at
+  construction, which means the Speech Hub does not open **at all**: no
+  dictation, no voices, a crash report, and every one of these three reports
+  was somebody trying to install a Kokoro voice. A contract test now reads the
+  dialog's real signature against the arguments the frame builds.
+- **The AI Hub's connection test no longer writes to a closed dialog** (#1421,
+  #1396). Closing the dialog while a test was still in flight left a
+  `wx.CallAfter` landing on a destroyed `StaticText`. The shared `dialog_alive`
+  guard fronts it, with a suite asserting the guard is the *first* thing every
+  background callback in the AI dialogs does.
+
 ### A polish pass that reached the editor's shared surfaces (2026-08-17)
 
 Most of this batch shipped in Quill Radio and QUILL Cast (see their own

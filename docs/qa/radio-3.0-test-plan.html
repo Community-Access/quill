@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio 3.0 -- test plan</title>
   <style>
@@ -1019,6 +1019,61 @@ restores the directory’s own name.</li>
 Record items – a recording is downloaded, not recorded; both verbs stay
 honest.</li>
 </ol>
+<h3
+id="t-417-add-a-podcast-by-url-and-the-empty-branch-that-helps">T-4.17
+Add a Podcast by URL, and the empty branch that helps</h3>
+<ol type="1">
+<li>Open the context menu on the <strong>Podcasts branch
+itself</strong>, and then on <strong>Subscriptions</strong>.
+<ul>
+<li><strong>Expect:</strong> <strong>Add a Podcast by URL…</strong> on
+both – and on <strong>neither</strong> a show row nor an episode row
+(those already are subscriptions).</li>
+</ul></li>
+<li>Choose it and paste a real feed address (any show’s RSS link).
+<ul>
+<li><strong>Listen for:</strong> <em>“Checking that feed…”</em> then
+<em>“Subscribed to <show>. N episodes are listed, and the show is shared
+with Quill Cast.”</em> – and, from the Subscriptions row, the tree
+reloads with the cursor on the new show, episodes already listed (no
+empty-until-refresh).</li>
+</ul></li>
+<li>Now feed it mistakes, one at a time, and listen for the
+<em>specific</em> sentence – a bare “invalid” anywhere here is a FAIL:
+<ul>
+<li>Nothing: <em>“Paste or type the feed’s web address first.”</em></li>
+<li><code>the daily</code>: <em>“That does not look like a web
+address…”</em> pointing at the RSS/Subscribe link on the show’s
+site.</li>
+<li>A show’s normal <strong>web page</strong> address: <em>“…answers
+with a web page, not a podcast feed”</em> with the same pointer.</li>
+<li>A blog/news feed with no audio: named, and <em>“…lists no playable
+episodes – it may be a news feed rather than a podcast.”</em></li>
+<li>A made-up address: <em>“…could not be read as a feed”</em> plus
+check typos / check you are online.</li>
+<li>A feed that needs a password: pointed at Quill Cast’s Add Podcast
+dialog, which saves credentials for both apps.</li>
+<li>An <code>http://</code> address is quietly tried as
+<code>https://</code> first rather than being bounced.</li>
+</ul></li>
+<li><strong>The empty branch helps.</strong> On a profile with no
+subscriptions at all, expand <strong>Subscriptions</strong>.
+<ul>
+<li><strong>Expect</strong> exactly three rows, each of which
+<em>acts</em> on Enter: <strong>Add a Podcast by URL…</strong>,
+<strong>Import Podcasts from OPML…</strong>, and <strong>Search for a
+Podcast…</strong> (which opens search pre-narrowed to Podcasts).
+Subscribe to anything and they are gone – they are the empty state, not
+furniture.</li>
+</ul></li>
+<li><strong>In QUILL Cast</strong>: the library tree offers <strong>Add
+Podcast…</strong> on folder rows and the tree’s background (never on
+shows or episodes), and an empty library shows the same three filler
+rows – Enter on Add/Search opens the Add Podcast dialog, Enter on Import
+opens the OPML chooser.</li>
+<li>In <strong>Safe Mode</strong>, adding by URL refuses out loud: the
+network is off.</li>
+</ol>
 <hr />
 <h2 id="5-transcripts">5. Transcripts</h2>
 <p>Radio reads two kinds of transcript through <strong>one shared reader
@@ -1059,21 +1114,13 @@ controls, one by one</h3>
 <p>Open a transcript via T-5.1 (or Ctrl+Shift+T while an episode plays),
 then:</p>
 <ol type="1">
-<li><strong>Tab</strong> to the checkbox labelled <strong>“Follow the
-audio as it plays”</strong> and press Space to turn it on while the
-episode is playing.
-<ul>
-<li><strong>Listen for:</strong> <em>“Following the audio.”</em></li>
-<li><strong>Expect:</strong> the caret moves to the line being spoken,
-re-synced about twice a second. <strong>Nothing is spoken per line –
-silence here is correct</strong>; the transcript follows quietly and
-your screen reader only speaks when <em>you</em> move.</li>
-</ul></li>
-<li>Turn the checkbox <strong>off</strong> and arrow around while
-playback continues.
+<li>Arrow around the transcript while the episode keeps playing.
 <ul>
 <li><strong>Expect:</strong> your caret never moves on its own. Reading
-always wins.</li>
+always wins. (There was a “Follow the audio as it plays” checkbox here
+until 2026-08; it was removed, because a caret that moves while you are
+reading is a caret you are fighting. If you can still find it,
+FAIL.)</li>
 </ul></li>
 <li>Put the caret on any line and press <strong>Enter</strong>.
 <ul>
@@ -1085,8 +1132,24 @@ words, never</strong> <code>4:12</code>.</li>
 <li>Use the reader’s <strong>Find</strong> for a word you saw later in
 the text.
 <ul>
-<li><strong>Listen for:</strong> <em>“Found at 12 minutes 8
-seconds.”</em> (again: words), and the caret lands on the match.</li>
+<li><strong>Listen for:</strong> <em>“Found at 12 minutes 8 seconds.
+Enter plays from here.”</em> (again: words, never <code>12:08</code>),
+and the caret lands <strong>on the match</strong> so Enter acts on the
+line you just found.</li>
+<li><strong>Expect:</strong> with nothing playing, the same sentence
+<strong>without</strong> the “Enter plays from here” half – the reader
+must not offer a jump it cannot make.</li>
+</ul></li>
+<li>Press the <strong>Links…</strong> button (or Ctrl+Shift+L).
+<ul>
+<li><strong>Expect:</strong> a list of every web address in the
+transcript, each read as its name then its address. Enter (or
+<strong>Open in Browser</strong>) opens the highlighted one in your real
+browser; <strong>Copy Address</strong> puts one on the clipboard,
+<strong>Copy All</strong> puts all of them there one per line.</li>
+<li>On a transcript with no addresses in it: <em>“There are no web
+addresses in this transcript.”</em> – spoken, never an empty
+window.</li>
 </ul></li>
 <li>Press the <strong>Save As…</strong> button. The format list offers,
 in this order: <strong>Plain text (.txt), WebVTT (.vtt), SubRip

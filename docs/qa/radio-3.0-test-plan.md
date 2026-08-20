@@ -543,6 +543,47 @@ Agenda both publish chapters).
 4. Episode and chapter rows (recordings) offer **no** Record items --
    a recording is downloaded, not recorded; both verbs stay honest.
 
+### T-4.17 Add a Podcast by URL, and the empty branch that helps
+
+1. Open the context menu on the **Podcasts branch itself**, and then on
+   **Subscriptions**.
+   - **Expect:** **Add a Podcast by URL...** on both -- and on **neither**
+     a show row nor an episode row (those already are subscriptions).
+2. Choose it and paste a real feed address (any show's RSS link).
+   - **Listen for:** *"Checking that feed..."* then *"Subscribed to
+     <show>. N episodes are listed, and the show is shared with Quill
+     Cast."* -- and, from the Subscriptions row, the tree reloads with
+     the cursor on the new show, episodes already listed (no
+     empty-until-refresh).
+3. Now feed it mistakes, one at a time, and listen for the *specific*
+   sentence -- a bare "invalid" anywhere here is a FAIL:
+   - Nothing: *"Paste or type the feed's web address first."*
+   - `the daily`: *"That does not look like a web address..."* pointing
+     at the RSS/Subscribe link on the show's site.
+   - A show's normal **web page** address: *"...answers with a web page,
+     not a podcast feed"* with the same pointer.
+   - A blog/news feed with no audio: named, and *"...lists no playable
+     episodes -- it may be a news feed rather than a podcast."*
+   - A made-up address: *"...could not be read as a feed"* plus check
+     typos / check you are online.
+   - A feed that needs a password: pointed at Quill Cast's Add Podcast
+     dialog, which saves credentials for both apps.
+   - An `http://` address is quietly tried as `https://` first rather
+     than being bounced.
+4. **The empty branch helps.** On a profile with no subscriptions at all,
+   expand **Subscriptions**.
+   - **Expect** exactly three rows, each of which *acts* on Enter:
+     **Add a Podcast by URL...**, **Import Podcasts from OPML...**, and
+     **Search for a Podcast...** (which opens search pre-narrowed to
+     Podcasts). Subscribe to anything and they are gone -- they are the
+     empty state, not furniture.
+5. **In QUILL Cast**: the library tree offers **Add Podcast...** on
+   folder rows and the tree's background (never on shows or episodes),
+   and an empty library shows the same three filler rows -- Enter on
+   Add/Search opens the Add Podcast dialog, Enter on Import opens the
+   OPML chooser.
+6. In **Safe Mode**, adding by URL refuses out loud: the network is off.
+
 ---
 
 ## 5. Transcripts
@@ -575,22 +616,29 @@ same one Cast uses, on purpose, so they can never drift apart):
 
 Open a transcript via T-5.1 (or Ctrl+Shift+T while an episode plays), then:
 
-1. **Tab** to the checkbox labelled **"Follow the audio as it plays"** and
-   press Space to turn it on while the episode is playing.
-   - **Listen for:** *"Following the audio."*
-   - **Expect:** the caret moves to the line being spoken, re-synced about
-     twice a second. **Nothing is spoken per line -- silence here is
-     correct**; the transcript follows quietly and your screen reader only
-     speaks when *you* move.
-2. Turn the checkbox **off** and arrow around while playback continues.
+1. Arrow around the transcript while the episode keeps playing.
    - **Expect:** your caret never moves on its own. Reading always wins.
-3. Put the caret on any line and press **Enter**.
+     (There was a "Follow the audio as it plays" checkbox here until
+     2026-08; it was removed, because a caret that moves while you are
+     reading is a caret you are fighting. If you can still find it, FAIL.)
+2. Put the caret on any line and press **Enter**.
    - **Listen for:** *"Playing from 4 minutes 12 seconds."* -- the position
      of *that* line, **always words, never** `4:12`.
    - **Expect:** the audio audibly jumps there.
-4. Use the reader's **Find** for a word you saw later in the text.
-   - **Listen for:** *"Found at 12 minutes 8 seconds."* (again: words), and
-     the caret lands on the match.
+3. Use the reader's **Find** for a word you saw later in the text.
+   - **Listen for:** *"Found at 12 minutes 8 seconds. Enter plays from
+     here."* (again: words, never `12:08`), and the caret lands **on the
+     match** so Enter acts on the line you just found.
+   - **Expect:** with nothing playing, the same sentence **without** the
+     "Enter plays from here" half -- the reader must not offer a jump it
+     cannot make.
+4. Press the **Links...** button (or Ctrl+Shift+L).
+   - **Expect:** a list of every web address in the transcript, each read as
+     its name then its address. Enter (or **Open in Browser**) opens the
+     highlighted one in your real browser; **Copy Address** puts one on the
+     clipboard, **Copy All** puts all of them there one per line.
+   - On a transcript with no addresses in it: *"There are no web addresses
+     in this transcript."* -- spoken, never an empty window.
 5. Press the **Save As...** button. The format list offers, in this order:
    **Plain text (.txt), WebVTT (.vtt), SubRip (.srt)**.
    - Save as **WebVTT**, then open the saved file (Quill, or any editor).

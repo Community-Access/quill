@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>What the documents and spell-check layers actually
+contain</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="what-the-documents-and-spell-check-layers-actually-contain">What
+the documents and spell-check layers actually contain</h1>
+<p>Date: 2026-08-20. The measurement Stage 3 of <a
+href="2026-08-17-runtime-layering-delta.md">the runtime layering
+plan</a> needs before it can start, plus three findings the measuring
+turned up.</p>
+<p>Nothing here proposes an architecture. Stage 3 – building the layer
+loader – is still unstarted and should stay that way until the decisions
+at the end of this document are made. What changed today is that the
+split is a number instead of an estimate, and the declaration is a file
+a test can read.</p>
+<h2 id="short-version">Short version</h2>
+<ul>
+<li>The shared runtime’s Python payload is <strong>284.1
+MB</strong>.</li>
+<li><strong>113.1 MB of it – 39.8% – is reachable by exactly one app of
+ten.</strong> The documents stack is 85.0 MB and the spell checker is
+28.1 MB; the editor is the only thing that can call either.</li>
+<li>Nine apps install all of it. Quill Weather ships a PDF renderer, an
+image library, Windows OCR and a spell checker to read out a
+forecast.</li>
+<li>Three apps use media tools and declare none. One of them is a
+<strong>converter</strong> that can only write WAV without the ffmpeg it
+never asks for.</li>
+</ul>
+<h2 id="how-this-was-measured">How this was measured</h2>
+<p><code>scripts/runtime_layer_report.py</code> (new) against
+<code>standalone/runtime/dist/QuillVilleRuntime</code>, built 2026-08-19
+14:40. It reads <code>standalone/runtime/app-profiles.json</code> (new)
+and walks <code>_internal</code> for real byte sizes.</p>
+<p>Two things worth saying about the method, because both have already
+misled somebody:</p>
+<ul>
+<li><strong><code>du -sm</code> is useless here.</strong> It rounds
+every file up to a block, which on a tree with this many small
+<code>.py</code> files overstates <code>_internal</code> by roughly 480
+MB. Every number in this document is an <code>os.path.getsize</code>
+sum.</li>
+<li><strong>The report shares its name normalizer with the inventory
+gate.</strong> <code>check_runtime_inventory.normalize</code> is
+imported rather than reimplemented, so the two tools cannot disagree
+about what a top-level entry <em>is</em>.</li>
+</ul>
+<h2 id="the-split-measured">The split, measured</h2>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>MB</th>
+<th>Who can call it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Runtime floor: CPython, its extension modules,
+<code>quill</code></td>
+<td>70.1</td>
+<td>every app</td>
+</tr>
+<tr>
+<td>Layer <code>documents</code></td>
+<td>85.0</td>
+<td>the editor only</td>
+</tr>
+<tr>
+<td>Layer <code>spellcheck</code></td>
+<td>28.1</td>
+<td>the editor only</td>
+</tr>
+<tr>
+<td>Unattributed</td>
+<td>100.9</td>
+<td>mixed – see below</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>284.1</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="layer-documents--850-mb">Layer <code>documents</code> – 85.0
+MB</h3>
+<table>
+<thead>
+<tr>
+<th>MB</th>
+<th>Package</th>
+<th>Why it is here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>39.5</td>
+<td><code>pymupdf</code></td>
+<td>PDF, via <code>quill/io</code></td>
+</tr>
+<tr>
+<td>13.4</td>
+<td><code>PIL</code></td>
+<td><code>quill/core/ai/vision.py</code>,
+<code>quill/platform/windows/screen_capture.py</code></td>
+</tr>
+<tr>
+<td>7.9</td>
+<td><code>pdfminer</code></td>
+<td>PDF text extraction</td>
+</tr>
+<tr>
+<td>7.2</td>
+<td><code>pypdfium2_raw</code></td>
+<td>second PDF renderer</td>
+</tr>
+<tr>
+<td>5.3</td>
+<td><code>pydantic_core</code></td>
+<td>markitdown’s closure</td>
+</tr>
+<tr>
+<td>3.9</td>
+<td><code>curl_cffi.libs</code></td>
+<td>markitdown’s closure</td>
+</tr>
+<tr>
+<td>2.6</td>
+<td><code>winrt</code></td>
+<td>Windows OCR</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td><code>libheif</code> + 0.9 <code>libde265</code></td>
+<td>HEIC images</td>
+</tr>
+<tr>
+<td>1.0</td>
+<td><code>docx</code>, 0.3 <code>pptx</code></td>
+<td>Office formats</td>
+</tr>
+<tr>
+<td>&lt;1</td>
+<td><code>latex2mathml</code>, <code>jiter</code>,
+<code>markupsafe</code>, <code>werkzeug</code>,
+<code>itsdangerous</code>, <code>click</code></td>
+<td>math + markitdown closure</td>
+</tr>
+</tbody>
+</table>
+<p>Every member was traced to an import under <code>quill/io</code>,
+<code>quill/core/math</code>, <code>quill/core/ai/vision.py</code> or
+<code>quill/platform/windows</code> – surfaces that exist only in the
+editor. The standalone apps open their bundled help as
+<strong>pre-rendered HTML</strong> through the system browser
+(<code>app_shell.open_app_document</code>), so none of them reaches the
+document path. That was checked, not assumed: it is the obvious way this
+analysis could have been wrong.</p>
+<h3 id="layer-spellcheck--281-mb">Layer <code>spellcheck</code> – 28.1
+MB</h3>
+<p><code>enchant</code>, after
+<code>scripts/prune_enchant_payload.py</code> has already taken it from
+90.7 MB. Only <code>quill/core/spellcheck.py</code> and
+<code>quill/core/spell_languages.py</code> import it, and only the
+editor reaches those – the fact that changed the whole language plan in
+<a
+href="../engineering/2026-08-18-runtime-layering-retrospective.md">the
+2026-08-18 retrospective</a>, where it had looked like a cost shared
+across eight apps.</p>
+<p>QUILL Social has a spell-check keymap entry, a PRD section, and no
+code. It joins this layer when that is built and not before.</p>
+<h3 id="unattributed--1009-mb">Unattributed – 100.9 MB</h3>
+<p>The interesting column: packages nobody has decided about. Not proven
+shared, not claimed by a layer.</p>
+<table>
+<thead>
+<tr>
+<th>MB</th>
+<th>Package</th>
+<th>Best guess</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>24.2</td>
+<td><code>wx</code></td>
+<td>genuinely shared – every app is wxPython</td>
+</tr>
+<tr>
+<td>21.0</td>
+<td><code>numpy.libs</code> + 6.5 <code>numpy</code></td>
+<td>shared (audio paths) – but worth confirming Weather and Inkwell
+reach it</td>
+</tr>
+<tr>
+<td>10.0</td>
+<td><code>yt_dlp</code></td>
+<td><strong>radio, cast, studio only</strong> – a media layer
+candidate</td>
+</tr>
+<tr>
+<td>9.2</td>
+<td><code>cryptography</code> + 5.2 <code>libcrypto</code> + 0.8
+<code>libssl</code></td>
+<td>shared (HTTPS, Beacon sync)</td>
+</tr>
+<tr>
+<td>8.2</td>
+<td><code>sound_lib</code></td>
+<td>shared – earcons</td>
+</tr>
+<tr>
+<td>2.7</td>
+<td><code>libstdc++</code></td>
+<td>shared C++ runtime</td>
+</tr>
+<tr>
+<td>2.4</td>
+<td><code>_soundfile_data</code> + 0.7
+<code>_sounddevice_data</code></td>
+<td>shared audio I/O</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td><code>sqlite3.dll</code></td>
+<td>shared</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td><code>accessible_output2</code></td>
+<td>shared – screen-reader bridge</td>
+</tr>
+<tr>
+<td>0.8</td>
+<td><code>quill_social</code></td>
+<td><strong>Social only</strong></td>
+</tr>
+<tr>
+<td>0.4</td>
+<td><code>libipld</code></td>
+<td>Beacon (AT Protocol) only</td>
+</tr>
+</tbody>
+</table>
+<p>Two clear candidates for a third layer are visible already:
+<code>yt_dlp</code> at 10.0 MB belongs to the three media apps, and
+<code>quill_social</code> plus <code>libipld</code> belong to one app
+each. Neither is worth a layer on its own; both are worth naming before
+the next person assumes they are shared.</p>
+<h2 id="three-apps-use-media-tools-and-declare-none">Three apps use
+media tools and declare none</h2>
+<p>This is what the declaration file surfaced on its first day, and none
+of it was previously written down anywhere.</p>
+<p><code>REQUIRED_COMPONENTS</code> is what makes the component store
+refcount a tool for an app, and calling
+<code>Stage-QuillMediaTools</code> in an app’s
+<code>build_release.ps1</code> is what puts the tool in its installer.
+Radio, Cast and Studio do both. These three do neither, and use the
+tools anyway:</p>
+<ol type="1">
+<li><strong>Quill Converter</strong> –
+<code>quill/apps/converter.py</code> calls <code>find_ffmpeg()</code>
+and hands the result to <code>available_output_formats()</code>, which
+returns exactly <code>["wav"]</code> when ffmpeg is absent. <strong>An
+audio converter that can only write WAV.</strong> Nothing installs
+ffmpeg for it, nothing refcounts it, and nothing says so to the person
+using it.</li>
+<li><strong>Quill Media Player</strong> –
+<code>quill/apps/player.py</code> announces “Audio effects need the
+libmpv engine” and reports which backend it is on, so it knows about
+libmpv and declares nothing. Effects are silently unavailable.</li>
+<li><strong>Quill Beacon</strong> –
+<code>quill/apps/beacon/player.py</code> documents an opt-in libmpv
+backend and falls back to <code>wx.media</code>. The mildest of the
+three: it degrades rather than breaks.</li>
+</ol>
+<p>All three are recorded in <code>app-profiles.json</code> as findings
+rather than fixed. Adding a component to an app changes what its
+installer must stage and what the store keeps alive, which is a
+packaging decision, not a refactor.</p>
+<h2 id="what-is-enforced-now-and-what-is-not">What is enforced now, and
+what is not</h2>
+<p><strong>Enforced</strong>
+(<code>tests/unit/structure/test_app_profiles.py</code>, 11 checks):</p>
+<ul>
+<li>every shipped entry point has a profile row – a new app that
+declares nothing is how the runtime grew in the first place;</li>
+<li>every row names a module and a standalone directory that exist;</li>
+<li>every row’s <code>components</code> matches that module’s own
+<code>REQUIRED_COMPONENTS</code> exactly. This is the control for the
+risk the whole idea carries: if the build-side declaration and the
+runtime one both own the truth, they drift, and a declaration that can
+be wrong is worse than none. Audio Studio shipped for months declaring
+ffmpeg while its build staged libmpv too;</li>
+<li>no package belongs to two layers, and every layer names an owning
+app that actually requires it;</li>
+<li><strong>the editor is still the only app requiring either heavy
+layer.</strong> If a second app ever legitimately needs one, that test
+failing is the moment to re-price the split rather than discover it
+after the work.</li>
+</ul>
+<p><strong>Not enforced:</strong> nothing checks a built artifact
+against layer membership. <code>runtime_layer_report.py</code> measures
+and prints; it never fails a build. Making it a gate is Stage 4, and
+doing that while 100.9 MB is unattributed would just gate a guess.</p>
+<h2 id="decisions-this-needs-before-stage-3-starts">Decisions this needs
+before Stage 3 starts</h2>
+<p>The first four are carried forward from the layering delta, unchanged
+and still open. The fifth is new.</p>
+<ol type="1">
+<li><strong>Is <code>ffprobe</code> worth 101.7 MB?</strong> ffmpeg and
+ffprobe are separate static builds totalling 203.6 MB of the 319.5 MB
+<code>tools/</code> tree. A shared-library ffmpeg would let them share
+one set of <code>libav*</code> DLLs. ffprobe is genuinely used, for
+M4B/M4A chapter marks and durations, so this is a build question and not
+a deletion.</li>
+<li><strong>Which layer owns <code>markitdown</code>?</strong> Its
+closure is already inside the documents figure above. Confirm nothing
+outside <code>quill/io</code> calls it.</li>
+<li><strong>Does <code>winrt</code> (2.6 MB, Windows OCR) belong in core
+or documents?</strong> It has silently vanished from a release once
+already. It is in <code>documents</code> here on the strength of its
+single importer, <code>windows_ocr.py</code>.</li>
+<li><strong>Radio’s offline promise.</strong> Radio must keep working
+offline out of the box, so its FULL installer staging ffmpeg and libmpv
+is not optional.</li>
+<li><strong>Is <code>numpy</code> really shared?</strong> 27.5 MB with
+<code>numpy.libs</code>, assumed shared because the audio paths use it.
+If Weather and Inkwell cannot reach it, it is the largest single item in
+the unattributed column and a layer candidate in its own right.</li>
+</ol>
+<h2 id="what-stage-3-would-take">What Stage 3 would take</h2>
+<p>Recorded so the next estimate does not start from zero.</p>
+<p>A layer is a versioned directory beside the runtime that
+<code>runtime_launcher.py</code> adds to <code>sys.path</code> when
+present, pinned by SHA-256 in the same in-code manifest the components
+already use, fetched by the same <code>fetch_file</code> core and
+refcounted by the same <code>components.state.json</code>. The pieces
+that do not exist yet are the layer manifest, the launcher’s path
+insertion, and the build split that produces a core runtime with the
+layer packages excluded.</p>
+<p>One rule from the retrospective governs all of it and is easy to
+forget: <strong>a frozen copy shadows an installed one
+permanently.</strong> PyInstaller’s <code>FrozenImporter</code> precedes
+<code>PathFinder</code> on <code>sys.meta_path</code>, so a package that
+ships in the core runtime <em>and</em> in a layer will always resolve to
+the core copy. Every package moved into a layer must be added to the
+spec’s <code>excludes</code> in the same change, and
+<code>scripts/check_runtime_imports.py</code> is what proves it.</p>
+</main>
+</body>
+</html>

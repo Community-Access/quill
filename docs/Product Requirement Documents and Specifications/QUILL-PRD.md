@@ -3356,6 +3356,22 @@ When Quill detects an autosave snapshot newer than the on-disk file on launch:
 
 **Offer suppression on inconclusive exits — shipped 0.9.0 Beta 3 (#940/#948).** `begin_session()` in `core/recovery.py` now calls `_log_shows_actionable_error(logs_dir)` before appending a `RecoveryOffer`: it scans the tail (last 256 KB) of `quill.log` for `ERROR`/`CRITICAL`/`Traceback` markers, and suppresses the offer entirely when none are found -- an exit with no error evidence in the log is indistinguishable from an external termination (OS shutdown, forced close) and gets no "Quill detected an unclean exit" prompt. A missing log file fails open (still offers recovery) since an absent log is inconclusive, not evidence of nothing having happened. The autosave snapshot itself is untouched either way; only the *offer* is gated.
 
+### 5.59b A file that is not there is a sentence, not a crash (shipped 2026-08-19; #1423)
+
+Opening a document must never reach the crash handler because the file moved. Reported against a OneDrive path -- a placeholder whose contents were never downloaded -- and equally reachable from a renamed Recent entry or a disconnected drive.
+
+- **One funnel refuses.** `io/open_read.read_open_document` is the single entry point every open path uses (synchronous, worker-thread, office, PDF, EPUB), and it now validates the path before reading, raising `DocumentUnavailableError` (`QUILL-IO-OPEN-UNAVAILABLE`) with a sentence naming the file and the likely reasons. A directory chosen where a file was expected is named as a directory rather than failing partway through a read.
+- **The synchronous path was the gap.** The office/PDF/large-file reads already ran under `MainFrame._run_background_task`, whose worker catches and marshals exceptions to the UI thread. The cheap read of a small `.txt`/`.md`/`.html` had no such path, so `FileNotFoundError` escaped to the excepthook. `ui/open_guard.read_document_or_report` closes it: status bar **and** announcement, then return -- the frame is left exactly where it was.
+- **The error code is not spoken.** `str(CodedError)` carries the `[QUILL-IO-OPEN-UNAVAILABLE]` prefix for the log and the crash bundle; the announcement uses `args[0]`, because a support code read aloud is noise to the person who just wanted their file.
+- **Recent is not pruned from this path.** `core.recent.prune_missing_recent_files` owns that decision and is bound by rules the open path cannot see (#14: only confirmed fixed drives are probed, so a detached USB or an offline share never loses its history; the whole behaviour sits behind `recent_files_auto_clear_missing`, default off). A quiet prune here would overrule a user setting *and* the removable-drive rule. Enforced by a test asserting `ui/open_guard.py` cannot even import the recent module.
+- **Placement is a GATE-11 consequence.** `main_frame.py` and `main_frame_simple_open.py` are both at their size ceilings, so the behaviour lives in its own module and the mixin holds a delegate; the call site in `main_frame.py` is one line either way, and the helper is underscore-prefixed so the GATE-6 public-surface snapshot is unchanged.
+
+### 5.59c A dialog's required arguments cannot drift from its caller (shipped 2026-08-19; #1422/#1417/#1395)
+
+`SpeechSetupDialog` gained two required keyword-only parameters and `MainFrame` was updated to supply them in the same change -- but nothing checked the two agreed, so the window between them shipped and three people hit it while installing a Kokoro voice. A missing keyword-only argument is a `TypeError` at construction: the Speech Hub does not open at all, so there is no dictation, no voices, and a crash report instead.
+
+The rule is that a constructor contract crossing a module boundary is checked by a test, not by review: `tests/unit/ui/test_speech_setup_kwargs_contract.py` reads the dialog's real signature (`inspect.signature`, required keyword-only parameters) against the dict literals `MainFrame` builds (parsed with `ast`, since building them for real needs a live frame and a machine probe), and fails when a required parameter is added without being supplied.
+
 ### 5.59a Application Status page (`Help → Status Page`)
 
 `HelpStatusDialog` (`quill/ui/status_dialog.py`) is a non-modal `wx.Notebook` of four tabs -- **Status** (Overview/Whisperer/Speech key-value rows), **Tasks & Downloads**, **Features**, and **Actions** -- each backed by a `wx.ListCtrl` (except Actions, a read-only text box) so screen readers get native column navigation instead of Browse-mode HTML table traversal. While the dialog is open, a `wx.Timer` calls `refresh()` every two seconds so background-task progress and downloads stay live without the user pressing the **Refresh** button.
@@ -4606,6 +4622,82 @@ it), a retry whose `_play_token` has moved on is dropped so Stop always wins, an
 not observed. Both `live_reconnect.py` and `engine_selection.py` are extractions
 from `player_controller.py` under GATE-11 — extract, never rebaseline.
 
+**One playback state, and the two words it was missing (`ui/radio/playback_state.py`,
+`ui/radio/playback_status.py`, `ui/radio/stream_stall.py`).** `RadioPlayerState`
+carried five members, and two facts about a stream had nowhere to live. A stall
+-- mpv reporting `paused-for-cache` when a live stream runs out of audio -- was
+*announced* ("Buffering...") while the state stayed PLAYING, so the focusable
+status bar's Now Playing cell and the tray tooltip both claimed playback through
+dead air. A reconnect re-entered CONNECTING, which is true of the wire and wrong
+for the listener: "connecting" is what a station somebody just chose does, and a
+listener who pressed nothing is owed a different word. Both are states now
+(**BUFFERING**, **RECONNECTING**), the engine reports **both edges** of a stall
+rather than only its start, and the wording lives in one pure module the status
+bar, the tray tooltip and the mini-player all read.
+
+The requirement that makes the split safe is the one that is easy to miss: **a
+state model may not have private copies of its own membership rule.** "Is a
+stream on the air?" was spelled `state in (PLAYING, CONNECTING)` in fifteen
+places, so adding two members would have silently broken every one of them --
+Stop turning back into Play mid-stall, the sleep inhibitor releasing during a
+reconnect, a favorite losing its now-playing badge every time its stream
+hiccuped. Three named sets replace all fifteen: `ACTIVE_STATES` (on the air or
+on the way), `RESTARTABLE_STATES` (plus PAUSED -- there is a station here to
+load again), and `RUNNING_STATES` (PLAYING or BUFFERING -- what every site that
+compared against PLAYING alone actually meant).
+
+**A reconnect attempt is spoken (`ui/radio/playback_status.py::transition_announcement`).**
+The paragraph above promised that every reconnect attempt is announced with its
+number. It was not: `live_reconnect` composed the sentence into
+`RadioPlaybackState.message`, which nothing spoke and which the status text
+ignored for CONNECTING. What a listener actually got was one earcon and up to
+twenty-two seconds indistinguishable from a hung player. The sentence is now
+both rendered into the status line and spoken once per attempt, deduplicated on
+the message rather than the state -- three attempts are three different
+sentences and all three are news, while a re-entry into the same attempt is not.
+Ordinary playback transitions stay cued rather than spoken, unchanged.
+
+**Absent is not the same as announced (`core/radio/media_health.py`,
+`ui/radio/media_preflight.py`).** `playback_engine` defaults to `"auto"`, and on
+"auto" a missing `libmpv-2.dll` fell through to Windows Media in silence: the
+one spoken line about it was reachable only by somebody who had opened
+Preferences and named mpv explicitly. Everyone else got a radio that had quietly
+lost live pause and rewind, output-device choice, Volume Boost, native Sound
+Enhancements, stream track titles, stall detection, and every Ogg Vorbis, Opus
+and HLS station -- with no sentence anywhere saying so. This is the other half
+of the 2026-08-17 runtime lesson: *"is it present?" is not "does it work?"*, and
+**absent is not the same as announced.**
+
+The rules: a degraded installation says **one** plain sentence at launch naming
+what is missing, what it cost and what to do -- spoken and deferred, never a
+modal that fights a screen reader for focus a launching app has not settled yet
+(cf. #259). A **healthy** installation says nothing at all, because a launch
+that reports "all is well" every time is a launch nobody can listen past. The
+mark is a **signature** of which tools are missing rather than a "seen" flag, so
+a machine that later loses a second tool is told again and one told once is not
+told forever. The probe asks the *same* predicate the engine selection asks
+(`mpv_output_device_available`), because a health report that probed differently
+from the code it describes would eventually describe a machine nobody has. And a
+station whose container needs libmpv gets the real reason rather than the
+generic "that stream could not be opened" -- conservatively, so an ordinary MP3
+station that was merely off the air is never blamed on a missing component.
+
+**First run (`core/radio/onboarding.py`, `ui/radio/first_run_dialog.py`).** A new
+listener opened Quill Radio and got an empty favorites tree -- an accurate
+picture of having no favorites, and an answer to none of the questions somebody
+arrives with. Three screens, not seven, the same shape QUILL Cast uses: welcome,
+find something to listen to, keep the ones you like. It does **not** run for
+somebody who already has favorites, however they got there -- an imported list, a
+restored backup, an upgrade -- because explaining how to find a first station to
+somebody with forty is a way of saying nobody checked. Skip is a first-class
+button and skipping counts as done. Every keystroke a screen teaches is resolved
+through the live keymap, so a rebound key is the key taught; a command with no
+binding names its menu item rather than rendering empty braces. The words live in
+the wx-free core module, so they are testable and cannot drift between a label
+and an announcement. **The flow is wired to a caller** -- Cast's equivalent dialog
+has existed for months with none, which is indistinguishable from having no
+first-run flow at all.
+
 **Action rows, and the two branches you add to yourself (Quill Radio 3.0;
 `ui/radio/browse_actions.py`, `core/radio/my_servers.py`,
 `core/radio/youtube_channels.py`).** `BrowseNode.is_action` existed from the
@@ -5735,6 +5827,42 @@ desktop clutter unasked. Defined in the `.iss` generator
 surface — never a bare frame: a live now-playing line, the favorite-stations
 list focused on launch with Enter to act, and its core action buttons, every
 control named via `dialog_contract.set_accessible_name`.
+
+**Every app declares what it needs (`standalone/runtime/app-profiles.json`,
+`tests/unit/structure/test_app_profiles.py`, `scripts/runtime_layer_report.py`).**
+The shared QuillVille Runtime is the union of every app's Python dependencies,
+and that union is dominated by the editor: measured on the 2026-08-19 build,
+**113.1 MB of the 284.1 MB Python payload -- 39.8% -- is reachable by exactly
+one app of ten** (the documents stack at 85.0 MB and the spell checker at
+28.1 MB). Nine apps install all of it. `REQUIRED_COMPONENTS` in each app module
+already declared external tools; nothing declared Python layers, so nothing
+could notice that Quill Weather ships a PDF renderer, Windows OCR and a spell
+checker to read out a forecast.
+
+The requirement is the declaration, not the split: **every shipped entry point
+has a profile row, and the two halves of a declaration may not drift.** A test
+checks that each row names a module and a standalone directory that exist, that
+each row's components match that module's own `REQUIRED_COMPONENTS` exactly --
+the control for the risk the idea carries, since a declaration that can be wrong
+is worse than none, and Audio Studio shipped for months declaring ffmpeg while
+its build staged libmpv too -- that no package belongs to two layers, and that
+the editor is still the only app requiring either heavy layer. A second app
+legitimately needing one is the moment to re-price the split, not to discover it
+afterwards.
+
+`runtime_layer_report.py` measures a built runtime against the declaration and
+prints core, per-layer and **unattributed** totals. It never fails a build:
+gating the split while 100.9 MB is unattributed would gate a guess. Scope,
+measurements and the open decisions are in
+`docs/design/2026-08-20-documents-layer-scope.md`.
+
+The declaration surfaced three findings on its first day, recorded rather than
+fixed because adding a component to an app changes what its installer must
+stage: **Quill Converter** calls `find_ffmpeg()` and offers exactly `["wav"]`
+without it -- an audio converter that can only write WAV -- while declaring no
+components and staging none; **Quill Media Player** announces "Audio effects
+need the libmpv engine" and declares nothing; **Quill Beacon** documents an
+opt-in libmpv backend and declares nothing, degrading rather than breaking.
 
 **Non-goals (v1).** No single-instance enforcement. The phased plan for the
 rest of the family, including the apps gated out of 1.0.0, lives in

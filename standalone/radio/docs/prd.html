@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio -- Product Requirements</title>
   <style>
@@ -595,6 +595,133 @@ and spending six letters on them would starve the actions that need
 them. Enforced by <code>tests/unit/ui/test_button_mnemonics.py</code>,
 which checks both halves (a key exists; the menu bar does not answer it
 first).</li>
+<li>A-14. <strong>One transport table, and every window answers to
+it.</strong> Quill Radio has always had exactly one player object; what
+it lacked was one <em>keyboard</em>. Speed, skip and chapters were menu
+items on the main frame, and a menu accelerator only fires for the
+window that owns the menu bar – so in Browse Stations half the transport
+did not exist, and the window a listener stood in decided which half.
+Every verb is now one row in
+<code>core/radio/transport_commands.py</code> (id, label, key, the verb
+that performs it, and two honesty flags), and the menus, the
+<code>wx.AcceleratorTable</code> built by
+<code>ui/radio/transport_keys.install</code>, the Command Palette and
+the player panel’s buttons are all rendered from it – four doors, one
+implementation, so a menu can no longer advertise a key the keyboard
+lacks. Ten windows install it: Browse Stations, Find Stations, Manage
+Favorites, the Recordings list, Song History, the chapter list, Now
+Playing, the download queue, Find Streams from a Website and the player
+panel. Short-lived settings pickers (<code>search_sources_dialog</code>,
+<code>browse_sources_dialog</code>) deliberately do not.</li>
+<li>A-15. <strong>A key that acts says so, and a key that cannot says
+why.</strong> A silent key is indistinguishable from an unbound one,
+which is how a listener concludes a feature is broken. The refusal half
+was built first (<code>transport_commands.refusal</code>: “This is live
+radio, which plays at broadcast speed and has no chapters or position to
+move through”). The success half was missing until 2026-08-19 –
+<code>toggle_play_pause</code>, <code>stop</code> and
+<code>toggle_mute</code> are not in <code>bounded_playback_ui</code>, so
+they reached the controller and announced nothing outside the main
+window. Mute is the load-bearing case: silence is the intended effect,
+so without a word there is no way to tell muting from the stream
+dropping. <code>transport_keys._describe_after</code> now speaks all
+three from the post-call state.</li>
+<li>A-16. <strong>One fact, one sentence, one distance.</strong> Volume
+had drifted into three readings (“Radio volume 45”, “Volume 45” with no
+unit, “Volume 45 percent.”) and two step sizes (10 through the menus, 5
+through the shared keyboard), chosen by which window had focus; and a
+step while muted changed the level without lifting the mute, announcing
+audio that did not exist. <code>transport_keys.describe_volume</code> is
+the single sentence every surface calls, and <code>_step_volume</code>
+defers to the player’s own stepper (which already cleared mute) rather
+than reimplementing it. The same rule applied to prosody: every
+announcement in the Radio tree ends as a sentence, because a screen
+reader applies sentence-final intonation on a full stop and Radio fires
+announcements back to back – enforced across the AST of every Radio
+module by
+<code>tests/unit/ui/radio/test_announcement_punctuation.py</code>, with
+<code># announce-punctuation: exempt</code> as the escape hatch.</li>
+<li>A-17. <strong>Delete leaves the cursor on the row that took its
+place.</strong> Two list managers answered this differently and both
+wrongly: Recordings restored selection by identity (a deleted row has
+none, so nothing was selected or focused) and Favorites fell through to
+“select the first item” (so deleting the fortieth favourite read out the
+first, with focus still in the tree).
+<code>core/radio/list_cursor.py</code> answers it once, wx-free –
+<code>index_after_removal</code> for a list, <code>neighbour_key</code>
+for a tree, which is rebuilt wholesale and therefore needs the answer
+computed <em>before</em> the removal. An emptied list says so rather
+than going quiet.</li>
+<li>A-18. <strong>A dialog never repurposes an app-global
+chord.</strong> Being modal hides the conflict – an app accelerator does
+not reach a modal dialog – but <code>EVT_CHAR_HOOK</code> precedes
+accelerators, so the moment those chords become window-wide (which A-14
+does for the transport, and which the Command Palette already claims)
+the dialog silently wins. Found in the verbosity token editor, which
+bound Ctrl+T and Ctrl+Shift+P (<code>window.new_document_tab</code> and
+<code>app.command_palette</code>) and now uses F5 / Shift+F5.</li>
+<li>A-19. <strong>The playback state says what is true, and the app owns
+its own membership rule.</strong> A stalled stream
+(<code>paused-for-cache</code>) was <em>announced</em> while the state
+stayed PLAYING, so the status-bar cell and the tray tooltip claimed
+playback through dead air; a reconnect re-entered CONNECTING, which is
+what a station somebody just <em>chose</em> does. Both are states now
+(<code>BUFFERING</code>, <code>RECONNECTING</code>) and the engine
+reports both edges of a stall rather than only its start. The rule that
+makes such a split safe: <strong>a state model may not carry private
+copies of its own membership</strong>. “Is a stream on the air?” was
+spelled <code>state in (PLAYING, CONNECTING)</code> in fifteen places,
+so two new members would have silently broken all fifteen – Stop
+reverting to Play mid-stall, standby allowed during a reconnect, a sleep
+timer that came due mid-stall leaving the radio on all night, Play/Pause
+<em>restarting</em> a stalled station. <code>ACTIVE_STATES</code> /
+<code>RESTARTABLE_STATES</code> / <code>RUNNING_STATES</code> in
+<code>ui/radio/playback_state.py</code> replace all of them; the wording
+lives in <code>ui/radio/playback_status.py</code>, which every surface
+reads. Related: a reconnect attempt is now <strong>spoken</strong>,
+which the module’s own docstring had promised since 3.0 while writing
+the sentence into a field nothing read.</li>
+<li>A-20. <strong>Absent is not the same as announced.</strong> The
+2026-08-17 runtime work recorded that <em>“is it present?” is not “does
+it work?”</em>. This is its other half. With the engine preference at
+its default (<code>"auto"</code>), a missing <code>libmpv-2.dll</code>
+fell through to Windows Media in silence – the one spoken line about it
+was reachable only from Preferences – so a listener lost live pause and
+rewind, output-device choice, Volume Boost, relay-free Sound
+Enhancements, stream track titles, stall detection and every
+Ogg/Opus/HLS station with nothing saying so. Requirements: a degraded
+installation says <strong>one</strong> plain sentence at launch naming
+what is missing, what it cost and what to do; it is <strong>spoken and
+deferred</strong>, never a modal that fights a screen reader for focus a
+launching app has not settled (cf. #259); a <strong>healthy</strong>
+installation says nothing, because a launch that reports “all is well”
+every time is one nobody can listen past; the mark is a
+<strong>signature</strong> of which tools are missing rather than a
+“seen” flag, so a second loss is news and one telling is not forever;
+the probe asks the <strong>same predicate the engine selection
+asks</strong>, because a health report that probes differently from the
+code it describes will eventually describe a machine nobody has; and a
+station whose container needs libmpv gets the real reason,
+conservatively, so a station that was merely off the air is never blamed
+on a missing component. <code>core/radio/media_health.py</code> (pure)
+and <code>ui/radio/media_preflight.py</code> (the probe and the
+mouth).</li>
+<li>A-21. <strong>A first minute, for somebody who has never used
+this.</strong> Three screens – welcome, find something to listen to,
+keep the ones you like – the shape QUILL Cast already uses. It does
+<strong>not</strong> run for anybody who already has favorites, however
+they got there (imported list, restored backup, upgrade), because
+explaining how to find a first station to somebody with forty is a way
+of saying nobody checked. Skip is a first-class button and skipping
+counts as done. Every keystroke a screen teaches is resolved through the
+<strong>live keymap</strong>, so a rebound key is the key taught and an
+unbound command names its menu item rather than rendering empty braces.
+The words live in the wx-free <code>core/radio/onboarding.py</code> so
+they are testable and cannot drift between a label and an announcement;
+the same module carries six one-shot tips (once ever, never modal, one
+switch). <strong>The flow has a caller</strong> – Cast’s equivalent
+dialog has existed for months with none, which is indistinguishable from
+having no first-run flow at all.</li>
 </ul>
 <h2 id="5-packaging-requirements">5. Packaging requirements</h2>
 <ul>
@@ -1741,7 +1868,7 @@ discipline, and gates
 everything that is not a resolved, finished video is untouched. On top
 of that: the uploader’s chapters,
 <code>Play Faster/Slower/Normal</code>, <code>Where Am I?</code>, and
-<code>Go to Position...</code> (Ctrl+Shift+J), which reuses the Media
+<code>Go to Position...</code> (Ctrl+Alt+J), which reuses the Media
 Player’s accessible H/M/S dialog rather than a second prompt.
 <strong>The last gap closed was the transport keys themselves:</strong>
 Rewind/Forward 30 Seconds still ran the live-DVR cache seek for a

@@ -197,6 +197,8 @@ The short version (the full map is [REPO-GUIDE.md](REPO-GUIDE.md)):
 - `vendor/wheels/` -- vendored wheels for dependencies not yet published.
 - `packages/`, `examples/` -- the Node Quillin runtime API and example
   extensions.
+- `build.ps1`, `build.cmd`, `build-<product>.cmd` -- the build commands,
+  described in the next section.
 
 Anything else you see at the root after building (`dist/`, `build/`,
 `local/`, `data/`) is gitignored output and safe to delete.
@@ -205,6 +207,73 @@ Anything else you see at the root after building (`dist/`, `build/`,
 
 Everything releasable lands under `dist/` subtrees, and a local build is
 laid out identically to a CI build.
+
+### One command per product
+
+The root of the checkout carries a build command for every product, so
+nothing has to be remembered about where a build script lives, what
+interpreter it wants, or which flags it takes:
+
+```powershell
+build-radio                  # Quill Radio: portable, Companion, Setup, Lite
+build-runtime                # the shared QuillVille Runtime
+build-runtime-installer      # QuillVille-Runtime-Setup.exe
+build-quill                  # QUILL itself
+build-all                    # every product, in the right order
+```
+
+There is one `build-<product>.cmd` per product -- `runtime`,
+`runtime-installer`, `quill`, `radio`, `cast`, `weather`, `studio`,
+`inkwell`, `beacon`, `social`, and `all`. Each is a shim over `build.ps1`,
+which is where the logic lives, so `build.ps1 radio` and `build.cmd radio`
+do exactly the same thing; `build.ps1 list` prints the roster with a
+one-line description apiece. (`converter`, `player`, and `radio-mac` have
+no build shell yet, and `list` says so rather than leaving you guessing.)
+
+Nothing needs a path. The interpreter, ISCC, ffmpeg, libmpv, and the
+bundled feedback token are all resolved by `scripts\BuildEnv.ps1`, so the
+same command works on any machine and from any drive letter.
+
+**Options pass straight through** to the real build script, so anything it
+accepts still works -- `-SkipSharedRuntime` (reuse the runtime already in
+`standalone\runtime\dist`, saving roughly ten minutes), `-Offline` (Audio
+Studio's Offline Edition), `-SkipCatalog`, `-SkipToken`, `-Iscc <path>`,
+`-Python <exe>`. `-Sign` is understood by every product, including QUILL's
+own Python build, where it sets the `QUILL_SIGN` the signer reads
+(`docs/code-signing.md`). Two options belong to the wrapper itself:
+`-NoLog` streams the build to the terminal instead of teeing it to a file,
+and `-NoCopy` leaves the artifacts in the product's `dist`.
+
+**Output is teed, not dumped.** A PyInstaller run prints hundreds of
+thousands of lines, which is worth keeping and unbearable to read. Each
+build writes `local\build-logs\<product>-<timestamp>.log` and leaves the
+terminal holding the summary: which script ran, where its log is, what was
+copied, and how long it took.
+
+**Finished artifacts are collected in `\installs`.** That path is
+deliberately written with no drive letter, so it resolves against the root
+of whatever drive the checkout is on: a build from `S:\QUILL` collects into
+`S:\installs`, and a clone on another drive collects there instead, with
+nothing to configure. Only files the current run produced are copied,
+matched on modification time -- a product's `dist` keeps older versions
+around, and without that filter every build would quietly refill
+`\installs` with releases nobody asked for.
+
+**Order matters, and `build-all` encodes it:** the runtime first, then the
+runtime installer, then the apps. A media app stages the tools it declares
+(ffmpeg and libmpv, 306 MB) into the shared runtime dist *after* the
+runtime is built, and nothing unstages them; `QuillVille-Runtime-Setup.exe`
+is compiled from whatever is sitting in that dist and is meant to carry the
+base runtime only. Compiling it straight after a fresh runtime build is the
+one moment that dist is clean. The same rule applies when you run
+`build-runtime-installer` by hand: build it on a runtime no app has touched
+yet.
+
+A failing product in `build-all` is recorded rather than fatal. The
+remaining products still build, the failures are named together at the end,
+and the run exits non-zero.
+
+### What runs underneath
 
 **The shared runtime.** `standalone\runtime\build_runtime.ps1` (no
 arguments) builds the QuillVille Runtime with PyInstaller from
