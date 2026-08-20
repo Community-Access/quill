@@ -1,0 +1,218 @@
+{
+  "_about": [
+    "What each QuillVille app requires, declared in one place a build can read.",
+    "",
+    "WHY THIS FILE EXISTS. The shared runtime is the union of every app's Python",
+    "dependencies -- quillville-runtime.spec says so in as many words -- and that",
+    "union is dominated by the editor. Measured on the 2026-08-19 build, 110.1 MB",
+    "of the 284.1 MB Python payload (38.8%) is the documents stack and the spell",
+    "checker, and the editor is the only thing that can call either. Eight apps",
+    "install it anyway.",
+    "",
+    "Splitting those into loadable layers (Stage 3 of the runtime layering plan)",
+    "is real engineering and is not started. This file is its prerequisite and is",
+    "useful on its own: it is the first place that says, in a form a test can",
+    "check, which app needs what. REQUIRED_COMPONENTS in each app module already",
+    "declares external tools; nothing declared Python layers, so nothing could",
+    "notice that Quill Weather ships a PDF renderer.",
+    "",
+    "WHAT IS ENFORCED TODAY. tests/unit/structure/test_app_profiles.py checks that",
+    "every shipped entry point has a row here, that every row names a module that",
+    "exists, and that each row's `components` matches that module's own",
+    "REQUIRED_COMPONENTS exactly -- so the build-side declaration and the runtime",
+    "one cannot drift. `layers` is declaration only: no loader reads it yet.",
+    "",
+    "WHAT IS NOT ENFORCED YET. Nothing checks a built artifact against the layer",
+    "membership below. scripts/runtime_layer_report.py measures and reports it;",
+    "making that a gate is Stage 4."
+  ],
+  "layers": {
+    "documents": {
+      "owner": "quill",
+      "why": [
+        "Reading, converting and describing documents. Every member was traced to",
+        "an import under quill/io, quill/core/math, quill/core/ai/vision.py or",
+        "quill/platform/windows -- surfaces that exist only in the editor. The",
+        "standalone apps open their bundled help as pre-rendered HTML through the",
+        "system browser (app_shell.open_app_document), so none of them reaches",
+        "the markdown/document path.",
+        "Names are spelled as scripts/check_runtime_inventory.py's normalize() produces them, so the report and the inventory gate cannot disagree about what a top-level entry is. A trailing * matches by prefix, for the two DLLs PyInstaller renames with a content hash."
+      ],
+      "packages": [
+        "pymupdf",
+        "pdfminer",
+        "pdfminer-six",
+        "pypdfium2",
+        "pypdfium2_raw",
+        "docx",
+        "pptx",
+        "pil",
+        "_pillow_heif",
+        "libheif*",
+        "libde265*",
+        "winrt",
+        "latex2mathml",
+        "pydantic",
+        "pydantic_core",
+        "curl_cffi",
+        "curl_cffi.libs",
+        "jiter",
+        "markupsafe",
+        "werkzeug",
+        "itsdangerous",
+        "click",
+        "curl-cffi"
+      ]
+    },
+    "spellcheck": {
+      "owner": "quill",
+      "why": [
+        "pyenchant plus the pruned libenchant payload. Only quill/core/spellcheck.py",
+        "and quill/core/spell_languages.py import it, and only the editor reaches",
+        "those -- the fact that changed the whole language plan in the 2026-08-18",
+        "retrospective, where it had looked like a cost shared across eight apps.",
+        "QUILL Social has a spell-check keymap entry and a PRD section and no code;",
+        "when that is built, Social joins this layer and not before."
+      ],
+      "packages": [
+        "enchant",
+        "pyenchant"
+      ]
+    }
+  },
+  "apps": {
+    "quill": {
+      "name": "QUILL",
+      "entry": "quill/__main__.py",
+      "standalone": null,
+      "components": [],
+      "layers": [
+        "documents",
+        "spellcheck"
+      ],
+      "notes": [
+        "The editor. The app the union was sized for, so layering saves it",
+        "nothing -- which is the point: everyone else is paying for this row.",
+        "Declares no REQUIRED_COMPONENTS today even though speech export uses",
+        "ffmpeg; that is a real gap, listed with the others below."
+      ]
+    },
+    "radio": {
+      "name": "Quill Radio",
+      "entry": "quill/apps/radio.py",
+      "standalone": "standalone/radio",
+      "components": [
+        "ffmpeg",
+        "mpv"
+      ],
+      "layers": [],
+      "notes": [
+        "ffmpeg records; libmpv is the playback engine that delivers DVR, output",
+        "device routing, Volume Boost, native Sound Enhancements, stream track",
+        "titles, stall detection and Ogg/Opus/HLS. Both are staged into the",
+        "shared runtime's tools/ by its own build_release.ps1."
+      ]
+    },
+    "cast": {
+      "name": "QUILL Cast",
+      "entry": "quill/apps/podcasts.py",
+      "standalone": "standalone/cast",
+      "components": [
+        "ffmpeg"
+      ],
+      "layers": [],
+      "notes": [
+        "Stages ffmpeg only -- 110 MB of libmpv it has no use for."
+      ]
+    },
+    "studio": {
+      "name": "QUILL Audio Studio",
+      "entry": "quill/apps/studio.py",
+      "standalone": "standalone/studio",
+      "components": [
+        "ffmpeg",
+        "mpv"
+      ],
+      "layers": [],
+      "notes": [
+        "The declaration was corrected to match the build after the 2026-08-17",
+        "layering work found it declaring ffmpeg only while staging libmpv too."
+      ]
+    },
+    "weather": {
+      "name": "Quill Weather",
+      "entry": "quill/apps/weather.py",
+      "standalone": "standalone/weather",
+      "components": [],
+      "layers": [],
+      "notes": [
+        "The leanest app, and the one layering would help most."
+      ]
+    },
+    "inkwell": {
+      "name": "Quill Inkwell",
+      "entry": "quill/apps/inkwell.py",
+      "standalone": "standalone/inkwell",
+      "components": [],
+      "layers": [],
+      "notes": [
+        "Text expansion. No media, no documents."
+      ]
+    },
+    "converter": {
+      "name": "Quill Converter",
+      "entry": "quill/apps/converter.py",
+      "standalone": "standalone/converter",
+      "components": [],
+      "layers": [],
+      "notes": [
+        "UNDECLARED MEDIA USE. converter.py calls find_ffmpeg() and passes the",
+        "result to available_output_formats(), which returns exactly [\"wav\"]",
+        "when ffmpeg is absent -- an audio converter that can only write WAV.",
+        "It declares no components and its build_release.ps1 does not call",
+        "Stage-QuillMediaTools, so nothing installs or refcounts ffmpeg for it.",
+        "Left as a finding rather than a change: adding ffmpeg here is a",
+        "packaging decision, not a refactor."
+      ]
+    },
+    "player": {
+      "name": "Quill Media Player",
+      "entry": "quill/apps/player.py",
+      "standalone": "standalone/player",
+      "components": [],
+      "layers": [],
+      "notes": [
+        "UNDECLARED MEDIA USE. Announces \"Audio effects need the libmpv engine\"",
+        "and reports which backend it is on, so it knows about libmpv and",
+        "declares nothing. Same finding shape as Converter."
+      ]
+    },
+    "beacon": {
+      "name": "Quill Beacon",
+      "entry": "quill/apps/beacon/__init__.py",
+      "standalone": "standalone/beacon",
+      "components": [],
+      "layers": [],
+      "notes": [
+        "UNDECLARED MEDIA USE, mildest of the three: beacon/player.py documents",
+        "an opt-in libmpv backend and falls back to wx.media, so the absence",
+        "degrades rather than breaks."
+      ]
+    },
+    "social": {
+      "name": "QUILL Social",
+      "entry": null,
+      "standalone": "standalone/social",
+      "components": [],
+      "layers": [],
+      "external_package": "quill_social",
+      "notes": [
+        "Ships as its own wheel (quill_social), vendored in vendor/wheels and",
+        "collected into the shared runtime; there is no quill/apps module for it, so",
+        "`entry` is null and the profile test skips the REQUIRED_COMPONENTS check.",
+        "Will join the spellcheck layer if and when its specified-but-unbuilt spell",
+        "check is written -- it has a keymap entry and a PRD section and no code."
+      ]
+    }
+  }
+}

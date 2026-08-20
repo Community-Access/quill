@@ -157,7 +157,7 @@ def _add_server(host: Any) -> None:
 
     def _failed(_op: str, error: BaseException) -> None:
         if host._tree:
-            host._announce(f"Could not reach {root}. {error}")
+            host._announce(f"Could not reach {root}. {error}.")
 
     host._task_manager.submit("radio-add-server", _work, on_success=_ok, on_failure=_failed)
 
@@ -212,7 +212,7 @@ def _add_channel(host: Any) -> None:
 
     def _failed(_op: str, error: BaseException) -> None:
         if host._tree:
-            host._announce(f"Could not read that channel. {error}")
+            host._announce(f"Could not read that channel. {error}.")
 
     host._task_manager.submit("radio-add-channel", _work, on_success=_ok, on_failure=_failed)
 
@@ -269,10 +269,80 @@ def _add_video(host: Any) -> None:
     _reload_branch(host, "youtube")
 
 
+# --- Search --------------------------------------------------------------------
+
+
+def add_search_row(tree: Any, root: Any) -> None:
+    """Put Search All Sources... at the top of the browse tree.
+
+    An action row, not a folder -- there is nothing to expand; Enter *does*
+    the thing (:func:`_search_all`). Above the sources and outside Choose
+    Browse Sources on purpose: hiding every source should not also hide the
+    way to search across them.
+    """
+    row = tree.AppendItem(root, "Search All Sources...")
+    tree.SetItemData(
+        row, {"node_id": "searchall", "label": "Search All Sources...", "is_action": True}
+    )
+
+
+def _search_all(host: Any) -> None:
+    """The tree-top Search All Sources... row: search without leaving.
+
+    It used to open the Find Stations window, which answered the question and
+    took the tree away to do it. It now searches every source from here and
+    puts the answer back into this tree as a Search Results branch -- browse
+    rows, with their own ids, so the menu on a found podcast show is the menu
+    on a browsed one. See :mod:`quill.ui.radio.browse_search_all`.
+    """
+    from quill.ui.radio import browse_search_all
+
+    browse_search_all.run(host)
+
+
+# --- The empty Subscriptions branch's three ways in -----------------------------
+
+
+def _add_podcast_url(host: Any) -> None:
+    from quill.ui.radio import browse_podcast_actions
+
+    browse_podcast_actions.add_podcast_by_url_prompt(host)
+
+
+def _import_podcasts_opml(host: Any) -> None:
+    from quill.ui.radio import browse_podcast_actions
+
+    browse_podcast_actions.import_opml(host)
+
+
+def _search_podcasts(host: Any) -> None:
+    """Search for a Podcast...: the same in-tree search, narrowed to podcasts.
+
+    It left for the Find Stations window too, and from the *emptiest* branch in
+    the tree -- somebody with no subscriptions yet, sent to another surface to
+    get their first one. The rows it answers with are podcast-show folders, so
+    Subscribe is right there on each one.
+    """
+    from quill.core.radio import federated_browse
+    from quill.ui.radio import browse_search_all
+
+    browse_search_all.run(
+        host,
+        title="Search for a Podcast",
+        prompt="Show name, host, or topic:",
+        what="the podcast directory",
+        targets=federated_browse.targets_of_type("Podcast"),
+    )
+
+
 #: Action node id -> what it does. A new "Add..." row is one entry here.
 _ACTIONS: dict[str, Callable[[Any], None]] = {
     "addserver": _add_server,
     "addchannel": _add_channel,
     "addplaylist": _add_playlist,
     "addvideo": _add_video,
+    "searchall": _search_all,
+    "addpodcasturl": _add_podcast_url,
+    "importpodcastsopml": _import_podcasts_opml,
+    "searchpodcasts": _search_podcasts,
 }

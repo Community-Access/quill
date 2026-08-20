@@ -58,6 +58,35 @@ def test_find_recurses_folders_from_the_root() -> None:
     assert [m["label"] for m in matches] == ["Alpha Jazz"]
 
 
+def test_erasing_the_find_field_is_bound_to_the_clear_path() -> None:
+    """Backspacing the field to empty must behave exactly like Clear: the
+    folder gets its normal children back and the cursor returns to it.
+    Before 2026-08-18 only Escape cleared; erasing the text left the stale
+    result rows in the tree, presented as current."""
+    import inspect
+
+    from quill.ui.radio import browse_tree_dialog
+
+    source = inspect.getsource(browse_tree_dialog)
+    assert "bind_empty_query_reset(self._find_ctrl, self._clear_find)" in source
+
+
+def test_clear_find_writes_the_field_with_changevalue() -> None:
+    """clear_find also runs from the empty-query reset; SetValue would fire
+    EVT_TEXT straight back into that binding (search_reset's contract)."""
+    calls: list[str] = []
+    host = SimpleNamespace(
+        _find_ctrl=SimpleNamespace(
+            ChangeValue=lambda v: calls.append(f"ChangeValue:{v}"),
+            SetValue=lambda v: calls.append(f"SetValue:{v}"),
+        ),
+        _find_return_node=None,
+        _find_active=False,
+    )
+    browse_find.clear_find(host)
+    assert calls == ["ChangeValue:"]
+
+
 def test_find_scopes_to_one_branch_only() -> None:
     d = _dialog({
         "iheart": [folder("iheart:1", "Rock"), folder("iheart:2", "Jazz")],

@@ -35,9 +35,12 @@ def test_a_lazily_resolved_station_can_be_favorited_from_browse() -> None:
     assert "def _resolve_then(" in src
     assert "self._resolve_then(data, self._add_favorite_station)" in src
     assert "self._resolve_then(data, self._play_station)" in src
-    assert '("Add to &Favorites"' in src
-    # The favorite button is enabled for a not-yet-resolved row (was disabled).
-    assert "self._favorite_btn.Enable(True)" in src
+    # The button's label and enabled state moved to browse_details.py when the
+    # browse window lost its duplicate player (2026-08-18); the behaviour they
+    # pin -- a not-yet-resolved row can still be favorited -- did not.
+    details = _read("quill/ui/radio/browse_details.py")
+    assert '("Add to &Favorites"' in details
+    assert "dialog._favorite_btn.Enable(True)" in details
 
 
 def test_favorites_manager_offers_remove_all() -> None:

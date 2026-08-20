@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -142,6 +143,23 @@ def merge_radio_listens(data_dir: Path, library: PodcastLibrary) -> tuple[int, i
         return (0, 0)
 
 
+def finished_audio_urls(data_dir: Path) -> frozenset[str]:
+    """Audio URLs Radio has heard to the end, still awaiting Cast's merge.
+
+    Read by Radio's own unheard badges (browse_libraries) so an episode
+    finished five minutes ago stops counting as unheard *now*, without Radio
+    ever writing the shared library -- the records here are the handoff, and
+    Cast consumes them at its next launch, at which point the library itself
+    says played and this set says nothing. Never raises.
+    """
+    try:
+        return frozenset(
+            str(row.get("audio", "")) for row in _read(data_dir) if bool(row.get("finished"))
+        )
+    except Exception:  # noqa: BLE001 - an empty overlay is the safe answer
+        return frozenset()
+
+
 def merge_summary(updated: int, finished: int) -> str:
     """What to announce after a merge, or ``""`` when there is nothing to say."""
     if not updated:
@@ -165,3 +183,140 @@ def _find_episode(library: PodcastLibrary, feed_url: str, audio_url: str) -> Pod
         if episode.audio_url == audio:
             return episode
     return None
+
+
+@dataclass(frozen=True, slots=True)
+class EpisodePlaybackProfile:
+    """What the shared library knows that should shape playing one episode.
+
+    Read by Quill Radio when a subscription episode starts (the reverse
+    direction of the handoff above -- and read-only on purpose: positions
+    written FROM Radio still travel through the append-only records so a
+    Radio write can never clobber Cast's open library).
+    """
+
+    #: Where Quill Cast (or a merged listen) left this episode. 0 = start.
+    position_ms: int = 0
+    #: The show's effective playback speed (its own setting, or the library
+    #: default). 1.0 = normal.
+    speed: float = 1.0
+    #: The episode's Podcasting 2.0 chapters file, when the feed declared one.
+    chapters_url: str = ""
+    #: Ready ``Authorization`` header for this show's private resources
+    #: (same-host rule applied by feed_auth), or "".
+    chapters_auth_header: str = ""
+
+
+def episode_playback_profile(
+    data_dir: Path, *, feed_url: str, audio_url: str
+) -> EpisodePlaybackProfile:
+    """The library's knowledge about one subscribed episode, or defaults.
+
+    Never raises, and answers defaults for an unfollowed feed -- an Apple
+    row played before subscribing is an ordinary recording, not an error.
+    """
+    try:
+        from quill.core.podcasts import feed_auth
+        from quill.core.podcasts.subscriptions import load_library
+
+        library = load_library(data_dir)
+        show = library.find_show_by_feed_url((feed_url or "").strip())
+        if show is None:
+            return EpisodePlaybackProfile()
+        episode = _find_episode(library, feed_url, audio_url)
+        chapters_url = str(getattr(episode, "chapters_url", "") or "")
+        return EpisodePlaybackProfile(
+            position_ms=max(0, int(getattr(episode, "position_ms", 0) or 0)),
+            speed=float(library.effective_settings(show).speed or 1.0),
+            chapters_url=chapters_url,
+            chapters_auth_header=(
+                feed_auth.auth_header_for_url(show, chapters_url) if chapters_url else ""
+            ),
+        )
+    except Exception:  # noqa: BLE001 - a broken profile must never break playback
+        return EpisodePlaybackProfile()
+
+
+def feed_credentials(data_dir: Path, feed_url: str) -> tuple[str, str]:
+    """``(username, password)`` for fetching *feed_url* itself, or ``("", "")``.
+
+    The same same-host gate Cast applies (feed_auth.auth_for_url against the
+    feed's own address), so a private feed that works in Cast lists its
+    episodes in Radio instead of reading as broken.
+    """
+    try:
+        from quill.core.podcasts import feed_auth
+        from quill.core.podcasts.subscriptions import load_library
+
+        show = load_library(data_dir).find_show_by_feed_url((feed_url or "").strip())
+        if show is None:
+            return ("", "")
+        return feed_auth.auth_for_url(show, show.feed_url)
+    except Exception:  # noqa: BLE001 - no credentials is the safe answer
+        return ("", "")
+
+
+# -- per-show speed, remembered on Radio's side --------------------------------
+# A speed the listener sets IN RADIO while a show's episode plays. Kept in
+# Radio's own small store rather than written into the shared library, for the
+# same clobber reason as the listen records above; Cast's own per-show speed
+# stays Cast's, and Radio's remembered speed wins locally when both exist.
+
+_SPEEDS_FILE = "radio-show-speeds.json"
+
+#: Shows kept when the speeds file is trimmed; a speed is one line, so this is
+#: effectively "every show anyone actually adjusts".
+_MAX_SPEEDS = 200
+
+
+def _speeds_path(data_dir: Path) -> Path:
+    return data_dir / _SPEEDS_FILE
+
+
+def _read_speeds(data_dir: Path) -> dict[str, float]:
+    try:
+        raw = json.loads(_speeds_path(data_dir).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    speeds: dict[str, float] = {}
+    for key, value in raw.items():
+        try:
+            speeds[str(key)] = float(value)
+        except (TypeError, ValueError):
+            continue
+    return speeds
+
+
+def remember_show_speed(data_dir: Path, feed_url: str, speed: float) -> None:
+    """Persist the speed *feed_url*'s episodes should play at in Radio.
+
+    ``speed == 1.0`` forgets the entry -- normal is the default, not a
+    preference. Never raises: losing a speed must never cost a playback.
+    """
+    feed = (feed_url or "").strip()
+    if not feed:
+        return
+    try:
+        speeds = _read_speeds(data_dir)
+        if float(speed) == 1.0:
+            speeds.pop(feed, None)
+        else:
+            speeds[feed] = float(speed)
+        if len(speeds) > _MAX_SPEEDS:
+            for stale in list(speeds)[: len(speeds) - _MAX_SPEEDS]:
+                speeds.pop(stale, None)
+        from quill.core.storage import write_json_atomic
+
+        write_json_atomic(_speeds_path(data_dir), speeds)
+    except Exception:  # noqa: BLE001 - best effort, never fatal
+        return
+
+
+def remembered_show_speed(data_dir: Path, feed_url: str) -> float:
+    """The speed Radio remembered for *feed_url*, or 0.0 when none is set."""
+    try:
+        return float(_read_speeds(data_dir).get((feed_url or "").strip(), 0.0))
+    except Exception:  # noqa: BLE001 - no memory is the safe answer
+        return 0.0

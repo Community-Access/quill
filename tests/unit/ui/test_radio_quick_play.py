@@ -37,7 +37,7 @@ def test_plays_the_nth_favorite() -> None:
         announce=announced.append,
     )
     assert played == ["station-B"]
-    assert announced == ["Playing favorite 2: B"]
+    assert announced == ["Playing favorite 2: B."]
 
 
 def test_empty_slot_announces_count_and_plays_nothing() -> None:

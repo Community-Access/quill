@@ -32,7 +32,7 @@ import quill.core.paths as paths_module
 import quill.ui.radio.close_confirm_dialog as close_confirm_dialog_module
 from quill.apps.radio import RadioAppFrame
 from quill.core.radio import history as radio_history_module
-from quill.ui.radio.player_controller import RadioPlayerState
+from quill.ui.radio.playback_state import RadioPlayerState
 
 # ---------------------------------------------------------------------------
 # Ctrl+Up/Down volume from the Favorites tree (_on_favorites_key)

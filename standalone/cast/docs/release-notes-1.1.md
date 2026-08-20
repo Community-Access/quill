@@ -14,6 +14,51 @@ Two more switches sit beside it. Anything you add to the **Play Queue** download
 
 For the two or three shows you never skip, **Auto-Queue New Episodes** goes further: new episodes land straight in the Play Queue, skipping the Inbox entirely. And **Announce New Episodes**, per show, says their titles out loud and in braille when the background check finds them, with a tray notification to match. Both are per podcast, and both are off until you ask -- being told about every feed is being told about nothing.
 
+## Your library, from either app
+
+Quill Radio learned to speak this library's language, and the library got
+more honest in return:
+
+- **Folders travel.** Folders you make here are folders in Radio's
+  Subscriptions branch, with the same unheard counts on them -- one shared
+  implementation, so the two apps can never disagree about what a folder's
+  number means. Radio can also make, rename, and delete folders and file
+  shows into them; everything lands back in this one library.
+- **OPML lands anywhere.** Importing an OPML file in Radio (right-click its
+  Podcasts branch) uses the same import engine as Cast's -- folders in the
+  file become real folders, duplicates are counted rather than doubled --
+  and the result is simply here the next time Cast opens.
+- **Unheard counts stop depending on which app refreshed.** Browsing a
+  subscribed show's episodes in Radio now syncs them into the library, so
+  a show followed there shows its "(N unheard)" badge in both apps without
+  Cast having refreshed it first.
+- **Mark All as Played knows when it is done.** The Episode-menu and
+  manager-menu items now dim when the show has nothing unheard, instead of
+  offering to do nothing -- and Radio carries the same verb, on the show's
+  own row, over the same shared state. Its confirmation now carries a
+  **"Don't ask me again"** checkbox, and the answer is shared: check it in
+  either app and both stop asking.
+- **The tree helps you start, and grows from anywhere.** An empty library
+  now shows three rows that act on Enter -- Add a Podcast by URL, Import
+  Podcasts from OPML, Search for a Podcast -- and they vanish the moment
+  anything is subscribed. **Add Podcast...** also joined the tree's own
+  context menu, on folders and the background (never on shows or
+  episodes). The same trio greets an empty Subscriptions branch in Quill
+  Radio, which can now add a feed by pasted URL too, with a fix-naming
+  sentence for every kind of wrong address.
+- **Remove All Downloads, beside Download All Episodes.** The library
+  tree's show menu gains the symmetric verb: delete a show's downloaded
+  files -- and only the files. Episodes, played state, and positions stay;
+  episodes marked **Keep This Episode** are skipped and the announcement
+  says how many were kept.
+- **Your position, your speed, and your credentials follow the show.** An
+  episode part-heard here resumes at the same spot when played from
+  Radio's Subscriptions (and the furthest point wins in both directions);
+  a show's saved playback speed applies there too; and a private feed's
+  credentials now travel with it, so the feed lists its episodes in both
+  apps. Episodes with Podcasting 2.0 chapters get chapter navigation on
+  Radio's player as well.
+
 ## Your queue looks after itself
 
 A queued episode you never got to is worse than clutter. The queue decides what plays next, so a stale item does not merely sit there taking up space -- it takes a turn.

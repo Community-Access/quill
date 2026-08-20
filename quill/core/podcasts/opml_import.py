@@ -43,6 +43,7 @@ import xml.etree.ElementTree as ET
 from collections.abc import Callable, Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from quill import __version__
 from quill.core.net_retry import retry_transient
@@ -237,6 +238,64 @@ def apply_plan(
         library.shows.append(show)
         added.append(show)
     return added
+
+
+@dataclass(frozen=True, slots=True)
+class OpmlImportOutcome:
+    """One completed file import: the plan that was applied, spoken plainly.
+
+    The one-call path below exists for the apps that want an OPML file to
+    simply *become subscriptions* -- Quill Radio's Station menu -- without
+    assembling parse/plan/apply/save themselves. Cast's richer flow (report
+    dialog, reachability sweep, prune-back) keeps calling the pieces.
+    """
+
+    added: int
+    already_followed: int
+    duplicates_in_file: int
+    unusable: int
+
+    @property
+    def spoken(self) -> str:
+        if not self.added and not self.already_followed:
+            return "Nothing could be imported from that file."
+        parts = [f"Imported {self.added} podcast{'s' if self.added != 1 else ''}"]
+        if self.already_followed:
+            parts.append(f"{self.already_followed} already followed")
+        if self.duplicates_in_file:
+            parts.append(f"{self.duplicates_in_file} listed twice in the file")
+        if self.unusable:
+            parts.append(f"{self.unusable} unusable")
+        return ", ".join(parts) + ". Find them under Podcasts, Subscriptions, and in Quill Cast."
+
+
+def import_opml_file(data_dir: Path | str, opml_path: Path | str) -> OpmlImportOutcome:
+    """Parse *opml_path*, add every new show to the shared library, and save.
+
+    Folder outlines in the file become library folders (nested paths
+    honored), so an export from an app that organizes by folder arrives
+    organized. Deduplication is :func:`plan_import`'s (normalized URLs);
+    already-followed shows are counted, never duplicated. Atomic persistence
+    via :func:`~quill.core.podcasts.subscriptions.save_library` is what makes
+    the import permanent -- both Radio and Cast read this one store.
+    """
+    from pathlib import Path
+
+    from quill.core.podcasts.subscriptions import load_library, save_library
+
+    text = Path(opml_path).read_text(encoding="utf-8", errors="replace")
+    entries = parse_opml(text)
+    library = load_library(Path(data_dir))
+    plan = plan_import(library, entries)
+    added = apply_plan(library, plan)
+    if added or plan.new:
+        save_library(Path(data_dir), library)
+    return OpmlImportOutcome(
+        added=len(added),
+        already_followed=len(plan.duplicates_in_library),
+        duplicates_in_file=len(plan.duplicates_in_file),
+        unusable=len(plan.unusable),
+    )
 
 
 # -- reachability ------------------------------------------------------------

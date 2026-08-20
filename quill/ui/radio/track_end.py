@@ -25,7 +25,7 @@ from typing import Any
 def handle(controller: Any) -> None:
     """Decide what an end-of-playback means, and act on it."""
     from quill.ui.radio import book_playback, live_reconnect
-    from quill.ui.radio.player_controller import RadioPlayerState
+    from quill.ui.radio.playback_state import RadioPlayerState
 
     controller._remember_resume_point()
     if live_reconnect.handle_finished(controller):

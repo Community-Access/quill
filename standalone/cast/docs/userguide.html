@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast User Guide</title>
   <style>
@@ -352,12 +352,16 @@ shows, with optional watched folders that pick up dropped files.</li>
 <li><strong>Always Sync</strong>, <strong>auto-trim silence</strong>,
 <strong>normalize loudness</strong>, and a live <strong>volume
 boost</strong> that respects the Sleep Timer’s restore volume.</li>
-<li><strong>Download All Episodes / Remove All Episodes</strong> on a
-show’s context menu: Download All queues everything not already
-downloaded or in progress, no extra confirmation needed. Remove All
-Episodes confirms first, then – only if the show has downloaded files –
-asks separately whether to delete those too; the show itself stays
-subscribed either way.</li>
+<li><strong>Download All Episodes / Remove All Downloads / Remove All
+Episodes</strong> on a show’s context menu: Download All queues
+everything not already downloaded or in progress, no extra confirmation
+needed. <strong>Remove All Downloads</strong> is its symmetric
+counterpart – it deletes the show’s downloaded files and only the files
+(episodes, played state, and positions stay; anything marked Keep This
+Episode is skipped and the announcement says how many were kept). Remove
+All Episodes confirms first, then – only if the show has downloaded
+files – asks separately whether to delete those too; the show itself
+stays subscribed either way.</li>
 </ul>
 <h2 id="private-feeds-username-and-password">Private feeds (username and
 password)</h2>
@@ -553,9 +557,12 @@ survives a restart. What normally follows an episode is set by the two
 “When an episode finishes” switches in Podcast Settings – with both off,
 playback simply stops at the end of the episode you started.</p>
 <p><strong>Mark All as Played…</strong> clears a podcast you have given
-up on. It always confirms, naming the show and the count; the episodes
-stay in your library, downloaded files are untouched, and they leave the
-Inbox because the Inbox is unplayed episodes.</p>
+up on. It confirms, naming the show and the count; the episodes stay in
+your library, downloaded files are untouched, and they leave the Inbox
+because the Inbox is unplayed episodes. The confirmation carries a
+<strong>“Don’t ask me again”</strong> checkbox, and the answer is shared
+with Quill Radio – check it in either app and both stop asking
+(cancelling with the box ticked changes nothing).</p>
 <p><strong>Sleep Timer…</strong> gained two things. <strong>End of this
 episode</strong> is now one of the choices, and it follows the episode
 rather than a clock – seek forward and the timer moves with you instead

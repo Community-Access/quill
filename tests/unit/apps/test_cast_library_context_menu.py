@@ -25,6 +25,7 @@ class _Host(CastLibraryActionsMixin):
     def __init__(self, library: PodcastLibrary, selected: tuple[str, str] | None) -> None:
         self._podcast_library = library
         self._selected = selected
+        self.opened: list[str] = []
         stopped = SimpleNamespace(name="STOPPED")
         self._podcast_controller = SimpleNamespace(
             state=SimpleNamespace(state=stopped, show_id=None, episode_guid=None)
@@ -43,6 +44,12 @@ class _Host(CastLibraryActionsMixin):
 
     def open_podcast_manager(self):  # referenced by every menu
         pass
+
+    def _podcast_open_add_dialog(self) -> None:
+        self.opened.append("add")
+
+    def _podcast_open_import_opml(self) -> None:
+        self.opened.append("import")
 
 
 def _library() -> PodcastLibrary:
@@ -88,3 +95,47 @@ def test_a_folder_row_advertises_f2_on_rename() -> None:
     folder = library.add_folder("News")
     labels = _labels(_Host(library, ("folder", folder.id)))
     assert "Rena&me Folder...\tF2" in labels
+
+
+def test_an_empty_library_action_row_offers_adding_and_importing() -> None:
+    host = _Host(PodcastLibrary(), ("action", "search"))
+    entries = dict(host._library_context_entries())
+
+    assert list(entries) == ["&Add Podcast...", "&Import Podcasts from OPML..."]
+    entries["&Add Podcast..."]()
+    entries["&Import Podcasts from OPML..."]()
+    assert host.opened == ["add", "import"]
+
+
+def test_a_downloaded_episode_offers_file_verbs_not_download(tmp_path) -> None:
+    """A saved episode is a file: Play/Pause, its own Stop, and Remove Download.
+
+    Offering "Download Episode" on a file already on disk is an offer to do
+    nothing, and until this there was no way to take one episode back off the
+    disk -- only Remove All Downloads, which empties the whole show.
+    """
+    library = _library()
+    episode = library.find_show("s1").find_episode("e1")
+    saved = tmp_path / "Pilot.mp3"
+    saved.write_bytes(b"audio")
+    episode.downloaded_path = str(saved)
+
+    labels = _labels(_Host(library, ("episode", "s1\x00e1")))
+
+    assert "&Play Episode" in labels
+    assert "&Stop" in labels
+    assert "Remo&ve Download" in labels
+    assert "&Download Episode" not in labels
+
+
+def test_a_recorded_download_whose_file_is_gone_is_downloadable_again(tmp_path) -> None:
+    # Deleted in Explorer: the disk decides, not the record, or the menu would
+    # offer to remove a file that is not there and refuse to fetch it again.
+    library = _library()
+    episode = library.find_show("s1").find_episode("e1")
+    episode.downloaded_path = str(tmp_path / "never-written.mp3")
+
+    labels = _labels(_Host(library, ("episode", "s1\x00e1")))
+
+    assert "&Download Episode" in labels
+    assert "Remo&ve Download" not in labels

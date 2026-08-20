@@ -11,11 +11,150 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 Major: Browse Stations becomes a browsable directory rather than a list of
 sources, the whole station directory now ships inside the app and answers
 locally (the Station Catalog), podcasts arrive keylessly, transcripts gain
-timings, and three long-standing silent faults are fixed. See
+timings, Quill Radio gains a first run and learns to say when a media tool has
+gone missing, and several long-standing silent faults are fixed. See
 `docs/release-notes-3.0.md`.
 
 ### Added
 
+- **A welcome, the first time you open Quill Radio.** Three screens -- welcome,
+  find something to listen to, keep the ones you like -- and then never again.
+  It tells you the one key that carries most of the app, the three ways into the
+  station directory, and how favorites work, and it offers to open Browse
+  Stations from inside the flow. **Skip** leaves in one keystroke, and skipping
+  counts as done. It does not run at all for anybody who already has favorites,
+  however they got there: an imported station list, a restored backup, or an
+  upgrade from a version before this existed. Every keystroke it teaches is the
+  one you actually have bound, so a key you changed in the Keyboard Manager is
+  the key it names.
+- **Tips: one sentence, once each.** Six things worth knowing that no button
+  label can say -- that live radio can be paused and rewound, that Radio
+  remembers a volume per station, that a recording can be scheduled for a
+  programme that has not started and will wake the computer to catch it. Each
+  appears once, ever, never takes the keyboard, and the whole feature has one
+  switch on the welcome screen.
+- **Quill Radio says when it is missing a media tool.** An installation that has
+  lost `libmpv-2.dll` or FFmpeg now says so once, in one plain sentence naming
+  what is gone, what it costs, and what to do about it. A healthy installation
+  says nothing at all.
+- **Go to Player (Ctrl+Shift+G): the player, summoned where you are.** A
+  compact panel opens over whatever window you are in, holding the whole
+  transport as buttons plus a readout of what is playing, where you are in
+  it, the speed and the volume. Escape closes it and returns focus to the
+  exact control you came from. It is modal to the window that summoned it,
+  so it never joins the Alt+Tab rotation; pressing Ctrl+Shift+G while it is
+  open says "You are already in the player." rather than stacking a second
+  one. The keys work inside it, and every one of them re-reads the readout.
+- **The transport keyboard reaches every window.** Browse Stations, Find
+  Stations, Manage Favorites, the Recordings list, Song History, the chapter
+  list, Now Playing, the download queue, Find Streams from a Website and the
+  player panel all answer to Play/Stop, volume, mute, skip, speed, chapters,
+  Where Am I, Go to Player and the Command Palette. Previously only the
+  browse tree did, and only the main window had the menu accelerators.
+- **The Command Palette opens from every window (Ctrl+Shift+P), and the whole
+  transport is in it.** It could change a setting and could not pause what
+  was playing; both halves are fixed, with no verb listed twice.
+
+- **Subscriptions grew folders, and they are Quill Cast's folders.** The
+  Subscriptions branch now shows the shared library's folder tree -- a
+  folder made in Cast (or arriving inside an imported OPML file) is a
+  folder here, with an unheard badge counting its whole subtree. On the
+  rows themselves: **New Folder...** on Subscriptions, **New Folder
+  Inside... / Rename Folder... / Delete Folder...** on a folder (delete
+  promotes its contents -- it can never unsubscribe anything), and **Move
+  to Folder...** on a show, using the same picker Cast's manager opens.
+  Every change is written to the one shared store, so the two apps can
+  never disagree.
+- **Import Podcasts from OPML, on the Podcasts branch itself.** Right-click
+  the Podcasts branch, pick a file, and every feed in it becomes a
+  subscription -- folders in the file become library folders, duplicates
+  (including the http/https twins old exports are full of) are counted
+  rather than doubled, and the whole import runs off the UI thread. A
+  1,307-entry Downcast export was the acceptance test.
+- **The unheard badges are finally real from Radio's side.** Browsing a
+  subscribed show's episodes now folds that fetch into the shared library
+  (new episodes only; your played state is never touched), so
+  "(3 unheard)" appears on shows and folders without ever opening Cast --
+  which is where those counts used to come from, and why a Radio-followed
+  show never showed one.
+- **Mark All as Played, on the show's own row.** The same verb and the
+  same shared state as Cast's Episode menu, always on a subscribed show's
+  context menu and dimmed when nothing is unheard -- in both apps.
+- **An episode continues where Quill Cast left it.** Twenty minutes into
+  an episode over there, Enter on the same row here, and the familiar
+  "Resuming at..." announcement carries Cast's position. The furthest
+  point always wins between the two apps, and the read is one-way on
+  purpose -- Radio's own positions still travel to Cast through the
+  existing handoff, so neither app can ever clobber the other's library.
+- **Private feeds work here too.** A show with saved feed credentials in
+  Cast now lists its episodes in Radio -- the fetch attaches the same
+  same-host credentials Cast uses, where before it went out bare and a
+  private feed read as broken.
+- **The show's speed follows the show.** A show set to 1.5x in Cast plays
+  at 1.5x here, with no new settings surface -- and Play Faster/Slower
+  always wins over it, exactly like the player's own speed re-apply.
+- **Radio remembers the speed you choose, per show.** Press Play Faster
+  while a podcast episode plays and the announcement adds *"Remembered
+  for this show."* -- that show's episodes start at your speed from then
+  on, outranking the Cast setting without ever writing to it. Normal
+  Speed forgets the memory out loud (*"This show will play at normal
+  speed."*); ordinary stations and videos speak exactly as before. A
+  saved speed auto-applies to downloaded episodes always, and to streamed
+  ones on the mpv engine; on the Windows Media Player fallback -- which
+  handles rate changes unreliably on network streams -- it stays saved
+  rather than stuttering, and Play Faster is still one keypress away.
+- **Podcast chapters on the player.** An episode whose feed publishes
+  Podcasting 2.0 chapters gets them on the same chapter commands videos
+  and audiobooks already have -- fetched in the background, publisher's
+  own titles, no new UI.
+- **Search All Sources, from the top of the tree.** The first row of
+  Browse Stations now opens one search across every provider's own
+  engine -- podcasts by podcast search, iHeart by iHeart, TuneIn by
+  TuneIn, YouTube by YouTube -- results interleaved and labelled. And
+  each searchable source's own row offers **Search This Source...**,
+  opening the same window pre-narrowed: standing on Podcasts searches
+  podcasts. Sources with no search engine honestly offer nothing.
+- **Download finally lives on every episode row.** A rights-allowlist
+  knew podcast episodes by one name while the browse tree used two
+  others, so Download... appeared on search results and silently
+  vanished from browsed and subscribed episodes -- and when it did work,
+  a single episode filed bare under Recordings. Both fixed: every
+  episode row offers Download..., and the file lands under
+  `Podcasts\<Show>\` like Download All's do.
+- **Download All Episodes and Remove All Downloads, on the show.** A
+  subscribed show's menu offers the whole list (counted from the shared
+  library, no expanding needed) and the way back -- Remove All Downloads
+  deletes the files and only the files: subscription, played state, and
+  positions untouched. Quill Cast's show menu gains the same Remove All
+  Downloads, honoring Keep This Episode.
+- **The tree keeps up with you.** Move to Folder now reloads the branch
+  and lands the cursor on the show inside its new folder (and Enter in
+  the folder picker confirms the move -- it used to do nothing). Rename
+  and Delete Folder refresh in place. Mark All as Played clears the
+  badges on screen the moment it speaks -- no more "Refresh Podcasts to
+  update" homework.
+- **Badges that believe your ears.** Finish an episode in Radio and the
+  show's unheard count drops immediately -- Radio now counts its own
+  finished listening instead of waiting for Quill Cast's next launch to
+  learn what you just heard. And a new **Mark Episode as
+  Played/Unplayed** on subscribed episode rows edits one episode at a
+  time, both apps agreeing.
+- **Mark All as Played can stop asking.** The confirmation gains a
+  "Don't ask me again" checkbox -- shared with Quill Cast, so one answer
+  quiets the question in both apps.
+- **The row's own verbs.** Live station rows offer **Record This
+  Station...** and **Schedule Recording...** pre-filled with that row's
+  station; favorited rows offer **Rename Favorite...** in place.
+- **Add a Podcast by URL.** Paste any show's RSS address on the Podcasts
+  or Subscriptions branch and it becomes a subscription, episodes listed
+  immediately and shared with Quill Cast. Every mistake gets its own
+  fix-naming sentence -- a web page instead of a feed, a news feed with
+  no audio, a typo, a feed behind a sign-in -- never a bare "invalid".
+  And an **empty** Subscriptions branch now offers the three ways in as
+  rows that act on Enter (add by URL, import OPML, search for a
+  podcast), disappearing the moment you subscribe to anything. Quill
+  Cast's library tree gains the same: Add Podcast on its branches and
+  the same three fillers when the library is empty.
 - **The YouTube branch takes any link, and one command files it.** Saved
   playlists and single videos now live beside followed channels — the branch
   is simply **YouTube** — each shape with its own **Add a...** row, and each
@@ -71,8 +210,6 @@ timings, and three long-standing silent faults are fixed. See
   **Alt+Shift+Up/Down** reordering chords already worked, but a shortcut only
   a document mentions is a shortcut most listeners never hear about; the menu
   now carries both, and says the keys.
-
-
 - **The Station Catalog** (`quill/core/radio/catalog/`): the full station
   directory shipped in the app (~7.5 MB seed, hard 10 MB build gate) and
   served locally -- 62k+ stations, SomaFM, and the Project Gutenberg audio
@@ -325,6 +462,34 @@ timings, and three long-standing silent faults are fixed. See
 
 ### Changed
 
+- **Buffering is now a state, not just a word.** A stalled stream said
+  "Buffering..." while the status bar and the tray tooltip both went on saying
+  "playing" through the silence. The status line now reads "Radio: buffering
+  WQXR..." for as long as the stall lasts, and returns to playing when the audio
+  does -- without a second earcon each time, so a stuttering stream does not
+  chime ten times.
+- **A reconnect says it is reconnecting, not connecting.** "Connecting" is what
+  a station you just chose does. A stream that dropped on its own now reads and
+  speaks as "Reconnecting to KFI AM 640. Attempt 2 of 3." -- a different word for
+  a different event, and one you did not cause.
+- **Speed and chapters moved off Ctrl+Alt+arrow.** That block is JAWS's and
+  NVDA's table navigation, so those verbs worked everywhere except while
+  somebody was reading a table. Play Faster / Slower / Normal Speed are now
+  **Ctrl+Shift+Up / Ctrl+Shift+Down / Ctrl+Shift+0**, Next / Previous Chapter
+  are **Ctrl+Shift+period / Ctrl+Shift+comma**, and Where Am I is
+  **Ctrl+Shift+W**. A build check fails if a transport verb lands back on
+  that block.
+- **One volume: one distance, one sentence.** Volume moved 10 through the
+  menus and 5 through the shared keyboard, and reported itself three
+  different ways -- "Radio volume 45", "Volume 45" (no unit at all, in the
+  Recordings list) and "Volume 45 percent." It is now the player's own step
+  everywhere, and one sentence: "Volume 60 percent.", "Volume off.",
+  "Muted."
+- **Every announcement ends as a sentence.** Seventy-one of them did not,
+  which costs the sentence-final prosody a screen reader applies on a full
+  stop -- so "Playing WNYC" ran into the next announcement as one run-on.
+  A build check now reads every Radio module so it cannot drift back.
+
 - **Subscriptions counts itself, and its shows say what is waiting.** The
   node under Podcasts read "Subscriptions (shows you follow, shared with
   Quill Cast)" — a sentence glued to the name, paid on every visit. It now
@@ -347,8 +512,6 @@ timings, and three long-standing silent faults are fixed. See
   now reads **Close** rather than a second, do-nothing "Open"; and "Add All
   … to Favorites" appears only when episodes are actually loaded under the
   row, instead of offering to add nothing.
-
-
 - **Browse sources moved behind one contract**
   (`quill/core/radio/browse_sources.py`). The Browse window no longer knows the
   shape of any source; it renders folders and leaves. Adding a source is one
@@ -370,6 +533,38 @@ timings, and three long-standing silent faults are fixed. See
   instead of a hard-coded `2.1.1` that had been stale for two releases.
 
 ### Fixed
+
+- **Reconnect attempts were never actually announced.** The sentence naming the
+  station and counting the attempt was composed correctly and written to a field
+  nothing read, so what you got was one earcon and up to twenty-two seconds of
+  silence -- indistinguishable from the app having hung. Each attempt is now
+  spoken once, with its number.
+- **A station that needs the mpv engine now says so.** An Ogg, Opus or HLS
+  station on an installation without libmpv reported "that stream could not be
+  opened", which is true and useless: the station was fine. It now names the
+  format, the missing engine and the fix. An ordinary MP3 station that is merely
+  off the air is never blamed on a missing component.
+- **The stall detector only reported the start of a stall**, never its end, so
+  nothing downstream could tell when audio came back.
+- **Play/Pause, Stop and Mute were silent.** Outside the main window all
+  three did their job and said nothing -- in the one part of the app whose
+  stated rule is that a silent key is indistinguishable from an unbound one.
+  Mute was the worst: silence is the intended effect, so there was no way to
+  tell muting apart from the stream dropping. All three speak now.
+- **Volume Up while muted announced a level you could not hear.** The level
+  changed, mute did not lift, and no sound came out. A deliberate volume
+  change now lifts mute, as the player's own volume control always did.
+- **Deleting a recording left the list with no cursor**, and **deleting a
+  favorite jumped to the first item in the tree.** Both now land on the row
+  that took the deleted one's place (or the new last row), and an emptied
+  list says "No recordings left." / "No favorites left." rather than going
+  quiet. Deleting a folder lands on the first station that stepped out of it.
+- **Quill Cast refused transport verbs it could perform.** Its playback state
+  carries an episode where Radio's carries a station, and the shared
+  dispatcher only knew how to ask Radio's question -- so mid-episode, Stop,
+  skip, speed, chapters and Where Am I all answered "Nothing is playing."
+  and Cast's own handlers were never reached. Cast volume also stepped from
+  a default of 100 rather than the level you had set.
 
 - **Shift+F10 on the favorites tree showed the window list.** The shared
   Window menu rebuilt itself into any menu whose title was empty — and popup
@@ -396,8 +591,6 @@ timings, and three long-standing silent faults are fixed. See
   Favorites, one keystroke away. The nested-folder mirror this replaces
   looked richer and could not be *reached* — the full folder view remains in
   Manage Favorites and the main tree.
-
-
 - **Shift+F10 and the Applications key opened no context menu at all.** The
   browse tree took its row from `EVT_TREE_ITEM_MENU`, which names its item by
   hit-testing the *mouse*; a keyboard request has no mouse over a row, so wx
@@ -562,8 +755,6 @@ timings, and three long-standing silent faults are fixed. See
 
 - **XSPF and ASX playlists are parsed with entity expansion disabled**, so a
   crafted playlist cannot be used for a billion-laughs expansion.
-
-
 - **Quill Radio's icon is its own again.** Quill Inkwell, Quill Audio Studio and Quill Weather were all shipping byte-identical copies of Quill Radio's broadcast-wave icon, so four products shared one face in the taskbar, in Alt+Tab and in the tray. Every app in the family now has a purpose-drawn icon: one shared tile shape and one shared amber accent, but a distinct silhouette and a distinct colour each. Radio keeps its waves, redrawn to survive tray size -- at 16x16 the old three thin arcs merged into a smear, so there are now two, thicker and further apart.
 - **Exact OptiLab processing.** Quill Radio's broadcast-polish modes have always been a faithful *adaptation* of **OptiLab Core by Lanes Audio / dgl1984** (https://github.com/dgl1984/optilab), rebuilt as ffmpeg filter chains so they work everywhere -- live, relayed and recorded -- and preview the moment you move a control. That adaptation has one honest limit: OptiLab eases its lift and pulls back bass help *while* its final limiter is working hard, and a filter chain cannot do that, because no stage in it can see how hard a later stage is working. Quill Radio can now run the real OptiLab engine instead, when the optional component is included in your build. One setting, three states, both off by default: **off** (the built-in chain everywhere), **when saving** (recordings and converted files -- the recommended one, and it costs nothing, because a recording is processed after it finishes and the original is replaced only once a good copy exists), or **when saving and while listening** (which relays the stream through the engine, so the station starts slower, uses more CPU, and needs a brief reconnect on every settings change -- stated in the option rather than discovered afterwards). The built-in filters always leave the graph when the real engine runs, so nothing is processed twice; if the component is absent the option says so and nothing else changes. With thanks to dgl1984; licensed Apache-2.0 with the Commons Clause.
 

@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import sys
+import types
 from pathlib import Path
 
 import pytest
 
-from quill.core import spellcheck
+from quill.core import spell_languages, spellcheck
 from quill.core.spellcheck import (
     add_word_to_scope,
     list_misspellings,
@@ -203,7 +205,17 @@ def test_installable_languages_excludes_installed(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     # No downloaded dicts: en_US installed, es_ES/fr_FR offered as downloads.
-    monkeypatch.setattr(spellcheck, "managed_hunspell_dir", lambda: tmp_path / "hunspell")
+    # The provider is stubbed as well as the download folder: installed
+    # languages now come from both, so the developer's own machine (whose
+    # enchant already resolves es_ES and fr_FR) would otherwise decide the
+    # result of this test.
+    monkeypatch.setattr(spell_languages, "managed_hunspell_dir", lambda: tmp_path / "hunspell")
+
+    class _Broker:
+        def list_languages(self) -> list[str]:
+            return ["en_US"]
+
+    monkeypatch.setitem(sys.modules, "enchant", types.SimpleNamespace(Broker=_Broker))
     assert spellcheck.installed_languages() == ["en_US"]
     assert set(spellcheck.installable_languages()) == {"es_ES", "fr_FR"}
     # Once es_ES is present on disk it counts as installed and drops from the offer.
@@ -218,7 +230,10 @@ def test_install_language_routes_through_release_assets(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     hs = tmp_path / "hunspell"
+    # Both modules: install_language resolves the name from spellcheck's
+    # globals, installed_languages from spell_languages'.
     monkeypatch.setattr(spellcheck, "managed_hunspell_dir", lambda: hs)
+    monkeypatch.setattr(spell_languages, "managed_hunspell_dir", lambda: hs)
     calls: dict[str, object] = {}
 
     def _fake_fetch(component, target, **kwargs):  # type: ignore[no-untyped-def]
@@ -295,3 +310,45 @@ def test_live_alert_not_suppressed_for_word_next_to_url() -> None:
     text = "See https://example.com then procede"
     start = text.index("procede")
     assert live_alert_suppressed(text, start, start + 7) is False
+
+
+def test_installed_languages_includes_what_the_provider_ships(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The pyenchant wheel's own dictionaries must be offerable.
+
+    They ship with every QuillVille app and they work, but the language chooser
+    listed only en_US because this looked exclusively at the download folder --
+    so a British user could not select the British English dictionary already
+    on their disk.
+    """
+    monkeypatch.setattr(spell_languages, "managed_hunspell_dir", lambda: tmp_path / "hunspell")
+
+    class _Broker:
+        def list_languages(self) -> list[str]:
+            return ["en_GB", "en_ZA", "en_US"]
+
+    monkeypatch.setitem(sys.modules, "enchant", types.SimpleNamespace(Broker=_Broker))
+    assert spellcheck.installed_languages() == ["en_GB", "en_US", "en_ZA"]
+
+
+def test_installed_languages_survives_a_broken_provider(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A broker that raises must not take the language chooser down with it."""
+    monkeypatch.setattr(spell_languages, "managed_hunspell_dir", lambda: tmp_path / "hunspell")
+
+    def _explode() -> None:
+        raise RuntimeError("no libenchant here")
+
+    monkeypatch.setitem(sys.modules, "enchant", types.SimpleNamespace(Broker=_explode))
+    assert spellcheck.installed_languages() == ["en_US"]
+
+
+def test_language_display_names_are_speakable() -> None:
+    """A screen reader reads this list aloud; "en_ZA" is not an answer."""
+    assert spellcheck.language_display_name("en_ZA") == "English (South Africa)"
+    assert spellcheck.language_display_name("en_GB") == "English (United Kingdom)"
+    assert "extended word list" in spellcheck.language_display_name("en_AU-large")
+    # An unknown tag still degrades to something rather than raising.
+    assert spellcheck.language_display_name("de_DE") == "de_DE"

@@ -258,7 +258,7 @@ class MpvRadioEngine(VideoOutputMixin):
         on_finished: Callable[[], None],
         on_error: Callable[[str], None],
         audio_device: str = "",
-        on_buffering: Callable[[], None] | None = None,
+        on_buffering: Callable[[bool], None] | None = None,
     ) -> None:
         dll_path = find_libmpv()
         if dll_path is None:
@@ -552,8 +552,13 @@ class MpvRadioEngine(VideoOutputMixin):
                 # Stall detection: mpv pauses itself to rebuffer when the
                 # network hiccups; say so once per stall instead of dead air.
                 stalled = self._mpv.get_flag("paused-for-cache") is True
-                if stalled and not self._buffering and self._on_buffering is not None:
-                    self._on_buffering()
+                # Both edges, not just the leading one. The start of a stall is
+                # what gets announced; the *end* is what lets the playback state
+                # stop claiming a stalled stream is playing, and reporting only
+                # the start left it stuck in BUFFERING until the next real
+                # transition.
+                if stalled is not self._buffering and self._on_buffering is not None:
+                    self._on_buffering(stalled)
                 self._buffering = stalled
         except Exception:  # noqa: BLE001 - polling must never take the app down
             _log.exception("mpv radio poll failed")

@@ -197,6 +197,10 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
             "mark_all_played",
             "Mark All as Pla&yed...",
             lambda: dialog._on_mark_all_played(show),
+            # Dimmed, not hidden: the verb is genuinely this row's; with
+            # nothing unheard its state is "done", and a vanishing item would
+            # read as the feature coming and going.
+            enabled=any(not e.played for e in show.episodes),
         ),
         action(
             "download_all", "Download &All Episodes", lambda: dialog._on_download_all_episodes(show)

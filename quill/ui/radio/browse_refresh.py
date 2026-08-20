@@ -31,6 +31,19 @@ def _refetch(host: Any, node: Any, data: dict) -> None:
     tree.Expand(node)  # triggers _on_expanding, which reloads
 
 
+def forget_load(host: Any, node: Any) -> None:
+    """Let a branch be fetched again next time it is opened.
+
+    ``loaded`` is set *before* the fetch, so without this a branch that
+    failed could never be retried by closing and reopening it -- the one
+    gesture anybody would try. (Moved here from the dialog: this module owns
+    the loaded-flag dance.)
+    """
+    data = host._node_data(node)
+    if data is not None:
+        data["loaded"] = False
+
+
 def refresh_selected(host: Any) -> None:
     """Re-fetch the highlighted node's source, or its nearest parent source.
 

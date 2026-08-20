@@ -99,10 +99,15 @@ def _absorb_source(survivor: RadioStation, dropped_source: str) -> None:
 def station_source_labels(station: RadioStation) -> set[str]:
     """Every Source-filter label a merged station should match: its own source
     plus any it absorbed as a duplicate. A blank source maps to "Radio Browser"
-    (the default facet for an unlabelled RadioBrowser result)."""
+    (the default facet for an unlabelled RadioBrowser result). Any podcast
+    source name additionally answers to the plain "Podcasts" facet -- episode
+    rows are stamped differently by search, the browse tree, and Subscriptions
+    (see downloadable.ALLOWED_SOURCES), and the facet should not care which."""
     labels = {station.source or "Radio Browser"}
     for src in station.alt_sources:
         labels.add(src or "Radio Browser")
+    if labels & {"Podcasts (Apple)", "Podcast", "Apple Podcasts", "Subscribed Podcasts"}:
+        labels.add("Podcasts")
     return labels
 
 

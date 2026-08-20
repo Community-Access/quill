@@ -31,6 +31,6 @@ def play_favorite_slot(
     if 0 <= index < len(ordered):
         favorite = ordered[index]
         controller.play_station(favorite.station)
-        announce(f"Playing favorite {slot}: {favorite.display_label}")
+        announce(f"Playing favorite {slot}: {favorite.display_label}.")
     else:
         announce(f"No favorite in slot {slot}. You have {len(ordered)} favorites.")

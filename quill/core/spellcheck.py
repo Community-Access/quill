@@ -28,6 +28,27 @@ from difflib import get_close_matches
 from pathlib import Path
 
 from quill.core.paths import app_data_dir
+
+# The language catalogue lives in spell_languages (a GATE-11 extraction). The
+# re-exports keep every existing caller -- and the tests that monkeypatch these
+# names as attributes of *this* module -- working unchanged.
+from quill.core.spell_languages import (
+    DEFAULT_LANGUAGE as _DEFAULT_LANGUAGE,
+)
+from quill.core.spell_languages import (
+    downloaded_languages as downloaded_languages,
+)
+from quill.core.spell_languages import (
+    installable_languages as installable_languages,
+)
+from quill.core.spell_languages import (
+    installed_languages as installed_languages,
+)
+from quill.core.spell_languages import (
+    language_display_name,
+    managed_hunspell_dir,
+    managed_spell_dir,
+)
 from quill.core.storage import read_json, write_json_atomic
 
 logger = logging.getLogger(__name__)
@@ -109,34 +130,9 @@ _WORDLIST_CACHE: frozenset[str] | None = None
 _ENCHANT_DICT: object | None = None
 _ENCHANT_TRIED: bool = False
 
-# The Hunspell language the enchant backend validates against. en_US ships inside
-# pyenchant and is the default; other languages are downloaded on demand (PRD
-# 10.2.4) into managed_hunspell_dir() and discovered via ENCHANT_CONFIG_DIR.
-_DEFAULT_LANGUAGE = "en_US"
+# The active Hunspell language; the default and the catalogue live in
+# spell_languages, re-exported above.
 _ACTIVE_LANGUAGE = _DEFAULT_LANGUAGE
-
-
-def managed_spell_dir() -> Path:
-    """The ENCHANT_CONFIG_DIR root holding Hunspell dictionaries.
-
-    Prefers the Offline Edition's bundled dictionaries under
-    ``{app}/dictionaries`` (when QUILL_APP_ROOT is set and a ``hunspell/``
-    subdir of translated dictionaries is staged there), so the bundled
-    languages are discoverable by both ``installed_languages`` and enchant on
-    an air-gapped machine. Falls back to the user-writable app-data dir, where
-    on-demand downloads land on a slim install.
-    """
-    app_root = os.environ.get("QUILL_APP_ROOT", "").strip()
-    if app_root:
-        bundled = Path(app_root) / "dictionaries"
-        if (bundled / "hunspell").is_dir():
-            return bundled
-    return app_data_dir() / "spell"
-
-
-def managed_hunspell_dir() -> Path:
-    """Where downloaded ``<lang>.dic``/``.aff`` pairs live (enchant scans here)."""
-    return managed_spell_dir() / "hunspell"
 
 
 def active_language() -> str:
@@ -311,48 +307,6 @@ def backend_info() -> BackendInfo:
         detail=f"built-in stub ({len(_STUB_WORDS)} words) — full data missing",
         word_count=len(_STUB_WORDS),
     )
-
-
-# Human-readable names for the language tags QUILL knows about. en_US is bundled;
-# the rest are downloadable (their release-asset components are "spell-<tag>").
-_LANGUAGE_NAMES: dict[str, str] = {
-    "en_US": "English (United States)",
-    "es_ES": "Spanish (Spain)",
-    "fr_FR": "French (France)",
-}
-
-
-def language_display_name(lang: str) -> str:
-    """A friendly name for a language tag, falling back to the tag itself."""
-    return _LANGUAGE_NAMES.get(lang, lang)
-
-
-def installed_languages() -> list[str]:
-    """Hunspell languages available now: bundled en_US plus any downloaded pair.
-
-    Cheap and filesystem-based (no enchant call): en_US always ships inside
-    pyenchant, and a downloaded language is a ``<tag>.dic`` in
-    :func:`managed_hunspell_dir`.
-    """
-    langs = {_DEFAULT_LANGUAGE}
-    hs = managed_hunspell_dir()
-    if hs.is_dir():
-        for dic in hs.glob("*.dic"):
-            langs.add(dic.stem)
-    return sorted(langs)
-
-
-def installable_languages() -> list[str]:
-    """Downloadable languages (have a pinned release asset) not yet installed."""
-    from quill.core import release_assets
-
-    installed = set(installed_languages())
-    out = [
-        component[len("spell-") :]
-        for component in release_assets.ASSETS
-        if component.startswith("spell-")
-    ]
-    return sorted(lang for lang in out if lang not in installed)
 
 
 def install_language(

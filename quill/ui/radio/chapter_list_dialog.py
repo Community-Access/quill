@@ -40,10 +40,12 @@ class ChapterListDialog:
         show_modal_dialog: Callable,
         announce: Callable[[str], None],
         go_to_chapter: Callable[[int], bool],
+        transport_host: object | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._transport_host = transport_host
         self._chapters = list(chapters)
         self._current = current_index
         self._announce = announce
@@ -95,6 +97,15 @@ class ChapterListDialog:
             affirmative_id=close_btn.GetId(),
             escape_id=close_btn.GetId(),
         )
+        # The transport keyboard, when the surface that opened this one knows
+        # about the player. It was installed in the browse tree and nowhere
+        # else, so every other Radio dialog was a window where the keys that
+        # work everywhere stopped working.
+        if self._transport_host is not None:
+            from quill.ui.radio import transport_keys
+
+            transport_keys.install(self.dialog, self._transport_host, wx=wx)
+
         self.dialog.SetSizer(root)
 
         self._go_btn.Bind(wx.EVT_BUTTON, lambda _e: self._jump())

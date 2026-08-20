@@ -42,10 +42,13 @@ def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[A
     playback_menu.Append(continue_id, "&Continue Listening...\tCtrl+Shift+Alt+C")
     frame.Bind(wx.EVT_MENU, lambda _e: _open_continue_listening(app), id=continue_id)
 
+    # Chapter keys come from the shared transport table too. Next/Previous
+    # were Ctrl+Alt+Right/Left, which is QUILL's table navigation -- a chapter
+    # key that stops working the moment somebody is reading a table.
     chapters_id, next_ch_id, prev_ch_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
     playback_menu.Append(chapters_id, "C&hapters...\tCtrl+Shift+C")
-    playback_menu.Append(next_ch_id, "Ne&xt Chapter\tCtrl+Alt+Right")
-    playback_menu.Append(prev_ch_id, "Pre&vious Chapter\tCtrl+Alt+Left")
+    playback_menu.Append(next_ch_id, "Ne&xt Chapter\tCtrl+Shift+.")
+    playback_menu.Append(prev_ch_id, "Pre&vious Chapter\tCtrl+Shift+,")
     frame.Bind(wx.EVT_MENU, lambda _e: video.open_chapters(app), id=chapters_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video.next_chapter(app), id=next_ch_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video.previous_chapter(app), id=prev_ch_id)
@@ -123,10 +126,16 @@ def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[A
         wx.NewIdRef(),
         wx.NewIdRef(),
     )
-    playback_menu.Append(faster_id, "Play &Faster\tCtrl+Alt+Up")
-    playback_menu.Append(slower_id, "Play Slo&wer\tCtrl+Alt+Down")
-    playback_menu.Append(normal_id, "&Normal Speed\tCtrl+Alt+0")
-    playback_menu.Append(where_id, "Where &Am I?\tCtrl+Alt+H")
+    # These four moved off Ctrl+Alt+arrow in 2026-08 (reported: "the ctrl+alt
+    # plus arrow keys is going to conflict with table nav"). They now read
+    # their keys from quill.core.radio.transport_commands, which is the same
+    # table every window's accelerators are built from -- so speed means the
+    # same keystroke in Radio, in Cast, and in the browse window, and none of
+    # them fights QUILL's table navigation.
+    playback_menu.Append(faster_id, "Play &Faster\tCtrl+Shift+Up")
+    playback_menu.Append(slower_id, "Play Slo&wer\tCtrl+Shift+Down")
+    playback_menu.Append(normal_id, "&Normal Speed\tCtrl+Shift+0")
+    playback_menu.Append(where_id, "Where &Am I?\tCtrl+Shift+W")
     goto_pos_id = wx.NewIdRef()
     playback_menu.Append(goto_pos_id, "&Go to Position...\tCtrl+Alt+J")
     frame.Bind(wx.EVT_MENU, lambda _e: video.go_to_position(app), id=goto_pos_id)

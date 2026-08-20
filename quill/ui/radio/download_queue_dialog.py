@@ -51,10 +51,12 @@ class DownloadQueueDialog:
         show_modal_dialog: Callable[[Any, str], int] | None = None,
         open_folder: Callable[[str], bool] | None = None,
         open_preferences: Callable[[], None] | None = None,
+        transport_host: object | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._transport_host = transport_host
         self._queue = queue
         self._cancel = cancel
         self._clear_all = clear_all
@@ -106,6 +108,15 @@ class DownloadQueueDialog:
         self._dialog.SetMinSize((680, 420))
         self._dialog.Fit()
         apply_modal_ids(self._dialog, cancel_id=wx.ID_CANCEL, cancel_label="Close")
+
+        # The transport keyboard, when the surface that opened this one knows
+        # about the player. It was installed in the browse tree and nowhere
+        # else, so every other Radio dialog was a window where the keys that
+        # work everywhere stopped working.
+        if self._transport_host is not None:
+            from quill.ui.radio import transport_keys
+
+            transport_keys.install(self._dialog, self._transport_host, wx=wx)
 
         self._open_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_selected())
         self._cancel_btn.Bind(wx.EVT_BUTTON, lambda _e: self.cancel_selected())

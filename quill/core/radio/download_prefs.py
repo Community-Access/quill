@@ -46,8 +46,18 @@ FOLDER_OTHER = "Recordings"
 
 #: Sources that are books, podcasts, or music, for filing purposes. A source not
 #: named here files under "Recordings", which is honest rather than clever.
+#: The podcast set must carry every name an episode row can be stamped with --
+#: search results, the browse tree, and Subscriptions each use their own (the
+#: same trio downloadable.ALLOWED_SOURCES lists, and the same 2026-08-18 bug:
+#: two of the three were missing here, so a browsed episode filed under
+#: Recordings\ with no show folder).
 _BOOK_SOURCES = frozenset({"LibriVox", "Project Gutenberg"})
-_PODCAST_SOURCES = frozenset({"Podcasts (Apple)", "Podcast"})
+_PODCAST_SOURCES = frozenset({
+    "Podcasts (Apple)",
+    "Podcast",
+    "Apple Podcasts",
+    "Subscribed Podcasts",
+})
 _MUSIC_SOURCES = frozenset({"ccMixter", "Audius"})
 
 _UNSAFE = re.compile(r"[^\w\-. ]+")

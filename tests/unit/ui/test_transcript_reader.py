@@ -80,7 +80,11 @@ def test_positions_are_spoken_as_words_never_as_a_timecode() -> None:
     assert describe_position(TranscriptCue(3_661_000, 3_662_000, "x")) == "1 hour 1 minute 1 second"
 
 
-def test_follow_playback_lands_on_the_line_being_spoken() -> None:
+def test_a_moment_maps_to_the_line_that_was_being_spoken() -> None:
+    # cue_at is what turns "where the audio is" into "which line" -- it backs
+    # Find's spoken position and the chapter/resume machinery. (It also backed
+    # the Follow the Audio checkbox, which was removed in 2026-08: a caret that
+    # moves while you are reading is a caret you are fighting.)
     assert cue_at(_CUES, 0) == 0
     assert cue_at(_CUES, 3_999) == 0
     assert cue_at(_CUES, 4_000) == 1

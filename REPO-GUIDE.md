@@ -55,7 +55,13 @@ accurate summary of the architecture).
   pack builds, macOS build/signing, docs artifact parity checks, and the
   generators for the interactive sign-off checklists
   (`gen_signoff_html.py`) and the interactive acceptance runner
-  (`gen_acceptance_html.py`).
+  (`gen_acceptance_html.py`). The shared-runtime guardrails live here too:
+  `check_build_env.py` (floor), `check_runtime_inventory.py` (ceiling),
+  `check_runtime_imports.py` (runs the finished bundle and imports it),
+  `StageMediaTools.ps1` (opt-in ffmpeg/libmpv staging per app declaration),
+  `build_fingerprint.py` (capture/compare two build machines — see
+  `docs/build-machine-sync.md`), and `build_spell_assets.py` (dictionary
+  release assets from pinned LibreOffice sources).
 - `installer/` — the Inno Setup installer sources (`quill.iss` is generated;
   edit the generator, not the .iss).
 - `standalone/` — self-contained build wrappers for the companion apps
@@ -169,6 +175,25 @@ the human sign-off phase is what the acceptance run completes.
 - `LICENSE`, `NOTICE` — licensing.
 - `pyproject.toml`, `requirements.txt`, `uv.lock`, `.quill-reqs.sha256` —
   Python packaging and dependency pinning.
+- `build.ps1` — the build engine: one dispatcher over every product's real
+  build script. It resolves the script (`standalone/<app>/scripts/build_release.ps1`,
+  `standalone/runtime/build_runtime*.ps1`, or
+  `scripts/build_windows_distribution.py`), runs it from the repo root, tees
+  its output to `local/build-logs/<product>-<timestamp>.log`, and copies the
+  finished installers and zips to `\installs`. It contains no build logic of
+  its own, so the per-product scripts stay the single source of truth.
+  `build.ps1 list` prints every product it knows.
+- `build.cmd`, `build-<product>.cmd` — the command-line front doors:
+  `build-radio`, `build-runtime`, `build-runtime-installer`, `build-quill`,
+  `build-cast`, `build-weather`, `build-studio`, `build-inkwell`,
+  `build-beacon`, `build-social`, and `build-all`. Each is a shim that calls
+  `build.ps1` with its product name and forwards every option
+  (`-SkipSharedRuntime`, `-Offline`, `-Sign`, `-NoLog`, `-NoCopy`, ...)
+  unchanged. They prefer PowerShell 7 and fall back to Windows PowerShell, so
+  the same command works from `cmd.exe`, a PowerShell prompt, or a shortcut.
+  `build-all` builds in the order that keeps artifacts honest — runtime,
+  runtime installer, then apps — for the reason spelled out under "The build
+  process" in `README.md`.
 - `run-from-source.bat` / `.sh` / `.command`, `run-current-build.bat`,
   `run-quill-radio.bat`, `run-quill-cast.bat` — convenience launchers.
 - `installer/`-adjacent root helpers: `quill-pub.key` (the public update
@@ -194,6 +219,13 @@ lands its output in a `dist/` subtree:
   and `scripts/build_update_zip.py`.
 - `dist/sound-packs/` and the braille pack ZIPs — from
   `scripts/build_sound_packs.py` and `scripts/build_braille_pack.py`.
+
+One output location sits **outside** the repository: `\installs`, at the root
+of whatever drive the checkout lives on (`S:\installs` for a checkout on `S:`).
+The `build-<product>` commands copy each run's finished installers and zips
+there so every product's shippable artifacts collect in one folder instead of
+scattering across eleven `dist/` trees. It is a convenience, never an input:
+nothing reads from it, and `-NoCopy` skips it.
 
 The release workflows (`windows-release.yml`, `windows-test-build.yml`)
 build into the same paths, so a local build and a CI build are laid out

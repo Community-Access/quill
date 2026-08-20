@@ -21,7 +21,6 @@ from pathlib import Path
 
 from quill.core.podcasts import feed_auth
 from quill.core.podcasts.chapter_sources import (
-    build_episode_chapters,
     episode_has_possible_chapters,
 )
 from quill.core.podcasts.download_queue import PodcastDownloadQueue
@@ -141,6 +140,7 @@ class PodcastManagerDialog(
         on_open_settings: Callable[[], None] | None = None,
         on_send_show_notes: Callable[[str], None] | None = None,
         chapter_skip_state: Callable[[], object] | None = None,
+        transport_host: object = None,
     ) -> None:
         import wx
 
@@ -170,6 +170,8 @@ class PodcastManagerDialog(
         self._on_open_settings = on_open_settings
         self._on_send_show_notes = on_send_show_notes
         self._chapter_skip_state = chapter_skip_state or (lambda: None)
+        #: The app frame, for the shared transport keyboard (transport_keys).
+        self._transport_host = transport_host
 
         self._current_show: PodcastShow | None = None
         self._current_episodes: list[PodcastEpisode] = []
@@ -328,6 +330,14 @@ class PodcastManagerDialog(
 
         self.dialog.SetSizer(root_sizer)
 
+        # The whole transport on this window -- play/pause, stop, skip, speed,
+        # chapters, volume -- reaching Cast's own verbs, instead of only the
+        # main window's menu bar reaching them.
+        if self._transport_host is not None:
+            from quill.ui.radio import transport_keys
+
+            transport_keys.install(self.dialog, self._transport_host, wx=wx)
+
         self._tree.Bind(wx.EVT_TREE_SEL_CHANGED, self._on_tree_selection)
         self._tree.Bind(wx.EVT_TREE_KEY_DOWN, self._on_tree_key_down)
         self._tree.Bind(wx.EVT_CONTEXT_MENU, lambda _e: self._show_tree_context_menu())
@@ -475,11 +485,11 @@ class PodcastManagerDialog(
         self._sync_episode_sort_choice()
 
     def _unheard_count_for_folder(self, folder_id: str) -> int:
-        total = sum(1 for e in _shows_episodes(self._library, folder_id) if not e.played)
-        for folder in self._library.folders:
-            if folder.parent_folder_id == folder_id:
-                total += self._unheard_count_for_folder(folder.id)
-        return total
+        # One shared implementation with Radio's Subscriptions branch, so the
+        # two apps can never disagree about what a folder's number means.
+        from quill.core.podcasts.sorting import unheard_count_for_folder
+
+        return unheard_count_for_folder(self._library, folder_id)
 
     def refresh_tree(self) -> None:
         self._tree.DeleteAllItems()
@@ -906,26 +916,9 @@ class PodcastManagerDialog(
         self._play_selected()
 
     def _on_chapters_click(self, _event: object) -> None:
-        show = self._current_show
-        episode = self._selected_episode()
-        if show is None or episode is None:
-            return
-        if self._task_manager is None:
-            return
+        from quill.ui.podcasts import transcript_actions
 
-        def _do_fetch(**_kwargs: object):
-            return build_episode_chapters(episode, show, safe_mode=self._safe_mode)
-
-        def _on_success(_op: str, result: object) -> None:
-            self._open_chapters_dialog(show, episode, result)
-
-        def _on_failure(_op: str, error: Exception) -> None:
-            self._announce(f"Could not load chapters: {error}")
-
-        self._announce("Loading chapters...")
-        self._task_manager.submit(
-            "podcast-chapters-dialog", _do_fetch, on_success=_on_success, on_failure=_on_failure
-        )
+        transcript_actions.open_chapters(self, self._current_show, self._selected_episode())
 
     def _open_chapters_dialog(
         self, show: PodcastShow, episode: PodcastEpisode, chapter_set: object
@@ -1069,16 +1062,9 @@ class PodcastManagerDialog(
         event.Skip()
 
     def _on_view_show_notes(self, episode: PodcastEpisode) -> None:
-        from quill.ui.podcasts.show_notes_dialog import ShowNotesDialog
+        from quill.ui.podcasts import transcript_actions
 
-        dialog = ShowNotesDialog(
-            self.dialog,
-            episode_title=episode.title,
-            description_html=episode.description,
-            on_send_to_editor=self._on_send_show_notes,
-            announce_cb=self._announce,
-        )
-        dialog.show()
+        transcript_actions.view_show_notes(self, episode)
 
     def _on_send_show_notes_click(self, episode: PodcastEpisode) -> None:
         if self._on_send_show_notes is None:

@@ -32,14 +32,11 @@ from quill.core.radio.recording_join import describe_reconnect
 from quill.core.radio.recording_schedule import RecordingScheduler
 from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
-from quill.ui.radio import quick_play
+from quill.ui.radio import playback_status, quick_play
 from quill.ui.radio.add_station_dialog import AddStationDialog
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
-from quill.ui.radio.player_controller import (
-    RadioPlaybackState,
-    RadioPlayerController,
-    ResolvedEnhancement,
-)
+from quill.ui.radio.playback_state import RadioPlaybackState
+from quill.ui.radio.player_controller import RadioPlayerController, ResolvedEnhancement
 from quill.ui.radio.recording_settings_dialog import RecordingSettingsDialog
 from quill.ui.radio.schedule_recording_dialog import ScheduleRecordingDialog
 from quill.ui.radio.station_browser_dialog import StationBrowserDialog
@@ -633,6 +630,17 @@ class RadioMixin:
         if station is None:
             self._announce("Nothing is playing to record. Start a station first.")
             return
+        if bool(getattr(station, "is_recording", False)):
+            # A podcast episode, a book chapter, an Archive item: it is already
+            # a file. Recording it would transcode it in real time to produce a
+            # worse copy of something being handed out, so the verb that
+            # applies is Download -- and this is the same refusal
+            # downloadable.LIVE_REASON makes in the other direction.
+            self._announce(
+                "This is a finished recording, not a live stream, so there is nothing to "
+                "record as it goes out. Use Download to save the file itself."
+            )
+            return
         try:
             self._radio_recorder.start(
                 station_name=station.name,
@@ -730,9 +738,10 @@ class RadioMixin:
         save_recording_settings(app_data_dir(), updated)
         self._announce("Recording settings saved")
 
-    def _radio_open_schedule_recording(self) -> None:
-        controller = getattr(self, "_radio_controller", None)
-        station = controller.state.station if controller is not None else None
+    def _radio_open_schedule_recording(self, *, station: Any = None) -> None:
+        if station is None:
+            controller = getattr(self, "_radio_controller", None)
+            station = controller.state.station if controller is not None else None
         ScheduleRecordingDialog(
             self.frame,
             entries=self._radio_scheduler.entries,
@@ -765,6 +774,23 @@ class RadioMixin:
         self._radio_track_history_and_volume(state)
         self._radio_track_titles_follow_playback(state)
         self._radio_maybe_try_fallback_url(state)
+        # The one transition that is spoken rather than cued: a reconnect.
+        # live_reconnect has always composed "Reconnecting to X. Attempt 1 of
+        # 3." and its docstring has always promised each attempt is announced
+        # with its number -- but the sentence went into a field nothing read,
+        # so what a listener actually got was one earcon and up to twenty-two
+        # seconds of silence. The policy (and the deduplication) is pure and
+        # lives in playback_status; this is only the mouth.
+        words = playback_status.transition_announcement(
+            state=state.state.name,
+            message=state.message,
+            previous_state=getattr(self, "_radio_last_state_name", ""),
+            previous_message=getattr(self, "_radio_last_state_message", ""),
+        )
+        self._radio_last_state_name = state.state.name
+        self._radio_last_state_message = state.message
+        if words:
+            self._announce(words)
         # A real playback transition re-arms the buffering earcon (#1302) --
         # volume/mute notifications land here too, and must not.
         if state.state is not getattr(self, "_radio_cued_playback_state", None):
@@ -787,13 +813,10 @@ class RadioMixin:
         Windows-only; a no-op elsewhere. Called on every playback/recording
         state change and when the preference is toggled."""
         from quill.platform.keep_awake import set_keep_awake
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         controller = getattr(self, "_radio_controller", None)
-        playing = controller is not None and controller.state.state in (
-            RadioPlayerState.PLAYING,
-            RadioPlayerState.CONNECTING,
-        )
+        playing = controller is not None and controller.state.state in ACTIVE_STATES
         recorder = getattr(self, "_radio_recorder", None)
         recording = int(getattr(recorder, "active_count", 0) or 0) > 0
         # A scheduled recording cannot fire on a sleeping machine, and until
@@ -856,12 +879,15 @@ class RadioMixin:
     _TITLE_POLL_MS = 30000
 
     def _radio_track_titles_follow_playback(self, state: RadioPlaybackState) -> None:
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import RUNNING_STATES
 
         timer = getattr(self, "_radio_title_timer", None)
         if timer is None:
             return
-        if state.state is RadioPlayerState.PLAYING and state.station is not None:
+        # RUNNING_STATES: a stalled stream is still the stream whose titles we
+        # are following. Stopping the poll on every hiccup would clear the
+        # track title and re-fetch it seconds later, for nothing.
+        if state.state in RUNNING_STATES and state.station is not None:
             # A good connection also re-arms the one-shot stream fallback.
             self._radio_fallback_tried = ""
             if not timer.IsRunning():
@@ -1118,6 +1144,7 @@ class RadioMixin:
             self._copy_to_clipboard,
             self._announce,
             title=f"Now Playing: {station.display_name}",
+            transport_host=self,
         ).show()
 
     # -- live DVR (mpv engine): rewind / forward / back to live -----------------
@@ -1239,7 +1266,7 @@ class RadioMixin:
         automatically; anything ambiguous is announced so the user can pick it
         up in Find Streams. One attempt per station per session, so a truly dead
         station never loops."""
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import RadioPlayerState
 
         station = state.station
         if state.state is not RadioPlayerState.ERROR or station is None or self._safe_mode:
@@ -1317,8 +1344,13 @@ class RadioMixin:
 
     # -- record a different station ---------------------------------------------
 
-    def open_record_station_dialog(self) -> None:
-        """Record Station...: record B while listening to A (or to nothing)."""
+    def open_record_station_dialog(self, *, station: Any = None) -> None:
+        """Record Station...: record B while listening to A (or to nothing).
+
+        *station* pre-fills the dialog with a specific station -- the browse
+        tree's Record This Station... passes the row it was asked about,
+        which otherwise would have to be found again inside the dialog.
+        """
         from quill.ui.radio.record_station_dialog import RecordStationDialog
 
         if not ffmpeg_available():
@@ -1334,7 +1366,9 @@ class RadioMixin:
         dialog = RecordStationDialog(
             self.frame,
             favorites=self._radio_favorites,
-            now_playing=controller.state.station if controller is not None else None,
+            now_playing=station
+            if station is not None
+            else (controller.state.station if controller is not None else None),
             default_duration_minutes=min(60, self._radio_recording_settings.max_duration_minutes),
             announce_cb=self._announce,
         )
@@ -1469,27 +1503,24 @@ class RadioMixin:
         """One transport action for menus rebuilt per popup: Stop while
         connecting/playing, resume when paused, replay the current station
         when stopped (live streams have no meaningful pause)."""
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         controller = getattr(self, "_radio_controller", None)
         if controller is None:
             return
         state = controller.state.state
-        if state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING):
+        if state in ACTIVE_STATES:
             self.radio_stop()
         else:
             self.radio_toggle_play_pause()
 
     def _build_radio_status_bar_menu(self, menu: object) -> None:
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         wx = self._wx
         play_id, mute_id = wx.NewIdRef(), wx.NewIdRef()
         controller = getattr(self, "_radio_controller", None)
-        playing = controller is not None and controller.state.state in (
-            RadioPlayerState.PLAYING,
-            RadioPlayerState.CONNECTING,
-        )
+        playing = controller is not None and controller.state.state in ACTIVE_STATES
         # One transport item (this menu is rebuilt on every popup, so the
         # label is always current): Stop while playing, Play otherwise --
         # the same single-button rule as the main panel and Playback menu.
@@ -1629,22 +1660,28 @@ class RadioMixin:
         controller = getattr(self, "_radio_controller", None)
         if controller is None:
             return
+        from quill.ui.radio.transport_keys import describe_volume
+
         controller.toggle_mute()
-        self._announce("Radio muted" if controller.state.muted else "Radio unmuted")
+        self._announce(describe_volume(controller))
 
     def radio_volume_up(self) -> None:
+        from quill.ui.radio.transport_keys import describe_volume
+
         controller = getattr(self, "_radio_controller", None)
         if controller is None:
             return
         controller.volume_up()
-        self._announce(f"Radio volume {controller.state.volume_percent}")
+        self._announce(describe_volume(controller))
 
     def radio_volume_down(self) -> None:
+        from quill.ui.radio.transport_keys import describe_volume
+
         controller = getattr(self, "_radio_controller", None)
         if controller is None:
             return
         controller.volume_down()
-        self._announce(f"Radio volume {controller.state.volume_percent}")
+        self._announce(describe_volume(controller))
 
     def _on_radio_enhance_error(self, message: str) -> None:
         """Sound Enhancements couldn't start (ffmpeg missing, relay failed);
@@ -1966,8 +2003,15 @@ class RadioMixin:
         self._refresh_statusbar()
 
     def open_internet_radio(
-        self, *, initial_category: str | None = None, focus_search: bool = False
+        self,
+        *,
+        initial_category: str | None = None,
+        focus_search: bool = False,
+        source_facet: str | None = None,
     ) -> None:
+        """*source_facet* pre-narrows the Source filter for this opening only
+        (Search This Source... from the browse tree); the listener's own
+        remembered facet is untouched unless they change it in the dialog."""
         if self._safe_mode:
             self._show_message_box(
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
@@ -1989,7 +2033,9 @@ class RadioMixin:
             spotify_client_provider=self._spotify_search_client,
             enabled_sources=self._radio_history.search_sources_enabled,
             catalog=_search_catalog(self),
-            source_facet=self._radio_history.search_source_facet,
+            source_facet=source_facet
+            if source_facet is not None
+            else self._radio_history.search_source_facet,
             on_search_prefs_changed=self._radio_save_search_prefs,
         )
         dlg.show(initial_category=initial_category, focus_search=focus_search)

@@ -74,7 +74,16 @@ ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0
 ; The -Shared suffix matches the per-app pattern; drop once the
 ; shared-runtime install is the only shipping layout.
+#ifdef Offline
+; The Offline Edition: build_release.ps1 -Offline stages the whisper.cpp
+; engine and a starter model into the runtime payload before ISCC runs
+; (scripts\stage_offline_speech.py), so this flavor dictates with zero
+; network access -- and, because the runtime is shared, so does every other
+; QuillVille app on the machine.
+OutputBaseFilename=QUILL-Audio-Studio-Offline-Setup-{#AppVersion}
+#else
 OutputBaseFilename=QUILL-Audio-Studio-Setup-Shared-{#AppVersion}
+#endif
 ; Kept in step with quill-radio.iss (2026-08-17): 64-bit Setup (Inno 7) +
 ; 128 MB LZMA dictionary, which dedupes the embedded runtime's near-identical
 ; ffmpeg.exe/ffprobe.exe pair in the solid stream (-27 MB measured on Radio).

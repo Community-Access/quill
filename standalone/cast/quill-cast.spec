@@ -86,6 +86,21 @@ a = Analysis(
         "imageio_ffmpeg",
         "matplotlib",
         "scipy",
+        # The 2026-08-18 [runtime] declarations put the editor's documents/GLOW
+        # stack on every build machine (pymupdf, markitdown, magika, azure,
+        # openai, msal). quill.core.glow imports its backend lazily and degrades
+        # to absent, and this app can call none of it -- but a self-contained
+        # sweep ships whatever is importable, so each is named here.
+        "quill_glow_core",
+        "acb_large_print",
+        "pymupdf",
+        "fitz",
+        "markitdown",
+        "magika",
+        "azure",
+        "openai",
+        "msal",
+        "curl_cffi",
     ],
     noarchive=False,
 )

@@ -273,6 +273,10 @@ office-text = [
 # pre-split install to satisfy the resolver and leave the engine silently
 # unavailable inside QUILL.
 glow = ["quill-glow-core[glow]>=0.1.1", "acb-large-print>=8.0.0"]
+# QUILL Social's application package (standalone/social/quill_social),
+# vendored as a wheel beside the glow wheels until published. Ships inside
+# the shared QuillVille Runtime so `-m quill_social` launches from it.
+social-app = ["quill-social>=0.3.0"]
 # LaTeX -> MathML conversion for quill/core/math/ (docs/planning/math.md, Tier 1-B).
 # Pure Python, no native build. Optional: the math bridge degrades to accepting
 # MathML input only (no LaTeX typing) when this is absent.
@@ -344,6 +348,11 @@ youtube = [
   # fixes far more often than QUILL ships releases. An engine-pack copy wins
   # over this bundled one -- see engine_install.prefer_engine_pack_yt_dlp.
   "yt-dlp>=2026.7.4",
+  # yt-dlp's optional TLS-impersonation backend, imported lazily when a site
+  # blocks the default client. It ships in the current runtime and imports
+  # cleanly there (probed 2026-08-18); undeclared, it only shipped because the
+  # build machine happened to have it.
+  "curl-cffi>=0.16.0",
 ]
 runtime = [
   "quill[ui]",
@@ -354,10 +363,31 @@ runtime = [
   "quill[mp3]",
   "quill[docx]",
   "quill[math]",
-  # Windows OCR (the winrt-* packages) shipped in the 2026-08-09 release and is
-  # absent from the current one. It is ~1.5 MB and needs no model download, so
-  # restoring it is a one-line change: add "quill[ocr]" here. Left out for now
-  # because what the runtime ships is a product decision, not a build one.
+  # Windows OCR ships in the current runtime and imports cleanly inside the
+  # frozen bundle (probed 2026-08-18). It was only ever absent when the build
+  # machine happened not to have it -- the drift class the fingerprint tool
+  # exists for -- so it is declared rather than left to chance.
+  "quill[ocr]",
+  # GLOW (large-print document accessibility) likewise ships working today:
+  # quill.core.glow, quill_glow_core and acb_large_print all import inside the
+  # frozen runtime. This pulls the documents stack (pymupdf, markitdown[all])
+  # that the runtime-inventory baseline already expects. Install with
+  # --find-links vendor/wheels until the glow wheels are published.
+  "quill[glow]",
+  # Report a Bug + crash fingerprinting (quill.core.issue_submit,
+  # crash_fingerprint, the wx FeedbackDialog). feedback-hub has zero hard
+  # dependencies; the 1.1.0 wheel is vendored beside the glow wheels.
+  "quill[feedback]",
+  # File > Open Remote > GitHub (quill.core.github.github_provider imports
+  # PyGithub). In the shipped runtime and working; declared so it stays that
+  # way on every build machine.
+  "quill[github]",
+  # QUILL Social's application package. The runtime spec has collected
+  # quill_social since the shared-runtime design landed -- silently
+  # collecting nothing, because the package was never installed on any build
+  # machine. Declared (wheel vendored beside glow/feedback-hub), the
+  # collection is finally real and the runtime can launch `-m quill_social`.
+  "quill[social-app]",
   "quill[office-text]",
   "quill[pdf-ocr]",
   "quill[youtube]",

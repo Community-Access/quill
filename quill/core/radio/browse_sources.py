@@ -34,7 +34,7 @@ Node id grammar, all opaque to the caller (see :mod:`browse_nodes`)::
     apple | apple:<storefront>      Apple Podcasts, keyless
     applegenre:<storefront>\\t<genre-id>
     appleshow:<collection-id>       ...then that show's episodes
-    mypodcasts | mypodcastshow:<feed-url>
+    mypodcasts | mypodcastfolder:<folder-id> | mypodcastshow:<feed-url>
                                     Subscriptions (the shared podcast library)
     archive | archive:<collection>  Internet Archive, nested to any depth
     archiveitem:<identifier>        ...then that item's files
@@ -113,6 +113,7 @@ from quill.core.radio.browse_libraries import (
     _browse_gutenberg,
     _browse_gutenberg_lang,
     _browse_gutenberg_topic,
+    _browse_my_podcast_folder,
     _browse_my_podcast_show,
     _browse_my_podcasts,
 )
@@ -212,14 +213,33 @@ def _stations(rows: Sequence[RadioStation]) -> list[BrowseNode]:
 # --- per-source handlers ------------------------------------------------------
 
 
+def _favorite_node(fav: object) -> BrowseNode:
+    """One saved favorite as a row: a stream to play, or a place to open.
+
+    A *place* (a podcast show, a book, a followed channel -- see
+    :func:`quill.core.radio.favorites.place_station`) comes back as a folder
+    carrying the browse id it was saved from, so opening it from Favorites
+    lands exactly where opening it from its own source would. Everything the
+    row can do afterwards -- subscribe, download all, expand -- follows from
+    that id, with no second implementation of any of it.
+    """
+    from quill.core.radio.favorites import place_node_id
+
+    station = fav.station  # type: ignore[attr-defined]
+    node_id = place_node_id(station)
+    if not node_id:
+        return leaf(station)
+    return folder(node_id, fav.display_label, note="saved place")  # type: ignore[attr-defined]
+
+
 def _browse_favorites(args: list[str], *, safe_mode: bool, favorites: object) -> list[BrowseNode]:
     if favorites is None:
         return []
     ordered = list(favorites.favorites_in_display_order())  # type: ignore[attr-defined]
     if args and args[0]:
         wanted = args[0]
-        return [leaf(fav.station) for fav in ordered if fav.folder == wanted]
-    nodes = [leaf(fav.station) for fav in ordered if not fav.folder]
+        return [_favorite_node(fav) for fav in ordered if fav.folder == wanted]
+    nodes = [_favorite_node(fav) for fav in ordered if not fav.folder]
     for name in favorites.folders_in_display_order():  # type: ignore[attr-defined]
         count = sum(1 for fav in ordered if fav.folder == name)
         nodes.append(folder(make_id("favorites", name), name, child_count=count))
@@ -686,6 +706,7 @@ _HANDLERS: dict[str, Callable[..., list[BrowseNode]]] = {
     "applegenre": _browse_apple_genre,
     "appleshow": _browse_apple_show,
     "mypodcasts": _browse_my_podcasts,
+    "mypodcastfolder": _browse_my_podcast_folder,
     "mypodcastshow": _browse_my_podcast_show,
     "audiopub": _browse_audiopub,
     "audiopubdiscover": _browse_audiopub_discover,

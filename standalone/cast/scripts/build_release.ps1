@@ -26,6 +26,7 @@ param(
     [string]$Iscc = "",
     [string]$QuillRepo = "",
     [switch]$SkipToken,
+    [switch]$SkipSharedRuntime,
     [switch]$Sign
 )
 
@@ -67,13 +68,41 @@ if (-not $SkipToken) {
 }
 
 # -- ffmpeg to bundle ---------------------------------------------------------
+# SECURITY: ffmpeg is copied verbatim into shipped artifacts, so it must come
+# from a vetted directory. No PATH auto-discovery (the old Get-Command fallback
+# here was exactly what Radio's build refuses on purpose -- a stale or planted
+# local install would ship unverified). Absent an explicit -FfmpegDir, stage
+# the pinned, SHA-256-verified asset the same way Radio and Studio do.
 if (-not $FfmpegDir) {
-    $ffmpeg = Get-Command ffmpeg -ErrorAction SilentlyContinue
-    if ($ffmpeg) { $FfmpegDir = Split-Path -Parent $ffmpeg.Source }
+    Write-Host "Staging ffmpeg from QUILL's pinned release assets..."
+    & $Python (Join-Path $QuillRepo "scripts\fetch_build_deps.py") --only ffmpeg
+    if ($LASTEXITCODE -ne 0) { throw "Could not stage ffmpeg (see scripts/fetch_build_deps.py)." }
+    $FfmpegDir = Join-Path $QuillRepo "build\deps\ffmpeg"
 }
-if (-not $FfmpegDir -or -not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
-    throw "ffmpeg.exe not found. Pass -FfmpegDir; audio trim/normalize must ship bundled."
+if (-not (Test-Path (Join-Path $FfmpegDir "ffmpeg.exe"))) {
+    throw "ffmpeg.exe not found in -FfmpegDir '$FfmpegDir'; audio trim/normalize must ship bundled."
 }
+
+# -- shared QuillVille Runtime ------------------------------------------------
+# Cast used to be the one app whose build never built the shared runtime -- it
+# inherited whatever another app's build had left in ..\..\runtime\dist, the
+# same undocumented ordering trap Weather's build retired. Build it here unless
+# the caller explicitly reuses one, then stage exactly what Cast declares
+# (REQUIRED_COMPONENTS = ("ffmpeg",) -- no libmpv; playback is wx.media).
+. (Join-Path $QuillRepo "scripts\StageMediaTools.ps1")
+$sharedRuntimeDist = Join-Path $repoRoot "..\runtime\dist\QuillVilleRuntime"
+if ($SkipSharedRuntime -and (Test-Path (Join-Path $sharedRuntimeDist "QuillVilleRuntime.exe"))) {
+    Write-Host "Reusing existing shared runtime at $sharedRuntimeDist (--SkipSharedRuntime)."
+} else {
+    Push-Location (Join-Path $repoRoot "..\runtime")
+    try {
+        & (Join-Path $repoRoot "..\runtime\build_runtime.ps1") -Python $Python
+        if ($LASTEXITCODE -ne 0) { throw "Shared QuillVille Runtime build failed." }
+    } finally {
+        Pop-Location
+    }
+}
+Stage-QuillMediaTools -RuntimeDist $sharedRuntimeDist -FfmpegDir $FfmpegDir
 # -- onedir build -------------------------------------------------------------
 Push-Location $repoRoot
 try {
@@ -127,7 +156,7 @@ Set-Content (Join-Path $dataDir "storage-mode.json") '{"mode": "portable"}'
 # Sign every exe/dll in the app BEFORE it is zipped or embedded in the installer.
 # Opt-in via -Sign / QUILL_SIGN; a no-op otherwise.
 $signer = Join-Path $QuillRepo "scripts\code_signing.py"
-& $Python $signer sign-build $appDir --label "cast payload"
+& $Python $signer sign-build $sharedRuntimeDist $appDir --label "cast payload"
 if ($LASTEXITCODE -ne 0) { throw "Code signing (payload) failed." }
 
 $zipPath = Join-Path $repoRoot "dist\QUILL-Cast-Portable-$version.zip"
@@ -137,16 +166,39 @@ Compress-Archive -Path $appDir -DestinationPath $zipPath
 # installed copy into portable mode), so remove it before the installer runs.
 Remove-Item $dataDir -Recurse -Force
 
-# -- installer ----------------------------------------------------------------
-# When QUILL_SIGN=1, pass /DSign plus the /Squilltrusted sign-command mapping so
-# the .iss SignTool/SignedUninstaller directives activate ($q -> ", $f -> file).
-# Inno then signs both the compiled Setup.exe and the embedded uninstaller.
+# -- shared-runtime flavors: Setup-Shared + Lite + Companion ------------------
+# Cast now consumes the shared QuillVille Runtime like Radio, Weather, Studio
+# and Inkwell (2026-08-18). Setup-Shared supersedes the old self-contained
+# Setup -- same AppId, so it upgrades it in place. The onedir above remains
+# the Portable zip's payload.
 $innoSign = @()
 if ($env:QUILL_SIGN -eq "1") {
     $innoSign = @("/DSign", "/Squilltrusted=`$q$Python`$q `$q$signer`$q sign `$f")
 }
-& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast.iss") "/O$(Join-Path $repoRoot 'dist')"
-if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
+# Cast declares ffmpeg only (already staged above). The runtime dist is a
+# communal work area, so strip any libmpv another app's build left there --
+# 110 MB Cast never calls (playback is wx.media).
+$stagedMpv = Join-Path $sharedRuntimeDist "tools\mpv"
+if (Test-Path $stagedMpv) {
+    Remove-Item $stagedMpv -Recurse -Force
+    Write-Host "Stripped staged mpv from the runtime payload (Cast declares ffmpeg only)."
+}
+$launcherDir = Join-Path $repoRoot "dist\QuillCast-shared"
+& $Python (Join-Path $QuillRepo "scripts\build_native_launcher.py") --product cast --out $launcherDir
+if ($LASTEXITCODE -ne 0) { throw "Native launcher build failed." }
+New-Item -ItemType Directory -Force (Join-Path $launcherDir "docs") | Out-Null
+Copy-Item (Join-Path $appDir "docs\*") (Join-Path $launcherDir "docs") -Recurse -Force
+& $Python $signer sign-build $sharedRuntimeDist $launcherDir --label "cast shared payload"
+if ($LASTEXITCODE -ne 0) { throw "Code signing (shared payload) failed." }
+& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast-shared.iss") "/O$(Join-Path $repoRoot 'dist')"
+if ($LASTEXITCODE -ne 0) { throw "ISCC (Setup-Shared) failed with exit code $LASTEXITCODE" }
+& $Iscc @innoSign "/dAppVersion=$version" (Join-Path $repoRoot "installer\quill-cast-lite.iss") "/O$(Join-Path $repoRoot 'dist')"
+if ($LASTEXITCODE -ne 0) { throw "ISCC (Lite) failed with exit code $LASTEXITCODE" }
+# Companion: the runtime-less stick (launcher + icon + docs, ~1 MB).
+$companionZip = Join-Path $repoRoot "dist\QUILL-Cast-Companion-$version.zip"
+if (Test-Path $companionZip) { Remove-Item $companionZip -Force }
+Copy-Item (Join-Path $repoRoot "assets\quill-cast.ico") $launcherDir -Force
+Compress-Archive -Path (Join-Path $launcherDir "*") -DestinationPath $companionZip
 
 Write-Host ""
 Write-Host "Release artifacts in $(Join-Path $repoRoot 'dist'):"

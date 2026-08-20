@@ -120,5 +120,5 @@ def play_book(host: Any, book: Any, *, start: int = 0) -> bool:
         return False
     if not play_chapter(host, book, chapter):
         return False
-    _announce(host, f"{book.title}. {chapter.spoken()}")
+    _announce(host, f"{book.title}. {chapter.spoken()}.")
     return True

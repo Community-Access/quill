@@ -66,11 +66,35 @@ key_fix_*.md
 key_troubleshoot*.md
 zquill_*.md
 fix.md
+# The running ledger of what is in the working tree and not yet committed
+# (2026-08-18). Untracked on purpose: it describes the uncommitted diff, so a
+# committed copy would be a description of nothing.
+fixes.md
+# Working notes in the same class as fixes.md: the six AI product-strategy
+# papers (suggest1-6) and the executable plan distilled from them against the
+# actual code and artifacts (suggest7), plus a session scratch file. They
+# describe work rather than being it, so they stay out of the committed root --
+# which is also what keeps tests/unit/structure/test_repo_layout.py green.
+# Listed one per line rather than as suggest*.md because that gate's matcher
+# reads exact patterns only (_gitignored_root_files skips anything with a
+# glob character), and a pattern it silently skipped would leave the gate red
+# for a reason nobody could see from the ignore file.
+suggest1.md
+suggest2.md
+suggest3.md
+suggest4.md
+suggest5.md
+suggest6.md
+suggest7.md
+duckto_assist.md
 email.md
 john.md
 meeting.md
 meeting2.md
 meeting3.md
+plane.md
+p.md
+c.md
 /Status
 keys.txt
 /files/

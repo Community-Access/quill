@@ -172,3 +172,22 @@ class SimpleOpenMixin:
         except Exception:  # noqa: BLE001 - non-Windows or no StandardPaths
             pass
         return None
+
+    # -- opening a file that is no longer there (#1423) -----------------------
+
+    def _read_open_document_guarded(
+        self,
+        selected_path: Path,
+        suffix: str,
+        csv_mode: str | None,
+        finish: object,
+    ) -> None:
+        """Read and install a document, saying why rather than crashing.
+
+        A delegate on purpose: the behaviour lives in
+        :mod:`quill.ui.open_guard` (with the reason it exists), and both this
+        module and ``main_frame.py`` are at their GATE-11 ceilings.
+        """
+        from quill.ui.open_guard import read_document_or_report
+
+        read_document_or_report(self, selected_path, suffix, csv_mode, finish)  # type: ignore[arg-type]

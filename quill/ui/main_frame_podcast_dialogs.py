@@ -51,6 +51,9 @@ class PodcastDialogsMixin:
             on_open_settings=self._podcast_open_settings,
             on_send_show_notes=self._podcast_send_show_notes_to_editor,
             chapter_skip_state=self.podcast_chapter_skip_state,
+            # So the transport keys work inside the manager too, not only from
+            # the main window's menu bar.
+            transport_host=self,
         )
         self._podcast_manager_dialog = dialog
         try:

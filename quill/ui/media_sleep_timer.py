@@ -29,7 +29,8 @@ from collections.abc import Callable
 import wx
 
 from quill.ui.podcasts.player_controller import PodcastPlayerController, PodcastPlayerState
-from quill.ui.radio.player_controller import RadioPlayerController, RadioPlayerState
+from quill.ui.radio.playback_state import RadioPlayerState
+from quill.ui.radio.player_controller import RadioPlayerController
 
 #: Fade gently over the final stretch of the countdown, not the whole thing.
 _FADE_WINDOW_SECONDS = 20.0
@@ -125,6 +126,10 @@ class SleepTimerController:
         radio = self._get_radio_controller()
         if radio is not None and radio.state.state in (
             RadioPlayerState.PLAYING,
+            # A stall is not an exit. Without this, a sleep timer that came due
+            # while the stream was rebuffering would find no radio to stop and
+            # leave it playing all night.
+            RadioPlayerState.BUFFERING,
             RadioPlayerState.PAUSED,
         ):
             pairs.append(("radio", radio))

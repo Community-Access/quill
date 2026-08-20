@@ -77,7 +77,7 @@ def _import_file(host: Any, path: str) -> None:
         # name must not cost the listener the whole import.
         text = Path(path).read_text(encoding="utf-8-sig", errors="replace")
     except OSError as error:
-        host._announce(f"That file could not be read: {error}")
+        host._announce(f"That file could not be read: {error}.")
         return
 
     channels = parse_subscriptions(text)

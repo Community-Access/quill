@@ -94,7 +94,7 @@ def handle_finished(host: Any) -> bool:
     # Lazy, and from the controller: RadioPlayerState is defined there, and
     # the controller reaches this module the same way, so neither import is
     # taken at module scope and the pair cannot deadlock on each other.
-    from quill.ui.radio.player_controller import RadioPlayerState
+    from quill.ui.radio.playback_state import RadioPlayerState
 
     station = getattr(getattr(host, "_state", None), "station", None)
     if station is None:
@@ -111,8 +111,14 @@ def handle_finished(host: Any) -> bool:
     host._live_reconnect_attempts = attempt
 
     name = getattr(station, "display_name", "") or "the station"
+    # RECONNECTING rather than CONNECTING. Both are true of the wire; only one
+    # is true of the listener. "Connecting" is what a station somebody just
+    # chose does, and a listener who pressed nothing deserves to hear that the
+    # app is recovering rather than starting -- which is also why the sentence
+    # composed here is now the one the status line renders, instead of being
+    # written into a field nothing read.
     host._set_state(
-        RadioPlayerState.CONNECTING,
+        RadioPlayerState.RECONNECTING,
         message=f"Reconnecting to {name}. Attempt {attempt} of {MAX_ATTEMPTS}.",
     )
     delay = BACKOFF_MS[min(attempt - 1, len(BACKOFF_MS) - 1)]
@@ -139,7 +145,7 @@ def _retry(host: Any, token: int) -> None:
     # Lazy, and from the controller: RadioPlayerState is defined there, and
     # the controller reaches this module the same way, so neither import is
     # taken at module scope and the pair cannot deadlock on each other.
-    from quill.ui.radio.player_controller import RadioPlayerState
+    from quill.ui.radio.playback_state import RadioPlayerState
 
     if int(getattr(host, "_play_token", 0)) != token:
         # Stop, or another station, happened while this retry was waiting.

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>The shared runtime has drifted from its own plan — measurements
+and a way back</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1
+id="the-shared-runtime-has-drifted-from-its-own-plan--measurements-and-a-way-back">The
+shared runtime has drifted from its own plan — measurements and a way
+back</h1>
+<p>Date: 2026-08-17. A delta against
+<code>2026-07-20-quillville-runtime-and-component-plan.md</code>, which
+remains the plan of record. Nothing here proposes a new architecture. It
+measures how far the built artifacts have moved from the one already
+decided, and what it costs.</p>
+<h2 id="short-version">Short version</h2>
+<p>“Keep the shared runtime minimal and add the layers each app needs”
+is not a new idea to adopt — it is §2 and §5 of the 2026-07-20 plan, and
+most of the machinery for it is already written and shipping. What has
+happened is that the build drifted away from it in two specific,
+measurable steps, and the result is that a weather app installs a 34 MB
+ICU locale database, a PDF renderer, and a speech-recognition
+backend.</p>
+<h2 id="what-the-plan-says">What the plan says</h2>
+<ul>
+<li>§2: there are <strong>two</strong> shared surfaces with different
+rules. <strong>The Runtime</strong> is “embeddable Python + pip + the
+<code>quill</code> package”. <strong>The Component Store</strong>
+(<code>%APPDATA%\Quill</code>) holds ffmpeg, mpv, engine packs, voices,
+models.</li>
+<li>§1: the component store already works and is “the single most
+important fact: the disk-heavy sharing already exists”. What was
+<em>not</em> yet shared was the Python runtime and the
+<code>quill</code> code — “tens of MB”.</li>
+<li>§5: each app declares <code>REQUIRED_COMPONENTS</code>; the store
+refcounts; the last app to need a component is the one whose removal
+makes it collectable. “No component is ever stored twice, and no app
+carries another app’s weight.”</li>
+</ul>
+<p>That last sentence is the one the current build breaks.</p>
+<h2 id="drift-1-the-heavy-components-moved-back-into-the-runtime">Drift
+1: the heavy components moved back into the runtime</h2>
+<p><code>standalone/runtime/build_runtime.ps1</code> stages ffmpeg,
+ffprobe, and libmpv into <code>dist\QuillVilleRuntime\tools\</code>, and
+the shared-runtime installer fragment ships that whole tree. The
+rationale in <code>build_release.ps1</code> is sound as far as it goes —
+“ffmpeg/mpv go here, not into the per-app <code>$appDir\tools\</code>,
+so the per-app install stays tiny” — but the destination it chose was
+the runtime rather than the component store, and the runtime is what
+<em>every</em> app installs.</p>
+<p>That is 304 MB, 41% of the runtime:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>MB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tools\ffmpeg\ffmpeg.exe</td>
+<td>97</td>
+</tr>
+<tr>
+<td>tools\ffmpeg\ffprobe.exe</td>
+<td>97</td>
+</tr>
+<tr>
+<td>tools\mpv\libmpv-2.dll</td>
+<td>110</td>
+</tr>
+</tbody>
+</table>
+<p>The refcount layer that was supposed to govern these is
+<strong>already implemented and running</strong>:
+<code>quill/core/components.py</code> maintains
+<code>components.state.json</code>, and the apps declare their needs —
+<code>quill.apps.radio.REQUIRED_COMPONENTS = ("ffmpeg", "mpv")</code>,
+<code>podcasts</code> and <code>studio</code> declare
+<code>("ffmpeg",)</code>. The resolver in §6 (store → staged wheelhouse
+→ verified network → guided prompt) exists too. Bundling into the
+runtime means that machinery is bypassed: the app finds the tools beside
+<code>sys.executable</code> and never consults the store.</p>
+<p><strong>Who does not declare a single component:</strong>
+<code>weather</code>, <code>inkwell</code>, <code>converter</code>,
+<code>player</code>, and beacon/social. They ship all 304 MB anyway.
+<code>Quill-Weather-Setup-Shared-2.2.0.exe</code> is 191.5 MB for an app
+that reads the forecast aloud.</p>
+<h2
+id="drift-2-the-runtime-became-the-union-of-every-apps-python-dependencies">Drift
+2: the runtime became the union of every app’s Python dependencies</h2>
+<p><code>quillville-runtime.spec</code> says so explicitly:</p>
+<blockquote>
+<p>The heavy optional ML stacks are NOT excluded here (unlike a
+single-app spec): the shared runtime is the union of every app’s
+needs.</p>
+</blockquote>
+<p>“Union” is right for a <em>shared</em> runtime in the abstract. It is
+wrong when the union is delivered whole to every app, because the union
+is dominated by QUILL-the-editor’s needs and every other app is a
+fraction of it.</p>
+<p>The dead <code>standalone/radio/quill-radio.spec</code> still records
+what Radio actually needs — it excludes <code>faster_whisper</code>,
+<code>vosk</code>, <code>kokoro_onnx</code>, <code>onnxruntime</code>,
+<code>torch</code>, <code>PIL</code>, <code>pdfminer</code>,
+<code>pypdfium2</code> and <code>lxml</code> by name. Nothing builds
+that spec any more.</p>
+<p>Measured on today’s build (734.9 MB total, real bytes):</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>MB</th>
+<th>Who can actually use it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Core: CPython, wx, numpy, quill, yt-dlp, networking, a11y
+bridges</td>
+<td>~150</td>
+<td>every app</td>
+</tr>
+<tr>
+<td>Media tools (ffmpeg, ffprobe, libmpv)</td>
+<td>304</td>
+<td>radio, cast, studio, QUILL speech</td>
+</tr>
+<tr>
+<td>Documents (pymupdf 38, PIL 13, pdfminer 8, pypdfium2 7, pyphen 6,
+docx, pptx, rdflib, latex2mathml, weasyprint)</td>
+<td>~80</td>
+<td>QUILL only</td>
+</tr>
+<tr>
+<td>Speech in (ctranslate2 59, vosk 26, hf_xet 9, tokenizers 7)</td>
+<td>~101</td>
+<td>QUILL, cast, studio</td>
+</tr>
+<tr>
+<td>Spellcheck (enchant, post-prune)</td>
+<td>27</td>
+<td>QUILL, maybe social/inkwell</td>
+</tr>
+<tr>
+<td>Neural TTS (kokoro-onnx, phonemizer-fork)</td>
+<td>~5 + on-demand models</td>
+<td>QUILL, studio</td>
+</tr>
+</tbody>
+</table>
+<p>Radio’s honest requirement is core + media, about 455 MB. Weather’s
+is core alone, about 150 MB. Both currently install 735.</p>
+<h2 id="what-this-costs-per-app">What this costs, per app</h2>
+<p>Every app’s installer is currently sized by QUILL’s needs. The saving
+from layering is not uniform — it is largest for the smallest apps,
+which is precisely backwards today:</p>
+<ul>
+<li>Weather, Inkwell, Converter, Player: ~585 MB of payload they cannot
+call.</li>
+<li>Radio, Cast: ~280 MB (the document + ASR + spellcheck layers).</li>
+<li>Studio: ~110 MB (documents + spellcheck).</li>
+<li>QUILL: nothing. It is the app the union was sized for.</li>
+</ul>
+<h2 id="the-way-back">The way back</h2>
+<p>The mechanism exists. This is sequencing, not invention.</p>
+<p><strong>Phase 1 — stop shipping what nothing can call.</strong> No
+architecture change, no new mechanism, purely removing dead weight from
+the union. Done today:</p>
+<ul>
+<li><code>scripts/prune_enchant_payload.py</code> — pyenchant vendors a
+slice of an MSYS2 <code>bin</code> (Tcl/Tk, a second CPython, GNU
+readline, the GCC support libraries, gettext’s toolchain, 34 MB of ICU)
+as package <em>data</em>, invisible to PyInstaller
+<code>excludes</code>. The pruner computes libenchant’s real PE import
+closure and keeps exactly that: 90.7 MB to 26.8 MB, verified end to end
+with identical <code>check()</code> and <code>suggest()</code> output.
+Wired into <code>build_runtime.ps1</code>.</li>
+<li><code>hypothesis</code> added to the spec excludes. A property-based
+test framework was being swept into the shipped runtime, the same way
+<code>mypy</code> was before it.</li>
+</ul>
+<p>Still open in this phase: <code>vosk\libstdc++-6.dll</code> is 25.4
+MB where the runtime’s other two copies of libstdc++ are 2.5 and 2.2
+MB.</p>
+<p><strong>Phase 2 — return ffmpeg and mpv to the component
+store.</strong> The largest single win (304 MB off every app that does
+not play media, and off the <em>runtime</em> for all of them) and the
+one the plan already specifies. <code>build_runtime.ps1</code> stops
+staging <code>tools\</code>; the per-app installer either stages them
+into the store (offline/FULL flavour) or lets the existing offline-first
+resolver fetch and refcount them on first launch (LEAN). Radio, Cast and
+Studio already declare what they need; Weather, Inkwell, Converter and
+Player already declare nothing, so they get it right for free.</p>
+<p>Prerequisite worth stating plainly: this reintroduces a first-launch
+download for Radio unless the FULL installer stages the tools. Radio
+must keep working offline out of the box, so the FULL flavour is not
+optional for it.</p>
+<p><strong>Phase 3 — split the Python feature layers.</strong> Build the
+core runtime with the document / ASR / spellcheck stacks excluded, and
+ship each as a separate versioned layer directory that
+<code>runtime_launcher.py</code> adds to <code>sys.path</code> when
+present. Layers are pinned by SHA-256 in the same in-code manifest §10b
+already defines for components, fetched by the same
+<code>fetch_file</code> core, refcounted by the same
+<code>components.state.json</code>. An app declares
+<code>REQUIRED_LAYERS</code> beside its
+<code>REQUIRED_COMPONENTS</code>.</p>
+<p>This is the genuinely new engineering, and it is worth doing only
+after Phase 2 proves the delivery path. It is also where the
+compatibility rules matter: a layer contains compiled extension modules
+and is therefore bound to the runtime’s Python minor version, so layer
+identity must include it (<code>documents/3.13/</code>), exactly as the
+runtime root already does.</p>
+<p><strong>Phase 4 — extend the gates.</strong>
+<code>check_runtime_inventory.py</code> grows a per-layer inventory so
+“a package appeared in the core that belongs in a layer” fails the build
+by name, the same ratchet as today.</p>
+<h2 id="decisions-the-owner-needs-to-make">Decisions the owner needs to
+make</h2>
+<ol type="1">
+<li><strong>Is ffprobe worth 97 MB?</strong> ffmpeg and ffprobe are
+separate ~97 MB static builds. A shared-library ffmpeg build would let
+them share one set of <code>libav*</code> DLLs. Worth pricing before
+Phase 2 freezes the component shape.</li>
+<li><strong>Which layer owns <code>markitdown</code>?</strong> It
+arrived in today’s build with 61 MB of transitive dependencies (pymupdf
+37.7, pydantic_core 5.0, pyphen 5.9, cramjam 4.0, curl_cffi 3.7,
+weasyprint, fonttools, google, opentelemetry, werkzeug, lark). It is
+QUILL’s Tier-1 document converter. Documents layer, almost certainly —
+but confirm nothing else calls it.</li>
+<li><strong>Does <code>winrt</code> (2.5 MB, Windows OCR) belong in core
+or documents?</strong> It silently vanished from a release once already,
+so wherever it lands it needs a declaration.</li>
+<li><strong>Radio’s offline promise.</strong> Confirm FULL-flavour
+staging of ffmpeg/mpv before Phase 2 removes them from the runtime.</li>
+</ol>
+<h2 id="note-on-todays-inventory-rebaseline">Note on today’s inventory
+rebaseline</h2>
+<p>The build interpreter had <code>pypdf</code> 6.15.0 against a
+<code>[runtime]</code> floor of 6.16.1 (raised in <code>09caf8e</code>
+when the vulnerable pin was removed). With the old pypdf,
+<code>collect_all("quill")</code> could not import the PDF subtree, so
+<strong>everything reachable through it silently did not ship</strong> —
+which is how the 181.9 MB
+<code>Quill-Radio-Setup-Shared-3.0.0.exe</code> currently in
+<code>dist\</code> was produced. Fixing the interpreter made 61 MB of
+genuinely-reachable dependencies appear, and
+<code>check_runtime_inventory.py</code> correctly failed the build
+naming all 25.</p>
+<p>They were declared (rebaselined) rather than excluded, because they
+<em>are</em> reachable from shipping code and a build that quietly omits
+them is the worse failure of the two. That is a decision to revisit in
+Phase 3, where most of them belong to the documents layer rather than to
+core. It is reversible: revert
+<code>standalone/runtime/runtime-inventory.json</code>.</p>
+<hr />
+<h2
+id="status-2026-08-17-evening-phases-1-and-2-are-done-and-measured">Status,
+2026-08-17 evening: Phases 1 and 2 are done and measured</h2>
+<p>The shared runtime is <strong>335.2 MB</strong>, down from 734.9 MB.
+Every QuillVille app installs that runtime, so it is 399.7 MB off all
+eight of them.</p>
+<h3 id="what-phase-1-actually-found">What Phase 1 actually found</h3>
+<p>Phase 1 was scoped as “stop shipping what nothing can call”. It
+turned out to be “stop shipping three speech engines that were already
+broken”.</p>
+<p>Probing the built runtime by importing each optional module inside it
+– rather than reading the file list – showed:</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>In the runtime</th>
+<th>What <code>import</code> did</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>vosk</code></td>
+<td>27.6 MB of mingw support DLLs</td>
+<td><code>OSError: cannot load library 'libvosk.dll'</code></td>
+</tr>
+<tr>
+<td><code>faster_whisper</code></td>
+<td>pure Python, plus ctranslate2’s 59 MB</td>
+<td><code>ModuleNotFoundError: No module named 'av'</code></td>
+</tr>
+<tr>
+<td><code>kokoro_onnx</code></td>
+<td>pure Python, plus phonemizer-fork</td>
+<td><code>ModuleNotFoundError: No module named 'onnxruntime'</code></td>
+</tr>
+</tbody>
+</table>
+<p>Three causes, one shape. <code>vosk</code> loads its 26 MB
+<code>libvosk.dll</code> through cffi at import time, which
+PyInstaller’s dependency analysis cannot see, so the engine DLL never
+shipped while its support libraries did. <code>av</code> and
+<code>onnxruntime</code> are deliberate spec excludes (they were dropped
+for size), and nothing checked what else needed them.</p>
+<p>Two things made this invisible:</p>
+<ol type="1">
+<li><strong>The frozen copy shadows the on-demand engine pack,
+permanently.</strong> <code>engine_install.activate_engine_packs</code>
+adds the pack to <code>sys.path</code>, but PyInstaller’s
+<code>FrozenImporter</code> sits ahead of <code>PathFinder</code> on
+<code>sys.meta_path</code>, so the frozen module always wins. (This is
+exactly why <code>yt_dlp</code> already needs the explicit meta-path
+finder in <code>engine_pack_imports.py</code>.) Installing the Vosk
+engine could not fix Vosk.</li>
+<li><strong><code>is_vosk_available()</code> and its siblings ask
+<code>find_spec</code></strong>, which resolves the broken frozen module
+without importing it. QUILL reported all three engines as installed and
+therefore never offered the pack that would have worked.</li>
+</ol>
+<p>Every build carrying this exited 0.
+<code>check_runtime_inventory.py</code> could not catch it either: it
+compares top-level <em>names</em>, and <code>faster_whisper</code> is
+pure Python, so it never had a name on disk to compare.</p>
+<h3 id="changes">Changes</h3>
+<ul>
+<li><strong><code>quillville-runtime.spec</code></strong>:
+<code>vosk</code>, <code>faster_whisper</code>,
+<code>ctranslate2</code>, <code>kokoro_onnx</code> and
+<code>sherpa_onnx</code> added to <code>excludes</code>. All five are
+engine-pack owned. <code>sherpa_onnx</code> was never on the build
+machine and so never shipped – which is precisely why it is now declared
+rather than left to luck.</li>
+<li><strong><code>scripts/check_runtime_imports.py</code></strong> (new,
+wired into <code>build_runtime.ps1</code>): runs the built bundle and
+asks it directly. Engine-pack-owned modules must be
+<strong>absent</strong>; the deliberately-bundled ones that load native
+code must <strong>import</strong>, not merely resolve. It fails the
+build naming what broke and how to fix it. Verified red against the
+2026-08-17 build (named all four) and green after.</li>
+<li><strong><code>build_runtime.ps1</code></strong> no longer stages
+<code>tools\</code> and no longer takes
+<code>-FfmpegDir</code>/<code>-LibmpvDir</code>. That retires the
+undocumented ordering dependency where a Weather build failed unless
+another app had already built the runtime.</li>
+<li><strong><code>scripts/StageMediaTools.ps1</code></strong> (new): the
+one implementation of media staging. Radio stages ffmpeg + libmpv;
+Studio stages both (ffmpeg for recording, libmpv for the player preview
+it has always shipped). Weather and Inkwell stage nothing. Staging is
+<strong>opt-in</strong>, so there is no per-app exclusion list to keep
+in step – an app that declares nothing gets it right by default.</li>
+</ul>
+<h3 id="verified">Verified</h3>
+<ul>
+<li>Both gates green on the rebuilt runtime; 288 build/structure tests
+pass.</li>
+<li>The engine-pack path now works where it could not before: with a
+real <code>vosk</code> package on <code>sys.path</code>, the frozen
+runtime imports it, loads <code>libvosk.dll</code> and calls into it.
+Before the change the broken frozen copy won every time.</li>
+<li><code>is_vosk_available()</code> now answers False on a machine with
+an empty pack dir, so QUILL will offer the install instead of failing at
+use time.</li>
+</ul>
+<h3 id="still-open">Still open</h3>
+<ul>
+<li><code>ffprobe</code> (Decision 1) is untouched and still 97 MB. It
+is genuinely used for M4B/M4A chapter marks and durations, so it needs
+the shared-library ffmpeg build priced before anything is dropped –
+Phase 4/Stage 4, unchanged.</li>
+<li>Studio’s <code>REQUIRED_COMPONENTS</code> declares only
+<code>("ffmpeg",)</code> but its build stages libmpv too. The build now
+matches its long-standing behaviour; the declaration is what should be
+corrected, and it wants a decision rather than a guess.</li>
+<li>Cast’s <code>build_release.ps1</code> does not build the shared
+runtime at all, so it still inherits whatever another app produced. It
+needs the same treatment.</li>
+<li>Phase 3 (splitting the document layer out of core) is unstarted.
+Note that Phase 1 removed ~96 MB of the ~101 MB “Speech in” layer the
+original table proposed, so that layer no longer needs building – the
+engine packs already are it.</li>
+</ul>
+</main>
+</body>
+</html>

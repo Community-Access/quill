@@ -96,7 +96,7 @@ def test_ctrl_down_lowers_volume_and_syncs_slider() -> None:
 
     assert controller.state.volume_percent == 40  # 50 - 10
     assert dialog._volume_slider.value == 40  # dialog slider kept in sync
-    assert announced == ["Radio volume 40"]
+    assert announced == ["Volume 40 percent."]
     assert event.skipped is False  # handled, not passed through
 
 
@@ -105,7 +105,7 @@ def test_ctrl_up_raises_volume() -> None:
     dialog._on_char_hook(_KeyEvent(_WXK_UP, ctrl=True))
     assert controller.state.volume_percent == 60
     assert dialog._volume_slider.value == 60
-    assert announced == ["Radio volume 60"]
+    assert announced == ["Volume 60 percent."]
 
 
 def test_bare_down_arrow_passes_through_to_the_list() -> None:

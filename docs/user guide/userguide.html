@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill User Guide</title>
   <style>
@@ -678,6 +678,32 @@ button. Press Enter to open the selected file, Escape to cancel.</li>
 number of visible entries, and any errors. Permission-denied and
 not-a-directory errors keep the dialog open so you can correct the path
 and try again.</p>
+<h3 id="when-a-file-is-not-where-it-was">When a file is not where it
+was</h3>
+<p>Files move. A OneDrive or SharePoint file can be a placeholder whose
+contents were never downloaded to this PC; a file opened from
+<strong>File &gt; Open Recent</strong> may have been renamed or deleted
+since; a file on a USB stick or a network share is simply not there when
+the drive is not connected.</p>
+<p>QUILL says so in one sentence, in the status bar and out loud:</p>
+<blockquote>
+<p><em>Bingo3.html is no longer there. It may have been moved, renamed,
+or deleted, or it may live on a drive that is not connected.</em></p>
+</blockquote>
+<p>Nothing else happens — no crash, no dialog to dismiss, and QUILL
+stays exactly where it was, so you can press <strong>Ctrl+O</strong> and
+pick something else. Choosing a <em>folder</em> where a file was
+expected says that instead, rather than failing halfway through reading
+it.</p>
+<p><strong>Your Recent list is left alone on purpose.</strong> A file
+that is missing today may be a USB stick you plug back in tomorrow, so
+QUILL does not quietly forget it when an open fails.</p>
+<p>There is an opt-in tidy for people who would rather not keep dead
+entries: <code>recent_files_auto_clear_missing</code> in your settings
+file, off by default and not yet exposed in Preferences. Even switched
+on it only removes entries on this PC’s own fixed drives — files on
+removable and network drives are never even checked, because “not
+connected” is not the same as “gone”.</p>
 <h2 id="command-line-launching">Command-Line Launching</h2>
 <p>Quill supports command-line startup options for scripted workflows
 and direct navigation.</p>

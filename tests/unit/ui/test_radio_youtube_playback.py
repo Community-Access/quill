@@ -14,7 +14,8 @@ import pytest
 import wx
 
 from quill.core.radio.models import RadioStation
-from quill.ui.radio.player_controller import RadioPlayerController, RadioPlayerState
+from quill.ui.radio.playback_state import RadioPlayerState
+from quill.ui.radio.player_controller import RadioPlayerController
 
 _YOUTUBE = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 _RESOLVED = "https://media.test/audio.m4a"

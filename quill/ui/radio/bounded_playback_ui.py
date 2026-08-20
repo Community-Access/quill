@@ -171,7 +171,16 @@ def _step_speed(host: Any, direction: int) -> None:
     target = min(candidates) if direction > 0 else max(candidates)
     applied = controller.set_playback_rate(target)
     if controller.is_seekable():
-        host._announce(f"{applied:g} times speed.")
+        # A podcast episode's chosen speed is remembered per show (Radio-side
+        # store; see episode_profile). "" for everything else, so ordinary
+        # videos and recordings speak exactly as before.
+        from quill.ui.radio import episode_profile
+
+        # announce-punctuation: exempt -- the sentence ends before the suffix,
+        # and remember_speed_choice returns either "" or its own full sentence.
+        host._announce(
+            f"{applied:g} times speed.{episode_profile.remember_speed_choice(controller)}"
+        )
     else:
         # Still remembered for the next video -- say so, rather than looking
         # like the key did nothing.
@@ -190,8 +199,12 @@ def slow_down(host: Any) -> None:
 
 def reset_speed(host: Any) -> None:
     """Back to normal speed."""
-    _controller(host).set_playback_rate(1.0)
-    host._announce("Normal speed.")
+    controller = _controller(host)
+    controller.set_playback_rate(1.0)
+    from quill.ui.radio import episode_profile
+
+    # announce-punctuation: exempt -- see _step_speed.
+    host._announce(f"Normal speed.{episode_profile.remember_speed_choice(controller)}")
 
 
 # -- chapters ----------------------------------------------------------------
@@ -253,5 +266,6 @@ def open_chapters(host: Any) -> None:
         show_modal_dialog=host._show_modal_dialog,
         announce=host._announce,
         go_to_chapter=controller.go_to_chapter,
+        transport_host=host,
     )
     dialog.show()

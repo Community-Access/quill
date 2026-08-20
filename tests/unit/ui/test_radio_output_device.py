@@ -18,7 +18,8 @@ from quill.ui.radio.mpv_radio_engine import (
     output_device_choices,
     parse_audio_device_list,
 )
-from quill.ui.radio.player_controller import RadioPlayerController, RadioPlayerState
+from quill.ui.radio.playback_state import RadioPlayerState
+from quill.ui.radio.player_controller import RadioPlayerController
 
 
 @pytest.fixture(scope="module", autouse=True)

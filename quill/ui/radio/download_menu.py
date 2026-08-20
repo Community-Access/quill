@@ -32,6 +32,7 @@ def open_queue(host: Any) -> None:
         announce=host._announce,
         show_modal_dialog=getattr(host, "_show_modal_dialog", None),
         open_preferences=getattr(host, "radio_download_preferences", None),
+        transport_host=host,
     )
     # Held while it is open so the runner can refresh it as transfers move on;
     # cleared afterwards so a finished transfer never calls into a dead window.

@@ -522,6 +522,7 @@
   "paste_markdown_as_html",
   "play_last_macro",
   "podcast_chapter_skip_state",
+  "podcast_current_show_unheard",
   "podcast_cycle_channel_mode",
   "podcast_delete_all_data",
   "podcast_export_data",

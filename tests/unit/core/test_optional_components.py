@@ -119,7 +119,11 @@ def test_a_broken_detector_never_crashes_the_list(monkeypatch) -> None:
 def test_dictionary_components_use_spellcheck_state(monkeypatch) -> None:
     from quill.core import spellcheck
 
-    monkeypatch.setattr(spellcheck, "installed_languages", lambda: ["en_US", "fr_FR"])
+    # `downloaded_languages`, not `installed_languages`: this dialog offers
+    # Install and Remove, so it lists only the dictionaries QUILL fetched and
+    # can delete -- never the 22 the enchant payload ships, which are part of
+    # the app and would appear here as undeletable rows.
+    monkeypatch.setattr(spellcheck, "downloaded_languages", lambda: ["en_US", "fr_FR"])
     monkeypatch.setattr(spellcheck, "installable_languages", lambda: ["es_ES"])
     by_id = {c.component_id: c for c in oc.gather_optional_components()}
     # en_US is bundled in pyenchant, so it is never listed as a separate download.

@@ -30,6 +30,12 @@ from typing import Any
 
 from quill.core.radio.browse_nodes import BrowseNode, folder, leaf, make_id, split_id
 
+#: How a guarded route reports that a source did not answer. Federated browse
+#: (:mod:`quill.core.radio.federated_browse`) asks every route at once and has
+#: to tell "nothing matched" apart from "nobody answered", so the wording is a
+#: constant rather than a sentence typed twice.
+UNREACHABLE = "could not be reached"
+
 #: Apple kinds where Find means "ask the podcast directory".
 _APPLE_KINDS = frozenset({"apple", "applechart", "applegenre", "appleshow"})
 
@@ -218,4 +224,4 @@ def _guarded(
         nodes, provenance = route(query, safe_mode=safe_mode)
         return list(nodes), str(provenance)
     except Exception:  # noqa: BLE001 - an unreachable directory is an answer, not a crash
-        return [], f"{label} could not be reached"
+        return [], f"{label} {UNREACHABLE}"

@@ -17,8 +17,15 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
-from quill.core.radio.browse_nodes import BrowseNode, folder, leaf, make_id
+from typing import TYPE_CHECKING
+
+from quill.core.radio.browse_nodes import BrowseNode, action, folder, leaf, make_id
 from quill.core.radio.models import RadioStation
+
+if TYPE_CHECKING:
+    from quill.core.podcasts.feed_reader import FeedInfo
+    from quill.core.podcasts.models import PodcastEpisode
+    from quill.core.podcasts.subscriptions import PodcastLibrary
 
 # --- Apple Podcasts -----------------------------------------------------------
 
@@ -101,6 +108,18 @@ def _feed_episode_leaves(feed_url: str, *, safe_mode: bool, source: str) -> list
     from quill.core.podcasts.feed_reader import fetch_and_parse_feed
 
     info = fetch_and_parse_feed(feed_url, safe_mode=safe_mode)
+    return _episode_leaves(info, feed_url, source=source)
+
+
+def _episode_leaves(info: FeedInfo, feed_url: str, *, source: str) -> list[BrowseNode]:
+    """Render an already-fetched feed's episodes as playable rows.
+
+    Split from the fetch so the Subscriptions path can fold the same fetch
+    into the shared library (:func:`_sync_subscribed_episodes`) without
+    asking the publisher twice.
+    """
+    from quill.core.podcasts.show_notes import html_to_plain_text
+
     nodes: list[BrowseNode] = []
     for episode in info.episodes:
         if not episode.audio_url:
@@ -121,6 +140,12 @@ def _feed_episode_leaves(feed_url: str, *, safe_mode: bool, source: str) -> list
                     homepage=feed_url,
                     source=source,
                     is_recording=True,
+                    # The publisher's own description, de-HTML-ed, so Station
+                    # Details answers "what is this episode about?" instead of
+                    # showing two addresses and nothing else.
+                    # getattr: a feed parser that carried no description at
+                    # all is a feed with no show notes, not a crash.
+                    notes=html_to_plain_text(str(getattr(episode, "description", "") or "")),
                 ),
                 node_id=node_id,
                 note="transcript available" if episode.transcript_url else "",
@@ -146,32 +171,112 @@ def _browse_apple_show(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
     return _feed_episode_leaves(feed_url, safe_mode=safe_mode, source="Apple Podcasts")
 
 
-def _browse_my_podcasts(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    """The shows in the shared podcast library -- the ones Quill Cast has.
-
-    A purely local read: listing what you follow costs no network. Each show's
-    node carries the feed URL itself, so opening it goes straight to the
-    publisher's feed with no directory in between.
+def _my_podcast_level(library: PodcastLibrary, folder_id: str | None) -> list[BrowseNode]:
+    """One level of the shared library: subfolders first, then the shows filed
+    there -- the same shape Quill Cast's manager tree shows, because it is the
+    same library. Folder badges count the whole subtree, show badges the show;
+    both use the shared counters, so the two apps can never disagree.
     """
     from quill.core.paths import app_data_dir
     from quill.core.podcasts.models import PodcastShow
-    from quill.core.podcasts.sorting import unheard_count
-    from quill.core.podcasts.subscriptions import load_library
+    from quill.core.podcasts.radio_listens import finished_audio_urls
+    from quill.core.podcasts.sorting import unheard_count, unheard_count_for_folder
 
-    def label(show: PodcastShow) -> str:
+    if folder_id is None and not library.shows and not library.folders:
+        # An empty Subscriptions branch offers the three ways in instead of
+        # nothing -- rows that act (browse_actions), and that stop appearing
+        # the moment the library holds anything.
+        return [
+            action("addpodcasturl", "Add a Podcast by URL..."),
+            action("importpodcastsopml", "Import Podcasts from OPML..."),
+            action("searchpodcasts", "Search for a Podcast..."),
+        ]
+
+    # Radio's own finished listens, subtracted from every badge on this level:
+    # an episode heard to the end HERE is finished now, even though the shared
+    # library only learns it at Cast's next merge (the clobber-safe handoff).
+    # Without this, finishing an episode left its show counting it unheard.
+    heard_here = finished_audio_urls(app_data_dir())
+
+    def show_label(show: PodcastShow) -> str:
         # The unheard badge reads from the shared library's own episode
-        # state -- the same count Quill Cast shows -- so a show freshly
-        # followed here (no episodes synced yet) is simply unbadged.
+        # state -- the same count Quill Cast shows. Browsing a show's episodes
+        # here syncs that state (see _browse_my_podcast_show), so the badge
+        # appears without ever opening Cast.
         name = show.title or show.feed_url
-        unheard = unheard_count(show)
+        unheard = unheard_count(show, exclude_audio=heard_here)
         return f"{name} ({unheard} unheard)" if unheard else name
 
-    shows = load_library(app_data_dir()).shows
-    return [
-        folder(make_id("mypodcastshow", show.feed_url), label(show))
-        for show in sorted(shows, key=lambda s: (s.title or s.feed_url).casefold())
-        if show.feed_url
-    ]
+    nodes: list[BrowseNode] = []
+    subfolders = sorted(
+        (f for f in library.folders if f.parent_folder_id == folder_id),
+        key=lambda f: f.name.casefold(),
+    )
+    for child in subfolders:
+        unheard = unheard_count_for_folder(library, child.id, exclude_audio=heard_here)
+        nodes.append(
+            folder(
+                make_id("mypodcastfolder", child.id),
+                f"{child.name} ({unheard} unheard)" if unheard else child.name,
+            )
+        )
+    shows = sorted(
+        (s for s in library.shows if s.feed_url and s.folder_id == folder_id),
+        key=lambda s: (s.title or s.feed_url).casefold(),
+    )
+    nodes.extend(
+        folder(make_id("mypodcastshow", show.feed_url), show_label(show)) for show in shows
+    )
+    return nodes
+
+
+def _browse_my_podcasts(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
+    """The shows in the shared podcast library -- the ones Quill Cast has.
+
+    A purely local read: listing what you follow costs no network. Folders
+    created in Quill Cast (or arriving inside an imported OPML file) appear
+    here as folders; each show's node carries the feed URL itself, so opening
+    it goes straight to the publisher's feed with no directory in between.
+    """
+    from quill.core.paths import app_data_dir
+    from quill.core.podcasts.subscriptions import load_library
+
+    return _my_podcast_level(load_library(app_data_dir()), None)
+
+
+def _browse_my_podcast_folder(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
+    """A library folder's own subfolders and shows; the node id is the folder id."""
+    if not args or not args[0]:
+        return []
+    from quill.core.paths import app_data_dir
+    from quill.core.podcasts.subscriptions import load_library
+
+    return _my_podcast_level(load_library(app_data_dir()), args[0])
+
+
+def _sync_subscribed_episodes(feed_url: str, fetched: list[PodcastEpisode]) -> None:
+    """Fold a just-fetched episode list into the shared library, and save.
+
+    This is what makes the unheard badges real from Radio's side: a show
+    followed here (or imported from OPML) has an empty episode list in the
+    store until someone syncs it, and before this only Quill Cast's refresh
+    did. Browsing the show already fetched the feed -- folding the result in
+    costs no extra network. ``merge_episodes`` keeps local state (played,
+    position) untouched, and the save happens only when episodes were
+    actually gained, so an ordinary re-browse never churns the store.
+    """
+    if not fetched:
+        return
+    from quill.core.paths import app_data_dir
+    from quill.core.podcasts.subscriptions import load_library, merge_episodes, save_library
+
+    data_dir = app_data_dir()
+    library = load_library(data_dir)
+    show = next((s for s in library.shows if s.feed_url == feed_url), None)
+    if show is None:
+        return  # browsing an unfollowed feed (Apple discovery) syncs nothing
+    if merge_episodes(show, fetched) > 0:
+        save_library(data_dir, library)
 
 
 def _browse_my_podcast_show(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
@@ -184,10 +289,17 @@ def _browse_my_podcast_show(args: list[str], *, safe_mode: bool) -> list[BrowseN
     if not args or not args[0]:
         return []
     from quill.core.paths import app_data_dir
+    from quill.core.podcasts.feed_reader import fetch_and_parse_feed
+    from quill.core.podcasts.radio_listens import feed_credentials
     from quill.core.radio.history import load_history
 
     limit = load_history(app_data_dir()).subscription_episode_limit
-    leaves = _feed_episode_leaves(args[0], safe_mode=safe_mode, source="Subscribed Podcasts")
+    # The same same-host credentials Quill Cast attaches: a private feed that
+    # works there must list its episodes here, not read as broken.
+    username, password = feed_credentials(app_data_dir(), args[0])
+    info = fetch_and_parse_feed(args[0], username=username, password=password, safe_mode=safe_mode)
+    _sync_subscribed_episodes(args[0], info.episodes)
+    leaves = _episode_leaves(info, args[0], source="Subscribed Podcasts")
     return leaves[:limit] if limit > 0 else leaves
 
 

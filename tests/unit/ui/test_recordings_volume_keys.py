@@ -75,7 +75,7 @@ def test_ctrl_down_lowers_recording_playback_volume() -> None:
     event = _KeyEvent(_WXK_DOWN, ctrl=True)
     dialog._on_char_hook(event)
     assert controller.state.volume_percent == 40
-    assert announced == ["Volume 40"]
+    assert announced == ["Volume 40 percent."]
     assert event.skipped is False
 
 
@@ -83,7 +83,7 @@ def test_ctrl_up_raises_recording_playback_volume() -> None:
     dialog, controller, announced = _make_dialog()
     dialog._on_char_hook(_KeyEvent(_WXK_UP, ctrl=True))
     assert controller.state.volume_percent == 60
-    assert announced == ["Volume 60"]
+    assert announced == ["Volume 60 percent."]
 
 
 def test_bare_down_arrow_passes_through_for_row_navigation() -> None:

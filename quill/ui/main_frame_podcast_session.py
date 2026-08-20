@@ -245,11 +245,17 @@ class PodcastSessionMixin:
     def podcast_speed_reset(self) -> None:
         self._podcast_apply_speed(1.0)
 
+    def podcast_current_show_unheard(self) -> int:
+        """Unplayed count of the playing show; in-memory (EVT_UPDATE_UI-safe)."""
+        controller = getattr(self, "_podcast_controller", None)
+        show = self._podcast_library.find_show(controller.state.show_id) if controller else None
+        return sum(1 for e in show.episodes if not e.played) if show is not None else 0
+
     def podcast_mark_all_played(self, show: object | None = None) -> None:
-        """Mark every episode of one show played, always confirmed by name
-        and count. Dismisses them from the Inbox as a side effect, because
-        the Inbox is unplayed episodes and these are no longer that."""
-        wx = self._wx
+        """Mark every episode of one show played, confirmed by name and count
+        until Don't ask me again is checked. Dismisses them from the Inbox as
+        a side effect, because the Inbox is unplayed episodes and these are
+        no longer that."""
         if show is None:
             controller = getattr(self, "_podcast_controller", None)
             show_id = controller.state.show_id if controller is not None else None
@@ -261,17 +267,16 @@ class PodcastSessionMixin:
         if not unplayed:
             self._announce(f"Every episode of {show.title} is already played.")
             return
-        from quill.ui.dialog_contract import show_message_box
+        from quill.ui.podcasts.mark_played_confirm_dialog import confirm_mark_all_played
 
-        answer = show_message_box(
-            f"Mark all {len(unplayed)} unplayed episode(s) of {show.title} as played? "
-            "They stay in your library; downloaded files are not deleted.",
-            "Mark All as Played",
-            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
+        if not confirm_mark_all_played(
             self.frame,
+            message=(
+                f"Mark all {len(unplayed)} unplayed episode(s) of {show.title} as played? "
+                "They stay in your library; downloaded files are not deleted."
+            ),
             announce=self._announce,
-        )
-        if answer != wx.YES:
+        ):
             return
         for episode in unplayed:
             episode.played = True
@@ -547,48 +552,7 @@ class PodcastSessionMixin:
     # -- command registration -------------------------------------------
 
     def _register_podcast_session_commands(self) -> None:
-        for command_id, title, handler in (
-            ("podcasts.speed_up", "Podcasts: Speed Up", self.podcast_speed_up),
-            ("podcasts.speed_down", "Podcasts: Speed Down", self.podcast_speed_down),
-            ("podcasts.speed_reset", "Podcasts: Reset Speed to Normal", self.podcast_speed_reset),
-            (
-                "podcasts.stop_after_episode",
-                "Podcasts: Stop After This Episode",
-                self.podcast_toggle_stop_after_episode,
-            ),
-            (
-                "podcasts.mark_all_played",
-                "Podcasts: Mark All Episodes as Played...",
-                self.podcast_mark_all_played,
-            ),
-            (
-                "podcasts.statistics",
-                "Podcasts: Listening Statistics...",
-                self.open_podcast_statistics,
-            ),
-            ("podcasts.downloads", "Podcasts: Downloads...", self.open_podcast_downloads),
-            ("podcasts.free_space", "Podcasts: Free Up Space", self.podcast_free_up_space),
-            (
-                "podcasts.quick_actions",
-                "Podcasts: Quick Actions...",
-                self.open_podcast_quick_actions,
-            ),
-            ("podcasts.export_data", "Podcasts: Export My Data...", self.podcast_export_data),
-            (
-                "podcasts.delete_all_data",
-                "Podcasts: Delete All Podcast Data...",
-                self.podcast_delete_all_data,
-            ),
-            (
-                "podcasts.run_maintenance",
-                "Podcasts: Run Housekeeping Now",
-                self.podcast_run_maintenance,
-            ),
-        ):
-            self.commands.try_register(
-                command_id,
-                title,
-                handler,
-                self._binding_for(command_id),
-                feature_id="core.podcasts",
-            )
+        """Palette wiring lives in quill/ui/podcasts/palette_commands.py (GATE-11)."""
+        from quill.ui.podcasts.palette_commands import register_podcast_commands
+
+        register_podcast_commands(self)

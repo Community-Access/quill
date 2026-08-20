@@ -93,9 +93,10 @@ def _open_reader(host: Any, episode: Any, cues: object) -> None:
         host.dialog,
         title=episode.title,
         cues=rows,
-        # Following and jumping are offered only while *this* episode is the one
-        # playing. Seeking a different episode to a line in this transcript would
-        # be worse than not offering it.
+        # Jumping is offered only while *this* episode is the one playing.
+        # Seeking a different episode to a line in this transcript would be
+        # worse than not offering it -- and it is why Find says "Enter plays
+        # from here" only when there is something to play.
         position_ms=controller.position_ms if (controller is not None and playing) else None,
         seek_to_ms=(lambda ms: bool(controller.seek_to(ms))) if playing else None,
         announce=host._announce,
@@ -183,4 +184,51 @@ def fetch_then(host: Any, show: Any, episode: Any, consume: object) -> None:
 
     host._task_manager.submit(
         "podcast-transcript", _do_fetch, on_success=_on_success, on_failure=_on_failure
+    )
+
+
+def view_show_notes(host: Any, episode: Any) -> None:
+    """Open one episode's show notes.
+
+    Here rather than in the manager dialog (GATE-11, and it belongs): this
+    module already owns "open a reading surface for this episode", and the show
+    notes viewer is the other half of the transcript reader -- same episode,
+    same two verbs on it (save it, list its links).
+    """
+    from quill.ui.podcasts.show_notes_dialog import ShowNotesDialog
+
+    ShowNotesDialog(
+        host.dialog,
+        episode_title=episode.title,
+        description_html=episode.description,
+        on_send_to_editor=getattr(host, "_on_send_show_notes", None),
+        announce_cb=host._announce,
+    ).show()
+
+
+def open_chapters(host: Any, show: Any, episode: Any) -> None:
+    """Fetch this episode's chapters off-thread, then show the list.
+
+    Here for the same reason as :func:`view_show_notes` (GATE-11, and it
+    belongs): chapters, transcript and show notes are the three reading
+    surfaces an episode has, and the fetch-then-open shape is identical for
+    all three.
+    """
+    from quill.core.podcasts.chapter_sources import build_episode_chapters
+
+    if show is None or episode is None or host._task_manager is None:
+        return
+
+    def _do_fetch(**_kwargs: object):
+        return build_episode_chapters(episode, show, safe_mode=host._safe_mode)
+
+    def _on_success(_op: str, result: object) -> None:
+        host._open_chapters_dialog(show, episode, result)
+
+    def _on_failure(_op: str, error: Exception) -> None:
+        host._announce(f"Could not load chapters: {error}")
+
+    host._announce("Loading chapters...")
+    host._task_manager.submit(
+        "podcast-chapters-dialog", _do_fetch, on_success=_on_success, on_failure=_on_failure
     )

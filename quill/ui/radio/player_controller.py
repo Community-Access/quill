@@ -34,8 +34,7 @@ from __future__ import annotations
 import logging
 import threading
 from collections.abc import Callable
-from dataclasses import dataclass, replace
-from enum import Enum, auto
+from dataclasses import replace
 from typing import TYPE_CHECKING, Any, NamedTuple
 
 import wx
@@ -49,7 +48,14 @@ from quill.core.sound_events import SoundEvent
 from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import WxMediaEngine
 from quill.ui.companion_cues import post_cue
+from quill.ui.radio import media_preflight, stream_stall
 from quill.ui.radio.mpv_radio_engine import MpvRadioEngine
+from quill.ui.radio.playback_state import (
+    RESTARTABLE_STATES,
+    RUNNING_STATES,
+    RadioPlaybackState,
+    RadioPlayerState,
+)
 from quill.ui.radio.youtube_playback import begin_youtube_play, is_youtube_station
 
 if TYPE_CHECKING:
@@ -90,40 +96,10 @@ class ResolvedEnhancement(NamedTuple):
     optilab_exact_live: bool = False
 
 
-class RadioPlayerState(Enum):
-    STOPPED = auto()
-    CONNECTING = auto()
-    PLAYING = auto()
-    PAUSED = auto()
-    ERROR = auto()
-
-
-@dataclass(slots=True)
-class RadioPlaybackState:
-    """A snapshot handed to every subscriber on every change."""
-
-    state: RadioPlayerState
-    station: RadioStation | None
-    muted: bool
-    volume_percent: int
-    message: str = ""
-
-    @property
-    def status_text(self) -> str:
-        """One line for the status bar / tray tooltip."""
-        if self.state is RadioPlayerState.STOPPED or self.station is None:
-            return "Radio: stopped"
-        label = self.station.name
-        if self.state is RadioPlayerState.CONNECTING:
-            return f"Radio: connecting to {label}..."
-        if self.state is RadioPlayerState.PLAYING:
-            muted_suffix = " (muted)" if self.muted else ""
-            return f"Radio: playing {label}{muted_suffix}"
-        if self.state is RadioPlayerState.PAUSED:
-            return f"Radio: paused - {label}"
-        if self.state is RadioPlayerState.ERROR:
-            return f"Radio: could not play {label} - {self.message}"
-        return "Radio"
+# The state model moved to its own module when BUFFERING and RECONNECTING
+# joined it -- see playback_state.py for why. Imported by name rather than
+# through a star, so a reader can see what this module consumes and the
+# twenty modules that import these from here keep working unchanged.
 
 
 #: The earcon each playback state gets (#1302). This is the only place that
@@ -374,7 +350,15 @@ class RadioPlayerController:
                 )
             return
         if not self._engine.load(url) and not self._attempt_engine_fallback():
-            self._set_state(RadioPlayerState.ERROR, message="That stream could not be opened.")
+            # "That stream could not be opened" is true and useless when the
+            # real reason is that the container needs libmpv and libmpv is not
+            # here: the station is fine, the machine cannot open it, and the
+            # next action is a reinstall rather than another station.
+            refusal = media_preflight.refusal_for(getattr(station, "name", ""), url)
+            self._set_state(
+                RadioPlayerState.ERROR,
+                message=refusal or "That stream could not be opened.",
+            )
             return
         self._declare_source_shape()
 
@@ -414,6 +398,12 @@ class RadioPlayerController:
             # Re-apply the chosen speed: load() resets mpv's speed so a video
             # left at 2x cannot carry that into the next live station.
             self._engine.set_rate(self._playback_rate)
+        if bounded:
+            # The shared library's knowledge for a podcast episode: the show's
+            # saved speed, and its Podcasting 2.0 chapters (episode_profile).
+            from quill.ui.radio import episode_profile
+
+            episode_profile.apply_profile(self)
 
     # -- resume: where you stopped in a recording -------------------------------
     # The logic lives in quill/ui/radio/resume_playback.py; this module is at its
@@ -511,13 +501,13 @@ class RadioPlayerController:
     def chapters(self) -> list[Any]:
         """The published chapters of what is playing, or an empty list.
 
-        These are the uploader's own markers, captured during the resolve at
-        no extra cost -- never guessed.
+        A video's own markers, or a podcast episode's Podcasting 2.0
+        chapters -- both published by the source, never guessed. The two
+        shapes are unified in quill/ui/radio/episode_profile.py.
         """
-        stream = self._youtube_stream
-        if stream is None or not self.is_seekable():
-            return []
-        return list(getattr(stream, "chapters", ()) or ())
+        from quill.ui.radio import episode_profile
+
+        return episode_profile.chapters_for(self)
 
     def audio_tracks(self) -> list[Any]:
         """Every selectable audio rendition of what is playing.
@@ -651,11 +641,7 @@ class RadioPlayerController:
             return
         self._output_device = device
         station = self._state.station
-        if station is not None and self._state.state in (
-            RadioPlayerState.PLAYING,
-            RadioPlayerState.CONNECTING,
-            RadioPlayerState.PAUSED,
-        ):
+        if station is not None and self._state.state in RESTARTABLE_STATES:
             self.play_station(station)
 
     def _current_filter_graph(self) -> str:
@@ -789,11 +775,7 @@ class RadioPlayerController:
             except Exception:  # noqa: BLE001
                 _log.exception("live mpv filter apply failed; reconnecting instead")
         station = self._state.station
-        if station is not None and self._state.state in (
-            RadioPlayerState.PLAYING,
-            RadioPlayerState.CONNECTING,
-            RadioPlayerState.PAUSED,
-        ):
+        if station is not None and self._state.state in RESTARTABLE_STATES:
             self.play_station(station)
 
     def set_enhancement(
@@ -947,7 +929,10 @@ class RadioPlayerController:
         return engine_selection.attempt_fallback(self)
 
     def toggle_play_pause(self) -> None:
-        if self._state.state is RadioPlayerState.PLAYING:
+        # RUNNING_STATES, not PLAYING: pressing Play/Pause during a stall used
+        # to pause (a stall stayed PLAYING). Comparing against PLAYING alone
+        # would drop it through to the third branch and *restart* the station.
+        if self._state.state in RUNNING_STATES:
             self._engine.pause()
             self._set_state(RadioPlayerState.PAUSED)
         elif self._state.state is RadioPlayerState.PAUSED:
@@ -999,11 +984,7 @@ class RadioPlayerController:
             return
         self._playback_engine = mode
         station = self._state.station
-        if station is not None and self._state.state in (
-            RadioPlayerState.PLAYING,
-            RadioPlayerState.CONNECTING,
-            RadioPlayerState.PAUSED,
-        ):
+        if station is not None and self._state.state in RESTARTABLE_STATES:
             self.play_station(station)
 
     def volume_up(self, step: int = 10) -> None:
@@ -1080,9 +1061,25 @@ class RadioPlayerController:
         # Before giving up, try the one cross-engine rescue: a stream WMP
         # cannot decode (Ogg/Opus/HLS) often plays fine on mpv, and vice
         # versa a misbehaving mpv falls back to WMP.
-        if self._state.state is RadioPlayerState.CONNECTING and self._attempt_engine_fallback():
+        # RECONNECTING as well as CONNECTING: a reconnect used to *be*
+        # CONNECTING, so it reached the cross-engine rescue. Splitting the two
+        # without this would have quietly taken that rescue away from exactly
+        # the case that needs it most -- a stream that has already dropped once.
+        if (
+            self._state.state in (RadioPlayerState.CONNECTING, RadioPlayerState.RECONNECTING)
+            and self._attempt_engine_fallback()
+        ):
             return
         self._set_state(RadioPlayerState.ERROR, message=message)
+
+    def _handle_buffering(self, active: bool) -> None:
+        """The engine's stall report, turned into a state as well as a sentence.
+
+        The rule lives in :mod:`quill.ui.radio.stream_stall`, with the other
+        three "what happens to a stream" modules; this is the seam the engine is
+        handed in ``engine_selection._build_mpv``.
+        """
+        stream_stall.handle(self, active)
 
     # -- internal -----------------------------------------------------------
 
@@ -1092,13 +1089,19 @@ class RadioPlayerController:
         *,
         station: RadioStation | None | Ellipsis = ...,  # type: ignore[valid-type]
         message: str = "",
+        cue: bool = True,
     ) -> None:
         # Only a real transition cues (#1302). The retry paths re-enter the
         # state they are already in -- the cross-engine rescue sets CONNECTING
         # a second time, a stalled stream re-announces itself -- so comparing
         # against the state being replaced is what stops one flaky stream from
         # firing the same earcon ten times in a row.
-        if state is not self._state.state and state in _STATE_SOUNDS:
+        #
+        # ``cue=False`` is for the one transition that is a *return* rather than
+        # an event: coming back from BUFFERING to PLAYING. A stream that stalls
+        # ten times is genuinely PLAYING ten times, and cueing each one would
+        # reintroduce the ten-earcons problem the comment above exists to stop.
+        if cue and state is not self._state.state and state in _STATE_SOUNDS:
             post_cue(_STATE_SOUNDS[state])
         if station is not ...:
             self._state.station = station

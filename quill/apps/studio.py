@@ -76,8 +76,13 @@ except ImportError:  # pragma: no cover - non-Windows
 _TITLE = "QUILL Audio Studio"
 _VERSION = __version__
 #: Shared components this app requires, for the component-refcount registry
-#: (ffmpeg for audio processing/export; mpv is opt-in, not required).
-REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
+#: (ffmpeg for audio processing/export; mpv for the player preview).
+#: mpv was declared "opt-in" while the build has always bundled it and
+#: create_engine() prefers it whenever the DLL resolves -- so the old
+#: declaration let another app's uninstall refcount tools\mpv away beneath
+#: Studio's preview. wx.media remains the fallback for a missing/broken DLL;
+#: the declaration now tells the truth about what ships.
+REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg", "mpv")
 _REPO = "Community-Access/quill"
 
 # Generate Captions accepts these; ffmpeg transcodes them to 16 kHz mono WAV

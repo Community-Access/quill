@@ -166,5 +166,6 @@ def open_song_history(host: Any) -> None:
         # off the UI thread. See quill/ui/radio/song_facts.py.
         request_facts=lambda song, show: song_facts.request(host, song, show),
         on_changed=lambda: save(host),
+        transport_host=host,
     )
     dialog.show()

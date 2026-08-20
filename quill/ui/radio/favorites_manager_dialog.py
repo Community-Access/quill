@@ -275,7 +275,7 @@ class FavoritesManagerDialog:
     def _on_close(self, event: object) -> None:
         previous = self._windows.previous_key(self._win)
         self._windows.unregister(self._win)
-        self._announce("Exited Manage Favorites")
+        self._announce("Exited Manage Favorites.")
         self._on_changed()
         event.Skip()
         self._win.Destroy()
@@ -292,6 +292,10 @@ class FavoritesManagerDialog:
             return
         self._win.CentreOnParent()
         apply_modal_ids(self._win, cancel_id=wx.ID_CANCEL)
+        # The transport keyboard, so the player is reachable from here too.
+        from quill.ui.radio import transport_keys
+
+        transport_keys.install(self._win, self, wx=self._wx)
         try:
             show_modal_dialog(self._win, "Manage Favorite Stations", announce=self._announce)
         finally:
@@ -403,7 +407,7 @@ class FavoritesManagerDialog:
         self._refresh_tree(keep_key)
 
     def _is_favorite_playing(self, favorite: FavoriteStation | None) -> bool:
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         if favorite is None:
             return False
@@ -411,7 +415,7 @@ class FavoritesManagerDialog:
         return (
             state.station is not None
             and state.station.stream_url == favorite.station.stream_url
-            and state.state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+            and state.state in ACTIVE_STATES
         )
 
     def _on_play(self) -> None:
@@ -421,23 +425,24 @@ class FavoritesManagerDialog:
         # One button, honest label: while this station plays it reads Stop.
         if self._is_favorite_playing(favorite):
             self._controller.stop()
-            self._announce("Radio stopped")
+            self._announce("Radio stopped.")
         else:
             self._controller.play_station(favorite.station)
-            self._announce(f"Playing {favorite.display_label}")
+            self._announce(f"Playing {favorite.display_label}.")
         self._on_selection_changed()
 
-    def _on_remove(self) -> None:
-        from quill.ui.radio.favorite_actions import remove_favorite
+    def _cursor_args(self) -> dict:
+        """What favorites_delete needs in order to say where the cursor lands."""
+        return {
+            "query": self._search_ctrl.GetValue().strip(),
+            "sort": self._sort,
+            "folder_sorts": self._folder_sorts,
+        }
 
-        favorite = self._selected_favorite()
-        if favorite is None:
-            return
-        key = favorite.key
-        if remove_favorite(self.dialog, self._store, favorite, announce=self._announce):
-            if self._marked_key == key:
-                self._marked_key = None
-            self._changed()
+    def _on_remove(self) -> None:
+        from quill.ui.radio import favorites_delete
+
+        favorites_delete.remove_selected(self)
 
     def _on_remove_all(self) -> None:
         from quill.ui.radio.favorite_actions import remove_all_favorites
@@ -503,7 +508,7 @@ class FavoritesManagerDialog:
         where = "above" if before else "below"
         suffix = f", in {moved.folder}" if moved is not None and moved.folder else ""
         prefix = "Switched to manual order. " if switched else ""
-        self._announce(f"{prefix}Moved {where} {target.display_label}{suffix}")
+        self._announce(f"{prefix}Moved {where} {target.display_label}{suffix}.")
 
     def _on_move_to_folder(self) -> None:
         from quill.ui.radio.favorite_actions import move_favorite_to_folder
@@ -556,24 +561,19 @@ class FavoritesManagerDialog:
         self._announce(f"Folder renamed to {name}; {touched} station(s) came along.")
 
     def _on_delete_folder(self) -> None:
-        wx = self._wx
+        from quill.ui.radio import favorites_delete
+
         selected = self._selected()
         if selected is None or selected[0] != "folder":
             return
         path = selected[1]
-        answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation inside a managed dialog
-            f"Delete the folder {path}?\n\n"
-            "Your stations are completely safe: they simply step out of the "
-            "folder and line up at the top level of your favorites, in the "
-            "same order. Nothing leaves your collection.",
-            "Delete Folder",
-            wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
-            self.dialog,
-        )
-        if answer != wx.YES:
+        if not favorites_delete.confirm_folder_delete(self._wx, self.dialog, path):
             return
+        landing = favorites_delete.landing_after_folder_delete(
+            self._store, path=path, sort=self._sort, folder_sorts=self._folder_sorts
+        )
         moved = self._store.delete_folder(path)
-        self._changed()
+        self._changed(keep_key=landing)
         self._announce(f"Folder {path} deleted; {moved} station(s) moved to the top level.")
 
     # -- keyboard and context menu -------------------------------------------

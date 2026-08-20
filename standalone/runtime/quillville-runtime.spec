@@ -69,6 +69,11 @@ a = Analysis(
         "matplotlib",
         "scipy",
         "mypy",
+        # hypothesis is a property-based TEST library. It reached the sweep the
+        # same way mypy did -- installed in the build interpreter, reachable
+        # through some collected package's optional import -- and a test
+        # framework has no business in a shipped runtime whatever its size.
+        "hypothesis",
         "lxml",
         # Additional dead weight dragged in transitively that NO QuillVille app
         # imports (verified: no `import speech_recognition|onnxruntime|av|imageio`
@@ -82,6 +87,110 @@ a = Analysis(
         "av",
         "imageio",
         "imageio_ffmpeg",
+        # --- engine-pack-owned modules: MUST NOT be frozen in -----------------
+        # These are installed on demand into %APPDATA%\Quill\engine-packs\ by
+        # quill.core.speech.engine_install, which puts the pack on sys.path.
+        # A frozen copy does not merely duplicate the pack -- it SHADOWS it and
+        # cannot be overridden, because PyInstaller's FrozenImporter sits ahead
+        # of PathFinder on sys.meta_path (the reason yt-dlp needs the explicit
+        # meta-path finder in engine_pack_imports.py to be updatable at all).
+        #
+        # Freezing them silently broke all three, verified in the 2026-08-17
+        # build by importing each one inside the shipped runtime:
+        #   vosk         -> OSError: cannot load libvosk.dll (0x7e). The wheel's
+        #                   26 MB libvosk.dll is not a PyInstaller-visible
+        #                   dependency, so only its three mingw support DLLs
+        #                   (27.6 MB) shipped -- the engine itself never did.
+        #   faster_whisper -> ModuleNotFoundError: 'av' (excluded above, and
+        #                   build_runtime.ps1 then prunes libx265, so `av` can
+        #                   never come back). ctranslate2's 59 MB shipped for a
+        #                   module that cannot import.
+        #   kokoro_onnx  -> ModuleNotFoundError: 'onnxruntime' (excluded above).
+        # Worse than the wasted weight: is_vosk_available() and friends use
+        # find_spec(), which finds the broken frozen module, so QUILL reported
+        # all three as installed and never offered the working engine pack.
+        # Excluding them costs no capability -- none of the three could run --
+        # and restores the on-demand path that already exists, is SHA-256
+        # verified, and is refcounted in the shared component store.
+        "vosk",
+        "faster_whisper",
+        "ctranslate2",
+        "kokoro_onnx",
+        # Not installed on the 2026-08-17 build machine, so it has never shipped
+        # -- which is exactly why it belongs here. sherpa-onnx backs the Nemotron
+        # and Parakeet providers and the VAD, all engine-pack-installed, so on a
+        # build machine that happens to have it the sweep would freeze it in and
+        # shadow the pack silently. Same class of accident as `winrt` vanishing
+        # from a release: what ships must not depend on what one laptop has.
+        "sherpa_onnx",
+        # --- present-but-broken in the 2026-08-18 probe ----------------------
+        # weasyprint needs GTK native libraries (libgobject, pango) that no
+        # wheel provides and the bundle never carried: it raises OSError the
+        # moment anything imports it. Nothing first-party imports it; it was
+        # swept in as a transitive extra of the documents stack.
+        "weasyprint",
+        # --- undeclared payload: reachable on the build machine, called by ---
+        # --- nothing the [runtime] extra declares (2026-08-19) --------------
+        # Every entry below arrived the way the inventory gate's own docstring
+        # describes: Analysis follows an optional import, the package happens to
+        # be installed on this laptop, and ~15 MB ships in all seven installers.
+        # None of it is reachable from a capability pyproject's [runtime] group
+        # declares. Verified per package before excluding, not swept by size.
+        #
+        # hf_xet (9.3 MB) -- huggingface_hub's Xet transfer accelerator. It is
+        # optional by construction: is_xet_available() gates every use and
+        # file_download falls back to plain HTTPS with a log line. QUILL only
+        # ever downloads through the hub (faster-whisper's snapshot_download);
+        # the upload paths that genuinely require it are never called. The hub
+        # itself STAYS -- Kokoro and Faster Whisper fetch through it.
+        "hf_xet",
+        # keynote_parser and its closure -- protobuf (google/_upb, 0.8 MB) and
+        # python-snappy -> cramjam (4.1 MB). This is quill.io.pages Route A, and
+        # `pages` is NOT in the [runtime] extra: it ships only because this build
+        # machine has `.[pages]` installed, the same accident as sherpa_onnx
+        # above. quill.io.pages already treats the import as optional
+        # (`except ImportError: raise ImportError("keynote-parser not available")`)
+        # and falls through to Route B (LibreOffice / MarkItDown), so a .pages
+        # file still opens. Excluding the root as well as the closure is
+        # deliberate: dropping only protobuf would leave keynote_parser frozen
+        # and broken, which is the failure mode check_runtime_imports.py exists
+        # for. To ship Route A, add quill[pages] to [runtime] and drop these
+        # four -- a declaration, not a build-machine coincidence.
+        "keynote_parser",
+        "google",
+        "snappy",
+        "cramjam",
+        # mcp -> opentelemetry (~1 MB, pure Python). Nothing in quill,
+        # quill_social or any app imports `mcp`; it is installed here for an
+        # unrelated project (adp-mcp) and reaches the sweep through
+        # huggingface_hub's optional inference/_mcp module. Excluded as a pair
+        # so the exclude cannot leave a frozen mcp that raises on opentelemetry.
+        # This one exclude takes the largest bite, because mcp 2.0 drags a whole
+        # second HTTP stack and a schema validator behind it: httpx2 + httpcore2
+        # (mcp does not use the httpx the AI SDKs already ship -- it requires the
+        # separately-named 2.x distribution), and jsonschema -> rpds,
+        # jsonschema_specifications, and lark via rfc3987-syntax. QUILL ships no
+        # jsonschema dependency on purpose -- every manifest validator in the
+        # tree is hand-rolled and says so (core/quillins/validation.py,
+        # core/verbosity/qvp.py, core/ai/agent_catalog.py) -- so all six were
+        # payload for a package no app imports. ~4.4 MB, and the reason the
+        # inventory loses six names it never should have gained.
+        "mcp",
+        "opentelemetry",
+        # fontTools + zopfli (0.8 MB). Both are weasyprint's, and weasyprint is
+        # excluded five lines up; pypdf wants fontTools only under its `fonts`
+        # extra, which nothing installs. Dead the moment weasyprint went.
+        "fontTools",
+        "zopfli",
+        # tomli is deliberately NOT excluded, though the 2026-08-18 probe found
+        # it broken too (a mypyc-compiled dist whose hashed runtime module never
+        # shipped). PyInstaller's setuptools hook aliases the vendored
+        # setuptools tomli onto that name, and an exclude collides with the
+        # alias ("Target module tomli already imported as ExcludedModule").
+        # The declared [runtime] closure does not install the mypyc dist, so a
+        # clean build machine ships the working vendored copy; a stray mypyc
+        # tomli install is exactly the drift build_fingerprint.py compare
+        # reports.
     ],
     noarchive=False,
 )

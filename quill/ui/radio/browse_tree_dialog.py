@@ -32,12 +32,12 @@ from collections.abc import Callable
 from dataclasses import replace
 from typing import Any
 
-from quill.core.radio import browse_helpers, browse_sources
+from quill.core.radio import browse_helpers, browse_sources, transport_commands
 from quill.core.radio.browse_nodes import BrowseNode
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
-from quill.ui.radio import browse_feedback, browse_position
+from quill.ui.radio import browse_feedback, browse_position, transport_keys
 
 #: Item data for the "Loading..." child that makes a node look expandable.
 _PLACEHOLDER = {"kind": "placeholder"}
@@ -178,8 +178,18 @@ class BrowseTreeDialog:
         root.Add(volume_row, 0, wx.EXPAND | wx.ALL, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._play_btn = wx.Button(self._surface, label="&Play")
-        self._play_btn.Enable(False)
+        # No transport button here. This window used to carry a Play/Stop that
+        # mirrored the main window's, which read as a second player and could
+        # disagree with the real one ("it shows radio stopped and pressing that
+        # button simply shows a dialog", 2026-08-18). Enter and the context
+        # menu still play the highlighted row; the *player* is one window, and
+        # this is the way to it. Volume stays above, because turning the sound
+        # down is the one thing nobody should have to change windows for.
+        self._player_btn = wx.Button(self._surface, label="&Go to Player")
+        go_to_player = transport_commands.command(transport_commands.GO_TO_PLAYER)
+        self._player_btn.SetName(
+            f"Go to the player window ({go_to_player.key})" if go_to_player else "Go to the player"
+        )
         self._favorite_btn = wx.Button(self._surface, label="Add to &Favorites")
         self._favorite_btn.Enable(False)
         self._refresh_btn = wx.Button(self._surface, label="&Refresh")
@@ -189,7 +199,7 @@ class BrowseTreeDialog:
         # button that looks like the way out does nothing.
         bind_close_button(self._win, close_btn, modeless=self._modeless)
         close_btn.SetName("Close (playback continues)")
-        btn_row.Add(self._play_btn, 0, wx.RIGHT, 6)
+        btn_row.Add(self._player_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._favorite_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._refresh_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
@@ -208,12 +218,18 @@ class BrowseTreeDialog:
         # Right-click, Shift+F10 and the Applications key -- see target_node.
         for context_event in (wx.EVT_TREE_ITEM_MENU, wx.EVT_CONTEXT_MENU):
             self._tree.Bind(context_event, self._on_context_menu)
-        self._play_btn.Bind(wx.EVT_BUTTON, lambda _e: self._play_selected())
+        self._player_btn.Bind(
+            wx.EVT_BUTTON,
+            lambda _e: transport_keys.perform(self, transport_commands.GO_TO_PLAYER),
+        )
         self._favorite_btn.Bind(wx.EVT_BUTTON, lambda _e: self._toggle_favorite())
         self._refresh_btn.Bind(wx.EVT_BUTTON, lambda _e: self._refresh_selected())
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
         self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, self._on_mute)
         self._find_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_find)
+        from quill.ui.search_reset import bind_empty_query_reset
+
+        bind_empty_query_reset(self._find_ctrl, self._clear_find)  # erase == Clear
         # Tabbing in selects what is there: type to replace the last search,
         # one Backspace to wipe it.
         self._find_ctrl.Bind(wx.EVT_SET_FOCUS, lambda e: browse_feedback.on_find_focus(self, e))
@@ -222,6 +238,11 @@ class BrowseTreeDialog:
         if state is not None:
             self._volume_slider.SetValue(state.volume_percent)
             self._mute_btn.SetValue(state.muted)
+
+        # The whole transport, on this window's own accelerator table: speed,
+        # skip, chapters and play/pause were menu items on the main frame, so
+        # standing here half the player did not exist (2026-08-18).
+        transport_keys.install(self._win, self, wx=wx)
 
         self._populate_sources()
 
@@ -253,11 +274,10 @@ class BrowseTreeDialog:
         ):
             self._find_ctrl.SetFocus()
             self._find_ctrl.SelectAll()
-            self._announce("Find in this folder")
+            self._announce("Find in this folder.")
             return
         # Escape in the Find box clears the search (the old Clear button).
-        in_find = self._win.FindFocus() is self._find_ctrl
-        if event.GetKeyCode() == wx.WXK_ESCAPE and in_find:
+        if event.GetKeyCode() == wx.WXK_ESCAPE and self._win.FindFocus() is self._find_ctrl:
             if self._find_active or self._find_ctrl.GetValue():
                 self._clear_find()
                 return
@@ -270,7 +290,7 @@ class BrowseTreeDialog:
     def _on_close(self, event: object) -> None:
         previous = self._windows.previous_key(self._win)
         self._windows.unregister(self._win)
-        self._announce("Exited Browse Stations")
+        self._announce("Exited Browse Stations.")
         self._on_favorites_changed()
         event.Skip()
         self._win.Destroy()
@@ -298,8 +318,11 @@ class BrowseTreeDialog:
     # -- tree population --------------------------------------------------------
 
     def _populate_sources(self) -> None:
+        from quill.ui.radio import browse_actions
+
         tree = self._tree
         root = tree.AddRoot("Sources")
+        browse_actions.add_search_row(tree, root)  # Search All Sources..., always first
         roots = browse_sources.visible_roots(self._visible_sources)
         for node_id, label in roots:
             node = tree.AppendItem(root, label)
@@ -399,7 +422,9 @@ class BrowseTreeDialog:
             # every expand would be a network request for a known answer.
             unreachable = failed or browse_sources.last_error_was_network()
             if unreachable:
-                self._forget_load(node)
+                from quill.ui.radio import browse_refresh
+
+                browse_refresh.forget_load(self, node)
             # ...and it keeps ONE row saying which of the two it was, which is
             # also what keeps the folder expandable (see browse_feedback).
             says = browse_feedback.empty_row_text(unreachable=unreachable, override=empty_text)
@@ -422,19 +447,11 @@ class BrowseTreeDialog:
             self, [c.node_id for c in children if c.is_folder and not c.is_action]
         )
         # #1188: leave the cursor on the just-expanded node -- do NOT jump it
-        # into the station list. The count announcement says what is inside; the
-        # listener arrows down to enter the list when ready.
+        # into the station list. One exception: a pending reveal, where the
+        # cursor following the just-edited row IS the feature (browse_reveal).
+        from quill.ui.radio import browse_reveal
 
-    def _forget_load(self, node: Any) -> None:
-        """Let a branch be fetched again next time it is opened.
-
-        ``loaded`` is set *before* the fetch, so without this a branch that
-        failed could never be retried by closing and reopening it -- the one
-        gesture anybody would try.
-        """
-        data = self._node_data(node)
-        if data is not None:
-            data["loaded"] = False
+        browse_reveal.on_children_added(self, node)
 
     def _row_label(self, child: BrowseNode) -> str:
         """The text of one row. See :func:`browse_helpers.row_label`."""
@@ -584,7 +601,9 @@ class BrowseTreeDialog:
             something unexpected, and the honest response is to let it be tried
             again.
             """
-            self._forget_load(node)
+            from quill.ui.radio import browse_refresh
+
+            browse_refresh.forget_load(self, node)
             self._add_children(node, [], failed=True)
 
         self._task_manager.submit("radio-browse-tree", _work, on_success=_ok, on_failure=_failed)
@@ -614,62 +633,12 @@ class BrowseTreeDialog:
     def _on_selected(self, _event: Any) -> None:
         browse_position.remember(self._tree, self._tree.GetSelection())
         data = self._selected_data()
-        from quill.ui.radio import browse_prefetch
+        from quill.ui.radio import browse_details, browse_prefetch
 
         # Landing on a collapsed folder starts its fetch now, so the expand
         # that usually follows opens instantly instead of loading.
         browse_prefetch.note_selected(self, data)
-        station = data.get("station") if data else None
-        if station is not None:
-            self._details.SetValue(station.details_text)
-            self._play_btn.Enable(True)
-            self._refresh_play_button(station)
-            self._favorite_btn.Enable(True)
-            self._update_favorite_label(station)
-        elif self._is_playable(data) and data is not None:
-            note = data.get("note") or "resolves when you play it"
-            self._details.SetValue(f"{data['label']}\n{note.capitalize()}.")
-            self._play_btn.Enable(True)
-            self._play_btn.SetLabel("&Play")
-            # The stream resolves lazily, but Add to Favorites resolves it on
-            # demand (#1210), so the button is live. Label it Add -- we cannot
-            # know the saved state before resolving.
-            self._favorite_btn.Enable(True)
-            self._favorite_btn.SetLabel("Add to &Favorites")
-        elif self._is_folder_data(data) and data is not None:
-            # A branch explains where its answers come from (catalog UX, 6.5):
-            # "Answers from your catalog, updated 2 hours ago." or "Asks the
-            # internet each time; nothing is stored." Detail-panel only --
-            # never a per-row suffix.
-            from quill.core.radio.browse_nodes import split_id
-            from quill.core.radio.catalog import read as catalog_read
-
-            kind, _args = split_id(str(data.get("node_id", "")))
-            sentence = catalog_read.provenance_sentence(getattr(self, "_catalog", None), kind)
-            label_text = str(data.get("label", ""))
-            self._details.SetValue(label_text + chr(10) + sentence)
-            self._play_btn.Enable(False)
-            self._play_btn.SetLabel("&Play")
-            self._favorite_btn.Enable(False)
-        elif data is not None and data.get("is_action"):
-            # An action row explains itself while merely highlighted, so nobody
-            # has to press Enter to learn what Enter would do.
-            note = str(data.get("note") or "")
-            detail = f"{data['label']}\n{note.capitalize()}. " if note else f"{data['label']}\n"
-            self._details.SetValue(f"{detail}Press Enter to use it.")
-            self._play_btn.Enable(False)
-            self._play_btn.SetLabel("&Play")
-            self._favorite_btn.Enable(False)
-        else:
-            self._details.SetValue("")
-            self._play_btn.Enable(False)
-            self._play_btn.SetLabel("&Play")
-            self._favorite_btn.Enable(False)
-
-    def _refresh_play_button(self, station: RadioStation) -> None:
-        """Label the Play button 'Stop' when the highlighted station is the one
-        currently playing, so it reads as a live toggle (like the main window)."""
-        self._play_btn.SetLabel("&Stop" if self._is_playing(station) else "&Play")
+        browse_details.describe_selection(self, data)
 
     # -- play / favorite --------------------------------------------------------
 
@@ -687,11 +656,10 @@ class BrowseTreeDialog:
     def _play_station(self, station: RadioStation) -> None:
         if self._is_playing(station):
             self._controller.stop()
-            self._announce("Radio stopped")
+            self._announce("Radio stopped.")
         else:
             self._controller.play_station(station)
-            self._announce(f"Playing {station.display_name}")
-        self._refresh_play_button(station)
+            self._announce(f"Playing {station.display_name}.")
 
     def _resolve_then(self, data: dict, then: Callable[[RadioStation], None]) -> None:
         """Resolve a lazy leaf off-thread, then hand the station to *then*.
@@ -721,13 +689,13 @@ class BrowseTreeDialog:
         self._task_manager.submit("radio-browse-resolve", _work, on_success=_ok, on_failure=None)
 
     def _is_playing(self, station: RadioStation) -> bool:
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         state = self._controller.state
         return (
             state.station is not None
             and state.station.stream_url == station.stream_url
-            and state.state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+            and state.state in ACTIVE_STATES
         )
 
     def _update_favorite_label(self, station: RadioStation) -> None:
@@ -736,10 +704,10 @@ class BrowseTreeDialog:
 
     def _add_favorite_station(self, station: RadioStation) -> None:
         if self._favorites.contains(station):
-            self._announce(f"{station.display_name} is already in your Favorites")
+            self._announce(f"{station.display_name} is already in your Favorites.")
             return
         self._favorites.add(station)
-        self._announce(f"Added {station.display_name} to Favorites")
+        self._announce(f"Added {station.display_name} to Favorites.")
         self._on_favorites_changed()
         self._refresh_favorites_branch()
 
@@ -754,10 +722,10 @@ class BrowseTreeDialog:
             return
         if self._favorites.contains(station):
             self._favorites.remove(station.station_uuid or station.stream_url)
-            self._announce(f"Removed {station.display_name} from Favorites")
+            self._announce(f"Removed {station.display_name} from Favorites.")
         else:
             self._favorites.add(station)
-            self._announce(f"Added {station.display_name} to Favorites")
+            self._announce(f"Added {station.display_name} to Favorites.")
         self._update_favorite_label(station)
         self._on_favorites_changed()
         self._refresh_favorites_branch()

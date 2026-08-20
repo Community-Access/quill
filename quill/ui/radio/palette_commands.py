@@ -203,3 +203,11 @@ def register_radio_commands(host: Any) -> None:
             host._binding_for(command_id),
             feature_id="future.spotify",
         )
+
+    # ...then the shared transport table, filling only the gaps this app left:
+    # the palette could change a setting and could not pause what was playing
+    # (2026-08-18). Last on purpose -- register_commands skips any verb this
+    # app already listed, so it has to see the table above first.
+    from quill.ui.radio import transport_keys
+
+    transport_keys.register_commands(host, prefix="radio")

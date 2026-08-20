@@ -16,7 +16,7 @@ import quill.ui.sound_enhance_dialog as sound_enhance_dialog_module
 from quill.core.radio.favorites import FavoriteStation, RadioFavoritesStore
 from quill.core.radio.models import RadioStation
 from quill.ui.main_frame_radio import RadioMixin
-from quill.ui.radio.player_controller import RadioPlayerState
+from quill.ui.radio.playback_state import RadioPlayerState
 
 
 class _FakeSoundEnhanceDialog:

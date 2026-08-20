@@ -99,6 +99,44 @@ class FavoriteStation:
         return self.custom_name or self.station.display_name
 
 
+#: Marks a favorite that is a *place in the browse tree* rather than a stream:
+#: a podcast show, a LibriVox book, a followed channel, a genre you keep coming
+#: back to. Namespaced so it can never collide with a Radio Browser uuid.
+PLACE_PREFIX = "browse:"
+
+
+def place_station(node_id: str, label: str, *, source: str = "") -> RadioStation:
+    """A favorite record standing for a browse *folder* rather than a stream.
+
+    Favorites has always held things you play, which meant the only rows that
+    could be saved were the leaves -- you could favorite one episode of a show
+    and not the show ("add to favorites should be in the podcast context menu
+    or frankly all context menus for all types", 2026-08-18).
+
+    A place is stored in the same list, with the browse node id where the
+    stream URL would go. It has no ``stream_url`` on purpose: nothing can
+    accidentally try to play it, and every surface that renders favorites asks
+    :func:`place_node_id` what it is.
+    """
+    return RadioStation(
+        name=label,
+        stream_url="",
+        station_uuid=f"{PLACE_PREFIX}{node_id}",
+        source=source,
+    )
+
+
+def place_node_id(station: object) -> str:
+    """The browse node id behind a saved place, or "" for an ordinary station."""
+    uuid = str(getattr(station, "station_uuid", "") or "")
+    return uuid[len(PLACE_PREFIX) :] if uuid.startswith(PLACE_PREFIX) else ""
+
+
+def is_place(station: object) -> bool:
+    """Whether this favorite opens a branch instead of playing a stream."""
+    return bool(place_node_id(station))
+
+
 @dataclass(slots=True)
 class RadioFavoritesStore:
     """All saved favorites, in display order."""

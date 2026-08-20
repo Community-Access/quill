@@ -47,10 +47,17 @@ def choose_surface(*, podcast_active: bool, radio_active: bool) -> str:
     return SURFACE_RADIO
 
 
-def _is_active(controller: Any, playing: Any, paused: Any) -> bool:
+def _is_active(controller: Any, *audible: Any) -> bool:
+    """True when *controller* is in one of the *audible* states.
+
+    Varargs rather than the original ``(playing, paused)`` pair because radio
+    grew a third audible state: a stream that stalled is still the thing you
+    were listening to, and BUFFERING had to join the set without the podcast
+    caller having to invent a state it does not have.
+    """
     state = getattr(controller, "state", None)
     current = getattr(state, "state", None)
-    return current is playing or current is paused
+    return any(current is candidate for candidate in audible)
 
 
 def podcast_is_active(host: Any) -> bool:
@@ -64,10 +71,14 @@ def podcast_is_active(host: Any) -> bool:
 
 
 def radio_is_active(host: Any) -> bool:
-    from quill.ui.radio.player_controller import RadioPlayerState
+    from quill.ui.radio.playback_state import RadioPlayerState
 
     return _is_active(
         getattr(host, "_radio_controller", None),
+        # BUFFERING as well as PLAYING: a stall is still the thing you were
+        # listening to. Connecting deliberately stays out (see the test that
+        # names it) -- it is not yet what you can hear.
+        RadioPlayerState.BUFFERING,
         RadioPlayerState.PLAYING,
         RadioPlayerState.PAUSED,
     )

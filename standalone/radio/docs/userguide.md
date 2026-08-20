@@ -44,6 +44,35 @@ Releases are code-signed as of 3.0: the installers, the uninstallers, and the ap
 
 ## Getting started
 
+### The first time you open it
+
+The very first launch shows a short welcome: three screens -- what Quill Radio
+is, the three ways to find something to listen to, and how favorites work. Each
+one names the actual key for the thing it describes, so if you have already
+rebound something in the Keyboard Manager it tells you *your* key, not the
+default.
+
+Two things to know about it:
+
+- **Skip leaves in one keystroke**, and skipping counts as done. It will not
+  come back and ask again.
+- **It never appears if you already have favorites** -- an imported station
+  list, a restored backup, or an upgrade from an older Quill Radio. It is for
+  somebody starting from nothing, and nobody else.
+
+On the second and third screens there is a **Browse Stations Now...** button, so
+you can leave the welcome and go straight to finding a station.
+
+There is also a checkbox, **Show me a tip now and then**. Tips are one sentence
+each, shown once ever, the first time you reach somewhere that a single
+non-obvious fact would help -- that live radio can be paused and rewound, that
+Quill Radio remembers a volume for each station separately, that a recording can
+be scheduled for a programme that has not started yet and will wake the computer
+to catch it. They never take the keyboard and they never repeat. Unchecking the
+box switches all of them off permanently.
+
+### Every launch after that
+
 Launch Quill Radio from the Start Menu (or the portable folder's `QuillRadio.exe`). The window opens with keyboard focus on your **Favorite stations** tree.
 
 - No favorites yet? Press Alt+S for the Station menu, then **Browse Stations...** to wander a tree of every source -- popular stations, NOAA Weather Radio, radio reading services, whole directories -- or **Search Stations...** to search thousands of stations by name, genre, country, or language. Either way, listen before you commit, and add the keepers to your favorites. The **ACB Media** submenu is also right there -- the whole ACB stream directory, playable without any setup.
@@ -54,6 +83,198 @@ Everything Quill Radio announces goes through the same announcement engine QUILL
 
 Those announcements also go to a connected **braille display**, not just to speech -- what's playing, a finished directory refresh, a recording starting. Nothing is shortened, so a long track title is there in full for you to pan through, and the same message repeated within a couple of seconds does not flash the display twice (a flash message replaces whatever is under your fingers, so repeats are worse than useless). If a burst of different messages arrives at once, the first is written immediately and the rest settle to the newest, rather than each shoving the last aside faster than cell one can be read; errors always write through straight away. Braille never costs you speech: an unplugged display, or a screen reader that will not take the message, simply means it was spoken and not brailled -- never silence. Turn it off with **Show announcements in braille** in Preferences, under Accessibility.
 
+## Your first half hour, step by step
+
+This chapter assumes nothing. Every step says which key to press and what you
+should hear. If you have never used Quill Radio before, work straight down it
+and you will finish with a station playing, a favorite saved, a recording made,
+and the six keys that matter in your fingers.
+
+If something does not happen as described, that is worth reporting rather than
+working around -- **Alt+H**, then **R** for **Report a Bug...**, fills most of
+the report in for you.
+
+Throughout: **Escape** always steps back out of wherever you are, and no step
+below can lose anything you have not deliberately saved.
+
+### Task 1: play your first station (about two minutes)
+
+1. Launch Quill Radio from the Start Menu, or run `QuillRadio.exe` from the
+   portable folder.
+2. Wait for the window. You should hear **"Favorite stations, tree"** or your
+   screen reader's equivalent -- focus lands in the favorites list on its own,
+   and there is nothing to Tab to first. If the list is empty, that is expected
+   on a fresh install.
+3. Press **Ctrl+B**. This is **Browse Stations**, and it opens a window with one
+   big tree in it. You should hear **"Entered Browse Stations"** and land in the
+   tree.
+4. Press **Down arrow** a few times. Each press reads a source: Favorites,
+   Popular Stations, Radio Browser by Genre, Weather / NOAA, ACB Media, and so
+   on. Nothing has loaded from the internet yet -- these are just the branches.
+5. Stop on **Popular Stations** and press **Right arrow** to open it. The first
+   time, this fetches the list, so give it a moment; Quill Radio announces when
+   the stations arrive.
+6. Press **Down arrow** to move onto a station, then press **Enter**.
+7. You should hear **"Playing"** and then the station. That is the whole loop:
+   arrow to a thing, press Enter.
+8. Press **Ctrl+Down** twice. Each press says the new level -- **"Volume 80
+   percent."**, then **"Volume 70 percent."** Volume moves in steps of ten, and
+   it says the number every time, in every window.
+9. Press **Ctrl+P** to stop, and **Ctrl+P** again to start. It says **"Stopped."**
+   and **"Playing."** so you never have to guess which way the toggle went.
+
+Leave the station playing for the next task.
+
+### Task 2: keep it (about one minute)
+
+1. Press **Escape** to close Browse Stations. You should hear **"Exited Browse
+   Stations"**, and focus returns to the main window's favorites list.
+2. Press **Alt+F**. That is the **Add to Favorites** button, reachable without
+   Tabbing to it. You should hear **"Added *station* to Favorites."**
+3. Press **Down arrow** in the favorites list. Your station is there.
+4. Press **Enter** on it. It plays. From now on this is your two-keystroke
+   route to that station: launch, Enter.
+
+That is the core of Quill Radio. Everything below is optional.
+
+### Task 3: work the player from anywhere (about three minutes)
+
+The player is one object, and every window can reach it. This is the part that
+makes Quill Radio different from a player with a window you have to go back to.
+
+1. With something playing, press **Ctrl+B** to open Browse Stations again.
+2. Press **Ctrl+Up**. The volume goes up and says so -- **from the browse
+   window**, without going back to the main one. The same is true of
+   **Ctrl+P** (play/stop), **Ctrl+Shift+O** (mute and unmute), and every other
+   transport key in the reference at the end of this guide.
+3. Press **Ctrl+Shift+G**. This is **Go to Player**, and it opens a small panel
+   **on top of whatever window you are in**. You should hear **"Entered
+   Player"**.
+4. Press **Tab** through it. The first thing is a read-only **Now playing**
+   box saying what is on, where you are in it, how fast it is playing and how
+   loud. After that come the buttons, in the order people reach for them:
+   Play/Pause, Stop, Skip Back, Skip Forward, Where Am I, chapters, speed,
+   volume, mute.
+5. Press **Escape**. Focus goes back **exactly where it was** -- the same
+   control in the same list, not the top of it.
+
+The player has no window of its own on purpose. It is summoned when you want it
+and gone when you are done, so it never becomes a third thing to manage in
+Alt+Tab.
+
+### Task 4: do anything by name (about one minute)
+
+If you cannot remember a key, you never need to.
+
+1. Press **Ctrl+Shift+P**. This is the **Command Palette**, and it opens from
+   **every** window -- the main one, Browse Stations, the Favorites Manager,
+   the Recordings list.
+2. Type a few letters of what you want -- `vol`, or `record`, or `chapter`.
+   The list narrows as you type.
+3. **Down arrow** to the command you want and press **Enter**. It runs, exactly
+   as the key or the menu item would, and each entry shows its own keystroke so
+   the palette teaches you the shortcut while you use it.
+
+The whole player is in there, so the palette can pause what is playing, not
+just change a setting.
+
+### Task 5: record something (about three minutes)
+
+1. With a station playing, press **Ctrl+R**.
+2. You should hear that recording has started. The **Record** button on the
+   main window now reads **Stop Recording**, and the status bar's Recording cell
+   fills in, so there are three places that agree you are recording.
+3. Wait ten or twenty seconds.
+4. Press **Ctrl+R** again to stop. Quill Radio names the file it saved.
+5. Press **Ctrl+G** to open the **Recordings** list. Your recording is at the
+   top -- newest first.
+6. Press **Enter** on it to play it back.
+7. Press **Delete** to remove it. A confirmation appears; press **Enter** or
+   **Y** for Yes. Focus lands on the recording that took its place in the list,
+   not at the top and not nowhere.
+8. Press **Escape** to leave the Recordings list.
+
+### Task 6: the six keys worth memorising
+
+Everything else is in the menus and the palette. These six carry the day:
+
+| What you want | Key |
+| --- | --- |
+| Play or stop | Ctrl+P |
+| Volume up or down | Ctrl+Up / Ctrl+Down |
+| Go to the player, from anywhere | Ctrl+Shift+G |
+| Do something by name | Ctrl+Shift+P |
+| Browse for stations | Ctrl+B |
+| What is playing right now? | Ctrl+T |
+
+### If you get lost
+
+- **Escape** closes the window you are in and says which one you left.
+- **F6** moves into the status bar along the bottom, which always says what is
+  playing, the volume, whether anything is recording, and the time. A second
+  **F6** or **Escape** brings you back.
+- **Ctrl+Shift+G** brings the player to you, wherever you are.
+- **Alt+H** then **U** opens this guide.
+
+## The player follows you
+
+Older versions of Quill Radio had one player and more than one place that knew
+how to talk to it -- and only the main window had keys. Standing in Browse
+Stations you could hear a podcast and not change its speed, because speed lived
+on the main window's menu bar and a menu accelerator only fires for the window
+that owns the menu bar. Half the player did not exist in the window you were
+standing in.
+
+That is over. Every window Quill Radio opens answers to the whole transport:
+
+- Browse Stations
+- Find Stations
+- Manage Favorites
+- The Recordings list
+- Song History
+- The Chapter list
+- Now Playing
+- The download queue
+- Find Streams from a Website
+- The player panel itself
+
+In all of them, **Ctrl+P** plays or stops, **Ctrl+.** stops outright,
+**Ctrl+Up** and **Ctrl+Down** move the volume, **Ctrl+Shift+O** mutes and
+unmutes, **Ctrl+Shift+Left** and **Ctrl+Shift+Right** skip, **Ctrl+Shift+Up**
+and **Ctrl+Shift+Down** change speed, **Ctrl+Shift+,** and **Ctrl+Shift+.**
+move by chapter, **Ctrl+Shift+C** opens the chapter list, **Ctrl+Shift+W** says
+where you are, and **Ctrl+Shift+G** summons the player panel.
+
+Three things follow from having one table of keys rather than several:
+
+- **A key means one thing everywhere.** Volume moves the same distance and
+  reports it in the same words in every window, because there is one
+  implementation and one sentence behind all of them.
+- **A key that cannot act says why.** Ask for speed or chapters while a live
+  stream is playing and you hear *"This is live radio, which plays at broadcast
+  speed and has no chapters or position to move through."* A key that quietly
+  does nothing is indistinguishable from a key that is not bound at all, which
+  is how people conclude an app is broken.
+- **A key that does act says so too.** Play, Stop and Mute all speak. Mute
+  especially: silence is what muting is *for*, so without a word there is no
+  way to tell muting apart from the stream dropping.
+
+### Go to Player (Ctrl+Shift+G)
+
+The player panel is a small window summoned over whatever you are doing. It
+holds the whole transport as buttons, plus a readout of what is playing, where
+you are in it, the speed and the volume.
+
+- Every button runs the same thing the keys and the menus run, so the panel can
+  never drift from them, and a verb the thing playing cannot do refuses out
+  loud here exactly as it does everywhere else.
+- The keys work **inside** the panel too, and every one of them re-reads the
+  readout, so a key and a button leave the panel saying the same thing.
+- **Escape** closes it and puts focus back on the exact control you came from.
+- Press **Ctrl+Shift+G** while the panel is already open and it says **"You are
+  already in the player."** rather than stacking a second one on top of the
+  first.
+
 ## The main window
 
 Tab order: the now-playing line, the favorites tree, then four buttons.
@@ -63,6 +284,28 @@ Tab order: the now-playing line, the favorites tree, then four buttons.
 - Buttons, each with its own Alt key: **P&lay** (**Alt+L**; it becomes **S&top**, **Alt+T**, while connecting or playing -- one transport control, never a dead button), **Add to &Favorites** (**Alt+F**; it becomes **Remove from &Favorites** when the playing station is already saved -- perfect for keeping something you found in ACB Media or Recently Played), **Rec&ord** (**Alt+O**), and **&Browse Stations...** (**Alt+B**). **Ctrl+P** plays or stops from anywhere in the window and **Ctrl+Alt+P** stops outright, whatever is happening. (Play is Alt+L rather than the more obvious Alt+P because Alt+P belongs to the Playback menu -- a button that claimed it would open the menu instead of playing, which is a bug this app has already had once.)
 - **Volume** (slider): right in the Tab order after the buttons, so you can tab to it while a station is playing and use the **arrow keys** (or Page Up/Page Down) to turn the volume up or down. It is one of three ways to set the volume -- the others are **Ctrl+Up/Ctrl+Down** from anywhere in the window, and the status bar's Volume cell -- and all three stay in agreement, including with each station's remembered volume.
 - **Status bar** (along the bottom): a row of cells that always show what is going on -- Now playing, Volume (with a note when Volume Boost is on), Recording, Sleep timer, Favorites count, and the time. Press **F6** to move focus into it; a second F6, or Escape, hands focus back to the favorites tree. Arrow **Left** and **Right** to move across the cells (**Home** and **End** jump to the first and last), press **Enter** or **Space** to act on the cell you are on (Now playing opens the What's Playing window, Volume mutes or unmutes, Recording starts or stops recording, Sleep timer opens the timer dialog, Favorites jumps back to the list, Time speaks the full date and time), and press the **Applications key** or right-click for a context menu with more actions (play/pause, mute, volume up and down, Volume Boost, stop all recordings, and Hide Status Bar). Turn the whole bar off from **View > Show Status Bar** if you would rather not have it.
+
+### What the status line is telling you
+
+The Now playing cell (and the tray tooltip, which says the same thing) has one
+line for each thing a stream can be doing. They are deliberately different
+words, because they are different situations and only some of them are your
+doing:
+
+| What it says | What is happening |
+|---|---|
+| `Radio: stopped` | Nothing is playing. |
+| `Radio: connecting to WQXR...` | A station you just chose is being opened. |
+| `Radio: buffering WQXR...` | It was playing and ran out of audio. The stream is refilling; you did not do anything, and it usually comes back on its own within a few seconds. |
+| `Radio: playing WQXR` | Playing. `(muted)` is added when the sound is muted. |
+| `Radio: paused - WQXR` | You paused it. On a live station this is a real pause, and you can rewind into what you missed. |
+| `Radio: Reconnecting to WQXR. Attempt 2 of 3.` | The stream dropped and Quill Radio is getting it back. Each attempt is spoken as well as shown, so a long wait never sounds like the app has hung. Three attempts, at two, five and fifteen seconds; after that it stops and says so. |
+| `Radio: could not play WQXR - ...` | It failed, with the reason. |
+
+Buffering and reconnecting are worth telling apart. **Buffering** means the
+stream is still there and the audio ran out for a moment. **Reconnecting** means
+the connection went away and is being rebuilt. Both used to read as either
+"playing" or "connecting", which was the app saying something it did not know.
 
 ## Windows, and moving between them
 
@@ -93,6 +336,8 @@ Each window opens only when you ask for it, and closing a window puts focus back
   - **Podcasts (Apple)** -- choose a country and you get that storefront's top shows plus Apple's whole podcast genre tree, with subgenres beneath each genre. Open a show for its episodes; **Enter** on an episode plays it. There is no key, no account and no sign-in at any step, and the top podcasts in Ireland, Japan or Brazil are one folder away. Apple is only how the show is *found*: opening a show resolves it to the publisher's own RSS feed, and the episode list, the audio and the transcripts all come from there. Quill Radio does not use Podcast Index, deliberately -- Apple answers the same questions with nothing to register for.
 
     **Subscribing, and finding what you subscribed to.** **Shift+F10** on a show offers **Subscribe to This Podcast**, which files it in the shared podcast library -- the same library Quill Cast reads, so the show is simply *there* the next time Cast opens. And it is findable right here too: the Podcasts branch leads with a **Subscriptions** folder, one folder per show you follow, each expanding to its newest episodes. On a show you already follow, the same menu slot reads **Unsubscribe from This Podcast** instead. The Subscriptions folder wears your follow count as its badge -- "Subscriptions (3)" -- and each show beneath it wears "(2 unheard)", the same count Quill Cast shows, so what is waiting is visible from either app. An episode whose feed publishes a transcript says "transcript available" on its row, and **View Transcript...** on its context menu opens it in the transcript reader without playing anything. How many episodes each show lists is a preference (**Ctrl+,** > "Episodes listed per subscribed podcast", 25 newest by default) -- deliberately Quill Radio's one podcast setting. Playback, downloads and per-episode actions work exactly as anywhere else in the tree; the rich side of podcasting -- automatic downloads, retention, the play queue, the full archive -- is **Quill Cast**'s job, and that is where a serious podcast habit belongs.
+
+    **The show's own menu does the housekeeping.** A subscribed show's context menu carries **Move to Folder...** (Enter in the picker confirms; the tree reloads and the cursor lands on the show in its new home), **Mark All as Played...** (dimmed when nothing is unheard; its confirmation has a "Don't ask me again" checkbox shared with Quill Cast, and the badges clear on screen the moment it speaks), **Download All N Episodes...** (counted from the shared library, so it works without expanding the show), and **Remove All Downloads...** (files gone, subscription and played state untouched; dimmed when nothing is downloaded). Episode rows of a subscribed show add **Mark Episode as Played** / **as Unplayed**, one direction at a time. And the badges believe your ears: finish an episode here and the show's unheard count drops immediately, without waiting for Quill Cast's next launch.
   - **Internet Archive** -- Old Time Radio, Audiobooks & Poetry, the Live Music Archive, Radio Programs, News & Public Affairs and more. Open a collection for its series, a series for its episodes, an episode for its files. The depth is the Archive's own; Old Time Radio alone holds 8,710 recordings across 114 series. A folder holding more than one page ends with **More...**, which says how much it is still hiding, and an item that publishes no rights information says exactly that rather than letting you assume it is free to reuse.
   - **LibriVox Audiobooks** -- **Recently Added**, **By Genre** (43 genres), and **By Author**, grouped A to Z across some seven thousand of them. A book with chapters is a folder of chapters; a book that is one single reading is simply playable. There is deliberately no **By Title**: LibriVox's catalogue supports author, genre and date filters and no title filter in any form, and a branch that quietly finds nothing is worse than one that is not offered.
   - **Project Gutenberg Audiobooks** -- the 1,124 Gutenberg records that carry human-read audio, by topic and by language, each shelf paging through completely via a "More audiobooks" row. It complements LibriVox rather than duplicating it. With the station catalog on, All Audiobooks answers from your own disk, instantly.
@@ -108,11 +353,13 @@ Each window opens only when you ask for it, and closing a window puts focus back
 - **Find in this folder** -- above the tree (one Shift+Tab away from the stations) is a search box that searches **from the folder you are highlighted on, downward** -- one iHeart genre, one state, one source -- so you get a short, relevant list instead of searching every directory at once. Highlight the folder, type, press **Enter** (or the **Find** button); matches appear under that folder, and **Clear** puts you back where you searched from. **Ctrl+F** jumps to the box from anywhere in the window. Find takes the fastest route for where you are standing, and says which it took: on the **Podcasts** branch it asks the real podcast search engine, and shows come back as folders you expand straight into episodes -- type "double tap", press Enter, expand, play. On a catalog-served branch (**By Country**, **By Language**, **By Genre**, **By Quality**) it answers instantly from the catalog on this computer, scoped to where you are -- Find "jazz" while on France and you get France's jazz stations, online or off, announced as "From your catalog." On **LibriVox** it searches the whole book catalog (books arrive as folders of chapters); the **Internet Archive** answers with items you can drill into; **TuneIn** with stations already resolved; **iHeart** from its full station index; **NOAA** by call sign, SAME code, or "County, ST"; **Project Gutenberg**, **SomaFM**, **Audius**, **Mixcloud** and **ccMixter** through their own catalogs. Only a branch with no search engine of its own walks the subtree, bounded, and tells you if it showed only the first results -- and a directory that cannot be reached says so instead of posing as "no matches." For a search across *every* directory at once, use **Search Stations...** instead.
 - **A branch that is slow says so, and a branch that is broken says *that*.** Opening a source names what it is loading ("Loading Old Time Radio..."), and if it takes more than three seconds it tells you it is still working -- silence and a hang feel identical otherwise. And an empty branch distinguishes the two kinds of empty: "there are no stations in this genre" is an answer, while "that directory could not be reached" means try again later. If a directory is having a bad day (it happens -- LibriVox and the Internet Archive both were on 16 August), Quill Radio says so plainly rather than quietly showing you nothing.
 - **The tree reads ahead.** Land on a closed folder and Quill Radio quietly starts fetching what is inside it; open a folder and the first few folders inside it fetch behind you. The expand you were about to make opens instantly. This follows your cursor only -- a source you hid in Choose Browse Sources is still never contacted, and Safe Mode still fetches nothing.
+- **Search All Sources...** -- the first row of the tree, always. Press Enter on it and the full Search Stations window opens with focus in the search box: one query, every provider's own search engine, results interleaved and labelled. It is the same window as **Station > Search Stations...**; this row is simply the door from inside the tree. And each searchable top-level source -- Podcasts (Apple), iHeart, TuneIn, YouTube and the rest -- offers **Search This Source...** on its context menu, which opens that same window with the Source filter already narrowed to it: standing on podcasts searches podcasts. A source with no search engine of its own (Weather / NOAA, NFB Radio) honestly offers nothing.
+- **Every live station row can be captured from where you found it.** A station's context menu offers **Record This Station...** and **Schedule Recording...**, pre-filled with that row's station rather than whatever is playing -- the same two commands the Record menu carries. A row you have favorited also offers **Rename Favorite...** in place (blank restores the directory's own name).
 - **Search Stations...** -- the full station search: search across four directories at once -- **RadioBrowser**, **SomaFM**, **iHeart**, and **TuneIn** -- blended into one results list, test-play, favorite. A search that looks like weather-radio geography -- a 6-digit **SAME code**, a **call sign** like `KHB36`, or a **"County, ST"** or state name -- also brings back exact NOAA Weather Radio transmitters from the authoritative directory, and reading services match by name, tag, or state right alongside. Every result is labeled with the directory it came from ("via iHeart", "via TuneIn"). RadioBrowser shows up to 200 stations at once, most-listened first; when there are still more, a **More Stations** button loads the next page and puts your cursor on the first newly added station. iHeart and TuneIn add a small set of their most relevant, immediately-playable matches to each search (each iHeart/TuneIn result's real stream is looked up on demand, so they are capped per search to keep one search from becoming dozens of network requests). And since 3.0 the search starts at home: matches from the **station catalog on your own computer** appear the instant you press Enter -- ordinary rows, labeled with the directory they came from -- with the live directories layering in behind them, so a search answers immediately, and still answers when the internet does not. Library results play too: press Enter on a podcast show and Quill Radio fetches its feed and plays the **latest episode**; a LibriVox book plays its **first section**; each is announced by name, and an Internet Archive collection says plainly that it opens on its own site.
   - **The libraries are searched too.** Beside the radio directories, a search also asks **LibriVox**, the **Internet Archive**, **Project Gutenberg** and **Apple Podcasts**, so a book or a recording turns up when you type its title rather than only when you go looking for it in Browse Stations. Those rows are labelled with where they came from, exactly like the station rows, and the **Source** dropdown below narrows to one of them. They arrive a moment after the stations, because each library is asked separately so a slow one cannot hold up the rest, and Quill Radio tells you once when they have all answered. If you are already arrowing the results when one arrives, your place is kept.
 
     The **music libraries answer too** -- **Audius**, **Mixcloud** and **ccMixter** -- so a track or a DJ set turns up by name and not only by wandering into the right shelf. They keep the same manners they have in Browse Stations: an Audius track and a ccMixter upload play here (a ccMixter row shows its Creative Commons licence), while a Mixcloud row is the show's page and opens in your browser, which the row tells you before you press Enter. If a library ever genuinely cannot be searched, Quill Radio names it rather than leaving you to wonder why nothing came back from it.
-  - **Source** -- a dropdown to narrow the search to one directory (All sources, RadioBrowser, iHeart, TuneIn, SomaFM, ACB Media, or Website) when you already know where a station lives. When the same station is carried by more than one directory (a SomaFM channel RadioBrowser also lists, say), it appears under each of those directories' filters, not just the one whose copy you happened to play.
+  - **Source** -- a dropdown to narrow the search to one directory (All sources, Radio Browser, iHeart, TuneIn, Podcasts, SomaFM, ACB Media, Community M3U, Xiph, Spotify, YouTube, or Website) when you already know where a station lives. **Podcasts** gathers every podcast result whichever exact directory stamped it, and it is the filter **Search This Source...** on the Podcasts branch opens on. When the same station is carried by more than one directory (a SomaFM channel RadioBrowser also lists, say), it appears under each of those directories' filters, not just the one whose copy you happened to play.
   - **Tag/genre** and **Country** -- these are now proper dropdown lists, filled in from the directory itself, so you pick "jazz" or "United Kingdom" from a list instead of typing the exact spelling; choosing one runs the search right away.
   - **Refresh** -- re-fetches the iHeart station directory. iHeart's directory index is cached once per Browse Stations session (TuneIn and RadioBrowser are always live), so use Refresh if you want the very latest iHeart listing.
   - The status line tells you when more can be loaded and suggests adding a tag or country to narrow a very broad search. Search is disabled in Safe Mode.
@@ -163,8 +410,8 @@ Each window opens only when you ask for it, and closing a window puts focus back
 - **Volume Boost** (Ctrl+Shift+B, check item) -- amplifies up to 50% past full volume for stations that just broadcast quiet. Your 0-100 volume scale, per-station volume memories, and mute all behave exactly as before; the boost is applied on top. Needs the mpv playback engine (the default -- see Preferences below).
 - **Rewind 30 Seconds** (Ctrl+Shift+Left), **Forward 30 Seconds** (Ctrl+Shift+Right), **Back to Live** (Ctrl+Shift+L) -- live radio you can move around in. On the mpv playback engine (the default), Quill Radio keeps a rolling buffer of the stream (roughly 45 minutes at typical bitrates): jump back to catch a missed sentence, work your way forward, then leap straight back to live. Every move announces how far behind live you are. Needs the mpv playback engine.
   - **A note on pausing.** Whether Play/Stop *holds your place* or *rejoins live* depends on the engine. On the **mpv** engine, pausing keeps your position in the rolling buffer, so Play resumes exactly where you stopped. On the **Windows Media (classic)** engine there is no buffer, so pausing a live stream and pressing Play again reconnects at the current live moment -- it looks like the stream simply refreshed. If you press Play/Stop expecting to resume where you left off and instead hear live audio, open **Station > Preferences (Ctrl+,)** and set **Playback engine** to **Automatic** (which uses mpv); the buffer, Rewind/Forward, and Back to Live all require that engine. (A live stream also only rewinds as far back as the buffer has actually filled since you started listening.)
-- **Chapters...** (Ctrl+Shift+C), **Next Chapter** (Ctrl+Alt+Right), **Previous Chapter** (Ctrl+Alt+Left) -- a finished YouTube video has a timeline, so you can move around it the way a live broadcast never lets you. Chapters opens the uploader's own chapter list, each entry read as a whole sentence ("3. Introducing layers, starts at 5 minutes 31 seconds") with the one playing now marked; Enter jumps to it. Previous Chapter restarts the current chapter first, then steps back, the way a CD player does. **Rewind / Forward 30 Seconds** (Ctrl+Shift+Left / Ctrl+Shift+Right) move along the video's own timeline -- the same keys move within live radio's rolling buffer when a live stream is playing, and Quill Radio picks the right one for what you are listening to. On a video they say where you landed ("3 minutes 10 seconds of 18 minutes 40 seconds"); on a live stream they say how far behind live you are. **Go to Position...** (Ctrl+Shift+J) jumps straight to an exact time, using the same accessible Hours / Minutes / Seconds dialog the Quill Media Player uses -- three labelled spin controls, plus a timecode field if you would rather type `1:23:45`. **Where Am I?** (Ctrl+Shift+P) speaks your position, the length, and the chapter you are in.
-- **Play Faster** (Ctrl+Alt+Up), **Play Slower** (Ctrl+Alt+Down), **Normal Speed** (Ctrl+Alt+0) -- speed for a finished video, stepping through round, speakable values from 0.25x to 4x rather than drifting by a multiplier. The speed you choose is remembered for the next video. Live radio plays at normal speed; setting a speed while a station is on says so, and remembers it for when a video plays.
+- **Chapters...** (Ctrl+Shift+C), **Next Chapter** (Ctrl+Shift+.), **Previous Chapter** (Ctrl+Shift+,) -- a finished YouTube video has a timeline, so you can move around it the way a live broadcast never lets you. Chapters opens the uploader's own chapter list, each entry read as a whole sentence ("3. Introducing layers, starts at 5 minutes 31 seconds") with the one playing now marked; Enter jumps to it. Previous Chapter restarts the current chapter first, then steps back, the way a CD player does. **Rewind / Forward 30 Seconds** (Ctrl+Shift+Left / Ctrl+Shift+Right) move along the video's own timeline -- the same keys move within live radio's rolling buffer when a live stream is playing, and Quill Radio picks the right one for what you are listening to. On a video they say where you landed ("3 minutes 10 seconds of 18 minutes 40 seconds"); on a live stream they say how far behind live you are. **Go to Position...** (Ctrl+Alt+J) jumps straight to an exact time, using the same accessible Hours / Minutes / Seconds dialog the Quill Media Player uses -- three labelled spin controls, plus a timecode field if you would rather type `1:23:45`. **Where Am I?** (Ctrl+Shift+W) speaks your position, the length, and the chapter you are in.
+- **Play Faster** (Ctrl+Shift+Up), **Play Slower** (Ctrl+Shift+Down), **Normal Speed** (Ctrl+Shift+0) -- speed for a finished video, stepping through round, speakable values from 0.25x to 4x rather than drifting by a multiplier. The speed you choose is remembered for the next video. Live radio plays at normal speed; setting a speed while a station is on says so, and remembers it for when a video plays. And while a **podcast episode** plays, the speed you choose is remembered **for that show**: the announcement adds *"Remembered for this show,"* the show's episodes start at your speed from then on (outranking any speed set in Quill Cast, without changing it there), and Normal Speed forgets the memory out loud. A remembered speed applies automatically to downloaded episodes always, and to streamed ones when the mpv engine is playing; on the Windows Media Player fallback it stays saved rather than risking a stuttering stream -- Play Faster is still one keypress away.
   - **All of these say why when they decline.** Ask for chapters, seeking, or speed while a live stream is playing and you hear "This is a live stream, so there is no timeline to move along"; ask for chapters on a video whose uploader published none and it says that instead. A control that quietly does nothing is worse than one that is not offered, because you cannot tell it apart from a broken app.
 - **What's Playing?** (Ctrl+T) -- opens a reviewable Now Playing window: the current title and artist in a read-only, selectable field you can arrow through **character by character** to catch an exact spelling, with a **Copy** button. It reads the title straight from the stream's own metadata (and if no title has arrived yet, Ctrl+T speaks and fetches it, as before). When a station sends messy broadcast metadata (a string of catalog codes rather than a clean "Artist - Title"), Quill Radio finds the title and artist in it and reads just those. And when a station answers with nothing at all -- no metadata, and the playback engine's own title channel is empty too (common on HLS) -- Quill Radio takes one more step: it reads the current title from the stream server's own public "now playing" status page (the Icecast or SHOUTcast status endpoint). It only ever asks the same server you are already listening to, and it is off in Safe Mode -- so a batch of stations that used to answer with silence now report a real title. You control the wording in Station > Preferences (Ctrl+,) with a small template: `{title}` and `{artist}` tokens, `[square brackets]` around optional wording that disappears when a field is empty (the default `{title}[ by {artist}]` drops the " by" when there's no artist), and `{raw}` for the stream's exact original text. Leave it blank to restore the default.
 - **Copy What's Playing** (Command Palette) -- copies the current title and artist straight to the clipboard without opening the Now Playing window (which Ctrl+T opens, above). You no longer have to press What's Playing first: if a station is on and no title has arrived yet, Quill Radio says "Checking what's playing...", fetches it, and then copies it. Both this and the Ctrl+T window always tell you *something* -- a stream that sends no titles at all says so and still opens a window naming the station, and a lookup that fails is reported rather than passing in silence. The confirmation names what it copied, so you know it worked without pasting to check.
@@ -520,6 +767,28 @@ Quill Radio reads and writes the same data store as QUILL and QUILL Cast (`%APPD
 - **NOAA Weather Radio** browsing, search, and the local-transmitter lookup use the keyless **WeatherIndex** directory (api.wxindex.org) when online, with the complete directory also bundled inside the app as a permanent offline fallback; **Radio Reading Services** refreshes from the community **RadioBrowser** directory the station search already uses, with its own bundled list as the fallback. (Text weather -- forecasts, alerts, air quality -- lives in the **Quill Weather** app now, along with its network calls; see the Weather chapter.)
 - The **ACB Media** directory is bundled -- no network needed to browse it, and the bundled **Radio Reading Services** and **NOAA Weather Radio** directories browse offline the same way.
 
+**If one of those bundled tools goes missing.** Both mpv and ffmpeg ship inside
+every Quill Radio installer, so a missing one means a damaged installation
+rather than something you never bought -- antivirus quarantine and a
+half-finished update are the two usual causes. Quill Radio now says so, once, at
+launch: one sentence naming which tool is gone, what it costs you, and what to
+do. It does not repeat on every launch, but it will say it again if a *second*
+tool goes missing later.
+
+- **Without mpv**, stations still play through Windows Media, but live pause and
+  rewind, choosing the output device, Volume Boost, Sound Enhancements without a
+  relay, track titles from the stream, and knowing when a stream has stalled all
+  stop working -- and Ogg Vorbis, Opus and HLS stations will not play at all. A
+  station in one of those formats now says exactly that, rather than the generic
+  "that stream could not be opened".
+- **Without ffmpeg**, recording (now or scheduled) and downloading episodes and
+  videos stop working. Everything else is normal. **Help > Get FFmpeg...**
+  downloads the official build on its own.
+- **Either way, reinstalling Quill Radio restores it.**
+
+A healthy installation says nothing at all about any of this, which is the
+point.
+
 ## Weather
 
 Weather is its own app -- **Quill Weather** -- and this Weather section lives in the Quill Weather User Guide (`../../weather/docs/userguide.md`), its own home.
@@ -544,18 +813,20 @@ short list of the ones worth memorising; the menus carry the rest.
 | Record Now / Stop Recording | Ctrl+R |
 | Schedule Recording | Ctrl+Shift+S |
 | Play / Stop | Ctrl+P |
+| Stop outright, whatever is happening | Ctrl+. or Ctrl+Alt+P |
 | Play Last Station | Ctrl+L |
-| Mute / Unmute | Ctrl+M |
-| Volume up / down | Ctrl+Up / Ctrl+Down |
+| Mute / Unmute | Ctrl+M (main window) or Ctrl+Shift+O (anywhere) |
+| Volume up / down (steps of 10) | Ctrl+Up / Ctrl+Down |
+| Go to Player (summons the player over any window) | Ctrl+Shift+G |
 | Volume Boost | Ctrl+Shift+B |
 | Output Device | Ctrl+Shift+D |
 | Rewind / Forward 30 seconds | Ctrl+Shift+Left / Ctrl+Shift+Right |
 | Back to Live | Ctrl+Shift+L |
 | Chapters (finished video) | Ctrl+Shift+C |
-| Go to Position (finished video) | Ctrl+Shift+J |
-| Next / previous chapter | Ctrl+Alt+Right / Ctrl+Alt+Left |
-| Play faster / slower / normal speed | Ctrl+Alt+Up / Ctrl+Alt+Down / Ctrl+Alt+0 |
-| Where am I? (position, length, chapter) | Ctrl+Shift+P |
+| Go to Position (finished video) | Ctrl+Alt+J |
+| Next / previous chapter | Ctrl+Shift+. / Ctrl+Shift+, |
+| Play faster / slower / normal speed | Ctrl+Shift+Up / Ctrl+Shift+Down / Ctrl+Shift+0 |
+| Where am I? (position, length, chapter) | Ctrl+Shift+W |
 | Show or hide the video | Ctrl+Shift+V |
 | Captions on or off | Ctrl+Shift+K |
 | Video information | Ctrl+Shift+I |
@@ -584,6 +855,20 @@ short list of the ones worth memorising; the menus carry the rest.
 | Record menu | Alt+R |
 | View menu | Alt+V |
 | Help menu | Alt+H |
+
+**The transport keys work in every window**, not only the main one -- Browse
+Stations, Find Stations, Manage Favorites, the Recordings list, Song History,
+the chapter list, Now Playing, the download queue and the player panel all
+answer to Play/Stop, volume, mute, skip, speed, chapters, Where Am I, Go to
+Player and the Command Palette. They come from one shared table, so a key means
+the same thing and moves the same distance wherever you press it.
+
+**Nothing here sits on Ctrl+Alt+arrow.** That block belongs to JAWS's and
+NVDA's table navigation, and a transport key there works everywhere except
+while somebody is reading a table. Speed and chapters used to be on it; in 3.0
+they moved to Ctrl+Shift+Up/Down and Ctrl+Shift+comma/period, and a build check
+now fails if anything lands back on that block. If you have notes from an
+earlier version, those four keys are the ones that changed.
 
 These keys belong to Quill Radio's own menus and are kept separate from QUILL's keymap, so nothing here collides with editor shortcuts.
 

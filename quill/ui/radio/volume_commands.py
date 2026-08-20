@@ -64,7 +64,7 @@ def toggle_global_volume(host: Any) -> None:
         radio_history.save_history(app_data_dir(), history)
         level = history.volume_percent
         detail = f" Every station now plays at {level} percent." if level >= 0 else ""
-        host._announce(f"One volume for all stations, on.{detail}")
+        host._announce(f"One volume for all stations, on.{detail}.")
     else:
         radio_history.save_history(app_data_dir(), history)
         host._announce(

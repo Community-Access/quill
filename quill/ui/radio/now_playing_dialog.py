@@ -41,10 +41,12 @@ class NowPlayingDialog:
         announce: Callable[[str], None] | None = None,
         *,
         title: str = "Now Playing",
+        transport_host: object | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        self._transport_host = transport_host
         self._text = text
         self._show_modal = show_modal_dialog
         self._copy = copy_to_clipboard
@@ -84,6 +86,15 @@ class NowPlayingDialog:
             affirmative_id=close_btn.GetId(),
             escape_id=close_btn.GetId(),
         )
+        # The transport keyboard, when the surface that opened this one knows
+        # about the player. It was installed in the browse tree and nowhere
+        # else, so every other Radio dialog was a window where the keys that
+        # work everywhere stopped working.
+        if self._transport_host is not None:
+            from quill.ui.radio import transport_keys
+
+            transport_keys.install(self.dialog, self._transport_host, wx=wx)
+
         self._copy_btn.Enable(bool(self._text))
         for b in (self._copy_btn, close_btn):
             btn_row.Add(b, 0, wx.RIGHT, 6)

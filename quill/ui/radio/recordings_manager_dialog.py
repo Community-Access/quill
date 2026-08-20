@@ -173,6 +173,11 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
         wx = self._wx
         self.dialog.CentreOnParent()
         apply_modal_ids(self.dialog, cancel_id=wx.ID_CANCEL)
+        # The transport keyboard (transport_keys), so the player stays reachable
+        # from a window a listener browses in while something is playing.
+        from quill.ui.radio import transport_keys
+
+        transport_keys.install(self.dialog, self, wx=wx)
         try:
             show_modal_dialog(self.dialog, "Radio Recordings", announce=self._announce)
         finally:
@@ -325,7 +330,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
         return None
 
     def _is_entry_playing(self, entry: RecordingEntry | None) -> bool:
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         if entry is None or entry.path is None:
             return False
@@ -333,7 +338,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
         return (
             state.station is not None
             and state.station.stream_url == str(entry.path)
-            and state.state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+            and state.state in ACTIVE_STATES
         )
 
     def _on_selection_changed(self) -> None:
@@ -451,33 +456,33 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
 
     def _winamp_play(self) -> None:
         """X: play the selected recording, or resume a paused one."""
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import RadioPlayerState
 
         state = getattr(self._controller, "state", None)
         if state is not None and state.state is RadioPlayerState.PAUSED:
             self._controller.toggle_play_pause()
-            self._announce("Playing")
+            self._announce("Playing.")
             return
         entry = self._selected()
         if entry is None or entry.path is None or entry.status != STATUS_RECORDED:
             self._announce("Select a finished recording to play.")
             return
         if self._is_entry_playing(entry):
-            self._announce(f"Already playing {entry.name}")
+            self._announce(f"Already playing {entry.name}.")
             return
         self._on_play()
 
     def _winamp_pause(self) -> None:
         """C: pause or unpause, and say which it was."""
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import RUNNING_STATES, RadioPlayerState
 
         state = getattr(self._controller, "state", None)
-        if state is None or state.state not in (RadioPlayerState.PLAYING, RadioPlayerState.PAUSED):
+        if state is None or state.state not in (RUNNING_STATES | {RadioPlayerState.PAUSED}):
             self._announce("Nothing is playing.")
             return
-        was_playing = state.state is RadioPlayerState.PLAYING
+        was_playing = state.state in RUNNING_STATES
         self._controller.toggle_play_pause()
-        self._announce("Paused" if was_playing else "Playing")
+        self._announce("Paused." if was_playing else "Playing.")
 
     def _winamp_stop(self, message: str) -> None:
         """V (and Shift+V): stop playback. The engine has no fade, so Shift+V
@@ -566,7 +571,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
                 self._list.Select(row)
                 self._list.Focus(row)
                 self._list.EnsureVisible(row)
-                self._announce(f"{entry.name}, {entry.status}")
+                self._announce(f"{entry.name}, {entry.status}.")
                 self._on_selection_changed()
                 return
         self._announce(f"No recording matches {needle}.")
@@ -574,13 +579,10 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
     def _adjust_volume(self, *, up: bool) -> None:
         """Step the shared radio volume (recording playback runs through the same
         controller/engine as live radio) and announce the new level."""
-        if up:
-            self._controller.volume_up()
-        else:
-            self._controller.volume_down()
-        state = getattr(self._controller, "state", None)
-        if state is not None:
-            self._announce(f"Volume {state.volume_percent}")
+        from quill.core.radio import transport_commands as tc
+        from quill.ui.radio import transport_keys
+
+        transport_keys.perform(self, tc.VOLUME_UP if up else tc.VOLUME_DOWN)
 
     # -- actions ------------------------------------------------------------------
 
@@ -594,13 +596,13 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
         # One button, honest label: while this recording plays it reads Stop.
         if self._is_entry_playing(entry):
             self._controller.stop()
-            self._announce("Playback stopped")
+            self._announce("Playback stopped.")
         else:
             station = RadioStation(name=entry.name, stream_url=str(entry.path))
             self._controller.play_station(station)
             # Joins the queue, so shuffle/repeat decide what follows it too.
             self._queue_row = self._list.GetFirstSelected()
-            self._announce(f"Playing recording {entry.name}")
+            self._announce(f"Playing recording {entry.name}.")
         self._on_selection_changed()
 
     def _on_stop_recording(self) -> None:
@@ -643,32 +645,12 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
         from quill.core.file_manager import reveal_command
 
         subprocess.Popen(reveal_command(entry.path))  # noqa: S603
-        self._announce(f"Showing {entry.name} in the file manager")
+        self._announce(f"Showing {entry.name} in the file manager.")
 
     def _on_remove(self) -> None:
-        wx = self._wx
-        entry = self._selected()
-        if entry is None or entry.path is None:
-            return
-        if entry.status == STATUS_RECORDING:
-            self._announce("Still recording; stop it before removing it.")
-            return
-        answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation inside a managed dialog
-            f"Delete the recording {entry.name}?\n\nThis removes the file "
-            f"({entry.size_display}) from your recordings folder permanently.",
-            "Remove Recording",
-            wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
-            self.dialog,
-        )
-        if answer != wx.YES:
-            return
-        try:
-            entry.path.unlink()
-        except OSError as error:
-            self._announce(f"Could not delete the file: {error}")
-            return
-        self._announce(f"Removed recording {entry.name}")
-        self._refresh(keep_selection=True)
+        from quill.ui.radio import recordings_delete
+
+        recordings_delete.remove_selected(self)
 
     def _on_key(self, event: Any) -> None:
         wx = self._wx

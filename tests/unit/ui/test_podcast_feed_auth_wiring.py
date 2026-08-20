@@ -55,7 +55,11 @@ def test_chapters_and_transcripts_pass_auth_header() -> None:
     # sites follow above.
     cascade = _read("core/podcasts/chapter_sources.py")
     assert "auth_header_for_url(show, chapters_url)" in cascade
-    for rel in ("ui/podcasts/manager_dialog.py", "ui/main_frame_podcasts.py"):
+    # The manager's own call moved to ui/podcasts/transcript_actions.py when the
+    # three episode reading surfaces (chapters, transcript, show notes) were
+    # gathered there under GATE-11. The rule is unchanged: every UI site goes
+    # through the one core helper rather than fetching for itself.
+    for rel in ("ui/podcasts/transcript_actions.py", "ui/main_frame_podcasts.py"):
         src = _read(rel)
         assert "build_episode_chapters(" in src, rel
         assert "fetch_and_parse_chapters(" not in src, rel

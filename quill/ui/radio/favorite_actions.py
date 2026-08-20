@@ -39,9 +39,9 @@ def rename_favorite(
         entry.Destroy()
     store.rename(favorite.key, name)
     if name:
-        announce(f"Station renamed to {name}")
+        announce(f"Station renamed to {name}.")
     else:
-        announce(f"Station name restored to {favorite.station.display_name}")
+        announce(f"Station name restored to {favorite.station.display_name}.")
     return True
 
 
@@ -52,20 +52,30 @@ def remove_favorite(
     *,
     announce: Callable[[str], None],
 ) -> bool:
-    """Confirm, then remove the favorite from the store."""
-    import wx
+    """Confirm, then remove the favorite from the store.
+
+    The confirmation carries a **Don't ask me again** checkbox (2026-08-18):
+    removing a favorite is small and undone by adding it back, and somebody
+    tidying a long list answers the same question a dozen times. The answer is
+    remembered in the shared ask-prefs store, so Delete on the row and Remove
+    from the context menu -- which both arrive here -- go quiet together.
+    """
+    from quill.core.podcasts.ask_prefs import REMOVE_FAVORITE_KEY
+    from quill.ui.confirm_once_dialog import confirm_once
 
     name = favorite.display_label
-    answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
-        f"Remove {name} from your favorites?",
-        "Remove Favorite",
-        wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
+    if not confirm_once(
         parent,
-    )
-    if answer != wx.YES:
+        title="Remove Favorite",
+        message=f"Remove {name} from your favorites?",
+        affirmative="&Remove",
+        question_key=REMOVE_FAVORITE_KEY,
+        announce=announce,
+        quiet_note="removing a favorite",
+    ):
         return False
     store.remove(favorite.key)
-    announce(f"Removed {name} from favorites")
+    announce(f"Removed {name} from favorites.")
     return True
 
 
@@ -84,7 +94,7 @@ def remove_all_favorites(
 
     count = len(store.favorites)
     if count == 0:
-        announce("You have no favorites to remove")
+        announce("You have no favorites to remove.")
         return False
     answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
         f"Remove all {count} favorite(s)? Folders are kept, and a backup is saved "
@@ -96,7 +106,7 @@ def remove_all_favorites(
     if answer != wx.YES:
         return False
     removed = store.clear()
-    announce(f"Removed all {removed} favorite(s)")
+    announce(f"Removed all {removed} favorite(s).")
     return True
 
 
@@ -140,7 +150,7 @@ def move_favorite_to_folder(
             return False
     folder = "" if choice == TOP_LEVEL_CHOICE else choice
     store.set_folder(favorite.key, folder)
-    announce(f"Filed {favorite.display_label} under {folder or 'the top level'}")
+    announce(f"Filed {favorite.display_label} under {folder or 'the top level'}.")
     return True
 
 
