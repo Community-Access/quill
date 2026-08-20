@@ -20,10 +20,12 @@ than in it: the caret's line is the cue, and the cue knows when it starts.
 
 Four rules this window keeps:
 
-* **Following is opt-in, and reading always wins.** With Follow Playback off --
-  the default -- playback never moves your caret. You are reading; the audio can
-  wait. With it on, the caret follows the audio and says nothing while it does,
-  because a position announcement per line would be unusable.
+* **Playback never moves your caret.** You are reading; the audio can wait.
+  There was once a Follow the Audio checkbox that dragged the cursor along with
+  playback, and it was removed (2026-08-18): a caret that moves while you are
+  reading is a caret you are fighting, and everything it offered is better
+  served by Find, which takes you to a moment you chose rather than to the one
+  that happens to be playing.
 * **Every position is spoken as words.** "4 minutes 12 seconds", never "4:12",
   which a screen reader reads as an ambiguous pair of numbers.
   ``bounded_playback_ui.spoken_duration`` is the single source for that, here as
@@ -43,7 +45,6 @@ from typing import Any
 
 from quill.core.podcasts.transcripts import (
     TranscriptCue,
-    cue_at,
     cues_to_srt,
     cues_to_text,
     cues_to_vtt,
@@ -51,13 +52,9 @@ from quill.core.podcasts.transcripts import (
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.radio.bounded_playback_ui import spoken_duration
 
-#: How often the caret is re-synced to the audio while Follow Playback is on.
-#: Twice a second: fast enough that the caret is never visibly behind, slow
-#: enough that it is not fighting a listener who is arrowing around, and cheap
-#: because :func:`cue_at` is a binary search.
-_FOLLOW_INTERVAL_MS = 500
-
-#: Save As formats, in the order the dialog offers them.
+#: Save As formats, in the order the dialog offers them. Text first because it
+#: is what most people want; the two subtitle formats because somebody keeping
+#: a transcript very often wants it in a form another player can follow.
 _SAVE_FORMATS: tuple[tuple[str, str, Callable[[Sequence[TranscriptCue]], str]], ...] = (
     ("Plain text", "txt", cues_to_text),
     ("WebVTT", "vtt", cues_to_vtt),
@@ -143,16 +140,19 @@ class TranscriptReader:
         self._announce = announce or (lambda _m: None)
         self._show_modal_dialog = show_modal_dialog
         self._on_send_to_quill = on_send_to_quill
-        self._following = False
-        self._timer: Any = None
-        self._last_followed = -1
 
         self._dialog = wx.Dialog(
             parent,
             title=f"Transcript: {title}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
+        # A real size, not just a floor: the window used to open at whatever
+        # its sizer's minimum happened to be, which showed a dozen lines of
+        # something that is often an hour of speech ("can we make the
+        # transcript window larger to show more text?", 2026-08-18). It is
+        # resizable, and this is a starting point worth reading in.
         self._dialog.SetMinSize((640, 520))
+        self._dialog.SetSize((1000, 760))
         root = wx.BoxSizer(wx.VERTICAL)
 
         heading = "&Transcript"
@@ -168,21 +168,16 @@ class TranscriptReader:
             value=cues_to_text(self._cues),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.TE_PROCESS_ENTER,
         )
-        self._text.SetName(
-            "Transcript. Enter on a line plays from there; Ctrl+F finds; "
-            "Ctrl+Shift+F follows the audio"
-        )
+        self._text.SetName("Transcript. Enter on a line plays from there; Ctrl+F finds")
+        self._text.SetMinSize((-1, 480))
         root.Add(self._text, 1, wx.EXPAND | wx.ALL, 10)
-
-        self._follow_check = wx.CheckBox(self._dialog, label="&Follow the audio as it plays")
-        self._follow_check.SetName("Move the cursor to the line being spoken")
-        self._follow_check.Enable(position_ms is not None)
-        root.Add(self._follow_check, 0, wx.LEFT | wx.RIGHT, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._jump_btn = wx.Button(self._dialog, label="&Play from Here")
         self._find_btn = wx.Button(self._dialog, label="F&ind...")
         self._copy_btn = wx.Button(self._dialog, label="&Copy")
+        self._links_btn = wx.Button(self._dialog, label="&Links...")
+        self._links_btn.SetName("List every web address in this transcript")
         self._save_btn = wx.Button(self._dialog, label="&Save As...")
         self._quill_btn = wx.Button(self._dialog, label="Open in &QUILL")
         self._close_btn = wx.Button(self._dialog, wx.ID_CANCEL, "Cl&ose")
@@ -190,6 +185,7 @@ class TranscriptReader:
             self._jump_btn,
             self._find_btn,
             self._copy_btn,
+            self._links_btn,
             self._save_btn,
             self._quill_btn,
             self._close_btn,
@@ -204,10 +200,10 @@ class TranscriptReader:
 
         self._text.Bind(wx.EVT_TEXT_ENTER, lambda _e: self.jump_to_caret())
         self._text.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
-        self._follow_check.Bind(wx.EVT_CHECKBOX, self._on_follow_toggled)
         self._jump_btn.Bind(wx.EVT_BUTTON, lambda _e: self.jump_to_caret())
         self._find_btn.Bind(wx.EVT_BUTTON, lambda _e: self.find())
         self._copy_btn.Bind(wx.EVT_BUTTON, lambda _e: self.copy())
+        self._links_btn.Bind(wx.EVT_BUTTON, lambda _e: self.show_links())
         self._save_btn.Bind(wx.EVT_BUTTON, lambda _e: self.save_as())
         self._quill_btn.Bind(wx.EVT_BUTTON, lambda _e: self.send_to_quill())
         self._dialog.Bind(wx.EVT_CLOSE, self._on_close)
@@ -228,69 +224,24 @@ class TranscriptReader:
                 return int(self._show_modal_dialog(self._dialog, title))
             return int(self._dialog.ShowModal())  # dialog_button_contract: exempt
         finally:
-            self._stop_following()
             self._dialog.Destroy()
 
     def _on_close(self, event: Any) -> None:
-        self._stop_following()
         event.Skip()
 
     def _on_char_hook(self, event: Any) -> None:
         wx = self._wx
         key = event.GetKeyCode()
-        if event.ControlDown() and key == ord("F"):
-            if event.ShiftDown():
-                self._follow_check.SetValue(not self._follow_check.GetValue())
-                self._on_follow_toggled(None)
-            else:
-                self.find()
+        if event.ControlDown() and key == ord("F") and not event.ShiftDown():
+            self.find()
+            return
+        if event.ControlDown() and event.ShiftDown() and key == ord("L"):
+            self.show_links()
             return
         if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
             self.jump_to_caret()
             return
         event.Skip()
-
-    # -- following -------------------------------------------------------------
-
-    def _on_follow_toggled(self, _event: Any) -> None:
-        if self._follow_check.GetValue():
-            self._start_following()
-            self._announce("Following the audio.")
-        else:
-            self._stop_following()
-            self._announce("No longer following the audio.")
-
-    def _start_following(self) -> None:
-        if self._timer is not None or self._position_ms is None:
-            return
-        self._following = True
-        self._timer = self._wx.Timer(self._dialog)
-        self._dialog.Bind(self._wx.EVT_TIMER, lambda _e: self.sync_to_playback(), self._timer)
-        self._timer.Start(_FOLLOW_INTERVAL_MS)
-
-    def _stop_following(self) -> None:
-        self._following = False
-        if self._timer is not None:
-            self._timer.Stop()
-            self._timer = None
-
-    def sync_to_playback(self) -> int:
-        """Move the caret to the line being spoken. Returns the cue index, or -1.
-
-        Deliberately silent. The caret moving *is* the feedback -- a screen reader
-        announces the new line by itself -- and speaking a position on every line
-        would make the feature unusable within about ten seconds.
-        """
-        if self._position_ms is None:
-            return -1
-        index = cue_at(self._cues, int(self._position_ms()))
-        if index < 0 or index == self._last_followed:
-            return index
-        self._last_followed = index
-        offset = self._offsets[index]
-        self._text.SetInsertionPoint(offset)
-        self._text.ShowPosition(offset)
-        return index
 
     # -- commands --------------------------------------------------------------
 
@@ -339,7 +290,18 @@ class TranscriptReader:
         self._text.ShowPosition(offset)
         index = cue_index_for_offset(self._offsets, self._cues, offset)
         if index >= 0:
-            self._announce(f"Found at {describe_position(self._cues[index])}.")
+            # The cursor is already on the hit; this says *when* it was said and
+            # what Enter would do about it. Only when there is a real timing to
+            # report and something that can act on it -- a transcript with no
+            # times, or one opened while nothing is playing, must not be told
+            # about a jump it cannot make (2026-08-18).
+            cue = self._cues[index]
+            said = f"Found at {describe_position(cue)}."
+            if self._seek_to_ms is not None:
+                said += " Enter plays from here."
+            self._announce(said)
+        else:
+            self._announce(f"Found {query}.")
         return index
 
     def _ask_for_query(self) -> str:
@@ -351,6 +313,28 @@ class TranscriptReader:
             return entry.GetValue().strip()
         finally:
             entry.Destroy()
+
+    def show_links(self) -> int:
+        """List every web address in the transcript, to open or copy.
+
+        A transcript is read-only prose in a text box, so an address in it was
+        something to read out and retype. Ctrl+Shift+L, or the Links button.
+        """
+        from quill.core.text_links import find_links
+        from quill.ui.link_list_dialog import LinkListDialog
+
+        links = find_links(self._text.GetValue())
+        if not links:
+            self._announce("There are no web addresses in this transcript.")
+            return 0
+        LinkListDialog(
+            self._dialog,
+            links=links,
+            title="Links in This Transcript",
+            announce_cb=self._announce,
+            show_modal_dialog=self._show_modal_dialog,
+        ).show()
+        return len(links)
 
     def copy(self) -> str:
         """Copy the selection, or the whole transcript when nothing is selected."""

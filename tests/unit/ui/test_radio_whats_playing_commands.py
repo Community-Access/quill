@@ -50,6 +50,7 @@ class _Host:
         self.announcements: list[str] = []
         self.copied: list[str] = []
         self.dialogs: list[tuple[str, str]] = []
+        self.transport_hosts: list[object] = []
         self.frame = object()
 
     # -- the host surface the commands use --------------------------------
@@ -82,8 +83,22 @@ def _station() -> RadioStation:
 
 def _install_fake_dialog(monkeypatch, host: _Host) -> None:
     class _FakeDialog:
-        def __init__(self, _parent, text, _show, _copy, _announce, *, title="Now Playing"):
+        def __init__(
+            self,
+            _parent,
+            text,
+            _show,
+            _copy,
+            _announce,
+            *,
+            title="Now Playing",
+            transport_host=None,
+        ):
+            # transport_host carries the shared transport keyboard into this
+            # window; the real dialog installs it, and the double records that
+            # it was handed one at all.
             host.dialogs.append((title, text))
+            host.transport_hosts.append(transport_host)
 
         def show(self) -> None:
             pass

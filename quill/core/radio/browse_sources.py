@@ -213,14 +213,33 @@ def _stations(rows: Sequence[RadioStation]) -> list[BrowseNode]:
 # --- per-source handlers ------------------------------------------------------
 
 
+def _favorite_node(fav: object) -> BrowseNode:
+    """One saved favorite as a row: a stream to play, or a place to open.
+
+    A *place* (a podcast show, a book, a followed channel -- see
+    :func:`quill.core.radio.favorites.place_station`) comes back as a folder
+    carrying the browse id it was saved from, so opening it from Favorites
+    lands exactly where opening it from its own source would. Everything the
+    row can do afterwards -- subscribe, download all, expand -- follows from
+    that id, with no second implementation of any of it.
+    """
+    from quill.core.radio.favorites import place_node_id
+
+    station = fav.station  # type: ignore[attr-defined]
+    node_id = place_node_id(station)
+    if not node_id:
+        return leaf(station)
+    return folder(node_id, fav.display_label, note="saved place")  # type: ignore[attr-defined]
+
+
 def _browse_favorites(args: list[str], *, safe_mode: bool, favorites: object) -> list[BrowseNode]:
     if favorites is None:
         return []
     ordered = list(favorites.favorites_in_display_order())  # type: ignore[attr-defined]
     if args and args[0]:
         wanted = args[0]
-        return [leaf(fav.station) for fav in ordered if fav.folder == wanted]
-    nodes = [leaf(fav.station) for fav in ordered if not fav.folder]
+        return [_favorite_node(fav) for fav in ordered if fav.folder == wanted]
+    nodes = [_favorite_node(fav) for fav in ordered if not fav.folder]
     for name in favorites.folders_in_display_order():  # type: ignore[attr-defined]
         count = sum(1 for fav in ordered if fav.folder == name)
         nodes.append(folder(make_id("favorites", name), name, child_count=count))

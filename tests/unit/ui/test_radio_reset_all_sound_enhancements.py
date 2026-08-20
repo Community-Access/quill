@@ -17,7 +17,7 @@ import quill.ui.app_preferences_dialog as app_preferences_dialog_module
 from quill.apps.radio import RadioAppFrame
 from quill.core.radio.favorites import FavoriteStation, RadioFavoritesStore
 from quill.core.radio.models import RadioStation
-from quill.ui.radio.player_controller import RadioPlayerState
+from quill.ui.radio.playback_state import RadioPlayerState
 
 
 def _station(key_suffix: str = "1") -> RadioStation:

@@ -46,7 +46,7 @@ class RecordingsQueueMixin:
         station = RadioStation(name=entry.name, stream_url=str(entry.path))
         self._controller.play_station(station)
         self._queue_row = row
-        self._announce(f"Playing recording {entry.name}")
+        self._announce(f"Playing recording {entry.name}.")
         self._on_selection_changed()
 
     # -- the play queue (item 12) -----------------------------------------
@@ -74,7 +74,7 @@ class RecordingsQueueMixin:
         on = self._play_queue().toggle_shuffle(self._playable_rows())
         self._history.recordings_shuffle = on
         self._save_history()
-        self._announce("Shuffle on" if on else "Shuffle off")
+        self._announce("Shuffle on." if on else "Shuffle off.")
 
     def _winamp_cycle_repeat(self) -> None:
         """S: off, then all recordings, then this recording."""
@@ -94,7 +94,7 @@ class RecordingsQueueMixin:
         """
         on = self._play_queue().toggle_stop_after_current()
         self._announce(
-            "Will stop after this recording" if on else "Will keep playing after this recording"
+            "Will stop after this recording." if on else "Will keep playing after this recording."
         )
 
     def _save_history(self) -> None:
@@ -113,7 +113,7 @@ class RecordingsQueueMixin:
         on every exit path -- including the ones that are exceptions.
         """
         from quill.core.radio.play_queue import NO_ROW
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import RadioPlayerState
 
         if self._queue_row < 0:
             return

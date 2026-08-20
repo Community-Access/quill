@@ -1,4 +1,4 @@
-# Shared build-environment resolution for every standalone app's
+﻿# Shared build-environment resolution for every standalone app's
 # scripts\build_release.ps1 and for standalone\runtime\build_runtime.ps1.
 #
 # WHY THIS EXISTS
@@ -211,7 +211,11 @@ function Resolve-QuillPython {
     $usable = @($candidates | Where-Object { $_.Version -ge $Minimum })
     if ($usable.Count -gt 0) {
         $pick = $usable[0]
-        $others = ($candidates | Where-Object { $_.Path -ne $pick.Path }).Count
+        # @(...) is load-bearing under Set-StrictMode -Version Latest: a
+        # Where-Object that filters everything out returns $null, and $null.Count
+        # is a hard error rather than 0 -- which took the build down on any
+        # machine with exactly one system Python.
+        $others = @($candidates | Where-Object { $_.Path -ne $pick.Path }).Count
         $suffix = if ($others -gt 0) { "; $others other system copy/copies ignored" } else { "" }
         Write-Host "Using system Python $($pick.Version) ($($pick.Path))$suffix"
         return $pick.Path

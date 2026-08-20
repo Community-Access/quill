@@ -15,6 +15,7 @@ from pathlib import Path
 from quill.core.audio_enhance import EQ_PRESETS
 from quill.core.radio.browse_visibility import normalize as normalize_browse_sources
 from quill.core.radio.models import RadioStation
+from quill.core.radio.onboarding import RadioOnboardingState
 from quill.core.radio.play_queue import normalize_repeat_mode
 from quill.core.radio.search_sources import DEFAULT_ENABLED as DEFAULT_SEARCH_SOURCES
 from quill.core.radio.search_sources import normalize as normalize_search_sources
@@ -57,6 +58,17 @@ class RadioHistory:
     #: first time QUILL ever touched YouTube, which is exactly the surprise the
     #: consent exists to prevent.
     youtube_consented: bool = False
+    #: What the listener has already been shown of the first-run flow and the
+    #: one-shot tips. A nested record rather than three flat fields, because it
+    #: is one feature and reading it as one is how the caller uses it.
+    onboarding: RadioOnboardingState = field(default_factory=RadioOnboardingState)
+    #: Which media-tool shortfall has already been mentioned at launch --
+    #: ``"ffmpeg=1,mpv=0"`` and friends, from ``MediaHealth.signature()``.
+    #: A signature rather than a "seen" flag so that a machine which later
+    #: loses a *second* tool is told again, while a machine told once about
+    #: the same state is not told on every launch until the end of time.
+    #: Cleared when everything is healthy again, so a later loss is news.
+    media_notice_signature: str = ""
     #: Speak "Now playing: ..." when the stream's track title changes.
     #: Off by default -- in QUILL it would interrupt writing; turning it on
     #: is one check item on the radio menus.
@@ -326,6 +338,8 @@ def load_history(data_dir: Path) -> RadioHistory:
             0, _coerce_int(raw.get("subscription_episode_limit"), 25)
         )
         history.youtube_consented = bool(raw.get("youtube_consented", False))
+        history.media_notice_signature = str(raw.get("media_notice_signature", ""))
+        history.onboarding = RadioOnboardingState.from_dict(raw.get("onboarding"))
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
         if "eq_bass_db" in raw or "eq_mid_db" in raw or "eq_treble_db" in raw:
@@ -467,6 +481,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "now_playing_template": history.now_playing_template,
             "recover_from_website": history.recover_from_website,
             "output_device": history.output_device,
+            "media_notice_signature": history.media_notice_signature,
+            "onboarding": history.onboarding.to_dict(),
             "playback_engine": history.playback_engine,
             "volume_boost": history.volume_boost,
             "volume_percent": history.volume_percent,

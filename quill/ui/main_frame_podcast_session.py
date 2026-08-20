@@ -552,48 +552,7 @@ class PodcastSessionMixin:
     # -- command registration -------------------------------------------
 
     def _register_podcast_session_commands(self) -> None:
-        for command_id, title, handler in (
-            ("podcasts.speed_up", "Podcasts: Speed Up", self.podcast_speed_up),
-            ("podcasts.speed_down", "Podcasts: Speed Down", self.podcast_speed_down),
-            ("podcasts.speed_reset", "Podcasts: Reset Speed to Normal", self.podcast_speed_reset),
-            (
-                "podcasts.stop_after_episode",
-                "Podcasts: Stop After This Episode",
-                self.podcast_toggle_stop_after_episode,
-            ),
-            (
-                "podcasts.mark_all_played",
-                "Podcasts: Mark All Episodes as Played...",
-                self.podcast_mark_all_played,
-            ),
-            (
-                "podcasts.statistics",
-                "Podcasts: Listening Statistics...",
-                self.open_podcast_statistics,
-            ),
-            ("podcasts.downloads", "Podcasts: Downloads...", self.open_podcast_downloads),
-            ("podcasts.free_space", "Podcasts: Free Up Space", self.podcast_free_up_space),
-            (
-                "podcasts.quick_actions",
-                "Podcasts: Quick Actions...",
-                self.open_podcast_quick_actions,
-            ),
-            ("podcasts.export_data", "Podcasts: Export My Data...", self.podcast_export_data),
-            (
-                "podcasts.delete_all_data",
-                "Podcasts: Delete All Podcast Data...",
-                self.podcast_delete_all_data,
-            ),
-            (
-                "podcasts.run_maintenance",
-                "Podcasts: Run Housekeeping Now",
-                self.podcast_run_maintenance,
-            ),
-        ):
-            self.commands.try_register(
-                command_id,
-                title,
-                handler,
-                self._binding_for(command_id),
-                feature_id="core.podcasts",
-            )
+        """Palette wiring lives in quill/ui/podcasts/palette_commands.py (GATE-11)."""
+        from quill.ui.podcasts.palette_commands import register_podcast_commands
+
+        register_podcast_commands(self)

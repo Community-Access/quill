@@ -55,7 +55,7 @@ def begin_youtube_play(
     """
     resolver = controller._resolve_youtube  # noqa: SLF001 - documented seam
     state = controller._state  # noqa: SLF001
-    from quill.ui.radio.player_controller import RadioPlayerState
+    from quill.ui.radio.playback_state import RadioPlayerState
 
     if resolver is None:
         state.station = station
@@ -99,7 +99,7 @@ def apply_youtube_result(
     stream: Any = None,
 ) -> None:
     """UI-thread continuation of :func:`begin_youtube_play`."""
-    from quill.ui.radio.player_controller import RadioPlayerState
+    from quill.ui.radio.playback_state import RadioPlayerState
 
     if token != controller._play_token:  # noqa: SLF001 - stale resolve, listener moved on
         return

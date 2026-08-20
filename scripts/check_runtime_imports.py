@@ -81,6 +81,19 @@ MUST_IMPORT: tuple[str, ...] = (
     "quill.core.spellcheck",
     "quill.core.speech.engine_install",
     "quill.ui.audio.mpv_engine",
+    # The two survivors of the 2026-08-19 undeclared-payload excludes. Each is
+    # kept deliberately while a package it can reach for was dropped, so each is
+    # one dependency bump away from becoming a shipped-broken feature:
+    #   huggingface_hub -- hf_xet is excluded. The hub falls back to plain
+    #     HTTPS today (is_xet_available() gates every use), but a future release
+    #     that makes Xet mandatory would break Faster Whisper's model download,
+    #     and nothing else would say so.
+    #   quill.io.pages -- keynote_parser and its protobuf/snappy closure are
+    #     excluded. The module must still import and fall through to Route B
+    #     (LibreOffice / MarkItDown); an ImportError here means .pages files
+    #     stopped opening at all rather than opening by the other route.
+    "huggingface_hub",
+    "quill.io.pages",
 )
 
 _PROBE_MODULE = "_quill_import_gate"

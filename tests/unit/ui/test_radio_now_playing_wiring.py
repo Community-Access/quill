@@ -70,7 +70,7 @@ def test_copy_whats_playing_puts_clean_text_on_the_clipboard() -> None:
     assert copied == ["YOUR SONG by Elton John"]
     # #1282: the confirmation names what went to the clipboard, so a listener
     # knows the copy caught the track they meant and not a stale one.
-    assert frame._announced == ["Copied: YOUR SONG by Elton John"]
+    assert frame._announced == ["Copied: YOUR SONG by Elton John."]
 
 
 def test_copy_whats_playing_when_nothing_is_playing() -> None:

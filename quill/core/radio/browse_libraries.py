@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quill.core.radio.browse_nodes import BrowseNode, folder, leaf, make_id
+from quill.core.radio.browse_nodes import BrowseNode, action, folder, leaf, make_id
 from quill.core.radio.models import RadioStation
 
 if TYPE_CHECKING:
@@ -118,6 +118,8 @@ def _episode_leaves(info: FeedInfo, feed_url: str, *, source: str) -> list[Brows
     into the shared library (:func:`_sync_subscribed_episodes`) without
     asking the publisher twice.
     """
+    from quill.core.podcasts.show_notes import html_to_plain_text
+
     nodes: list[BrowseNode] = []
     for episode in info.episodes:
         if not episode.audio_url:
@@ -138,6 +140,12 @@ def _episode_leaves(info: FeedInfo, feed_url: str, *, source: str) -> list[Brows
                     homepage=feed_url,
                     source=source,
                     is_recording=True,
+                    # The publisher's own description, de-HTML-ed, so Station
+                    # Details answers "what is this episode about?" instead of
+                    # showing two addresses and nothing else.
+                    # getattr: a feed parser that carried no description at
+                    # all is a feed with no show notes, not a crash.
+                    notes=html_to_plain_text(str(getattr(episode, "description", "") or "")),
                 ),
                 node_id=node_id,
                 note="transcript available" if episode.transcript_url else "",
@@ -173,6 +181,16 @@ def _my_podcast_level(library: PodcastLibrary, folder_id: str | None) -> list[Br
     from quill.core.podcasts.models import PodcastShow
     from quill.core.podcasts.radio_listens import finished_audio_urls
     from quill.core.podcasts.sorting import unheard_count, unheard_count_for_folder
+
+    if folder_id is None and not library.shows and not library.folders:
+        # An empty Subscriptions branch offers the three ways in instead of
+        # nothing -- rows that act (browse_actions), and that stop appearing
+        # the moment the library holds anything.
+        return [
+            action("addpodcasturl", "Add a Podcast by URL..."),
+            action("importpodcastsopml", "Import Podcasts from OPML..."),
+            action("searchpodcasts", "Search for a Podcast..."),
+        ]
 
     # Radio's own finished listens, subtracted from every badge on this level:
     # an episode heard to the end HERE is finished now, even though the shared

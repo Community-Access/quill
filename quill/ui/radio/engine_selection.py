@@ -122,7 +122,10 @@ def _build_mpv(host: Any) -> bool:
             on_finished=host._on_finished,
             on_error=host._on_error,
             audio_device=host._output_device,
-            on_buffering=host._on_buffering,
+            # The controller's interposer, not the host announcer it wraps:
+            # a stall has to become a *state* as well as a sentence, or the
+            # status bar goes on saying "playing" through dead air.
+            on_buffering=host._handle_buffering,
         )
     except Exception:  # noqa: BLE001 - fall back, never fail playback
         _log.exception("mpv radio engine unavailable; using wx.media")
@@ -135,7 +138,7 @@ def attempt_fallback(host: Any) -> bool:
 
     One rescue per play attempt, latched on ``host._fallback_attempted``.
     """
-    from quill.ui.radio.player_controller import RadioPlayerState
+    from quill.ui.radio.playback_state import RadioPlayerState
 
     station = host._state.station
     if host._fallback_attempted or station is None:

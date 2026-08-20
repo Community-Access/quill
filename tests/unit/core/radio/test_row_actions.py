@@ -408,3 +408,69 @@ def test_a_subscribed_episode_offers_the_played_toggle_one_way_at_a_time() -> No
     plain = _ids(actions_for("archiveitem", station=_Row(is_recording=True)))
     assert row_actions.MARK_EPISODE_PLAYED not in plain
     assert row_actions.MARK_EPISODE_UNPLAYED not in plain
+
+
+def test_a_streaming_row_toggles_one_transport_verb() -> None:
+    # A live station has two states, so Stop replaces Play rather than joining
+    # it: two transport items where one applies is two items to read past.
+    playing = row_actions.transport_actions(playing=True, downloaded=False)
+    stopped = row_actions.transport_actions(playing=False, downloaded=False)
+
+    assert [a.id for a in playing] == [row_actions.STOP]
+    assert [a.id for a in stopped] == [row_actions.PLAY]
+
+
+def test_a_downloaded_row_offers_play_pause_and_stop() -> None:
+    # A saved file has a middle you can stand still in, so pausing to answer
+    # the door is not the same verb as abandoning the episode.
+    playing = row_actions.transport_actions(playing=True, downloaded=True)
+    stopped = row_actions.transport_actions(playing=False, downloaded=True)
+
+    assert [a.id for a in playing] == [row_actions.PAUSE, row_actions.STOP]
+    assert [a.id for a in stopped] == [row_actions.PLAY, row_actions.STOP]
+
+
+def test_download_becomes_remove_download_once_the_file_is_here() -> None:
+    saved = row_actions.station_actions(
+        playing=False,
+        saved=False,
+        has_homepage=False,
+        can_download=True,
+        can_report=False,
+        is_recording=True,
+        downloaded=True,
+    )
+    unsaved = row_actions.station_actions(
+        playing=False,
+        saved=False,
+        has_homepage=False,
+        can_download=True,
+        can_report=False,
+        is_recording=True,
+        downloaded=False,
+    )
+
+    assert row_actions.REMOVE_DOWNLOAD in [a.id for a in saved]
+    assert row_actions.DOWNLOAD not in [a.id for a in saved]
+    assert row_actions.DOWNLOAD in [a.id for a in unsaved]
+    assert row_actions.REMOVE_DOWNLOAD not in [a.id for a in unsaved]
+
+
+def test_a_downloaded_row_keeps_one_accelerator_per_key() -> None:
+    # The fullest downloaded-episode menu there is. A popup with two items
+    # answering the same key means one of them silently never fires.
+    actions = row_actions.station_actions(
+        playing=True,
+        saved=True,
+        has_homepage=True,
+        can_download=True,
+        can_report=True,
+        is_recording=True,
+        episode_played=False,
+        downloaded=True,
+    )
+
+    keys = [
+        label.split("&", 1)[1][0].lower() for label in (a.label for a in actions) if "&" in label
+    ]
+    assert len(keys) == len(set(keys)), sorted(keys)

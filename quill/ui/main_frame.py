@@ -6824,7 +6824,7 @@ class MainFrame(
                 finish,
             )
             return
-        finish(read_open_document(selected_path, suffix, csv_mode=csv_mode))
+        self._read_open_document_guarded(selected_path, suffix, csv_mode, finish)
 
     def _docx_read_engine(self) -> str:
         """The ``docx_read_engine`` setting, resolved on the UI thread.

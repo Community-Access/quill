@@ -355,6 +355,17 @@ class PodcastsAppFrame(
         for folder in self._podcast_library.folders:
             folder_item(folder.id)
 
+        if not self._podcast_library.shows and not self._podcast_library.folders:
+            # An empty library offers the three ways in, as rows that act on
+            # Enter -- and stop appearing the moment anything is subscribed.
+            # The same trio Quill Radio's empty Subscriptions branch shows.
+            for key, label in (
+                ("add", "Add a Podcast by URL..."),
+                ("import", "Import Podcasts from OPML..."),
+                ("search", "Search for a Podcast..."),
+            ):
+                tag(tree.AppendItem(root, label), ("action", key))
+
         for show in sort_shows(
             self._podcast_library.shows, self._podcast_library.settings.show_sort_mode
         ):
@@ -477,6 +488,15 @@ class PodcastsAppFrame(
         if kind == "more":
             self.open_podcast_manager()
             self._announce("Opened the Podcast Manager, where the full episode list lives.")
+            return
+        if kind == "action":
+            # The empty-library filler rows. Add Podcast and Search open the
+            # same dialog (its search box leads and its URL field sits below);
+            # Import goes straight to the OPML chooser.
+            if key == "import":
+                self._podcast_open_import_opml()
+            else:
+                self._podcast_open_add_dialog()
             return
         if kind == "view":
             from quill.core.podcasts.virtual_views import view_label

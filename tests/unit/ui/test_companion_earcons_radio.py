@@ -21,7 +21,8 @@ import wx
 from quill.core.radio.models import RadioStation
 from quill.core.sound_events import SoundEvent
 from quill.ui.main_frame_radio import RadioMixin
-from quill.ui.radio.player_controller import RadioPlayerController, RadioPlayerState
+from quill.ui.radio.playback_state import RadioPlayerState
+from quill.ui.radio.player_controller import RadioPlayerController
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -156,7 +157,11 @@ def test_buffering_cues_once_until_the_playback_state_changes() -> None:
 def test_a_new_playback_state_re_arms_the_buffering_cue() -> None:
     host = _host()
     host._radio_announce_buffering()
-    host._on_radio_state_changed(SimpleNamespace(state=RadioPlayerState.CONNECTING, station=None))
+    host._on_radio_state_changed(
+        # message="" because the real RadioPlaybackState always carries one, and
+        # the reconnect announcement reads it.
+        SimpleNamespace(state=RadioPlayerState.CONNECTING, station=None, message="")
+    )
     host._radio_announce_buffering()
     assert [sound for _msg, sound in host.spoken] == [
         SoundEvent.RADIO_BUFFERING,
@@ -167,7 +172,7 @@ def test_a_new_playback_state_re_arms_the_buffering_cue() -> None:
 def test_a_volume_notification_does_not_re_arm_the_buffering_cue() -> None:
     host = _host()
     host._radio_announce_buffering()
-    state = SimpleNamespace(state=RadioPlayerState.PLAYING, station=None)
+    state = SimpleNamespace(state=RadioPlayerState.PLAYING, station=None, message="")
     host._on_radio_state_changed(state)  # first sighting of PLAYING re-arms
     host._radio_announce_buffering()
     host._on_radio_state_changed(state)  # a volume/mute notify: same state
@@ -225,8 +230,8 @@ def test_the_standalone_app_cues_a_station_added_to_favourites() -> None:
     app._reload_favorites_tree = lambda: None
     app._refresh_favorite_toggle = lambda: None
     app._on_favorite_toggle()
-    assert spoken == [("Added KEXP to favorites", SoundEvent.RADIO_FAVORITE_ADDED)]
+    assert spoken == [("Added KEXP to favorites.", SoundEvent.RADIO_FAVORITE_ADDED)]
     # Removing one is not the same event and must not borrow its cue.
     spoken.clear()
     app._on_favorite_toggle()
-    assert spoken == [("Removed KEXP from favorites", "")]
+    assert spoken == [("Removed KEXP from favorites.", "")]

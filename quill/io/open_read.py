@@ -14,7 +14,35 @@ from __future__ import annotations
 from pathlib import Path
 
 from quill.core.document import Document
+from quill.core.error_codes import CodedError
 from quill.io.text import read_text_document
+
+
+class DocumentUnavailableError(CodedError):
+    """The file the user asked to open is not there, or cannot be read.
+
+    A OneDrive placeholder whose contents were never downloaded, a file deleted
+    since it was added to Recent, a disconnected network drive: all three end in
+    a bare ``FileNotFoundError`` (or ``PermissionError``) escaping the read and
+    reaching the crash handler, which is how #1423 was reported -- QUILL showed
+    a crash report for a file that was simply gone. Raised here, at the single
+    funnel every open path goes through, so the message can say what happened in
+    a sentence rather than a traceback.
+    """
+
+    code = "QUILL-IO-OPEN-UNAVAILABLE"
+
+
+def _require_readable(selected_path: Path) -> None:
+    """Fail with a sentence, not a stack trace, when the file is not there."""
+    if selected_path.is_dir():
+        raise DocumentUnavailableError(f"{selected_path.name} is a folder, not a file.")
+    if not selected_path.exists():
+        raise DocumentUnavailableError(
+            f"{selected_path.name} is no longer there. It may have been moved, "
+            "renamed, or deleted, or it may live on a drive that is not connected."
+        )
+
 
 # PERF-12: heavy office and PDF formats are parsed off the UI thread.
 OFFICE_STREAM_SUFFIXES: frozenset[str] = frozenset({
@@ -71,7 +99,13 @@ def read_open_document(
     ``docx_engine`` carries the ``docx_read_engine`` setting the same way.
     ``pdf_password`` carries a password the UI collected for an encrypted PDF; it
     is used only for this read and never stored.
+
+    Raises :class:`DocumentUnavailableError` when the path cannot be opened at
+    all, so every caller -- the worker-thread reads and the synchronous ones --
+    reports one sentence instead of the raw OSError that used to reach the crash
+    handler (#1423).
     """
+    _require_readable(selected_path)
     if suffix in _CSV_SUFFIXES:
         loaded = read_text_document(selected_path)
         engine = "csv grid" if csv_mode == "grid" else "csv text"

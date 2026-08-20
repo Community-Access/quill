@@ -129,6 +129,59 @@ a = Analysis(
         # moment anything imports it. Nothing first-party imports it; it was
         # swept in as a transitive extra of the documents stack.
         "weasyprint",
+        # --- undeclared payload: reachable on the build machine, called by ---
+        # --- nothing the [runtime] extra declares (2026-08-19) --------------
+        # Every entry below arrived the way the inventory gate's own docstring
+        # describes: Analysis follows an optional import, the package happens to
+        # be installed on this laptop, and ~15 MB ships in all seven installers.
+        # None of it is reachable from a capability pyproject's [runtime] group
+        # declares. Verified per package before excluding, not swept by size.
+        #
+        # hf_xet (9.3 MB) -- huggingface_hub's Xet transfer accelerator. It is
+        # optional by construction: is_xet_available() gates every use and
+        # file_download falls back to plain HTTPS with a log line. QUILL only
+        # ever downloads through the hub (faster-whisper's snapshot_download);
+        # the upload paths that genuinely require it are never called. The hub
+        # itself STAYS -- Kokoro and Faster Whisper fetch through it.
+        "hf_xet",
+        # keynote_parser and its closure -- protobuf (google/_upb, 0.8 MB) and
+        # python-snappy -> cramjam (4.1 MB). This is quill.io.pages Route A, and
+        # `pages` is NOT in the [runtime] extra: it ships only because this build
+        # machine has `.[pages]` installed, the same accident as sherpa_onnx
+        # above. quill.io.pages already treats the import as optional
+        # (`except ImportError: raise ImportError("keynote-parser not available")`)
+        # and falls through to Route B (LibreOffice / MarkItDown), so a .pages
+        # file still opens. Excluding the root as well as the closure is
+        # deliberate: dropping only protobuf would leave keynote_parser frozen
+        # and broken, which is the failure mode check_runtime_imports.py exists
+        # for. To ship Route A, add quill[pages] to [runtime] and drop these
+        # four -- a declaration, not a build-machine coincidence.
+        "keynote_parser",
+        "google",
+        "snappy",
+        "cramjam",
+        # mcp -> opentelemetry (~1 MB, pure Python). Nothing in quill,
+        # quill_social or any app imports `mcp`; it is installed here for an
+        # unrelated project (adp-mcp) and reaches the sweep through
+        # huggingface_hub's optional inference/_mcp module. Excluded as a pair
+        # so the exclude cannot leave a frozen mcp that raises on opentelemetry.
+        # This one exclude takes the largest bite, because mcp 2.0 drags a whole
+        # second HTTP stack and a schema validator behind it: httpx2 + httpcore2
+        # (mcp does not use the httpx the AI SDKs already ship -- it requires the
+        # separately-named 2.x distribution), and jsonschema -> rpds,
+        # jsonschema_specifications, and lark via rfc3987-syntax. QUILL ships no
+        # jsonschema dependency on purpose -- every manifest validator in the
+        # tree is hand-rolled and says so (core/quillins/validation.py,
+        # core/verbosity/qvp.py, core/ai/agent_catalog.py) -- so all six were
+        # payload for a package no app imports. ~4.4 MB, and the reason the
+        # inventory loses six names it never should have gained.
+        "mcp",
+        "opentelemetry",
+        # fontTools + zopfli (0.8 MB). Both are weasyprint's, and weasyprint is
+        # excluded five lines up; pypdf wants fontTools only under its `fonts`
+        # extra, which nothing installs. Dead the moment weasyprint went.
+        "fontTools",
+        "zopfli",
         # tomli is deliberately NOT excluded, though the 2026-08-18 probe found
         # it broken too (a mypyc-compiled dist whose hashed runtime module never
         # shipped). PyInstaller's setuptools hook aliases the vendored

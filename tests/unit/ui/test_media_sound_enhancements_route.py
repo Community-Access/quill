@@ -24,7 +24,7 @@ from quill.ui.media.sound_enhancements_route import (
     open_for_whats_playing,
 )
 from quill.ui.podcasts.player_controller import PodcastPlayerState
-from quill.ui.radio.player_controller import RadioPlayerState
+from quill.ui.radio.playback_state import RadioPlayerState
 
 # -- the rule ----------------------------------------------------------------
 

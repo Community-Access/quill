@@ -91,6 +91,58 @@ UNKNOWN_REASON = (
     "Only sources whose terms clearly allow it are offered for download."
 )
 
+#: What the one capture button on the player can be doing. A live stream is
+#: recorded as it goes out; a finished recording is downloaded. They are
+#: different verbs for different objects, and offering the wrong one is how
+#: Quill Radio ended up able to *record* a podcast episode in real time
+#: through ffmpeg -- an hour of transcoding to obtain a file the publisher was
+#: already offering (reported 2026-08-18).
+CAPTURE_RECORD = "record"
+CAPTURE_STOP_RECORDING = "stop_recording"
+CAPTURE_DOWNLOAD = "download"
+CAPTURE_REMOVE_DOWNLOAD = "remove_download"
+
+
+@dataclass(frozen=True, slots=True)
+class CaptureButton:
+    """The label, mnemonic and verb for the player's capture button."""
+
+    action: str
+    label: str
+    #: The accessible name, which spells the verb out without the mnemonic.
+    name: str
+
+
+def capture_button(
+    station: Any,
+    *,
+    recording_active: bool = False,
+    downloaded: bool = False,
+) -> CaptureButton:
+    """What the capture button should read and do right now. Pure.
+
+    Order matters. Stopping a running recording wins over everything: whatever
+    is playing now, somebody who started a recording must be able to end it
+    from the same button that started it.
+
+    Mnemonics are chosen against the rest of that button row and the menu bar
+    (#1208): Play holds L, Favorites F, Browse B, Record O, and the menu bar
+    owns S, V, P, R, U, Q, H and W -- so both download states take D, which
+    they can share because only ever one of them is on the button.
+    """
+    if recording_active:
+        return CaptureButton(CAPTURE_STOP_RECORDING, "St&op Recording", "Stop Recording")
+    if station is not None and bool(getattr(station, "is_recording", False)):
+        if downloaded:
+            # "&D" for both, because they are mutually exclusive -- one replaces
+            # the other on the same button, so they can never compete. Not "&V":
+            # the menu bar's &View answers Alt+V first and the button would
+            # never fire (#1208).
+            return CaptureButton(CAPTURE_REMOVE_DOWNLOAD, "Remove Downloa&d", "Remove Download")
+        return CaptureButton(CAPTURE_DOWNLOAD, "&Download", "Download this episode")
+    return CaptureButton(CAPTURE_RECORD, "Rec&ord", "Record")
+
+
 _UNSAFE_NAME = re.compile(r"[^\w\-. ]+")
 
 

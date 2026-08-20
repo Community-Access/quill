@@ -45,7 +45,7 @@ from quill.core.radio.spotify_search import (
     youtube_search_stations,
 )
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
-from quill.ui.radio import library_search
+from quill.ui.radio import library_search, transport_keys
 
 _FAVORITES = "Favorites"
 _ACB_MEDIA = acb_media.CATEGORY_LABEL
@@ -567,7 +567,7 @@ class StationBrowserDialog:
     def _on_close(self, event: object) -> None:
         previous = self._windows.previous_key(self._win)
         self._windows.unregister(self._win)
-        self._announce("Exited Search Stations")
+        self._announce("Exited Search Stations.")
         self._on_favorites_changed()
         event.Skip()
         self._win.Destroy()
@@ -590,6 +590,9 @@ class StationBrowserDialog:
             return
         self._win.CentreOnParent()
         apply_modal_ids(self._win, cancel_id=self._wx.ID_CANCEL)
+        # The transport keyboard (Ctrl+Up/Down stay on the char hook, which
+        # precedes accelerators and now runs the same dispatcher).
+        transport_keys.install(self._win, self, wx=self._wx)
         from quill.ui.dialog_contract import show_modal_dialog
 
         try:
@@ -1022,7 +1025,7 @@ class StationBrowserDialog:
             return
         station = RadioStation(name=title, stream_url=tunein.best_stream(streams), source="TuneIn")
         self._controller.play_station(station)
-        self._announce(f"Playing {title}")
+        self._announce(f"Playing {title}.")
         self._refresh_play_button()
 
     def _on_refresh(self, _event: object) -> None:
@@ -1357,13 +1360,13 @@ class StationBrowserDialog:
         menu.Destroy()
 
     def _is_station_playing(self, station: RadioStation) -> bool:
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         state = self._controller.state
         return (
             state.station is not None
             and state.station.stream_url == station.stream_url
-            and state.state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+            and state.state in ACTIVE_STATES
         )
 
     def _refresh_play_button(self) -> None:
@@ -1386,12 +1389,12 @@ class StationBrowserDialog:
         # One button, honest label: it stops the station it started.
         if self._is_station_playing(station):
             self._controller.stop()
-            self._announce("Radio stopped")
+            self._announce("Radio stopped.")
         elif library_search.activate_row(self, station):
             pass  # a show or book row: resolved and played (or refused) by name
         else:
             self._controller.play_station(station)
-            self._announce(f"Playing {station.name}")
+            self._announce(f"Playing {station.name}.")
         self._refresh_play_button()
 
     def _on_char_hook(self, event: object) -> None:
@@ -1412,23 +1415,21 @@ class StationBrowserDialog:
         event.Skip()
 
     def _adjust_volume(self, *, up: bool) -> None:
-        """Step the radio volume and keep the dialog's own slider/mute in sync.
+        """Step the radio volume and keep this dialog's slider/mute in sync.
 
-        Goes through the controller (the single source of truth every surface
-        shares), then mirrors the new level onto this dialog's slider and mute
-        button and announces it, matching the wording of the Playback menu's
-        Volume Up/Down.
+        The step and the sentence belong to the shared dispatcher, so every
+        window moves the same distance and says the same thing; this only
+        mirrors the result onto the two widgets that live here.
         """
-        if up:
-            self._controller.volume_up()
-        else:
-            self._controller.volume_down()
+        from quill.core.radio import transport_commands as tc
+        from quill.ui.radio import transport_keys
+
+        transport_keys.perform(self, tc.VOLUME_UP if up else tc.VOLUME_DOWN)
         state = getattr(self._controller, "state", None)
         if state is None:
             return
         self._volume_slider.SetValue(state.volume_percent)
         self._mute_btn.SetValue(state.muted)
-        self._announce(f"Radio volume {state.volume_percent}")
 
     def _on_volume_slider(self, _event: object) -> None:
         self._controller.set_volume(self._volume_slider.GetValue())
@@ -1451,10 +1452,10 @@ class StationBrowserDialog:
             return
         if self._favorites.contains(station):
             self._favorites.remove(station.station_uuid or station.stream_url)
-            self._announce(f"Removed {station.name} from Favorites")
+            self._announce(f"Removed {station.name} from Favorites.")
         else:
             self._favorites.add(station)
-            self._announce(f"Added {station.name} to Favorites")
+            self._announce(f"Added {station.name} to Favorites.")
         self._update_favorite_button_label(station)
         self._on_favorites_changed()
         if self._category_list.GetSelection() == _CATEGORIES.index(_FAVORITES):

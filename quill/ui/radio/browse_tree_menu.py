@@ -25,8 +25,10 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import row_actions
-from quill.core.radio.browse_nodes import split_id
+from quill.core.radio.browse_nodes import make_id, split_id
 from quill.core.radio.spotify_search import open_link_label
+from quill.ui.radio import browse_download_actions as downloads
+from quill.ui.radio import browse_places as places
 
 
 def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_actions.FolderState:
@@ -58,8 +60,12 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
     except Exception:  # noqa: BLE001 - a menu must never fail on a widget probe
         expanded = False
     from quill.core.radio import browse_sources
+    from quill.core.radio.favorites import place_station
 
+    node_id = make_id(kind, *args) if args else kind
+    saved_place = bool(dialog._favorites.find(place_station(node_id, "").station_uuid) is not None)
     return row_actions.FolderState(
+        saved_place=saved_place,
         loaded_stations=len(loaded),
         savable=len(savable),
         is_podcast_show=row_actions.is_podcast_show(kind),
@@ -102,26 +108,6 @@ def _episode_played(dialog: Any, station: Any) -> bool | None:
         return None
 
 
-def _show_group(dialog: Any, node: Any, station: Any) -> str:
-    """The show a podcast episode belongs to, for the per-show download folder.
-
-    The parent row's text minus its unheard badge -- the same name Download
-    All uses, so single and bulk downloads land in the same folder. "" for
-    everything else, which files exactly as before.
-    """
-    from quill.core.podcasts.radio_listens import PODCAST_EPISODE_SOURCES
-
-    if str(getattr(station, "source", "")) not in PODCAST_EPISODE_SOURCES:
-        return ""
-    try:
-        parent = dialog._tree.GetItemParent(node)
-        if parent is not None and parent.IsOk():
-            return dialog._tree.GetItemText(parent).split(" (")[0]
-    except Exception:  # noqa: BLE001 - a widget probe must never break Download
-        pass
-    return ""
-
-
 def _known_subscribed(dialog: Any, kind: str, args: list[str]) -> bool:
     """Whether this show's feed is already followed, if we know it offline."""
     if kind == "mypodcastshow":
@@ -155,6 +141,14 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
         row_actions.REFRESH: dialog._refresh_selected,
     }
     if station is not None:
+        handlers[row_actions.PAUSE] = dialog._controller.toggle_play_pause
+        # Stop is its own item on a downloaded row, so it must stop rather
+        # than toggle: _play_selected would start playback on a stopped row
+        # that is offering Stop only because the file is local.
+        handlers[row_actions.STOP] = lambda: downloads.stop_playback(dialog, station)
+        handlers[row_actions.REMOVE_DOWNLOAD] = lambda: downloads.remove_download(
+            dialog, node, station
+        )
         handlers[row_actions.COPY_LINK] = lambda: dialog._copy_text(station.stream_url)
         handlers[row_actions.DETAILS] = lambda: _speak_details(dialog, station)
         handlers[row_actions.OPEN_SITE] = lambda: dialog._open_url(station.homepage)
@@ -165,11 +159,30 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
             # per-show folder in download_prefs.plan_destination).
             host,
             station,
-            group=_show_group(dialog, node, station),
+            group=downloads.show_group(dialog, node, station),
         )
         if dialog._on_report_bad_station is not None:
             handlers[row_actions.REPORT_BAD] = lambda: dialog._on_report_bad_station(station)
-    handlers[row_actions.DOWNLOAD_ALL] = lambda: _download_all(dialog, node, host)
+    # The playback verbs on the row that IS playing. Routed through the same
+    # dispatcher the keys and the player buttons use, so a menu item and its
+    # keystroke can never do different things -- and a verb the thing playing
+    # cannot do says why instead of doing nothing.
+    from quill.ui.radio import transport_keys
+
+    for action_id in (
+        row_actions.PLAYING_PREVIOUS_CHAPTER,
+        row_actions.PLAYING_NEXT_CHAPTER,
+        row_actions.PLAYING_CHAPTER_LIST,
+        row_actions.PLAYING_WHERE,
+        row_actions.PLAYING_SPEED_UP,
+        row_actions.PLAYING_SPEED_DOWN,
+        row_actions.PLAYING_SPEED_RESET,
+    ):
+        handlers[action_id] = lambda aid=action_id: transport_keys.perform(dialog, aid)
+    handlers[row_actions.TOGGLE_CAPTIONS] = lambda: places.toggle_captions(host)
+    handlers[row_actions.FAVORITE_PLACE_ADD] = lambda: places.save_place(dialog, node, kind, args)
+    handlers[row_actions.FAVORITE_PLACE_REMOVE] = lambda: places.forget_place(dialog, node)
+    handlers[row_actions.DOWNLOAD_ALL] = lambda: downloads.download_all(dialog, node, host)
     handlers[row_actions.HIDE_SOURCE] = lambda: _hide_source(dialog, kind)
     handlers[row_actions.RESET_SOURCES] = lambda: _reset_sources(dialog)
     handlers[row_actions.SUBSCRIBE_PODCAST] = lambda: _subscribe(dialog, node, kind, args)
@@ -196,6 +209,7 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     )
     handlers[row_actions.MARK_ALL_PLAYED] = lambda: podcast_acts.mark_all_played(dialog, args)
     handlers[row_actions.IMPORT_OPML] = lambda: podcast_acts.import_opml(dialog)
+    handlers[row_actions.ADD_PODCAST_URL] = lambda: podcast_acts.add_podcast_by_url_prompt(dialog)
     handlers[row_actions.DOWNLOAD_ALL_EPISODES] = lambda: podcast_acts.download_all_episodes(
         dialog, args
     )
@@ -248,14 +262,6 @@ def _speak_details(dialog: Any, station: Any) -> None:
     this. Speaking it is the version that works either way.
     """
     dialog._announce(station.details_text.replace(chr(10), ". "))
-
-
-def _download_all(dialog: Any, node: Any, host: Any) -> None:
-    from quill.ui.radio import download_command
-
-    rows = [r for r in dialog._loaded_stations_under(node) if download_command.can_download(r)]
-    if rows:
-        download_command.download_book(host, rows, title=dialog._tree.GetItemText(node))
 
 
 def target_node(dialog: Any, event: Any) -> Any:
@@ -320,6 +326,14 @@ def show_for_event(dialog: Any, event: Any) -> None:
         # dialog without one simply offers no record items.
         can_record=hasattr(host, "open_record_station_dialog"),
         episode_played=_episode_played(dialog, station),
+        # A saved copy changes the transport verbs and turns Download into
+        # Remove Download (row_actions.transport_actions explains why).
+        downloaded=downloads.is_downloaded(dialog, node, station),
+        # The player's own facts, for the row that IS playing: chapters and
+        # captions exist or they do not, and a menu must not offer either as a
+        # possibility to be discovered by pressing it.
+        has_chapters=places.playing_has(dialog, station, "chapters"),
+        has_captions=places.playing_has(dialog, station, "captions"),
     )
     if not entries:
         return
@@ -333,7 +347,7 @@ def show_for_event(dialog: Any, event: Any) -> None:
             continue
         item_id = wx.NewIdRef()
         id_refs.append(item_id)
-        item = menu.Append(item_id, action.label)
+        item = menu.Append(item_id, row_actions.menu_label(action))
         if not action.enabled:
             item.Enable(False)
         menu.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
@@ -412,6 +426,12 @@ def _subscribe(dialog: Any, node: Any, kind: str, args: list[str]) -> None:
     result = follow_feed(
         app_data_dir(), feed_url=feed, title=title, homepage=homepage, artwork_url=artwork
     )
+    # Subscribing is pressed on an Apple show, outside the Subscriptions
+    # subtree, so the branch has to be found rather than walked up to -- and
+    # the cursor stays where it is (browse_reveal explains why).
+    from quill.ui.radio import browse_reveal
+
+    browse_reveal.refetch_and_reveal(dialog, feed_url=feed)
     dialog._announce(result.spoken)
 
 
@@ -427,9 +447,14 @@ def _unsubscribe(dialog: Any, node: Any, kind: str, args: list[str]) -> None:
 
     result = unfollow_feed(app_data_dir(), feed)
     spoken = result.spoken
-    if result.removed and kind == "mypodcastshow":
-        # The row under Subscriptions is stale until the branch reloads.
-        spoken += " Refresh to update the list."
+    if result.removed:
+        from quill.ui.radio import browse_reveal
+
+        # The row under Subscriptions is stale until the branch reloads, and
+        # leaving a show somebody just unsubscribed sitting in the list reads
+        # as the unsubscribe having failed.
+        if not browse_reveal.refetch_subscriptions(dialog) and kind == "mypodcastshow":
+            spoken += " Refresh to update the list."
     dialog._announce(spoken)
 
 

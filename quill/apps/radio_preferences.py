@@ -306,4 +306,4 @@ def open_preferences(app: Any) -> None:
     menu_bar = app.frame.GetMenuBar()
     if menu_bar is not None:
         menu_bar.Check(int(app._resume_menu_item_id), history.resume_on_launch)
-    app._announce("Preferences saved")
+    app._announce("Preferences saved.")

@@ -115,6 +115,11 @@ class LinkFinderDialog:
     def show(self) -> None:
         self.dialog.CentreOnParent()
         apply_modal_ids(self.dialog, cancel_id=self._wx.ID_CANCEL)
+        # The transport keyboard (transport_keys): testing a found stream is
+        # exactly when somebody wants to stop or turn down what is already on.
+        from quill.ui.radio import transport_keys
+
+        transport_keys.install(self.dialog, self, wx=self._wx)
         from quill.ui.dialog_contract import show_modal_dialog
 
         try:
@@ -189,7 +194,7 @@ class LinkFinderDialog:
         if self._testing:
             self._controller.stop()
             self._set_testing(False)
-            self._announce("Test stopped")
+            self._announce("Test stopped.")
             return
         candidate = self._selected_candidate()
         if candidate is None:
@@ -198,7 +203,7 @@ class LinkFinderDialog:
         station = RadioStation(name=name, stream_url=candidate.url)
         self._controller.play_station(station)
         self._set_testing(True)
-        self._announce(f"Testing {station.name}")
+        self._announce(f"Testing {station.name}.")
 
     def _set_testing(self, testing: bool) -> None:
         self._testing = testing

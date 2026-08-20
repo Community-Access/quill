@@ -176,6 +176,8 @@ def _step_speed(host: Any, direction: int) -> None:
         # videos and recordings speak exactly as before.
         from quill.ui.radio import episode_profile
 
+        # announce-punctuation: exempt -- the sentence ends before the suffix,
+        # and remember_speed_choice returns either "" or its own full sentence.
         host._announce(
             f"{applied:g} times speed.{episode_profile.remember_speed_choice(controller)}"
         )
@@ -201,6 +203,7 @@ def reset_speed(host: Any) -> None:
     controller.set_playback_rate(1.0)
     from quill.ui.radio import episode_profile
 
+    # announce-punctuation: exempt -- see _step_speed.
     host._announce(f"Normal speed.{episode_profile.remember_speed_choice(controller)}")
 
 
@@ -263,5 +266,6 @@ def open_chapters(host: Any) -> None:
         show_modal_dialog=host._show_modal_dialog,
         announce=host._announce,
         go_to_chapter=controller.go_to_chapter,
+        transport_host=host,
     )
     dialog.show()

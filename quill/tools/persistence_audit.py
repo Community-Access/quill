@@ -147,6 +147,14 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/podcasts/chapter_inference.py::save_cached_inference": "cache",
     # Radio -> Cast listening handoff: latest position/finished per episode,
     # consumed by Cast at merge. Loss = Cast misses one session; harmless.
+    # The speed you chose for a show, remembered per feed. A preference, but a
+    # trivially defaulted one: losing it plays the next episode at 1x, which is
+    # where it started.
+    "core/podcasts/radio_listens.py::remember_show_speed": "marker",
+    # "Don't ask me again" for the confirmations that offer it (Mark All as
+    # Played, and the delete prompts). A boolean per question; losing it asks
+    # once more, which is the safe direction.
+    "core/podcasts/ask_prefs.py::set_should_ask": "marker",
     "core/podcasts/radio_listens.py::record_listen": "cache",
     "core/podcasts/radio_listens.py::merge_radio_listens": "cache",
     # Two-machines guard for synced data folders: {machine, pid, at}.

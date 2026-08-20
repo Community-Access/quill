@@ -50,7 +50,7 @@ def seek(host: Any, seconds: int) -> float | None:
 
 def jump_to_live(host: Any) -> bool:
     """Return to the live edge. False when nothing is playing."""
-    from quill.ui.radio.player_controller import RadioPlayerState
+    from quill.ui.radio.playback_state import RadioPlayerState
 
     station = host._state.station
     if station is None or host._state.state is RadioPlayerState.STOPPED:

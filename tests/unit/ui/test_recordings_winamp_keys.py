@@ -122,7 +122,7 @@ class _PlayerState:
 def _dialog(
     *, playing: bool = True, entries: list[RecordingEntry] | None = None, selected: int = 0
 ) -> tuple[RecordingsManagerDialog, _Controller, list[str]]:
-    from quill.ui.radio.player_controller import RadioPlayerState
+    from quill.ui.radio.playback_state import RadioPlayerState
 
     dialog = RecordingsManagerDialog.__new__(RecordingsManagerDialog)
     controller = _Controller(RadioPlayerState.PLAYING if playing else RadioPlayerState.STOPPED)
@@ -144,7 +144,7 @@ def test_c_pauses_and_says_so() -> None:
     dialog, controller, announced = _dialog(playing=True)
     dialog._on_char_hook(_KeyEvent(ord("C")))
     assert controller.calls == [("toggle",)]
-    assert announced == ["Paused"]
+    assert announced == ["Paused."]
 
 
 def test_c_on_nothing_playing_says_nothing_is_playing() -> None:
@@ -173,7 +173,7 @@ def test_b_plays_the_next_finished_recording() -> None:
     dialog._on_char_hook(_KeyEvent(ord("B")))
     assert controller.calls == [("play", "two")]
     assert dialog._list.selected == 1
-    assert announced == ["Playing recording two"]
+    assert announced == ["Playing recording two."]
 
 
 def test_z_at_the_top_says_so_instead_of_wrapping_silently() -> None:

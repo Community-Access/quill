@@ -104,7 +104,8 @@ TIPS: dict[str, str] = {
         "never stale. A plain playlist keeps exactly what you put in it."
     ),
     "transcript_reader": (
-        "Read Transcript... follows the audio as it plays, and Enter on any line plays from there."
+        "Read Transcript... opens the whole transcript; Enter on any line plays "
+        "from there, Ctrl+F finds a moment, and Links lists every address in it."
     ),
 }
 

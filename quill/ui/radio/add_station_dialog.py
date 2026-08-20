@@ -164,7 +164,7 @@ class AddStationDialog:
             return
         self._controller.play_station(station)
         self._status.SetLabel(f"Testing {station.name} -- listen for it to start playing.")
-        self._announce(f"Testing {station.name}")
+        self._announce(f"Testing {station.name}.")
 
     def _on_save(self, _event: object) -> None:
         station = self._build_station()

@@ -3,10 +3,19 @@
 Edits the announcement template for one verb. A Simple / Advanced view switch
 (a ``wx.RadioBox`` per the §5 locked decision, not a notebook) shares one
 template field. Validation and preview run against the verb's own token list via
-the pure core (:mod:`quill.core.verbosity.parser`): ``Ctrl+T`` validates and
-speaks the summary, ``Ctrl+Shift+P`` previews, and Save is disabled while
-blocking errors exist. A11Y-4 hardened: label-then-control, mnemonics,
-``apply_modal_ids``, no icon-only buttons.
+the pure core (:mod:`quill.core.verbosity.parser`): ``Shift+F5`` validates and
+speaks the summary, ``F5`` previews, and Save is disabled while blocking
+errors exist.
+
+Those two keys used to be ``Ctrl+T`` and ``Ctrl+Shift+P``, which are
+``window.new_document_tab`` and ``app.command_palette`` in the global keymap.
+A modal dialog hid the conflict -- neither app key reaches one -- but a
+dialog that repurposes an app-wide chord is a trap the moment those chords
+become window-wide, which is exactly what Quill Radio's transport keyboard
+now does (2026-08-19). ``F5`` and ``Shift+F5`` are claimed by nothing.
+
+A11Y-4 hardened: label-then-control, mnemonics, ``apply_modal_ids``, no
+icon-only buttons.
 """
 
 from __future__ import annotations
@@ -79,8 +88,8 @@ class VerbosityTokenEditorDialog:
         root.Add(self._review, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         btns = wx.BoxSizer(wx.HORIZONTAL)
-        self._validate_btn = wx.Button(self.dialog, label="&Validate (Ctrl+T)")
-        self._preview_btn = wx.Button(self.dialog, label="&Preview (Ctrl+Shift+P)")
+        self._validate_btn = wx.Button(self.dialog, label="&Validate (Shift+F5)")
+        self._preview_btn = wx.Button(self.dialog, label="&Preview (F5)")
         self._speak_btn = wx.Button(self.dialog, label="&Speak Current Template")
         self._insert_btn = wx.Button(self.dialog, label="&Insert Token")
         self._save_btn = wx.Button(self.dialog, id=wx.ID_SAVE, label="Sa&ve")
@@ -165,11 +174,9 @@ class VerbosityTokenEditorDialog:
 
     def _on_char_hook(self, event: object) -> None:
         key = event.GetKeyCode()
-        ctrl = event.ControlDown()
-        shift = event.ShiftDown()
-        if ctrl and not shift and key == ord("T"):
+        if key == wx.WXK_F5 and event.ShiftDown():
             self._on_validate()
-        elif ctrl and shift and key == ord("P"):
+        elif key == wx.WXK_F5 and not event.ShiftDown():
             self._on_preview()
         else:
             event.Skip()

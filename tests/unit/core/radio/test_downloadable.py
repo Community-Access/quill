@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import pytest
 
+from quill.core.radio import downloadable
 from quill.core.radio.downloadable import (
     ALLOWED_SOURCES,
     LIVE_REASON,
@@ -136,3 +137,57 @@ def test_the_confirmation_names_the_thing_and_its_basis() -> None:
 def test_a_refusal_describes_itself_rather_than_saying_nothing() -> None:
     row = _row("Radio Browser", recording=False)
     assert describe(can_download(row), row) == LIVE_REASON
+
+
+def test_the_capture_button_records_a_live_station() -> None:
+    live = RadioStation(name="Jazz FM", stream_url="https://s/jazz")
+
+    button = downloadable.capture_button(live)
+
+    assert button.action == downloadable.CAPTURE_RECORD
+    assert button.name == "Record"
+
+
+def test_the_capture_button_downloads_a_finished_recording() -> None:
+    # Recording a podcast episode means transcoding a file in real time to get
+    # a worse copy of something the publisher is already handing out.
+    episode = RadioStation(name="Ep 1", stream_url="https://s/ep1.mp3", is_recording=True)
+
+    button = downloadable.capture_button(episode)
+
+    assert button.action == downloadable.CAPTURE_DOWNLOAD
+
+
+def test_the_capture_button_offers_to_undo_a_download() -> None:
+    episode = RadioStation(name="Ep 1", stream_url="https://s/ep1.mp3", is_recording=True)
+
+    button = downloadable.capture_button(episode, downloaded=True)
+
+    assert button.action == downloadable.CAPTURE_REMOVE_DOWNLOAD
+
+
+def test_stopping_a_running_recording_beats_everything() -> None:
+    # Whatever is playing now, somebody who started a recording has to be able
+    # to end it from the button that started it.
+    episode = RadioStation(name="Ep 1", stream_url="https://s/ep1.mp3", is_recording=True)
+
+    button = downloadable.capture_button(episode, recording_active=True, downloaded=True)
+
+    assert button.action == downloadable.CAPTURE_STOP_RECORDING
+
+
+def test_the_capture_labels_do_not_fight_the_buttons_beside_them() -> None:
+    """#1208: Play holds L, Favorites F, Browse B, Volume U, and the menu bar
+    owns R -- a capture label claiming one of those never fires."""
+    taken = {"l", "f", "b", "u", "r"}
+    episode = RadioStation(name="Ep", stream_url="https://s/e.mp3", is_recording=True)
+    states = [
+        downloadable.capture_button(None),
+        downloadable.capture_button(episode),
+        downloadable.capture_button(episode, downloaded=True),
+        downloadable.capture_button(episode, recording_active=True),
+    ]
+
+    for state in states:
+        key = state.label.split("&", 1)[1][0].lower()
+        assert key not in taken, state.label

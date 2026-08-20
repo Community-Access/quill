@@ -27,8 +27,9 @@ _SUBSCRIPTION_LEVELS = frozenset({"mypodcasts", "mypodcastfolder"})
 def _subscriptions_ancestor(dialog: Any) -> Any:
     """The Subscriptions node above the current selection, or ``None``.
 
-    The verbs this serves all act on rows *inside* that subtree, so walking
-    up from the selection is enough -- no whole-tree search.
+    The reveal verbs all act on rows *inside* that subtree, so walking up from
+    the selection answers both questions at once: which node to reload, and
+    whether moving the cursor afterwards is welcome.
     """
     tree = dialog._tree
     node = tree.GetSelection()
@@ -41,9 +42,50 @@ def _subscriptions_ancestor(dialog: Any) -> Any:
     return None
 
 
+def _subscriptions_anywhere(dialog: Any) -> Any:
+    """The Subscriptions node wherever it sits in the tree, or ``None``.
+
+    Walking up from the cursor is not enough for the verbs that *create* a
+    subscription: Subscribe is pressed on an Apple show, and OPML import from
+    the Podcasts branch, both outside the Subscriptions subtree. Standing
+    anywhere else, the reload never happened -- so the branch kept its three
+    "you have no subscriptions" rows and the show you had just subscribed to
+    was nowhere, until you pressed Refresh by hand (reported 2026-08-18).
+
+    Only nodes the tree has already built are visited, so this never causes a
+    fetch; a Subscriptions branch that was never opened has nothing stale to
+    correct and correctly answers ``None``.
+    """
+    tree = dialog._tree
+    if not tree:
+        return None
+    root = tree.GetRootItem()
+    if root is None or not root.IsOk():
+        return None
+
+    def _walk(parent: Any) -> Any:
+        child, cookie = tree.GetFirstChild(parent)
+        while child is not None and child.IsOk():
+            data = dialog._node_data(child) or {}
+            kind, _args = split_id(str(data.get("node_id") or ""))
+            if kind == "mypodcasts":
+                return child
+            found = _walk(child)
+            if found is not None:
+                return found
+            child, cookie = tree.GetNextChild(parent, cookie)
+        return None
+
+    return _walk(root)
+
+
 def refetch_subscriptions(dialog: Any) -> bool:
-    """Reload the Subscriptions branch in place. True when it could."""
-    node = _subscriptions_ancestor(dialog)
+    """Reload the Subscriptions branch in place. True when it could.
+
+    The branch above the cursor first (that is the one the listener is looking
+    at), then anywhere in the tree.
+    """
+    node = _subscriptions_ancestor(dialog) or _subscriptions_anywhere(dialog)
     if node is None:
         return False
     from quill.ui.radio import browse_refresh
@@ -59,13 +101,21 @@ def refetch_and_reveal(dialog: Any, *, feed_url: str = "", folder_id: str = "") 
     """Reload Subscriptions, then land the cursor on a show or folder.
 
     Exactly one of *feed_url* (reveal that show) or *folder_id* (reveal that
-    folder) should be given. Returns False when the selection is not inside
-    the Subscriptions subtree -- the caller falls back to the old spoken
+    folder) should be given. Returns False only when there is no Subscriptions
+    branch on screen at all -- the caller then falls back to the old spoken
     "Refresh Podcasts to update." so the truth is always told.
+
+    The cursor is only walked to the row when the listener was already inside
+    the Subscriptions subtree. Subscribing from an Apple show reloads the
+    branch quietly instead: yanking the cursor across the tree, away from the
+    list somebody is still working through, is not a confirmation -- it is a
+    lost place.
     """
+    inside = _subscriptions_ancestor(dialog) is not None
     if not refetch_subscriptions(dialog):
         return False
-    dialog._pending_reveal = {"feed_url": feed_url, "folder_id": folder_id}
+    if inside:
+        dialog._pending_reveal = {"feed_url": feed_url, "folder_id": folder_id}
     return True
 
 

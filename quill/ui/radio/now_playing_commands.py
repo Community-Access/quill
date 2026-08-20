@@ -72,7 +72,7 @@ def copy_whats_playing(host: Any) -> None:
             host._announce(NO_TITLE_MESSAGE)
             return
         if host._copy_to_clipboard(text):
-            host._announce(f"Copied: {text}")
+            host._announce(f"Copied: {text}.")
         else:
             host._announce("Could not copy to the clipboard.")
 
@@ -106,6 +106,7 @@ def show_whats_playing_details(host: Any) -> None:
             host._copy_to_clipboard,
             host._announce,
             title=title,
+            transport_host=host,
         ).show()
 
     resolve_now_playing_text(host, _show)

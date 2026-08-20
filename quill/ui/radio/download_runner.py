@@ -136,6 +136,10 @@ def enqueue(
             group=group,
         )
     count = len(savable)
+    # A single download gets a specific confirmation naming the file and the
+    # folder when it lands (see _after); a batch gets progress and a summary
+    # instead, because forty "saved" sentences is not feedback.
+    host._download_batch_size = count
     label = group or ("1 file" if count == 1 else f"{count} files")
     _announce(
         host,
@@ -160,7 +164,11 @@ def pump(host: Any) -> bool:
 
     task_manager = getattr(host, "_task_manager", None)
     if task_manager is None:
+        # Silently failing here was the one path where Download really did
+        # nothing at all: the item was marked failed and nobody was told, so
+        # the menu item read as dead. A refusal is an answer; silence is not.
         queue.fail(item, "downloading is not available here")
+        _announce(host, f"{item.name} could not be downloaded here. Try the main Radio window.")
         return False
 
     queue.start(item)
@@ -191,6 +199,13 @@ def pump(host: Any) -> bool:
 def _after(host: Any, queue: DownloadQueue, item: QueueItem) -> None:
     """One item finished: refresh, then start the next."""
     _refresh(host)
+    if item.state == "done" and getattr(host, "_download_batch_size", 0) == 1:
+        # "Queued" is a promise; this is the receipt. Without it a single
+        # download's only confirmation was the end-of-queue summary, which
+        # says how many rather than where -- and somebody who missed it had
+        # no way to tell a finished download from one that never started.
+        where = Path(item.path).parent if str(getattr(item, "path", "") or "") else item.folder
+        _announce(host, f"Saved {item.name} to {where}.")
     if item.state == "failed":
         # Named as it happens rather than only in the end-of-queue summary: one
         # chapter failing in a forty-chapter book is worth hearing about while

@@ -47,7 +47,7 @@ def export_favorites_to_playlist(frame: Any) -> None:
     try:
         destination.write_text(export_m3u(playable), encoding="utf-8")
     except OSError as exc:
-        frame._announce(f"Could not write the playlist: {exc}")
+        frame._announce(f"Could not write the playlist: {exc}.")
         return
     plural = "station" if len(playable) == 1 else "stations"
     frame._announce(f"Exported {len(playable)} {plural} to {destination.name}.")

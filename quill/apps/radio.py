@@ -225,6 +225,21 @@ class RadioAppFrame(
         from quill.ui.data_folder_dialog import surface_data_folder_startup
 
         wx.CallAfter(surface_data_folder_startup, self)
+        # Media tools: say once, at launch, when this installation has lost the
+        # engine that plays Ogg/Opus/HLS or the one that records. Deferred and
+        # spoken rather than modal for the same reason as the line above -- a
+        # launch is not the place to seize focus a screen reader has not settled
+        # yet (#259). Silent on a healthy install, by design.
+        from quill.ui.radio.media_preflight import surface_media_health_startup
+
+        wx.CallAfter(surface_media_health_startup, self)
+        # First run: three screens for somebody who has never used this before,
+        # and nothing at all for anybody who already has favorites. Modal rather
+        # than spoken, unlike the line above -- it is the whole content of a
+        # first launch, and Skip leaves in one keystroke.
+        from quill.ui.radio.first_run_dialog import maybe_run_first_run
+
+        wx.CallAfter(maybe_run_first_run, self)
         # Missed-recording reporting + startup reconcile/resume live in
         # RadioMixin._init_radio now (R2/11.6 + R3), so both hosts get them once.
 
@@ -294,8 +309,13 @@ class RadioAppFrame(
         # (#1152 feedback), mirroring the single Play/Stop button above.
         self._record_btn = wx.Button(panel, label="Rec&ord")
         set_accessible_name(self._record_btn, "Record")
-        self._record_btn.Bind(wx.EVT_BUTTON, lambda _e: self.radio_record_toggle())
+        self._record_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_capture_button())
         buttons.Add(self._record_btn, 0, wx.RIGHT, 6)
+        # Previous/Next Chapter and Chapters..., hidden until the thing playing
+        # actually has chapters (quill/apps/radio_chapter_buttons.py).
+        from quill.apps import radio_chapter_buttons
+
+        radio_chapter_buttons.build(self, panel, buttons, wx)
         browse_btn = wx.Button(panel, label="&Browse Stations...")
         set_accessible_name(browse_btn, "Browse Stations...")
         browse_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_browse_stations())
@@ -419,6 +439,17 @@ class RadioAppFrame(
         if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
             self._on_favorites_activated(event)
             return
+        # Space on the row you are listening to pauses it. Only that row: Space
+        # everywhere else in a tree belongs to the tree, and hijacking it would
+        # take away a key people use to select. A podcast paused here keeps its
+        # place; the old behaviour reloaded the episode from the beginning.
+        if code == wx.WXK_SPACE and not (
+            event.ControlDown() or event.ShiftDown() or event.AltDown()
+        ):
+            favorite = self._selected_favorite()
+            if favorite is not None and self._favorite_is_playing(favorite):
+                self._toggle_current_playback()
+                return
         if code in (wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE):
             self._on_tree_remove()
             return
@@ -497,7 +528,7 @@ class RadioAppFrame(
         self._save_radio_favorites()
 
     def _on_favorites_context_menu(self, _event: object) -> None:
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         selected = self._selected_tree_data()
         if selected is None:
@@ -510,8 +541,7 @@ class RadioAppFrame(
                 favorite is not None
                 and self._radio_controller.state.station is not None
                 and self._radio_controller.state.station.stream_url == favorite.station.stream_url
-                and self._radio_controller.state.state
-                in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+                and self._radio_controller.state.state in ACTIVE_STATES
             )
             entries = [
                 ("&Stop" if playing else "&Play", self._on_play_stop_context),
@@ -557,7 +587,7 @@ class RadioAppFrame(
         menu.Destroy()
 
     def _on_play_stop_context(self) -> None:
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         favorite = self._selected_favorite()
         if favorite is None:
@@ -566,12 +596,12 @@ class RadioAppFrame(
         if (
             state.station is not None
             and state.station.stream_url == favorite.station.stream_url
-            and state.state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+            and state.state in ACTIVE_STATES
         ):
             self.radio_stop()
         else:
             self._radio_controller.play_station(favorite.station)
-            self._announce(f"Playing {favorite.display_label}")
+            self._announce(f"Playing {favorite.display_label}.")
 
     def _on_favorite_details(self) -> None:
         """Show the selected favorite's details (name, source, stream, format,
@@ -590,6 +620,7 @@ class RadioAppFrame(
             self._copy_to_clipboard,
             self._announce,
             title=f"Details: {favorite.display_name}",
+            transport_host=self,
         ).show()
 
     def _on_mark_favorite(self) -> None:
@@ -741,7 +772,7 @@ class RadioAppFrame(
         try:
             text = source.read_text(encoding="utf-8", errors="replace")
         except OSError as exc:
-            self._announce(f"Could not read the playlist: {exc}")
+            self._announce(f"Could not read the playlist: {exc}.")
             return
         stations = parse_m3u(text)
         if not stations:
@@ -823,10 +854,10 @@ class RadioAppFrame(
             self._reload_favorites_tree(keep_key=favorite.key)
 
     def _on_play_stop_button(self) -> None:
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES, RadioPlayerState
 
         state = self._radio_controller.state.state
-        if state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING):
+        if state in ACTIVE_STATES:
             self.radio_stop()
         elif state is RadioPlayerState.PAUSED:
             self.radio_toggle_play_pause()
@@ -834,10 +865,10 @@ class RadioAppFrame(
             self._play_selected_favorite()
 
     def _refresh_play_stop_button(self) -> None:
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         state = self._radio_controller.state.state
-        stopping = state in (RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING)
+        stopping = state in ACTIVE_STATES
         # A button mnemonic on a frame competes with the MENU BAR's, which is
         # #1208: "&Record" on both meant Alt+R opened the menu and the button
         # never fired. The answer is a free letter, not no letter -- Alt+P is
@@ -857,17 +888,20 @@ class RadioAppFrame(
         self._refresh_favorite_toggle()
 
     def _refresh_record_button(self) -> None:
-        """Reflect recording state on the Record button: it becomes "Stop
-        Recording" while any recording is active so it is obvious you are
-        recording, and toggles back to "Record" when they all stop."""
-        button = getattr(self, "_record_btn", None)
-        if button is None:
-            return
-        recording = bool(getattr(self._radio_recorder, "is_recording", False))
-        label = "St&op Recording" if recording else "Rec&ord"
-        if button.GetLabel() != label:
-            button.SetLabel(label)
-            set_accessible_name(button, "Stop Recording" if recording else "Record")
+        """Keep the capture button honest about what it would capture.
+
+        The decision lives in quill/apps/radio_capture_button.py (GATE-11);
+        this is the one line that applies it.
+        """
+        from quill.apps.radio_capture_button import refresh
+
+        refresh(self)
+
+    def _on_capture_button(self) -> None:
+        """Do whatever the capture button currently says it will do."""
+        from quill.apps.radio_capture_button import act
+
+        act(self)
 
     def _refresh_favorite_toggle(self) -> None:
         button = getattr(self, "_favorite_toggle_btn", None)
@@ -900,24 +934,48 @@ class RadioAppFrame(
         key = station.station_uuid or station.stream_url
         if self._radio_favorites.contains(station):
             self._radio_favorites.remove(key)
-            self._announce(f"Removed {station.display_name} from favorites")
+            self._announce(f"Removed {station.display_name} from favorites.")
         else:
             self._radio_favorites.add(station)
             self._announce(
-                f"Added {station.display_name} to favorites",
+                f"Added {station.display_name} to favorites.",
                 sound=SoundEvent.RADIO_FAVORITE_ADDED,
             )
         self._save_radio_favorites()
         self._reload_favorites_tree()
         self._refresh_favorite_toggle()
 
+    def _favorite_is_playing(self, favorite: object) -> bool:
+        """Whether this favourite is the thing the player currently holds."""
+        station = getattr(self._radio_controller.state, "station", None)
+        if station is None or favorite is None:
+            return False
+        return str(getattr(station, "stream_url", "")) == str(
+            getattr(getattr(favorite, "station", None), "stream_url", "")
+        )
+
+    def _toggle_current_playback(self) -> None:
+        """Pause or resume what is playing, and say which it did."""
+        from quill.ui.radio.playback_state import RadioPlayerState
+
+        self._radio_controller.toggle_play_pause()
+        state = getattr(self._radio_controller.state, "state", None)
+        self._announce("Paused." if state is RadioPlayerState.PAUSED else "Resumed.")
+
     def _play_selected_favorite(self) -> None:
         favorite = self._selected_favorite()
         if favorite is None:
             self._announce("No station selected. Add favorites from Browse Stations.")
             return
+        if self._favorite_is_playing(favorite):
+            # Already the thing playing: pause or resume it rather than loading
+            # it again. Reloading a podcast episode throws away where you were
+            # in it, which is the opposite of what pressing play on the row you
+            # are already listening to means (reported 2026-08-18).
+            self._toggle_current_playback()
+            return
         self._radio_controller.play_station(favorite.station)
-        self._announce(f"Playing {favorite.display_label}")
+        self._announce(f"Playing {favorite.display_label}.")
 
     # -- menu bar -------------------------------------------------------------
 
@@ -1594,7 +1652,7 @@ class RadioAppFrame(
         radio_history.save_history(app_data_dir(), history)
         self._reload_favorites_tree()
         labels = dict(zip(_FAVORITES_SORT_VALUES, _FAVORITES_SORT_LABELS, strict=True))
-        self._announce(f"Sorted favorites: {labels[value]}")
+        self._announce(f"Sorted favorites: {labels[value]}.")
 
     def _expand_all_folders(self, expand: bool) -> None:
         """View > Expand/Collapse All Folders on the favorites tree."""
@@ -1620,7 +1678,7 @@ class RadioAppFrame(
         radio_history.save_history(app_data_dir(), history)
         self._apply_text_size()
         names = {1.0: "Normal", 1.25: "Large", 1.5: "Larger"}
-        self._announce(f"Text size: {names.get(scale, 'Normal')}")
+        self._announce(f"Text size: {names.get(scale, 'Normal')}.")
 
     def _apply_text_size(self) -> None:
         """Scale the main window's fonts (tree, buttons, now-playing line, status
@@ -1657,7 +1715,7 @@ class RadioAppFrame(
             return
         if status_bar.has_focus():
             self._focus_initial_control()
-            self._announce("Returned to favorite stations")
+            self._announce("Returned to favorite stations.")
             return
         status_bar.refresh()
         status_bar.focus_bar(return_focus=getattr(self, "_favorites_tree", None))
@@ -1942,6 +2000,9 @@ class RadioAppFrame(
             status_bar.refresh()
         self._refresh_play_stop_button()
         self._refresh_record_button()
+        from quill.apps import radio_chapter_buttons
+
+        radio_chapter_buttons.refresh(self)
 
     def _save_radio_favorites(self) -> None:
         # Every favorites mutation -- the toggle button, tree actions, the
@@ -1959,13 +2020,10 @@ class RadioAppFrame(
         # which never ShowModals from inside EVT_CLOSE -- it vetoes and defers the
         # confirm dialog so Alt+F4 works while a station plays. "Ask" only prompts
         # when there's something to protect (live playback or a recording).
-        from quill.ui.radio.player_controller import RadioPlayerState
+        from quill.ui.radio.playback_state import ACTIVE_STATES
 
         recording_active = bool(getattr(self._radio_recorder, "is_recording", False))
-        playback_active = self._radio_controller.state.state in (
-            RadioPlayerState.PLAYING,
-            RadioPlayerState.CONNECTING,
-        )
+        playback_active = self._radio_controller.state.state in ACTIVE_STATES
         self.handle_app_close(
             event,
             close_action=self._radio_history.close_action,

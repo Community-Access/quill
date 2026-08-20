@@ -70,8 +70,14 @@ def test_subscribed_shows_list_as_folders_sorted_by_title(data_dir) -> None:
     assert all(n.is_folder for n in nodes)
 
 
-def test_an_empty_library_lists_nothing(data_dir) -> None:
-    assert _browse_my_podcasts([], safe_mode=True) == []
+def test_an_empty_library_offers_the_three_ways_to_add_a_show(data_dir) -> None:
+    nodes = _browse_my_podcasts([], safe_mode=True)
+    assert [node.node_id for node in nodes] == [
+        "addpodcasturl",
+        "importpodcastsopml",
+        "searchpodcasts",
+    ]
+    assert all(node.is_action for node in nodes)
 
 
 def test_a_show_expands_to_its_episodes(data_dir, monkeypatch) -> None:

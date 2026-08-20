@@ -61,6 +61,13 @@ class RadioStation:
     #: treated as bounded, so a four-hour LibriVox chapter behaved like a live
     #: broadcast: no seek bar, no position, and no memory of where you were.
     is_recording: bool = False
+    #: The publisher's own description of this recording -- a podcast episode's
+    #: show notes, a book's synopsis -- already converted to plain text. The
+    #: details panel had nothing to show for an episode but its address, which
+    #: is the one fact a listener deciding whether to play it does not need
+    #: (reported 2026-08-18). Transient and excluded from equality, exactly
+    #: like ``alt_sources``: it describes a row, it does not identify one.
+    notes: str = field(default="", compare=False)
 
     @property
     def display_name(self) -> str:
@@ -71,8 +78,17 @@ class RadioStation:
 
     @property
     def details_text(self) -> str:
-        """A read-only, multi-line summary for the station-details panel."""
+        """A read-only, multi-line summary for the station-details panel.
+
+        Written to be *read down*, by a screen reader, in the order somebody
+        actually wants it: what this is, who it is from, what it is about, and
+        only then the machine facts. A podcast episode used to arrive here as
+        its title, the word "Homepage" followed by an RSS address, and a stream
+        address -- three lines, none of which answer "what is this episode?".
+        """
         lines = [self.name]
+        if self.source:
+            lines.append(f"From: {self.source}")
         if self.country or self.language:
             where = ", ".join(part for part in (self.country, self.language) if part)
             lines.append(f"Location/language: {where}")
@@ -88,8 +104,16 @@ class RadioStation:
         if self.votes:
             lines.append(f"Community votes: {self.votes}")
         if self.homepage:
-            lines.append(f"Homepage: {self.homepage}")
-        lines.append(f"Stream URL: {self.stream_url}")
+            # A recording's "homepage" is the feed or collection it came out
+            # of, and calling that a homepage is how this panel ended up
+            # announcing an RSS address as though it were a website.
+            lines.append(f"{'Feed' if self.is_recording else 'Homepage'}: {self.homepage}")
+        lines.append(f"{'Audio' if self.is_recording else 'Stream URL'}: {self.stream_url}")
+        if self.notes:
+            # Last, and behind a blank line: show notes run to paragraphs, and
+            # somebody who wants the address should not have to arrow through
+            # an episode summary to reach it.
+            lines.extend(["", "Notes:", self.notes])
         return "\n".join(lines)
 
     def to_dict(self) -> dict[str, object]:

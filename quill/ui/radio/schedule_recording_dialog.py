@@ -420,7 +420,7 @@ class ScheduleRecordingDialog:
     def _on_close(self, event: object) -> None:
         previous = self._windows.previous_key(self._win)
         self._windows.unregister(self._win)
-        self._announce("Exited Schedule Recording")
+        self._announce("Exited Schedule Recording.")
         event.Skip()
         self._win.Destroy()
         if previous:
@@ -475,7 +475,7 @@ class ScheduleRecordingDialog:
             if self._editing_id == entry_id:
                 self._reset_form()
             self._refresh_list()
-            self._announce("Removed scheduled recording")
+            self._announce("Removed scheduled recording.")
 
     def _enter_add_mode(self) -> None:
         """Leave edit mode: the primary button adds a new schedule again."""
@@ -553,7 +553,7 @@ class ScheduleRecordingDialog:
             self._entries = [updated if e.id == updated.id else e for e in self._entries]
             self._refresh_list(keep_id=updated.id)
             state = "enabled" if updated.enabled else "disabled"
-            self._announce(f"{updated.station_name} {state}")
+            self._announce(f"{updated.station_name} {state}.")
 
     def _build_entry_from_form(self) -> RecordingScheduleEntry | None:
         """Read the controls, validate via the pure builder, show any error."""
@@ -585,7 +585,7 @@ class ScheduleRecordingDialog:
                 self._refresh_list(keep_id=entry.id)
                 self._reset_form()
                 self._status.SetLabel(f"Saved: {_entry_summary(entry)}")
-                self._announce(f"Saved changes to {entry.station_name}")
+                self._announce(f"Saved changes to {entry.station_name}.")
                 self._focus_saved_entry()
             return
         self._on_add(entry)
@@ -593,7 +593,7 @@ class ScheduleRecordingDialog:
         self._refresh_list(keep_id=entry.id)
         self._reset_form()
         self._status.SetLabel(f"Added: {_entry_summary(entry)}")
-        self._announce(f"Scheduled recording added for {entry.station_name}")
+        self._announce(f"Scheduled recording added for {entry.station_name}.")
         self._focus_saved_entry()
 
     def _focus_saved_entry(self) -> None:

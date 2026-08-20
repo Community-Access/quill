@@ -227,6 +227,52 @@ def remove_all_downloads(dialog: Any, args: list[str]) -> None:
     dialog._announce(download_cleanup.remove_show_downloads(app_data_dir(), title))
 
 
+def add_podcast_by_url_prompt(dialog: Any) -> None:
+    """Add a Podcast by URL...: paste a feed address, get a subscription.
+
+    The validation and every human-centered refusal live in the wx-free
+    :mod:`quill.core.podcasts.add_by_url`; this is the prompt (clipboard
+    pre-filled, like every address prompt in the tree), the off-thread
+    fetch, and the spoken outcome -- plus the cursor walking to the new
+    show when the Subscriptions branch is in view.
+    """
+    from quill.ui.radio import browse_actions
+
+    url = browse_actions._ask(
+        dialog,
+        title="Add a Podcast by URL",
+        prompt=(
+            "Address of the podcast's RSS feed, for example\n"
+            "https://example.com/feed.xml -- usually behind a link named\n"
+            "RSS or Subscribe on the show's website."
+        ),
+    )
+    if not url:
+        return
+    dialog._announce("Checking that feed...")
+
+    def _work(**_kwargs: Any) -> Any:
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts.add_by_url import add_podcast_by_url
+
+        return add_podcast_by_url(app_data_dir(), url, safe_mode=dialog._safe_mode)
+
+    def _ok(_op: str, outcome: Any) -> None:
+        if not dialog._tree:  # the window closed while the feed was checked
+            return
+        dialog._announce(str(getattr(outcome, "spoken", "") or ""))
+        if getattr(outcome, "ok", False) and getattr(outcome, "feed_url", ""):
+            from quill.ui.radio import browse_reveal
+
+            browse_reveal.refetch_and_reveal(dialog, feed_url=outcome.feed_url)
+
+    def _failed(_op: str, error: object) -> None:
+        if dialog._tree:
+            dialog._announce(f"That feed could not be checked. {error}.")
+
+    dialog._task_manager.submit("radio-add-podcast-url", _work, on_success=_ok, on_failure=_failed)
+
+
 def import_opml(dialog: Any) -> None:
     """Import Podcasts from OPML... on the Podcasts branch itself.
 
@@ -255,9 +301,17 @@ def import_opml(dialog: Any) -> None:
         return import_opml_file(app_data_dir(), path).spoken
 
     def _ok(_op: str, spoken: object) -> None:
-        dialog._announce(f"{spoken} Refresh Podcasts to see them.")
+        # Reload the branch rather than telling somebody to do it: an import
+        # that added forty shows and left the tree saying "you have none" is
+        # the one moment the list is most obviously wrong.
+        from quill.ui.radio import browse_reveal
+
+        if browse_reveal.refetch_subscriptions(dialog):
+            dialog._announce(str(spoken))
+        else:
+            dialog._announce(f"{spoken} Refresh Podcasts to see them.")
 
     def _failed(_op: str, error: object) -> None:
-        dialog._announce(f"That file could not be imported. {error}")
+        dialog._announce(f"That file could not be imported. {error}.")
 
     dialog._task_manager.submit("radio-opml-import", _work, on_success=_ok, on_failure=_failed)

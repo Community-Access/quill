@@ -103,3 +103,27 @@ def test_every_advertised_key_is_one_wx_can_actually_bind(radio_menu_bar) -> Non
         if not entry.FromString(label):
             unparsable.append(f"{where} ({label.split(chr(9), 1)[1]})")
     assert unparsable == [], "wx cannot bind these: " + "; ".join(unparsable)
+
+
+def test_no_menu_item_claims_a_table_navigation_key(radio_menu_bar) -> None:
+    """Ctrl+Alt+arrow belongs to table navigation and never reaches the app.
+
+    Two claimants, not one: QUILL's own table navigation binds that block
+    (keymap.table.next_cell and kin), and JAWS and NVDA bind it for *their*
+    table navigation too -- so a menu item advertising one of these keys is
+    advertising a key the screen reader eats before the app ever sees it
+    (reported 2026-08-18: "ctralt and arrow keys will not work either, more
+    table navigation keys for JAWS and NVDA").
+
+    Quill Radio shipped six transport verbs there -- speed, chapters, position
+    -- and they now read their keys from quill.core.radio.transport_commands.
+    This is the gate that keeps them out.
+    """
+    forbidden = {"ctrl+alt+up", "ctrl+alt+down", "ctrl+alt+left", "ctrl+alt+right"}
+    offenders = []
+    for where, label, _enabled in _items(radio_menu_bar):
+        _text, _, key = label.partition(chr(9))
+        if key and key.replace(" ", "").lower() in forbidden:
+            offenders.append(f"{where} -> {key}")
+
+    assert not offenders, "menu items on a table-navigation key: " + "; ".join(offenders)

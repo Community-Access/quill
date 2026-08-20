@@ -175,6 +175,15 @@ def clear_find(host: Any) -> None:
     # (typing then erasing the field), and SetValue would fire EVT_TEXT back
     # into that binding (see search_reset.bind_empty_query_reset's contract).
     host._find_ctrl.ChangeValue("")
+    # Escape means "drop the results I am looking at", and Search All Sources
+    # results are results too -- clearing only the scoped find would leave the
+    # other list behind and read as Escape not working.
+    from quill.ui.radio import browse_search_all
+
+    if browse_search_all.clear_results(host) and getattr(host, "_find_return_node", None) is None:
+        host._find_active = False
+        host._announce("Search results cleared.")
+        return
     node = host._find_return_node
     host._find_return_node = None
     was_active = host._find_active
@@ -189,7 +198,10 @@ def clear_find(host: Any) -> None:
         host._tree.DeleteChildren(node)
         host._tree.SetItemData(host._tree.AppendItem(node, "Loading..."), dict(host._placeholder()))
         host._tree.Collapse(node)
-    host._tree.SelectItem(node)  # cursor back on the folder you searched from
-    host._tree.SetFocus()
+    # The cursor goes back on the folder you searched from -- its result rows
+    # have just been deleted, so it has to land somewhere real. Focus is left
+    # exactly where it was: clearing is a refresh, not a destination, and
+    # somebody who cleared from the Find box is still typing there.
+    host._tree.SelectItem(node)
     if was_active:
         host._announce(f"Search cleared. Back on {host._tree.GetItemText(node)}.")

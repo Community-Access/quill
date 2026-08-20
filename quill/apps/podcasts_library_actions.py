@@ -79,6 +79,9 @@ class CastLibraryActionsMixin:
                 ("Rena&me Folder...\tF2", self._on_library_rename_folder),
                 ("&Delete Folder...\tDelete", self._on_library_remove),
                 ("New F&older...", self._on_library_new_folder),
+                # On branches, never on shows or episodes -- those already ARE
+                # subscriptions; Add belongs where new things get filed.
+                ("&Add Podcast...", lambda: self._podcast_open_add_dialog()),
                 ("Open &Manager...", lambda: self.open_podcast_manager()),
             ]
         elif kind == "view":
@@ -97,13 +100,42 @@ class CastLibraryActionsMixin:
                 and state.episode_guid == episode.guid
                 and state.state.name not in ("STOPPED", "ERROR")
             )
+            # A downloaded episode is a file, and a file has three states
+            # rather than two: Play/Pause plus a Stop of its own. It also
+            # offers to give the disk space back, which was previously only
+            # possible for a whole show at once. Same shape as Quill Radio's
+            # browse menu (quill.core.radio.row_actions.transport_actions), so
+            # the two apps do not teach different habits for the same object.
+            downloaded = self._episode_is_downloaded(episode)
+            if downloaded:
+                entries = [
+                    (
+                        "&Pause" if playing_this else "&Play Episode",
+                        self._on_library_episode_play_stop,
+                    ),
+                    ("&Stop", self._on_library_episode_stop),
+                    ("Remo&ve Download", self._on_library_remove_episode_download),
+                ]
+            else:
+                entries = [
+                    (
+                        "&Stop" if playing_this else "&Play Episode",
+                        self._on_library_episode_play_stop,
+                    ),
+                    ("&Download Episode", self._on_library_download_episode),
+                ]
+            entries.append(("Open &Manager...", lambda: self.open_podcast_manager()))
+        elif kind == "action":
+            # The empty-library filler rows: their menu is what they do.
             entries = [
-                ("&Stop" if playing_this else "&Play Episode", self._on_library_episode_play_stop),
-                ("&Download Episode", self._on_library_download_episode),
-                ("Open &Manager...", lambda: self.open_podcast_manager()),
+                ("&Add Podcast...", lambda: self._podcast_open_add_dialog()),
+                ("&Import Podcasts from OPML...", lambda: self._podcast_open_import_opml()),
             ]
         else:
-            entries = [("Open &Manager...", lambda: self.open_podcast_manager())]
+            entries = [
+                ("&Add Podcast...", lambda: self._podcast_open_add_dialog()),
+                ("Open &Manager...", lambda: self.open_podcast_manager()),
+            ]
         return entries
 
     def _on_library_context_menu(self, _event: object) -> None:
@@ -210,6 +242,60 @@ class CastLibraryActionsMixin:
             self.podcast_stop()
         else:
             self._play_episode_object(show, episode)
+
+    def _episode_is_downloaded(self, episode: object) -> bool:
+        """Whether this episode has a file on disk right now.
+
+        The library records the path; the disk decides. Somebody who deleted
+        the file in Explorer has un-downloaded that episode, and a menu built
+        from the record alone would offer to remove a file that is not there
+        (and refuse to download the one that should be).
+        """
+        from pathlib import Path
+
+        recorded = str(getattr(episode, "downloaded_path", "") or "").strip()
+        if not recorded:
+            return False
+        try:
+            return Path(recorded).is_file()
+        except OSError:  # noqa: PERF203 - an unreadable path is simply not a hit
+            return False
+
+    def _on_library_episode_stop(self) -> None:
+        """Stop, from a downloaded episode's own Stop item.
+
+        Not the play/stop toggle: on a downloaded row Stop is a separate item,
+        so it must stop rather than start something.
+        """
+        self.podcast_stop()
+
+    def _on_library_remove_episode_download(self) -> None:
+        """Delete this episode's file; the subscription and played state stay.
+
+        Confirmation is the spoken outcome rather than a dialog: one episode is
+        a small, re-downloadable thing, and the show-wide Remove All Downloads
+        (which is not) keeps its confirmation.
+        """
+        from pathlib import Path
+
+        pair = self._selected_episode()
+        if pair is None:
+            return
+        _show, episode = pair
+        recorded = str(getattr(episode, "downloaded_path", "") or "").strip()
+        if not self._episode_is_downloaded(episode):
+            episode.downloaded_path = ""
+            self._save_podcast_library()
+            self._announce(f"{episode.title} is not downloaded.")
+            return
+        try:
+            Path(recorded).unlink()
+        except OSError as error:
+            self._announce(f"{episode.title} could not be removed. {error}")
+            return
+        episode.downloaded_path = ""
+        self._save_podcast_library()
+        self._announce(f"Removed the download of {episode.title}. It can be streamed again.")
 
     def _on_library_download_episode(self) -> None:
         """Download this one episode -- enqueued on the background download

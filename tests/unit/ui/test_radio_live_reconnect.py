@@ -19,7 +19,7 @@ from typing import Any
 import pytest
 
 from quill.ui.radio import live_reconnect
-from quill.ui.radio.player_controller import RadioPlayerState
+from quill.ui.radio.playback_state import RadioPlayerState
 
 
 class _State:
@@ -82,7 +82,11 @@ def test_a_dropped_live_station_schedules_a_reconnect_and_says_so() -> None:
     assert live_reconnect.handle_finished(host) is True
 
     state, message = host.states[-1]
-    assert state is RadioPlayerState.CONNECTING
+    # RECONNECTING, not CONNECTING: "connecting" is what a station somebody
+    # just chose does. A listener who pressed nothing is owed a different word,
+    # and the status line now renders this state's message instead of throwing
+    # it away.
+    assert state is RadioPlayerState.RECONNECTING
     # The station is named and the attempt is counted out loud: a silent retry
     # is indistinguishable from a hung player.
     assert "KFI AM 640" in message
@@ -115,7 +119,7 @@ def test_the_retry_loads_the_stream_again() -> None:
 
     assert host._engine.load_calls == ["https://stream.example/zc177"]
     # Loading is not playing: the recovery is announced by _on_loaded, not here.
-    assert host.states[-1][0] is RadioPlayerState.CONNECTING
+    assert host.states[-1][0] is RadioPlayerState.RECONNECTING
 
 
 def test_a_retry_whose_token_is_stale_is_dropped() -> None:

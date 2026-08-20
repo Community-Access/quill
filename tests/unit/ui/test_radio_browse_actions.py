@@ -122,7 +122,67 @@ def test_a_known_action_runs_and_an_unknown_one_is_ignored() -> None:
 def test_is_action_id_knows_both_rows() -> None:
     assert browse_actions.is_action_id("addserver")
     assert browse_actions.is_action_id("addchannel")
+    assert browse_actions.is_action_id("addpodcasturl")
+    assert browse_actions.is_action_id("importpodcastsopml")
+    assert browse_actions.is_action_id("searchpodcasts")
     assert not browse_actions.is_action_id("librivox")
+
+
+def test_the_empty_subscriptions_actions_dispatch_to_their_own_helpers(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from quill.ui.radio import browse_podcast_actions
+
+    host = _Host()
+    called: list[tuple[str, object]] = []
+    monkeypatch.setattr(
+        browse_podcast_actions,
+        "add_podcast_by_url_prompt",
+        lambda supplied_host: called.append(("add", supplied_host)),
+    )
+    monkeypatch.setattr(
+        browse_podcast_actions,
+        "import_opml",
+        lambda supplied_host: called.append(("import", supplied_host)),
+    )
+
+    browse_actions.perform(host, "addpodcasturl")
+    browse_actions.perform(host, "importpodcastsopml")
+
+    assert called == [("add", host), ("import", host)]
+
+
+def test_both_search_rows_answer_inside_the_tree(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Neither search row leaves the browse window any more.
+
+    Both used to call ``open_internet_radio``, which swapped the tree for the
+    Find Stations dialog -- "search all sources is taking me somewhere else"
+    (2026-08-18). They now run the same in-tree search, one of them narrowed
+    to the podcast directories.
+    """
+    from quill.core.radio import federated_browse
+    from quill.ui.radio import browse_search_all
+
+    runs: list[tuple[object, tuple[str, ...] | None]] = []
+    monkeypatch.setattr(
+        browse_search_all,
+        "run",
+        lambda host, *, targets=None, **_kwargs: runs.append((
+            host,
+            tuple(t.label for t in targets) if targets is not None else None,
+        )),
+    )
+    host = _Host()
+
+    browse_actions.perform(host, "searchall")
+    browse_actions.perform(host, "searchpodcasts")
+
+    assert [supplied for supplied, _targets in runs] == [host, host]
+    # Search All asks everything; Search for a Podcast asks the podcast
+    # directories only -- derived from the source table, never a second list.
+    assert runs[0][1] is None
+    assert runs[1][1] == tuple(t.label for t in federated_browse.targets_of_type("Podcast"))
+    assert runs[1][1]  # the narrowing is not an empty tuple that asks nothing
 
 
 def test_adding_a_server_probes_first_and_stores_it(monkeypatch: pytest.MonkeyPatch) -> None:
