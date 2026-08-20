@@ -656,6 +656,7 @@
   "quill/ui/radio/download_queue_dialog.py::DownloadQueueDialog.__init__::wx.ListBox": "named",
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog.__init__::wx.TreeCtrl": "named",
+  "quill/ui/radio/first_run_dialog.py::RadioFirstRunDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/radio/import_stations_dialog.py::prompt_import_target::wx.ComboBox": "named",
   "quill/ui/radio/link_finder_dialog.py::LinkFinderDialog.__init__::wx.ListCtrl": "named",
   "quill/ui/radio/link_finder_dialog.py::LinkFinderDialog.__init__::wx.TextCtrl": "named",
