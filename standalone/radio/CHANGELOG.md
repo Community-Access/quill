@@ -29,6 +29,16 @@ Three separate faults, all of them now closed:
 
 Two more upgrade fixes ride along, and the first is the one that mattered most: **a fresh install could not start at all.** The program that launches Quill Radio looked for its Python engine in one folder while the installer put it in another, so a clean install answered "Quill Radio could not find a Python runtime" and closed. Both sides now agree, and a build check keeps them agreeing. The second: **an update actually replaces the program code** -- previously an update onto a machine that already had the same Python version skipped the copy entirely and reported success while leaving the old app in place.
 
+### The playback engine can be installed in any order, and fetched when it isn't
+
+Quill Radio plays through **mpv**. Without it the app falls back to Windows Media and quietly loses live pause and rewind, output-device choice, Volume Boost, Sound Enhancements without a relay, track titles from the stream, stall detection, and every Ogg Vorbis, Opus and HLS station. Two separate faults could leave a listener there, and neither announced itself.
+
+- **Installing your apps in the wrong order used to cost you the engine.** ffmpeg and libmpv are 306 MB, so they are not built into the shared QuillVille Runtime -- four of the seven apps never call them, and Quill Weather's installer was once 191 MB to read out a forecast. Each media app contributes the tools it needs instead. But those tools were being installed by the *same* line as the runtime, which is skipped when a newer sibling app has already put a runtime there. So installing QUILL Cast (which needs ffmpeg only) and *then* Quill Radio skipped Radio's whole payload: libmpv never landed. The tools are now laid down unconditionally, so a machine ends up with the union of what its apps need, whoever installed first -- and an app that declares no media tools no longer risks packing 306 MB another app's build happened to leave behind.
+- **Reinstalling could not fix it, though the app said it would.** The reinstall hit the same skip. It works now, which is what makes the advice true rather than merely reassuring.
+- **Help > Get mpv Playback Engine... (Ctrl+Alt+M)** downloads it, for the case where reinstalling is not the answer at all. The **Lite** installer downloads the base runtime and carries no media tools by design, so "reinstall" was never going to help a Lite listener; now they have the same one-command repair as everybody else. It is the same SHA-256-pinned pack the build itself uses -- it has been sitting on QUILL's own release the entire time with no route from the running app to it -- and it arrives with mpv's GPL texts and corresponding-source offer, because those are part of shipping it, not extras.
+- **Audio Health gained a Get mpv button** beside Get FFmpeg, each enabled only when it would actually do something, and the mpv row now names the download instead of telling you to reinstall.
+- **The advice now knows which edition you are running.** A Lite install is pointed at the full installer rather than told to repeat an install that could not have helped.
+
 ### Bring your YouTube subscriptions across, without a Google account
 
 - **Station > Import YouTube Subscriptions...** (Ctrl+Alt+Shift+Y) reads the subscriptions file you export from Google and follows every channel in it, so forty channels cost one file rather than forty pasted addresses. They land in the YouTube Channels branch you already have, and Quill Radio says what happened: "Imported 24 channels; 3 you already followed."
@@ -178,6 +188,15 @@ Two more upgrade fixes ride along, and the first is the one that mattered most: 
   Find Stations results and the Recordings list can now be reordered and pruned,
   and both offer more than they show: Language, Genres, Popularity and Bitrate on
   a station row, Length on a recording.
+- **Continue Listening moved to Ctrl+Alt+Shift+L**, because Choose Columns took
+  the C. It had `Ctrl+Shift+Alt+C`, which reads as a different key and is not
+  one: wx ignores the order the modifiers are written in, so the two menu items
+  claimed one chord and whichever wx bound second silently never fired. Choose
+  Columns keeps the C -- QUILL Cast binds it there too, and a family key that
+  differs per app is worse than an unfamiliar one. The gate that exists to catch
+  exactly this missed it because it compared the accelerator *text*; it now
+  compares the way the Keyboard Manager already did, so a re-ordered spelling
+  can never hide a collision again.
 - **Two lists, not checkboxes**, for the reason Quick Actions reorders by
   position: a checkbox inside a list is a state a screen reader has to be asked
   for, while a list position is a place you land on and the announcement after a

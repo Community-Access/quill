@@ -244,17 +244,21 @@ def show_audio_health(host: Any) -> None:
     refresh_btn = wx.Button(dialog, label="&Check Again")
     refresh_btn.SetName("Re-read every row, after plugging in a device or reinstalling a tool")
     ffmpeg_btn = wx.Button(dialog, label="&Get FFmpeg...")
+    mpv_btn = wx.Button(dialog, label="Get &mpv...")
+    mpv_btn.SetName("Download the mpv playback engine, which this installation is missing")
     close_btn = wx.Button(dialog, wx.ID_CLOSE, label="C&lose")
-    for button in (refresh_btn, ffmpeg_btn, close_btn):
+    for button in (refresh_btn, ffmpeg_btn, mpv_btn, close_btn):
         row_sizer.Add(button, 0, wx.RIGHT, 6)
     root.Add(row_sizer, 0, wx.ALL, 8)
     apply_modal_ids(dialog, affirmative_id=close_btn.GetId(), escape_id=close_btn.GetId())
     dialog.SetSizer(root)
 
-    # Get FFmpeg is offered only when it would do something. A button that
+    # Each Get button is offered only when it would do something. A button that
     # downloads what you already have teaches people to press buttons and see
     # what happens, which is the opposite of what this window is for.
+    _MPV_ROW = "mpv playback engine"
     ffmpeg_btn.Enable(any(row.label == "FFmpeg" and row.severity != "ok" for row in report))
+    mpv_btn.Enable(any(row.label == _MPV_ROW and row.severity != "ok" for row in report))
 
     def _refresh(_event: Any) -> None:
         new_line, new_report = _rows(host)
@@ -262,6 +266,9 @@ def show_audio_health(host: Any) -> None:
         summary_label.SetLabel(new_line)
         ffmpeg_btn.Enable(
             any(entry.label == "FFmpeg" and entry.severity != "ok" for entry in new_report)
+        )
+        mpv_btn.Enable(
+            any(entry.label == _MPV_ROW and entry.severity != "ok" for entry in new_report)
         )
         if listbox.GetCount():
             listbox.SetSelection(0)
@@ -278,8 +285,17 @@ def show_audio_health(host: Any) -> None:
         dialog.EndModal(wx.ID_CLOSE)
         downloader()
 
+    def _get_mpv(_event: Any) -> None:
+        downloader = getattr(host, "download_mpv_component", None)
+        if downloader is None:
+            host._announce("This build has no mpv downloader.")
+            return
+        dialog.EndModal(wx.ID_CLOSE)
+        downloader()
+
     refresh_btn.Bind(wx.EVT_BUTTON, _refresh)
     ffmpeg_btn.Bind(wx.EVT_BUTTON, _get_ffmpeg)
+    mpv_btn.Bind(wx.EVT_BUTTON, _get_mpv)
     close_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CLOSE))
     apply_listbox_activation(listbox, lambda _e: None)
     if listbox.GetCount():

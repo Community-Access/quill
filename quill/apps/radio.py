@@ -1349,6 +1349,14 @@ class RadioAppFrame(
         ffmpeg_id = wx.NewIdRef()
         help_menu.Append(ffmpeg_id, "&Get FFmpeg...\tCtrl+Alt+F")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
+        # Beside Get FFmpeg because they are the same kind of thing: the two
+        # media tools every full installer bundles, and that a Lite install --
+        # which downloads the base runtime and no tools at all -- has neither
+        # of. Radio needs this one more than FFmpeg: mpv is the playback engine,
+        # so without it Ogg, Opus and HLS stations do not play at all.
+        mpv_id = wx.NewIdRef()
+        help_menu.Append(mpv_id, "Get mpv Playback &Engine...\tCtrl+Alt+M")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_mpv_component(), id=mpv_id)
         help_menu.AppendSeparator()
         guide_id, notes_id, prd_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         # The release notes ship in two halves: the narrative, and the companion

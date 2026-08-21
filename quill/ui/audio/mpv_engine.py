@@ -9,8 +9,8 @@ seeking, and wide format coverage — chapter navigation that feels instant on
 libmpv is *not* bundled. :func:`find_libmpv` looks for ``libmpv-2.dll`` in,
 in order: the ``QUILL_LIBMPV`` environment override (a file or a folder),
 the mpv engine pack folder (``<app data>/engine-packs/mpv`` — where the
-on-demand assets-v1 download lands once that asset is hosted), and next to
-the running executable. No DLL found simply means the player stays on the
+on-demand assets-v1 download lands, see :mod:`quill.core.mpv_install`), and
+next to the running executable. No DLL found simply means the player stays on the
 wx.media backend; nothing else changes.
 
 The binding is a deliberately small ctypes wrapper over the libmpv client
@@ -42,10 +42,16 @@ _MPV_FORMAT_DOUBLE = 5
 
 
 def mpv_pack_dir() -> Path:
-    """Where the on-demand mpv component installs (assets-v1 flow)."""
-    from quill.core.speech.engine_install import engine_packs_dir
+    """Where the on-demand mpv component installs (assets-v1 flow).
 
-    return engine_packs_dir() / "mpv"
+    Defers to :func:`quill.core.mpv_install.managed_mpv_dir` so the downloader
+    and the resolver cannot disagree about the folder. They agreed by
+    coincidence while both spelled it out; a downloader writing where the
+    resolver does not look would report success and change nothing.
+    """
+    from quill.core.mpv_install import managed_mpv_dir
+
+    return managed_mpv_dir()
 
 
 def find_libmpv() -> Path | None:

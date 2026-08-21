@@ -72,8 +72,11 @@ def test_a_missing_tool_names_what_it_costs_and_how_to_fix_it() -> None:
     assert ffmpeg.severity == DEGRADED
     assert "Help > Get FFmpeg" in ffmpeg.detail
 
+    # Both tools name their own download now (2026-08-21). "Reinstall" used to
+    # be the only thing this row could say, and for a Lite install it was not
+    # even true -- the thin installer carries no media tools at all.
     rows = build_report(_healthy(mpv_present=False, active_engine="wx"))
-    assert "Reinstalling Quill Radio" in _row(rows, "mpv playback engine").detail
+    assert "Get mpv Playback Engine" in _row(rows, "mpv playback engine").detail
 
 
 def test_a_chosen_device_the_system_no_longer_offers_is_flagged() -> None:

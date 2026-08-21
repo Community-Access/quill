@@ -737,8 +737,38 @@ any that does.
 
 ### Things that were quietly wrong, and are not now
 
-Four worth knowing about, because every one of them was broken and not one
+Five worth knowing about, because every one of them was broken and not one
 announced itself.
+
+**Installing your apps in the wrong order cost you the playback engine.** Quill
+Radio plays through mpv; without it the app drops to Windows Media and loses
+live pause and rewind, output-device choice, Volume Boost, track titles from the
+stream, stall detection, and every Ogg Vorbis, Opus and HLS station. The mpv
+library and FFmpeg are 306 MB together, so they are not built into the shared
+QuillVille Runtime that all seven apps use -- four of those apps never call
+them, and Quill Weather's installer was once 191 MB to read out a forecast.
+Each media app contributes what it needs instead.
+
+That is a sound arrangement, and the install step did not honour it. The tools
+were installed by the same instruction as the runtime itself, which is skipped
+when a newer sibling app has already put a runtime on the machine. So installing
+QUILL Cast -- which needs FFmpeg and not mpv -- and *then* installing Quill
+Radio skipped Radio's payload entirely, and mpv never arrived. Nothing said so.
+The app fell back, played most stations, and simply could not play some.
+
+Reinstalling did not help either, though the app confidently said it would: the
+reinstall met the same skip. Both halves are fixed. The tools are now laid down
+unconditionally, so a machine ends up with the union of what its apps need
+whoever installed first, and reinstalling really does restore them.
+
+And for the case where reinstalling is not the answer at all -- the **Lite**
+installer downloads the base runtime and carries no media tools by design --
+**Help > Get mpv Playback Engine... (Ctrl+Alt+M)** simply fetches it, about
+46 MB, the same checksum-pinned package the build itself uses. Audio Health has
+a button for it too, next to Get FFmpeg, lit only when pressing it would change
+something. It arrives with mpv's licence texts and its corresponding-source
+offer, because those are part of shipping it rather than paperwork bolted on
+afterwards.
 
 **A station that hiccuped once was dead.** This came in as a report while 3.0
 was being finished, and it is the most consequential fix in the release:
