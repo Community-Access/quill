@@ -32,7 +32,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "1.1.0"
+$version = "2.0.0"
 
 # -- resolve the toolchain ----------------------------------------------------
 # standalone\cast -> standalone -> the QUILL checkout root.

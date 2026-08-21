@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "quill-cast"
-version = "1.1.0"
+version = "2.0.0"
 description = "QUILL Cast -- accessible, screen-reader-first podcasts as a standalone app"
 readme = "README.md"
 requires-python = ">=3.12"
