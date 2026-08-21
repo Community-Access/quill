@@ -15,6 +15,7 @@ question at all, for every app that ships the shared runtime.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
@@ -131,3 +132,167 @@ def test_every_thin_installer_probes_that_same_versioned_path() -> None:
         assert "Runtime\\3.13\\quillville-runtime.json" in path.read_text(encoding="utf-8"), (
             path.name
         )
+
+
+# -- the media tools must not ride inside the runtime's install-if-newer gate --
+#
+# ffmpeg and libmpv are 306 MB, so they are contributed per app rather than
+# built into the shared runtime (scripts\StageMediaTools.ps1). Until 2026-08-21
+# they were nonetheless installed by the SAME [Files] line as the runtime, which
+# is gated by RuntimeNeedsInstall -- so which tools a machine ended up with was
+# decided by the order the apps happened to be installed in. Install Cast
+# (ffmpeg only, newer runtime build) and then Radio (ffmpeg + mpv, older build)
+# and Radio's payload was skipped whole: no libmpv, no Ogg/Opus/HLS stations, no
+# output-device choice, no DVR -- and reinstalling hit the same skip, so the
+# app's own repair advice ("reinstalling restores it") could not come true.
+
+#: app id -> the tool defines its installer must set, mirroring the app module's
+#: ``REQUIRED_COMPONENTS``. The apps that declare no media tools are absent on
+#: purpose: they must set neither define and ship neither tool.
+MEDIA_TOOL_DEFINES = {
+    "standalone/radio/installer/quill-radio.iss": {"ToolFfmpeg", "ToolMpv"},
+    "standalone/cast/installer/quill-cast-shared.iss": {"ToolFfmpeg"},
+    "standalone/studio/installer/quill-audio-studio.iss": {"ToolFfmpeg", "ToolMpv"},
+}
+
+#: ``quill/apps/<module>.py`` for each of the above, so the two lists cannot
+#: drift: the installer's tools are the app's declared components or the app
+#: launches missing something it says it needs.
+APP_MODULE_FOR_INSTALLER = {
+    "standalone/radio/installer/quill-radio.iss": "radio",
+    "standalone/cast/installer/quill-cast-shared.iss": "podcasts",
+    "standalone/studio/installer/quill-audio-studio.iss": "studio",
+}
+
+_DEFINE_FOR_COMPONENT = {"ffmpeg": "ToolFfmpeg", "mpv": "ToolMpv"}
+
+
+def _files_entry(source: str, starts_with: str) -> str:
+    """One whole [Files] entry: its Source line plus every ``\\`` continuation.
+
+    Read as a unit on purpose -- ``Check:`` and ``Excludes:`` both sit on
+    continuation lines here, so a per-line assertion would pass while the entry
+    said the opposite of what it was asserted to say.
+    """
+    lines = source.splitlines()
+    index = next(i for i, line in enumerate(lines) if line.startswith(starts_with))
+    entry = [lines[index]]
+    while entry[-1].rstrip().endswith("\\"):
+        index += 1
+        entry.append(lines[index])
+    return "\n".join(entry)
+
+
+def test_the_tools_are_installed_unconditionally_not_behind_the_runtime_gate() -> None:
+    """Each tool gets its own Check-less [Files] entry, or install order decides."""
+    source = FRAGMENT.read_text(encoding="utf-8")
+    for tool in ("ffmpeg", "mpv"):
+        marker = rf'Source: "{{#RuntimeSourceDir}}\tools\{tool}\*"'
+        assert marker in source, f"{tool} has no [Files] entry of its own"
+        entry = _files_entry(source, marker)
+        assert "Check:" not in entry, (
+            f"the {tool} entry is gated by a Check, so a newer sibling runtime "
+            f"can still skip it and install order decides who has {tool}"
+        )
+        assert rf'DestDir: "{{code:RuntimeDir}}\tools\{tool}"' in entry, (
+            f"{tool} must land in the shared runtime's tools\\ dir, which is "
+            f"where QUILL_APP_ROOT-based discovery looks for it"
+        )
+
+
+def test_the_runtime_wildcard_excludes_the_tools_it_no_longer_installs() -> None:
+    """Without the exclude, every tool byte is packed twice (306 MB per app)."""
+    source = FRAGMENT.read_text(encoding="utf-8")
+    gated = _files_entry(source, r'Source: "{#RuntimeSourceDir}\*"')
+    assert "Check: RuntimeNeedsInstall" in gated, "the runtime itself must stay gated"
+    assert r'Excludes: "tools,tools\*"' in gated, (
+        "the gated runtime wildcard must exclude tools\\, which is now installed "
+        "by its own entries -- otherwise the payload carries them twice"
+    )
+
+
+def test_each_media_installer_declares_exactly_the_tools_its_app_requires() -> None:
+    """The installer's defines and the app's REQUIRED_COMPONENTS are one list."""
+    for relative, expected in MEDIA_TOOL_DEFINES.items():
+        source = (REPO / relative).read_text(encoding="utf-8")
+        declared = {define for define in ("ToolFfmpeg", "ToolMpv") if f"#define {define}" in source}
+        assert declared == expected, f"{relative} declares {declared}, expected {expected}"
+
+        module = REPO / "quill" / "apps" / f"{APP_MODULE_FOR_INSTALLER[relative]}.py"
+        text = module.read_text(encoding="utf-8")
+        line = next(raw for raw in text.splitlines() if raw.startswith("REQUIRED_COMPONENTS"))
+        required = {component for component in _DEFINE_FOR_COMPONENT if f'"{component}"' in line}
+        assert {_DEFINE_FOR_COMPONENT[c] for c in required} == expected, (
+            f"{module.name} requires {sorted(required)} but {relative} stages "
+            f"{sorted(expected)} -- the app would launch without a tool it declares"
+        )
+
+
+def test_apps_with_no_media_components_stage_no_tools() -> None:
+    """Weather must not ship 306 MB another app's build left in the shared dist."""
+    for relative in SHARED_RUNTIME_INSTALLERS - set(MEDIA_TOOL_DEFINES):
+        source = (REPO / relative).read_text(encoding="utf-8")
+        assert "#define ToolFfmpeg" not in source, relative
+        assert "#define ToolMpv" not in source, relative
+
+
+# -- every {#Macro} an installer uses must be defined somewhere it can see -----
+#
+# QUILL Cast's 2.0 work added the quill-cast:// URI handler to all three of its
+# installers, but only quill-cast.iss defined the AppExeName it interpolates --
+# and quill-cast.iss is the one build_release.ps1 no longer compiles. So the two
+# installers that ARE built could not compile at all ("Undeclared identifier:
+# AppExeName. Compile aborted."), and nothing noticed for as long as nobody cut
+# a release. ISCC catches this instantly; the gap was that nothing ran ISCC.
+# This is the cheap half of that check, and it runs on every commit.
+
+#: Macros ISPP/Inno provide or that the build supplies on the command line
+#: (ISCC /d...), so an installer is right not to define them itself.
+_EXTERNALLY_DEFINED = frozenset({
+    "AppVersion",  # passed as /dAppVersion=<version> by every build script
+    "SetupSetting",  # ISPP built-in
+    "Sign",  # /DSign, and only ever tested with #ifdef
+})
+
+_MACRO_USE = re.compile(r"\{#\s*([A-Za-z_][A-Za-z0-9_]*)")
+_MACRO_DEF = re.compile(r"^\s*#\s*define\s+([A-Za-z_][A-Za-z0-9_]*)", re.MULTILINE)
+_INCLUDE = re.compile(r'^\s*#\s*include\s+"([^"]+)"', re.MULTILINE)
+
+
+def _defined_names(path: Path, *, seen: set[Path] | None = None) -> set[str]:
+    """Every macro name visible in *path*, following #include one level or more."""
+    seen = seen if seen is not None else set()
+    resolved = path.resolve()
+    if resolved in seen or not resolved.is_file():
+        return set()
+    seen.add(resolved)
+    text = resolved.read_text(encoding="utf-8")
+    names = set(_MACRO_DEF.findall(text))
+    for relative in _INCLUDE.findall(text):
+        names |= _defined_names(resolved.parent / relative, seen=seen)
+    return names
+
+
+def _used_names(path: Path, *, seen: set[Path] | None = None) -> set[str]:
+    seen = seen if seen is not None else set()
+    resolved = path.resolve()
+    if resolved in seen or not resolved.is_file():
+        return set()
+    seen.add(resolved)
+    text = resolved.read_text(encoding="utf-8")
+    names = set(_MACRO_USE.findall(text))
+    for relative in _INCLUDE.findall(text):
+        names |= _used_names(resolved.parent / relative, seen=seen)
+    return names
+
+
+def test_every_installer_defines_the_macros_it_interpolates() -> None:
+    problems: list[str] = []
+    for path in sorted(REPO.glob("standalone/*/installer/*.iss")):
+        undefined = _used_names(path) - _defined_names(path) - _EXTERNALLY_DEFINED
+        if undefined:
+            problems.append(f"{path.relative_to(REPO).as_posix()}: {sorted(undefined)}")
+    assert not problems, (
+        "these installers interpolate a macro nothing defines, so ISCC aborts on "
+        f"the first build that compiles them: {problems}"
+    )

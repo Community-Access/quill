@@ -47,6 +47,11 @@
 #define RuntimeVersion "3.13.15"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "radio"
+; The media tools Radio declares (quill.apps.radio REQUIRED_COMPONENTS =
+; ("ffmpeg", "mpv")). shared-runtime.iss installs these unconditionally, so
+; Radio gets its playback engine whatever order the apps were installed in.
+#define ToolFfmpeg
+#define ToolMpv
 
 [Setup]
 #ifdef Sign

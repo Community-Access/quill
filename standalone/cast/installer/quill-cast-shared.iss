@@ -18,7 +18,7 @@
 
 #define AppName "QUILL Cast"
 #ifndef AppVersion
-  #define AppVersion "1.1.0"
+  #define AppVersion "2.0.0"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-cast"
@@ -29,6 +29,16 @@
 #define RuntimeVersion "3.13.15"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "cast"
+; The launcher both shared-runtime editions install into {app}. It is
+; ALSO the quill-cast:// URI handler below, which is what needs it named:
+; a protocol handler is one exe plus "%1", so it cannot be expressed as the
+; runtime plus "-m quill.apps.podcasts" the way the shortcuts are.
+; Spelled differently from quill-cast.iss's QUILLCast.exe on purpose --
+; that is the self-contained onedir's PyInstaller output, a different file.
+#define AppExeName "QuillCast.exe"
+; quill.apps.podcasts REQUIRED_COMPONENTS = ("ffmpeg",). No mpv: Cast plays
+; through wx.media, and the 110 MB it never calls stays out of its installer.
+#define ToolFfmpeg
 
 [Setup]
 #ifdef Sign
