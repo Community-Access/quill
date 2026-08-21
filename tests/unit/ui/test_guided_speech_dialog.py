@@ -97,4 +97,9 @@ def test_hub_offers_audio_extras_download() -> None:
     assert '"audio_extras": lambda: self.download_audio_extras(on_done=_back)' in src
     assert "def download_audio_extras" in src
     assert "install_mp3_support(" in src  # on-demand mutagen install
-    assert '"libmpv",' in src  # on-demand mpv fetch_component call
+    # The mpv half of the pack. This used to pin the raw '"libmpv",' argument of
+    # an inline fetch_component call; the download moved into
+    # quill.core.mpv_install (2026-08-21) so Quill Radio's Help > Get mpv and
+    # this hub cannot pick different target folders, and what matters now is
+    # that the hub calls that one installer.
+    assert "install_mpv(" in src  # on-demand mpv install, via core.mpv_install
