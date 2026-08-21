@@ -783,3 +783,65 @@ def test_explicit_exit_skips_confirm_even_while_recording(monkeypatch: pytest.Mo
     assert skipped == [True]
     assert vetoed == []
     assert "recorder.shutdown" in calls
+
+
+# -- the close gesture's default answer must be the one the gesture asked for --
+
+
+def test_the_close_confirm_defaults_to_exit_not_minimize() -> None:
+    """Alt+F4 then Enter must exit, because that is what Alt+F4 means.
+
+    Reported 2026-08-21: "alt+f4 is not closing ... the Exit command works."
+    Both halves were true and neither was a broken close path. While a station
+    plays the close is protected, so Alt+F4 raises this dialog -- and the
+    dialog's default button was Minimize to Tray. So the whole keyboard
+    interaction (Alt+F4, Enter) tucked the window into the tray, and the only
+    thing that genuinely exited was the Exit menu item, which bypasses the
+    dialog. Minimize is the interesting alternative here; it is not the
+    expected answer to "close this window".
+
+    Pinned as source rather than by building the dialog: it assigns its ids
+    with ``int(wx.NewIdRef())``, which drops the IdRef, and wx recycles the id
+    out from under a second construction in the same process.
+    """
+    from pathlib import Path
+
+    source = (
+        Path(__file__).resolve().parents[3] / "quill" / "ui" / "radio" / "close_confirm_dialog.py"
+    ).read_text(encoding="utf-8")
+
+    assert "affirmative_id=self._exit_id" in source, "Enter must answer a close gesture with Exit"
+    assert 'affirmative_label="Exit"' in source
+    # Exit leads the row: the first button is the one a listener meets first.
+    assert source.index('self._exit_id, "E&xit"') < source.index(
+        'self._minimize_id, "&Minimize to Tray"'
+    ), "Exit must be created, and added, before Minimize"
+    assert source.index("buttons.Add(exit_btn") < source.index("buttons.Add(minimize_btn")
+
+
+def test_the_main_window_answers_go_to_player_like_every_other_window() -> None:
+    """Ctrl+Shift+G worked in eight windows and not in the one people try first.
+
+    ``transport_keys.install()`` carries the transport table into the browse
+    tree, the managers and the player panel. The main window never installs it,
+    and APP_KEYMAPS carries no entry either, so Go to Player -- the key whose
+    entire job is "take me back to the player" -- was the one key that did
+    nothing on the main window. Pinned as source, because the binding is a menu
+    item on a frame this test cannot cheaply build.
+    """
+    from pathlib import Path
+
+    from quill.core.radio import transport_commands
+
+    source = (Path(__file__).resolve().parents[3] / "quill" / "apps" / "radio.py").read_text(
+        encoding="utf-8"
+    )
+    command = transport_commands.command(transport_commands.GO_TO_PLAYER)
+    assert command is not None
+    assert f"Go to Player\t{command.key}" in source, (
+        "the main window must advertise Go to Player on its own accelerator, "
+        "and with the same key every other window answers to"
+    )
+    assert "transport_keys.perform(self, transport_commands.GO_TO_PLAYER)" in source, (
+        "it must run the shared dispatcher, not a private copy"
+    )

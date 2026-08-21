@@ -1197,6 +1197,16 @@ class RadioAppFrame(
         video_menu_ids = build_playback_extras(self, playback_menu, wx)
         playback_menu.AppendSeparator()
         whats_playing_id = wx.NewIdRef()
+        # Go to Player summons the player panel over whatever window you are
+        # in. transport_keys.install() carries it into the browse tree, the
+        # managers and the rest; the main window has no transport install, so
+        # until 2026-08-21 Ctrl+Shift+G worked in every window EXCEPT this
+        # one -- the one most people try first. A menu item is the right home
+        # for it here: it binds the accelerator on the frame and puts the key
+        # in a label, which is how every other key in this app is found.
+        go_to_player_id = wx.NewIdRef()
+        playback_menu.Append(go_to_player_id, "&Go to Player	Ctrl+Shift+G")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_go_to_player(), id=go_to_player_id)
         playback_menu.Append(whats_playing_id, "&What's Playing?\tCtrl+T")
         # Ctrl+Shift+H is free in the standalone app; inside full QUILL the same
         # command ships unbound because there Ctrl+Shift+H is Replace All.
@@ -1349,6 +1359,14 @@ class RadioAppFrame(
         ffmpeg_id = wx.NewIdRef()
         help_menu.Append(ffmpeg_id, "&Get FFmpeg...\tCtrl+Alt+F")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
+        # Beside Get FFmpeg because they are the same kind of thing: the two
+        # media tools every full installer bundles, and that a Lite install --
+        # which downloads the base runtime and no tools at all -- has neither
+        # of. Radio needs this one more than FFmpeg: mpv is the playback engine,
+        # so without it Ogg, Opus and HLS stations do not play at all.
+        mpv_id = wx.NewIdRef()
+        help_menu.Append(mpv_id, "Get mpv Playback &Engine...\tCtrl+Alt+M")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_mpv_component(), id=mpv_id)
         help_menu.AppendSeparator()
         guide_id, notes_id, prd_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         # The release notes ship in two halves: the narrative, and the companion
@@ -1870,6 +1888,15 @@ class RadioAppFrame(
                 self.radio_volume_down()
             return
         event.Skip()
+
+    def _radio_go_to_player(self) -> None:
+        """Playback > Go to Player. Runs the same dispatcher every other window
+        runs, so the main window cannot answer this key differently from the
+        browse tree or the managers."""
+        from quill.core.radio import transport_commands
+        from quill.ui.radio import transport_keys
+
+        transport_keys.perform(self, transport_commands.GO_TO_PLAYER)
 
     def _on_volume_boost_menu(self) -> None:
         """The Playback menu's Volume Boost check item: toggle, then pin the

@@ -134,6 +134,37 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/runtime_refs.py::_save": "cache",
     "core/weather/monitor.py::save_notified_ids": "cache",
     "core/radio/favorites.py::save_favorites": "content",
+    # --- 2026-08-21: the Choose Columns / chapters / Listening Places wave ---
+    # Which columns a list speaks and in what order, per surface. A user choice
+    # with real structure (order plus a hidden set), an additive shape and a
+    # tolerant loader: an unknown column id is dropped on read and a corrupt
+    # file degrades to the app's catalogue defaults, which is where every
+    # install starts. Same store shape as quick_actions, deliberately.
+    "core/media/list_columns.py::save_column_layouts": "content",
+    # The user-ordered action list per content type, whose first entry is the
+    # default for Enter. Same reasoning as list_columns above.
+    "core/quick_actions.py::save_quick_actions": "content",
+    # An observed log of what was played and for how long, behind Listening
+    # Stats and Year in Review. Not user-authored, capped by a retention
+    # window, rebuilt as you listen: losing it costs the report, not the
+    # library. Same call as radio/song_history.py.
+    "core/media_stats.py::save_sessions": "cache",
+    # Radio -> Cast instruction handoff: "play next", "add to queue", "send to
+    # the Inbox", written by Radio and consumed by Cast at merge. The exact
+    # counterpart of radio_listens (which carries what Radio *heard*) and
+    # classified the same way: loss means one instruction is missed, which is
+    # why an older Cast that never opens the file leaves it waiting rather than
+    # consuming it.
+    "core/podcasts/radio_actions.py::record_action": "cache",
+    "core/podcasts/radio_actions.py::merge_radio_actions": "cache",
+    # Listening Places (spec listening-places/1): this device's file in a
+    # folder any podcast app may read and write. User data, and the one entry
+    # here whose shape is NOT ours alone to change -- the format is published,
+    # with JSON conformance fixtures both implementations test against, so a
+    # field may be added but never repurposed. Every device writes exactly one
+    # file and reads everyone else's, which is what stops a cloud drive
+    # producing a conflicted copy.
+    "core/sync/listening_places.py::write_device_file": "content",
     "core/radio/history.py::save_history": "content",
     # An observed log of what each station played, not user-authored config:
     # every field is additive with a tolerant loader, there is no default whose

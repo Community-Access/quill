@@ -597,7 +597,7 @@ elements now contribute a blank line, collapsed so empty tags can never
 stack more than one -- a screen reader's next-paragraph navigation needs a
 real boundary to land on, and a wall of single-spaced lines has none.
 
-## 16. Reaching outside this machine (1.2)
+## 16. Reaching outside this machine (2.0)
 
 Sections 12 to 15 all made QUILL Cast better at what it already did. This one
 is different in kind: four of its five parts are Cast talking to something that
@@ -757,7 +757,7 @@ Bundling is what makes the feature real: chapters have to answer the first time
 somebody asks, and an engine that must be downloaded first means the first
 answer is always "no chapters could be found".
 
-## 17. The columns are the sentence (1.2)
+## 17. The columns are the sentence (2.0)
 
 The counterpart of Quill Radio's section 13, on the same shared machinery
 (`core/media/list_columns.py`) and for the same reason: an episode list is read

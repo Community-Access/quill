@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Cast -- sign-off checklist</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-cast--sign-off-checklist">QUILL Cast – sign-off
+checklist</h1>
+<p>One pass, top to bottom, ticking boxes. Every step says exactly what
+to press, exactly what to type, and the one thing that decides pass or
+fail.</p>
+<p>The narrative version of every feature below is <a
+href="../../standalone/cast/docs/userguide.md">the user guide</a>; the
+reasoning is in <a href="../../standalone/cast/docs/prd.md">the PRD</a>
+and <a href="../../standalone/cast/docs/release-notes-2.0.md">release
+notes 2.0</a>.</p>
+<h2 id="before-you-start-3-minutes">Before you start (3 minutes)</h2>
+<ul>
+<li>Install or launch the build under test. Note the version from
+<strong>Help &gt; About QUILL Cast</strong>:
+<code>____________</code></li>
+<li>Have a screen reader running and speaking (JAWS or NVDA).</li>
+<li>Cast shares its library with QUILL and Quill Radio in
+<code>%APPDATA%\Quill</code>. If you want a clean run, take a copy of
+that folder first.</li>
+<li><strong>Fail means:</strong> it did not happen, or it happened
+silently, or what you heard differs from what this file quotes. Write
+down what you actually heard.</li>
+<li>Safe Mode is <code>quill-cast.exe --safe-mode</code>.</li>
+<li>Feeds used throughout (all verified live):</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Show</th>
+<th>Feed</th>
+<th>Carries</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Podcasting 2.0</td>
+<td><code>https://feeds.podcastindex.org/pc20.xml</code></td>
+<td>transcript, chapters, people, funding</td>
+</tr>
+<tr>
+<td>Buzzcast</td>
+<td><code>https://feeds.buzzsprout.com/1538779.rss</code></td>
+<td>transcript, chapters, people</td>
+</tr>
+<tr>
+<td>No Agenda</td>
+<td><code>https://feed.nashownotes.com/rss.xml</code></td>
+<td>transcript, chapters, funding</td>
+</tr>
+<tr>
+<td>The Rest Is History</td>
+<td><code>https://feeds.megaphone.fm/GLT4787413333</code></td>
+<td>none of it</td>
+</tr>
+<tr>
+<td>99% Invisible</td>
+<td><code>https://feeds.simplecast.com/BqbsxVfO</code></td>
+<td>none of it</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-20-minute-pass">The 20-minute pass</h2>
+<p>No time for the whole thing? Run exactly these ten and stop – all are
+quick and need no key, no second machine and no long download:
+<strong>C-02, C-03, C-06, C-11, C-37, C-40, C-52, C-59, C-88,
+C-102.</strong></p>
+<hr />
+<h2 id="block-a--first-run-and-the-main-window-6-min">Block A – First
+run and the main window (6 min)</h2>
+<p><strong>C-01. First run is three screens, not seven</strong></p>
+<ul>
+<li>Do: launch a copy with no podcasts (or a fresh profile).</li>
+<li>Pass: three screens – welcome, add your first podcast, you’re set –
+each a text box you can arrow through and copy. <strong>Skip</strong> is
+a real button and counts as done. Someone who already has podcasts never
+sees it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-02. Focus lands where the work is</strong></p>
+<ul>
+<li>Do: open Cast normally.</li>
+<li>Pass: keyboard focus is in the <strong>Library</strong> tree the
+instant the window opens.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-03. Add your first podcast</strong></p>
+<ul>
+<li>Do: <strong>Alt+S &gt; Add Podcast…</strong>, type
+<code>Podcasting 2.0</code>, search, arrow to the result, press
+<strong>Enter</strong>.</li>
+<li>Pass: Enter opens a read-only <strong>Preview</strong> – what it is,
+who makes it, how many episodes, its description as arrowable text, ten
+recent episode titles with dates – and <strong>Subscribe</strong> is on
+that same window. Enter must not subscribe outright.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-04. Tab order on the main window</strong></p>
+<ul>
+<li>Do: Tab from the top.</li>
+<li>Pass: now-playing line, library tree, then <strong>Play</strong>,
+<strong>Stop</strong>, <strong>Add to Favorites</strong>, <strong>Open
+Manager…</strong>, <strong>Add Podcast…</strong></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-05. The transport button is never dead</strong></p>
+<ul>
+<li>Do: press <strong>Play</strong>, then press it again, then
+again.</li>
+<li>Pass: it reads <strong>Play</strong>, then <strong>Pause</strong>
+while playing, then <strong>Resume</strong> while paused. Add to
+Favorites likewise becomes <strong>Remove from Favorites</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-06. Enter on a show plays its next unplayed
+episode</strong></p>
+<ul>
+<li>Do: arrow to a show in the tree, press <strong>Enter</strong>.</li>
+<li>Pass: the next unplayed episode plays, with no detour through the
+Manager. If every episode is played, it plays the most recent one
+<strong>and says so</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-07. Episodes without leaving the main window</strong></p>
+<ul>
+<li>Do: press <strong>Right Arrow</strong> on a show, arrow to an
+episode, press <strong>Enter</strong>.</li>
+<li>Pass: shows start collapsed; expanding lists episodes newest first;
+Enter on an episode plays <em>that</em> episode.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-08. The counts are in words</strong></p>
+<ul>
+<li>Do: read a show row and a folder row.</li>
+<li>Pass: “(3 unheard)” on a show; a folder says how many podcasts live
+under it, counting its whole subtree.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-09. Rename the pinned views, not the shows</strong></p>
+<ul>
+<li>Do: <strong>F2</strong> on <strong>Favorites</strong>; then
+<strong>F2</strong> on a show.</li>
+<li>Pass: the view takes your name and keeps it in the Manager too, and
+its menu gains <strong>Reset Name</strong>; the show refuses – its name
+comes from the feed.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-10. One-sentence tips, once each</strong></p>
+<ul>
+<li>Do: use Cast normally for a few minutes on a fresh profile.</li>
+<li>Pass: occasional single sentences (Play Queue vs Inbox, settings can
+differ per podcast), never modal, never taking the keyboard, spoken
+<strong>and</strong> brailled. One switch turns them off; <strong>Show
+Tips Again</strong> brings them back.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-b--the-podcast-manager-8-min">Block B – The Podcast
+Manager (8 min)</h2>
+<p><strong>C-11. The Manager opens on its pinned views</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+M</strong>.</li>
+<li>Pass: <strong>Favorites</strong>, <strong>New Episodes</strong>,
+<strong>Continue Listening</strong>, <strong>Inbox</strong> lead the
+tree, above your folders and shows.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-12. Cross-show lists read three ways</strong></p>
+<ul>
+<li>Do: in <strong>New Episodes</strong>, change <strong>“View
+cross-show lists as”</strong> to each of <strong>Grouped in
+list</strong>, <strong>Flat list</strong>, <strong>Folders per
+podcast</strong>.</li>
+<li>Pass: grouped clusters each show together; flat is one date-sorted
+stream; folders per podcast are real expandable nodes under the
+view.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-13. Sort episodes, per podcast</strong></p>
+<ul>
+<li>Do: change <strong>Sort episodes</strong> with a show (or its
+Folders node) selected.</li>
+<li>Pass: it applies to cross-show lists too, and selecting one show
+overrides just that podcast, leaving the shared default alone.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-14. Sort shows, including your own order</strong></p>
+<ul>
+<li>Do: <strong>Sort shows</strong> &gt; each option; then
+<strong>Alt+Up</strong> / <strong>Alt+Down</strong> on a show.</li>
+<li>Pass: the dropdown opens on whatever the library really is sorted
+by; the first Alt+Up switches to <strong>Custom Order</strong> starting
+from the order already on screen, so nothing jumps, and the new position
+is spoken.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-15. Filter episodes</strong></p>
+<ul>
+<li>Do: work through the Episodes filter: All, Unplayed, Played,
+<strong>In progress</strong>, Downloaded, Not downloaded.</li>
+<li>Pass: each narrows correctly, and the status line reports the true
+total.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-16. Search Everywhere</strong></p>
+<ul>
+<li>Do: search a word you know appears in an episode title, a note, and
+a fetched transcript. Then <strong>empty the box</strong>.</li>
+<li>Pass: shows, episodes, notes and transcripts all match, and Enter
+jumps to the result; emptying the box empties the results <strong>at
+once</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-17. A very large library stays navigable</strong></p>
+<ul>
+<li>Do: on a library with thousands of episodes, open <strong>New
+Episodes</strong>.</li>
+<li>Pass: the newest thousand rows fill the list and the status line
+says the <strong>true</strong> total.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-c--subscribing-7-min">Block C – Subscribing (7 min)</h2>
+<p><strong>C-18. Two directories, and where results came
+from</strong></p>
+<ul>
+<li>Do: <strong>Add Podcast…</strong>, set <strong>Directory</strong> to
+<strong>iTunes</strong>, search <code>history</code>. Then add a free
+key at <strong>Alt+S &gt; Podcast Index Credentials…</strong> and set
+Directory to <strong>Both</strong>.</li>
+<li>Pass: iTunes needs nothing and is the default; <strong>Podcast Index
+does not appear at all until a key exists</strong>; Both merges by feed
+address and says “12 results: 9 from iTunes, 3 from Podcast Index.” A
+directory that fails contributes a sentence, not a failed search.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] no key – not
+run</label></li>
+</ul>
+<p><strong>C-19. Read It Back</strong></p>
+<ul>
+<li>Do: in Podcast Index Credentials…, press <strong>Read It
+Back</strong>.</li>
+<li>Pass: the secret is spoken once, four characters at a time; the box
+is masked otherwise; clearing both boxes and saving removes them.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-20. Add by feed URL</strong></p>
+<ul>
+<li>Do: <strong>Add Podcast…</strong> &gt; <strong>Add by Feed
+URL</strong>, paste <code>https://feed.nashownotes.com/rss.xml</code>,
+press <strong>Add</strong>.</li>
+<li>Pass: it subscribes and the episodes are listed.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-21. A private feed, end to end</strong></p>
+<ul>
+<li>Do: add a feed that requires a sign-in.</li>
+<li>Pass: a <strong>Feed Credentials</strong> dialog opens <strong>with
+focus on the username field</strong>; a wrong password reopens it with
+the username kept and says so; afterwards refresh, download, playback,
+transcripts and chapters are all signed in.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] no private feed –
+not run</label></li>
+</ul>
+<p><strong>C-22. Credentials go to the credential store, and only to the
+feed’s host</strong></p>
+<ul>
+<li>Do: <strong>Shift+F10</strong> on that show &gt; <strong>Feed
+Credentials…</strong>, change the password, then <strong>Clear
+Credentials</strong>. Then open <strong>Export OPML…</strong> output in
+a text editor and search it for the password.</li>
+<li>Pass: every save and clear is announced; the password is nowhere in
+the OPML, nowhere in <code>podcasts.json</code>, nowhere in a log.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-23. ACB Media and local podcasts</strong></p>
+<ul>
+<li>Do: <strong>Alt+S &gt; Subscribe to ACB Media Podcasts</strong>.
+Then <strong>Add Local Podcast…</strong> on a folder of your own audio,
+then <strong>Scan Watched Folders</strong>.</li>
+<li>Pass: ACB’s directory arrives in one step; the local folder becomes
+a show and dropped files are picked up on a scan.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-d--folders-5-min">Block D – Folders (5 min)</h2>
+<p><strong>C-24. A folder is somewhere you listen from</strong></p>
+<ul>
+<li>Do: <strong>Shift+F10</strong> on a folder &gt; <strong>Play All
+Unplayed</strong>.</li>
+<li>Pass: the newest unplayed episode of <strong>each</strong> show in
+it – one per show – queued and started. A folder always means its whole
+subtree.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-25. Add All to Queue, and moving folders</strong></p>
+<ul>
+<li>Do: <strong>Add All to Queue</strong> on that folder, then
+<strong>Move Up</strong> / <strong>Move Down</strong>.</li>
+<li>Pass: every unplayed episode in it is queued; the new position is
+spoken (“News, 2 of 5”).</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-26. Folder Settings apply to everything under
+it</strong></p>
+<ul>
+<li>Do: <strong>Folder Settings…</strong>, change queue expiry only,
+OK.</li>
+<li>Pass: each control starts at <strong>“change nothing”</strong>; it
+says how many podcasts it changed; a show moved into the folder
+afterwards keeps its own settings.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-27. Export one folder</strong></p>
+<ul>
+<li>Do: <strong>Export This Folder as OPML…</strong></li>
+<li>Pass: that folder and its sub-folders only – not the whole
+library.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-28. Move several podcasts in one step</strong></p>
+<ul>
+<li>Do: on any podcast’s menu, <strong>Move Several Podcasts to
+Folder…</strong>; extend with Shift+arrow, toggle with Ctrl+Space, then
+<strong>Select All</strong>.</li>
+<li>Pass: the count is spoken as you go, and the folder is asked
+<strong>once</strong> for the lot.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-29. Deleting a folder never unsubscribes</strong></p>
+<ul>
+<li>Do: <strong>Delete</strong> (or Delete Folder…) on a folder with
+shows in it.</li>
+<li>Pass: the confirmation opens on <strong>No</strong>; accepting
+dissolves the folder and the shows step safely to the top level.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-e--queue-playlists-and-the-inbox-10-min">Block E – Queue,
+playlists and the Inbox (10 min)</h2>
+<p><strong>C-30. The Play Queue</strong></p>
+<ul>
+<li>Do: <strong>Play Next</strong> and <strong>Add to Queue</strong> on
+a few episodes, then reorder with Move Up/Down (and Mark then Move for a
+long hop). Restart Cast.</li>
+<li>Pass: it auto-advances, reorders from the keyboard, and survives the
+restart.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-31. Grouping the queue never changes the order</strong></p>
+<ul>
+<li>Do: set <strong>Group by</strong> to <strong>Podcast</strong>, then
+<strong>Library folder</strong>.</li>
+<li>Pass: only the reading changes; a group header announces itself as
+one (“News, group, 4 episodes”), and Play, Move and Remove all ignore
+headers.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-32. A manual playlist</strong></p>
+<ul>
+<li>Do: <strong>Shift+F10</strong> on <strong>Playlists</strong> &gt;
+<strong>New Playlist…</strong>, then <strong>Add to Playlist…</strong>
+on a few episodes. Rename with <strong>F2</strong>.</li>
+<li>Pass: it holds what you put in it, renames, and deletes with a
+confirmation that opens on <strong>No</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-33. A smart playlist says what you mean</strong></p>
+<ul>
+<li>Do: <strong>New Smart Playlist…</strong>, set <strong>match
+any</strong>, add two rules (a library folder, and “has a note of
+mine”), and watch the live count.</li>
+<li>Pass: <strong>“Matches 23 episodes right now”</strong> recomputes as
+you type; “at most N” is applied <strong>after</strong> sorting, so “the
+ten newest” really is.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-34. Starter playlists</strong></p>
+<ul>
+<li>Do: <strong>Add Starter Playlists</strong>.</li>
+<li>Pass: five ordinary, editable playlists appear (Continue Listening,
+New This Week, Quick Listens, Downloaded and Unplayed, Long Reads) – not
+built-ins.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-35. The Inbox fills the way you told it to</strong></p>
+<ul>
+<li>Do: <strong>Podcast Settings… &gt; Which shows go to the
+Inbox</strong>, switch between <em>Only the shows I choose</em> and
+<em>Every show except the ones I exclude</em>.</li>
+<li>Pass: nothing moves until you change the setting; the per-show menu
+item flips to <strong>Keep This Show Out of the Inbox</strong> and says
+so when used.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-36. Filing is remembered per show</strong></p>
+<ul>
+<li>Do: file an episode into one of your Inbox folders by hand, then let
+a new episode of the same show arrive.</li>
+<li>Pass: the second is filed there automatically;
+<strong>Forget</strong> reverts it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-37. Bulk actions, asked once</strong></p>
+<ul>
+<li>Do: select several episodes (Shift/Ctrl+arrow, or
+<strong>Ctrl+A</strong>) and open the context menu.</li>
+<li>Pass: <strong>Add N Episodes to Queue</strong>, <strong>Download N
+Episodes</strong>, <strong>Mark N Episodes as Played</strong>,
+<strong>Add N Episodes to Playlist…</strong>, <strong>Remove N
+Downloaded Copies</strong>, and <strong>File N Episodes to Inbox
+Folder…</strong> – which asks <strong>once</strong> which folder, and
+says a show gained a remembered folder once, not once per episode.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-38. Removing downloads is not unsubscribing</strong></p>
+<ul>
+<li>Do: <strong>Remove N Downloaded Copies</strong> on that
+selection.</li>
+<li>Pass: the episodes stay in the library with their played marks and
+positions.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-39. Inbox limits trim without deleting</strong></p>
+<ul>
+<li>Do: set an Inbox count limit in <strong>Settings for This
+Podcast…</strong></li>
+<li>Pass: older episodes leave the Inbox but stay unplayed in the show’s
+own list; anything started, queued or filed by hand is never
+trimmed.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-f--playing-an-episode-10-min">Block F – Playing an episode
+(10 min)</h2>
+<p><strong>C-40. The transport keys</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+P</strong>, <strong>Ctrl+.</strong>,
+<strong>Ctrl+Up</strong> / <strong>Ctrl+Down</strong>,
+<strong>Ctrl+Right</strong> / <strong>Ctrl+Left</strong>.</li>
+<li>Pass: play/pause, stop, volume, and skip forward 30 / back 15 – each
+spoken.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-41. Speed, in tenths, and whose it is</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+Up</strong>,
+<strong>Ctrl+Shift+Down</strong>, <strong>Ctrl+Shift+0</strong>.</li>
+<li>Pass: anywhere from 0.5x to 5.0x in tenths, and the announcement
+says both the new speed and whose it is – the playing show’s own, or the
+shared default when nothing is playing.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-42. Scan forward by holding a key</strong></p>
+<ul>
+<li>Do: <strong>hold Shift+Right</strong>, then let go – while listening
+at 1.5x.</li>
+<li>Pass: <em>“Scanning forward, 4 times speed”</em>, then <em>“Back to
+1.5 times speed”</em> – exactly the speed you were at, not 1.0. Losing
+the window ends a scan too.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-43. Skip Settings, per podcast</strong></p>
+<ul>
+<li>Do: <strong>Skip Settings…</strong>, change the jumps, and set an
+<strong>auto-skip intro</strong>.</li>
+<li>Pass: the jumps change for that show; the intro skip fires on a
+<strong>fresh</strong> start and never when resuming a saved position;
+an outro skip ends the episode as if it had finished, so auto-advance
+still runs.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-44. Sound Enhancements, live and per podcast</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+E</strong> while an episode plays. Set a Quick
+preset, turn on <strong>Even Out Volume</strong> and <strong>Smart
+Speed</strong>, Apply.</li>
+<li>Pass: applied live; the brief reconnect on Apply resumes at
+<strong>your exact position</strong>; pause/resume works throughout.
+Opened with nothing playing, it sets the shared default instead.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-45. FFmpeg missing is explained, not silent</strong></p>
+<ul>
+<li>Do: if FFmpeg is unavailable, use enhancements anyway.</li>
+<li>Pass: playback continues unfiltered and Cast says why, pointing at
+<strong>Help &gt; Get FFmpeg…</strong></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] not
+applicable</label></li>
+</ul>
+<p><strong>C-46. Audio output</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+M</strong> (Audio Output Mode), then
+<strong>Ctrl+Shift+K</strong> (Audio Output Device…).</li>
+<li>Pass: the mode changes; the device item <strong>says in a
+sentence</strong> that Cast plays through Windows’ default device and
+offers to open Windows’ own per-app sound settings – rather than opening
+a picker that would do nothing.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-47. Sleep timer</strong></p>
+<ul>
+<li>Do: <strong>Sleep Timer…</strong>, choose <strong>End of this
+episode</strong>, then seek forward. Use <strong>Extend Sleep Timer 5
+Minutes</strong> while it counts down.</li>
+<li>Pass: the end-of-episode choice is offered only when an episode is
+loaded and <strong>follows the episode</strong> when you seek; extending
+also undoes a fade in progress.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-48. Stop After This Episode</strong></p>
+<ul>
+<li>Do: turn it on, let the episode end. Then restart Cast.</li>
+<li>Pass: it stops instead of auto-advancing, clears itself when it
+fires, and never survives a restart.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-49. Player Information stays put</strong></p>
+<ul>
+<li>Do: <strong>Player Information…</strong> while something plays.</li>
+<li>Pass: one read-only field you can arrow through and copy – title,
+show, position, duration, remaining, percent, speed, streaming or local,
+kept or temporary, note count, resume point, current chapter.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-50. The position survives a hard close</strong></p>
+<ul>
+<li>Do: play two minutes, then end the process from Task Manager.
+Relaunch and play the same episode.</li>
+<li>Pass: at most a sentence is lost – the position is written every
+fifteen seconds.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-51. Resume Last Episode on Launch</strong></p>
+<ul>
+<li>Do: tick <strong>Alt+S &gt; Resume Last Episode on Launch</strong>,
+quit mid-episode, relaunch.</li>
+<li>Pass: it picks the episode back up at launch (and only at
+launch).</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-g--chapters-8-min">Block G – Chapters (8 min)</h2>
+<p><strong>C-52. Chapters a publisher wrote</strong></p>
+<ul>
+<li>Do: play a <strong>Podcasting 2.0</strong> or <strong>No
+Agenda</strong> episode, open <strong>Chapters…</strong></li>
+<li>Pass: the publisher’s own titles, and the list says they came from
+the feed.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-53. Chapters from show-note timestamps</strong></p>
+<ul>
+<li>Do: open Chapters on an episode whose notes carry
+<code>00:12:34 Topic</code> lines.</li>
+<li>Pass: they are read as chapters – including <code>1:02:03</code>,
+<code>12.34</code>, <code>1h05m</code>, bracketed and bulleted forms,
+and the time at the <strong>end</strong> of the line – and the list says
+where they came from.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-54. Marked moments are labelled as such</strong></p>
+<ul>
+<li>Do: open Chapters on an episode with publisher highlights and no
+chapter file.</li>
+<li>Pass: they appear as <strong>Moments this podcast marked</strong>,
+each keeping its own real end – never presented as a full chapter
+list.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-55. Worked-out chapters say how hard they
+looked</strong></p>
+<ul>
+<li>Do: <strong>Podcast Settings &gt; Chapters</strong>, set effort to
+<strong>Thorough</strong>, then open Chapters on an episode with none
+published.</li>
+<li>Pass: nothing interrupts you – the menu item reads “Chapters
+(working them out…)”, opening it says it will tell you when they are
+ready, and the finished summary names the method, how much was examined,
+and a confidence (“12 sections, worked out by listening for pauses.
+Examined: 48 minutes of audio. Confidence 41%”).</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-56. Off means off</strong></p>
+<ul>
+<li>Do: switch one individual method off, and set <strong>when</strong>
+to <em>never</em>.</li>
+<li>Pass: that method never runs at any effort level; with the whole
+feature off, Cast never mentions worked-out chapters again.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-57. Deep transcribes on this machine</strong></p>
+<ul>
+<li>Do: set effort to <strong>Deep</strong> on an episode with no
+transcript, then stop it part-way.</li>
+<li>Pass: it transcribes locally with no download and no network, and
+stopping works at any point.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-58. Skip a chapter</strong></p>
+<ul>
+<li>Do: with an episode playing, <strong>Chapters…</strong> &gt;
+<strong>Skip This Chapter</strong> on an ad break. Then <strong>Skip
+Nothing</strong>.</li>
+<li>Pass: playback jumps past it saying <em>“Skipping chapter:”</em> and
+its name; consecutive marks are stepped over together; marking to the
+end simply finishes the episode so auto-advance still fires. Marks last
+the session only, and the button appears only for the episode actually
+playing.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-h--what-else-the-podcast-published-5-min">Block H – What
+else the podcast published (5 min)</h2>
+<p><strong>C-59. About This Episode</strong></p>
+<ul>
+<li>Do: <strong>About This Episode…</strong> on a <strong>Podcasting
+2.0</strong> episode.</li>
+<li>Pass: a one-line spoken summary <strong>before</strong> the window
+opens (“2 people, 1 marked moment, 1 recommended podcast”), then tabs –
+and a tab exists only when it has something in it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-60. Each tab reads as sentences</strong></p>
+<ul>
+<li>Do: walk <strong>People</strong>, <strong>Highlights</strong>,
+<strong>Live</strong>, <strong>Other Audio</strong>,
+<strong>Recommended</strong>, <strong>Support</strong>,
+<strong>Place</strong>.</li>
+<li>Pass: “Bob Brown, guest (this episode)”; “The good bit – 1 hour 2
+minutes in, 1 minute long”; a live stream plays through the
+<strong>ordinary transport</strong>; Subscribe under Recommended is a
+<strong>real</strong> subscribe with artwork and episodes; Support opens
+in your browser.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-61. The button says what it will do</strong></p>
+<ul>
+<li>Do: arrow down a tab’s list.</li>
+<li>Pass: the button changes – <em>Open in Browser</em>, <em>Play</em>,
+<em>Subscribe to This Podcast</em> – and reads <em>Nothing to Open</em>,
+disabled, on a row with nothing.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-62. A podcast that publishes none of it</strong></p>
+<ul>
+<li>Do: <strong>About This Episode…</strong> on a <strong>99%
+Invisible</strong> episode.</li>
+<li>Pass: the window still opens and says this podcast publishes no
+extra details. A greyed-out menu item here would be a fail.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-63. Transcripts</strong></p>
+<ul>
+<li>Do: on a <strong>Buzzcast</strong> episode, open the transcript;
+save it to a file; reopen it.</li>
+<li>Pass: it opens, saves, and reopens instantly from cache. Cast never
+generates one from audio – that stays in QUILL.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-64. Episode notes</strong></p>
+<ul>
+<li>Do: <strong>Add Episode Note…</strong> while playing, then
+<strong>My Notes in This Episode…</strong>, then <strong>Copy
+Note</strong> and paste it somewhere.</li>
+<li>Pass: the note is stamped with the playing moment; Enter jumps
+playback there; from the Manager it starts the episode first, then
+jumps; the copied text carries episode, podcast, timestamp, your words
+and the audio link.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-i--downloads-and-housekeeping-10-min">Block I – Downloads
+and housekeeping (10 min)</h2>
+<p><strong>C-65. Download one, and download all</strong></p>
+<ul>
+<li>Do: <strong>Download Episode</strong> from an episode’s context
+menu; then <strong>Download All Episodes</strong> on the show.</li>
+<li>Pass: the file lands as <code>show-title\episode-title.mp3</code>
+under your download location; Download All queues everything not already
+there, with no extra confirmation.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-66. Remove All Downloads keeps Keep This
+Episode</strong></p>
+<ul>
+<li>Do: mark one episode <strong>Keep This Episode</strong>, then
+<strong>Remove All Downloads…</strong> on the show.</li>
+<li>Pass: only the files go; episodes, played state and positions stay;
+the kept one is skipped and the announcement says how many were
+kept.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-67. Automatic downloads</strong></p>
+<ul>
+<li>Do: <strong>Podcast Settings &gt; Automatically download</strong>,
+set <em>newest 3</em>. Refresh.</li>
+<li>Pass: three arrive, and Cast says how many it started. Anything you
+add to the <strong>Play Queue</strong> downloads too; anything routed to
+the <strong>Inbox</strong> does not.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-68. A metered connection holds automatic downloads
+only</strong></p>
+<ul>
+<li>Do: mark your connection metered in Windows, wait for a refresh,
+then press <strong>Download Episode</strong> by hand.</li>
+<li>Pass: automatic downloads wait; the one you pressed happens anyway.
+An unknown connection counts as unmetered.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] cannot stage – not
+run</label></li>
+</ul>
+<p><strong>C-69. A dropped connection reconnects</strong></p>
+<ul>
+<li>Do: pull the network mid-download, restore it.</li>
+<li>Pass: <em>“Download connection dropped; reconnecting”</em> and it
+resumes – it does not sit in Failed. The attempts and wait are
+configurable in Podcast Settings.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-70. Downloads… answers “how much disk”</strong></p>
+<ul>
+<li>Do: <strong>Alt+D &gt; Downloads…</strong>, then tick
+<strong>Unheard only</strong>.</li>
+<li>Pass: a total, a breakdown by podcast largest first, and it says how
+many already-played downloads the filter hid. <strong>Remove This
+Podcast’s Downloads…</strong> clears one show without touching the
+library.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-71. The two automatic rules, and what they will not
+touch</strong></p>
+<ul>
+<li>Do: set <strong>Delete downloads after N days</strong> and a
+<strong>Total download storage cap</strong>, then <strong>Alt+D &gt;
+Free Up Space</strong>.</li>
+<li>Pass: it says how many bytes came back; a <strong>queued or
+part-played</strong> episode is never removed; if the cap cannot be
+reached it says what it could not free.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-72. Run Housekeeping Now</strong></p>
+<ul>
+<li>Do: <strong>Alt+D &gt; Run Housekeeping Now</strong>.</li>
+<li>Pass: one sentence reporting everything it did – expired queue
+items, the Recently Expired sweep, the Inbox trim, the storage
+rules.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-73. Pause and resume all downloads</strong></p>
+<ul>
+<li>Do: <strong>Alt+D &gt; Pause All Downloads</strong>, then
+<strong>Resume All Downloads</strong>.</li>
+<li>Pass: both take effect and are announced.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-j--expiry-and-getting-things-back-5-min">Block J – Expiry,
+and getting things back (5 min)</h2>
+<p><strong>C-74. A queued episode expires into Recently
+Expired</strong></p>
+<ul>
+<li>Do: <strong>Settings for This Podcast… &gt; Expire from the
+queue</strong>, set 1 day, and age a queued item (or run housekeeping
+after changing the clock).</li>
+<li>Pass: it moves to <strong>Recently Expired</strong> – keeping its
+file, its position and its place in the show – and the expiry is
+announced. Never is the default, and there is deliberately no global
+setting.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-75. Restore, Restore All, Forget This One</strong></p>
+<ul>
+<li>Do: use all three on Recently Expired rows.</li>
+<li>Pass: Restore puts it at the end of the queue with a fresh clock;
+Forget stops offering it and leaves its file alone. Only the seven-day
+sweep removes a downloaded copy.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-76. Re-published episodes</strong></p>
+<ul>
+<li>Do: on a show that re-publishes an episode, refresh.</li>
+<li>Pass: it is recognised rather than arriving as a duplicate.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] cannot stage – not
+run</label></li>
+</ul>
+<p><strong>C-77. Getting an episode back out</strong></p>
+<ul>
+<li>Do: <strong>Save Episode Audio As…</strong>, <strong>Copy Podcast
+Link</strong>, <strong>Show in File Explorer</strong>.</li>
+<li>Pass: Save copies rather than moves and suggests “Show - Episode”
+with illegal characters replaced; an undownloaded episode is offered a
+fetch instead of a progress bar you cannot escape; Copy Podcast Link
+gives the <strong>feed</strong> address (a local podcast says it has
+none); Show in File Explorer selects the file, and a streamed episode
+says it has none.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-k--statistics-4-min">Block K – Statistics (4 min)</h2>
+<p><strong>C-78. Listening Statistics</strong></p>
+<ul>
+<li>Do: <strong>Listening Statistics…</strong></li>
+<li>Pass: week / month / year / all time, what faster playback bought
+you, episodes finished, and a breakdown by podcast – as arrowable,
+copyable text, with durations as language (“3 hours, 47 minutes”), never
+<code>3:47:00</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-79. Export and clear</strong></p>
+<ul>
+<li>Do: <strong>Export CSV…</strong>, then <strong>Clear
+Statistics…</strong></li>
+<li>Pass: every session exports; clearing deletes the log and nothing
+else.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-80. Retention is your choice</strong></p>
+<ul>
+<li>Do: <strong>Podcast Settings</strong>, set history retention to
+<strong>don’t keep one</strong>.</li>
+<li>Pass: it stops the writing rather than deleting what exists. The log
+never leaves the machine either way.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-81. Year in Review, and streaks that are off by
+default</strong></p>
+<ul>
+<li>Do: <strong>Year in Review…</strong>; then turn streaks on in
+Podcast Settings.</li>
+<li>Pass: a few sentences you can arrow, copy or save – not a dashboard
+– and anything the log cannot support is <strong>left out</strong>, not
+printed as zero. Streaks are off until asked for, and a run that ended
+yesterday still counts as current.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-l--sharing-and-syncing-6-min">Block L – Sharing and
+syncing (6 min)</h2>
+<p><strong>C-82. Share This Moment copies two things</strong></p>
+<ul>
+<li>Do: <strong>Share This Moment</strong> on a playing episode, then
+paste.</li>
+<li>Pass: a sentence – “Blind Abilities, Episode 214, at 41 minutes 12
+seconds” – <strong>and</strong> a <code>quill-cast://</code> link that
+reopens it at that second.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-83. A link for a show you do not follow does
+nothing</strong></p>
+<ul>
+<li>Do: open a share link for a podcast you are not subscribed to.</li>
+<li>Pass: it says so and does nothing. Cast never fetches a web address,
+and never adds a subscription, because a link asked it to.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-84. Carry My Place – the encrypted half</strong></p>
+<ul>
+<li>Do: <strong>Help &gt; Command Palette… (Ctrl+Shift+P)</strong> &gt;
+<strong>Carry My Place Between Machines…</strong>, choose a folder
+inside a service you already sync, set a recovery phrase.</li>
+<li>Pass: it sets up with no account and no server; only a machine with
+the phrase can read it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-85. Listening Places – the plain half</strong></p>
+<ul>
+<li>Do: in the same window turn on <strong>A plain file other apps can
+read</strong>.</li>
+<li>Pass: it needs <strong>no recovery phrase</strong>; every device
+writes exactly one file and reads the others (so no “conflicted copy” is
+ever produced); ids are hashed, and <strong>Include episode and file
+names</strong> is a separate switch.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-86. The two sync rules that matter</strong></p>
+<ul>
+<li>Do: jump back twenty minutes in an episode, then open it on the
+other machine. Then, with Cast open, change a position elsewhere and
+wait.</li>
+<li>Pass: the <strong>most recent</strong> position wins, not the
+furthest; and nothing is read mid-session – only at launch and when you
+press <strong>Sync Now</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] one machine only –
+not run</label></li>
+</ul>
+<p><strong>C-87. Continue Listening spans the family</strong></p>
+<ul>
+<li>Do: <strong>Continue Listening…</strong> with an unfinished Quill
+Radio recording around.</li>
+<li>Pass: one list, newest first, each row naming its kind (“Rome, The
+Rest Is History, podcast, 20 minutes in, 33% through”);
+<strong>Resume</strong> and <strong>Forget This One</strong> behave as
+named – forgetting leaves the episode unplayed; a radio recording Cast
+cannot play is still listed with Resume unavailable <strong>and says
+so</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-m--columns-quick-actions-keys-7-min">Block M – Columns,
+Quick Actions, keys (7 min)</h2>
+<p><strong>C-88. Choose Columns</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+Shift+C</strong> (Subscriptions &gt; Choose
+Columns…). Move a column up, <strong>Hide</strong> another, read the
+<strong>A row will read:</strong> line, press OK.</li>
+<li>Pass: the preview matches what rows then say; a hidden column is
+<strong>absent from the row</strong>, not last; showing it again returns
+it to its place, not the end; the pinned column refuses to be hidden
+<strong>and says why</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-89. Three lists, and the off-by-default
+columns</strong></p>
+<ul>
+<li>Do: switch between the <strong>episode list</strong>,
+<strong>Downloads</strong> and <strong>Add Podcast’s
+results</strong>.</li>
+<li>Pass: the episode list offers <strong>Podcast</strong>, <strong>Time
+Left</strong> and <strong>Downloaded</strong> (all off by default); Add
+Podcast offers <strong>Feed Address</strong>. <strong>Reset This
+List</strong> restores one list. Changing the layout while the Manager
+is open takes effect there and then.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-90. Quick Actions decide what Enter does</strong></p>
+<ul>
+<li>Do: <strong>Alt+S &gt; Quick Actions…</strong>, move
+<strong>Download</strong> to the top of the episode list with
+<strong>Make Default</strong>. Then press <strong>Enter</strong> on an
+episode, and <strong>Ctrl+3</strong>.</li>
+<li>Pass: Enter now downloads; Ctrl+1..Ctrl+9 run the first nine in
+order; the right-click menu is in the same order. <strong>Reset This
+List</strong> restores the shipped order.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-91. Winamp keys, and typeahead</strong></p>
+<ul>
+<li>Do: in a list, press <strong>X</strong>, <strong>C</strong>,
+<strong>V</strong>, <strong>B</strong>, <strong>Z</strong>,
+<strong>T</strong>, <strong>J</strong>, <strong>Ctrl+J</strong>. Then
+focus a text box and type those letters.</li>
+<li>Pass: play / pause / stop / next / previous / elapsed-or-remaining /
+jump to episode / jump to a time – and <strong>never</strong> while a
+text box has focus. Turning them off in <strong>Ctrl+,</strong> returns
+the letters to typeahead; Ctrl+Up and Ctrl+Down keep working either
+way.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-92. Hardware media keys</strong></p>
+<ul>
+<li>Do: press the keyboard’s Play/Pause, Stop and Next/Previous Track –
+including from the tray.</li>
+<li>Pass: they control Cast system-wide; Next/Previous map to chapters;
+a key another app already owns is left alone. Starting an episode
+silences a playing radio stream and vice versa – nothing
+double-plays.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] no media keys –
+not run</label></li>
+</ul>
+<p><strong>C-93. Global hotkeys</strong></p>
+<ul>
+<li>Do: <strong>Help &gt; Global Hotkeys…</strong>, assign Play/Pause,
+then use it from another program. Note that <strong>Show/Hide to the
+Tray</strong> starts on <strong>Ctrl+Alt+Shift+Q</strong>.</li>
+<li>Pass: only the safe commands can be bound; the first assignment
+warns that a system-wide key may override the same key elsewhere; a key
+another app owns is left alone. If you also run QUILL, that chord
+collides by design – change one of them here and confirm the change
+sticks.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-94. The Keyboard Manager is shared with the
+family</strong></p>
+<ul>
+<li>Do: <strong>Help &gt; Keyboard Shortcuts…</strong>, search for a
+command, reassign it, then check the same command in Quill Radio.</li>
+<li>Pass: conflicts and risky keys are warned about; the change reaches
+the whole family; a two-key chord or a comma key keeps its built-in
+shortcut until the next launch.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-95. The Command Palette</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+P</strong>, type part of a command name.</li>
+<li>Pass: every Cast command is reachable and searchable here.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-n--the-window-the-tray-your-data-6-min">Block N – The
+window, the tray, your data (6 min)</h2>
+<p><strong>C-96. Send to tray, and Alt+F4</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+W</strong>. Then bring it back and, with the
+preference on, press <strong>Alt+F4</strong> while playing.</li>
+<li>Pass: the window tucks away with playback running and says so; the
+titlebar X and <strong>Exit</strong> still exit. Right-click (or
+<strong>Shift+F10</strong>) the tray icon for Show, podcast controls and
+Exit; double-click restores.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-97. Import a large OPML</strong></p>
+<ul>
+<li>Do: <strong>Import OPML…</strong> on an export of a thousand or more
+feeds, with <strong>Check that each feed is still reachable</strong>
+ticked. Use <strong>Stop Checking</strong> part way.</li>
+<li>Pass: it runs in the background without freezing;
+<code>http://</code> and <code>https://</code> twins count as one feed;
+two shows sharing only a <em>title</em> are both imported and flagged;
+progress every ten per cent; stopping keeps everything already imported;
+<strong>Add every show as streaming</strong> is ticked by default.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-98. The import report</strong></p>
+<ul>
+<li>Do: from that report, <strong>Export Report…</strong> and
+<strong>Save Pruned OPML…</strong></li>
+<li>Pass: corrections, unreachable feeds, skipped duplicates and
+failures are all listed; a feed asking for a sign-in counts as
+<strong>reachable</strong>; the pruned file keeps your folders and drops
+only the dead feeds.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-99. Opening an OPML from Explorer</strong></p>
+<ul>
+<li>Do: if you ticked the installer’s file-association box, double-click
+a <code>.opml</code> file.</li>
+<li>Pass: Cast opens <strong>straight into the import</strong> and names
+the file. The box is <strong>off</strong> unless asked for, and
+uninstalling gives the file type back.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] association not
+enabled</label></li>
+</ul>
+<p><strong>C-100. Export My Data</strong></p>
+<ul>
+<li>Do: <strong>Alt+S &gt; Export My Data…</strong>, open the
+result.</li>
+<li>Pass: one readable JSON file with subscriptions, folders, the Play
+Queue, playlists, notes, statistics and recently played – and <strong>no
+passwords</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-101. Delete All Podcast Data asks twice</strong></p>
+<ul>
+<li>Do: <strong>Alt+S &gt; Delete All Podcast Data…</strong> – then
+<strong>cancel</strong>.</li>
+<li>Pass: it asks twice, and asks about downloaded
+<strong>files</strong> separately. Both questions open on
+<strong>No</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-102. Destructive questions all open on No</strong></p>
+<ul>
+<li>Do: open <strong>Delete Folder</strong>, <strong>Delete
+Playlist</strong>, <strong>Remove All Episodes</strong> and
+<strong>Delete Downloaded Files</strong>.</li>
+<li>Pass: every one opens with <strong>No</strong> selected. Reflexive
+Enter can never lose data.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-o--announcements-safe-mode-updates-5-min">Block O –
+Announcements, Safe Mode, updates (5 min)</h2>
+<p><strong>C-103. Speech and braille together</strong></p>
+<ul>
+<li>Do: with a braille display connected, trigger a burst (a refresh
+cascade or a download reporting in), then trigger an error.</li>
+<li>Pass: speech never steals focus; braille gets the same messages; a
+burst settles to the newest rather than flickering; an
+<strong>error</strong> is written straight through and can be held.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] no display – not
+run</label></li>
+</ul>
+<p><strong>C-104. Braille settings live in QUILL</strong></p>
+<ul>
+<li>Do: change braille style in <strong>QUILL &gt; Preferences &gt;
+Accessibility</strong>.</li>
+<li>Pass: the change applies to Cast and Radio too; turning braille off
+there turns it off here.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-105. Safe Mode</strong></p>
+<ul>
+<li>Do: relaunch with <code>--safe-mode</code>. Try a refresh, a
+download, Add Podcast, and the Quillins menu.</li>
+<li>Pass: network features refuse out loud and nothing reaches the
+network; downloads never run; Quillins are off.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-106. Quillins</strong></p>
+<ul>
+<li>Do: open the <strong>Quillins</strong> menu normally.</li>
+<li>Pass: only add-ons that declare QUILL Cast appear (the bundled
+<code>cast-premium-auth</code> sample among them); third-party Quillins
+stay disabled in this release.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-107. Check for Updates</strong></p>
+<ul>
+<li>Do: <strong>Help &gt; Check for Updates…</strong></li>
+<li>Pass: it compares versions, downloads in-app with spoken progress,
+then offers <strong>Install now</strong> or <strong>Open folder</strong>
+– and shows a <strong>dialog</strong> when already up to date, not just
+an announcement. The quiet daily check is switchable off in
+<strong>Ctrl+,</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-108. Redeem Unlock Code</strong></p>
+<ul>
+<li>Do: <strong>Help &gt; Redeem Unlock Code…</strong> with a signed
+code.</li>
+<li>Pass: verified entirely on the machine, nothing transmitted, and the
+unlock counts for QUILL and Quill Radio too.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] no code – not
+run</label></li>
+</ul>
+<h2 id="block-p--one-library-three-apps-4-min">Block P – One library,
+three apps (4 min)</h2>
+<p><strong>C-109. Subscribe here, subscribed everywhere</strong></p>
+<ul>
+<li>Do: subscribe in Cast, then look in QUILL’s Podcasts and in Quill
+Radio’s Browse Stations &gt; Podcasts &gt; Subscriptions.</li>
+<li>Pass: one library. Queue, positions, notes and downloads are one set
+of data.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-110. Radio’s folder and badge changes land
+here</strong></p>
+<ul>
+<li>Do: create a folder and move a show <strong>from Quill
+Radio</strong> (see radio-signoff R-22), then open Cast’s manager.</li>
+<li>Pass: the changes are simply there, with matching unheard
+counts.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-111. Radio’s hand-off instructions arrive</strong></p>
+<ul>
+<li>Do: use <strong>Play Next in QUILL Cast</strong>, <strong>Add to
+QUILL Cast Queue</strong> and <strong>Send to the QUILL Cast
+Inbox</strong> from Radio, then open Cast.</li>
+<li>Pass: each lands. An instruction waits for Cast rather than being
+silently discarded – an older Cast simply never opens the file.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-112. Mark All as Played dims and shares its
+answer</strong></p>
+<ul>
+<li>Do: in Cast, <strong>Mark All as Play&amp;ed…</strong> on a show
+with nothing unheard; then tick <strong>Don’t ask me again</strong> on
+another and try the same in Radio.</li>
+<li>Pass: the menu item is present but <strong>dimmed</strong> when
+there is nothing to do, and neither app asks again.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-113. Local podcasts stay out of the shared
+folder</strong></p>
+<ul>
+<li>Do: check where a local podcast’s data lives.</li>
+<li>Pass: outside the synced data folder, by construction. Uninstalling
+Cast never deletes the shared store.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-q--spotify-optional-skip-freely">Block Q – Spotify
+(optional, skip freely)</h2>
+<p><strong>C-114. Off and invisible until deliberately
+enabled</strong></p>
+<ul>
+<li>Do: on an ordinary install, look for Spotify items in the
+<strong>Help</strong> menu.</li>
+<li>Pass: there are none, and nothing has reached Spotify’s
+servers.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>C-115. Connect and play</strong></p>
+<ul>
+<li>Do: with the feature unlocked, Premium, your own Client ID (redirect
+exactly <code>http://127.0.0.1:43217/callback</code>) and WebView2:
+<strong>Help &gt; Connect to Spotify…</strong>, then <strong>Browse
+Spotify Podcasts…</strong></li>
+<li>Pass: sign-in returns to the local address, tokens go to the Windows
+credential vault, and an episode plays with the ordinary transport,
+status bar, tray and global hotkeys driving it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ]
+skipped</label></li>
+</ul>
+<p><strong>C-116. Spotify episodes are play-only</strong></p>
+<ul>
+<li>Do: look for <strong>Download</strong> on a Spotify episode.</li>
+<li>Pass: there is none, and the reason is copy protection. Spotify is
+off in Safe Mode, and the first sign-in asks a one-time network-access
+confirmation.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ]
+skipped</label></li>
+</ul>
+<hr />
+<h2 id="sign-off">Sign-off</h2>
+<ul>
+<li>Build / version: ______________</li>
+<li>Date: ______________</li>
+<li>Screen reader and version: ______________</li>
+<li>Windows version: ______________</li>
+<li>Blocks run: ______________</li>
+<li>Result: [ ] ship [ ] ship with the findings below [ ] do not
+ship</li>
+</ul>
+<p><strong>For every fail, report three things:</strong> the test id
+(C-71, say), what was said <strong>word for word</strong>, and what you
+expected to hear. A step that did nothing at all is the most serious
+kind of failure here – report it even when nothing looks broken.</p>
+</main>
+</body>
+</html>

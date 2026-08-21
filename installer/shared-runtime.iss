@@ -13,6 +13,9 @@
 ;   #define RuntimeVersion   "3.13.1"     ; the CPython version the runtime ships
 ;   #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"  ; built payload
 ;   #define AppRefId         "radio"      ; this app's stable id in runtime_refs
+; and, for a media app, one define per tool it declares in REQUIRED_COMPONENTS:
+;   #define ToolFfmpeg                    ; quill.apps.radio declares "ffmpeg"
+;   #define ToolMpv                       ; ...and "mpv"
 ; and its [Icons]/[Run] should launch the app via:
 ;   {code:RuntimeExe} -m <the app's module>     (e.g. -m quill.apps.radio)
 
@@ -21,10 +24,53 @@
 ; RuntimeNeedsInstall can compare the build this setup CARRIES against the
 ; build already installed. Without it the check could only see one side.
 Source: "{#RuntimeSourceDir}\quillville-runtime.json"; Flags: dontcopy noencryption
-; The whole runtime, gated by RuntimeNeedsInstall so a second app skips it.
+; The runtime itself, gated by RuntimeNeedsInstall so a second app skips it.
+; tools\ is excluded here and installed unconditionally below -- see why.
 Source: "{#RuntimeSourceDir}\*"; DestDir: "{code:RuntimeDir}"; Components: runtime; \
+  Excludes: "tools,tools\*"; \
   Check: RuntimeNeedsInstall; \
   Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
+
+; -- the media tools, installed in EVERY order ------------------------------
+;
+; WHY THESE ARE NOT GATED BY RuntimeNeedsInstall
+; ----------------------------------------------
+; The runtime is one shared thing; the media tools beside it are contributed
+; per app (scripts\StageMediaTools.ps1), because ffmpeg + libmpv are 306 MB and
+; four of the seven apps never call them. Those two facts used to meet in one
+; [Files] line: tools\ rode along inside the gated runtime wildcard, so whether
+; a machine ended up with libmpv depended on the ORDER the apps were installed
+; in. Install Cast (ffmpeg only, newer runtime build) and then Radio (ffmpeg +
+; mpv, older build) and Radio's whole payload was skipped -- mpv never landed,
+; Radio dropped to Windows Media, and it lost Ogg/Opus/HLS stations, output
+; device selection and the DVR buffer. Reinstalling could not fix it either:
+; the reinstall hit the same skip, which made media_health's "reinstalling
+; restores it" advice untrue in exactly the case it was written for.
+;
+; So the tools are their own entries with no Check. Each app always lays down
+; what it declares, whoever installed first, and a machine's tools become the
+; UNION of what its apps need rather than whatever the newest runtime build
+; happened to carry. It costs install-time copying and nothing in download
+; size -- these bytes are already in this installer's payload -- and it is what
+; makes a media app repairable by reinstalling it, on its own, in any order.
+;
+; ignoreversion + the same-content payload make a repeat install a no-op copy.
+; An app that declares no media tools defines neither symbol and ships none,
+; which also stops it silently packing 306 MB another app's build happened to
+; leave in the communal runtime dist.
+; Pinned by tests\unit\structure\test_shared_runtime_installer.py.
+#ifdef ToolFfmpeg
+#pragma message "shared-runtime: packing tools\ffmpeg (this app declares ffmpeg)"
+Source: "{#RuntimeSourceDir}\tools\ffmpeg\*"; DestDir: "{code:RuntimeDir}\tools\ffmpeg"; \
+  Components: runtime; \
+  Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
+#endif
+#ifdef ToolMpv
+#pragma message "shared-runtime: packing tools\mpv (this app declares mpv)"
+Source: "{#RuntimeSourceDir}\tools\mpv\*"; DestDir: "{code:RuntimeDir}\tools\mpv"; \
+  Components: runtime; \
+  Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
+#endif
 
 [Run]
 ; Record that this app needs this runtime version (idempotent). Runs the shared

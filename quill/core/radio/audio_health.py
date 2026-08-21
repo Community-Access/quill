@@ -163,7 +163,8 @@ def _mpv_row(present: bool) -> HealthRow:
     return HealthRow(
         "mpv playback engine",
         "missing. Without it you lose " + _join(MPV_CAPABILITIES) + ". "
-        "Reinstalling Quill Radio restores it.",
+        "Help, then Get mpv Playback Engine, downloads it; the full installer "
+        "also carries it.",
         DEGRADED,
     )
 

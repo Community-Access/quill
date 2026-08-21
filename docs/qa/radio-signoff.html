@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Radio -- sign-off checklist</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-radio--sign-off-checklist">Quill Radio – sign-off
+checklist</h1>
+<p>One pass, top to bottom, ticking boxes. Every step says exactly what
+to press, exactly what to type, and the one thing that decides pass or
+fail. Nothing here needs an account or a key except Block M (Spotify),
+which is optional.</p>
+<p>The reasoning, the background, and the “why this test exists” prose
+live in <a href="radio-3.0-test-plan.md">radio-3.0-test-plan.md</a>.
+This file is the fast run.</p>
+<h2 id="before-you-start-3-minutes">Before you start (3 minutes)</h2>
+<ul>
+<li>Install or launch the build under test. Note the version from
+<strong>Help &gt; About Quill Radio (Alt+F1)</strong>:
+<code>____________</code></li>
+<li>Have a screen reader running and speaking (JAWS or NVDA).</li>
+<li>Downloads land in <code>Downloads\Quill Radio</code> –
+<code>Books\</code>, <code>Podcasts\</code>, <code>Music\</code>
+underneath – unless you change it.</li>
+<li><strong>Fail means:</strong> it did not happen, or it happened
+silently, or what you heard differs from what this file quotes. Write
+down what you actually heard. A silent success is a fail.</li>
+<li>Safe Mode is <code>quill-radio.exe --safe-mode</code>, or the
+<code>--safe-mode</code> shortcut.</li>
+</ul>
+<h2 id="the-20-minute-pass">The 20-minute pass</h2>
+<p>No time for the whole thing? Run exactly these ten and stop – all are
+quick and need no long download or multi-app setup: <strong>R-02, R-04,
+R-08, R-14, R-18, R-37, R-45, R-55, R-69, R-73.</strong> All ten green
+is a credible smoke test.</p>
+<hr />
+<h2 id="block-a--starting-up-5-min">Block A – Starting up (5 min)</h2>
+<p><strong>R-01. First run</strong></p>
+<ul>
+<li>Do: launch a copy with no settings yet (or a fresh profile).</li>
+<li>Pass: the first-run screens appear, each a text box you can arrow
+through, and <strong>Skip</strong> leaves in one keystroke and never
+asks again.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-02. Play a station</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+F</strong>, type <code>BBC World Service</code>,
+<strong>Enter</strong>, then <strong>Enter</strong> on the BBC World
+Service row.</li>
+<li>Pass: audio inside a few seconds <strong>and</strong> the station
+name is spoken.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-03. Stop and resume</strong></p>
+<ul>
+<li>Do: <strong>Playback &gt; Stop</strong>, wait two seconds,
+<strong>Playback &gt; Play (Ctrl+P)</strong>.</li>
+<li>Pass: the same station resumes. No re-search, no prompt.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-04. Sound Enhancements apply live</strong></p>
+<ul>
+<li>Do: with that station playing, <strong>Ctrl+E</strong>, move any
+slider a large step.</li>
+<li>Pass: audible immediately. A gap, stutter or reconnect is a
+fail.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-05. The catalog says where its answers come
+from</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+Shift+S</strong> (View &gt; Station Catalog
+Status…).</li>
+<li>Pass: every source is named, with whether it is stored, how fresh it
+is, and why the live-only ones are live-only.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-06. Audio Health</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+Shift+M</strong> (Audio Health…).</li>
+<li>Pass: it opens and reports the current engine and device state in
+sentences.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-b--browse-stations-8-min">Block B – Browse Stations (8
+min)</h2>
+<p><strong>R-07. Loading rows, then a count</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+B</strong> (Station &gt; Browse Stations…), arrow
+to <strong>Internet Archive</strong>, press <strong>Right
+arrow</strong>.</li>
+<li>Pass: a <em>“Loading…”</em> row first, then real rows <strong>and a
+count</strong> (“24 items”).</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-08. The cache</strong></p>
+<ul>
+<li>Do: <strong>Left arrow</strong> to collapse, <strong>Right
+arrow</strong> to expand again.</li>
+<li>Pass: instant, the count again, and <strong>no second</strong>
+“Loading…”.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-09. Offline browsing answers from your own
+disk</strong></p>
+<ul>
+<li>Do: turn off the network (airplane mode). Expand <strong>By
+Country</strong>, then a country.</li>
+<li>Pass: rows arrive instantly with counts, and offline browsing
+announces itself once per session.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-10. The two kinds of empty</strong></p>
+<ul>
+<li>Do: still offline, expand a branch you have <strong>not</strong>
+opened before.</li>
+<li>Pass: the placeholder clears – never stuck on “Loading…” – and you
+hear one of: <em>“Nothing in X. It may be empty, or the source could not
+be reached.”</em> or <em>“X could not be reached. Close and reopen it to
+try again.”</em></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-11. A failed branch retries</strong></p>
+<ul>
+<li>Do: restore the network. Collapse and re-expand the same
+branch.</li>
+<li>Pass: real rows arrive. A branch is never permanently stuck.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-12. Choosing which branches exist</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+Alt+O</strong> (Station &gt; Choose Browse
+Sources…), hide one source, OK, reopen Browse Stations.</li>
+<li>Pass: that branch is gone; everything else is where it was.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-13. Update the catalog by hand</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+Shift+G</strong> (Update Station Catalog).</li>
+<li>Pass: a spoken summary of what changed. The window stays usable
+throughout.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-c--search-5-min">Block C – Search (5 min)</h2>
+<p><strong>R-14. Five searches, five sources</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+F</strong> and run each, waiting for the late
+arrivals: <code>Middlemarch</code> (LibriVox), <code>Sherlock</code>
+(Project Gutenberg), <code>Johnny Dollar</code> (Internet Archive),
+<code>The Rest Is History</code> (Podcasts), <code>jazz</code> (Audius,
+ccMixter, Mixcloud).</li>
+<li>Pass: stations answer first, libraries after, and you are told
+<strong>once</strong> when they have all reported.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-15. Your place is kept</strong></p>
+<ul>
+<li>Do: start arrowing the results while a late group is still
+landing.</li>
+<li>Pass: the cursor does not jump.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-16. The row carries its own truth</strong></p>
+<ul>
+<li>Do: on the <code>jazz</code> results, arrow to a
+<strong>ccMixter</strong> row, then a <strong>Mixcloud</strong> row –
+before pressing anything.</li>
+<li>Pass: ccMixter speaks its licence in the row; Mixcloud says
+<em>“opens on Mixcloud in your browser”</em> in the row, not after
+Enter.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-17. Search All Sources, and search one source</strong></p>
+<ul>
+<li>Do: open Browse Stations. The <strong>first row</strong> is
+<strong>Search All Sources…</strong> – press Enter on it. Then Escape,
+and open the context menu (<strong>Shift+F10</strong>) on
+<strong>Podcasts (Apple)</strong> and choose <strong>Search This
+Source…</strong>.</li>
+<li>Pass: the first opens search with the filter on <strong>All
+sources</strong>; the second opens it pre-filtered to
+<strong>Podcasts</strong>. Sources with no search of their own (Weather
+/ NOAA, NFB Radio) offer no such item.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-d--podcasts-15-min">Block D – Podcasts (15 min)</h2>
+<p>Test feeds that publish Podcasting 2.0 tags:</p>
+<table>
+<thead>
+<tr>
+<th>Show</th>
+<th>Feed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Podcasting 2.0</td>
+<td><code>https://feeds.podcastindex.org/pc20.xml</code></td>
+</tr>
+<tr>
+<td>Buzzcast</td>
+<td><code>https://feeds.buzzsprout.com/1538779.rss</code></td>
+</tr>
+<tr>
+<td>No Agenda</td>
+<td><code>https://feed.nashownotes.com/rss.xml</code></td>
+</tr>
+</tbody>
+</table>
+<p>Test feeds that publish none (the honest-absence cases):</p>
+<table>
+<thead>
+<tr>
+<th>Show</th>
+<th>Feed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The Rest Is History</td>
+<td><code>https://feeds.megaphone.fm/GLT4787413333</code></td>
+</tr>
+<tr>
+<td>99% Invisible</td>
+<td><code>https://feeds.simplecast.com/BqbsxVfO</code></td>
+</tr>
+<tr>
+<td>Radiolab</td>
+<td><code>https://feeds.simplecast.com/EmVW7VGp</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>R-18. Reach a show and play an episode</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+F</strong>, type <code>Podcasting 2.0</code>,
+<strong>Enter</strong>. Enter on the show row, then Enter on an
+episode.</li>
+<li>Pass: episodes list newest first; audio starts and the episode is
+named.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-19. The Apple browse path, including a leaf
+genre</strong></p>
+<ul>
+<li>Do: Browse Stations &gt; <strong>Podcasts (Apple)</strong> &gt;
+<strong>United States</strong> &gt; expand <strong>Arts</strong>.</li>
+<li>Pass: sub-areas (Books, Design, Food) appear. An empty Arts branch
+is the old leaf-genre bug.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-20. Subscriptions shows Cast’s folders with unheard
+badges</strong></p>
+<ul>
+<li>Setup: in QUILL Cast, put a subscribed show in a folder, leave an
+episode unplayed.</li>
+<li>Do: Browse Stations &gt; <strong>Podcasts</strong> &gt;
+<strong>Subscriptions</strong>.</li>
+<li>Pass: the folder is <strong>first</strong>, labelled with its
+subtree count (“News (2 unheard)”); shows inside carry their own
+counts.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-21. A badge appears without ever opening Cast</strong></p>
+<ul>
+<li>Do: subscribe to a show from Radio, open it once under
+Subscriptions, collapse and re-expand.</li>
+<li>Pass: the show now carries its “(N unheard)” badge.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-22. Folders made, filled, renamed and deleted from
+Radio</strong></p>
+<ul>
+<li>Do: on <strong>Subscriptions</strong>, <strong>Shift+F10 &gt; New
+Folder…</strong>, type <code>Tech</code>, OK. On a show row,
+<strong>Move to Folder…</strong>, arrow to <code>Tech</code>,
+<strong>Enter</strong>. On the folder, <strong>Rename Folder…</strong>
+to <code>Technology</code>, then <strong>Delete Folder…</strong>.</li>
+<li>Pass, in order: <em>“Created folder Tech. It is shared with Quill
+Cast.”</em>; <em>“Moved <show> to Tech.”</em> with the cursor landing on
+the show inside the folder and no refresh chore; <em>“Renamed Tech to
+Technology.”</em>; <em>“Deleted folder Technology. Its podcasts moved up
+a level; nothing was unsubscribed.”</em></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-23. Add a Podcast by URL</strong></p>
+<ul>
+<li>Do: <strong>Shift+F10</strong> on the <strong>Podcasts</strong>
+branch (and on <strong>Subscriptions</strong>) &gt; <strong>Add a
+Podcast by URL…</strong>, paste
+<code>https://feeds.buzzsprout.com/1538779.rss</code>.</li>
+<li>Pass: <em>“Checking that feed…”</em> then <em>“Subscribed to <show>.
+N episodes are listed, and the show is shared with Quill Cast.”</em>,
+with the cursor on the new show and episodes already listed.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-24. The refusals are specific, one at a time</strong></p>
+<ul>
+<li>Do: feed the same dialog, one per attempt: nothing at all;
+<code>the daily</code>; <code>https://www.bbc.co.uk/</code> (a web
+page); a made-up address such as
+<code>https://example.invalid/feed.xml</code>.</li>
+<li>Pass: four <strong>different</strong> sentences – paste an address
+first / that does not look like a web address / answers with a web page,
+not a podcast feed / could not be read as a feed. A bare “invalid”
+anywhere is a fail.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-25. The empty branch helps</strong></p>
+<ul>
+<li>Do: on a profile with no subscriptions, expand
+<strong>Subscriptions</strong>.</li>
+<li>Pass: exactly three rows, each of which acts on Enter – <strong>Add
+a Podcast by URL…</strong>, <strong>Import Podcasts from OPML…</strong>,
+<strong>Search for a Podcast…</strong></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-26. Import OPML</strong></p>
+<ul>
+<li>Do: <strong>Shift+F10</strong> on the <strong>Podcasts</strong>
+branch &gt; <strong>Import Podcasts from OPML…</strong>, pick any OPML
+export. Then import the <strong>same file again</strong>.</li>
+<li>Pass: <em>“Importing podcasts…”</em> with the tree still usable; a
+count on finishing; the second run reports <em>“Imported 0
+podcasts”</em> and no duplicates. Quit and reopen – everything is still
+there.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-27. Mark All as Played, and the dimmed verb</strong></p>
+<ul>
+<li>Do: <strong>Shift+F10</strong> on a show with unheard episodes &gt;
+<strong>Mark All as Played…</strong>, accept. Reopen the menu.</li>
+<li>Pass: <em>“Marked N episodes of <show> as played.”</em>, badge gone
+on screen immediately, cursor back on the show; the menu item is still
+<strong>there</strong> but <strong>dimmed</strong>. A vanished item is a
+fail.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-28. Don’t ask me again crosses to Cast</strong></p>
+<ul>
+<li>Do: on another show, tick <strong>“Don’t ask me again”</strong> and
+accept. Try the same command in <strong>QUILL Cast</strong>.</li>
+<li>Pass: neither app asks again. (Cancelling with the box ticked must
+change nothing.)</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-29. A Cast position continues in Radio</strong></p>
+<ul>
+<li>Setup: in Cast, play an episode two minutes, stop.</li>
+<li>Do: play the same episode in Radio.</li>
+<li>Pass: <em>“Resuming at 2 minutes 10 seconds.”</em> – Cast’s
+position, in words.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-30. The show’s speed follows the show</strong></p>
+<ul>
+<li>Setup: in Cast, set a show’s speed to 1.5x.</li>
+<li>Do: play one of its episodes in Radio, then press
+<strong>Ctrl+Shift+Up</strong>.</li>
+<li>Pass: it starts at 1.5x, and the press says <em>“1.75 times speed.
+Remembered for this show.”</em> Return later: 1.75x, and Cast still says
+1.5x.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-31. Marking one episode, and a badge that believes your
+ears</strong></p>
+<ul>
+<li>Do: <strong>Shift+F10</strong> on an episode &gt; <strong>Mark
+Episode as Played</strong>. Then play a different episode of that show
+<strong>to the end</strong>.</li>
+<li>Pass: the badge drops by one each time, immediately, without opening
+Cast.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-32. Handing an episode to Cast</strong></p>
+<ul>
+<li>Do: <strong>Shift+F10</strong> on a subscribed show’s episode
+row.</li>
+<li>Pass: <strong>Play Next in QUILL Cast</strong>, <strong>Add to QUILL
+Cast Queue</strong> and <strong>Send to the QUILL Cast Inbox</strong>
+are on the menu, and each lands in Cast (next launch is acceptable;
+being silently discarded is not).</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-33. Download one, download all, take them back</strong></p>
+<ul>
+<li>Do: <strong>Shift+F10</strong> on an episode row &gt;
+<strong>Download…</strong>. Then on the show row &gt; <strong>Download
+All N Episodes…</strong>, then <strong>Remove All
+Downloads…</strong>.</li>
+<li>Pass: the file lands under
+<code>Downloads\Quill Radio\Podcasts\&lt;Show&gt;\</code>; the queue
+says <em>“Queued … You can carry on listening.”</em>; Remove All
+confirms with the real file count, says <em>“Your subscription and
+played state are untouched.”</em>, and leaves every badge as it
+was.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-34. A private feed works here too</strong></p>
+<ul>
+<li>Do: with a credentialed feed saved in Cast, open that show in
+Radio.</li>
+<li>Pass: its episodes list, exactly like a public feed. (No such feed?
+Mark <strong>not run</strong> rather than skipping silently.)</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ] not
+run</label></li>
+</ul>
+<p><strong>R-35. Chapters on a podcast episode</strong></p>
+<ul>
+<li>Do: play an episode of <strong>Podcasting 2.0</strong> or <strong>No
+Agenda</strong>, give it a few seconds, then
+<strong>Ctrl+Shift+C</strong> and <strong>Ctrl+Shift+.</strong> /
+<strong>Ctrl+Shift+,</strong>.</li>
+<li>Pass: the publisher’s own chapter titles. On an unchaptered feed,
+the same commands give the honest “no chapters” answer, never an
+invented marker.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-36. Record and rename from the row</strong></p>
+<ul>
+<li>Do: <strong>Shift+F10</strong> on a <strong>live station</strong>
+row.</li>
+<li>Pass: <strong>Record This Station…</strong> and <strong>Schedule
+Recording…</strong> are there, pre-filled with <em>that</em> station; on
+a favorite, <strong>Rename Favorite…</strong> too. Episode and chapter
+rows offer no Record items.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-e--transcripts-6-min">Block E – Transcripts (6 min)</h2>
+<p><strong>R-37. Read a transcript without playing anything</strong></p>
+<ul>
+<li>Do: reach a <strong>Podcasting 2.0</strong> episode row,
+<strong>Shift+F10 &gt; View Transcript…</strong></li>
+<li>Pass: <em>“Fetching transcript…”</em>, then a read-only text box,
+one caption line per row – and <strong>nothing starts
+playing</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-38. The caret is yours</strong></p>
+<ul>
+<li>Do: with the episode playing, arrow around the transcript.</li>
+<li>Pass: the caret never moves on its own. (There is no “follow the
+audio” checkbox any more. If you find one, fail.)</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-39. Enter plays from a line; Find lands on the
+match</strong></p>
+<ul>
+<li>Do: put the caret on a line, press <strong>Enter</strong>. Then use
+<strong>Find</strong> for a word further down.</li>
+<li>Pass: <em>“Playing from 4 minutes 12 seconds.”</em> and the audio
+jumps there; <em>“Found at 12 minutes 8 seconds. Enter plays from
+here.”</em> – always words, never <code>4:12</code>. With nothing
+playing, the same sentence without the second half.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-40. Links, and Save As</strong></p>
+<ul>
+<li>Do: press <strong>Links… (Ctrl+Shift+L)</strong>, then <strong>Save
+As…</strong> and save as <strong>WebVTT</strong>, then open the saved
+file.</li>
+<li>Pass: each link read as name then address, with Open / Copy Address
+/ Copy All working; a transcript with none says <em>“There are no web
+addresses in this transcript.”</em> out loud; the saved cue timings
+match what the reader spoke.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-41. The honest absences, one each</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+T</strong> while a <strong>live
+station</strong> plays; then on a <strong>video with no
+captions</strong>; then <strong>View Transcript…</strong> in Safe Mode.
+And check a <em>Radiolab</em> episode row.</li>
+<li>Pass: three distinct spoken sentences (live stream / no captions
+published / disabled in Safe Mode), and the Radiolab row simply
+<strong>has no View Transcript… item</strong> rather than opening an
+empty reader.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-42. Automatic captions are labelled automatic</strong></p>
+<ul>
+<li>Do: play any casual YouTube upload (not one from the table below)
+and press <strong>Ctrl+Shift+T</strong>.</li>
+<li>Pass: the reader’s heading says the transcript is automatically
+generated.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-f--video-captions-described-audio-10-min">Block F – Video,
+captions, described audio (10 min)</h2>
+<table>
+<thead>
+<tr>
+<th>Video</th>
+<th>URL</th>
+<th>Tracks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TED talk</td>
+<td><code>https://www.youtube.com/watch?v=iG9CE55wbtY</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td>Big Buck Bunny</td>
+<td><code>https://www.youtube.com/watch?v=YE7VzlLtp-4</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td>MrBeast (dubbed)</td>
+<td><code>https://www.youtube.com/watch?v=0e3GPea1Tyg</code></td>
+<td>24</td>
+</tr>
+<tr>
+<td>ART LAB (really described)</td>
+<td><code>https://www.youtube.com/watch?v=UusppshIAio</code></td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>R-43. Show the picture without losing the sound</strong></p>
+<ul>
+<li>Do: play the TED talk (paste the URL into <strong>Ctrl+F</strong>),
+let it settle, press <strong>Ctrl+Shift+V</strong>. Press it again. Then
+<strong>F11</strong>.</li>
+<li>Pass: <em>“Video shown, 1280 by 720.”</em>, no audio gap; <em>“Video
+hidden. Audio is still playing.”</em>; full screen announces
+<strong>both</strong> ways out.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-44. Captions</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+K</strong>, then
+<strong>Ctrl+Shift+Alt+T</strong> and set size to 300%, then
+<strong>Ctrl+Shift+K</strong> again.</li>
+<li>Pass: captions appear and go, each said out loud; text scales; the
+background stays opaque.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-45. The track picker counts correctly</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+A</strong> on the TED talk, then on
+MrBeast.</li>
+<li>Pass: TED = <strong>exactly one</strong> row, “English”; MrBeast =
+<strong>24</strong> rows, every one a language <em>name</em> (“Tamil”,
+“Bangla”), never a code, fragment or duplicate. Both under the heading
+<em>“No described audio was published for this video.”</em></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-46. The absence path is spoken, not silent</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+D</strong> on the TED talk. Then
+<strong>Ctrl+Alt+D</strong> while a <strong>live station</strong>
+plays.</li>
+<li>Pass: an honest answer both times – the second is <em>“This is a
+live stream, so it has no described audio track to choose.”</em> Silence
+is a fail.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-47. The presence path</strong></p>
+<ul>
+<li>Do: play the <strong>ART LAB</strong> video and listen. Then
+<strong>Ctrl+Shift+A</strong>. Note your position with
+<strong>Ctrl+Shift+I</strong>, switch to the described track, check
+again.</li>
+<li>Pass: <em>“Described audio is available for this video. Press
+Ctrl+Alt+D to hear the narration of what is on screen.”</em> –
+<strong>once</strong>; the picker heading says it is available, the
+described track is <strong>first</strong> with the cursor already on it;
+the narration is audibly there; the position <strong>survives the
+switch</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-48. A described upload that is one track</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+A</strong> on
+<code>https://www.youtube.com/watch?v=LYKUnym0EqU</code> (Microsoft,
+audio-described version).</li>
+<li>Pass: the <em>absence</em> heading and one row – correct, because
+the description is mixed into the only track. An invented second row is
+a fail.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-g--youtube-and-playlists-5-min">Block G – YouTube and
+playlists (5 min)</h2>
+<p><strong>R-49. Follow a channel</strong></p>
+<ul>
+<li>Do: Browse Stations &gt; <strong>YouTube Channels</strong> &gt; its
+Add action, paste <code>https://www.youtube.com/@TED</code>.</li>
+<li>Pass: recent videos appear as rows, each playable with Enter.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-50. A playlist becomes stations</strong></p>
+<ul>
+<li>Do: <strong>Station &gt; Add from YouTube Playlist…</strong>, paste
+<code>https://www.youtube.com/playlist?list=PLbpi6ZahtOH6Blw3RGYpWkSByi_T7Rygb</code>.</li>
+<li>Pass: <strong>19 entries</strong> added. A different count is a
+finding.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-51. Import a .pls</strong></p>
+<ul>
+<li>Do: save <code>https://somafm.com/groovesalad.pls</code>, then
+<strong>Ctrl+I</strong> (Station &gt; Import Stations from Playlist…)
+and pick it.</li>
+<li>Pass: <strong>3 entries</strong>, each playable.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-52. The M3U round trip</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+X</strong> to export favorites as
+<code>.m3u</code>, then <strong>Ctrl+I</strong> to import that same
+file.</li>
+<li>Pass: the same stations, in the same order.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-53. A Live365 page becomes a stream</strong></p>
+<ul>
+<li>Do: paste any <code>https://live365.com/station/...</code>
+<strong>page</strong> address where a stream URL is accepted.</li>
+<li>Pass: it is rewritten to the real stream <strong>and the app says it
+did so</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-h--downloads-12-min">Block H – Downloads (12 min)</h2>
+<p><strong>R-54. Download Preferences</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+Shift+D</strong>. Listen without touching
+anything, then toggle a checkbox, then Cancel.</li>
+<li>Pass: focus lands in the folder field and its name explains what
+blank means; the summary sentence updates on every toggle; Cancel
+changes nothing.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-55. What may and may not be saved</strong></p>
+<ul>
+<li>Do: open <strong>Shift+F10</strong> on each row kind and look for
+<strong>Download…</strong>: a LibriVox chapter (search
+<code>Middlemarch</code>), the BBC live station, a Mixcloud row, a
+YouTube video, an Audius track, a ccMixter track (search
+<code>jazz</code>).</li>
+<li>Pass: offered on the LibriVox chapter and the ccMixter track only;
+the other four have <strong>no Download item</strong>, and asking
+through the command palette gives a refusal that names the reason (no
+end / Mixcloud opens in the browser / deliberately not from YouTube /
+the artist’s choice). The ccMixter download saves a
+<code>.licence.txt</code> beside the audio.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-56. A whole book, and one folder prompt</strong></p>
+<ul>
+<li>Do: turn on “Ask where to save each download” in R-54, then in
+Browse Stations put the cursor on Middlemarch’s <strong>folder</strong>
+(LibriVox) &gt; <strong>Download All 86 Files…</strong></li>
+<li>Pass: <strong>one</strong> folder prompt for the whole book, never
+86; <em>“Queued Middlemarch… You can carry on listening.”</em>;
+cancelling the prompt says <em>“Download cancelled. Nothing was
+queued.”</em></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-57. The downloads list reads as sentences</strong></p>
+<ul>
+<li>Do: play a live station while it downloads, then
+<strong>Ctrl+Shift+J</strong> (View &gt; Downloads…) and arrow the
+rows.</li>
+<li>Pass: playback unaffected; rows read <em>“Chapter 4, Middlemarch,
+downloading now”</em> – state <strong>last</strong>; a heartbeat every
+few chapters (<em>“12 of 86.”</em>); finished rows stay in the
+list.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-58. The list’s own verbs</strong></p>
+<ul>
+<li>Do: on a finished row, <strong>Open Containing Folder</strong>. On a
+waiting row, <strong>Cancel This One</strong>. On the running row,
+<strong>Remove From List</strong>. Then <strong>Clear Finished</strong>
+and <strong>Clear All</strong>.</li>
+<li>Pass: Explorer opens <strong>with the file selected</strong>; the
+waiting one cancels and keeps what was saved; the running one is refused
+– <em>“That one is downloading now. Cancel it first.”</em>; clearing
+empties the list and touches nothing on disk.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-59. Where things land</strong></p>
+<ul>
+<li>Do: download a second book by the same author, a podcast episode,
+and a ccMixter track.</li>
+<li>Pass: <code>Books\Middlemarch\</code> for the first book with
+<strong>no</strong> author folder; an author folder appears only once a
+second book needs to disambiguate; <code>Podcasts\&lt;show&gt;\</code>;
+<code>Music\</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-60. Interruption and resume</strong></p>
+<ul>
+<li>Do: kill the network mid-chapter, restore it, download the same book
+again. Then cancel a download mid-chapter.</li>
+<li>Pass: that chapter fails and the <strong>next one still
+runs</strong>; part-finished files <strong>resume</strong> rather than
+restart; the cancel stops within seconds.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-61. Quitting with downloads outstanding</strong></p>
+<ul>
+<li>Do: press <strong>Alt+F4</strong> while downloads are running.</li>
+<li>Pass: they keep going or they stop, per your preference – and the
+app <strong>says which</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-i--books-and-continue-listening-6-min">Block I – Books and
+Continue Listening (6 min)</h2>
+<p><strong>R-62. Chapters chain in numeric order</strong></p>
+<ul>
+<li>Do: play chapter 1 of the downloaded Middlemarch, hands off to its
+end.</li>
+<li>Pass: chapter 2 starts on its own, announced <em>“2 of 86, …”</em> –
+position <strong>first</strong>. Chapter 2 plays before chapter 10.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-63. The last chapter says so</strong></p>
+<ul>
+<li>Do: play the last chapter to its end.</li>
+<li>Pass: playback stops and says <em>“That was the last chapter of
+Middlemarch.”</em></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-64. Three kinds of unfinished thing</strong></p>
+<ul>
+<li>Do: leave a podcast episode, a streamed LibriVox chapter and a
+downloaded file each part-played, then <strong>Ctrl+Alt+Shift+L</strong>
+(Playback &gt; Continue Listening…). This key changed: it was
+<code>Ctrl+Shift+Alt+C</code>, which is the same chord as Choose
+Columns, so one of the two never fired.</li>
+<li>Pass: all three, newest first, each naming its kind and how far in;
+an opening summary such as <em>“2 things you did not finish, across
+recordings, podcasts.”</em></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-65. Resume, forget, and the missing file</strong></p>
+<ul>
+<li>Do: Resume one row. <strong>Forget This One</strong> on another.
+Move a downloaded file in Explorer and reopen the list; then play it
+from its new place and reopen.</li>
+<li>Pass: resume starts where you left off; forgetting removes the row
+and leaves the episode <strong>unplayed</strong>; the moved file’s row
+is quietly absent, and comes back pointing at the new place.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-j--recording-4-min">Block J – Recording (4 min)</h2>
+<p><strong>R-66. A thirty-second capture</strong></p>
+<ul>
+<li>Do: with a station playing, press the <strong>Record</strong>
+button, wait 30 seconds, press it again. Check <strong>Recording &gt;
+Recordings…</strong></li>
+<li>Pass: the button reads <strong>Stop Recording</strong> while
+recording and <strong>Record</strong> after; the file is listed; the
+stop is announced. A silent stop is a fail.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-67. Honesty about an empty capture</strong></p>
+<ul>
+<li>Do: record a station producing no audio.</li>
+<li>Pass: reported as capturing nothing, and the empty file is
+deleted.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-68. Scheduling in hours and minutes</strong></p>
+<ul>
+<li>Do: <strong>Recording &gt; Schedule Recording…</strong></li>
+<li>Pass: separate <strong>Hours</strong> and <strong>Minutes</strong>
+boxes – “3” and “0” is three hours.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-k--lists-columns-and-the-window-5-min">Block K – Lists,
+columns and the window (5 min)</h2>
+<p><strong>R-69. Choose Columns</strong></p>
+<ul>
+<li>Do: <strong>View &gt; Choose Columns…</strong>, move a column up,
+<strong>Hide</strong> another, read the <strong>A row will
+read:</strong> line, press OK.</li>
+<li>Pass: the preview line matches what rows then actually say; a hidden
+column is <strong>absent from the row</strong>, not moved to the end;
+the pinned column refuses to be hidden and says why; <strong>Reset This
+List</strong> restores the shipped order.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-70. It survives a restart</strong></p>
+<ul>
+<li>Do: quit and relaunch, return to the same list.</li>
+<li>Pass: your column order and hiding are still in force.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-71. Alt+F4 to tray</strong></p>
+<ul>
+<li>Do: with the preference on, press <strong>Alt+F4</strong> while
+playing.</li>
+<li>Pass: the window tucks away, playback continues, and it says so. The
+titlebar X and Exit still exit.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-72. The QuillVille menu</strong></p>
+<ul>
+<li>Do: open the <strong>QuillVille</strong> menu.</li>
+<li>Pass: <strong>QUILL</strong> and <strong>Quill Weather</strong>
+only. Inkwell is deliberately not there.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-l--safe-mode-and-updates-5-min">Block L – Safe Mode and
+updates (5 min)</h2>
+<p><strong>R-73. Refusals are per-branch and by name</strong></p>
+<ul>
+<li>Do: relaunch with <code>--safe-mode</code>. Expand
+<strong>TuneIn</strong>; then try Favorites, <strong>ACB Media</strong>,
+<strong>NFB Radio</strong> and <strong>Networks</strong>.</li>
+<li>Pass: <em>“TuneIn is disabled in Safe Mode.”</em> by name; the four
+offline branches still work.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-74. Safe Mode refuses before it asks</strong></p>
+<ul>
+<li>Do: in Safe Mode, press <strong>Ctrl+F</strong> and search; try a
+download; try <strong>Add a Podcast by URL…</strong>; try <strong>Import
+Podcasts from OPML…</strong></li>
+<li>Pass: each refuses out loud, and <strong>no request leaves the
+machine</strong>. The OPML one says <em>“Importing is disabled in Safe
+Mode. Restart Quill Radio normally.”</em></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>R-75. Check for Updates knows which edition you
+installed</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+U</strong> (Help &gt; Check for Updates…).</li>
+<li>Pass: it offers the edition you actually have (installer vs
+portable), with spoken progress, and says so plainly when you are
+already up to date.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="block-m--spotify-optional-skip-freely">Block M – Spotify
+(optional, skip freely)</h2>
+<p><strong>R-76. Rows and the two refusals</strong></p>
+<ul>
+<li>Do: with Spotify enabled and Premium, search for an artist; then try
+to <strong>download</strong> and to <strong>record</strong> a Spotify
+row.</li>
+<li>Pass: rows appear alongside stations; both attempts refuse with
+<em>“copy- protected and cannot be saved by any app, including this
+one.”</em></li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail [ ]
+skipped</label></li>
+</ul>
+<hr />
+<h2 id="the-two-c-and-l-chords-together">The two C-and-L chords,
+together</h2>
+<p>Fixed on 2026-08-21; confirm the fix held rather than assuming
+it.</p>
+<p><strong>R-77. One chord, one command</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Alt+Shift+C</strong>, close what opens, then
+press <strong>Ctrl+Alt+Shift+L</strong>.</li>
+<li>Pass: <strong>Choose Columns</strong> for the first,
+<strong>Continue Listening</strong> for the second. Both opening the
+same window means the old collision is back.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<h2 id="sign-off">Sign-off</h2>
+<ul>
+<li>Build / version: ______________</li>
+<li>Date: ______________</li>
+<li>Screen reader and version: ______________</li>
+<li>Windows version: ______________</li>
+<li>Blocks run: ______________</li>
+<li>Result: [ ] ship [ ] ship with the findings below [ ] do not
+ship</li>
+</ul>
+<p><strong>For every fail, report three things:</strong> the test id
+(R-57, say), what was said <strong>word for word</strong>, and what you
+expected to hear. A step that did nothing at all is the most serious
+kind of failure here – report it even when nothing looks broken.</p>
+</main>
+</body>
+</html>

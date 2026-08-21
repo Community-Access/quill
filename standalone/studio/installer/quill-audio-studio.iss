@@ -38,6 +38,10 @@
 #define RuntimeVersion "3.13.15"
 #define RuntimeSourceDir "..\..\runtime\dist\QuillVilleRuntime"
 #define AppRefId "studio"
+; quill.apps.studio REQUIRED_COMPONENTS = ("ffmpeg", "mpv") -- mpv for the
+; player preview this build has always bundled.
+#define ToolFfmpeg
+#define ToolMpv
 
 [Setup]
 #ifdef Sign

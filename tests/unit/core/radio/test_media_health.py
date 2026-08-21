@@ -86,17 +86,21 @@ def test_every_summary_ends_as_a_sentence() -> None:
         assert health.notice().endswith(".")
 
 
-def test_the_repair_hint_only_offers_get_ffmpeg_when_ffmpeg_is_the_problem() -> None:
-    # Radio has no in-app mpv download; pointing at one would be a dead route.
+def test_each_hint_offers_the_download_for_the_tool_that_is_actually_missing() -> None:
+    # Both tools have an in-app download now (2026-08-21), so each hint names
+    # exactly the one that is missing. Offering the other is a dead route in the
+    # most misleading direction: it looks like a fix and does nothing.
     assert "Get FFmpeg" in NO_FFMPEG.repair_hint()
+    assert "Get mpv" not in NO_FFMPEG.repair_hint()
+    assert "Get mpv Playback Engine" in NO_MPV.repair_hint()
     assert "Get FFmpeg" not in NO_MPV.repair_hint()
-    assert "reinstalling restores it" in NO_MPV.repair_hint()
 
 
-def test_the_repair_hint_for_both_names_the_installer_and_the_download() -> None:
+def test_the_repair_hint_for_both_names_both_downloads_and_the_installer() -> None:
     hint = NEITHER.repair_hint()
     assert "reinstalling restores them" in hint
     assert "Get FFmpeg" in hint
+    assert "Get mpv Playback Engine" in hint
 
 
 def test_the_notice_is_the_summary_followed_by_the_hint() -> None:
@@ -159,3 +163,45 @@ def test_the_capability_list_is_semicolon_separated() -> None:
     assert "live pause and rewind; choosing the output device" in summary
     # And the entry that carries its own commas is still intact inside it.
     assert "Ogg Vorbis, Opus and HLS stations" in summary
+
+
+# -- the advice has to match the edition the listener actually has -------------
+#
+# The thin ("-Lite") installer downloads the base shared runtime, which carries
+# no media tools at all -- so "reinstall" is the one instruction that cannot
+# help a Lite listener, and it is the instruction they used to be given.
+
+
+def test_a_lite_install_is_told_to_get_the_full_installer_not_to_reinstall() -> None:
+    for health in (NO_MPV, NO_FFMPEG, NEITHER):
+        hint = health.repair_hint(lite=True)
+        assert "full Quill Radio installer" in hint
+        assert "reinstall" not in hint.lower(), (
+            "reinstalling the Lite installer re-downloads a runtime that never "
+            f"carried the tools: {hint}"
+        )
+
+
+def test_a_full_install_is_still_told_that_reinstalling_works() -> None:
+    # True only because installer\shared-runtime.iss lays the tools down
+    # unconditionally; see test_shared_runtime_installer.py.
+    for health in (NO_MPV, NO_FFMPEG, NEITHER):
+        assert "reinstall" in health.repair_hint().lower()
+
+
+def test_the_download_is_offered_to_a_lite_install_too() -> None:
+    # The whole point of having a download: it is the one repair that does not
+    # depend on which edition the listener installed.
+    assert "Get mpv Playback Engine" in NO_MPV.repair_hint(lite=True)
+    assert "Get FFmpeg" in NO_FFMPEG.repair_hint(lite=True)
+
+
+def test_the_lite_notice_and_refusal_carry_the_edition_through() -> None:
+    assert NO_MPV.repair_hint(lite=True) in NO_MPV.notice(lite=True)
+    assert NO_MPV.repair_hint(lite=True) in NO_MPV.format_refusal("SomaFM", lite=True)
+
+
+def test_every_lite_hint_ends_as_a_sentence() -> None:
+    for health in (NO_MPV, NO_FFMPEG, NEITHER):
+        assert health.repair_hint(lite=True).endswith(".")
+        assert health.notice(lite=True).endswith(".")

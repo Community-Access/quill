@@ -962,8 +962,38 @@ stays true.</p>
 not claimed, with a build check refusing any that does.</p>
 <h3 id="things-that-were-quietly-wrong-and-are-not-now">Things that were
 quietly wrong, and are not now</h3>
-<p>Four worth knowing about, because every one of them was broken and
+<p>Five worth knowing about, because every one of them was broken and
 not one announced itself.</p>
+<p><strong>Installing your apps in the wrong order cost you the playback
+engine.</strong> Quill Radio plays through mpv; without it the app drops
+to Windows Media and loses live pause and rewind, output-device choice,
+Volume Boost, track titles from the stream, stall detection, and every
+Ogg Vorbis, Opus and HLS station. The mpv library and FFmpeg are 306 MB
+together, so they are not built into the shared QuillVille Runtime that
+all seven apps use – four of those apps never call them, and Quill
+Weather’s installer was once 191 MB to read out a forecast. Each media
+app contributes what it needs instead.</p>
+<p>That is a sound arrangement, and the install step did not honour it.
+The tools were installed by the same instruction as the runtime itself,
+which is skipped when a newer sibling app has already put a runtime on
+the machine. So installing QUILL Cast – which needs FFmpeg and not mpv –
+and <em>then</em> installing Quill Radio skipped Radio’s payload
+entirely, and mpv never arrived. Nothing said so. The app fell back,
+played most stations, and simply could not play some.</p>
+<p>Reinstalling did not help either, though the app confidently said it
+would: the reinstall met the same skip. Both halves are fixed. The tools
+are now laid down unconditionally, so a machine ends up with the union
+of what its apps need whoever installed first, and reinstalling really
+does restore them.</p>
+<p>And for the case where reinstalling is not the answer at all – the
+<strong>Lite</strong> installer downloads the base runtime and carries
+no media tools by design – <strong>Help &gt; Get mpv Playback Engine…
+(Ctrl+Alt+M)</strong> simply fetches it, about 46 MB, the same
+checksum-pinned package the build itself uses. Audio Health has a button
+for it too, next to Get FFmpeg, lit only when pressing it would change
+something. It arrives with mpv’s licence texts and its
+corresponding-source offer, because those are part of shipping it rather
+than paperwork bolted on afterwards.</p>
 <p><strong>A station that hiccuped once was dead.</strong> This came in
 as a report while 3.0 was being finished, and it is the most
 consequential fix in the release: stations like KFI would play for about

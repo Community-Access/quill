@@ -14,7 +14,7 @@
 ; It was an unguarded #define pinned at 1.0.5, so a 1.0.7 build shipped a
 ; portable zip named 1.0.7 next to a Setup.exe that called itself 1.0.5.
 #ifndef AppVersion
-  #define AppVersion "1.1.0"
+  #define AppVersion "2.0.0"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-cast"

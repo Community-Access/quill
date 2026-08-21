@@ -630,6 +630,7 @@ class SpeechDownloadsMixin:
         thread behind one combined progress dialog, blocked in Safe Mode."""
         import threading
 
+        from quill.core.mpv_install import MpvInstallError
         from quill.core.optional_components import (
             _ffmpeg_installed,
             _libmpv_installed,
@@ -720,15 +721,14 @@ class SpeechDownloadsMixin:
             base = 0.0
             try:
                 if need_libmpv:
-                    from quill.core.release_assets import fetch_component
-                    from quill.core.speech.engine_install import engine_packs_dir
+                    # Through core.mpv_install rather than fetch_component
+                    # directly: Quill Radio's Help > Get mpv needs the same
+                    # download, and two call sites picking their own target
+                    # folder is how a downloader ends up writing where the
+                    # resolver does not look.
+                    from quill.core.mpv_install import install_mpv
 
-                    fetch_component(
-                        "libmpv",
-                        engine_packs_dir() / "mpv",
-                        progress=_combined_progress(base),
-                        label="Downloading the mpv player engine...",
-                    )
+                    install_mpv(_combined_progress(base))
                     base += span
                 if need_mp3:
                     install_mp3_support(_combined_progress(base))
@@ -747,7 +747,9 @@ class SpeechDownloadsMixin:
                         f"Could not finish the download: {user_facing_message(exc)}",
                     )
                     detail = str(exc)
-                    if not isinstance(exc, EngineInstallError | FFmpegInstallError):
+                    if not isinstance(
+                        exc, EngineInstallError | FFmpegInstallError | MpvInstallError
+                    ):
                         detail = f"Unexpected error: {user_facing_message(exc)}"
                     wx.CallAfter(
                         self._offer_component_bug_report,

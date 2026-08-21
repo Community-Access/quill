@@ -54,6 +54,25 @@ def current_health() -> MediaHealth:
     return MediaHealth(ffmpeg=ffmpeg, mpv=mpv)
 
 
+def _is_lite_install() -> bool:
+    """True on the thin installer, whose runtime download carries no media tools.
+
+    Resolution belongs on this side of the line for the same reason the probes
+    do: :mod:`quill.core.radio.media_health` is pure and takes booleans, and the
+    repair advice is only true if it matches the edition the listener actually
+    has. A failure to tell answers False -- the full-installer advice is the
+    right guess for the common case, and a probe must never be the thing that
+    breaks a courtesy.
+    """
+    try:
+        from quill.core import install_edition
+
+        return install_edition.detect() == install_edition.INSTALLER_LITE
+    except Exception:  # noqa: BLE001 - never let edition detection break a notice
+        _log.exception("install edition probe failed; assuming the full installer")
+        return False
+
+
 def surface_media_health_startup(host: Any) -> None:
     """Say once, at launch, what this installation cannot do and why.
 
@@ -74,7 +93,7 @@ def surface_media_health_startup(host: Any) -> None:
         if _remembered(host) == signature:
             return
         _remember(host, signature)
-        host._announce(health.notice())
+        host._announce(health.notice(lite=_is_lite_install()))
     except Exception:  # noqa: BLE001 - a courtesy must not break a launch
         _log.exception("media health surfacing failed")
 
@@ -92,7 +111,7 @@ def refusal_for(station_name: str, url: str) -> str:
     health = current_health()
     if health.mpv:
         return ""
-    return health.format_refusal(station_name)
+    return health.format_refusal(station_name, lite=_is_lite_install())
 
 
 # -- where the "already said" mark lives ---------------------------------------
