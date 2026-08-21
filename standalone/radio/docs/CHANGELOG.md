@@ -516,6 +516,12 @@ gone missing, and several long-standing silent faults are fixed. See
   a station you just chose does. A stream that dropped on its own now reads and
   speaks as "Reconnecting to KFI AM 640. Attempt 2 of 3." -- a different word for
   a different event, and one you did not cause.
+- **Continue Listening moved to Ctrl+Alt+Shift+L.** It had Ctrl+Shift+Alt+C,
+  which looks like a different key from Choose Columns' Ctrl+Alt+Shift+C and is
+  not one -- the order the modifiers are written in makes no difference, so two
+  menu items claimed one chord and one of them silently never fired. Choose
+  Columns keeps the C, because QUILL Cast uses it for the same command and a
+  family key that changes per app is worse than an unfamiliar one.
 - **Speed and chapters moved off Ctrl+Alt+arrow.** That block is JAWS's and
   NVDA's table navigation, so those verbs worked everywhere except while
   somebody was reading a table. Play Faster / Slower / Normal Speed are now

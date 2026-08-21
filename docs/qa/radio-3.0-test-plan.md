@@ -1,5 +1,11 @@
 # Quill Radio 3.0 -- test plan
 
+> **Signing off, not investigating?** Use
+> [radio-signoff.md](radio-signoff.md) instead: the same coverage as numbered
+> steps with tick boxes, about 90 minutes, or 20 for the short run. This
+> document is the reference behind it -- read it when a step fails and you want
+> to know why the test exists.
+
 A run-through of everything 3.0 changed, with **real links that were checked
 against the live services** while this was written. Nothing here is a guessed
 address: every one came back through Quill Radio's own adapters, so if a link
@@ -1118,7 +1124,9 @@ Use the Middlemarch download from T-9.2.
 2. Play a LibriVox chapter (streaming, not downloaded) for a minute, then
    Stop.
 3. Play a **downloaded** file for a minute, then Stop.
-4. Open **Playback > Continue Listening... (Ctrl+Shift+Alt+C)**.
+4. Open **Playback > Continue Listening... (Ctrl+Alt+Shift+L)**. The key moved
+   off `Ctrl+Shift+Alt+C` on 2026-08-21: wx ignores modifier order, so that was
+   the same chord as View > Choose Columns... and one of the pair never fired.
    - **Expect:** all three appear, **newest first**, and every row names
      its **kind** and **how far in** you were -- the streamed chapter
      labelled as a recording source, the downloaded one as a *file on this

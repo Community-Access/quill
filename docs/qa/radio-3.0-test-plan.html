@@ -197,6 +197,13 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
 <h1 id="quill-radio-30--test-plan">Quill Radio 3.0 – test plan</h1>
+<blockquote>
+<p><strong>Signing off, not investigating?</strong> Use <a
+href="radio-signoff.md">radio-signoff.md</a> instead: the same coverage
+as numbered steps with tick boxes, about 90 minutes, or 20 for the short
+run. This document is the reference behind it – read it when a step
+fails and you want to know why the test exists.</p>
+</blockquote>
 <p>A run-through of everything 3.0 changed, with <strong>real links that
 were checked against the live services</strong> while this was written.
 Nothing here is a guessed address: every one came back through Quill
@@ -1921,7 +1928,10 @@ then Stop.</li>
 <li>Play a <strong>downloaded</strong> file for a minute, then
 Stop.</li>
 <li>Open <strong>Playback &gt; Continue Listening…
-(Ctrl+Shift+Alt+C)</strong>.
+(Ctrl+Alt+Shift+L)</strong>. The key moved off
+<code>Ctrl+Shift+Alt+C</code> on 2026-08-21: wx ignores modifier order,
+so that was the same chord as View &gt; Choose Columns… and one of the
+pair never fired.
 <ul>
 <li><strong>Expect:</strong> all three appear, <strong>newest
 first</strong>, and every row names its <strong>kind</strong> and
