@@ -83,11 +83,22 @@ def test_every_enabled_menu_item_advertises_a_keyboard_route(radio_menu_bar) -> 
 
 def test_no_two_menu_items_claim_the_same_key(radio_menu_bar) -> None:
     """Two items on one key means one of them never fires -- worse than none,
-    because the menu promises something it cannot deliver."""
+    because the menu promises something it cannot deliver.
+
+    Compared *canonically*, not as text. wx ignores the order the modifiers are
+    written in, so "Ctrl+Shift+Alt+C" and "Ctrl+Alt+Shift+C" are one chord --
+    and this gate, comparing raw strings, read them as two and stayed green
+    while Choose Columns and Continue Listening shared a key. The Keyboard
+    Manager already had the right answer (``keymap_query.canonical_binding``);
+    it is used here so the two cannot disagree about what "the same key" means.
+    """
+    from quill.core.keymap_query import canonical_binding
+
     claimed = collections.defaultdict(list)
     for where, label, _enabled in _items(radio_menu_bar):
         if chr(9) in label:
-            claimed[label.split(chr(9), 1)[1].strip()].append(where)
+            accel = label.split(chr(9), 1)[1].strip()
+            claimed[canonical_binding(accel) or accel].append(where)
     duplicated = {key: where for key, where in claimed.items() if len(where) > 1}
     assert duplicated == {}, f"accelerators claimed twice: {duplicated}"
 

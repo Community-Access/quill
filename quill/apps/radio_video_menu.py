@@ -38,8 +38,14 @@ def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[A
     # is at its GATE-11 budget, and it belongs beside the timeline commands --
     # both are about recordings, which are the only thing Radio plays that has
     # somewhere to come back to.
+    # Not Ctrl+Shift+Alt+C, which this shipped with: wx ignores the order the
+    # modifiers are written in, so that is the same chord as View > Choose
+    # Columns... (Ctrl+Alt+Shift+C) and one of the pair silently never fired.
+    # Choose Columns keeps the C, because QUILL Cast binds it there too and a
+    # family key that differs per app is worse than an unfamiliar one; this
+    # takes L, for Listening.
     continue_id = wx.NewIdRef()
-    playback_menu.Append(continue_id, "&Continue Listening...\tCtrl+Shift+Alt+C")
+    playback_menu.Append(continue_id, "&Continue Listening...\tCtrl+Alt+Shift+L")
     frame.Bind(wx.EVT_MENU, lambda _e: _open_continue_listening(app), id=continue_id)
 
     # Chapter keys come from the shared transport table too. Next/Previous
