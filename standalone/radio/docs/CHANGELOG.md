@@ -459,6 +459,40 @@ gone missing, and several long-standing silent faults are fixed. See
   available so it can be spoken rather than implied.
 - **A probe suite for every external service** (37 probes, `S:\radio-probes`),
   each asserting a specific capability rather than a status code.
+- **Folder actions on favorites** -- Play All in Folder, Shuffle Folder and
+  Export This Folder..., with Next/Previous Station in Folder in the command
+  palette. A folder always means its whole subtree, and the ends of a folder
+  are announced rather than silently wrapping.
+- **Quick Actions (Station > Quick Actions..., Ctrl+Alt+Q)** -- reorder the
+  actions on a station, a recording and a browse folder row, and choose what
+  Enter does. The first nine of each answer to Ctrl+1 through Ctrl+9, as in
+  QUILL Cast. The ordering machinery is shared with Cast rather than written
+  twice.
+- **Listening Statistics (Playback > Listening Statistics..., Ctrl+Shift+Q)**
+  -- time listened by station and by network over this week, month, year or all
+  time, with Copy, Save as CSV and Delete My History. Time counts only while
+  audio is actually coming out, and anything under ten seconds is not counted.
+- **Handoff to QUILL Cast from an episode row** -- Play Next in QUILL Cast, Add
+  to QUILL Cast Queue, and Send to the QUILL Cast Inbox. Cast carries them out
+  at its next launch, which is why every confirmation is in the future tense.
+- **Chapters for a local file or a Cast-analysed episode**, read from the
+  file's own chapter frames or from the shared cache Cast leaves behind. Quill
+  Radio computes none itself, on purpose. Where there is a local file, the list
+  also offers **Preview This Mark** -- ten seconds either side of a boundary
+  through its own player, so your place does not move.
+- **Search history in Find Stations** -- the name field is a combo; Down lists
+  the searches already run, newest first, and picking one restores all three
+  fields and re-runs it. De-duplicated, capped at 15, riding the existing radio
+  history file.
+- **Audio Health (View > Audio Health..., Ctrl+Alt+Shift+M)** -- the engine
+  actually in use, mpv and FFmpeg, the output device and whether the system
+  still offers it, Sound Enhancements and their scope, the OptiLab adapter, and
+  whether a recording started now could be written. It probes nothing, so it is
+  safe to open mid-recording.
+- **Keyboard Shortcuts Sheet (Help > Keyboard Shortcuts Sheet...,
+  Ctrl+Alt+Shift+K)** -- built by walking the live menu bar, so it lists the
+  keys you actually have, rebindings included. Filterable by key, by action or
+  by menu; the keys with no menu item are listed with the surface they work in.
 
 ### Changed
 
@@ -531,6 +565,21 @@ gone missing, and several long-standing silent faults are fixed. See
   not import from the UI layer.
 - **The NOAA Weather Radio user agent is derived from the package version**
   instead of a hard-coded `2.1.1` that had been stale for two releases.
+- **The status strip's Recording cell counts time, not rows.** It counts down
+  to a length you chose and up when you did not; the job snapshot records which
+  of the two it was, so a reconnect inherits that answer rather than
+  re-deriving it from the minutes it is handed.
+- **The Recordings window's status line leads with what happens next** -- what
+  is recording and how long is left, then the next scheduled recording and when
+  it starts, then the shelf and the folder. Schedules that exist but cannot
+  fire say so rather than reading as cover.
+- **What's Playing names where a track title came from** -- the ICY block
+  carried with the audio, the player's own metadata, or the station's status
+  page -- and shows the original text where what is displayed is a reading of
+  what arrived.
+- **Rows the listing directory could not play carry "may not be playable"**,
+  from Radio Browser's own published verdict; rows that resolve at play time
+  (TuneIn, YouTube) say that instead. Nothing here scores or estimates.
 
 ### Fixed
 

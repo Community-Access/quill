@@ -283,7 +283,7 @@ Tab order: the now-playing line, the favorites tree, then four buttons.
 - **Favorite stations** (tree): the same nested folder structure you build in the Favorites Manager, right on the main page. Enter plays a station, Delete removes it (with confirmation), F2 renames a station or folder, and Shift+F10 opens the full context menu -- Play/Stop, **Station Details...** (a reviewable, copyable readout of the station's source, stream, format, and country -- the same view the search results give), Rename, Move to Folder, Remove, New Folder, Mark for Move, and Manage Favorites. Your custom names are used everywhere.
 - Buttons, each with its own Alt key: **P&lay** (**Alt+L**; it becomes **S&top**, **Alt+T**, while connecting or playing -- one transport control, never a dead button), **Add to &Favorites** (**Alt+F**; it becomes **Remove from &Favorites** when the playing station is already saved -- perfect for keeping something you found in ACB Media or Recently Played), **Rec&ord** (**Alt+O**), and **&Browse Stations...** (**Alt+B**). **Ctrl+P** plays or stops from anywhere in the window and **Ctrl+Alt+P** stops outright, whatever is happening. (Play is Alt+L rather than the more obvious Alt+P because Alt+P belongs to the Playback menu -- a button that claimed it would open the menu instead of playing, which is a bug this app has already had once.)
 - **Volume** (slider): right in the Tab order after the buttons, so you can tab to it while a station is playing and use the **arrow keys** (or Page Up/Page Down) to turn the volume up or down. It is one of three ways to set the volume -- the others are **Ctrl+Up/Ctrl+Down** from anywhere in the window, and the status bar's Volume cell -- and all three stay in agreement, including with each station's remembered volume.
-- **Status bar** (along the bottom): a row of cells that always show what is going on -- Now playing, Volume (with a note when Volume Boost is on), Recording, Sleep timer, Favorites count, and the time. Press **F6** to move focus into it; a second F6, or Escape, hands focus back to the favorites tree. Arrow **Left** and **Right** to move across the cells (**Home** and **End** jump to the first and last), press **Enter** or **Space** to act on the cell you are on (Now playing opens the What's Playing window, Volume mutes or unmutes, Recording starts or stops recording, Sleep timer opens the timer dialog, Favorites jumps back to the list, Time speaks the full date and time), and press the **Applications key** or right-click for a context menu with more actions (play/pause, mute, volume up and down, Volume Boost, stop all recordings, and Hide Status Bar). Turn the whole bar off from **View > Show Status Bar** if you would rather not have it.
+- **Status bar** (along the bottom): a row of cells that always show what is going on -- Now playing, Volume (with a note when Volume Boost is on), Recording (with how long it has left, or how long it has been running), Sleep timer, Favorites count, and the time. Press **F6** to move focus into it; a second F6, or Escape, hands focus back to the favorites tree. Arrow **Left** and **Right** to move across the cells (**Home** and **End** jump to the first and last), press **Enter** or **Space** to act on the cell you are on (Now playing opens the What's Playing window, Volume mutes or unmutes, Recording starts or stops recording, Sleep timer opens the timer dialog, Favorites jumps back to the list, Time speaks the full date and time), and press the **Applications key** or right-click for a context menu with more actions (play/pause, mute, volume up and down, Volume Boost, stop all recordings, and Hide Status Bar). Turn the whole bar off from **View > Show Status Bar** if you would rather not have it.
 
 ### What the status line is telling you
 
@@ -414,6 +414,7 @@ Each window opens only when you ask for it, and closing a window puts focus back
 - **Play Faster** (Ctrl+Shift+Up), **Play Slower** (Ctrl+Shift+Down), **Normal Speed** (Ctrl+Shift+0) -- speed for a finished video, stepping through round, speakable values from 0.25x to 4x rather than drifting by a multiplier. The speed you choose is remembered for the next video. Live radio plays at normal speed; setting a speed while a station is on says so, and remembers it for when a video plays. And while a **podcast episode** plays, the speed you choose is remembered **for that show**: the announcement adds *"Remembered for this show,"* the show's episodes start at your speed from then on (outranking any speed set in Quill Cast, without changing it there), and Normal Speed forgets the memory out loud. A remembered speed applies automatically to downloaded episodes always, and to streamed ones when the mpv engine is playing; on the Windows Media Player fallback it stays saved rather than risking a stuttering stream -- Play Faster is still one keypress away.
   - **All of these say why when they decline.** Ask for chapters, seeking, or speed while a live stream is playing and you hear "This is a live stream, so there is no timeline to move along"; ask for chapters on a video whose uploader published none and it says that instead. A control that quietly does nothing is worse than one that is not offered, because you cannot tell it apart from a broken app.
 - **What's Playing?** (Ctrl+T) -- opens a reviewable Now Playing window: the current title and artist in a read-only, selectable field you can arrow through **character by character** to catch an exact spelling, with a **Copy** button. It reads the title straight from the stream's own metadata (and if no title has arrived yet, Ctrl+T speaks and fetches it, as before). When a station sends messy broadcast metadata (a string of catalog codes rather than a clean "Artist - Title"), Quill Radio finds the title and artist in it and reads just those. And when a station answers with nothing at all -- no metadata, and the playback engine's own title channel is empty too (common on HLS) -- Quill Radio takes one more step: it reads the current title from the stream server's own public "now playing" status page (the Icecast or SHOUTcast status endpoint). It only ever asks the same server you are already listening to, and it is off in Safe Mode -- so a batch of stations that used to answer with silence now report a real title. You control the wording in Station > Preferences (Ctrl+,) with a small template: `{title}` and `{artist}` tokens, `[square brackets]` around optional wording that disappears when a field is empty (the default `{title}[ by {artist}]` drops the " by" when there's no artist), and `{raw}` for the stream's exact original text. Leave it blank to restore the default.
+- **Where the track information came from.** Quill Radio looks for a title in three places -- the metadata carried along with the audio, the playback engine's own reading of the stream, and the station's status page -- and the full details window (Enter on the status bar's Now playing cell) now names which one answered. They are not the same kind of fact: a status page is a snapshot the station publishes for its own listing, and it can be a song behind what you are hearing. Where the title you are shown was *read out of* something messier -- advert markers, catalog codes, the station's own call sign -- the window shows what the station actually sent alongside it, and says plainly that the tidy version is a reading of it. That reading is usually right and is not always right, so you can see both.
 - **Copy What's Playing** (Command Palette) -- copies the current title and artist straight to the clipboard without opening the Now Playing window (which Ctrl+T opens, above). You no longer have to press What's Playing first: if a station is on and no title has arrived yet, Quill Radio says "Checking what's playing...", fetches it, and then copies it. Both this and the Ctrl+T window always tell you *something* -- a stream that sends no titles at all says so and still opens a window naming the station, and a lookup that fails is reported rather than passing in silence. The confirmation names what it copied, so you know it worked without pasting to check.
 - **Use One Volume for All Stations** (check item) -- Quill Radio normally remembers a volume for each favorite, which is lovely when stations are mastered at wildly different levels and maddening when you simply want everything quieter: with twenty favorites, there were twenty places to turn the volume down. Tick this and a single level answers for every station, so Ctrl+Up and Ctrl+Down turn *everything* up or down. Ticking it adopts whatever you are hearing at that moment, so nothing jumps. Your per-station levels are not thrown away -- untick it and every station goes straight back to its own remembered volume. Off unless you turn it on.
 - **Forget Every Station's Own Volume...** -- the deliberate way to be rid of those per-station levels rather than merely bypassing them: it tells you how many stations have one, asks first, and leaves your stations, folders, and every other setting untouched.
@@ -491,10 +492,11 @@ Quill Radio picks the file type for you from the stream's own format: an MP3 str
 ### View (Alt+V)
 
 - **Show Station Details** -- shows or hides the read-only details box (source, stream, format, country) in Browse Stations and Search Stations. On by default; turn it off if you would rather not tab past it. Every station surface honors the choice, and it is remembered between sessions.
-- **Show Status Bar** -- shows or hides the status strip along the bottom of the main window (Now playing, Volume, Recording, Sleep timer, Favorites count, and the time). On by default. Reach the bar with **F6** and arrow across it; see "The main window" above for the full navigation.
+- **Show Status Bar** -- shows or hides the status strip along the bottom of the main window (Now playing, Volume, Recording, Sleep timer, Favorites count, and the time). The Recording cell shows time as well as state, and which kind depends on how the capture was started: ask for an hour and it counts **down** to the end you chose ("42 min left"); press Record Now, where you asked for no length at all, and it counts **up** ("18 min so far"). The only number the app has in that second case is a safety cap that stops a forgotten recording filling your disk, and counting down to that would be telling you about a plan you never made. On by default. Reach the bar with **F6** and arrow across it; see "The main window" above for the full navigation.
 - **Sort Favorites** -- Ascending (A to Z), Descending (Z to A), or Unsorted (your manual order). This is the same setting as the one in Preferences, put here so it is quick to reach; the current order is shown with a bullet. Choosing Unsorted reveals the hand-arranged order you built with Move Up/Down.
 - **Expand All Folders** / **Collapse All Folders** -- open or close every folder in the favorites tree at once.
 - **Station Catalog Status...** -- the complete answer to "what is stored on this computer, and what is not." Every source in one list: the stored ones with their station counts and freshness ("Radio Browser: 62,375 stations, updated 2 hours ago"), and the live-only ones with the honest reason ("iHeart: live only; its terms do not allow storing its listings"). Update Now runs a refresh; Rebuild From Shipped Snapshot restores the catalog that came with the app -- and neither touches your favorites, custom stations, or servers, which live in their own files and are never part of any catalog operation.
+- **Audio Health...** (Ctrl+Alt+Shift+M) -- the answer to "is this going to work?", in one list. Which playback engine is actually in use (and, when the setting is "automatic", whether it has quietly fallen back to Windows Media because mpv is missing -- the setting still reads *automatic*, which is true and tells you nothing); whether mpv and FFmpeg are present and what their absence costs you; where the audio is going, and whether the system is still offering the output device you chose; what Sound Enhancements are doing and whether they apply to this station or all of them; whether the exact-OptiLab component shipped in this build; and whether a recording started right now could actually be written to your recordings folder. **Check Again** re-reads everything, after plugging a headset back in or reinstalling a tool. It tests nothing -- no sound is played, no device opened, no file written -- so it is safe to open in the middle of a recording, which is exactly when you are most likely to want it.
 - **Downloads...** (Ctrl+Shift+J) -- the download queue: what is waiting, downloading, saved and failed, with Open Containing Folder, per-row cancel and remove, Clear Finished, Clear All, and a Preferences button. Described in full under "The download queue" above.
 - **Customize Features...** -- turn whole areas of Quill Radio off if you never use them. The list shows each switchable area with a short description of what it covers -- the **Recording** menu (recording, scheduling, and the recordings list) and the **Weather** menu -- and unchecking one leaves out that whole menu, and every command under it, the next time you open the app. Nothing is deleted and nothing is lost; tick it again and it comes back. Everything is switched on to begin with, and a feature added in a future version arrives switched on too, so you only ever have to turn *off* what you do not want. Handy if you want a plain radio and nothing else to arrow past.
 - **Text Size** -- Normal, Large, or Larger. Scales the text on the main window (the favorites list, the buttons, the now-playing line, and the status bar) up for easier reading. Remembered between sessions.
@@ -503,6 +505,7 @@ Quill Radio picks the file type for you from the stream's own format: an MP3 str
 
 - **Command Palette...** (Ctrl+Shift+P) -- every Quill Radio command in one searchable list.
 - **Keyboard Shortcuts...** -- open the Keyboard Manager to view, search, and change Quill Radio's keyboard shortcuts (see "Global hotkeys and keyboard shortcuts" below).
+- **Keyboard Shortcuts Sheet...** (Ctrl+Alt+Shift+K) -- every key Quill Radio answers to, in one filterable list. Type what you want to do ("record") or a key you found and cannot place ("Ctrl+B"), and the list narrows to it. The sheet is built by reading the menu bar in front of you, so it shows **the keys you actually have**: rebind something in the Keyboard Manager and the sheet says your key, not the default. Keys that have no menu item -- F6 into the status bar, the Winamp letters in the Recordings list, Shift+F10 for a row's actions -- are listed too, each with the window it works in. **Copy All** copies the list as filtered; **Change Shortcuts...** hands you to the editor.
 - **Global Hotkeys...** -- assign a system-wide key to Quill Radio's playback controls so they work while another program has focus (see below).
 - **Redeem Unlock Code...** -- enter a signed code for a pre-release capability. Verified entirely on your machine; nothing is transmitted; one code counts for QUILL, Quill Radio, and QUILL Cast together.
 - **Check for Updates...** (Ctrl+Alt+U) -- compares your version with the newest release, downloads **the edition you are actually running** with spoken progress, then offers Install now or Open folder. A release publishes four downloads -- the full installer, the thin "Lite" installer, the portable zip, and the Companion zip -- and each installer records which one it laid down, so an update gives you the same kind back. (Before 3.0 the choice was made by file extension, and the "are you portable?" test looked for an uninstaller beside the running program -- which, on the shared runtime, lives in your AppData folder where no uninstaller sits. Nearly every installed listener was therefore offered the portable zip. If that happened to you, this is the fix; you do not need to reinstall by hand, though installing once over the top records your edition so future updates are exact.) Already up to date shows a dialog too, not just a spoken announcement. Quill Radio also runs this check quietly once a day when it launches -- silent unless it actually finds something, and Station > Preferences (Ctrl+,) turns it off if you'd rather check manually only.
@@ -528,6 +531,24 @@ browsing feels different in 3.0:
   counting used to cost a network round trip and now costs nothing.
 - **Find Stations starts locally.** Matches from the catalog appear the
   moment you search; the live directories layer in behind them.
+- **The searches you have already run are one Down arrow away.** Press
+  **Down** in the station-name box for the searches you ran before, newest
+  first. Picking one restores all three fields together -- name, tag and
+  country -- because they work as a set: *jazz in France* and *jazz in
+  Brazil* are different searches, and a list that kept only "jazz" would
+  give you back the wrong one. Running the same search again moves it to the
+  top rather than adding a second copy, and an empty search is never kept.
+  The list holds fifteen and lives in the same file as your recently played
+  stations, so clearing that clears this too.
+- **A row that probably will not play says so.** Radio Browser checks every
+  stream it lists and publishes the result; rows it could not play are
+  marked **"may not be playable"**, and rows that have to be looked up
+  before they can start -- TuneIn, YouTube -- say **"resolved when you play
+  it"** instead, so a pause before the audio begins is explained rather than
+  worrying. Every other row stays unmarked: only Radio Browser publishes a
+  check, so marking the rest "unknown" would put a word on nearly every row
+  to tell you nothing. Select any row and the details box says more,
+  including the good news and the "nobody has checked this" case.
 - **If you are offline, the app says so exactly once** -- "You are offline.
   Browsing from your catalog, updated this morning." -- and then keeps
   working.
@@ -585,14 +606,108 @@ Station > Manage Favorites... is a full organizer, keyboard-first:
 - **Search favorites** filters live across names (including your custom names), countries, languages, tags, and folder names; results flatten into one arrow-key list with each station's folder spoken in its label.
 - **Folders of any depth.** Create one with **New Folder...** (Ctrl+Shift+E) -- pick its location, name it, and it exists immediately, even before a station lives in it. Or just file a station under "News/Morning" and the path springs into being. Rename a folder (F2) and its subfolders come along; delete one and its stations simply step out to the top level -- nothing is ever deleted with a folder.
 - **Reordering.** Move Up / Move Down within a folder; for long hops, **Mark for Move**, select the destination, then **Move Above** or **Move Below** -- the moved station joins the destination's folder. Reordering is your hand-arranged "Unsorted" order, and the Move buttons work from any view: if the list is currently sorted Ascending or Descending, the first move switches to manual order (revealing your saved order, announced "Switched to manual order") and moves the station within it -- exactly like Alt+Shift+Up/Down on the main page. Your stored order is preserved, never overwritten by the alphabetical view, so a hand-arranged list can't be lost.
+- **A folder is somewhere you listen from.** A folder's own menu (Shift+F10 on it) offers **Play All in Folder**, **Shuffle Folder** and **Export This Folder...**. Playing a folder starts its first station and remembers the rest, so **Next Station in Folder** and **Previous Station in Folder** -- both in the Command Palette -- walk them. A live station never ends, so there is nothing for a playlist to advance *on*; what "play the News folder" actually means is one keystroke to the next station in the set you chose. Shuffle is one fixed order, so Previous walks back through the same sequence rather than re-rolling. Reaching either end says so rather than wrapping round, because silently looping is how you hear the same station twice and cannot work out why. A folder always means everything beneath it -- playing "News" plays "News/Local" too -- and "News" never swallows a separate folder called "Newsroom".
 - **Remove All...** clears every favorite at once (your folders stay) after a confirmation that defaults to No. Because favorites keep a rolling backup, an accidental Remove All can still be recovered.
 - **Sort order.** Preferences (Ctrl+,) sets the default order for every folder -- Ascending (A to Z), Descending (Z to A), or Unsorted. Any single folder can override that from its context menu (**Sort This Folder...** on the main-page tree): choose Ascending, Descending, Unsorted, or "follow the default" just for that folder's stations. Ascending/Descending re-sort automatically as you add stations.
 - **Rename** (F2 on a station) gives it your own display name everywhere; blank restores the directory's name.
 - Enter plays (the Play button reads Stop while that station is on), Delete removes (with confirmation), Shift+F10 opens every action on the selected item. The main-page tree offers the same actions, so the Manager is for the heavy lifting, not a required stop.
 
+## Chapters, and checking a mark without losing your place
+
+**Ctrl+Shift+C** opens the chapter list. It is no longer only for a video's
+published chapters:
+
+- For a **recording or a downloaded episode**, Quill Radio reads the file's own
+  chapter frames.
+- For an episode **QUILL Cast has already analysed**, it reads the result Cast
+  left in the shared cache -- so chapters you worked out in Cast this morning
+  are there in Radio this evening, without doing it twice.
+- Where there is nothing, it says so. Radio works chapters out for itself, and
+  is not going to: it is the lite app, and 91 MB of speech engine to answer a
+  question its sibling has already answered is not a trade worth making.
+
+The list says which of those it is using, in its own first line.
+
+Where the thing playing is a **file on this computer**, the list also offers
+**Preview This Mark**: ten seconds *either side* of the boundary, played through
+its own player. Your place does not move, so checking six marks costs nothing.
+Both sides, because the question a chapter mark raises is *does the programme
+turn here* -- playing forward from the mark answers a different question, which
+is what the section is about.
+
+## Quick Actions
+
+**Station > Quick Actions...** (Ctrl+Alt+Q) decides what each kind of row
+offers, and in what order.
+
+There are three lists, chosen from the combo box at the top: **Station
+actions**, **Recording actions**, and **Browse folder actions**. In each, the
+**first action is what Enter does**, the first nine also answer to **Ctrl+1**
+through **Ctrl+9**, and the whole list is the order of the right-click menu.
+Move Up, Move Down and **Make Default** rearrange; **Reset This List** puts a
+list back to how it shipped.
+
+QUILL Cast has had exactly this since 1.1.0, with the same keys and the same
+nine, so whichever of the two you learn it in, you have learned it in both.
+
+One thing it deliberately cannot do: it orders what a row *already* offers, and
+never adds anything. A station already in your favorites still offers Remove and
+not Add; a live stream still offers no Download. Putting Download at the top of
+your list does not make a live stream downloadable -- it means Download is first
+on the rows that have it.
+
+## Listening statistics
+
+**Playback > Listening Statistics...** (Ctrl+Shift+Q) answers the question the
+recently-played list never could: not *what did I have on*, but *how much*.
+
+Choose a period -- this week, this month, this year, or all time -- and the
+window reports how long you listened in total, how many listening sessions that
+was, then a breakdown **by station** and **by network**. Durations are read as
+language ("3 hours, 47 minutes"), never as a clock face, because a screen reader
+reads `3:47:00` as a time of day.
+
+**Copy** takes the whole report. **Save as CSV...** writes every session out for
+a spreadsheet. **Delete My History...** removes the lot, and asks first with No
+as the default, because there is no other copy of it anywhere.
+
+What counts, and what does not:
+
+- Time counts **only while audio is actually coming out**. Connecting does not
+  count. Buffering through dead air does not count. Paused does not count. The
+  app sitting stopped overnight does not count.
+- Anything under ten seconds is not a session. Skipping past a station in a list
+  is not listening, and a log full of three-second samples would make every
+  per-station total meaningless.
+- There is no "time saved by playing faster" and no "silence trimmed", because
+  neither means anything for a live broadcast. They are left out rather than
+  reported as zero.
+
+Your history is kept on this computer and goes nowhere.
+
+## Handing an episode to QUILL Cast
+
+On a subscribed show's episode in the browse tree, alongside Play and Mark
+Episode as Played:
+
+- **Play Next in QUILL Cast**
+- **Add to QUILL Cast Queue**
+- **Send to the QUILL Cast Inbox**
+
+These are a **handoff**, not an instant change. Quill Radio notes what you asked
+for, and QUILL Cast carries it out the next time it opens -- which is why the
+confirmation says so ("It will be next in the QUILL Cast queue") rather than
+implying it has already happened. Both apps load and save the shared library
+whole, so a write from here while Cast was open would overwrite whatever Cast
+had done since it opened.
+
 ## The Recordings list
 
-Record > Recordings... shows the whole recording life cycle in one place. The list updates rows in place keyed by file path, so it is a no-op when nothing has changed; when something has, your selection, focus, and scroll position are preserved instead of the list rebuilding under you mid-read:
+Record > Recordings... shows the whole recording life cycle in one place. The list updates rows in place keyed by file path, so it is a no-op when nothing has changed; when something has, your selection, focus, and scroll position are preserved instead of the list rebuilding under you mid-read.
+
+The line under the list leads with what is happening rather than with counts: *"Recording, 42 min left. Next: KFI at 11:00 tomorrow. 14 recorded. In D:\Music\Quill Radio Recordings."* A recording due within the hour is given in minutes ("KFI in 12 minutes"), one further out by weekday, and a date past a week. If you have scheduled recordings but none of them can fire -- every one disabled, or a one-off that already ran -- it says "3 scheduled, none coming up" rather than a count that reads as cover.
+
+The list itself holds:
 
 - Every recording being written right now -- each its own **Recording** row, its size growing as you watch, with its own live elapsed time. They are counted from the recorder itself, so a recording still being written to the temp folder is always visible here, never invisible until it lands. When several are running, each is its own row.
 - Every finished file, newest first -- status **Recorded**, with size and date.
@@ -804,9 +919,16 @@ the menu shows *the key you actually have bound*: rebind it in **Help >
 Keyboard Shortcuts...** and the menu updates to match. The table below is the
 short list of the ones worth memorising; the menus carry the rest.
 
+For the whole list at once, without opening six menus: **Help > Keyboard
+Shortcuts Sheet... (Ctrl+Alt+Shift+K)**. It is built from the menu bar in front
+of you, so it always shows the keys *you* have -- including anything you
+rebound, which is more than this table can promise.
+
 | Action | Key |
 | --- | --- |
 | Browse Stations | Ctrl+B |
+| Keyboard Shortcuts Sheet (every key, filterable) | Ctrl+Alt+Shift+K |
+| Audio Health (can this installation play and record?) | Ctrl+Alt+Shift+M |
 | Find Stations | Ctrl+F |
 | Manage Favorites | Ctrl+Shift+M |
 | Recordings | Ctrl+G |

@@ -295,6 +295,16 @@ Reopening any of this needs a new reason, not a new email.
   - *Badges that read from the shared library.* "Subscriptions (N)" and per-show "(n unheard)" come from the podcast library's own episode state -- the same counts Quill Cast shows.
   - *An emptied search field empties its results* (`search_reset.bind_empty_query_reset`, family-wide). The station browser guards on the country facet: name and tag empty with a country chosen is still a live query. Any new search surface with a separate results list binds the same helper.
 
+- **Seven things the app could not say about itself (3.0.0; `core/radio/recording_progress.py`, `search_history.py`, `now_playing_source.py`, `station_confidence.py`, `audio_health.py`, `cheat_sheet.py`, `recording_center.py`).** From a product review of Quill Radio that predated 3.0: read back against the shipped app, most of its recommendations were already built and a few had been deliberately decided against with the reasoning recorded in the code (its "repair panel" is `media_preflight`'s spoken-once notice, which is not modal for the stated reason that a launch is not the moment to take focus a screen reader has not settled). Seven were open, and each is a question the app could not answer.
+  - *A safety cap is not a deadline.* The status strip's Recording cell said `Idle`/`Recording` while the sleep-timer cell beside it said "12 min left". Every capture carries `minutes`, but for a Record Now capture that is `settings.max_duration_minutes` -- a disk-safety cap, not a plan -- so `JobSnapshot.duration_requested` records which of the two it was and the cell counts **down** only for a chosen length and **up** otherwise. A reconnect inherits the flag rather than re-deriving it, because a continuation is always handed the remaining minutes as an explicit duration and would otherwise silently acquire a deadline. Elapsed floors, remaining ceilings, so neither overstates.
+  - *A search is not a string.* Find Stations persisted its source selection and Source facet on the stated principle that a re-set preference is not a preference, and persisted nothing about the searches. `recent_searches` stores whole `(name, tag, country)` triples -- *jazz in France* and *jazz in Brazil* are different searches -- de-duplicated case- and space-insensitively, capped at 15, riding `radio_history.json` so one clear empties both. Recorded only on a deliberate commit, reusing the dialog's existing test for that, so arrowing the Tag or Country dropdowns does not fill the list with half-formed queries.
+  - *Three routes to a title, presented as one.* ICY, the engine's `media-title`/metadata map, and the station's status page are not equally direct -- a status page can lag the audio by a song -- and `_radio_apply_track_title` is already the single choke point every route lands on, so the source is recorded there. The details window also shows the raw text when the rendered title differs from it, compared rather than flagged, since rendering is a pure function of the raw.
+  - *The check the directory already publishes.* Radio Browser's `lastcheckok` arrived on every search and was discarded. Parsed as a tri-state (absent stays `None`: "nobody has checked" and "the check failed" are different rows), excluded from `RadioStation` equality so a re-check cannot duplicate a favorite, and surfaced as a badge **only** for a failed check or a resolve-at-play source. Nothing is scored from bitrate or votes: the only negative verdict is the listing directory's own, and absence is not bad news.
+  - *Told versus asked.* `media_preflight` speaks once at launch and, correctly, says nothing when healthy -- which left no way to ask. **Audio Health** (View, Ctrl+Alt+Shift+M) reports engine, mpv, FFmpeg, output device, enhancements and scope, OptiLab availability, and recording-folder writability. It probes nothing (no tone, no device opened, `os.access` rather than a temp file) so it is safe mid-recording, reuses `media_preflight.current_health` rather than asking a second, subtly different question, and counts problems rather than scoring health.
+  - *A shortcut list that cannot go stale.* **Keyboard Shortcuts Sheet** (Help, Ctrl+Alt+Shift+K) is built by walking the live `wx.MenuBar`, not the keymap: it therefore covers literal-accelerator items, shows rebindings, and cannot drift from the menus because it is the menus. Filterable across key, action and menu. Disabled items are skipped -- they are status readouts and the one case the accelerator gate exempts from carrying a key.
+  - *The window that was not built.* `recordings_index.list_recordings` already returns active, recorded and scheduled in one list, so merging the Recordings and Schedule windows would have produced the second surface that drifts. The gap was the headline: it counted rows and never said **when**. It now leads with what is recording and how long is left, then the next occurrence (minutes inside the hour, weekday inside a week, date beyond), then the shelf -- and schedules that cannot fire say so rather than reading as cover. Reuses `recording_progress`, so the headline and the status cell cannot disagree.
+  - *Extractions, not budget raises.* GATE-11 pushed back on three modules and the splits follow real seams: `ui/radio/search_recents.py` (remembered searches), `ui/radio/results_view.py` (what a row says -- where per-row confidence belongs, since badge and panel are both presentation), `ui/main_frame_radio_status.py` (the read-only status windows, which share a theme: each exists because the app otherwise speaks only when it decides to).
+
 See `CHANGELOG.md` for the full, versioned history.
 
 ## 9. Weather -- now its own product
@@ -1350,3 +1360,110 @@ were fetched and measured today.
   the earlier rubber-duck note this file held is superseded by this plan
   (its delight items live in Phase 4, its "what not to do" list is absorbed
   into Non-goals and Invariants).
+
+## 12. Parity with the sibling app (3.0.0)
+
+Four gaps, all of the same shape: something QUILL Cast could do for a podcast
+that Quill Radio could not do for a station, in an app the same person uses for
+the same job an hour apart. None of them is a new idea. What each one needed was
+a decision about *where the shared code is born*.
+
+### 12.1 The rule about shared code
+
+New shared modules under `quill/core/` are written as **new code Radio
+consumes**, and Cast migrates onto them on its own release schedule. That buys
+one release of duplication in exchange for a Radio branch whose blast radius
+stops at Radio -- the alternative, extracting from Cast first, puts a Cast
+regression inside Radio's release window with no Cast release to catch it.
+
+Two such modules exist now, and Cast has since migrated onto both:
+
+- `core/quick_actions.py` -- the record, the ordering, the repair that keeps an
+  order saved by another build usable, and the store, with the filename passed
+  in. `DIRECT_KEY_COUNT = 9` lives here, so Ctrl+3 is the third action of
+  whichever list has focus **in both apps**.
+- `core/media_stats.py` -- the session record, the retention window, the period
+  summaries, the per-key totals and the CSV, with the store filename and the
+  retention default passed in.
+
+`quill/ui/media/quick_actions_dialog.py` is the shared reorder window; each app
+supplies its own catalogue and labels.
+
+Cast's `core/podcasts/stats.py` keeps **its own on-disk shape** deliberately. It
+has been accumulating real listening history since 1.1.0 under its own field
+names; rewriting that to the shared record's spelling would gain tidiness and
+risk somebody's history, for a file nobody can recompute. What was genuinely
+duplicated -- the period table and the way a duration is spoken -- now comes
+from the shared module, so "this week" cannot come to mean two different weeks
+in two apps a listener compares.
+
+### 12.2 Quick Actions (R1)
+
+Three contexts -- station, recording, browse node -- each with the first action
+as Enter's default and the first nine on Ctrl+1..9.
+
+The catalogue's ids **are** `row_actions`' own ids, verbatim, and a test fails
+the build if Radio's catalogue ever offers one no row menu builds. An action a
+listener can put first and then never reach is a preference that silently does
+nothing.
+
+The preference **orders what a row already offers and never adds to it**. A
+station already in Favorites offers Remove and not Add; a live stream offers no
+Download. Ranking Download first means Download is first on the rows that have
+it.
+
+### 12.3 Listening statistics (R2)
+
+Keyed the way `favorites.py` keys a station, so the totals and the favorites
+list are talking about the same thing and a renamed favorite does not fork into
+two rows. The network travels alongside as the group, because "four hours of ACB
+Media" is a fact about a network no per-station row can add up.
+
+Radio gets **its own dialog** rather than Cast's with rows suppressed:
+suppression means editing a Cast dialog to serve Radio, which is the dependency
+12.1 exists to avoid, and the suppressed version is more code than the honest
+one because every hidden row is a condition.
+
+Two rules about what counts:
+
+- **Time counts only while audio is coming out.** Not connecting, not buffering
+  through dead air, not paused, not stopped overnight. A statistics window that
+  counts any of those is worse than none, because it is confidently wrong about
+  the only number it exists to report.
+- **Under ten seconds is not a session.** Skipping past a station in a list is
+  not listening, and a log full of three-second samples makes every per-station
+  total a lie.
+
+Speed and silence-trimming are **omitted**, not zeroed: neither means anything
+for a live broadcast.
+
+### 12.4 The Cast handoff (R3)
+
+Episode rows gain Play Next, Add to Queue and Send to Inbox, carried in
+`radio-actions.json` -- **a second file, not a field on the existing one**.
+
+This is a forward-compatibility decision with a verified failure behind it.
+`radio_listens._read` keeps any record carrying a non-empty `audio` key, and
+`merge_radio_listens` consumes every record it can match, writing only unmatched
+ones back. A record written by a new Radio as an `action` field on the listens
+record and read by an **already-installed** Cast is matched, does nothing, and
+is then deleted -- losing the queue intent silently. That is the common case,
+not an edge one, because Radio ships first and every Cast in the field is the
+old one. A file an old Cast never opens leaves the backlog intact.
+
+### 12.5 Favorites folders, and chapters (R4, A3)
+
+A favorites folder gains Play All, Shuffle and Export. Playing one leaves a
+queue behind that Next and Previous walk, because a live station never ends and
+there is nothing for a sequential playlist to advance on. Shuffle is a fixed
+permutation, so Previous retraces it. The ends of a folder are announced rather
+than wrapped.
+
+Chapters: Radio **reads** and never computes. The file's own frames first, then
+the result QUILL Cast left in the shared inference cache -- so work done once in
+Cast is available in Radio without doing it twice. Radio is the lite app and is
+not gaining a speech engine to answer a question its sibling has already
+answered. Where a local file exists, the list offers **Preview This Mark**: ten
+seconds either side of the boundary, through its own player, without moving the
+listener's place. Both sides, because the question is whether the programme
+turns there, and that needs the end of what came before.

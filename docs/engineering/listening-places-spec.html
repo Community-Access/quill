@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Listening Places</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<header id="title-block-header">
+<h1 class="title">Listening Places, format listening-places/1</h1>
+<p class="subtitle">A file-based interchange format for listening
+positions</p>
+</header>
+<h1 id="listening-places">Listening Places</h1>
+<p><strong>Status:</strong> implemented in QUILL Cast, 2026-08-20.
+Format id <code>listening-places/1</code>.</p>
+<p>This is the normative description of the file QUILL Cast writes and
+reads, so a second implementation has something to conform to rather
+than a moving target. It is the format proposed to Earshot (Payown
+Media) in that project’s <code>sync.md</code>; the section numbers below
+match that proposal, so the two documents can be read side by side.</p>
+<p>The mechanism itself is deliberately dull. What it buys is this: you
+listen to forty minutes of an episode on your phone, you sit down at
+your desk, and the desktop knows where you got to – with no account, no
+server, no signup, and no company holding anybody’s listening
+history.</p>
+<h2 id="what-it-is-not">What it is not</h2>
+<ul>
+<li><strong>Not an account system.</strong> No email, no password, no
+portal.</li>
+<li><strong>Not audio sync.</strong> The folder carries positions, which
+are bytes. Whether the audio is also in that folder is entirely the
+user’s business.</li>
+<li><strong>Not real-time.</strong> Propagation takes as long as the
+cloud client takes. The promise is that your place is right when you
+pick up the other device.</li>
+<li><strong>Not subscriptions.</strong> Positions and played state only.
+Subscriptions cannot be hashed the way ids are – the whole point of a
+feed record is a URL the other app can fetch – so they carry a different
+exposure and belong behind their own switch. Not implemented.</li>
+<li><strong>Not encrypted.</strong> This is tier A. QUILL’s encrypted
+machine-to-machine sync is a separate switch over the same folder
+(<code>quill/core/sync/places.py</code>) and the two do not
+interfere.</li>
+</ul>
+<h2 id="1-the-folder">1. The folder</h2>
+<p>The user picks one folder, inside whatever they already sync. The
+apps create:</p>
+<pre><code>&lt;chosen folder&gt;/
+  Listening Places/
+    README.txt
+    devices/
+      1f4c8a2e.json
+      9b30d7f1.json</code></pre>
+<p><strong>One writer per file.</strong> Every device writes exactly one
+file and reads everyone else’s. This is the property the whole design
+rests on: cloud drives resolve two devices editing one file by leaving
+<code>positions (Jeff's conflicted copy).json</code> lying around, which
+is the single worst failure mode available, and if no two devices ever
+write the same file that failure cannot happen. It also scales past two
+devices for nothing – phone, laptop and desktop each drop one file and
+every device merges across all of them.</p>
+<p>The filename is a random device id generated once at setup,
+<strong>not the device name</strong>, so a shared folder’s listing does
+not announce “Jeff’s iPhone” to everybody who can see it.</p>
+<p><code>README.txt</code> is one paragraph of plain text, so somebody
+who stumbles on the folder six months later is not mystified.</p>
+<p>A device file is capped at 1,000 records (roughly 250 KB); the oldest
+fall off.</p>
+<h2 id="2-the-record">2. The record</h2>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;format&quot;</span><span class="fu">:</span> <span class="st">&quot;listening-places/1&quot;</span><span class="fu">,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;device&quot;</span><span class="fu">:</span> <span class="st">&quot;1f4c8a2e&quot;</span><span class="fu">,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;device_label&quot;</span><span class="fu">:</span> <span class="st">&quot;Jeff&#39;s iPhone&quot;</span><span class="fu">,</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;app&quot;</span><span class="fu">:</span> <span class="st">&quot;earshot/1.0.3&quot;</span><span class="fu">,</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;written_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-08-20T14:02:11Z&quot;</span><span class="fu">,</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;records&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;episode:3f9a1c77b2e40d58&quot;</span><span class="fu">,</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;kind&quot;</span><span class="fu">:</span> <span class="st">&quot;episode&quot;</span><span class="fu">,</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;position_ms&quot;</span><span class="fu">:</span> <span class="dv">2412000</span><span class="fu">,</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;duration_ms&quot;</span><span class="fu">:</span> <span class="dv">3894000</span><span class="fu">,</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;played&quot;</span><span class="fu">:</span> <span class="kw">false</span><span class="fu">,</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;updated_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-08-20T13:58:02Z&quot;</span><span class="fu">,</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;label&quot;</span><span class="fu">:</span> <span class="st">&quot;Blind Abilities: Episode 214&quot;</span><span class="fu">,</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;feed&quot;</span><span class="fu">:</span> <span class="st">&quot;https://feeds.example.com/blindabilities&quot;</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;episode:b17c40e9d8a2f36c&quot;</span><span class="fu">,</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;deleted&quot;</span><span class="fu">:</span> <span class="kw">true</span><span class="fu">,</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;updated_at&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-08-18T09:12:00Z&quot;</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<ul>
+<li><code>position_ms</code> is milliseconds.</li>
+<li><code>duration_ms</code> is 0 when unknown. Plenty of feeds omit
+<code>itunes:duration</code>.</li>
+<li><code>played</code> true with <code>position_ms</code> 0 means
+<strong>finished</strong>. This is how “I finished it” is distinguished
+from “nobody knows where they are”, which matters because both apps zero
+the position on completion.</li>
+<li><code>updated_at</code> is RFC 3339 UTC with a trailing
+<code>Z</code>. Written that way, plain string comparison sorts
+correctly, so the merge needs no date parsing.</li>
+<li><code>label</code> is human-readable only and <strong>never part of
+the identity</strong>. It exists so a disagreement can say “you and your
+phone disagree about Episode 214” rather than reading out a hash, and it
+is the one field that leaks, so it can be turned off.</li>
+<li><code>feed</code> is carried for disambiguation and debugging and is
+<strong>not</strong> part of the key.</li>
+<li><code>deleted</code> true is a tombstone and carries no other
+fields. A record <em>missing</em> from a device file means “that device
+has not heard of this”, never “delete it everywhere”.</li>
+</ul>
+<h2 id="3-identity">3. Identity</h2>
+<p>Three namespaces. An app that does not understand a namespace
+<strong>ignores those records</strong> rather than choking on them, so
+the format can grow.</p>
+<p><strong><code>episode:</code></strong> —
+<code>"episode:" + sha256(guid)[0:16]</code>, where <code>guid</code> is
+the RSS item GUID verbatim, before any normalisation. With no GUID,
+<code>sha256(enclosure_url)</code>.</p>
+<p>Keyed on the GUID <em>alone</em>, not on feed URL plus GUID, because
+two apps disagree about a feed’s URL far more often than one expects:
+one subscribed through a FeedBurner redirect and the other through the
+final host, one has <code>http</code> and the other <code>https</code>,
+one carries a tracking prefix. GUIDs are required to be unique by the
+RSS spec and survive all of it.</p>
+<p>The hash is not for security. It is so a plain-text file in a shared
+folder does not list every podcast somebody follows in readable form,
+and so ids are fixed-length and filename-safe.</p>
+<p><strong><code>file:</code></strong> —
+<code>"file:" + size + "-" + digest</code>, where <code>digest</code> is
+the first 32 hex characters of a SHA-256 over the ASCII decimal size,
+then the first 64 KB of the file, then the last 64 KB (the last chunk is
+skipped for files under 128 KB). That is <code>media_identity()</code>
+in <code>quill/core/media/positions.py</code>, in production since
+before this format existed.</p>
+<p>This is the namespace that makes the cloud-file case work: the same
+MP3 in <code>Dropbox/Audiobooks/</code> produces the same id on iOS and
+on Windows regardless of where each platform mounts it and what either
+called it.</p>
+<p><strong><code>stream:</code></strong> —
+<code>"stream:" + sha256(lowercased url)[0:16]</code>. Reserved for
+Quill Radio recordings. Listed so the namespace cannot be claimed for
+something else.</p>
+<h2 id="4-reading-and-merging">4. Reading and merging</h2>
+<p>On sync, an app:</p>
+<ol type="1">
+<li>Lists <code>devices/*.json</code> and reads every file that is
+<strong>not its own</strong>.</li>
+<li>Builds the remote view: for each id, the record with the greatest
+<code>updated_at</code> across all device files.</li>
+<li>Merges the remote winner against the local record. <strong>Last
+write wins on <code>updated_at</code>.</strong> Ties and missing
+timestamps resolve to the remote, which keeps behaviour predictable when
+data is incomplete.</li>
+<li>Applies wins to its own database.</li>
+<li>Rewrites its own device file from its own now-current state.</li>
+</ol>
+<p><strong>Last write, not furthest position.</strong> If you
+deliberately jumped back twenty minutes to re-hear something and then
+opened the episode on the laptop, the furthest position is precisely the
+wrong answer.</p>
+<p>A disagreement is worth telling the user about only when the two
+positions are at least <strong>five minutes</strong> apart. Finding the
+position eight seconds off is not news; “these two devices disagree by
+an hour” is.</p>
+<p><strong>Do not rewrite the device file when nothing changed.</strong>
+Hash the records you are about to write and compare against the last
+hash you wrote. Without that check a machine left open all day
+re-uploads an identical file over and over, which costs bandwidth,
+drains a battery, burns a metered connection, and makes the folder’s
+modification times useless to anybody reading them.</p>
+<h2 id="5-clock-skew">5. Clock skew</h2>
+<p>Two devices with clocks a few minutes apart make bad merge decisions.
+Vector clocks are overkill for a listening position. One cheap guard
+fixes the case people actually notice: <strong>when writing a record,
+never write an <code>updated_at</code> earlier than the newest
+<code>updated_at</code> you have ever seen for that id, plus one
+second.</strong> A device with a slow clock therefore cannot repeatedly
+lose to its own stale data.</p>
+<p>A known, bounded limitation rather than a solved problem. Positions
+are not money.</p>
+<h2 id="6-when-each-half-runs">6. When each half runs</h2>
+<p>Never on a playback path, and never as a blocking operation.</p>
+<p><strong>Writing follows activity:</strong> on pause or stop, on
+completion, on marking something played or unplayed; during continuous
+playback, debounced.</p>
+<p><strong>Reading happens at two moments only: app launch, and an
+explicit Sync Now.</strong> Not on a timer, not on window focus, not on
+a file-change notification.</p>
+<p>That asymmetry is a decision, not an implementation shortcut. If a
+read lands mid-session and finds that another device moved you to 52
+minutes in the episode you are listening to at 40, every available
+behaviour is bad: moving the playhead under somebody is unacceptable,
+and worse for a screen reader user who gets no visual cue that anything
+happened; queuing it silently is confusing; asking mid-episode is an
+interruption nobody wants. At launch nothing is playing, so there is
+nothing to disturb.</p>
+<p>The cost is that a change made elsewhere while the app is already
+open does not appear until the next launch or the next Sync Now. That is
+the correct trade.</p>
+<p><strong>A read always reports its result, and says nothing happened
+when nothing did.</strong> “Sync finished” after a sync that moved
+nothing is the message that teaches people to ignore the message.</p>
+<h2 id="7-privacy">7. Privacy</h2>
+<p>What a third party with access to the folder learns from a tier A
+file: how many things are listened to, roughly how long each is, when,
+the device labels, and the <code>label</code> field if it is left on.
+Not the feed URLs and not the GUIDs, because those are hashed. For most
+people syncing through their own Dropbox that is less than the OPML file
+they already export by hand.</p>
+<p><code>label</code> is a separate switch for the people it is not fine
+for.</p>
+<h2 id="8-where-this-lives-in-quill">8. Where this lives in QUILL</h2>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Module</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Format, identity, device files, merge, clock-skew guard</td>
+<td><code>quill/core/sync/listening_places.py</code></td>
+</tr>
+<tr>
+<td>Cast’s episode-position adapter</td>
+<td><code>quill/core/podcasts/position_sync.py</code></td>
+</tr>
+<tr>
+<td>One sync pass over the folder</td>
+<td><code>quill/core/sync/places_interchange.py</code></td>
+</tr>
+<tr>
+<td>Settings, device id, the three switches</td>
+<td><code>quill/core/sync/places_config.py</code></td>
+</tr>
+<tr>
+<td>The window, and Sync Now</td>
+<td><code>quill/ui/sync_places_dialog.py</code></td>
+</tr>
+<tr>
+<td>Launch read, background read, one-sentence report</td>
+<td><code>quill/ui/sync_places_command.py</code></td>
+</tr>
+<tr>
+<td>Conformance fixtures</td>
+<td><code>tests/unit/core/sync/fixtures/</code></td>
+</tr>
+</tbody>
+</table>
+<p>The per-episode timestamp this all rests on is
+<code>PodcastEpisode.position_updated_at</code>. Every site that moves a
+position goes through <code>position_sync.remember_position</code> /
+<code>mark_played</code> rather than assigning <code>position_ms</code>
+directly, because one site that forgets the timestamp is a device whose
+place silently stops travelling.</p>
+<h2 id="9-conformance-fixtures">9. Conformance fixtures</h2>
+<p><code>tests/unit/core/sync/fixtures/</code> holds a device file and
+the expected merged result. <code>test_conformance.py</code> reads them.
+The usual fate of an informal interchange format is that two
+implementations drift until somebody’s data is wrong; a fixture in both
+repositories means a change that breaks the other app fails a test
+rather than a user.</p>
+<p>Adding a case is adding a JSON pair. Please do, in either
+repository.</p>
+</main>
+</body>
+</html>

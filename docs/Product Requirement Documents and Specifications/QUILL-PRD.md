@@ -6795,6 +6795,62 @@ who would have to already understand the thing they are setting up.
 
 ---
 
+### 5.84k Listening Places -- the same folder, in a format other apps can read
+
+QuillSync (5.84j) carries a listening position between two copies of QUILL,
+encrypted, over a folder the listener already syncs. That is right, it works,
+and it will only ever work QUILL-to-QUILL. Somebody who listens on a phone with
+a podcast app somebody else wrote is not helped by it at all.
+
+**Listening Places** (`core/sync/listening_places.py`, format id
+`listening-places/1`) is the interchange half: a small, published, plain-JSON
+format any app can read and write, in the same chosen folder, alongside the
+encrypted vault and independent of it. The specification and its conformance
+fixtures live at `docs/engineering/listening-places-spec.md` and
+`tests/unit/core/sync/fixtures/`, so a change that breaks the other
+implementation fails a test rather than a user.
+
+**It is a separate switch and needs no recovery phrase.** Gating an interchange
+format behind the encrypted half would mean a feature nobody can set up, which
+syncs nothing. `PlacesConfig` therefore carries `encrypted` and `interchange`
+independently, plus `include_labels` -- three switches because they carry three
+different exposures, and collapsing them would misdescribe what the folder
+learns.
+
+Four properties are requirements rather than implementation choices, each ruling
+out one failure:
+
+- **One writer per file.** Every device writes exactly one file in `devices/`
+  and reads every other. A cloud drive's answer to two devices editing one file
+  is a conflicted copy, which is the worst outcome available here; if no two
+  devices write the same file, it cannot happen -- and three devices work for
+  free.
+- **Last write wins, never furthest position.** Jumping back twenty minutes on
+  purpose and then opening the episode elsewhere must not be undone.
+- **Reads happen at launch and on an explicit Sync Now, and nowhere else.** A
+  position arriving mid-session has no acceptable behaviour: moving the playhead
+  under somebody is unacceptable, and worse without a visual cue that it
+  happened. At launch nothing is playing.
+- **Identity is derived, never a path.** An episode is `sha256(guid)[0:16]` --
+  the GUID alone, because two apps disagree about a feed's URL far more often
+  than about GUIDs. A local file reuses `media_identity()`: size plus a digest
+  of the two ends, which is the one key that agrees across Windows and iOS for
+  the same file in the same folder. The hash is not for secrecy; it is so a
+  plain file in a shared folder does not list what somebody listens to.
+
+**What Cast owed itself regardless.** A podcast episode's `position_ms` lived
+inside the monolithic library file with no timestamp, so there was nothing to
+merge on. `PodcastEpisode.position_updated_at` closes that, and **every** site
+that moves a position now routes through `core/podcasts/position_sync` -- one
+site that forgot the stamp is a device whose place silently stops travelling.
+
+**Not built, deliberately:** subscriptions in the shared file. A subscription
+record cannot be hashed the way a position can -- the whole point of it is a URL
+the receiving app must be able to fetch -- so it carries a different exposure and
+belongs behind its own switch. Also not built: any server, any account, and any
+third-party cloud SDK. The app talks to a folder; the provider's own client does
+the syncing, which is somebody else's already-solved problem.
+
 ### 5.84i Continue Listening, across every provider
 
 **The problem was that four memories never met.** QUILL remembered where you

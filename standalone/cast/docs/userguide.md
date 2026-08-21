@@ -61,7 +61,7 @@ Some feeds -- Patreon supporter feeds, premium and members-only shows, private c
 
 ### Subscriptions (Alt+S)
 
-Open Podcast Manager... (Ctrl+M), Add Podcast..., Import OPML..., Export OPML..., New Folder... (creates a library folder without opening the Manager), **Sort Podcasts** (a submenu -- see below), Add Local Podcast..., Scan Watched Folders, Subscribe to ACB Media Podcasts, Podcast Settings..., **Quick Actions...**, **Export My Data...**, **Delete All Podcast Data...**, **Resume Last Episode on Launch** (check item -- the appliance switch), **Preferences...** (Ctrl+,), Send to Tray (Ctrl+W), Exit.
+Open Podcast Manager... (Ctrl+M), Add Podcast..., Import OPML..., Export OPML..., New Folder... (creates a library folder without opening the Manager), **Sort Podcasts** (a submenu -- see below), Add Local Podcast..., Scan Watched Folders, Subscribe to ACB Media Podcasts, Podcast Settings..., **Podcast Index Credentials...**, **Quick Actions...**, **Export My Data...**, **Delete All Podcast Data...**, **Resume Last Episode on Launch** (check item -- the appliance switch), **Preferences...** (Ctrl+,), Send to Tray (Ctrl+W), Exit.
 
 **Sort Podcasts** decides how your shows are ordered everywhere they are listed: **Ascending (A to Z)**, **Descending (Z to A)**, or **Custom Order**. Custom order is the one you build by hand: **Alt+Up / Alt+Down** on a show in the library tree (or Move Up/Down in Custom Order on its context menu) nudges it among its folder's neighbours. The first move switches to custom automatically -- starting from the order already on screen, so nothing jumps -- and the radio items here always show which mode is live.
 
@@ -205,7 +205,13 @@ Two rules make the caps safe:
 
 It is a read-only text field you arrow through line by line and can copy -- the same shape as Player Information. Durations are read as language ("3 hours, 47 minutes"), never as a clock face, because a screen reader reads `3:47:00` as a time of day.
 
-**Export CSV...** saves every session for a spreadsheet. **Clear Statistics...** deletes the log and nothing else. Ninety days are kept.
+**Export CSV...** saves every session for a spreadsheet. **Clear Statistics...** deletes the log and nothing else.
+
+**How long the log is kept is yours to choose** (Podcast Settings): don't keep one, 30 days, 90 days (the default), a year, or forever. Choosing not to keep one stops the writing rather than deleting afterwards, which is what somebody choosing it asked for. The log never leaves this computer either way.
+
+**Year in Review...** is a few sentences about a year of listening -- how long, what you listened to most and what share of the year each show was, your busiest month, what faster playback bought you, and how many days you listened on. It is text you can arrow through, copy, or save, rather than a dashboard: a table read aloud is a list of numbers with their meanings three columns away. Anything the log cannot honestly support is left out rather than printed as a zero.
+
+**Listening streaks** -- how many days in a row you have listened -- are **off unless you ask for them** (Podcast Settings). A streak is a nudge, and a nudge nobody asked for is pressure. When they are on, they appear in the statistics readout and in Year in Review. A run that ended yesterday is still current: your streak is never reported as broken before you have had a chance to listen today.
 
 One number is deliberately absent: time saved by Smart Speed. The silence-trimming path cannot honestly report how much silence it dropped, and an invented figure would be worse than no figure at all.
 
@@ -241,6 +247,60 @@ QUILL Cast finds chapters from three places -- the feed's own chapter document, 
 Open **Chapters...** for the episode you are playing and use **Skip This Chapter** to mark the ad break, the sponsor read, or the outro. Playback jumps past it and says "Skipping chapter:" and its name. Consecutive marked chapters are stepped over together, and marking everything to the end simply finishes the episode normally, so auto-advance and delete-after-play still fire. **Skip Nothing** clears every mark.
 
 Marks last for the listening session only -- a chapter you skipped in yesterday's episode says nothing about today's -- and the button only appears for the episode actually playing.
+
+### Chapters from a running order written in prose
+
+Most podcasts publish no chapter list, and a good many of them do something
+almost as useful that QUILL Cast used to throw away: they describe their running
+order in the show notes.
+
+> "high school student Tyler Juranek begins a series of short reviews he calls
+> Techie Tidbits ... Next, we visit with Gerry Chevalier about the newest release
+> of the Victor Reader Stream ... Finally, Matt Roberts brings us part one of a
+> demonstration on accessing DVR from Dish Network"
+
+That is a running order: four segments, named, in sequence, **written by a
+person**. Cast now takes each described topic and finds where in the episode its
+distinctive words actually arrive. The result is a chapter list whose *titles* a
+human wrote and whose *times* were worked out -- the only route to authored
+titles that involves no AI at all. On the episodes this was measured against,
+the marks landed within 9 and 15 seconds of the real section starts.
+
+Where the notes describe two or more segments, Cast uses them and stops. Four
+chapters that are mostly right beats fourteen that are mostly wrong.
+
+### How hard to look, and what each level really does
+
+The **Chapters** group in Podcast Settings leads with the only question most
+people will ever want to answer, and everything else follows from it:
+
+- **Quick** -- only what is already here: a published list, or a transcript you
+  already have.
+- **Thorough** (the default) -- fetches a published transcript if the episode has
+  one, and works the sections out of the words. **If there is no transcript it
+  says so rather than guessing.** Listening for pauses used to be Thorough's
+  fallback and no longer is: measured against hand-built reference chapter
+  lists, it scored 0.06 where cutting the episode into equal slices with no
+  knowledge of it at all scored 0.15. An answer worse than dividing by *n* is
+  not an answer.
+- **Deep** -- transcribes the episode on this computer and works the sections out
+  from that, then keeps the pause scan as a last resort, because somebody who
+  chose Deep has said they would rather have a weak answer than none. The engine
+  ships with the app: 40 MB, CPU-only, no download and no network. It was chosen
+  over models thirty-five times its size because it *scored better* and ran 4.7
+  times faster -- and not on transcription quality. Its lines break at natural
+  pauses, so its edges are already plausible section starts.
+
+Beneath the effort control, a sentence says exactly what that level will do, and
+it changes as you change the choice. The rest of the group switches individual
+sources on and off -- show notes, transcript, pause scan -- and **off means off**
+at any effort level. There is also **Chapter preview length**, which is how much
+Review Chapters plays either side of a mark, and whether Cast says how many
+chapters it found.
+
+**Work chapters out** decides when any of this happens at all: never, only for
+episodes you have downloaded (the default), or for every episode. A chapter list
+the podcast published is always shown whatever this says.
 
 ### When an episode has no chapters at all
 
@@ -342,6 +402,131 @@ item would leave you guessing which one it was.
 in Browser*, *Play*, *Subscribe to This Podcast* -- and on a row with nothing to
 do it reads *Nothing to Open* and is disabled, rather than being pressed and
 quietly declining.
+
+## Finding a podcast to subscribe to
+
+**Add Podcast...** searches a **Directory**, and there are two.
+
+- **iTunes** is the default and needs nothing. It indexes very nearly every
+  podcast there is.
+- **Podcast Index** needs a free key, which is why it is not the default -- and
+  why it does not appear at all until you have one. It is the index the
+  Podcasting 2.0 tags were defined for, so it knows about chapter documents,
+  transcripts, marked moments and credits, which is a good deal of what QUILL
+  Cast is built on.
+- **Both** searches each and merges the results by feed address, and says where
+  they came from: "12 results: 9 from iTunes, 3 from Podcast Index."
+
+If one directory does not answer, the other's results still arrive, with a
+sentence about the one that failed. A search that finds nothing says so.
+
+To add a Podcast Index key, register free at podcastindex.org and put the key
+and secret into **Subscriptions > Podcast Index Credentials...**. They go into
+Windows' own credential store, never into a settings file, and they are scrubbed
+out of crash reports. **Read It Back** says the secret once, four characters at
+a time, so a long random string copied from another window can be checked; the
+box is masked otherwise. Clearing both boxes and saving removes them, and
+searches go back to iTunes.
+
+## Looking at a podcast before subscribing
+
+A search result is a title, and subscribing to a title is how you end up
+unsubscribing from a title a minute later.
+
+**Preview** (or just Enter on a result -- Enter previews now rather than
+subscribing) opens the show read-only: what it is, who makes it, how many
+episodes it has, its own description as a text field you arrow through, and its
+ten most recent episode titles with their dates. Between them those answer *is
+this the show I meant*, *is it still running*, and *is it in my language*.
+**Subscribe** is on the same window when the answer is yes.
+
+## Doing something to a whole folder
+
+A folder in your library is somewhere you listen from, not only somewhere shows
+are filed. Right-click one (or press the applications key) for:
+
+- **Play All Unplayed** -- the newest unplayed episode of *each* show in the
+  folder, queued and started. One per show on purpose: a folder of forty shows
+  holds hundreds of unplayed episodes, and a queue of hundreds is not a queue.
+- **Add All to Queue** -- every unplayed episode in it, for when you meant it.
+- **Move Up** / **Move Down** -- reorder folders among their neighbours, with
+  the new position spoken ("News, 2 of 5").
+- **Folder Settings...** -- set the queue-expiry window, Inbox routing and
+  playback speed for every podcast in the folder at once. Each control starts at
+  "change nothing", so nothing is applied by accident, and it says how many
+  podcasts it changed. The values are written into each podcast, so a show you
+  move into the folder afterwards keeps its own settings -- there is one place a
+  setting comes from, not two.
+- **Export This Folder as OPML...** -- hand one folder and its sub-folders to
+  another machine or another person, without exporting your whole library.
+
+A folder always means everything beneath it. Playing "News" plays what is in
+"News/Local" too.
+
+**Move Several Podcasts to Folder...** (on any podcast's menu) files a batch in
+one step: arrows move through the list, Shift and arrow extend the selection,
+Ctrl and Space adds or removes one, and Select All takes the lot. It says how
+many are selected as you go, then asks once which folder they go to.
+
+## Grouping the Play Queue
+
+The Play Queue has a **Group by** control: Nothing, Podcast, or Library folder.
+
+Grouping never changes the play order -- only how the list reads. A group header
+announces itself as one ("News, group, 4 episodes"), and no action can act on a
+header by mistake: Play, Move and Remove all ignore them.
+
+## Sharing where you are in an episode
+
+**Share This Moment** (any episode's menu) copies two things at once:
+
+- a sentence -- "Blind Abilities, Episode 214, at 41 minutes 12 seconds";
+- a link that reopens the episode at exactly that second.
+
+The sentence is not an afterthought. A link nobody can open is worse than a
+sentence anybody can paste, and the person you are sending it to very often does
+not have QUILL Cast. The sentence works in an email, in a message, and read down
+the phone.
+
+Opening a link somebody sent you plays that episode from that second -- provided
+it is a podcast **you already subscribe to**. A link for a podcast you do not
+follow says so and does nothing at all: a link cannot add a subscription, and
+QUILL Cast never fetches a web address because a link asked it to.
+
+## Carrying your place to another device
+
+**Carry My Place Between Machines...** now offers two ways to share, and they
+are separate switches because they carry different exposure.
+
+- **Encrypted, for my other QUILL machines** -- what this feature has always
+  been. Locked with your recovery phrase; only a machine that has the phrase can
+  read it.
+- **A plain file other apps can read** -- a small published format called
+  *Listening Places* that other podcast apps can read and write, in the same
+  folder. It needs **no recovery phrase at all**: a feature nobody can set up
+  syncs nothing.
+
+Both work through a folder you already sync -- inside Dropbox, OneDrive, Google
+Drive, iCloud Drive, Nextcloud, Syncthing, or a network share. There is no
+account and no server, and QUILL holds nothing.
+
+What the plain file gives away: every episode in it is identified by a hash, so
+somebody with access to the folder learns how many things you listen to and
+roughly when, and nothing about what. **Include episode and file names** is a
+third switch, on by default -- with it on, a disagreement can say "you and your
+phone disagree about Episode 214" instead of reading out a hash; with it off,
+the folder learns less.
+
+Two things worth knowing about how it behaves:
+
+- **The most recent position wins, not the furthest.** If you jump back twenty
+  minutes to hear something again and then open the episode on the laptop, the
+  furthest position is exactly the wrong answer.
+- **It reads at launch and when you press Sync Now, and at no other time.** A
+  position arriving mid-session would move your playhead with no warning, which
+  is unacceptable and worse when you cannot see it happen. The cost is that a
+  change made elsewhere while Cast is open waits until next launch. The promise
+  being kept is that your place is right when you sit down.
 
 ## Picking up whatever you were in the middle of
 

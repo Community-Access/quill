@@ -597,4 +597,164 @@ elements now contribute a blank line, collapsed so empty tags can never
 stack more than one -- a screen reader's next-paragraph navigation needs a
 real boundary to land on, and a wall of single-spaced lines has none.
 
+## 16. Reaching outside this machine (1.2)
+
+Sections 12 to 15 all made QUILL Cast better at what it already did. This one
+is different in kind: four of its five parts are Cast talking to something that
+is not Cast. That is a class of feature the app had none of, and each part
+carries a rule about *how far* the reach goes.
+
+### 16.1 Listening Places: a format, not a service
+
+QUILL Sync already carries listening positions between two copies of QUILL,
+encrypted, over a folder the listener already syncs. It always will, and it will
+only ever work QUILL-to-QUILL.
+
+**Listening Places** (`core/sync/listening_places.py`, format id
+`listening-places/1`, specified in `docs/engineering/listening-places-spec.md`)
+is the interchange half: a small plain-JSON format any podcast app can read and
+write, in the same folder, with no account, no server and no signup. It is a
+second, independent switch from the encrypted half and requires **no recovery
+phrase** -- gating it behind one would mean a feature nobody can set up, which
+syncs nothing.
+
+Four properties are requirements, not implementation details, and each one rules
+out a specific failure:
+
+- **P-1. One writer per file.** Every device writes exactly one file and reads
+  every other. Cloud drives resolve simultaneous edits to one file by leaving a
+  conflicted copy behind, which is the worst failure available here; if no two
+  devices ever write the same file, it cannot occur. It also scales past two
+  devices for free.
+- **P-2. Last write wins, never furthest position.** Jumping back twenty minutes
+  deliberately and then opening the episode elsewhere must not be undone. Every
+  record carries an RFC 3339 UTC timestamp, spelled so that string comparison
+  sorts it.
+- **P-3. Reads happen at launch and on an explicit Sync Now, and nowhere else.**
+  Not on a timer, not on foreground, not on a file-change notification. A
+  position arriving mid-session has no acceptable behaviour: moving the playhead
+  under somebody is unacceptable and worse without a visual cue, queuing it is
+  confusing, and asking mid-episode is an interruption. At launch nothing is
+  playing.
+- **P-4. Identity is derived, never a path.** An episode is keyed on
+  `sha256(guid)[0:16]` -- the GUID alone, because two apps disagree about a
+  feed's URL far more often than about its GUIDs. A local file is keyed on its
+  size and the digest of its two ends, which is the one key that agrees across
+  Windows and iOS for the same file in the same cloud folder.
+
+The episode adapter (`core/podcasts/position_sync.py`) closes a gap Cast owed
+itself regardless: `position_ms` lived inside the monolithic library file with
+no timestamp, so there was nothing to merge on. `PodcastEpisode` now carries
+`position_updated_at`, and **every** site that moves a position goes through
+`position_sync` -- one site that forgot the stamp would be a device whose place
+silently stopped travelling.
+
+Conformance fixtures live beside the spec and are executed by
+`tests/unit/core/sync/test_conformance.py`, so a change that breaks the other
+implementation fails a test rather than a user.
+
+### 16.2 Sharing a moment
+
+`quill-cast://episode?feed=...&guid=...&t=<seconds>`, registered by every Cast
+installer. Two rules:
+
+- **The sentence ships with the link, always.** "Blind Abilities, Episode 214,
+  at 41 minutes 12 seconds" goes on the clipboard with it, because the recipient
+  usually does not have Cast, and a link nobody can open is worth less than a
+  sentence anybody can paste.
+- **A link is untrusted input and resolves only inside the library.**
+  `share_links.parse_link` refuses anything that is not the scheme, refuses a
+  `feed` that is not an http(s) address, and yields a feed address and a GUID
+  and nothing else. The caller must find both in the library the listener
+  already subscribes to. **Cast never fetches a URL, and never adds a
+  subscription, because a link asked it to.**
+
+### 16.3 A second directory
+
+Podcast Index (`core/podcasts/podcast_index.py`) joins iTunes as an opt-in
+source, for its Podcasting 2.0 metadata. This reverses the 2026-08-13 decision
+not to integrate it; the reversal is recorded in the egress audit beside the
+call site so a stale rationale cannot keep asserting itself.
+
+- **iTunes stays the default and stays keyless.** Podcast Index requires
+  credentials, and the source is simply absent from the picker until they exist
+  -- a feature that only works after registering for an API key is a feature
+  most people do not have.
+- **Credentials go to the platform credential store**, never `podcasts.json`,
+  and must survive `stability/redaction.py` scrubbing.
+- **One directory failing is not the search failing.**
+  `core/podcasts/directory_search.py` returns what did arrive plus a sentence
+  about what did not.
+
+### 16.4 Folders as a listening lens, and the queue that follows
+
+A folder is a place to listen from (`core/podcasts/folder_actions.py`). The
+subtree walk is one function everything else reuses, so no two folder actions
+can disagree about what a folder contains, and `move_folder` refuses to make a
+folder its own descendant -- a ring is a tree nothing can render and nobody can
+undo.
+
+**Play All Unplayed means one episode per show.** A folder of forty shows holds
+hundreds of unplayed episodes; a queue of hundreds is not a queue.
+
+**Folder settings apply at save time, not read time.** Choosing a value writes
+it into every member show's own override and the folder forgets it. One
+inheritance chain: what a show's setting *is* remains what
+`PodcastLibrary.effective_settings` says. The cost -- a show moved in later
+inherits nothing -- is stated in the window. The alternative, resolving folder
+values at read time, means every consumer walks the tree and two shows in one
+folder can disagree about their own setting depending which code path asked.
+
+`queue.group_queue_by` groups the Play Queue by nothing, podcast or folder.
+Grouping is presentation only: the play order is untouched, headers announce
+themselves as headers, and no action can act on one.
+
+### 16.5 Rules that can express a disjunction
+
+`PlaylistRules` ANDed everything, which cannot express "anything from these
+three shows **or** anything I have bookmarked". It gains `match_mode`,
+`folder_ids` (subtree aware), `download_state`, `has_note`, `text_contains`,
+`progress` and `item_limit`.
+
+Two rules govern the implementation. A rule left at its "does not narrow" value
+contributes **no predicate at all** -- otherwise every `any` playlist would
+match everything. And `item_limit` applies **after** sorting, so "the ten
+newest" is the ten newest.
+
+Scope (`show_ids`, `folder_ids`) is always AND, whatever `match_mode` says: "any
+of these rules, but only in this folder" is what naming a folder means.
+
+The live **"Matches N episodes right now"** count is a requirement rather than a
+nicety. A filter set with no feedback is a guess somebody must save, close,
+reopen and read to check -- and there is no list quietly filtering itself in the
+background to glance at.
+
+### 16.6 Chapters: authored titles without a model
+
+`core/podcasts/note_anchors.py` matches the running order publishers write in
+prose against where each topic's distinctive words **arrive** in the transcript,
+aligned monotonically because notes are written in programme order. It is the
+only route to authored titles that involves no model at all. Two measured
+findings are recorded in the module and hold: anchor on **onset**, not density
+(a long interview mentions its guest most often in the middle); and where the
+notes describe two or more segments, use them and stop, because padding them
+out with lexical boundaries measurably made the list worse.
+
+**Thorough no longer offers the pause scan.** It scored 0.06 against a 0.15
+do-nothing floor -- worse than dividing the episode by *n*. It remains available
+under Deep, where the listener has accepted a weak answer over none, and for a
+recording (`inference_budget.for_recording`), where there is nothing else.
+
+**Deep transcribes locally, and the engine ships in the box** (~40 MB, CPU-only,
+in `DEFAULT_BUNDLED_DEPENDENCY_GROUPS` with its model staged by
+`_stage_vosk_model`). `speech.service.preferred_chapter_provider_id` is
+deliberately **not** the dictation ladder: dictation wants an engine that never
+invents text from silence; chapters want cue boundaries that fall on pauses.
+The engine that wins the second is a 40 MB model that beat one thirty-five times
+its size on measurement (0.372 against 0.316) at 4.7 times the speed.
+
+Bundling is what makes the feature real: chapters have to answer the first time
+somebody asks, and an engine that must be downloaded first means the first
+answer is always "no chapters could be found".
+
 See `CHANGELOG.md` for the full, versioned history.

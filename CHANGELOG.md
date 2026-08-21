@@ -6,6 +6,68 @@ The most recent work first: a reliability pass driven entirely by what people
 reported (a full disk that could lose a document, an editor doing too much work
 between keystrokes), then the release as originally scoped below.
 
+### Chapters that come from somewhere, and a place that follows you anywhere (2026-08-21)
+
+Three strands of the same work: making chapter marks trustworthy, closing the
+gaps where Quill Radio and QUILL Cast answered the same question differently,
+and letting a listening position leave the QUILL family entirely.
+
+**Chapters, from the most direct source available.** The chapter cascade now
+starts where a person already wrote the answer: an episode's own show notes.
+Titles somebody typed, with times worked out against the audio, beat anything
+inferred from silence. Porting that tier found a real defect worth naming --
+score ties resolved to the *earliest* candidate position, and because the onset
+score is flat across every window that straddles the moment a new subject
+arrives, the earliest of those places the boundary before a single word of the
+segment has been spoken. Ties now resolve later.
+
+Two things nobody had noticed were broken turned up while wiring it. The
+transcript cache stored **flat** text, so the tier described as "segment a
+transcript this machine already has" could never find one; there is now a timed
+sidecar beside it. And `may_transcribe` was advertised by the Deep profile while
+**nothing transcribed** -- there is now a local-transcription tier, and every
+tier that needs cues reads one shared memoised source rather than each doing the
+work again.
+
+**The Chapters settings had no controls.** All six `chapters_*` settings were
+live, read on every run, and reachable only by editing a file. They have a
+settings group now.
+
+**Vosk ships with every build**, not only the Offline Edition, so the local
+transcription tier is available rather than theoretical -- with the chapter
+provider preference kept separate from the dictation ladder, because the best
+engine for one is not automatically the best for the other. The pause scan came
+out of the Thorough profile on measurement (0.06 against a 0.15 do-nothing
+floor) and stays in Deep and in recordings, where it earns its cost.
+
+**Radio and Cast stopped disagreeing about the same row.** Quick Actions,
+listening statistics, and folders-as-a-listening-lens were built in one app and
+missing from the other; they now run on shared cores rather than two
+implementations of one idea. An episode row in Radio can hand an episode to Cast
+(Play Next, Add to Queue, Send to Inbox) as a handoff Cast carries out at its
+next launch, rather than a write into a library both apps load and save
+wholesale. Radio's chapter list reads a file's own chapter frames and the result
+Cast already computed and cached; Radio works none out itself, on purpose,
+because it is the lite app and 91 MB to re-answer its sibling's question is not
+a trade worth making. Full detail in each app's own release notes.
+
+**Listening Places: your position, in a format other apps can read.** QuillSync
+carries a place between two copies of QUILL, encrypted, through a folder you
+already sync -- and that is all it will ever do. Listening Places is the
+interchange half: a small published plain-JSON format written into the same
+folder, with no account, no server and no signup, specified in
+`docs/engineering/listening-places-spec.md` with conformance fixtures both
+implementations test against. It is a separate switch and needs no recovery
+phrase (gating an interchange format behind an encrypted one produces a feature
+nobody can set up). One writer per file, so a cloud drive can never produce a
+conflicted copy; last write wins rather than furthest position, so a deliberate
+jump backwards is not undone; reads happen at launch and on an explicit Sync
+Now and nowhere else, because a position arriving mid-session has no acceptable
+behaviour; and every id is hashed, so what a shared folder learns is counts and
+timings rather than titles. Subscriptions are deliberately not in it: a
+subscription record cannot be hashed the way a position can, so it carries a
+different exposure and belongs behind its own switch.
+
 ### Radio says what it is doing, and what it cannot do (2026-08-20)
 
 Five things, and the first two are the same bug seen from opposite ends: the app

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Cast 1.2 -- Release Notes</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-cast-12--release-notes">QUILL Cast 1.2 – Release
+Notes</h1>
+<p>QUILL Cast 1.1 made the app do things without being asked. 1.2 is
+about the places it could not reach: <strong>another directory</strong>,
+<strong>another device</strong>, <strong>another app</strong>, and the
+episodes whose publishers never wrote a chapter list.</p>
+<p>Two of those are new kinds of thing for Cast entirely. It has never
+before been able to hand anything to another program, and it has never
+before known where you got to on a machine that is not this one.</p>
+<hr />
+<h2 id="your-place-follows-you-and-not-only-between-quill-machines">Your
+place follows you, and not only between QUILL machines</h2>
+<p>Cast has carried your listening position between two copies of itself
+for a while, encrypted, through a folder you already sync. That works,
+and it will only ever work QUILL-to-QUILL.</p>
+<p><strong>Listening Places</strong> is the other half: a small,
+published, plain-text format that any podcast app can read and write, in
+the same folder. Turn on <strong>a plain file other apps can
+read</strong> in <em>Carry My Place Between Machines…</em>, and Cast
+keeps one file up to date with where you are in every episode – and
+reads whatever the other apps have left there.</p>
+<p>There is no account, no server, and no signup. You pick a folder
+inside Dropbox, OneDrive, Google Drive, iCloud Drive, Nextcloud,
+Syncthing, or a network share, and the cloud provider you already pay
+for does the syncing. QUILL runs nothing and holds nobody’s listening
+history.</p>
+<p>Four decisions in that design are worth knowing about, because each
+of them rules out a specific way this could have gone wrong.</p>
+<p><strong>Every device writes exactly one file and reads everyone
+else’s.</strong> Cloud drives resolve two devices editing the same file
+by leaving <code>positions (Jeff's conflicted copy).json</code> lying
+around, which is the single worst failure available here. If no two
+devices ever write the same file, that cannot happen – and it scales
+past two devices for nothing: phone, laptop and desktop each drop one
+file, and every device merges across all of them.</p>
+<p><strong>The most recent position wins, not the furthest one.</strong>
+If you jump back twenty minutes to hear something again and then open
+the episode on the laptop, “furthest” is exactly the wrong answer.</p>
+<p><strong>Reading happens at launch and when you press Sync Now. Never
+otherwise.</strong> Not on a timer, not when the window gains focus. If
+a read landed mid-session and found that another device had moved you to
+52 minutes in the episode you are listening to at 40, every available
+behaviour would be bad – and moving the playhead under somebody with no
+visual cue that it happened is the worst of them. At launch nothing is
+playing, so there is nothing to disturb. The cost is that a change made
+elsewhere while Cast is open does not appear until next launch; the
+promise being kept is that your place is right when you sit down.</p>
+<p><strong>Nothing in the folder says what you listen to.</strong> Every
+episode is identified by a hash of its feed’s own GUID, so somebody with
+access to the folder learns how many things you listen to and roughly
+when, and nothing about what. Episode names are a <em>separate</em>
+switch, on by default because a message that says “you and your phone
+disagree about Episode 214” is worth far more than one that reads out a
+hash – and off for anybody who would rather the folder learned less.</p>
+<p>The format is written down in
+<code>docs/engineering/listening-places-spec.md</code>, with JSON
+conformance fixtures both implementations test against, so two apps
+cannot quietly drift into disagreeing about somebody’s data.</p>
+<h2 id="share-the-moment-not-the-file">Share the moment, not the
+file</h2>
+<p>Cast could copy an episode’s audio address and save its audio to a
+file. Neither of those is what somebody means when they say <em>listen
+to this bit</em>.</p>
+<p><strong>Share This Moment</strong> (any episode’s menu) copies two
+things at once: a link that reopens the episode at the second you shared
+it from, and a plain English sentence saying the same thing – “Blind
+Abilities, Episode 214, at 41 minutes 12 seconds”. The sentence is not
+an afterthought. A link nobody can open is worse than a sentence anybody
+can paste, and the person you are sending it to very often does not have
+QUILL Cast at all. The sentence works in an email, in a text message,
+and read down the phone.</p>
+<p>The installer registers <code>quill-cast://</code> so a link opens
+the app at the right place. Opening one is treated as what it is –
+somebody else’s input – so it resolves to a feed address and an episode
+GUID, both of which are looked up in the library <strong>you already
+subscribe to</strong>. A link for a podcast you do not follow says so
+and does nothing. Cast never fetches a web address because a link asked
+it to, and never adds a subscription because a link asked it to.</p>
+<h2 id="a-second-podcast-directory">A second podcast directory</h2>
+<p>Add Podcast has searched Apple’s directory and nothing else. Apple’s
+is a good default – free, keyless, and it indexes very nearly everything
+– but it knows nothing about the Podcasting 2.0 tags Cast has built a
+great deal on: chapter documents, transcripts, marked moments, credits,
+funding.</p>
+<p><strong>Podcast Index</strong> does, because it is the index those
+tags were defined for. Add Podcast now has a <strong>Directory</strong>
+picker: iTunes, Podcast Index, or both. Searching both merges the
+results by feed address and says where they came from – “12 results: 9
+from iTunes, 3 from Podcast Index” – and a directory that fails does not
+fail the search: you get the results that did arrive, and a sentence
+about the one that did not.</p>
+<p>Podcast Index needs a free key, which is why iTunes stays the default
+and why the option is simply absent until you add one
+(<strong>Subscriptions &gt; Podcast Index Credentials…</strong>). The
+key and secret go into Windows’ own credential store, never into a
+settings file, and they are scrubbed out of crash reports.</p>
+<h2 id="look-before-you-subscribe">Look before you subscribe</h2>
+<p>A search result is a title. Subscribing to a title is how you end up
+unsubscribing from a title.</p>
+<p><strong>Preview</strong> (and Enter on a result, which now previews
+rather than subscribing) opens the podcast read-only first: what it is,
+who makes it, how many episodes, its own description as text you can
+arrow through, and its ten most recent episode titles with dates.
+Between them those answer <em>is this the show I meant, is it still
+going, and is it in my language</em>. Subscribe is right there when the
+answer is yes.</p>
+<h2 id="folders-you-can-listen-from">Folders you can listen from</h2>
+<p>Cast has had a folder tree for a long time and has never had a single
+action <em>on</em> a folder. Forty shows filed into “News” made the list
+tidier and did nothing whatever for the listening.</p>
+<p>A folder’s menu now offers:</p>
+<ul>
+<li><strong>Play All Unplayed</strong> – the newest unplayed episode of
+<em>each</em> show in the folder, queued and started. One per show,
+deliberately: a folder of forty shows holds hundreds of unplayed
+episodes, and a queue of hundreds is not a queue, it is something you
+have to undo.</li>
+<li><strong>Add All to Queue</strong> – every unplayed episode, for when
+you meant it.</li>
+<li><strong>Move Up</strong> and <strong>Move Down</strong>, which
+announce the new position (“News, 2 of 5”). A tree that can only be
+rearranged by dragging is a tree that cannot be rearranged at all with a
+screen reader.</li>
+<li><strong>Folder Settings…</strong> – apply the queue-expiry window,
+Inbox routing, and playback speed to every podcast in the folder at
+once. Each control starts at “change nothing”, so nothing is applied by
+accident, and it says how many podcasts it touched.</li>
+<li><strong>Export This Folder as OPML…</strong> – hand one folder and
+its children to another machine, or another person, without exporting
+your whole library.</li>
+</ul>
+<p>A folder always means its whole subtree, everywhere: playing “News”
+plays what is in “News/Local” too, because that is what somebody looking
+at the tree means.</p>
+<p><strong>The Play Queue can be grouped by folder</strong> as well as
+by podcast (<strong>Group by</strong>, in the Play Queue). Grouping
+never changes the play order – only how it reads – and a group header
+announces itself as one (“News, group, 4 episodes”), so no action can
+act on a header by accident.</p>
+<h2 id="moving-several-podcasts-at-once">Moving several podcasts at
+once</h2>
+<p>Filing was one show at a time, so tidying forty into six folders was
+forty trips through a picker. <strong>Move Several Podcasts to
+Folder…</strong> lists your podcasts in a multiple-selection list –
+arrows move, Shift and arrow extend, Ctrl and Space toggles – with
+Select All, a running count, and then the same folder picker once for
+the lot.</p>
+<p>The subscription tree itself is deliberately <em>not</em>
+multi-select. That would change how every existing selection in it
+behaves, and multi-select trees are markedly harder to drive with a
+screen reader, for a job most people do twice in the life of a
+library.</p>
+<h2 id="smart-playlists-that-can-express-what-you-mean">Smart playlists
+that can express what you mean</h2>
+<p><code>PlaylistRules</code> had six filters and ANDed all of them.
+That is right for narrowing and useless for the other half of what
+people want: <em>anything from these three shows, or anything I have
+bookmarked</em> cannot be said with AND at all.</p>
+<p>Smart playlists now also filter on: <strong>match all or
+any</strong>, <strong>a library folder</strong> (subtree aware),
+<strong>downloaded or not</strong>, <strong>has a note of mine</strong>,
+<strong>title or show notes contain</strong>, <strong>where the playhead
+is</strong> (not started, started, finished – which is genuinely
+different from the played mark), and <strong>at most N
+episodes</strong>, applied <em>after</em> sorting so “the ten newest” is
+the ten newest.</p>
+<p>Beside them is the thing that makes a rule builder usable:
+<strong>“Matches 23 episodes right now”</strong>, recomputed as you
+change the rules. Without it, checking what a filter did meant saving,
+closing, reopening and reading – four steps to answer <em>did I mean
+that</em>.</p>
+<p>And because a blank rule builder is where most people stop,
+<strong>Add Starter Playlists</strong> creates five worth having:
+Continue Listening, New This Week, Quick Listens, Downloaded and
+Unplayed, Long Reads. They arrive as ordinary editable playlists rather
+than built-ins, so renaming, retuning or deleting one works exactly as
+it does for a playlist you wrote yourself.</p>
+<h2 id="chapters-for-the-episodes-nobody-wrote-chapters-for">Chapters
+for the episodes nobody wrote chapters for</h2>
+<p>Most podcasts publish no chapter list. A good many of them do
+something almost as useful and Cast was throwing it away: they describe
+their running order in prose.</p>
+<blockquote>
+<p>“high school student Tyler Juranek begins a series of short reviews
+he calls Techie Tidbits … Next, we visit with Gerry Chevalier about the
+newest release of the Victor Reader Stream … Finally, Matt Roberts
+brings us part one of a demonstration on accessing DVR from Dish
+Network”</p>
+</blockquote>
+<p>That is a running order: four segments, named, in sequence,
+<strong>written by a person</strong>. Cast now takes each described
+topic and finds where in the episode its distinctive words actually
+<em>arrive</em>, giving chapters whose titles a human wrote and whose
+times were worked out. Measured against hand-built reference chapter
+lists, the marks landed within 9 and 15 seconds.</p>
+<p>Two details decided the design. The phrases are matched <strong>in
+order</strong>, because show notes are written in the order the
+programme runs, so it is a sequence-alignment problem rather than a
+series of independent guesses. And a topic anchors where it
+<strong>starts</strong>, not where it is densest – a thirty-five-minute
+interview mentions its guest most often in the middle, and matching on
+density put one episode’s main segment at 30:00 when it began at
+1:09.</p>
+<p><strong>Thorough no longer offers to listen for pauses.</strong>
+Measured against those same reference lists, the pause scan scored 0.06
+where cutting the episode into equal slices with no knowledge of it at
+all scored 0.15. An answer worse than dividing by <em>n</em> is not an
+answer, and offering it by default spent tens of seconds making the list
+worse. Thorough fetches a transcript and works the sections out of the
+words; if there is no transcript it says so. Deep still offers the pause
+scan, because somebody who chose Deep has said they would rather have a
+weak answer than none, and a recording off the radio still uses it,
+because for a recording there is nothing else.</p>
+<p><strong>Deep can now transcribe an episode on your own
+machine</strong>, which it has always advertised and never actually
+done. The engine ships in the box – 40 MB, CPU-only – so chapters work
+the first time you ask, with no download and no network. It was chosen
+over models thirty-five times its size on measurement: it scored
+<em>better</em> (0.372 against 0.316) and ran 4.7 times faster, and the
+reason is not transcription quality at all. Its cues break at natural
+pauses, so its edges are already plausible section starts.</p>
+<p>And <strong>every chapters setting now has a control</strong>. All
+six were live and all six were invisible, which is worse than absent: a
+listener whose chapters were slow, missing, or being worked out when
+they did not want them to be had no way to find the switch that said so.
+There is now a <strong>Chapters</strong> group in Podcast Settings, led
+by the one question most people will ever want to answer – how hard
+should I look? – with the consequence of that choice spelled out beneath
+it in a sentence.</p>
+<h2 id="smaller-things-that-were-missing">Smaller things that were
+missing</h2>
+<ul>
+<li><strong>How long your listening history is kept</strong> is now
+yours to choose: don’t keep one, 30 days, 90 days (the default, and what
+was hardcoded), a year, or forever. “Don’t keep one” stops the writing
+rather than deleting afterwards, which is what somebody choosing it
+asked for.</li>
+<li><strong>Downloads can wait for a connection you are not paying
+for.</strong> Cast has mentioned metered connections in its own source
+comments for two releases and never checked. It checks now, and holds
+only <em>automatic</em> downloads – one you pressed Download for always
+happens. An unknown connection counts as unmetered, because refusing to
+download on a guess is worse than downloading.</li>
+<li><strong>Audio Output Device…</strong> is in the Episode menu. Cast
+plays through Windows’ default device and cannot switch devices itself,
+so rather than offering a picker that would do nothing, it says so in
+one sentence and offers to open Windows’ own per-app sound settings,
+where the choice sticks.</li>
+<li><strong>Listening streaks and a Year in Review.</strong> Streaks are
+<strong>off by default</strong>: a streak is a nudge, and a nudge nobody
+asked for is pressure. Year in Review is a few sentences you can read,
+copy or save – not a dashboard, because a table read aloud is a list of
+numbers with their meanings three columns away. Anything the log cannot
+support is omitted rather than printed as a confident zero.</li>
+<li><strong>What Quill Radio was asked to do now happens.</strong> From
+Radio’s browse tree you could play a subscribed show’s episode and
+nothing else. <strong>Play Next in QUILL Cast</strong>, <strong>Add to
+QUILL Cast Queue</strong> and <strong>Send to the QUILL Cast
+Inbox</strong> are on those rows now, and Cast carries them out at its
+next launch.</li>
+</ul>
+<hr />
+<h2 id="for-anybody-keeping-score-on-the-format">For anybody keeping
+score on the format</h2>
+<p><code>listening-places/1</code> is deliberately not a QUILL thing. It
+is documented, versioned, and small enough to implement in an afternoon;
+the identity scheme is the only part that is hard to change once data
+exists in the wild, which is why it is the part the specification is
+most careful about. If you write a podcast app and want your users’
+places to travel to and from QUILL Cast, the whole of what you need is
+in <code>docs/engineering/listening-places-spec.md</code> and the
+fixtures beside it.</p>
+</main>
+</body>
+</html>

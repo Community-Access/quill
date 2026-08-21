@@ -32265,6 +32265,47 @@ more than a few minutes, that is a real disagreement and QUILL says so
 rather than quietly picking one.</p>
 <p>Everything works completely normally with no sync at all: this is
 additive, and nothing waits on a folder before playing.</p>
+<h3 id="sharing-your-place-with-apps-that-are-not-quill">Sharing your
+place with apps that are not QUILL</h3>
+<p>The sync above carries your place between two copies of QUILL. It is
+encrypted end to end, which is exactly right and also exactly why it can
+never work with anything else: an app somebody else wrote has no way to
+read it. If you listen on a phone with a podcast app that is not ours,
+none of the above helps you.</p>
+<p><strong>Listening Places</strong> is the other half, and it is a
+separate checkbox in the same window. In the same folder you already
+chose, QUILL also writes a small, plain, published file that any podcast
+app is free to read and write. There is no account, no server, and no
+signup – the format is written down publicly, so another app can simply
+support it.</p>
+<p>What that means in practice:</p>
+<ul>
+<li><strong>Turn on only the half you want.</strong> The encrypted
+QUILL-to-QUILL sync and the shared plain file are independent switches,
+because they expose different things. You can run either, both, or
+neither.</li>
+<li><strong>No recovery phrase is needed for this half.</strong> The
+shared file is not encrypted – it could not be, and still be readable by
+another app – so setting it up is one checkbox.</li>
+<li><strong>Titles are not in it unless you say so.</strong> Every show
+and episode is identified by a scrambled fingerprint rather than its
+name, so a folder shared with a family member does not become a list of
+what you listen to. A third checkbox, off by default, adds readable
+titles if you would rather have them.</li>
+<li><strong>Each device writes its own file.</strong> That is what stops
+a cloud drive ever producing a <em>“positions (Jeff’s conflicted
+copy)”</em>, and it means a third and fourth device work without any
+extra setup.</li>
+<li><strong>The most recent place wins, not the furthest.</strong> If
+you deliberately jumped back twenty minutes and then opened the episode
+somewhere else, that jump is respected rather than undone.</li>
+<li><strong>It reads at launch and when you press Sync Now, and at no
+other time.</strong> A position arriving from another device mid-episode
+would move the playhead under you with nothing on screen to explain it,
+so it does not happen.</li>
+</ul>
+<p><strong>Sync Now</strong> covers both halves in one press and reports
+on each.</p>
 <h2 id="sleep-timer">Sleep Timer</h2>
 <p><strong>Tools &gt; Media &gt; Sleep Timer…</strong> stops whatever is
 playing after a while, from one place. Choose a preset (15, 30, 45, 60,

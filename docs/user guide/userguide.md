@@ -8441,6 +8441,43 @@ than quietly picking one.
 Everything works completely normally with no sync at all: this is additive, and
 nothing waits on a folder before playing.
 
+### Sharing your place with apps that are not QUILL
+
+The sync above carries your place between two copies of QUILL. It is encrypted
+end to end, which is exactly right and also exactly why it can never work with
+anything else: an app somebody else wrote has no way to read it. If you listen
+on a phone with a podcast app that is not ours, none of the above helps you.
+
+**Listening Places** is the other half, and it is a separate checkbox in the
+same window. In the same folder you already chose, QUILL also writes a small,
+plain, published file that any podcast app is free to read and write. There is
+no account, no server, and no signup -- the format is written down publicly, so
+another app can simply support it.
+
+What that means in practice:
+
+- **Turn on only the half you want.** The encrypted QUILL-to-QUILL sync and the
+  shared plain file are independent switches, because they expose different
+  things. You can run either, both, or neither.
+- **No recovery phrase is needed for this half.** The shared file is not
+  encrypted -- it could not be, and still be readable by another app -- so
+  setting it up is one checkbox.
+- **Titles are not in it unless you say so.** Every show and episode is
+  identified by a scrambled fingerprint rather than its name, so a folder shared
+  with a family member does not become a list of what you listen to. A third
+  checkbox, off by default, adds readable titles if you would rather have them.
+- **Each device writes its own file.** That is what stops a cloud drive ever
+  producing a *"positions (Jeff's conflicted copy)"*, and it means a third and
+  fourth device work without any extra setup.
+- **The most recent place wins, not the furthest.** If you deliberately jumped
+  back twenty minutes and then opened the episode somewhere else, that jump is
+  respected rather than undone.
+- **It reads at launch and when you press Sync Now, and at no other time.** A
+  position arriving from another device mid-episode would move the playhead
+  under you with nothing on screen to explain it, so it does not happen.
+
+**Sync Now** covers both halves in one press and reports on each.
+
 ## Sleep Timer
 
 **Tools > Media > Sleep Timer...** stops whatever is playing after a while, from one place. Choose a preset (15, 30, 45, 60, or 90 minutes) or type a custom number of minutes, then press **Start**. Over the final 20 seconds, playback fades gently down rather than cutting off abruptly, then stops; your volume is set back to what it was before the fade started, so pressing play again later isn't unexpectedly quiet. Open the dialog again while a timer is running to see how much time is left, or press **Cancel Sleep Timer** (also in the Command Palette as **Media: Cancel Sleep Timer**) to stop the countdown early.
