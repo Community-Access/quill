@@ -39,6 +39,11 @@ Quill Radio plays through **mpv**. Without it the app falls back to Windows Medi
 - **Audio Health gained a Get mpv button** beside Get FFmpeg, each enabled only when it would actually do something, and the mpv row now names the download instead of telling you to reinstall.
 - **The advice now knows which edition you are running.** A Lite install is pointed at the full installer rather than told to repeat an install that could not have helped.
 
+### Two keys that meant one thing and did another
+
+- **Alt+F4 now exits.** While a station plays, closing is protected, so Alt+F4 raises the Exit / Minimize to Tray / Cancel question -- and that dialog's default button was **Minimize**. So the whole keyboard interaction, Alt+F4 then Enter, tucked the window into the tray, and the only thing that genuinely exited was the Exit menu item (which skips the dialog). Exit now leads the row and answers Enter. Minimize is the interesting alternative to a close gesture; it is not the expected answer to one.
+- **Ctrl+Shift+G works on the main window.** Go to Player summons the player over whatever window you are in, and it was carried into the browse tree, the managers, the recordings list and the player panel -- every window except the main one, which is the window most people try it in first. It is now on the Playback menu with its key in the label, running the same dispatcher every other window runs.
+
 ### Bring your YouTube subscriptions across, without a Google account
 
 - **Station > Import YouTube Subscriptions...** (Ctrl+Alt+Shift+Y) reads the subscriptions file you export from Google and follows every channel in it, so forty channels cost one file rather than forty pasted addresses. They land in the YouTube Channels branch you already have, and Quill Radio says what happened: "Imported 24 channels; 3 you already followed."

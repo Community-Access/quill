@@ -1,5 +1,8 @@
 """Closing the window: Exit vs Minimize to Tray, with a persisted default.
 
+Exit is the default button. Anything else makes Alt+F4 answer a question the
+listener did not ask -- see the comment on the button row.
+
 Triggered from ``_on_radio_app_close`` (the titlebar X, Alt+F4, and the
 Station > Exit menu item all funnel through the same ``EVT_CLOSE`` handler)
 whenever ``RadioHistory.close_action`` is still ``"ask"``. The problem this
@@ -55,11 +58,19 @@ class RadioCloseConfirmDialog:
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
-        minimize_btn = wx.Button(self.dialog, self._minimize_id, "&Minimize to Tray")
+        # Exit first, and the default. Alt+F4 and the titlebar X are the "close
+        # this window" gesture, so the answer Enter gives has to be the one the
+        # gesture asked for. Minimize led and was the default until 2026-08-21,
+        # which meant Alt+F4 followed by Enter -- the whole interaction, for
+        # somebody driving by keyboard -- tucked the window into the tray
+        # instead of closing it, and the only thing that really exited was the
+        # Exit menu item. Minimize is the interesting alternative here, not the
+        # expected answer.
         exit_btn = wx.Button(self.dialog, self._exit_id, "E&xit")
+        minimize_btn = wx.Button(self.dialog, self._minimize_id, "&Minimize to Tray")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
-        buttons.Add(minimize_btn, 0, wx.RIGHT, 6)
         buttons.Add(exit_btn, 0, wx.RIGHT, 6)
+        buttons.Add(minimize_btn, 0, wx.RIGHT, 6)
         buttons.Add(cancel_btn)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
         self.dialog.SetSizerAndFit(root)
@@ -76,8 +87,8 @@ class RadioCloseConfirmDialog:
         self.dialog.CentreOnParent()
         apply_modal_ids(
             self.dialog,
-            affirmative_id=self._minimize_id,
-            affirmative_label="Minimize to Tray",
+            affirmative_id=self._exit_id,
+            affirmative_label="Exit",
             cancel_id=wx.ID_CANCEL,
             escape_id=wx.ID_CANCEL,
         )
