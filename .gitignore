@@ -57,6 +57,22 @@ msg.txt
 /x2.md
 /x3.md
 /todo.md
+# Session handoff for the chapter work (2026-08-20). Describes what is in the
+# working tree and not yet committed, so a committed copy would describe nothing.
+/todo2.md
+# Earshot parity working notes -- the same class as the suggest*.md papers above
+# (they describe work rather than being it). Untracked like the rest; listed
+# because tests/unit/structure/test_repo_layout.py reads exact patterns only.
+/ear.md
+
+# Local research lab for the chapter work (2026-08-20): the evaluation harness
+# plus 22 GB of vendored engines, episode audio and result sweeps. The findings
+# it produced are in quill/core/podcasts/; the lab itself is a workbench, not a
+# deliverable, and is far too large to belong in the tree.
+/labs/
+# Scratch capture directories and one-off log dumps from build/size sweeps.
+/.scan/
+/local_full.txt
 
 # Working / scratch files (not part of the project)
 zfix*
