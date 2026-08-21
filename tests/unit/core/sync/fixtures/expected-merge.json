@@ -1,0 +1,32 @@
+{
+  "_about": "The result of merging device-phone.json into device-desktop.json, from the point of view of the desktop. Last write wins on updated_at; a disagreement is reported only when the two positions are at least five minutes apart.",
+  "merged": {
+    "episode:d49b8a9525b77556": {
+      "position_ms": 3120000,
+      "played": false,
+      "updated_at": "2026-08-20T15:30:44Z"
+    },
+    "episode:aa006c65353adf4c": {
+      "position_ms": 0,
+      "played": true,
+      "updated_at": "2026-08-19T20:00:00Z"
+    },
+    "episode:450f529097b3d4a2": {
+      "position_ms": 45000,
+      "played": false,
+      "updated_at": "2026-08-17T08:00:00Z"
+    },
+    "file:73400320-a41f9c02e88b7d15": {
+      "position_ms": 8125000,
+      "played": false,
+      "updated_at": "2026-08-19T21:40:55Z"
+    }
+  },
+  "disagreements": [
+    {
+      "id": "episode:aa006c65353adf4c",
+      "local_ms": 600000,
+      "remote_ms": 0
+    }
+  ]
+}

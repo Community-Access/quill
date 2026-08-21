@@ -30,6 +30,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from quill.core.podcasts import position_sync
 from quill.core.podcasts.models import PodcastEpisode
 
 if TYPE_CHECKING:
@@ -126,14 +127,13 @@ def merge_radio_listens(data_dir: Path, library: PodcastLibrary) -> tuple[int, i
                 # Cast's own convention for a finished episode: played, and
                 # the place cleared so replaying starts at the top.
                 if not episode.played or episode.position_ms:
-                    episode.played = True
-                    episode.position_ms = 0
+                    position_sync.mark_played(episode)
                     updated += 1
                     finished_count += 1
             else:
                 position = max(0, int(row.get("position_ms") or 0))
                 if position and position != episode.position_ms and not episode.played:
-                    episode.position_ms = position
+                    position_sync.remember_position(episode, position)
                     updated += 1
         from quill.core.storage import write_json_atomic
 

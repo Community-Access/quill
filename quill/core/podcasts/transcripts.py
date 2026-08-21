@@ -421,6 +421,45 @@ def save_cached_transcript(show_id: str, episode_guid: str, text: str) -> None:
         return
 
 
+def _timed_cache_name(show_id: str, episode_guid: str) -> str:
+    return f"{_safe_cache_name(show_id, episode_guid)[:-4]}.vtt"
+
+
+def save_cached_transcript_vtt(show_id: str, episode_guid: str, vtt: str) -> None:
+    """Keep the **timed** form of a transcript beside the flat one.
+
+    Two caches rather than one, because the two readers want opposite things
+    and neither can use the other's file. Search wants a paragraph of words and
+    would otherwise match a listener's query against a timestamp; chapters want
+    to know when each line is spoken and cannot work at all without it. Writing
+    only the flat form -- which is what happened until now -- meant the tier
+    described as "segment a transcript already on this machine" could never
+    find one, because every transcript on the machine had had its timings
+    thrown away on the way in.
+
+    Best effort, like its sibling: a transcript that cannot be cached is still
+    a transcript that arrived.
+    """
+    if not vtt.strip():
+        return
+    try:
+        from quill.core.storage import write_text_atomic
+
+        directory = _cache_dir()
+        directory.mkdir(parents=True, exist_ok=True)
+        write_text_atomic(directory / _timed_cache_name(show_id, episode_guid), vtt)
+    except OSError:
+        return
+
+
+def load_cached_transcript_vtt(show_id: str, episode_guid: str) -> str:
+    """The cached WebVTT for an episode, or ""."""
+    try:
+        return (_cache_dir() / _timed_cache_name(show_id, episode_guid)).read_text(encoding="utf-8")
+    except OSError:
+        return ""
+
+
 def load_cached_transcript(show_id: str, episode_guid: str) -> str:
     """The cached transcript text for an episode, or ""."""
     try:

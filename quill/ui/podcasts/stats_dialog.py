@@ -30,9 +30,15 @@ def format_report(
     *,
     show_titles: dict[str, str] | None = None,
     max_shows: int = 20,
+    streak_line: str = "",
 ) -> str:
     """The whole report as plain text -- the dialog's content, and the thing
-    Copy puts on the clipboard."""
+    Copy puts on the clipboard.
+
+    *streak_line* is passed in already decided, and is empty unless the
+    listener has switched streaks on. A streak is a nudge; a nudge nobody asked
+    for is pressure, so this function never works one out for itself.
+    """
     titles = show_titles or {}
     lines = [f"Listening statistics -- {summary.period_label}", ""]
     if not summary.sessions:
@@ -54,6 +60,8 @@ def format_report(
         )
     lines.append(f"Episodes finished: {summary.episodes_completed}")
     lines.append(f"Listening sessions: {summary.sessions}")
+    if streak_line:
+        lines.append(streak_line)
     if summary.saved_by_speed_seconds >= 1 or summary.saved_by_trim_seconds >= 1:
         lines.append(
             f"Content covered in total: {stats.format_duration(summary.total_with_savings_seconds)}"
@@ -84,6 +92,7 @@ class PodcastStatsDialog:
         show_titles: dict[str, str] | None = None,
         announce_cb: Callable[[str], None] | None = None,
         on_clear: Callable[[], int] | None = None,
+        streaks_enabled: bool = False,
     ) -> None:
         import wx
 
@@ -92,6 +101,8 @@ class PodcastStatsDialog:
         self._show_titles = show_titles or {}
         self._announce = announce_cb or (lambda _m: None)
         self._on_clear = on_clear
+        # Opt-in, and off unless the listener asked. See _streak_line.
+        self._streaks_enabled = streaks_enabled
 
         self.dialog = wx.Dialog(
             parent,
@@ -125,12 +136,15 @@ class PodcastStatsDialog:
         copy_btn.SetName("Copy the whole report to the clipboard")
         export_btn = wx.Button(self.dialog, label="&Export CSV...")
         export_btn.SetName("Save every listening session as a CSV file")
+        year_btn = wx.Button(self.dialog, label="&Year in Review...")
+        year_btn.SetName("A few sentences about your listening year, to read or keep")
         clear_btn = wx.Button(self.dialog, label="Clear &Statistics...")
         clear_btn.SetName("Delete the whole listening log")
         clear_btn.Enable(on_clear is not None)
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
         btn_row.Add(copy_btn, 0, wx.RIGHT, 6)
         btn_row.Add(export_btn, 0, wx.RIGHT, 6)
+        btn_row.Add(year_btn, 0, wx.RIGHT, 6)
         btn_row.Add(clear_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn)
@@ -140,6 +154,7 @@ class PodcastStatsDialog:
         self._period_choice.Bind(wx.EVT_CHOICE, lambda _e: self._refresh(announce=True))
         copy_btn.Bind(wx.EVT_BUTTON, self._on_copy)
         export_btn.Bind(wx.EVT_BUTTON, self._on_export)
+        year_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_year_in_review())
         clear_btn.Bind(wx.EVT_BUTTON, self._on_clear_click)
         self._refresh()
 
@@ -157,15 +172,36 @@ class PodcastStatsDialog:
         index = max(0, self._period_choice.GetSelection())
         return stats.PERIODS[index][0]
 
+    def _streak_line(self) -> str:
+        """The streak sentence, or "" -- opt-in, and off unless asked for.
+
+        A streak is a nudge, and a nudge nobody asked for is pressure. Nobody
+        opening a statistics window to see how much they listened should be
+        told how many days in a row they have managed.
+        """
+        if not getattr(self, "_streaks_enabled", False):
+            return ""
+        from quill.core.podcasts.year_in_review import streaks
+
+        return streaks(self._sessions).describe()
+
     def _refresh(self, *, announce: bool = False) -> None:
         summary = stats.summarize(self._sessions, period=self._period_id())
-        text = format_report(summary, show_titles=self._show_titles)
+        text = format_report(
+            summary, show_titles=self._show_titles, streak_line=self._streak_line()
+        )
         self._report.SetValue(text)
         self._report.SetInsertionPoint(0)
         if announce:
             self._announce(
                 f"{summary.period_label}: {stats.format_duration(summary.total_seconds)} listened"
             )
+
+    def _on_year_in_review(self) -> None:
+        """The year as a paragraph -- see ui/podcasts/year_review_dialog."""
+        from quill.ui.podcasts.year_review_dialog import open_year_in_review
+
+        open_year_in_review(self)
 
     def _on_copy(self, _event: object) -> None:
         wx = self._wx

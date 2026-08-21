@@ -89,7 +89,11 @@ def test_picker_offers_rename_and_delete_management() -> None:
 def test_manager_offers_folder_rename_and_delete_with_contents_choice() -> None:
     """Delete Folder... always asks what to do with the podcasts inside —
     move them up to the parent, or unsubscribe them — never a silent choice.
-    F2 renames whatever the tree/list selection is (folder, show, episode)."""
+    F2 renames whatever the tree/list selection is (folder, show, episode).
+
+    The delete body moved to ``ui/podcasts/folder_delete`` under GATE-11 when
+    the folder row gained its listening actions; the manager keeps the entry
+    point, and the two questions are checked where they now live."""
     src = (_UI / "manager_dialog.py").read_text(encoding="utf-8")
     assert "def _on_rename_folder(" in src
     assert "def _on_delete_folder(" in src
@@ -97,5 +101,10 @@ def test_manager_offers_folder_rename_and_delete_with_contents_choice() -> None:
     assert "def _on_rename_episode(" in src
     assert "def _on_delete_inbox_folder(" in src
     assert "WXK_F2" in src
-    assert 'contents = "promote" if picker.GetSelection() == 0 else "remove"' in src
-    assert "_delete_downloaded_files_for_removed_shows(" in src
+
+    deleter = (_UI / "folder_delete.py").read_text(encoding="utf-8")
+    assert 'contents = "promote" if picker.GetSelection() == 0 else "remove"' in deleter
+    assert "_delete_downloaded_files_for_removed_shows(" in deleter
+    # And the second question still defaults to No: audio must not be lost by
+    # somebody pressing Enter on a dialog they have not finished hearing.
+    assert "wx.NO_DEFAULT" in deleter

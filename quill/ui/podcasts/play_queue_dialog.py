@@ -45,6 +45,23 @@ class PlayQueueDialog:
         self.dialog.SetMinSize((560, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
+        group_row = wx.BoxSizer(wx.HORIZONTAL)
+        group_row.Add(
+            wx.StaticText(self.dialog, label="&Group by:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            6,
+        )
+        self._group_choice = wx.Choice(
+            self.dialog, choices=["Nothing", "Podcast", "Library folder"]
+        )
+        self._group_choice.SetName(
+            "How the queue is read. Grouping never changes the play order, only how it is listed."
+        )
+        self._group_choice.SetSelection(self._group_index())
+        group_row.Add(self._group_choice, 1, wx.EXPAND)
+        root.Add(group_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+
         self._list = wx.ListBox(self.dialog)
         self._list.SetName("Play Queue in play order; Enter plays the selected episode now")
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 8)
@@ -73,6 +90,7 @@ class PlayQueueDialog:
         root.Add(close_row, 0, wx.EXPAND | wx.ALL, 8)
 
         self.dialog.SetSizer(root)
+        self._group_choice.Bind(wx.EVT_CHOICE, lambda _e: self._on_group_changed())
         self._list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._on_play_now())
         self._list.Bind(wx.EVT_KEY_DOWN, self._on_list_key)
         self._reload()
@@ -88,17 +106,76 @@ class PlayQueueDialog:
         show, episode = resolved
         return f"{index + 1}. {episode.title} — {show.title}{marker}"
 
+    def _group_index(self) -> int:
+        settings = getattr(self._library, "settings", None)
+        mode = str(getattr(settings, "queue_group_mode", "none") or "none")
+        return queue_ops.GROUP_MODES.index(mode) if mode in queue_ops.GROUP_MODES else 0
+
+    def _on_group_changed(self) -> None:
+        """Remember the choice, redraw, and say how the list now reads."""
+        mode = queue_ops.GROUP_MODES[max(0, self._group_choice.GetSelection())]
+        settings = getattr(self._library, "settings", None)
+        if settings is not None:
+            settings.queue_group_mode = mode
+            self._on_library_changed()
+        self._reload()
+        self._list.SetSelection(0)
+        groups = len([row for row in self._rows if row[0] is None])
+        if mode == "none":
+            self._announce(f"{len(self._library.queue)} episodes, ungrouped.")
+        else:
+            self._announce(f"{groups} group{'' if groups == 1 else 's'}.")
+
     def _reload(self, select: int | None = None) -> None:
-        current = self._list.GetSelection() if select is None else select
-        self._list.Set([self._slot_label(i) for i in range(len(self._library.queue))])
-        count = len(self._library.queue)
-        if count:
-            self._list.SetSelection(max(0, min(current, count - 1)))
+        """Rebuild the visible list, which may now carry group headers.
+
+        ``self._rows`` maps every visible line back to a queue index, or to
+        ``None`` for a header. Every action reads the queue index from there
+        rather than from the list position, so a header can never be played,
+        moved or removed by an action that thought it was an episode.
+
+        *select* is a **queue index**, not a row: an episode that moved should
+        be followed, and in a grouped list its row number is not its position.
+        """
+        current_row = self._list.GetSelection()
+        mode = queue_ops.GROUP_MODES[max(0, self._group_choice.GetSelection())]
+        labels: list[str] = []
+        self._rows: list[tuple[int | None, str]] = []
+        for group_label, indices in queue_ops.group_queue_by(self._library, mode):
+            if group_label:
+                count = len(indices)
+                labels.append(f"{group_label}, group, {count} episode{'' if count == 1 else 's'}")
+                self._rows.append((None, group_label))
+            for index in indices:
+                labels.append(("    " if group_label else "") + self._slot_label(index))
+                self._rows.append((index, group_label))
+        self._list.Set(labels)
+        if not labels:
+            return
+        if select is None:
+            self._list.SetSelection(max(0, min(current_row, len(labels) - 1)))
+            return
+        for row, (index, _label) in enumerate(self._rows):
+            if index == select:
+                self._list.SetSelection(row)
+                return
+        self._list.SetSelection(0)
 
     # -- actions ---------------------------------------------------------------
 
     def _selected(self) -> int:
-        return self._list.GetSelection()
+        """The queue index of the selected line, or -1 on a header or nothing.
+
+        Headers answer -1 rather than the next episode's index: acting on a
+        header because it happened to be selected is how somebody removes an
+        episode they never chose.
+        """
+        row = self._list.GetSelection()
+        rows = getattr(self, "_rows", [])
+        if not (0 <= row < len(rows)):
+            return -1
+        index = rows[row][0]
+        return -1 if index is None else int(index)
 
     def _on_play_now(self) -> None:
         index = self._selected()

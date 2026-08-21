@@ -21,6 +21,27 @@ dropped. A fabricated "time saved" figure is worse than an absent one, so an
 unreported saving stays zero rather than being estimated from the filter
 settings.
 
+WHAT IS SHARED WITH QUILL RADIO, AND WHAT IS NOT
+------------------------------------------------
+The engine -- the session record, the periods, the retention window, the
+per-key totals, the CSV -- is :mod:`quill.core.media_stats`, and Radio sits on
+the same one (``core/radio/stats.py``). What stays here is Cast's own
+vocabulary and, deliberately, **Cast's own on-disk shape**.
+
+The store is not migrated onto the shared one, and that is a decision rather
+than an omission. This file has been accumulating real listening history in
+``{"retention_days": n, "sessions": [...]}`` with ``show_id`` and
+``episode_guid`` field names since 1.1.0. Rewriting it to the shared record's
+spelling would gain tidiness and risk somebody's history, and there is no
+version of that trade worth taking for a file nobody can recompute. The two
+readers understand each other's field names (see
+``MediaSession.from_dict``), so a future migration stays available and simply
+is not urgent.
+
+What genuinely was duplicated -- the period table and the way a duration is
+spoken -- now comes from the shared module, so "this week" cannot come to mean
+two different weeks in two apps a listener compares.
+
 wx-free, strict-typed.
 """
 
@@ -31,6 +52,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
+from quill.core import media_stats
 from quill.core.podcasts.models import now_iso
 
 _FILE_NAME = "podcast_stats.json"
@@ -42,13 +64,9 @@ _MAX_SESSIONS = 5000
 DEFAULT_RETENTION_DAYS = 90
 
 #: Period selectors offered by the Statistics dialog: (id, label, days).
-#: ``0`` days means "everything the log still holds".
-PERIODS: tuple[tuple[str, str, int], ...] = (
-    ("week", "This week", 7),
-    ("month", "This month", 30),
-    ("year", "This year", 365),
-    ("all", "All time", 0),
-)
+#: Shared with Quill Radio, because "this week" has to mean the same seven days
+#: in both apps or a listener comparing them is comparing nothing.
+PERIODS = media_stats.PERIODS
 
 
 @dataclass(slots=True)
@@ -157,24 +175,10 @@ def _parse(timestamp: str) -> datetime | None:
     return parsed if parsed.tzinfo is not None else parsed.replace(tzinfo=UTC)
 
 
-def format_duration(seconds: float) -> str:
-    """Spoken-friendly duration: "3 hours, 47 minutes".
-
-    Words, not colons: a screen reader reads ``3:47:00`` as "three forty-seven
-    zero zero", which is a time of day, not a length. Under a minute reports
-    seconds so a fresh install does not read "0 minutes" and look broken.
-    """
-    total = int(max(0.0, seconds))
-    if total < 60:
-        return f"{total} second{'s' if total != 1 else ''}"
-    hours, remainder = divmod(total, 3600)
-    minutes = remainder // 60
-    parts: list[str] = []
-    if hours:
-        parts.append(f"{hours} hour{'s' if hours != 1 else ''}")
-    if minutes or not hours:
-        parts.append(f"{minutes} minute{'s' if minutes != 1 else ''}")
-    return ", ".join(parts)
+#: Spoken-friendly duration ("3 hours, 47 minutes"), shared with Quill Radio.
+#: Words rather than colons, because a screen reader reads ``3:47:00`` as
+#: "three forty-seven zero zero", which is a time of day and not a length.
+format_duration = media_stats.format_duration
 
 
 def summarize(

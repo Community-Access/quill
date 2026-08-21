@@ -62,6 +62,18 @@ ENGINE_PACK_OWNED: tuple[str, ...] = (
     "kokoro_onnx",
     "onnxruntime",  # arrives with the kokoro-onnx pack
     "sherpa_onnx",  # nemotron / parakeet / VAD
+    # The hub travels WITH the Faster Whisper pack, not with the runtime:
+    # engine_install._FASTER_WHISPER_REQUIREMENTS installs
+    # ``huggingface_hub>=0.20`` into the pack folder alongside faster-whisper,
+    # and no module under quill/ imports it directly (model_mirrors.py moved it
+    # off the base dependency deliberately; whisper.cpp fetches its GGML models
+    # over plain HTTPS). A frozen copy would therefore serve nobody but the
+    # pack -- and shadow the pack's own, pinned copy while doing it, which is
+    # the whole failure this list exists to prevent. It was listed under
+    # MUST_IMPORT until 2026-08-20, where it demanded a module the 2026-08-19
+    # excludes had already made unreachable, so the runtime build could not
+    # pass on any machine.
+    "huggingface_hub",
 )
 
 #: Deliberately bundled and NOT engine-pack-owned, but load native libraries or
@@ -81,18 +93,13 @@ MUST_IMPORT: tuple[str, ...] = (
     "quill.core.spellcheck",
     "quill.core.speech.engine_install",
     "quill.ui.audio.mpv_engine",
-    # The two survivors of the 2026-08-19 undeclared-payload excludes. Each is
-    # kept deliberately while a package it can reach for was dropped, so each is
-    # one dependency bump away from becoming a shipped-broken feature:
-    #   huggingface_hub -- hf_xet is excluded. The hub falls back to plain
-    #     HTTPS today (is_xet_available() gates every use), but a future release
-    #     that makes Xet mandatory would break Faster Whisper's model download,
-    #     and nothing else would say so.
-    #   quill.io.pages -- keynote_parser and its protobuf/snappy closure are
-    #     excluded. The module must still import and fall through to Route B
-    #     (LibreOffice / MarkItDown); an ImportError here means .pages files
-    #     stopped opening at all rather than opening by the other route.
-    "huggingface_hub",
+    # The survivor of the 2026-08-19 undeclared-payload excludes: kept
+    # deliberately while a package it can reach for was dropped, so it is one
+    # dependency bump away from becoming a shipped-broken feature.
+    # keynote_parser and its protobuf/snappy closure are excluded, and this is
+    # quill.io.pages Route A. The module must still import and fall through to
+    # Route B (LibreOffice / MarkItDown); an ImportError here means .pages files
+    # stopped opening at all rather than opening by the other route.
     "quill.io.pages",
 )
 

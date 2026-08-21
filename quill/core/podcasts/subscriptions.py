@@ -311,23 +311,13 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         if show is not None:
             shows.append(show)
     folders: list[PodcastFolder] = []
+    # Through the model rather than field by field: PodcastFolder gained
+    # sort_order (Move Up / Move Down), and a second reader here would have
+    # silently dropped it on every save.
     for entry in raw.get("folders", []) if isinstance(raw.get("folders"), list) else []:
-        if not isinstance(entry, dict):
-            continue
-        folder_id = str(entry.get("id", "")).strip()
-        name = str(entry.get("name", "")).strip()
-        if not folder_id or not name:
-            continue
-        parent_id = entry.get("parent_folder_id")
-        folders.append(
-            PodcastFolder(
-                id=folder_id,
-                name=name,
-                parent_folder_id=str(parent_id)
-                if isinstance(parent_id, str) and parent_id
-                else None,
-            )
-        )
+        folder = PodcastFolder.from_dict(entry)
+        if folder is not None:
+            folders.append(folder)
     settings_data = raw.get("settings")
     settings = (
         PodcastSettings.from_dict(settings_data)
@@ -341,22 +331,9 @@ def load_library(data_dir: Path) -> PodcastLibrary:
             queue.append(item)
     inbox_folders: list[PodcastFolder] = []
     for entry in raw.get("inbox_folders", []) if isinstance(raw.get("inbox_folders"), list) else []:
-        if not isinstance(entry, dict):
-            continue
-        folder_id = str(entry.get("id", "")).strip()
-        name = str(entry.get("name", "")).strip()
-        if not folder_id or not name:
-            continue
-        parent_id = entry.get("parent_folder_id")
-        inbox_folders.append(
-            PodcastFolder(
-                id=folder_id,
-                name=name,
-                parent_folder_id=str(parent_id)
-                if isinstance(parent_id, str) and parent_id
-                else None,
-            )
-        )
+        folder = PodcastFolder.from_dict(entry)
+        if folder is not None:
+            inbox_folders.append(folder)
     assignments_raw = raw.get("inbox_assignments")
     inbox_assignments = (
         {str(k): str(v) for k, v in assignments_raw.items()}
@@ -395,16 +372,10 @@ def save_library(data_dir: Path, library: PodcastLibrary) -> None:
         _store_path(data_dir),
         {
             "shows": [s.to_dict() for s in library.shows],
-            "folders": [
-                {"id": f.id, "name": f.name, "parent_folder_id": f.parent_folder_id}
-                for f in library.folders
-            ],
+            "folders": [f.to_dict() for f in library.folders],
             "settings": library.settings.to_dict(),
             "queue": [q.to_dict() for q in library.queue],
-            "inbox_folders": [
-                {"id": f.id, "name": f.name, "parent_folder_id": f.parent_folder_id}
-                for f in library.inbox_folders
-            ],
+            "inbox_folders": [f.to_dict() for f in library.inbox_folders],
             "inbox_assignments": dict(library.inbox_assignments),
             "playlists": [p.to_dict() for p in library.playlists],
             "recently_expired": [e.to_dict() for e in library.recently_expired],

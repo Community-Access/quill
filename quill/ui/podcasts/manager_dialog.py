@@ -19,7 +19,7 @@ import re
 from collections.abc import Callable
 from pathlib import Path
 
-from quill.core.podcasts import feed_auth
+from quill.core.podcasts import feed_auth, position_sync
 from quill.core.podcasts.chapter_sources import (
     episode_has_possible_chapters,
 )
@@ -644,26 +644,22 @@ class PodcastManagerDialog(
     # -- move / rename / delete ----------------------------------------------
 
     def _on_move_show_to_folder(self, show: PodcastShow) -> None:
-        from quill.ui.podcasts.folder_picker_dialog import FolderPickerDialog
+        """File one podcast -- see ui/podcasts/move_shows_dialog."""
+        from quill.ui.podcasts.move_shows_dialog import move_one_show
 
-        picker = FolderPickerDialog(
-            self.dialog,
-            library=self._library,
-            title=f"Move {show.title} to Folder",
-            announce_cb=self._announce,
-        )
-        result = picker.show()
-        if not result.confirmed:
-            return
-        chosen = result.folder_id
-        anchor = self._neighbor_anchor_for_show(show.id)
-        show.folder_id = chosen or None
-        self._on_library_changed()
-        self.refresh_tree()
-        self._restore_tree_anchor(anchor)
-        destination = self._library.find_folder(chosen) if chosen else None
-        where = destination.name if destination is not None else "the top level"
-        self._announce(f"Moved {show.title} to {where}")
+        move_one_show(self, show)
+
+    def _on_add_starter_playlists(self) -> None:
+        """Five smart playlists worth having -- see ui/podcasts/playlist_starters."""
+        from quill.ui.podcasts.playlist_starters import add_starters
+
+        add_starters(self)
+
+    def _on_move_several(self, preselect: str = "") -> None:
+        """Move several podcasts into one folder -- see ui/podcasts/move_shows_dialog."""
+        from quill.ui.podcasts.move_shows_dialog import open_move_shows
+
+        open_move_shows(self, preselect)
 
     def _prompt_rename(self, title: str, current: str) -> str | None:
         wx = self._wx
@@ -720,41 +716,13 @@ class PodcastManagerDialog(
         return deleted
 
     def _on_delete_folder(self, folder: object) -> None:
-        wx = self._wx
-        with wx.SingleChoiceDialog(  # dialog_button_contract: exempt
-            self.dialog,
-            f'What should happen to the podcasts inside "{folder.name}"?',
-            "Delete Folder",
-            [
-                "Move them up to the parent folder (safe)",
-                "Unsubscribe them too",
-            ],
-        ) as picker:
-            if picker.ShowModal() != wx.ID_OK:
-                return
-            contents = "promote" if picker.GetSelection() == 0 else "remove"
-        removed = self._library.delete_folder(folder.id, contents=contents)
-        deleted_files = 0
-        if removed:
-            confirm = show_message_box(
-                f"Also delete the downloaded episode files of the "
-                f"{len(removed)} unsubscribed show(s)?",
-                "Delete Downloaded Files",
-                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-                self.dialog,
-                announce=self._announce,
-            )
-            if confirm == wx.YES:
-                deleted_files = self._delete_downloaded_files_for_removed_shows(removed)
-        self._on_library_changed()
-        self.refresh_tree()
-        if removed:
-            suffix = f" and {deleted_files} downloaded file(s) deleted" if deleted_files else ""
-            self._announce(
-                f"Folder {folder.name} deleted; {len(removed)} show(s) unsubscribed{suffix}"
-            )
-        else:
-            self._announce(f"Folder {folder.name} deleted; its contents moved up")
+        """Delete a folder, and decide what happens to what is inside it.
+
+        Body in ``ui/podcasts/folder_delete`` (GATE-11).
+        """
+        from quill.ui.podcasts.folder_delete import delete_folder
+
+        delete_folder(self, folder)
 
     def _on_delete_inbox_folder(self, folder: object) -> None:
         from quill.core.podcasts.inbox import delete_inbox_folder
@@ -793,9 +761,15 @@ class PodcastManagerDialog(
                 menu.Bind(wx.EVT_MENU, lambda _e: self._on_forget_inbox_folder(show), forget_item)
             menu.AppendSeparator()
             build_menu(self, menu, self._resolved_show_actions(show))
+            # Filing several at once. On the show menu because that is where
+            # somebody already is when they decide the library needs tidying.
+            bulk_item = menu.Append(wx.ID_ANY, "Move Se&veral Podcasts to Folder...")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_move_several(show.id), bulk_item)
         elif self._selected_virtual_view() == "recently_expired":
             self._append_recently_expired_items(menu)
         elif self._selected_playlists_root():
+            starters_item = menu.Append(wx.ID_ANY, "Add S&tarter Playlists")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_add_starter_playlists(), starters_item)
             smart_item = menu.Append(wx.ID_ANY, "New &Smart Playlist...")
             menu.Bind(wx.EVT_MENU, lambda _e: self._on_new_smart_playlist(), smart_item)
             manual_item = menu.Append(wx.ID_ANY, "New Play&list...")
@@ -822,6 +796,11 @@ class PodcastManagerDialog(
             folder_id = self._selected_folder_id()
             folder = self._library.find_folder(folder_id) if folder_id else None
             if folder is not None:
+                # A folder is a place you listen from, not only a place shows
+                # are filed. Built in ui/podcasts/folder_menu (GATE-11).
+                from quill.ui.podcasts.folder_menu import append_folder_items
+
+                append_folder_items(self, menu, folder_id)
                 rename_item = menu.Append(wx.ID_ANY, "Rena&me Folder...\tF2")
                 menu.Bind(wx.EVT_MENU, lambda _e, f=folder: self._on_rename_folder(f), rename_item)
                 delete_item = menu.Append(wx.ID_ANY, "&Delete Folder...")
@@ -919,6 +898,21 @@ class PodcastManagerDialog(
         from quill.ui.podcasts import transcript_actions
 
         transcript_actions.open_chapters(self, self._current_show, self._selected_episode())
+
+    def _on_analyze_chapters(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        """Analyse Chapters, from the episode context menu.
+
+        Routed to the frame rather than run here: the analysis needs the task
+        manager and the announcement channel, and the manager dialog is a view
+        onto the frame's library, not a second owner of it.
+        """
+        from quill.ui.podcasts.chapter_analysis import analyse_chapters_for_episode
+
+        host = self._transport_host
+        if host is None or not hasattr(host, "_task_manager"):
+            self._announce("Chapters can only be analysed from the main window.")
+            return
+        analyse_chapters_for_episode(host, show, episode)
 
     def _open_chapters_dialog(
         self, show: PodcastShow, episode: PodcastEpisode, chapter_set: object
@@ -1075,7 +1069,7 @@ class PodcastManagerDialog(
         self._announce("Sent show notes to a new document")
 
     def _on_toggle_played(self, episode: PodcastEpisode) -> None:
-        episode.played = not episode.played
+        position_sync.mark_played(episode, not episode.played)
         self._on_library_changed()
         self._refresh_selected_episode_row()
         self._announce("Marked as played" if episode.played else "Marked as unplayed")
@@ -1088,6 +1082,12 @@ class PodcastManagerDialog(
             finally:
                 wx.TheClipboard.Close()
         self._announce("Copied episode link")
+
+    def _on_share_moment(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        """Copy a link and a sentence for where this episode is right now."""
+        from quill.ui.podcasts.share_moment import share_moment
+
+        share_moment(self, show, episode, int(getattr(episode, "position_ms", 0) or 0))
 
     # -- sharing and export (x.md item 9) ------------------------------
     # Thin wiring only; the behaviour is in show_actions so the standalone
@@ -1160,7 +1160,6 @@ class PodcastManagerDialog(
         if show is None:
             return
         wx = self._wx
-        from quill.ui.dialog_contract import show_message_box
 
         downloaded = [e for e in show.episodes if e.downloaded_path]
         policy = self._library.effective_settings(show).delete_files_on_remove

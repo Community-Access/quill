@@ -17,6 +17,9 @@ from quill.core.radio.browse_visibility import normalize as normalize_browse_sou
 from quill.core.radio.models import RadioStation
 from quill.core.radio.onboarding import RadioOnboardingState
 from quill.core.radio.play_queue import normalize_repeat_mode
+from quill.core.radio.search_history import SearchQuery
+from quill.core.radio.search_history import from_json as search_history_from_json
+from quill.core.radio.search_history import to_json as search_history_to_json
 from quill.core.radio.search_sources import DEFAULT_ENABLED as DEFAULT_SEARCH_SOURCES
 from quill.core.radio.search_sources import normalize as normalize_search_sources
 
@@ -96,6 +99,13 @@ class RadioHistory:
     #: The last Source-facet choice in Find Stations, re-applied on open -- a
     #: filter you must re-pick every search is not a filter.
     search_source_facet: str = ""
+    #: The searches already run, newest first, so running one again is not
+    #: retyping it. Whole queries rather than bare words: *jazz in France* and
+    #: *jazz in Brazil* are different searches, and a list that kept only "jazz"
+    #: would hand back the wrong one. See quill.core.radio.search_history --
+    #: it rides this file deliberately, so clearing the recently-played history
+    #: clears this too rather than leaving a second history nobody knew about.
+    recent_searches: tuple[SearchQuery, ...] = ()
     #: Which branches Browse Stations shows. ``None`` means "never set", which
     #: matters: it lets a branch added in a later release appear for people who
     #: never touched the setting, instead of being frozen out by a stored list
@@ -319,6 +329,7 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.recordings_repeat = normalize_repeat_mode(raw.get("recordings_repeat"))
         history.search_sources_enabled = normalize_search_sources(raw.get("search_sources_enabled"))
         history.search_source_facet = str(raw.get("search_source_facet", "") or "")
+        history.recent_searches = search_history_from_json(raw.get("recent_searches"))
         # Present-vs-absent is load-bearing: absent stays None ("never set").
         if "browse_sources_enabled" in raw:
             history.browse_sources_enabled = normalize_browse_sources(
@@ -455,6 +466,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "recordings_repeat": history.recordings_repeat,
             "search_sources_enabled": list(history.search_sources_enabled),
             "search_source_facet": history.search_source_facet,
+            "recent_searches": search_history_to_json(history.recent_searches),
             **(
                 {"browse_sources_enabled": list(history.browse_sources_enabled)}
                 if history.browse_sources_enabled is not None

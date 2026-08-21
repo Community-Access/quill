@@ -67,6 +67,35 @@ class PodcastFolder:
     id: str
     name: str
     parent_folder_id: str | None = None
+    #: Where this folder sits among its siblings. Move Up / Move Down write it
+    #: (``folder_actions.reorder_folder``), and it exists because a tree that
+    #: can only be rearranged by dragging is a tree somebody using a screen
+    #: reader cannot rearrange at all.
+    sort_order: int = 0
+
+    def to_dict(self) -> dict[str, object]:
+        row: dict[str, object] = {"id": self.id, "name": self.name}
+        if self.parent_folder_id:
+            row["parent_folder_id"] = self.parent_folder_id
+        if self.sort_order:
+            row["sort_order"] = self.sort_order
+        return row
+
+    @classmethod
+    def from_dict(cls, data: object) -> PodcastFolder | None:
+        if not isinstance(data, dict):
+            return None
+        folder_id = str(data.get("id", "")).strip()
+        name = str(data.get("name", "")).strip()
+        if not folder_id or not name:
+            return None
+        parent = str(data.get("parent_folder_id", "") or "").strip()
+        return cls(
+            id=folder_id,
+            name=name,
+            parent_folder_id=parent or None,
+            sort_order=_coerce_int(data.get("sort_order"), 0),
+        )
 
 
 @dataclass(slots=True)
@@ -252,6 +281,26 @@ class PodcastSettings:
     chapters_speech_engine: str = ""
     #: Say so when a scan finishes. Politely, once, and never as an interruption.
     chapters_announce: bool = True
+    #: Seconds either side of a mark that **Preview** plays -- see
+    #: ``chapter_edits.preview_window`` for why it is symmetrical.
+    chapters_preview_seconds: int = 10
+    #: How long a listening history is kept, in days. 90 by default; ``0``
+    #: keeps it forever, and ``-1`` means **do not keep one at all**, which
+    #: short-circuits the write rather than pruning afterwards. A privacy
+    #: commitment the app made and could not honour: the 90 days was hardcoded
+    #: and there was no way to say either "forever" or "never".
+    history_retention_days: int = 90
+    #: Download when the connection is metered. True is today's behaviour, so
+    #: nobody's downloads stop on upgrade; the guard only ever *holds* an
+    #: automatic download, never a one you asked for by name.
+    download_on_metered: bool = True
+    #: Streaks and Year in Review. Off, matching the app it came from: a
+    #: listening streak is a nudge, and a nudge nobody asked for is pressure.
+    stats_streaks_enabled: bool = False
+    #: Which directory Add Podcast searches: iTunes, Podcast Index, or both.
+    directory_source: str = "itunes"
+    #: How the Play Queue is grouped: none, by podcast, or by library folder.
+    queue_group_mode: str = "none"
     #: Queue Expiration (1.1.0): a queued episode older than this many days
     #: leaves the Play Queue for Recently Expired. 0 = off, and off is the
     #: only sensible *global* value -- the useful number differs per show
@@ -354,6 +403,12 @@ class PodcastSettings:
             "chapters_name_sections": self.chapters_name_sections,
             "chapters_speech_engine": self.chapters_speech_engine,
             "chapters_announce": self.chapters_announce,
+            "chapters_preview_seconds": self.chapters_preview_seconds,
+            "history_retention_days": self.history_retention_days,
+            "download_on_metered": self.download_on_metered,
+            "stats_streaks_enabled": self.stats_streaks_enabled,
+            "directory_source": self.directory_source,
+            "queue_group_mode": self.queue_group_mode,
             "queue_age_limit_days": self.queue_age_limit_days,
             "inbox_max_episodes": self.inbox_max_episodes,
             "inbox_age_limit_hours": self.inbox_age_limit_hours,
@@ -433,6 +488,15 @@ class PodcastSettings:
                 {"off", "when_downloaded", "always"},
                 "when_downloaded",
             ),
+            history_retention_days=_coerce_int(data.get("history_retention_days"), 90),
+            download_on_metered=bool(data.get("download_on_metered", True)),
+            stats_streaks_enabled=bool(data.get("stats_streaks_enabled", False)),
+            directory_source=_one_of(
+                data.get("directory_source"), {"itunes", "podcast_index", "both"}, "itunes"
+            ),
+            queue_group_mode=_one_of(
+                data.get("queue_group_mode"), {"none", "show", "folder"}, "none"
+            ),
             chapters_effort=_one_of(
                 data.get("chapters_effort"), {"quick", "thorough", "deep"}, "thorough"
             ),
@@ -442,6 +506,10 @@ class PodcastSettings:
             chapters_name_sections=bool(data.get("chapters_name_sections", False)),
             chapters_speech_engine=str(data.get("chapters_speech_engine", "") or ""),
             chapters_announce=bool(data.get("chapters_announce", True)),
+            # Clamped, not validated: neither value is a reason to refuse to open.
+            chapters_preview_seconds=max(
+                3, min(60, _coerce_int(data.get("chapters_preview_seconds"), 10))
+            ),
             queue_age_limit_days=max(0, _coerce_int(data.get("queue_age_limit_days"), 0)),
             inbox_max_episodes=max(0, _coerce_int(data.get("inbox_max_episodes"), 0)),
             inbox_age_limit_hours=max(0, _coerce_int(data.get("inbox_age_limit_hours"), 0)),
@@ -492,6 +560,12 @@ class PodcastEpisode:
     mode_override: str = ""  # "" | "stream" | "download"
     played: bool = False
     position_ms: int = 0  # resume position; syncs via QUILL Sync (guid-keyed)
+    #: When the place above was last decided. RFC 3339 UTC ending ``Z``, so
+    #: plain string comparison sorts it and the merge needs no date parsing.
+    #: Merging positions is last-write-wins, never furthest-wins -- see
+    #: ``core/podcasts/position_sync.py`` -- so without this field there is
+    #: nothing to merge on and a place cannot travel between devices at all.
+    position_updated_at: str = ""
     #: Podcasting 2.0 tags read from this item: who is on it, the moments the
     #: publisher marked, alternate audio, where it is about. Serialised only
     #: when non-empty, so feeds that publish none of it cost nothing.
@@ -512,6 +586,11 @@ class PodcastEpisode:
             "mode_override": self.mode_override,
             "played": self.played,
             "position_ms": self.position_ms,
+            **(
+                {"position_updated_at": self.position_updated_at}
+                if self.position_updated_at
+                else {}
+            ),
             **({"tags": self.tags.to_dict()} if not self.tags.is_empty else {}),
         }
 
@@ -536,6 +615,7 @@ class PodcastEpisode:
             mode_override=str(data.get("mode_override", "")),
             played=bool(data.get("played", False)),
             position_ms=_coerce_int(data.get("position_ms"), 0),
+            position_updated_at=str(data.get("position_updated_at", "")),
             tags=NamespaceTags.from_dict(data.get("tags")),
         )
 

@@ -67,15 +67,22 @@ def plan(
     next_url: str = "",
     next_is_local: bool = False,
     already_prebuffered: bool = False,
+    on_metered: bool = False,
 ) -> PrebufferPlan:
     """Whether to start loading the next queue item now.
 
     Deliberately a pure decision with every input passed in: the caller knows
     what is playing and what is next, and this knows the policy. That split is
-    what lets the policy be tested without a player, a queue or a network.
+    what lets the policy be tested without a player, a queue or a network --
+    which is also why *on_metered* is a plain flag rather than a call into
+    ``core.net_metered`` from in here.
     """
     if not enabled:
         return PrebufferPlan(reason="Prebuffering is switched off.")
+    if on_metered:
+        # The clearest case of all for the metered guard: nobody asked for this
+        # episode yet, and it may never be played at all.
+        return PrebufferPlan(reason="Waiting until you are off a metered connection.")
     if already_prebuffered:
         return PrebufferPlan(reason="The next episode is already ready.")
     if not (next_show_id and next_episode_guid):

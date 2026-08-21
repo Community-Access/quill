@@ -234,6 +234,12 @@ class JobSnapshot:
     minutes: int
     filter_graph: str
     entry_id: str = ""
+    #: True when the listener asked for this length, false when ``minutes`` is
+    #: ``settings.max_duration_minutes`` standing in as a safety cap. Only the
+    #: first kind may be counted down to -- see ``radio.recording_progress``,
+    #: which explains why showing "142 min left" to somebody who pressed Record
+    #: Now announces an intention they never expressed.
+    duration_requested: bool = False
 
 
 @dataclass
@@ -262,6 +268,11 @@ class RecordingJob:
     started_at: datetime
     scheduled_end: datetime
     entry_id: str = ""
+    #: Carried onto every snapshot; see ``JobSnapshot.duration_requested``. A
+    #: continuation inherits it rather than re-deriving it, because a reconnect
+    #: is handed the *remaining* minutes as an explicit duration and would
+    #: otherwise promote an open-ended capture into one with a deadline.
+    duration_requested: bool = False
     #: The exact-OptiLab pass to run over the finished file, or None (the
     #: default) for "leave it as recorded". Carried on the job, not read from
     #: settings at the end, so a recording is post-processed the way it was
@@ -292,6 +303,7 @@ class RecordingJob:
             minutes=self.minutes,
             filter_graph=self.filter_graph,
             entry_id=self.entry_id,
+            duration_requested=self.duration_requested,
         )
 
 
@@ -451,6 +463,7 @@ class RadioRecorder:
         _forced_extension: str = "",
         _started_at: datetime | None = None,
         _scheduled_end: datetime | None = None,
+        _duration_requested: bool | None = None,
     ) -> Path:
         """Start recording *stream_url* as a new concurrent job; returns where
         ffmpeg is writing. Raises :class:`RecordingError` if ffmpeg is
@@ -574,6 +587,14 @@ class RadioRecorder:
         minutes = (
             duration_minutes if duration_minutes is not None else settings.max_duration_minutes
         )
+        # Whether that length is a decision or a safety cap. A continuation
+        # passes the original answer in, because it is always handed an
+        # explicit `duration_minutes` (the remaining time) and re-deriving it
+        # here would turn every reconnected open-ended capture into one that
+        # appears to be counting down to an end nobody chose.
+        duration_requested = (
+            (duration_minutes is not None) if _duration_requested is None else _duration_requested
+        )
         args = build_record_command(
             ffmpeg,
             capture_url,
@@ -637,6 +658,7 @@ class RadioRecorder:
             started_at=started_at,
             scheduled_end=scheduled_end,
             entry_id=entry_id,
+            duration_requested=duration_requested,
             win_job=win_job,
             reconnect_attempt=_continuation_part,
             # Raw capture is never decoded, so it can never be post-processed
@@ -962,6 +984,7 @@ class RadioRecorder:
                 _forced_extension=job.extension,
                 _started_at=job.started_at,
                 _scheduled_end=job.scheduled_end,
+                _duration_requested=job.duration_requested,
             )
         except RecordingError as error:
             logger.warning("Reconnect attempt %d could not start: %s", attempt, error)

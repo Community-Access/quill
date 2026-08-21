@@ -125,6 +125,17 @@ if (Test-Path (Join-Path $FfmpegDir "ffprobe.exe")) {
 }
 $ffLicense = Join-Path (Split-Path -Parent $FfmpegDir) "LICENSE"
 if (Test-Path $ffLicense) { Copy-Item $ffLicense (Join-Path $toolsDir "FFMPEG-LICENSE.txt") -Force }
+
+# -- the chapter engine's model ----------------------------------------------
+# Cast infers chapters from a transcript, and most podcasts publish none -- so
+# without a local engine the honest answer is always "no chapters could be
+# found". The model is 40 MB and Apache-2.0, which is exactly why it was chosen
+# over models thirty-five times its size: small enough to ship, so the feature
+# answers the first time somebody asks rather than opening with a download.
+# Verified against the MD5 the publisher pins (scripts/stage_vosk_model.py).
+Write-Host "Staging the Vosk chapter model..."
+& $Python (Join-Path $QuillRepo "scripts\stage_vosk_model.py") $appDir
+if ($LASTEXITCODE -ne 0) { throw "Could not stage the Vosk chapter model." }
 $docsDir = Join-Path $appDir "docs"
 New-Item -ItemType Directory -Force $docsDir | Out-Null
 # .md + .html for every doc (Help > User Guide / Release Notes / Product

@@ -38,13 +38,22 @@ quill_datas, quill_binaries, quill_hiddenimports = collect_all("quill")
 # quill.tools.signing, so collect it explicitly rather than trusting the
 # tracer -- the wheel's _sodium extension must land in binaries too.
 nacl_datas, nacl_binaries, nacl_hiddenimports = collect_all("nacl")
+# Vosk: the chapter engine. It ships libvosk as a bundled binary, so collect_all
+# rather than a hiddenimport -- a name in the import graph with no DLL beside it
+# imports and then fails at the first Model(). Guarded because a source checkout
+# without the optional `vosk` extra installed must still be able to build; that
+# build simply has no local chapter engine, and the app already says so.
+try:
+    vosk_datas, vosk_binaries, vosk_hiddenimports = collect_all("vosk")
+except Exception:  # noqa: BLE001 - an absent optional engine is not a build failure
+    vosk_datas, vosk_binaries, vosk_hiddenimports = [], [], []
 
 a = Analysis(
     ["launcher.py"],
     pathex=[],
-    binaries=quill_binaries + nacl_binaries,
-    datas=drop_dev_caches(quill_datas + nacl_datas),
-    hiddenimports=quill_hiddenimports + nacl_hiddenimports,
+    binaries=quill_binaries + nacl_binaries + vosk_binaries,
+    datas=drop_dev_caches(quill_datas + nacl_datas + vosk_datas),
+    hiddenimports=quill_hiddenimports + nacl_hiddenimports + vosk_hiddenimports,
     hookspath=[],
     runtime_hooks=[],
     excludes=[
@@ -55,10 +64,14 @@ a = Analysis(
         # extractor set into an app that can never call it.
         "yt_dlp",
         # Basic app: QUILL fetches/uses these only for features Cast never
-        # touches (speech transcription engines, neural TTS, science stacks).
-        # Feed-provided transcripts are plain downloads and need none of them.
+        # touches (the heavier transcription engines, neural TTS, science
+        # stacks). Feed-provided transcripts are plain downloads and need none
+        # of them. **Vosk is deliberately absent from this list** as of
+        # 2026-08-20: it is Cast's chapter engine, collected above. Most
+        # podcasts publish no transcript, so without a local engine the honest
+        # answer to "find the chapters" is always "none could be found" -- and
+        # at 40 MB CPU-only it is the one engine small enough to ship for that.
         "faster_whisper",
-        "vosk",
         "kokoro_onnx",
         "onnxruntime",
         "torch",

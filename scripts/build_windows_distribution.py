@@ -189,12 +189,14 @@ MP3_WHEELHOUSE_REQUIREMENTS = ("mutagen>=1.48.1",)
 # "speech" bundles sounddevice (PortAudio) so offline dictation works out of the
 # box (#617) without a separate pip install. The whisper.cpp engine itself is a
 # separate InnoSetup component (tools/speech/whispercpp), not a pip wheel.
-# Vosk (the very-low-resource CPU-only offline engine, #669) is NOT bundled: at
-# ~51 MB of self-contained wheel (it ships libvosk) it is the single largest optional
-# engine, and it is not the default (whisper.cpp is). Like Faster Whisper it downloads
-# on demand into a user-writable engine pack (quill/core/speech/engine_install.install_vosk,
-# activated on sys.path) via Tools > Speech > Download Vosk, so the base installer no
-# longer carries it. Its ~40 MB model still downloads on demand via Manage Speech Models.
+# Vosk (the very-low-resource CPU-only offline engine, #669) IS bundled as of
+# 2026-08-20 -- see DEFAULT_BUNDLED_DEPENDENCY_GROUPS below for the measurement
+# that decided it. It is ~51 MB of self-contained wheel (it ships libvosk) plus
+# a 40 MB model staged by _stage_vosk_model, and it is not the dictation default
+# (whisper.cpp still is): it is bundled so podcast chapters can be worked out on
+# first launch with no download. Tools > Speech > Download Vosk and the
+# engine-pack install path both still exist for source runs and for anybody who
+# removes the bundled copy.
 # The default whisper.cpp engine is itself already on-demand (~8 MB, excluded from the
 # installer in quill.iss and fetched via release_assets / the dictation pre-flight), so no
 # offline engine is bundled -- the installer stays small and the first offline use fetches
@@ -219,11 +221,23 @@ MP3_WHEELHOUSE_REQUIREMENTS = ("mutagen>=1.48.1",)
 # deliberately NOT bundled: magika pulls onnxruntime + numpy and its spreadsheet
 # converters pull pandas, ~150 MB installed for a better-but-not-required reader.
 # It stays a one-click download.
+# "vosk" IS bundled, and it is the one offline engine that is (2026-08-20).
+# Not for dictation -- whisper.cpp remains the dictation default and Parakeet
+# its promotion. It is here for **chapters**. Measured against hand-built
+# reference chapter lists, Vosk small scored 0.372 where Whisper medium scored
+# 0.316, at 40 MB against 1.5 GB and 2.7 minutes per hour against 12.7. It does
+# not win on transcription quality; it wins because its cues break at natural
+# pauses, so its cue edges are already plausible section starts. ~51 MB of
+# wheel plus a 40 MB model, and the payoff is that chapters work on first
+# launch with no download, no network and no setup step -- which for this
+# audience is the difference between a feature they meet and one they never
+# find. The model stages beside it (see _stage_vosk_model).
 DEFAULT_BUNDLED_DEPENDENCY_GROUPS = (
     "ui",
     "spellcheck",
     "ocr",
     "speech",
+    "vosk",
     "feedback",
     "github",
     "office-text",
@@ -532,6 +546,10 @@ def build_windows_distribution(
     # --whisper-dir is given) with nothing to transcribe with, requiring a
     # network call the very first time the "offline" build tries to transcribe
     # anything. No --*-dir override exists for this; see _stage_whisper_model.
+    # Vosk's model stages on every build, not only the Offline Edition: it is
+    # what works podcast chapters out, and a chapter feature that needs a
+    # download before it can answer is one nobody meets. See _stage_vosk_model.
+    _stage_vosk_model(portable_dir)
     if bundle_offline:
         _stage_whisper_model(portable_dir)
         # Piper closes the last tracked speech gap in the Offline Edition:
@@ -1188,7 +1206,10 @@ def build_inno_setup_script(
     _optional_component_excludes = (
         "tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,"
         "tools\\speech\\whispercpp\\*,vendor\\braille-pack\\*,kokoro-models\\*,"
-        "speech-models-bundled\\*,"
+        # Not speech-models-bundled\\* wholesale any more: the Vosk model
+        # inside it ships in every build (chapters have to work on first
+        # launch), so only the Offline-Edition members are excluded here.
+        "speech-models-bundled\\whispercpp\\*,speech-models-bundled\\piper\\*,"
         "wheels\\kokoro\\*,wheels\\faster-whisper\\*,wheels\\vosk\\*,wheels\\mp3\\*"
     )
     _files_excludes = (
@@ -2489,6 +2510,78 @@ def _stage_whisper_model(
     print(f"Downloading whisper.cpp {model_id!r} model from {url}...")
     _download_with_verification(url, target, expected_sha256=info.sha256)
     return target.exists()
+
+
+def _stage_vosk_model(portable_dir: Path, model_id: str = "") -> bool:
+    """Download + MD5 verify the small Vosk model into
+    portable/speech-models-bundled/vosk/<model_id>/.
+
+    Staged on **every** build, not only the Offline Edition, because unlike the
+    other optional engines this one has a job that has to work the first time
+    somebody tries it. Podcast chapters are inferred from a transcript; if the
+    engine that produces the transcript needs a download first, then the honest
+    answer on first use is "no chapters could be found", and nobody ever meets
+    the feature. 40 MB is the price of that, and it is the whole reason the
+    small model won the evaluation over models thirty-five times its size.
+
+    Alphacephei publishes MD5 rather than SHA-256 for these and the catalog
+    already pins it (``catalog.VOSK_MODELS``), so this verifies the same digest
+    the runtime's own on-demand download verifies rather than inventing a second
+    source of truth. An already-staged model is reused.
+    """
+    from quill.core.speech.catalog import VOSK_RECOMMENDED_MODEL_ID, vosk_model_by_id
+
+    wanted = model_id or VOSK_RECOMMENDED_MODEL_ID
+    info = vosk_model_by_id(wanted)
+    if info is None or not info.download_url:
+        raise RuntimeError(f"No Vosk catalog entry for model {wanted!r}")
+
+    target = portable_dir / "speech-models-bundled" / "vosk" / wanted
+    if _vosk_model_staged(target):
+        print(f"Vosk {wanted!r} model already staged; skipping.")
+        return True
+    target.mkdir(parents=True, exist_ok=True)
+
+    print(f"Downloading Vosk {wanted!r} model from {info.download_url}...")
+    with urllib.request.urlopen(info.download_url, timeout=300) as response:  # noqa: S310
+        data = response.read()
+    expected = (info.md5 or "").strip().lower()
+    if expected:
+        digest = hashlib.md5(data).hexdigest()  # noqa: S324 - the publisher pins MD5
+        if digest != expected:
+            raise RuntimeError(
+                f"MD5 mismatch for {info.download_url}\n"
+                f"  expected: {expected}\n  got:      {digest}"
+            )
+    archive = target.parent / f"{wanted}.zip"
+    archive.write_bytes(data)
+    try:
+        with zipfile.ZipFile(archive) as zf:
+            # The same zip-slip refusal the runtime's own extractor performs. A
+            # build machine is not a reason to trust an archive less carefully.
+            root = target.resolve()
+            for member in zf.namelist():
+                resolved = (root / member).resolve()
+                if root not in resolved.parents and resolved != root:
+                    raise RuntimeError(f"Unsafe path in the Vosk model archive: {member!r}")
+            zf.extractall(root)
+    finally:
+        archive.unlink(missing_ok=True)
+    return _vosk_model_staged(target)
+
+
+def _vosk_model_staged(target: Path) -> bool:
+    """Whether *target* already holds a loadable Vosk model.
+
+    A Vosk archive extracts one ``vosk-model-.../`` folder, so the marker is
+    ``conf`` either directly inside *target* or one level down -- the same two
+    shapes ``providers.vosk._vosk_model_root`` accepts at runtime.
+    """
+    if not target.is_dir():
+        return False
+    if (target / "conf").is_dir():
+        return True
+    return any((child / "conf").is_dir() for child in target.iterdir() if child.is_dir())
 
 
 #: Starter Piper voices staged under --bundle-offline: one good default per

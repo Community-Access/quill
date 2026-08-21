@@ -19,7 +19,7 @@ from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.paths import app_data_dir
 from quill.core.radio import favorites as radio_favorites
 from quill.core.radio import history as radio_history
-from quill.core.radio import radio_browser, wake_timer
+from quill.core.radio import now_playing_source, radio_browser, wake_timer
 from quill.core.radio.favorites import FavoriteStation
 from quill.core.radio.models import RadioStation
 from quill.core.radio.recording import (
@@ -32,7 +32,8 @@ from quill.core.radio.recording_join import describe_reconnect
 from quill.core.radio.recording_schedule import RecordingScheduler
 from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
-from quill.ui.radio import playback_status, quick_play
+from quill.ui.main_frame_radio_status import RadioStatusWindowsMixin
+from quill.ui.radio import playback_status, quick_play, stats_session
 from quill.ui.radio.add_station_dialog import AddStationDialog
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.playback_state import RadioPlaybackState
@@ -57,7 +58,7 @@ _NO_FFMPEG_MESSAGE = (
 )
 
 
-class RadioMixin:
+class RadioMixin(RadioStatusWindowsMixin):
     """Adds Internet Radio to ``MainFrame``."""
 
     # -- setup --------------------------------------------------------------
@@ -74,6 +75,9 @@ class RadioMixin:
         set_radio_debug(self._radio_history.debug_mode)
         self._radio_history_key = ""
         self._radio_track_title = ""
+        #: Which of the three routes supplied `_radio_track_title` (an
+        #: ``ui.radio.now_playing_source.SOURCE_*`` id). Empty until one does.
+        self._radio_track_source = ""
         self._radio_fallback_tried = ""
         self._radio_ever_played = False
         # Track-title poller: fires only while a stream plays; each tick reads
@@ -772,6 +776,8 @@ class RadioMixin:
         from quill.core.settings import save_settings
 
         self._radio_track_history_and_volume(state)
+        # Time only counts while audio is actually coming out (stats_session).
+        stats_session.on_state_changed(self, state)
         self._radio_track_titles_follow_playback(state)
         self._radio_maybe_try_fallback_url(state)
         # The one transition that is spoken rather than cued: a reconnect.
@@ -896,6 +902,10 @@ class RadioMixin:
         else:
             timer.Stop()
             self._radio_track_title = ""
+            # Clear the provenance with the title. A "from the station's status
+            # page" line outliving the title it described would attach the last
+            # station's sourcing to the next one's song.
+            self._radio_track_source = ""
 
     def _radio_fetch_track_title(
         self,
@@ -930,10 +940,16 @@ class RadioMixin:
 
         def _done(_op: str, title: object) -> None:
             resolved = str(title or "")
+            # Which of the three routes actually answered. Recorded here rather
+            # than guessed later: by the time the title reaches the details
+            # window every route looks identical, and a status page can lag the
+            # audio by a song while an ICY block cannot.
+            source = now_playing_source.SOURCE_ICY
             if not resolved and controller is not None:
                 # Engine-native fallback (mpv media-title): some hosts
                 # reject the out-of-band ICY tap, and HLS has no ICY at all.
                 resolved = controller.engine_track_title()
+                source = now_playing_source.SOURCE_ENGINE
             if not resolved:
                 # Free tier-1 fallback (#1111): the station's own Icecast/
                 # SHOUTcast status endpoint, off-thread. Only reached when both
@@ -942,7 +958,7 @@ class RadioMixin:
                 self._radio_fetch_server_now_playing(url, announce_result, on_resolved)
                 return
             self._wx.CallAfter(
-                self._radio_apply_track_title, resolved, announce_result, on_resolved
+                self._radio_apply_track_title, resolved, announce_result, on_resolved, source
             )
 
         self._task_manager.submit(
@@ -975,7 +991,11 @@ class RadioMixin:
 
         def _done(_op: str, title: object) -> None:
             self._wx.CallAfter(
-                self._radio_apply_track_title, str(title or ""), announce_result, on_resolved
+                self._radio_apply_track_title,
+                str(title or ""),
+                announce_result,
+                on_resolved,
+                now_playing_source.SOURCE_STATUS_PAGE,
             )
 
         self._task_manager.submit(
@@ -1003,10 +1023,16 @@ class RadioMixin:
         title: str,
         announce_result: bool,
         on_resolved: Callable[[], None] | None = None,
+        source: str = "",
     ) -> None:
         changed = bool(title) and title != self._radio_track_title
         if title:
             self._radio_track_title = title
+            # Which route supplied it. Recorded at the same choke point as the
+            # title so the two can never describe different songs -- see
+            # quill.core.radio.now_playing_source for why a status page and an
+            # ICY block are not interchangeable claims.
+            self._radio_track_source = source
         if changed:
             # One choke point: every route to a title (ICY, the engine, the
             # station's status endpoint) lands here, and `changed` is already
@@ -1124,6 +1150,10 @@ class RadioMixin:
             "",
             f"Now playing: {track}" if track else "Now playing: no track information yet",
         ]
+        # Where that track came from, and whether it is quoted or read. Three
+        # routes supply titles and they are not equally direct, so the window
+        # that claims to hold "everything known" has to say which one answered.
+        lines.extend(self._radio_now_playing_facts().provenance_lines())
         state = controller.state
         volume = f"Volume: {int(getattr(state, 'volume_percent', 0) or 0)}%"
         if getattr(state, "muted", False):
@@ -1970,6 +2000,7 @@ class RadioMixin:
             sort=self._radio_history.favorites_sort,
             folder_sorts=self._radio_history.folder_sort_orders,
             windows=getattr(self, "_windows", None),
+            host=self,
         )
         dlg.show()
         self._refresh_statusbar()
@@ -2037,6 +2068,8 @@ class RadioMixin:
             if source_facet is not None
             else self._radio_history.search_source_facet,
             on_search_prefs_changed=self._radio_save_search_prefs,
+            recent_searches=self._radio_history.recent_searches,
+            on_recent_searches_changed=self._radio_save_recent_searches,
         )
         dlg.show(initial_category=initial_category, focus_search=focus_search)
         self._refresh_statusbar()
@@ -2184,16 +2217,21 @@ class RadioMixin:
 
         catalog_ui.update_catalog_command(self)
 
-    def radio_catalog_status(self) -> None:
-        """View > Station Catalog Status... See catalog_status_dialog."""
-        from quill.ui.radio.catalog_status_dialog import show_catalog_status
-
-        show_catalog_status(self)
-
     def _radio_save_search_prefs(self, enabled: tuple[str, ...], facet: str) -> None:
         """Remember the source selection and the Source facet across sessions."""
         self._radio_history.search_sources_enabled = enabled
         self._radio_history.search_source_facet = facet
+        self._save_radio_history()
+
+    def _radio_save_recent_searches(self, searches: tuple[object, ...]) -> None:
+        """Remember the searches already run, so re-running one is not retyping.
+
+        Written when the list actually changes rather than on every search: a
+        repeat of the search already at the top produces the same list, and
+        rewriting the history file to say nothing new is a disk write somebody
+        else's sync client would have to carry.
+        """
+        self._radio_history.recent_searches = tuple(searches)  # type: ignore[assignment]
         self._save_radio_history()
 
     def _spotify_search_client(self) -> object | None:

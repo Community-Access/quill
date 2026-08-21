@@ -13,6 +13,24 @@ from typing import Any
 from quill.ui.radio import volume_commands
 
 
+def _open_statistics(host: Any) -> None:
+    """How long, on what, in what network -- see ui/radio/stats_dialog."""
+    from quill.ui.radio.stats_dialog import open_for_host
+
+    open_for_host(host)
+
+
+def _folder_step(host: Any, *, forward: bool) -> None:
+    """Walk the folder queue Play All in Folder left behind."""
+    from quill.ui.radio import favorite_folder_actions
+
+    controller = getattr(host, "_radio_controller", None)
+    if forward:
+        favorite_folder_actions.next_in_folder(host, controller)
+    else:
+        favorite_folder_actions.previous_in_folder(host, controller)
+
+
 def register_radio_commands(host: Any) -> None:
     for command_id, title, handler in (
         ("radio.browse", "Internet Radio: Browse Stations...", host.open_internet_radio),
@@ -55,6 +73,26 @@ def register_radio_commands(host: Any) -> None:
             "radio.manage_favorites",
             "Internet Radio: Manage Favorites...",
             host.open_manage_radio_favorites,
+        ),
+        # Playing a favorites folder leaves a queue behind, and a queue with no
+        # way to step through it is a queue nobody can use. Palette commands
+        # rather than menu items on purpose: every letter and Shift+letter of
+        # the shared radio chord is already assigned, and an item advertising a
+        # key that does nothing is worse than one with no key at all.
+        (
+            "radio.statistics",
+            "Internet Radio: Listening Statistics...",
+            lambda: _open_statistics(host),
+        ),
+        (
+            "radio.folder_next",
+            "Internet Radio: Next Station in Folder",
+            lambda: _folder_step(host, forward=True),
+        ),
+        (
+            "radio.folder_previous",
+            "Internet Radio: Previous Station in Folder",
+            lambda: _folder_step(host, forward=False),
         ),
         (
             "radio.play_last",

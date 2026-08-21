@@ -28,6 +28,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
+from quill.core.radio.recording_progress import (
+    RecordingProgress,
+    recording_cell_help,
+    recording_cell_text,
+)
+
 
 @dataclass(frozen=True)
 class CellSpec:
@@ -44,6 +50,13 @@ class CellSpec:
     activate: Callable[[], None]
     help: str
     build_menu: Callable[[Any], None] | None = None
+    #: A cell whose hint depends on live state supplies it here, and ``refresh``
+    #: keeps it current. The Recording cell needs this because "12 min left" and
+    #: "18 min so far" are two different measurements sharing one cell, and
+    #: which one is on screen depends on how the capture was started -- a
+    #: distinction the number alone cannot carry. A cell with a fixed hint
+    #: leaves this ``None`` and ``help`` stands.
+    live_help: Callable[[], str] | None = None
 
 
 @dataclass
@@ -94,7 +107,7 @@ class RadioStatusBar:
         for spec in self._specs:
             button = wx.Button(panel, label=self._button_label(spec), style=wx.BU_EXACTFIT)
             button.SetName(self._button_name(spec))
-            button.SetHelpText(spec.help)
+            button.SetHelpText(self._cell_help(spec))
             button.Bind(wx.EVT_BUTTON, lambda _e, s=spec: self._activate(s))
             button.Bind(wx.EVT_KEY_DOWN, lambda e, s=spec: self._on_key_down(e, s))
             button.Bind(wx.EVT_SET_FOCUS, lambda e, s=spec: self._on_cell_focus(e, s))
@@ -143,6 +156,7 @@ class RadioStatusBar:
                     "the current station; right-click to stop all recordings."
                 ),
                 build_menu=self._menu_recording,
+                live_help=self._help_recording,
             ),
             CellSpec(
                 key="sleep_timer",
@@ -183,14 +197,39 @@ class RadioStatusBar:
         boosted = bool(getattr(getattr(self._host, "_radio_history", None), "volume_boost", False))
         return f"{percent}% (boosted)" if boosted else f"{percent}%"
 
-    def _text_recording(self) -> str:
+    def _recording_progress(self) -> list[RecordingProgress]:
+        """Every running capture, reduced to what the cell needs.
+
+        Defensive by design: this feeds a status cell that repaints on a timer,
+        so a recorder mid-teardown (or a fake host in a test) must produce an
+        empty list rather than an exception that takes the whole bar down.
+        """
         recorder = getattr(self._host, "_radio_recorder", None)
-        count = int(getattr(recorder, "active_count", 0) or 0)
-        if count <= 0:
-            return "Idle"
-        if count == 1:
-            return "Recording"
-        return f"{count} recording"
+        if recorder is None:
+            return []
+        try:
+            jobs = list(recorder.active_jobs())
+        except Exception:  # noqa: BLE001 - a status cell must never raise
+            return []
+        progress: list[RecordingProgress] = []
+        for job in jobs:
+            started = getattr(job, "started_at", None)
+            if not isinstance(started, datetime):
+                continue
+            progress.append(
+                RecordingProgress(
+                    started_at=started,
+                    minutes=int(getattr(job, "minutes", 0) or 0),
+                    duration_requested=bool(getattr(job, "duration_requested", False)),
+                )
+            )
+        return progress
+
+    def _text_recording(self) -> str:
+        return recording_cell_text(self._recording_progress(), datetime.now())
+
+    def _help_recording(self) -> str:
+        return recording_cell_help(self._recording_progress(), datetime.now())
 
     def _text_sleep_timer(self) -> str:
         timer = getattr(self._host, "_sleep_timer_controller", None)
@@ -271,12 +310,26 @@ class RadioStatusBar:
         value = spec.text()
         return f"{spec.name}, {value}" if value else spec.name
 
+    def _cell_help(self, spec: CellSpec) -> str:
+        """A cell's current hint: its live one where it has one, else the fixed
+        text. A ``live_help`` that raises falls back rather than losing the hint
+        entirely -- a cell with no help is worse than a cell with general help.
+        """
+        if spec.live_help is None:
+            return spec.help
+        try:
+            return spec.live_help() or spec.help
+        except Exception:  # noqa: BLE001 - a status cell must never raise
+            return spec.help
+
     def refresh(self) -> None:
         """Repaint every cell's label from live state (dead-widget safe)."""
         for cell in self._cells:
             try:
                 cell.button.SetLabel(self._button_label(cell.spec))
                 cell.button.SetName(self._button_name(cell.spec))
+                if cell.spec.live_help is not None:
+                    cell.button.SetHelpText(self._cell_help(cell.spec))
             except RuntimeError:
                 continue
         panel = self._panel

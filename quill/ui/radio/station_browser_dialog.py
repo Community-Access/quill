@@ -22,6 +22,7 @@ from quill.core.radio import (
     radio_browser,
     search_sources,
     soma_fm,
+    station_confidence,
     tunein,
     xiph,
 )
@@ -29,12 +30,12 @@ from quill.core.radio.directory_search import (
     iheart_search_stations,
     merge_and_rank,
     reading_services_search_stations,
-    station_source_labels,
     tunein_search_stations,
     wxindex_search_stations,
 )
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
+from quill.core.radio.search_history import SearchQuery
 from quill.core.radio.spotify_search import (
     SOURCE as _SPOTIFY_SOURCE,
 )
@@ -46,6 +47,9 @@ from quill.core.radio.spotify_search import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
 from quill.ui.radio import library_search, transport_keys
+from quill.ui.radio.results_view import ALL_SOURCES as _ALL_SOURCES
+from quill.ui.radio.results_view import ResultsViewMixin
+from quill.ui.radio.search_recents import RecentSearchesMixin
 
 _FAVORITES = "Favorites"
 _ACB_MEDIA = acb_media.CATEGORY_LABEL
@@ -98,7 +102,6 @@ BROWSE_MENU_CATEGORIES: tuple[str, ...] = (
 #: "RadioBrowser" -- a screen-reader user hearing the run-together word thought
 #: the source was gone. The label is spelled the human way here and everywhere it
 #: is derived (directory_search.station_source_labels, _source_label below).
-_ALL_SOURCES = "All sources"
 _SOURCE_FACETS = (
     _ALL_SOURCES,
     "Radio Browser",
@@ -177,7 +180,7 @@ def looks_like_url(text: str) -> bool:
     return "." in host and " " not in host and not host.endswith(".")
 
 
-class StationBrowserDialog:
+class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
     """Browse/search/play/favorite internet radio stations."""
 
     def __init__(
@@ -200,6 +203,8 @@ class StationBrowserDialog:
         catalog: object | None = None,
         source_facet: str = "",
         on_search_prefs_changed: Callable[[tuple[str, ...], str], None] | None = None,
+        recent_searches: object = None,
+        on_recent_searches_changed: Callable[[tuple[SearchQuery, ...]], None] | None = None,
     ) -> None:
         import wx
 
@@ -226,6 +231,12 @@ class StationBrowserDialog:
         #: The remembered Source-facet choice, re-applied when the dialog opens.
         self._initial_source_facet = str(source_facet or "")
         self._on_search_prefs_changed = on_search_prefs_changed
+        #: The searches already run, newest first, offered from the name field's
+        #: dropdown. Held here (rather than read from the store on every
+        #: keystroke) so the dialog owns one consistent list for its lifetime
+        #: and the store is written only when the list actually changes.
+        self._recent_searches: tuple[SearchQuery, ...] = tuple(recent_searches or ())
+        self._on_recent_searches_changed = on_recent_searches_changed
 
         self._current_results: list[RadioStation] = []
         #: The unfiltered list behind _current_results, so the Source facet can
@@ -275,16 +286,22 @@ class StationBrowserDialog:
         search_grid = wx.FlexGridSizer(cols=2, gap=(6, 4))
         search_grid.AddGrowableCol(1, 1)
 
-        def _labeled_field(label: str, *, accessible_name: str) -> wx.TextCtrl:
-            search_grid.Add(wx.StaticText(self._surface, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
-            ctrl = wx.TextCtrl(self._surface, style=wx.TE_PROCESS_ENTER)
-            ctrl.SetName(accessible_name)
-            search_grid.Add(ctrl, 1, wx.EXPAND)
-            return ctrl
-
-        self._name_ctrl = _labeled_field(
-            "Station &name:", accessible_name="Station name to search for"
+        # The name field is a combo rather than a plain text box so the searches
+        # already run are one Down arrow away (see core.radio.search_history).
+        # A combo, deliberately, and not a second control or a Recent... button:
+        # the dropdown is the idiom every search box on the platform already
+        # uses, the Tag field beside it is already one, and it costs the dialog
+        # no new Tab stop -- a listener who never wants the history simply types,
+        # exactly as before.
+        search_grid.Add(
+            wx.StaticText(self._surface, label="Station &name:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
+        self._name_ctrl = wx.ComboBox(self._surface, style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER)
+        self._name_ctrl.SetName(
+            "Station name to search for; press Down arrow for searches you have already run"
+        )
+        search_grid.Add(self._name_ctrl, 1, wx.EXPAND)
+        self._fill_recent_searches()
         # Tag/genre and Country are pickable dropdowns (quill-radio #2), filled
         # off-thread from RadioBrowser's own lists so they are not typo-prone
         # free text. Tag stays an editable combo so a rare custom tag still
@@ -458,6 +475,9 @@ class StationBrowserDialog:
             self._win.SetSizer(outer)
 
         self._name_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
+        # Picking a row from the name field's dropdown restores a whole
+        # remembered search rather than running the label as a station name.
+        self._name_ctrl.Bind(wx.EVT_COMBOBOX, self._on_recent_search_picked)
         self._tag_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search)
         from quill.ui.search_reset import bind_empty_query_reset
 
@@ -606,51 +626,6 @@ class StationBrowserDialog:
 
     # ------------------------------------------------------------------
     # Population
-
-    def _source_label(self, station: RadioStation) -> str:
-        """The Source-column/facet label for *station* (Radio Browser default)."""
-        return station.source or "Radio Browser"
-
-    def _apply_source_facet(self, stations: list[RadioStation]) -> list[RadioStation]:
-        """Filter *stations* by the current Source facet (All = everything)."""
-        choice = self._source_facet.GetStringSelection() or _ALL_SOURCES
-        if choice == _ALL_SOURCES:
-            return stations
-        # Match against every source that carried the station, not just the
-        # winning label, so a SomaFM channel RadioBrowser also lists still
-        # shows under the SomaFM facet (directory_search de-dups the two).
-        return [s for s in stations if choice in station_source_labels(s)]
-
-    def _fill_results(self, stations: list[RadioStation], *, status: str) -> None:
-        # Keep the full list so the Source facet can filter without re-searching.
-        self._all_results = stations
-        self._fill_status = status
-        self._render_results()
-
-    def _render_results(self) -> None:
-        stations = self._apply_source_facet(self._all_results)
-        self._current_results = stations
-        self._results.DeleteAllItems()
-        for row, station in enumerate(stations):
-            # Blended non-Radio-Browser sources name themselves in the row so a
-            # listener can tell where a station came from (iHeart, TuneIn, ...).
-            label = station.display_name
-            source = self._source_label(station)
-            if source != "Radio Browser":
-                label = f"{label} - via {source}"
-            self._results.InsertItem(row, label)
-            self._results.SetItem(row, 1, station.country)
-            bitrate = f"{station.bitrate_kbps}k" if station.bitrate_kbps else ""
-            fmt = " ".join(part for part in (station.codec, bitrate) if part)
-            self._results.SetItem(row, 2, fmt)
-            self._results.SetItem(row, 3, source)
-        self._status.SetLabel(self._fill_status)
-        self._play_btn.Enable(False)
-        self._favorite_btn.Enable(False)
-        self._details.SetValue("")
-        if stations:
-            self._results.Select(0)
-            self._results.Focus(0)
 
     def _on_source_facet(self, _event: object) -> None:
         """Re-render the current results filtered by the chosen source."""
@@ -1097,6 +1072,13 @@ class StationBrowserDialog:
         # Remember the query so "More Stations" can page the same search.
         self._search_query, self._search_tag, self._search_country = name, tag, country
         self._search_offset = 0
+        # ...and remember it for *next time*, but only on a deliberate commit.
+        # `_focus_results_after_search` already distinguishes the two: it is
+        # False exactly when this search came from arrowing a dropdown, which is
+        # the same set of events that must not fill the history with the
+        # half-formed queries somebody passed through on the way to this one.
+        if self._focus_results_after_search:
+            self._remember_search(name, tag, country)
 
         def _do_search(**_kwargs: Any) -> tuple[list[RadioStation], list[RadioStation]]:
             # The catalog lane (quill/ui/radio/catalog_search.py): local FTS
@@ -1299,7 +1281,12 @@ class StationBrowserDialog:
         index = event.GetIndex()
         if 0 <= index < len(self._current_results):
             station = self._current_results[index]
-            self._details.SetValue(station.details_text)
+            # The panel has room for a sentence where the row had room for a
+            # badge, so it says the good news and the "nobody has checked" case
+            # too -- both worth having somewhere, neither worth a badge.
+            explanation = station_confidence.assess(station).explanation
+            details = station.details_text
+            self._details.SetValue(f"{details}\n\n{explanation}" if explanation else details)
             self._play_btn.Enable(True)
             self._favorite_btn.Enable(True)
             self._update_favorite_button_label(station)

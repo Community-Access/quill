@@ -115,11 +115,25 @@ def episode_actions(
             enabled=episode_has_possible_chapters(episode),
         ),
         action(
+            "analyze_chapters",
+            "Anal&yse Chapters...",
+            lambda: dialog._on_analyze_chapters(show, episode),
+            # Only for an episode whose bytes are here. Analysis reads the audio,
+            # and offering it for something not downloaded would be a menu item
+            # that exists to explain why it cannot run.
+            enabled=downloaded,
+        ),
+        action(
             "add_to_playlist",
             "Add to Play&list...",
             lambda: dialog._on_add_to_playlist(show, episode),
         ),
         action("copy_link", "&Copy Episode Link", lambda: dialog._on_copy_episode_link(episode)),
+        action(
+            "share_moment",
+            "Share This &Moment",
+            lambda: dialog._on_share_moment(show, episode),
+        ),
         action(
             "save_audio_as",
             "&Save Episode Audio As...",

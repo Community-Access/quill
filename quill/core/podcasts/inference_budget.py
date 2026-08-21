@@ -10,11 +10,17 @@ one control, it has three values, and every constant below is a function of it.
 
 * **Quick** -- a published chapter list, or a transcript already downloaded.
   Never transcribes, never scans. Instant.
-* **Thorough** (the default) -- fetches a published transcript if one exists;
-  otherwise listens to the audio for pauses. Names sections from text it already
-  has. Seconds.
+* **Thorough** (the default) -- fetches a published transcript if one exists,
+  and works the sections out of the words. If there is no transcript it says so
+  rather than guessing: measured against four hand-built reference chapter
+  lists, the pause scan scored **0.06** where cutting the episode into equal
+  slices with no knowledge of it at all scored **0.15**. An answer worse than
+  dividing by n is not an answer, and offering it by default spends tens of
+  seconds to make the list worse. Seconds.
 * **Deep** -- transcribes the audio locally, segments that, then names the
-  sections. Minutes, with progress and a real cancel.
+  sections. Minutes, with progress and a real cancel. Deep keeps the pause scan
+  as a last resort, because somebody who chose Deep has said they would rather
+  have a weak answer than none.
 
 The advanced values stay adjustable in a settings *file* for anybody who
 genuinely wants them, and are deliberately absent from the UI. The failure mode
@@ -44,14 +50,14 @@ BUDGETS: tuple[str, ...] = (QUICK, THOROUGH, DEEP)
 #: What each one promises, in the listener's terms rather than the machine's.
 BUDGET_LABELS: dict[str, str] = {
     QUICK: "Quick -- only what is already here",
-    THOROUGH: "Thorough -- fetch a transcript, or listen for pauses",
+    THOROUGH: "Thorough -- fetch a transcript and work out the sections",
     DEEP: "Deep -- transcribe the episode, then work out the sections",
 }
 
 BUDGET_DESCRIPTIONS: dict[str, str] = {
     QUICK: "Instant. Uses a published chapter list or a transcript already downloaded.",
-    THOROUGH: "Seconds. Fetches a published transcript if there is one; otherwise listens "
-    "to the audio for pauses.",
+    THOROUGH: "Seconds. Fetches a published transcript if there is one and works the "
+    "sections out of the words. If there is no transcript it says so rather than guessing.",
     DEEP: "Minutes. Transcribes the episode on this machine, then works out the sections "
     "from what was said. You can cancel at any point.",
 }
@@ -73,8 +79,13 @@ class InferenceBudget:
     #: transcript URL fell straight through to a slow audio scan because nobody
     #: had opened it yet. The best free answer available was routinely skipped.
     may_fetch_transcript: bool = True
-    #: May the audio be scanned for silences? Tens of seconds.
-    may_scan_audio: bool = True
+    #: May the audio be scanned for silences? Tens of seconds -- and **off under
+    #: Thorough**, because the measurement says the answer it produces is worse
+    #: than no knowledge of the episode at all (0.06 against a 0.15 do-nothing
+    #: floor). It stays available for Deep, where the listener has accepted a
+    #: weak answer over none, and for a recording, where there is no transcript
+    #: to be had and a pause is the only structure in the file.
+    may_scan_audio: bool = False
     #: May the audio be transcribed locally? Minutes, and only on request.
     may_transcribe: bool = False
     #: May a model be asked to name the sections (text only, never audio)?
@@ -84,12 +95,16 @@ class InferenceBudget:
     #: harder because it is allowed to take longer.
     noise_db: float = -35.0
     min_silence_seconds: float = 1.6
-    #: No section shorter than this, whatever the detector says.
-    min_chapter_ms: int = 90_000
+    #: No section shorter than this, whatever the detector says. Three minutes,
+    #: measured -- see ``chapter_inference.DEFAULT_MIN_CHAPTER_MS``.
+    min_chapter_ms: int = 180_000
 
-    #: Transcript segmentation: how many cues each comparison window holds, and
-    #: the most sections to produce.
-    window_cues: int = 8
+    #: Transcript segmentation: how many **seconds of speech** each comparison
+    #: window holds, and the most sections to produce. Seconds rather than cues
+    #: because cue length belongs to whoever produced the transcript -- the same
+    #: count of cues is half a minute of one transcript and three minutes of
+    #: another, and the episode has not changed.
+    window_seconds: float = 150.0
     max_chapters: int = 60
 
     #: How much of a section is examined to name it, **when naming would
@@ -143,7 +158,11 @@ def for_budget(name: str) -> InferenceBudget:
             # Listening harder is affordable when minutes are already on offer.
             noise_db=-40.0,
             min_silence_seconds=1.2,
-            window_cues=10,
+            # Not widened for Deep. The window is not an effort dial -- it is
+            # the length of speech over which a subject has to stay changed to
+            # count as a section, and that is a property of programmes rather
+            # than of how long the listener is willing to wait.
+            window_seconds=150.0,
             max_chapters=80,
             # Deep has the whole transcript, so sampling is not a constraint --
             # it is set high only for the case where a section still has to be
@@ -152,6 +171,18 @@ def for_budget(name: str) -> InferenceBudget:
             middle_probe_seconds=45,
         )
     return InferenceBudget(name=THOROUGH)
+
+
+def for_recording(name: str = THOROUGH) -> InferenceBudget:
+    """The budget for a file **nobody published**: a recording off the radio.
+
+    Every argument for retiring the pause scan under Thorough rests on there
+    being something better to reach for -- a chapters document, a transcript the
+    publisher wrote. A recording has none of that and never will, so the choice
+    here is not "pauses or a transcript", it is "pauses or nothing". Pauses win
+    that comparison, and the label says how they were found.
+    """
+    return replace(for_budget(name), may_fetch_transcript=False, may_scan_audio=True)
 
 
 def describe_plan(budget: InferenceBudget) -> str:

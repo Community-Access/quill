@@ -71,6 +71,57 @@ def queue_groups(library: PodcastLibrary) -> list[tuple[PodcastShow, list[int]]]
     return groups
 
 
+#: How the queue may be arranged for reading. Not a re-order: the play order is
+#: untouched, and grouping only decides how the same order is *presented*.
+GROUP_MODES: tuple[str, ...] = ("none", "show", "folder")
+
+
+def group_queue_by(library: PodcastLibrary, mode: str = "none") -> list[tuple[str, list[int]]]:
+    """The queue as ``(group label, [queue indices])``, in play order.
+
+    A flat queue of forty items from four podcasts is a list nobody can hold in
+    their head; four groups is. Grouping by **folder** is the same idea one
+    level up, and for a library organised into "News", "Fiction" and "Work" it
+    is the level somebody actually thinks in.
+
+    Groups appear in the order their first episode does, so "what is next" is
+    always the first group, whichever mode is on. ``"none"`` returns a single
+    unlabelled group, so a caller has one shape to render rather than two.
+    """
+    wanted = mode if mode in GROUP_MODES else "none"
+    if wanted == "none":
+        return [("", list(range(len(library.queue))))]
+
+    order: list[str] = []
+    indices: dict[str, list[int]] = {}
+    labels: dict[str, str] = {}
+    for index, item in enumerate(library.queue):
+        key, label = _group_of(library, item.show_id, wanted)
+        if key not in indices:
+            indices[key] = []
+            labels[key] = label
+            order.append(key)
+        indices[key].append(index)
+    return [(labels[key], indices[key]) for key in order]
+
+
+def _group_of(library: PodcastLibrary, show_id: str, mode: str) -> tuple[str, str]:
+    """The group key and label one queued episode belongs to."""
+    show = library.find_show(show_id)
+    if show is None:
+        return ("", "No longer in your library")
+    if mode == "show":
+        return (str(show.id), str(show.title))
+    folder_id = str(getattr(show, "folder_id", "") or "")
+    if not folder_id:
+        # Not "Uncategorised": a podcast at the top level has not failed to be
+        # filed, it simply is not in a folder, and a group name that implies a
+        # missing decision invites somebody to go and make one.
+        return ("", "Not in a folder")
+    folder = library.find_folder(folder_id)
+    return (folder_id, folder.name if folder is not None else "A folder that is gone")
+
+
 def move_group(library: PodcastLibrary, show_id: str, *, where: str) -> int:
     """Move every queue slot belonging to *show_id* as one block.
 

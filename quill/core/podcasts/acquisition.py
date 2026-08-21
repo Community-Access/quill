@@ -66,6 +66,15 @@ def episodes_to_auto_download(
     those sets for its own reasons.
     """
     settings = library.effective_settings(show)
+    # A metered connection holds automatic downloads, and only automatic ones:
+    # this function *is* the automatic policy, so the guard belongs here rather
+    # than at the download call site, where a download somebody pressed would
+    # be caught by it too. Unknown counts as unmetered -- refusing to download
+    # on a guess is worse than downloading (core/net_metered).
+    from quill.core.net_metered import may_download
+
+    if not may_download(settings, automatic=True):
+        return []
     if settings.playback_mode != "download" and not show.is_local:
         # A stream-by-default show still honours a per-episode download
         # override, but nothing auto-downloads for it: the listener asked for

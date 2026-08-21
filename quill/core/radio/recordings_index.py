@@ -56,6 +56,14 @@ class ActiveRecording:
     stream_url: str = ""
     started_at: datetime | None = None
     job_id: str = ""
+    #: The capture's length in minutes, and whether that length is something
+    #: the listener asked for rather than the recorder's disk-safety cap.
+    #: Carried so the Recordings window's headline can count *down* to a
+    #: deliberate end and only *up* otherwise -- see
+    #: ``quill.core.radio.recording_progress`` for why conflating the two
+    #: announces an intention nobody expressed.
+    scheduled_minutes: int = 0
+    duration_requested: bool = False
 
 
 @dataclass(slots=True)
@@ -79,6 +87,10 @@ class RecordingEntry:
     #: The recorder job id for a Recording row (concurrent recording), so the
     #: dialog's Stop button can stop this exact recording. Empty for other rows.
     job_id: str = ""
+    #: Mirrors ``ActiveRecording``: the length and whether it was chosen. Both
+    #: zero/False on every row that is not a live capture.
+    scheduled_minutes: int = 0
+    duration_requested: bool = False
 
     @property
     def size_display(self) -> str:
@@ -235,6 +247,8 @@ def list_recordings(
                 detail="writing now",
                 started_at=item.started_at,
                 job_id=item.job_id,
+                scheduled_minutes=int(getattr(item, "scheduled_minutes", 0) or 0),
+                duration_requested=bool(getattr(item, "duration_requested", False)),
             )
         )
 

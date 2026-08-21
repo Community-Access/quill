@@ -12,7 +12,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from quill.core.podcasts import feed_reader, itunes_search
+from quill.core.podcasts import directory_search, feed_reader, itunes_search
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
 from quill.ui.dialog_contract import apply_modal_ids
@@ -47,13 +47,33 @@ class AddPodcastDialog:
         self.dialog.SetMinSize((640, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
-        search_box = wx.StaticBoxSizer(wx.HORIZONTAL, self.dialog, "Search iTunes")
+        search_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "Search a Podcast Directory")
+        source_row = wx.BoxSizer(wx.HORIZONTAL)
+        source_row.Add(
+            wx.StaticText(self.dialog, label="&Directory:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.ALL,
+            6,
+        )
+        self._source_choice = wx.Choice(
+            self.dialog, choices=[label for _sid, label in directory_search.SOURCE_LABELS]
+        )
+        self._source_choice.SetName(
+            "Which directory to search. iTunes needs nothing. Podcast Index "
+            "carries the extra Podcasting 2.0 information -- chapters, "
+            "transcripts -- and needs a key you add in Podcast Settings."
+        )
+        self._source_choice.SetSelection(self._source_index())
+        source_row.Add(self._source_choice, 1, wx.ALL | wx.EXPAND, 6)
+        search_box.Add(source_row, 0, wx.EXPAND)
+        query_row = wx.BoxSizer(wx.HORIZONTAL)
         self._query_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
         self._query_ctrl.SetName("Podcast name to search for")
-        search_box.Add(self._query_ctrl, 1, wx.ALL | wx.EXPAND, 6)
+        query_row.Add(self._query_ctrl, 1, wx.ALL | wx.EXPAND, 6)
         self._search_btn = wx.Button(self.dialog, label="&Search")
-        self._search_btn.SetName("Search iTunes for podcasts matching this name")
-        search_box.Add(self._search_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        self._search_btn.SetName("Search the chosen directory for podcasts matching this name")
+        query_row.Add(self._search_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        search_box.Add(query_row, 0, wx.EXPAND)
         root.Add(search_box, 0, wx.EXPAND | wx.ALL, 10)
 
         self._results = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
@@ -62,9 +82,18 @@ class AddPodcastDialog:
         self._results.InsertColumn(1, "Artist/Network", width=220)
         root.Add(self._results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
+        result_row = wx.BoxSizer(wx.HORIZONTAL)
+        # Preview first, and it is what Enter does: subscribing from a title
+        # alone is the thing that produces regret, and a title is all a search
+        # result shows.
+        self._preview_btn = wx.Button(self.dialog, label="&Preview...")
+        self._preview_btn.SetName("Look at this podcast before subscribing to it")
+        self._preview_btn.Enable(False)
         self._subscribe_btn = wx.Button(self.dialog, label="Su&bscribe to Selected")
         self._subscribe_btn.Enable(False)
-        root.Add(self._subscribe_btn, 0, wx.ALL, 10)
+        result_row.Add(self._preview_btn, 0, wx.RIGHT, 6)
+        result_row.Add(self._subscribe_btn, 0)
+        root.Add(result_row, 0, wx.ALL, 10)
 
         url_box = wx.StaticBoxSizer(wx.HORIZONTAL, self.dialog, "Add by Feed URL")
         self._url_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
@@ -95,6 +124,9 @@ class AddPodcastDialog:
         self._results.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_result_selected)
         self._results.Bind(wx.EVT_LIST_ITEM_DESELECTED, self._on_result_deselected)
         self._subscribe_btn.Bind(wx.EVT_BUTTON, self._on_subscribe_selected)
+        self._preview_btn.Bind(wx.EVT_BUTTON, self._on_preview_selected)
+        # Enter on a result previews rather than subscribing.
+        self._results.Bind(wx.EVT_LIST_ITEM_ACTIVATED, self._on_preview_selected)
         self._url_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_add_url)
         self._add_url_btn.Bind(wx.EVT_BUTTON, self._on_add_url)
         import_btn.Bind(wx.EVT_BUTTON, self._on_import_opml)
@@ -133,42 +165,70 @@ class AddPodcastDialog:
         if not query:
             self._status.SetLabel("Type a podcast name to search for.")
             return
-        self._status.SetLabel("Searching iTunes...")
+        source = directory_search.SOURCES[self._source_choice.GetSelection()]
+        self._status.SetLabel("Searching...")
         self._search_btn.Enable(False)
+        from quill.ui.podcasts.preview_command import podcast_index_credentials
 
-        def _do_search(**_kwargs: Any) -> list[itunes_search.PodcastSearchResult]:
-            return itunes_search.search_podcasts(query, safe_mode=self._safe_mode)
+        key, secret = podcast_index_credentials()
+
+        def _do_search(**_kwargs: Any) -> directory_search.DirectorySearch:
+            return directory_search.search(
+                query, source=source, key=key, secret=secret, safe_mode=self._safe_mode
+            )
 
         self._task_manager.submit(
             "podcast-search",
             _do_search,
-            on_success=lambda _op, results: self._on_search_done(results, None),
-            on_failure=lambda _op, exc: self._on_search_done([], exc),
+            on_success=lambda _op, found: self._on_search_done(found, None),
+            on_failure=lambda _op, exc: self._on_search_done(None, exc),
         )
 
+    def _source_index(self) -> int:
+        """Which directory the library last chose (iTunes when it has not)."""
+        settings = getattr(self._library, "settings", None)
+        wanted = str(getattr(settings, "directory_source", "itunes") or "itunes")
+        return directory_search.SOURCES.index(wanted) if wanted in directory_search.SOURCES else 0
+
     def _on_search_done(
-        self, results: list[itunes_search.PodcastSearchResult], error: BaseException | None
+        self, found: directory_search.DirectorySearch | None, error: BaseException | None
     ) -> None:
         self._search_btn.Enable(True)
-        if error is not None:
+        if error is not None or found is None:
             self._status.SetLabel(f"Search failed: {error}")
             return
+        results = found.results
         self._search_results = results
         self._results.DeleteAllItems()
         for row, result in enumerate(results):
             self._results.InsertItem(row, result.title)
             self._results.SetItem(row, 1, result.artist)
-        self._status.SetLabel(f"{len(results)} result(s).")
-        self._announce(f"{len(results)} search results")
+        # One sentence that names the directories and any that did not answer:
+        # "12 results" from an unknown source is what makes somebody wonder
+        # whether the other one was asked at all.
+        said = found.summary()
+        self._status.SetLabel(said)
+        self._announce(said)
         if results:
             self._results.Select(0)
             self._results.Focus(0)
 
     def _on_result_selected(self, _event: object) -> None:
         self._subscribe_btn.Enable(True)
+        self._preview_btn.Enable(True)
 
     def _on_result_deselected(self, _event: object) -> None:
         self._subscribe_btn.Enable(False)
+        self._preview_btn.Enable(False)
+
+    def _on_preview_selected(self, _event: object = None) -> None:
+        """Look at the selected show before committing to it (C2)."""
+        index = self._results.GetFirstSelected()
+        if not (0 <= index < len(self._search_results)):
+            return
+        from quill.ui.podcasts.preview_command import preview_search_result
+
+        preview_search_result(self, self._search_results[index], index)
 
     def _on_subscribe_selected(self, _event: object) -> None:
         index = self._results.GetFirstSelected()

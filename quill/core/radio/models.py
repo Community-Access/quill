@@ -68,6 +68,19 @@ class RadioStation:
     #: (reported 2026-08-18). Transient and excluded from equality, exactly
     #: like ``alt_sources``: it describes a row, it does not identify one.
     notes: str = field(default="", compare=False)
+    #: Radio Browser's own checker's verdict on this stream: True when it
+    #: played, False when it did not, ``None`` when nobody published a check
+    #: (every other directory, and any station saved before this field existed).
+    #:
+    #: The directory has always sent this on every search and Quill Radio threw
+    #: it away, so a results list made the same silent promise for every row and
+    #: the only way to find the dead ones was to press Enter on each in turn.
+    #: Transient and excluded from equality exactly like ``alt_sources`` and
+    #: ``notes``: it describes how a row is doing, it does not identify it --
+    #: and a station whose check flips must not thereby become a different
+    #: station to the favorites de-duplicator.
+    #: See ``quill.core.radio.station_confidence`` for what is done with it.
+    last_check_ok: bool | None = field(default=None, compare=False)
 
     @property
     def display_name(self) -> str:

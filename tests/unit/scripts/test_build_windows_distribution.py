@@ -289,7 +289,11 @@ def test_bundle_offline_lifts_optional_component_excludes() -> None:
         "tools\\speech\\whispercpp\\*",
         "vendor\\braille-pack\\*",
         "kokoro-models\\*",
-        "speech-models-bundled\\*",
+        # Not speech-models-bundled\\* wholesale: the Vosk chapter model inside
+        # it ships in every build (chapters have to answer on first launch), so
+        # only the Offline-Edition members of that folder are excluded.
+        "speech-models-bundled\\whispercpp\\*",
+        "speech-models-bundled\\piper\\*",
         "wheels\\kokoro\\*",
         "wheels\\faster-whisper\\*",
         "wheels\\vosk\\*",
@@ -303,6 +307,12 @@ def test_bundle_offline_lifts_optional_component_excludes() -> None:
     # because there is nothing it could ever include. It stays excluded either way.
     assert "tools\\speech\\piper\\*" in online_excludes
     assert "tools\\speech\\piper\\*" in offline_excludes
+
+    # The Vosk chapter model is the one bundled speech asset a regular installer
+    # keeps. Cast infers chapters from a transcript and most podcasts publish
+    # none, so an engine that has to be downloaded first means the feature's
+    # first answer is always "no chapters could be found".
+    assert "speech-models-bundled\\vosk" not in online_excludes
 
     # Node.js has no --nodejs-dir staging flag on this script (it is not part of
     # the offline-speech/braille bundle) and the build-artifact/dev-only entries

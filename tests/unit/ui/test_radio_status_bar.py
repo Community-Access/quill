@@ -7,6 +7,7 @@ menus) is covered by the app-level integration tests.
 
 from __future__ import annotations
 
+from datetime import datetime, timedelta
 from types import SimpleNamespace
 
 from quill.ui.radio.status_bar import RadioStatusBar, clamp_index
@@ -25,7 +26,7 @@ def _host(**overrides: object) -> SimpleNamespace:
         "_radio_controller": SimpleNamespace(
             state=SimpleNamespace(volume_percent=100, muted=False)
         ),
-        "_radio_recorder": SimpleNamespace(active_count=0),
+        "_radio_recorder": SimpleNamespace(active_count=0, active_jobs=list),
         "_sleep_timer_controller": SimpleNamespace(is_active=False, remaining_seconds=0),
         "_radio_favorites": SimpleNamespace(favorites=[]),
         "_radio_history": SimpleNamespace(volume_boost=False),
@@ -62,12 +63,52 @@ def test_volume_cell_reports_percent_mute_and_boost() -> None:
     assert _spec_text(RadioStatusBar(boosted), "volume") == "100% (boosted)"
 
 
-def test_recording_cell_counts_active_jobs() -> None:
+def _recorder(*jobs: SimpleNamespace) -> SimpleNamespace:
+    return SimpleNamespace(active_count=len(jobs), active_jobs=lambda: list(jobs))
+
+
+def _job(minutes_ago: int, minutes: int, requested: bool) -> SimpleNamespace:
+    return SimpleNamespace(
+        started_at=datetime.now() - timedelta(minutes=minutes_ago),
+        minutes=minutes,
+        duration_requested=requested,
+    )
+
+
+def test_recording_cell_counts_active_jobs_and_says_how_long() -> None:
     assert _spec_text(RadioStatusBar(_host()), "recording") == "Idle"
-    one = _host(_radio_recorder=SimpleNamespace(active_count=1))
-    assert _spec_text(RadioStatusBar(one), "recording") == "Recording"
-    many = _host(_radio_recorder=SimpleNamespace(active_count=3))
-    assert _spec_text(RadioStatusBar(many), "recording") == "3 recording"
+    # A capture with a length the listener chose counts down to it...
+    one = _host(_radio_recorder=_recorder(_job(18, 60, requested=True)))
+    assert _spec_text(RadioStatusBar(one), "recording") == "42 min left"
+    # ...and one started with Record Now counts up, because its `minutes` is a
+    # disk-safety cap rather than a plan. See core.radio.recording_progress.
+    open_ended = _host(_radio_recorder=_recorder(_job(18, 180, requested=False)))
+    assert _spec_text(RadioStatusBar(open_ended), "recording") == "18 min so far"
+    many = _host(
+        _radio_recorder=_recorder(
+            _job(18, 60, requested=True),
+            _job(5, 30, requested=True),
+            _job(2, 180, requested=False),
+        )
+    )
+    assert _spec_text(RadioStatusBar(many), "recording") == "3 recordings, 25 min left"
+
+
+def test_a_recorder_without_job_snapshots_degrades_to_idle() -> None:
+    """A cell repainted on a timer must never take the bar down.
+
+    A recorder mid-teardown (and any older fake) has no ``active_jobs``, and the
+    only acceptable answer to that is a quiet one.
+    """
+    stale = _host(_radio_recorder=SimpleNamespace(active_count=2))
+    assert _spec_text(RadioStatusBar(stale), "recording") == "Idle"
+
+
+def test_the_recording_hint_follows_what_the_cell_is_showing() -> None:
+    bar = RadioStatusBar(_host(_radio_recorder=_recorder(_job(18, 60, requested=True))))
+    spec = next(s for s in bar._specs if s.key == "recording")
+    assert spec.live_help is not None
+    assert "counts down" in spec.live_help()
 
 
 def test_sleep_timer_cell_off_and_remaining() -> None:

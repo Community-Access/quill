@@ -134,6 +134,42 @@ def preferred_dictation_provider_id(registry: SpeechProviderRegistry, chosen: st
     return DEFAULT_PROVIDER_ID
 
 
+#: The engine chapter work asks for first. Vosk is bundled and its model is
+#: 40 MB, so it is present on first launch with no download -- and the measured
+#: reason it wins is not accuracy: it scored 0.372 against Whisper medium's
+#: 0.316 because **its cues break at natural pauses**, so its edges are already
+#: plausible section starts. Whisper's 1.5 GB bought a worse answer 4.7x slower.
+CHAPTER_PROVIDER_ID = "vosk"
+
+
+def preferred_chapter_provider_id(registry: SpeechProviderRegistry, chosen: str = "") -> str:
+    """Which engine should transcribe an episode **for chapters**.
+
+    Deliberately not :func:`preferred_dictation_provider_id`. The two jobs want
+    opposite things and sharing one ladder would make each worse:
+
+    * **Dictation** is a person waiting for their own words, so it wants the
+      engine that never invents text from silence and detects its language --
+      Parakeet, once its 650 MB model is installed.
+    * **Chapters** is a batch pass over an hour of audio nobody is watching,
+      and what it needs from a transcript is *where the pauses are*. Vosk's
+      cue boundaries land on them, which is why a 40 MB model beats a 1.5 GB
+      one at this and is 4.7 times faster doing it.
+
+    An explicit ``chosen`` still wins, for the same reason it does in
+    dictation: a setting that is quietly overridden is a setting that lies.
+    """
+    if chosen and registry.get(chosen) is not None:
+        return chosen
+    try:
+        vosk = registry.get(CHAPTER_PROVIDER_ID)
+        if vosk is not None and vosk.is_available():
+            return CHAPTER_PROVIDER_ID
+    except Exception:  # noqa: BLE001 - a probing failure must never block chapters
+        pass
+    return DEFAULT_PROVIDER_ID
+
+
 @dataclass(frozen=True, slots=True)
 class ModelRow:
     """One accessible row for the model-manager list."""

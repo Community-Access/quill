@@ -1071,6 +1071,13 @@ class RadioAppFrame(
         station_menu.Append(
             manage_id, self._menu_label("&Manage Favorites...", "radio.manage_favorites")
         )
+        # Put the actions you use at the top of every row menu, and choose what
+        # Enter does. Wiring lives in ui/radio/quick_actions_command (at budget).
+        from quill.ui.radio.quick_actions_command import open_quick_actions
+
+        quick_id = wx.NewIdRef()
+        station_menu.Append(quick_id, "&Quick Actions...\tCtrl+Alt+Q")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: open_quick_actions(self), id=quick_id)
         new_folder_id = wx.NewIdRef()
         station_menu.Append(new_folder_id, "New F&older...\tCtrl+Shift+E")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._on_new_folder(), id=new_folder_id)
@@ -1183,11 +1190,11 @@ class RadioAppFrame(
         # none of which a live broadcast can do, and every one of which says so
         # out loud rather than doing nothing. Wiring lives in
         # quill/apps/radio_video_menu.py; radio.py is at its GATE-11 budget.
-        from quill.apps.radio_video_menu import build_video_playback_items
+        from quill.apps.radio_playback_extras import build_playback_extras
 
         # Pinned as a group rather than unpacked: the helper owns which items
         # exist, and a fixed-length unpack here would break every time it grew.
-        video_menu_ids = build_video_playback_items(self, playback_menu, wx)
+        video_menu_ids = build_playback_extras(self, playback_menu, wx)
         playback_menu.AppendSeparator()
         whats_playing_id = wx.NewIdRef()
         playback_menu.Append(whats_playing_id, "&What's Playing?\tCtrl+T")
@@ -1324,6 +1331,14 @@ class RadioAppFrame(
         help_menu.Append(hotkeys_id, "&Global Hotkeys...\tCtrl+Alt+G")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
+        # The sheet sits beside the editor because they are the two halves of
+        # one question: this one answers "what can I press?", the editor answers
+        # "I want that somewhere else". Every menu item names its key since 3.0,
+        # which fixed discovery *inside* a menu and left "open six menus and
+        # arrow to the end of each" as the only way to see them together.
+        sheet_id = wx.NewIdRef()
+        help_menu.Append(sheet_id, "Keyboard Shortcuts S&heet...\tCtrl+Alt+Shift+K")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_keyboard_cheat_sheet(), id=sheet_id)
         bug_id = wx.NewIdRef()
         help_menu.Append(bug_id, "Report a &Bug...\tCtrl+Alt+B")
         self.frame.Bind(
@@ -1336,12 +1351,23 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
         help_menu.AppendSeparator()
         guide_id, notes_id, prd_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        # The release notes ship in two halves: the narrative, and the companion
+        # that carries the reasoning. The narrative points at the companion by
+        # name, so it needs a door of its own -- a document nobody can open from
+        # the Help menu is a document that does not really ship.
+        notes_depth_id = wx.NewIdRef()
         help_menu.Append(guide_id, "&User Guide\tF1")
         help_menu.Append(notes_id, "&Release Notes\tShift+F1")
+        help_menu.Append(notes_depth_id, "Release Notes: The &Long Version\tCtrl+Shift+F1")
         help_menu.Append(prd_id, "&Product Requirements...\tCtrl+F1")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("userguide"), id=guide_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._open_radio_doc("release-notes-3.0"), id=notes_id
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self._open_radio_doc("release-notes-3.0-in-depth"),
+            id=notes_depth_id,
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("prd"), id=prd_id)
         help_menu.AppendSeparator()
@@ -1411,8 +1437,8 @@ class RadioAppFrame(
         self._keep_menu_ids(downloads_id)
         from quill.apps.radio_settings_menu import build_catalog_status_item
 
-        (catalog_status_id,) = build_catalog_status_item(self, view_menu, wx)
-        self._keep_menu_ids(catalog_status_id)
+        catalog_status_id, audio_health_id = build_catalog_status_item(self, view_menu, wx)
+        self._keep_menu_ids(catalog_status_id, audio_health_id)
         view_menu.AppendSeparator()
         features_id = wx.NewIdRef()
         view_menu.Append(features_id, "&Customize Features...\tCtrl+Alt+C")
@@ -1515,6 +1541,7 @@ class RadioAppFrame(
             ffmpeg_id,
             guide_id,
             notes_id,
+            notes_depth_id,
             prd_id,
             updates_id,
             about_id,
@@ -1526,12 +1553,14 @@ class RadioAppFrame(
             *self._text_size_item_ids,
             shortcuts_id,
             hotkeys_id,
+            sheet_id,
         )
 
     def _open_radio_doc(self, stem: str) -> None:
         titles = {
             "userguide": "Quill Radio User Guide",
             "release-notes-3.0": "Quill Radio Release Notes",
+            "release-notes-3.0-in-depth": "Quill Radio Release Notes: The Long Version",
             "prd": "Quill Radio Product Requirements",
         }
         self.open_app_document(

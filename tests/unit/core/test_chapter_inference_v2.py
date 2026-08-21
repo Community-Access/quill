@@ -130,13 +130,28 @@ def test_the_report_is_sentences_and_says_who_wrote_the_titles() -> None:
 
 def test_the_best_answer_wins_not_the_first() -> None:
     # The whole point. A one-boundary transcript answer used to short-circuit
-    # the scan; now both run and the better one is kept.
+    # the scan; now both run and the better one is kept. Deep rather than
+    # Thorough because Thorough no longer offers the pause scan at all.
     inputs = CascadeInputs(
         transcript=lambda: _chapters(0),
         silence_scan=lambda: _chapters(0, 900_000, 1_800_000, 2_700_000),
         total_ms=_HOUR,
     )
-    assert run(inputs, for_budget(THOROUGH)).source == SOURCE_SILENCE
+    assert run(inputs, for_budget(DEEP)).source == SOURCE_SILENCE
+
+
+def test_thorough_declines_rather_than_offering_a_pause_scan() -> None:
+    # Retiring the scan from Thorough is only meaningful if the cascade honours
+    # it: the honest answer here is "no chapters could be found".
+    scanned: list[str] = []
+
+    def _scan() -> list[PodcastChapter]:
+        scanned.append("scan")
+        return _chapters(0, 900_000, 1_800_000, 2_700_000)
+
+    inputs = CascadeInputs(silence_scan=_scan, total_ms=_HOUR)
+    assert run(inputs, for_budget(THOROUGH)).chapters == ()
+    assert scanned == []
 
 
 def test_an_authored_answer_short_circuits_everything_below_it() -> None:
@@ -202,7 +217,7 @@ def test_a_tier_that_raises_is_simply_a_tier_without_an_answer() -> None:
         silence_scan=lambda: _chapters(0, 900_000, 1_800_000),
         total_ms=_HOUR,
     )
-    assert run(inputs, for_budget(THOROUGH)).source == SOURCE_SILENCE
+    assert run(inputs, for_budget(DEEP)).source == SOURCE_SILENCE
 
 
 def test_every_chapter_carries_its_own_provenance() -> None:
@@ -236,6 +251,27 @@ def test_a_tier_switched_off_is_disabled_not_deprioritised() -> None:
     assert budget.name == DEEP
     assert budget.may_scan_audio is False
     assert budget.may_transcribe is False
+
+
+def test_thorough_no_longer_offers_the_pause_scan() -> None:
+    """0.06 against a 0.15 do-nothing floor. An answer worse than dividing by n."""
+    budget = for_budget(THOROUGH)
+    assert budget.may_fetch_transcript is True
+    assert budget.may_scan_audio is False
+    assert "pauses" not in budget.describe()
+
+
+def test_deep_keeps_the_pause_scan_as_a_last_resort() -> None:
+    assert for_budget(DEEP).may_scan_audio is True
+
+
+def test_a_recording_may_still_be_scanned_because_nothing_else_exists() -> None:
+    from quill.core.podcasts.inference_budget import for_recording
+
+    budget = for_recording()
+    assert budget.may_scan_audio is True
+    # There is no publisher, so there is no transcript to fetch.
+    assert budget.may_fetch_transcript is False
 
 
 def test_an_unknown_effort_reads_as_the_default_not_as_more_work() -> None:

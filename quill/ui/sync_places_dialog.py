@@ -17,6 +17,15 @@ Aloud* says it a word at a time with numbers, which is what somebody writing it
 down needs. It is stored in the platform credential store like every other
 secret, never in a settings file.
 
+**What gets shared is three switches, not one.** They carry genuinely
+different exposure, so collapsing them would be a lie about what the folder
+learns. The encrypted half is QUILL to QUILL and needs the phrase. The plain
+half writes a published ``listening-places/1`` file that another app -- Earshot
+on a phone -- reads and writes, and it needs **no phrase at all**: gating it
+behind encryption would mean a feature nobody can set up, which syncs nothing.
+Names are a third switch because the ids in that file are hashed and the names
+are not.
+
 **Sync runs off the UI thread**, and its report is a sentence: what came back,
 what went out, and whether two machines disagreed about a place.
 """
@@ -28,6 +37,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.sync import recovery_phrase, vault_file
+from quill.core.sync.listening_places import new_device_id as _new_device_id
 from quill.core.sync.places_config import PlacesConfig, default_device_name
 from quill.ui.dialog_contract import apply_modal_ids
 
@@ -118,6 +128,34 @@ class SyncPlacesDialog:
         self._on_stop.SetValue(config.sync_on_stop)
         root.Add(self._on_stop, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        shared = wx.StaticBoxSizer(wx.VERTICAL, self._dialog, "What goes in that folder")
+        self._encrypted = wx.CheckBox(self._dialog, label="&Encrypted, for my other QUILL machines")
+        self._encrypted.SetName(
+            "Locked with your recovery phrase. Only a machine that has the phrase "
+            "can read it, and the folder's provider learns nothing but sizes."
+        )
+        self._encrypted.SetValue(config.encrypted)
+        shared.Add(self._encrypted, 0, wx.ALL, 6)
+
+        self._interchange = wx.CheckBox(self._dialog, label="A &plain file other apps can read")
+        self._interchange.SetName(
+            "Writes a Listening Places file other podcast apps understand, so your "
+            "place follows you to a phone as well as to another computer. It needs "
+            "no recovery phrase. Every id in it is hashed, so anybody who can see "
+            "the folder learns how much you listen and when, but not to what."
+        )
+        self._interchange.SetValue(config.interchange)
+        shared.Add(self._interchange, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+
+        self._labels = wx.CheckBox(self._dialog, label="Include episode and file &names")
+        self._labels.SetName(
+            'With this off, a message says "an episode" instead of naming it, and '
+            "anybody who can see the folder learns less about what you listen to."
+        )
+        self._labels.SetValue(config.include_labels)
+        shared.Add(self._labels, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
+        root.Add(shared, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         self._status = wx.TextCtrl(
             self._dialog, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 60)
         )
@@ -172,12 +210,22 @@ class SyncPlacesDialog:
 
     def config(self) -> PlacesConfig:
         """What the fields currently say, as a config record."""
+        interchange = bool(self._interchange.GetValue())
         return PlacesConfig(
             enabled=bool(self._enabled.GetValue()),
             remote_dir=self._folder.GetValue().strip(),
             device=self._device.GetValue().strip() or default_device_name(),
             has_phrase=bool(recovery_phrase.normalise(self._phrase.GetValue())),
             sync_on_stop=bool(self._on_stop.GetValue()),
+            encrypted=bool(self._encrypted.GetValue()),
+            interchange=interchange,
+            # Minted here, once, the first time the plain half is switched on:
+            # it names this device's file in a folder other people may see, so
+            # it is random rather than the machine's name, and it must not
+            # change afterwards or this device starts leaving a second file
+            # behind on every sync.
+            device_id=self._config.device_id or (_new_device_id() if interchange else ""),
+            include_labels=bool(self._labels.GetValue()),
         )
 
     def browse(self) -> str:
@@ -223,6 +271,12 @@ class SyncPlacesDialog:
             return "Choose a folder both machines can see first."
         if not Path(config.remote_dir).is_dir():
             return "That folder does not exist. Choose one both machines can see."
+        if not config.encrypted and not config.interchange:
+            return "Choose at least one thing to put in that folder."
+        # A phrase is the key to the encrypted half and is meaningless to the
+        # plain one, so it is only required when the encrypted half is wanted.
+        if not config.encrypted:
+            return ""
         return recovery_phrase.describe_problem(self._phrase.GetValue())
 
     def _on_save_clicked(self, event: Any) -> None:

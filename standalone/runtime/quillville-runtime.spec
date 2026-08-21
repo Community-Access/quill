@@ -123,6 +123,15 @@ a = Analysis(
         # shadow the pack silently. Same class of accident as `winrt` vanishing
         # from a release: what ships must not depend on what one laptop has.
         "sherpa_onnx",
+        # The Faster Whisper pack installs its own huggingface_hub (see
+        # engine_install._FASTER_WHISPER_REQUIREMENTS), and nothing under quill/
+        # imports the hub directly. Whether it was swept in at all depended on
+        # which unrelated package on the build machine reached it -- on this one
+        # that was `mcp`, excluded below, so the hub silently stopped shipping
+        # and the import gate failed demanding it. Excluded outright now: what
+        # ships must not depend on what one laptop has, and a frozen hub would
+        # shadow the pack's pinned copy the way vosk shadowed its pack.
+        "huggingface_hub",
         # --- present-but-broken in the 2026-08-18 probe ----------------------
         # weasyprint needs GTK native libraries (libgobject, pango) that no
         # wheel provides and the bundle never carried: it raises OSError the
@@ -142,7 +151,8 @@ a = Analysis(
         # file_download falls back to plain HTTPS with a log line. QUILL only
         # ever downloads through the hub (faster-whisper's snapshot_download);
         # the upload paths that genuinely require it are never called. The hub
-        # itself STAYS -- Kokoro and Faster Whisper fetch through it.
+        # itself is excluded above and arrives with the pack that uses it, so
+        # this exclude no longer strands a bundled copy.
         "hf_xet",
         # keynote_parser and its closure -- protobuf (google/_upb, 0.8 MB) and
         # python-snappy -> cramjam (4.1 MB). This is quill.io.pages Route A, and

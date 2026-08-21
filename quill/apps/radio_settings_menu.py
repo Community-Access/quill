@@ -66,4 +66,16 @@ def build_catalog_status_item(app, view_menu, wx):
     status_id = wx.NewIdRef()
     view_menu.Append(status_id, "Station Catalog &Status...\tCtrl+Alt+Shift+S")
     app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_catalog_status(), id=status_id)
-    return (status_id,)
+    # Audio Health sits beside it because they answer the same shape of
+    # question -- "what is this installation actually doing?" -- one about the
+    # station catalog, one about the audio chain. The catalog one was already
+    # here; the audio one had no door at all: media_preflight speaks once at
+    # launch and, when nothing is wrong, correctly says nothing, so there was
+    # no way to ask.
+    audio_id = wx.NewIdRef()
+    # Ctrl+Alt+Shift+M, not ...+A: the unlock-gated Audio Description Project
+    # menu already claims +A, and two items on one key means one of them
+    # silently never fires. M for media, which is what the window reports on.
+    view_menu.Append(audio_id, "Audio &Health...\tCtrl+Alt+Shift+M")
+    app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_audio_health(), id=audio_id)
+    return (status_id, audio_id)

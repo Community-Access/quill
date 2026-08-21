@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quill.core.paths import app_data_dir
-from quill.core.podcasts import feed_auth, retention
+from quill.core.podcasts import feed_auth, position_sync, retention
 from quill.core.podcasts import history as podcast_history
 from quill.core.podcasts.download_queue import DownloadItem
 from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
@@ -22,7 +22,6 @@ from quill.core.podcasts.subscriptions import (
     PodcastLibrary,
     load_library,
     merge_episodes,
-    save_library,
 )
 from quill.core.sound_events import SoundEvent
 from quill.ui.companion_cues import post_cue
@@ -59,18 +58,11 @@ class PodcastsMixin(
 
     def _init_podcasts(self) -> None:
         self._podcast_library: PodcastLibrary = load_library(app_data_dir())
-        # Catch up on what Quill Radio heard (positions and finished episodes
-        # from Browse Stations > Podcasts > Subscriptions) before anything
-        # reads episode state, so the Inbox and Continue Listening open
-        # already knowing. Quiet, like the maintenance pass below -- a launch
-        # summary would talk over the screen reader announcing the window.
-        from quill.core.podcasts.radio_listens import merge_radio_listens
+        # Catch up on Quill Radio before anything reads episode state, so the
+        # Inbox and Continue Listening open already knowing.
+        from quill.ui.podcasts.launch_catchup import catch_up_with_radio
 
-        # Plain save, not _save_podcast_library(): that helper reaches the
-        # download queue, which does not exist yet this early in init.
-        updated, _finished = merge_radio_listens(app_data_dir(), self._podcast_library)
-        if updated:
-            save_library(app_data_dir(), self._podcast_library)
+        catch_up_with_radio(self._podcast_library)
         self._podcast_manager_dialog: PodcastManagerDialog | None = None
         self._podcast_ever_active = False
         self._podcast_current_chapters: list = []
@@ -220,7 +212,8 @@ class PodcastsMixin(
         episode = show.find_episode(episode_guid) if show is not None else None
         if episode is None:
             return
-        episode.position_ms = max(0, int(ms))
+        # Stamped, so the place can travel between devices (position_sync).
+        position_sync.remember_position(episode, int(ms))
         # A checkpoint is exactly the moment a listening session ends
         # (pause / stop / switch / shutdown), which is why the statistics log
         # is flushed here instead of on the once-a-second poll that feeds it.
@@ -234,8 +227,7 @@ class PodcastsMixin(
         episode = show.find_episode(episode_guid)
         if episode is None:
             return
-        episode.played = True
-        episode.position_ms = 0
+        position_sync.mark_played(episode)
         self._podcast_flush_stats(completed=True)
         # The end of an episode is a state QUILL Cast changed through in
         # silence: the next episode simply started, or nothing did (#1302).
@@ -614,6 +606,12 @@ class PodcastsMixin(
         show = self._podcast_library.find_show(state.show_id or "")
         episode = show.find_episode(state.episode_guid or "") if show is not None else None
         find_chapters_for_episode(self, show, episode)
+
+    def analyze_podcast_chapters(self) -> None:
+        """Work chapters out, then show them for checking before keeping any."""
+        from quill.ui.podcasts.chapter_analysis import analyse_playing_episode
+
+        analyse_playing_episode(self)
 
     def podcast_next_chapter(self) -> None:
         from quill.core.podcasts.chapters import next_chapter
@@ -1048,6 +1046,11 @@ class PodcastsMixin(
                 "podcasts.find_chapters",
                 "Podcasts: Find Chapters in This Episode...",
                 self.find_podcast_chapters,
+            ),
+            (
+                "podcasts.analyze_chapters",
+                "Podcasts: Analyse Chapters in This Episode...",
+                self.analyze_podcast_chapters,
             ),
             ("podcasts.next_chapter", "Podcasts: Next Chapter", self.podcast_next_chapter),
             (

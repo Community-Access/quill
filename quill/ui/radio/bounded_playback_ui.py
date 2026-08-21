@@ -16,6 +16,7 @@ this module is the wording and the wx wiring.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 #: Said whenever a transport command lands on a live stream.
@@ -248,12 +249,61 @@ def previous_chapter(host: Any) -> None:
     _announce_chapter(host, index)
 
 
+def local_media_path(controller: Any) -> Path | None:
+    """The file being played, when there is one. ``None`` for a live stream.
+
+    Preview cuts a slice out of a file, so it needs a file. A stream has no
+    bytes on disk to cut and never will, which is why Preview is absent rather
+    than disabled there.
+    """
+    try:
+        url = str(controller.current_playback_url() or "")
+    except Exception:  # noqa: BLE001 - a controller with nothing loaded is not an error
+        return None
+    if not url:
+        return None
+    if url.lower().startswith("file:///"):
+        from urllib.parse import unquote, urlparse
+
+        url = unquote(urlparse(url).path).lstrip("/")
+    elif "://" in url:
+        return None
+    try:
+        path = Path(url)
+        return path if path.is_file() else None
+    except OSError:
+        return None
+
+
 def open_chapters(host: Any) -> None:
-    """A list of the video's chapters; Enter jumps to the chosen one."""
+    """A list of this item's chapters; Enter jumps, Preview checks a mark.
+
+    The uploader's chapters when the resolve captured some. Otherwise whatever
+    already exists for the file -- its own chapter frames, or a list QUILL Cast
+    worked out earlier and left in the shared cache. Radio works none out
+    itself: see :mod:`quill.core.radio.chapter_lookup`.
+    """
     if _refuse(host):
         return
     controller = _controller(host)
     chapters = controller.chapters()
+    audio_path = local_media_path(controller)
+    source_label = "published by the uploader"
+    if not chapters:
+        from quill.core.paths import app_data_dir
+        from quill.core.radio.chapter_lookup import chapters_for_media, identify_episode
+
+        station = getattr(getattr(controller, "state", None), "station", None)
+        show_id, guid = "", ""
+        if station is not None:
+            show_id, guid = identify_episode(
+                app_data_dir(),
+                str(getattr(station, "homepage", "") or ""),
+                str(getattr(station, "stream_url", "") or ""),
+            )
+        found, where = chapters_for_media(audio_path, show_id=show_id, episode_guid=guid)
+        if found:
+            chapters, source_label = found, where
     if not chapters:
         host._announce(NO_CHAPTERS)
         return
@@ -267,5 +317,7 @@ def open_chapters(host: Any) -> None:
         announce=host._announce,
         go_to_chapter=controller.go_to_chapter,
         transport_host=host,
+        audio_path=audio_path,
+        source_label=source_label,
     )
     dialog.show()

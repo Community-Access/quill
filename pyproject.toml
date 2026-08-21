@@ -546,6 +546,14 @@ extend-exclude = [
     # One-off dispatch helper that drove the podcast episode reorg. Not
     # first-party app code; long literal brief strings are intentional.
     "docs/podcast/dispatch_main.py",
+    # Research harnesses. labs/ holds throwaway measurement code -- the
+    # chapter-inference evaluation that decided the speech engine, the window
+    # size and the retirement of the pause scan lives here, with its corpus and
+    # its results. It is kept because the numbers in the PRD have to be
+    # reproducible, and it is not shipped, imported by, or a dependency of any
+    # first-party module. Holding scratch measurement code to the app's lint
+    # rules would mean rewriting an experiment to keep a gate quiet.
+    "labs",
 ]
 
 [tool.ruff.format]
@@ -669,5 +677,11 @@ module = [
     # Optional yt-dlp (audio-converter URL import, #1255 §4.6); installed on
     # demand and imported lazily in core/audio/url_import.py. Ships no stubs.
     "yt_dlp",
+    # Optional WinRT connectivity namespace (core/net_metered.py, the metered
+    # -connection guard). pywinrt ships the namespace packages QUILL actually
+    # uses -- OCR and Imaging -- and not this one, and the module is imported
+    # behind a try/except that treats its absence as "cost unknown". The scoped
+    # gate must not depend on a package the app deliberately does not require.
+    "winrt.windows.networking.connectivity",
 ]
 ignore_missing_imports = true

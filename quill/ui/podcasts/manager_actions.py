@@ -116,8 +116,9 @@ class ManagerActionsMixin:
         changed = 0
         for _index, _show, episode in rows:
             if not episode.played:
-                episode.played = True
-                episode.position_ms = 0
+                from quill.core.podcasts.position_sync import mark_played
+
+                mark_played(episode)
                 changed += 1
         if not changed:
             self._announce("Those episodes were already played.")
@@ -289,8 +290,9 @@ class ManagerActionsMixin:
         if answer != wx.YES:
             return
         for episode in unplayed:
-            episode.played = True
-            episode.position_ms = 0
+            from quill.core.podcasts.position_sync import mark_played
+
+            mark_played(episode)
         self._on_library_changed()
         self.refresh_tree()
         self._fill_episodes(show if show is self._current_show else self._current_show)

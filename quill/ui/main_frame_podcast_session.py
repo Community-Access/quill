@@ -63,7 +63,27 @@ class PodcastSessionMixin:
         self._podcast_chapter_skip = ChapterSkipState()
 
     def _podcast_stats_retention_days(self) -> int:
-        return stats.DEFAULT_RETENTION_DAYS
+        """How long the listening log is kept -- the listener's own choice.
+
+        Was hardcoded to 90 days, which meant a stated privacy setting the app
+        offered no way to change. ``0`` means keep forever and ``-1`` means keep
+        nothing at all, which ``_podcast_flush_stats`` short-circuits on rather
+        than writing and pruning.
+        """
+        settings = getattr(self._podcast_library, "settings", None)
+        return int(getattr(settings, "history_retention_days", stats.DEFAULT_RETENTION_DAYS))
+
+    def open_podcast_directory_credentials(self) -> None:
+        """Podcast Index Credentials... -- see ui/podcasts/directory_credentials_dialog."""
+        from quill.ui.podcasts.directory_credentials_dialog import open_directory_credentials
+
+        open_directory_credentials(self)
+
+    def podcast_choose_output_device(self) -> None:
+        """Audio Output Device...: route this app's sound. See ui/media/output_device."""
+        from quill.ui.media.output_device import choose_output_device
+
+        choose_output_device(self)
 
     # -- statistics -----------------------------------------------------
 
@@ -145,6 +165,12 @@ class PodcastSessionMixin:
         self._podcast_stats_seconds = 0.0
         if key is None or seconds < 1.0:
             return
+        # "Do not keep a history" is short-circuited here rather than pruned
+        # afterwards: writing a session and deleting it a moment later would
+        # still have put it on the disk, which is precisely what somebody who
+        # chose that option asked not to happen.
+        if self._podcast_stats_retention_days() < 0:
+            return
         session = stats.ListeningSession(
             show_id=key[0],
             episode_guid=key[1],
@@ -172,6 +198,9 @@ class PodcastSessionMixin:
             show_titles=titles,
             announce_cb=self._announce,
             on_clear=self._podcast_clear_statistics,
+            streaks_enabled=bool(
+                getattr(self._podcast_library.settings, "stats_streaks_enabled", False)
+            ),
         )
         dialog.show()
 
@@ -279,8 +308,9 @@ class PodcastSessionMixin:
         ):
             return
         for episode in unplayed:
-            episode.played = True
-            episode.position_ms = 0
+            from quill.core.podcasts.position_sync import mark_played
+
+            mark_played(episode)
         self._save_podcast_library()
         manager = getattr(self, "_podcast_manager_dialog", None)
         if manager is not None:

@@ -130,3 +130,20 @@ begin
     end;
   end;
 end;
+
+[Registry]
+
+; The quill-cast:// URI scheme, for "Share This Moment" links -- a link that
+; reopens an episode at the second it was shared from. Written unconditionally
+; rather than behind a task: a scheme nobody else claims is not a file type
+; being taken over, and a shared link that does nothing is the failure the
+; feature exists to avoid. "URL Protocol" (empty value) is what marks the key
+; as a protocol handler; Windows requires it to be present, not to have a value.
+;
+; The app never fetches what the link names. It resolves to a feed address and
+; a GUID, looks both up in the library the listener already subscribes to, and
+; does nothing at all if they are not there -- see core/podcasts/share_links.
+Root: HKA; Subkey: "Software\Classes\quill-cast"; ValueType: string; ValueName: ""; ValueData: "URL:QUILL Cast episode"; Flags: uninsdeletekey
+Root: HKA; Subkey: "Software\Classes\quill-cast"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
+Root: HKA; Subkey: "Software\Classes\quill-cast\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\{#AppExeName},0"
+Root: HKA; Subkey: "Software\Classes\quill-cast\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""

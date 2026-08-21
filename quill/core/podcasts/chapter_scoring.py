@@ -38,6 +38,11 @@ SOURCE_SHOW_NOTES = "show notes"
 #: bit" and a poor answer to "how is this episode laid out". Which is why they
 #: only win when nothing better was published.
 SOURCE_SOUNDBITES = "soundbites"
+#: The publisher's own running order, matched to where each topic arrives in
+#: the words. The *titles* were written by a person and the *times* were
+#: worked out, which is why it sits below the four sources that carry both
+#: and above the two that carry neither.
+SOURCE_NOTE_ANCHORS = "show notes and audio"
 SOURCE_TRANSCRIPT = "transcript"
 SOURCE_SILENCE = "silence scan"
 
@@ -48,6 +53,9 @@ SOURCE_LABELS: dict[str, str] = {
     SOURCE_FILE_TAGS: "read from the audio file's own chapter marks",
     SOURCE_SHOW_NOTES: "read from timestamps in the show notes",
     SOURCE_SOUNDBITES: "the moments this podcast marked as worth hearing",
+    SOURCE_NOTE_ANCHORS: (
+        "matched from the running order in the show notes to where each topic starts"
+    ),
     SOURCE_TRANSCRIPT: "worked out from the transcript, where the topic changed",
     SOURCE_SILENCE: "worked out by listening for pauses in the audio",
 }
@@ -59,6 +67,7 @@ BASE_CONFIDENCE: dict[str, float] = {
     SOURCE_FILE_TAGS: 0.95,
     SOURCE_SHOW_NOTES: 0.9,
     SOURCE_SOUNDBITES: 0.85,
+    SOURCE_NOTE_ANCHORS: 0.7,
     SOURCE_TRANSCRIPT: 0.5,
     SOURCE_SILENCE: 0.35,
 }
@@ -91,6 +100,7 @@ class ChapterAnswer:
             SOURCE_FILE_TAGS,
             SOURCE_SHOW_NOTES,
             SOURCE_SOUNDBITES,
+            SOURCE_NOTE_ANCHORS,
         }
 
 
@@ -231,7 +241,12 @@ def describe(answer: ChapterAnswer) -> str:
     ]
     if answer.examined:
         lines.append(f"Examined: {answer.examined}.")
-    if answer.is_authored:
+    if answer.source == SOURCE_NOTE_ANCHORS:
+        lines.append(
+            "The titles come from the running order this podcast published, so a person "
+            "wrote them. Where each one starts was worked out from the words."
+        )
+    elif answer.is_authored:
         lines.append("A person wrote these titles, so they say what each part is about.")
     else:
         lines.append(

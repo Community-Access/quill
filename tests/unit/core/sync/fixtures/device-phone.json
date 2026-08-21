@@ -1,0 +1,36 @@
+{
+  "format": "listening-places/1",
+  "device": "1f4c8a2e",
+  "device_label": "Jeff's iPhone",
+  "app": "earshot/1.0.3",
+  "written_at": "2026-08-20T13:59:00Z",
+  "records": [
+    {
+      "id": "episode:d49b8a9525b77556",
+      "kind": "episode",
+      "position_ms": 2412000,
+      "duration_ms": 3894000,
+      "played": false,
+      "updated_at": "2026-08-20T13:58:02Z",
+      "label": "Blind Abilities: Episode 214"
+    },
+    {
+      "id": "episode:aa006c65353adf4c",
+      "kind": "episode",
+      "position_ms": 0,
+      "duration_ms": 2400000,
+      "played": true,
+      "updated_at": "2026-08-19T20:00:00Z",
+      "label": "Blind Abilities: Episode 213"
+    },
+    {
+      "id": "file:73400320-a41f9c02e88b7d15",
+      "kind": "file",
+      "position_ms": 8125000,
+      "duration_ms": 41220000,
+      "played": false,
+      "updated_at": "2026-08-19T21:40:55Z",
+      "label": "Middlemarch, part 3"
+    }
+  ]
+}

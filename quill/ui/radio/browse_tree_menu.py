@@ -81,33 +81,6 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
     )
 
 
-def _episode_played(dialog: Any, station: Any) -> bool | None:
-    """The played state of a subscribed podcast episode, or ``None``.
-
-    ``None`` (no mark item) for anything that is not a subscribed episode --
-    the library is only consulted for rows whose source says it could know.
-    """
-    if station is None:
-        return None
-    from quill.core.podcasts.radio_listens import PODCAST_EPISODE_SOURCES
-
-    if str(getattr(station, "source", "")) not in PODCAST_EPISODE_SOURCES:
-        return None
-    try:
-        from quill.core.paths import app_data_dir
-        from quill.core.podcasts.subscriptions import load_library
-
-        library = load_library(app_data_dir())
-        show = library.find_show_by_feed_url(str(getattr(station, "homepage", "") or ""))
-        if show is None:
-            return None
-        audio = str(getattr(station, "stream_url", "") or "")
-        episode = next((e for e in show.episodes if e.audio_url == audio), None)
-        return bool(episode.played) if episode is not None else None
-    except Exception:  # noqa: BLE001 - a menu must never fail on a library read
-        return None
-
-
 def _known_subscribed(dialog: Any, kind: str, args: list[str]) -> bool:
     """Whether this show's feed is already followed, if we know it offline."""
     if kind == "mypodcastshow":
@@ -221,6 +194,7 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
         handlers[row_actions.MARK_EPISODE_UNPLAYED] = lambda: podcast_acts.mark_episode_played(
             dialog, station, played=False
         )
+        podcast_acts.register_cast_handoffs(handlers, dialog, station)
         handlers[row_actions.RENAME_FAVORITE] = lambda: _rename_favorite(dialog, station)
         if hasattr(host, "open_record_station_dialog"):
             handlers[row_actions.RECORD_STATION] = lambda: host.open_record_station_dialog(
@@ -306,7 +280,7 @@ def show_for_event(dialog: Any, event: Any) -> None:
         return
     kind, args = split_id(str(data.get("node_id") or ""))
     station = data.get("station")
-    from quill.ui.radio import download_command
+    from quill.ui.radio import browse_podcast_actions, download_command
 
     host = getattr(dialog, "_download_host", dialog)
     entries = row_actions.actions_for(
@@ -325,7 +299,7 @@ def show_for_event(dialog: Any, event: Any) -> None:
         # Record verbs need the frame (recorder, scheduler); an embedded test
         # dialog without one simply offers no record items.
         can_record=hasattr(host, "open_record_station_dialog"),
-        episode_played=_episode_played(dialog, station),
+        episode_played=browse_podcast_actions.episode_played(station),
         # A saved copy changes the transport verbs and turns Download into
         # Remove Download (row_actions.transport_actions explains why).
         downloaded=downloads.is_downloaded(dialog, node, station),
@@ -335,6 +309,12 @@ def show_for_event(dialog: Any, event: Any) -> None:
         has_chapters=places.playing_has(dialog, station, "chapters"),
         has_captions=places.playing_has(dialog, station, "captions"),
     )
+    # The listener's own order (Quick Actions). It can only reorder what this
+    # row already offers, never add an action the row cannot perform.
+    from quill.ui.radio.quick_actions_command import order_row_actions
+
+    context = "node" if dialog._is_folder_data(data) else "station"
+    entries = order_row_actions(host, entries, context)
     if not entries:
         return
 

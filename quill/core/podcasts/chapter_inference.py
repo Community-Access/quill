@@ -48,8 +48,10 @@ from quill.core.podcasts.chapters import PodcastChapter
 __all__ = [
     "TimedCue",
     "PODCAST_SILENCE",
+    "Segmentation",
     "parse_timed_cues",
     "segment_transcript",
+    "segment_with_evidence",
     "silence_chapters_for_podcast",
     "load_cached_inference",
     "save_cached_inference",
@@ -181,6 +183,42 @@ _STOPWORDS: frozenset[str] = frozenset(
 
 _WORD = re.compile(r"[a-z0-9']+")
 
+#: Cohesion this flat, relative to its own average, is an episode with no
+#: sections in it rather than an episode whose sections are subtle.
+_FLAT_COHESION = 0.02
+
+#: How much speech is compared either side of a candidate boundary.
+#:
+#: Two and a half minutes, and the number is measured rather than chosen. Against
+#: hand-built reference chapter lists for four Main Menu episodes, the previous
+#: 45 seconds scored an F1 of 0.165 where cutting the episode into **equal
+#: slices with no knowledge of it at all** scored 0.151 -- so it was, within
+#: noise, no better than dividing by n. At 150 seconds the same code scores
+#: 0.311 and proposes 14 sections instead of 35 where the truth is 7.
+#:
+#: The reason is what 45 seconds *is*. It is about the length of one caller's
+#: question. When somebody rings a talk programme and asks about braille
+#: displays, the vocabulary either side of them changes completely and then
+#: changes back, and a narrow window reads that blip as a chapter. A chapter is a
+#: section of a programme, and sections are minutes long -- so the window has to
+#: be long enough to ask "did the subject change *and stay changed*".
+DEFAULT_WINDOW_SECONDS = 150.0
+
+#: No section shorter than three minutes. Measured alongside the window above:
+#: at a 90-second floor the same settings return nearly twice as many sections,
+#: and the extra ones are wrong. A chapter list somebody arrows through with a
+#: screen reader is worth having only if nearly every row in it is real.
+DEFAULT_MIN_CHAPTER_MS = 180_000
+
+#: The fewest cues a comparison window may hold on each side, whatever the
+#: window's duration works out to. A duration is the right *unit* -- see
+#: :func:`_windowed_cohesion` -- but it cannot conjure resolution a transcript
+#: does not have: a voice-activity detector emits cues of twenty-odd seconds, so
+#: forty-five seconds of them is barely two, and two bags of words is not enough
+#: to say anything about vocabulary. Where the transcript is coarser than the
+#: window, the window widens to fit rather than the tier returning nothing.
+_MIN_WINDOW_CUES = 4
+
 
 def _content_words(text: str) -> list[str]:
     return [w for w in _WORD.findall(text.lower()) if len(w) > 2 and w not in _STOPWORDS]
@@ -215,87 +253,194 @@ def _title_from(text: str, *, max_chars: int = 60) -> str:
     return f"{cut}..." if cut else flat[:max_chars]
 
 
-def segment_transcript(
+@dataclass(frozen=True, slots=True)
+class Segmentation:
+    """Boundaries, plus the evidence the segmenter has about its own quality."""
+
+    chapters: list[PodcastChapter]
+    #: How far below its own threshold the accepted boundaries sat, 0.0-0.5.
+    #: :func:`quill.core.podcasts.chapter_scoring.score` has always asked for
+    #: this and nothing used to compute it, so its ``confidence *= 1.0 + margin``
+    #: term multiplied by one and every inferred answer scored the same whether
+    #: its boundaries were obvious or marginal.
+    cohesion_margin: float = 0.0
+
+
+def _typical_cue_ms(rows: list[TimedCue]) -> int:
+    """The median gap between cues -- how much speech one cue is worth.
+
+    Median rather than mean: one long pause between two cues would otherwise
+    make a fine-grained transcript look coarse and widen every window.
+    """
+    if len(rows) < 2:
+        return 0
+    gaps = sorted(
+        b.start_ms - a.start_ms
+        for a, b in zip(rows, rows[1:], strict=False)
+        if b.start_ms > a.start_ms
+    )
+    return gaps[len(gaps) // 2] if gaps else 0
+
+
+def _windowed_cohesion(
+    rows: list[TimedCue], bags: list[dict[str, int]], window_ms: int
+) -> list[tuple[int, float]]:
+    """Cohesion at every gap, comparing a fixed *duration* either side.
+
+    **The window is seconds of speech, not a count of cues**, and that is the
+    whole point of this function. Cue length is a property of whoever produced
+    the transcript, not of the episode: eight cues is about thirty seconds of a
+    Whisper transcript, two minutes of a Vosk one, three minutes of a
+    speech-recogniser fed through a voice-activity detector, and **three
+    seconds** of a publisher's word-level transcript. The old count-based window
+    therefore compared wildly different amounts of speech depending on the file
+    it was handed, and answered a question about the *episode* using a fact about
+    the *file*. A word-level transcript -- the best input this tier can ever
+    receive -- was the input it handled worst.
+
+    Two pointers rather than a slice per gap, so a word-level transcript with
+    tens of thousands of cues costs the same per cue as a coarse one.
+    """
+    window_ms = max(window_ms, _MIN_WINDOW_CUES * _typical_cue_ms(rows))
+    left: dict[str, int] = {}
+    right: dict[str, int] = {}
+
+    def _add(target: dict[str, int], bag: dict[str, int]) -> None:
+        for word, count in bag.items():
+            target[word] = target.get(word, 0) + count
+
+    def _remove(target: dict[str, int], bag: dict[str, int]) -> None:
+        for word, count in bag.items():
+            remaining = target.get(word, 0) - count
+            if remaining > 0:
+                target[word] = remaining
+            else:
+                target.pop(word, None)
+
+    low = 0  # first cue still inside the left window
+    high = 0  # first cue beyond the right window
+    scores: list[tuple[int, float]] = []
+    for index in range(len(rows)):
+        if index:
+            _add(left, bags[index - 1])
+            _remove(right, bags[index - 1])
+        boundary_ms = rows[index].start_ms
+        while low < index and rows[low].start_ms < boundary_ms - window_ms:
+            _remove(left, bags[low])
+            low += 1
+        while high < len(rows) and rows[high].start_ms <= boundary_ms + window_ms:
+            if high >= index:
+                _add(right, bags[high])
+            high += 1
+        # A window that never filled is a window at the edge of the episode, and
+        # an edge is not a topic change.
+        if index - low < 2 or high - index < 2:
+            continue
+        scores.append((index, _cosine(left, right)))
+    return scores
+
+
+def segment_with_evidence(
     cues: Iterable[TimedCue],
     *,
     total_ms: int = 0,
-    min_chapter_ms: int = 90 * 1000,
-    window_cues: int = 8,
+    min_chapter_ms: int = DEFAULT_MIN_CHAPTER_MS,
+    window_seconds: float = DEFAULT_WINDOW_SECONDS,
     max_chapters: int = 60,
-) -> list[PodcastChapter]:
+) -> Segmentation:
     """Cut a timed transcript into sections where the vocabulary changes.
 
-    The TextTiling shape: slide a pair of adjacent windows over the cues, score
-    how much vocabulary they share, and cut at the *local minima* of that score
-    -- the points where the conversation stopped using the words it had been
-    using. Boundaries are then thinned so no section is shorter than
+    The TextTiling shape: slide a pair of adjacent windows over the transcript,
+    score how much vocabulary they share, and cut at the *local minima* of that
+    score -- the points where the conversation stopped using the words it had
+    been using. Boundaries are then thinned so no section is shorter than
     ``min_chapter_ms``.
 
-    Deterministic and offline. Returns an empty list when the transcript is too
-    short to say anything useful, which the caller reads as "no answer" rather
-    than forcing a single meaningless chapter.
+    Deterministic and offline. Returns no chapters when the transcript is too
+    short, or too uniform, to say anything useful -- which the caller reads as
+    "no answer" rather than forcing a meaningless partition.
     """
-    cue_list = [c for c in cues if c.text.strip()]
-    if len(cue_list) < window_cues * 2:
-        return []
+    rows = [c for c in cues if c.text.strip()]
+    if len(rows) < 6:
+        return Segmentation([])
 
-    bags = [dict(_counts(_content_words(c.text))) for c in cue_list]
-
-    # Cohesion at each gap between cue i-1 and i, over the surrounding windows.
-    scores: list[tuple[int, float]] = []
-    for index in range(window_cues, len(cue_list) - window_cues + 1):
-        left: dict[str, int] = {}
-        right: dict[str, int] = {}
-        for bag in bags[index - window_cues : index]:
-            for word, count in bag.items():
-                left[word] = left.get(word, 0) + count
-        for bag in bags[index : index + window_cues]:
-            for word, count in bag.items():
-                right[word] = right.get(word, 0) + count
-        scores.append((index, _cosine(left, right)))
-
-    if not scores:
-        return []
+    bags = [dict(_counts(_content_words(c.text))) for c in rows]
+    scores = _windowed_cohesion(rows, bags, int(window_seconds * 1000))
+    if len(scores) < 3:
+        return Segmentation([])
 
     # A gap is a candidate when it is a local minimum and meaningfully below the
     # average cohesion -- an episode that never changes subject should produce
     # no chapters rather than arbitrary ones.
     mean = sum(value for _, value in scores) / len(scores)
     spread = math.sqrt(sum((value - mean) ** 2 for _, value in scores) / len(scores))
+
+    # Flat cohesion means there is nothing to find, and the threshold below
+    # cannot say so: with no spread it collapses onto the mean, every gap sits
+    # at exactly the threshold, and "meaningfully below average" silently
+    # becomes "every local wobble". A programme that keeps to one subject for an
+    # hour then gets a full set of invented boundaries -- confidently wrong,
+    # which is the one output this tier must never produce.
+    if spread < _FLAT_COHESION * max(mean, _FLAT_COHESION):
+        return Segmentation([])
+
     threshold = mean - spread / 2.0
 
-    candidates: list[int] = []
+    candidates: list[tuple[int, float]] = []
     for position, (index, value) in enumerate(scores):
         if value > threshold:
             continue
         before = scores[position - 1][1] if position else math.inf
         after = scores[position + 1][1] if position + 1 < len(scores) else math.inf
         if value <= before and value <= after:
-            candidates.append(index)
+            candidates.append((index, threshold - value))
 
     # Always open at zero, then keep only boundaries far enough apart.
     starts = [0]
-    for index in candidates:
-        start_ms = cue_list[index].start_ms
+    depths: list[float] = []
+    for index, depth in candidates:
+        start_ms = rows[index].start_ms
         if start_ms - starts[-1] >= min_chapter_ms:
             starts.append(start_ms)
+            depths.append(depth)
         if len(starts) >= max_chapters:
             break
     if total_ms and total_ms - starts[-1] < min_chapter_ms and len(starts) > 1:
         starts.pop()
+        if depths:
+            depths.pop()
     if len(starts) < 2:
-        return []
+        return Segmentation([])
 
     chapters: list[PodcastChapter] = []
     for position, start_ms in enumerate(starts):
         end_ms = starts[position + 1] if position + 1 < len(starts) else (total_ms or None)
         body = " ".join(
             c.text
-            for c in cue_list
+            for c in rows
             if c.start_ms >= start_ms and (end_ms is None or c.start_ms < end_ms)
         )
         chapters.append(PodcastChapter(start_ms=start_ms, title=_title_from(body)))
-    return chapters
+    margin = sum(depths) / len(depths) if depths else 0.0
+    return Segmentation(chapters, round(min(0.5, max(0.0, margin)), 4))
+
+
+def segment_transcript(
+    cues: Iterable[TimedCue],
+    *,
+    total_ms: int = 0,
+    min_chapter_ms: int = DEFAULT_MIN_CHAPTER_MS,
+    window_seconds: float = DEFAULT_WINDOW_SECONDS,
+    max_chapters: int = 60,
+) -> list[PodcastChapter]:
+    """:func:`segment_with_evidence`, for callers that only want the chapters."""
+    return segment_with_evidence(
+        cues,
+        total_ms=total_ms,
+        min_chapter_ms=min_chapter_ms,
+        window_seconds=window_seconds,
+        max_chapters=max_chapters,
+    ).chapters
 
 
 def _counts(words: list[str]) -> dict[str, int]:

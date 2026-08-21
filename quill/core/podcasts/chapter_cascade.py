@@ -38,6 +38,7 @@ from dataclasses import dataclass, field
 
 from quill.core.podcasts.chapter_scoring import (
     SOURCE_FILE_TAGS,
+    SOURCE_NOTE_ANCHORS,
     SOURCE_PUBLISHED,
     SOURCE_SHOW_NOTES,
     SOURCE_SILENCE,
@@ -77,6 +78,13 @@ class CascadeInputs:
     #: moment and titled it -- so it short-circuits like the three above, but it
     #: is asked last of them because a highlight is not a partition.
     soundbites: Tier | None = None
+    #: The publisher's running order in prose, matched to where each topic
+    #: arrives in the words. Asked below the four tiers above because its
+    #: *times* were worked out; asked above everything below because its
+    #: *titles* were not. Most feeds describe their segments and timestamp
+    #: none of them, so for those episodes this is the only authored answer
+    #: there is.
+    note_anchors: Tier | None = None
     cached: Callable[[], ChapterAnswer | None] | None = None
     transcript: Tier | None = None
     fetch_transcript: Tier | None = None
@@ -127,7 +135,8 @@ def run(inputs: CascadeInputs, budget: InferenceBudget) -> ChapterAnswer:
     if inputs.total_ms and inputs.total_ms < MIN_EPISODE_MS:
         return ChapterAnswer()
 
-    # 1-4: authored. First hit wins outright -- a person wrote these.
+    # 1-4: authored, and complete. First hit wins outright -- a person wrote
+    # both the titles and the times.
     for source, tier, floor in (
         (SOURCE_PUBLISHED, inputs.published, 2),
         (SOURCE_FILE_TAGS, inputs.file_tags, 2),
@@ -138,7 +147,7 @@ def run(inputs: CascadeInputs, budget: InferenceBudget) -> ChapterAnswer:
         if answer is not None:
             return answer
 
-    # 4: a previous run's result. Never recomputed, and the cache itself is
+    # 5: a previous run's result. Never recomputed, and the cache itself is
     # keyed on the audio file's stamp, so this cannot outlive its episode.
     if inputs.cached is not None:
         try:
@@ -148,7 +157,18 @@ def run(inputs: CascadeInputs, budget: InferenceBudget) -> ChapterAnswer:
         if cached is not None and cached.is_useful:
             return cached
 
-    # 5+: inferred. Every tier the budget allows runs, and the best wins --
+    # 6: the publisher's running order in prose, matched to where each topic
+    # arrives in the words. Authored titles, worked-out times -- so it
+    # short-circuits like the four above rather than being scored against the
+    # heuristics, because a title a person wrote is worth more than any
+    # boundary a heuristic finds. It is asked *after* the cache and not with
+    # the others because it is the one authored tier that needs a transcript,
+    # and an episode already answered must not pay for one.
+    anchored = _authored(inputs, SOURCE_NOTE_ANCHORS, inputs.note_anchors, floor=2)
+    if anchored is not None:
+        return anchored
+
+    # 7+: inferred. Every tier the budget allows runs, and the best wins --
     # this is the change. A weak segmentation no longer hides a better scan.
     answers: list[ChapterAnswer] = []
 

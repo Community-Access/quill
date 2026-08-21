@@ -35,10 +35,14 @@ class PlaylistRulesDialog:
         shows: list[PodcastShow],
         rules: PlaylistRules,
         announce_cb: Callable[[str], None] | None = None,
+        library: object = None,
     ) -> None:
         import wx
 
         self._wx = wx
+        # Only for the live preview count. Absent in a test that just wants the
+        # form, and the preview simply says nothing then.
+        self._library = library
         self._announce = announce_cb or (lambda _m: None)
         self._result: PlaylistRules | None = None
         self._shows = sorted(shows, key=lambda s: s.title.casefold())
@@ -139,6 +143,14 @@ class PlaylistRulesDialog:
         grid.Add(self._sort_choice, 1, wx.EXPAND)
         root.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        # The wider rule set -- match mode, folders, downloads, notes, text,
+        # progress, limit -- plus the live preview count. Its own module: this
+        # dialog is near its GATE-11 ceiling and those rows are a coherent set.
+        from quill.ui.podcasts.playlist_rules_extra import ExtraRules
+
+        self._extra = ExtraRules(self.dialog, root, rules, announce=self._announce)
+        self._extra.set_preview_source(self._preview_count)
+
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
         ok_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
@@ -149,6 +161,44 @@ class PlaylistRulesDialog:
         self.dialog.SetSizerAndFit(root)
 
         ok_btn.Bind(wx.EVT_BUTTON, self._on_save)
+
+    def _current_rules(self) -> PlaylistRules:
+        """What the form currently says, as a rules record."""
+        checked_show_ids = [
+            show.id
+            for show, check in zip(self._shows, self._show_checks, strict=True)
+            if check.GetValue()
+        ]
+        status_index = self._status_choice.GetSelection()
+        sort_index = self._sort_choice.GetSelection()
+        return PlaylistRules(
+            show_ids=checked_show_ids,
+            episode_status=PLAYLIST_STATUS_MODES[status_index] if status_index >= 0 else "any",
+            published_within_days=self._days_ctrl.GetValue(),
+            min_duration_minutes=self._min_minutes_ctrl.GetValue(),
+            max_duration_minutes=self._max_minutes_ctrl.GetValue(),
+            sort_mode=EPISODE_SORT_MODES[sort_index] if sort_index >= 0 else "date_newest",
+            **self._extra.values(),
+        )
+
+    def _preview_count(self) -> int:
+        """How many episodes these rules match **right now**.
+
+        The difference between a rule builder people trust and one they abandon.
+        A set of filters with no feedback is a guess somebody has to save,
+        close, open and check -- four steps to answer "did I mean that?".
+        """
+        library = self._library
+        if library is None:
+            return -1
+        from quill.core.podcasts.models import Playlist
+        from quill.core.podcasts.playlists import resolve_playlist
+
+        try:
+            preview = Playlist(id="preview", name="", kind="smart", rules=self._current_rules())
+            return len(resolve_playlist(library, preview))
+        except Exception:  # noqa: BLE001 - a preview that cannot be computed is not an error
+            return -1
 
     def show(self) -> PlaylistRules | None:
         self.dialog.CentreOnParent()
@@ -166,19 +216,5 @@ class PlaylistRulesDialog:
             self.dialog.Destroy()
 
     def _on_save(self, _event: object) -> None:
-        checked_show_ids = [
-            show.id
-            for show, check in zip(self._shows, self._show_checks, strict=True)
-            if check.GetValue()
-        ]
-        status_index = self._status_choice.GetSelection()
-        sort_index = self._sort_choice.GetSelection()
-        self._result = PlaylistRules(
-            show_ids=checked_show_ids,
-            episode_status=PLAYLIST_STATUS_MODES[status_index] if status_index >= 0 else "any",
-            published_within_days=self._days_ctrl.GetValue(),
-            min_duration_minutes=self._min_minutes_ctrl.GetValue(),
-            max_duration_minutes=self._max_minutes_ctrl.GetValue(),
-            sort_mode=EPISODE_SORT_MODES[sort_index] if sort_index >= 0 else "date_newest",
-        )
+        self._result = self._current_rules()
         self.dialog.EndModal(self._wx.ID_OK)

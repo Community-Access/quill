@@ -347,8 +347,19 @@ def test_github_extra_is_bundled_in_the_windows_installer() -> None:
         pathlib.Path(__file__).resolve().parents[2] / "scripts" / "build_windows_distribution.py"
     )
     src = distribution_script.read_text("utf-8")
-    groups_line = src.split("DEFAULT_BUNDLED_DEPENDENCY_GROUPS", 1)[1].split(")", 1)[0]
+    # Split on the ASSIGNMENT, not on the bare name: the constant is discussed
+    # by name in the comments above it (the comment block explaining why each
+    # group is or is not bundled), and splitting on the name found the comment
+    # instead of the tuple.
+    groups_line = src.split("DEFAULT_BUNDLED_DEPENDENCY_GROUPS = (", 1)[1].split(")", 1)[0]
     assert '"github"' in groups_line, (
         "build_windows_distribution.py DEFAULT_BUNDLED_DEPENDENCY_GROUPS must "
         "include 'github' so PyGithub ships in the Windows installer"
+    )
+    # And the chapter engine, which is what makes podcast chapters answer on
+    # first launch rather than opening with a download (2026-08-20).
+    assert '"vosk"' in groups_line, (
+        "DEFAULT_BUNDLED_DEPENDENCY_GROUPS must include 'vosk': chapters are "
+        "inferred from a transcript, and an engine that has to be downloaded "
+        "first means the feature's first answer is always 'none could be found'"
     )

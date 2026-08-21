@@ -76,12 +76,16 @@ class FavoritesManagerDialog:
         sort: str = "manual",
         folder_sorts: dict[str, str] | None = None,
         windows: object | None = None,
+        host: object | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
         self._store = favorites
         self._controller = controller
+        # The app frame, when there is one. The folder queue hangs on it so
+        # Next and Previous keep working after this window closes.
+        self._host = host
         self._announce = announce_cb or (lambda _m: None)
         self._on_changed = on_changed or (lambda: None)
         # Persist "sort is now manual" in the host's history. Called when a
@@ -606,40 +610,9 @@ class FavoritesManagerDialog:
         ):
             self._changed()
 
-    def _on_context_menu(self, _event: Any) -> None:
-        wx = self._wx
-        selected = self._selected()
-        if selected is None:
-            return
-        menu = wx.Menu()
-        entries: list[tuple[str, Callable[[], None]]]
-        if selected[0] == "station":
-            entries = [
-                ("&Play", self._on_play),
-                ("Rena&me Station...\tF2", self._on_rename_station),
-                ("&Remove...\tDelete", self._on_remove),
-                ("Move &Up", lambda: self._on_move(-1)),
-                ("Move &Down", lambda: self._on_move(1)),
-                ("&Mark for Move", self._on_mark),
-                ("Move to F&older...", self._on_move_to_folder),
-            ]
-            if self._marked_key is not None:
-                entries.insert(5, ("Move &Above", lambda: self._on_move_marked(True)))
-                entries.insert(6, ("Move Be&low", lambda: self._on_move_marked(False)))
-        else:
-            entries = [
-                ("Rena&me Folder...\tF2", self._on_rename_folder),
-                ("&Delete Folder...", self._on_delete_folder),
-            ]
-        id_refs = []
-        for label, handler in entries:
-            item_id = wx.NewIdRef()
-            id_refs.append(item_id)
-            menu.Append(item_id, label)
-            menu.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
-        # A SEPARATE attribute: assigning self._menu_id_refs here would drop the
-        # menu-bar Close id ref pinned in it, re-exposing the id-reuse bug where
-        # a random menu item closes the window.
-        self._context_menu_id_refs = id_refs  # pinned while the popup can fire
-        self._tree.PopupMenu(menu)
-        menu.Destroy()
+    def _on_context_menu(self, event: Any) -> None:
+        """The row menu. Built in ``favorites_menu`` -- see that module's note
+        on why the id refs it returns have to be pinned here."""
+        from quill.ui.radio import favorites_menu
+
+        self._context_menu_id_refs = favorites_menu.popup(self, event)

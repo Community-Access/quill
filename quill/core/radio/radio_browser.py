@@ -129,6 +129,30 @@ def _http_json(url_path: str) -> object:
     raise RadioBrowserError(f"Could not reach the station directory: {last_error}")
 
 
+def _coerce_check(value: object) -> bool | None:
+    """Radio Browser's ``lastcheckok`` as a tri-state, or ``None`` if absent.
+
+    Absent must stay ``None`` rather than collapsing to False: "nobody has
+    checked" and "the check failed" are the difference between a row that says
+    nothing and a row that warns you off a station, and the API omits the field
+    on some endpoints. It arrives as ``1``/``0`` today and has been seen as
+    ``"1"`` and as a JSON boolean, so all three are read rather than trusting
+    one shape of a field this app does not control.
+    """
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)):
+        return bool(value)
+    text = str(value).strip().lower()
+    if text in {"1", "true", "yes"}:
+        return True
+    if text in {"0", "false", "no"}:
+        return False
+    return None
+
+
 def _station_from_json(entry: dict[str, object]) -> RadioStation | None:
     name = str(entry.get("name", "")).strip()
     stream_url = str(entry.get("url_resolved") or entry.get("url") or "").strip()
@@ -150,6 +174,7 @@ def _station_from_json(entry: dict[str, object]) -> RadioStation | None:
         codec=str(entry.get("codec", "")),
         bitrate_kbps=bitrate,
         votes=votes,
+        last_check_ok=_coerce_check(entry.get("lastcheckok")),
     )
 
 

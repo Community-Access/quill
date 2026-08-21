@@ -608,6 +608,8 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
             shows=list(self._library.shows),
             rules=PlaylistRules(),
             announce_cb=self._announce,
+            # For the live "matches N episodes right now" count.
+            library=self._library,
         )
         rules = dialog.show()
         if rules is None:
@@ -639,6 +641,7 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
             shows=list(self._library.shows),
             rules=playlist.rules,
             announce_cb=self._announce,
+            library=self._library,
         )
         rules = dialog.show()
         if rules is None:

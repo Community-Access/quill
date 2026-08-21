@@ -111,6 +111,15 @@ class PodcastsAppFrame(
         # Deferred (CallAfter), not inline: this touches the network, and a
         # launch is not the place to do that before the window is even up.
         wx.CallAfter(self._maybe_check_updates_on_startup)
+        # Read the shared Listening Places folder once, now, while nothing is
+        # playing. Deferred and off-thread: a cloud folder can take seconds to
+        # materialise a file and launch must never wait on it, and a position
+        # arriving mid-session would move the playhead under somebody. See
+        # sync_places_command.sync_at_launch for why this is the only
+        # unprompted read there is.
+        from quill.ui.sync_places_command import sync_at_launch
+
+        wx.CallAfter(sync_at_launch, self)
 
     # -- main panel -------------------------------------------------------------
     #
@@ -918,6 +927,15 @@ def main() -> int:
     opml_path = opml_path_from_argv(sys.argv[1:])
     if opml_path is not None:
         wx.CallAfter(frame.podcast_import_opml_file, opml_path)
+    # A quill-cast:// link somebody opened (Share This Moment). Deferred for the
+    # same reason, and refused unless it names a podcast already in the library
+    # -- see ui/podcasts/share_moment.open_share_link.
+    for argument in sys.argv[1:]:
+        if argument.lower().startswith("quill-cast://"):
+            from quill.ui.podcasts.share_moment import open_share_link
+
+            wx.CallAfter(open_share_link, frame, argument)
+            break
     app.MainLoop()
     return 0
 

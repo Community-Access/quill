@@ -23,14 +23,14 @@ from __future__ import annotations
 
 import subprocess
 from collections.abc import Callable
+from datetime import datetime
 from typing import Any
 
+from quill.core.radio import recording_center
 from quill.core.radio.models import RadioStation
 from quill.core.radio.recordings_index import (
-    STATUS_COMPLETED,
     STATUS_RECORDED,
     STATUS_RECORDING,
-    STATUS_SCHEDULED,
     ActiveRecording,
     RecordingEntry,
     format_elapsed,
@@ -210,6 +210,8 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
                     stream_url=getattr(j, "stream_url", "") or "",
                     started_at=getattr(j, "started_at", None),
                     job_id=getattr(j, "job_id", "") or "",
+                    scheduled_minutes=int(getattr(j, "minutes", 0) or 0),
+                    duration_requested=bool(getattr(j, "duration_requested", False)),
                 )
                 for j in jobs()
             ]
@@ -222,6 +224,11 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
                 station_name=getattr(rec, "current_station_name", "") or "",
                 stream_url=getattr(rec, "current_stream_url", "") or "",
                 started_at=getattr(rec, "current_started_at", None),
+                scheduled_minutes=int(getattr(rec, "current_minutes", 0) or 0),
+                # The old scalar getters predate the requested/cap distinction
+                # and cannot answer it, so this path counts up. Under-claiming
+                # is the right way to be wrong here.
+                duration_requested=False,
             )
         ]
 
@@ -314,14 +321,23 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
         self._on_selection_changed()
 
     def _update_status_label(self) -> None:
-        recorded = sum(1 for e in self._entries if e.status == STATUS_RECORDED)
-        active = sum(1 for e in self._entries if e.status == STATUS_RECORDING)
-        scheduled = sum(1 for e in self._entries if e.status == STATUS_SCHEDULED)
-        completed = sum(1 for e in self._entries if e.status == STATUS_COMPLETED)
-        parts = [f"{recorded} recorded", f"{active} recording now", f"{scheduled} scheduled"]
-        if completed:
-            parts.append(f"{completed} completed")
-        self._status.SetLabel(", ".join(parts) + f" -- in {recordings_dir(self._settings)}")
+        """The window's headline: what is recording, what is next, what is here.
+
+        This used to count rows -- "14 recorded, 1 recording now, 3 scheduled"
+        -- which answers "how many?" and never answers "when?". The one fact
+        somebody opens this window for on a Thursday evening is whether
+        tonight's show is covered, and that lived only inside the scheduled
+        rows. See ``core.radio.recording_center`` for why the answer is a
+        better sentence here rather than a third window.
+        """
+        self._status.SetLabel(
+            recording_center.summary_from_rows(
+                list(self._entries),
+                list(getattr(self._scheduler, "entries", []) or []),
+                folder=str(recordings_dir(self._settings)),
+                now=datetime.now(),
+            )
+        )
 
     def _selected(self) -> RecordingEntry | None:
         index = self._list.GetFirstSelected()

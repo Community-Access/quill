@@ -69,6 +69,53 @@ def export_opml(library: PodcastLibrary) -> str:
     return ET.tostring(root, encoding="unicode", xml_declaration=False)
 
 
+def export_subtree(library: PodcastLibrary, folder_id: str) -> str:
+    """One folder and everything beneath it, as OPML.
+
+    So a folder round-trips: somebody who has spent an evening arranging
+    "Blindness" into six sub-folders can hand that arrangement to another
+    machine, or to somebody else, without exporting their whole library --
+    which is both more than they meant to share and less useful to receive.
+
+    The chosen folder becomes the outermost outline, so importing it anywhere
+    recreates the folder itself rather than spilling its shows into the root.
+    """
+    from quill.core.podcasts.folder_actions import subtree_folder_ids
+
+    wanted = set(subtree_folder_ids(library, folder_id))
+    if not wanted:
+        return ""
+    root = ET.Element("opml", version="2.0")
+    head = ET.SubElement(root, "head")
+    folder = next((f for f in library.folders if f.id == folder_id), None)
+    ET.SubElement(head, "title").text = folder.name if folder is not None else "QUILL Podcasts"
+    body = ET.SubElement(root, "body")
+
+    def _emit(parent_xml: ET.Element, current_id: str) -> None:
+        this_folder = next((f for f in library.folders if f.id == current_id), None)
+        if this_folder is None:
+            return
+        folder_xml = ET.SubElement(parent_xml, "outline", text=this_folder.name)
+        for child in library.folders:
+            if child.parent_folder_id == current_id and child.id in wanted:
+                _emit(folder_xml, child.id)
+        for show in library.shows:
+            if show.is_local or not show.feed_url or show.folder_id != current_id:
+                continue
+            ET.SubElement(
+                folder_xml,
+                "outline",
+                type="rss",
+                text=show.title,
+                title=show.title,
+                xmlUrl=show.feed_url,
+                htmlUrl=show.homepage,
+            )
+
+    _emit(body, folder_id)
+    return ET.tostring(root, encoding="unicode", xml_declaration=False)
+
+
 @dataclass(slots=True)
 class ImportedShow:
     title: str

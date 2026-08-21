@@ -163,6 +163,70 @@ def mark_episode_played(dialog: Any, station: Any, *, played: bool) -> None:
     dialog._announce(spoken)
 
 
+def hand_to_cast(dialog: Any, station: Any, *, action: str) -> None:
+    """Note a QUILL Cast instruction for this episode, and say what will happen.
+
+    A handoff, not a write into Cast's library: both apps load and save the
+    library wholesale, so a Radio write while Cast is open would be a
+    last-writer-wins clobber waiting to happen. Cast carries it out at its next
+    launch, which is why the confirmation is in the future tense -- a message
+    implying it had already happened would be a small lie the listener finds
+    out about later.
+    """
+    from quill.core.paths import app_data_dir
+    from quill.core.podcasts import radio_actions
+
+    feed = str(getattr(station, "homepage", "") or "")
+    audio = str(getattr(station, "stream_url", "") or "")
+    title = str(getattr(station, "name", "") or "")
+    if not radio_actions.record_action(
+        app_data_dir(), feed_url=feed, audio_url=audio, action=action, title=title
+    ):
+        dialog._announce("That episode could not be handed to QUILL Cast.")
+        return
+    dialog._announce(radio_actions.ACTION_DONE.get(action, "Noted for QUILL Cast."))
+
+
+def episode_played(station: Any) -> bool | None:
+    """The played state of a subscribed podcast episode, or ``None``.
+
+    ``None`` (no mark item) for anything that is not a subscribed episode --
+    the library is only consulted for rows whose source says it could know.
+    """
+    if station is None:
+        return None
+    from quill.core.podcasts.radio_listens import PODCAST_EPISODE_SOURCES
+
+    if str(getattr(station, "source", "")) not in PODCAST_EPISODE_SOURCES:
+        return None
+    try:
+        from quill.core.paths import app_data_dir
+        from quill.core.podcasts.subscriptions import load_library
+
+        library = load_library(app_data_dir())
+        show = library.find_show_by_feed_url(str(getattr(station, "homepage", "") or ""))
+        if show is None:
+            return None
+        audio = str(getattr(station, "stream_url", "") or "")
+        episode = next((e for e in show.episodes if e.audio_url == audio), None)
+        return bool(episode.played) if episode is not None else None
+    except Exception:  # noqa: BLE001 - a menu must never fail on a library read
+        return None
+
+
+def register_cast_handoffs(handlers: dict, dialog: Any, station: Any) -> None:
+    """Wire the three Cast handoffs onto an episode row's handler table."""
+    from quill.core.podcasts import radio_actions
+    from quill.core.radio import cast_handoff
+
+    for row_id, action in (
+        (cast_handoff.CAST_PLAY_NEXT, radio_actions.ACTION_QUEUE_TOP),
+        (cast_handoff.CAST_ADD_TO_QUEUE, radio_actions.ACTION_QUEUE_BOTTOM),
+        (cast_handoff.CAST_SEND_TO_INBOX, radio_actions.ACTION_INBOX),
+    ):
+        handlers[row_id] = lambda a=action: hand_to_cast(dialog, station, action=a)
+
+
 def download_all_episodes(dialog: Any, args: list[str]) -> None:
     """Queue every episode the library holds for this show, filed per show.
 

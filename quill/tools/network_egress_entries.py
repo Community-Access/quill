@@ -298,9 +298,9 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "cached on disk (core/radio/directory_cache.py) so re-opening a branch "
         "makes no request at all. HTTPS-only over a verified TLS context with a "
         "bounded timeout and response size. Disabled in Safe Mode via "
-        "refuse_in_safe_mode. Apple is used for podcast discovery throughout; "
-        "Podcast Index is deliberately not integrated (Jeff, 2026-08-13), so "
-        "this site carries the whole directory story and needs no key."
+        "refuse_in_safe_mode. Apple remains the DEFAULT and the only keyless "
+        "directory; the 2026-08-13 decision against Podcast Index was reversed "
+        "on 2026-08-20 and it is now opt-in behind the listener's own key."
     ),
     "core/podcasts/itunes_search.py::_fetch_once": (
         "Single egress site for Add Podcast's search: iTunes' free, keyless "
@@ -308,6 +308,17 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "the Add Podcast dialog. HTTPS-only over a verified TLS context with "
         "a bounded timeout. Disabled in Safe Mode via refuse_in_safe_mode; "
         "_http_json retries transient failures rather than saying 'no results'."
+    ),
+    "core/podcasts/podcast_index.py::_fetch_once": (
+        "Second, OPT-IN directory for Add Podcast: the Podcast Index API, which "
+        "indexes the Podcasting 2.0 tags (chapters, transcripts, soundbites) "
+        "Apple's does not. Reached only by the explicit Search action, and only "
+        "when the listener chose this source AND supplied a key and secret -- "
+        "with no credentials no request is ever formed. HTTPS-only over a "
+        "verified TLS context, bounded timeout, retried on a transient failure, "
+        "refused in Safe Mode. Credentials live in the platform credential store "
+        "(DPAPI), never in podcasts.json, and redaction.py scrubs them from "
+        "crash bundles."
     ),
     "core/radio/link_finder.py::_http_get_text": (
         "Single egress site for 'Find Streams from a Website...': fetches the "

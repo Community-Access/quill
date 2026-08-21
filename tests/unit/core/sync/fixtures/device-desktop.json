@@ -1,0 +1,36 @@
+{
+  "format": "listening-places/1",
+  "device": "9b30d7f1",
+  "device_label": "Studio PC",
+  "app": "quill-cast/1.1.0",
+  "written_at": "2026-08-20T15:31:00Z",
+  "records": [
+    {
+      "id": "episode:d49b8a9525b77556",
+      "kind": "episode",
+      "position_ms": 3120000,
+      "duration_ms": 3894000,
+      "played": false,
+      "updated_at": "2026-08-20T15:30:44Z",
+      "label": "Blind Abilities: Episode 214"
+    },
+    {
+      "id": "episode:aa006c65353adf4c",
+      "kind": "episode",
+      "position_ms": 600000,
+      "duration_ms": 2400000,
+      "played": false,
+      "updated_at": "2026-08-19T10:00:00Z",
+      "label": "Blind Abilities: Episode 213"
+    },
+    {
+      "id": "episode:450f529097b3d4a2",
+      "kind": "episode",
+      "position_ms": 45000,
+      "duration_ms": 1800000,
+      "played": false,
+      "updated_at": "2026-08-17T08:00:00Z",
+      "label": "Blind Abilities: Episode 212"
+    }
+  ]
+}

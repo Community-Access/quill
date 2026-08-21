@@ -41,6 +41,17 @@ _LAUNCH_VIEW_LABELS = (
     "Favorites",
     "Recently Expired",
 )
+#: How long a listening history is kept. -1 is "do not keep one at all", which
+#: is short-circuited at the write rather than pruned afterwards; 0 is forever.
+_HISTORY_LABELS = (
+    "Do not keep a history",
+    "30 days",
+    "90 days",
+    "1 year",
+    "Keep forever",
+)
+_HISTORY_VALUES = (-1, 30, 90, 365, 0)
+
 _LAUNCH_VIEW_VALUES = (
     "",
     "new_episodes",
@@ -165,6 +176,45 @@ class PodcastSettingsDialog:
             "played, started, or queued is never trimmed."
         )
         grid.Add(self._inbox_max_ctrl, 0)
+
+        grid.Add(
+            wx.StaticText(self.dialog, label="Keep my listening &history for:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
+        )
+        self._history_choice = wx.Choice(self.dialog, choices=list(_HISTORY_LABELS))
+        self._history_choice.SetName(
+            "How long QUILL Cast keeps a record of what you listened to and when. "
+            "It never leaves this computer either way. Choosing not to keep one "
+            "means nothing is written at all, not that it is deleted afterwards."
+        )
+        history_days = int(getattr(settings, "history_retention_days", 90))
+        self._history_choice.SetSelection(
+            _HISTORY_VALUES.index(history_days) if history_days in _HISTORY_VALUES else 2
+        )
+        grid.Add(self._history_choice, 1, wx.EXPAND)
+
+        self._metered_check = wx.CheckBox(
+            self.dialog, label="Download automatically on a &metered connection"
+        )
+        self._metered_check.SetName(
+            "With this off, downloads QUILL Cast starts by itself wait until you "
+            "are off a metered connection. A download you ask for by name always "
+            "happens."
+        )
+        self._metered_check.SetValue(bool(getattr(settings, "download_on_metered", True)))
+        grid.Add(self._metered_check, 0)
+
+        self._streaks_check = wx.CheckBox(
+            self.dialog, label="Show listening &streaks in Statistics"
+        )
+        self._streaks_check.SetName(
+            "Whether the Statistics window reports how many days in a row you "
+            "have listened. Off unless you ask for it: a streak is a nudge, and "
+            "a nudge nobody asked for is pressure."
+        )
+        self._streaks_check.SetValue(bool(getattr(settings, "stats_streaks_enabled", False)))
+        grid.Add(self._streaks_check, 0)
 
         grid.Add(
             wx.StaticText(self.dialog, label="Delete downloads after (days, 0 = never):"),
@@ -311,6 +361,15 @@ class PodcastSettingsDialog:
         )
         self._inbox_mode.SetSelection(1 if settings.inbox_mode == "exclude" else 0)
         root.Add(self._inbox_mode, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
+        # Every chapters_* switch, in one group. All six were live and none had
+        # a control, which is worse than absent: a setting nobody can reach is a
+        # bug with a default. Its own module because this dialog is at its
+        # GATE-11 ceiling.
+        from quill.ui.podcasts.chapter_settings_group import ChapterSettingsGroup
+
+        self._chapters = ChapterSettingsGroup(self.dialog, settings)
+        root.Add(self._chapters.sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         session_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "When an episode finishes")
         self._continue_queue_check = wx.CheckBox(
@@ -504,6 +563,10 @@ class PodcastSettingsDialog:
             auto_download_inbox=self._auto_download_inbox_check.GetValue(),
             inbox_mode="exclude" if self._inbox_mode.GetSelection() == 1 else "include",
             inbox_max_episodes=self._inbox_max_ctrl.GetValue(),
+            **self._chapters.values(),
+            history_retention_days=_HISTORY_VALUES[max(0, self._history_choice.GetSelection())],
+            download_on_metered=self._metered_check.GetValue(),
+            stats_streaks_enabled=self._streaks_check.GetValue(),
             download_retention_days=self._retention_days_ctrl.GetValue(),
             storage_cap_mb=self._storage_cap_ctrl.GetValue(),
             playback_cache=self._playback_cache_ctrl.GetValue(),

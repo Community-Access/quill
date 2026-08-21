@@ -70,6 +70,13 @@ class CastMenuBarMixin:
         subs_menu.Append(acb_id, "Subscribe to ACB Media &Podcasts")
         subs_menu.AppendSeparator()
         subs_menu.Append(settings_id, "Podcast &Settings...")
+        # The second directory's key. Somewhere you go, not something you meet:
+        # iTunes needs nothing and stays the default (core/podcasts/podcast_index).
+        directory_id = wx.NewIdRef()
+        subs_menu.Append(directory_id, "Podcast &Index Credentials...")
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.open_podcast_directory_credentials(), id=directory_id
+        )
         quick_actions_id = wx.NewIdRef()
         subs_menu.Append(quick_actions_id, "&Quick Actions...")
         self.frame.Bind(
@@ -201,6 +208,12 @@ class CastMenuBarMixin:
         channel_id = wx.NewIdRef()
         episode_menu.Append(channel_id, "Audio &Output Mode\tCtrl+Shift+M")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_cycle_channel_mode(), id=channel_id)
+        # And which sound card it comes out of. Radio can route audio itself
+        # (libmpv); Cast cannot, and says so rather than opening a picker that
+        # would do nothing -- see ui/media/output_device.
+        device_id = wx.NewIdRef()
+        episode_menu.Append(device_id, "Audio Output &Device...\tCtrl+Shift+K")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_choose_output_device(), id=device_id)
         skip_settings_id = wx.NewIdRef()
         episode_menu.Append(skip_settings_id, "S&kip Settings...")
         self.frame.Bind(
