@@ -29,6 +29,12 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "radio.import_youtube_subscriptions": "Ctrl+Alt+Shift+Y",
         "radio.find_streams": "Ctrl+Alt+S",
         "radio.manage_favorites": "Ctrl+Shift+M",
+        # Saving whatever is playing. It lived only on a button until
+        # 2026-08-21, so it had no key and no menu home at all. Beside
+        # Ctrl+Shift+M so the favorites pair is one thing to remember;
+        # Ctrl+D is Show Station Details and Ctrl+F is Search Stations, so
+        # neither of the obvious mnemonics was free.
+        "radio.toggle_playing_favorite": "Ctrl+Shift+F",
         "radio.toggle_global_volume": "Ctrl+Alt+V",
         "radio.forget_station_volumes": "Ctrl+Alt+Shift+V",
         "radio.toggle_title_announcements": "Ctrl+Alt+T",

@@ -158,6 +158,17 @@ class PlayerPanel:
             grid.Add(button, 0, wx.EXPAND)
         root.Add(grid, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
+        # Saving the station you are listening to belongs here as much as on the
+        # Station menu: this panel is "everything about what is playing", and
+        # that is the one fact the decision turns on. One handler, two doors --
+        # the label flips exactly as the menu item's does.
+        self._fav_btn = wx.Button(self.dialog, label="Add to &Favorites")
+        self._fav_btn.Bind(wx.EVT_BUTTON, lambda _e: self._toggle_favorite())
+        fav_row = wx.BoxSizer(wx.HORIZONTAL)
+        fav_row.Add(self._fav_btn, 0)
+        root.Add(fav_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
+        self._refresh_favorite_button()
+
         # A sizer with a stretch spacer, not wx.ALIGN_RIGHT: the banned-pattern
         # gate rejects that alignment in quill/ui because of how it reports to
         # a screen reader (A11Y-4, the dialog contract).
@@ -181,6 +192,34 @@ class PlayerPanel:
 
         transport_keys.install(self.dialog, host, wx=wx, after=self._refresh)
 
+    def _toggle_favorite(self) -> None:
+        """Run the host's one favorites handler, then re-read the label."""
+        toggle = getattr(self._host, "_on_favorite_toggle", None)
+        if callable(toggle):
+            toggle()
+        self._refresh_favorite_button()
+
+    def _refresh_favorite_button(self) -> None:
+        """Say what pressing it would do, and refuse when there is nothing on."""
+        button = getattr(self, "_fav_btn", None)
+        if button is None:
+            return
+        station = None
+        controller = getattr(self._host, "_radio_controller", None)
+        if controller is not None:
+            station = getattr(getattr(controller, "state", None), "station", None)
+        favorites = getattr(self._host, "_radio_favorites", None)
+        saved = bool(station is not None and favorites is not None and favorites.contains(station))
+        label = "Remove from &Favorites" if saved else "Add to &Favorites"
+        if button.GetLabel() != label:
+            button.SetLabel(label)
+        button.SetName(
+            "Remove the playing station from favorites"
+            if saved
+            else "Add the playing station to favorites"
+        )
+        button.Enable(station is not None)
+
     def status_text(self) -> str:
         """What is playing, where you are in it, and how fast. Never raises.
 
@@ -201,6 +240,9 @@ class PlayerPanel:
         readout to review it. A refused verb changes nothing, and now costs
         nothing.
         """
+        # Every transport key runs through here, so the favorites label follows
+        # a station change made from the panel as well as one made outside it.
+        self._refresh_favorite_button()
         try:
             fresh = self.status_text()
             if fresh != self._status.GetValue():
