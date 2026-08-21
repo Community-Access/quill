@@ -656,6 +656,38 @@ not Add; a live stream still offers no Download. Putting Download at the top of
 your list does not make a live stream downloadable -- it means Download is first
 on the rows that have it.
 
+## What each row says
+
+A list is read out one column at a time, so the columns *are* the sentence you
+hear on every row. **View > Choose Columns...** (Ctrl+Alt+Shift+C) is where you
+decide it -- for Find Stations results, and for the Recordings list.
+
+The window holds two lists: **Shown, in the order they are read** and
+**Hidden**. Move Up and Move Down (or Alt+Up and Alt+Down) rearrange the shown
+ones. **Hide** takes a column out of the row altogether -- not to the end of it,
+out of it, because a column that is still there is still spoken. **Show** puts
+one back where its place in the order says it belongs, so hiding something for a
+week and showing it again does not send it to the end.
+
+Underneath the lists, **A row will read:** spells out the sentence one row will
+say with the settings exactly as they stand. You can hear the effect of a change
+before pressing OK, which is the whole point: this is a speech setting wearing a
+column setting's clothes.
+
+**One column in each list is pinned** -- the station's name, the recording's
+name -- because a row with nothing to identify it is a row you cannot act on.
+Asking to hide it says so and why, rather than quietly doing nothing.
+
+**Some columns are offered but start switched off**, because a list that says
+everything says nothing. Find Stations can also show **Language**, **Genres**,
+**Popularity** and **Bitrate** on its own. Recordings can also show **Length**,
+which is blank wherever the number Quill Radio holds is a disk-safety cap rather
+than a length you chose -- announcing a cap as a plan would be telling you
+something you never said.
+
+**Reset This List** puts one list back the way it shipped. Your choice is saved
+per list and kept between sessions.
+
 ## Listening statistics
 
 **Playback > Listening Statistics...** (Ctrl+Shift+Q) answers the question the

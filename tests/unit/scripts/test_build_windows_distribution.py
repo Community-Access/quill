@@ -35,6 +35,61 @@ from scripts.build_windows_distribution import (
 _VERSION_TOML = Path(__file__).resolve().parents[3] / "build" / "version.toml"
 
 
+@pytest.fixture(autouse=True)
+def _no_model_downloads(monkeypatch: pytest.MonkeyPatch) -> list[Path]:
+    """Keep the network out of the packaging tests.
+
+    ``build_windows_distribution`` stages the Vosk model on **every** build --
+    the deliberate contract that stops podcast chapters answering "none found"
+    the first time somebody asks (see ``_stage_vosk_model``). That makes a plain
+    call to it reach out for 40 MB, which is not something a unit test may do:
+    it turns a layout assertion into a five-minute download that fails on any
+    machine that is offline.
+
+    Stubbed here rather than made conditional in the build script, because the
+    behaviour is correct and it is the test that must not perform it.
+    ``test_a_plain_build_still_stages_the_vosk_model`` keeps the contract itself
+    covered, so this stub cannot quietly become the reason nobody notices the
+    staging was dropped.
+    """
+    staged: list[Path] = []
+
+    def _fake_stage(portable_dir: Path, model_id: str = "") -> bool:
+        staged.append(portable_dir)
+        return True
+
+    monkeypatch.setattr("scripts.build_windows_distribution._stage_vosk_model", _fake_stage)
+    return staged
+
+
+def test_a_plain_build_still_stages_the_vosk_model(
+    tmp_path: Path, _no_model_downloads: list[Path]
+) -> None:
+    """Not only the Offline Edition -- every build.
+
+    The whole argument for spending 40 MB on the small Vosk model is that a
+    chapter feature which needs a download before it can answer is one nobody
+    ever meets. That only holds if the plain build stages it, so the plain build
+    is what this asserts.
+    """
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text(
+        """
+[project]
+name = "quill"
+version = "3.0.0"
+""".strip(),
+        encoding="utf-8",
+    )
+
+    build_windows_distribution(pyproject, tmp_path / "dist")
+
+    assert _no_model_downloads == [tmp_path / "dist" / "portable"], (
+        "a plain (non-offline) build must still stage the Vosk model; without it "
+        "the first request for podcast chapters answers 'none found'."
+    )
+
+
 # Builds a full portable distribution (file copies + installer-script generation),
 # which can exceed the global 30s pytest-timeout on a loaded CI runner. Give this
 # heavy end-to-end test more headroom; the rest of the suite keeps the default.

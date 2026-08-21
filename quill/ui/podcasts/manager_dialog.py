@@ -33,9 +33,11 @@ from quill.core.podcasts.sorting import (
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.media.list_columns_view import fill_row
 from quill.ui.podcasts.manager_actions import ManagerActionsMixin
 from quill.ui.podcasts.manager_downloads import ManagerDownloadsMixin
 from quill.ui.podcasts.manager_phase4 import ManagerPhase4Mixin
+from quill.ui.podcasts.manager_row_view import ManagerRowViewMixin
 from quill.ui.podcasts.player_controller import PodcastPlayerController
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
 
@@ -115,7 +117,11 @@ def _shows_episodes(library: PodcastLibrary, folder_id: str) -> list[PodcastEpis
 
 
 class PodcastManagerDialog(
-    ManagerPhase4Mixin, ManagerActionsMixin, ManagerDownloadsMixin, CastWinampKeysMixin
+    ManagerPhase4Mixin,
+    ManagerActionsMixin,
+    ManagerDownloadsMixin,
+    ManagerRowViewMixin,
+    CastWinampKeysMixin,
 ):
     """Browse/subscribe/download/play podcasts."""
 
@@ -257,10 +263,7 @@ class PodcastManagerDialog(
         episode_col.Add(view_mode_row, 0, wx.EXPAND | wx.BOTTOM, 4)
         self._episodes = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._episodes.SetName("Episodes of the selected show; arrow through for details")
-        self._episodes.InsertColumn(0, "Title", width=280)
-        self._episodes.InsertColumn(1, "Published", width=110)
-        self._episodes.InsertColumn(2, "Duration", width=80)
-        self._episodes.InsertColumn(3, "Status", width=130)
+        self._build_episode_columns()
         episode_col.Add(self._episodes, 1, wx.EXPAND)
         body.Add(episode_col, 2, wx.EXPAND)
 
@@ -831,12 +834,12 @@ class PodcastManagerDialog(
         self._current_episodes = sort_episodes(episodes, self._selected_episode_sort_mode())
         self._pair_shows = []
         for row, episode in enumerate(self._current_episodes):
-            self._episodes.InsertItem(row, episode.title)
-            self._episodes.SetItem(row, 1, episode.published[:16])
-            minutes, seconds = divmod(episode.duration_seconds, 60)
-            duration_text = f"{minutes}:{seconds:02d}" if episode.duration_seconds else ""
-            self._episodes.SetItem(row, 2, duration_text)
-            self._episodes.SetItem(row, 3, self._episode_status_text(episode))
+            fill_row(
+                self._episodes,
+                row,
+                self._episode_columns,
+                self._episode_row_values(episode, show),
+            )
         self._download_btn.Enable(False)
         self._pause_btn.Enable(False)
         self._remove_download_btn.Enable(False)
@@ -846,14 +849,6 @@ class PodcastManagerDialog(
         if self._current_episodes:
             self._episodes.Select(0)
             self._episodes.Focus(0)
-
-    def _episode_status_text(self, episode: PodcastEpisode) -> str:
-        if episode.downloaded_path:
-            return "Downloaded" + (", played" if episode.played else "")
-        item = self._download_queue.get(self._download_item_id(episode))
-        if item is not None and item.status in ("queued", "downloading", "paused"):
-            return item.status.capitalize()
-        return "Streaming"
 
     def _download_item_id(self, episode: PodcastEpisode) -> str:
         return episode.guid

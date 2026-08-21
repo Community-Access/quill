@@ -233,6 +233,41 @@ Settings, led by the one question most people will ever want to answer -- how
 hard should I look? -- with the consequence of that choice spelled out beneath
 it in a sentence.
 
+## The columns are yours now
+
+This one is a speech setting wearing a display setting's clothes. An episode
+list is read out one column at a time, so the columns *are* the sentence you
+hear on every row -- and that sentence had been chosen once, in code, for
+everybody. If you work through one show at a time you never needed its name; if
+you queue by length you wanted the duration first, not third.
+
+**Subscriptions > Choose Columns...** (Ctrl+Alt+Shift+C) hands it over, for the
+episode list, for Downloads, and for Add Podcast's results. There are two lists
+in the window -- what is shown, in the order it is read, and what is hidden --
+with Move Up and Move Down between them. Not checkboxes: a checkbox in a list is
+a state your screen reader has to be asked for, while a position is a place you
+land on, and moving something says where it is now.
+
+Hiding a column takes it *out* of the row rather than to the end of it, because
+a screen reader reads every column it is given and "last" is still read. It
+keeps its place while hidden, so bringing it back later does not send it to the
+end of a row you already arranged. Underneath, one line reads out exactly what a
+row will say, so you can hear the effect of a change before pressing OK.
+
+Each list offers more than it shows. The episode list can add **Podcast** --
+worth having in the Inbox or a playlist where the rows come from several shows,
+and pure noise in a list of one show, which is why it is off to begin with --
+**Time Left** on an episode you have started, and **Downloaded**. Add Podcast can
+add the **Feed Address**, which is what tells two shows with the same name apart.
+One column in each list cannot be hidden -- the episode's title, the podcast's
+name -- and asking to says so, and why.
+
+Change it while the Manager is open and the list rearranges under you there and
+then. Quill Radio gets the same window on its own lists, from the same code:
+Quick Actions, listening statistics and folder actions all had to be carried
+across from one app to the other after being built twice, and this one was
+shared on the first day.
+
 ## Smaller things that were missing
 
 - **How long your listening history is kept** is now yours to choose: don't

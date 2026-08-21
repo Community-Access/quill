@@ -493,6 +493,16 @@ gone missing, and several long-standing silent faults are fixed. See
   Ctrl+Alt+Shift+K)** -- built by walking the live menu bar, so it lists the
   keys you actually have, rebindings included. Filterable by key, by action or
   by menu; the keys with no menu item are listed with the surface they work in.
+- **Choose Columns (View > Choose Columns..., Ctrl+Alt+Shift+C)** -- what each
+  row of Find Stations and of Recordings says, and in what order. A report list
+  is read out one column at a time, so the column set is the sentence every row
+  speaks. Two lists rather than checkboxes (position is a place you land on; a
+  checkbox is a state a screen reader has to be asked for); hidden means absent
+  rather than last, because a screen reader speaks every column it is given; a
+  hidden column keeps its place in the order; one column per list is pinned so a
+  row can always say what it is; and a live preview reads out the sentence a row
+  will speak before you press OK. Find Stations also offers Language, Genres,
+  Popularity and Bitrate; Recordings also offers Length.
 
 ### Changed
 

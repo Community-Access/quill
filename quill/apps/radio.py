@@ -1435,11 +1435,11 @@ class RadioAppFrame(
         view_menu.Append(downloads_id, "&Downloads...	Ctrl+Shift+J")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_download_queue(), id=downloads_id)
         self._keep_menu_ids(downloads_id)
-        from quill.apps.radio_settings_menu import build_catalog_status_item
+        from quill.apps import radio_settings_menu as menus
 
-        catalog_status_id, audio_health_id = build_catalog_status_item(self, view_menu, wx)
+        catalog_status_id, audio_health_id = menus.build_catalog_status_item(self, view_menu, wx)
         self._keep_menu_ids(catalog_status_id, audio_health_id)
-        view_menu.AppendSeparator()
+        self._keep_menu_ids(menus.build_choose_columns_item(self, view_menu, wx))
         features_id = wx.NewIdRef()
         view_menu.Append(features_id, "&Customize Features...\tCtrl+Alt+C")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_app_features(), id=features_id)

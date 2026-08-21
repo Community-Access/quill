@@ -757,4 +757,39 @@ Bundling is what makes the feature real: chapters have to answer the first time
 somebody asks, and an engine that must be downloaded first means the first
 answer is always "no chapters could be found".
 
+## 17. The columns are the sentence (1.2)
+
+The counterpart of Quill Radio's section 13, on the same shared machinery
+(`core/media/list_columns.py`) and for the same reason: an episode list is read
+out one column at a time, so the column set is not a display preference but a
+speech setting. **Subscriptions > Choose Columns...** (Ctrl+Alt+Shift+C) covers
+the episode list, Downloads, and Add Podcast's search results.
+
+The four properties are Radio's, unchanged -- hidden means absent rather than
+last, a hidden column keeps its place, one column per surface is pinned, and a
+saved layout is repaired against this build on every read. The window is the same
+two lists with the same live preview of the sentence a row will speak.
+
+**What Cast offers beyond its defaults**, and why each is off to start with:
+
+- **Podcast** on an episode row. Worth having in a list that spans several
+  shows -- the Inbox, Continue Listening, a playlist -- and pure noise in a list
+  of one show's episodes, which is the common case and therefore the default.
+- **Time Left**, said only where something was started and something remains.
+  "58 min left" on an untouched episode is the duration read twice, and a
+  negative answer on an overrun position is nonsense, so both are blank.
+- **Downloaded**, for somebody who decides what to play by what is already on the
+  machine.
+- **Feed Address** on a search result, which is what tells two shows with the
+  same name apart.
+
+**Applied while the window is open.** Cast holds a live reference to its Manager
+so it can be refreshed in place, so a layout saved while the Manager is up takes
+effect there rather than next time. Radio's two lists are modal windows opened
+from the menu bar the item lives on, so its cache is simply dropped -- the next
+window built is the very next thing somebody does.
+
+`tests/unit/core/podcasts/test_podcast_list_columns.py` fails the build if the
+catalogue offers a column no fill site produces.
+
 See `CHANGELOG.md` for the full, versioned history.

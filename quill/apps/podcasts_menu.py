@@ -82,6 +82,16 @@ class CastMenuBarMixin:
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.open_podcast_quick_actions(), id=quick_actions_id
         )
+        # What a row says, and in what order. An episode list is read out
+        # column by column, so this is where somebody decides the sentence
+        # they will hear on every row. Next to Quick Actions because the two
+        # answer the same kind of question about a row: what it offers, and
+        # what it says.
+        from quill.ui.podcasts.list_columns_command import open_list_columns
+
+        columns_id = wx.NewIdRef()
+        subs_menu.Append(columns_id, "Choose Co&lumns...\tCtrl+Alt+Shift+C")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: open_list_columns(self), id=columns_id)
         export_data_id, delete_data_id = wx.NewIdRef(), wx.NewIdRef()
         subs_menu.Append(export_data_id, "Ex&port My Data...")
         subs_menu.Append(delete_data_id, "Delete All Podcast &Data...")
@@ -340,6 +350,7 @@ class CastMenuBarMixin:
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
             quick_actions_id,
+            columns_id,
             export_data_id,
             delete_data_id,
             speed_up_id,

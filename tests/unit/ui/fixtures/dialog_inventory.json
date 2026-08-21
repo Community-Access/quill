@@ -500,6 +500,7 @@
   "quill/ui/media/bookmark_actions.py::import_sync_bundle::wx.FileDialog": "native",
   "quill/ui/media/go_to_position_dialog.py::GoToPositionDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/media/library_dialog.py::LibraryDialog::subclass:wx.Dialog": "hardened_custom",
+  "quill/ui/media/list_columns_dialog.py::ListColumnsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/media/player_info_dialog.py::PlayerInfoDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/media/quick_actions_dialog.py::QuickActionsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/media/winamp_mixin.py::MediaWinampKeysMixin._winamp_jump_to_file::wx.TextEntryDialog": "native",

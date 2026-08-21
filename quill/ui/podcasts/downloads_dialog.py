@@ -20,9 +20,12 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.core.media.list_columns import ColumnDef
 from quill.core.podcasts import retention
+from quill.core.podcasts.list_columns import DOWNLOADS
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.media.list_columns_view import build_columns, columns_for, fill_row
 
 _FILTER_LABELS = ("All downloads", "Unheard only")
 
@@ -69,9 +72,10 @@ class DownloadsDialog:
 
         self._list = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._list.SetName("Downloaded episodes by podcast; arrow through for sizes")
-        self._list.InsertColumn(0, "Podcast", width=300)
-        self._list.InsertColumn(1, "Files", width=80)
-        self._list.InsertColumn(2, "Size", width=110)
+        # Subscriptions > Choose Columns... owns which columns exist and in
+        # what order -- a report row is read out column by column.
+        self._columns: list[ColumnDef] = columns_for("cast", DOWNLOADS.id)
+        build_columns(self._list, self._columns)
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         self._rules = wx.StaticText(self.dialog, label="")
@@ -133,9 +137,16 @@ class DownloadsDialog:
         self._list.Freeze()
         try:
             for index, (show, files, size) in enumerate(self._rows):
-                self._list.InsertItem(index, show.title)
-                self._list.SetItem(index, 1, str(files))
-                self._list.SetItem(index, 2, retention.format_bytes(size))
+                fill_row(
+                    self._list,
+                    index,
+                    self._columns,
+                    {
+                        "podcast": show.title,
+                        "files": str(files),
+                        "size": retention.format_bytes(size),
+                    },
+                )
         finally:
             self._list.Thaw()
 

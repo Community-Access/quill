@@ -33,17 +33,17 @@ from quill.core.radio.recordings_index import (
     STATUS_RECORDING,
     ActiveRecording,
     RecordingEntry,
-    format_elapsed,
     list_recordings,
     recordings_dir,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.radio.recordings_queue import RecordingsQueueMixin
+from quill.ui.radio.recordings_row_view import RecordingsRowViewMixin
 
 _REFRESH_MS = 2000
 
 
-class RecordingsManagerDialog(RecordingsQueueMixin):
+class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
     """List, play, stop, reveal, and remove radio recordings."""
 
     def __init__(
@@ -95,10 +95,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
             "removes it. Winamp keys: X play, C pause, V stop, B next, Z "
             "previous, arrows seek, J jump to file"
         )
-        self._list.InsertColumn(0, "Name", width=280)
-        self._list.InsertColumn(1, "Status", width=100)
-        self._list.InsertColumn(2, "Size", width=100)
-        self._list.InsertColumn(3, "When", width=220)
+        self._build_columns()
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         self._status = wx.StaticText(self.dialog, label="")
@@ -232,25 +229,6 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
             )
         ]
 
-    def _cells(self, entry: RecordingEntry) -> tuple[str, str, str, str]:
-        """The four column strings for *entry* (used by both the diff and the
-        no-op fast path, so they always agree)."""
-        if entry.status == STATUS_RECORDING and entry.started_at is not None:
-            when = f"elapsed {format_elapsed(entry.started_at)}"
-        elif entry.modified is not None:
-            when = entry.modified.strftime("%Y-%m-%d %H:%M")
-        else:
-            when = entry.detail
-        return (entry.name, entry.status, entry.size_display, when)
-
-    def _set_row(self, row: int, entry: RecordingEntry) -> None:
-        """Update row *row* in place to match *entry* (R1 -- no rebuild)."""
-        name, status, size, when = self._cells(entry)
-        self._list.SetItem(row, 0, name)
-        self._list.SetItem(row, 1, status)
-        self._list.SetItem(row, 2, size)
-        self._list.SetItem(row, 3, when)
-
     def _snapshot_unchanged(self, snapshot: list[RecordingEntry]) -> bool:
         """True when *snapshot* is cell-for-cell identical to what is shown.
 
@@ -293,7 +271,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin):
             self._set_row(row, snapshot[row])
         if new_count > old_count:
             for row in range(old_count, new_count):
-                self._list.InsertItem(row, snapshot[row].name)
+                self._list.InsertItem(row, "")
                 self._set_row(row, snapshot[row])
         elif new_count < old_count:
             for row in range(old_count - 1, new_count - 1, -1):

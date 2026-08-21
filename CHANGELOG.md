@@ -6,6 +6,63 @@ The most recent work first: a reliability pass driven entirely by what people
 reported (a full disk that could lose a document, an editor doing too much work
 between keystrokes), then the release as originally scoped below.
 
+### The columns are the sentence (2026-08-21)
+
+A report list is read out one column at a time. That makes the column set of a
+list not a display preference but a **speech** setting: whoever chose the columns
+chose what somebody hears on every row of a list they arrow through hundreds of
+times a day. Quill Radio and QUILL Cast both made that choice once, in code, for
+everybody -- a country read on all sixty thousand station rows for somebody who
+never leaves one, a show's name read on two hundred episode rows for somebody
+working through one show.
+
+**Choose Columns...** (Ctrl+Alt+Shift+C, on Radio's View menu and Cast's
+Subscriptions menu) hands it over, for five lists: Find Stations results, the
+Recordings list, the episode list, Downloads, and Add Podcast's results.
+
+Four properties are requirements rather than implementation choices, each ruling
+out one failure:
+
+- **Hidden is absent, not last.** A screen reader speaks every column a report
+  list is given, so pushing an unwanted column to the end does not stop it being
+  read -- it only makes it the last thing said. Hiding a column means the column
+  is not built at all, and order and visibility are two separate answers rather
+  than one list with the unwanted part at the bottom.
+- **A hidden column keeps its place.** Showing it again returns it to where it
+  was, rather than asking somebody to redo a reordering they already did.
+- **One column per list is pinned** -- the station's name, the recording's name,
+  the episode's title, the podcast's name. A row with nothing to identify it is a
+  row nobody can act on, and a preference that can produce one is a preference
+  that can break the app. The refusal is spoken with its reason rather than
+  shipped as a disabled button.
+- **Repair on read, always.** A layout saved by a later build can name columns
+  this one has never heard of, and one saved by an earlier build is missing
+  everything added since. Unknown ids are dropped and missing ones appended in
+  their shipped position.
+
+**Two lists, not checkboxes**, following the rule Quick Actions already sets: a
+checkbox inside a list is a state a screen reader has to be asked for, while a
+list position is a place you land on and the announcement after a move says where
+you are now. Under them, one line reads out **exactly what a row will say**,
+comma-separated, because that is how a screen reader runs a report row's cells
+together -- the announcement rather than a picture of it, so the effect of hiding
+a column can be heard before pressing OK.
+
+Each list offers more than it shows, because a default that says everything says
+nothing: Language, Genres, Popularity and Bitrate on a station row; Length on a
+recording (blank where the number is a disk-safety cap rather than a length
+somebody chose); Podcast, Time Left and Downloaded on an episode; the feed
+address on a search result. A test fails the build if the catalogue offers a
+column no fill site produces -- a column somebody can switch on and then hear
+nothing from is worse than one that was never offered.
+
+**Shared from the first day.** Quick Actions, listening statistics and folder
+actions were each built in one app and ported to the other afterwards; this one
+was built on shared machinery (`core/media/list_columns.py`) with each app
+supplying only its own catalogue, so the two cannot drift into answering the same
+question differently. Extending it to the rest of QUILL's lists is the named next
+step rather than something done here.
+
 ### Chapters that come from somewhere, and a place that follows you anywhere (2026-08-21)
 
 Three strands of the same work: making chapter marks trustworthy, closing the

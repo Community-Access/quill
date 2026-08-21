@@ -46,6 +46,7 @@ from quill.core.radio.spotify_search import (
     youtube_search_stations,
 )
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.media.list_columns_view import build_columns
 from quill.ui.radio import library_search, transport_keys
 from quill.ui.radio.results_view import ALL_SOURCES as _ALL_SOURCES
 from quill.ui.radio.results_view import ResultsViewMixin
@@ -381,10 +382,11 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         results_col.Add(facet_row, 0, wx.BOTTOM, 4)
         self._results = wx.ListCtrl(self._surface, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._results.SetName("Station results; arrow through to hear details of each")
-        self._results.InsertColumn(0, "Name", width=240)
-        self._results.InsertColumn(1, "Country", width=120)
-        self._results.InsertColumn(2, "Format", width=110)
-        self._results.InsertColumn(3, "Source", width=110)
+        # The columns are the listener's, not the author's: View > Choose
+        # Columns... decides which of them exist and in what order, and a report
+        # row is read out column by column, so that choice is the sentence every
+        # row speaks. ResultsViewMixin owns the fill side.
+        build_columns(self._results, self._result_columns())
         results_col.Add(self._results, 1, wx.EXPAND)
         # TuneIn's directory is a real tree, so it browses in a TreeCtrl that
         # takes the results area's place while the TuneIn category is selected:

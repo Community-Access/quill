@@ -1467,3 +1467,80 @@ answered. Where a local file exists, the list offers **Preview This Mark**: ten
 seconds either side of the boundary, through its own player, without moving the
 listener's place. Both sides, because the question is whether the programme
 turns there, and that needs the end of what came before.
+
+
+## 13. The columns are the sentence (3.0.0)
+
+A report list is read out one column at a time. That makes the column set of a
+list not a display preference but a **speech** setting: whoever chose the columns
+chose what a listener hears on every row of a list they arrow through hundreds of
+times a day. Quill Radio made that choice once, in code, for everybody --
+somebody who never leaves one country heard a country on all sixty thousand rows,
+and somebody who browses by network heard the source last.
+
+**View > Choose Columns...** (Ctrl+Alt+Shift+C) hands the choice over, for Find
+Stations results and for the Recordings list.
+
+### 13.1 Four properties, each ruling out a failure
+
+- **Hidden is absent, not last.** A screen reader speaks every column a report
+  list is given. Pushing an unwanted column to the end therefore does not stop it
+  being read -- it only makes it the last thing said. Order and visibility are
+  two separate answers rather than one list with the unwanted part at the bottom,
+  and hiding a column means the column is not built at all.
+- **A hidden column keeps its place.** Visibility does not disturb the order, so
+  a column hidden for a week and shown again returns to where it was rather than
+  to the end. The alternative asks somebody to re-do a reordering they already
+  did.
+- **One column per surface is pinned.** The station's name, the recording's name.
+  A row with nothing to identify it is a row nobody can act on, and a preference
+  that can produce one is a preference that can break the app. The refusal is
+  spoken with its reason rather than shipped as a disabled button, because "no"
+  without "why" is the less useful half of the answer.
+- **Repair on read, always.** A layout saved by a later build can name columns
+  this one has never heard of; one saved by an earlier build is missing
+  everything added since. Unknown ids are dropped and missing ones appended in
+  their shipped position, so an upgrade, a downgrade, or a settings file carried
+  from another machine can never leave somebody in front of a list that reads
+  nothing.
+
+### 13.2 The window
+
+Two lists -- **Shown, in the order they are read** and **Hidden** -- with Move
+Up / Move Down and Hide / Show, never checkboxes inside a list. That is the same
+rule Quick Actions follows and for the same reason: a checkbox in a list is a
+state a screen reader has to be asked for, while a list position is a place you
+land on, and the announcement after a move says where you are now.
+
+Under the lists, one line reads out **exactly what a row will say**,
+comma-separated, because that is how a screen reader runs a report row's cells
+together. It is the announcement rather than a picture of it, so somebody
+deciding whether to hide Country can hear the answer before pressing OK.
+
+### 13.3 What is offered but not shown
+
+A default list that says everything says nothing, so the catalogue holds more
+than the default shows. Find Stations adds **Language**, **Genres**,
+**Popularity** and **Bitrate**; Recordings adds **Length** -- blank wherever the
+`minutes` a capture carries is a disk-safety cap rather than a length somebody
+chose, because announcing a cap as a plan states an intention nobody expressed.
+`tests/unit/core/radio/test_radio_list_columns.py` fails the build if the
+catalogue offers a column no fill site produces: a column somebody can switch on
+and then hear nothing from is worse than one that was never offered.
+
+### 13.4 Shared, deliberately
+
+The machinery (`core/media/list_columns.py`, `ui/media/list_columns_dialog.py`,
+`ui/media/list_columns_view.py`) is shared with QUILL Cast, which gets the same
+window on its own catalogue. Quick Actions, listening statistics and folder
+actions each had to be *ported* between the two apps after being built twice;
+this one was built shared on the first day. Each app keeps its own store file,
+because the two catalogues have no ids in common and a shared file would mean
+each app's repair pass silently discarding the other's layout.
+
+**Not built, deliberately:** per-column widths as a saved preference (the list
+control already lets somebody drag a column and Windows remembers nothing about
+it, which is the existing behaviour and not a regression), and a universal
+version of this across every list in QUILL -- named as the next step rather than
+done here, because the two apps a listener uses for the same job an hour apart
+are where the inconsistency actually hurt.

@@ -79,3 +79,23 @@ def build_catalog_status_item(app, view_menu, wx):
     view_menu.Append(audio_id, "Audio &Health...\tCtrl+Alt+Shift+M")
     app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_audio_health(), id=audio_id)
     return (status_id, audio_id)
+
+
+def build_choose_columns_item(app, view_menu, wx):
+    """Append Choose Columns... to the View menu, bound to *app*.
+
+    A report list is read out column by column, so the column set *is* the
+    sentence every row speaks. This is where somebody decides it: which
+    columns exist on Find Stations and on Recordings, and in what order.
+
+    It sits on View rather than on Station because it is about how the app
+    presents a list, not about what a station can do -- the same shelf as
+    Show Station Details and Text Size.
+    """
+    from quill.ui.radio.list_columns_command import open_list_columns
+
+    view_menu.AppendSeparator()
+    columns_id = wx.NewIdRef()
+    view_menu.Append(columns_id, "Choose Co&lumns...\tCtrl+Alt+Shift+C")
+    app.frame.Bind(wx.EVT_MENU, lambda _e: open_list_columns(app), id=columns_id)
+    return columns_id

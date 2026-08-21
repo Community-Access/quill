@@ -168,6 +168,40 @@ Two more upgrade fixes ride along, and the first is the one that mattered most: 
 - **TuneIn could hand you an unencrypted stream when an encrypted one was on offer.** Where a station returned several addresses, Quill Radio took the first that was not TuneIn's own un-followable redirect -- which is not the same as taking the best. It now prefers HTTPS, while still preferring a working plain address over an encrypted one that nothing can play.
 - **Browse levels are remembered between sessions.** Opening a source used to re-download its whole index every single time, and the Xiph genre index alone is a 5 MB page. Levels are now cached, a failed refresh keeps what you had rather than blanking the branch, and anything served from a cache can say how old it is instead of quietly implying it is current.
 
+### The columns are yours
+
+- **View > Choose Columns... (Ctrl+Alt+Shift+C).** A report list is read out one
+  column at a time, so whoever chose the columns chose the sentence every row
+  speaks -- and until now that choice was made once, in code, for everybody.
+  Somebody who never leaves one country heard a country on all sixty thousand
+  rows; somebody who browses by network heard the source last or not at all.
+  Find Stations results and the Recordings list can now be reordered and pruned,
+  and both offer more than they show: Language, Genres, Popularity and Bitrate on
+  a station row, Length on a recording.
+- **Two lists, not checkboxes**, for the reason Quick Actions reorders by
+  position: a checkbox inside a list is a state a screen reader has to be asked
+  for, while a list position is a place you land on and the announcement after a
+  move says where you are now. Hide moves a column out of the spoken row and into
+  Hidden; Show puts it back *where its order says it belongs*, so a column hidden
+  for a week does not come back at the end.
+- **Hidden means absent, not last.** A screen reader speaks every column a report
+  list is given, so the only way to stop hearing something is for the column not
+  to exist. Order and visibility are two answers, not one list with the unwanted
+  part pushed down.
+- **The preview is the announcement.** Under the two lists, one line reads out
+  exactly what a row will say, comma-separated, because that is how a screen
+  reader runs a report row's cells together. Somebody deciding whether to hide
+  Country can hear the answer before pressing OK.
+- **One column per list cannot be hidden** -- the station's name, the recording's
+  name -- because a row with nothing to identify it is a row nobody can act on,
+  and a preference that can produce one is a preference that can break the app.
+  The refusal says why rather than being a disabled button that says only no.
+- **Length is blank where the number is a cap.** Every capture carries a
+  `minutes` value, and for a Record Now capture that number is a disk-safety
+  limit rather than a plan; showing it as a length would announce an intention
+  nobody expressed, so `JobSnapshot`'s existing requested/cap answer decides
+  whether the cell says anything at all.
+
 ### Questions the app could not answer about itself
 
 A dozen gaps, each one a question the app could not answer about itself. They came out of a product review of Quill Radio that predated 3.0; going back through it against the shipped app found most of its recommendations already built, a few deliberately decided against, and these genuinely open.
@@ -193,6 +227,8 @@ A dozen gaps, each one a question the app could not answer about itself. They ca
 - **Every external service is now checked by a runnable probe.** Thirty-seven of them, one per service, each asserting something specific -- not "the server answered" but "that station id came back with an address that plays". They caught an Apple genre filter that matched nothing, a station directory that answers "this country has no states" instead of an error when a request is malformed, and a documented bulk endpoint whose answer changed depending on which fields you asked it for. All three would have shipped.
 - `quill/core/radio/`: new pure modules `recording_progress`, `search_history`, `now_playing_source`, `station_confidence`, `audio_health`, `cheat_sheet`, `recording_center`. All wx-free, strict-typed, and covered by table tests.
 - GATE-11 extractions rather than budget raises, as the gate instructs: `ui/radio/search_recents.py` and `ui/radio/results_view.py` out of `station_browser_dialog.py`, and `ui/main_frame_radio_status.py` out of `main_frame_radio.py`. Each split follows a real seam -- remembered searches, row presentation, and read-only status windows -- not a line count.
+
+- GATE-11 extractions rather than budget raises, again: `ui/radio/recordings_row_view.py` out of `recordings_manager_dialog.py`, and Choose Columns' menu wiring into `apps/radio_settings_menu.py`. Both follow the seam the column work exposed -- *getting* rows on one side, *presenting* them on the other -- rather than a line count. The machinery itself (`core/media/list_columns.py`, `ui/media/list_columns_dialog.py`, `ui/media/list_columns_view.py`) is shared with QUILL Cast, so the two apps cannot drift into answering the same question differently again.
 
 ### What is not finished, said out loud
 

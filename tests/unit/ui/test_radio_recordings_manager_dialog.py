@@ -14,9 +14,12 @@ from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
+from quill.core.media.list_columns import ColumnLayouts
+from quill.core.radio.list_columns import SURFACES
 from quill.core.radio.recording import RecordingSettings
 from quill.core.radio.recordings_index import RecordingEntry
 from quill.ui.radio.recordings_manager_dialog import RecordingsManagerDialog
+from quill.ui.radio.recordings_row_view import SURFACE
 
 
 class _FakeList:
@@ -91,6 +94,10 @@ def _dialog(tmp_path: Path) -> tuple[RecordingsManagerDialog, _FakeList, SimpleN
     dlg._settings = RecordingSettings(destination_root=str(tmp_path))
     dlg._scheduler = scheduler
     dlg._entries = []
+    # The shipped column layout rather than whoever is running the tests:
+    # a row's cells are written by column id now, and a test that read the
+    # developer's own Choose Columns preference would pass or fail by it.
+    dlg._columns = ColumnLayouts.defaults(SURFACES).columns(SURFACE)
     dlg._status = SimpleNamespace(_label="", SetLabel=lambda s: None)
     # Selection-changed handler touches buttons we do not model here; the diff
     # logic under test does not depend on it.

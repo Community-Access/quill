@@ -43,6 +43,37 @@ The Manager (Ctrl+M) is where episode-level life happens, and it is the same Man
 - **Always Sync**, **auto-trim silence**, **normalize loudness**, and a live **volume boost** that respects the Sleep Timer's restore volume.
 - **Download All Episodes / Remove All Downloads / Remove All Episodes** on a show's context menu: Download All queues everything not already downloaded or in progress, no extra confirmation needed. **Remove All Downloads** is its symmetric counterpart -- it deletes the show's downloaded files and only the files (episodes, played state, and positions stay; anything marked Keep This Episode is skipped and the announcement says how many were kept). Remove All Episodes confirms first, then -- only if the show has downloaded files -- asks separately whether to delete those too; the show itself stays subscribed either way.
 
+## What each row says
+
+An episode list is read out one column at a time, so the columns *are* the
+sentence you hear on every row. **Subscriptions > Choose Columns...**
+(Ctrl+Alt+Shift+C) is where you decide it -- for the episode list, for
+Downloads, and for Add Podcast's search results.
+
+The window holds two lists: **Shown, in the order they are read** and
+**Hidden**. Move Up and Move Down (or Alt+Up and Alt+Down) rearrange the shown
+ones. **Hide** takes a column out of the row altogether -- not to the end of it,
+out of it, because a column that is still there is still spoken. **Show** puts
+one back where its place in the order says it belongs.
+
+Underneath the lists, **A row will read:** spells out the sentence one row will
+say with the settings exactly as they stand, so you can hear a change before
+pressing OK.
+
+**One column in each list is pinned** -- the episode's title, the podcast's
+name -- because a row with nothing to identify it is a row you cannot choose
+between.
+
+**Some columns are offered but start switched off.** The episode list can also
+show **Podcast** (worth having in a list that spans several shows, and noise in
+a list of one), **Time Left** on an episode you have started, and
+**Downloaded**. Add Podcast's results can also show the **Feed Address**, which
+is what tells two shows with the same name apart.
+
+**Reset This List** puts one list back the way it shipped. Your choice is saved
+per list and kept between sessions. Changing it while the Manager is open takes
+effect there and then, rather than next time.
+
 ## Private feeds (username and password)
 
 Some feeds -- Patreon supporter feeds, premium and members-only shows, private company or organization feeds -- protect their RSS address with a username and password (HTTP Basic authentication). QUILL Cast handles them end to end.

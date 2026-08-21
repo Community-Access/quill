@@ -12,10 +12,13 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.media.list_columns import ColumnDef
 from quill.core.podcasts import directory_search, feed_reader, itunes_search
+from quill.core.podcasts.list_columns import DIRECTORY_RESULTS
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.media.list_columns_view import build_columns, columns_for, fill_row
 
 
 class AddPodcastDialog:
@@ -78,8 +81,10 @@ class AddPodcastDialog:
 
         self._results = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._results.SetName("Search results")
-        self._results.InsertColumn(0, "Title", width=320)
-        self._results.InsertColumn(1, "Artist/Network", width=220)
+        # Subscriptions > Choose Columns... owns which columns exist and in
+        # what order -- a report row is read out column by column.
+        self._columns: list[ColumnDef] = columns_for("cast", DIRECTORY_RESULTS.id)
+        build_columns(self._results, self._columns)
         root.Add(self._results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         result_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -201,8 +206,16 @@ class AddPodcastDialog:
         self._search_results = results
         self._results.DeleteAllItems()
         for row, result in enumerate(results):
-            self._results.InsertItem(row, result.title)
-            self._results.SetItem(row, 1, result.artist)
+            fill_row(
+                self._results,
+                row,
+                self._columns,
+                {
+                    "title": result.title,
+                    "artist": result.artist,
+                    "feed": result.feed_url,
+                },
+            )
         # One sentence that names the directories and any that did not answer:
         # "12 results" from an unknown source is what makes somebody wonder
         # whether the other one was asked at all.

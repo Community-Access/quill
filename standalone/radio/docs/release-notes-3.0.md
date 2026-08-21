@@ -543,6 +543,42 @@ it can never drift from the menus, because it *is* the menus. The keys that
 have no menu item to carry them -- F6 into the status bar, the Winamp letters
 in the Recordings player -- are listed too, each with the window it works in.
 
+**And the columns are yours now (Ctrl+Alt+Shift+C).** This one is a speech
+setting wearing a display setting's clothes. A list like Find Stations is read
+out one column at a time, so the columns *are* the sentence you hear on every
+row -- and that sentence had been chosen once, in code, for everybody. If you
+never leave one country you heard a country on all sixty thousand rows. If you
+choose stations by who runs them, the source was read last.
+
+**View > Choose Columns...** hands it over, for Find Stations results and for
+the Recordings list. There are two lists in the window -- what is shown, in the
+order it is read, and what is hidden -- with Move Up and Move Down between them.
+Not checkboxes: a checkbox in a list is a state your screen reader has to be
+asked for, while a position is a place you land on, and moving something says
+where it is now.
+
+Hiding a column takes it *out* of the row rather than to the end of it, because
+a screen reader reads every column it is given and "last" is still read. It
+keeps its place while it is hidden, so bringing it back a week later does not
+send it to the end of a row you already arranged.
+
+Under the two lists, one line reads out exactly what a row will say. That is the
+part worth having: you can hear the effect of hiding Country before you press
+OK, rather than pressing OK and finding out.
+
+Each list also offers more than it shows, because a list that says everything
+says nothing. Find Stations can add Language, Genres, Popularity and Bitrate;
+Recordings can add Length -- and Length is deliberately blank where the number
+Quill Radio holds is a disk-safety cap rather than a length you chose, because
+reading out a cap as a plan would be telling you something you never said. One
+column in each list cannot be hidden -- the station's name, the recording's
+name -- and asking to says so, and why.
+
+QUILL Cast gets the same window on its own lists, from the same code. Quick
+Actions, listening statistics and folder actions all had to be carried across
+from one app to the other after being built twice; this one was shared on the
+first day.
+
 **The Recordings window now says what happens next.** It used to count things:
 "14 recorded, 1 recording now, 3 scheduled". That answers *how many* and never
 answers *when*, and when you are checking on a Thursday evening whether
