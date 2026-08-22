@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Radio: what belongs on the surface, and what belongs one
+key away</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1
+id="quill-radio-what-belongs-on-the-surface-and-what-belongs-one-key-away">Quill
+Radio: what belongs on the surface, and what belongs one key away</h1>
+<p><strong>Built and shipped.</strong> Every question raised during
+review was answered; the decisions are listed below and the reasoning
+for each sits in its own section. Two of them were overturned during
+implementation by the repo’s own gates, and both overturnings are
+recorded in place rather than quietly edited away.</p>
+<p>Date: 2026-08-21</p>
+<h2 id="the-problem">The problem</h2>
+<p>Two complaints, one cause.</p>
+<p>The main window shows the favorites list <strong>and</strong> a row
+of player buttons: Play/Stop, Add to Favorites, Record, Chapters (when
+relevant), Browse Stations, and a Volume slider. Somebody arrowing out
+of the favorites tree passes six or more controls, most of which act on
+something that is not the tree.</p>
+<p>The Playback menu holds <strong>39 items</strong> covering three
+unrelated questions: what the transport is doing, how the audio sounds,
+and what to do with video. (I first estimated twenty. The video and
+chapter items are appended flat into the same menu rather than sitting
+in a submenu, which is both the reason for the miscount and the reason
+the menu is unusable.)</p>
+<p>Underneath both is an inconsistency the app already argues against
+itself about. <code>quill/ui/radio/player_panel.py</code> states the
+position plainly:</p>
+<blockquote>
+<p>A permanent player window buys one obvious place and costs a third
+citizen in the Alt+Tab rotation – which is the thing that was being
+complained about in the first place. And with the transport keyboard now
+working in every window, an always-open player is mostly furniture.</p>
+</blockquote>
+<p>The player was then given no window of its own – it is summoned with
+Ctrl+Shift+G and returns focus to the exact control you left. But the
+main window is still a permanent player. The design decision was made
+and the landing page was never brought in line with it.</p>
+<p>There is also a plain gap: the Browse window has a Mute toggle and
+the main window does not.</p>
+<h2 id="decisions">Decisions</h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>What is the main window?</td>
+<td>A favorites list you play from – not a player</td>
+</tr>
+<tr>
+<td>Which controls stay?</td>
+<td>Now playing (read-only), the tree, Mute, Volume</td>
+</tr>
+<tr>
+<td>Where does “save the playing station” go?</td>
+<td>Station menu on Ctrl+Shift+F <strong>and</strong> the player
+window</td>
+</tr>
+<tr>
+<td>How does the Playback menu split?</td>
+<td>39 items become Playback (17) / Audio (11) / Video (8), plus
+Listening Statistics to View</td>
+</tr>
+<tr>
+<td>Does Video appear and disappear?</td>
+<td>No – always present, greyed out when there is no video</td>
+</tr>
+<tr>
+<td>Is there a “Controls” menu?</td>
+<td>No – Play, Rewind and Forward <em>are</em> playback</td>
+</tr>
+<tr>
+<td>Do any keys change?</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Is the now-playing line readable?</td>
+<td>Yes – read-only TextCtrl, focusable, copyable</td>
+</tr>
+<tr>
+<td>What does it show?</td>
+<td>Station and state, the track, one line of anything else true</td>
+</tr>
+<tr>
+<td>Does it show elapsed time?</td>
+<td>No – Ctrl+Shift+W answers that on demand</td>
+</tr>
+<tr>
+<td>Startup window setting?</td>
+<td>One checkbox: “Open Browse Stations at startup”, off by default</td>
+</tr>
+<tr>
+<td>Where do What’s Playing? / Song History go?</td>
+<td>They stay in Playback</td>
+</tr>
+<tr>
+<td>Quick navigation?</td>
+<td><strong>Ctrl+G</strong> opens a Go To popup: a numbered list of
+places, user-ordered</td>
+</tr>
+<tr>
+<td>What happens to Recordings’ Ctrl+G?</td>
+<td>Recordings is a <em>place</em>: reached through Go To. Ctrl+R stays
+Record Now.</td>
+</tr>
+<tr>
+<td>Is the Go To list configurable?</td>
+<td>Yes – order and membership, on the Choose Columns machinery</td>
+</tr>
+<tr>
+<td>How many positions?</td>
+<td>Ten: 1-9 then 0, all ten filled by default. A destination added
+later lands in the pool, never in the menu, so nothing renumbers</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-changes">What changes</h2>
+<h3 id="1-the-main-window-becomes-a-list-you-play-from">1. The main
+window becomes a list you play from</h3>
+<p>After:</p>
+<pre><code>Now playing:  +-----------------------------------+
+              | Jazz24 -- playing                 |   read-only,
+              | Take Five -- Dave Brubeck         |   focusable,
+              | Recording                         |   copyable
+              +-----------------------------------+
+Favorite stations:  [tree]         &lt;- focus lands here
+-------------------------------------------------
+[ Mute ]   Volume: [==========]</code></pre>
+<p>Five stops, down from eight or nine, and the same shape as the Browse
+window.</p>
+<p>These controls come off the main window:</p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Where it lives instead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Play/Stop</td>
+<td>Enter on a tree row, Ctrl+P, Playback menu</td>
+</tr>
+<tr>
+<td>Add to Favorites</td>
+<td>Station menu (new key) and the player window – see section 2</td>
+</tr>
+<tr>
+<td>Record</td>
+<td>Ctrl+R, the Record menu, the player window</td>
+</tr>
+<tr>
+<td>Chapters</td>
+<td>The player window, which already has them</td>
+</tr>
+<tr>
+<td>Browse Stations</td>
+<td>Ctrl+B, the Station menu, and the first-run flow</td>
+</tr>
+</tbody>
+</table>
+<p>Nothing loses its only route. Browse is worth calling out
+specifically: a brand-new listener never depended on that button,
+because <code>first_run_dialog.py</code> offers <strong>Browse Stations
+Now…</strong> on two of its three screens.</p>
+<p>Mute is a <code>wx.ToggleButton</code> labelled
+<code>&amp;Mute</code>, matching <code>browse_tree_dialog.py</code>
+exactly, and keeps Ctrl+M. It is the one control being <em>added</em> to
+the main window.</p>
+<p>The now-playing line stays, and <strong>changes from a
+<code>wx.StaticText</code> to a read-only
+<code>wx.TextCtrl</code></strong>.</p>
+<p>This is the one place the trimming adds a tab stop rather than
+removing one, and it is worth it. A <code>StaticText</code> cannot take
+focus, so it cannot be arrowed through, cannot be reviewed word by word,
+and cannot be copied. A track title, a station name and a format are
+exactly the kind of text somebody wants to go back over slowly – and
+today the only ways to do that are F6 into the status bar or Ctrl+T for
+the full Now Playing window. Both are fine, and neither should be
+required to read the line already sitting at the top of the window.</p>
+<p>Specifics that matter:</p>
+<ul>
+<li><code>wx.TE_READONLY | wx.TE_MULTILINE</code>, so a long “station –
+track – artist” wraps and can be read a line at a time instead of
+scrolling sideways.</li>
+<li><strong>No <code>wx.TE_PROCESS_TAB</code></strong>, so Tab moves
+focus onward and the control never becomes a trap.</li>
+<li>Copy works for free, which quietly answers “what <em>was</em> that
+track?”.</li>
+<li>Accessible name stays “Now playing”.</li>
+<li><strong>Only write to it when the text actually changes</strong>,
+and <strong>never while it has focus</strong>. A read-only field re-set
+on a timer re-announces itself under a screen reader, and rewriting it
+while somebody is reading it moves the text out from under them
+mid-sentence. Two guards: an equality check before
+<code>SetValue</code>, and a pending-update slot that is applied when
+focus leaves. This is the one real risk in the change, and it is
+entirely avoidable.</li>
+</ul>
+<p><strong>What it says.</strong> Today the line is one state sentence
+(“Radio: stopped”, “Playing Jazz24”). Now that it can be read properly
+it should carry what you would otherwise press Ctrl+T for:</p>
+<ol type="1">
+<li><strong>Station and what it is doing</strong> – the existing status
+text, which already folds in muted and “(recording)”.</li>
+<li><strong>The track</strong>, when there is one – title and artist,
+from <code>_radio_now_playing_text()</code>, the same source the status
+bar and the announcements use.</li>
+<li><strong>Anything currently true and worth knowing</strong> –
+recording, sleep timer running – one short line, omitted entirely when
+there is nothing to say.</li>
+</ol>
+<p>Lines are omitted rather than filled with placeholders. A station
+with no track metadata shows two lines, not a line reading “no track
+information”.</p>
+<p><strong>What stays behind Ctrl+T.</strong> Stream URL, format,
+bitrate, country, source, and the track’s provenance. That window is the
+“everything known” reference and should stay reference; this field is
+the headline. The rule for deciding is whether you would want it read to
+you <em>every time the station changes</em> – the station and the track,
+yes; the stream URL, no.</p>
+<p>The ordering matters for the same reason: the slowest-changing fact
+is first, so the start of the field is stable while a track name changes
+underneath it.</p>
+<p><strong>Elapsed time and DVR position are deliberately
+excluded</strong> (decided 2026-08-21). They are the one genuinely
+useful fact that changes every second, and a field that rewrites every
+second either re-announces constantly or has to be exempted from the
+change check that makes the rest of this safe. <strong>Ctrl+Shift+W
+(“Where am I?”) answers it on demand</strong>, which is the right shape
+for a fact you want occasionally and never want read at you.</p>
+<p>The status bar keeps its own focusable “Now playing” cell (F6, Enter
+for full details). That is not duplication worth removing: the status
+bar is a scan-across-everything surface, and this is the headline.</p>
+<h3 id="2-saving-the-station-that-is-playing">2. Saving the station that
+is playing</h3>
+<p>This is the only capability that would otherwise be lost.
+<code>_on_favorite_toggle</code> in <code>quill/apps/radio.py</code> is
+currently reachable <strong>only</strong> from the button – there is no
+menu item and no key. It also cannot simply move into the favorites
+tree’s context menu, because the station it acts on is very often one
+you found in Browse and that is not in the tree at all.</p>
+<p>Two homes, one handler:</p>
+<ul>
+<li><strong>Station menu</strong>: “Add Playing Station to Favorites” on
+<strong>Ctrl+Shift+F</strong>. The label flips to “Remove Playing
+Station from Favorites” when the playing station is already saved,
+exactly as the button’s label did. Disabled, and saying why, when
+nothing is playing.</li>
+<li><strong>Player window</strong> (Ctrl+Shift+G): the same action as a
+button, alongside the transport it already carries.</li>
+</ul>
+<p>Ctrl+Shift+F is unclaimed in Radio today, and sits beside
+Ctrl+Shift+M (Manage Favorites), which makes the pair easy to
+remember.</p>
+<h3 id="3-the-playback-menu-splits-three-ways">3. The Playback menu
+splits three ways</h3>
+<p><strong>First, a correction to the premise.</strong> I said “about
+twenty items”. It is <strong>39</strong>. The video, chapter, transcript
+and speed items are not a submenu – I assumed they were, and they are
+not. <code>radio_video_menu.py</code> appends them <em>directly into the
+Playback menu</em>, flat, alongside everything else. That is the actual
+reason the menu is unmanageable, and it means “promote the video
+submenu” was never the change; the change is a real three-way split.</p>
+<p>Here are the three menus, item for item. Every key below already
+exists. None of them changes.</p>
+<h4 id="playback--what-the-transport-is-doing-17">&amp;Playback – what
+the transport is doing (17)</h4>
+<pre><code>  Radio: stopped                          (readout, disabled)
+  ----------------------------------------------------------
+  &amp;Play                                   Ctrl+P
+  Re&amp;wind 30 Seconds                      Ctrl+Shift+Left
+  &amp;Forward 30 Seconds                     Ctrl+Shift+Right
+  Back to &amp;Live                           Ctrl+Shift+L
+  ----------------------------------------------------------
+  Play &amp;Faster                            Ctrl+Shift+Up
+  Play Slo&amp;wer                            Ctrl+Shift+Down
+  &amp;Normal Speed                           Ctrl+Shift+0
+  ----------------------------------------------------------
+  C&amp;hapters...                            Ctrl+Shift+C
+  Ne&amp;xt Chapter                           Ctrl+Shift+.
+  Pre&amp;vious Chapter                       Ctrl+Shift+,
+  &amp;Transcript...                          Ctrl+Shift+T
+  ----------------------------------------------------------
+  &amp;Go to Player                           Ctrl+Shift+G
+  &amp;Continue Listening...                  Ctrl+Alt+Shift+L
+  What&#39;s Pla&amp;ying?                        Ctrl+T
+  Son&amp;g History...                        Ctrl+Shift+H
+  ----------------------------------------------------------
+  Sleep &amp;Timer...                         Ctrl+Shift+Z
+  Wake-U&amp;p Timer...                       Ctrl+Alt+Z</code></pre>
+<p><strong>Chapters and Transcript live here, not under Video.</strong>
+A recording and a podcast episode have chapters too. Filing them under
+Video would hide them from everything that is not a video, which is most
+of what this app plays.</p>
+<h4 id="audio--how-it-sounds-11">&amp;Audio – how it sounds (11)</h4>
+<pre><code>  &amp;Mute/Unmute                            Ctrl+M
+  Volume &amp;Up                              Ctrl+Up
+  Volume &amp;Down                            Ctrl+Down
+  Volume &amp;Boost                           Ctrl+Shift+B
+  ----------------------------------------------------------
+  &amp;Output Device...                       Ctrl+Shift+D
+  Sound &amp;Enhancements...                  Ctrl+E
+  ----------------------------------------------------------
+  Use One &amp;Volume for All Stations        (check)
+  Forget Every Station&#39;s Own Volu&amp;me...   Ctrl+Alt+Shift+V
+  Announce Trac&amp;k Titles                  (check)
+  ----------------------------------------------------------
+  &amp;Audio and Described Audio...           Ctrl+Shift+A
+  Play &amp;Described Audio                   Ctrl+Alt+D</code></pre>
+<p><strong>Described audio is an Audio item, not a Video one.</strong>
+Choosing an audio track is choosing what you hear, and for a blind
+listener described audio is the <em>main</em> track rather than an
+accessibility extra bolted onto video.</p>
+<h4 id="video--the-picture-8">Vi&amp;deo – the picture (8)</h4>
+<pre><code>  Show &amp;Video                             Ctrl+Shift+V
+  F&amp;ull Screen                            F11
+  Video Si&amp;ze                             (submenu)
+  ----------------------------------------------------------
+  &amp;Captions                               Ctrl+Shift+K
+  Caption Se&amp;ttings...                    Ctrl+Shift+Alt+T
+  ----------------------------------------------------------
+  Video &amp;Information                      Ctrl+Shift+I
+  Take a Snaps&amp;hot                        Ctrl+Shift+Alt+H</code></pre>
+<p>Always present, every item greyed out when nothing playing has video.
+A menu that appears and disappears changes the shape of the menu bar,
+and the menu bar is navigated by position.</p>
+<h4 id="one-item-moves-out-entirely">One item moves out entirely</h4>
+<p><code>Listening Stati&amp;stics... (Ctrl+Shift+Q)</code> goes to
+<strong>View</strong>. It is a report about past listening, not a
+control over present listening, and View is where the other reports
+already are.</p>
+<h4 id="the-arithmetic">The arithmetic</h4>
+<p>39 items in one menu becomes 17 + 11 + 8 in three, plus one moved to
+View. The longest menu anybody has to arrow through drops from 39 to 17,
+and each of the three answers one question rather than three.</p>
+<p><strong>No keyboard shortcut changes.</strong> Every item already
+advertises its key in its label, and the accelerator gate enforces
+uniqueness across the entire menu bar rather than per menu – so moving
+an item between menus is free in muscle memory and costs only relearning
+where to look.</p>
+<p>Two decisions inside the split worth stating:</p>
+<ul>
+<li><strong>No separate “Controls” menu.</strong> Play, Rewind and
+Forward <em>are</em> playback. Splitting them out would leave the
+Playback menu with nothing in it.</li>
+<li><strong>Video is always present, greyed out.</strong> As above.</li>
+</ul>
+<h3 id="4-one-startup-setting">4. One startup setting</h3>
+<p>A single checkbox in Preferences: <strong>“Open Browse Stations at
+startup.”</strong> Off by default.</p>
+<p>When it is on, Radio opens the main window as usual and <em>then</em>
+opens Browse over it. It does not replace the main window. Closing
+Browse must leave you somewhere real rather than nowhere.</p>
+<p>This is deliberately not a general “which window opens” picker. A
+setting that changes where you land is expensive for somebody driving by
+keyboard: one predictable place every launch beats a choice made months
+ago and half-remembered. Browse is already one key away on Ctrl+B, so
+the checkbox is a convenience, not a fix.</p>
+<h3 id="5-go-to-one-key-for-every-place-in-the-app">5. Go To: one key
+for every place in the app</h3>
+<p><strong>The problem is not reach, it is recall.</strong> Almost every
+destination already has a key – Browse Ctrl+B, Recordings Ctrl+G, Manage
+Favorites Ctrl+Shift+M, Player Ctrl+Shift+G, Song History Ctrl+Shift+H,
+Downloads Ctrl+Shift+J, Statistics Ctrl+Shift+Q, Preferences Ctrl+comma.
+That is eight chords to hold in your head, and holding eight chords is
+the actual cost.</p>
+<p>The Window menu (Ctrl+Tab, Ctrl+1..9) does not solve it either, for a
+specific reason: <strong>it renumbers.</strong> It lists windows that
+are <em>open</em>, in the order they opened, so Recordings might be 3
+today and 5 tomorrow – and if it is not open, no number reaches it at
+all. Position can never become memory.</p>
+<p><strong>Ctrl+G opens a Go To popup.</strong> A short, numbered list
+of places, open or not:</p>
+<pre><code>Go To
+
+  1. Favorites                  (this window)
+  2. Browse Stations            Ctrl+B
+  3. The Player                 Ctrl+Shift+G
+  4. Recordings
+  5. Downloads                  Ctrl+Shift+J
+  6. Manage Favorites           Ctrl+Shift+M
+  7. Song History               Ctrl+Shift+H
+  8. Listening Statistics       Ctrl+Shift+Q
+  9. Find Stations              Ctrl+F
+  0. Preferences                Ctrl+comma</code></pre>
+<p><strong>Ten positions, numbered 1 through 9 and then 0</strong> – the
+number row, in the order your hand meets it, with 0 sitting where a
+tenth key would be. Ten is the ceiling because that is where the number
+row ends: an eleventh entry would have no key, and a menu where some
+rows have a number and others do not is worse than a shorter menu.</p>
+<p>The default fills all ten. <strong>Find Stations</strong> at 9
+because searching for a station and browsing to one are different
+activities that people reach for about equally, and Browse already has
+2. <strong>Preferences</strong> at 0 because settings belong at the end
+of a list, and 0 is where a hand goes last.</p>
+<p><em>(An earlier draft left 9 and 0 empty “so an upgrade cannot
+renumber you”. That reasoning was wrong, and worth recording as wrong: a
+destination added in a later release lands in the
+<strong>not-in-the-menu pool</strong>, never in the menu itself, so it
+cannot renumber anything whether or not there are empty slots. The pool
+is the protection. Empty slots bought nothing and cost two
+positions.)</em></p>
+<p><strong>The pool</strong> – destinations available to add, not in the
+menu by default: Scheduled Recordings, Station Catalog Status, Audio
+Health, Keyboard Shortcuts Sheet, What’s Playing. Somebody who records
+on a timetable will very reasonably want Scheduled Recordings at 4 and
+Statistics gone; that is exactly what the settings dialog is for.</p>
+<p><code>Ctrl+G</code> and <code>Ctrl+Shift+G</code> (Go to Player)
+become a pair, which is the kind of mnemonic that survives without being
+written down.</p>
+<h4 id="the-key-change-this-forces-and-how-it-resolves">The key change
+this forces, and how it resolves</h4>
+<p>Ctrl+G is Recordings today, so Recordings has to move. <strong>Ctrl+R
+is not available for it: Ctrl+R is Record Now / Stop Recording</strong>,
+which is both the more frequent action and the more natural mnemonic.
+Taking it would be a downgrade.</p>
+<p><strong>Recordings gives up its dedicated chord and is reached
+through Go To.</strong></p>
+<p>That is not a loss dressed up as a decision – it is the distinction
+this whole design runs on. <strong>Recordings is a place. Record Now is
+an action.</strong> Places live behind Ctrl+G; actions keep their own
+keys. Recordings stays on the Record menu with its label, it stays in Go
+To at a position you choose, and anybody who wants a chord for it can
+bind one in the Keyboard Manager, which already exists.</p>
+<p>The alternative was Ctrl+Shift+Alt+R, which is free and is a four-key
+chord nobody would press twice.</p>
+<h4 id="rules">Rules</h4>
+<ul>
+<li><strong>Press the number to go.</strong> Arrows and Enter work too,
+but the number is the point: Ctrl+G then 4 is two keystrokes and no
+reading.</li>
+<li><strong>Each row shows its own direct key</strong>, where it has
+one. The popup is a teaching surface as well as a shortcut: somebody who
+uses Ctrl+G 2 for a month learns Ctrl+B by reading it every time, and
+graduates off the popup.</li>
+<li><strong>Already open means raise, not open again.</strong> No second
+Recordings window.</li>
+<li><strong>Escape returns focus exactly where it was</strong>, to the
+control and the character – the same contract the player panel already
+keeps.</li>
+</ul>
+<h4 id="the-list-is-yours-to-configure">The list is yours to
+configure</h4>
+<p>Fixed numbering is what makes this worth having; <strong>fixed does
+not mean chosen by us.</strong> A list you arranged is more memorable
+than one we arranged, because you put the thing you use most at 1.</p>
+<p><strong>Go To Settings…</strong> (from the popup itself, and from
+View) uses the two-list shape Choose Columns already established:</p>
+<ul>
+<li>one list of what is in the menu, in order, with Move Up / Move
+Down</li>
+<li>one list of what is not, with Add / Remove between them</li>
+<li>a line underneath reading out what the menu will say, so you can
+hear the result before pressing OK</li>
+<li><strong>hidden means absent, not last</strong> – the same rule as
+Choose Columns, because the only way to stop hearing an entry is for it
+not to be there</li>
+</ul>
+<p>Constraints worth stating:</p>
+<ul>
+<li><strong>Ten entries maximum</strong>, numbered 1-9 then 0. Adding an
+eleventh is refused with a sentence that says the number row is full and
+which entry to remove first – not a disabled button that says only
+no.</li>
+<li><strong>At least one entry</strong>, refused with a sentence saying
+why rather than a disabled button that says only no.</li>
+<li><strong>An unknown id in a saved layout is dropped on read</strong>,
+and a destination added in a later release appears at the end rather
+than renumbering what you already learned. A layout from an older
+version must never renumber the entries you have memorised.</li>
+</ul>
+<p><strong>This is the third instance of one pattern</strong>, and it
+should not become a third implementation.
+<code>core/quick_actions.py</code> orders actions;
+<code>core/media/list_columns.py</code> orders columns with a hidden
+set, a tolerant loader and a repair pass, shared between Radio and Cast.
+Go To needs exactly that: an ordered list of ids, a hidden set, a
+catalogue supplied by the app, and a loader that survives ids it does
+not recognise.</p>
+<p>The recommendation is to lift the generic core out of
+<code>list_columns.py</code> – it is already app-independent and already
+does everything needed – and have columns and Go To sit on it as two
+catalogues. The reorder dialog is the expensive part and it is the part
+most worth sharing; a listener who has arranged their columns should
+meet the same window, with the same keys, when they arrange their Go To
+menu.</p>
+<h4 id="what-this-is-not">What this is not</h4>
+<p>Not a command palette. Ctrl+Shift+P still runs commands and still
+filters by typing. This is <strong>places, not verbs</strong>, and it
+deliberately never asks you to type. For a screen-reader user a
+filtering search box is the most expensive way to reach a destination
+you already know the name of.</p>
+<p>It also appears as <code>&amp;Go To...  Ctrl+G</code> in the View
+menu, because a key nobody can discover is a key nobody uses.</p>
+<h2 id="what-this-does-not-touch">What this does not touch</h2>
+<ul>
+<li>Favorites data, and the favorites tree’s own context menu and keys
+(Enter, Delete, F2, Shift+F10)</li>
+<li>The status bar and F6</li>
+<li>The player window’s internal layout, beyond gaining the favorite
+toggle</li>
+<li>The Record menu</li>
+<li>Every existing keyboard shortcut in the app</li>
+</ul>
+<h2 id="how-it-gets-checked">How it gets checked</h2>
+<p>Existing gates cover most of it:</p>
+<ul>
+<li>The <strong>menu accelerator gate</strong>
+(<code>tests/unit/ui/test_menu_accelerators.py</code>) fails on any
+duplicate or unparsable key across the whole menu bar. It covers the
+three-way split and the new Ctrl+Shift+F without any new test being
+written.</li>
+<li>The <strong>accessible-name inventory</strong> covers the new Mute
+toggle.</li>
+</ul>
+<p>New tests worth writing:</p>
+<ol type="1">
+<li>The main window exposes exactly the intended controls – so a button
+quietly reappearing is a failing test, not a slow drift back to
+today.</li>
+<li>“Add the playing station” is reachable from both the Station menu
+and the player window, and both run one handler.</li>
+<li>The Video menu exists and is disabled rather than absent when
+nothing playing has video.</li>
+<li>The startup checkbox opens Browse <em>over</em> the main window, and
+closing Browse leaves the main window focused.</li>
+<li>The now-playing control is read-only, is reachable by Tab, does not
+swallow Tab, is not rewritten when its text has not changed, and is not
+rewritten at all while it holds focus.</li>
+<li>The field omits the track line entirely when there is no track,
+rather than showing a placeholder.</li>
+<li>The Go To numbering does not depend on which windows are open – the
+stability is the feature, so a test that pins it is the feature’s test.
+Separately: a saved layout from an older release, missing a destination
+added since, must not renumber the entries already in it.</li>
+<li>Go To raises an already-open destination rather than opening a
+second copy, and Escape restores focus to the exact control it was
+summoned from.</li>
+<li>Position 10 is reachable by pressing 0, and an eleventh entry is
+refused with a sentence rather than silently dropped.</li>
+</ol>
+<h2 id="files-this-touches">Files this touches</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Change</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quill/apps/radio.py</code></td>
+<td>Main window layout: remove five buttons, add Mute, swap the
+now-playing StaticText for a read-only TextCtrl. Station menu gains the
+favorite toggle. Playback menu splits three ways.</td>
+</tr>
+<tr>
+<td><code>quill/apps/radio_video_menu.py</code></td>
+<td>The video submenu becomes a top-level menu, always present, disabled
+when there is no video.</td>
+</tr>
+<tr>
+<td><code>quill/ui/radio/player_panel.py</code></td>
+<td>Gains the “Add/Remove Playing Station” button.</td>
+</tr>
+<tr>
+<td><code>quill/apps/radio_preferences.py</code></td>
+<td>Gains the “Open Browse Stations at startup” checkbox.</td>
+</tr>
+<tr>
+<td><code>quill/ui/radio/go_to_dialog.py</code> (new)</td>
+<td>The Go To popup: numbered list, number keys, raise-if-open, focus
+restore.</td>
+</tr>
+<tr>
+<td><code>quill/core/radio/go_to.py</code> (new)</td>
+<td>The destination catalogue and the saved layout, on the shared
+ordered-list core.</td>
+</tr>
+<tr>
+<td><code>quill/core/media/list_columns.py</code></td>
+<td>Generic core lifted out so Go To and Choose Columns share one
+implementation.</td>
+</tr>
+<tr>
+<td><code>quill/core/app_keymaps.py</code></td>
+<td><code>radio.recordings</code> loses Ctrl+G; Go To takes it.
+<code>radio.record_toggle</code> keeps Ctrl+R.</td>
+</tr>
+<tr>
+<td><code>quill/core/radio/history.py</code></td>
+<td>Gains the persisted flag behind that checkbox.</td>
+</tr>
+<tr>
+<td><code>quill/core/app_keymaps.py</code></td>
+<td>Ctrl+Shift+F for the favorite toggle.</td>
+</tr>
+<tr>
+<td><code>standalone/radio/CHANGELOG.md</code>,
+<code>docs/release-notes-*.md</code></td>
+<td>Say plainly what moved and where it went.</td>
+</tr>
+</tbody>
+</table>
+<p><code>radio.py</code> is already at its GATE-11 ceiling. Removing
+five buttons frees more than the menu split and the new field cost, so
+this should ratchet the budget <strong>down</strong> rather than need a
+rebaseline – but if the arithmetic goes the other way, the menu
+construction is the natural thing to extract into a module of its own
+rather than raising the number.</p>
+<h2 id="risks">Risks</h2>
+<ul>
+<li><strong>Relearning.</strong> Anybody who reaches for the Play button
+will not find it. The keys and menu items are unchanged, and the release
+notes have to say plainly what moved and where it went.</li>
+<li><strong>The empty landing page.</strong> With no favorites and
+nothing playing, the main window is a heading, an empty tree, Mute and
+Volume. That is thin. The first-run flow covers a genuinely new user;
+somebody who deleted all their favorites is the case to check by
+hand.</li>
+<li><strong>Scope.</strong> This is four changes that share a rationale,
+not one change. They can ship separately, and probably should: the menu
+split and the Mute button are low-risk and independent; the button
+removals are the part people will notice.</li>
+</ul>
+<h2 id="suggested-order">Suggested order</h2>
+<ol type="1">
+<li>Add Mute to the main window (smallest, fixes a real asymmetry on its
+own)</li>
+<li>Split the Playback menu three ways</li>
+<li>Add “Add Playing Station to Favorites” to the Station menu and the
+player window</li>
+<li>Remove the five buttons from the main window</li>
+<li>Add the startup checkbox</li>
+<li>Add the Go To popup on Ctrl+G, then its settings dialog</li>
+</ol>
+<p>Steps 1-3 and 6 are additive and safe to ship on their own. Step 4 is
+the one that changes what people see, and it depends on step 3 having
+landed first. Step 6 is independent of all of them and could go first if
+it is the part you want soonest – it is the only item here that adds a
+capability rather than moving one.</p>
+<h2 id="the-one-call-made-without-a-strong-opinion">The one call made
+without a strong opinion</h2>
+<p><strong>What’s Playing? and Song History stay in
+Playback.</strong></p>
+<p>They are metadata rather than transport, so View is a defensible home
+for them and a tidier one. They stay because they are where people have
+found them for three versions, and because they answer a question you
+ask <em>while listening</em> – which is what the Playback menu is for.
+Moving them buys neatness and costs relearning, and this design already
+spends relearning on the button removals.</p>
+<p>Reversible in one line if it turns out to read badly.</p>
+<h2 id="what-implementation-changed">What implementation changed</h2>
+<p>Two decisions in this document did not survive contact with the
+codebase, and the codebase was right both times.</p>
+<p><strong>Recordings could not give up its key.</strong> The design
+said it would be reached only through Go To. The menu-accelerator gate
+refused: <em>every enabled menu item must advertise a keyboard
+route</em>, which is a rule rather than a preference, so “reached only
+through Go To” was never actually on the table. Recordings takes
+<strong>Ctrl+Shift+R</strong> from Restore from Backup instead, which
+moves to Ctrl+Alt+Shift+W. Frequency wins the shorter chord, and nobody
+restores a backup by muscle memory.</p>
+<p><strong>A key that looked free was not.</strong>
+<code>Ctrl+Alt+Shift+B</code> read as unclaimed by a plain text search
+and is in fact Show Status Bar, spelled <code>Ctrl+Shift+Alt+B</code> –
+the same chord, a different spelling. That is exactly the bug fixed
+earlier the same day, and the fix caught it. Candidate keys are now
+checked with <code>keymap_query.canonical_binding</code>, never by
+grep.</p>
+<p><strong>GATE-11 shaped the module layout.</strong>
+<code>radio.py</code> hit its ceiling four separate times, and every one
+was resolved by extraction rather than by raising the number:
+<code>radio_now_playing.py</code> (the readout and its two guards),
+<code>radio_favorite_toggle.py</code> (the one pair of facts every door
+onto “save this station” reads), <code>radio_audio_menu.py</code> (the
+Audio menu’s remembered preferences), and <code>radio_go_to.py</code>
+(the command and the destinations that had no method of their own).</p>
+</main>
+</body>
+</html>
