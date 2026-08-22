@@ -20,13 +20,27 @@ from __future__ import annotations
 from typing import Any
 
 
-def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[Any, ...]:
+def build_video_playback_items(
+    app: Any,
+    playback_menu: Any,
+    wx: Any,
+    *,
+    audio_menu: Any = None,
+    video_menu: Any = None,
+) -> tuple[Any, ...]:
     """Append the timeline commands to *playback_menu* and bind them to *app*.
 
     Returns every id ref it created, because the caller must **pin** them:
     a menu id ref that is garbage-collected can be reissued to a different
     item, and the symptom is a random menu entry firing the wrong command.
     """
+    # One menu of 39 became Playback / Audio / Video on 2026-08-21. These
+    # items are built here wherever they land, and each falls back to the
+    # Playback menu when a caller supplies only one -- so a surface that
+    # has not split its menus keeps working unchanged.
+    audio_target = audio_menu if audio_menu is not None else playback_menu
+    video_target = video_menu if video_menu is not None else playback_menu
+
     from quill.ui.radio import bounded_playback_ui as video
     from quill.ui.radio import transcript_command as transcript
 
@@ -73,8 +87,8 @@ def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[A
     # answer even when a video has no described track, because "this video
     # published none" is exactly what the listener wanted to know.
     audio_tracks_id, described_id = wx.NewIdRef(), wx.NewIdRef()
-    playback_menu.Append(audio_tracks_id, "&Audio and Described Audio...	Ctrl+Shift+A")
-    playback_menu.Append(described_id, "Play &Described Audio	Ctrl+Alt+D")
+    audio_target.Append(audio_tracks_id, "&Audio and Described Audio...	Ctrl+Shift+A")
+    audio_target.Append(described_id, "Play &Described Audio	Ctrl+Alt+D")
     frame.Bind(wx.EVT_MENU, lambda _e: transcript.open_audio_tracks(app), id=audio_tracks_id)
     frame.Bind(wx.EVT_MENU, lambda _e: transcript.play_described_audio(app), id=described_id)
 
@@ -94,12 +108,12 @@ def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[A
         snapshot_id,
         full_screen_id,
     ) = (wx.NewIdRef() for _ in range(6))
-    playback_menu.Append(show_video_id, "Show &Video	Ctrl+Shift+V")
-    playback_menu.Append(captions_id, "&Captions	Ctrl+Shift+K")
-    playback_menu.Append(caption_settings_id, "Caption Se&ttings...\tCtrl+Shift+Alt+T")
-    playback_menu.Append(video_info_id, "Video &Information	Ctrl+Shift+I")
-    playback_menu.Append(snapshot_id, "Take a Snaps&hot\tCtrl+Shift+Alt+H")
-    playback_menu.Append(full_screen_id, "F&ull Screen	F11")
+    video_target.Append(show_video_id, "Show &Video	Ctrl+Shift+V")
+    video_target.Append(captions_id, "&Captions	Ctrl+Shift+K")
+    video_target.Append(caption_settings_id, "Caption Se&ttings...\tCtrl+Shift+Alt+T")
+    video_target.Append(video_info_id, "Video &Information	Ctrl+Shift+I")
+    video_target.Append(snapshot_id, "Take a Snaps&hot\tCtrl+Shift+Alt+H")
+    video_target.Append(full_screen_id, "F&ull Screen	F11")
     frame.Bind(wx.EVT_MENU, lambda _e: video_commands.toggle_video(app), id=show_video_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video_commands.toggle_captions(app), id=captions_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video_commands.caption_settings(app), id=caption_settings_id)
@@ -124,7 +138,7 @@ def build_video_playback_items(app: Any, playback_menu: Any, wx: Any) -> tuple[A
             id=size_id,
         )
     video_size_id = wx.NewIdRef()
-    playback_menu.AppendSubMenu(size_menu, "Video Si&ze")
+    video_target.AppendSubMenu(size_menu, "Video Si&ze")
 
     faster_id, slower_id, normal_id, where_id = (
         wx.NewIdRef(),

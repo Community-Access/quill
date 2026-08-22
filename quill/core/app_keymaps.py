@@ -29,6 +29,12 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "radio.import_youtube_subscriptions": "Ctrl+Alt+Shift+Y",
         "radio.find_streams": "Ctrl+Alt+S",
         "radio.manage_favorites": "Ctrl+Shift+M",
+        # Saving whatever is playing. It lived only on a button until
+        # 2026-08-21, so it had no key and no menu home at all. Beside
+        # Ctrl+Shift+M so the favorites pair is one thing to remember;
+        # Ctrl+D is Show Station Details and Ctrl+F is Search Stations, so
+        # neither of the obvious mnemonics was free.
+        "radio.toggle_playing_favorite": "Ctrl+Shift+F",
         "radio.toggle_global_volume": "Ctrl+Alt+V",
         "radio.forget_station_volumes": "Ctrl+Alt+Shift+V",
         "radio.toggle_title_announcements": "Ctrl+Alt+T",
@@ -36,7 +42,17 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "radio.record_station": "Ctrl+Alt+R",
         "radio.stop_all_recordings": "Ctrl+Alt+X",
         "radio.schedule_recording": "Ctrl+Shift+S",
-        "radio.recordings": "Ctrl+G",
+        # Recordings gave up Ctrl+G to Go To on 2026-08-21. It is a *place*,
+        # and places are what Ctrl+G is for -- it is still on the Record menu
+        # and sits in the Go To list at whatever position you put it. Ctrl+R
+        # stays Record Now, which is the more frequent action and the more
+        # natural mnemonic; taking it for the list would have been a downgrade.
+        "radio.go_to": "Ctrl+G",
+        # ...and Recordings takes Ctrl+Shift+R from Restore from Backup, a
+        # once-in-a-crisis action. "Reached only through Go To" was never
+        # available: every enabled menu item must advertise a keyboard route,
+        # and that gate is a rule rather than a preference. It decided this.
+        "radio.recordings": "Ctrl+Shift+R",
         "radio.recording_settings": "Ctrl+Alt+Shift+I",
         # Record Now's shared binding is a QUILL-key chord, which a menu label
         # cannot carry (#612); the app gets a plain key of its own.

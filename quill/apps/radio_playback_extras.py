@@ -20,11 +20,27 @@ from typing import Any
 __all__ = ["build_playback_extras"]
 
 
-def build_playback_extras(app: Any, menu: Any, wx: Any) -> tuple[Any, ...]:
-    """Append the video items and Listening Statistics. Returns the ids to pin."""
+def build_playback_extras(
+    app: Any,
+    menu: Any,
+    wx: Any,
+    audio_menu: Any = None,
+    video_menu: Any = None,
+    view_menu: Any = None,
+) -> tuple[Any, ...]:
+    """Append the video items and Listening Statistics. Returns the ids to pin.
+
+    Since the 2026-08-21 three-way split the caller may hand in an Audio and a
+    Video menu; each falls back to *menu* when absent, so a surface that has not
+    split its menus keeps working unchanged. Listening Statistics goes to
+    *view_menu* when one is supplied -- it is a report about past listening, not
+    a control over present listening, and View is where the other reports are.
+    """
     from quill.apps.radio_video_menu import build_video_playback_items
 
-    ids = tuple(build_video_playback_items(app, menu, wx))
+    ids = tuple(
+        build_video_playback_items(app, menu, wx, audio_menu=audio_menu, video_menu=video_menu)
+    )
 
     # How long you listened, to what, and in which network. Radio kept a
     # recently-played list and a song log and neither of them was *time*, so
@@ -34,7 +50,11 @@ def build_playback_extras(app: Any, menu: Any, wx: Any) -> tuple[Any, ...]:
     # Ctrl+Shift+Y (Add from YouTube Playlist, on Station): a key claimed twice
     # means one of the pair silently never fires, which is worse than a menu
     # item with a less memorable key.
-    menu.Append(stats_id, "Listening Stati&stics...\tCtrl+Shift+Q")
+    # A report about past listening, not a control over present listening, so
+    # it belongs in View with the other reports rather than in Playback with the
+    # transport. Falls back to *menu* for a caller that has not split its menus.
+    stats_home = view_menu if view_menu is not None else menu
+    stats_home.Append(stats_id, "Listening Stati&stics...\tCtrl+Shift+Q")
 
     def _open(_event: Any) -> None:
         from quill.ui.radio.stats_dialog import open_for_host

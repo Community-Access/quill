@@ -12,6 +12,8 @@ import sys
 
 import wx
 
+from quill.apps import radio_audio_menu, radio_go_to
+from quill.apps import radio_now_playing as now_playing_readout
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.core.radio import reading_services
@@ -233,6 +235,10 @@ class RadioAppFrame(
         from quill.ui.radio.media_preflight import surface_media_health_startup
 
         wx.CallAfter(surface_media_health_startup, self)
+        # Over the main window, never instead of it: closing Browse has to
+        # leave you somewhere real rather than nowhere.
+        if self._radio_history.open_browse_at_startup:
+            wx.CallAfter(self.open_browse_stations)
         # First run: three screens for somebody who has never used this before,
         # and nothing at all for anybody who already has favorites. Modal rather
         # than spoken, unlike the line above -- it is the whole content of a
@@ -254,8 +260,27 @@ class RadioAppFrame(
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
-        self._now_playing_text = wx.StaticText(panel, label="Radio: stopped")
+        # Read-only rather than static: a wx.StaticText cannot take focus, so the
+        # one line carrying the station, the track and what the player is doing
+        # could not be arrowed through, reviewed word by word, or copied. The
+        # only ways to read it slowly were F6 into the status bar or Ctrl+T for
+        # the full window, and neither should be required to read the line
+        # already sitting at the top. No TE_PROCESS_TAB: Tab must move focus
+        # onward and never be captured here.
+        self._now_playing_text = wx.TextCtrl(
+            panel,
+            value="Radio: stopped",
+            style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_NO_VSCROLL | wx.BORDER_SIMPLE,
+            size=(-1, 54),
+        )
         set_accessible_name(self._now_playing_text, "Now playing")
+        self._now_playing_text.SetHelpText(
+            "What is playing. Ctrl+Shift+W says where you are in it; Ctrl+T opens the full details."
+        )
+        self._pending_now_playing: str | None = None
+        self._now_playing_text.Bind(
+            wx.EVT_KILL_FOCUS, lambda e: now_playing_readout.on_blur(self, e)
+        )
         root.Add(self._now_playing_text, 0, wx.EXPAND | wx.ALL, 8)
 
         favorites_label = wx.StaticText(panel, label="&Favorite stations:")
@@ -285,41 +310,11 @@ class RadioAppFrame(
         self._favorites_tree.Bind(wx.EVT_KEY_DOWN, self._on_favorites_key)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        # One transport button, not two: it reads Play when idle and Stop
-        # while connecting/playing, so the panel never shows a dead button.
-        # No "&" mnemonic on the transport button: "&Stop"/"&Play" would claim
-        # Alt+S / Alt+P, which collide with the Station / Playback menu-bar
-        # mnemonics (the menu bar wins, so the button never fired) -- #1208. The
-        # reliable transport key is the menu accelerator Ctrl+P, which the
-        # accessible name now advertises so it is reported correctly.
-        self._play_stop_btn = wx.Button(panel, label="P&lay")
-        set_accessible_name(self._play_stop_btn, "Play (Alt+L, or Ctrl+P)")
-        self._play_stop_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_play_stop_button())
-        buttons.Add(self._play_stop_btn, 0, wx.RIGHT, 6)
-        # Favorite toggle for whatever is on right now: Add while listening
-        # to something new (from ACB Media, Recently Played, a test...),
-        # Remove when the playing station is already saved.
-        self._favorite_toggle_btn = wx.Button(panel, label="Add to &Favorites")
-        set_accessible_name(self._favorite_toggle_btn, "Add the playing station to favorites")
-        self._favorite_toggle_btn.Enable(False)
-        self._favorite_toggle_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_favorite_toggle())
-        buttons.Add(self._favorite_toggle_btn, 0, wx.RIGHT, 6)
-        # The Record button doubles as the stop control: while a recording is
-        # running it reads "Stop Recording" so it is obvious you are recording
-        # (#1152 feedback), mirroring the single Play/Stop button above.
-        self._record_btn = wx.Button(panel, label="Rec&ord")
-        set_accessible_name(self._record_btn, "Record")
-        self._record_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_capture_button())
-        buttons.Add(self._record_btn, 0, wx.RIGHT, 6)
-        # Previous/Next Chapter and Chapters..., hidden until the thing playing
-        # actually has chapters (quill/apps/radio_chapter_buttons.py).
-        from quill.apps import radio_chapter_buttons
-
-        radio_chapter_buttons.build(self, panel, buttons, wx)
-        browse_btn = wx.Button(panel, label="&Browse Stations...")
-        set_accessible_name(browse_btn, "Browse Stations...")
-        browse_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_browse_stations())
-        buttons.Add(browse_btn, 0, wx.RIGHT, 6)
+        # A favorites list you play from, not a player. Play/Stop, Add to
+        # Favorites, Record, the chapter buttons and Browse all left this row on
+        # 2026-08-21, each keeping its menu item and key; player_panel.py had
+        # already argued it -- "an always-open player is mostly furniture". Mute
+        # and Volume stay, and are exactly the pair the Browse window has.
         # A volume control right in the Tab order, so the volume can be adjusted
         # by arrowing a focused slider while listening -- not only via Ctrl+Up/
         # Down or the status bar (#1214). Kept in step with the real volume by
@@ -332,6 +327,15 @@ class RadioAppFrame(
         controller = getattr(self, "_radio_controller", None)
         if controller is not None:
             start_volume = controller.state.volume_percent
+        # Mute sits with Volume and matches browse_tree_dialog exactly -- the
+        # same control, the same label, the same key. The main window was the
+        # one surface in the app without it, so the same listener met two
+        # different answers to "how do I mute this?".
+        self._mute_btn = wx.ToggleButton(panel, label="&Mute")
+        set_accessible_name(self._mute_btn, "Mute (Ctrl+M)")
+        self._mute_btn.SetValue(bool(getattr(controller, "state", None) and controller.state.muted))
+        self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, lambda _e: self.radio_mute_toggle())
+        buttons.Add(self._mute_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         self._volume_slider = wx.Slider(
             panel, value=start_volume, minValue=0, maxValue=100, style=wx.SL_HORIZONTAL
         )
@@ -904,27 +908,10 @@ class RadioAppFrame(
         act(self)
 
     def _refresh_favorite_toggle(self) -> None:
-        button = getattr(self, "_favorite_toggle_btn", None)
-        if button is None:
-            return
-        station = self._radio_controller.state.station
-        if station is None:
-            button.Enable(False)
-            if button.GetLabel() != "Add to &Favorites":
-                button.SetLabel("Add to &Favorites")
-                set_accessible_name(button, "Add the playing station to favorites")
-            return
-        button.Enable(True)
-        saved = self._radio_favorites.contains(station)
-        label = "Remove from &Favorites" if saved else "Add to &Favorites"
-        if button.GetLabel() != label:
-            button.SetLabel(label)
-            set_accessible_name(
-                button,
-                "Remove the playing station from favorites"
-                if saved
-                else "Add the playing station to favorites",
-            )
+        """Keep every door onto "save this station" saying the same thing."""
+        from quill.apps import radio_favorite_toggle
+
+        radio_favorite_toggle.refresh(self)
 
     def _on_favorite_toggle(self) -> None:
         station = self._radio_controller.state.station
@@ -1071,6 +1058,18 @@ class RadioAppFrame(
         station_menu.Append(
             manage_id, self._menu_label("&Manage Favorites...", "radio.manage_favorites")
         )
+        # Saving what is playing, which until now existed only as a button
+        # on the main window. It cannot live in the favorites tree context
+        # menu instead: the station it acts on is usually one you found in
+        # Browse and that is not in the tree at all.
+        self._fav_toggle_menu_id = wx.NewIdRef()
+        station_menu.Append(
+            self._fav_toggle_menu_id,
+            self._menu_label("Add Playing Station to &Favorites", "radio.toggle_playing_favorite"),
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._on_favorite_toggle(), id=self._fav_toggle_menu_id
+        )
         # Put the actions you use at the top of every row menu, and choose what
         # Enter does. Wiring lives in ui/radio/quick_actions_command (at budget).
         from quill.ui.radio.quick_actions_command import open_quick_actions
@@ -1097,7 +1096,10 @@ class RadioAppFrame(
 
         backup_id, restore_id = wx.NewIdRef(), wx.NewIdRef()
         station_menu.Append(backup_id, "Back &Up Stations and Settings...\tCtrl+Shift+U")
-        station_menu.Append(restore_id, "&Restore from Backup...\tCtrl+Shift+R")
+        # Ctrl+Shift+R went to Recordings on 2026-08-21 (which gave up Ctrl+G to
+        # Go To): frequency wins the shorter chord, and nobody restores a backup
+        # by muscle memory.
+        station_menu.Append(restore_id, "&Restore from Backup...\tCtrl+Alt+Shift+W")
         self.frame.Bind(wx.EVT_MENU, lambda _e: back_up_radio_data(self), id=backup_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: restore_radio_data(self), id=restore_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_add_custom(None), id=add_id)
@@ -1155,6 +1157,17 @@ class RadioAppFrame(
         menu_bar.Append(station_menu, "&Station")
 
         playback_menu = wx.Menu()
+        # 39 items answering three unrelated questions -- what the transport is
+        # doing, how the audio sounds, what to do with video -- split 2026-08-21
+        # into 17 / 11 / 8. No key changes: the accelerator gate enforces
+        # uniqueness across the whole menu bar, not per menu, so moving an item
+        # costs relearning where to look and nothing in muscle memory. View is
+        # built here and inserted further down, because Listening Statistics is
+        # a report about past listening rather than a control over present
+        # listening and belongs there with the other reports.
+        audio_menu = wx.Menu()
+        video_menu = wx.Menu()
+        view_menu = wx.Menu()
         self._now_playing_item_id = wx.NewIdRef()
         playback_menu.Append(self._now_playing_item_id, "Radio: stopped")
         playback_menu.Enable(self._now_playing_item_id, False)
@@ -1165,18 +1178,18 @@ class RadioAppFrame(
         self._play_menu_item_id = wx.NewIdRef()
         playback_menu.Append(self._play_menu_item_id, "&Play\tCtrl+P")
         mute_id, vol_up_id, vol_down_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        playback_menu.Append(mute_id, "&Mute/Unmute\tCtrl+M")
-        playback_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
-        playback_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
+        audio_menu.Append(mute_id, "&Mute/Unmute\tCtrl+M")
+        audio_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
+        audio_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
         self._volume_boost_item_id = wx.NewIdRef()
-        playback_menu.AppendCheckItem(self._volume_boost_item_id, "Volume &Boost\tCtrl+Shift+B")
-        playback_menu.Check(self._volume_boost_item_id, self._radio_history.volume_boost)
+        audio_menu.AppendCheckItem(self._volume_boost_item_id, "Volume &Boost\tCtrl+Shift+B")
+        audio_menu.Check(self._volume_boost_item_id, self._radio_history.volume_boost)
         # #1253: pick the audio output device (sound card) with a shortcut, without
         # opening full Preferences. Thin wiring lives in output_device_ui.
         from quill.ui.radio.output_device_ui import choose_output_device
 
         output_device_id = wx.NewIdRef()
-        playback_menu.Append(output_device_id, "&Output Device...\tCtrl+Shift+D")
+        audio_menu.Append(output_device_id, "&Output Device...\tCtrl+Shift+D")
         self.frame.Bind(wx.EVT_MENU, lambda _e: choose_output_device(self), id=output_device_id)
         playback_menu.AppendSeparator()
         # Live DVR (mpv engine): pause is the Play/Stop item; these move
@@ -1194,7 +1207,9 @@ class RadioAppFrame(
 
         # Pinned as a group rather than unpacked: the helper owns which items
         # exist, and a fixed-length unpack here would break every time it grew.
-        video_menu_ids = build_playback_extras(self, playback_menu, wx)
+        video_menu_ids = build_playback_extras(
+            self, playback_menu, wx, audio_menu, video_menu, view_menu
+        )
         playback_menu.AppendSeparator()
         whats_playing_id = wx.NewIdRef()
         # Go to Player summons the player panel over whatever window you are
@@ -1213,35 +1228,7 @@ class RadioAppFrame(
         song_history_id = wx.NewIdRef()
         playback_menu.Append(song_history_id, "Son&g History...\tCtrl+Shift+H")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_song_history(), id=song_history_id)
-        self._global_volume_item_id = wx.NewIdRef()
-        playback_menu.AppendCheckItem(
-            self._global_volume_item_id,
-            self._menu_label("Use One &Volume for All Stations", "radio.toggle_global_volume"),
-        )
-        playback_menu.Check(self._global_volume_item_id, self._radio_history.use_global_volume)
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.radio_toggle_global_volume(),
-            id=self._global_volume_item_id,
-        )
-        forget_volumes_id = wx.NewIdRef()
-        playback_menu.Append(
-            forget_volumes_id,
-            self._menu_label(
-                "Forget Every Station's Own Volu&me...", "radio.forget_station_volumes"
-            ),
-        )
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.radio_forget_station_volumes(), id=forget_volumes_id
-        )
-        self._announce_titles_item_id = wx.NewIdRef()
-        playback_menu.AppendCheckItem(
-            self._announce_titles_item_id,
-            self._menu_label("Announce Trac&k Titles", "radio.toggle_title_announcements"),
-        )
-        playback_menu.Check(
-            self._announce_titles_item_id, self._radio_history.announce_track_titles
-        )
+        forget_volumes_id = radio_audio_menu.build_preferences(self, audio_menu, wx)
         sleep_id = wx.NewIdRef()
         playback_menu.Append(sleep_id, "Sleep &Timer...\tCtrl+Shift+Z")
         wake_id = wx.NewIdRef()
@@ -1271,9 +1258,13 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
         playback_menu.AppendSeparator()
         enhance_id = wx.NewIdRef()
-        playback_menu.Append(enhance_id, "Sound &Enhancements...\tCtrl+E")
+        audio_menu.Append(enhance_id, "Sound &Enhancements...\tCtrl+E")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sound_enhancements(), id=enhance_id)
         menu_bar.Append(playback_menu, "&Playback")
+        menu_bar.Append(audio_menu, "&Audio")
+        # Video is always present, greyed out with nothing to show: a menu that
+        # comes and goes changes the shape of a bar navigated by position.
+        menu_bar.Append(video_menu, "Vi&deo")
 
         record_menu = wx.Menu()
         record_id, schedule_id, settings_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
@@ -1403,7 +1394,6 @@ class RadioAppFrame(
 
         # &View: show/hide the read-only Station Details pane, honored by every
         # surface that has one (Browse Stations, Search Stations).
-        view_menu = wx.Menu()
         show_details_id = wx.NewIdRef()
         view_menu.AppendCheckItem(show_details_id, "Show Station &Details\tCtrl+D")
         view_menu.Check(show_details_id, self._radio_history.show_station_details)
@@ -1455,8 +1445,11 @@ class RadioAppFrame(
         self._keep_menu_ids(downloads_id)
         from quill.apps import radio_settings_menu as menus
 
+        go_to_id = wx.NewIdRef()
+        view_menu.Append(go_to_id, self._menu_label("&Go To...", "radio.go_to"))
+        self.frame.Bind(wx.EVT_MENU, lambda _e: radio_go_to.open_go_to(self), id=go_to_id)
         catalog_status_id, audio_health_id = menus.build_catalog_status_item(self, view_menu, wx)
-        self._keep_menu_ids(catalog_status_id, audio_health_id)
+        self._keep_menu_ids(go_to_id, catalog_status_id, audio_health_id)
         self._keep_menu_ids(menus.build_choose_columns_item(self, view_menu, wx))
         features_id = wx.NewIdRef()
         view_menu.Append(features_id, "&Customize Features...\tCtrl+Alt+C")
@@ -2040,6 +2033,14 @@ class RadioAppFrame(
         current = controller.state.volume_percent
         if slider.GetValue() != current:
             slider.SetValue(current)
+        # Same one-way rule for Mute: Ctrl+M and the Audio menu mute too, so a
+        # toggle that only ever sends and never receives ends up showing the
+        # opposite of the truth.
+        mute_btn = getattr(self, "_mute_btn", None)
+        if mute_btn is not None:
+            muted = bool(getattr(controller.state, "muted", False))
+            if mute_btn.GetValue() != muted:
+                mute_btn.SetValue(muted)
 
     def _refresh_statusbar(self) -> None:
         text = self._radio_status_text() or "Radio: stopped"
@@ -2048,9 +2049,7 @@ class RadioAppFrame(
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
             menu_bar.SetLabel(int(self._now_playing_item_id), text)
-        now_playing = getattr(self, "_now_playing_text", None)
-        if now_playing is not None:
-            now_playing.SetLabel(text)
+        now_playing_readout.refresh(self)
         status_bar = getattr(self, "_status_bar", None)
         if status_bar is not None:
             status_bar.refresh()

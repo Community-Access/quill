@@ -54,20 +54,28 @@ def test_favorites_manager_offers_remove_all() -> None:
     assert "wx.NO_DEFAULT" in actions
 
 
-def test_transport_button_does_not_claim_alt_s_or_alt_p() -> None:
+def test_no_control_on_the_main_window_claims_a_menu_bar_mnemonic() -> None:
+    """#1208, outlived by the button it was written about.
+
+    The transport button used to read "&Stop"/"&Play", claiming Alt+S and
+    Alt+P -- which the Station and Playback menu-bar entries answer first, so
+    pressing them opened a menu instead of stopping the radio. It was fixed by
+    moving to free letters (Alt+L, Alt+T), and on 2026-08-21 the button left the
+    main window entirely: the transport is Enter on a row, Ctrl+P, or the
+    Playback menu.
+
+    The rule the fix established outlives the button, so this guards the rule:
+    no control built on the main panel may claim a letter the menu bar answers
+    first. Menu ITEMS are unaffected -- a submenu mnemonic does not compete with
+    the menu bar, only a control's does.
+    """
     src = _read("quill/apps/radio.py")
-    # #1208: the button must not claim Alt+S or Alt+P, which the Station and
-    # Playback MENU BAR entries answer first -- pressing them opened a menu
-    # instead of stopping the radio. The original fix removed the mnemonic
-    # altogether, which left the button with no Alt key at all; it now takes
-    # free letters (Alt+L to play, Alt+T to stop) and still advertises Ctrl+P.
-    assert 'wx.Button(panel, label="P&lay")' in src
-    assert 'button_label = "S&top" if stopping else "P&lay"' in src
-    for forbidden in ('label="&Play"', 'label="&Stop"', 'button_label = "&Stop"'):
-        assert forbidden not in src, f"transport button claims a menu-bar key: {forbidden}"
-    # The Playback MENU item keeps its own mnemonic: a submenu mnemonic does
-    # not compete with the menu bar, only a control's does.
+    panel = src[
+        src.index("root = wx.BoxSizer(wx.VERTICAL)") : src.index("def _focus_initial_control")
+    ]
+    for claimed in ("&S", "&P", "&V", "&R", "&A", "&H", "&Q"):
+        forbidden = f'label="{claimed}'
+        assert forbidden not in panel, f"a main-window control claims a menu-bar key: {claimed}"
+    # The transport keeps its route, in the menu where it now lives.
     assert 'menu_label = "&Stop" if stopping else "&Play"' in src
-    assert "(Alt+L, or Ctrl+P)" in src
-    # The Playback menu item keeps its accelerator.
     assert "Ctrl+P" in src

@@ -186,8 +186,9 @@ just change a setting.
    fills in, so there are three places that agree you are recording.
 3. Wait ten or twenty seconds.
 4. Press **Ctrl+R** again to stop. Quill Radio names the file it saved.
-5. Press **Ctrl+G** to open the **Recordings** list. Your recording is at the
-   top -- newest first.
+5. Press **Ctrl+Shift+R** to open the **Recordings** list. Your recording is at
+   the top -- newest first. (**Ctrl+G** now opens **Go To**, the list of places;
+   Recordings is in it, so Ctrl+G then its number works too.)
 6. Press **Enter** on it to play it back.
 7. Press **Delete** to remove it. A confirmation appears; press **Enter** or
    **Y** for Yes. Focus lands on the recording that took its place in the list,
@@ -277,12 +278,14 @@ you are in it, the speed and the volume.
 
 ## The main window
 
-Tab order: the now-playing line, the favorites tree, then four buttons.
+Tab order: the now-playing line, the favorites tree, then Mute and Volume.
+Four stops, deliberately -- this is a list you play from, not a player.
 
-- **Now playing** (read-only text): what is on right now; also mirrored in the status bar and the Playback menu.
+- **Now playing** (a read-only box you can tab into): what is on right now -- the station and what the player is doing, the track when there is one, and a line for anything else true, such as a recording running. It is a real control rather than a label, so you can **arrow through it**, review it a word at a time, and **copy it** with Ctrl+C when you want to know what that track was. It is never rewritten while you are reading it: an update that arrives while it has focus waits until you leave, rather than moving the text out from under you. Elapsed position is not in it on purpose -- it changes every second -- so press **Ctrl+Shift+W** when you want to know where you are.
 - **Favorite stations** (tree): the same nested folder structure you build in the Favorites Manager, right on the main page. Enter plays a station, Delete removes it (with confirmation), F2 renames a station or folder, and Shift+F10 opens the full context menu -- Play/Stop, **Station Details...** (a reviewable, copyable readout of the station's source, stream, format, and country -- the same view the search results give), Rename, Move to Folder, Remove, New Folder, Mark for Move, and Manage Favorites. Your custom names are used everywhere.
-- Buttons, each with its own Alt key: **P&lay** (**Alt+L**; it becomes **S&top**, **Alt+T**, while connecting or playing -- one transport control, never a dead button), **Add to &Favorites** (**Alt+F**; it becomes **Remove from &Favorites** when the playing station is already saved -- perfect for keeping something you found in ACB Media or Recently Played), **Rec&ord** (**Alt+O**), and **&Browse Stations...** (**Alt+B**). **Ctrl+P** plays or stops from anywhere in the window and **Ctrl+Alt+P** stops outright, whatever is happening. (Play is Alt+L rather than the more obvious Alt+P because Alt+P belongs to the Playback menu -- a button that claimed it would open the menu instead of playing, which is a bug this app has already had once.)
-- **Volume** (slider): right in the Tab order after the buttons, so you can tab to it while a station is playing and use the **arrow keys** (or Page Up/Page Down) to turn the volume up or down. It is one of three ways to set the volume -- the others are **Ctrl+Up/Ctrl+Down** from anywhere in the window, and the status bar's Volume cell -- and all three stay in agreement, including with each station's remembered volume.
+- **Mute** (toggle button): new on the main window, and exactly the control the Browse window has always had -- same label, same **Ctrl+M**. It follows whatever the rest of the app does rather than only sending, so it never shows the opposite of the truth.
+- **The buttons that used to be here are not gone, only moved.** Play/Stop is **Enter** on a station, or **Ctrl+P** from anywhere. Record is **Ctrl+R**. Browse Stations is **Ctrl+B**. Chapters live in the player (**Ctrl+Shift+G**). Adding the playing station to favorites is **Ctrl+Shift+F**, on the Station menu and in the player. The main window stopped being a second copy of the player, which is what it had quietly become.
+- **Volume** (slider): last in the Tab order, so you can tab to it while a station is playing and use the **arrow keys** (or Page Up/Page Down) to turn the volume up or down. It is one of three ways to set the volume -- the others are **Ctrl+Up/Ctrl+Down** from anywhere in the window, and the status bar's Volume cell -- and all three stay in agreement, including with each station's remembered volume.
 - **Status bar** (along the bottom): a row of cells that always show what is going on -- Now playing, Volume (with a note when Volume Boost is on), Recording (with how long it has left, or how long it has been running), Sleep timer, Favorites count, and the time. Press **F6** to move focus into it; a second F6, or Escape, hands focus back to the favorites tree. Arrow **Left** and **Right** to move across the cells (**Home** and **End** jump to the first and last), press **Enter** or **Space** to act on the cell you are on (Now playing opens the What's Playing window, Volume mutes or unmutes, Recording starts or stops recording, Sleep timer opens the timer dialog, Favorites jumps back to the list, Time speaks the full date and time), and press the **Applications key** or right-click for a context menu with more actions (play/pause, mute, volume up and down, Volume Boost, stop all recordings, and Hide Status Bar). Turn the whole bar off from **View > Show Status Bar** if you would rather not have it.
 
 ### What the status line is telling you
@@ -306,6 +309,56 @@ Buffering and reconnecting are worth telling apart. **Buffering** means the
 stream is still there and the audio ran out for a moment. **Reconnecting** means
 the connection went away and is being rebuilt. Both used to read as either
 "playing" or "connecting", which was the app saying something it did not know.
+
+## Go To: one key for every place
+
+Press **Ctrl+G** anywhere in Quill Radio and a short numbered list opens. Press
+the number, and you are there. Escape closes it and puts you back exactly where
+you were, on the same control.
+
+The default list:
+
+| Key | Place |
+| --- | --- |
+| 1 | Favorites (the main window) |
+| 2 | Browse Stations |
+| 3 | The Player |
+| 4 | Recordings |
+| 5 | Downloads |
+| 6 | Manage Favorites |
+| 7 | Song History |
+| 8 | Listening Statistics |
+| 9 | Find Stations |
+| 0 | Preferences |
+
+Ten places, numbered 1 to 9 and then 0 -- the number row, in the order your hand
+meets it.
+
+**The number never changes on its own.** Recordings is 4 today and 4 next year,
+whether or not it is open. That is the whole point of the list, and it is what
+Ctrl+1 to Ctrl+9 cannot do: those reach the windows you have *open*, in the
+order you opened them, so the numbering shifts under you all day.
+
+Each row also shows that place's own direct shortcut, where it has one. That is
+deliberate: use Ctrl+G 2 for a month, read "Browse Stations, Ctrl+B" every time,
+and one day you will find you no longer need the list.
+
+### Making it yours
+
+**Go To Settings** -- the Settings button in the list, or **View > Go To** --
+chooses which places are in the menu and in what order. It is the same window
+as Choose Columns: two lists, one of what is in the menu and one of what is not,
+with **Move Up** and **Move Down**. Put what you use most at 1.
+
+Places you can add: Scheduled Recordings, Station Catalog Status, Audio Health,
+Keyboard Shortcuts, and What's Playing.
+
+The menu holds ten because the number row does. Asking for an eleventh says so
+and suggests removing one first, rather than refusing silently.
+
+**An update will never renumber your list.** A place added in a later version
+waits in the "not in the menu" list until you put it somewhere, so whatever you
+have learned stays true.
 
 ## Windows, and moving between them
 

@@ -622,6 +622,8 @@
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/favorites_manager_dialog.py::FavoritesManagerDialog._on_rename_folder::wx.TextEntryDialog": "native",
   "quill/ui/radio/first_run_dialog.py::RadioFirstRunDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/radio/go_to_dialog.py::open_popup::wx.Dialog": "hardened_custom",
+  "quill/ui/radio/go_to_settings_dialog.py::edit::wx.Dialog": "hardened_custom",
   "quill/ui/radio/import_stations_dialog.py::prompt_import_target::wx.Dialog": "hardened_custom",
   "quill/ui/radio/link_finder_dialog.py::LinkFinderDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/now_playing_dialog.py::NowPlayingDialog.__init__::wx.Dialog": "hardened_custom",

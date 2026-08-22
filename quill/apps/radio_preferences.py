@@ -117,6 +117,13 @@ def open_preferences(app: Any) -> None:
                 history.alt_f4_to_tray,
             ),
             PreferenceCheckbox(
+                "Open &Browse Stations at startup",
+                "When on, Quill Radio opens Browse Stations over the main "
+                "window at launch. It opens over it, never instead of it, so "
+                "closing Browse leaves you somewhere real rather than nowhere",
+                history.open_browse_at_startup,
+            ),
+            PreferenceCheckbox(
                 "Verbose logging (&debug mode)",
                 "Write detailed radio diagnostics -- playback, recording, and "
                 "stream recovery -- to quill.log, for tracking down a "
@@ -253,6 +260,7 @@ def open_preferences(app: Any) -> None:
         history.announce_dialog_transitions,
         history.recover_from_website,
         history.alt_f4_to_tray,
+        history.open_browse_at_startup,
         history.debug_mode,
         history.prevent_sleep,
         history.keep_awake_before_recording,

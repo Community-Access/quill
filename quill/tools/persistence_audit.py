@@ -141,6 +141,12 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # file degrades to the app's catalogue defaults, which is where every
     # install starts. Same store shape as quick_actions, deliberately.
     "core/media/list_columns.py::save_column_layouts": "content",
+    # Which places are in the Go To menu and in what order. A user-arranged
+    # list with an additive shape and a tolerant loader: an unknown id is
+    # dropped on read, a corrupt file falls back to the default ten, and a
+    # destination added in a later release is pooled rather than inserted --
+    # so a saved layout can never renumber what somebody has learned.
+    "core/radio/go_to.py::save_layout": "content",
     # The user-ordered action list per content type, whose first entry is the
     # default for Enter. Same reasoning as list_columns above.
     "core/quick_actions.py::save_quick_actions": "content",

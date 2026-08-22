@@ -188,6 +188,7 @@ def test_open_preferences_passes_a_reset_all_action(monkeypatch: pytest.MonkeyPa
     frame._radio_history.output_device = ""
     frame._radio_history.playback_engine = "auto"
     frame._radio_history.alt_f4_to_tray = False
+    frame._radio_history.open_browse_at_startup = False
 
     RadioAppFrame._open_preferences(frame)
 
