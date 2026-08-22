@@ -12,7 +12,7 @@ import sys
 
 import wx
 
-from quill.apps import radio_audio_menu
+from quill.apps import radio_audio_menu, radio_go_to
 from quill.apps import radio_now_playing as now_playing_readout
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
@@ -235,6 +235,10 @@ class RadioAppFrame(
         from quill.ui.radio.media_preflight import surface_media_health_startup
 
         wx.CallAfter(surface_media_health_startup, self)
+        # Over the main window, never instead of it: closing Browse has to
+        # leave you somewhere real rather than nowhere.
+        if self._radio_history.open_browse_at_startup:
+            wx.CallAfter(self.open_browse_stations)
         # First run: three screens for somebody who has never used this before,
         # and nothing at all for anybody who already has favorites. Modal rather
         # than spoken, unlike the line above -- it is the whole content of a
@@ -1092,7 +1096,10 @@ class RadioAppFrame(
 
         backup_id, restore_id = wx.NewIdRef(), wx.NewIdRef()
         station_menu.Append(backup_id, "Back &Up Stations and Settings...\tCtrl+Shift+U")
-        station_menu.Append(restore_id, "&Restore from Backup...\tCtrl+Shift+R")
+        # Ctrl+Shift+R went to Recordings on 2026-08-21 (which gave up Ctrl+G to
+        # Go To): frequency wins the shorter chord, and nobody restores a backup
+        # by muscle memory.
+        station_menu.Append(restore_id, "&Restore from Backup...\tCtrl+Alt+Shift+W")
         self.frame.Bind(wx.EVT_MENU, lambda _e: back_up_radio_data(self), id=backup_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: restore_radio_data(self), id=restore_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_open_add_custom(None), id=add_id)
@@ -1438,8 +1445,11 @@ class RadioAppFrame(
         self._keep_menu_ids(downloads_id)
         from quill.apps import radio_settings_menu as menus
 
+        go_to_id = wx.NewIdRef()
+        view_menu.Append(go_to_id, self._menu_label("&Go To...", "radio.go_to"))
+        self.frame.Bind(wx.EVT_MENU, lambda _e: radio_go_to.open_go_to(self), id=go_to_id)
         catalog_status_id, audio_health_id = menus.build_catalog_status_item(self, view_menu, wx)
-        self._keep_menu_ids(catalog_status_id, audio_health_id)
+        self._keep_menu_ids(go_to_id, catalog_status_id, audio_health_id)
         self._keep_menu_ids(menus.build_choose_columns_item(self, view_menu, wx))
         features_id = wx.NewIdRef()
         view_menu.Append(features_id, "&Customize Features...\tCtrl+Alt+C")

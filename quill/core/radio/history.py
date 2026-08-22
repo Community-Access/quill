@@ -252,6 +252,13 @@ class RadioHistory:
     #: keyboard close tucks the radio away while the deliberate exits still
     #: exit (or ask, per close_action).
     alt_f4_to_tray: bool = False
+    #: Open Browse Stations over the main window at launch. Off by default,
+    #: and deliberately not a general "which window opens" picker: a setting
+    #: that changes where you land is expensive for somebody driving by
+    #: keyboard, and one predictable place every launch beats a choice made
+    #: months ago and half-remembered. Browse is already Ctrl+B away, so this
+    #: is a convenience rather than a fix.
+    open_browse_at_startup: bool = False
     #: Verbose radio logging (quill-radio #5). When on, the radio logger
     #: subtrees drop to DEBUG (via radio_logging.set_radio_debug) and recording
     #: runs ffmpeg at -loglevel verbose, so a hard-to-reproduce playback or
@@ -431,6 +438,7 @@ def load_history(data_dir: Path) -> RadioHistory:
             else {}
         )
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
+        history.open_browse_at_startup = bool(raw.get("open_browse_at_startup", False))
         history.debug_mode = bool(raw.get("debug_mode", False))
         history.last_seen = str(raw.get("last_seen", ""))
         history.log_dir = str(raw.get("log_dir", ""))
@@ -512,6 +520,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "optilab_exact": history.optilab_exact,
             "optilab_exact_live": history.optilab_exact_live,
             "alt_f4_to_tray": history.alt_f4_to_tray,
+            "open_browse_at_startup": history.open_browse_at_startup,
             "debug_mode": history.debug_mode,
             "last_seen": history.last_seen,
             "log_dir": history.log_dir,
