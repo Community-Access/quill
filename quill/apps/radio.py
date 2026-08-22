@@ -12,6 +12,7 @@ import sys
 
 import wx
 
+from quill.apps import radio_audio_menu
 from quill.apps import radio_now_playing as now_playing_readout
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
@@ -1149,6 +1150,17 @@ class RadioAppFrame(
         menu_bar.Append(station_menu, "&Station")
 
         playback_menu = wx.Menu()
+        # 39 items answering three unrelated questions -- what the transport is
+        # doing, how the audio sounds, what to do with video -- split 2026-08-21
+        # into 17 / 11 / 8. No key changes: the accelerator gate enforces
+        # uniqueness across the whole menu bar, not per menu, so moving an item
+        # costs relearning where to look and nothing in muscle memory. View is
+        # built here and inserted further down, because Listening Statistics is
+        # a report about past listening rather than a control over present
+        # listening and belongs there with the other reports.
+        audio_menu = wx.Menu()
+        video_menu = wx.Menu()
+        view_menu = wx.Menu()
         self._now_playing_item_id = wx.NewIdRef()
         playback_menu.Append(self._now_playing_item_id, "Radio: stopped")
         playback_menu.Enable(self._now_playing_item_id, False)
@@ -1159,18 +1171,18 @@ class RadioAppFrame(
         self._play_menu_item_id = wx.NewIdRef()
         playback_menu.Append(self._play_menu_item_id, "&Play\tCtrl+P")
         mute_id, vol_up_id, vol_down_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        playback_menu.Append(mute_id, "&Mute/Unmute\tCtrl+M")
-        playback_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
-        playback_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
+        audio_menu.Append(mute_id, "&Mute/Unmute\tCtrl+M")
+        audio_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
+        audio_menu.Append(vol_down_id, "Volume &Down\tCtrl+Down")
         self._volume_boost_item_id = wx.NewIdRef()
-        playback_menu.AppendCheckItem(self._volume_boost_item_id, "Volume &Boost\tCtrl+Shift+B")
-        playback_menu.Check(self._volume_boost_item_id, self._radio_history.volume_boost)
+        audio_menu.AppendCheckItem(self._volume_boost_item_id, "Volume &Boost\tCtrl+Shift+B")
+        audio_menu.Check(self._volume_boost_item_id, self._radio_history.volume_boost)
         # #1253: pick the audio output device (sound card) with a shortcut, without
         # opening full Preferences. Thin wiring lives in output_device_ui.
         from quill.ui.radio.output_device_ui import choose_output_device
 
         output_device_id = wx.NewIdRef()
-        playback_menu.Append(output_device_id, "&Output Device...\tCtrl+Shift+D")
+        audio_menu.Append(output_device_id, "&Output Device...\tCtrl+Shift+D")
         self.frame.Bind(wx.EVT_MENU, lambda _e: choose_output_device(self), id=output_device_id)
         playback_menu.AppendSeparator()
         # Live DVR (mpv engine): pause is the Play/Stop item; these move
@@ -1188,7 +1200,9 @@ class RadioAppFrame(
 
         # Pinned as a group rather than unpacked: the helper owns which items
         # exist, and a fixed-length unpack here would break every time it grew.
-        video_menu_ids = build_playback_extras(self, playback_menu, wx)
+        video_menu_ids = build_playback_extras(
+            self, playback_menu, wx, audio_menu, video_menu, view_menu
+        )
         playback_menu.AppendSeparator()
         whats_playing_id = wx.NewIdRef()
         # Go to Player summons the player panel over whatever window you are
@@ -1207,35 +1221,7 @@ class RadioAppFrame(
         song_history_id = wx.NewIdRef()
         playback_menu.Append(song_history_id, "Son&g History...\tCtrl+Shift+H")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_song_history(), id=song_history_id)
-        self._global_volume_item_id = wx.NewIdRef()
-        playback_menu.AppendCheckItem(
-            self._global_volume_item_id,
-            self._menu_label("Use One &Volume for All Stations", "radio.toggle_global_volume"),
-        )
-        playback_menu.Check(self._global_volume_item_id, self._radio_history.use_global_volume)
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.radio_toggle_global_volume(),
-            id=self._global_volume_item_id,
-        )
-        forget_volumes_id = wx.NewIdRef()
-        playback_menu.Append(
-            forget_volumes_id,
-            self._menu_label(
-                "Forget Every Station's Own Volu&me...", "radio.forget_station_volumes"
-            ),
-        )
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.radio_forget_station_volumes(), id=forget_volumes_id
-        )
-        self._announce_titles_item_id = wx.NewIdRef()
-        playback_menu.AppendCheckItem(
-            self._announce_titles_item_id,
-            self._menu_label("Announce Trac&k Titles", "radio.toggle_title_announcements"),
-        )
-        playback_menu.Check(
-            self._announce_titles_item_id, self._radio_history.announce_track_titles
-        )
+        forget_volumes_id = radio_audio_menu.build_preferences(self, audio_menu, wx)
         sleep_id = wx.NewIdRef()
         playback_menu.Append(sleep_id, "Sleep &Timer...\tCtrl+Shift+Z")
         wake_id = wx.NewIdRef()
@@ -1265,9 +1251,13 @@ class RadioAppFrame(
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sleep_timer_dialog(), id=sleep_id)
         playback_menu.AppendSeparator()
         enhance_id = wx.NewIdRef()
-        playback_menu.Append(enhance_id, "Sound &Enhancements...\tCtrl+E")
+        audio_menu.Append(enhance_id, "Sound &Enhancements...\tCtrl+E")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_sound_enhancements(), id=enhance_id)
         menu_bar.Append(playback_menu, "&Playback")
+        menu_bar.Append(audio_menu, "&Audio")
+        # Video is always present, greyed out with nothing to show: a menu that
+        # comes and goes changes the shape of a bar navigated by position.
+        menu_bar.Append(video_menu, "Vi&deo")
 
         record_menu = wx.Menu()
         record_id, schedule_id, settings_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
@@ -1397,7 +1387,6 @@ class RadioAppFrame(
 
         # &View: show/hide the read-only Station Details pane, honored by every
         # surface that has one (Browse Stations, Search Stations).
-        view_menu = wx.Menu()
         show_details_id = wx.NewIdRef()
         view_menu.AppendCheckItem(show_details_id, "Show Station &Details\tCtrl+D")
         view_menu.Check(show_details_id, self._radio_history.show_station_details)
