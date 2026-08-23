@@ -347,7 +347,7 @@ youtube = [
   # because yt-dlp goes stale whenever YouTube changes its player and ships
   # fixes far more often than QUILL ships releases. An engine-pack copy wins
   # over this bundled one -- see engine_install.prefer_engine_pack_yt_dlp.
-  "yt-dlp>=2026.7.4",
+  "yt-dlp>=2026.8.19",
   # yt-dlp's optional TLS-impersonation backend, imported lazily when a site
   # blocks the default client. It ships in the current runtime and imports
   # cleanly there (probed 2026-08-18); undeclared, it only shipped because the
