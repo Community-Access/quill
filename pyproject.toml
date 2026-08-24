@@ -307,7 +307,7 @@ github = [
 # bridges to the same Safe Editor Tool Gateway + Permission Broker and emits the
 # same normalized events; none edits the buffer directly. The Native harness
 # always works without any of these.
-ai-copilot = ["github-copilot-sdk>=1.0.8"]  # PyPI package; imports as `copilot`
+ai-copilot = ["github-copilot-sdk>=1.0.11"]  # PyPI package; imports as `copilot`
 ai-claude = ["claude-agent-sdk>=0.2.138"]
 ai-openai = ["openai-agents>=0.20.0"]
 # Build-time only: compile the optional Table Studio native UIA provider
