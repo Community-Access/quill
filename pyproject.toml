@@ -152,7 +152,7 @@ dictation = ["SpeechRecognition>=3.17.0"]
 # Offline speech-to-text (#617). The whisper.cpp executable + GGML models are
 # managed out-of-band (AI > Speech > Manage Speech Models); this optional extra
 # adds microphone capture for offline dictate-at-cursor via PortAudio.
-speech = ["sounddevice>=0.5.5"]
+speech = ["sounddevice>=0.5.6"]
 # Optional higher-throughput offline speech engine (#617 S4). Faster Whisper is
 # a CTranslate2-based library that uses the GPU when available; huggingface_hub
 # fetches its CTranslate2 model repositories. Users opt in via AI > Speech >
