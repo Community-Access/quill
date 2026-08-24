@@ -14,7 +14,7 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill.core.podcasts import transcript_export
+from quill.core.podcasts import search_history, transcript_export
 from quill.core.podcasts.onboarding import OnboardingState
 
 _FILE_NAME = "podcast_history.json"
@@ -93,6 +93,27 @@ class PodcastHistory:
     #: memory is real for anyone who came through Winamp. Mirrors Quill
     #: Radio's RadioHistory.winamp_playback_keys, and shares its key map.
     winamp_playback_keys: bool = True
+    #: What closing the window means: "ask" every time, "exit", or
+    #: "minimize" to the tray. Quill Radio has carried these three since it
+    #: had a tray icon; Cast had only the Alt+F4 checkbox, so the titlebar X
+    #: ended playback with no way to say otherwise (list.md 5.4).
+    #:
+    #: Shipped default is "exit", not "ask": Cast has always exited on close,
+    #: and an upgrade that starts asking a question is an upgrade that changed
+    #: somebody's Alt+F4 under them. "Ask every time" is one choice away in
+    #: Preferences, and the confirm dialog offers to remember the answer.
+    close_action: str = "exit"
+    #: Searches already run in Search Everywhere, most recent first. Rides
+    #: this file rather than one of its own so that clearing the recently
+    #: played list clears these too -- a second history nobody knew about is
+    #: worse than no history. See
+    #: :mod:`quill.core.podcasts.search_history` (list.md 5.5).
+    recent_searches: tuple[str, ...] = ()
+    #: The media-tools state the listener has already been told about, as
+    #: :meth:`quill.core.podcasts.media_health.CastMediaHealth.signature`
+    #: writes it. Empty means nothing has been said. See
+    #: :mod:`quill.ui.podcasts.media_preflight`.
+    media_notice_signature: str = ""
     #: Look for new episodes on a timer. Named exactly as
     #: :class:`quill.core.settings.Settings` names them, because
     #: ``PodcastCheckMonitor`` reads its settings object duck-typed: inside
@@ -142,6 +163,17 @@ class PodcastHistory:
         return self.episodes[0] if self.episodes else None
 
 
+def _coerce_close_action(value: object) -> str:
+    """A stored close preference, or the shipped default.
+
+    Anything unreadable reads as "exit" -- the behaviour Cast has always had.
+    A junk value must not turn into "ask", which would start interrupting
+    Alt+F4 with a question nobody chose.
+    """
+    text = str(value or "").strip().lower()
+    return text if text in {"ask", "exit", "minimize"} else "exit"
+
+
 def _coerce_check_interval(value: object) -> int:
     """A stored cadence, through the one shared normalisation (60 if absent).
 
@@ -175,6 +207,9 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.transcript_detail = transcript_export.normalize_detail(raw.get("transcript_detail"))
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
+        history.close_action = _coerce_close_action(raw.get("close_action"))
+        history.media_notice_signature = str(raw.get("media_notice_signature", ""))
+        history.recent_searches = search_history.from_json(raw.get("recent_searches"))
         history.podcast_check_enabled = bool(raw.get("podcast_check_enabled", False))
         history.podcast_check_interval_minutes = _coerce_check_interval(
             raw.get("podcast_check_interval_minutes")
@@ -206,6 +241,9 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
             "announce_dialog_transitions": history.announce_dialog_transitions,
             "alt_f4_to_tray": history.alt_f4_to_tray,
             "winamp_playback_keys": history.winamp_playback_keys,
+            "close_action": history.close_action,
+            "media_notice_signature": history.media_notice_signature,
+            "recent_searches": search_history.to_json(history.recent_searches),
             "podcast_check_enabled": history.podcast_check_enabled,
             "podcast_check_interval_minutes": history.podcast_check_interval_minutes,
             "podcast_check_audible_tick": history.podcast_check_audible_tick,

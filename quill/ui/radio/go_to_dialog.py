@@ -1,5 +1,11 @@
 """The Go To popup: a numbered list of places, and a visit rather than a move.
 
+Both apps use this one window. It is handed a layout and knows nothing about
+where the places came from, so QUILL Cast's Inbox, Queue and folders arrive
+here exactly as Quill Radio's stations do. It lives under ``ui/radio`` because
+that is where it was written; a second copy for the second app would be how the
+two menus start behaving differently.
+
 Ctrl+G opens it from anywhere in Quill Radio. Press the number, and you are
 there. Escape puts you back exactly where you were -- the same contract
 :mod:`quill.ui.radio.player_panel` keeps, and for the same reason: this is
@@ -21,7 +27,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.core.radio import go_to
+# The shared machinery, not either app's catalogue: this window shows
+# whatever layout it is handed, so it serves Quill Radio and QUILL Cast
+# without knowing which one called it (list.md 5.2).
+from quill.core import go_to_menu as go_to
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
 
 TITLE = "Go To"

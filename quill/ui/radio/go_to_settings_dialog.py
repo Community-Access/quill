@@ -21,28 +21,34 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from quill.core.radio import go_to
+from quill.core.radio import go_to as radio_places
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
 TITLE = "Go To Settings"
 
 
-def _menu_rows(order: list[str]) -> list[str]:
+def _menu_rows(places: Any, order: list[str]) -> list[str]:
     """Each row carries the number it answers to, because that is the point."""
     rows = []
     for index, destination_id in enumerate(order):
-        destination = go_to.destination(destination_id)
+        destination = places.destination(destination_id)
         if destination is not None:
-            rows.append(f"{go_to.position_key(index)}. {destination.title}")
+            rows.append(f"{places.position_key(index)}. {destination.title}")
     return rows
 
 
-def _pool_rows(order: list[str]) -> list[str]:
-    return [d.title for d in go_to.GoToLayout(order=list(order)).available()]
+def _pool_rows(places: Any, order: list[str]) -> list[str]:
+    return [d.title for d in places.GoToLayout(order=list(order)).available()]
 
 
-def edit(host: Any, layout: go_to.GoToLayout, data_dir: Path) -> bool:
-    """Show the editor. Returns True when a new layout was saved."""
+def edit(host: Any, layout: Any, data_dir: Path, *, places: Any = radio_places) -> bool:
+    """Show the editor. Returns True when a new layout was saved.
+
+    *places* is the app's catalogue module -- Quill Radio's by default, QUILL
+    Cast's when Cast opens it. Everything structural is shared; only *which
+    places exist* differs, so this window takes the catalogue as an argument
+    rather than a second copy of itself being written (list.md 5.2).
+    """
     wx = host._wx
     announce = getattr(host, "_announce", None)
     order = list(layout.order)
@@ -63,14 +69,14 @@ def edit(host: Any, layout: go_to.GoToLayout, data_dir: Path) -> bool:
 
     in_box = wx.BoxSizer(wx.VERTICAL)
     in_box.Add(wx.StaticText(dialog, label="&In the menu:"), 0)
-    in_list = wx.ListBox(dialog, choices=_menu_rows(order))
+    in_list = wx.ListBox(dialog, choices=_menu_rows(places, order))
     in_list.SetName("Places in the Go To menu, in order")
     in_box.Add(in_list, 1, wx.EXPAND | wx.TOP, 4)
     columns.Add(in_box, 1, wx.EXPAND | wx.RIGHT, 8)
 
     out_box = wx.BoxSizer(wx.VERTICAL)
     out_box.Add(wx.StaticText(dialog, label="&Not in the menu:"), 0)
-    out_list = wx.ListBox(dialog, choices=_pool_rows(order))
+    out_list = wx.ListBox(dialog, choices=_pool_rows(places, order))
     out_list.SetName("Places available to add")
     out_box.Add(out_list, 1, wx.EXPAND | wx.TOP, 4)
     columns.Add(out_box, 1, wx.EXPAND)
@@ -117,8 +123,8 @@ def edit(host: Any, layout: go_to.GoToLayout, data_dir: Path) -> bool:
             announce(message)
 
     def _redraw(select_in: int | None = None, select_out: int | None = None) -> None:
-        in_list.Set(_menu_rows(order))
-        out_list.Set(_pool_rows(order))
+        in_list.Set(_menu_rows(places, order))
+        out_list.Set(_pool_rows(places, order))
         if select_in is not None and in_list.GetCount():
             in_list.SetSelection(min(select_in, in_list.GetCount() - 1))
         if select_out is not None and out_list.GetCount():
@@ -131,38 +137,38 @@ def edit(host: Any, layout: go_to.GoToLayout, data_dir: Path) -> bool:
             return
         order[index], order[target] = order[target], order[index]
         _redraw(select_in=target)
-        destination = go_to.destination(order[target])
+        destination = places.destination(order[target])
         if destination is not None:
             # Where it landed, not that it moved: the number is the fact.
-            _say(f"{destination.title} is now {go_to.position_key(target)}.")
+            _say(f"{destination.title} is now {places.position_key(target)}.")
 
     def _remove(_event: Any) -> None:
         index = in_list.GetSelection()
         if index < 0:
             return
-        refusal = go_to.refusal_for_removing(go_to.GoToLayout(order=list(order)), order[index])
+        refusal = places.refusal_for_removing(places.GoToLayout(order=list(order)), order[index])
         if refusal:
             _say(refusal)
             return
-        removed = go_to.destination(order.pop(index))
+        removed = places.destination(order.pop(index))
         _redraw(select_in=index, select_out=0)
         if removed is not None:
             _say(f"{removed.title} removed from the menu.")
 
     def _add(_event: Any) -> None:
         index = out_list.GetSelection()
-        pool = go_to.GoToLayout(order=list(order)).available_ids()
+        pool = places.GoToLayout(order=list(order)).available_ids()
         if index < 0 or index >= len(pool):
             return
-        refusal = go_to.refusal_for_adding(go_to.GoToLayout(order=list(order)))
+        refusal = places.refusal_for_adding(places.GoToLayout(order=list(order)))
         if refusal:
             _say(refusal)
             return
         order.append(pool[index])
         _redraw(select_in=len(order) - 1, select_out=index)
-        added = go_to.destination(order[-1])
+        added = places.destination(order[-1])
         if added is not None:
-            _say(f"{added.title} is now {go_to.position_key(len(order) - 1)}.")
+            _say(f"{added.title} is now {places.position_key(len(order) - 1)}.")
 
     up_btn.Bind(wx.EVT_BUTTON, lambda _e: _move(-1))
     down_btn.Bind(wx.EVT_BUTTON, lambda _e: _move(1))
@@ -175,7 +181,7 @@ def edit(host: Any, layout: go_to.GoToLayout, data_dir: Path) -> bool:
     try:
         if show_modal_dialog(dialog, TITLE, announce=announce) != wx.ID_OK:
             return False
-        go_to.save_layout(data_dir, go_to.GoToLayout(order=order))
+        places.save_layout(data_dir, places.GoToLayout(order=order))
         _say("Go To menu saved.")
         return True
     finally:

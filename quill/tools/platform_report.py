@@ -117,6 +117,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.cast_help_audit"),
     ),
     Gate(
+        "surface-reachability",
+        "GATE-REACH: a surface a listener cannot reach is not shipped",
+        (sys.executable, "-m", "quill.tools.surface_reachability_audit"),
+    ),
+    Gate(
         "bulk-count",
         "GATE-BULK-COUNT: a verb that touches many rows says how many",
         (sys.executable, "-m", "quill.tools.bulk_count_audit"),

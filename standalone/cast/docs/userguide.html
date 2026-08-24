@@ -322,7 +322,12 @@ context menu.</li>
 notes, and fetched transcripts at once and jumps to the result. Emptying
 the search box empties the results at once – stale matches for a query
 that is no longer there never sit around looking current. (Add Podcast’s
-search behaves the same way.)</li>
+search behaves the same way.) <strong>The box remembers what you have
+searched for</strong>: press the down arrow for the last fifteen
+searches, newest first, and choosing one runs it. Searching the same
+thing again moves it to the top rather than adding a second copy, and
+the list stays on this machine – nothing about what you search for
+leaves it.</li>
 <li><strong>“Sort shows”</strong> orders the podcasts within each
 folder: Title A-Z, Title Z-A, Most unheard first, Recently updated
 first, or <strong>Your custom order</strong> – the hand-arranged order
@@ -473,11 +478,39 @@ deliberate exit still exits.</li>
 <li><strong>Winamp playback keys</strong> – on by default. See “Winamp
 playback keys” below.</li>
 </ul>
+<p>and one list:</p>
+<ul>
+<li><strong>When closing the window</strong> – <em>Ask every time</em>,
+<em>Exit</em> (the shipped answer, and what QUILL Cast has always done),
+or <em>Minimize to Tray</em>. This governs the titlebar X, Alt+F4 and
+Exit together. <strong>Ask every time</strong> only actually asks when
+there is something to lose: with nothing playing and nothing downloading
+it closes straight away, rather than interrupting a deliberate close to
+ask whether you meant it. The question names what is at stake – “An
+episode is playing and 2 downloads are in progress” – and can remember
+your answer. The Alt+F4 checkbox above still acts first when it is
+on.</li>
+</ul>
 <p><strong>Export My Data…</strong> writes everything QUILL Cast knows
 about your listening – subscriptions, folders, the Play Queue,
 playlists, episode notes, listening statistics, and your recently-played
 list – to one readable JSON file. Export OPML covers your subscriptions
 and nothing else; this covers the rest.</p>
+<p><strong>Back Up My Podcasts…</strong> (Ctrl+Alt+Shift+B) writes your
+whole library to one file – a <code>.qcbackup</code>. Subscriptions,
+folders, playlists, positions, notes, statistics, your Go To order and
+your bookmarks, in a single archive you can put on a memory stick. It
+offers to include your <strong>downloaded episodes</strong> and defaults
+to leaving them out: they can be tens of gigabytes and can always be
+downloaded again, where the 40 KB beside them cannot.</p>
+<p><strong>Restore from a Backup…</strong> (Ctrl+Alt+Shift+R) puts one
+back. It tells you when the backup was made and how many podcasts are in
+it <em>before</em> it does anything, because the two ways to get this
+wrong are restoring the wrong file and restoring a six-month-old one.
+Restoring replaces what is here rather than merging, anything playing
+stops first, and your library reappears without restarting the app. This
+is different from Export My Data, which is a readable snapshot you can
+look at but not put back.</p>
 <p><strong>Delete All Podcast Data…</strong> unsubscribes from
 everything and clears your queue, playlists, Inbox filing, statistics,
 and history. It asks twice, and asks about downloaded files separately,
@@ -539,6 +572,22 @@ Inbox, and Favorite. Anything left on <strong>Use the shared
 default</strong> stores no override at all, so changing the global later
 still reaches that show. <strong>Follow the Shared Defaults</strong>
 drops every override for the show at once.</p>
+<h3 id="three-settings-you-can-reach-in-one-keystroke">Three settings
+you can reach in one keystroke</h3>
+<p>Three per-show settings are the ones people change over and over: how
+many downloads to keep for a podcast that publishes daily, how long its
+episodes wait in the queue, and how fast a particular host talks. Each
+has its own row on a show’s context menu – <strong>Episodes to
+Keep…</strong>, <strong>Queue Expiry…</strong>, <strong>Playback
+Speed…</strong> – and each opens a window holding <strong>one control,
+with the cursor already in it</strong>. No tabs, no hunting: you said
+which setting you wanted when you chose the menu item.</p>
+<p>Each opens on the value actually in force, inherited default
+included, and says what you chose back in words rather than as a number
+– “Keeping the 5 newest downloaded episodes”, “Queued episodes of this
+podcast wait indefinitely”. They are Quick Actions too, so you can order
+them: if you adjust speed constantly, put Playback Speed first and reach
+it with Ctrl+1.</p>
 <h3 id="quick-actions">Quick Actions</h3>
 <p><strong>Quick Actions…</strong> lets you decide the order of the
 actions on episodes, podcasts, and Play Queue items. Three lists, each
@@ -1773,6 +1822,54 @@ for.</li>
 alarm clock is a reason to set one.</p>
 <p>The window is shared with the other Quill listening apps, so you set
 it once.</p>
+<h2 id="every-key-this-build-answers-to">Every key this build answers
+to</h2>
+<p><strong>Help &gt; Keyboard Shortcuts Sheet…</strong>
+(Ctrl+Alt+Shift+K) lists every keyboard shortcut QUILL Cast currently
+has, with what it does and which menu it lives in. It is <em>generated
+from the menus you actually have</em>, so it includes any key you
+rebound and can never drift out of date. A filter box at the top narrows
+it – type “download” and you get the rows about downloading. Copy All
+puts the list, as filtered, on the clipboard.</p>
+<p>This is the other half of <strong>Keyboard Shortcuts…</strong>, which
+is where you change a key. The editor is for a key you can already name;
+the sheet is how you find out which keys exist.</p>
+<h2 id="go-to-one-key-for-every-place">Go To: one key for every
+place</h2>
+<p><strong>Help &gt; Go To…</strong> (Ctrl+G) opens a short numbered
+list of places – the Podcast Manager, Continue Listening, the Play
+Queue, Downloads, Bookmarks, Listening Statistics, Add a Podcast,
+Episode Notes, the Sleep Timer, Preferences. Press the number and you
+are there; press Escape and you are back exactly where you were.</p>
+<p><strong>The numbering never moves.</strong> That is the whole point,
+and it is why this is not the Window menu: that lists the windows that
+happen to be open, in the order they opened, so a place can be 3 today
+and 5 tomorrow and has no number at all when it is closed. Here, 1 is 1
+forever.</p>
+<p><strong>Settings…</strong> inside the popup lets you choose which ten
+places are on the list and in what order – put what you use most at 1.
+Anything you take off goes into a pool you can add back. A place added
+by a later release always lands in the pool, never in your menu, so an
+update cannot renumber the places you have learned.</p>
+<p>Rows show the place’s own direct key where it has one, so the popup
+teaches itself out of a job: use Go To 1 for a month and you will have
+learned Ctrl+M.</p>
+<h2 id="when-a-media-tool-is-missing">When a media tool is missing</h2>
+<p>QUILL Cast needs <strong>FFmpeg</strong> for four things: trimming
+the silence off a downloaded episode, evening out its volume, working
+out chapters for an episode that has none, and Sound Enhancements and
+Smart Speed while playing. Everything else – subscribing, downloading,
+playing – works without it.</p>
+<p>The trouble with those four is that they fail by producing a
+<em>plausible</em> result. The download completes and simply is not
+trimmed. The chapter analysis finishes and finds nothing, which is
+exactly what an episode with genuinely no chapters looks like. So QUILL
+Cast says once, at launch, when FFmpeg is missing, naming what it costs
+and how to get it – and says nothing at all when everything is
+there.</p>
+<p><strong>Help &gt; Media Tools</strong> (Ctrl+Alt+Shift+M) answers the
+same question whenever you ask it, including when the answer is good
+news.</p>
 <h2 id="moving-your-setup-to-another-machine">Moving your setup to
 another machine</h2>
 <p><strong>Help &gt; Export My Setup…</strong> (Ctrl+Alt+Shift+X) writes
@@ -1939,6 +2036,26 @@ deletes the shared store.</p>
 <tr>
 <td>Command Palette</td>
 <td>Ctrl+Shift+P</td>
+</tr>
+<tr>
+<td>Go To (a numbered list of places)</td>
+<td>Ctrl+G</td>
+</tr>
+<tr>
+<td>Keyboard Shortcuts Sheet</td>
+<td>Ctrl+Alt+Shift+K</td>
+</tr>
+<tr>
+<td>Media Tools (is FFmpeg here?)</td>
+<td>Ctrl+Alt+Shift+M</td>
+</tr>
+<tr>
+<td>Back Up My Podcasts</td>
+<td>Ctrl+Alt+Shift+B</td>
+</tr>
+<tr>
+<td>Restore from a Backup</td>
+<td>Ctrl+Alt+Shift+R</td>
 </tr>
 <tr>
 <td>Send to tray</td>

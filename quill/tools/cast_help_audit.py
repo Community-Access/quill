@@ -49,6 +49,12 @@ _SCAN_GLOBS: tuple[str, ...] = ("quill/apps/podcasts*.py",)
 #: Surface constructions whose titles the scan cannot resolve, with the
 #: reason they are fine. Keyed ``<module>::<qualname>``.
 TITLE_EXEMPT: dict[str, str] = {
+    "quill/ui/podcasts/single_setting_dialog.py::SingleSettingDialog.__init__": (
+        "the title is '<setting title> -- <show>', built from "
+        "single_settings.SINGLE_SETTINGS, so the scan sees no literal; all "
+        "three titles are prefixes in surface_help.PREFIX_PURPOSES and are "
+        "pinned by test_cast_single_settings"
+    ),
     "quill/ui/podcasts/first_run_dialog.py::FirstRunDialog.__init__": (
         "titles come from podcasts.onboarding.SCREEN_TITLES; all three "
         "screens are in surface_help.PURPOSES, pinned by test_cast_surface_help"

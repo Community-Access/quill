@@ -89,6 +89,8 @@ QUILL is a layered wxPython desktop application with strict import boundaries:
 
 **`QUILL_DATA_DIR`:** Respected only when `_DEV_BUILD=True` (i.e., `QUILL_DEV_BUILD=1`). In release builds the env var is ignored; dev overrides must also stay under `Path.home()`.
 
+**Surface reachability (GATE-REACH):** every module under `quill/ui` that builds a window (`wx.Dialog`, `wx.Frame`, `ShowModal`, `_show_modal_dialog`) must be reachable by imports from an app entry point — `quill/__main__.py`, `quill/apps/*.py`, `quill/ui/main_frame*.py`. **Tests do not count as callers**: Cast's first-run dialog shipped unreachable for two releases with passing tests and a user guide describing it. `surface_reachability_audit.py` walks the import graph and compares against `tests/unit/ui/fixtures/surface_reachability.json`; a surface genuinely reached by a registry or string dispatch is classified `dynamic` (or `parked`) in that snapshot, and the classification *is* the review. Regenerate with `python -m quill.tools.surface_reachability_audit --write`.
+
 **App icons:** every app in `standalone/` that ships a Windows installer must have an entry in `scripts/build_app_icons.py`, which owns the family design system (one rounded tile, one amber accent, a distinct silhouette *and* a distinct hue+lightness per app). Icons are generated, never hand-edited. `tests/unit/scripts/test_app_icons.py` fails if two apps render the same face, if a committed `.ico` has drifted from source, or if a new installer appears with no icon entry — the seam that let four apps ship byte-identical copies of Quill Radio's icon.
 
 ### Module size budget

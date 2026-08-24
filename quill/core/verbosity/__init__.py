@@ -20,6 +20,7 @@ from quill.core.verbosity.channels import (
     Channel,
     route_channels,
 )
+from quill.core.verbosity.chords import COMMAND_VERBS, EDITING_CHORDS, chord_verbs
 from quill.core.verbosity.controller import AnnouncementOutcome, VerbosityController
 from quill.core.verbosity.data_order import DataOrder
 from quill.core.verbosity.engine import (
@@ -181,6 +182,10 @@ __all__ = [
     "FeedbackSignal",
     "AnnouncementHistory",
     "HistoryEntry",
+    # which chord fires which verb
+    "COMMAND_VERBS",
+    "EDITING_CHORDS",
+    "chord_verbs",
     # safe mode
     "VerbositySafeMode",
     "reset_verb",

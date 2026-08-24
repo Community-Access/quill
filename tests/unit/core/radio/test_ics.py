@@ -135,9 +135,71 @@ def test_parameters_are_dropped_and_the_value_kept() -> None:
 
 def test_a_colon_inside_a_quoted_parameter_is_not_the_value_separator() -> None:
     """``DTSTART;TZID="A/B":2026...`` has two colons, and taking the first
-    would glue the timezone to the front of the value."""
+    would glue the timezone to the front of the value.
+
+    It is also read *in* that zone: 3 pm in New York is 19:00 UTC in August.
+    This used to answer 15:00 UTC -- the zone was parsed correctly and then
+    ignored -- which is the bug in the section below.
+    """
     text = _event(extra='DTSTART;TZID="America/New_York":20260824T150000')
+    assert parse_calendar(text)[0].start == datetime(2026, 8, 24, 19, 0, tzinfo=UTC)
+
+
+# -- the zone a time was written in (found against the live ACB feed) ------------
+
+
+def test_a_tzid_time_is_read_in_that_zone() -> None:
+    """**Every** event in ACB's feed is written ``TZID=America/Chicago``.
+
+    Reading those as UTC and then rendering them in the reader's own zone --
+    which ``calendar_actions.clock`` does -- put the whole schedule five hours
+    early, on every machine that is not on UTC. Nobody reported it, because a
+    schedule that is consistently wrong still looks like a schedule.
+    """
+    text = _event(extra="DTSTART;TZID=America/Chicago:20260731T234100")
+
+    assert parse_calendar(text)[0].start == datetime(2026, 8, 1, 4, 41, tzinfo=UTC)
+
+
+def test_a_zone_this_machine_does_not_have_costs_the_offset_not_the_programme() -> None:
+    """A feed naming a zone the tz database does not carry should degrade to
+    the old behaviour -- an offset the reader can see and correct -- rather
+    than dropping the event."""
+    text = _event(extra="DTSTART;TZID=Mars/Olympus_Mons:20260824T150000")
+
     assert parse_calendar(text)[0].start == datetime(2026, 8, 24, 15, 0, tzinfo=UTC)
+
+
+def test_an_explicit_utc_time_ignores_any_tzid_beside_it() -> None:
+    """The trailing Z is the stronger statement: it says what the instant *is*,
+    where TZID says how to read a wall clock."""
+    text = _event(extra="DTSTART;TZID=America/Chicago:20260824T150000Z")
+
+    assert parse_calendar(text)[0].start == datetime(2026, 8, 24, 15, 0, tzinfo=UTC)
+
+
+def test_a_floating_time_is_still_read_as_utc() -> None:
+    """No Z and no TZID. Guessing the reader's zone would be wrong by a
+    different amount on every machine; being consistently wrong by an amount
+    the caller can see is the better failure."""
+    text = _event(extra="DTSTART:20260824T150000")
+
+    assert parse_calendar(text)[0].start == datetime(2026, 8, 24, 15, 0, tzinfo=UTC)
+
+
+def test_the_end_is_read_in_its_own_zone_too() -> None:
+    """An end read in a different zone from its start is a programme that
+    appears to run for five hours, or to end before it began."""
+    text = _event(
+        extra=(
+            "DTSTART;TZID=America/Chicago:20260731T234100\n"
+            "DTEND;TZID=America/Chicago:20260801T013900"
+        )
+    )
+    event = parse_calendar(text)[0]
+
+    assert event.start == datetime(2026, 8, 1, 4, 41, tzinfo=UTC)
+    assert event.end == datetime(2026, 8, 1, 6, 39, tzinfo=UTC)
 
 
 def test_a_url_in_a_value_keeps_its_own_colon() -> None:

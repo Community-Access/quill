@@ -152,6 +152,9 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # destination added in a later release is pooled rather than inserted --
     # so a saved layout can never renumber what somebody has learned.
     "core/radio/go_to.py::save_layout": "content",
+    # The shared Go To machinery both apps write through; each supplies its
+    # own file name (radio-go-to.json, cast-go-to.json).
+    "core/go_to_menu.py::save_layout": "content",
     # The user-ordered action list per content type, whose first entry is the
     # default for Enter. Same reasoning as list_columns above.
     "core/quick_actions.py::save_quick_actions": "content",

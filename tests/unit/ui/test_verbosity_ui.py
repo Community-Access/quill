@@ -127,3 +127,29 @@ def test_no_checklistbox_anywhere() -> None:
     for module, _cls, _core in _DIALOGS:
         assert "wx.CheckListBox" not in _source(module)
     assert "wx.CheckListBox" not in _source("verbosity_prefs.py")
+
+
+# --- every dialog has a way in (list.md 12.3) ---
+
+
+def test_the_panel_can_open_every_verbosity_dialog() -> None:
+    """Nine dialogs, nine buttons.
+
+    Two of these -- the chord editor and the QVP installer -- were complete,
+    hardened, covered by every test above, and reachable from nothing. Passing
+    tests are what made that survivable: the module was mentioned constantly,
+    just never by anything a user could press. So the contract is checked from
+    the hub's side, where the way in either exists or does not.
+    """
+    source = _source("verbosity_prefs.py")
+
+    for module, cls, _core in _DIALOGS:
+        assert f"from quill.ui.{module[:-3]} import {cls}" in source, (
+            f"{cls} has no way in: nothing in the preferences panel opens it"
+        )
+
+
+def test_the_chord_editor_is_given_the_map_it_actually_takes() -> None:
+    """Its second argument is ``chord_verbs``, and nothing in the tree used to
+    produce one -- which is the concrete reason it was never opened."""
+    assert "quill.core.verbosity.chords" in _source("verbosity_prefs.py")

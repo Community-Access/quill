@@ -267,6 +267,36 @@ sit in named, announced groups.</li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
+<li><p><strong>The ACB Media schedule showed every programme at the
+wrong time.</strong> Every event in ACB’s feed is written in US Central
+time and says so; Quill Radio read those times as UTC and then converted
+them to your clock, so the whole schedule sat five hours early on any
+machine not running on UTC. Nobody reported it, because a schedule that
+is consistently wrong still looks like a schedule. Times are now read in
+the zone they were written in, so ACB Presents the Daily Schedule is a 9
+am Central programme wherever you are. Found by reading the live feed on
+2026-08-24 rather than by a test, which is the point: it is the first
+day that feed contained anything unusual enough to send somebody
+looking.</p></li>
+<li><p><strong>A repeating programme whose repeat rule had already
+expired vanished entirely.</strong> ACB published their first genuine
+recurring entry on 2026-08-24, and its rule ends nineteen minutes
+<em>before</em> the event it is attached to – so a strict reading
+produces no occurrences at all and the programme disappears from the
+schedule. A published programme that quietly does not appear is the
+worst thing this window can do, so the first occurrence is now always
+shown, which is what every other calendar does with the same entry.
+Cancelled dates still cancel it, and a series that genuinely ended
+months ago still stays gone.</p></li>
+<li><p><strong>The Command Palette key did nothing, in every window of
+both apps.</strong> Ctrl+Shift+P is installed on every window as part of
+the shared transport keyboard, and it resolved to nothing anywhere: the
+palette belongs to the app frame rather than to the player, and the key
+was only ever looking at the player. It was silent about it too, which
+is why it went unreported – a key that does nothing is indistinguishable
+from a key nobody bound. The key now finds the window’s palette, and a
+test walks every verb in the shared table asking whether <em>both</em>
+apps can actually perform it, which is how this one was found.</p></li>
 <li><p><strong>A repeating programme would have appeared once instead of
 every week.</strong> ACB’s schedule currently writes out every
 occurrence separately, so this was invisible – but the moment their

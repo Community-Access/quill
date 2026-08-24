@@ -33,7 +33,7 @@ The Manager (Ctrl+M) is where episode-level life happens, and it is the same Man
 - **"View cross-show lists as"**, a combo box next to "Sort episodes", offers three ways to see the Inbox and every other cross-show list (New Episodes, Continue Listening, Favorites): **Grouped in list** (the default -- each show's episodes cluster together, read one podcast's backlog at a time), **Flat list** (everything as one stream, sorted purely by date across every show at once), or **Folders per podcast** (real expandable tree nodes, one per show, right under the pinned view). The Sort Episodes control now applies to these cross-show lists too, not just a single show's own episode list -- and it's per-podcast: select a show (or its Folders node) and change the sort to override just that podcast, leaving everyone else on the shared default.
 - **Play Queue**: Play Next or Add to Queue on any episode; the queue auto-advances, survives restarts, and reorders from the keyboard (Move Up/Down, or Mark then Move for long hops).
 - **Playlists**, below the Play Queue in the tree: saved, named episode lists, distinct from the (transient) Play Queue and the (fixed) pinned views. Right-click Playlists for **New Playlist...** (manual -- add episodes one at a time via **Add to Playlist...** on any episode's context menu) or **New Smart Playlist...** (rule-based -- which shows, episode status, how recent, how long, and how to sort, re-resolved live every time you open it). Edit Rules..., Rename (F2), and Delete round out each playlist's own context menu.
-- **Search Everywhere** searches shows, episodes, your notes, and fetched transcripts at once and jumps to the result. Emptying the search box empties the results at once -- stale matches for a query that is no longer there never sit around looking current. (Add Podcast's search behaves the same way.)
+- **Search Everywhere** searches shows, episodes, your notes, and fetched transcripts at once and jumps to the result. Emptying the search box empties the results at once -- stale matches for a query that is no longer there never sit around looking current. (Add Podcast's search behaves the same way.) **The box remembers what you have searched for**: press the down arrow for the last fifteen searches, newest first, and choosing one runs it. Searching the same thing again moves it to the top rather than adding a second copy, and the list stays on this machine -- nothing about what you search for leaves it.
 - **"Sort shows"** orders the podcasts within each folder: Title A-Z, Title Z-A, Most unheard first, Recently updated first, or **Your custom order** -- the hand-arranged order from Sort Podcasts and Alt+Up/Alt+Down. The dropdown opens on whatever the library is actually sorted by, so the Manager and the main window never disagree.
 - **Transcripts**: when a feed provides one (Podcasting 2.0; VTT/SRT/JSON), save it to a file or open it -- cached for instant reopening. QUILL Cast never generates transcripts from audio; that stays in full QUILL.
 - **Episode notes** timestamp the playing moment; Enter on a note jumps playback there.
@@ -104,7 +104,33 @@ Open Podcast Manager... (Ctrl+M), Add Podcast..., Import OPML..., Export OPML...
 - **Alt+F4 minimizes to the system tray** -- off by default. When on, Alt+F4 tucks the window away with playback still running instead of closing it, so the reflexive keyboard close stops ending your listening. The titlebar X and Exit are unaffected: a deliberate exit still exits.
 - **Winamp playback keys** -- on by default. See "Winamp playback keys" below.
 
+and one list:
+
+- **When closing the window** -- *Ask every time*, *Exit* (the shipped answer,
+  and what QUILL Cast has always done), or *Minimize to Tray*. This governs
+  the titlebar X, Alt+F4 and Exit together. **Ask every time** only actually
+  asks when there is something to lose: with nothing playing and nothing
+  downloading it closes straight away, rather than interrupting a deliberate
+  close to ask whether you meant it. The question names what is at stake --
+  "An episode is playing and 2 downloads are in progress" -- and can remember
+  your answer. The Alt+F4 checkbox above still acts first when it is on.
+
 **Export My Data...** writes everything QUILL Cast knows about your listening -- subscriptions, folders, the Play Queue, playlists, episode notes, listening statistics, and your recently-played list -- to one readable JSON file. Export OPML covers your subscriptions and nothing else; this covers the rest.
+
+**Back Up My Podcasts...** (Ctrl+Alt+Shift+B) writes your whole library to one
+file -- a `.qcbackup`. Subscriptions, folders, playlists, positions, notes,
+statistics, your Go To order and your bookmarks, in a single archive you can
+put on a memory stick. It offers to include your **downloaded episodes** and
+defaults to leaving them out: they can be tens of gigabytes and can always be
+downloaded again, where the 40 KB beside them cannot.
+
+**Restore from a Backup...** (Ctrl+Alt+Shift+R) puts one back. It tells you
+when the backup was made and how many podcasts are in it *before* it does
+anything, because the two ways to get this wrong are restoring the wrong file
+and restoring a six-month-old one. Restoring replaces what is here rather than
+merging, anything playing stops first, and your library reappears without
+restarting the app. This is different from Export My Data, which is a readable
+snapshot you can look at but not put back.
 
 **Delete All Podcast Data...** unsubscribes from everything and clears your queue, playlists, Inbox filing, statistics, and history. It asks twice, and asks about downloaded files separately, because "start over" and "reclaim the disk" are not the same wish.
 
@@ -124,6 +150,22 @@ Open Podcast Manager... (Ctrl+M), Add Podcast..., Import OPML..., Export OPML...
 - **Start on this view** -- which part of the library QUILL Cast opens on: New Episodes, Continue Listening, the Inbox, Favorites, Recently Expired, or the top of the tree.
 
 **Settings for This Podcast...**, on any show's context menu in the Podcast Manager, holds the same choices for one show plus the ones that only make sense per podcast: **Auto-Queue New Episodes**, **Announce new episodes by name**, **Expire from the queue**, the Inbox age limit, Route to Inbox, and Favorite. Anything left on **Use the shared default** stores no override at all, so changing the global later still reaches that show. **Follow the Shared Defaults** drops every override for the show at once.
+
+### Three settings you can reach in one keystroke
+
+Three per-show settings are the ones people change over and over: how many
+downloads to keep for a podcast that publishes daily, how long its episodes
+wait in the queue, and how fast a particular host talks. Each has its own row
+on a show's context menu -- **Episodes to Keep...**, **Queue Expiry...**,
+**Playback Speed...** -- and each opens a window holding **one control, with
+the cursor already in it**. No tabs, no hunting: you said which setting you
+wanted when you chose the menu item.
+
+Each opens on the value actually in force, inherited default included, and
+says what you chose back in words rather than as a number -- "Keeping the 5
+newest downloaded episodes", "Queued episodes of this podcast wait
+indefinitely". They are Quick Actions too, so you can order them: if you
+adjust speed constantly, put Playback Speed first and reach it with Ctrl+1.
 
 ### Quick Actions
 
@@ -1021,6 +1063,58 @@ clock is a reason to set one.
 
 The window is shared with the other Quill listening apps, so you set it once.
 
+## Every key this build answers to
+
+**Help > Keyboard Shortcuts Sheet...** (Ctrl+Alt+Shift+K) lists every keyboard
+shortcut QUILL Cast currently has, with what it does and which menu it lives
+in. It is *generated from the menus you actually have*, so it includes any key
+you rebound and can never drift out of date. A filter box at the top narrows
+it -- type "download" and you get the rows about downloading. Copy All puts
+the list, as filtered, on the clipboard.
+
+This is the other half of **Keyboard Shortcuts...**, which is where you change
+a key. The editor is for a key you can already name; the sheet is how you find
+out which keys exist.
+
+## Go To: one key for every place
+
+**Help > Go To...** (Ctrl+G) opens a short numbered list of places -- the
+Podcast Manager, Continue Listening, the Play Queue, Downloads, Bookmarks,
+Listening Statistics, Add a Podcast, Episode Notes, the Sleep Timer,
+Preferences. Press the number and you are there; press Escape and you are back
+exactly where you were.
+
+**The numbering never moves.** That is the whole point, and it is why this is
+not the Window menu: that lists the windows that happen to be open, in the
+order they opened, so a place can be 3 today and 5 tomorrow and has no number
+at all when it is closed. Here, 1 is 1 forever.
+
+**Settings...** inside the popup lets you choose which ten places are on the
+list and in what order -- put what you use most at 1. Anything you take off
+goes into a pool you can add back. A place added by a later release always
+lands in the pool, never in your menu, so an update cannot renumber the
+places you have learned.
+
+Rows show the place's own direct key where it has one, so the popup teaches
+itself out of a job: use Go To 1 for a month and you will have learned Ctrl+M.
+
+## When a media tool is missing
+
+QUILL Cast needs **FFmpeg** for four things: trimming the silence off a
+downloaded episode, evening out its volume, working out chapters for an
+episode that has none, and Sound Enhancements and Smart Speed while playing.
+Everything else -- subscribing, downloading, playing -- works without it.
+
+The trouble with those four is that they fail by producing a *plausible*
+result. The download completes and simply is not trimmed. The chapter analysis
+finishes and finds nothing, which is exactly what an episode with genuinely no
+chapters looks like. So QUILL Cast says once, at launch, when FFmpeg is
+missing, naming what it costs and how to get it -- and says nothing at all
+when everything is there.
+
+**Help > Media Tools** (Ctrl+Alt+Shift+M) answers the same question whenever
+you ask it, including when the answer is good news.
+
 ## Moving your setup to another machine
 
 **Help > Export My Setup...** (Ctrl+Alt+Shift+X) writes one file -- a
@@ -1103,6 +1197,11 @@ QUILL Cast reads and writes the same data store as QUILL and Quill Radio (`%APPD
 | Winamp jump to episode / to time | J / Ctrl+J |
 | Winamp elapsed or remaining | T |
 | Command Palette | Ctrl+Shift+P |
+| Go To (a numbered list of places) | Ctrl+G |
+| Keyboard Shortcuts Sheet | Ctrl+Alt+Shift+K |
+| Media Tools (is FFmpeg here?) | Ctrl+Alt+Shift+M |
+| Back Up My Podcasts | Ctrl+Alt+Shift+B |
+| Restore from a Backup | Ctrl+Alt+Shift+R |
 | Send to tray | Ctrl+W |
 | Preferences | Ctrl+, |
 | Play selected show's next episode | Enter (in the tree) |

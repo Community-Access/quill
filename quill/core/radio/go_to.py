@@ -31,35 +31,24 @@ This is the third store of this shape (``core.quick_actions`` orders actions,
 It is deliberately the same shape as both.
 
 wx-free, strict-typed.
+
+**The machinery moved.** Everything structural here -- fixed numbering, the
+derived pool, repair, the refusals -- is now :mod:`quill.core.go_to_menu`,
+shared with QUILL Cast, which had no Go To at all (list.md 5.2). What stays in
+this module is what is genuinely Radio's: which places, and in what order. Two
+copies of "the pool is what makes the numbering permanent" is exactly how two
+apps come to disagree about it.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
-from quill.core.storage import read_json, write_json_atomic
+from quill.core import go_to_menu
+from quill.core.go_to_menu import MAX_ENTRIES, Destination, position_key
 
 _FILE_NAME = "radio-go-to.json"
-
-#: Ten, because 1-9 then 0 is where the number row ends.
-MAX_ENTRIES = 10
-
-
-@dataclass(frozen=True, slots=True)
-class Destination:
-    """One place, and the host method that opens it.
-
-    *key* is the destination's own direct shortcut where it still has one, shown
-    on its row so the popup teaches: somebody who uses Go To 2 for a month
-    learns Ctrl+B by reading it every time, and graduates off the popup.
-    """
-
-    id: str
-    title: str
-    opens: str
-    key: str = ""
-
 
 #: Every place Go To can reach. Order here is the *default* menu order for the
 #: first ten; the rest start in the pool. Adding to this tuple is safe by
@@ -86,48 +75,25 @@ DESTINATIONS: tuple[Destination, ...] = (
     Destination("whats_playing", "What's Playing", "radio_whats_playing_details", "Ctrl+T"),
 )
 
-_BY_ID: dict[str, Destination] = {d.id: d for d in DESTINATIONS}
-
 #: The first ten, which is what a fresh install gets.
-DEFAULT_ORDER: tuple[str, ...] = tuple(d.id for d in DESTINATIONS[:MAX_ENTRIES])
+DEFAULT_ORDER: tuple[str, ...] = go_to_menu.default_order(DESTINATIONS)
 
 
-def position_key(index: int) -> str:
-    """The key that jumps to *index*: ``"1"``-``"9"`` then ``"0"``.
+@dataclass
+class GoToLayout(go_to_menu.GoToLayout):
+    """Radio's layout: the shared shape, with this app's catalogue built in.
 
-    0 sits where a tenth key would be, because that is where a hand goes last.
+    A subclass rather than a parameter so that ``GoToLayout(order=[...])``
+    keeps meaning what it has always meant here -- the dialogs construct these
+    inline, and a layout that arrived without its catalogue would report every
+    destination as unknown and quietly repair itself to the default.
     """
-    if index < 0 or index >= MAX_ENTRIES:
-        return ""
-    return "0" if index == MAX_ENTRIES - 1 else str(index + 1)
+
+    catalogue: tuple[Destination, ...] = DESTINATIONS
 
 
 def destination(destination_id: str) -> Destination | None:
-    return _BY_ID.get(destination_id)
-
-
-@dataclass(slots=True)
-class GoToLayout:
-    """What is in the menu, in order. Everything known and not listed is pooled."""
-
-    order: list[str] = field(default_factory=lambda: list(DEFAULT_ORDER))
-
-    def ordered(self) -> list[Destination]:
-        """The menu, as destinations, in position order."""
-        return [_BY_ID[i] for i in self.order if i in _BY_ID]
-
-    def available_ids(self) -> list[str]:
-        """Everything not in the menu, in catalogue order.
-
-        Derived rather than stored: a destination added in a later release is
-        *automatically* pooled, with no migration and no chance of it being
-        inserted into somebody's numbering.
-        """
-        chosen = set(self.order)
-        return [d.id for d in DESTINATIONS if d.id not in chosen]
-
-    def available(self) -> list[Destination]:
-        return [_BY_ID[i] for i in self.available_ids()]
+    return go_to_menu.lookup(DESTINATIONS, destination_id)
 
 
 def default_layout() -> GoToLayout:
@@ -135,60 +101,47 @@ def default_layout() -> GoToLayout:
 
 
 def repair(layout: GoToLayout) -> GoToLayout:
-    """Drop ids we no longer know, de-duplicate, and cap at ten.
-
-    An unknown id is dropped rather than raising: a layout saved by a newer
-    build, or one naming a destination since removed, must degrade to a working
-    menu rather than to no app.
-    """
-    seen: set[str] = set()
-    order: list[str] = []
-    for destination_id in layout.order:
-        if destination_id in _BY_ID and destination_id not in seen:
-            seen.add(destination_id)
-            order.append(destination_id)
-        if len(order) == MAX_ENTRIES:
-            break
-    if not order:
-        order = list(DEFAULT_ORDER)
-    return GoToLayout(order=order)
+    """Drop ids we no longer know, de-duplicate, and cap at ten."""
+    return GoToLayout(order=list(go_to_menu.repair(_shared(layout)).order))
 
 
 def refusal_for_adding(layout: GoToLayout) -> str:
-    """Why another entry cannot be added, or ``""`` when one can.
-
-    A sentence rather than a disabled button: a control that says only "no" is a
-    control that has to be guessed at.
-    """
-    if len(layout.order) < MAX_ENTRIES:
-        return ""
-    return (
-        "The Go To menu is full: it holds ten places, numbered 1 to 9 and then "
-        "0, and the number row has no eleventh key. Remove one to make room."
-    )
+    """Why another entry cannot be added, or ``""`` when one can."""
+    return go_to_menu.refusal_for_adding(_shared(layout))
 
 
 def refusal_for_removing(layout: GoToLayout, destination_id: str) -> str:
     """Why this entry cannot be removed, or ``""`` when it can."""
-    if destination_id not in layout.order:
-        return ""
-    if len(layout.order) > 1:
-        return ""
-    return "The Go To menu cannot be empty. Add another place first, then remove this one."
+    return go_to_menu.refusal_for_removing(_shared(layout), destination_id)
 
 
 def load_layout(data_dir: Path) -> GoToLayout:
     """Read the saved menu, repaired. A missing or corrupt file is the default."""
-    raw = read_json(data_dir / _FILE_NAME, {})
-    order: list[str] = []
-    if isinstance(raw, dict):
-        entries = raw.get("order")
-        if isinstance(entries, list):
-            order = [str(entry) for entry in entries if isinstance(entry, str)]
-    if not order:
-        return default_layout()
-    return repair(GoToLayout(order=order))
+    shared = go_to_menu.load_layout(data_dir, file_name=_FILE_NAME, catalogue=DESTINATIONS)
+    return GoToLayout(order=list(shared.order))
 
 
 def save_layout(data_dir: Path, layout: GoToLayout) -> None:
-    write_json_atomic(data_dir / _FILE_NAME, {"order": list(repair(layout).order)})
+    go_to_menu.save_layout(data_dir, _shared(layout), file_name=_FILE_NAME)
+
+
+def _shared(layout: go_to_menu.GoToLayout) -> go_to_menu.GoToLayout:
+    """This layout as the shared machinery wants it, catalogue attached."""
+    return go_to_menu.GoToLayout(order=list(layout.order), catalogue=DESTINATIONS)
+
+
+__all__ = [
+    "DEFAULT_ORDER",
+    "DESTINATIONS",
+    "MAX_ENTRIES",
+    "Destination",
+    "GoToLayout",
+    "default_layout",
+    "destination",
+    "load_layout",
+    "position_key",
+    "refusal_for_adding",
+    "refusal_for_removing",
+    "repair",
+    "save_layout",
+]

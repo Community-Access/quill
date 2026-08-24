@@ -97,6 +97,16 @@ class CastMenuBarMixin:
         subs_menu.Append(delete_data_id, "Delete All Podcast &Data...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_export_data(), id=export_data_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_delete_all_data(), id=delete_data_id)
+        # Beside Export My Data because that is where somebody looks for them,
+        # and *not* the same thing: the export is a readable JSON snapshot,
+        # these are an archive that goes back in (list.md 5.6). Cast's library
+        # -- subscriptions, folders, playlists, positions, notes, statistics --
+        # is the more painful of the two apps' to lose.
+        backup_id, restore_id = wx.NewIdRef(), wx.NewIdRef()
+        subs_menu.Append(backup_id, self._menu_label("&Back Up My Podcasts...", "app.backup"))
+        subs_menu.Append(restore_id, self._menu_label("&Restore from a Backup...", "app.restore"))
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.back_up_cast_data(), id=backup_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.restore_cast_data(), id=restore_id)
         subs_menu.AppendSeparator()
         self._resume_menu_item_id = wx.NewIdRef()
         subs_menu.AppendCheckItem(self._resume_menu_item_id, "Resume Last Episode on Lau&nch")
@@ -307,6 +317,25 @@ class CastMenuBarMixin:
         help_menu.Append(hotkeys_id, "&Global Hotkeys...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
+        # The sheet is the other half of the editor above it, and the half
+        # somebody learning the app needs: the editor changes a key you can
+        # already name, the sheet is how you find out which keys exist
+        # (list.md 5.1). Generated from this menu bar, so it cannot go stale.
+        # One key for every place in the app (list.md 5.2). In the Help menu
+        # beside the sheet because both answer "how do I get to things"; the
+        # popup itself teaches the direct keys, so it trains you out of itself.
+        go_to_id = wx.NewIdRef()
+        help_menu.Append(go_to_id, self._menu_label("&Go To...", "app.go_to"))
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_cast_go_to(), id=go_to_id)
+        sheet_id, media_tools_id = wx.NewIdRef(), wx.NewIdRef()
+        help_menu.Append(
+            sheet_id, self._menu_label("Keyboard Shortcuts S&heet...", "app.shortcut_sheet")
+        )
+        help_menu.Append(media_tools_id, self._menu_label("&Media Tools", "app.media_tools"))
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_keyboard_cheat_sheet(), id=sheet_id)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.podcast_media_tools_status(), id=media_tools_id
+        )
         # Spotify (future.spotify) is experimental: ids always created for
         # pinning, items shown only while the feature is on and Safe Mode is off.
         spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
@@ -366,6 +395,8 @@ class CastMenuBarMixin:
             quick_actions_id,
             columns_id,
             export_data_id,
+            backup_id,
+            restore_id,
             delete_data_id,
             speed_up_id,
             speed_down_id,
@@ -423,6 +454,9 @@ class CastMenuBarMixin:
             about_id,
             shortcuts_id,
             hotkeys_id,
+            sheet_id,
+            media_tools_id,
+            go_to_id,
             *self._sort_mode_menu_ids.values(),
         )
         self._refresh_sort_mode_menu()

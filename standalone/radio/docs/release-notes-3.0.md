@@ -1273,6 +1273,31 @@ podcasts -- was a show you could not search at all.
 
 ## The rest
 
+### Two things the ACB schedule was getting wrong
+
+Both were found on 2026-08-24 by reading the live feed rather than by a test,
+and both are the kind that do not announce themselves.
+
+**Every programme was five hours early.** ACB writes its calendar in US
+Central time and says so in the feed; Quill Radio read those times as though
+they were UTC and then converted them to your clock. Everything moved by the
+same amount, so the schedule still looked like a schedule -- there was nothing
+on screen to compare it against. Times are now read in the zone they were
+written in. If you had learned to mentally add five hours, you can stop.
+
+**A repeating programme could vanish.** ACB published their first genuinely
+recurring entry this month, and its repeat rule ends before the event it is
+attached to. Read strictly, that produces no occurrences at all and the
+programme simply is not in the schedule -- no error, no gap, nothing to
+notice. The first occurrence is now always shown, which is what every other
+calendar does with the same entry. A programme you deliberately cancelled
+stays cancelled, and a series that genuinely finished months ago stays gone.
+
+**The Command Palette key worked in neither app.** Ctrl+Shift+P is installed
+on every window, and it opened nothing anywhere -- silently, which is why it
+went unreported: a key that does nothing is indistinguishable from a key
+nobody bound. It opens the palette now, from any window.
+
 ### What is not in 3.0, and why saying so matters
 
 "Not mentioned" and "not built" look identical from the outside, so here is the

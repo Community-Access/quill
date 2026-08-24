@@ -106,6 +106,22 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # place you name, Ctrl+Alt+Shift+J opens the places you saved.
         "app.bookmark_moment": "Ctrl+Alt+A",
         "app.bookmarks": "Ctrl+Alt+Shift+J",
+        # The sheet, on the key Quill Radio's sheet uses. Deliberately the same
+        # in both apps: somebody who learned it in one has learned it in both,
+        # and the two sheets are the same window over a different menu bar.
+        "app.shortcut_sheet": "Ctrl+Alt+Shift+K",
+        # What FFmpeg's absence costs, asked rather than waited for. Beside
+        # the sheet because both are "tell me about this installation".
+        "app.media_tools": "Ctrl+Alt+Shift+M",
+        # One key to every place in the app -- Radio's Ctrl+G, and free in
+        # Cast (Ctrl+G was nothing here).
+        "app.go_to": "Ctrl+G",
+        # A library out and a library back in. Deliberately long chords: these
+        # are deliberate, once-in-a-while verbs, and Restore replaces
+        # everything -- a short key beside a common one is how somebody
+        # restores a six-month-old backup by accident.
+        "app.backup": "Ctrl+Alt+Shift+B",
+        "app.restore": "Ctrl+Alt+Shift+R",
     },
 }
 

@@ -1,5 +1,24 @@
 """Podcasts > Search Everywhere... -- search every subscription, episode,
-and note at once, grouped by type."""
+and note at once, grouped by type.
+
+The box is a **combo**, not a plain text field, because the searches somebody
+runs here are worth keeping (list.md 5.5). A podcast search is not usually a
+one-off: "the episode about the harbour" is a thing somebody looks for several
+times across a week, from a different place in the library each time, and the
+query is the part they have to reconstruct from memory every attempt. Quill
+Radio has remembered its searches for a while; this is the same idea over one
+field instead of three, and the pure half is
+:mod:`quill.core.podcasts.search_history`.
+
+Two details that are easy to get wrong and cost the whole feature:
+
+* **Only a committed search is remembered.** Typing is not searching, and a
+  history full of the half-words somebody passed through on the way to what
+  they meant is a history nobody can find anything in.
+* **Re-filling the dropdown clears the text on wxMSW**, so what was typed is
+  put back afterwards. A search box that empties itself the moment you press
+  Search is indistinguishable from one that lost the query.
+"""
 
 from __future__ import annotations
 
@@ -19,6 +38,8 @@ class SearchEverywhereDialog:
         *,
         on_search: Callable[[str], list[SearchResult]],
         announce_cb: Callable[[str], None] | None = None,
+        recent_searches: tuple[str, ...] = (),
+        on_recent_searches_changed: Callable[[tuple[str, ...]], None] | None = None,
     ) -> None:
         import wx
 
@@ -27,6 +48,8 @@ class SearchEverywhereDialog:
         self._announce = announce_cb or (lambda _m: None)
         self._results: list[SearchResult] = []
         self._result: SearchResult | None = None
+        self._recent = tuple(recent_searches)
+        self._on_recent_changed = on_recent_searches_changed
 
         self.dialog = wx.Dialog(
             parent,
@@ -37,8 +60,25 @@ class SearchEverywhereDialog:
         root = wx.BoxSizer(wx.VERTICAL)
 
         search_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._query_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
-        self._query_ctrl.SetName("Search every subscription, episode, and note at once")
+        # A combo rather than a text field: the same box, plus everything
+        # searched before it on the down arrow. An editable combo keeps
+        # typing exactly as it was -- nothing is selected until somebody
+        # arrows to it deliberately.
+        self._query_ctrl = wx.ComboBox(
+            self.dialog,
+            value="",
+            choices=list(self._recent),
+            style=wx.TE_PROCESS_ENTER,
+        )
+        self._query_ctrl.SetName(
+            "Search every subscription, episode, and note at once; "
+            "down arrow for searches you have run before"
+        )
+        self._query_ctrl.SetHelpText(
+            "Searches show titles, episode titles, show notes, your own notes "
+            "and any transcripts already downloaded. The last "
+            f"{len(self._recent) or 'few'} searches are on the down arrow."
+        )
         search_row.Add(self._query_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         search_btn = wx.Button(self.dialog, label="&Search")
         search_row.Add(search_btn, 0)
@@ -62,6 +102,9 @@ class SearchEverywhereDialog:
         self.dialog.SetSizer(root)
 
         self._query_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_search_click)
+        # Picking a remembered search runs it: choosing a row from a list of
+        # searches is a commit, not a way of filling in a text box.
+        self._query_ctrl.Bind(wx.EVT_COMBOBOX, self._on_recent_picked)
         search_btn.Bind(wx.EVT_BUTTON, self._on_search_click)
         self._list.Bind(wx.EVT_LISTBOX_DCLICK, self._on_go)
         go_btn.Bind(wx.EVT_BUTTON, self._on_go)
@@ -106,8 +149,39 @@ class SearchEverywhereDialog:
         if self._results:
             self._list.SetSelection(0)
         count = len(self._results)
+        if query:
+            self._remember(query)
         self._status.SetLabel(f'{count} result(s) for "{query}".' if query else "")
         self._announce(self._status.GetLabel() or "Type something to search.")
+
+    def _on_recent_picked(self, event: object) -> None:
+        """Run a search the listener has run before."""
+        index = int(getattr(event, "GetSelection", lambda: -1)() or -1)
+        if not (0 <= index < len(self._recent)):
+            return
+        query = self._recent[index]
+        self._query_ctrl.SetValue(query)
+        self._announce(f"Searching again for {query}.")
+        self._on_search_click(None)
+
+    def _remember(self, query: str) -> None:
+        """Record a search that was actually committed."""
+        from quill.core.podcasts import search_history
+
+        updated = search_history.remember(self._recent, query)
+        if updated == self._recent:
+            return
+        self._recent = updated
+        try:
+            self._query_ctrl.Set(list(self._recent))
+        except RuntimeError:  # the dialog is being torn down
+            return
+        # Re-filling the dropdown clears the text on wxMSW; put back what was
+        # typed, or the box appears to have swallowed the query.
+        if self._query_ctrl.GetValue() != query:
+            self._query_ctrl.SetValue(query)
+        if self._on_recent_changed is not None:
+            self._on_recent_changed(updated)
 
     def _on_go(self, _event: object) -> None:
         index = self._list.GetSelection()

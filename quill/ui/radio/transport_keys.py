@@ -514,6 +514,37 @@ def _go_to_player(host: Any) -> bool:
     return True
 
 
+#: Verbs the *window* owns rather than the player. The command palette is the
+#: app shell's, not any controller's, and the shell is shared by both apps --
+#: so it is looked up on the host by its plain name.
+#:
+#: Named explicitly rather than falling back to ``getattr(host, verb)`` for
+#: every verb: a frame with a method called ``stop`` would otherwise silently
+#: take over Stop from the player.
+_HOST_VERBS = frozenset({"open_command_palette"})
+
+
+def _host_verb(host: Any, verb: str) -> Any:
+    """*verb* as a callable on the window that owns it, or ``None``.
+
+    A modeless surface is its own host -- the browse tree passes ``self`` --
+    and the palette lives on the app frame, which that surface knows as
+    ``_download_host`` or ``_transport_host``. Same cascade as
+    :func:`_go_to_player`, for the same reason: a key that works on the main
+    window and not in Browse is the shape of bug this module exists to end.
+    """
+    for candidate in (
+        host,
+        getattr(host, "_download_host", None),
+        getattr(host, "_transport_host", None),
+        getattr(host, "frame", None),
+    ):
+        method = getattr(candidate, verb, None) if candidate is not None else None
+        if callable(method):
+            return method
+    return None
+
+
 def _shared_verb(host: Any, verb: str) -> bool:
     """The default implementation of *verb*, for a host with no opinion."""
     from quill.ui.radio import bounded_playback_ui
@@ -524,6 +555,16 @@ def _shared_verb(host: Any, verb: str) -> bool:
         return _step_volume(host, -1)
     if verb == "go_to_player":
         return _go_to_player(host)
+    if verb in _HOST_VERBS:
+        # Ctrl+Shift+P was installed on every window and resolved to nothing:
+        # no host defines ``transport_open_command_palette``, Cast has no
+        # ``podcast_open_command_palette``, and it is not a controller verb --
+        # so the one key the table carries for both apps was the one key that
+        # did nothing anywhere (found by the parity test, list.md 12.1).
+        method = _host_verb(host, verb)
+        if method is not None:
+            method()
+            return True
     shared = getattr(bounded_playback_ui, verb, None)
     if callable(shared):
         shared(host)

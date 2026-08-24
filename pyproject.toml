@@ -508,6 +508,15 @@ prerelease = "allow"
 pythonpath = ["."]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
+# A per-test wall-clock ceiling, because **a hang is not a failure** (list.md
+# 12.2). `test_button_mnemonics` once stalled entire runs through a deferred
+# modal and reported as "still going" rather than red -- a red test gets fixed,
+# and a run that never ends gets abandoned. Thirty seconds is far above any
+# honest test here (the slowest legitimate one is a few seconds) and far below
+# anybody's patience. pytest-timeout's thread method catches a wx modal loop
+# as readily as a sleep, which matters because the modal is the case that
+# actually happened. Pinned by tests/unit/tools/test_suite_guardrails.py so it
+# cannot be quietly removed or raised.
 timeout = 30
 log_cli = true
 log_level = "INFO"
@@ -519,7 +528,11 @@ log_level = "INFO"
 #     pytest -p randomly tests/unit/core
 #     pytest -p randomly -p no:cacheprovider tests/unit/ui   # a suspect area
 # Reproduce a specific shuffle with the seed it prints: -p randomly -p randomly.seed=12345
-addopts = "-p no:randomly"
+# --durations reports the ten slowest tests over five seconds, so a test
+# creeping from two seconds toward the thirty-second ceiling is visible
+# *before* it reaches it. Without a floor the only signal is the ceiling
+# itself, which arrives as a failure rather than as a warning (list.md 12.2).
+addopts = "-p no:randomly --durations=10 --durations-min=5.0"
 markers = [
     "perf: wall-clock performance budgets; run with RUN_PERF=1 or exclude with -m 'not perf'",
     "smoke: fast, high-signal core checks; run the quick subset with -m smoke",

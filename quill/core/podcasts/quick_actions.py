@@ -84,6 +84,26 @@ SHOW_ACTIONS: tuple[QuickAction, ...] = (
         "Podcast Settings for This Show...",
         "Per-show playback and download settings.",
     ),
+    # The three settings people change per show and often, each opening on
+    # its own control rather than on the two-dozen-control window above
+    # (list.md 5.7). They are separate actions so they can be *ordered*:
+    # somebody who adjusts speed constantly can put it first and reach it
+    # with one key.
+    QuickAction(
+        "keep_episodes",
+        "Episodes to Keep...",
+        "How many downloaded episodes to keep for this show.",
+    ),
+    QuickAction(
+        "queue_expiry",
+        "Queue Expiry...",
+        "How long this show's episodes wait in the Play Queue.",
+    ),
+    QuickAction(
+        "playback_speed",
+        "Playback Speed...",
+        "How fast this show plays, remembered between episodes.",
+    ),
     QuickAction(
         "copy_show_link",
         "Copy Podcast Link",

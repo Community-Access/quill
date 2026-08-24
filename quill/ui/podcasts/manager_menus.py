@@ -26,6 +26,7 @@ from dataclasses import dataclass
 from quill.core import dimmed_reason
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.quick_actions import DIRECT_KEY_COUNT
+from quill.ui.podcasts import single_setting_actions
 
 
 @dataclass(slots=True)
@@ -273,6 +274,21 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
             "show_settings",
             "&Settings for This Podcast...",
             lambda: dialog._on_show_settings(show),
+        ),
+        action(
+            "keep_episodes",
+            "Episodes to Kee&p...",
+            lambda: single_setting_actions.edit_keep_episodes(dialog, show),
+        ),
+        action(
+            "queue_expiry",
+            "&Queue Expiry...",
+            lambda: single_setting_actions.edit_queue_age(dialog, show),
+        ),
+        action(
+            "playback_speed",
+            "Playback Spee&d...",
+            lambda: single_setting_actions.edit_playback_speed(dialog, show),
         ),
         action(
             "copy_show_link",

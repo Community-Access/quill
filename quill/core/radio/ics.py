@@ -39,7 +39,7 @@ wx-free, strict-typed, pure. No network: the caller fetches, this reads.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, tzinfo
 
 #: Properties whose value is text and therefore carries escapes.
 _TEXT_PROPERTIES = frozenset({"SUMMARY", "DESCRIPTION", "LOCATION", "CATEGORIES", "COMMENT"})
@@ -112,6 +112,14 @@ def parse_calendar(text: str) -> list[CalendarEvent]:
         name, value = _split_property(line)
         if not name:
             continue
+        # Keep the zone a start or end was written in. Every event in ACB's
+        # feed carries TZID=America/Chicago, and reading those as UTC put the
+        # whole schedule five hours early for anybody whose clock is not UTC
+        # (found 2026-08-24 against the live feed).
+        if name in ("DTSTART", "DTEND"):
+            zone = _tzid_of(line)
+            if zone:
+                current[f"{name}#TZID"] = zone
         if name == "EXDATE" and current.get("EXDATE"):
             # A cancelled week is one EXDATE line; three cancelled weeks are
             # three, and keeping only the last would quietly restore two of
@@ -141,6 +149,10 @@ def _unfolded(text: str) -> list[str]:
 
 def _split_property(line: str) -> tuple[str, str]:
     """``NAME;PARAM=X:value`` -> ``("NAME", "value")``, parameters dropped.
+
+    ``TZID`` is the exception and is kept, by the caller, under a name of its
+    own -- see :func:`_tzid_of`. It is the one parameter whose absence changes
+    what the value *means*.
 
     The colon that ends the name is the first one *outside* a quoted
     parameter: ``DTSTART;TZID="America/New_York":2026...`` has two, and taking
@@ -177,29 +189,77 @@ def _unescape(value: str) -> str:
     return "".join(out).strip()
 
 
-def parse_timestamp(value: str) -> datetime | None:
+def _tzid_of(line: str) -> str:
+    """The ``TZID`` parameter on a property line, or "".
+
+    Quoted or bare -- ``TZID="America/New_York"`` and ``TZID=America/Chicago``
+    are both legal and ACB writes the second.
+    """
+    head = line.split(":", 1)[0]
+    for parameter in head.split(";")[1:]:
+        name, _, value = parameter.partition("=")
+        if name.strip().upper() == "TZID":
+            return value.strip().strip('"')
+    return ""
+
+
+def _zone(tzid: str) -> tzinfo | None:
+    """*tzid* as a real timezone, or ``None`` when this machine has no such zone.
+
+    ``None`` rather than an exception: a feed naming a zone the tz database
+    does not carry should cost the *offset*, which the caller can see and
+    correct, never the programme.
+    """
+    if not tzid:
+        return None
+    try:
+        from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+    except ImportError:  # pragma: no cover - zoneinfo is stdlib on 3.9+
+        return None
+    try:
+        return ZoneInfo(tzid)
+    except (ZoneInfoNotFoundError, ValueError, OSError):
+        return None
+
+
+def parse_timestamp(value: str, *, tzid: str = "") -> datetime | None:
     """An ICS date-time as aware UTC, or None when it cannot be read.
 
-    Handles ``20260824T193000Z``, ``20260824T193000`` (floating, read as UTC)
-    and ``20260824`` (a whole day, read as its midnight). Anything else is
-    None, which the caller turns into a skipped event rather than a crash.
+    Handles ``20260824T193000Z``, ``20260824T193000`` (floating) and
+    ``20260824`` (a whole day, read as its midnight). Anything else is None,
+    which the caller turns into a skipped event rather than a crash.
+
+    *tzid* is the property's ``TZID`` parameter, and it is the difference
+    between a right answer and a wrong one. **Every** event in ACB's feed is
+    written ``DTSTART;TZID=America/Chicago:...``; reading those as UTC and
+    then rendering them in the reader's own zone (which ``calendar_actions``
+    does) put the entire schedule five hours early. A genuinely floating time
+    -- no ``Z``, no ``TZID`` -- is still read as UTC, because guessing the
+    reader's zone would be wrong by a different amount on every machine.
     """
     text = str(value or "").strip()
     if not text:
         return None
     trailing_z = text.endswith(("Z", "z"))
     body = text[:-1] if trailing_z else text
+    zone = None if trailing_z else _zone(tzid)
     for pattern in ("%Y%m%dT%H%M%S", "%Y%m%dT%H%M", "%Y%m%d"):
         try:
             moment = datetime.strptime(body, pattern)
         except ValueError:
             continue
+        if zone is not None:
+            return moment.replace(tzinfo=zone).astimezone(UTC)
         return moment.replace(tzinfo=UTC)
     try:
         moment = datetime.fromisoformat(body)
     except ValueError:
         return None
-    return moment if moment.tzinfo is not None else moment.replace(tzinfo=UTC)
+    if moment.tzinfo is not None:
+        return moment.astimezone(UTC)
+    if zone is not None:
+        return moment.replace(tzinfo=zone).astimezone(UTC)
+    return moment.replace(tzinfo=UTC)
 
 
 def _event_from(fields: dict[str, str]) -> CalendarEvent | None:
@@ -209,7 +269,7 @@ def _event_from(fields: dict[str, str]) -> CalendarEvent | None:
     cannot be placed in a week, and putting it somewhere anyway would be
     inventing a time somebody might act on.
     """
-    start = parse_timestamp(fields.get("DTSTART", ""))
+    start = parse_timestamp(fields.get("DTSTART", ""), tzid=fields.get("DTSTART#TZID", ""))
     if start is None:
         return None
     summary = fields.get("SUMMARY", "").strip()
@@ -220,7 +280,7 @@ def _event_from(fields: dict[str, str]) -> CalendarEvent | None:
         uid=fields.get("UID", "").strip() or f"{start.isoformat()}|{summary}",
         summary=summary or "Untitled programme",
         start=start,
-        end=parse_timestamp(fields.get("DTEND", "")),
+        end=parse_timestamp(fields.get("DTEND", ""), tzid=fields.get("DTEND#TZID", "")),
         description=fields.get("DESCRIPTION", "").strip(),
         location=fields.get("LOCATION", "").strip(),
         categories=categories,

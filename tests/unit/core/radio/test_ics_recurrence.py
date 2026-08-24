@@ -313,3 +313,75 @@ def test_the_window_rolls_across_a_year_end() -> None:
 
     assert start == datetime(2026, 12, 1, tzinfo=UTC)
     assert end == datetime(2027, 2, 1, tzinfo=UTC)
+
+
+# -- DTSTART is always an instance (found against the live ACB feed) -------------
+
+
+def test_an_until_before_the_event_still_shows_the_event_once() -> None:
+    """RFC 5545: DTSTART is the first instance of a recurrence set, whatever
+    the rule says afterwards.
+
+    The first real RRULE ACB published carries ``UNTIL=20260801T000000Z`` on an
+    event that starts at 04:41 on 1 August -- the UNTIL is before the event it
+    is attached to. Read strictly, the series is empty and the programme
+    disappears from the schedule. A schedule that quietly omits a published
+    programme is the worst failure this app has, and every other calendar shows
+    this entry once.
+    """
+    event = _event(datetime(2026, 8, 1, 4, 41, tzinfo=UTC))
+
+    out = rec.expand(
+        event,
+        "FREQ=WEEKLY;UNTIL=20260801T000000Z",
+        window_start=datetime(2026, 7, 1, tzinfo=UTC),
+        window_end=datetime(2026, 9, 1, tzinfo=UTC),
+    )
+
+    assert [o.start for o in out] == [event.start]
+
+
+def test_a_count_of_zero_occurrences_still_shows_the_event_once() -> None:
+    """Same rule from the other direction: a bound that excludes everything
+    must not exclude the programme itself."""
+    event = _event(datetime(2026, 8, 10, 19, 0, tzinfo=UTC))
+
+    out = rec.expand(
+        event,
+        "FREQ=DAILY;UNTIL=20260101T000000Z",
+        window_start=datetime(2026, 8, 1, tzinfo=UTC),
+        window_end=datetime(2026, 9, 1, tzinfo=UTC),
+    )
+
+    assert len(out) == 1
+
+
+def test_an_anchor_outside_the_window_is_not_dragged_into_it() -> None:
+    """The limit of the rule above. A series that ended in March must not
+    reappear in August just because its bounds excluded everything."""
+    event = _event(datetime(2026, 3, 2, 19, 0, tzinfo=UTC))
+
+    out = rec.expand(
+        event,
+        "FREQ=WEEKLY;UNTIL=20260301T000000Z",
+        window_start=datetime(2026, 8, 1, tzinfo=UTC),
+        window_end=datetime(2026, 9, 1, tzinfo=UTC),
+    )
+
+    assert out == []
+
+
+def test_an_exdate_naming_the_first_instance_still_cancels_it() -> None:
+    """The other limit: somebody saying "not that one" explicitly outranks the
+    courtesy above."""
+    event = _event(datetime(2026, 8, 10, 19, 0, tzinfo=UTC))
+
+    out = rec.expand(
+        event,
+        "FREQ=WEEKLY;UNTIL=20260801T000000Z",
+        window_start=datetime(2026, 8, 1, tzinfo=UTC),
+        window_end=datetime(2026, 9, 1, tzinfo=UTC),
+        exdates="20260810T190000Z",
+    )
+
+    assert out == []

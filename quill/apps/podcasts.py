@@ -12,6 +12,14 @@ import sys
 
 import wx
 
+from quill.apps.podcasts_close import (
+    _CLOSE_ACTION_LABELS,
+    CastCloseMixin,
+    _close_action_index,
+    _close_action_value,
+)
+from quill.apps.podcasts_go_to import CastGoToMixin
+from quill.apps.podcasts_help_surfaces import CastHelpSurfacesMixin
 from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
 from quill.apps.podcasts_menu import APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
 from quill.ui.app_quillins import QuillinsAppMixin
@@ -41,6 +49,9 @@ class PodcastsAppFrame(
     AppShellFrame,
     PodcastsMixin,
     CastLibraryActionsMixin,
+    CastCloseMixin,
+    CastGoToMixin,
+    CastHelpSurfacesMixin,
     CastMenuBarMixin,
     CastWinampKeysMixin,
     MediaSleepTimerMixin,
@@ -151,6 +162,11 @@ class PodcastsAppFrame(
         from quill.ui.podcasts.first_run_dialog import maybe_run_first_run
 
         wx.CallAfter(maybe_run_first_run, self)
+        # What this installation cannot do, said once. Every Cast feature that
+        # needs FFmpeg fails by producing a plausible result -- an untrimmed
+        # download, an analysis that finds no chapters -- so without this the
+        # loss is invisible (list.md 5.3). Silent on a healthy install.
+        wx.CallAfter(self.surface_cast_media_health)
 
     # -- main panel -------------------------------------------------------------
     #
@@ -750,6 +766,23 @@ class PodcastsAppFrame(
             ],
             choices=[
                 PreferenceChoice(
+                    "When c&losing the window:",
+                    # Radio has carried these three for as long as it has had a
+                    # tray icon. Cast had only the Alt+F4 checkbox above, so the
+                    # titlebar X ended playback with no way to say otherwise
+                    # (list.md 5.4). Exit stays the shipped answer: an upgrade
+                    # that starts asking a question is an upgrade that changed
+                    # somebody's Alt+F4 under them.
+                    "What the titlebar X, Alt+F4 and Exit do. Ask every time "
+                    "offers Exit or Minimize to Tray, and can remember your "
+                    "answer. Minimize to Tray keeps playing and downloading "
+                    "with the window out of the way; the tray icon brings it "
+                    "back. This does not change the Alt+F4 setting above, which "
+                    "acts first when it is on.",
+                    list(_CLOSE_ACTION_LABELS),
+                    _close_action_index(history.close_action),
+                ),
+                PreferenceChoice(
                     "Check subscribed podcast &feeds:",
                     # The rule from section 3: what it does, then the misreading
                     # it prevents. Every misread here has been the second half.
@@ -780,8 +813,9 @@ class PodcastsAppFrame(
             history.winamp_playback_keys,
             history.podcast_check_enabled,
         ) = checkbox_values
+        history.close_action = _close_action_value(choice_indices[0])
         history.podcast_check_interval_minutes = refresh_policy.interval_from_index(
-            choice_indices[0]
+            choice_indices[1]
         )
         podcast_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()
@@ -940,54 +974,6 @@ class PodcastsAppFrame(
             self._tree_reload_pending = False
             if getattr(self, "_shows_tree", None) is not None:
                 self._reload_library_tree()
-
-    # -- lifecycle --------------------------------------------------------------
-
-    def _on_cast_app_close(self, event: wx.CloseEvent) -> None:
-        # Cast has no "ask"/minimize confirm -- closing always exits -- but it
-        # routes through the shared close flow (AppShellFrame.handle_app_close)
-        # so all three companion apps share one path. protected=False means the
-        # confirm is never reached; close_action="exit" closes straight away.
-        self.handle_app_close(
-            event,
-            close_action="exit",
-            protected=False,
-            confirm=lambda: "exit",
-            shutdown=self._cast_shutdown,
-        )
-
-    def _cast_shutdown(self) -> None:
-        try:
-            self._app_host.shutdown()
-        except Exception:  # noqa: BLE001 - Quillin teardown must never block exit
-            pass
-        try:
-            # Force the write rather than going through the coalescing path:
-            # this is the last chance, and a pending timer will never fire.
-            self._podcast_flush_stats()
-            self._flush_podcast_library()
-        except Exception:  # noqa: BLE001 - a failed save must never block exit
-            pass
-        for action in (
-            getattr(getattr(self, "_scan_hold", None), "shutdown", None),
-            getattr(self._podcast_controller, "shutdown", None),
-            getattr(self, "_shutdown_podcast_transfers", None),
-        ):
-            if action is None:
-                continue
-            try:
-                action()
-            except Exception:  # noqa: BLE001 - shutdown must never block exit
-                pass
-        self._task_manager.shutdown(wait=False)
-        self._unregister_media_keys()
-        # Guarded like MainFrame's teardown: a hotkey unregister failure must
-        # never block the window from closing.
-        try:
-            self._unregister_global_hotkeys()
-        except Exception:  # noqa: BLE001 - shutdown must never block exit
-            pass
-        self._remove_tray_icon()
 
 
 def main() -> int:

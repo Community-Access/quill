@@ -44,8 +44,12 @@ def test_apps_init_the_host_and_add_the_menu() -> None:
 
 
 def test_apps_shut_down_the_host() -> None:
+    # Cast's whole lifecycle block -- the close preference, the confirm and
+    # the teardown -- moved to apps/podcasts_close.py under GATE-11 when the
+    # three close answers landed (list.md 5.4).
+    cast = _read("quill/apps/podcasts.py") + _read("quill/apps/podcasts_close.py")
     assert "self._app_host.shutdown()" in _read("quill/apps/radio.py")
-    assert "self._app_host.shutdown()" in _read("quill/apps/podcasts.py")
+    assert "self._app_host.shutdown()" in cast
 
 
 # -- capability split (app-neutral vs editor-only) ---------------------------

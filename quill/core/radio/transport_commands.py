@@ -20,7 +20,7 @@ an id, a label, a default key and nothing else, so
 * and the two apps can be compared -- and their drift measured -- by a test
   rather than by reading two menu builders.
 
-Three rules the key choices follow:
+Four rules this table follows:
 
 **In-app, never OS-global.** These are accelerators on the app's own windows.
 Quill Radio does not take a key away from the rest of the computer to do them
@@ -30,6 +30,19 @@ this is not that).
 **Ctrl+Alt+arrow is off limits.** QUILL's table navigation owns that block, and
 a transport verb that fights table navigation is a verb that works everywhere
 except where somebody is reading a table.
+
+**A verb means the same thing in both players.** This is the table's actual
+contract, and it is written here because it has been making decisions on its
+own. Adding Skip Silence obliged QUILL Cast to implement it -- the right
+outcome, arrived at because a test went red rather than because anybody
+decided it (list.md 12.1). There is deliberately **no "Radio only" field**: the
+moment a row can be app-conditional, the two apps start disagreeing about what
+Ctrl+Shift+Up does, which is the exact drift this module was written to end. A
+verb one app cannot honour does not belong in the table; it belongs in that
+app's own menu. What that costs is real and is the point -- a new row is a
+commitment in two apps, and :func:`quill.ui.radio.transport_keys.perform` must
+be able to resolve it in both. It found Ctrl+Shift+P resolving to nothing in
+either.
 
 **A verb that a listener cannot use is not offered.** ``needs_bounded`` marks
 the verbs that only mean something for a *recording* -- speed, seeking,

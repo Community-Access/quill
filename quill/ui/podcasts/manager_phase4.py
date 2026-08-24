@@ -21,13 +21,13 @@ from __future__ import annotations
 from quill.core.podcasts import volume_boost
 from quill.core.podcasts.filtering import (
     filter_shows,
-    search_everywhere,
 )
 from quill.core.podcasts.models import Playlist, PodcastEpisode, PodcastShow
 from quill.core.podcasts.virtual_views import virtual_view_pairs
 from quill.ui.podcasts import volume_boost_ui
 from quill.ui.podcasts.episode_search import EpisodeSearchMixin
 from quill.ui.podcasts.manager_expired import ManagerExpiredMixin
+from quill.ui.podcasts.manager_search_everywhere import SearchEverywhereMixin
 
 _EPISODE_FILTER_LABELS = (
     "All",
@@ -72,7 +72,7 @@ _PINNED_VIEWS = (
 _MAX_CROSS_SHOW_ROWS = 1000
 
 
-class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin):
+class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin, SearchEverywhereMixin):
     """Phase 4 wiring; mixed into PodcastManagerDialog."""
 
     # -- filter row -----------------------------------------------------------
@@ -390,48 +390,6 @@ class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin):
         if 0 <= index < len(pair_shows):
             return pair_shows[index]
         return None
-
-    # -- Search Everywhere ------------------------------------------------------
-
-    def _on_search_everywhere(self) -> None:
-        from quill.core.podcasts.episode_notes import load_episode_notes
-        from quill.core.podcasts.transcripts import iter_cached_transcripts
-        from quill.ui.podcasts.search_everywhere_dialog import SearchEverywhereDialog
-
-        try:
-            transcripts = list(iter_cached_transcripts())
-        except Exception:  # noqa: BLE001 - a broken cache must not block search
-            transcripts = []
-        dialog = SearchEverywhereDialog(
-            self.dialog,
-            on_search=lambda query: search_everywhere(
-                self._library,
-                query,
-                episode_notes=load_episode_notes(),
-                transcripts=transcripts,
-            ),
-            announce_cb=self._announce,
-        )
-        result = dialog.show()
-        if result is None:
-            return
-        self._select_search_result(result)
-
-    def _select_search_result(self, result: object) -> None:
-        """Land the tree/list selection on a Search Everywhere hit."""
-        show = self._library.find_show(getattr(result, "show_id", "") or "")
-        if show is None:
-            return
-        self.refresh_tree()
-        self._restore_tree_anchor(("show", show.id))
-        guid = getattr(result, "episode_guid", "") or ""
-        if guid:
-            for row, episode in enumerate(self._current_episodes):
-                if episode.guid == guid:
-                    self._episodes.Select(row)
-                    self._episodes.Focus(row)
-                    break
-        self._announce(f"Selected {show.title}")
 
     # -- Play Queue ---------------------------------------------------------------
 

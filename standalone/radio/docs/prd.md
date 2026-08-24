@@ -1866,3 +1866,53 @@ sentence: true, and useless.
 over the podcast UI. The scanner and snapshot rules both gates share now live
 in `quill/tools/help_audit.py`, so the two cannot drift.
 
+
+## 16. A published schedule must be shown, and shown at the right time (2026-08-24)
+
+Two requirements that the ACB Media Schedule window turned out not to meet.
+Both were found by reading the live feed, and neither would have been found by
+a test written from the same assumptions as the code.
+
+### 16.1 A time is read in the zone it was written in
+
+**Requirement.** A calendar time that states its zone is read in that zone.
+Only a genuinely floating time -- no `Z`, no `TZID` -- falls back to UTC.
+
+The window read every time as UTC and then rendered it in the reader's own
+zone (`calendar_actions.clock`), so the entire schedule sat five hours early
+everywhere but UTC. The failure has no edge to catch on: every programme moves
+by the same amount, so the schedule still reads as a schedule.
+
+The fallback stays, and its reasoning is unchanged -- guessing the reader's
+zone for a floating time is wrong by a different amount on every machine,
+where being consistently wrong is at least correctable. What changed is that
+a stated zone is no longer treated as an absent one. A zone this machine
+cannot resolve degrades to the old reading rather than dropping the event.
+
+### 16.2 A published programme is never silently absent
+
+**Requirement.** Expanding a repeat rule may drop *repeats* it cannot
+interpret. It may never drop the programme.
+
+`DTSTART` is the first instance of a recurrence set (RFC 5545 3.8.5.3), and it
+is kept even when the rule's own bounds exclude everything -- which is exactly
+what ACB's first real recurring entry does, its `UNTIL` falling before the
+event it is attached to. The expander already had this instinct in one place:
+an unreadable or unsupported `FREQ` returns the event unchanged rather than
+nothing. This extends it to a rule that is perfectly readable and produces an
+empty set.
+
+Two limits keep it honest: an anchor outside the requested window is not
+dragged into it, and an `EXDATE` naming the anchor still cancels it, because
+that is somebody saying so on purpose rather than a bound that happens to
+exclude everything.
+
+### 16.3 The fixture is verbatim
+
+**Requirement.** A fixture standing in for a live feed is captured
+byte-for-byte, including whitespace and parameters that look decorative.
+
+Both faults above live in exactly the parts a tidied-up fixture loses: a
+`TZID` parameter that looks like metadata, and the double spacing ACB's
+exporter emits. `tests/unit/core/radio/fixtures/acb-2026-08-recurring.ics` is
+three events copied out of the live feed untouched.

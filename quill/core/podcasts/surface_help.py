@@ -40,6 +40,12 @@ from quill.core.control_help import (
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
     # -- the windows -------------------------------------------------------------
+    "Closing QUILL Cast": (
+        "What closing the window should do: exit, or keep playing with QUILL "
+        "Cast tucked into the system tray. Cancel leaves everything as it "
+        "was. Don't ask me again remembers your answer, and Preferences can "
+        "set it back to asking."
+    ),
     "QUILL Cast": (
         "The main window: what is playing, and the transport for it. Your "
         "shows live in the Podcast Manager, the episodes waiting for you are "
@@ -179,6 +185,26 @@ PURPOSES: dict[str, str] = {
 
 #: Purposes for windows whose titles carry live data, matched by prefix.
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
+    (
+        # The three single-setting editors are titled "<Setting> -- <Show>",
+        # so they are matched by prefix; each carries its own sentence on the
+        # control itself (single_settings.SingleSetting.help).
+        "Episodes to Keep",
+        "How many downloaded episodes of this one podcast to keep before the "
+        "oldest are deleted. Zero keeps all of them, and it is the downloaded "
+        "audio only -- nothing leaves the episode list.",
+    ),
+    (
+        "Queue Expiry",
+        "How long this one podcast's episodes wait in the Play Queue before "
+        "they drop out. Zero means they wait indefinitely. Dropping out of "
+        "the queue does not delete an episode or mark it played.",
+    ),
+    (
+        "Playback Speed",
+        "How fast this one podcast plays, remembered between its episodes, so "
+        "a host who talks slowly stays sped up without setting it each time.",
+    ),
     (
         "Review Chapters",
         "The chapters Cast worked out for this episode, before they are "

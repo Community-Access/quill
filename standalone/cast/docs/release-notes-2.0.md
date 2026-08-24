@@ -509,6 +509,87 @@ transferring will finish.
   QUILL Cast**, **Add to QUILL Cast Queue** and **Send to the QUILL Cast
   Inbox** are on those rows now, and Cast carries them out at its next launch.
 
+## Six things Quill Radio had and QUILL Cast did not
+
+Two apps, one audience, and a list of small things that had only ever been
+built once. None of them are new ideas -- they are all Radio's, brought across
+where the reasoning applies equally to podcasts.
+
+**A Keyboard Shortcuts Sheet** (Ctrl+Alt+Shift+K). Cast had the shortcuts
+*editor*, which is for changing a key you can already name. The sheet is for
+finding out which keys exist. It is generated from the menus you actually
+have, so it includes anything you rebound and cannot go stale, and a filter
+box narrows 130 rows to the eight about recording -- or downloading, or
+chapters.
+
+**Go To** (Ctrl+G). A short numbered list of places -- Podcast Manager,
+Continue Listening, Play Queue, Downloads, Bookmarks, Statistics -- where the
+numbering never moves. That is what makes it different from the Window menu,
+which renumbers itself every time something opens. You choose which ten places
+are on the list and in what order; anything a later release adds lands in a
+pool rather than in your menu, so an update cannot renumber what you have
+learned. Cast's only "Go To" until now jumped to a *time inside an episode*,
+which is a different feature that happens to share two words.
+
+**Something to say when FFmpeg is missing.** Cast needs it for four things:
+trimming silence off a download, evening out its volume, working out chapters
+for an episode that has none, and Sound Enhancements while playing. Every one
+of them fails by producing a plausible result -- the download completes and is
+simply not trimmed; the chapter analysis finishes and finds nothing, which is
+what an episode with no chapters looks like. So it is now said once at launch,
+naming what is lost, and silence means all is well. **Help > Media Tools**
+(Ctrl+Alt+Shift+M) answers the same question whenever you ask.
+
+**Three answers to closing the window.** Cast exited, and had one narrow
+escape from it in the Alt+F4 checkbox -- so the titlebar X ended an hour of
+listening with no way to say otherwise. Preferences now carries *When closing
+the window*: Ask every time, Exit, or Minimize to Tray. Exit stays the shipped
+answer, because an upgrade that starts asking a question has changed your
+Alt+F4 under you. Ask only asks when there is something to lose, and names it:
+"An episode is playing and 2 downloads are in progress."
+
+**Search Everywhere remembers.** The box is a combo now: press the down arrow
+for the last fifteen searches, newest first, and choosing one runs it. The
+episode about the harbour is a thing people look for several times across a
+week, from a different place in the library each time.
+
+**Back Up My Podcasts** (Ctrl+Alt+Shift+B) and **Restore from a Backup**
+(Ctrl+Alt+Shift+R). Cast had Export My Data -- a readable snapshot you can
+look at but cannot put back -- and the shared setup transfer. Neither is a
+restore, and Cast's library is the more painful of the two apps' to lose:
+subscriptions, folders, playlists, positions, notes and statistics are years
+of accumulated choices, where a station list can be rebuilt from a directory
+in an afternoon. The backup is one file; downloaded episodes are optional and
+left out by default, because they are the part that can always be fetched
+again. A restore names the date and the size of what it is about to put back
+*before* it does anything, stops playback first, and leaves your library live
+without a restart.
+
+## And one thing Earshot had
+
+**Three per-show settings you can reach in one keystroke.** How many downloads
+to keep, how long an episode waits in the queue, and how fast this particular
+host talks are the settings people change over and over -- and each of them
+lived in a window of two dozen controls. Each now has its own row on a show's
+context menu, opening a window with **one control and the cursor already in
+it**. They are Quick Actions too, so if you adjust speed constantly you can
+put Playback Speed first and reach it with Ctrl+1.
+
+## One fix worth naming
+
+**Ctrl+Shift+P opened nothing, in every window.** The Command Palette key
+rides the shared transport keyboard that both QUILL Cast and Quill Radio
+install on every window, and it resolved to nothing in either app: the palette
+belongs to the window, and the key was only ever asking the player. It was
+silent about it, which is why nobody reported it -- a key that quietly does
+nothing looks exactly like a key that was never bound. It opens the palette
+now, from anywhere.
+
+The reason it went unnoticed for so long is worth writing down too: every test
+either app had was an *app's* test, and this was broken in both, identically,
+for the same reason. There is now one that walks the shared table verb by verb
+and asks whether each app can actually perform it.
+
 ---
 
 ## For anybody keeping score on the format

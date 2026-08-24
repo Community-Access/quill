@@ -78,8 +78,21 @@ def expand(
         if start in skipped:
             continue
         out.append(_occurrence(event, start))
-    # The anchor itself may sit outside the window (a series that began in
-    # March, seen in August), in which case it must not be added back.
+    # DTSTART is always the first instance of a recurrence set (RFC 5545
+    # 3.8.5.3), whatever the rule says afterwards. This is not pedantry: the
+    # first real RRULE ACB published carries an UNTIL that falls *before* the
+    # event it is attached to, so a strict reading of the bounds drops the
+    # programme entirely (found against the live feed, 2026-08-24). A schedule
+    # that quietly omits a published programme is the worst failure this app
+    # has; showing it once is what every other calendar does with the same
+    # entry.
+    #
+    # The anchor still has to be inside the window -- a series that began in
+    # March, seen in August, must not be dragged forward -- and an EXDATE that
+    # names it still cancels it, because that is somebody saying so explicitly.
+    anchor = event.start
+    if not out and window_start <= anchor <= window_end and anchor not in skipped:
+        out.append(_occurrence(event, anchor))
     return out
 
 

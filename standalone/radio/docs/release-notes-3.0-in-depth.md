@@ -1379,6 +1379,82 @@ sentence in the panel are both presentation), and
 have a theme: every one of them exists because the app otherwise only speaks
 when it decides to).
 
+## 23. The ACB schedule was five hours early, and nobody could tell
+
+The ACB Media Schedule window (Station > ACB Media Schedule, Ctrl+Shift+N) has
+been reading the feed correctly since the day it shipped, and showing every
+programme at the wrong time.
+
+### 23.1 A parse that was documented and wrong
+
+`core/radio/ics.parse_timestamp` handled three forms: `20260824T193000Z`,
+`20260824T193000` and `20260824`. The docstring said a floating time -- no
+`Z`, no zone -- is read as UTC, "because guessing wrong by five hours is worse
+than being consistently wrong by an amount the caller can see and correct".
+That reasoning is right, and it was being applied to times that were not
+floating at all.
+
+Every one of the 69 events in ACB's August export is written
+`DTSTART;TZID=America/Chicago:...`. The property parser split the name from
+the value correctly -- it even has a test for the colon inside a quoted
+`TZID` -- and then dropped the parameter, so the zone was read and discarded.
+`calendar_actions.clock` then converted the result into the reader's own zone,
+which is what turned an ignored offset into a visible one: five hours early on
+Central time, seven on the Pacific coast, and exactly right for anybody
+running on UTC.
+
+**Why nobody reported it.** A schedule that is uniformly wrong still looks
+like a schedule. Every programme moves by the same amount, the ordering is
+unchanged, the day headings are unchanged, and there is nothing on screen to
+compare against. The failure has no edge to catch on.
+
+The fix keeps the old behaviour for genuinely floating times and honours the
+zone where the feed states one. `tzdata` was already a dependency, so a zone
+name resolves on Windows too; a zone this machine has never heard of falls
+back to the previous reading rather than dropping the programme.
+
+### 23.2 The first real repeat rule, and what it did
+
+`core/radio/ics_recurrence` was written against feeds we wrote ourselves,
+because ACB's export contained no `RRULE` at all -- 32 tests, none of which had
+met the real thing. That was recorded as an open question rather than a
+completed feature, and it was the right way round: reading the live feed on
+2026-08-24 found their first genuine recurring entry, and it is a case none of
+the 32 covered.
+
+    SUMMARY:Flight 93 National Memorial visitors center
+    RRULE:FREQ=WEEKLY;UNTIL=20260801T000000Z
+    DTSTART;TZID=America/Chicago:20260731T234100
+    DTEND;TZID=America/Chicago:20260801T013900
+
+The `UNTIL` is 04:41 UTC *before* the event's own start, and before its end.
+Read strictly -- and the expander did read it strictly -- the recurrence set is
+empty, and the programme disappears from the schedule entirely. Note that this
+only became visible *after* 23.1: while the zone was being ignored, the start
+read as 23:41 UTC, which is inside the bound, and the event survived by
+accident.
+
+RFC 5545 is explicit that `DTSTART` is the first instance of a recurrence set,
+and every other calendar shows this entry once. More to the point, a schedule
+that quietly omits a published programme is the worst thing that window can
+do: there is no error, no gap, nothing to notice. So the anchor occurrence is
+now always kept, with two limits that matter -- an anchor outside the window is
+still not dragged into it (a series that ended in March must not reappear in
+August), and an `EXDATE` naming the anchor still cancels it, because that is
+somebody saying so explicitly.
+
+### 23.3 What the tests do differently now
+
+`tests/unit/core/radio/fixtures/acb-2026-08-recurring.ics` is three events
+taken verbatim from the live feed, double spacing and all. A fixture somebody
+has tidied up is no longer evidence of what arrives, and both faults above
+live in the parts that get tidied: a parameter that looks decorative, and
+whitespace.
+
+One of its assertions is deliberately naive -- ACB Presents the Daily Schedule
+is a 9 am Central programme, and the test says so. If that ever reads 2 pm
+again, the timezone has been dropped again.
+
 ---
 
 *The story version of this release is in `release-notes-3.0`, which ships in this

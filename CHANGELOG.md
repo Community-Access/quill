@@ -6,6 +6,65 @@ The most recent work first: a reliability pass driven entirely by what people
 reported (a full disk that could lose a document, an editor doing too much work
 between keystrokes), then the release as originally scoped below.
 
+### Six things Quill Radio had and QUILL Cast did not (2026-08-24)
+
+A Keyboard Shortcuts Sheet, Go To, a word when FFmpeg is missing, three
+answers to closing the window, a search box that remembers, and a real backup
+you can restore. Details in QUILL Cast's release notes; the shape worth
+recording here is that five of the six are now *one* implementation serving
+both apps rather than two that will drift. The Go To machinery moved to
+`core/go_to_menu`; the shortcuts sheet was already app-neutral, because it
+reads the live menu bar rather than a list somebody maintains.
+
+The exception is deliberate: the media-tools notice and the close-confirm
+dialog are Cast's own, because the words are the product. Radio's warns about
+a recording in progress and offers to keep recording in the tray, and a shared
+dialog with the nouns swapped by parameter would read as neither app's.
+
+### The ACB schedule was five hours early, and nobody could tell (2026-08-24)
+
+Every event in ACB Media's calendar is written in US Central time and says so
+in the feed. The reader took those times as UTC and then converted them to the
+reader's own clock, so the entire schedule sat five hours out on any machine
+not running on UTC -- and a schedule that is consistently wrong still looks
+like a schedule, which is why it went unreported.
+
+It surfaced because ACB published their first genuine recurring event, and
+reading the live feed to check the recurrence code turned up the timezone
+instead. The recurrence itself found a second fault on the way past: that
+entry's repeat rule ends before the event it is attached to, and a strict
+reading of it drops the programme from the schedule altogether. A published
+programme that quietly does not appear is the worst thing that window can do,
+so the first occurrence is now always shown -- which is what every other
+calendar does with the same entry.
+
+### The dialogs nobody could open (2026-08-24)
+
+Two finished, keyboard-hardened dialogs in the verbosity preferences had never
+been reachable. **Per-chord wording** -- reword what a single key announces,
+so Ctrl+Right after a Find can say something different from Ctrl+Right in a
+paragraph -- and **Install Pack**, which takes a `.qvp.json` verbosity pack.
+Both had passing tests, and passing tests were what made it survivable: the
+modules were mentioned constantly, just never by anything a person could
+press. They are now two buttons in Verbosity preferences beside the seven that
+were already there.
+
+The chord editor needed one thing that did not exist: the list of which key
+fires which announcement. It has two halves, because chords come from two
+places. The platform's editing keys -- Ctrl+Right, Backspace, Ctrl+Home --
+are fixed, because QUILL never bound them and cannot rebind them. The rest are
+read live from your keymap, so a Save you moved to F12 appears in the list as
+F12 rather than as the Ctrl+S it used to be.
+
+**A new gate stops this happening again.** Every gate we had ran the same
+direction: does this feature have documentation, does this window have an
+authored purpose. All of them start at the code and look for words. None
+started at a window and asked *can anybody get here?* GATE-REACH does: it
+begins at the app entry points, follows imports, and reports any module that
+puts something on screen and cannot be arrived at. **Tests do not count as
+callers** -- that is the whole point, and it is why the first run found
+exactly these two. All 322 surfaces now answer for themselves.
+
 ### QUILL Cast welcomes a first-time listener (2026-08-24)
 
 Three screens on a genuinely first launch -- welcome, add your first podcast,
