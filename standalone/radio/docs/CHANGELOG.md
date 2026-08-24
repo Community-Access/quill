@@ -17,6 +17,51 @@ gone missing, and several long-standing silent faults are fixed. See
 
 ### Added
 
+- **The ACB Media schedule, in Quill Radio.** Station > ACB Media Schedule
+  (Ctrl+Shift+N) opens a week -- Sunday to Saturday, a heading before each day,
+  every day shown including the empty ones, because a week that quietly omits
+  Wednesday reads as a week with no Wednesday. Search narrows it in place and a
+  channel box narrows it to one of the ten. Previous Week, Next Week and Today
+  move around it, and Export writes what you are looking at -- filtered and all
+  -- to a Markdown file.
+- **Six things you can do to a programme, three ways each.** Play, Schedule a
+  Recording, Set a Reminder, Add to the Play Queue, Copy Details and Show
+  Notes, reachable from the context menu (Shift+F10 or the Applications key),
+  from tabbable buttons in the same order, and by Enter for the obvious one. A
+  verb that cannot run is dimmed and says why -- a programme on no named channel
+  has nothing to play, and one that finished on Tuesday cannot be recorded.
+- **Play means the channel, and says so.** Live radio has one thing on it at a
+  time, so playing a Thursday programme on Tuesday is not something the medium
+  can do. Quill Radio tunes in to the channel and tells you whether the
+  programme is on now or when it starts, rather than letting you believe you
+  started a show. Add to Queue says the same thing for the same reason.
+- **Schedule a Recording knows everything already.** The calendar has the
+  channel, the date, the start time and the length -- every field that window
+  would have asked for -- so it confirms those four facts and schedules it. A
+  form you only have to press OK on is still a form.
+- **What Is On Now** (Ctrl+Alt+H): one key, one sentence, across all ten
+  channels, without opening anything. It answers from the stored schedule, so
+  it answers immediately.
+- **Reminders, and Upcoming.** Set a reminder on any programme -- when it
+  starts, or 5 minutes to a day before -- and Quill Radio says so when the time
+  comes, including for one that came due while the app was closed. Quiet hours
+  can hold a reminder back, and holding it back does not end it: it stays due
+  and reappears when the quiet window does. **Upcoming** (Ctrl+Alt+Shift+F)
+  is everything planned, reminders and scheduled recordings together, soonest
+  first, with the kind on every row -- because Dismiss on a reminder and
+  Dismiss on a recording would mean two very different mornings.
+- **The schedule works offline.** It is kept on this computer and refreshed
+  when you open the window (if it has aged past an hour) or when you press
+  Refresh -- never on a background timer. With no connection it opens from what
+  it has and says how old that is, rather than presenting three-day-old
+  listings as current. A schedule that will not load is an empty week with a
+  sentence, and the reason is written into Recent Problems.
+- **A programme ACB lists twice appears once.** Their feed genuinely publishes
+  some entries in duplicate -- the same title, start, end and channel, under two
+  different internal ids -- so a listing that trusted those ids showed twenty of
+  August's sixty-nine entries twice over. Quill Radio treats a programme as the
+  same programme when it is on at the same time, on the same channel, under the
+  same name.
 - **Bookmarks, on anything Quill Radio plays.** Radio had no way to keep a
   moment at all. **Bookmark This Moment** (Playback menu) marks where you are
   in one keystroke -- a station, a recording, a saved YouTube row or a

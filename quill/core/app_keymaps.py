@@ -80,6 +80,12 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # place you name, Ctrl+Alt+Shift+J opens the places you saved.
         "app.bookmark_moment": "Ctrl+Alt+A",
         "app.bookmarks": "Ctrl+Alt+Shift+J",
+        # The ACB Media schedule (section 6). Three keys, not one window with
+        # tabs: browsing a week, asking what is on *without leaving what you
+        # are doing*, and reading what you have planned are three questions.
+        "radio.acb_calendar": "Ctrl+Shift+N",
+        "radio.on_now": "Ctrl+Alt+H",
+        "radio.upcoming": "Ctrl+Alt+Shift+F",
     },
     # QUILL Cast had no app keymap at all until undo needed one: every other
     # Cast accelerator is either a shared default or baked into a menu label.

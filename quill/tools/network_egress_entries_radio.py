@@ -57,15 +57,19 @@ RADIO_EGRESS: dict[str, str] = {
     ),
     "core/radio/acb_calendar.py::_fetch_ics": (
         "Single egress site for the ACB Media programme schedule: one HTTPS "
-        "GET of ACB's My Calendar iCalendar export (their REST API is off, so "
-        "the ICS feed is the data path), parsed locally by core/radio/ics.py "
-        "with no dependency and no second request -- the feed names streams by "
-        "category and the stream addresses are already bundled in "
-        "core/radio/acb_media.py, so nothing is looked up. Reached when the "
-        "listener opens the ACB Media Schedule window and its cache has aged "
-        "out (one hour), or when they press Refresh; there is no background "
-        "timer. Verified TLS context, bounded timeout, and the response is "
-        "text only. Safe Mode answers from the cache and never fetches."
+        "GET of ACB's My Calendar iCalendar export at acbmedia.org (their REST "
+        "API is off, so the ICS feed is the data path), parsed locally by "
+        "core/radio/ics.py with no dependency and no second request -- the feed "
+        "names channels by category and the stream addresses are already "
+        "bundled in core/radio/acb_media.py, so nothing is looked up. The "
+        "address is built by ics_url() and carries only a month, a following "
+        "month and ACB's own published category ids: no listener data, no "
+        "identifier, nothing that says who is asking. Reached when the listener "
+        "opens the ACB Media Schedule window (or steps into a month whose cache "
+        "has aged past an hour), presses Refresh, or presses What Is On Now; "
+        "there is no background timer. Verified TLS context, bounded timeout, "
+        "and the response is read as text only. Safe Mode answers from the "
+        "cache and never fetches."
     ),
     "core/radio/youtube_channels.py::_flat_entries": (
         "Single egress site for following a YouTube channel with no Google "

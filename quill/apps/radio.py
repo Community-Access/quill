@@ -196,10 +196,10 @@ class RadioAppFrame(
         from quill.ui.radio import problem_retries
 
         self._register_app_support_commands(problem_retries)
-        # Bookmarks (4.3): what Radio plays, and what it can reopen.
-        from quill.ui.radio import bookmarks_wiring
+        # Bookmarks and the ACB Media schedule (radio_launch_tasks).
+        from quill.apps import radio_launch_tasks
 
-        bookmarks_wiring.register(self)
+        radio_launch_tasks.register_surfaces(self)
 
         self._ensure_tray_icon(self._build_radio_tray_menu, tooltip=_TITLE)
         self._register_media_keys({
@@ -1158,7 +1158,9 @@ class RadioAppFrame(
         prefs_id = wx.NewIdRef()
         station_menu.Append(prefs_id, "&Preferences...\tCtrl+,")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_preferences(), id=prefs_id)
-        station_menu.AppendSeparator()
+        from quill.apps.radio_launch_tasks import append_calendar_menu
+
+        append_calendar_menu(self, station_menu, wx)
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         station_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
         station_menu.Append(exit_id, "E&xit\tCtrl+Q")
@@ -2184,6 +2186,7 @@ class RadioAppFrame(
             # A wx.Timer still running when its frame goes is a timer that can
             # fire into a destroyed window.
             getattr(getattr(self, "_podcast_refresh_monitor", None), "stop", None),
+            getattr(getattr(self, "_reminder_monitor", None), "stop", None),
         ):
             if shutdown_fn is None:
                 continue

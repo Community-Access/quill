@@ -21,6 +21,9 @@ They are ordered, and the order is the argument:
    one.
 5. **The subscribed-feed check**, which is armed rather than run: the monitor
    has to exist before Preferences can re-apply its cadence.
+6. **Reminders**, armed the same way and for the same reason -- plus one look
+   straight away, which is what makes a reminder that came due while the app
+   was closed still get said.
 
 Extracted from ``apps/radio.py`` under GATE-11.
 """
@@ -47,4 +50,40 @@ def schedule(app: Any, wx: Any, *, safe_mode: bool = False) -> Any:
     wx.CallAfter(surface_media_health_startup, app)
     wx.CallAfter(open_startup_window, app)
     wx.CallAfter(maybe_run_first_run, app)
+    # 6. **Reminders**, armed here for the same reason the feed check is: the
+    #    timer has to exist before anything can set one, and its first look is
+    #    what makes a reminder missed while the app was closed still speak.
+    from quill.ui.radio import calendar_wiring
+
+    app._reminder_monitor = calendar_wiring.install_reminders(app, wx)
     return radio_podcast_refresh.install(app, wx, safe_mode=safe_mode)
+
+
+def register_surfaces(app: Any) -> None:
+    """Register the surfaces that are neither menus nor launch tasks.
+
+    Bookmarks (4.3) and the ACB Media schedule (section 6) each need two
+    things done at the same moment -- commands registered, and the app told
+    what it plays or can reopen -- and both have to happen after the command
+    registry exists. One call because "which extra surfaces does Quill Radio
+    have?" should have one answer in one place, and because ``radio.py`` is at
+    its GATE-11 ceiling and is not improved by knowing either answer.
+    """
+    from quill.ui.radio import bookmarks_wiring, calendar_wiring
+
+    bookmarks_wiring.register(app)
+    calendar_wiring.register(app)
+
+
+def append_calendar_menu(app: Any, station_menu: Any, wx: Any) -> None:
+    """The ACB Media schedule's three items, fenced by separators.
+
+    On the Station menu rather than Record: the schedule is about what is
+    *on*, and recording one programme is a verb inside it rather than the
+    reason to open it.
+    """
+    from quill.ui.radio import calendar_wiring
+
+    station_menu.AppendSeparator()
+    calendar_wiring.append_menu_items(app, station_menu, wx)
+    station_menu.AppendSeparator()

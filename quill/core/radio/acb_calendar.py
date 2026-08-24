@@ -38,19 +38,62 @@ from typing import Any
 
 from quill.core.radio.ics import CalendarEvent, parse_calendar
 
-#: ACB's My Calendar ICS export. My Calendar answers ``?ical=1`` on its own
-#: page; the address is a constant rather than a setting because it is a fact
-#: about ACB's site, not a preference -- and a wrong one degrades to "the
-#: schedule could not be read", never to a crash.
-ICS_URL = "https://acbmedia.org/acb-media-schedule/?ical=1"
+#: ACB's My Calendar ICS export (confirmed against acbmedia.org, 2026-08-24).
+#:
+#: **The month is part of the address**, which is the whole reason this is a
+#: template rather than a constant: My Calendar serves a *window*, not the
+#: whole calendar, and ``month``/``yr`` say which. A hardcoded month would work
+#: perfectly until the first of September and then return last month's
+#: listings for ever -- the kind of failure that looks like a quiet schedule
+#: rather than a bug.
+#:
+#: ``nmonth``/``nyr`` name the following month, so each fetch covers two: a
+#: week that straddles the 31st is one request, not two.
+#:
+#: ``mcat`` is My Calendar's category filter, and the list is ACB's own
+#: published set. Passing every id rather than omitting the parameter is
+#: deliberate -- omitting it returns the site's *default* categories, which is
+#: a subset somebody chose in WordPress and could change without warning.
+ICS_URL_TEMPLATE = (
+    "https://www.acbmedia.org/feed/my-calendar-ics/"
+    "?dy=1&format=list&mcat={categories}"
+    "&month={month}&nmonth={next_month}&nyr={next_year}&time=month&yr={year}"
+)
+
+#: ACB's category ids, as published on their own schedule page. Numbers rather
+#: than names because that is what the feed takes; the *names* come back in
+#: each event's CATEGORIES, which is what maps a programme to a channel.
+_CATEGORY_IDS = (
+    "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,23,28,29,32,34,36,38,40,56,57,58"
+)
 
 #: How long a cached schedule stays fresh. An hour: programme listings change
 #: on the order of days, and a week somebody opens twice in a morning should
 #: not cost two fetches.
 MAX_AGE_SECONDS = 3600.0
 
-#: The cache key. One key, because there is one schedule.
-CACHE_KEY = "acb-media-calendar"
+#: One cache entry per month, for the same reason the URL carries one: a
+#: single key would serve August's listings for October, from disk, silently.
+CACHE_KEY_PREFIX = "acb-media-calendar"
+
+
+def ics_url(moment: datetime) -> str:
+    """The feed address for the month containing *moment*, plus the next one."""
+    year, month = moment.year, moment.month
+    next_month, next_year = (1, year + 1) if month == 12 else (month + 1, year)
+    return ICS_URL_TEMPLATE.format(
+        categories=_CATEGORY_IDS,
+        month=month,
+        year=year,
+        next_month=next_month,
+        next_year=next_year,
+    )
+
+
+def cache_key(moment: datetime) -> str:
+    """The cache entry for that month."""
+    return f"{CACHE_KEY_PREFIX}-{moment.year:04d}-{moment.month:02d}"
+
 
 #: Named, because a server that logs its callers should be able to tell who
 #: this is -- and because an unattributed reader is the kind a site blocks.
@@ -63,24 +106,33 @@ _TIMEOUT_SECONDS = 20.0
 _STREAM_RE = re.compile(r"acb\s*media\s*(\d{1,2})", re.IGNORECASE)
 
 
-def fetch_schedule(*, refresh: bool = False, safe_mode: bool = False) -> tuple[list[Any], Any]:
-    """The schedule, and how old it is. Never raises.
+def fetch_schedule(
+    *, when: datetime | None = None, refresh: bool = False, safe_mode: bool = False
+) -> tuple[list[Any], Any]:
+    """The schedule around *when*, and how old it is. Never raises.
 
     Returns ``(events, age_seconds_or_None)`` -- ``None`` means it came off the
     network just now. Safe Mode answers with the cache alone and no fetch,
     because Safe Mode's promise is that nothing reaches out.
 
+    *when* decides which month is asked for and which cache entry answers, so
+    stepping forward a week near the end of a month fetches the next month
+    rather than re-reading a cached one that cannot contain it.
+
     Runs on a worker thread. Nothing here touches wx.
     """
     from quill.core.radio import directory_cache
 
+    moment = when or datetime.now(UTC)
+    key = cache_key(moment)
+
     if safe_mode:
-        entry = directory_cache.load(CACHE_KEY)
+        entry = directory_cache.load(key)
         return (_events_from(entry.payload) if entry is not None else [], _age(entry))
 
     payload, age = directory_cache.resolve(
-        CACHE_KEY,
-        _fetch_ics,
+        key,
+        lambda: _fetch_ics(moment),
         max_age_seconds=MAX_AGE_SECONDS,
         refresh=refresh,
         empty=[],
@@ -88,7 +140,7 @@ def fetch_schedule(*, refresh: bool = False, safe_mode: bool = False) -> tuple[l
     return (_events_from(payload), age)
 
 
-def _fetch_ics() -> list[dict[str, Any]]:
+def _fetch_ics(moment: datetime) -> list[dict[str, Any]]:
     """Read the feed and return events as JSON-safe rows.
 
     Rows rather than dataclasses because the cache is a JSON file: a
@@ -99,7 +151,7 @@ def _fetch_ics() -> list[dict[str, Any]]:
     import urllib.request
 
     request = urllib.request.Request(
-        ICS_URL,
+        ics_url(moment),
         headers={"User-Agent": _USER_AGENT, "Accept": "text/calendar, text/plain"},
     )
     with urllib.request.urlopen(  # noqa: S310 - literal HTTPS constant, no user input
@@ -289,7 +341,39 @@ def _events_from(payload: object) -> list[CalendarEvent]:
                 url=str(row.get("url", "") or ""),
             )
         )
-    return sorted(events, key=lambda event: event.start)
+    return deduplicate(sorted(events, key=lambda event: event.start))
+
+
+def deduplicate(events: list[CalendarEvent]) -> list[CalendarEvent]:
+    """Drop programmes the feed published twice (pure).
+
+    **ACB's feed really does this.** Confirmed against the live August 2026
+    export: 20 of 69 events were exact repeats -- same title, same start, same
+    end, same channel -- carrying *different* uids (``105795-4440`` and
+    ``105842-4487`` for the same Daily Schedule). So the uid cannot be the
+    identity, and a week view that trusted it showed every affected programme
+    twice.
+
+    Identity is what a listener would call the same programme: when it starts,
+    when it ends, what it is called, and which channel it is on. The first one
+    in file order wins, and the sort above is stable, so the surviving uid is
+    the same on every load -- which matters because a reminder targets a uid
+    and would otherwise attach itself to a row that vanished next week.
+    """
+    seen: set[tuple[str, str, str, tuple[str, ...]]] = set()
+    kept: list[CalendarEvent] = []
+    for event in events:
+        key = (
+            event.start.isoformat(),
+            event.end.isoformat() if event.end is not None else "",
+            event.summary.strip().casefold(),
+            tuple(sorted(name.strip().casefold() for name in event.categories)),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        kept.append(event)
+    return kept
 
 
 def _moment(value: object) -> datetime | None:
@@ -308,11 +392,14 @@ def _age(entry: Any) -> float | None:
 
 
 __all__ = [
-    "CACHE_KEY",
-    "ICS_URL",
+    "CACHE_KEY_PREFIX",
+    "ICS_URL_TEMPLATE",
     "MAX_AGE_SECONDS",
+    "cache_key",
+    "ics_url",
     "by_stream",
     "days_of",
+    "deduplicate",
     "fetch_schedule",
     "on_now",
     "search",

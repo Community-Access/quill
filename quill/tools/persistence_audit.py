@@ -182,6 +182,11 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # write moved to history_store when the record and the file were split
     # under GATE-11; history.py re-exports it, and both spellings are listed
     # so an importer of either is covered.
+    # Reminders somebody set by hand, one at a time, about programmes that
+    # happen once. Losing the file means missing the thing you asked to be
+    # told about, and no amount of recomputation brings it back -- content,
+    # not cache, and the reason the store is atomic like the rest.
+    "core/radio/reminders.py::save_reminders": "content",
     "core/radio/history.py::save_history": "content",
     "core/radio/history_store.py::save_history": "content",
     # An observed log of what each station played, not user-authored config:

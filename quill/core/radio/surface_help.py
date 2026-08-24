@@ -193,6 +193,22 @@ PURPOSES: dict[str, str] = {
         "A report of your listening: which stations, how long, and when. It "
         "reads your own local history and nothing leaves this computer."
     ),
+    "ACB Media Schedule": (
+        "What is on the ten ACB Media channels this week, Sunday to Saturday, "
+        "with a heading before each day. Enter tunes in to the highlighted "
+        "programme's channel; the buttons and the context menu also offer "
+        "Schedule a Recording, Set a Reminder, Add to the Play Queue and Copy "
+        "Details. Search narrows the week in place, and the channel box "
+        "narrows it to one. The schedule is kept on this computer, so it opens "
+        "with no connection and says how old it is when it does."
+    ),
+    "Upcoming": (
+        "Everything Quill Radio has planned -- reminders and scheduled "
+        "recordings together, soonest first, with the kind on every row. "
+        "Snooze and Dismiss work on a reminder; a recording is cancelled in "
+        "Schedule Recording, where it was made, because Dismiss on the wrong "
+        "row would mean a very different morning."
+    ),
     "Quiet Hours": (
         "The window in which this app stops speaking on its own: check ticks, "
         "new-episode notices, download notices. Feeds are still checked and "

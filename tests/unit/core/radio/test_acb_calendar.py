@@ -221,7 +221,7 @@ def _isolated_cache(monkeypatch, tmp_path):
 def test_a_schedule_that_will_not_load_is_no_events_rather_than_a_crash(monkeypatch) -> None:
     """A browse window that throws takes the window with it."""
 
-    def _boom() -> list:
+    def _boom(_when) -> list:
         raise OSError("acbmedia.org is unreachable")
 
     monkeypatch.setattr(acb_calendar, "_fetch_ics", _boom)
@@ -233,7 +233,7 @@ def test_a_schedule_that_will_not_load_is_no_events_rather_than_a_crash(monkeypa
 
 
 def test_a_fetched_schedule_comes_back_live_and_is_cached(monkeypatch) -> None:
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda: [_row("Main Menu")])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [_row("Main Menu")])
 
     events, age = acb_calendar.fetch_schedule()
     assert [e.summary for e in events] == ["Main Menu"]
@@ -247,10 +247,10 @@ def test_a_fetched_schedule_comes_back_live_and_is_cached(monkeypatch) -> None:
 
 
 def test_refresh_goes_past_a_fresh_cache(monkeypatch) -> None:
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda: [_row("Old")])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [_row("Old")])
     acb_calendar.fetch_schedule()
 
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda: [_row("New")])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [_row("New")])
     events, age = acb_calendar.fetch_schedule(refresh=True)
 
     assert [e.summary for e in events] == ["New"]
@@ -259,10 +259,10 @@ def test_refresh_goes_past_a_fresh_cache(monkeypatch) -> None:
 
 def test_a_dead_network_falls_back_to_the_cache(monkeypatch) -> None:
     """Works offline from the cache -- the second half of 6.8."""
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda: [_row("Main Menu")])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [_row("Main Menu")])
     acb_calendar.fetch_schedule()
 
-    def _boom() -> list:
+    def _boom(_when) -> list:
         raise OSError("no network")
 
     monkeypatch.setattr(acb_calendar, "_fetch_ics", _boom)
@@ -273,7 +273,7 @@ def test_a_dead_network_falls_back_to_the_cache(monkeypatch) -> None:
 
 
 def test_safe_mode_reads_the_cache_and_never_reaches_out(monkeypatch) -> None:
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda: [_row("Main Menu")])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [_row("Main Menu")])
     acb_calendar.fetch_schedule()
 
     monkeypatch.setattr(acb_calendar, "_fetch_ics", _never)
@@ -293,7 +293,7 @@ def test_a_cache_written_by_an_older_build_reads_as_fewer_events(monkeypatch) ->
     monkeypatch.setattr(
         acb_calendar,
         "_fetch_ics",
-        lambda: [_row("Good"), {"summary": "No start"}, "not a row", {"start": "whenever"}],
+        lambda _when: [_row("Good"), {"summary": "No start"}, "not a row", {"start": "whenever"}],
     )
     events, _age = acb_calendar.fetch_schedule()
 
@@ -304,7 +304,7 @@ def test_the_cache_round_trip_keeps_every_field(monkeypatch) -> None:
     row = _row("Main Menu")
     row["description"] = "Technology news, reviews, and interviews."
     row["url"] = "https://acbmedia.org/show"
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda: [row])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [row])
     acb_calendar.fetch_schedule()
 
     monkeypatch.setattr(acb_calendar, "_fetch_ics", _never)
@@ -331,5 +331,139 @@ def _row(summary: str) -> dict:
     }
 
 
-def _never() -> list:
+def _never(_when=None) -> list:
     raise AssertionError("the network must not be reached here")
+
+
+# -- the month is part of the address ---------------------------------------------
+
+
+def test_the_feed_address_carries_the_month_being_looked_at() -> None:
+    """A hardcoded month works perfectly until the first of September, and
+    then serves last month's listings for ever."""
+    august = acb_calendar.ics_url(datetime(2026, 8, 24, tzinfo=UTC))
+
+    assert "month=8" in august
+    assert "yr=2026" in august
+    assert "nmonth=9" in august and "nyr=2026" in august
+
+
+def test_december_rolls_the_following_month_into_the_next_year() -> None:
+    december = acb_calendar.ics_url(datetime(2026, 12, 3, tzinfo=UTC))
+
+    assert "month=12" in december and "yr=2026" in december
+    assert "nmonth=1" in december and "nyr=2027" in december
+
+
+def test_the_address_asks_for_every_category_rather_than_the_site_default() -> None:
+    """Omitting mcat returns whatever subset somebody chose in WordPress, which
+    can change without warning."""
+    assert "mcat=1,2,3" in acb_calendar.ics_url(datetime(2026, 8, 24, tzinfo=UTC))
+
+
+def test_each_month_gets_its_own_cache_entry() -> None:
+    """One key would serve August's listings for October, from disk, silently."""
+    august = acb_calendar.cache_key(datetime(2026, 8, 24, tzinfo=UTC))
+    october = acb_calendar.cache_key(datetime(2026, 10, 1, tzinfo=UTC))
+
+    assert august != october
+    assert august == "acb-media-calendar-2026-08"
+
+
+def test_a_different_month_is_a_different_fetch(monkeypatch) -> None:
+    asked: list[int] = []
+
+    def _fetch(when):
+        asked.append(when.month)
+        return [_row(f"Month {when.month}")]
+
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", _fetch)
+
+    acb_calendar.fetch_schedule(when=datetime(2026, 8, 24, tzinfo=UTC))
+    acb_calendar.fetch_schedule(when=datetime(2026, 9, 24, tzinfo=UTC))
+    acb_calendar.fetch_schedule(when=datetime(2026, 8, 25, tzinfo=UTC))
+
+    assert asked == [8, 9], "the third is August again, and comes from the cache"
+
+
+# -- the feed publishes some programmes twice -------------------------------------
+
+
+def test_a_programme_published_twice_is_listed_once() -> None:
+    """ACB's feed really does this. Confirmed against the live August 2026
+    export: 20 of 69 events were exact repeats -- same title, same start, same
+    end, same channel -- carrying *different* uids. A week view that trusted
+    the uid showed every affected programme twice."""
+    first = _event("The Daily Schedule")
+    twin = CalendarEvent(
+        uid="105842-4487",
+        summary=first.summary,
+        start=first.start,
+        end=first.end,
+        categories=first.categories,
+    )
+
+    assert acb_calendar.deduplicate([first, twin]) == [first]
+
+
+def test_the_first_one_wins_so_a_reminder_keeps_its_target() -> None:
+    """A reminder targets a uid. If the survivor changed between loads, the
+    reminder would attach itself to a row that vanished next week."""
+    first = _event("The Daily Schedule")
+    twin = CalendarEvent(
+        uid="zzz-later",
+        summary=first.summary,
+        start=first.start,
+        end=first.end,
+        categories=first.categories,
+    )
+
+    assert acb_calendar.deduplicate([first, twin])[0].uid == first.uid
+    assert acb_calendar.deduplicate([first, twin])[0].uid == first.uid
+
+
+def test_two_genuinely_different_programmes_both_survive() -> None:
+    assert len(acb_calendar.deduplicate([_event("A"), _event("B")])) == 2
+
+
+def test_the_same_title_at_a_different_time_is_a_different_programme() -> None:
+    """A daily show is not a duplicate of itself."""
+    monday = _event("Main Menu", days=1)
+    tuesday = _event("Main Menu", days=2)
+
+    assert len(acb_calendar.deduplicate([monday, tuesday])) == 2
+
+
+def test_the_same_title_on_a_different_channel_is_a_different_programme() -> None:
+    assert (
+        len(
+            acb_calendar.deduplicate([
+                _event("Simulcast", stream="ACB Media 1"),
+                _event("Simulcast", stream="ACB Media 4"),
+            ])
+        )
+        == 2
+    )
+
+
+def test_a_repeat_that_differs_only_by_case_or_spacing_is_still_a_repeat() -> None:
+    first = _event("Main Menu")
+    twin = CalendarEvent(
+        uid="other",
+        summary="  main menu ",
+        start=first.start,
+        end=first.end,
+        categories=("acb media 1",),
+    )
+
+    assert len(acb_calendar.deduplicate([first, twin])) == 1
+
+
+def test_deduplication_happens_on_the_way_out_of_the_cache_too(monkeypatch) -> None:
+    """A cache written before this existed must not replay the duplicates."""
+    row = _row("Twice")
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [row, dict(row, uid="other")])
+
+    events, _age = acb_calendar.fetch_schedule()
+
+    assert [e.summary for e in events] == ["Twice"]

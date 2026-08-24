@@ -1,0 +1,271 @@
+"""What each calendar verb actually does (6.4, 6.5).
+
+Split from the window under GATE-11, and it is a real seam: the window owns
+*which* verbs a row has and how they read; this owns what happens when one
+runs. They change for different reasons -- a new verb is a menu question, and
+"Schedule a Recording should pre-fill the end time" is not.
+
+The rule they share: **a verb that cannot finish says why, and changes
+nothing.** Every one of these can meet a schedule that has moved on -- a
+channel that no longer exists, a programme that ended while the window was
+open -- and the answer is always a sentence rather than an exception or a
+silent no-op.
+"""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from typing import Any
+
+from quill.core.radio import acb_calendar, calendar_actions
+
+
+def run(host: Any, window: Any, action_id: str, event: Any) -> None:
+    """Dispatch one verb. Never raises into the window."""
+    handlers = {
+        calendar_actions.PLAY: _play,
+        calendar_actions.RECORD: _record,
+        calendar_actions.REMIND: _remind,
+        calendar_actions.UNREMIND: _unremind,
+        calendar_actions.QUEUE: _queue,
+        calendar_actions.COPY: _copy,
+        calendar_actions.DETAILS: _details,
+    }
+    handler = handlers.get(action_id)
+    if handler is None:
+        return
+    try:
+        handler(host, window, event)
+    except Exception as error:  # noqa: BLE001 - reported, never raised at a menu
+        host._announce(f"That could not be done: {error}.")
+
+
+def _play(host: Any, _window: Any, event: Any) -> None:
+    """Tune in to the programme's channel (6.5).
+
+    The *channel*, not the programme: a live stream has one thing on it at a
+    time, and what that is depends on when you arrive. Playing a Thursday show
+    on Tuesday is not a thing the medium can do, and the announcement says
+    which it did.
+    """
+    station = acb_calendar.station_for(event)
+    if station is None:
+        host._announce("That programme does not say which channel it is on.")
+        return
+    controller = getattr(host, "_radio_controller", None)
+    if controller is None:
+        host._announce("Nothing here can play that.")
+        return
+    controller.play_station(station)
+    now = datetime.now(UTC)
+    if event.overlaps(now):
+        host._announce(f"Playing {station.name}. {event.summary} is on now.")
+    else:
+        when = calendar_actions.clock(event.start)
+        host._announce(
+            f"Playing {station.name}. {event.summary} is not on yet -- it starts at {when}."
+        )
+
+
+def _record(host: Any, window: Any, event: Any) -> None:
+    """Schedule a one-off recording of this programme, after confirming it.
+
+    Built here rather than by opening Schedule Recording pre-filled: the
+    calendar already knows the channel, the date, the local start time and the
+    length, which is every field that window would ask for. Handing somebody a
+    form they only have to press OK on is a form.
+
+    Confirmed first, because a recording is disk, a wake-up and a block of
+    time -- and the confirmation is where those four facts get read back, which
+    is also how a wrong one gets caught before it runs.
+    """
+    from quill.core.paths import app_data_dir
+    from quill.core.radio.recording_schedule import (
+        RecordingScheduleEntry,
+        load_schedule,
+        new_id,
+        save_schedule,
+    )
+    from quill.ui.dialog_contract import show_message_box
+
+    station = acb_calendar.station_for(event)
+    if station is None:
+        host._announce("That programme does not say which channel it is on.")
+        return
+    local = event.start.astimezone()
+    minutes = int(event.duration.total_seconds() // 60) if event.duration else 60
+    minutes = max(1, min(minutes, 24 * 60))
+    question = (
+        f"Record {event.summary} from {station.name}?\n\n"
+        f"{calendar_actions.day_label(event.start, 1).split(',')[0]} at "
+        f"{calendar_actions.clock(event.start)}, for {minutes} minute(s)."
+    )
+    import wx
+
+    answer = show_message_box(
+        question,
+        "Schedule a Recording",
+        wx.YES_NO | wx.ICON_QUESTION,
+        window.dialog,
+        announce=host._announce,
+    )
+    if answer != wx.YES:
+        return
+    data_dir = app_data_dir()
+    entries = load_schedule(data_dir)
+    entries.append(
+        RecordingScheduleEntry(
+            id=new_id(),
+            station_name=station.name,
+            stream_url=station.stream_url,
+            recurrence="once",
+            # Local wall clock with an empty timezone means "this machine's
+            # time", which is what the listener just read in the confirmation.
+            run_at=local.strftime("%Y-%m-%dT%H:%M"),
+            duration_minutes=minutes,
+        )
+    )
+    save_schedule(data_dir, entries)
+    host._announce(
+        f"Scheduled a recording of {event.summary} on {station.name}, "
+        f"{calendar_actions.clock(event.start)}, for {minutes} minutes."
+    )
+
+
+def _remind(host: Any, window: Any, event: Any) -> None:
+    """Ask how much warning, then set it."""
+    import wx
+
+    from quill.core.paths import app_data_dir
+    from quill.core.radio import reminders
+
+    labels = [label for _seconds, label in reminders.LEAD_CHOICES]
+    with wx.SingleChoiceDialog(
+        window.dialog, f"Remind me about {event.summary}:", "Set a Reminder", labels
+    ) as chooser:
+        if chooser.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+            return
+        lead = reminders.LEAD_CHOICES[max(0, chooser.GetSelection())][0]
+    reminders.add_reminder(
+        app_data_dir(),
+        event.summary,
+        event.start,
+        kind=reminders.KIND_EVENT,
+        target=event.uid,
+        lead_seconds=lead,
+        note=acb_calendar.stream_for(event),
+    )
+    window._sync()
+    host._announce(f"Reminder set for {event.summary}, {reminders.lead_label(lead).lower()}.")
+
+
+def _unremind(host: Any, window: Any, event: Any) -> None:
+    from quill.core.paths import app_data_dir
+    from quill.core.radio import reminders
+
+    existing = reminders.find_for_target(app_data_dir(), reminders.KIND_EVENT, event.uid)
+    if existing is None:
+        host._announce("There is no reminder on that programme.")
+        return
+    reminders.remove_reminder(app_data_dir(), existing.reminder_id)
+    window._sync()
+    host._announce(f"Reminder removed from {event.summary}.")
+
+
+def _queue(host: Any, _window: Any, event: Any) -> None:
+    """Put the channel in the Play Queue.
+
+    The channel again, and the announcement says so: a queued live stream
+    plays whatever is on when the queue reaches it, and somebody who thought
+    they had queued Thursday's programme would find that out at the worst
+    moment.
+    """
+    station = acb_calendar.station_for(event)
+    if station is None:
+        host._announce("That programme does not say which channel it is on.")
+        return
+    enqueue = getattr(host, "radio_add_to_queue", None) or getattr(host, "add_to_play_queue", None)
+    if not callable(enqueue):
+        host._announce("There is no play queue here.")
+        return
+    enqueue(station)
+    host._announce(
+        f"Added {station.name} to the Play Queue. A live channel plays whatever is "
+        "on when the queue reaches it."
+    )
+
+
+def _copy(host: Any, _window: Any, event: Any) -> None:
+    text = calendar_actions.details_text(event)
+    copier = getattr(host, "_copy_text", None)
+    if callable(copier):
+        copier(text)
+    else:  # pragma: no cover - every app on the shell has _copy_text
+        import wx
+
+        if wx.TheClipboard.Open():
+            try:
+                wx.TheClipboard.SetData(wx.TextDataObject(text))
+            finally:
+                wx.TheClipboard.Close()
+    host._announce(f"Copied the details for {event.summary}.")
+
+
+def _details(host: Any, window: Any, event: Any) -> None:
+    """Read the programme's own description.
+
+    A message box rather than a bespoke window: it is a paragraph, it is
+    read once, and it needs nothing but OK.
+    """
+    body = calendar_actions.details_text(event)
+    shower = getattr(host, "_show_message_box", None)
+    if callable(shower):
+        shower(body, event.summary)
+        return
+    import wx
+
+    wx.MessageBox(  # MSGBOX-OK: parented read-only detail for one calendar row
+        body, event.summary, wx.OK | wx.ICON_INFORMATION, window.dialog
+    )
+
+
+def export_week(host: Any, parent: Any, days: list[Any], anchor: Any) -> None:
+    """Write the visible week to Markdown.
+
+    The *visible* week -- filtered by channel and by the search box -- because
+    what somebody exports is what they are looking at. Exporting the unfiltered
+    week from a filtered window would be the app answering a question nobody
+    asked.
+    """
+    from pathlib import Path
+
+    import wx
+
+    total = sum(len(events) for _midnight, events in days)
+    if not total:
+        host._announce("There is nothing in this week to export.")
+        return
+    start = acb_calendar.week_start(anchor).astimezone()
+    default = f"acb-media-{start.strftime('%Y-%m-%d')}.md"
+    with wx.FileDialog(
+        parent,
+        message="Export this week",
+        defaultFile=default,
+        wildcard="Markdown (*.md)|*.md|Text (*.txt)|*.txt|All files (*.*)|*.*",
+        style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+    ) as chooser:
+        if chooser.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+            return
+        destination = Path(chooser.GetPath())
+    heading = f"ACB Media schedule, week of {start.strftime('%d %B %Y')}"
+    try:
+        destination.write_text(
+            calendar_actions.week_markdown(days, heading=heading), encoding="utf-8"
+        )
+    except OSError as error:
+        host._announce(f"The week could not be exported. {error}.")
+        return
+    host._announce(f"Exported {total} programme(s) to {destination.name}.")
+
+
+__all__ = ["export_week", "run"]
