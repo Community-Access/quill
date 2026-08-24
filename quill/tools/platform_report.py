@@ -58,7 +58,7 @@ GATES: tuple[Gate, ...] = (
     Gate(
         "network-egress",
         "every outbound call site is inventoried and reviewed",
-        (sys.executable, "-m", "quill.tools.network_egress_audit"),
+        (sys.executable, "-m", "quill.tools.network_egress_cli"),
     ),
     Gate(
         "error-codes",

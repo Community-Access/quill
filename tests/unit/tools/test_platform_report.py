@@ -35,6 +35,12 @@ def test_known_gate_modules_are_on_the_roster() -> None:
         "check_version_consistency",
         # Data checker for the persistence layer, run by its own tests.
         "persistence_audit",
+        # The walker, not the gate. Its command line is network_egress_cli,
+        # which IS rostered -- split on 2026-08-24 because this module was at
+        # its GATE-11 ceiling, and because walking the tree and deciding an
+        # exit code are two jobs. Exempting the walker is right; what must
+        # stay rostered is something that can go red, which the cli can.
+        "network_egress_audit",
     }
     missing = {m for m in gate_modules if m not in exempt and m not in rostered}
     assert missing == set(), (

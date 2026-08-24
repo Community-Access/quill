@@ -273,3 +273,28 @@ def run_checks() -> list[str]:
         errors.extend(tabless)
 
     return errors
+
+
+def main() -> int:
+    """The command line ``platform_report`` has always invoked.
+
+    **It was not there** -- the same fault the network-egress gate had, found
+    the same way on 2026-08-24. ``platform_report`` runs
+    ``python -m quill.tools._check_binding_label_consistency`` and reads its
+    exit code; the module defined :func:`run_checks` and stopped, so the
+    "binding-labels" row on the scorecard reported green without checking
+    anything. ``menu_lint`` and the unit tests do call ``run_checks``, so drift
+    was still caught by the suite -- what was lost is the fast gate somebody
+    runs before pushing, and the truthfulness of a scorecard row.
+    """
+    errors = run_checks()
+    if not errors:
+        print("Binding/label consistency: no drift.")
+        return 0
+    for line in errors:
+        print(line)
+    return 1
+
+
+if __name__ == "__main__":  # pragma: no cover - the gate's entry point
+    raise SystemExit(main())
