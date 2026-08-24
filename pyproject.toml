@@ -223,7 +223,7 @@ ocr = [
 # self-contained — they bundle eSpeak-NG phoneme data and do not require a system install.
 # soundfile writes the synthesized PCM to WAV; it bundles libsndfile on Windows.
 kokoro = [
-    "kokoro-onnx>=0.5.0",
+    "kokoro-onnx>=0.6.1",
     "soundfile>=0.14.0",
     # Runtime dep of the Kokoro phonemizer chain
     # (kokoro-onnx -> phonemizer -> segments -> csvw -> babel.numbers). csvw
