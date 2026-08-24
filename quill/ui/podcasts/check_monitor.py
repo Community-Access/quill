@@ -8,9 +8,24 @@ a cadence you choose, a way to hear that the check is alive, and a say in
 whether the answer interrupts you.
 
 This is the podcast half of the ambient-monitor triple defined in
-:mod:`quill.core.monitor_policy`. All three controls come from that one shared
-resolver, so "check every 30 minutes, tick audibly, don't interrupt" means
-exactly the same thing here as it does for watched folders.
+:mod:`quill.core.monitor_policy`. The tick and interrupt legs come from that
+one shared resolver, so "tick audibly, don't interrupt" means exactly the same
+thing here as it does for watched folders.
+
+**The cadence leg answers to** :mod:`quill.core.podcasts.refresh_policy`
+instead, because that is the question Quill Radio also asks. Before this the
+two apps clamped the same setting to different ranges and offered different
+lists, so "every 12 hours" was a choice in one app and not the other, and a
+value one app accepted the other quietly rewrote. One list, one normalisation,
+one meaning for zero -- which is *manually only*, an answer rather than the
+absence of one.
+
+**And each app skips a check the other has just run.** The cadence is per app
+by design (a single shared switch would mean turning the check on in Cast
+turned it on in Radio, with no way to say "let Radio do it"), so the cost of
+that rightness is two timers over one set of feeds. The shared
+``PodcastLibrary.last_auto_check`` stamp settles it: whoever checks says when,
+and the other stays quiet inside the same interval. Nobody configures this.
 
 Everything is off until asked for: with ``podcast_check_enabled`` false (the
 default) the timer never starts and this class costs one object.
@@ -25,6 +40,7 @@ from typing import Any
 import wx
 
 from quill.core.monitor_policy import MONITOR_PODCASTS, MonitorPolicy, resolve_monitor_policy
+from quill.core.podcasts import refresh_policy
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +113,24 @@ class PodcastCheckMonitor:
             return False
         return bool(getattr(self._settings(), "podcast_check_enabled", False))
 
+    def _manually_allowed(self) -> bool:
+        """Whether a check somebody asked for may run. Safe Mode still says no."""
+        if self._safe_mode:
+            return False
+        return self._feature_enabled is None or bool(self._feature_enabled())
+
     # -- lifecycle ------------------------------------------------------
+
+    def interval_minutes(self) -> int:
+        """The chosen cadence in minutes; 0 is "manually only".
+
+        Normalised through :mod:`quill.core.podcasts.refresh_policy`, the same
+        function Quill Radio uses, so both apps accept the same values and mean
+        the same thing by them.
+        """
+        return refresh_policy.normalize_interval(
+            getattr(self._settings(), "podcast_check_interval_minutes", 0)
+        )
 
     def apply(self) -> bool:
         """Re-read settings and start or stop the timer. Returns whether it runs.
@@ -109,7 +142,10 @@ class PodcastCheckMonitor:
         self.stop()
         if not self._enabled():
             return False
-        self._timer.Start(self._policy.poll_interval_ms)
+        minutes = self.interval_minutes()
+        if not minutes:
+            return False  # manually only -- an answer, not the absence of one
+        self._timer.Start(minutes * 60_000)
         return True
 
     def stop(self) -> None:
@@ -126,21 +162,35 @@ class PodcastCheckMonitor:
 
     # -- the check ------------------------------------------------------
 
-    def check_now(self) -> int:
+    def check_now(self, *, force: bool = False) -> int:
         """Refresh every eligible subscribed feed once. Returns how many ran.
 
-        The tick fires first and unconditionally (when enabled): it announces
-        that a *check happened*, which is exactly the information silence
-        cannot carry. Whether that check found anything is a separate message,
-        delivered by the refresh itself at the policy's severity.
+        The tick fires first (when enabled and when the check is actually
+        going to run): it announces that a *check happened*, which is exactly
+        the information silence cannot carry. Whether that check found
+        anything is a separate message, delivered by the refresh itself at the
+        policy's severity.
+
+        *force* is the manual verb, which never defers to the other app's
+        stamp and never skips a paused show: somebody who pressed Refresh has
+        said which shows they mean.
         """
-        if not self._enabled():
+        # *force* passes the switch, but never Safe Mode or a disabled
+        # feature. "Check the feeds now" is a thing somebody asked for; the
+        # automatic-check switch answers a different question -- whether to
+        # check without being asked -- and leaving it off, which is the
+        # default, must not disable the manual verb too.
+        if not self._enabled() and not (force and self._manually_allowed()):
             return 0
-        self._tick()
         library = self._library_provider()
+        if not force and not self._claim_this_round(library):
+            return 0  # the other app checked inside this interval
+        self._tick()
         started = 0
         for show in list(getattr(library, "shows", []) or []):
-            if getattr(show, "paused", False) or not getattr(show, "feed_url", ""):
+            if not refresh_policy.can_refresh(show):
+                continue
+            if not force and refresh_policy.is_paused(show):
                 continue
             try:
                 self._refresh_show(str(show.id))
@@ -149,6 +199,31 @@ class PodcastCheckMonitor:
                 continue
             started += 1
         return started
+
+    def _claim_this_round(self, library: Any) -> bool:
+        """Whether this app should do this round of checking, and claim it.
+
+        Reads the shared stamp, and writes it before doing any work rather
+        than after: two apps whose timers fire in the same second must not
+        both decide they are the one, and the fetch takes seconds during which
+        the other would otherwise still see the old stamp.
+        """
+        import time
+
+        now = time.time()
+        if not refresh_policy.is_due(
+            getattr(library, "last_auto_check", ""), self.interval_minutes(), now
+        ):
+            return False
+        try:
+            from quill.core.paths import app_data_dir
+            from quill.core.podcasts.subscriptions import save_library
+
+            library.last_auto_check = refresh_policy.stamp_now(now)
+            save_library(app_data_dir(), library)
+        except Exception:  # noqa: BLE001 - a stamp that will not save costs one
+            logger.exception("could not claim the podcast check round")
+        return True
 
     def _tick(self) -> None:
         """Post the heartbeat earcon for one check, when the user asked for it."""

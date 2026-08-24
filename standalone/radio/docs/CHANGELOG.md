@@ -17,6 +17,33 @@ gone missing, and several long-standing silent faults are fixed. See
 
 ### Added
 
+- **Quill Radio checks your subscribed podcasts on its own, if you ask it to.**
+  Until now a show's episode list was only as fresh as the last time you opened
+  that show, so "what is new?" could only be answered by walking the
+  Subscriptions branch and opening everything. Preferences gains a cadence --
+  from every 15 minutes to once a day, plus **Manually only**, which is an
+  answer rather than the absence of one -- and a separate "check at launch"
+  switch. It is **off by default**: an app that starts reaching the network on a
+  schedule nobody chose is an app spending somebody else's data allowance. A
+  check reads episode lists and nothing else: no download starts, nothing is
+  queued, nothing you are playing changes, and a show you have paused is left
+  alone. It says what it found once, at the end, counted and named -- and says
+  nothing at all when it found nothing, because a check that reports silence
+  four times an hour has stopped being information. A check that fails is
+  written into Recent Problems whether or not it was spoken, so a feed that
+  broke at 3 a.m. is still there at breakfast.
+- **Check All Feeds Now, on the Subscriptions branch and on every podcast
+  folder.** Refresh on a show answers "anything new in *this* one?". This is the
+  other question. It checks paused shows too -- a pause means "leave this show
+  alone", never "you cannot reach this show", which is the whole reason a pause
+  is safe to offer -- and it never defers to the automatic schedule, because a
+  key you pressed is not a timer firing.
+- **Quill Radio and QUILL Cast stop asking the same publisher twice.** Each app
+  keeps its own cadence, deliberately: one shared switch would mean turning the
+  check on in Cast turned it on here too, with no way to say "let the other one
+  do it". They share the record of *when* instead, so whichever app checks
+  first, the other finds the work already done and stays quiet. Nobody
+  configures this and nobody has to know it happens.
 - **A welcome, the first time you open Quill Radio.** Three screens -- welcome,
   find something to listen to, keep the ones you like -- and then never again.
   It tells you the one key that carries most of the app, the three ways into the

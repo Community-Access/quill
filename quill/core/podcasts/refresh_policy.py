@@ -128,6 +128,59 @@ def shows_to_refresh(shows: Iterable[Any], *, force: bool = False) -> list[Any]:
     return [show for show in shows if can_refresh(show) and (force or not is_paused(show))]
 
 
+def stamp_now(now: float) -> str:
+    """*now* (unix seconds) as the stored form of "checked at". Pure."""
+    from datetime import UTC, datetime
+
+    return datetime.fromtimestamp(max(0.0, float(now)), tz=UTC).isoformat()
+
+
+def seconds_since(stamp: object, now: float) -> float | None:
+    """How long ago *stamp* was, or None when it cannot be read (pure)."""
+    from datetime import UTC, datetime
+
+    text = str(stamp or "").strip()
+    if not text:
+        return None
+    try:
+        moment = datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=UTC)
+    return max(0.0, float(now) - moment.timestamp())
+
+
+def is_due(last_checked: object, interval_minutes: object, now: float) -> bool:
+    """Whether an automatic check should actually run (pure).
+
+    **This is the guard against two apps polling the same feeds.** Quill Radio
+    and QUILL Cast read one shared library, and each decides for itself whether
+    *it* is the one that checks -- which is right, because a single shared
+    switch would mean turning the check on in one app turned it on in the other
+    and neither could be told not to. The cost of that rightness is that
+    somebody running both gets two timers over one set of feeds, and a
+    publisher sees twice the requests for no extra information.
+
+    So the *stamp* is shared even though the *cadence* is not: whichever app
+    checks writes when it did, and the other one, arriving inside the same
+    interval, finds the work already done and stays quiet. Nobody is asked to
+    configure this and nobody has to know it happens.
+
+    A stamp that cannot be read means "never checked", which runs the check --
+    the safe direction, since the worst case is one extra fetch.
+    """
+    minutes = normalize_interval(interval_minutes)
+    if not minutes:
+        return False
+    elapsed = seconds_since(last_checked, now)
+    if elapsed is None:
+        return True
+    # A small tolerance, because two timers started seconds apart should not
+    # both fire: within a tenth of the interval of each other is the same tick.
+    return elapsed >= (minutes * 60) * 0.9
+
+
 def describe_schedule(interval_minutes: object, *, on_launch: bool = False) -> str:
     """The whole policy as one spoken sentence (pure).
 

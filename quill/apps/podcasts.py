@@ -678,9 +678,11 @@ class PodcastsAppFrame(
     def _open_preferences(self) -> None:
         from quill.core.paths import app_data_dir
         from quill.core.podcasts import history as podcast_history
+        from quill.core.podcasts import refresh_policy
         from quill.ui.app_preferences_dialog import (
             PreferenceAction,
             PreferenceCheckbox,
+            PreferenceChoice,
             PreferencesDialog,
         )
         from quill.ui.data_folder_dialog import open_data_folder_dialog
@@ -727,25 +729,61 @@ class PodcastsAppFrame(
                     "instead. The same keys as Quill Radio's recordings player.",
                     history.winamp_playback_keys,
                 ),
+                PreferenceCheckbox(
+                    "Check subscribed podcast feeds on a &timer",
+                    "Look for new episodes without being asked. Off by default. "
+                    "A check reads episode lists only: it starts no downloads by "
+                    "itself, skips shows you have paused, and never changes what "
+                    "you are playing.",
+                    history.podcast_check_enabled,
+                ),
+            ],
+            choices=[
+                PreferenceChoice(
+                    "Check subscribed podcast &feeds:",
+                    # The rule from section 3: what it does, then the misreading
+                    # it prevents. Every misread here has been the second half.
+                    refresh_policy.describe_schedule(
+                        history.podcast_check_interval_minutes
+                        if history.podcast_check_enabled
+                        else 0
+                    )
+                    + " Quill Radio has its own separate setting; whichever app "
+                    "checks first, the other skips that round rather than asking "
+                    "the same feeds twice.",
+                    [label for _minutes, label in refresh_policy.INTERVAL_CHOICES],
+                    refresh_policy.interval_index(history.podcast_check_interval_minutes),
+                ),
             ],
             announce_cb=self._announce,
         )
         result = dialog.show()
         if result is None:
             return
-        checkbox_values, _choice_indices, _text_values = result
+        checkbox_values, choice_indices, _text_values = result
         (
             history.resume_on_launch,
             history.check_updates_on_startup,
             history.announce_dialog_transitions,
             history.alt_f4_to_tray,
             history.winamp_playback_keys,
+            history.podcast_check_enabled,
         ) = checkbox_values
+        history.podcast_check_interval_minutes = refresh_policy.interval_from_index(
+            choice_indices[0]
+        )
         podcast_history.save_history(app_data_dir(), history)
         menu_bar = self.frame.GetMenuBar()
         if menu_bar is not None:
             menu_bar.Check(int(self._resume_menu_item_id), history.resume_on_launch)
-        self._announce("Preferences saved")
+        # Re-applied rather than left until the next launch: a cadence you just
+        # chose should be the cadence that is running.
+        monitor = getattr(self, "_podcast_check_monitor", None)
+        said = ""
+        if monitor is not None:
+            monitor.apply()
+            said = str(monitor.describe())
+        self._announce(f"Preferences saved. {said}".strip())
 
     def _maybe_resume_last_episode(self) -> None:
         """Podcasts as an appliance: launch, and your last episode is ready."""

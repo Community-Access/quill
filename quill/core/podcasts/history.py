@@ -93,6 +93,31 @@ class PodcastHistory:
     #: memory is real for anyone who came through Winamp. Mirrors Quill
     #: Radio's RadioHistory.winamp_playback_keys, and shares its key map.
     winamp_playback_keys: bool = True
+    #: Look for new episodes on a timer. Named exactly as
+    #: :class:`quill.core.settings.Settings` names them, because
+    #: ``PodcastCheckMonitor`` reads its settings object duck-typed: inside
+    #: QUILL that object is ``Settings``, and standalone QUILL Cast has no
+    #: ``Settings`` at all -- which is why the background check silently never
+    #: ran there until this record started answering for it. Same names, one
+    #: monitor, one meaning.
+    #:
+    #: Off by default, and separate from Quill Radio's own cadence on purpose:
+    #: one shared switch would mean enabling the check here enabled it there
+    #: too, with no way to say "let Radio do it". What the two apps *do* share
+    #: is the record of when a check happened, so they never ask one publisher
+    #: twice (``PodcastLibrary.last_auto_check``).
+    podcast_check_enabled: bool = False
+    #: Minutes between checks; 0 is "manually only", an answer rather than the
+    #: absence of one. Normalised through
+    #: :mod:`quill.core.podcasts.refresh_policy`, which is the same list and
+    #: the same clamping Quill Radio uses.
+    podcast_check_interval_minutes: int = 60
+    #: An earcon each time a check runs, so an ambient thing can be heard to
+    #: be alive. Off by default: a sound four times an hour is a sound.
+    podcast_check_audible_tick: bool = False
+    #: Let what a check found cut across whatever is being spoken. Off by
+    #: default -- new episodes are news, not an emergency.
+    podcast_check_interrupt_speech: bool = False
 
     def record(
         self, show_id: str, episode_guid: str, *, show_title: str, episode_title: str
@@ -117,6 +142,20 @@ class PodcastHistory:
         return self.episodes[0] if self.episodes else None
 
 
+def _coerce_check_interval(value: object) -> int:
+    """A stored cadence, through the one shared normalisation (60 if absent).
+
+    Missing is *not* zero: an older file predates the setting, and reading it
+    as "manually only" would be inventing a choice nobody made. Zero written
+    down is a choice, and survives.
+    """
+    if value is None:
+        return 60
+    from quill.core.podcasts.refresh_policy import normalize_interval
+
+    return normalize_interval(value)
+
+
 def _store_path(data_dir: Path) -> Path:
     return data_dir / _FILE_NAME
 
@@ -136,6 +175,14 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.transcript_detail = transcript_export.normalize_detail(raw.get("transcript_detail"))
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
+        history.podcast_check_enabled = bool(raw.get("podcast_check_enabled", False))
+        history.podcast_check_interval_minutes = _coerce_check_interval(
+            raw.get("podcast_check_interval_minutes")
+        )
+        history.podcast_check_audible_tick = bool(raw.get("podcast_check_audible_tick", False))
+        history.podcast_check_interrupt_speech = bool(
+            raw.get("podcast_check_interrupt_speech", False)
+        )
         history.onboarding = OnboardingState.from_dict(raw.get("onboarding"))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
@@ -159,6 +206,10 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
             "announce_dialog_transitions": history.announce_dialog_transitions,
             "alt_f4_to_tray": history.alt_f4_to_tray,
             "winamp_playback_keys": history.winamp_playback_keys,
+            "podcast_check_enabled": history.podcast_check_enabled,
+            "podcast_check_interval_minutes": history.podcast_check_interval_minutes,
+            "podcast_check_audible_tick": history.podcast_check_audible_tick,
+            "podcast_check_interrupt_speech": history.podcast_check_interrupt_speech,
             "onboarding": history.onboarding.to_dict(),
             "episodes": [e.to_dict() for e in history.episodes],
         },

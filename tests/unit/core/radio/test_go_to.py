@@ -140,9 +140,11 @@ def test_the_startup_window_opens_over_the_main_window_not_instead_of_it() -> No
     """
     # parents[4], not [3]: this file is four directories deep under the repo
     # root (tests/unit/core/radio), one deeper than tests/unit/ui.
-    radio = (Path(__file__).resolve().parents[4] / "quill" / "apps" / "radio.py").read_text(
-        encoding="utf-8"
-    )
-    assert "wx.CallAfter(open_startup_window, self)" in radio
+    root = Path(__file__).resolve().parents[4] / "quill" / "apps"
+    # The deferred launch tasks moved to their own module under GATE-11 on
+    # 2026-08-24; the call this pins is unchanged, only its address.
+    tasks = (root / "radio_launch_tasks.py").read_text(encoding="utf-8")
+    assert "wx.CallAfter(open_startup_window, app)" in tasks
     # The main window is shown and focused unconditionally, before any of this.
+    radio = (root / "radio.py").read_text(encoding="utf-8")
     assert "frame.frame.Show()" in radio

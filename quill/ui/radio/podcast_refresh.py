@@ -71,22 +71,28 @@ class PodcastRefreshMonitor:
     # -- policy ---------------------------------------------------------------
 
     def _settings(self) -> Any:
-        """The shared podcast settings, or ``None`` when there is no library yet.
+        """Radio's own history record, or ``None`` before there is one.
 
         Read fresh every time rather than cached at construction: Preferences
-        writes the library, and a monitor holding a stale copy would keep the
+        writes the record, and a monitor holding a stale copy would keep the
         old cadence until the next restart.
+
+        **Radio's own, not the shared podcast settings.** Both apps read one
+        library, so a single shared cadence would mean turning the check on in
+        QUILL Cast turned it on here too, with no way to say "let Cast do it".
         """
         try:
             return self._history_provider()
-        except Exception:  # noqa: BLE001 - a missing library is not an error
+        except Exception:  # noqa: BLE001 - a missing record is not an error
             return None
 
     def _interval_minutes(self) -> int:
-        return refresh_policy.normalize_interval(getattr(self._settings(), "refresh_minutes", 0))
+        return refresh_policy.normalize_interval(
+            getattr(self._settings(), "podcast_refresh_minutes", 0)
+        )
 
     def _on_launch(self) -> bool:
-        return bool(getattr(self._settings(), "refresh_on_launch", False))
+        return bool(getattr(self._settings(), "podcast_refresh_on_launch", False))
 
     def describe(self) -> str:
         """The policy as one sentence, for Preferences and the status readout."""
@@ -155,12 +161,27 @@ class PodcastRefreshMonitor:
         if self._task_manager is None:
             return False
 
-        def _work(**_kwargs: Any) -> list[tuple[str, int]]:
-            return refresh_subscribed_feeds(force=force)
+        def _work(**_kwargs: Any) -> list[tuple[str, int]] | None:
+            # None means "the other app just did this" -- see refresh_policy.is_due.
+            return refresh_subscribed_feeds(
+                force=force,
+                safe_mode=self._safe_mode,
+                only_if_due_minutes=None if force else self._interval_minutes(),
+            )
 
         def _ok(_op: str, result: object) -> None:
+            if result is None:
+                return  # the other app checked inside this interval; nothing to say
             found = list(result) if isinstance(result, list) else []
-            if not found and not announce_when_empty:
+            # **The count, not the row count.** ``found`` carries a row for
+            # every show that was checked, including the ones with nothing
+            # new -- so "did anything happen?" is the sum, not whether the
+            # list is empty. Testing the list meant an automatic check
+            # announced "No new episodes." every fifteen minutes to anybody
+            # with at least one subscription (reported 2026-08-24, within
+            # minutes of it being wired up).
+            gained = sum(count for _title, count in found)
+            if not gained and not announce_when_empty:
                 return
             # Quiet hours (11.9) hold back the *automatic* summary only. A
             # check somebody pressed a key for -- announce_when_empty, the
@@ -197,12 +218,19 @@ class PodcastRefreshMonitor:
 
 
 def refresh_subscribed_feeds(
-    *, force: bool = False, safe_mode: bool = False
-) -> list[tuple[str, int]]:
+    *,
+    force: bool = False,
+    safe_mode: bool = False,
+    only_if_due_minutes: int | None = None,
+) -> list[tuple[str, int]] | None:
     """Fetch every eligible subscribed feed and fold it into the shared library.
 
     Returns ``(show title, new episode count)`` for every show checked, which
-    is what the caller turns into one spoken sentence.
+    is what the caller turns into one spoken sentence -- or ``None`` when
+    *only_if_due_minutes* is given and the shared stamp says another app
+    already checked inside that interval. ``None`` is deliberately not an
+    empty list: "nothing new" and "somebody else just did this" are different
+    facts, and only the first is worth saying.
 
     The merge is exactly the one Radio already performs when you *open* a show
     (``browse_libraries._sync_subscribed_episodes``): ``merge_episodes`` keeps
@@ -213,15 +241,32 @@ def refresh_subscribed_feeds(
 
     Runs on a worker thread. Nothing here touches wx.
     """
+    import time
+
     from quill.core.paths import app_data_dir
     from quill.core.podcasts import feed_auth, feed_reader
     from quill.core.podcasts.subscriptions import load_library, merge_episodes, save_library
 
     data_dir = app_data_dir()
     library = load_library(data_dir)
+    now = time.time()
+    if only_if_due_minutes is not None:
+        if not refresh_policy.is_due(library.last_auto_check, only_if_due_minutes, now):
+            return None
+        # Claimed *before* the work, not after: two apps whose timers fire in
+        # the same second must not both decide they are the one, and the
+        # fetches take seconds during which the other would still see the old
+        # stamp. The stamp records that the feeds were asked, so it is right
+        # even when the answer turns out to be nothing.
+        library.last_auto_check = refresh_policy.stamp_now(now)
+        save_library(data_dir, library)
     found: list[tuple[str, int]] = []
     gained = 0
-    for show in refresh_policy.shows_to_refresh(list(getattr(library, "shows", []) or [])):
+    shows = list(getattr(library, "shows", []) or [])
+    # *force* has to reach here, not just the docstring: it is the whole
+    # difference between "check the shows on the schedule" and "check the
+    # shows I just asked about, paused ones included".
+    for show in refresh_policy.shows_to_refresh(shows, force=force):
         title = str(getattr(show, "title", "") or getattr(show, "feed_url", ""))
         try:
             username, password = feed_auth.auth_for_url(show, show.feed_url)

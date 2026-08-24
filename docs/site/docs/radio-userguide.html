@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio User Guide</title>
   <style>
@@ -1685,19 +1685,25 @@ instead. Ctrl+Up and Ctrl+Down still change the volume either way.
 <strong>Episodes listed per subscribed podcast</strong> (25 newest by
 default) governs how many episodes each show under Podcasts &gt;
 Subscriptions lists – deliberately Quill Radio’s one podcast setting,
-with the full archive living in Quill Cast. And the <strong>Data
-Folder…</strong> button opens the family-wide data location: where every
-Quill app stores its settings, favorites, subscriptions, and playback
-positions. Point it at a folder that Dropbox, OneDrive, Google Drive, or
-iCloud already keeps in sync and your whole Quill setup travels between
-computers – no account, no sign-in; the sync client does the moving. The
-change applies the next time an app starts (a restart is offered), your
-existing data is moved for you, and the machine-heavy caches (like the
-Station Catalog) deliberately stay on each computer rather than churning
-through the sync service. One rule to respect: do not run Quill apps on
-two computers against the same folder at the same time – if you do, the
-next launch says so (“this data folder was in use on LAPTOP-X…”) rather
-than letting two machines silently fight over one profile.</li>
+with the full archive living in Quill Cast. Beside it, <strong>Check
+subscribed podcast feeds at launch</strong> and <strong>Check subscribed
+podcast feeds:</strong> (Manually only, through every 15 minutes to once
+a day) decide whether Quill Radio looks for new episodes without being
+asked; both are off to begin with, and the choice’s own description says
+what a check does <em>not</em> do – see “Checking your subscribed
+podcasts for new episodes”. And the <strong>Data Folder…</strong> button
+opens the family-wide data location: where every Quill app stores its
+settings, favorites, subscriptions, and playback positions. Point it at
+a folder that Dropbox, OneDrive, Google Drive, or iCloud already keeps
+in sync and your whole Quill setup travels between computers – no
+account, no sign-in; the sync client does the moving. The change applies
+the next time an app starts (a restart is offered), your existing data
+is moved for you, and the machine-heavy caches (like the Station
+Catalog) deliberately stay on each computer rather than churning through
+the sync service. One rule to respect: do not run Quill apps on two
+computers against the same folder at the same time – if you do, the next
+launch says so (“this data folder was in use on LAPTOP-X…”) rather than
+letting two machines silently fight over one profile.</li>
 <li><strong>Send to Tray</strong> (Ctrl+W) – hide the window; playback
 continues from the notification area.</li>
 <li><strong>Exit</strong> – quit Quill Radio. Closing the window –
@@ -3078,6 +3084,198 @@ features.</li>
 <p>If your keyboard has media keys, Play/Pause and Stop control Quill
 Radio system-wide while it runs – even from the tray. Keys another app
 already owns are left alone.</p>
+<h2 id="finding-an-episode-inside-one-show">Finding an episode inside
+one show</h2>
+<p><strong>Find in this folder</strong> (Ctrl+F) searches the rows under
+the folder you are on, and it matches a row’s
+<strong>description</strong> as well as its name. On a podcast show’s
+branch that is episode search: the episodes are the rows, and their show
+notes are searched with them – which is what a show that numbers its
+episodes and puts the subject in the notes needs.</p>
+<p>The search is scoped to the folder you are in and bounded, and it
+always says how many matched. Clear the box to return to the folder.</p>
+<h2 id="taking-back-the-last-thing-you-did">Taking back the last thing
+you did</h2>
+<p>Press <strong>Ctrl+Z</strong> (Edit &gt; Undo Last Action) and the
+last destructive thing you did comes back: an unsubscribe, a Remove All
+Episodes, a Remove All Downloads, a Mark All as Played, a deleted
+recording. It says what it brought back – “Undid Unsubscribe. Brought
+back The Daily, with 412 episodes and 3 downloaded files.”</p>
+<p>Three things worth knowing.</p>
+<p><strong>It is one step, not a stack.</strong> Undoing twice in a row
+does nothing the second time; you get one, and the app says “Nothing to
+undo” rather than quietly rewinding something older that you had
+forgotten about. If you have to count how many times to press Ctrl+Z,
+you have been given a puzzle rather than an undo.</p>
+<p><strong>Deleted files come back, not just the intent to fetch
+them.</strong> A file this app deletes on your behalf is moved aside
+first, so an undo restores the bytes themselves. Once you do the next
+destructive thing, the one before it is gone for good – which is what
+makes a single step safe to offer without asking you first.</p>
+<p><strong>Anything it cannot bring back, it says so in the same
+breath.</strong> A private feed’s saved password, for instance, is
+deleted deliberately when you unsubscribe; the undo brings the
+subscription back and tells you the password has to be entered
+again.</p>
+<p>Every action that can be undone ends its own announcement with
+“Ctrl+Z undoes this”, so you never have to remember whether this
+particular verb was one of them.</p>
+<h2 id="why-a-menu-item-is-dimmed">Why a menu item is dimmed</h2>
+<p>A greyed menu item used to be a dead end: a screen reader says
+“dimmed” and stops, and the item itself says nothing about what would
+un-dim it. Every dimmed item now carries its reason, which the status
+bar shows and which readers that voice menu help speak:</p>
+<ul>
+<li>“Analyse Chapters: this episode is not downloaded yet, so there is
+nothing to analyse.”</li>
+<li>“Download All Episodes: nothing to download, all 40 are already
+here.”</li>
+<li>“Mark All as Played: nothing to mark, all 63 episodes are already
+played.”</li>
+</ul>
+<p>Pressing a Quick Action number on a dimmed row says the same thing,
+rather than the old “that Quick Action is not available”. So does the
+command palette (Ctrl+Shift+P), where an unavailable command reads its
+reason instead of a bare “(unavailable)”.</p>
+<p>Items dim rather than disappear on purpose: a verb the row genuinely
+owns is better as a state you can hear than as something that comes and
+goes.</p>
+<h2 id="recent-problems">Recent Problems</h2>
+<p><strong>Help &gt; Recent Problems…</strong> (Ctrl+Alt+Shift+P) is a
+list of what has failed recently – feeds that could not be read,
+downloads that died, streams that dropped – each with its reason and the
+time it happened.</p>
+<p>It exists because announcements are transient. That is right almost
+always, and wrong the one time the sentence you needed went past while
+you were in another window: before this list, a spoken failure that was
+missed was gone for good.</p>
+<p><strong>Retry</strong> tries the highlighted row again. <strong>Copy
+All</strong> takes the list as text, which is what to paste into a bug
+report – it contains addresses and error messages, never passwords.
+<strong>Clear List</strong> empties it, and does not fix anything or
+stop the same problem being recorded again next time it happens.</p>
+<p>Nothing in the list leaves this computer.</p>
+<h2 id="quiet-hours">Quiet hours</h2>
+<p><strong>Help &gt; Quiet Hours…</strong> (Ctrl+Alt+Shift+Z) sets a
+window – 22:00 to 07:00 by default, and a window may cross midnight – in
+which the app stops speaking <em>on its own</em>.</p>
+<p>What that means precisely, because the name invites two wrong
+readings:</p>
+<ul>
+<li>Feeds are still checked, downloads still run, recordings still
+record. Nothing stops happening. Only the announcements about them
+wait.</li>
+<li><strong>Anything you press a key for still answers.</strong> Press
+Play at three in the morning and you hear what is playing. Quiet hours
+never silence the reply to something you asked for; they hold back the
+speech nobody asked for.</li>
+<li>Failures always speak, whatever the window says. A recording that
+stopped at 3 a.m. is exactly the thing somebody set an alarm-clock radio
+for.</li>
+</ul>
+<p>There is one override: reminders can be let through anyway, since an
+alarm clock is a reason to set one.</p>
+<p>The window is shared with the other Quill listening apps, so you set
+it once.</p>
+<h2 id="moving-your-setup-to-another-machine">Moving your setup to
+another machine</h2>
+<p><strong>Help &gt; Export My Setup…</strong> (Ctrl+Alt+Shift+X) writes
+one file – a <code>.quillsetup</code> – carrying what you have built up:
+your subscriptions, folders and playlists, your favorite stations and
+saved places, your settings, your Go To order, your Quick Action order,
+your scheduled recordings, your bookmarks and any keys you rebound.
+<strong>Help &gt; Import My Setup…</strong> (Ctrl+Alt+Shift+N) puts them
+on the other machine.</p>
+<p>An OPML export moves subscriptions and nothing else. This moves the
+rest.</p>
+<p>Three things about the file:</p>
+<ul>
+<li>It is an ordinary ZIP with a readable manifest inside, so you can
+see what you are carrying between machines.</li>
+<li><strong>Passwords are not in it.</strong> Private-feed sign-ins,
+server credentials and unlock codes stay on the machine that holds them
+and have to be entered again on the new one. The confirmation says so
+before it does anything.</li>
+<li>Importing <strong>replaces</strong> what is on this machine rather
+than merging with it. The confirmation names what the file holds and
+says this plainly; merging two libraries is a different job with
+different questions.</li>
+</ul>
+<p>Close and reopen the app after an import, so everything is read back
+in.</p>
+<h2 id="checking-your-subscribed-podcasts-for-new-episodes">Checking
+your subscribed podcasts for new episodes</h2>
+<p>Quill Radio used to read a show’s feed only when you opened that
+show, which meant the unheard count on a show you had not opened was as
+old as the last time you opened it, and “what is new?” could only be
+answered by walking the Subscriptions branch and opening everything.</p>
+<p><strong>Ask once, for everything.</strong> <strong>Check All Feeds
+Now</strong>, on the Subscriptions branch and on any podcast folder in
+it, asks every subscribed show at once. It checks shows you have paused
+as well: a pause means <em>leave this show alone</em> – no checking on a
+timer, no downloading by itself – and it must never come to mean the
+show is out of reach. That it costs nothing you cannot undo with one
+keystroke on the row in front of you is what makes a pause safe to use
+freely. <strong>Refresh</strong> on a single show is the same question
+about one show.</p>
+<p><strong>Or have Radio ask on its own.</strong> Preferences (Ctrl+,)
+holds two settings for this: how often to check – from every 15 minutes
+to once a day, plus <strong>Manually only</strong> – and whether to
+check once at launch. Both are <strong>off</strong> to begin with, on
+purpose: an app that starts reaching the network on a schedule nobody
+chose is spending somebody else’s data allowance.</p>
+<p>What an automatic check does, exactly:</p>
+<ul>
+<li>It reads episode lists. Nothing is downloaded, nothing is queued,
+and nothing you are playing changes – downloads and queues are QUILL
+Cast’s job.</li>
+<li>A show you have paused is skipped.</li>
+<li>It says what it found once, at the end, counted and named. When it
+found nothing it says nothing at all, because a check that reports
+silence four times an hour has stopped being information.</li>
+<li>During quiet hours it still checks; it just holds the summary.</li>
+<li>A check that fails is written into <strong>Recent Problems</strong>
+whether or not it was spoken, so a feed that broke at three in the
+morning is still there at breakfast.</li>
+</ul>
+<p><strong>If you also run QUILL Cast</strong>, the two apps will not
+ask the same publisher twice. Each keeps its own cadence deliberately –
+one shared switch would mean turning the check on in Cast turned it on
+here too, with no way to say “let Cast do it” – but they share the
+record of <em>when</em> a check happened, so whichever app goes first,
+the other finds the work already done and stays quiet. There is nothing
+to set up and nothing to notice.</p>
+<h2 id="your-place-follows-you-between-quill-radio-and-quill-cast">Your
+place follows you between Quill Radio and QUILL Cast</h2>
+<p>Both apps can play the same subscribed episode, and they now share
+one place per episode on this computer. Pause an episode in one, open it
+in the other, and it picks up where you left off – and says so: “Picking
+up where you left off in Quill Radio, at 1 hour 2 minutes 3
+seconds.”</p>
+<p>The <strong>later</strong> decision wins, not the furthest through
+the episode. If you skipped to the outro to check something and then
+went back to the middle, the middle is where you are; an app that
+dragged you forward again on the grounds that it was further in would be
+overruling you with arithmetic.</p>
+<p>An episode either app has finished stays finished.</p>
+<h2 id="skip-silence-and-a-speed-that-sticks">Skip Silence, and a speed
+that sticks</h2>
+<p>Two things the playback engine could always do and Quill Radio never
+offered outside podcasts.</p>
+<p><strong>Skip Silence</strong> (Playback &gt; Skip Silence,
+Ctrl+Shift+9) shortens the long pauses in a recording, a YouTube row or
+a podcast episode as it plays. It takes effect on what is already
+playing, with no interruption. It has no effect on live radio – a
+broadcast plays at broadcast speed, and its pauses have already gone out
+– and it says so if you turn it on while a station is playing, rather
+than appearing to do nothing.</p>
+<p><strong>Play Faster is remembered.</strong> A speed you choose while
+a recording plays now applies to every recording; a speed you choose on
+a YouTube row applies to YouTube rows. Per kind rather than per row,
+because what somebody means by “1.5x for recordings” is every recording,
+and being asked to set it again for each captured hour is the same
+feature with the cost moved onto you. Podcast episodes keep their own
+per-show speed, which they always had.</p>
 <h2 id="global-hotkeys-and-keyboard-shortcuts">Global hotkeys and
 keyboard shortcuts</h2>
 <p>Quill Radio’s shortcuts are now yours to change, and its playback

@@ -103,7 +103,13 @@ class PodcastsMixin(
         # user turned podcast_check_enabled on, so this costs one object.
         self._podcast_check_monitor = PodcastCheckMonitor(
             self.frame,
-            settings_provider=lambda: getattr(self, "settings", None),
+            # ``Settings`` inside QUILL; standalone QUILL Cast has none, and
+            # falling back to None meant the check read as permanently off
+            # there -- a whole feature that could not be reached by any route.
+            # PodcastHistory answers with the same field names.
+            settings_provider=lambda: (
+                getattr(self, "settings", None) or getattr(self, "_podcast_history", None)
+            ),
             library_provider=lambda: self._podcast_library,
             refresh_show=self.refresh_podcast_feed,
             safe_mode=self._safe_mode,

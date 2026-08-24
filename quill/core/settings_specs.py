@@ -1316,8 +1316,8 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Check podcast feeds in the background",
         "accessibility",
         "bool",
-        "Look for new episodes on a timer instead of only when you ask. Off by "
-        "default; nothing is downloaded, only the feeds are read.",
+        "Look for new episodes on a timer, not only when you ask. Off by default; feeds "
+        "are read, never audio. Quill Radio checks too; whichever is first, the other skips.",
         keywords=("podcast", "feed", "check", "background", "new episodes"),
     ),
     SettingSpec(
@@ -1325,7 +1325,7 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Podcast check: how often (minutes)",
         "accessibility",
         "int",
-        "How often podcast feeds are checked for new episodes (5 to 1440 minutes).",
+        "How often feeds are checked. Reads episode lists only, and skips paused shows.",
         minimum=5,
         maximum=1440,
         keywords=("podcast", "feed", "interval", "minutes", "poll", "check"),

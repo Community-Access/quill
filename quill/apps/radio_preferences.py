@@ -43,6 +43,7 @@ def open_preferences(app: Any) -> None:
         _TITLE,
     )
     from quill.core.paths import app_data_dir
+    from quill.core.podcasts import refresh_policy
     from quill.core.radio import history as radio_history
     from quill.ui.app_preferences_dialog import (
         PreferenceAction,
@@ -168,6 +169,14 @@ def open_preferences(app: Any) -> None:
                 "turn it off to use letter keys for list typeahead instead",
                 getattr(history, "winamp_playback_keys", True),
             ),
+            PreferenceCheckbox(
+                "Check subscribed &podcast feeds at launch",
+                "Runs one check as the app starts, as well as on whatever "
+                "cadence is set below. Off by default: a launch that spends "
+                "four seconds on feeds is a launch you spend waiting, and it "
+                "stays quiet when it finds nothing.",
+                history.podcast_refresh_on_launch,
+            ),
         ],
         choices=[
             PreferenceChoice(
@@ -225,6 +234,20 @@ def open_preferences(app: Any) -> None:
                 episode_limit_labels,
                 episode_limit_index,
             ),
+            PreferenceChoice(
+                "Check subscribed podcast &feeds:",
+                # The rule from section 3: what it does, then the misreading it
+                # prevents. Every misread here has been about the second half.
+                refresh_policy.describe_schedule(
+                    history.podcast_refresh_minutes,
+                    on_launch=history.podcast_refresh_on_launch,
+                )
+                + " QUILL Cast has its own separate setting; whichever app "
+                "checks first, the other skips that round rather than asking "
+                "the same feeds twice.",
+                [label for _minutes, label in refresh_policy.INTERVAL_CHOICES],
+                refresh_policy.interval_index(history.podcast_refresh_minutes),
+            ),
         ],
         texts=[
             PreferenceText(
@@ -272,6 +295,7 @@ def open_preferences(app: Any) -> None:
         history.catalog_enabled,
         history.catalog_refresh_on_startup,
         history.winamp_playback_keys,
+        history.podcast_refresh_on_launch,
     ) = checkbox_values
     # Apply verbose logging immediately (quill-radio #5) so it takes effect
     # this session, not just the next launch.
@@ -297,6 +321,7 @@ def open_preferences(app: Any) -> None:
     chosen_sort = _FAVORITES_SORT_VALUES[choice_indices[4]]
     history.catalog_refresh_hours = catalog_interval_values[choice_indices[5]]
     history.subscription_episode_limit = episode_limit_values[choice_indices[6]]
+    history.podcast_refresh_minutes = refresh_policy.interval_from_index(choice_indices[7])
     if chosen_sort != history.favorites_sort:
         history.favorites_sort = chosen_sort
         app._reload_favorites_tree()
@@ -316,10 +341,16 @@ def open_preferences(app: Any) -> None:
             target = Path(new_log_dir) if new_log_dir else app_data_dir() / "logs"
             relocate_log(listener, target)
     radio_history.save_history(app_data_dir(), history)
+    # The feed check takes effect now rather than at the next launch, and says
+    # what it will do -- a cadence you cannot hear you have changed is one you
+    # have to restart the app to believe.
+    from quill.apps import radio_podcast_refresh
+
+    schedule_said = radio_podcast_refresh.reapply(app)
     # Apply the Prevent Sleep choice now: acquire the keep-awake lock if a
     # station is already playing, or release it if the user just turned it off.
     app._update_sleep_inhibitor()
     menu_bar = app.frame.GetMenuBar()
     if menu_bar is not None:
         menu_bar.Check(int(app._resume_menu_item_id), history.resume_on_launch)
-    app._announce("Preferences saved.")
+    app._announce(f"Preferences saved. {schedule_said}".strip())

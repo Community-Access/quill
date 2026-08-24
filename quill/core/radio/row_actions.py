@@ -61,6 +61,8 @@ DETAILS = "details"
 OPEN_FOLDER = "folder.open"
 CLOSE_FOLDER = "folder.close"
 REFRESH = "folder.refresh"
+#: Check every subscribed feed now, paused shows included (list.md 1.7).
+REFRESH_ALL_PODCASTS = "podcast.refresh_all"
 SUBSCRIBE_PODCAST = "podcast.subscribe"
 UNSUBSCRIBE_PODCAST = "podcast.unsubscribe"
 UNFOLLOW_CHANNEL = "channel.unfollow"
@@ -452,6 +454,11 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
         # show or an episode (they already ARE subscriptions).
         actions.append(RowAction(NEW_PODCAST_FOLDER, "New Fo&lder..."))
         actions.append(RowAction(ADD_PODCAST_URL, "Add a Podcast by &URL..."))
+        # Refresh on a *show* re-reads that show. This is the other question --
+        # "is there anything new anywhere?" -- which otherwise could only be
+        # answered by opening every show in turn, and which the automatic check
+        # answers on a cadence somebody may not have turned on.
+        actions.append(RowAction(REFRESH_ALL_PODCASTS, "Chec&k All Feeds Now"))
 
     if kind == "apple" and state.root_source:
         # On the Podcasts branch itself: a whole OPML file's worth of shows
@@ -466,6 +473,7 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
         actions.append(RowAction(NEW_PODCAST_FOLDER, "New Fo&lder Inside..."))
         actions.append(RowAction(RENAME_PODCAST_FOLDER, "R&ename Folder..."))
         actions.append(RowAction(DELETE_PODCAST_FOLDER, "Dele&te Folder..."))
+        actions.append(RowAction(REFRESH_ALL_PODCASTS, "Chec&k All Feeds Now"))
 
     if is_followed_channel(kind) or state.is_followed_channel:
         # "&P", not "&C": an expanded channel's menu now leads with "&Close".

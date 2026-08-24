@@ -187,6 +187,7 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     )
     handlers[row_actions.MARK_ALL_PLAYED] = lambda: podcast_acts.mark_all_played(dialog, args)
     handlers[row_actions.IMPORT_OPML] = lambda: podcast_acts.import_opml(dialog)
+    handlers[row_actions.REFRESH_ALL_PODCASTS] = lambda: podcast_acts.refresh_all_feeds(dialog)
     handlers[row_actions.ADD_PODCAST_URL] = lambda: podcast_acts.add_podcast_by_url_prompt(dialog)
     handlers[row_actions.DOWNLOAD_ALL_EPISODES] = lambda: podcast_acts.download_all_episodes(
         dialog, args

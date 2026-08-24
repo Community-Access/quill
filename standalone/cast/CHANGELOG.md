@@ -4,6 +4,40 @@ All notable changes to QUILL Cast are documented here. See `docs/release-notes-2
 
 ## 2.0.0
 
+### Check All Feeds Now, and one check rather than two (2026-08-24)
+
+**A verb for the question the per-show Refresh could not answer.** Refresh Feed
+on a show has always answered "anything new in *this* one?". **Check All Feeds
+Now**, on the folder and library rows of the Podcast Manager's tree, answers the
+other one. It says how many feeds it is checking before it starts, because that
+result arrives show by show over the next few seconds and a bare "checking"
+never tells you when it is finished.
+
+It checks paused shows too. A pause means "leave this show alone" -- no
+automatic feed check, no automatic download, for a finished show or a seasonal
+one between seasons -- and it must never come to mean "you cannot reach this
+show". That it costs nothing you cannot undo with one keystroke on the row in
+front of you is the whole reason a pause is safe to offer.
+
+And it runs whether or not the background check is switched on. That switch
+answers a different question -- whether to check *without being asked* -- and
+it is off by default, so reading one as the other would have shipped a menu item
+that did nothing at all for most people.
+
+**Cast and Quill Radio stop asking the same publisher twice.** Both apps read
+one podcast library, and each keeps its own cadence on purpose: a single shared
+switch would mean enabling the check here enabled it in Radio too, with no way
+to say "let Radio do it". The cost of that is two timers over one set of feeds,
+so they now share the record of *when* a check happened. Whichever app checks
+first writes it down, and the other, arriving inside the same interval, finds
+the work already done and stays quiet. Nobody configures this.
+
+**One list of intervals, meaning the same thing in both apps.** Cast used to
+clamp its interval to its own range and offer its own choices, so "every 12
+hours" was a choice in one app and not the other, and a value one app accepted
+the other quietly rewrote. Both now ask one shared policy, including for what
+zero means: **manually only**, an answer rather than the absence of one.
+
 ### QUILL Cast welcomes a first-time listener (2026-08-24)
 
 Three screens on a genuinely first launch -- welcome, add your first podcast,

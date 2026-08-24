@@ -16,6 +16,7 @@ import wx
 import quill.ui.app_preferences_dialog as app_preferences_dialog_module
 from quill.apps.radio import RadioAppFrame
 from quill.core.radio.favorites import FavoriteStation, RadioFavoritesStore
+from quill.core.radio.history import RadioHistory
 from quill.core.radio.models import RadioStation
 from quill.ui.radio.playback_state import RadioPlayerState
 
@@ -31,29 +32,21 @@ def _frame(*, playing: RadioStation | None = None) -> Any:
     frame = RadioAppFrame.__new__(RadioAppFrame)
     frame.frame = object()
     frame._announce = lambda _msg: None
-    frame._radio_history = SimpleNamespace(
+    # A real RadioHistory, not a hand-built stand-in. This was a
+    # SimpleNamespace listing twenty-two fields by hand, which meant every new
+    # setting on the record broke this test with an AttributeError that had
+    # nothing to do with sound enhancements. The dataclass defaults everything;
+    # only the handful this test actually cares about are set.
+    frame._radio_history = RadioHistory(
         eq_bass_db=1.0,
         eq_mid_db=2.0,
         eq_treble_db=3.0,
         compressor_enabled=True,
-        now_playing_template="{title}[ by {artist}]",
-        debug_mode=False,
         prevent_sleep=True,
         keep_awake_before_recording=True,
         wake_for_scheduled_recording=True,
         catalog_enabled=True,
         catalog_refresh_on_startup=True,
-        catalog_refresh_hours=24,
-        log_dir="",
-        favorites_sort="az",
-        channel_mode="stereo",
-        night_mode_enabled=False,
-        optilab_enabled=False,
-        optilab_mode="off",
-        optilab_input_db=0.0,
-        optilab_auto_adapt=0,
-        optilab_exact=False,
-        optilab_exact_live=False,
     )
     frame._radio_favorites = RadioFavoritesStore()
     frame._radio_controller = SimpleNamespace(

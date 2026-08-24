@@ -43,6 +43,13 @@ class PodcastLibrary:
     shows: list[PodcastShow] = field(default_factory=list)
     folders: list[PodcastFolder] = field(default_factory=list)
     settings: PodcastSettings = field(default_factory=PodcastSettings)
+    #: When an automatic check last read these feeds, whichever app ran it
+    #: (ISO-8601 UTC; "" = never). Shared deliberately: the *cadence* is each
+    #: app's own -- one switch for both would mean turning the check on in Cast
+    #: turned it on in Radio -- but the *work* is one job over one set of feeds,
+    #: so whichever app does it says when, and the other stays quiet inside the
+    #: same interval. See refresh_policy.is_due.
+    last_auto_check: str = ""
     #: The cross-show Play Queue (Phase 4): ordered episode references,
     #: persisted with the library. Operations live in podcasts.queue.
     queue: list[QueueItem] = field(default_factory=list)
@@ -361,6 +368,7 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         playlists=playlists,
         recently_expired=recently_expired,
         onboarding=OnboardingState.from_dict(raw.get("onboarding")),
+        last_auto_check=str(raw.get("last_auto_check", "") or ""),
     )
 
 
@@ -380,5 +388,6 @@ def save_library(data_dir: Path, library: PodcastLibrary) -> None:
             "playlists": [p.to_dict() for p in library.playlists],
             "recently_expired": [e.to_dict() for e in library.recently_expired],
             "onboarding": library.onboarding.to_dict(),
+            "last_auto_check": library.last_auto_check,
         },
     )

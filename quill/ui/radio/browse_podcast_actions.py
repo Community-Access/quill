@@ -416,3 +416,34 @@ def import_opml(dialog: Any) -> None:
         dialog._announce(f"That file could not be imported. {error}.")
 
     dialog._task_manager.submit("radio-opml-import", _work, on_success=_ok, on_failure=_failed)
+
+
+def refresh_all_feeds(dialog: Any) -> None:
+    """Check every subscribed feed now, paused shows included.
+
+    Refresh on a *show* answers "is there anything new in this one?". This is
+    the other question -- "is there anything new anywhere?" -- which otherwise
+    had no answer short of opening every show in turn, and which the automatic
+    check only answers on a cadence somebody has to have turned on first.
+
+    Forced, so it ignores both the pause on a show and the shared "another app
+    just checked" stamp: a key somebody pressed is not a timer firing, and
+    being told "the other app did that a moment ago" is not an answer.
+
+    The work, the off-thread submit and the one spoken summary all belong to
+    the monitor already; this only finds it. Radio without a monitor (Safe
+    Mode, or a frame built by a test) says so rather than doing nothing.
+    """
+    # The same tree runs inside QUILL, where the monitor is Cast's and is
+    # called something else. Both answer check_now(force=True), which is the
+    # only part this verb cares about.
+    host = getattr(dialog, "_download_host", None) or dialog
+    monitor = None
+    for owner in (dialog, host):
+        for name in ("_podcast_refresh_monitor", "_podcast_check_monitor"):
+            monitor = monitor or getattr(owner, name, None)
+    if monitor is None:
+        dialog._announce("Subscribed feeds cannot be checked right now.")
+        return
+    dialog._announce("Checking subscribed feeds...")
+    monitor.check_now(force=True)

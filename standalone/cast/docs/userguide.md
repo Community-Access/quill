@@ -488,6 +488,8 @@ are filed. Right-click one (or press the applications key) for:
   setting comes from, not two.
 - **Export This Folder as OPML...** -- hand one folder and its sub-folders to
   another machine or another person, without exporting your whole library.
+- **Check All Feeds Now** -- ask every subscribed podcast whether it has
+  published anything new. See "Checking for new episodes" below.
 
 A folder always means everything beneath it. Playing "News" plays what is in
 "News/Local" too.
@@ -496,6 +498,38 @@ A folder always means everything beneath it. Playing "News" plays what is in
 one step: arrows move through the list, Shift and arrow extend the selection,
 Ctrl and Space adds or removes one, and Select All takes the lot. It says how
 many are selected as you go, then asks once which folder they go to.
+
+## Checking for new episodes
+
+There are two questions, and QUILL Cast answers them separately.
+
+**"Anything new in this one?"** -- **Refresh Feed** on a podcast's own context
+menu. It works on any show that has a feed address, including one you have
+paused.
+
+**"Anything new anywhere?"** -- **Check All Feeds Now**, on a folder or on the
+tree below your podcasts. It says how many feeds it is checking before it
+starts, because the answers arrive show by show over the next few seconds.
+
+Both of these are things you asked for, so both check paused shows as well. A
+pause means *leave this show alone* -- no automatic check, no automatic
+download, for a finished show or a seasonal one between seasons -- and it never
+means the show is out of reach. That it costs nothing you cannot undo with one
+keystroke on the row in front of you is what makes a pause safe to use freely.
+
+**Checking without being asked** is a separate switch, in Podcast Settings, and
+it is off by default. Turn it on and pick a cadence -- from every 15 minutes to
+once a day -- and Cast will look on its own. A check reads episode lists: it
+starts no downloads by itself unless you have also asked for automatic
+downloads, and it never changes what you are playing. Check All Feeds Now works
+whether or not that switch is on; it is not the same question.
+
+**If you also run Quill Radio**, the two apps will not ask the same publisher
+twice. Each keeps its own cadence on purpose -- otherwise turning the check on
+here would turn it on there, with no way to say "let Radio do it" -- but they
+share the record of when a check last happened, so whichever one goes first, the
+other finds the work already done and stays quiet. There is nothing to
+configure.
 
 ## Grouping the Play Queue
 

@@ -819,6 +819,8 @@ class PodcastManagerDialog(
                 menu.AppendSeparator()
             new_folder_item = menu.Append(wx.ID_ANY, "&New Folder...")
             menu.Bind(wx.EVT_MENU, self._on_new_folder, new_folder_item)
+            check_item = menu.Append(wx.ID_ANY, "Chec&k All Feeds Now")
+            menu.Bind(wx.EVT_MENU, lambda _e: self._on_check_all_feeds(), check_item)
         self._tree.PopupMenu(menu)
         menu.Destroy()
 

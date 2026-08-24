@@ -1685,19 +1685,25 @@ instead. Ctrl+Up and Ctrl+Down still change the volume either way.
 <strong>Episodes listed per subscribed podcast</strong> (25 newest by
 default) governs how many episodes each show under Podcasts &gt;
 Subscriptions lists – deliberately Quill Radio’s one podcast setting,
-with the full archive living in Quill Cast. And the <strong>Data
-Folder…</strong> button opens the family-wide data location: where every
-Quill app stores its settings, favorites, subscriptions, and playback
-positions. Point it at a folder that Dropbox, OneDrive, Google Drive, or
-iCloud already keeps in sync and your whole Quill setup travels between
-computers – no account, no sign-in; the sync client does the moving. The
-change applies the next time an app starts (a restart is offered), your
-existing data is moved for you, and the machine-heavy caches (like the
-Station Catalog) deliberately stay on each computer rather than churning
-through the sync service. One rule to respect: do not run Quill apps on
-two computers against the same folder at the same time – if you do, the
-next launch says so (“this data folder was in use on LAPTOP-X…”) rather
-than letting two machines silently fight over one profile.</li>
+with the full archive living in Quill Cast. Beside it, <strong>Check
+subscribed podcast feeds at launch</strong> and <strong>Check subscribed
+podcast feeds:</strong> (Manually only, through every 15 minutes to once
+a day) decide whether Quill Radio looks for new episodes without being
+asked; both are off to begin with, and the choice’s own description says
+what a check does <em>not</em> do – see “Checking your subscribed
+podcasts for new episodes”. And the <strong>Data Folder…</strong> button
+opens the family-wide data location: where every Quill app stores its
+settings, favorites, subscriptions, and playback positions. Point it at
+a folder that Dropbox, OneDrive, Google Drive, or iCloud already keeps
+in sync and your whole Quill setup travels between computers – no
+account, no sign-in; the sync client does the moving. The change applies
+the next time an app starts (a restart is offered), your existing data
+is moved for you, and the machine-heavy caches (like the Station
+Catalog) deliberately stay on each computer rather than churning through
+the sync service. One rule to respect: do not run Quill apps on two
+computers against the same folder at the same time – if you do, the next
+launch says so (“this data folder was in use on LAPTOP-X…”) rather than
+letting two machines silently fight over one profile.</li>
 <li><strong>Send to Tray</strong> (Ctrl+W) – hide the window; playback
 continues from the notification area.</li>
 <li><strong>Exit</strong> – quit Quill Radio. Closing the window –
@@ -3197,6 +3203,48 @@ different questions.</li>
 </ul>
 <p>Close and reopen the app after an import, so everything is read back
 in.</p>
+<h2 id="checking-your-subscribed-podcasts-for-new-episodes">Checking
+your subscribed podcasts for new episodes</h2>
+<p>Quill Radio used to read a show’s feed only when you opened that
+show, which meant the unheard count on a show you had not opened was as
+old as the last time you opened it, and “what is new?” could only be
+answered by walking the Subscriptions branch and opening everything.</p>
+<p><strong>Ask once, for everything.</strong> <strong>Check All Feeds
+Now</strong>, on the Subscriptions branch and on any podcast folder in
+it, asks every subscribed show at once. It checks shows you have paused
+as well: a pause means <em>leave this show alone</em> – no checking on a
+timer, no downloading by itself – and it must never come to mean the
+show is out of reach. That it costs nothing you cannot undo with one
+keystroke on the row in front of you is what makes a pause safe to use
+freely. <strong>Refresh</strong> on a single show is the same question
+about one show.</p>
+<p><strong>Or have Radio ask on its own.</strong> Preferences (Ctrl+,)
+holds two settings for this: how often to check – from every 15 minutes
+to once a day, plus <strong>Manually only</strong> – and whether to
+check once at launch. Both are <strong>off</strong> to begin with, on
+purpose: an app that starts reaching the network on a schedule nobody
+chose is spending somebody else’s data allowance.</p>
+<p>What an automatic check does, exactly:</p>
+<ul>
+<li>It reads episode lists. Nothing is downloaded, nothing is queued,
+and nothing you are playing changes – downloads and queues are QUILL
+Cast’s job.</li>
+<li>A show you have paused is skipped.</li>
+<li>It says what it found once, at the end, counted and named. When it
+found nothing it says nothing at all, because a check that reports
+silence four times an hour has stopped being information.</li>
+<li>During quiet hours it still checks; it just holds the summary.</li>
+<li>A check that fails is written into <strong>Recent Problems</strong>
+whether or not it was spoken, so a feed that broke at three in the
+morning is still there at breakfast.</li>
+</ul>
+<p><strong>If you also run QUILL Cast</strong>, the two apps will not
+ask the same publisher twice. Each keeps its own cadence deliberately –
+one shared switch would mean turning the check on in Cast turned it on
+here too, with no way to say “let Cast do it” – but they share the
+record of <em>when</em> a check happened, so whichever app goes first,
+the other finds the work already done and stays quiet. There is nothing
+to set up and nothing to notice.</p>
 <h2 id="your-place-follows-you-between-quill-radio-and-quill-cast">Your
 place follows you between Quill Radio and QUILL Cast</h2>
 <p>Both apps can play the same subscribed episode, and they now share

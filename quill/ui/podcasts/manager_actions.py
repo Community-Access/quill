@@ -364,3 +364,28 @@ class ManagerActionsMixin:
             else f"Resumed updates for {show.title} -- feed checks and automatic "
             "downloads are back on"
         )
+
+    def _on_check_all_feeds(self) -> None:
+        """Check every subscribed feed now, paused shows included.
+
+        Refresh Feed on a *show* answers "anything new in this one?". This is
+        the other question -- "anything new anywhere?" -- which otherwise had
+        no answer short of walking the tree, and which the automatic check
+        only answers on a cadence somebody has to have turned on first.
+
+        Forced, so it ignores both the pause on a show and the shared "the
+        other app just checked" stamp: a key somebody pressed is not a timer
+        firing, and "Quill Radio did that a moment ago" is not an answer.
+        """
+        monitor = getattr(self._transport_host, "_podcast_check_monitor", None)
+        if monitor is None or self._safe_mode:
+            self._announce("Subscribed feeds cannot be checked right now.")
+            return
+        # The count up front, because this is the one verb whose result
+        # arrives show by show over the next few seconds: "checking three
+        # feeds" tells you when it is finished, where "checking" does not.
+        started = monitor.check_now(force=True)
+        if not started:
+            self._announce("No subscribed feed to check.")
+            return
+        self._announce(f"Checking {started} feed{'' if started == 1 else 's'}...")

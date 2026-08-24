@@ -14,7 +14,6 @@ import wx
 
 from quill.apps import radio_audio_menu, radio_go_to
 from quill.apps import radio_now_playing as now_playing_readout
-from quill.apps.radio_startup_window import open_startup_window
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.core.radio import reading_services
@@ -236,28 +235,13 @@ class RadioAppFrame(
         # No Weather Guardian resume here anymore: the Weather menu left Quill
         # Radio (2026-08-17), so background alert monitoring belongs to the
         # Quill Weather app that owns its on/off switch.
-        # Data Folder surfacing: announce a move applied at this launch, and
-        # warn when a synced custom folder looks in use on another computer.
-        from quill.ui.data_folder_dialog import surface_data_folder_startup
+        # Everything that happens once the window is up -- the data-folder
+        # notice, media health, the startup window, the first-run flow, and
+        # arming the subscribed-feed check. See apps/radio_launch_tasks.py for
+        # why each is deferred and why they are in that order.
+        from quill.apps import radio_launch_tasks
 
-        wx.CallAfter(surface_data_folder_startup, self)
-        # Media tools: say once, at launch, when this installation has lost the
-        # engine that plays Ogg/Opus/HLS or the one that records. Deferred and
-        # spoken rather than modal for the same reason as the line above -- a
-        # launch is not the place to seize focus a screen reader has not settled
-        # yet (#259). Silent on a healthy install, by design.
-        from quill.ui.radio.media_preflight import surface_media_health_startup
-
-        wx.CallAfter(surface_media_health_startup, self)
-        # One window, or none (radio_startup_window), over the main window.
-        wx.CallAfter(open_startup_window, self)
-        # First run: three screens for somebody who has never used this before,
-        # and nothing at all for anybody who already has favorites. Modal rather
-        # than spoken, unlike the line above -- it is the whole content of a
-        # first launch, and Skip leaves in one keystroke.
-        from quill.ui.radio.first_run_dialog import maybe_run_first_run
-
-        wx.CallAfter(maybe_run_first_run, self)
+        self._podcast_refresh_monitor = radio_launch_tasks.schedule(self, wx, safe_mode=safe_mode)
         # Missed-recording reporting + startup reconcile/resume live in
         # RadioMixin._init_radio now (R2/11.6 + R3), so both hosts get them once.
 
@@ -2189,6 +2173,9 @@ class RadioAppFrame(
             getattr(self._radio_controller, "shutdown", None),
             getattr(self._radio_recorder, "shutdown", None),
             getattr(self._radio_scheduler, "shutdown", None),
+            # A wx.Timer still running when its frame goes is a timer that can
+            # fire into a destroyed window.
+            getattr(getattr(self, "_podcast_refresh_monitor", None), "stop", None),
         ):
             if shutdown_fn is None:
                 continue
