@@ -439,7 +439,7 @@ dev = [
   # Property-based testing for the pure parsers (find_model, regex_helper,
   # quill/io readers): generates edge cases a hand-written example never
   # thinks of. See tests/unit/core/test_find_model_properties.py.
-  "hypothesis>=6.165.2",
+  "hypothesis>=6.165.10",
   # Randomized test ordering, DISABLED by default via addopts (-p no:randomly).
   # Opt in with `pytest -p randomly ...` to hunt order-dependent coupling.
   "pytest-randomly>=4.1.0",
