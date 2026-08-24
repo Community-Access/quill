@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from quill.core.podcasts import settings_help
+from quill.core.podcasts import settings_help, volume_boost
 from quill.core.podcasts.models import SPEED_MAX, SPEED_MIN, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids
@@ -124,6 +124,7 @@ class ShowSettingsDialog:
             "Auto-&download:", lambda: wx.Choice(self.dialog, choices=list(_AUTO_DOWNLOAD_LABELS))
         )
         self._auto_download.SetName(settings_help.SHOW_HELP["auto_download"])
+        self._auto_download.SetHelpText(settings_help.SHOW_HELP["auto_download"])
         self._auto_download.SetSelection(
             _index_for(
                 _AUTO_DOWNLOAD_VALUES,
@@ -136,12 +137,14 @@ class ShowSettingsDialog:
             lambda: wx.CheckBox(self.dialog, label="New episodes go straight to the Play &Queue"),
         )
         self._auto_queue.SetName(settings_help.SHOW_HELP["auto_queue"])
+        self._auto_queue.SetHelpText(settings_help.SHOW_HELP["auto_queue"])
         self._auto_queue.SetValue(show.auto_queue)
 
         self._notify = add_row(
             "", lambda: wx.CheckBox(self.dialog, label="&Announce new episodes by name")
         )
         self._notify.SetName(settings_help.SHOW_HELP["notify"])
+        self._notify.SetHelpText(settings_help.SHOW_HELP["notify"])
         self._notify.SetValue(show.notify_new_episodes)
 
         self._queue_age = add_row(
@@ -149,6 +152,7 @@ class ShowSettingsDialog:
             lambda: wx.Choice(self.dialog, choices=list(_QUEUE_AGE_LABELS)),
         )
         self._queue_age.SetName(settings_help.SHOW_HELP["queue_expiry"])
+        self._queue_age.SetHelpText(settings_help.SHOW_HELP["queue_expiry"])
         self._queue_age.SetSelection(_index_for(_QUEUE_AGE_VALUES, settings.queue_age_limit_days))
 
         self._speed = add_row(
@@ -166,12 +170,14 @@ class ShowSettingsDialog:
         )
         self._inbox_max.SetValue(settings.inbox_max_episodes)
         self._inbox_max.SetName(settings_help.SHOW_HELP["inbox_max"])
+        self._inbox_max.SetHelpText(settings_help.SHOW_HELP["inbox_max"])
 
         self._inbox_age = add_row(
             "Inbox: drop episodes &older than:",
             lambda: wx.Choice(self.dialog, choices=list(_INBOX_AGE_LABELS)),
         )
         self._inbox_age.SetName(settings_help.SHOW_HELP["inbox_age"])
+        self._inbox_age.SetHelpText(settings_help.SHOW_HELP["inbox_age"])
         self._inbox_age.SetSelection(_index_for(_INBOX_AGE_VALUES, settings.inbox_age_limit_hours))
 
         self._retention_days = add_row(
@@ -180,6 +186,7 @@ class ShowSettingsDialog:
         )
         self._retention_days.SetValue(settings.download_retention_days)
         self._retention_days.SetName(settings_help.SHOW_HELP["delete_after_days"])
+        self._retention_days.SetHelpText(settings_help.SHOW_HELP["delete_after_days"])
 
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -192,7 +199,28 @@ class ShowSettingsDialog:
         )
         self._playback_cache.SetValue(settings.playback_cache)
         self._playback_cache.SetName(settings_help.SHOW_HELP["playback_cache"])
+        self._playback_cache.SetHelpText(settings_help.SHOW_HELP["playback_cache"])
         root.Add(self._playback_cache, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
+        # Volume Boost, per podcast (list.md 2.8) -- the half that matters,
+        # because one badly-mastered show among forty is exactly what the
+        # global setting cannot fix.
+        root.Add(
+            wx.StaticText(self.dialog, label="Volume &Boost for this podcast:"),
+            0,
+            wx.LEFT | wx.RIGHT | wx.TOP,
+            10,
+        )
+        self._boost = wx.Choice(
+            self.dialog, choices=[label for _v, label, _f in volume_boost.LEVELS]
+        )
+        self._boost.SetName(settings_help.SHOW_HELP["volume_boost"])
+        self._boost.SetHelpText(settings_help.SHOW_HELP["volume_boost"])
+        self._boost.SetHelpText(settings_help.SHOW_HELP["volume_boost"])
+        self._boost.SetSelection(
+            volume_boost.index_of(getattr(settings, "volume_boost", volume_boost.OFF))
+        )
+        root.Add(self._boost, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._favorite = wx.CheckBox(self.dialog, label="A &favorite podcast")
         self._favorite.SetValue(show.is_favorite)
@@ -202,6 +230,7 @@ class ShowSettingsDialog:
         ok_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
         clear_btn = wx.Button(self.dialog, label="&Follow the Shared Defaults")
         clear_btn.SetName(settings_help.SHOW_HELP["reset"])
+        clear_btn.SetHelpText(settings_help.SHOW_HELP["reset"])
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         btn_row.Add(clear_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
@@ -263,6 +292,7 @@ class ShowSettingsDialog:
             "inbox_age_limit_hours": _INBOX_AGE_VALUES[max(0, self._inbox_age.GetSelection())],
             "download_retention_days": self._retention_days.GetValue(),
             "playback_cache": self._playback_cache.GetValue(),
+            "volume_boost": volume_boost.from_index(self._boost.GetSelection()),
         }
         if auto_value is not None:
             # -1 is "the whole catalog", which is what always_sync_full_catalog

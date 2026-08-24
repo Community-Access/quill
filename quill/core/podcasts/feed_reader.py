@@ -158,11 +158,19 @@ def _parse_duration(raw: object) -> int:
 def _episode_extra_tags(entry_xml: str) -> tuple[str, str, str]:
     """Best-effort ``(chapters_url, transcript_url, transcript_type)`` for one
     entry's raw XML fragment."""
+    from quill.core.podcasts import transcript_choice
+
     chapters_match = _CHAPTERS_TAG_RE.search(entry_xml)
-    transcript_match = _TRANSCRIPT_TAG_RE.search(entry_xml)
     chapters_url = chapters_match.group(1) if chapters_match else ""
-    transcript_url = transcript_match.group(1) if transcript_match else ""
-    transcript_type = (transcript_match.group(2) or "") if transcript_match else ""
+    # **Every** transcript tag, not the first (list.md 2.6). A feed may offer
+    # the same words as JSON, WebVTT, SRT and HTML, and only the structured
+    # ones carry cue times -- so taking whichever the publisher happened to
+    # list first cost the timed reader, the chapter cascade's transcript tier
+    # and Markdown timestamps, silently, on every episode of that show.
+    offered = [
+        (match.group(1), match.group(2) or "") for match in _TRANSCRIPT_TAG_RE.finditer(entry_xml)
+    ]
+    transcript_url, transcript_type = transcript_choice.best(offered)
     return chapters_url, transcript_url, transcript_type
 
 

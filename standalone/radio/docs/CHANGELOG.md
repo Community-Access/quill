@@ -17,6 +17,18 @@ gone missing, and several long-standing silent faults are fixed. See
 
 ### Added
 
+- **A feed offering several transcripts now gets read properly.** Some podcasts
+  publish the same episode's transcript as JSON, WebVTT, SRT *and* HTML. Quill
+  Radio took whichever the publisher happened to list first -- and only the
+  structured formats carry the timings the transcript reader follows along
+  with, so a show that listed HTML first silently lost them on every episode.
+  The choice is now made by what a format can do rather than by feed order.
+- **Skip Silence never moves your place, and that is now written down.**
+  Compressing the silences changes what you hear, not where you are: a saved
+  position stays in the original recording's timeline, so resuming an episode
+  you part-listened to with it on lands exactly where you left. (It is the same
+  filter QUILL Cast calls Smart Speed -- one behaviour, and the two apps are
+  now tested to agree about it.)
 - **A reminder on anything, not just a programme.** Every station, recording
   and saved row now offers **Set a Reminder...** on its context menu, and the
   same row offers **Remove Reminder** once it has one -- a menu that cannot tell

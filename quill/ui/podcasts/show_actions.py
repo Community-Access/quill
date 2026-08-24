@@ -154,7 +154,30 @@ def start_episode_playback(
         auto_skip_intro_ms=settings.auto_skip_intro_seconds * 1000,
         auto_skip_outro_ms=settings.auto_skip_outro_seconds * 1000,
     )
+    # Volume Boost is per podcast (2.8), so it is applied *after* the episode
+    # is loaded rather than passed with it: the engine has to exist to be told,
+    # and the level belongs to the show rather than to the episode.
+    _apply_volume_boost(controller, settings)
     return True
+
+
+def _apply_volume_boost(controller: object, settings: object) -> None:
+    """Set this podcast's boost on the player. Never raises.
+
+    Off is a real answer that has to be sent -- otherwise a loud show played
+    after a quiet one would inherit the quiet one's boost, which is the exact
+    complaint a per-show setting exists to prevent.
+    """
+    from quill.core.podcasts import volume_boost
+
+    setter = getattr(controller, "set_volume_boost", None)
+    if not callable(setter):
+        return
+    level = volume_boost.normalize(getattr(settings, "volume_boost", volume_boost.OFF))
+    try:
+        setter(volume_boost.multiplier(level))
+    except Exception:  # noqa: BLE001 - a boost that will not set is not a failure to play
+        return
 
 
 def enqueue_episode_download(

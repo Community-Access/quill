@@ -68,6 +68,13 @@ HELP: dict[str, str] = {
         "are off a metered connection. A download you ask for by name always "
         "happens, metered or not."
     ),
+    "volume_boost": (
+        "Makes quiet podcasts louder. It is playback gain: nothing on disk "
+        "changes and your system volume is untouched. This is the default for "
+        "every podcast -- the one that actually matters is the per-podcast "
+        "override, because one badly-mastered show is exactly what a single "
+        "setting cannot fix."
+    ),
     "download_notify": (
         "One desktop notification when the download queue goes quiet, not one "
         "per episode. Off by default. Nothing leaves this computer, and quiet "
@@ -242,6 +249,12 @@ SHOW_HELP: dict[str, str] = {
         "Save this podcast's streamed audio as it plays, so playback continues "
         "through a dropped connection and chapters can be found in it. It is "
         "not a download and keeps nothing permanently."
+    ),
+    "volume_boost": (
+        "Makes this podcast louder, and only this one. It is playback gain: "
+        "nothing on disk changes, your system volume is untouched, and no "
+        "other show is affected. This is the setting that fixes one "
+        "badly-mastered show without making everything else too loud."
     ),
     "reset": (
         "Drop every override for this podcast so it follows Podcast Settings "

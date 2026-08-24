@@ -48,9 +48,25 @@ class PodcastPlayerVolumeMixin:
         self._apply_engine_volume()
 
     def _apply_engine_volume(self) -> None:
+        """Send the engine the boosted volume, capped where boost stops helping.
+
+        Capped at ``volume_boost.MAX_PERCENT`` rather than at 100 (list.md
+        2.8). The old ceiling of 100 was not wrong below it -- 40 at 1.5x was
+        60, as it should be -- but it meant a podcast already playing at 100
+        could not be boosted at all, which is precisely the badly-mastered
+        show a per-podcast boost exists for. Quill Radio's boost has always
+        gone past 100 on the mpv engine; this makes the two agree.
+
+        150 and no further: past about there a spoken-word recording stops
+        getting louder and starts distorting. An engine that cannot exceed 100
+        clamps it itself, which is why sending the boosted number is safe
+        everywhere.
+        """
         if self._engine is not None:
+            from quill.core.podcasts.volume_boost import MAX_PERCENT
+
             boosted = round(self._volume_percent * self._volume_boost)
-            self._engine.set_volume(min(100, boosted))
+            self._engine.set_volume(min(MAX_PERCENT, boosted))
 
     @property
     def volume_percent(self) -> int:

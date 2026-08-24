@@ -1338,6 +1338,34 @@ Quill Radio’s recordings player uses, from the same shared map.</p>
 typing is never swallowed. Turn the letters off in Preferences (Ctrl+,)
 if you would rather use them for list typeahead; Ctrl+Up and Ctrl+Down
 for volume always work either way.</p>
+<h2 id="making-a-quiet-podcast-louder">Making a quiet podcast
+louder</h2>
+<p>Some shows are simply mastered quieter than others, and turning the
+system volume up for that one means turning it down again for everything
+else. <strong>Volume Boost</strong> fixes it per podcast.</p>
+<p>Set it from the box in the Podcast Manager with a podcast selected,
+or in that podcast’s own settings: <strong>Off</strong>,
+<strong>Low</strong>, <strong>Medium</strong> or <strong>High</strong>.
+It is remembered for that show and applied whenever the show plays.</p>
+<p>It is playback gain, which means it changes nothing on disk, nothing
+about your system volume, and nothing about any other podcast. It
+multiplies the volume you already chose and stops at 150% – past about
+there a spoken-word recording stops getting louder and starts
+distorting.</p>
+<p>There is a global default in Podcast Settings too, but the
+per-podcast setting is the one that matters: a single setting is the one
+shape that cannot fix one badly-mastered show.</p>
+<h2 id="transcripts-when-a-feed-offers-more-than-one">Transcripts, when
+a feed offers more than one</h2>
+<p>Some podcasts publish the same episode’s transcript in several
+formats at once – JSON, WebVTT, SRT and HTML. Only the first three carry
+the <em>timings</em> that let the transcript reader follow along with
+playback, that let chapters be worked out from a transcript, and that
+put timestamps into an exported Markdown file.</p>
+<p>QUILL Cast picks by what a format can do, not by the order the
+publisher listed them in, and falls back to HTML when that is genuinely
+all a show offers. If a show’s transcript used to arrive without
+timings, this is why, and it should not any more.</p>
 <h2 id="bookmarks-keeping-a-moment">Bookmarks: keeping a moment</h2>
 <p><strong>Bookmark This Moment</strong> (Episode menu, or Ctrl+Alt+A)
 marks where you are in one keystroke. <strong>Bookmarks…</strong> (Help

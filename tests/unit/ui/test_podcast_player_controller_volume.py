@@ -74,11 +74,21 @@ def test_boost_scales_the_engine_volume() -> None:
     assert fake.volume_calls[-1] == 60
 
 
-def test_boost_caps_at_100_even_when_scaled_higher() -> None:
+def test_boost_goes_past_100_and_stops_at_150() -> None:
+    """The ceiling moved from 100 to 150 (list.md 2.8).
+
+    At 100 a podcast already playing at full volume could not be boosted at
+    all -- which is precisely the badly-mastered show a boost exists for. 150
+    is where a spoken-word recording stops getting louder and starts
+    distorting, and it is what Quill Radio's boost has always allowed.
+    """
     controller, fake = _make_controller()
     controller.set_volume(80)
-    controller.set_volume_boost(2.0)
-    assert fake.volume_calls[-1] == 100
+    controller.set_volume_boost(1.5)
+    assert fake.volume_calls[-1] == 120
+
+    controller.set_volume_boost(3.0)
+    assert fake.volume_calls[-1] == 150
 
 
 def test_volume_percent_stays_unboosted_for_sleep_timer() -> None:
@@ -92,7 +102,7 @@ def test_set_volume_boost_clamps_to_valid_range() -> None:
     controller, fake = _make_controller()
     controller.set_volume(50)
     controller.set_volume_boost(10.0)  # way above the 3.0 cap
-    assert fake.volume_calls[-1] == 100  # 50 * 3.0 clamped to 100
+    assert fake.volume_calls[-1] == 150  # 50 * 3.0, then the 150 ceiling
     controller.set_volume_boost(0.1)  # below the 0.5 floor
     assert fake.volume_calls[-1] == 25  # 50 * 0.5
 

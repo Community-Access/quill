@@ -4,6 +4,38 @@ All notable changes to QUILL Cast are documented here. See `docs/release-notes-2
 
 ## 2.0.0
 
+### Volume Boost per podcast, and the right transcript (2026-08-24)
+
+**Volume Boost is per podcast now, and it is remembered.** One badly-mastered
+show among forty is exactly what a single global control cannot fix -- turn it
+up for that one and everything else is too loud. Choose Off, Low, Medium or
+High with a podcast selected in the Podcast Manager, or in that podcast's own
+settings, and it applies whenever that show plays.
+
+Two things about the old control were quietly wrong. It was **session-only**,
+so the show you fixed last week was quiet again today. And its ceiling was 100%
+of the system volume, so a podcast already playing at full volume could not be
+boosted **at all** -- precisely the case a boost exists for. The ceiling is now
+150%, which is what Quill Radio's boost has always allowed and about where a
+spoken-word recording stops getting louder and starts distorting.
+
+Four levels rather than a number, deliberately: "louder" is a judgement, and
+choosing between Low and Medium is a question you can hold, where choosing
+between 118% and 126% is being asked to do the app's job.
+
+**A feed offering several transcripts now gets read properly.** Some podcasts
+publish the same episode's transcript as JSON, WebVTT, SRT *and* HTML. QUILL
+Cast took whichever the publisher happened to list first -- and only the
+structured formats carry cue times, so a show that listed HTML first silently
+lost the timed transcript reader, chapter detection from transcripts, and
+timestamps in exported Markdown, on every episode. Cast now picks by what a
+format can do rather than by feed order, and still falls back to HTML when that
+is genuinely all there is.
+
+**Every settings control answers F1.** Podcast Settings and per-podcast
+settings named themselves properly but had nothing to say when asked -- 42
+controls now answer with the same sentence they announce.
+
 ### Preferences that group what belongs together (2026-08-24)
 
 Preferences had grown into one flat run of controls, which reads as a list of

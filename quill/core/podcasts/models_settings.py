@@ -61,6 +61,13 @@ def _coerce_float(value: object, default: float) -> float:
     return default
 
 
+def _normalize_boost(value: object) -> str:
+    """A stored Volume Boost level, through the one shared normalisation."""
+    from quill.core.podcasts.volume_boost import normalize
+
+    return normalize(value)
+
+
 @dataclass(slots=True)
 class PodcastSettings:
     """One global defaults record; a show's own ``PodcastShow.settings`` only
@@ -215,6 +222,12 @@ class PodcastSettings:
     #: ``download`` kind, because a forty-episode overnight batch is
     #: otherwise the first thing in the family to wake somebody at 3 a.m.
     download_notify: bool = False
+    #: Volume Boost for this podcast: off, low, medium or high (list.md 2.8).
+    #: Per show and not just global, because one badly-mastered show among
+    #: forty is exactly the case a single control cannot fix -- turn it up for
+    #: that one and every other is now too loud. Multiplies the volume already
+    #: chosen, capped; see :mod:`quill.core.podcasts.volume_boost`.
+    volume_boost: str = "off"
     #: Streaks and Year in Review. Off, matching the app it came from: a
     #: listening streak is a nudge, and a nudge nobody asked for is pressure.
     stats_streaks_enabled: bool = False
@@ -351,6 +364,7 @@ class PodcastSettings:
             "history_retention_days": self.history_retention_days,
             "download_on_metered": self.download_on_metered,
             "download_notify": self.download_notify,
+            "volume_boost": self.volume_boost,
             "stats_streaks_enabled": self.stats_streaks_enabled,
             "directory_source": self.directory_source,
             "queue_group_mode": self.queue_group_mode,
@@ -439,6 +453,7 @@ class PodcastSettings:
             history_retention_days=_coerce_int(data.get("history_retention_days"), 90),
             download_on_metered=bool(data.get("download_on_metered", True)),
             download_notify=bool(data.get("download_notify", False)),
+            volume_boost=_normalize_boost(data.get("volume_boost")),
             stats_streaks_enabled=bool(data.get("stats_streaks_enabled", False)),
             directory_source=_one_of(
                 data.get("directory_source"), {"itunes", "podcast_index", "both"}, "both"

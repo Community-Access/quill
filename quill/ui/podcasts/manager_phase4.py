@@ -18,12 +18,14 @@ control carries an accessible name.
 
 from __future__ import annotations
 
+from quill.core.podcasts import volume_boost
 from quill.core.podcasts.filtering import (
     filter_shows,
     search_everywhere,
 )
 from quill.core.podcasts.models import Playlist, PodcastEpisode, PodcastShow
 from quill.core.podcasts.virtual_views import virtual_view_pairs
+from quill.ui.podcasts import volume_boost_ui
 from quill.ui.podcasts.episode_search import EpisodeSearchMixin
 from quill.ui.podcasts.manager_expired import ManagerExpiredMixin
 
@@ -45,8 +47,8 @@ _EPISODE_FILTER_MODES = (
 )
 _SHOW_FILTER_LABELS = ("All shows", "Favorites only", "Has unplayed")
 _SHOW_FILTER_MODES = ("all", "favorites_only", "has_unplayed")
-_BOOST_LABELS = ("Boost off", "1.5x boost", "2x boost", "3x boost")
-_BOOST_FACTORS = (1.0, 1.5, 2.0, 3.0)
+#: Volume Boost, from the shared table (list.md 2.8).
+_BOOST_LABELS = tuple(label for _value, label, _factor in volume_boost.LEVELS)
 
 #: (view_id, tree label) for the pinned nodes, in pinned order.
 _PINNED_VIEWS = (
@@ -85,7 +87,8 @@ class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin):
         self._show_filter_choice.SetName("Filter shows in the folder tree")
         self._show_filter_choice.SetSelection(0)
         self._boost_choice = wx.Choice(self.dialog, choices=list(_BOOST_LABELS))
-        self._boost_choice.SetName("Volume boost for quiet audio; playback gain only")
+        self._boost_choice.SetName(volume_boost_ui.HELP)
+        self._boost_choice.SetHelpText(volume_boost_ui.HELP)
         self._boost_choice.SetSelection(0)
         # Find in this show -- see episode_search.py for what it composes with.
         self._episode_search_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
@@ -137,12 +140,9 @@ class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin):
         return filter_shows(shows, self._selected_show_filter())
 
     def _on_boost_choice(self, _event: object) -> None:
-        index = max(0, self._boost_choice.GetSelection())
-        factor = _BOOST_FACTORS[index]
-        self._controller.set_volume_boost(factor)
-        self._announce(
-            "Volume boost off" if factor == 1.0 else f"Volume boost {factor:g}x for quiet audio"
-        )
+        from quill.ui.podcasts import volume_boost_ui
+
+        volume_boost_ui.chosen(self, max(0, self._boost_choice.GetSelection()))
 
     # -- pinned virtual views ---------------------------------------------------
 

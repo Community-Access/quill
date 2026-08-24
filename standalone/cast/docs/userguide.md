@@ -724,6 +724,37 @@ If you came through Winamp, the classic transport letters work in the Podcast Ma
 
 They are on by default and never fire while a text box has focus, so typing is never swallowed. Turn the letters off in Preferences (Ctrl+,) if you would rather use them for list typeahead; Ctrl+Up and Ctrl+Down for volume always work either way.
 
+## Making a quiet podcast louder
+
+Some shows are simply mastered quieter than others, and turning the system
+volume up for that one means turning it down again for everything else.
+**Volume Boost** fixes it per podcast.
+
+Set it from the box in the Podcast Manager with a podcast selected, or in that
+podcast's own settings: **Off**, **Low**, **Medium** or **High**. It is
+remembered for that show and applied whenever the show plays.
+
+It is playback gain, which means it changes nothing on disk, nothing about your
+system volume, and nothing about any other podcast. It multiplies the volume
+you already chose and stops at 150% -- past about there a spoken-word recording
+stops getting louder and starts distorting.
+
+There is a global default in Podcast Settings too, but the per-podcast setting
+is the one that matters: a single setting is the one shape that cannot fix one
+badly-mastered show.
+
+## Transcripts, when a feed offers more than one
+
+Some podcasts publish the same episode's transcript in several formats at once
+-- JSON, WebVTT, SRT and HTML. Only the first three carry the *timings* that let
+the transcript reader follow along with playback, that let chapters be worked
+out from a transcript, and that put timestamps into an exported Markdown file.
+
+QUILL Cast picks by what a format can do, not by the order the publisher listed
+them in, and falls back to HTML when that is genuinely all a show offers. If a
+show's transcript used to arrive without timings, this is why, and it should
+not any more.
+
 ## Bookmarks: keeping a moment
 
 **Bookmark This Moment** (Episode menu, or Ctrl+Alt+A) marks where you are in
