@@ -91,6 +91,11 @@ ITEMS: tuple[SetupItem, ...] = (
     SetupItem("podcast-ask-prefs.json", "the confirmations you asked not to see again", "cast"),
     SetupItem("quiet-hours.json", "your quiet hours", "both"),
     SetupItem("bookmarks.json", "your bookmarks", "both"),
+    SetupItem(
+        "media_bookmarks.json",
+        "the moments you bookmarked in podcasts, stations and recordings",
+        "both",
+    ),
     SetupItem("keymap.json", "the keys you rebound", "both"),
 )
 

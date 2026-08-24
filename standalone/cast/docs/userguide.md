@@ -724,6 +724,28 @@ If you came through Winamp, the classic transport letters work in the Podcast Ma
 
 They are on by default and never fire while a text box has focus, so typing is never swallowed. Turn the letters off in Preferences (Ctrl+,) if you would rather use them for list typeahead; Ctrl+Up and Ctrl+Down for volume always work either way.
 
+## Bookmarks: keeping a moment
+
+**Bookmark This Moment** (Episode menu, or Ctrl+Alt+A) marks where you are in
+one keystroke. **Bookmarks...** (Help menu, or Ctrl+Alt+Shift+J) opens the
+list, where Enter goes to the highlighted one.
+
+**No note is required.** Episode notes used to insist on text, so "I was here"
+-- the commonest kind of bookmark there is -- was not something you could
+record. It is now. Add a note later with **Edit Note** if it turns out there
+was something to say.
+
+The other verbs in the list: **Share** copies the place, the note and what it
+is in, together; **Delete** takes everything selected and says how many;
+**Export...** writes the lot as Markdown, grouped by what each bookmark is in.
+
+**The list is shared with Quill Radio.** A bookmark you make here is in Radio's
+Bookmarks window and the other way round -- no sync and no account, exactly the
+way your place in an episode already travels between the two. Rows this app
+cannot open, such as a bookmark Radio made on a live station, still appear with
+**Go There** dimmed and a reason. Hiding them would leave you wondering where
+your bookmark went.
+
 ## Getting an episode back out
 
 Four commands, all of them **Quick Actions** entries -- so they can be reordered, made the Enter default, or reached on Ctrl+1 to Ctrl+9 like everything else on those menus.

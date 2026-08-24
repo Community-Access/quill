@@ -1,10 +1,28 @@
-"""Named, note-bearing media bookmarks (``player.md`` Sections 7.9 / 9.7).
+"""Named, note-bearing bookmarks on any playable thing (``player.md`` 7.9/9.7).
 
-Per-book time-point bookmarks with an optional label and note, persisted as one
-atomic JSON file keyed by the book's resume key. Pure ``quill.core`` -- the UI
-lists them (Enter jumps), adds them (one key), and can send one into the open
-document. The store path is injectable so it is unit-testable without the real
-data directory.
+Time-point bookmarks with an optional label and note, persisted as one atomic
+JSON file keyed by an **anchor** -- and the anchor is the whole of list.md 4.3
+and 4.5. This began as the Media Player's per-book store, keyed by a book's
+resume key, and the key was always just an opaque string: what changed is that
+:mod:`quill.core.bookmark_anchors` now says how *every* playable thing spells
+one, so a station, a YouTube row, a recording and a podcast episode all live
+here beside the books.
+
+Two consequences worth naming, because they are the point:
+
+* **One list window, not four.** A bookmark is a bookmark; where it points is
+  a property of the row, not a reason for a separate feature.
+* **A bookmark made in Quill Radio is in QUILL Cast's list.** Both apps build
+  the identical anchor for the identical episode and read the same file in the
+  shared data folder, so there is no sync, no merge and no protocol -- the same
+  trick ``radio_listens`` and ``cross_app_resume`` already play with positions.
+
+The label and the note are both optional, deliberately (4.2): a bare
+timestamped bookmark -- "I was here" -- is the most common kind, and demanding
+a sentence for it is demanding a sentence.
+
+Pure ``quill.core``. The store path is injectable so it is unit-testable
+without the real data directory.
 """
 
 from __future__ import annotations
@@ -14,6 +32,12 @@ from pathlib import Path
 
 from quill.core.media.timecode import format_timecode
 from quill.core.storage import read_json, write_json_atomic
+
+#: ``list`` is also the name of this store's read method, and inside the class
+#: body the method wins -- so the two annotations that need the builtin say so
+#: through an alias rather than by renaming a public method.
+_Anchors = list[str]
+_Rows = list["tuple[str, MediaBookmark]"]
 
 
 def _as_int(value: object, default: int = -1) -> int:
@@ -27,14 +51,27 @@ def _as_int(value: object, default: int = -1) -> int:
 
 @dataclass(frozen=True, slots=True)
 class MediaBookmark:
-    """One time-point bookmark within a book."""
+    """One time-point bookmark on one anchored thing.
+
+    ``label`` and ``note`` are both optional: a bare timestamp is a bookmark
+    (4.2). ``title`` is what the anchored thing was *called* when the bookmark
+    was made, carried on the row rather than resolved -- a shared list has to
+    name a station Quill Radio knows and QUILL Cast does not, and a row that
+    reads "Recording, 1:04:12" with no name is a row nobody can use.
+    """
 
     position_ms: int
     label: str = ""
     note: str = ""
+    title: str = ""
 
     def to_dict(self) -> dict[str, object]:
-        return {"position_ms": self.position_ms, "label": self.label, "note": self.note}
+        return {
+            "position_ms": self.position_ms,
+            "label": self.label,
+            "note": self.note,
+            "title": self.title,
+        }
 
     @classmethod
     def from_dict(cls, data: dict[str, object]) -> MediaBookmark:
@@ -42,11 +79,18 @@ class MediaBookmark:
             position_ms=max(0, _as_int(data.get("position_ms"), 0)),
             label=str(data.get("label", "") or ""),
             note=str(data.get("note", "") or ""),
+            title=str(data.get("title", "") or ""),
         )
 
 
 class BookmarkStore:
-    """Per-book bookmark persistence in one atomic JSON file."""
+    """Bookmark persistence for every anchor, in one atomic JSON file.
+
+    The parameter is still spelled ``book_key`` at every call site that only
+    ever holds books, and means "anchor" everywhere -- renaming it across four
+    modules would have been churn in exchange for nothing a reader gains that
+    this sentence does not give them.
+    """
 
     def __init__(self, path: Path | str | None = None) -> None:
         self._path = Path(path) if path is not None else self._default_path()
@@ -71,10 +115,18 @@ class BookmarkStore:
         return sorted(marks, key=lambda m: m.position_ms)
 
     def add(
-        self, book_key: str, position_ms: int, *, label: str = "", note: str = ""
+        self,
+        book_key: str,
+        position_ms: int,
+        *,
+        label: str = "",
+        note: str = "",
+        title: str = "",
     ) -> MediaBookmark:
         """Add (or update the note/label of) a bookmark at ``position_ms``."""
-        mark = MediaBookmark(position_ms=max(0, int(position_ms)), label=label, note=note)
+        mark = MediaBookmark(
+            position_ms=max(0, int(position_ms)), label=label, note=note, title=title
+        )
         data = self._read()
         rows = [row for row in data.get(book_key, []) if isinstance(row, dict)]
         rows = [row for row in rows if _as_int(row.get("position_ms")) != mark.position_ms]
@@ -103,7 +155,7 @@ class BookmarkStore:
         mark = existing.get(int(position_ms))
         if mark is None:
             return False
-        self.add(book_key, mark.position_ms, label=label, note=mark.note)
+        self.add(book_key, mark.position_ms, label=label, note=mark.note, title=mark.title)
         return True
 
     def clear(self, book_key: str) -> int:
@@ -115,6 +167,29 @@ class BookmarkStore:
         data.pop(book_key, None)
         self._write(data)
         return len(rows)
+
+    def anchors(self) -> _Anchors:
+        """Every anchor that has at least one bookmark, in stored order."""
+        return [key for key, rows in self._read().items() if rows]
+
+    def all_bookmarks(self) -> _Rows:
+        """``(anchor, bookmark)`` for everything, newest anchor last.
+
+        The one read a shared list window needs, and the reason it is here
+        rather than in the window: three surfaces would otherwise each write
+        their own loop over the same file, and one of them would sort
+        differently.
+        """
+        found: _Rows = []
+        for anchor, rows in self._read().items():
+            for row in rows:
+                if isinstance(row, dict):
+                    found.append((anchor, MediaBookmark.from_dict(row)))
+        return sorted(found, key=lambda pair: (pair[0], pair[1].position_ms))
+
+    def count(self) -> int:
+        """How many bookmarks exist across every anchor."""
+        return sum(len(rows) for rows in self._read().values() if isinstance(rows, list))
 
     # -- sync (QuilleSync local half) ---------------------------------------
 

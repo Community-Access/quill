@@ -51,7 +51,12 @@ class EpisodeNote:
         show_id = str(data.get("show_id", "")).strip()
         episode_guid = str(data.get("episode_guid", "")).strip()
         text = str(data.get("text", "")).strip()
-        if not note_id or not show_id or not episode_guid or not text:
+        # The text is optional (list.md 4.2). A note with nothing written on
+        # it is a **bookmark** -- "I was here" -- which is the most common
+        # kind, and demanding a sentence for it was demanding a sentence.
+        # The three ids are still required: a note anchored to nothing is not
+        # a bookmark, it is a row that cannot be jumped to.
+        if not note_id or not show_id or not episode_guid:
             return None
         position_ms = data.get("position_ms")
         return cls(
@@ -94,9 +99,14 @@ def notes_for_episode(
 
 
 def add_episode_note(
-    show_id: str, episode_guid: str, position_ms: int, text: str
+    show_id: str, episode_guid: str, position_ms: int, text: str = ""
 ) -> list[EpisodeNote]:
-    """Load, append a new note, save, and return the full updated list."""
+    """Load, append a new note, save, and return the full updated list.
+
+    *text* defaults to empty, which makes this the bookmark verb as well as
+    the note verb -- one store, one list, one jump, and the difference is
+    whether anybody had something to say.
+    """
     notes = load_episode_notes()
     notes.append(
         EpisodeNote(
@@ -158,7 +168,10 @@ def format_note_for_sharing(
     heading = " -- ".join(part for part in (episode_title, show_title) if part.strip())
     if heading:
         lines.append(heading)
-    lines.append(f"At {format_timestamp(note.position_ms)}: {note.text}".rstrip())
+    # A bookmark has no text (4.2), and "At 3:10:" with a dangling colon is
+    # a sentence that promised something and did not deliver it.
+    stamp = format_timestamp(note.position_ms)
+    lines.append(f"At {stamp}: {note.text}".rstrip() if note.text.strip() else f"At {stamp}")
     if audio_url.strip():
         lines.append(audio_url.strip())
     return "\n".join(lines)

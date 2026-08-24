@@ -73,6 +73,13 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # Move my setup to another machine: one file out, one file in.
         "app.export_setup": "Ctrl+Alt+Shift+X",
         "app.import_setup": "Ctrl+Alt+Shift+N",
+        # Bookmark This Moment is the one verb here you press *while doing
+        # something else*, so it gets the shorter chord of the pair; the list
+        # you go and look for takes the longer one. And the longer one is
+        # Shift plus Go to Position's key on purpose: Ctrl+Alt+J goes to a
+        # place you name, Ctrl+Alt+Shift+J opens the places you saved.
+        "app.bookmark_moment": "Ctrl+Alt+A",
+        "app.bookmarks": "Ctrl+Alt+Shift+J",
     },
     # QUILL Cast had no app keymap at all until undo needed one: every other
     # Cast accelerator is either a shared default or baked into a menu label.
@@ -86,6 +93,13 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # Move my setup to another machine: one file out, one file in.
         "app.export_setup": "Ctrl+Alt+Shift+X",
         "app.import_setup": "Ctrl+Alt+Shift+N",
+        # Bookmark This Moment is the one verb here you press *while doing
+        # something else*, so it gets the shorter chord of the pair; the list
+        # you go and look for takes the longer one. And the longer one is
+        # Shift plus Go to Position's key on purpose: Ctrl+Alt+J goes to a
+        # place you name, Ctrl+Alt+Shift+J opens the places you saved.
+        "app.bookmark_moment": "Ctrl+Alt+A",
+        "app.bookmarks": "Ctrl+Alt+Shift+J",
     },
 }
 

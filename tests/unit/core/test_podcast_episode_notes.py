@@ -72,17 +72,34 @@ def test_delete_episode_note_missing_id_is_a_noop() -> None:
     assert [n.text for n in remaining] == ["Keep me"]
 
 
-def test_from_dict_rejects_blank_text() -> None:
-    assert (
-        EpisodeNote.from_dict({
+def test_a_note_with_no_text_is_a_bookmark_rather_than_nothing() -> None:
+    """list.md 4.2: "I was here" is the commonest kind of mark there is, and
+    requiring a sentence for it was requiring a sentence. What is still
+    required is the three ids -- a note anchored to nothing is not a bookmark,
+    it is a row that cannot be jumped to."""
+    bookmark = EpisodeNote.from_dict({
+        "note_id": "n1",
+        "show_id": "s1",
+        "episode_guid": "e1",
+        "text": "  ",
+        "position_ms": 0,
+    })
+
+    assert bookmark is not None
+    assert bookmark.text == ""
+
+
+def test_from_dict_still_rejects_a_note_anchored_to_nothing() -> None:
+    for missing in ("note_id", "show_id", "episode_guid"):
+        data = {
             "note_id": "n1",
             "show_id": "s1",
             "episode_guid": "e1",
-            "text": "  ",
+            "text": "something",
             "position_ms": 0,
-        })
-        is None
-    )
+        }
+        data[missing] = ""
+        assert EpisodeNote.from_dict(data) is None, missing
 
 
 def test_save_and_load_round_trip() -> None:

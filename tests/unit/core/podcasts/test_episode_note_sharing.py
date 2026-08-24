@@ -69,9 +69,16 @@ def test_a_blank_audio_url_adds_no_empty_line() -> None:
     assert text.splitlines() == ["Episode One", "At 12:34: The bit about beeswax"]
 
 
-def test_an_empty_note_does_not_leave_trailing_whitespace() -> None:
+def test_a_bookmark_shares_as_a_place_rather_than_an_empty_sentence() -> None:
+    """A note with no text is a bookmark (list.md 4.2), and "At 12:34:" is a
+    sentence that promised something and did not deliver it."""
     text = format_note_for_sharing(_note(text=""), episode_title="Episode One")
-    assert text == "Episode One\nAt 12:34:"
+    assert text == "Episode One\nAt 12:34"
+
+
+def test_a_note_of_pure_whitespace_reads_as_a_bookmark_too() -> None:
+    text = format_note_for_sharing(_note(text="   "), episode_title="Episode One")
+    assert text == "Episode One\nAt 12:34"
 
 
 def test_a_multi_line_note_keeps_its_lines() -> None:

@@ -90,6 +90,11 @@ class PodcastsAppFrame(
         from quill.ui.podcasts import problem_retries
 
         self._register_app_support_commands(problem_retries)
+        # Bookmarks (4.5): the anchor Cast builds for an episode is the one
+        # Quill Radio builds, which is what makes the list shared.
+        from quill.ui.podcasts import bookmarks_wiring
+
+        bookmarks_wiring.register(self)
         self._ensure_tray_icon(self._build_podcast_tray_menu, tooltip=_TITLE)
         self._register_media_keys({
             "play_pause": self.podcast_toggle_play_pause,

@@ -1,9 +1,9 @@
-"""The three Help-menu items every listening app grew on 2026-08-24.
+"""The shared Help-menu items every listening app grew on 2026-08-24.
 
-Recent Problems, Quiet Hours, and Export / Import My Setup -- built once here
-and appended by both Quill Radio and QUILL Cast, because all three are shared
-surfaces over shared files and a second copy of the wiring is a second place
-for the two apps to drift apart.
+Recent Problems, Quiet Hours, Export / Import My Setup, and Bookmarks -- built
+once here and appended by both Quill Radio and QUILL Cast, because every one of
+them is a shared surface over a shared file and a second copy of the wiring is
+a second place for the two apps to drift apart.
 
 They sit together on Help rather than being scattered because they answer the
 same family of question: *why is this app talking to me, why is it not, and
@@ -16,6 +16,10 @@ how do I take all of this with me?*
 * **Export / Import My Setup** (11.10) -- one file carrying subscriptions,
   favorites, folders, places, settings and bookmarks. OPML moves subscriptions
   and nothing else.
+* **Bookmarks** (4.4) -- everywhere you marked, in either app, in one list.
+  Its companion verb, Bookmark This Moment, belongs on each app's playback
+  menu instead: it is a thing you do while listening, not a thing you go and
+  look for.
 
 Every label goes through the host's ``_menu_label`` so it shows the key that
 is *actually* bound and follows the listener when they rebind it -- the house
@@ -28,7 +32,7 @@ from typing import Any
 
 
 def append_support_items(host: Any, help_menu: Any, wx: Any) -> tuple[Any, ...]:
-    """Append the three shared items to *help_menu*, bound to *host*.
+    """Append the shared items to *help_menu*, bound to *host*.
 
     Returns every id ref it created. The caller must pin them (``_keep_menu_ids``):
     a menu id ref that is garbage-collected can be reissued to a different
@@ -42,13 +46,17 @@ def append_support_items(host: Any, help_menu: Any, wx: Any) -> tuple[Any, ...]:
     help_menu.Append(quiet_id, host._menu_label("&Quiet Hours...", "app.quiet_hours"))
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.open_quiet_hours(), id=quiet_id)
 
+    bookmarks_id = wx.NewIdRef()
+    help_menu.Append(bookmarks_id, host._menu_label("&Bookmarks...", "app.bookmarks"))
+    host.frame.Bind(wx.EVT_MENU, lambda _e: host.open_bookmarks(), id=bookmarks_id)
+
     export_id, import_id = wx.NewIdRef(), wx.NewIdRef()
     help_menu.Append(export_id, host._menu_label("E&xport My Setup...", "app.export_setup"))
     help_menu.Append(import_id, host._menu_label("&Import My Setup...", "app.import_setup"))
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.export_my_setup(), id=export_id)
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.import_my_setup(), id=import_id)
 
-    ids = (problems_id, quiet_id, export_id, import_id)
+    ids = (problems_id, quiet_id, bookmarks_id, export_id, import_id)
     host._keep_menu_ids(*ids)
     return ids
 
@@ -73,7 +81,7 @@ def insert_edit_menu(host: object, menu_bar: object, wx: object, *, position: in
 
 
 def wire_support_surfaces(host: Any, menu_bar: Any, help_menu: Any, wx: Any) -> None:
-    """Both halves at once: the &Edit menu, and the three Help items.
+    """Both halves at once: the &Edit menu, and the shared Help items.
 
     The one call an app frame makes. Keeping it one call is the point -- the
     four surfaces arrive together, are shared between the apps, and a frame

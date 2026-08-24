@@ -17,6 +17,28 @@ gone missing, and several long-standing silent faults are fixed. See
 
 ### Added
 
+- **Bookmarks, on anything Quill Radio plays.** Radio had no way to keep a
+  moment at all. **Bookmark This Moment** (Playback menu) marks where you are
+  in one keystroke -- a station, a recording, a saved YouTube row or a
+  subscribed episode -- and **Bookmarks...** (Help menu) is the list: Enter
+  goes there, and Share, Edit Note, Delete and Export are beside it. No note is
+  required. "I was here" is the commonest kind of bookmark, and demanding a
+  sentence for it was demanding a sentence; the note can be added later, from
+  the list, if there turns out to be something to say.
+- **A live station's bookmark is honest about what it is.** Live radio has no
+  timeline anybody shares -- ten minutes in meant ten minutes into *your*
+  listening, and tomorrow it means something else. So a station bookmark
+  records the station and the elapsed time it was made at, and Go There tunes
+  in now rather than pretending to seek to a moment that no longer exists. A
+  recording, a video and an episode all do seek, because they have a timeline
+  to seek in.
+- **The same list in both apps.** A bookmark dropped in Quill Radio is in QUILL
+  Cast's Bookmarks window, and the other way round. There is no sync and no
+  account: both apps spell the same episode the same way and read one file in
+  your shared data folder, the way your place in an episode already travels. A
+  row this app cannot open -- a Cast bookmark on a station, say -- still
+  appears, with Go There dimmed and a reason, because hiding it would leave you
+  wondering where your bookmark went.
 - **Every recording and download setting now says what it does *not* do.** A
   description that answers "what does this do?" and stops leaves the harder
   question open, and the harder question is the one people get wrong. So: the

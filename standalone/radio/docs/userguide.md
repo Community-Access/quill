@@ -1126,6 +1126,42 @@ do it" -- but they share the record of *when* a check happened, so whichever app
 goes first, the other finds the work already done and stays quiet. There is
 nothing to set up and nothing to notice.
 
+## Bookmarks: keeping a moment
+
+**Bookmark This Moment** (Playback menu, or Ctrl+Alt+A) marks where you are, in
+one keystroke, on whatever is playing: a station, a recording, a saved YouTube
+row, or an episode from your subscriptions. **Bookmarks...** (Help menu, or
+Ctrl+Alt+Shift+J) opens the list.
+
+**No note is required.** "I was here" is the commonest kind of bookmark, and
+having to stop and type a sentence for it is how a bookmark does not get made.
+Add the note later from the list, with **Edit Note**, if it turns out there was
+something to say.
+
+In the list, Enter goes to the highlighted bookmark. The other verbs:
+
+- **Share** copies the place, the note and what it is in, together -- the note
+  on its own is a fragment nobody can act on.
+- **Delete** takes everything selected: Shift and arrow extend the selection,
+  and it says how many it removed.
+- **Export...** writes the lot as a Markdown file, grouped by what each
+  bookmark is in, for a listening log.
+
+**A live station's bookmark is honest about being one.** Live radio has no
+timeline anybody else shares: ten minutes in meant ten minutes into *your*
+listening, and tomorrow it means something else entirely. So a station bookmark
+records the station and the elapsed time you made it at, and **Go There** tunes
+in now rather than pretending to seek to a moment that has gone. A recording, a
+video and a podcast episode all do seek, because they have a timeline to seek
+in.
+
+**The list is shared with QUILL Cast.** A bookmark you make here is in Cast's
+Bookmarks window, and one made there is here -- no sync, no account, the same
+way your place in an episode already travels. A row this app cannot open, such
+as a bookmark Cast made on something Radio has no way to play, still appears
+with Go There dimmed and a reason; hiding it would leave you wondering where
+your bookmark went.
+
 ## Your place follows you between Quill Radio and QUILL Cast
 
 Both apps can play the same subscribed episode, and they now share one place

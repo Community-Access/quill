@@ -196,6 +196,11 @@ class RadioAppFrame(
         from quill.ui.radio import problem_retries
 
         self._register_app_support_commands(problem_retries)
+        # Bookmarks (4.3): what Radio plays, and what it can reopen.
+        from quill.ui.radio import bookmarks_wiring
+
+        bookmarks_wiring.register(self)
+
         self._ensure_tray_icon(self._build_radio_tray_menu, tooltip=_TITLE)
         self._register_media_keys({
             "play_pause": self._on_play_stop_button,
@@ -1240,6 +1245,9 @@ class RadioAppFrame(
         wake_id = wx.NewIdRef()
         playback_menu.Append(wake_id, self._menu_label("Wake-U&p Timer...", "radio.wake_timer"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_wake_timer_dialog(), id=wake_id)
+        from quill.ui.radio import bookmarks_wiring as bookmarks
+
+        bookmarks.append_menu_item(self, playback_menu, wx)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._on_play_stop_button(), id=self._play_menu_item_id
         )

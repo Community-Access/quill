@@ -4,6 +4,29 @@ All notable changes to QUILL Cast are documented here. See `docs/release-notes-2
 
 ## 2.0.0
 
+### Bookmarks, and one list of them across both apps (2026-08-24)
+
+**Bookmark This Moment** on the Episode menu marks where you are in one
+keystroke, and **Bookmarks...** on Help is the list -- Enter goes there, with
+Share, Edit Note, Delete and Export beside it.
+
+**No note is required.** Episode notes used to insist on text, so "I was here"
+-- the commonest kind of bookmark there is -- was not a thing you could record.
+It is now, and the note can be added later from the list if it turns out there
+was something to say. Sharing a bookmark with no note says the place rather
+than a sentence with a dangling colon.
+
+**The list is shared with Quill Radio.** A bookmark dropped in Radio is here,
+and one dropped here is there. No sync, no account, no merge: both apps spell
+the same episode the same way and read one file in your shared data folder,
+exactly the way your place in an episode already travels between them. Rows
+this app cannot open -- a bookmark Radio made on a live station -- still
+appear, with Go There dimmed and a reason, because hiding them would leave you
+wondering where your bookmark went.
+
+Export writes the lot as Markdown, grouped by what each bookmark is in, for
+anybody keeping a listening log.
+
 ### Every setting now says what it does *not* do (2026-08-24)
 
 A settings description that answers "what does this do?" and stops leaves the
