@@ -161,7 +161,40 @@ def _fetch_ics(moment: datetime) -> list[dict[str, Any]]:
     # errors="replace" rather than strict: a schedule with one bad byte in a
     # programme title should lose that character, not the week.
     text = raw.decode("utf-8", errors="replace")
-    return [_to_row(event) for event in parse_calendar(text)]
+    return [_to_row(event) for event in _expanded(parse_calendar(text), moment)]
+
+
+def _expanded(events: list[CalendarEvent], moment: datetime) -> list[CalendarEvent]:
+    """Repeat rules turned into the programmes they mean (6.10).
+
+    Done here rather than in the parser because expansion needs a *window*, and
+    the window is the two months the feed's own address asked for -- so a rule
+    can never produce occurrences the rest of the calendar has nowhere to show.
+
+    ACB's August 2026 export carried no ``RRULE`` at all, so on today's feed
+    this is a no-op that costs one pass. It exists because the day the feed
+    does define a series as a series, a weekly programme would otherwise appear
+    **once** instead of every week -- and that reads as a thin schedule rather
+    than as a bug, so nobody would report it.
+    """
+    from quill.core.radio import ics_recurrence
+
+    window_start, window_end = ics_recurrence.window_for(moment)
+    out: list[CalendarEvent] = []
+    for event in events:
+        if not event.rrule:
+            out.append(event)
+            continue
+        out.extend(
+            ics_recurrence.expand(
+                event,
+                event.rrule,
+                window_start=window_start,
+                window_end=window_end,
+                exdates=event.exdates,
+            )
+        )
+    return sorted(out, key=lambda event: event.start)
 
 
 # -- the querying (pure) ----------------------------------------------------------

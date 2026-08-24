@@ -57,6 +57,10 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
         history.podcast_refresh_minutes = _coerce_int(raw.get("podcast_refresh_minutes"), 0)
         history.podcast_refresh_on_launch = bool(raw.get("podcast_refresh_on_launch", False))
+        history.reminder_default_lead_seconds = _coerce_int(
+            raw.get("reminder_default_lead_seconds"), 900
+        )
+        history.reminder_sound = bool(raw.get("reminder_sound", True))
         history.skip_silence = bool(raw.get("skip_silence", False))
         history.recording_speed = _coerce_float(raw.get("recording_speed"), 1.0) or 1.0
         history.youtube_speed = _coerce_float(raw.get("youtube_speed"), 1.0) or 1.0
@@ -218,6 +222,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "winamp_playback_keys": history.winamp_playback_keys,
             "podcast_refresh_minutes": history.podcast_refresh_minutes,
             "podcast_refresh_on_launch": history.podcast_refresh_on_launch,
+            "reminder_default_lead_seconds": history.reminder_default_lead_seconds,
+            "reminder_sound": history.reminder_sound,
             "skip_silence": history.skip_silence,
             "recording_speed": history.recording_speed,
             "youtube_speed": history.youtube_speed,

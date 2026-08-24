@@ -107,6 +107,7 @@
   "radio_favorite_added": "radio_favorite_added.wav",
   "cast_download_started": "cast_download_started.wav",
   "cast_download_complete": "cast_download_complete.wav",
+  "radio_reminder": "radio_reminder.wav",
   "cast_episode_finished": "cast_episode_finished.wav",
   "weather_alert": "weather_alert.wav",
   "beacon_captured": "beacon_captured.wav",

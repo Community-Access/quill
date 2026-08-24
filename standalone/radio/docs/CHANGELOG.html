@@ -214,6 +214,56 @@ say when a media tool has gone missing, and several long-standing silent
 faults are fixed. See <code>docs/release-notes-3.0.md</code>.</p>
 <h3 id="added">Added</h3>
 <ul>
+<li><strong>A reminder on anything, not just a programme.</strong> Every
+station, recording and saved row now offers <strong>Set a
+Reminder…</strong> on its context menu, and the same row offers
+<strong>Remove Reminder</strong> once it has one – a menu that cannot
+tell you what you already did is a menu you have to remember for, which
+is the job a reminder exists to take off you. A row has no start time of
+its own, so the question changes from “how long before?” to “when?”,
+which is the same control reading differently rather than a second
+dialog to learn.</li>
+<li><strong>Reminders carry a note and a priority.</strong> The note is
+free text – a number to call in on, a reason, a message to yourself –
+and is spoken with the reminder. <strong>High priority</strong> is the
+one thing that comes through quiet hours on its own, without your having
+to turn on “let reminders through” for everything. It changes nothing
+else: a high-priority reminder is not louder, sooner or repeated.</li>
+<li><strong>Reminders have their own sound.</strong> Three rising bell
+tones, unlike anything else in the app, played just before the words –
+so a listener who recognises it has already turned their attention by
+the time the sentence starts. It has its own switch in Preferences,
+separate from the general per-event sound list, because somebody who has
+turned most earcons off has probably not meant to silence the one thing
+they asked to be interrupted by.</li>
+<li><strong>A reminder now arrives as a desktop notice too, with a Go
+There button.</strong> Spoken <em>and</em> shown: the speech is the
+reminder, and the notice is what is still there thirty seconds later for
+somebody who was mid-sentence with a screen reader when it came. Its
+button opens whatever the reminder was about, where before the only
+route was to open Upcoming and find the row.</li>
+<li><strong>Preferences: a default lead time, and the reminder
+sound.</strong> Every reminder still asks how much warning you want;
+this decides what that control opens on, so the usual answer is one
+keystroke shorter.</li>
+<li><strong>Preferences groups.</strong> Both apps’ Preferences had
+grown into one flat run of twenty-odd controls, which reads as twenty
+unrelated facts – especially to somebody arrowing through with a screen
+reader, who has no visual proximity to infer from. Related settings now
+sit in named, announced groups.</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li><p><strong>A repeating programme would have appeared once instead of
+every week.</strong> ACB’s schedule currently writes out every
+occurrence separately, so this was invisible – but the moment their
+calendar defines a series <em>as</em> a series, a weekly show would have
+shown up on one day and vanished from the other seven. That reads as a
+thin schedule rather than as a bug, so nobody would have reported it.
+Repeat rules are now expanded: daily, weekly (including several days a
+week), fortnightly, monthly and yearly, with cancelled dates honoured
+and each occurrence keeping its own identity, so a reminder set on next
+Tuesday stays on next Tuesday.</p></li>
 <li><p><strong>The ACB Media schedule, in Quill Radio.</strong> Station
 &gt; ACB Media Schedule (Ctrl+Shift+N) opens a week – Sunday to
 Saturday, a heading before each day, every day shown including the empty
@@ -1028,7 +1078,7 @@ be playable”</strong>, from Radio Browser’s own published verdict; rows
 that resolve at play time (TuneIn, YouTube) say that instead. Nothing
 here scores or estimates.</p></li>
 </ul>
-<h3 id="fixed">Fixed</h3>
+<h3 id="fixed-1">Fixed</h3>
 <ul>
 <li><p><strong>Reconnect attempts were never actually
 announced.</strong> The sentence naming the station and counting the
@@ -1729,7 +1779,7 @@ entered them, and each row shows the stream’s host in brackets so two
 similar entries – or a duplicate still pointing at the original station
 – are easy to tell apart. (#1220)</li>
 </ul>
-<h4 id="fixed-1">Fixed</h4>
+<h4 id="fixed-2">Fixed</h4>
 <ul>
 <li><p><strong>Seeking a finished YouTube video no longer reports a live
 edge that does not exist.</strong> <strong>Rewind / Forward 30
@@ -1918,7 +1968,7 @@ button, so pressing Enter reflexively destroyed the thing. Enter is now
 always the safe answer and you choose Yes deliberately. A build check
 keeps it that way.</li>
 </ul>
-<h4 id="fixed-2">Fixed</h4>
+<h4 id="fixed-3">Fixed</h4>
 <ul>
 <li><strong>Launching Quill Radio no longer crashes on a stray
 keystroke.</strong> A key pressed at the wrong moment during launch
@@ -1963,7 +2013,7 @@ Releases are not yet code-signed (SmartScreen may caution on first run);
 signing is planned.</li>
 </ul>
 <h2 id="212">[2.1.2]</h2>
-<h3 id="fixed-3">Fixed</h3>
+<h3 id="fixed-4">Fixed</h3>
 <ul>
 <li>One-click updating works again (the update installer no longer
 rejects a legitimately app-sized download as a “decompression
@@ -1994,7 +2044,7 @@ searching every directory. Type a name, press Enter, and matches appear
 as a flat list under that folder; <strong>Clear</strong> puts you back
 where you started.</li>
 </ul>
-<h3 id="fixed-4">Fixed</h3>
+<h3 id="fixed-5">Fixed</h3>
 <ul>
 <li>The Source filter no longer hides a station carried by more than one
 directory.</li>
@@ -2013,7 +2063,7 @@ favorites, recordings, and settings.</li>
 <li>Reorder favorites from the keyboard (Alt+Shift+Up / Alt+Shift+Down)
 in manual order.</li>
 </ul>
-<h3 id="fixed-5">Fixed</h3>
+<h3 id="fixed-6">Fixed</h3>
 <ul>
 <li>Quill Radio no longer opens a second copy of itself. The Record
 button reads Stop Recording while recording. Volume changes are quiet
@@ -2034,12 +2084,12 @@ Limiter), adapted with credit from OptiLab Core by dgl1984
 <li>Favorites sort order (Ascending, Descending, Unsorted) with
 per-folder overrides. M3U/M3U8 playlist import.</li>
 </ul>
-<h3 id="fixed-6">Fixed</h3>
+<h3 id="fixed-7">Fixed</h3>
 <ul>
 <li>Channel mode Left/Right now plays in one ear only.</li>
 </ul>
 <h2 id="201">[2.0.1]</h2>
-<h3 id="fixed-7">Fixed</h3>
+<h3 id="fixed-8">Fixed</h3>
 <ul>
 <li>A recording no longer stops after a minute on a transient hiccup;
 only a genuinely terminal failure (full disk, HTTP 404/410/451) stops a
@@ -2125,7 +2175,7 @@ station search (up to 200 results).</li>
 second station directory (SomaFM). Automatic Check for Updates. A
 Preferences dialog. In-app documentation in the Help menu.</li>
 </ul>
-<h3 id="fixed-8">Fixed</h3>
+<h3 id="fixed-9">Fixed</h3>
 <ul>
 <li>Volume keys work from the Favorites tree, and volume stays put
 across play/pause.</li>

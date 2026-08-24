@@ -36,7 +36,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core import dimmed_reason
-from quill.core.radio import transport_commands
+from quill.core.radio import row_reminders, transport_commands
 from quill.core.radio.cast_handoff import CAST_HANDOFFS
 from quill.core.radio.row_state import FolderState as FolderState
 
@@ -63,6 +63,10 @@ CLOSE_FOLDER = "folder.close"
 REFRESH = "folder.refresh"
 #: Check every subscribed feed now, paused shows included (list.md 1.7).
 REFRESH_ALL_PODCASTS = "podcast.refresh_all"
+#: Be told about this row at a time you choose (7.1); the pair lives in
+#: row_reminders so QUILL Cast's rows can offer the identical verb.
+SET_REMINDER = row_reminders.SET_REMINDER
+REMOVE_REMINDER = row_reminders.REMOVE_REMINDER
 SUBSCRIBE_PODCAST = "podcast.subscribe"
 UNSUBSCRIBE_PODCAST = "podcast.unsubscribe"
 UNFOLLOW_CHANNEL = "channel.unfollow"
@@ -572,6 +576,7 @@ def actions_for(
     downloaded: bool = False,
     has_chapters: bool = False,
     has_captions: bool = False,
+    has_reminder: bool = False,
 ) -> list[RowAction]:
     """Every action this row offers, in menu order."""
     if station is not None:
@@ -602,6 +607,8 @@ def actions_for(
         if kind == "ytvideo":  # removable from the menu that plays it
             actions.append(RowAction(REMOVE_SAVED, "Remo&ve from YouTube"))
             actions.extend(youtube_add_actions())
+        # Any row worth playing is worth being reminded about (7.1).
+        actions.append(row_reminders.reminder_action(RowAction, has_reminder=has_reminder))
         return actions
     if resolve_lazily:
         return lazy_leaf_actions(saved=saved)

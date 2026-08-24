@@ -140,7 +140,7 @@ def show_upcoming(host: Any) -> None:
         if current is None:
             host._announce("Nothing is selected.")
             return
-        host._announce(_open(host, current[1]))
+        host._announce(open_target(host, current[1]))
         dialog.EndModal(wx.ID_CLOSE)
 
     snooze_btn.Bind(wx.EVT_BUTTON, _on_snooze)
@@ -220,8 +220,13 @@ def _summarise(rows: list[tuple[str, Any]]) -> str:
     return " and ".join(parts) + "."
 
 
-def _open(host: Any, payload: Any) -> str:
-    """Go to whatever a row is about; what to say either way."""
+def open_target(host: Any, payload: Any) -> str:
+    """Go to whatever a row is about; what to say either way.
+
+    Public because the reminder toast's Go There button uses it too (7.6):
+    "where does this kind of reminder lead?" is one question, and a second
+    copy would drift the first time a kind was added.
+    """
     if not isinstance(payload, rem.Reminder):
         opener = getattr(host, "open_schedule_recording", None)
         if callable(opener):
@@ -243,4 +248,4 @@ def _open(host: Any, payload: Any) -> str:
     return f"{payload.title}: there is nowhere to go from here."
 
 
-__all__ = ["SNOOZE_CHOICES", "TITLE", "show_upcoming"]
+__all__ = ["SNOOZE_CHOICES", "TITLE", "open_target", "show_upcoming"]

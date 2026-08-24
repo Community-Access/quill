@@ -236,7 +236,7 @@ def _monitor(frame, said: list[str]) -> ReminderMonitor:
 def test_a_due_reminder_is_announced_once(frame, tmp_path, monkeypatch) -> None:
     from quill.core.radio import reminders
 
-    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind: False)
+    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind, **_k: False)
     reminders.add_reminder(tmp_path, "Main Menu", SHOWTIME, target="uid-1")
     said: list[str] = []
     monitor = _monitor(frame, said)
@@ -251,7 +251,7 @@ def test_a_due_reminder_is_announced_once(frame, tmp_path, monkeypatch) -> None:
 def test_nothing_due_is_silent(frame, tmp_path, monkeypatch) -> None:
     from quill.core.radio import reminders
 
-    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind: False)
+    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind, **_k: False)
     reminders.add_reminder(tmp_path, "Main Menu", SHOWTIME, target="uid-1")
     said: list[str] = []
     monitor = _monitor(frame, said)
@@ -269,7 +269,7 @@ def test_quiet_hours_hold_a_reminder_without_ending_it(frame, tmp_path, monkeypa
 
     asked: list[str] = []
     monkeypatch.setattr(
-        "quill.ui.quiet_hours_ui.held_back", lambda kind: asked.append(kind) or True
+        "quill.ui.quiet_hours_ui.held_back", lambda kind, **_k: asked.append(kind) or True
     )
     reminders.add_reminder(tmp_path, "Main Menu", SHOWTIME, target="uid-1")
     said: list[str] = []
@@ -287,13 +287,13 @@ def test_a_reminder_held_back_speaks_when_the_quiet_window_ends(
 ) -> None:
     from quill.core.radio import reminders
 
-    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind: True)
+    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind, **_k: True)
     reminders.add_reminder(tmp_path, "Main Menu", SHOWTIME, target="uid-1")
     said: list[str] = []
     monitor = _monitor(frame, said)
     monitor.check_now(now=SHOWTIME)
 
-    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind: False)
+    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind, **_k: False)
     assert monitor.check_now(now=SHOWTIME + timedelta(minutes=5)) == 1
     monitor.stop()
 
@@ -303,7 +303,7 @@ def test_an_unreadable_quiet_window_lets_the_reminder_through(frame, tmp_path, m
     interrupted by."""
     from quill.core.radio import reminders
 
-    def _boom(_kind):
+    def _boom(_kind, **_k):
         raise RuntimeError("the quiet-hours file is unreadable")
 
     monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", _boom)
@@ -373,3 +373,29 @@ def test_the_on_now_key_says_something_when_nothing_is_on(monkeypatch) -> None:
     calendar_wiring.announce_on_now(host)
 
     assert host.said[-1] == calendar_actions.nothing_on_now()
+
+
+def test_a_high_priority_reminder_comes_through_quiet_hours(frame, tmp_path, monkeypatch) -> None:
+    """7.3: the per-reminder choice has to work on its own, or it does nothing
+    for the only person who would reach for it -- somebody who did *not* want
+    every reminder through."""
+    from quill.core.radio import reminders
+
+    seen: list[bool] = []
+
+    def _held(_kind, *, high_priority: bool = False, **_k):
+        seen.append(high_priority)
+        return not high_priority  # quiet hours are on; only the urgent escapes
+
+    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", _held)
+    reminders.add_reminder(
+        tmp_path, "Board meeting", SHOWTIME, target="a", priority=reminders.PRIORITY_HIGH
+    )
+    reminders.add_reminder(tmp_path, "Main Menu", SHOWTIME, target="b")
+    said: list[str] = []
+    monitor = _monitor(frame, said)
+
+    assert monitor.check_now(now=SHOWTIME) == 1
+    assert said and "Board meeting" in said[0]
+    assert seen == [True, False], "the priority reaches quiet hours per reminder"
+    monitor.stop()

@@ -697,6 +697,26 @@ def generate_all() -> None:
         vol=0.5,
     )
 
+    # Reminder: the one cue in these apps that arrives because the listener
+    # asked to be interrupted at a moment they chose. So it is deliberately
+    # *unlike* its neighbours -- three rising bell tones on a major triad, the
+    # third held, which reads as a question being asked rather than a task
+    # reporting itself finished. Bell-voiced so it carries over speech without
+    # being sharp, and quiet enough (0.45) that it is a tap on the shoulder
+    # rather than an alarm; the weather alert is the app's only alarm and it
+    # sounds nothing like this on purpose.
+    write_wav(
+        "radio_reminder.wav",
+        _concat(
+            _bell(587, 110),  # D5
+            _silence(30),
+            _bell(740, 110),  # F#5
+            _silence(30),
+            _bell(880, 300),  # A5, held -- the unresolved "well?"
+        ),
+        vol=0.45,
+    )
+
     # Cast: bell-voiced. Started and complete are inversions of each other.
     write_wav("cast_download_started.wav", _bell_seq([523, 659], 120), vol=0.5)
     write_wav("cast_download_complete.wav", _bell_seq([659, 523], 120), vol=0.5)

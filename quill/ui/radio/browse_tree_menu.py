@@ -33,6 +33,18 @@ from quill.ui.radio import browse_transcript
 from quill.ui.radio import browse_youtube_menu as yt_menu
 
 
+def _has_reminder(station: Any) -> bool:
+    """Whether this row already carries a reminder. False for anything odd.
+
+    Read here rather than passed in because it is one cheap file read and the
+    alternative is threading a store through every caller of the menu builder
+    for the sake of one boolean.
+    """
+    from quill.ui.radio import row_reminders_wiring
+
+    return row_reminders_wiring.has_reminder(station)
+
+
 def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_actions.FolderState:
     """What is known about this folder without fetching anything."""
     from quill.ui.radio import download_command
@@ -188,6 +200,14 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     handlers[row_actions.MARK_ALL_PLAYED] = lambda: podcast_acts.mark_all_played(dialog, args)
     handlers[row_actions.IMPORT_OPML] = lambda: podcast_acts.import_opml(dialog)
     handlers[row_actions.REFRESH_ALL_PODCASTS] = lambda: podcast_acts.refresh_all_feeds(dialog)
+    from quill.ui.radio import row_reminders_wiring
+
+    handlers[row_actions.SET_REMINDER] = lambda: row_reminders_wiring.set_reminder(
+        dialog, host, station
+    )
+    handlers[row_actions.REMOVE_REMINDER] = lambda: row_reminders_wiring.remove_reminder(
+        dialog, station
+    )
     handlers[row_actions.ADD_PODCAST_URL] = lambda: podcast_acts.add_podcast_by_url_prompt(dialog)
     handlers[row_actions.DOWNLOAD_ALL_EPISODES] = lambda: podcast_acts.download_all_episodes(
         dialog, args
@@ -322,6 +342,9 @@ def show_for_event(dialog: Any, event: Any) -> None:
         # possibility to be discovered by pressing it.
         has_chapters=places.playing_has(dialog, station, "chapters"),
         has_captions=places.playing_has(dialog, station, "captions"),
+        # Whether this row already has one, so the menu offers Remove rather
+        # than a second Set (7.1).
+        has_reminder=_has_reminder(station),
     )
     # The listener's own order (Quick Actions). It can only reorder what this
     # row already offers, never add an action the row cannot perform.

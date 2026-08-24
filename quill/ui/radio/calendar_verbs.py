@@ -133,30 +133,29 @@ def _record(host: Any, window: Any, event: Any) -> None:
 
 
 def _remind(host: Any, window: Any, event: Any) -> None:
-    """Ask how much warning, then set it."""
-    import wx
+    """Ask for the details, then set it.
 
-    from quill.core.paths import app_data_dir
+    The same dialog every other row uses (7.1-7.3), rather than the lead-time
+    list this shipped with: a programme reminder and a station reminder are the
+    same record, and two dialogs would have been two places for the note field
+    and the priority to be missing from one of them.
+    """
     from quill.core.radio import reminders
+    from quill.ui.radio import reminder_dialog
 
-    labels = [label for _seconds, label in reminders.LEAD_CHOICES]
-    with wx.SingleChoiceDialog(
-        window.dialog, f"Remind me about {event.summary}:", "Set a Reminder", labels
-    ) as chooser:
-        if chooser.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-            return
-        lead = reminders.LEAD_CHOICES[max(0, chooser.GetSelection())][0]
-    reminders.add_reminder(
-        app_data_dir(),
-        event.summary,
-        event.start,
+    reminder = reminder_dialog.ask(
+        host,
+        window.dialog,
+        title=event.summary,
         kind=reminders.KIND_EVENT,
         target=event.uid,
-        lead_seconds=lead,
+        starts_at=event.start,
         note=acb_calendar.stream_for(event),
     )
+    if reminder is None:
+        return
     window._sync()
-    host._announce(f"Reminder set for {event.summary}, {reminders.lead_label(lead).lower()}.")
+    host._announce(reminder_dialog.spoken_confirmation(reminder))
 
 
 def _unremind(host: Any, window: Any, event: Any) -> None:

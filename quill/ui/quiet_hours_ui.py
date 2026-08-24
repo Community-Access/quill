@@ -55,10 +55,14 @@ def invalidate() -> None:
     _cached_at = 0.0
 
 
-def held_back(kind: str, *, now: datetime | None = None) -> bool:
-    """Whether an announcement of *kind* should stay silent right now."""
+def held_back(kind: str, *, now: datetime | None = None, high_priority: bool = False) -> bool:
+    """Whether an announcement of *kind* should stay silent right now.
+
+    *high_priority* only means anything for a reminder, and means "this one in
+    particular gets through" -- see :func:`quill.core.quiet_hours.silences`.
+    """
     moment = (now or datetime.now()).time()
-    return silences(current(), kind, moment)
+    return silences(current(), kind, moment, high_priority=high_priority)
 
 
 def speak_background(host: Any, message: str, *, kind: str = Kind.BACKGROUND) -> bool:

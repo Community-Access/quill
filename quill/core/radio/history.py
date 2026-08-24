@@ -221,6 +221,17 @@ class RadioHistory:
     #: Run one check at launch as well. Off by default: a launch that spends
     #: four seconds on feeds is a launch a screen-reader user spends waiting.
     podcast_refresh_on_launch: bool = False
+    #: The lead time a new reminder starts on (list.md 7.8). Chosen per
+    #: reminder either way; this only decides what the control opens at, so
+    #: the common case is one keystroke shorter. 15 minutes because that is
+    #: the shortest warning that is still a warning -- long enough to finish
+    #: what you are doing, short enough that you have not forgotten by then.
+    reminder_default_lead_seconds: int = 900
+    #: Play the reminder earcon (7.4). On by default, and separate from the
+    #: global per-event sound list on purpose: somebody who has turned most
+    #: earcons off has probably not meant to turn off the one sound they
+    #: asked to be interrupted by.
+    reminder_sound: bool = True
     #: Skip Silence for bounded playback (11.7): long pauses in a recording,
     #: a YouTube row or a podcast episode are shortened as it plays. The
     #: engine has always been able to do this (audio_enhance's Smart Speed

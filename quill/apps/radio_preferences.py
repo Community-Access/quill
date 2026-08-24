@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.core.radio import startup_window
+from quill.core.radio import reminders, startup_window
 
 
 def _open_data_folder(app: Any) -> None:
@@ -23,6 +23,21 @@ def _open_data_folder(app: Any) -> None:
     from quill.ui.data_folder_dialog import open_data_folder_dialog
 
     open_data_folder_dialog(app, app_title=_TITLE)
+
+
+#: Preference group names (list.md 8.1). Written in the order somebody looks
+#: for them, which is what the dialog preserves -- and short, because the box
+#: label is read aloud every time focus enters the group.
+_PODCASTS = "Podcasts"
+_REMINDERS = "Reminders"
+
+
+def _lead_index(seconds: object) -> int:
+    """Which lead-time row a stored default is, or the first when unknown."""
+    for index, (offered, _label) in enumerate(reminders.LEAD_CHOICES):
+        if offered == seconds:
+            return index
+    return 1
 
 
 def open_preferences(app: Any) -> None:
@@ -176,6 +191,18 @@ def open_preferences(app: Any) -> None:
                 "four seconds on feeds is a launch you spend waiting, and it "
                 "stays quiet when it finds nothing.",
                 history.podcast_refresh_on_launch,
+                group=_PODCASTS,
+            ),
+            PreferenceCheckbox(
+                "Play a sound when a re&minder comes due",
+                "The reminder earcon -- three rising bell tones, unlike any "
+                "other sound in the app. On by default and separate from the "
+                "global per-event sound list: somebody who has turned most "
+                "earcons off has probably not meant to turn off the one sound "
+                "they asked to be interrupted by. The reminder is still "
+                "spoken either way.",
+                history.reminder_sound,
+                group=_REMINDERS,
             ),
         ],
         choices=[
@@ -247,6 +274,17 @@ def open_preferences(app: Any) -> None:
                 "the same feeds twice.",
                 [label for _minutes, label in refresh_policy.INTERVAL_CHOICES],
                 refresh_policy.interval_index(history.podcast_refresh_minutes),
+                group=_PODCASTS,
+            ),
+            PreferenceChoice(
+                "New reminders &start at:",
+                "What the lead time opens at when you set a reminder. Every "
+                "reminder still asks, and every reminder can differ -- this "
+                "only decides what the control starts on, so the usual answer "
+                "is one keystroke shorter.",
+                [label for _seconds, label in reminders.LEAD_CHOICES],
+                _lead_index(history.reminder_default_lead_seconds),
+                group=_REMINDERS,
             ),
         ],
         texts=[
@@ -296,6 +334,7 @@ def open_preferences(app: Any) -> None:
         history.catalog_refresh_on_startup,
         history.winamp_playback_keys,
         history.podcast_refresh_on_launch,
+        history.reminder_sound,
     ) = checkbox_values
     # Apply verbose logging immediately (quill-radio #5) so it takes effect
     # this session, not just the next launch.
@@ -322,6 +361,9 @@ def open_preferences(app: Any) -> None:
     history.catalog_refresh_hours = catalog_interval_values[choice_indices[5]]
     history.subscription_episode_limit = episode_limit_values[choice_indices[6]]
     history.podcast_refresh_minutes = refresh_policy.interval_from_index(choice_indices[7])
+    history.reminder_default_lead_seconds = reminders.LEAD_CHOICES[
+        min(max(0, choice_indices[8]), len(reminders.LEAD_CHOICES) - 1)
+    ][0]
     if chosen_sort != history.favorites_sort:
         history.favorites_sort = chosen_sort
         app._reload_favorites_tree()

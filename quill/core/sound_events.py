@@ -81,6 +81,12 @@ class SoundEvent(StrEnum):
     RADIO_FAVORITE_ADDED = "radio_favorite_added"
     CAST_DOWNLOAD_STARTED = "cast_download_started"
     CAST_DOWNLOAD_COMPLETE = "cast_download_complete"
+    #: A reminder coming due (list.md 7.4). Its own sound rather than a
+    #: borrowed one: a reminder is the only thing in these apps that arrives
+    #: because the listener asked to be interrupted at a moment they chose,
+    #: and it has to be tellable from a download finishing or a feed check
+    #: ticking without waiting for the words that follow it.
+    RADIO_REMINDER = "radio_reminder"
     CAST_EPISODE_FINISHED = "cast_episode_finished"
     WEATHER_ALERT = "weather_alert"
     BEACON_CAPTURED = "beacon_captured"

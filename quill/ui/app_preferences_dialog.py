@@ -3,23 +3,39 @@ apps (Quill Radio, QUILL Cast) -- a short list of app-level startup toggles
 (Resume on Launch, Check for Updates on Startup, ...). Each app supplies its
 own checkbox specs and applies the returned values back to its own settings
 store; this dialog holds no app-specific knowledge.
+
+**Specs can name a group** (list.md 8.1). Anything that names one is drawn
+inside a labelled ``wx.StaticBox``, in first-appearance order, after the
+ungrouped run. That is what stops twenty toggles reading as twenty unrelated
+facts -- and a static box is a real grouping control, so a screen reader
+announces the group on entering it rather than leaving somebody to infer it
+from the order. An app that names no group gets exactly the layout it had
+before groups existed, control for control.
+
+**The returned lists stay in spec order regardless of the layout.** Callers
+unpack by position, so a grouped arrangement that reordered its results would
+silently and completely corrupt somebody's settings.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass(slots=True)
 class PreferenceCheckbox:
     """One checkbox: the visible label, its accessible name, and the
     starting value. ``name`` carries the ``&`` mnemonic; ``help_text`` is the
-    fuller accessible description set via ``SetName``."""
+    fuller accessible description set via ``SetName`` and ``SetHelpText``."""
 
     name: str
     help_text: str
     value: bool
+    #: Which labelled box this belongs in; empty for the ungrouped
+    #: run at the top of the dialog.
+    group: str = ""
 
 
 @dataclass(slots=True)
@@ -33,6 +49,9 @@ class PreferenceAction:
     name: str
     help_text: str
     on_click: Callable[[], None]
+    #: Which labelled box this belongs in; empty for the ungrouped
+    #: run at the top of the dialog.
+    group: str = ""
 
 
 @dataclass(slots=True)
@@ -40,12 +59,15 @@ class PreferenceText:
     """One labeled single-line text field: for a free-form value a checkbox or
     a closed choice can't hold (e.g. Quill Radio's "What's Playing"
     announcement template). ``name`` is the field's label (with its ``&``
-    mnemonic), ``help_text`` the fuller accessible description set via
-    ``SetName``, ``value`` the starting text."""
+    mnemonic), ``help_text`` the fuller accessible description, ``value`` the
+    starting text."""
 
     name: str
     help_text: str
     value: str
+    #: Which labelled box this belongs in; empty for the ungrouped
+    #: run at the top of the dialog.
+    group: str = ""
 
 
 @dataclass(slots=True)
@@ -54,12 +76,15 @@ class PreferenceChoice:
     checkbox can't represent (e.g. Radio's "When closing the window").
     ``name`` is the row's own label (no mnemonic collision with the
     checkboxes since it labels a Choice, not a button); ``help_text`` is the
-    fuller accessible description set via ``SetName``."""
+    fuller accessible description."""
 
     name: str
     help_text: str
     options: list[str]
     selected_index: int
+    #: Which labelled box this belongs in; empty for the ungrouped
+    #: run at the top of the dialog.
+    group: str = ""
 
 
 class PreferencesDialog:
@@ -83,56 +108,35 @@ class PreferencesDialog:
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._result: tuple[list[bool], list[int], list[str]] | None = None
-        self._checks: list[wx.CheckBox] = []
-        self._choice_controls: list[wx.Choice] = []
-        self._text_controls: list[wx.TextCtrl] = []
-        self._action_buttons: list[wx.Button] = []
+        self._action_buttons: list[Any] = []
 
         self.dialog = wx.Dialog(
             parent, title=f"{app_title} Preferences", style=wx.DEFAULT_DIALOG_STYLE
         )
         root = wx.BoxSizer(wx.VERTICAL)
 
-        for spec in choices or []:
-            row = wx.BoxSizer(wx.HORIZONTAL)
-            row.Add(
-                wx.StaticText(self.dialog, label=spec.name),
-                0,
-                wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
-                6,
-            )
-            choice = wx.Choice(self.dialog, choices=list(spec.options))
-            choice.SetName(spec.help_text)
-            choice.SetSelection(spec.selected_index)
-            row.Add(choice, 1, wx.EXPAND)
-            root.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
-            self._choice_controls.append(choice)
+        # Slots, so every returned list stays in *spec* order however the boxes
+        # are arranged on screen. A caller unpacks by position.
+        self._choice_controls: list[Any] = [None] * len(choices or [])
+        self._checks: list[Any] = [None] * len(checkboxes)
+        self._text_controls: list[Any] = [None] * len(texts or [])
 
-        for spec in checkboxes:
-            check = wx.CheckBox(self.dialog, label=spec.name)
-            check.SetName(spec.help_text)
-            check.SetValue(spec.value)
-            root.Add(check, 0, wx.ALL, 8)
-            self._checks.append(check)
-
-        for text_spec in texts or []:
-            root.Add(
-                wx.StaticText(self.dialog, label=text_spec.name),
-                0,
-                wx.LEFT | wx.RIGHT | wx.TOP,
-                8,
-            )
-            text_ctrl = wx.TextCtrl(self.dialog, value=text_spec.value)
-            text_ctrl.SetName(text_spec.help_text)
-            root.Add(text_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-            self._text_controls.append(text_ctrl)
-
-        for action_spec in actions or []:
-            action_btn = wx.Button(self.dialog, label=action_spec.name)
-            action_btn.SetName(action_spec.help_text)
-            action_btn.Bind(wx.EVT_BUTTON, lambda _e, cb=action_spec.on_click: cb())
-            root.Add(action_btn, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-            self._action_buttons.append(action_btn)
+        for group in self._group_order(choices, checkboxes, texts, actions):
+            sizer, parent_window = self._container(root, group)
+            for index, choice_spec in enumerate(choices or []):
+                if choice_spec.group == group:
+                    self._choice_controls[index] = self._add_choice(
+                        sizer, parent_window, choice_spec
+                    )
+            for index, check_spec in enumerate(checkboxes):
+                if check_spec.group == group:
+                    self._checks[index] = self._add_check(sizer, parent_window, check_spec)
+            for index, text_spec in enumerate(texts or []):
+                if text_spec.group == group:
+                    self._text_controls[index] = self._add_text(sizer, parent_window, text_spec)
+            for action_spec in actions or []:
+                if action_spec.group == group:
+                    self._action_buttons.append(self._add_action(sizer, parent_window, action_spec))
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         save_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
@@ -145,6 +149,88 @@ class PreferencesDialog:
         self.dialog.SetSizer(root)
         root.Fit(self.dialog)
         save_btn.Bind(wx.EVT_BUTTON, self._on_save)
+
+    # -- layout ---------------------------------------------------------------
+
+    @staticmethod
+    def _group_order(*spec_lists: Any) -> list[str]:
+        """Group names in first-appearance order, ungrouped always first.
+
+        First appearance rather than alphabetical: the caller wrote them in an
+        order, and that order is a judgement about what somebody looks for
+        first. Sorting would replace it with the alphabet.
+        """
+        seen: list[str] = [""]
+        for specs in spec_lists:
+            for spec in specs or []:
+                group = str(getattr(spec, "group", "") or "")
+                if group and group not in seen:
+                    seen.append(group)
+        return seen
+
+    def _container(self, root: Any, group: str) -> tuple[Any, Any]:
+        """``(sizer to add into, window to parent controls to)`` for *group*.
+
+        An ungrouped run goes straight onto the dialog, exactly as it did
+        before groups existed, so an app that names no group is unaffected.
+        Controls in a group are parented to the box itself rather than to the
+        dialog: wxMSW walks the real parent chain when it reports a control's
+        grouping, so parenting to the dialog would draw a box the screen
+        reader never mentions.
+        """
+        wx = self._wx
+        if not group:
+            return (root, self.dialog)
+        box = wx.StaticBox(self.dialog, label=group)
+        sizer = wx.StaticBoxSizer(box, wx.VERTICAL)
+        root.Add(sizer, 0, wx.EXPAND | wx.ALL, 8)
+        return (sizer, box)
+
+    def _describe(self, control: Any, help_text: str) -> None:
+        """One sentence, said two ways.
+
+        ``SetName`` is what focus announces; ``SetHelpText`` is what F1
+        answers. Different mechanisms, so both -- a control that names itself
+        and then has nothing to say when asked is half a control.
+        """
+        control.SetName(help_text)
+        control.SetHelpText(help_text)
+
+    def _add_choice(self, sizer: Any, parent: Any, spec: PreferenceChoice) -> Any:
+        wx = self._wx
+        row = wx.BoxSizer(wx.HORIZONTAL)
+        row.Add(wx.StaticText(parent, label=spec.name), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        choice = wx.Choice(parent, choices=list(spec.options))
+        self._describe(choice, spec.help_text)
+        choice.SetSelection(spec.selected_index)
+        row.Add(choice, 1, wx.EXPAND)
+        sizer.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+        return choice
+
+    def _add_check(self, sizer: Any, parent: Any, spec: PreferenceCheckbox) -> Any:
+        check = self._wx.CheckBox(parent, label=spec.name)
+        self._describe(check, spec.help_text)
+        check.SetValue(spec.value)
+        sizer.Add(check, 0, self._wx.ALL, 8)
+        return check
+
+    def _add_text(self, sizer: Any, parent: Any, spec: PreferenceText) -> Any:
+        wx = self._wx
+        sizer.Add(wx.StaticText(parent, label=spec.name), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+        text_ctrl = wx.TextCtrl(parent, value=spec.value)
+        self._describe(text_ctrl, spec.help_text)
+        sizer.Add(text_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+        return text_ctrl
+
+    def _add_action(self, sizer: Any, parent: Any, spec: PreferenceAction) -> Any:
+        wx = self._wx
+        button = wx.Button(parent, label=spec.name)
+        self._describe(button, spec.help_text)
+        button.Bind(wx.EVT_BUTTON, lambda _e, cb=spec.on_click: cb())
+        sizer.Add(button, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+        return button
+
+    # -- results --------------------------------------------------------------
 
     def _capture_result(self) -> None:
         """Snapshot every control's value into ``self._result`` (the returned

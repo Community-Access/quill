@@ -4,6 +4,17 @@ All notable changes to QUILL Cast are documented here. See `docs/release-notes-2
 
 ## 2.0.0
 
+### Preferences that group what belongs together (2026-08-24)
+
+Preferences had grown into one flat run of controls, which reads as a list of
+unrelated facts -- especially arrowing through it with a screen reader, where
+there is no visual proximity to infer grouping from. Related settings now sit
+in named groups that are announced when you enter them, rather than in a run
+you have to hold in your head.
+
+Every control in them says what it does *and* what it does not, under the same
+rule the rest of the settings were rewritten to earlier today.
+
 ### Bookmarks, and one list of them across both apps (2026-08-24)
 
 **Bookmark This Moment** on the Episode menu marks where you are in one

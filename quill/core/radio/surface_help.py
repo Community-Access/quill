@@ -202,6 +202,13 @@ PURPOSES: dict[str, str] = {
         "narrows it to one. The schedule is kept on this computer, so it opens "
         "with no connection and says how old it is when it does."
     ),
+    "Set a Reminder": (
+        "Be told about this at a time you choose -- a programme in the "
+        "schedule, a station, a recording. Pick how much warning you want, "
+        "add a note if there is something to say with it, and choose High "
+        "priority if it should come through quiet hours. A reminder only "
+        "tells you: it never starts, records or queues anything by itself."
+    ),
     "Upcoming": (
         "Everything Quill Radio has planned -- reminders and scheduled "
         "recordings together, soonest first, with the kind on every row. "

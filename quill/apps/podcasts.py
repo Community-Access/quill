@@ -680,6 +680,10 @@ class PodcastsAppFrame(
             else "Resume on launch turned off."
         )
 
+    #: Preference group names (list.md 8.1). Short, because a static box
+    #: label is read aloud every time focus enters the group.
+    _PODCASTS = "Podcasts"
+
     def _open_preferences(self) -> None:
         from quill.core.paths import app_data_dir
         from quill.core.podcasts import history as podcast_history
@@ -741,6 +745,7 @@ class PodcastsAppFrame(
                     "itself, skips shows you have paused, and never changes what "
                     "you are playing.",
                     history.podcast_check_enabled,
+                    group=self._PODCASTS,
                 ),
             ],
             choices=[
@@ -758,6 +763,7 @@ class PodcastsAppFrame(
                     "the same feeds twice.",
                     [label for _minutes, label in refresh_policy.INTERVAL_CHOICES],
                     refresh_policy.interval_index(history.podcast_check_interval_minutes),
+                    group=self._PODCASTS,
                 ),
             ],
             announce_cb=self._announce,

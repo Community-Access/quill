@@ -1191,18 +1191,54 @@ time, on the same channel, under two different internal ids. Quill Radio shows
 it once. If you compare the window to their website and count differently, that
 is why.
 
+**Repeating programmes.** ACB's schedule currently writes out every occurrence
+separately, so a daily show simply appears once a day. If they ever define a
+series *as* a series instead, Quill Radio expands it -- daily, weekly (including
+several days a week), fortnightly, monthly or yearly, with any cancelled dates
+left out. Each occurrence is its own row, so a reminder set on next Tuesday
+stays on next Tuesday rather than attaching itself to the whole series.
+
 ## Reminders and Upcoming
 
-Set a reminder on any programme in the schedule, from "when it starts" to a day
-before. When the time comes, Quill Radio says what it is and when it starts --
-and it still says so for a reminder that came due while the app was closed, as
-long as that was within the last couple of hours. Being told at breakfast about
-something that ended at midnight is noise, not a reminder.
+**Setting one.** Any programme in the schedule, and any station, recording or
+saved row in the browse tree, offers **Set a Reminder...** on its context menu
+(Shift+F10, or the Applications key). Once a row has one, the same slot offers
+**Remove Reminder** instead -- a menu that cannot tell you what you already did
+is a menu you have to remember for, which is exactly the job a reminder exists
+to take off you.
 
-**Quiet hours can hold a reminder back**, and holding it back does not end it.
-A withheld reminder stays due and is said when the quiet window ends; it still
-shows in Upcoming as waiting. (Quiet Hours has its own "let reminders through
-anyway" setting if you would rather they always came through.)
+The dialog asks three things:
+
+- **When.** For a programme, how much warning you want, from "when it starts"
+  to a day before. For a station or a recording -- which have no start time of
+  their own -- the same control asks *when*, counted from now.
+- **A note**, optional. A number to call in on, a reason, a message to
+  yourself. It is spoken with the reminder and never leaves this computer.
+- **Priority.** Normal, or High. High is the only thing that comes through
+  quiet hours on its own, without your having turned on "let reminders through"
+  for everything. It changes nothing else: a high-priority reminder is not
+  louder, not sooner, and not repeated.
+
+**When one comes due**, Quill Radio plays the reminder sound -- three rising
+bell tones, unlike anything else in the app -- then says what it is and when it
+starts, and shows a desktop notice with a **Go There** button that opens
+whatever it was about. The sound comes first on purpose: if you know it, you
+have already turned your attention by the time the sentence begins.
+
+A reminder that came due while the app was closed is still said when you next
+open it, as long as that was within the last couple of hours. Being told at
+breakfast about something that ended at midnight is noise, not a reminder.
+
+**Quiet hours can hold a reminder back, and holding it back does not end it.**
+A withheld reminder stays due, is said when the quiet window ends, and shows in
+Upcoming as waiting in the meantime.
+
+**Preferences** (Ctrl+,) holds two reminder settings: the lead time new
+reminders *start* on -- every reminder still asks, this just makes the usual
+answer one keystroke shorter -- and whether the reminder sound plays. That
+sound has its own switch, separate from the general per-event sound list,
+because turning most earcons off is not the same as wanting to miss the one
+thing you asked to be interrupted by.
 
 **Station > Upcoming...** (Ctrl+Alt+Shift+F) is everything Quill Radio has
 planned -- your reminders and your scheduled recordings, together, soonest

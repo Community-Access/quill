@@ -17,6 +17,49 @@ gone missing, and several long-standing silent faults are fixed. See
 
 ### Added
 
+- **A reminder on anything, not just a programme.** Every station, recording
+  and saved row now offers **Set a Reminder...** on its context menu, and the
+  same row offers **Remove Reminder** once it has one -- a menu that cannot tell
+  you what you already did is a menu you have to remember for, which is the job
+  a reminder exists to take off you. A row has no start time of its own, so the
+  question changes from "how long before?" to "when?", which is the same
+  control reading differently rather than a second dialog to learn.
+- **Reminders carry a note and a priority.** The note is free text -- a number
+  to call in on, a reason, a message to yourself -- and is spoken with the
+  reminder. **High priority** is the one thing that comes through quiet hours on
+  its own, without your having to turn on "let reminders through" for
+  everything. It changes nothing else: a high-priority reminder is not louder,
+  sooner or repeated.
+- **Reminders have their own sound.** Three rising bell tones, unlike anything
+  else in the app, played just before the words -- so a listener who recognises
+  it has already turned their attention by the time the sentence starts. It has
+  its own switch in Preferences, separate from the general per-event sound list,
+  because somebody who has turned most earcons off has probably not meant to
+  silence the one thing they asked to be interrupted by.
+- **A reminder now arrives as a desktop notice too, with a Go There button.**
+  Spoken *and* shown: the speech is the reminder, and the notice is what is
+  still there thirty seconds later for somebody who was mid-sentence with a
+  screen reader when it came. Its button opens whatever the reminder was about,
+  where before the only route was to open Upcoming and find the row.
+- **Preferences: a default lead time, and the reminder sound.** Every reminder
+  still asks how much warning you want; this decides what that control opens
+  on, so the usual answer is one keystroke shorter.
+- **Preferences groups.** Both apps' Preferences had grown into one flat run of
+  twenty-odd controls, which reads as twenty unrelated facts -- especially to
+  somebody arrowing through with a screen reader, who has no visual proximity to
+  infer from. Related settings now sit in named, announced groups.
+
+### Fixed
+
+- **A repeating programme would have appeared once instead of every week.**
+  ACB's schedule currently writes out every occurrence separately, so this was
+  invisible -- but the moment their calendar defines a series *as* a series,
+  a weekly show would have shown up on one day and vanished from the other
+  seven. That reads as a thin schedule rather than as a bug, so nobody would
+  have reported it. Repeat rules are now expanded: daily, weekly (including
+  several days a week), fortnightly, monthly and yearly, with cancelled dates
+  honoured and each occurrence keeping its own identity, so a reminder set on
+  next Tuesday stays on next Tuesday.
 - **The ACB Media schedule, in Quill Radio.** Station > ACB Media Schedule
   (Ctrl+Shift+N) opens a week -- Sunday to Saturday, a heading before each day,
   every day shown including the empty ones, because a week that quietly omits

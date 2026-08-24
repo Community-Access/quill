@@ -116,6 +116,9 @@ class QuietHours:
     #: Reminders are the one silenceable kind somebody may want *through* the
     #: quiet window -- an alarm clock is the reason they set one. Off by
     #: default: quiet means quiet unless you say otherwise.
+    #: Let *every* reminder speak during quiet hours. Off by default. A
+    #: single reminder can also be marked high priority when it is made, which
+    #: gets that one through on its own -- see :func:`silences`.
     allow_reminders: bool = False
 
     def start_time(self) -> _time:
@@ -158,16 +161,27 @@ def is_quiet_at(hours: QuietHours, now: _time) -> bool:
     return now >= start or now < end
 
 
-def silences(hours: QuietHours, kind: str, now: _time) -> bool:
+def silences(hours: QuietHours, kind: str, now: _time, *, high_priority: bool = False) -> bool:
     """Whether *kind* should be held back right now.
 
     Urgent speech is never held back, and anything not in
     :data:`SILENCEABLE_KINDS` is treated as prompted -- an answer to something
     the listener did.
+
+    **Reminders have two ways through, and they are different questions**
+    (list.md 7.3). ``allow_reminders`` is the standing answer: *let reminders
+    speak during quiet hours*, set once, for all of them. ``high_priority`` is
+    the per-reminder answer: *this one in particular matters*, set on the
+    reminder itself when it was made.
+
+    Either is enough. Requiring both would make the per-reminder choice do
+    nothing for anybody who had not already turned the standing one on -- which
+    is exactly the case it exists for, since somebody who wanted every reminder
+    through would have turned that switch on and never reached for priority.
     """
     if kind not in SILENCEABLE_KINDS:
         return False
-    if kind == Kind.REMINDER and hours.allow_reminders:
+    if kind == Kind.REMINDER and (hours.allow_reminders or high_priority):
         return False
     return is_quiet_at(hours, now)
 

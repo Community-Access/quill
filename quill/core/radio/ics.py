@@ -5,13 +5,18 @@ REST API is switched off, so the ICS feed is the data path). Parsing it needs
 about two hundred lines and no dependency at all, and that is the trade this
 module takes:
 
+* **Recurrence is carried, not resolved.** A ``VEVENT`` with an ``RRULE`` means
+  many programmes, but expanding it needs a window to be bounded by and only
+  the caller knows which one. The rule rides on the event;
+  :mod:`quill.core.radio.ics_recurrence` does the expanding.
 * **No new dependency.** ``icalendar`` would be a wheel in every installer, a
   line in the egress-free dependency audit, and a thing to update, in exchange
-  for RFC 5545 coverage this feed does not use -- no recurrence expansion, no
-  alarms, no timezone definitions beyond a name.
+  for RFC 5545 coverage this feed does not use -- no alarms, no journals, no
+  timezone *definitions* beyond a name, and only the handful of recurrence
+  parts a programme listing actually writes.
 * **What is actually in the feed is narrow.** ``VEVENT`` records with a
-  summary, a start, an end, a category and sometimes a description. The rest of
-  RFC 5545 is not there to be got wrong.
+  summary, a start, an end, a category, sometimes a description, and sometimes
+  a repeat rule. The rest of RFC 5545 is not there to be got wrong.
 * **A feed that breaks must not break the week.** Every field is optional, an
   event that cannot be read is skipped rather than fatal, and a file that is
   not ICS at all reads as no events -- which the caller reports as "the
@@ -59,6 +64,13 @@ class CalendarEvent:
     location: str = ""
     categories: tuple[str, ...] = field(default_factory=tuple)
     url: str = ""
+    #: The raw ``RRULE`` and ``EXDATE``, carried rather than acted on here:
+    #: expanding a series needs a *window* to be bounded by, and only the
+    #: caller knows which fortnight it is about to show. See
+    #: :mod:`quill.core.radio.ics_recurrence`. Empty for the ordinary case,
+    #: which is what ACB's own export writes today.
+    rrule: str = ""
+    exdates: str = ""
 
     @property
     def duration(self) -> timedelta | None:
@@ -98,7 +110,15 @@ def parse_calendar(text: str) -> list[CalendarEvent]:
         if current is None:
             continue
         name, value = _split_property(line)
-        if name:
+        if not name:
+            continue
+        if name == "EXDATE" and current.get("EXDATE"):
+            # A cancelled week is one EXDATE line; three cancelled weeks are
+            # three, and keeping only the last would quietly restore two of
+            # them. Joined, because that is how the value already reads when a
+            # feed puts them on one line.
+            current["EXDATE"] = f"{current['EXDATE']},{value}"
+        else:
             current[name] = value
     return sorted(events, key=lambda event: event.start)
 
@@ -205,6 +225,8 @@ def _event_from(fields: dict[str, str]) -> CalendarEvent | None:
         location=fields.get("LOCATION", "").strip(),
         categories=categories,
         url=fields.get("URL", "").strip(),
+        rrule=fields.get("RRULE", "").strip(),
+        exdates=fields.get("EXDATE", "").strip(),
     )
 
 
