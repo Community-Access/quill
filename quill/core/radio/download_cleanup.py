@@ -20,6 +20,7 @@ did, because "Removed 12 files" and silence are different answers.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
 
 from quill.core.radio import download_prefs
@@ -51,10 +52,21 @@ def downloaded_file_count(data_dir: Path, show_title: str) -> int:
         return 0
 
 
-def remove_show_downloads(data_dir: Path, show_title: str) -> str:
+def remove_show_downloads(
+    data_dir: Path,
+    show_title: str,
+    *,
+    take: Callable[[list[Path]], int] | None = None,
+) -> str:
     """Delete every downloaded file for *show_title*. Returns the sentence.
 
     The folder itself is removed only when the delete emptied it.
+
+    *take* is how the files leave: given the whole list, it returns how many
+    it took responsibility for. It exists so one step of undo can move them
+    aside instead of unlinking them (:func:`quill.ui.undo_last_ui.hold_or_delete`)
+    without this module learning what an undo is. Default: unlink, exactly as
+    before.
     """
     if not (show_title or "").strip():
         return "There is nothing downloaded for that show."
@@ -64,14 +76,17 @@ def remove_show_downloads(data_dir: Path, show_title: str) -> str:
         entries = list(folder.iterdir())
     except OSError:
         return "There is nothing downloaded for that show."
-    for entry in entries:
-        if not entry.is_file():
-            continue
-        try:
-            entry.unlink()
-            removed += 1
-        except OSError:
-            failed += 1
+    files = [entry for entry in entries if entry.is_file()]
+    if take is not None:
+        removed = take(files)
+        failed = len(files) - removed
+    else:
+        for entry in files:
+            try:
+                entry.unlink()
+                removed += 1
+            except OSError:
+                failed += 1
     try:
         if not any(folder.iterdir()):
             folder.rmdir()

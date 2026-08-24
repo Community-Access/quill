@@ -10,6 +10,12 @@ The search recurses the subtree under the highlighted folder only, within
 bounds -- depth, results, and folder fetches -- so searching from a big branch
 (or TuneIn's remote tree) stays scoped instead of walking the whole internet.
 Hitting a bound is reported, never silent.
+
+It matches a row's **label and its description** (2026-08-24, list.md 5.1):
+on a podcast show's branch this is "episode search inside one show", and a
+show that numbers its episodes and puts the subject in the notes -- most
+interview podcasts -- is precisely where a title-only search finds nothing.
+The count is announced on every search, matches or not.
 """
 
 from __future__ import annotations
@@ -21,6 +27,22 @@ from typing import Any
 FIND_MAX_DEPTH = 6
 FIND_MAX_RESULTS = 2000
 FIND_MAX_FETCHES = 80
+
+
+def searchable_text(node: Any) -> str:
+    """Everything about a row a search should look inside, lower-cased.
+
+    The label, and -- for a podcast episode or a book chapter -- the
+    publisher's own description, which the row already carries as
+    ``RadioStation.notes`` for the details panel (list.md 5.1). A show that
+    numbers its episodes and describes them in the notes is exactly the case
+    where searching titles alone finds nothing at all.
+    """
+    parts = [str(getattr(node, "label", "") or "")]
+    station = getattr(node, "station", None)
+    if station is not None:
+        parts.append(str(getattr(station, "notes", "") or ""))
+    return " ".join(parts).lower()
 
 
 def _collect_matches(
@@ -45,7 +67,7 @@ def _collect_matches(
             continue
         if child.is_folder:
             capped = _collect_matches(host, child.node_id, ql, depth + 1, acc, budget) or capped
-        elif ql in child.label.lower():
+        elif ql in searchable_text(child):
             acc.append(host._leaf_data(child))
         if len(acc) >= FIND_MAX_RESULTS:
             return True

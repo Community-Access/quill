@@ -21,7 +21,10 @@ def _read(rel: str) -> str:
 
 
 def test_add_custom_station_refreshes_favorites_view() -> None:
-    src = _read("quill/ui/main_frame_radio.py")
+    # Add Custom Station moved to quill/ui/radio/add_custom_station.py under
+    # GATE-11 on 2026-08-24, when duplicate detection (11.6) grew it past the
+    # frame's budget. The refresh it pins is unchanged.
+    src = _read("quill/ui/radio/add_custom_station.py")
     # After add + save, both the tree and the toggle are refreshed (guarded for
     # embedded QUILL which has no favorites tree).
     assert '_reload_favorites_tree", None)' in src

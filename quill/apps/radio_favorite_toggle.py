@@ -82,3 +82,30 @@ def _refresh_button(host: Any, *, playing: bool, saved: bool) -> None:
             else "Add the playing station to favorites",
         )
     button.Enable(playing)
+
+
+def expand_all_folders(host: Any, expand: bool) -> None:
+    """View > Expand/Collapse All Folders on the favorites tree."""
+    tree = getattr(host, "_favorites_tree", None)
+    if tree is None:
+        return
+    # Counted, like every other bulk verb (11.4): "Expanded all folders"
+    # reads the same on a tree with one folder and a tree with thirty, and
+    # the number is the only part that tells you what just moved.
+    folders = favorites_folder_count(host)
+    if expand:
+        tree.ExpandAll()
+        host._announce(f"Expanded all {folders} folder(s).")
+    else:
+        tree.CollapseAll()
+        host._announce(f"Collapsed all {folders} folder(s).")
+
+
+def favorites_folder_count(host: Any) -> int:
+    """Folders in the favorites tree, however deeply nested."""
+    store = getattr(host, "_radio_favorites", None)
+    folders = getattr(store, "folders", None)
+    try:
+        return len(folders) if folders is not None else 0
+    except TypeError:
+        return 0

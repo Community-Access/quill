@@ -235,10 +235,13 @@ show between folders is a planned follow-up (see the end of this
 tutorial).</p>
 <p>Not ready to unsubscribe from a show but don’t want new episodes
 right now? Right-click it in the tree (or open its context menu with
-Menu/Shift+F10) and choose <strong>Pause Downloads for This
+Menu/Shift+F10) and choose <strong>Pause Updates for This
 Podcast</strong> — it stays in your library, episodes and all, but QUILL
-stops fetching or downloading anything new for it until you choose
-<strong>Resume Downloads for This Podcast</strong> later.</p>
+stops checking its feed <em>and</em> stops downloading anything new for
+it until you choose <strong>Resume Updates for This Podcast</strong>
+later. Pausing never cancels a download already running, and it never
+puts the show out of reach: <strong>Refresh Feed</strong> on that row
+still checks it any time you ask.</p>
 <h2 id="3-download-an-episode-for-offline-listening">3. Download an
 episode for offline listening</h2>
 <p>Select an episode in the list and press <strong>Download</strong>, or
@@ -325,6 +328,33 @@ whole subscription list — folder structure included — to a standard
 <code>.opml</code> file that any other podcast app can read. Bring it
 back into QUILL (or take it somewhere else) with <strong>Import
 OPML…</strong>, the same button you used in step 1.</p>
+<p>OPML moves subscriptions and nothing else. To move the rest — your
+folders and playlists, your settings, your Quick Action order, your
+bookmarks and the keys you rebound — use <strong>Export My
+Setup…</strong> and <strong>Import My Setup…</strong> on QUILL Cast’s or
+Quill Radio’s Help menu, which write one <code>.quillsetup</code> file.
+Passwords are never included, and importing replaces what is on the
+other machine rather than merging with it. Both of those say so before
+they act.</p>
+<h2 id="9-if-something-goes-wrong-or-you-want-quiet">9. If something
+goes wrong, or you want quiet</h2>
+<p>Two surfaces worth knowing about, shared by QUILL Cast and Quill
+Radio.</p>
+<p><strong>Recent Problems</strong> (Help &gt; Recent Problems…) is a
+list of what has failed recently — a feed that could not be read, a
+download that died overnight, a stream that dropped — with the reason,
+the time, and a Retry. Announcements are transient by design, and before
+this list a spoken failure that went past while you were in another
+window was gone for good.</p>
+<p><strong>Quiet Hours</strong> (Help &gt; Quiet Hours…) is a window in
+which the apps stop speaking on their own. Feeds are still checked and
+downloads still run — only the announcements wait — and anything you
+press a key for still answers. Failures always speak.</p>
+<p>And if you do the wrong thing to the wrong row:
+<strong>Ctrl+Z</strong> takes back the last destructive step, once, and
+tells you what came back. Deleted files are moved aside rather than
+deleted outright, so an undo brings the audio back and not just the
+intention to fetch it again.</p>
 <h2 id="whats-not-here-yet">What’s not here yet</h2>
 <p>No video podcasts — audio only, matching every other playback surface
 in QUILL. Moving a show between folders is keyboard-menu-only for now

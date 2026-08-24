@@ -16,6 +16,7 @@ from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
 from quill.apps.podcasts_menu import APP_REPO, APP_TITLE, APP_VERSION, CastMenuBarMixin
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
+from quill.ui.app_support import ListeningAppSupportMixin
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_adp import AdpMixin
@@ -48,9 +49,14 @@ class PodcastsAppFrame(
     GlobalHotkeysMixin,
     KeymapEditorMixin,
     QuillinsAppMixin,
+    ListeningAppSupportMixin,
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
+        self._apply_app_keymap("cast")
+        # Undo, Recent Problems, Quiet Hours and setup transfer: the shared
+        # slots, claimed before any window can offer them.
+        self._init_app_support()
         # This app IS the podcast manager: the editor's release gate on
         # ``core.podcasts`` must not apply here, or the new-episode check
         # monitor and every podcast palette command silently die in a public
@@ -65,6 +71,14 @@ class PodcastsAppFrame(
         set_transition_announcement_policy(
             lambda: self._podcast_history.announce_dialog_transitions
         )
+        # F1 context help with Cast's authored purpose catalogue. The app
+        # shell already activated the shared engine (provider + dialog-contract
+        # hook + main-frame F1); this re-activation swaps in Cast's
+        # window-purpose resolver so the authored paragraphs lead every answer
+        # instead of the generic sentence (GATE-CAST-HELP, 2026-08-24).
+        from quill.ui.podcasts import context_help
+
+        context_help.activate()
         self._init_media_sleep_timer()
         self._build_menu_bar()
         self._build_main_panel()
@@ -73,6 +87,9 @@ class PodcastsAppFrame(
         self._register_media_sleep_timer_commands()
         self._register_adp_commands()
         self._register_unlock_code_commands()
+        from quill.ui.podcasts import problem_retries
+
+        self._register_app_support_commands(problem_retries)
         self._ensure_tray_icon(self._build_podcast_tray_menu, tooltip=_TITLE)
         self._register_media_keys({
             "play_pause": self.podcast_toggle_play_pause,
@@ -120,6 +137,15 @@ class PodcastsAppFrame(
         from quill.ui.sync_places_command import sync_at_launch
 
         wx.CallAfter(sync_at_launch, self)
+        # First run: three screens for somebody who has never used this before,
+        # and nothing at all for anybody who already has podcasts -- however
+        # they got there. The dialog has existed since 1.1 with no caller,
+        # which is exactly the failure Quill Radio's equivalent carries a
+        # docstring about; this is that caller. Scheduled last so it opens over
+        # a window everything else has already finished with.
+        from quill.ui.podcasts.first_run_dialog import maybe_run_first_run
+
+        wx.CallAfter(maybe_run_first_run, self)
 
     # -- main panel -------------------------------------------------------------
     #
@@ -734,7 +760,13 @@ class PodcastsAppFrame(
         episode = show.find_episode(last.episode_guid) if show is not None else None
         if show is None or episode is None:
             return
-        start_episode_playback(self._podcast_controller, self._podcast_library, show, episode)
+        start_episode_playback(
+            self._podcast_controller,
+            self._podcast_library,
+            show,
+            episode,
+            announce=self._announce,
+        )
 
     def _maybe_check_updates_on_startup(self) -> None:
         """Silent, throttled update check -- quiet unless a genuine update
@@ -760,7 +792,11 @@ class PodcastsAppFrame(
     def _open_podcasts_doc(self, stem: str) -> None:
         titles = {
             "userguide": "QUILL Cast User Guide",
-            "release-notes-1.1": "QUILL Cast Release Notes",
+            # 2.0 is the current release; Help offered 1.1, so the notes
+            # describing everything in this build were unreachable from
+            # inside it. 1.1 stays in the box for anybody upgrading.
+            "release-notes-2.0": "QUILL Cast Release Notes",
+            "release-notes-1.1": "QUILL Cast Release Notes (1.1)",
             "prd": "QUILL Cast Product Requirements",
         }
         self.open_app_document(

@@ -157,10 +157,17 @@ class RadioFavoritesStore:
         key = station.station_uuid or station.stream_url
         return self.find(key) is not None
 
-    def add(self, station: RadioStation, *, folder: str = "", custom: bool = False) -> None:
+    def add(self, station: RadioStation, *, folder: str = "", custom: bool = False) -> bool:
+        """Add *station*; False (and no change) when it is already here.
+
+        The return value is item 11.6 from the store's side: it answered
+        ``None`` either way, so callers announced "Added X to Favorites"
+        whether or not anything had been.
+        """
         if self.contains(station):
-            return
+            return False
         self.favorites.append(FavoriteStation(station=station, folder=folder, custom=custom))
+        return True
 
     def remove(self, key: str) -> bool:
         before = len(self.favorites)

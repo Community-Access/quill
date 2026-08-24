@@ -4,9 +4,102 @@ All notable changes to Quill Radio are documented here. See `docs/release-notes-
 
 ## [3.0.0] - 2026-08-15
 
-A major version, and the number is doing real work. Quill Radio 3.0 changes what the app *is*: for two years it was a very good way to play a station you could already name, and it is now somewhere you can wander. Browse Stations grew from thirteen branches to twenty-eight -- four of them axes the station directory always had and nobody had ever exposed -- podcasts arrived as a first-class thing you can walk into by country and by genre with no account anywhere, and the machinery underneath was rebuilt so that the next source costs an afternoon instead of a refactor. And the whole station directory now ships *inside* the app: browsing answers from your own disk, instantly, with or without the internet.
+### Undo, Recent Problems, quiet hours, and a setup that travels (2026-08-24)
 
-Three of the changes below are fixes to things that had been quietly wrong for months: a genre list that was losing 412 entries every time it loaded, a stream chooser that could prefer an unencrypted address over an encrypted one, and a station directory whose best browse axes were being used to fill two dropdowns. None of them announced themselves, and none would have been found by using the app. They were found by building something that talks to every one of these services and *checks* -- which is the other thing 3.0 added.
+Eight things Quill Radio owed a listener and was quietly not paying. Most are
+shared with QUILL Cast -- one store, one window, one wording -- so setting
+them here sets them there.
+
+- **Ctrl+Z takes back the last destructive thing you did.** Unsubscribe,
+  Remove All Downloads, Delete Recording, Mark All as Played -- one step, and
+  it says what came back before and after ("Undid Unsubscribe. Brought back
+  The Daily, with 412 episodes and 3 downloaded files"). The alternative we
+  deliberately did not take was a confirmation prompt on every verb: it costs
+  a keystroke and a sentence on all nine hundred occasions you meant it, and
+  it still cannot help the one time your cursor was on the wrong row.
+  **Deleted files genuinely come back** -- a file Quill Radio removes on your
+  behalf is moved aside rather than unlinked, so undoing a Delete Recording
+  restores the recording and not merely its name. It is one step, not a stack;
+  and where something cannot come back (a private feed's stored password is
+  deleted deliberately) the offer says so in the same breath. Every undoable
+  verb ends its announcement with "Ctrl+Z undoes this", because an undo you do
+  not know about is not an undo.
+
+- **Recent Problems (Help, Ctrl+Alt+Shift+P).** Feeds that failed, downloads
+  that died, streams that dropped and could not be reconnected -- each with
+  its reason, its time, and a Retry. Announcements are transient by design,
+  which is right until the sentence you needed went past while you were in
+  another window or asleep; that was the single place this app was not
+  screen-reader-first, because a sighted listener still had a list to scroll
+  back through. A feed failing on each of six checks reads as one row with a
+  fresh time, but a *different* reason gets its own row. Copy All is for a bug
+  report: it carries addresses and error messages, never passwords. Nothing
+  leaves this computer.
+
+- **Quiet hours (Help, Ctrl+Alt+Shift+Z).** A window -- 22:00 to 07:00 by
+  default, crossing midnight -- in which Quill Radio stops speaking *on its
+  own*: check ticks, new-episode notices. Feeds are still checked and
+  recordings still record; only the announcements wait. **Anything you press a
+  key for still answers**, which is the line the whole feature is built around
+  and why each announcement had to opt in by name rather than everything being
+  switched off at one point. Failures always speak. One override: reminders
+  can be let through. Shared with the rest of the family, so you set it once.
+
+- **Move your setup to another machine (Help, Ctrl+Alt+Shift+X / +N).** One
+  file carrying your favorite stations and their folders, your saved places,
+  your settings, your Go To order, your own servers, your scheduled recordings
+  and recording settings, your YouTube rows and channels, your bookmarks and
+  any keys you rebound. OPML moved your podcast subscriptions and nothing else
+  -- the part that was easy to standardise. The file is an ordinary ZIP with a
+  readable manifest over a **declared list** of files rather than a sweep of
+  the data folder, **passwords are not in it** (said before it acts), and
+  importing **replaces** rather than merges, which it also says first.
+
+- **Your place follows you into QUILL Cast, and back.** Both apps can play the
+  same subscribed episode; until now half an episode heard here reached Cast
+  at Cast's next launch, and nothing came back the other way. They now share
+  one place per episode on this machine, written **when you pause** as well as
+  when you stop -- Quill Radio never wrote a position on pause at all, so its
+  report was always from whenever you last pressed Stop. The **later** decision
+  wins, not the furthest through the episode: somebody who skipped to the outro
+  and went back to the middle has decided the middle is where they are. The
+  cross-app jump is explained out loud; resuming inside this app stays silent,
+  because that is ordinary and does not need narrating.
+
+- **Skip Silence (Playback, Ctrl+Shift+9), and a speed that sticks.** Two
+  things the engine could always do and Quill Radio never offered outside
+  podcasts. Skip Silence shortens long pauses in a recording, a YouTube row or
+  a podcast episode, applied to what is already playing with no interruption;
+  on live radio it says plainly that it will do nothing rather than appearing
+  to work. And Play Faster on a recording is now remembered for recordings, on
+  a YouTube row for YouTube rows -- per kind, because "1.5x for recordings"
+  means every recording.
+
+- **A dimmed menu item says why it is dimmed.** This app dims a great deal on
+  purpose -- Mark All as Played with nothing unheard is a *state* of a verb
+  that row owns, and an item that vanished would read as the feature coming
+  and going -- but a screen reader says "dimmed" and stops. Each now carries
+  its reason ("Remove All Downloads: nothing is downloaded for this show"), on
+  the item, on the Quick Action keys, and in the command palette instead of a
+  bare "(unavailable)".
+
+- **Add to Favorites stopped lying, and Download All learned to count.** The
+  favorites store answered the same thing whether or not it had added
+  anything, so adding a station you already had announced success over nothing
+  happening; it now names what you have and moves the cursor to it. Download
+  All queued the lot and said whatever the queue said next -- a folder of
+  forty chapters with thirty-nine already on disk reported the same as forty
+  new ones. It now says eligible / started / skipped, which required teaching
+  it for the first time how to tell whether a row was already here.
+
+### Find an episode inside one show (2026-08-24)
+
+**Find in this folder** (Ctrl+F) now matches a row's **description** as well
+as its name. On a podcast show's branch that is episode search: the episodes
+are the rows, and their show notes are searched with them -- which is what a
+show that numbers its episodes and puts the subject in the notes needs, and
+which a title-only search could never help with. The search stays scoped to
+the folder you are in and bounded, and it already said how many matched.
 
 ### The Station Catalog: the whole directory, on your computer
 

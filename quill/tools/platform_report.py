@@ -112,6 +112,16 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.radio_help_audit"),
     ),
     Gate(
+        "cast-help",
+        "GATE-CAST-HELP: every Cast surface and control answers F1",
+        (sys.executable, "-m", "quill.tools.cast_help_audit"),
+    ),
+    Gate(
+        "bulk-count",
+        "GATE-BULK-COUNT: a verb that touches many rows says how many",
+        (sys.executable, "-m", "quill.tools.bulk_count_audit"),
+    ),
+    Gate(
         "announce-gap",
         "user-visible outcomes are announced",
         (sys.executable, "-m", "quill.tools.check_announce_gap"),

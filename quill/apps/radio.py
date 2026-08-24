@@ -22,6 +22,7 @@ from quill.core.radio.radio_browser import RadioBrowserError
 from quill.core.sound_events import SoundEvent
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
+from quill.ui.app_support import ListeningAppSupportMixin
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_adp import AdpMixin
@@ -148,9 +149,11 @@ class RadioAppFrame(
     GlobalHotkeysMixin,
     KeymapEditorMixin,
     QuillinsAppMixin,
+    ListeningAppSupportMixin,
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
+        self._init_app_support()  # the shared slots: undo, problems, quiet, setup
         # This app IS the radio: the editor's release gate on ``core.radio``
         # (#1340) must not apply here, or the recording scheduler, wake task,
         # missed-recording reports, and every radio palette command silently
@@ -191,6 +194,9 @@ class RadioAppFrame(
         self._register_media_sleep_timer_commands()
         self._register_adp_commands()
         self._register_unlock_code_commands()
+        from quill.ui.radio import problem_retries
+
+        self._register_app_support_commands(problem_retries)
         self._ensure_tray_icon(self._build_radio_tray_menu, tooltip=_TITLE)
         self._register_media_keys({
             "play_pause": self._on_play_stop_button,
@@ -1348,6 +1354,11 @@ class RadioAppFrame(
         help_menu.Append(hotkeys_id, "&Global Hotkeys...\tCtrl+Alt+G")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_keymap_editor(), id=shortcuts_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_global_hotkeys_manager(), id=hotkeys_id)
+        # Undo, Recent Problems, Quiet Hours and Export / Import My Setup:
+        # four shared surfaces over shared files, wired once for both apps.
+        from quill.ui.support_menu import wire_support_surfaces
+
+        wire_support_surfaces(self, menu_bar, help_menu, wx)
         # The sheet sits beside the editor because they are the two halves of
         # one question: this one answers "what can I press?", the editor answers
         # "I want that somewhere else". Every menu item names its key since 3.0,
@@ -1459,8 +1470,10 @@ class RadioAppFrame(
         expand_id, collapse_id = wx.NewIdRef(), wx.NewIdRef()
         view_menu.Append(expand_id, "&Expand All Folders\tCtrl+Alt+E")
         view_menu.Append(collapse_id, "&Collapse All Folders\tCtrl+Alt+Shift+E")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(True), id=expand_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._expand_all_folders(False), id=collapse_id)
+        from quill.apps.radio_favorite_toggle import expand_all_folders as expand_all
+
+        self.frame.Bind(wx.EVT_MENU, lambda _e: expand_all(self, True), id=expand_id)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: expand_all(self, False), id=collapse_id)
         view_menu.AppendSeparator()
         downloads_id = wx.NewIdRef()
         view_menu.Append(downloads_id, "&Downloads...	Ctrl+Shift+J")
@@ -1725,18 +1738,6 @@ class RadioAppFrame(
         self._reload_favorites_tree()
         labels = dict(zip(_FAVORITES_SORT_VALUES, _FAVORITES_SORT_LABELS, strict=True))
         self._announce(f"Sorted favorites: {labels[value]}.")
-
-    def _expand_all_folders(self, expand: bool) -> None:
-        """View > Expand/Collapse All Folders on the favorites tree."""
-        tree = getattr(self, "_favorites_tree", None)
-        if tree is None:
-            return
-        if expand:
-            tree.ExpandAll()
-            self._announce("Expanded all folders.")
-        else:
-            tree.CollapseAll()
-            self._announce("Collapsed all folders.")
 
     def _set_text_size(self, scale: float) -> None:
         """View > Text Size: persist the font scale and apply it right away."""

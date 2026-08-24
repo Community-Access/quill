@@ -275,34 +275,18 @@ class CastWinampKeysMixin:
         return _clock(position) if length <= 0 else f"{_clock(position)} of {_clock(length)}"
 
     def _winamp_jump_to_time(self) -> None:
-        """Ctrl+J: type 90, 1:30, or 1:02:03 and land there."""
-        from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
-        from quill.ui.radio.winamp_keys import parse_time_to_ms
+        """Ctrl+J: type 90, 1:30, 62:03 or 1:02:03 and land there.
 
-        wx = self._winamp_wx()
-        controller = self._winamp_controller()
-        if controller is None or controller.state.show_id is None:
-            self._announce("Nothing is playing to jump within.")
+        One surface, not two (11.8): this used to raise its own bare text
+        prompt while the menu had none at all, so the two players asked the
+        question differently and accepted subtly different answers. Both now
+        open the same Go to Position dialog, over the same parser.
+        """
+        goto = getattr(self, "podcast_go_to_position", None)
+        if callable(goto):
+            goto()
             return
-        with wx.TextEntryDialog(
-            self._winamp_parent_window(),
-            "Jump to which time? Type seconds, or minutes and seconds like 1:30.",
-            "Jump to Time",
-        ) as dialog:
-            apply_modal_ids(dialog)
-            if show_modal_dialog(dialog, "Jump to Time", announce=self._announce) != wx.ID_OK:
-                return
-            raw = dialog.GetValue()
-        target = parse_time_to_ms(raw)
-        if target is None:
-            self._announce(f"{raw!r} is not a time.")
-            return
-        length = controller.length_ms()
-        if length > 0 and target > length:
-            self._announce("That is past the end of this episode.")
-            return
-        controller.seek(target)
-        self._announce(self._winamp_position_text())
+        self._announce("Nothing is playing to jump within.")
 
     def _winamp_jump_to_file(self) -> None:
         """J: type part of a title and land on the first episode that matches."""

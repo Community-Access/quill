@@ -68,6 +68,12 @@ msg.txt
 # because tests/unit/structure/test_repo_layout.py reads exact patterns only.
 /ear.md
 
+# Running work list for the current push (2026-08-23). Describes what is left
+# to build rather than being part of the build; untracked like the notes above,
+# and listed explicitly because tests/unit/structure/test_repo_layout.py reads
+# exact patterns only.
+/list.md
+
 # Local research lab for the chapter work (2026-08-20): the evaluation harness
 # plus 22 GB of vendored engines, episode audio and result sweeps. The findings
 # it produced are in quill/core/podcasts/; the lab itself is a workbench, not a

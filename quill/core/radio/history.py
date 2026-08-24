@@ -217,6 +217,18 @@ class RadioHistory:
     #: support -- else wx.media), "wx" (classic Windows Media, the escape
     #: hatch), or "mpv" (insist; falls back with an announcement if absent).
     playback_engine: str = "auto"
+    #: Skip Silence for bounded playback (11.7): long pauses in a recording,
+    #: a YouTube row or a podcast episode are shortened as it plays. The
+    #: engine has always been able to do this (audio_enhance's Smart Speed
+    #: clause); Quill Radio simply never passed the flag. No effect on live
+    #: radio, which plays at broadcast speed.
+    skip_silence: bool = False
+    #: Playback speed remembered per *kind* of bounded row (11.7). A podcast
+    #: is remembered per show (radio_listens) because shows have voices you
+    #: have an opinion about; a recording is not -- "1.5x for recordings"
+    #: means every recording. 1.0 = normal, and nothing is applied.
+    recording_speed: float = 1.0
+    youtube_speed: float = 1.0
     #: Volume Boost (mpv engine): amplify up to 50% past 100 for quiet
     #: streams. No effect on the wx.media engine, which caps at 100.
     volume_boost: bool = False
@@ -358,6 +370,9 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.confirm_browse_delete = bool(raw.get("confirm_browse_delete", True))
         history.explain_browse_delete = bool(raw.get("explain_browse_delete", True))
         history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
+        history.skip_silence = bool(raw.get("skip_silence", False))
+        history.recording_speed = _coerce_float(raw.get("recording_speed"), 1.0) or 1.0
+        history.youtube_speed = _coerce_float(raw.get("youtube_speed"), 1.0) or 1.0
         history.recordings_shuffle = bool(raw.get("recordings_shuffle", False))
         history.recordings_repeat = normalize_repeat_mode(raw.get("recordings_repeat"))
         history.search_sources_enabled = normalize_search_sources(raw.get("search_sources_enabled"))
@@ -514,6 +529,9 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "confirm_browse_delete": history.confirm_browse_delete,
             "explain_browse_delete": history.explain_browse_delete,
             "winamp_playback_keys": history.winamp_playback_keys,
+            "skip_silence": history.skip_silence,
+            "recording_speed": history.recording_speed,
+            "youtube_speed": history.youtube_speed,
             "recordings_shuffle": history.recordings_shuffle,
             "recordings_repeat": history.recordings_repeat,
             "search_sources_enabled": list(history.search_sources_enabled),

@@ -13,6 +13,7 @@ sentences the unit tests pin.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 
@@ -259,8 +260,22 @@ def download_all_episodes(dialog: Any, args: list[str]) -> None:
     if not rows:
         dialog._announce("The library has no episodes for this show yet. Open the show first.")
         return
+    from quill.core.podcasts.download_batch import plan_download_all
+    from quill.ui.radio import download_runner
+
     host = getattr(dialog, "_download_host", dialog)
-    download_command.download_book(host, rows, title=show.title or "Podcast")
+    title = show.title or "Podcast"
+    # Bounded and counted, the same way Quill Cast's Download All is (0.6):
+    # eligible / started / skipped / deferred, every clause with a number.
+    # The skip predicate is download_runner.already_have -- the piece item 2.1
+    # named as the actual work.
+    batch = plan_download_all(
+        rows,
+        already_have=lambda row: download_runner.already_have(host, row, work=title),
+    )
+    if batch.started:
+        download_command.download_book(host, list(batch.started), title=title)
+    dialog._announce(batch.sentence(title))
 
 
 def remove_all_downloads(dialog: Any, args: list[str]) -> None:
@@ -288,7 +303,29 @@ def remove_all_downloads(dialog: Any, args: list[str]) -> None:
     )
     if answer != wx.YES:
         return
-    dialog._announce(download_cleanup.remove_show_downloads(app_data_dir(), title))
+    from quill.ui import undo_last_ui
+
+    # The files are moved aside rather than unlinked, so Ctrl+Z brings the
+    # bytes back and not merely the intent to fetch them again (11.3).
+    held: dict[Path, Path] = {}
+
+    def _take(paths: list[Path]) -> int:
+        held.update(undo_last_ui.hold_or_delete(paths))
+        return len(held)
+
+    spoken = download_cleanup.remove_show_downloads(app_data_dir(), title, take=_take)
+
+    def _undo() -> None:
+        undo_last_ui.restore(held)
+
+    undo_last_ui.remember(
+        "Remove All Downloads",
+        title or "this show",
+        f"{len(held)} downloaded file(s)",
+        _undo,
+        dispose=lambda: undo_last_ui.discard(held),
+    )
+    dialog._announce(undo_last_ui.offer(spoken))
 
 
 def add_podcast_by_url_prompt(dialog: Any) -> None:

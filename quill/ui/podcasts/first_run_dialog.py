@@ -27,6 +27,7 @@ from quill.core.podcasts.onboarding import (
     SCREEN_BODIES,
     SCREEN_TITLES,
     OnboardingState,
+    needs_first_run,
 )
 from quill.ui.dialog_contract import apply_modal_ids
 
@@ -149,3 +150,62 @@ class FirstRunDialog:
             return self._state
         finally:
             self._dialog.Destroy()
+
+
+def maybe_run_first_run(host: Any) -> bool:
+    """Run the flow at launch if this listener needs it. True when it ran.
+
+    **This function is the whole point of the fix.** The dialog above has
+    existed since 1.1 with no caller at all -- written, tested, and never once
+    shown -- which Quill Radio's equivalent carried a docstring about, as the
+    failure it existed not to repeat. It had gone on being true.
+
+    Called deferred (``wx.CallAfter``) once the window is up. Never raises: a
+    welcome that can take the app down on its very first launch would be the
+    worst possible first impression, and there is nothing here worth failing a
+    launch over.
+
+    **It refuses over a window that is not on screen.** The launch path shows
+    the main window and *then* enters the loop this deferred call runs in, so
+    a real launch always has a frame up. Anywhere else -- a frame built and
+    never shown, which is what a test harness does -- a modal would be a
+    dialog with nothing behind it and nobody able to answer it, and
+    ``ShowModal`` would sit there forever. A welcome nobody can see is not a
+    welcome.
+
+    **And it refuses for somebody who already has podcasts**, however they got
+    there -- an imported OPML, a restored `.quillsetup`, an upgrade. Explaining
+    how to add a first podcast to somebody with two hundred is a way of saying
+    nobody checked.
+    """
+    import logging
+
+    try:
+        frame = getattr(host, "frame", None)
+        is_shown = getattr(frame, "IsShown", None)
+        if frame is None or (callable(is_shown) and not is_shown()):
+            return False
+        history = getattr(host, "_podcast_history", None)
+        state = getattr(history, "onboarding", None)
+        if state is None:
+            return False
+        shows = getattr(getattr(host, "_podcast_library", None), "shows", [])
+        if not needs_first_run(state, has_shows=bool(shows)):
+            return False
+
+        add = getattr(host, "_podcast_open_add_dialog", None)
+        dialog = FirstRunDialog(
+            frame,
+            state=state,
+            announce=getattr(host, "_announce", None),
+            show_modal_dialog=getattr(host, "_show_modal_dialog", None),
+            on_add_podcast=(lambda: add()) if callable(add) else None,
+        )
+        dialog.show()
+        saver = getattr(host, "_save_podcast_history", None)
+        if callable(saver):
+            saver()
+        return True
+    except Exception:  # noqa: BLE001 - a welcome must never break a launch
+        logging.getLogger(__name__).exception("first-run flow failed")
+        return False

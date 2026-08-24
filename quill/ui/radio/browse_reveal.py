@@ -156,3 +156,38 @@ def on_children_added(dialog: Any, node: Any) -> None:
         child, cookie = tree.GetNextChild(node, cookie)
     for folder in folders:
         tree.Expand(folder)  # triggers that folder's own (local) load
+
+
+def reveal_favorite(dialog: Any, name: str) -> bool:
+    """Land the cursor on the Favorites row called *name*. True when it did.
+
+    The other half of duplicate detection (11.6): telling somebody they
+    already have a thing, without going to it, leaves them exactly where they
+    were -- which is what made them add it twice. The Favorites branch is
+    expanded (a local read; favorites never touch the network) and walked for
+    a row whose label starts with the name, since labels carry counts and
+    badges after it.
+
+    False when there is no Favorites branch on screen, or no matching row --
+    the caller then says the honest "Nothing was added" instead.
+    """
+    tree = getattr(dialog, "_tree", None)
+    node = getattr(dialog, "_favorites_root", None)
+    if tree is None or node is None or not node.IsOk():
+        return False
+    wanted = (name or "").strip()
+    if not wanted:
+        return False
+    try:
+        tree.Expand(node)
+        child, cookie = tree.GetFirstChild(node)
+        while child.IsOk():
+            label = tree.GetItemText(child)
+            if label == wanted or label.startswith(f"{wanted}  ("):
+                tree.SelectItem(child)
+                tree.EnsureVisible(child)
+                return True
+            child, cookie = tree.GetNextChild(node, cookie)
+    except Exception:  # noqa: BLE001 - a reveal that fails must not eat the verb
+        return False
+    return False

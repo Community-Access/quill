@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio -- Product Requirements</title>
   <style>
@@ -4728,6 +4728,262 @@ ship an app in which no window answers F1.</li>
 <code>python -m quill.tools.radio_help_audit --write</code> and review
 the diff; the tool run also prints title violations and missing sites
 directly.</p>
+<h2 id="15-what-both-listening-apps-owe-a-listener-2026-08-24">15. What
+both listening apps owe a listener (2026-08-24)</h2>
+<p>Eleven requirements that arrived together because most of them are
+<strong>one answer shared between Quill Radio and QUILL Cast</strong>
+rather than two answers that happen to agree today. Where a section
+below says “shared”, the store, the module and the wording are literally
+one thing, and a change to either app changes both.</p>
+<h3 id="151-nothing-is-a-dead-end">15.1 Nothing is a dead end</h3>
+<p><strong>Requirement.</strong> A command that cannot run says
+<em>why</em>, at the moment somebody asks for it.</p>
+<p>This family dims a great deal on purpose: Mark All as Played with
+nothing unheard is a <strong>state of a verb the row owns</strong>,
+which is exactly why it dims rather than vanishing – a verb that comes
+and goes teaches nobody anything. But a screen reader says “dimmed” and
+stops, and the item itself said nothing about what would un-dim it. That
+is a dead end you cannot see around.</p>
+<p>Every dimmed action now carries a <code>reason</code>: one lower-case
+clause naming the condition, with a count wherever a count makes it
+concrete.</p>
+<ul>
+<li><strong>Where it lives.</strong>
+<code>quill/core/dimmed_reason.py</code> – shared vocabulary, so the two
+apps say the same thing. <code>RowAction</code> (Radio) and
+<code>ResolvedAction</code> (Cast) carry the reason beside the label, in
+the same wx-free table.</li>
+<li><strong>Where it is spent.</strong> The context menu’s help string;
+the Quick Action direct keys (Ctrl+1..Ctrl+9), which used to answer
+“that Quick Action is not available”; and the command palette, through
+the registry’s availability probe
+(<code>quill/ui/app_availability.py</code>) that every shell app now
+installs.</li>
+<li><strong>Wording.</strong> Lower case, no trailing stop
+(<code>explain()</code> supplies both), state the condition rather than
+the fix, and prefer a count to an adjective: “nothing to download, all
+40 are already here” answers a question “nothing to download” leaves
+open.</li>
+<li><strong>Enforced.</strong>
+<code>tests/unit/ui/test_dimmed_action_reasons.py</code>: an action
+built with a conditional <code>enabled=</code> and no
+<code>reason</code> fails the build.</li>
+</ul>
+<h3
+id="152-one-step-of-undo-in-preference-to-a-prompt-on-every-verb">15.2
+One step of undo, in preference to a prompt on every verb</h3>
+<p><strong>Requirement.</strong> The last destructive action can be
+taken back, once, and the offer is spoken.</p>
+<p>A confirmation prompt is the cheap answer and a poor one: it costs a
+keystroke and a sentence <em>every single time</em>, including the nine
+hundred times the listener meant it, and it still cannot help the one
+time the wrong row was focused. One step of undo is cheaper than a
+prompt on every verb and kinder than either.</p>
+<ul>
+<li><strong>Scope.</strong> Unsubscribe, Remove All Episodes, Remove All
+Downloads, Mark All as Played, Delete Recording – in both apps.</li>
+<li><strong>One slot, not a stack</strong>
+(<code>quill/core/undo_last.py</code>). Remembering displaces; taking
+empties. A listener who has to remember how many times to press Ctrl+Z
+has been given a puzzle, not an undo.</li>
+<li><strong>Deleted files are moved aside, not unlinked.</strong>
+<code>hold_files</code> puts them in a holding folder that only ever
+contains the one undoable step; the slot’s disposer empties it when the
+step is displaced. Ctrl+Z restores the bytes, not the intention to fetch
+them again. No new dependency and no recycle-bin round trip.</li>
+<li><strong>Retention deletions are caught too.</strong>
+<code>capturing_deletes()</code> installs a hook on
+<code>core/podcasts/retention.py</code> for the duration of one verb, so
+delete-after-play, keep-last-N and the storage cap are held with the
+rest.</li>
+<li><strong>It says what it cannot bring back.</strong> A private feed’s
+stored password is deleted by design when you unsubscribe; the offer
+says so in the same breath.</li>
+<li><strong>QUILL itself never activates.</strong> Its Ctrl+Z is the
+editor’s, and <code>hold_or_delete</code> deletes outright without a
+slot – so no bytes are ever held aside for a slot nobody can reach.</li>
+<li><strong>The offer is spoken.</strong> Every undoable verb ends its
+announcement with “Ctrl+Z undoes this”: an undo you do not know about is
+not an undo.</li>
+</ul>
+<h3 id="153-a-verb-that-touches-many-rows-says-how-many">15.3 A verb
+that touches many rows says how many</h3>
+<p><strong>Requirement.</strong> Every action on more than one row ends
+by announcing exact eligible / done / skipped counts, with the skipped
+<em>reason</em> beside the number.</p>
+<p>“Removed downloads” tells a listener who cannot see the list neither
+how many files went nor whether the ones it could not touch were
+mentioned.</p>
+<ul>
+<li><code>quill/core/counted.py</code> is the shared vocabulary; nothing
+eligible is a sentence of its own that says <em>why</em>, and failures
+are never folded into skipped (a file that could not be deleted and a
+file deliberately kept are different news).</li>
+<li><strong>GATE-BULK-COUNT</strong>
+(<code>quill/tools/bulk_count_audit.py</code>) covers every bulk-named
+function in both apps, each classified <code>counted</code> /
+<code>counts-elsewhere</code> / <code>no-announce</code>; a new one that
+announces no count fails the build. Silent truncation is a failure too:
+a verb that caps its work says what it deferred.</li>
+</ul>
+<h3 id="154-a-failure-that-was-spoken-once-still-exists">15.4 A failure
+that was spoken once still exists</h3>
+<p><strong>Requirement.</strong> Feeds, downloads, recordings and
+streams that fail are written down, with reason, time and a way to try
+again.</p>
+<p>Announcements are transient by design, which is right until the
+sentence you needed went past while you were in another window. That was
+the one place this family was <strong>not</strong> screen-reader-first:
+a sighted listener still had a list to scroll back through and a
+listener who missed the speech had nothing at all.</p>
+<ul>
+<li><code>quill/core/problem_log.py</code>: bounded (200), newest-first,
+local, and shared by both apps. Consecutive identical failures collapse
+onto one row’s timestamp, so a feed checked every fifteen minutes cannot
+fill the window by itself – but a <em>different</em> reason is a
+different fact and gets its own row.</li>
+<li><strong>Retry is registered by kind, not stored as a
+closure</strong>, because the log outlives the session that wrote it: a
+row from last Tuesday must be retryable by today’s handler. A kind
+nothing claims simply has no Retry, and the button says so rather than
+pretending.</li>
+<li><strong>Never carries a credential.</strong> Copy All is meant for a
+bug report.</li>
+</ul>
+<h3 id="155-quiet-hours-and-the-line-they-must-not-cross">15.5 Quiet
+hours, and the line they must not cross</h3>
+<p><strong>Requirement.</strong> One window, shared by both apps, in
+which the apps stop speaking <em>on their own</em>.</p>
+<p><strong>Unprompted is the whole distinction, and it is a hard
+rule.</strong> Quiet hours must never silence the answer to a keypress:
+a listener who presses Play at three in the morning is entitled to hear
+what is playing, because they asked. What is held back is speech nobody
+asked for – check ticks, new-episode notices, download notices,
+reminders. This is why the implementation is a small vocabulary of
+<em>kinds</em> each call site opts into
+(<code>quill/core/quiet_hours.py</code>) rather than a gate around
+<code>_announce</code>: a gate would silence replies as well, and no
+amount of care at the call sites would make that safe.</p>
+<ul>
+<li><code>Kind.URGENT</code> is never held back. A recording that failed
+at 3 a.m. is exactly the thing somebody set an alarm-clock radio for,
+and an app that swallowed it to be polite would have chosen the wrong
+side.</li>
+<li>Windows wrap past midnight (22:00-07:00 is the ordinary case), and a
+zero-length window means <em>nothing</em> rather than everything.</li>
+<li>One explicit override: reminders may be let through, since an alarm
+clock is a reason to set one.</li>
+<li>The readout says what the setting does <strong>not</strong> do –
+feeds are still checked, downloads still run – because “quiet hours”
+invites exactly those two misreadings.</li>
+<li>This is most of the machinery the Reminders feature needs for Do Not
+Disturb.</li>
+</ul>
+<h3 id="156-the-setup-is-portable-and-says-what-it-is-not-carrying">15.6
+The setup is portable, and says what it is not carrying</h3>
+<p><strong>Requirement.</strong> One file carries everything this
+machine has been taught, out and back in.</p>
+<p>OPML moves subscriptions and nothing else – which is to say it moves
+the part that was easy to standardise and leaves the part somebody
+actually built.</p>
+<ul>
+<li>A <code>.quillsetup</code> is an ordinary ZIP with a readable
+manifest, over a <strong>declared inventory</strong>
+(<code>quill/core/setup_transfer.py</code>) of 17 stores. Not a sweep of
+the data folder: a sweep would eventually carry a cache, a lock file, or
+a credential nobody meant to move.</li>
+<li><strong>No secrets, ever</strong>, and the report says so rather
+than leaving somebody to discover it. A test enforces that no secret
+store is in the inventory, and import refuses to write any file the
+inventory does not name – a setup file is not a way to drop an arbitrary
+file into somebody’s data folder.</li>
+<li><strong>Import replaces, and says so first.</strong> Merging two
+libraries is a different feature with different questions; pretending
+otherwise would be the expensive kind of kindness.</li>
+</ul>
+<h3 id="157-a-place-is-a-place-whichever-app-you-were-in">15.7 A place
+is a place, whichever app you were in</h3>
+<p><strong>Requirement.</strong> An episode started in one app picks up
+in the other, on this machine, at the position the listener last decided
+on.</p>
+<p>Listening Places already defined <em>what a place is</em> between
+devices. What was missing was one shared local store and the write on
+pause – Radio never wrote a position when you paused at all, so its
+handoff to Cast reported wherever you had last pressed Stop.</p>
+<ul>
+<li><strong>Last write wins, not furthest wins</strong> – the rule
+<code>position_sync</code> already states for cross-device sync, for the
+same reason. Somebody who skipped to the outro to check something and
+went back to the middle has <em>decided</em> the middle is where they
+are; an app that dragged them forward again would be overruling them
+with arithmetic.</li>
+<li><strong>A finish is sticky.</strong> “Finished” and “at 0:00” are
+the same stored state, so reading a newer zero as “start again” would
+undo a completion every time.</li>
+<li><strong>The jump is explained.</strong> A cross-app resume says
+which app the place came from; a jump nobody explained is
+indistinguishable from a bug. Resuming where you left off in the app you
+left off in stays silent, because that is the ordinary behaviour and
+does not need narrating.</li>
+</ul>
+<h3 id="158-adding-something-you-already-have">15.8 Adding something you
+already have</h3>
+<p><strong>Requirement.</strong> Say so, name it, and move to the row
+that already exists.</p>
+<p>The reason anybody adds a thing twice is that they could not find the
+first one, so a refusal that leaves the cursor where it was answers the
+wrong question. The root cause on the Radio side was a store that
+answered <code>None</code> whether or not it had added anything, so
+every caller announced success over nothing happening.</p>
+<h3 id="159-find-an-episode-inside-one-show">15.9 Find an episode inside
+one show</h3>
+<p><strong>Requirement.</strong> Search the episodes of the show you are
+on, over <strong>titles and descriptions</strong>, composing with the
+state filter and the sort, announcing the match count on submit.</p>
+<p>Between “filter by state” and a cross-library search there was
+nothing, so <em>which episode of this show was the one about the
+harbour</em> had no answer but arrowing two hundred rows. Descriptions
+are in scope because a show that numbers its episodes and puts the
+subject in the notes – most interview podcasts – is precisely where a
+title-only search finds nothing.</p>
+<ul>
+<li><strong>It narrows, it does not replace.</strong> The query is
+applied inside the filter step, after the state filter and before the
+sort, so all three compose.</li>
+<li><strong>Typing is silent; Enter counts.</strong> A per-keystroke
+announcement talks over the typing. No matches says what was searched
+and that a filter above may be the reason, rather than announcing a bare
+zero.</li>
+</ul>
+<h3 id="1510-timeline-verbs-mean-the-same-thing-in-both-players">15.10
+Timeline verbs mean the same thing in both players</h3>
+<p><strong>Requirement.</strong> One parser and one dialog for “go to
+this position”, and one key for Skip Silence.</p>
+<ul>
+<li><code>1:02:03</code>, <code>62:03</code> and <code>3723</code> are
+the same moment in both apps. They were not: two parsers disagreed, and
+Cast’s jump existed only on a Winamp letter key – which means it existed
+for whoever had those keys on and knew about them, and for nobody
+else.</li>
+<li>Skip Silence is a transport verb in both, on the same key, because
+the shared transport table’s contract is that a verb means the same
+thing in each player. Cast had it as a per-show setting with no way to
+reach it while listening, which is the only moment anybody forms an
+opinion about it.</li>
+</ul>
+<h3 id="1511-every-surface-says-what-it-is-for">15.11 Every surface says
+what it is for</h3>
+<p><strong>Requirement.</strong> F1 in QUILL Cast opens with an authored
+paragraph about the window, exactly as Quill Radio’s has since 3.0 – and
+a new window cannot ship without one.</p>
+<p>The family-wide F1 engine had worked everywhere since 2026-08-23 and
+only Radio had authored purposes, so every Cast window answered with the
+generic sentence: true, and useless.</p>
+<p><strong>GATE-CAST-HELP</strong>
+(<code>quill/tools/cast_help_audit.py</code>) mirrors GATE-RADIO-HELP
+over the podcast UI. The scanner and snapshot rules both gates share now
+live in <code>quill/tools/help_audit.py</code>, so the two cannot
+drift.</p>
 </main>
 </body>
 </html>

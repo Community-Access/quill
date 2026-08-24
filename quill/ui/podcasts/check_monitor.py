@@ -155,6 +155,13 @@ class PodcastCheckMonitor:
         event = self._policy.tick_sound_event
         if not event:
             return
+        # Quiet hours (11.9): the check still runs -- feeds are still read and
+        # downloads still start -- but the heartbeat that says so stays silent
+        # between the listener's chosen hours.
+        from quill.ui.quiet_hours_ui import should_tick
+
+        if not should_tick():
+            return
         poster = self._post_tick
         if poster is None:
             from quill.ui.sound_manager import post_sound

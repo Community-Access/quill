@@ -23,18 +23,31 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from quill.core import dimmed_reason
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.quick_actions import DIRECT_KEY_COUNT
 
 
 @dataclass(slots=True)
 class ResolvedAction:
-    """One action, resolved against the thing it would act on right now."""
+    """One action, resolved against the thing it would act on right now.
+
+    ``reason`` is why it is dimmed, when it is -- one lower-case clause from
+    :mod:`quill.core.dimmed_reason`, which the menu's help string and the
+    Quick Action direct keys both spend. A dimmed action with no reason fails
+    ``tests/unit/ui/test_dimmed_action_reasons.py``: "not available" is not
+    an answer.
+    """
 
     id: str
     label: str
     enabled: bool
     run: Callable[[], None]
+    reason: str = ""
+
+    def unavailable_sentence(self) -> str:
+        """What to say when this action is asked for and cannot run."""
+        return dimmed_reason.explain(self.label, self.reason)
 
 
 def _inbox_menu_label(dialog: object, show: object) -> str:
@@ -62,9 +75,14 @@ def episode_actions(
     )
 
     def action(
-        action_id: str, label: str, run: Callable[[], None], *, enabled: bool = True
+        action_id: str,
+        label: str,
+        run: Callable[[], None],
+        *,
+        enabled: bool = True,
+        reason: str = "",
     ) -> tuple[str, ResolvedAction]:
-        return action_id, ResolvedAction(action_id, label, enabled, run)
+        return action_id, ResolvedAction(action_id, label, enabled, run, reason)
 
     from quill.core.podcasts.chapter_sources import episode_has_possible_chapters
 
@@ -91,6 +109,11 @@ def episode_actions(
             "&Download Episode",
             lambda: dialog._on_download(None),
             enabled=not downloaded and not in_flight,
+            reason=(
+                dimmed_reason.already_downloaded()
+                if downloaded
+                else dimmed_reason.download_in_flight()
+            ),
         ),
         action(
             "toggle_played",
@@ -102,6 +125,7 @@ def episode_actions(
             "&View Show Notes...",
             lambda: dialog._on_view_show_notes(episode),
             enabled=bool(episode.description),
+            reason=dimmed_reason.no_show_notes(),
         ),
         action(
             "episode_notes",
@@ -113,6 +137,7 @@ def episode_actions(
             "C&hapters...",
             lambda: dialog._on_chapters_click(None),
             enabled=episode_has_possible_chapters(episode),
+            reason=dimmed_reason.no_chapters(),
         ),
         action(
             "analyze_chapters",
@@ -122,6 +147,7 @@ def episode_actions(
             # and offering it for something not downloaded would be a menu item
             # that exists to explain why it cannot run.
             enabled=downloaded,
+            reason=dimmed_reason.not_downloaded("analyse"),
         ),
         action(
             "add_to_playlist",
@@ -144,18 +170,21 @@ def episode_actions(
             "Sho&w in File Explorer",
             lambda: dialog._on_show_episode_in_explorer(episode),
             enabled=downloaded,
+            reason=dimmed_reason.not_downloaded("show"),
         ),
         action(
             "file_to_inbox",
             "F&ile to Inbox Folder...",
             lambda: dialog._on_file_to_inbox_folder(show, episode),
             enabled=show.route_to_inbox,
+            reason=dimmed_reason.not_routed_to_inbox(),
         ),
         action(
             "remove_download",
             "&Remove Downloaded Copy",
             lambda: dialog._on_remove_download(None),
             enabled=downloaded,
+            reason=dimmed_reason.not_downloaded("remove"),
         ),
         action("rename", "Rena&me...\tF2", lambda: dialog._on_rename_episode(episode)),
     ])
@@ -165,9 +194,14 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
     """Every podcast action, keyed by id, resolved for this show."""
 
     def action(
-        action_id: str, label: str, run: Callable[[], None], *, enabled: bool = True
+        action_id: str,
+        label: str,
+        run: Callable[[], None],
+        *,
+        enabled: bool = True,
+        reason: str = "",
     ) -> tuple[str, ResolvedAction]:
-        return action_id, ResolvedAction(action_id, label, enabled, run)
+        return action_id, ResolvedAction(action_id, label, enabled, run, reason)
 
     return dict([
         action(
@@ -180,6 +214,9 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
             "&Refresh Feed",
             lambda: dialog._on_refresh_feed(show),
             enabled=bool(show.feed_url) and not dialog._safe_mode,
+            reason=(
+                dimmed_reason.no_feed_address() if not show.feed_url else dimmed_reason.safe_mode()
+            ),
         ),
         action(
             "toggle_favorite",
@@ -215,6 +252,7 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
             # nothing unheard its state is "done", and a vanishing item would
             # read as the feature coming and going.
             enabled=any(not e.played for e in show.episodes),
+            reason=dimmed_reason.nothing_unheard(len(show.episodes)),
         ),
         action(
             "download_all", "Download &All Episodes", lambda: dialog._on_download_all_episodes(show)
@@ -229,6 +267,7 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
             "Copy Podcast &Link",
             lambda: dialog._on_copy_show_link(show),
             enabled=bool(show.feed_url),
+            reason=dimmed_reason.no_feed_address(),
         ),
         action(
             "move_to_folder", "&Move to Folder...", lambda: dialog._on_move_show_to_folder(show)
@@ -238,6 +277,7 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
             "Feed Cre&dentials...",
             lambda: dialog._on_feed_credentials(show),
             enabled=bool(show.feed_url),
+            reason=dimmed_reason.no_feed_address(),
         ),
         action("rename", "Rena&me...\tF2", lambda: dialog._on_rename_show(show)),
         action(
@@ -276,17 +316,35 @@ def build_menu(dialog: object, menu: object, actions: list[ResolvedAction]) -> N
             label = f"{label}\tCtrl+{index + 1}"
         item = menu.Append(wx.ID_ANY, label)
         item.Enable(resolved.enabled)
+        if not resolved.enabled:
+            # Why it is dimmed, on the item itself: the status bar shows this
+            # and the readers that voice menu help speak it, so a greyed row
+            # stops being a dead end (11.2).
+            try:
+                item.SetHelp(resolved.unavailable_sentence())
+            except Exception:  # noqa: BLE001 - help text is best-effort
+                pass
         menu.Bind(wx.EVT_MENU, lambda _e, r=resolved: r.run(), item)
+
+
+def direct_key_action(actions: list[ResolvedAction], number: int) -> ResolvedAction | None:
+    """The *number*-th action (1-based), or None when there is none there."""
+    index = number - 1
+    if not (0 <= index < len(actions)):
+        return None
+    return actions[index]
 
 
 def run_direct_key(actions: list[ResolvedAction], number: int) -> bool:
     """Run the *number*-th action (1-based); False when there is none there
-    or it is currently unavailable."""
-    index = number - 1
-    if not (0 <= index < len(actions)):
-        return False
-    resolved = actions[index]
-    if not resolved.enabled:
+    or it is currently unavailable.
+
+    Callers that want to *say why* it could not run should use
+    :func:`direct_key_action` and read its ``unavailable_sentence()`` --
+    "that Quick Action is not available" is the dead end 11.2 is about.
+    """
+    resolved = direct_key_action(actions, number)
+    if resolved is None or not resolved.enabled:
         return False
     resolved.run()
     return True

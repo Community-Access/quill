@@ -352,6 +352,33 @@ class PodcastPlayerController(PodcastSpotifyEngineMixin, PodcastPlayerVolumeMixi
         self._set_state(PodcastPlayerState.LOADING)
         self._start_load(source, start_ms=current_position)
 
+    def smart_speed_enabled(self) -> bool:
+        """Whether long pauses are being shortened as this plays."""
+        return self._smart_speed_enabled
+
+    def set_smart_speed(self, enabled: bool) -> bool:
+        """Turn Skip Silence on or off, keeping your place. Returns the state.
+
+        The transport's Skip Silence (Ctrl+Shift+9, the same key Quill Radio
+        uses) lands here. Like the channel mode, it means restarting the
+        ffmpeg relay -- there is no way to alter a running one -- so it
+        reloads at the current position rather than from the top. Somebody
+        forty minutes in who turns it on must not be sent back to the
+        beginning to get it.
+        """
+        wanted = bool(enabled)
+        if wanted == self._smart_speed_enabled:
+            return wanted
+        self.set_enhancement(
+            bass_db=self._eq_bass_db,
+            mid_db=self._eq_mid_db,
+            treble_db=self._eq_treble_db,
+            compressor_enabled=self._compressor_enabled,
+            smart_speed_enabled=wanted,
+            channel_mode=self._channel_mode,
+        )
+        return wanted
+
     def channel_mode(self) -> str:
         """Where the audio is currently coming out (stereo/mono/left/right)."""
         return self._channel_mode

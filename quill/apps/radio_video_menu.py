@@ -159,6 +159,12 @@ def build_video_playback_items(
     goto_pos_id = wx.NewIdRef()
     playback_menu.Append(goto_pos_id, "&Go to Position...\tCtrl+Alt+J")
     frame.Bind(wx.EVT_MENU, lambda _e: video.go_to_position(app), id=goto_pos_id)
+    # Skip Silence (11.7): the engine could always shorten long pauses --
+    # it is the same filter Quill Cast passes -- and Quill Radio never
+    # offered it. Beside the speed verbs, because that is what it is for.
+    skip_silence_id = wx.NewIdRef()
+    playback_menu.Append(skip_silence_id, "S&kip Silence	Ctrl+Shift+9")
+    frame.Bind(wx.EVT_MENU, lambda _e: video.toggle_skip_silence(app), id=skip_silence_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video.speed_up(app), id=faster_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video.slow_down(app), id=slower_id)
     frame.Bind(wx.EVT_MENU, lambda _e: video.reset_speed(app), id=normal_id)
@@ -184,6 +190,7 @@ def build_video_playback_items(
         normal_id,
         where_id,
         goto_pos_id,
+        skip_silence_id,
     )
 
 

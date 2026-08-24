@@ -31,7 +31,6 @@ from pathlib import Path
 
 from quill.core.paths import app_data_dir
 from quill.core.podcasts import expiration, quick_actions, retention, stats
-from quill.core.podcasts.models import SPEED_MAX, SPEED_MIN, clamp_speed
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
 #: Speed Up / Speed Down step. Matches Earshot, and is small enough that
@@ -228,51 +227,39 @@ class PodcastSessionMixin:
     def podcast_stop_after_episode(self) -> bool:
         return bool(getattr(self, "_podcast_stop_after_episode", False))
 
-    def _podcast_speed_context(self):
-        """``(show, effective settings)`` the speed commands act on: the
-        playing show's own override if something is playing, otherwise the
-        shared default -- the same resolution Sound Enhancements uses."""
-        controller = getattr(self, "_podcast_controller", None)
-        show_id = controller.state.show_id if controller is not None else None
-        show = self._podcast_library.find_show(show_id) if show_id else None
-        settings = (
-            self._podcast_library.effective_settings(show)
-            if show is not None
-            else self._podcast_library.settings
-        )
-        return show, settings
+    def podcast_toggle_skip_silence(self) -> None:
+        """Skip Silence on or off for what is playing (Ctrl+Shift+9)."""
+        from quill.ui.podcasts.skip_silence import toggle_skip_silence
 
-    def _podcast_apply_speed(self, speed: float) -> None:
-        show, _settings = self._podcast_speed_context()
-        resolved = clamp_speed(speed)
-        if show is not None:
-            self._podcast_library.apply_show_override(show, speed=resolved)
-            target = show.title
-        else:
-            self._podcast_library.settings.speed = resolved
-            target = "every podcast"
-        self._save_podcast_library()
-        controller = getattr(self, "_podcast_controller", None)
-        if controller is not None and controller.state.show_id is not None:
-            controller.set_rate(resolved)
-        self._announce(f"Speed {resolved:g}x for {target}")
+        toggle_skip_silence(self)
+
+    # Speed and Skip Silence share one scope rule (the playing show, else the
+    # shared default), so they live together in quill/ui/podcasts/speed.py.
+    def _podcast_speed_context(self):
+        from quill.ui.podcasts import speed
+
+        return speed.speed_context(self)
 
     def podcast_speed_up(self) -> None:
-        _show, settings = self._podcast_speed_context()
-        if settings.speed >= SPEED_MAX:
-            self._announce(f"Already at the fastest speed, {SPEED_MAX:g}x")
-            return
-        self._podcast_apply_speed(settings.speed + SPEED_STEP)
+        from quill.ui.podcasts import speed
+
+        speed.speed_up(self)
 
     def podcast_speed_down(self) -> None:
-        _show, settings = self._podcast_speed_context()
-        if settings.speed <= SPEED_MIN:
-            self._announce(f"Already at the slowest speed, {SPEED_MIN:g}x")
-            return
-        self._podcast_apply_speed(settings.speed - SPEED_STEP)
+        from quill.ui.podcasts import speed
+
+        speed.speed_down(self)
 
     def podcast_speed_reset(self) -> None:
-        self._podcast_apply_speed(1.0)
+        from quill.ui.podcasts import speed
+
+        speed.speed_reset(self)
+
+    def podcast_go_to_position(self) -> None:
+        """Type a position and land there -- 1:02:03, 62:03, or 3723 (11.8)."""
+        from quill.ui.podcasts.go_to_position import go_to_position
+
+        go_to_position(self)
 
     def podcast_current_show_unheard(self) -> int:
         """Unplayed count of the playing show; in-memory (EVT_UPDATE_UI-safe)."""
@@ -307,10 +294,15 @@ class PodcastSessionMixin:
             announce=self._announce,
         ):
             return
-        for episode in unplayed:
-            from quill.core.podcasts.position_sync import mark_played
+        from quill.core.podcasts import retention
+        from quill.core.podcasts.position_sync import mark_played
 
+        library = self._podcast_library
+        for episode in unplayed:
             mark_played(episode)
+            # Same rule as finishing one by ear: marking it played is saying
+            # you are done with it, however you say it.
+            retention.on_episode_played(library, show, episode)
         self._save_podcast_library()
         manager = getattr(self, "_podcast_manager_dialog", None)
         if manager is not None:

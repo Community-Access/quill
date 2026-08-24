@@ -56,6 +56,7 @@ from quill.ui.radio.playback_state import (
     RadioPlaybackState,
     RadioPlayerState,
 )
+from quill.ui.radio.player_tracks import PlayerTracksMixin
 from quill.ui.radio.youtube_playback import begin_youtube_play, consent_granted, is_youtube_station
 
 if TYPE_CHECKING:
@@ -116,8 +117,12 @@ _STATE_SOUNDS: dict[RadioPlayerState, str] = {
 }
 
 
-class RadioPlayerController:
-    """Play/pause/stop/mute one internet-radio stream at a time."""
+class RadioPlayerController(PlayerTracksMixin):
+    """Play/pause/stop/mute one internet-radio stream at a time.
+
+    Audio renditions and captions come from :class:`PlayerTracksMixin`, split
+    out under GATE-11 when Skip Silence pushed this module past its ceiling.
+    """
 
     def __init__(
         self,
@@ -222,6 +227,10 @@ class RadioPlayerController:
         #: Playback speed for bounded sources (1.0 = normal). Live radio
         #: ignores it: a broadcast plays at broadcast speed.
         self._playback_rate = 1.0
+        #: Skip Silence for bounded playback (11.7). Set from the app's
+        #: remembered preference at startup and by the Playback menu toggle;
+        #: ignored for live radio, which has no pauses left to skip.
+        self._skip_silence = False
         self._parent = parent
         self._wx_engine = WxMediaEngine(
             parent,
@@ -495,6 +504,24 @@ class RadioPlayerController:
             return False
         return self.seek_to(int(self._engine.position_ms()) + int(ms))
 
+    def skip_silence(self) -> bool:
+        """Whether Skip Silence is on (it applies to bounded playback only)."""
+        return self._skip_silence
+
+    def set_skip_silence(self, enabled: bool) -> bool:
+        """Turn Skip Silence on or off, heard immediately. Returns the state.
+
+        The filter is part of the same graph Sound Enhancements renders, so
+        on the mpv engine this takes effect on what is already playing with
+        no interruption -- ``_apply_sound_change`` is the one path either way.
+        """
+        wanted = bool(enabled)
+        if wanted == self._skip_silence:
+            return self._skip_silence
+        self._skip_silence = wanted
+        self._apply_sound_change()
+        return self._skip_silence
+
     def playback_rate(self) -> float:
         """The current speed for bounded sources (1.0 = normal)."""
         return self._playback_rate
@@ -509,56 +536,6 @@ class RadioPlayerController:
         if self.is_seekable():
             self._engine.set_rate(self._playback_rate)
         return self._playback_rate
-
-    def chapters(self) -> list[Any]:
-        """The published chapters of what is playing, or an empty list.
-
-        A video's own markers, or a podcast episode's Podcasting 2.0
-        chapters -- both published by the source, never guessed. The two
-        shapes are unified in quill/ui/radio/episode_profile.py.
-        """
-        from quill.ui.radio import episode_profile
-
-        return episode_profile.chapters_for(self)
-
-    def audio_tracks(self) -> list[Any]:
-        """Every selectable audio rendition of what is playing.
-        See :mod:`quill.ui.radio.track_selection`."""
-        from quill.ui.radio import track_selection
-
-        return track_selection.audio_tracks(self)
-
-    def play_audio_track(self, track: Any) -> bool:
-        """Switch to *track* (a reload, keeping the position). True on success."""
-        from quill.ui.radio import track_selection
-
-        return track_selection.play_audio_track(self, track)
-
-    def selected_audio_track(self) -> Any:
-        """The rendition currently playing, or ``None`` for the default."""
-        from quill.ui.radio import track_selection
-
-        return track_selection.selected_audio_track(self)
-
-    def caption_track(self) -> tuple[str, bool]:
-        """``(caption url, is automatic)`` for what is playing."""
-        from quill.ui.radio import track_selection
-
-        return track_selection.caption_track(self)
-
-    def current_chapter_index(self) -> int:
-        """Index of the chapter the playhead sits in, or -1 if none applies."""
-        chapters = self.chapters()
-        if not chapters:
-            return -1
-        position = int(self._engine.position_ms())
-        current = -1
-        for index, chapter in enumerate(chapters):
-            if int(getattr(chapter, "start_ms", 0)) <= position:
-                current = index
-            else:
-                break
-        return current
 
     def go_to_chapter(self, index: int) -> bool:
         """Jump to a chapter by index. False when the index does not exist."""
@@ -659,7 +636,13 @@ class RadioPlayerController:
     def _current_filter_graph(self) -> str:
         """The Sound Enhancements ffmpeg graph for the current settings
         ("" = nothing engaged) -- the single source both delivery paths
-        (relay and mpv-native ``af``) render from."""
+        (relay and mpv-native ``af``) render from.
+
+        Skip Silence (11.7) rides the same graph, but only for something
+        bounded: the filter shortens pauses, and a live broadcast's pauses
+        have already gone out. That guard is why the flag is computed here
+        rather than stored as part of the enhancement settings.
+        """
         from quill.core.audio_enhance import build_filter_graph
 
         return build_filter_graph(
@@ -667,6 +650,7 @@ class RadioPlayerController:
             self._eq_mid_db,
             self._eq_treble_db,
             compressor_enabled=self._compressor_enabled,
+            smart_speed_enabled=self._skip_silence and self.is_seekable(),
             channel_mode=self._channel_mode,
             night_mode_enabled=self._night_mode_enabled,
             optilab_enabled=self._optilab_enabled,
@@ -945,6 +929,12 @@ class RadioPlayerController:
         # to pause (a stall stayed PLAYING). Comparing against PLAYING alone
         # would drop it through to the third branch and *restart* the station.
         if self._state.state in RUNNING_STATES:
+            # Keep the place *before* pausing, and while the engine can still
+            # be asked where it is (11.11's "write on pause"). Pause used to be
+            # the one way to leave an episode part-heard that wrote nothing at
+            # all, so a listener who paused in Radio and opened Cast was
+            # offered the position from whenever they last pressed Stop.
+            self._remember_resume_point()
             self._engine.pause()
             self._set_state(RadioPlayerState.PAUSED)
         elif self._state.state is RadioPlayerState.PAUSED:

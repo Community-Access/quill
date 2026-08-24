@@ -46,3 +46,37 @@ def on_key_up(host: Any, event: Any) -> None:
     if scan is not None and scan.is_scanning and event.GetKeyCode() == host._wx.WXK_RIGHT:
         scan.stop()
     event.Skip()
+
+
+def handle_episode_key(dialog: Any, event: Any) -> None:
+    """Ctrl+1..Ctrl+9 and Enter, over this episode's Quick Actions.
+
+    A dimmed action answers with *which state* dimmed it (11.2) rather than
+    the old "that Quick Action is not available", which is a dead end you
+    cannot see around -- and Ctrl+3 on a dimmed row used to say nothing at
+    all until the caller added a sentence of its own.
+    """
+    from quill.ui.podcasts.manager_menus import direct_key_action
+
+    wx = dialog._wx
+    code = event.GetKeyCode()
+    if event.ControlDown() and not event.ShiftDown() and not event.AltDown():
+        if ord("1") <= code <= ord("9"):
+            actions = dialog._resolved_episode_actions()
+            resolved = direct_key_action(actions, code - ord("0"))
+            if resolved is None:
+                dialog._announce("There is no Quick Action on that number.")
+            elif resolved.enabled:
+                resolved.run()
+            else:
+                dialog._announce(resolved.unavailable_sentence())
+            return
+    if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+        actions = dialog._resolved_episode_actions()
+        if actions:
+            if actions[0].enabled:
+                actions[0].run()
+            else:
+                dialog._announce(actions[0].unavailable_sentence())
+            return
+    event.Skip()

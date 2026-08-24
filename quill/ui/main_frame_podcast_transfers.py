@@ -63,8 +63,31 @@ class PodcastTransfersMixin:
     def _apply_podcast_download_status(self, item: DownloadItem) -> None:
         self._refresh_statusbar()
         self._podcast_cue_download_started(item)
+        if item.status == "failed":
+            self._record_podcast_download_problem(item)
         if self._podcast_manager_dialog is not None:
             self._podcast_manager_dialog.on_download_status_changed(item)
+
+    def _record_podcast_download_problem(self, item: DownloadItem) -> None:
+        """Write a failed download down (11.5), so an overnight batch that
+        lost three episodes can still say which three, and why."""
+        from quill.core import problem_log
+        from quill.core.paths import app_data_dir
+
+        subject = item.episode_guid
+        show = self._podcast_library.find_show(item.show_id)
+        if show is not None:
+            episode = show.find_episode(item.episode_guid)
+            title = getattr(episode, "title", "") if episode is not None else ""
+            named = title or "an episode"
+            subject = f"{named} -- {show.title}" if show.title else named
+        problem_log.record_problem(
+            app_data_dir(),
+            problem_log.KIND_DOWNLOAD,
+            subject,
+            item.error_message or "the download failed",
+            target=item.show_id + problem_log.TARGET_SEP + item.episode_guid,
+        )
 
     def _podcast_cue_download_started(self, item: DownloadItem) -> None:
         """Earcon the moment downloading actually begins (#1302).

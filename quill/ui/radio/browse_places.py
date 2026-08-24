@@ -46,8 +46,17 @@ def place_record(dialog: Any, node: Any, kind: str, args: list[str]) -> Any:
 
 def save_place(dialog: Any, node: Any, kind: str, args: list[str]) -> None:
     """Keep this branch in Favorites -- a show, a book, a channel, a genre."""
+    from quill.core import duplicate_add
+
     station = place_record(dialog, node, kind, args)
-    dialog._favorites.add(station)
+    if not dialog._favorites.add(station):
+        # 11.6: saying "Added" over a place that was already saved is how a
+        # listener ends up with two of everything and trusts neither.
+        from quill.ui.radio import browse_reveal
+
+        moved = bool(browse_reveal.reveal_favorite(dialog, station.name))
+        dialog._announce(duplicate_add.already_have("place", station.name, moved=moved))
+        return
     dialog._on_favorites_changed()
     dialog._refresh_favorites_branch()
     dialog._announce(f"Added {station.name} to Favorites. It opens back to here.")

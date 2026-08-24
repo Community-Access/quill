@@ -18,7 +18,10 @@ def _read(rel: str) -> str:
 
 
 def test_feed_refresh_passes_credentials_and_reports_auth_failure() -> None:
-    src = _read("ui/main_frame_podcasts.py")
+    # The refresh moved to ui/podcasts/feed_refresh.py under GATE-11 on
+    # 2026-08-24 (it grew a failure record and a quiet-hours check); the
+    # behaviour this pins is unchanged, only its address.
+    src = _read("ui/podcasts/feed_refresh.py")
     assert "auth_for_url(show, show.feed_url)" in src
     assert "announce_if_feed_auth_failure(" in src
     helpers = _read("ui/podcasts/show_actions.py")

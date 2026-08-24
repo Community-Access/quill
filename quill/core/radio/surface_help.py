@@ -193,6 +193,20 @@ PURPOSES: dict[str, str] = {
         "A report of your listening: which stations, how long, and when. It "
         "reads your own local history and nothing leaves this computer."
     ),
+    "Quiet Hours": (
+        "The window in which this app stops speaking on its own: check ticks, "
+        "new-episode notices, download notices. Feeds are still checked and "
+        "downloads still run -- only the announcements wait -- and anything "
+        "you press a key for still answers. The window is shared with the "
+        "other Quill listening apps."
+    ),
+    "Recent Problems": (
+        "Everything that has failed recently, in one list that outlives the "
+        "announcement: feeds that could not be read, downloads that died, "
+        "streams that dropped -- each with its reason and the time it "
+        "happened. Retry tries the highlighted row again; nothing here is "
+        "sent anywhere."
+    ),
     "Record Station": (
         "Record the chosen station, starting now, for a length you set -- or "
         "open-ended with a safety cap. The capture runs in the background; "

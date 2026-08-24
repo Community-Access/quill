@@ -960,6 +960,164 @@ Choose **Station > Browse Spotify...** to open an accessible search box with a r
 
 If your keyboard has media keys, Play/Pause and Stop control Quill Radio system-wide while it runs -- even from the tray. Keys another app already owns are left alone.
 
+## Finding an episode inside one show
+
+**Find in this folder** (Ctrl+F) searches the rows under the folder you are
+on, and it matches a row's **description** as well as its name. On a podcast
+show's branch that is episode search: the episodes are the rows, and their
+show notes are searched with them -- which is what a show that numbers its
+episodes and puts the subject in the notes needs.
+
+The search is scoped to the folder you are in and bounded, and it always says
+how many matched. Clear the box to return to the folder.
+
+## Taking back the last thing you did
+
+Press **Ctrl+Z** (Edit > Undo Last Action) and the last destructive thing you
+did comes back: an unsubscribe, a Remove All Episodes, a Remove All Downloads,
+a Mark All as Played, a deleted recording. It says what it brought back --
+"Undid Unsubscribe. Brought back The Daily, with 412 episodes and 3 downloaded
+files."
+
+Three things worth knowing.
+
+**It is one step, not a stack.** Undoing twice in a row does nothing the
+second time; you get one, and the app says "Nothing to undo" rather than
+quietly rewinding something older that you had forgotten about. If you have to
+count how many times to press Ctrl+Z, you have been given a puzzle rather than
+an undo.
+
+**Deleted files come back, not just the intent to fetch them.** A file this
+app deletes on your behalf is moved aside first, so an undo restores the bytes
+themselves. Once you do the next destructive thing, the one before it is gone
+for good -- which is what makes a single step safe to offer without asking you
+first.
+
+**Anything it cannot bring back, it says so in the same breath.** A private
+feed's saved password, for instance, is deleted deliberately when you
+unsubscribe; the undo brings the subscription back and tells you the password
+has to be entered again.
+
+Every action that can be undone ends its own announcement with "Ctrl+Z undoes
+this", so you never have to remember whether this particular verb was one of
+them.
+
+## Why a menu item is dimmed
+
+A greyed menu item used to be a dead end: a screen reader says "dimmed" and
+stops, and the item itself says nothing about what would un-dim it. Every
+dimmed item now carries its reason, which the status bar shows and which
+readers that voice menu help speak:
+
+- "Analyse Chapters: this episode is not downloaded yet, so there is nothing
+  to analyse."
+- "Download All Episodes: nothing to download, all 40 are already here."
+- "Mark All as Played: nothing to mark, all 63 episodes are already played."
+
+Pressing a Quick Action number on a dimmed row says the same thing, rather
+than the old "that Quick Action is not available". So does the command palette
+(Ctrl+Shift+P), where an unavailable command reads its reason instead of a
+bare "(unavailable)".
+
+Items dim rather than disappear on purpose: a verb the row genuinely owns is
+better as a state you can hear than as something that comes and goes.
+
+## Recent Problems
+
+**Help > Recent Problems...** (Ctrl+Alt+Shift+P) is a list of what has failed
+recently -- feeds that could not be read, downloads that died, streams that
+dropped -- each with its reason and the time it happened.
+
+It exists because announcements are transient. That is right almost always,
+and wrong the one time the sentence you needed went past while you were in
+another window: before this list, a spoken failure that was missed was gone
+for good.
+
+**Retry** tries the highlighted row again. **Copy All** takes the list as
+text, which is what to paste into a bug report -- it contains addresses and
+error messages, never passwords. **Clear List** empties it, and does not fix
+anything or stop the same problem being recorded again next time it happens.
+
+Nothing in the list leaves this computer.
+
+## Quiet hours
+
+**Help > Quiet Hours...** (Ctrl+Alt+Shift+Z) sets a window -- 22:00 to 07:00
+by default, and a window may cross midnight -- in which the app stops speaking
+*on its own*.
+
+What that means precisely, because the name invites two wrong readings:
+
+- Feeds are still checked, downloads still run, recordings still record.
+  Nothing stops happening. Only the announcements about them wait.
+- **Anything you press a key for still answers.** Press Play at three in the
+  morning and you hear what is playing. Quiet hours never silence the reply to
+  something you asked for; they hold back the speech nobody asked for.
+- Failures always speak, whatever the window says. A recording that stopped at
+  3 a.m. is exactly the thing somebody set an alarm-clock radio for.
+
+There is one override: reminders can be let through anyway, since an alarm
+clock is a reason to set one.
+
+The window is shared with the other Quill listening apps, so you set it once.
+
+## Moving your setup to another machine
+
+**Help > Export My Setup...** (Ctrl+Alt+Shift+X) writes one file -- a
+`.quillsetup` -- carrying what you have built up: your subscriptions, folders
+and playlists, your favorite stations and saved places, your settings, your Go
+To order, your Quick Action order, your scheduled recordings, your bookmarks
+and any keys you rebound. **Help > Import My Setup...** (Ctrl+Alt+Shift+N)
+puts them on the other machine.
+
+An OPML export moves subscriptions and nothing else. This moves the rest.
+
+Three things about the file:
+
+- It is an ordinary ZIP with a readable manifest inside, so you can see what
+  you are carrying between machines.
+- **Passwords are not in it.** Private-feed sign-ins, server credentials and
+  unlock codes stay on the machine that holds them and have to be entered
+  again on the new one. The confirmation says so before it does anything.
+- Importing **replaces** what is on this machine rather than merging with it.
+  The confirmation names what the file holds and says this plainly; merging
+  two libraries is a different job with different questions.
+
+Close and reopen the app after an import, so everything is read back in.
+
+## Your place follows you between Quill Radio and QUILL Cast
+
+Both apps can play the same subscribed episode, and they now share one place
+per episode on this computer. Pause an episode in one, open it in the other,
+and it picks up where you left off -- and says so: "Picking up where you left
+off in Quill Radio, at 1 hour 2 minutes 3 seconds."
+
+The **later** decision wins, not the furthest through the episode. If you
+skipped to the outro to check something and then went back to the middle, the
+middle is where you are; an app that dragged you forward again on the grounds
+that it was further in would be overruling you with arithmetic.
+
+An episode either app has finished stays finished.
+
+## Skip Silence, and a speed that sticks
+
+Two things the playback engine could always do and Quill Radio never offered
+outside podcasts.
+
+**Skip Silence** (Playback > Skip Silence, Ctrl+Shift+9) shortens the long
+pauses in a recording, a YouTube row or a podcast episode as it plays. It
+takes effect on what is already playing, with no interruption. It has no
+effect on live radio -- a broadcast plays at broadcast speed, and its pauses
+have already gone out -- and it says so if you turn it on while a station is
+playing, rather than appearing to do nothing.
+
+**Play Faster is remembered.** A speed you choose while a recording plays now
+applies to every recording; a speed you choose on a YouTube row applies to
+YouTube rows. Per kind rather than per row, because what somebody means by
+"1.5x for recordings" is every recording, and being asked to set it again for
+each captured hour is the same feature with the cost moved onto you. Podcast
+episodes keep their own per-show speed, which they always had.
+
 ## Global hotkeys and keyboard shortcuts
 
 Quill Radio's shortcuts are now yours to change, and its playback controls can reach across your whole desktop.

@@ -78,8 +78,24 @@ def remove_download(dialog: Any, node: Any, station: Any) -> None:
 
 
 def download_all(dialog: Any, node: Any, host: Any) -> None:
-    from quill.ui.radio import download_command
+    """Download every savable row under this folder, bounded and counted.
 
+    It used to enqueue silently and say only whatever the queue said next
+    (11.4): a folder of forty chapters, thirty-nine of them already on disk,
+    reported the same thing as a folder of forty new ones.
+    """
+    from quill.core.podcasts.download_batch import plan_download_all
+    from quill.ui.radio import download_command, download_runner
+
+    title = dialog._tree.GetItemText(node)
     rows = [r for r in dialog._loaded_stations_under(node) if download_command.can_download(r)]
-    if rows:
-        download_command.download_book(host, rows, title=dialog._tree.GetItemText(node))
+    if not rows:
+        dialog._announce(f"Nothing under {title} can be saved.")
+        return
+    batch = plan_download_all(
+        rows,
+        already_have=lambda row: download_runner.already_have(host, row, work=title),
+    )
+    if batch.started:
+        download_command.download_book(host, list(batch.started), title=title)
+    dialog._announce(batch.sentence(title))

@@ -161,6 +161,15 @@ class CastMenuBarMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_speed_up(), id=speed_up_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_speed_down(), id=speed_down_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_speed_reset(), id=speed_reset_id)
+        # Jump to a typed position (11.8). It existed only on a Winamp letter
+        # key, which means it existed for whoever had those on and knew about
+        # it, and for nobody else. Ctrl+Alt+J, the same key Quill Radio uses.
+        goto_pos_id = wx.NewIdRef()
+        self._keep_menu_ids(goto_pos_id)
+        episode_menu.Append(
+            goto_pos_id, self._menu_label("&Go to Position...", "podcasts.go_to_position")
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_go_to_position(), id=goto_pos_id)
         stop_after_id = wx.NewIdRef()
         episode_menu.Append(stop_after_id, "Stop &After This Episode")
         self.frame.Bind(
@@ -317,6 +326,11 @@ class CastMenuBarMixin:
             lambda _e: self.report_app_bug(source_app="QUILL Cast", app_version=_VERSION),
             id=bug_id,
         )
+        # Undo, Recent Problems, Quiet Hours and Export / Import My Setup:
+        # four shared surfaces over shared files, wired once for both apps.
+        from quill.ui.support_menu import wire_support_surfaces
+
+        wire_support_surfaces(self, menu_bar, help_menu, wx)
         ffmpeg_id = wx.NewIdRef()
         help_menu.Append(ffmpeg_id, "&Get FFmpeg...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
@@ -327,7 +341,7 @@ class CastMenuBarMixin:
         help_menu.Append(prd_id, "&Product Requirements...")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("userguide"), id=guide_id)
         self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self._open_podcasts_doc("release-notes-1.1"), id=notes_id
+            wx.EVT_MENU, lambda _e: self._open_podcasts_doc("release-notes-2.0"), id=notes_id
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("prd"), id=prd_id)
         help_menu.AppendSeparator()

@@ -68,7 +68,22 @@ def test_download_all_episodes_skips_downloaded_and_already_queued(tmp_path: Pat
     count = download_all_episodes(queue, tmp_path, show, announce=announced.append)
     assert count == 1
     assert [e[0] for e in queue.enqueued] == ["fresh"]
-    assert "Queued 1 episode(s)" in announced[-1]
+    # Every count spoken, not just the one that started.
+    assert "1 eligible" in announced[-1]
+    assert "1 started" in announced[-1]
+    assert "2 skipped" in announced[-1]
+
+
+def test_download_all_episodes_caps_the_batch_and_says_what_was_deferred(tmp_path: Path) -> None:
+    show = _show([_episode(f"e{n}") for n in range(60)])
+    queue = _FakeQueue()
+    announced: list[str] = []
+    count = download_all_episodes(queue, tmp_path, show, announce=announced.append)
+    assert count == 50
+    assert len(queue.enqueued) == 50
+    assert "60 eligible" in announced[-1]
+    assert "50 started" in announced[-1]
+    assert "10 deferred" in announced[-1]
 
 
 def test_download_all_episodes_announces_when_nothing_to_do(tmp_path: Path) -> None:
@@ -78,6 +93,7 @@ def test_download_all_episodes_announces_when_nothing_to_do(tmp_path: Path) -> N
     count = download_all_episodes(queue, tmp_path, show, announce=announced.append)
     assert count == 0
     assert "Nothing to download" in announced[-1]
+    assert "all 1 episode(s) are already downloaded or in progress" in announced[-1]
 
 
 def test_remove_all_episodes_prompt_no_episodes_skips_the_dialog(

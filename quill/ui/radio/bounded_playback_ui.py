@@ -249,6 +249,32 @@ def reset_speed(host: Any) -> None:
     host._announce(f"Normal speed.{episode_profile.remember_speed_choice(controller)}")
 
 
+def toggle_skip_silence(host: Any) -> None:
+    """Skip Silence on or off, heard immediately (11.7).
+
+    The engine has always been able to shorten long pauses -- it is the same
+    Smart Speed clause Quill Cast passes -- so this is a flag on a filter
+    graph that already exists, applied live on the mpv engine with no
+    interruption. The state is remembered across sessions.
+    """
+    controller = _controller(host)
+    from quill.core.radio import bounded_prefs
+
+    enabled = controller.set_skip_silence(not controller.skip_silence())
+    history = getattr(host, "_radio_history", None)
+    if history is not None:
+        history.skip_silence = enabled
+        from quill.core.paths import app_data_dir
+        from quill.core.radio.history import save_history
+
+        try:
+            save_history(app_data_dir(), history)
+        except OSError:
+            pass
+    station = getattr(getattr(controller, "_state", None), "station", None)
+    host._announce(bounded_prefs.describe_skip_silence(enabled, bounded_prefs.kind_for(station)))
+
+
 # -- chapters ----------------------------------------------------------------
 
 

@@ -55,6 +55,8 @@ SKIP_BACK = "transport.skip_back"
 SPEED_UP = "transport.speed_up"
 SPEED_DOWN = "transport.speed_down"
 SPEED_RESET = "transport.speed_reset"
+#: 11.7: shorten the long pauses in a recording, a YouTube row or an episode.
+SKIP_SILENCE = "transport.skip_silence"
 NEXT_CHAPTER = "transport.next_chapter"
 PREVIOUS_CHAPTER = "transport.previous_chapter"
 CHAPTER_LIST = "transport.chapter_list"
@@ -108,6 +110,17 @@ COMMANDS: tuple[TransportCommand, ...] = (
     TransportCommand(SPEED_DOWN, "Speed Do&wn", "Ctrl+Shift+Down", "slow_down", needs_bounded=True),
     TransportCommand(
         SPEED_RESET, "Reset Speed to Norma&l", "Ctrl+Shift+0", "reset_speed", needs_bounded=True
+    ),
+    # Skip Silence sits with the speed verbs because that is what it is: a
+    # way of getting through the same hour faster, the one the engine could
+    # always do and Quill Radio never offered (11.7). Bounded only -- a live
+    # broadcast's pauses have already gone out.
+    TransportCommand(
+        SKIP_SILENCE,
+        "S&kip Silence",
+        "Ctrl+Shift+9",
+        "toggle_skip_silence",
+        needs_bounded=True,
     ),
     TransportCommand(
         PREVIOUS_CHAPTER,

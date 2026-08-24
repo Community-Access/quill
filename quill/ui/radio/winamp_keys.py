@@ -150,26 +150,23 @@ def normalize_key_code(code: int, wx: object) -> str:
 def parse_time_to_ms(text: str) -> int | None:
     """Parse a Jump To Time entry into milliseconds, or None if it is not a time.
 
-    Accepts what a listener actually types: ``90`` (seconds), ``1:30``, and
-    ``1:02:03``. Blank or nonsense returns None so the caller can say so rather
-    than silently seeking to zero.
+    Accepts what a listener actually types: ``90`` (seconds), ``1:30``,
+    ``62:03`` (minutes past the hour mark) and ``1:02:03``. Blank or nonsense
+    returns None so the caller can say so rather than silently seeking to zero.
+
+    One parser, not two (11.8): this used to have its own arithmetic, which
+    differed from :func:`quill.core.media.timecode.parse_timecode` in what it
+    accepted -- so the same string could work in one player and not the other.
+    It now delegates, and the None-instead-of-raise contract is the only
+    difference that remains.
     """
-    raw = str(text or "").strip()
-    if not raw:
-        return None
-    parts = raw.split(":")
-    if len(parts) > 3:
-        return None
+    from quill.core.media.errors import InvalidTimecodeError
+    from quill.core.media.timecode import parse_timecode
+
     try:
-        numbers = [int(part) for part in parts]
-    except ValueError:
+        return parse_timecode(str(text or ""))
+    except InvalidTimecodeError:
         return None
-    if any(number < 0 for number in numbers):
-        return None
-    total = 0
-    for number in numbers:
-        total = total * 60 + number
-    return total * 1000
 
 
 def keymap_rows() -> list[tuple[str, str]]:

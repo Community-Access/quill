@@ -34,7 +34,6 @@ from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
 from quill.ui.main_frame_radio_status import RadioStatusWindowsMixin
 from quill.ui.radio import playback_status, quick_play, stats_session, youtube_ui
-from quill.ui.radio.add_station_dialog import AddStationDialog
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.playback_state import RadioPlaybackState
 from quill.ui.radio.player_controller import RadioPlayerController, ResolvedEnhancement
@@ -126,6 +125,12 @@ class RadioMixin(RadioStatusWindowsMixin):
             optilab_exact_live=self._radio_history.optilab_exact_live,
         )
         self._radio_controller.set_volume_boost(self._radio_history.volume_boost)
+        # 11.7: Skip Silence, and the speed each *kind* of bounded row is
+        # remembered at. The controller reads the history back through
+        # episode_profile when a row loads, so hand it the same record the
+        # frame holds rather than a copy that can drift.
+        self._radio_controller._radio_history = self._radio_history
+        self._radio_controller._skip_silence = bool(self._radio_history.skip_silence)
         self._radio_recording_settings = load_recording_settings(app_data_dir())
         self._radio_recorder = RadioRecorder(
             on_state_changed=self._on_radio_recording_changed,
@@ -2133,29 +2138,14 @@ class RadioMixin(RadioStatusWindowsMixin):
         self._save_radio_history()
 
     def _radio_open_add_custom(self, prefill: RadioStation | None) -> None:
-        dlg = AddStationDialog(
-            self.frame,
-            controller=self._radio_controller,
-            prefill=prefill,
-            announce_cb=self._announce,
-            youtube_consent_cb=self._radio_youtube_consent,
-        )
-        station = dlg.show()
-        if station is None:
-            return
-        self._radio_favorites.add(station, custom=True)
-        self._save_radio_favorites()
-        # Refresh the favorites tree and the favorite toggle so the just-added
-        # custom station appears immediately, instead of only after a restart
-        # (#1205). These live on the standalone RadioAppFrame; embedded QUILL
-        # has no favorites tree, so guard for their absence.
-        reload_tree = getattr(self, "_reload_favorites_tree", None)
-        if callable(reload_tree):
-            reload_tree()
-        refresh_toggle = getattr(self, "_refresh_favorite_toggle", None)
-        if callable(refresh_toggle):
-            refresh_toggle()
-        self._announce(f"Added {station.name} to Favorites", sound=SoundEvent.RADIO_FAVORITE_ADDED)
+        """Add a station Quill Radio's directories do not know.
+
+        The dialog, the duplicate check and the tree refresh live in
+        :mod:`quill.ui.radio.add_custom_station` (extracted under GATE-11).
+        """
+        from quill.ui.radio import add_custom_station
+
+        add_custom_station.open_add_custom(self, prefill)
 
     def _radio_open_link_finder(self) -> None:
         if self._safe_mode:

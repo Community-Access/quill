@@ -14,14 +14,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quill.core.paths import app_data_dir
-from quill.core.podcasts import feed_auth, position_sync, retention
 from quill.core.podcasts import history as podcast_history
+from quill.core.podcasts import position_sync, retention
 from quill.core.podcasts.download_queue import DownloadItem
 from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
 from quill.core.podcasts.subscriptions import (
     PodcastLibrary,
     load_library,
-    merge_episodes,
 )
 from quill.core.sound_events import SoundEvent
 from quill.ui.companion_cues import post_cue
@@ -156,6 +155,15 @@ class PodcastsMixin(
         )
         podcast_history.save_history(app_data_dir(), self._podcast_history)
 
+    def _save_podcast_history(self) -> None:
+        """Persist the podcast history record (settings, onboarding, recents).
+
+        Named rather than inlined because the first-run flow needs a saver it
+        can look up by name on whatever host it was handed, exactly as Quill
+        Radio's does.
+        """
+        podcast_history.save_history(app_data_dir(), self._podcast_history)
+
     def _maybe_reload_podcast_chapters(self, state: PodcastPlaybackState) -> None:
         if not state.show_id or not state.episode_guid:
             self._podcast_current_chapters = []
@@ -214,11 +222,24 @@ class PodcastsMixin(
             return
         # Stamped, so the place can travel between devices (position_sync).
         position_sync.remember_position(episode, int(ms))
+        # ...and written to the store Quill Radio reads, so the place travels
+        # between *apps* on this machine too (11.11). This runs on the same
+        # events the library write does -- pause, stop, switch, shutdown, and
+        # the mid-play checkpoint -- which is exactly "the write on pause".
+        self._podcast_share_place(show, episode, int(ms), finished=False)
         # A checkpoint is exactly the moment a listening session ends
         # (pause / stop / switch / shutdown), which is why the statistics log
         # is flushed here instead of on the once-a-second poll that feeds it.
         self._podcast_flush_stats()
         self._save_podcast_library()
+
+    def _podcast_share_place(
+        self, show: object, episode: object, ms: int, *, finished: bool
+    ) -> None:
+        """Write this episode's place where Quill Radio can read it (11.11)."""
+        from quill.ui.podcasts.shared_place import share_place
+
+        share_place(show, episode, ms, finished=finished)
 
     def _on_podcast_episode_finished(self, show_id: str, episode_guid: str) -> None:
         show = self._podcast_library.find_show(show_id)
@@ -228,6 +249,9 @@ class PodcastsMixin(
         if episode is None:
             return
         position_sync.mark_played(episode)
+        # A finish is sticky across apps (11.11): Radio must not offer to
+        # resume an episode Cast has just finished.
+        self._podcast_share_place(show, episode, 0, finished=True)
         self._podcast_flush_stats(completed=True)
         # The end of an episode is a state QUILL Cast changed through in
         # silence: the next episode simply started, or nothing did (#1302).
@@ -374,7 +398,13 @@ class PodcastsMixin(
             return
         from quill.ui.podcasts.show_actions import start_episode_playback
 
-        start_episode_playback(self._podcast_controller, self._podcast_library, show, episode)
+        start_episode_playback(
+            self._podcast_controller,
+            self._podcast_library,
+            show,
+            episode,
+            announce=self._announce,
+        )
 
     def _open_play_queue(self) -> None:
         from quill.ui.podcasts.play_queue_dialog import PlayQueueDialog
@@ -391,7 +421,13 @@ class PodcastsMixin(
     def _play_queue_pair(self, show: PodcastShow, episode: PodcastEpisode) -> None:
         from quill.ui.podcasts.show_actions import start_episode_playback
 
-        start_episode_playback(self._podcast_controller, self._podcast_library, show, episode)
+        start_episode_playback(
+            self._podcast_controller,
+            self._podcast_library,
+            show,
+            episode,
+            announce=self._announce,
+        )
 
     def _build_podcast_status_bar_menu(self, menu: object) -> None:
         from quill.ui.podcasts.player_controller import PodcastPlayerState
@@ -678,69 +714,30 @@ class PodcastsMixin(
         controller.seek(target_ms)
         self._announce(f"Back {seconds} seconds")
 
-    def podcast_pause_all_downloads(self) -> None:
-        self._podcast_download_queue.pause_all()
-        self._announce("Paused all podcast downloads")
-
-    def podcast_resume_all_downloads(self) -> None:
-        self._podcast_download_queue.resume_all()
-        self._announce("Resumed podcast downloads")
-
     # -- feed refresh (Phase 1: manual only; auto-refresh is a Phase 2+ item) --
 
+    def podcast_pause_all_downloads(self) -> None:
+        """Stop starting new transfers, and say how many that leaves waiting."""
+        from quill.ui.podcasts.download_pause import podcast_pause_all_downloads
+
+        podcast_pause_all_downloads(self)
+
+    def podcast_resume_all_downloads(self) -> None:
+        """Start the queue again, and say how many it picks back up."""
+        from quill.ui.podcasts.download_pause import podcast_resume_all_downloads
+
+        podcast_resume_all_downloads(self)
+
     def refresh_podcast_feed(self, show_id: str) -> None:
-        from quill.core.podcasts import feed_reader
+        """Re-read one show's feed, off-thread, and take in what is new.
 
-        show = self._podcast_library.find_show(show_id)
-        if show is None or not show.feed_url or show.paused or self._safe_mode:
-            return
-        username, password = feed_auth.auth_for_url(show, show.feed_url)
+        The whole of it -- the fetch, the merge, the routing, the auto-download
+        and the failure record -- lives in
+        :mod:`quill.ui.podcasts.feed_refresh` (extracted under GATE-11).
+        """
+        from quill.ui.podcasts.feed_refresh import refresh_feed
 
-        def _do_refresh(**_kwargs: object) -> feed_reader.FeedInfo:
-            return feed_reader.fetch_and_parse_feed(
-                show.feed_url, username=username, password=password, safe_mode=self._safe_mode
-            )
-
-        def _on_success(_op: str, info: feed_reader.FeedInfo) -> None:
-            known = {episode.guid for episode in show.episodes}
-            republished: list[str] = []
-            if not info.tags.is_empty:
-                show.tags = info.tags
-            new_count = merge_episodes(show, info.episodes, republished=republished)
-            fresh = [episode for episode in show.episodes if episode.guid not in known]
-            queued = self._podcast_route_new_episodes(show, fresh)
-            self._podcast_resurface_republished(show, republished)
-            self._save_podcast_library()
-            if self._podcast_manager_dialog is not None:
-                self._podcast_manager_dialog.refresh_tree()
-            if new_count:
-                # "Let results interrupt speech" is the third leg of the shared
-                # monitor policy: force=True raises the announcement to WARNING,
-                # which is the severity that cuts across current speech.
-                self._announce(
-                    self._podcast_new_episode_message(show, new_count, queued),
-                    force=self._podcast_check_monitor.interrupt_speech,
-                )
-                self._podcast_notify_new_episodes(show, fresh)
-            # Always Sync is now one value of the auto-download policy
-            # (effective_auto_download_count == -1), so the single
-            # acquisition pass below covers both -- calling the old backfill
-            # as well would queue the same items twice and say so twice.
-            self._podcast_apply_auto_download(show)
-            # Aging the queue and trimming the Inbox belong right after new
-            # episodes arrive: that is the moment the counts actually change.
-            self.podcast_run_maintenance()
-
-        from quill.ui.podcasts.show_actions import announce_if_feed_auth_failure
-
-        self._task_manager.submit(
-            "podcast-refresh",
-            _do_refresh,
-            on_success=_on_success,
-            on_failure=lambda _op, exc: announce_if_feed_auth_failure(
-                exc, show, announce=self._announce
-            ),
-        )
+        refresh_feed(self, show_id)
 
     def _maybe_backfill_always_sync(self, show: object) -> None:
         """Always Sync (Phase 4): a download-mode show with

@@ -6,6 +6,152 @@ The most recent work first: a reliability pass driven entirely by what people
 reported (a full disk that could lose a document, an editor doing too much work
 between keystrokes), then the release as originally scoped below.
 
+### QUILL Cast welcomes a first-time listener (2026-08-24)
+
+Three screens on a genuinely first launch -- welcome, add your first podcast,
+you're set -- with **Skip** as a first-class button rather than a small link,
+because somebody who already knows what a podcast player is should be able to
+leave in one keystroke.
+
+They were written a long time ago and never once shown: nothing in the app
+called them. Cast now does, at launch, and remembers that it has. It stays
+away entirely from anybody who already has podcasts, however they got there --
+an imported OPML, a restored setup, an upgrade -- because explaining how to
+add a first podcast to somebody with two hundred is a way of saying nobody
+checked. Skipping counts as done: somebody who skipped chose to, and asking
+again next launch would be overriding that with a guess.
+
+### Find an episode inside one show (2026-08-24)
+
+There was a filter by state ("unplayed", "downloaded") and there was Search
+Everywhere across the whole library, and nothing in between -- so *which
+episode of this show was the one about the harbour* had no answer except
+arrowing two hundred rows.
+
+QUILL Cast's Podcast Manager has a **Find** box beside the episode filter. It
+matches **titles and show notes**, because a podcast that numbers its episodes
+and describes them in the notes -- which is most interview shows -- is exactly
+where searching titles alone finds nothing. It **narrows what the filter and
+sort already chose** rather than replacing them, so "unplayed episodes about
+the harbour, newest first" is three controls you set independently. Typing
+narrows the list silently; **Enter** says how many matched out of how many
+were searched, and a search that found nothing says the filter above it may be
+the reason rather than announcing a bare zero.
+
+In Quill Radio, **Find in this folder** (Ctrl+F) now matches a row's
+description as well as its name. On a podcast show's branch that is the same
+feature -- the episodes are the rows, and their show notes were already there,
+sitting unused in the details panel.
+
+### Undo, Recent Problems, Quiet Hours and the rest of "further greatness" (2026-08-24)
+
+Eleven things worth having in both listening apps that neither had. They ship
+together because most of them are one answer shared between Quill Radio and
+QUILL Cast rather than two answers that agree for now.
+
+- **Ctrl+Z takes back the last destructive thing you did.** Unsubscribe,
+  Remove All Episodes, Remove All Downloads, Mark All as Played, Delete
+  Recording -- one step, and it says what would come back before it does it
+  ("Undo Unsubscribe: brings back The Daily, with 412 episodes and 3 downloaded
+  files"). One step of undo is cheaper than a confirmation prompt on every verb
+  and kinder than either: a prompt costs a keystroke and a sentence *every*
+  time, including the nine hundred times you meant it, and it still cannot help
+  the one time the wrong row was focused. Deleted files are **moved aside, not
+  unlinked**, so the bytes genuinely come back rather than the intent to fetch
+  them again -- and where they cannot (a private-feed password is deleted by
+  design), the offer says so in the same breath. Every verb that can be undone
+  ends its announcement with "Ctrl+Z undoes this", because an undo you do not
+  know about is not an undo. QUILL itself is untouched: its Ctrl+Z is the
+  editor's, and nothing is held aside there.
+
+- **A dimmed command tells you why it is dimmed.** This family dims a great
+  deal on purpose -- Mark All as Played with nothing unheard is a *state* of a
+  verb the row owns, which is why it dims rather than vanishing -- and a
+  screen reader says "dimmed" and stops. Every dimmed item now carries its
+  reason: "Analyse Chapters: this episode is not downloaded yet, so there is
+  nothing to analyse", "Download All Episodes: nothing to download, all 40 are
+  already here". Pressing a Quick Action number on a dimmed row used to answer
+  "that Quick Action is not available"; it now names the state. The command
+  palette says the reason too, in both apps, instead of a bare "(unavailable)".
+
+- **Recent Problems: a list a spoken failure goes into.** Announcements are
+  transient by design, which is right until the one you needed went past while
+  you were in another window -- and that was the single place this family was
+  not screen-reader-first, because a sighted listener still had a list to
+  scroll back through and you had nothing. Feeds that failed, downloads that
+  died overnight, a stream that dropped and could not be reconnected: each with
+  its reason, the time it happened, and a Retry that tries it again. Nothing
+  leaves the machine, and the list carries addresses and error messages, never
+  passwords. Ctrl+Alt+Shift+P, on Help.
+
+- **Quiet hours, shared by both apps.** A window in which the apps stop
+  speaking *on their own* -- check ticks, new-episode notices, download
+  notices, and (when reminders land) reminders. Everything still happens: feeds
+  are still checked and downloads still run, and **anything you press a key for
+  still answers**, because quiet hours must never silence the reply to
+  something you asked for. Failures always speak. One window, one file, both
+  apps, and one checkbox to let reminders through anyway.
+
+- **Move my setup to another machine.** OPML moves subscriptions and nothing
+  else -- which is to say it moves the part that was easy to standardise and
+  leaves the part you actually built. **Export My Setup** writes one file
+  carrying your subscriptions, folders and playlists, your favorite stations
+  and saved places, your settings, your Go To order, your Quick Action order,
+  your scheduled recordings, your bookmarks and your rebound keys; **Import My
+  Setup** puts them on the other machine. It is an ordinary ZIP with a manifest
+  you can read, over a declared list of files rather than a sweep of the data
+  folder, and passwords are never in it -- the confirmation says so rather than
+  leaving you to find out.
+
+- **An episode started in one app picks up in the other.** Quill Radio and
+  QUILL Cast can both play a subscribed episode, and until now only one
+  direction of that travelled, at Cast's next launch. They now share one local
+  place per episode, written on **pause** as well as on stop -- Radio never
+  wrote on pause at all -- and the later decision wins rather than the furthest
+  one, because somebody who skipped to the outro and came back has decided
+  where they are. The jump is explained out loud: "Picking up where you left
+  off in Quill Radio, at 1 hour 2 minutes 3 seconds."
+
+- **Adding something you already have says so, and takes you to it.** Quill
+  Radio's favorites store answered "added" whether or not it had added
+  anything, so Add to Favorites on a station already saved announced success
+  over nothing happening. It now names what you already have and moves the
+  cursor to it -- which is the answer you were actually looking for, since the
+  reason anybody adds a thing twice is that they could not find the first one.
+
+- **Every bulk action counts out loud.** A verb that touches more than one row
+  ends by saying eligible / done / skipped, with a number on every clause and
+  the reason beside the skipped count. Quill Radio's Download All was the last
+  uncounted one -- it now knows which episodes are already on disk, so it can
+  say what it skipped and why. Pause All Downloads says how many are waiting
+  and that the one already transferring will finish. A build gate keeps the
+  other thirty-six honest.
+
+- **QUILL Cast answers F1 with its own words.** Press F1 anywhere in Cast and
+  the help now opens with what *that window* is for, the way Quill Radio's has
+  since 3.0 -- and a build gate means a new Cast window cannot ship without
+  saying what it is for.
+
+- **Skip Silence, and a speed that sticks, for Quill Radio's recordings and
+  YouTube rows.** The engine could always shorten long pauses; Radio simply
+  never offered it (Ctrl+Shift+9, applied to what is already playing with no
+  interruption). And Play Faster on a two-hour recording is now remembered for
+  recordings, rather than forgotten the moment it stopped.
+
+- **Skip Silence is now a transport key in QUILL Cast too.** Cast has had it as
+  **Smart Speed**, a per-show setting in Podcast Settings, and no way to reach
+  it while listening -- which is the only moment anybody forms an opinion about
+  it. Ctrl+Shift+9 toggles it for the playing show (or, with nothing playing,
+  for every podcast), heard on the episode in progress rather than the next
+  one, and it keeps your place rather than starting over. The same key does
+  the same thing in Quill Radio.
+
+- **Type a time and land there, in both players.** `1:02:03`, `62:03` or
+  `3723` all mean the same moment, in the same labelled Hours / Minutes /
+  Seconds window, in both apps (Ctrl+Alt+J). Cast could already do this from a
+  Winamp letter key, which means it existed for whoever had those keys on and
+  knew about them, and for nobody else.
+
 ### Radio window behaviour: exit cues, the startup window, Ctrl+Tab focus (2026-08-23)
 
 - **`dialog_contract.announce_surface_exit`** -- the exit cue now asks

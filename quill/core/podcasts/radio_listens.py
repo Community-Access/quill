@@ -31,6 +31,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from quill.core.podcasts import position_sync
+from quill.core.podcasts.cross_app_resume import Place as CrossAppPlace
 from quill.core.podcasts.models import PodcastEpisode
 
 if TYPE_CHECKING:
@@ -73,13 +74,20 @@ def record_listen(
     title: str = "",
     position_ms: int = 0,
     finished: bool = False,
+    app: str = "radio",
 ) -> None:
-    """Note that Radio reached *position_ms* in (or finished) an episode.
+    """Note that *app* reached *position_ms* in (or finished) an episode.
 
     One record per episode: a later save for the same audio URL replaces the
     earlier one, so the file holds the latest word on each episode rather
     than a keystroke log. Best effort; never raises -- losing a handoff
     record must never cost the listener their playback.
+
+    *app* was added with cross-app resume (11.11), which turned this from a
+    one-way handoff into a place both apps write: Cast records here too, so
+    an episode paused in Cast picks up in Radio. The field is what lets the
+    resume say *which* app the place came from, which is the difference
+    between an explained jump and a mysterious one.
     """
     feed = (feed_url or "").strip()
     audio = (audio_url or "").strip()
@@ -96,6 +104,7 @@ def record_listen(
             "position_ms": max(0, int(position_ms)),
             "finished": bool(finished),
             "at": time.time(),
+            "app": (app or "radio").strip() or "radio",
         })
         write_json_atomic(_path(data_dir), records[-_MAX_RECORDS:])
     except Exception:  # noqa: BLE001 - a handoff is a courtesy, never a crash
@@ -320,3 +329,29 @@ def remembered_show_speed(data_dir: Path, feed_url: str) -> float:
         return float(_read_speeds(data_dir).get((feed_url or "").strip(), 0.0))
     except Exception:  # noqa: BLE001 - no memory is the safe answer
         return 0.0
+
+
+def latest_place(data_dir: Path, audio_url: str) -> CrossAppPlace | None:
+    """The shared place for *audio_url*, or ``None`` (cross-app resume, 11.11).
+
+    The read half of the store: either app asks this before it starts an
+    episode, and :mod:`quill.core.podcasts.cross_app_resume` decides whether
+    what comes back beats what the app already knows. Never raises -- a
+    missing or unreadable file simply means "no shared opinion".
+    """
+    audio = (audio_url or "").strip()
+    if not audio:
+        return None
+    for row in reversed(_read(data_dir)):
+        if row.get("audio") != audio:
+            continue
+        try:
+            return CrossAppPlace(
+                position_ms=max(0, int(row.get("position_ms", 0) or 0)),
+                updated_at=float(row.get("at", 0.0) or 0.0),
+                finished=bool(row.get("finished", False)),
+                app=str(row.get("app", "radio") or "radio"),
+            )
+        except (TypeError, ValueError):
+            return None
+    return None

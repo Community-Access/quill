@@ -196,8 +196,21 @@ def maybe_run_first_run(host: Any) -> bool:
     QUILL Cast's equivalent dialog has existed for months with **no caller at
     all**: written, tested, and never once shown. That is the failure this
     function exists to not repeat.
+
+    **It refuses over a window that is not on screen.** The launch path shows
+    the main window and *then* enters the loop this deferred call runs in, so
+    in a real launch the frame is always up. Anywhere else -- a frame built
+    and never shown, which is what a test harness does -- a modal would be a
+    dialog with nothing behind it and nobody able to answer it, and
+    ``ShowModal`` would sit there forever. A welcome nobody can see is not a
+    welcome; skipping it is the honest answer, and it costs a real launch
+    nothing because a real launch is always shown.
     """
     try:
+        frame = getattr(host, "frame", None)
+        is_shown = getattr(frame, "IsShown", None)
+        if frame is None or (callable(is_shown) and not is_shown()):
+            return False
         history = getattr(host, "_radio_history", None)
         state = getattr(history, "onboarding", None)
         if state is None:

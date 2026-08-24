@@ -11,54 +11,19 @@ from collections.abc import Callable
 
 from quill.core.podcasts.models import SPEED_MAX, SPEED_MIN, PodcastSettings
 from quill.ui.dialog_contract import apply_modal_ids
-
-_PLAYBACK_MODES = ("download", "stream")
-_PLAYBACK_LABELS = ("Download episodes", "Stream episodes")
-_RETENTION_MODES = ("keep_all", "keep_last_n", "delete_after_play")
-_RETENTION_LABELS = (
-    "Keep every episode",
-    "Keep only the most recent episodes",
-    "Delete after playing",
-)
-_DELETE_POLICIES = ("ask", "always", "never")
-_DELETE_LABELS = ("Ask me each time", "Always delete them", "Never delete them")
-#: Auto-download (1.1.0): the acquisition policy every new show starts with.
-_AUTO_DOWNLOAD_LABELS = (
-    "None -- download by hand",
-    "The newest episode",
-    "The newest 3",
-    "The newest 5",
-    "The newest 10",
-    "Every episode (full catalog)",
-)
-_AUTO_DOWNLOAD_VALUES = (0, 1, 3, 5, 10, -1)
-#: Which node the library tree lands on at launch.
-_LAUNCH_VIEW_LABELS = (
-    "The top of the library",
-    "New Episodes",
-    "Continue Listening",
-    "Inbox",
-    "Favorites",
-    "Recently Expired",
-)
-#: How long a listening history is kept. -1 is "do not keep one at all", which
-#: is short-circuited at the write rather than pruned afterwards; 0 is forever.
-_HISTORY_LABELS = (
-    "Do not keep a history",
-    "30 days",
-    "90 days",
-    "1 year",
-    "Keep forever",
-)
-_HISTORY_VALUES = (-1, 30, 90, 365, 0)
-
-_LAUNCH_VIEW_VALUES = (
-    "",
-    "new_episodes",
-    "continue_listening",
-    "inbox",
-    "favorites",
-    "recently_expired",
+from quill.ui.podcasts.podcast_settings_choices import (
+    _AUTO_DOWNLOAD_LABELS,
+    _AUTO_DOWNLOAD_VALUES,
+    _DELETE_LABELS,
+    _DELETE_POLICIES,
+    _HISTORY_LABELS,
+    _HISTORY_VALUES,
+    _LAUNCH_VIEW_LABELS,
+    _LAUNCH_VIEW_VALUES,
+    _PLAYBACK_LABELS,
+    _PLAYBACK_MODES,
+    _RETENTION_LABELS,
+    _RETENTION_MODES,
 )
 
 
@@ -228,6 +193,22 @@ class PodcastSettingsDialog:
             "part-played episodes are never deleted."
         )
         grid.Add(self._retention_days_ctrl, 0)
+
+        grid.Add(
+            wx.StaticText(self.dialog, label="When an episode has been played:"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL,
+        )
+        self._delete_played_check = wx.CheckBox(self.dialog, label="Delete its downloaded &file")
+        self._delete_played_check.SetName(
+            "Remove a downloaded file once you have finished the episode, however you "
+            "finish it -- playing it to the end, or marking it played. Not the age rule "
+            "above and not the storage cap: it composes with both. It never touches a "
+            "running download, and never goes back over episodes finished before you "
+            "switched it on."
+        )
+        self._delete_played_check.SetValue(bool(getattr(settings, "delete_after_play", False)))
+        grid.Add(self._delete_played_check, 0)
 
         grid.Add(
             wx.StaticText(self.dialog, label="Total download storage cap (MB, 0 = none):"),
@@ -569,6 +550,7 @@ class PodcastSettingsDialog:
             stats_streaks_enabled=self._streaks_check.GetValue(),
             download_retention_days=self._retention_days_ctrl.GetValue(),
             storage_cap_mb=self._storage_cap_ctrl.GetValue(),
+            delete_after_play=self._delete_played_check.GetValue(),
             playback_cache=self._playback_cache_ctrl.GetValue(),
             playback_cache_cap_mb=self._playback_cache_cap_ctrl.GetValue(),
             continue_after_queue=self._continue_queue_check.GetValue(),

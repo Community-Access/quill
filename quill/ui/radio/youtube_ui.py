@@ -374,10 +374,12 @@ def add_playlist_entries_as_stations(host: Any, entries: list[Any]) -> tuple[int
             stream_url=page_url,
             source="YouTube",
         )
-        # RadioFavoritesStore.add returns None, not a bool -- counting its
-        # return value would report "added 0" for every successful add.
-        store.add(station, custom=True)
-        added += 1
+        # add() answers whether anything was actually added since 11.6, so the
+        # count is now the truth rather than the number of rows we looked at.
+        if store.add(station, custom=True):
+            added += 1
+        else:
+            skipped += 1
     if added:
         # _save_radio_favorites, not _persist_radio_favorites: adding stations is
         # a structural change, and the standalone app's favorites tree has to be

@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.podcasts import transcript_export
+from quill.core.podcasts.onboarding import OnboardingState
 
 _FILE_NAME = "podcast_history.json"
 _MAX_ENTRIES = 15
@@ -57,6 +58,11 @@ class PodcastHistory:
 
     episodes: list[PlayedEpisode] = field(default_factory=list)
     resume_on_launch: bool = False
+    #: What the listener has already been shown of the first-run flow and the
+    #: one-shot tips. A nested record rather than three flat fields, because it
+    #: is one feature and reading it as one is how the caller uses it -- the
+    #: same shape Quill Radio's history carries.
+    onboarding: OnboardingState = field(default_factory=OnboardingState)
     #: Silently check GitHub releases for a newer QUILL Cast on launch (the
     #: same check Help > Check for Updates runs, just quiet unless a genuine
     #: update is found); on by default, one checkbox in Preferences (Ctrl+,)
@@ -130,6 +136,7 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.transcript_detail = transcript_export.normalize_detail(raw.get("transcript_detail"))
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
+        history.onboarding = OnboardingState.from_dict(raw.get("onboarding"))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
             played = PlayedEpisode.from_dict(entry)
@@ -152,6 +159,7 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
             "announce_dialog_transitions": history.announce_dialog_transitions,
             "alt_f4_to_tray": history.alt_f4_to_tray,
             "winamp_playback_keys": history.winamp_playback_keys,
+            "onboarding": history.onboarding.to_dict(),
             "episodes": [e.to_dict() for e in history.episodes],
         },
     )

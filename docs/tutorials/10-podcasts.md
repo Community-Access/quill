@@ -35,9 +35,12 @@ planned follow-up (see the end of this tutorial).
 
 Not ready to unsubscribe from a show but don't want new episodes right now?
 Right-click it in the tree (or open its context menu with Menu/Shift+F10)
-and choose **Pause Downloads for This Podcast** — it stays in your library,
-episodes and all, but QUILL stops fetching or downloading anything new for
-it until you choose **Resume Downloads for This Podcast** later.
+and choose **Pause Updates for This Podcast** — it stays in your library,
+episodes and all, but QUILL stops checking its feed *and* stops downloading
+anything new for it until you choose **Resume Updates for This Podcast**
+later. Pausing never cancels a download already running, and it never puts
+the show out of reach: **Refresh Feed** on that row still checks it any time
+you ask.
 
 ## 3. Download an episode for offline listening
 
@@ -124,6 +127,33 @@ time** (the default), **always delete them**, or **never delete them**.
 list — folder structure included — to a standard `.opml` file that any
 other podcast app can read. Bring it back into QUILL (or take it
 somewhere else) with **Import OPML...**, the same button you used in step 1.
+
+OPML moves subscriptions and nothing else. To move the rest — your folders
+and playlists, your settings, your Quick Action order, your bookmarks and the
+keys you rebound — use **Export My Setup...** and **Import My Setup...** on
+QUILL Cast's or Quill Radio's Help menu, which write one `.quillsetup` file.
+Passwords are never included, and importing replaces what is on the other
+machine rather than merging with it. Both of those say so before they act.
+
+## 9. If something goes wrong, or you want quiet
+
+Two surfaces worth knowing about, shared by QUILL Cast and Quill Radio.
+
+**Recent Problems** (Help > Recent Problems...) is a list of what has failed
+recently — a feed that could not be read, a download that died overnight, a
+stream that dropped — with the reason, the time, and a Retry. Announcements
+are transient by design, and before this list a spoken failure that went past
+while you were in another window was gone for good.
+
+**Quiet Hours** (Help > Quiet Hours...) is a window in which the apps stop
+speaking on their own. Feeds are still checked and downloads still run — only
+the announcements wait — and anything you press a key for still answers.
+Failures always speak.
+
+And if you do the wrong thing to the wrong row: **Ctrl+Z** takes back the last
+destructive step, once, and tells you what came back. Deleted files are moved
+aside rather than deleted outright, so an undo brings the audio back and not
+just the intention to fetch it again.
 
 ## What's not here yet
 

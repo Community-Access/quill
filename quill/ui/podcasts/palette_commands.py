@@ -18,6 +18,11 @@ def register_podcast_commands(host: Any) -> None:
         ("podcasts.speed_down", "Podcasts: Speed Down", host.podcast_speed_down),
         ("podcasts.speed_reset", "Podcasts: Reset Speed to Normal", host.podcast_speed_reset),
         (
+            "podcasts.go_to_position",
+            "Podcasts: Go to Position...",
+            host.podcast_go_to_position,
+        ),
+        (
             "podcasts.stop_after_episode",
             "Podcasts: Stop After This Episode",
             host.podcast_toggle_stop_after_episode,

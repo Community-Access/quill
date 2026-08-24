@@ -112,13 +112,15 @@ class ManagerActionsMixin:
         self._fill_episodes(self._current_show)
 
     def _on_bulk_mark_played(self) -> None:
+        from quill.core.podcasts import retention
+        from quill.core.podcasts.position_sync import mark_played
+
         rows = self._selected_rows()
         changed = 0
-        for _index, _show, episode in rows:
+        for _index, show, episode in rows:
             if not episode.played:
-                from quill.core.podcasts.position_sync import mark_played
-
                 mark_played(episode)
+                retention.on_episode_played(self._library, show, episode)
                 changed += 1
         if not changed:
             self._announce("Those episodes were already played.")
@@ -289,14 +291,45 @@ class ManagerActionsMixin:
         )
         if answer != wx.YES:
             return
-        for episode in unplayed:
-            from quill.core.podcasts.position_sync import mark_played
+        from quill.core.podcasts import retention
+        from quill.core.podcasts.position_sync import mark_played
+        from quill.ui import undo_last_ui
 
-            mark_played(episode)
+        library = self._library
+        # What each episode was before, so Ctrl+Z restores the marks *and* the
+        # positions -- "unplayed" alone would lose where you had got to.
+        before = [(e, e.played, e.position_ms, e.downloaded_path) for e in unplayed]
+        with undo_last_ui.capturing_deletes() as held:
+            for episode in unplayed:
+                mark_played(episode)
+                # Same rule as finishing one by ear: marking it played is saying
+                # you are done with it, however you say it.
+                retention.on_episode_played(library, show, episode)
+
+        def _undo() -> None:
+            for episode, played, position, path in before:
+                episode.played = played
+                episode.position_ms = position
+                episode.downloaded_path = path
+            undo_last_ui.restore(held)
+            self._on_library_changed()
+            self.refresh_tree()
+            self._fill_episodes(self._current_show)
+
+        undo_last_ui.remember(
+            "Mark All as Played",
+            show.title,
+            f"{len(unplayed)} unplayed episode(s)"
+            + (f" and {len(held)} downloaded file(s)" if held else ""),
+            _undo,
+            dispose=lambda: undo_last_ui.discard(held),
+        )
         self._on_library_changed()
         self.refresh_tree()
         self._fill_episodes(show if show is self._current_show else self._current_show)
-        self._announce(f"Marked {len(unplayed)} episode(s) of {show.title} as played")
+        self._announce(
+            undo_last_ui.offer(f"Marked {len(unplayed)} episode(s) of {show.title} as played")
+        )
 
     def _on_feed_credentials(self, show: PodcastShow) -> None:
         from quill.ui.podcasts.show_actions import feed_credentials_prompt
@@ -323,7 +356,11 @@ class ManagerActionsMixin:
         show.paused = not show.paused
         self._on_library_changed()
         self._announce(
-            f"Paused downloads for {show.title}"
+            # Says what pausing does *not* do, because "paused" reads as
+            # "downloads only" and it is both halves: no feed check either.
+            f"Paused updates for {show.title} -- no feed checks and no automatic "
+            "downloads; Refresh Feed on this show still works"
             if show.paused
-            else f"Resumed downloads for {show.title}"
+            else f"Resumed updates for {show.title} -- feed checks and automatic "
+            "downloads are back on"
         )

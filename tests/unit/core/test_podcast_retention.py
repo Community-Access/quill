@@ -6,7 +6,13 @@ from __future__ import annotations
 from pathlib import Path
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
-from quill.core.podcasts.retention import apply_delete_after_play, apply_keep_last_n
+from quill.core.podcasts.retention import (
+    apply_delete_after_play,
+    apply_keep_last_n,
+    on_episode_played,
+    wants_delete_after_play,
+)
+from quill.core.podcasts.subscriptions import PodcastLibrary
 
 
 def _downloaded_episode(tmp_path: Path, name: str, *, published: str) -> PodcastEpisode:
@@ -87,3 +93,59 @@ def test_apply_delete_after_play_noop_without_a_downloaded_file() -> None:
     settings = PodcastSettings(retention="delete_after_play")
 
     assert apply_delete_after_play(episode, settings) is False
+
+
+def test_delete_after_play_is_a_switch_that_composes_with_keep_last_n(tmp_path: Path) -> None:
+    """The point of the change: it is no longer one of three exclusive modes."""
+    episode = _downloaded_episode(tmp_path, "e1.mp3", published="2026-07-01")
+    settings = PodcastSettings(retention="keep_last_n", retention_count=5, delete_after_play=True)
+
+    assert wants_delete_after_play(settings) is True
+    assert apply_delete_after_play(episode, settings) is True
+    assert episode.downloaded_path == ""
+
+
+def test_legacy_retention_mode_still_means_delete_after_play() -> None:
+    """A settings file written before the switch existed must keep working."""
+    restored = PodcastSettings.from_dict({"retention": "delete_after_play"})
+
+    assert restored.delete_after_play is True
+    assert wants_delete_after_play(restored) is True
+
+
+def test_delete_after_play_round_trips_through_to_dict() -> None:
+    stored = PodcastSettings(delete_after_play=True).to_dict()
+
+    assert PodcastSettings.from_dict(dict(stored)).delete_after_play is True
+
+
+def test_delete_after_play_never_deletes_a_running_download(tmp_path: Path) -> None:
+    """A file still being written is not a file to remove out from under itself."""
+    episode = _downloaded_episode(tmp_path, "e1.mp3", published="2026-07-01")
+    settings = PodcastSettings(delete_after_play=True)
+
+    assert apply_delete_after_play(episode, settings, download_in_progress=True) is False
+    assert episode.downloaded_path
+    assert (tmp_path / "e1.mp3").exists()
+
+
+def test_on_episode_played_uses_the_shows_own_override(tmp_path: Path) -> None:
+    """One show can delete after playing while the library default does not."""
+    keeper = _downloaded_episode(tmp_path, "keep.mp3", published="2026-07-01")
+    goner = _downloaded_episode(tmp_path, "gone.mp3", published="2026-07-01")
+    plain = PodcastShow(id="s1", title="Plain", episodes=[keeper])
+    tidy = PodcastShow(id="s2", title="Tidy", episodes=[goner])
+    library = PodcastLibrary(shows=[plain, tidy], settings=PodcastSettings())
+    library.apply_show_override(tidy, delete_after_play=True)
+
+    assert on_episode_played(library, plain, keeper) is False
+    assert keeper.downloaded_path
+    assert on_episode_played(library, tidy, goner) is True
+    assert goner.downloaded_path == ""
+
+
+def test_on_episode_played_survives_a_show_it_cannot_place() -> None:
+    """Marking an episode played must never fail because of a settings lookup."""
+    episode = PodcastEpisode(guid="e1", title="e1", audio_url="https://x/e1.mp3")
+
+    assert on_episode_played(None, None, episode) is False

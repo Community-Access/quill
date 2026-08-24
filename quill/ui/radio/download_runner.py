@@ -26,7 +26,7 @@ import threading
 from pathlib import Path
 from typing import Any
 
-from quill.core.radio.download_queue import DownloadQueue, QueueItem
+from quill.core.radio.download_queue import FAILED, DownloadQueue, QueueItem
 
 
 def queue_of(host: Any) -> DownloadQueue:
@@ -71,6 +71,33 @@ def destination_for(host: Any, station: Any, *, work: str = "", author: str = ""
         author=author,
         existing_authors=_authors_on_disk(prefs),
     )
+
+
+def already_have(host: Any, station: Any, *, work: str = "", author: str = "") -> bool:
+    """True when this row is already saved, or already in the queue.
+
+    The predicate item 2.1 named as "the actual work": Quill Radio's Download
+    All fed the queue without ever asking whether a row was already here, so
+    it could not say how many it skipped -- and a bulk verb that cannot count
+    what it skipped is exactly the thing 11.4 is about.
+
+    Two questions, both answered locally and cheaply: is there an unfinished
+    or finished queue entry for this address, and is the file the runner would
+    write already sitting in the folder it would write it to.
+    """
+    from quill.core.radio import downloadable
+
+    url = str(getattr(station, "stream_url", "") or "")
+    if url:
+        for item in queue_of(host).items:
+            queued = str(getattr(item.station, "stream_url", "") or "")
+            if queued == url and item.state != FAILED:
+                return True
+    try:
+        folder = destination_for(host, station, work=work, author=author)
+        return (folder / downloadable.suggested_filename(station, url=url)).exists()
+    except OSError:
+        return False
 
 
 def _authors_on_disk(prefs: Any) -> dict[str, int]:
@@ -211,6 +238,18 @@ def _after(host: Any, queue: DownloadQueue, item: QueueItem) -> None:
         # chapter failing in a forty-chapter book is worth hearing about while
         # there is still something to do about it.
         _announce(host, f"{item.name} could not be downloaded.")
+        # ...and written down (11.5), because the sentence above goes past a
+        # listener who was in another window and never comes back.
+        from quill.core import problem_log
+        from quill.core.paths import app_data_dir
+
+        problem_log.record_problem(
+            app_data_dir(),
+            problem_log.KIND_DOWNLOAD,
+            f"{item.name} -- {item.group}" if item.group else item.name,
+            item.error or "the download failed",
+            target=str(getattr(item.station, "stream_url", "") or ""),
+        )
     pump(host)
 
 

@@ -73,13 +73,20 @@ class ManagerDownloadsMixin:
     def _on_remove_all_episodes(self, show: PodcastShow) -> None:
         from quill.ui.podcasts.show_actions import remove_all_episodes_prompt
 
-        removed = remove_all_episodes_prompt(
-            self.dialog, self._download_queue, show, announce=self._announce
-        )
-        if removed:
+        def _changed() -> None:
             self._on_library_changed()
             if show is self._current_show:
                 self._fill_episodes(show)
+
+        # _changed runs after the removal *and* after Ctrl+Z, so the list
+        # matches the library either way (11.3).
+        remove_all_episodes_prompt(
+            self.dialog,
+            self._download_queue,
+            show,
+            announce=self._announce,
+            on_change=_changed,
+        )
 
     def on_download_status_changed(self, item: DownloadItem) -> None:
         """Called (off the UI thread) by the mixin's queue callback."""

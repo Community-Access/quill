@@ -277,6 +277,29 @@ class PodcastSettings:
     #: ``virtual_views.view_label``). Views only -- a show's or episode's name
     #: belongs to its feed and is never renamable.
     view_names: dict[str, str] = field(default_factory=dict)
+    #: How often subscribed feeds are checked on their own, in minutes; 0 =
+    #: manually only. Shared by every app that reads this library, because a
+    #: show subscribed in Quill Radio and a show subscribed in QUILL Cast are
+    #: the same show, and two apps disagreeing about when to check it would
+    #: mean two requests, two answers and one confused listener. The choices
+    #: and the rules live in ``quill.core.podcasts.refresh_policy``.
+    #:
+    #: Manual by default. An app that starts reaching the network on a
+    #: schedule nobody chose is an app spending somebody else's data.
+    refresh_minutes: int = 0
+    #: Also check once at launch. Separate from the interval on purpose: a
+    #: listener who wants an hourly check does not necessarily want to wait on
+    #: the network while the app is opening.
+    refresh_on_launch: bool = False
+    #: Delete a downloaded file once the episode has been *played* -- an
+    #: independent switch, not a retention mode, so it composes with "keep the
+    #: last N" and with the age and storage rules rather than replacing one of
+    #: them. Age answers "this is old" and this answers "I am done with it",
+    #: and they are different questions.
+    #:
+    #: Never touches an in-progress download, and never applies retroactively
+    #: to episodes finished before it was switched on.
+    delete_after_play: bool = False
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -336,6 +359,9 @@ class PodcastSettings:
             "default_launch_view": self.default_launch_view,
             "show_sort_mode": self.show_sort_mode,
             "view_names": dict(self.view_names),
+            "refresh_minutes": self.refresh_minutes,
+            "refresh_on_launch": self.refresh_on_launch,
+            "delete_after_play": self.delete_after_play,
         }
 
     @classmethod
@@ -441,6 +467,13 @@ class PodcastSettings:
                 "title_az",
             ),
             view_names=view_names,
+            refresh_minutes=_coerce_int(data.get("refresh_minutes"), 0),
+            refresh_on_launch=bool(data.get("refresh_on_launch", False)),
+            # A file written before the switch existed carries the old
+            # retention *mode*, which meant exactly this; read it as True so
+            # nobody's downloads start piling up after an upgrade.
+            delete_after_play=bool(data.get("delete_after_play", False))
+            or str(data.get("retention", "")) == "delete_after_play",
         )
 
     @property

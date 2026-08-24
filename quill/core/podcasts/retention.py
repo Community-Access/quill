@@ -13,18 +13,48 @@ pressure is not a reason to throw away the thing somebody is halfway through.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastSettings, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
+
+#: Optional hook consulted before every retention deletion. Given the path,
+#: it returns True when it has taken responsibility for the file (moved it
+#: aside for one step of undo -- see :func:`quill.ui.undo_last_ui.capturing_deletes`)
+#: and False to let the ordinary unlink proceed. None in every other case, so
+#: the default behaviour is exactly what it was.
+_delete_hook: Callable[[Path], bool] | None = None
+
+
+def set_delete_hook(hook: Callable[[Path], bool] | None) -> Callable[[Path], bool] | None:
+    """Install *hook*; return whatever it replaced (so a scope can restore it).
+
+    Retention deletes files from several paths -- delete-after-play, keep-last-N,
+    the storage cap -- and a destructive verb that wants to be undoable has to
+    catch all of them without knowing which one fired. One hook, installed for
+    the duration of that verb, does it.
+    """
+    global _delete_hook
+    previous = _delete_hook
+    _delete_hook = hook
+    return previous
 
 
 def _delete_file(path_str: str) -> None:
     if not path_str:
         return
+    path = Path(path_str)
+    if _delete_hook is not None:
+        try:
+            if _delete_hook(path):
+                return
+        except Exception:  # noqa: BLE001 - a hook bug must not strand the file
+            pass
     try:
-        Path(path_str).unlink(missing_ok=True)
+        path.unlink(missing_ok=True)
     except OSError:
         pass
 
@@ -61,14 +91,65 @@ def apply_keep_last_n(show: PodcastShow, settings: PodcastSettings) -> list[Podc
     return to_prune
 
 
-def apply_delete_after_play(episode: PodcastEpisode, settings: PodcastSettings) -> bool:
-    """For ``retention == "delete_after_play"``, remove *episode*'s local
-    file now that it has played; returns True if a file was removed."""
-    if settings.retention != "delete_after_play" or not episode.downloaded_path:
+def wants_delete_after_play(settings: PodcastSettings) -> bool:
+    """Whether a finished episode's download should be removed (pure).
+
+    Two ways to say the same thing, because it used to be a *retention mode*
+    -- one of three, so choosing it meant giving up "keep the last N" -- and is
+    now an independent switch that composes with the rest. A settings file
+    written before the change still carries the mode, and it still means this.
+    """
+    return bool(
+        getattr(settings, "delete_after_play", False) or settings.retention == "delete_after_play"
+    )
+
+
+def apply_delete_after_play(
+    episode: PodcastEpisode,
+    settings: PodcastSettings,
+    *,
+    download_in_progress: bool = False,
+) -> bool:
+    """Remove *episode*'s local file now that it has played, if asked to.
+
+    Returns True if a file was removed.
+
+    *download_in_progress* is the one refusal: an episode can finish playing
+    from a partial file while the rest of it is still arriving (streamed
+    playback writes into the cache as it goes), and deleting the target of a
+    running download is how you get a half-written file nobody can play and a
+    download that reports success. The caller knows; this asks.
+    """
+    if not wants_delete_after_play(settings) or not episode.downloaded_path:
+        return False
+    if download_in_progress:
         return False
     _delete_file(episode.downloaded_path)
     episode.downloaded_path = ""
     return True
+
+
+def on_episode_played(library: Any, show: Any, episode: Any) -> bool:
+    """Apply the delete-after-play rule to an episode just marked played.
+
+    The one entry point every *"this is finished"* path shares -- the player's
+    own end-of-episode callback, Mark as Played on a row, Mark All Played, and
+    the positions Quill Radio hands back for episodes it finished. Before this
+    existed only the first of those deleted anything, so whether the file went
+    away depended on *how* you finished the episode, which is not a distinction
+    anybody makes.
+
+    Resolves the show's effective settings (a per-show override beats the
+    global default here as everywhere else) and returns whether a file was
+    removed, so the caller knows whether to save.
+    """
+    if show is None or episode is None:
+        return False
+    try:
+        settings = library.effective_settings(show)
+    except Exception:  # noqa: BLE001 - a settings lookup must never lose a mark
+        return False
+    return apply_delete_after_play(episode, settings)
 
 
 # -- library-wide storage management (1.1.0) --------------------------------
@@ -215,6 +296,8 @@ def format_bytes(size: int) -> str:
 __all__ = [
     "apply_age_limit",
     "apply_delete_after_play",
+    "on_episode_played",
+    "wants_delete_after_play",
     "apply_keep_last_n",
     "downloaded_episodes",
     "enforce_storage_cap",

@@ -88,8 +88,36 @@ class PodcastDialogsMixin:
             safe_mode=self._safe_mode,
             announce_cb=self._announce,
             on_library_changed=self._save_podcast_library,
+            # 11.6: when a feed is already followed, land the cursor on the row
+            # the listener already has rather than only refusing.
+            on_reveal_show=self._podcast_reveal_show,
         )
         dialog.show()
+
+    def _podcast_reveal_show(self, show_id: str) -> bool:
+        """Land the cursor on *show_id* in whichever list is open. True if it did.
+
+        The Podcast Manager first (it is what the Add dialog usually opens
+        over), then the app's own library tree. False where neither is up --
+        which is honest, and makes the spoken refusal say "Nothing was added"
+        instead of promising a move that did not happen.
+        """
+        manager = getattr(self, "_podcast_manager_dialog", None)
+        select = getattr(manager, "select_show", None)
+        if callable(select):
+            try:
+                if bool(select(show_id)):
+                    return True
+            except Exception:  # noqa: BLE001 - a reveal that fails is not fatal
+                pass
+        reload_tree = getattr(self, "_reload_library_tree", None)
+        if callable(reload_tree):
+            try:
+                reload_tree(keep_key=("show", show_id))
+                return True
+            except Exception:  # noqa: BLE001
+                return False
+        return False
 
     def _podcast_open_import_opml(self) -> None:
         # AddPodcastDialog already offers Import OPML...; reuse the same

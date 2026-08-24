@@ -161,11 +161,25 @@ def _retry(host: Any, token: int) -> None:
         return
     if _attempts(host) >= MAX_ATTEMPTS:
         reset(host)
+        name = getattr(station, "display_name", "") or "That station"
+        # A drop that outlasted every retry is exactly the failure worth a
+        # second look an hour later, so it is written down as well as said
+        # (11.5) -- with the station's address as the handle Retry needs.
+        from quill.core import problem_log
+        from quill.core.paths import app_data_dir
+
+        problem_log.record_problem(
+            app_data_dir(),
+            problem_log.KIND_STREAM,
+            name,
+            f"dropped and could not be reconnected after {MAX_ATTEMPTS} attempts",
+            target=str(getattr(station, "stream_url", "") or ""),
+        )
         host._set_state(
             RadioPlayerState.STOPPED,
             message=(
-                f"{getattr(station, 'display_name', '') or 'That station'} could not be "
-                f"reconnected after {MAX_ATTEMPTS} attempts. It may be off the air."
+                f"{name} could not be reconnected after {MAX_ATTEMPTS} attempts. "
+                "It may be off the air."
             ),
         )
         return

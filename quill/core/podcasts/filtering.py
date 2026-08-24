@@ -50,15 +50,48 @@ def filter_shows(shows: list[PodcastShow], mode: str) -> list[PodcastShow]:
 
 
 def filter_episodes_by_text(episodes: list[PodcastEpisode], query: str) -> list[PodcastEpisode]:
-    """Episodes whose title OR description contains *query* (case-insensitive
-    substring; an empty query matches everything) -- the episode list's
-    inline search box, distinct from the cross-library Search Everywhere."""
+    """Episodes whose title OR description contains *query*.
+
+    Case-insensitive substring; an empty query matches everything. This is the
+    episode list's own **inside one show** search (list.md section 5),
+    deliberately distinct from the cross-library Search Everywhere: the answer
+    to "which episode of *this* show was the one about the harbour" should not
+    arrive mixed with forty other shows.
+
+    Titles *and* descriptions, because a show that numbers its episodes and
+    describes them in the notes -- which is most interview podcasts -- is
+    exactly the case where a title-only search finds nothing at all.
+    """
     needle = query.strip().casefold()
     if not needle:
         return list(episodes)
     return [
         e for e in episodes if needle in e.title.casefold() or needle in e.description.casefold()
     ]
+
+
+def search_summary(matched: int, total: int, query: str, *, noun: str = "episode") -> str:
+    """What an in-show search says on submit (section 5.3).
+
+    Counted, like every other list verb in this family (11.4): a search that
+    says only "found" leaves a listener who cannot see the list unable to tell
+    one match from forty. A search with no matches says what was searched
+    rather than announcing a zero, and says that the filter above it may be
+    the reason.
+    """
+    text = query.strip()
+    if not text:
+        return f"Search cleared. Showing all {total} {noun}{'' if total == 1 else 's'}."
+    if not matched:
+        return (
+            f"No {noun} matches {text!r}. {total} {noun}"
+            f"{'' if total == 1 else 's'} were searched, titles and descriptions; "
+            "a filter above may be narrowing the list."
+        )
+    return (
+        f"{matched} of {total} {noun}{'' if total == 1 else 's'} match {text!r}, "
+        "by title or description."
+    )
 
 
 def filter_shows_by_text(shows: list[PodcastShow], query: str) -> list[PodcastShow]:

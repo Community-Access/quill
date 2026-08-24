@@ -37,6 +37,7 @@ from quill.ui.media.list_columns_view import fill_row
 from quill.ui.podcasts.manager_actions import ManagerActionsMixin
 from quill.ui.podcasts.manager_downloads import ManagerDownloadsMixin
 from quill.ui.podcasts.manager_phase4 import ManagerPhase4Mixin
+from quill.ui.podcasts.manager_reveal import ManagerRevealMixin
 from quill.ui.podcasts.manager_row_view import ManagerRowViewMixin
 from quill.ui.podcasts.player_controller import PodcastPlayerController
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
@@ -117,6 +118,7 @@ def _shows_episodes(library: PodcastLibrary, folder_id: str) -> list[PodcastEpis
 
 
 class PodcastManagerDialog(
+    ManagerRevealMixin,
     ManagerPhase4Mixin,
     ManagerActionsMixin,
     ManagerDownloadsMixin,
@@ -746,17 +748,23 @@ class PodcastManagerDialog(
         if show is not None:
             from quill.ui.podcasts.manager_menus import build_menu
 
-            # Pause Downloads is not a Quick Action: it is a state of the
-            # subscription's *transfers*, not something you do to the show.
+            # Pause Updates is not a Quick Action: it is a state of the
+            # subscription, not something you do to the show. It was called
+            # "Pause Downloads" until somebody reasonably read that as
+            # "downloads only" -- it stops the feed check too, and the label
+            # now says which.
             pause_label = (
-                "&Resume Downloads for This Podcast"
+                "&Resume Updates for This Podcast"
                 if show.paused
-                else "&Pause Downloads for This Podcast"
+                else "&Pause Updates for This Podcast"
             )
             pause_item = menu.Append(wx.ID_ANY, pause_label)
             pause_item.SetHelp(
-                "Keeps the podcast in your library but stops fetching or "
-                "downloading new episodes for it."
+                "Stops both halves of keeping this show current: no feed checks "
+                "for new episodes, and no automatic downloads. It does not "
+                "unsubscribe you, does not remove episodes or downloaded files, "
+                "does not stop a download already running, and does not disable "
+                "Refresh Feed on this show -- that still checks it on demand."
             )
             menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_show_paused(show), pause_item)
             if show.route_to_inbox and show.inbox_default_folder_id:
@@ -1032,23 +1040,10 @@ class PodcastManagerDialog(
         menu.Destroy()
 
     def _on_episode_key_down(self, event: object) -> None:
-        """Ctrl+1..Ctrl+9 run the first nine Quick Actions for this episode."""
-        from quill.ui.podcasts.manager_menus import run_direct_key
+        """Ctrl+1..Ctrl+9 and Enter, over this episode's Quick Actions."""
+        from quill.ui.podcasts.manager_keys import handle_episode_key
 
-        wx = self._wx
-        code = event.GetKeyCode()
-        if event.ControlDown() and not event.ShiftDown() and not event.AltDown():
-            if ord("1") <= code <= ord("9"):
-                if run_direct_key(self._resolved_episode_actions(), code - ord("0")):
-                    return
-                self._announce("That Quick Action is not available for this episode.")
-                return
-        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-            actions = self._resolved_episode_actions()
-            if actions and actions[0].enabled:
-                actions[0].run()
-                return
-        event.Skip()
+        handle_episode_key(self, event)
 
     def _on_view_show_notes(self, episode: PodcastEpisode) -> None:
         from quill.ui.podcasts import transcript_actions
@@ -1065,6 +1060,18 @@ class PodcastManagerDialog(
 
     def _on_toggle_played(self, episode: PodcastEpisode) -> None:
         position_sync.mark_played(episode, not episode.played)
+        if episode.played:
+            from quill.core.podcasts import retention
+
+            show = self._current_show or next(
+                (
+                    candidate
+                    for candidate in self._library.shows
+                    if any(item.guid == episode.guid for item in candidate.episodes)
+                ),
+                None,
+            )
+            retention.on_episode_played(self._library, show, episode)
         self._on_library_changed()
         self._refresh_selected_episode_row()
         self._announce("Marked as played" if episode.played else "Marked as unplayed")

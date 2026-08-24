@@ -59,7 +59,7 @@ The Podcasts dialog's **Add Podcast...** button opens a dialog with three ways i
 The Podcasts dialog shows a folder tree on the left and, for whatever folder or show is selected, an episode list on the right — the same tree-and-list shape Internet Radio's dialogs use.
 
 - **New Folder...** creates a folder, nested under whatever's currently selected in the tree.
-- A show's right-click context menu (or Menu/Shift+F10) offers **Refresh Feed** (check for new episodes now), **Pause/Resume Downloads for This Podcast** (keeps the show, its episodes, and any downloads in your library, but stops fetching or downloading anything new until you resume it), and **Unsubscribe**.
+- A show's right-click context menu (or Menu/Shift+F10) offers **Refresh Feed** (check for new episodes now), **Pause/Resume Updates for This Podcast** (stops both halves of keeping the show current -- no automatic feed checks and no automatic downloads -- while keeping the show, its episodes and any downloads in your library; it does not stop a download already running, and **Refresh Feed** on the row still checks the show whenever you ask), and **Unsubscribe**.
 - **Unsubscribe** also works with the **Delete** key on a selected show. What happens to that show's downloaded files depends on **Podcast Settings...** (below): ask each time, always delete them, or never delete them.
 
 #### Podcast Settings
@@ -235,6 +235,30 @@ launches it.
 The app respects Safe Mode (`QUILL_SAFE_MODE=1`) and skips the tray icon on
 macOS, where the system has no equivalent notification-area icon (the same rule
 QUILL itself follows).
+
+## User guide: undo, Recent Problems, quiet hours and setup transfer
+
+_Moved from the standalone user guides, where the full sections live. Summarised
+here because these four surfaces are shared with Quill Radio and QUILL, and a
+reader of QUILL's own docs needs to know they exist and that they behave
+identically in each._
+
+- **Ctrl+Z** takes back the last destructive step, once, and says what came
+  back. Deleted files are moved aside rather than unlinked, so an undo restores
+  the bytes. **QUILL itself does not take part**: its Ctrl+Z is the editor's
+  undo, and nothing is held aside there.
+- **Help > Recent Problems...** is a bounded local list of what has failed
+  recently -- feeds, downloads, dropped streams -- each with its reason, its
+  time and a Retry. It exists because announcements are transient: before it, a
+  spoken failure that was missed was gone for good.
+- **Help > Quiet Hours...** silences the announcements the apps make *on their
+  own* inside a window you choose. Feeds are still checked and downloads still
+  run; anything you press a key for still answers; failures always speak. One
+  window, shared by the family.
+- **Help > Export / Import My Setup...** carries subscriptions, folders,
+  favorites, places, settings and bookmarks between machines in one
+  `.quillsetup` file. Passwords are never in it, and import replaces rather
+  than merges.
 
 ## User guide: background podcast-feed checks
 

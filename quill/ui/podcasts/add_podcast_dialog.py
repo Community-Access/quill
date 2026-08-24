@@ -33,6 +33,7 @@ class AddPodcastDialog:
         safe_mode: bool,
         announce_cb: Callable[[str], None] | None = None,
         on_library_changed: Callable[[], None] | None = None,
+        on_reveal_show: Callable[[str], bool] | None = None,
     ) -> None:
         import wx
 
@@ -42,6 +43,9 @@ class AddPodcastDialog:
         self._safe_mode = safe_mode
         self._announce = announce_cb or (lambda _m: None)
         self._on_library_changed = on_library_changed or (lambda: None)
+        #: Land the cursor on a show already in the library (11.6). Returns
+        #: whether it could; None where there is no list to move in.
+        self._on_reveal_show = on_reveal_show
         self._search_results: list[itunes_search.PodcastSearchResult] = []
 
         self.dialog = wx.Dialog(
@@ -272,8 +276,9 @@ class AddPodcastDialog:
         if self._safe_mode:
             self._status.SetLabel("Adding podcasts is disabled in Safe Mode.")
             return
-        if self._library.find_show_by_feed_url(feed_url) is not None:
-            self._status.SetLabel("You're already subscribed to that feed.")
+        existing = self._library.find_show_by_feed_url(feed_url)
+        if existing is not None:
+            self._say_already_have(existing)
             return
         self._status.SetLabel(f"Fetching {title_hint or feed_url}...")
 
@@ -322,7 +327,8 @@ class AddPodcastDialog:
         )
         added = self._library.add_show(show)
         if not added:
-            self._status.SetLabel("You're already subscribed to that feed.")
+            existing = self._library.find_show_by_feed_url(feed_url)
+            self._say_already_have(existing or show)
             self._return_focus_to_results(result_index)
             return
         if username and password:
@@ -334,6 +340,29 @@ class AddPodcastDialog:
         self._announce(f"Subscribed to {show.title}")
         self._url_ctrl.SetValue("")
         self._return_focus_to_results(result_index)
+
+    def _say_already_have(self, show: Any) -> None:
+        """Name the show you already follow, and go to it if we can (11.6).
+
+        The status label alone was not enough: a StaticText that changes is
+        silent to a screen reader, so "You're already subscribed to that feed"
+        was, in practice, nothing happening. It is announced now, it names the
+        show rather than "that feed", and where the Podcast Manager is open
+        behind this dialog the cursor lands on the row you already have.
+        """
+        from quill.core import duplicate_add
+
+        title = str(getattr(show, "title", "") or "that podcast")
+        moved = False
+        reveal = self._on_reveal_show
+        if reveal is not None:
+            try:
+                moved = bool(reveal(str(getattr(show, "id", "") or "")))
+            except Exception:  # noqa: BLE001 - a reveal that fails is not fatal
+                moved = False
+        sentence = duplicate_add.already_have("podcast", title, moved=moved)
+        self._status.SetLabel(sentence)
+        self._announce(sentence)
 
     def _return_focus_to_results(self, result_index: int | None) -> None:
         """After subscribing from a search result, put focus back on the list.

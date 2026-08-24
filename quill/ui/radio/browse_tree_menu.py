@@ -350,6 +350,13 @@ def _popup(dialog: Any, entries: list, handlers: dict) -> None:
         item = menu.Append(item_id, row_actions.menu_label(action))
         if not action.enabled:
             item.Enable(False)
+            # Why it is dimmed, on the item itself (11.2): the status bar
+            # shows this and the readers that voice menu help speak it, so a
+            # greyed row is no longer a dead end you cannot see around.
+            try:
+                item.SetHelp(action.unavailable_sentence())
+            except Exception:  # noqa: BLE001 - help text is best-effort
+                pass
         menu.Bind(wx.EVT_MENU, lambda _e, h=handler: h(), id=item_id)
     # A SEPARATE attribute: assigning dialog._menu_id_refs here would drop the
     # menu-bar Close id ref pinned in it, re-exposing the id-reuse bug where
@@ -458,10 +465,36 @@ def unsubscribe(dialog: Any, node: Any, kind: str, args: list[str]) -> None:
         dialog._announce("That show's feed could not be found, so nothing was unsubscribed.")
         return
     from quill.core.paths import app_data_dir
+    from quill.core.podcasts.subscriptions import load_library, save_library
     from quill.core.radio.podcast_follow import unfollow_feed
+    from quill.ui import undo_last_ui
 
-    result = unfollow_feed(app_data_dir(), feed)
+    # What is about to go, captured before it goes: the show object itself and
+    # its place in the library, so Ctrl+Z puts the subscription back exactly
+    # where it was rather than re-adding it at the end (11.3).
+    data_dir = app_data_dir()
+    before = load_library(data_dir)
+    doomed = before.find_show_by_feed_url(feed)
+    position = before.shows.index(doomed) if doomed is not None else 0
+    result = unfollow_feed(data_dir, feed)
     spoken = result.spoken
+    if result.removed and doomed is not None:
+
+        def _undo() -> None:
+            library = load_library(data_dir)
+            library.shows.insert(min(position, len(library.shows)), doomed)
+            save_library(data_dir, library)
+            from quill.ui.radio import browse_reveal
+
+            browse_reveal.refetch_subscriptions(dialog)
+
+        undo_last_ui.remember(
+            "Unsubscribe",
+            doomed.title or feed,
+            f"{len(doomed.episodes)} episode(s)",
+            _undo,
+        )
+        spoken = undo_last_ui.offer(spoken)
     if result.removed:
         from quill.ui.radio import browse_reveal
 

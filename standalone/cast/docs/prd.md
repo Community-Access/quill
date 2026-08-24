@@ -803,4 +803,270 @@ window built is the very next thing somebody does.
 `tests/unit/core/podcasts/test_podcast_list_columns.py` fails the build if the
 catalogue offers a column no fill site produces.
 
+## 18. What both listening apps owe a listener (2026-08-24)
+
+Eleven requirements that arrived together because most of them are **one
+answer shared between Quill Radio and QUILL Cast** rather than two answers
+that happen to agree today. Where a section below says "shared", the store,
+the module and the wording are literally one thing, and a change to either
+app changes both.
+
+### 18.1 Nothing is a dead end
+
+**Requirement.** A command that cannot run says *why*, at the moment somebody
+asks for it.
+
+This family dims a great deal on purpose: Mark All as Played with nothing
+unheard is a **state of a verb the row owns**, which is exactly why it dims
+rather than vanishing -- a verb that comes and goes teaches nobody anything.
+But a screen reader says "dimmed" and stops, and the item itself said nothing
+about what would un-dim it. That is a dead end you cannot see around.
+
+Every dimmed action now carries a `reason`: one lower-case clause naming the
+condition, with a count wherever a count makes it concrete.
+
+- **Where it lives.** `quill/core/dimmed_reason.py` -- shared vocabulary, so
+  the two apps say the same thing. `RowAction` (Radio) and `ResolvedAction`
+  (Cast) carry the reason beside the label, in the same wx-free table.
+- **Where it is spent.** The context menu's help string; the Quick Action
+  direct keys (Ctrl+1..Ctrl+9), which used to answer "that Quick Action is not
+  available"; and the command palette, through the registry's availability
+  probe (`quill/ui/app_availability.py`) that every shell app now installs.
+- **Wording.** Lower case, no trailing stop (`explain()` supplies both), state
+  the condition rather than the fix, and prefer a count to an adjective:
+  "nothing to download, all 40 are already here" answers a question "nothing
+  to download" leaves open.
+- **Enforced.** `tests/unit/ui/test_dimmed_action_reasons.py`: an action built
+  with a conditional `enabled=` and no `reason` fails the build.
+
+### 18.2 One step of undo, in preference to a prompt on every verb
+
+**Requirement.** The last destructive action can be taken back, once, and the
+offer is spoken.
+
+A confirmation prompt is the cheap answer and a poor one: it costs a keystroke
+and a sentence *every single time*, including the nine hundred times the
+listener meant it, and it still cannot help the one time the wrong row was
+focused. One step of undo is cheaper than a prompt on every verb and kinder
+than either.
+
+- **Scope.** Unsubscribe, Remove All Episodes, Remove All Downloads, Mark All
+  as Played, Delete Recording -- in both apps.
+- **One slot, not a stack** (`quill/core/undo_last.py`). Remembering displaces;
+  taking empties. A listener who has to remember how many times to press
+  Ctrl+Z has been given a puzzle, not an undo.
+- **Deleted files are moved aside, not unlinked.** `hold_files` puts them in a
+  holding folder that only ever contains the one undoable step; the slot's
+  disposer empties it when the step is displaced. Ctrl+Z restores the bytes,
+  not the intention to fetch them again. No new dependency and no recycle-bin
+  round trip.
+- **Retention deletions are caught too.** `capturing_deletes()` installs a hook
+  on `core/podcasts/retention.py` for the duration of one verb, so
+  delete-after-play, keep-last-N and the storage cap are held with the rest.
+- **It says what it cannot bring back.** A private feed's stored password is
+  deleted by design when you unsubscribe; the offer says so in the same breath.
+- **QUILL itself never activates.** Its Ctrl+Z is the editor's, and
+  `hold_or_delete` deletes outright without a slot -- so no bytes are ever held
+  aside for a slot nobody can reach.
+- **The offer is spoken.** Every undoable verb ends its announcement with
+  "Ctrl+Z undoes this": an undo you do not know about is not an undo.
+
+### 18.3 A verb that touches many rows says how many
+
+**Requirement.** Every action on more than one row ends by announcing exact
+eligible / done / skipped counts, with the skipped *reason* beside the number.
+
+"Removed downloads" tells a listener who cannot see the list neither how many
+files went nor whether the ones it could not touch were mentioned.
+
+- `quill/core/counted.py` is the shared vocabulary; nothing eligible is a
+  sentence of its own that says *why*, and failures are never folded into
+  skipped (a file that could not be deleted and a file deliberately kept are
+  different news).
+- **GATE-BULK-COUNT** (`quill/tools/bulk_count_audit.py`) covers every
+  bulk-named function in both apps, each classified `counted` /
+  `counts-elsewhere` / `no-announce`; a new one that announces no count fails
+  the build. Silent truncation is a failure too: a verb that caps its work
+  says what it deferred.
+
+### 18.4 A failure that was spoken once still exists
+
+**Requirement.** Feeds, downloads, recordings and streams that fail are
+written down, with reason, time and a way to try again.
+
+Announcements are transient by design, which is right until the sentence you
+needed went past while you were in another window. That was the one place this
+family was **not** screen-reader-first: a sighted listener still had a list to
+scroll back through and a listener who missed the speech had nothing at all.
+
+- `quill/core/problem_log.py`: bounded (200), newest-first, local, and shared
+  by both apps. Consecutive identical failures collapse onto one row's
+  timestamp, so a feed checked every fifteen minutes cannot fill the window by
+  itself -- but a *different* reason is a different fact and gets its own row.
+- **Retry is registered by kind, not stored as a closure**, because the log
+  outlives the session that wrote it: a row from last Tuesday must be
+  retryable by today's handler. A kind nothing claims simply has no Retry, and
+  the button says so rather than pretending.
+- **Never carries a credential.** Copy All is meant for a bug report.
+
+### 18.5 Quiet hours, and the line they must not cross
+
+**Requirement.** One window, shared by both apps, in which the apps stop
+speaking *on their own*.
+
+**Unprompted is the whole distinction, and it is a hard rule.** Quiet hours
+must never silence the answer to a keypress: a listener who presses Play at
+three in the morning is entitled to hear what is playing, because they asked.
+What is held back is speech nobody asked for -- check ticks, new-episode
+notices, download notices, reminders. This is why the implementation is a
+small vocabulary of *kinds* each call site opts into
+(`quill/core/quiet_hours.py`) rather than a gate around `_announce`: a gate
+would silence replies as well, and no amount of care at the call sites would
+make that safe.
+
+- `Kind.URGENT` is never held back. A recording that failed at 3 a.m. is
+  exactly the thing somebody set an alarm-clock radio for, and an app that
+  swallowed it to be polite would have chosen the wrong side.
+- Windows wrap past midnight (22:00-07:00 is the ordinary case), and a
+  zero-length window means *nothing* rather than everything.
+- One explicit override: reminders may be let through, since an alarm clock is
+  a reason to set one.
+- The readout says what the setting does **not** do -- feeds are still checked,
+  downloads still run -- because "quiet hours" invites exactly those two
+  misreadings.
+- This is most of the machinery the Reminders feature needs for Do Not Disturb.
+
+### 18.6 The setup is portable, and says what it is not carrying
+
+**Requirement.** One file carries everything this machine has been taught, out
+and back in.
+
+OPML moves subscriptions and nothing else -- which is to say it moves the part
+that was easy to standardise and leaves the part somebody actually built.
+
+- A `.quillsetup` is an ordinary ZIP with a readable manifest, over a
+  **declared inventory** (`quill/core/setup_transfer.py`) of 17 stores. Not a
+  sweep of the data folder: a sweep would eventually carry a cache, a lock
+  file, or a credential nobody meant to move.
+- **No secrets, ever**, and the report says so rather than leaving somebody to
+  discover it. A test enforces that no secret store is in the inventory, and
+  import refuses to write any file the inventory does not name -- a setup file
+  is not a way to drop an arbitrary file into somebody's data folder.
+- **Import replaces, and says so first.** Merging two libraries is a different
+  feature with different questions; pretending otherwise would be the
+  expensive kind of kindness.
+
+### 18.7 A place is a place, whichever app you were in
+
+**Requirement.** An episode started in one app picks up in the other, on this
+machine, at the position the listener last decided on.
+
+Listening Places already defined *what a place is* between devices. What was
+missing was one shared local store and the write on pause -- Radio never wrote
+a position when you paused at all, so its handoff to Cast reported wherever
+you had last pressed Stop.
+
+- **Last write wins, not furthest wins** -- the rule `position_sync` already
+  states for cross-device sync, for the same reason. Somebody who skipped to
+  the outro to check something and went back to the middle has *decided* the
+  middle is where they are; an app that dragged them forward again would be
+  overruling them with arithmetic.
+- **A finish is sticky.** "Finished" and "at 0:00" are the same stored state,
+  so reading a newer zero as "start again" would undo a completion every time.
+- **The jump is explained.** A cross-app resume says which app the place came
+  from; a jump nobody explained is indistinguishable from a bug. Resuming
+  where you left off in the app you left off in stays silent, because that is
+  the ordinary behaviour and does not need narrating.
+
+### 18.8 Adding something you already have
+
+**Requirement.** Say so, name it, and move to the row that already exists.
+
+The reason anybody adds a thing twice is that they could not find the first
+one, so a refusal that leaves the cursor where it was answers the wrong
+question. The root cause on the Radio side was a store that answered `None`
+whether or not it had added anything, so every caller announced success over
+nothing happening.
+
+### 18.9 Find an episode inside one show
+
+**Requirement.** Search the episodes of the show you are on, over **titles and
+descriptions**, composing with the state filter and the sort, announcing the
+match count on submit.
+
+Between "filter by state" and a cross-library search there was nothing, so
+*which episode of this show was the one about the harbour* had no answer but
+arrowing two hundred rows. Descriptions are in scope because a show that
+numbers its episodes and puts the subject in the notes -- most interview
+podcasts -- is precisely where a title-only search finds nothing.
+
+- **It narrows, it does not replace.** The query is applied inside the filter
+  step, after the state filter and before the sort, so all three compose.
+- **Typing is silent; Enter counts.** A per-keystroke announcement talks over
+  the typing. No matches says what was searched and that a filter above may be
+  the reason, rather than announcing a bare zero.
+
+### 18.10 Timeline verbs mean the same thing in both players
+
+**Requirement.** One parser and one dialog for "go to this position", and one
+key for Skip Silence.
+
+- `1:02:03`, `62:03` and `3723` are the same moment in both apps. They were
+  not: two parsers disagreed, and Cast's jump existed only on a Winamp letter
+  key -- which means it existed for whoever had those keys on and knew about
+  them, and for nobody else.
+- Skip Silence is a transport verb in both, on the same key, because the
+  shared transport table's contract is that a verb means the same thing in
+  each player. Cast had it as a per-show setting with no way to reach it while
+  listening, which is the only moment anybody forms an opinion about it.
+
+### 18.11 Every surface says what it is for
+
+**Requirement.** F1 in QUILL Cast opens with an authored paragraph about the
+window, exactly as Quill Radio's has since 3.0 -- and a new window cannot ship
+without one.
+
+The family-wide F1 engine had worked everywhere since 2026-08-23 and only
+Radio had authored purposes, so every Cast window answered with the generic
+sentence: true, and useless.
+
+**GATE-CAST-HELP** (`quill/tools/cast_help_audit.py`) mirrors GATE-RADIO-HELP
+over the podcast UI. The scanner and snapshot rules both gates share now live
+in `quill/tools/help_audit.py`, so the two cannot drift.
+
+## 19. The first launch (2026-08-24)
+
+**Requirement.** A genuinely first launch shows three screens -- welcome, add
+your first podcast, you're set -- and nothing else ever does.
+
+The screens themselves shipped in 1.1. **Nothing called them**, for two
+releases, which is the failure Quill Radio's equivalent carries a docstring
+about; a feature can be written, reviewed and fully unit-tested and still be
+entirely absent, because nothing in a test suite asks "and can anybody reach
+this?".
+
+Four rules the flow follows:
+
+- **Skip is a first-class button**, and skipping counts as done. Somebody who
+  skipped chose to; asking again next launch would override that with a guess.
+- **Not for somebody who already has podcasts**, however they got there -- an
+  imported OPML, a restored `.quillsetup`, an upgrade. Explaining how to add a
+  first podcast to somebody with two hundred says nobody checked.
+- **It refuses over a window that is not on screen.** A deferred modal with
+  nothing behind it is a hang rather than a welcome, and a welcome nobody can
+  see is not a welcome. Safe because the launch path shows the main window
+  before entering the loop the deferred call runs in.
+- **It never raises.** A welcome that can take the app down on its very first
+  launch would be the worst possible first impression.
+
+The state persists in `PodcastHistory.onboarding`, a nested record of ids
+rather than a version number -- a tip added next year should fire for somebody
+who has used Cast for a year, and a version stamp would say they had seen it.
+
+**The wiring is what the tests assert.**
+`tests/unit/ui/test_podcast_first_run.py` checks that the app actually calls
+the flow and that the launch shows its window first, alongside the behaviour:
+a test that only exercised the dialog would have passed throughout the two
+releases in which nobody could reach it.
+
 See `CHANGELOG.md` for the full, versioned history.

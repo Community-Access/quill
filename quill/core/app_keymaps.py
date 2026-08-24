@@ -62,6 +62,30 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # what state the player is in.
         "radio.stop": "Ctrl+Alt+P",
         "adp.ask": "Ctrl+Alt+Shift+Q",
+        # One step of undo for the destructive verbs (11.3). Radio has no
+        # editor, so Ctrl+Z is free here in exactly the way it is not in QUILL.
+        "app.undo_last": "Ctrl+Z",
+        # Recent Problems: the list a transient announcement goes into. On
+        # Help, beside the other "what is going on here" surfaces.
+        "app.recent_problems": "Ctrl+Alt+Shift+P",
+        # Quiet Hours: the window in which the app stops speaking on its own.
+        "app.quiet_hours": "Ctrl+Alt+Shift+Z",
+        # Move my setup to another machine: one file out, one file in.
+        "app.export_setup": "Ctrl+Alt+Shift+X",
+        "app.import_setup": "Ctrl+Alt+Shift+N",
+    },
+    # QUILL Cast had no app keymap at all until undo needed one: every other
+    # Cast accelerator is either a shared default or baked into a menu label.
+    "cast": {
+        "app.undo_last": "Ctrl+Z",
+        # The same key Quill Radio's Go to Position uses, so "jump to the bit
+        # forty minutes in" is one keystroke in both players (11.8).
+        "podcasts.go_to_position": "Ctrl+Alt+J",
+        "app.recent_problems": "Ctrl+Alt+Shift+P",
+        "app.quiet_hours": "Ctrl+Alt+Shift+Z",
+        # Move my setup to another machine: one file out, one file in.
+        "app.export_setup": "Ctrl+Alt+Shift+X",
+        "app.import_setup": "Ctrl+Alt+Shift+N",
     },
 }
 

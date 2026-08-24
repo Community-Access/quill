@@ -66,6 +66,10 @@ BUTTONS: tuple[tuple[str, str], ...] = (
     (tc.SPEED_DOWN, "Slo&wer"),
     (tc.SPEED_UP, "Fas&ter"),
     (tc.SPEED_RESET, "Norma&l Speed"),
+    # Skip Silence sits with the speed buttons because that is what it is for:
+    # getting through the same hour faster (11.7). K, because S is Stop, F is
+    # Skip Forward and every letter of "silence" that reads well was taken.
+    (tc.SKIP_SILENCE, "S&kip Silence"),
     (tc.VOLUME_DOWN, "Volume &Down"),
     (tc.VOLUME_UP, "Vol&ume Up"),
     (tc.MUTE, "&Mute/Unmute"),

@@ -318,10 +318,12 @@ tree-and-list shape Internet Radio’s dialogs use.</p>
 whatever’s currently selected in the tree.</li>
 <li>A show’s right-click context menu (or Menu/Shift+F10) offers
 <strong>Refresh Feed</strong> (check for new episodes now),
-<strong>Pause/Resume Downloads for This Podcast</strong> (keeps the
-show, its episodes, and any downloads in your library, but stops
-fetching or downloading anything new until you resume it), and
-<strong>Unsubscribe</strong>.</li>
+<strong>Pause/Resume Updates for This Podcast</strong> (stops both
+halves of keeping the show current – no automatic feed checks and no
+automatic downloads – while keeping the show, its episodes and any
+downloads in your library; it does not stop a download already running,
+and <strong>Refresh Feed</strong> on the row still checks the show
+whenever you ask), and <strong>Unsubscribe</strong>.</li>
 <li><strong>Unsubscribe</strong> also works with the
 <strong>Delete</strong> key on a selected show. What happens to that
 show’s downloaded files depends on <strong>Podcast Settings…</strong>
@@ -705,6 +707,34 @@ Quill</strong> launches it.</p>
 <p>The app respects Safe Mode (<code>QUILL_SAFE_MODE=1</code>) and skips
 the tray icon on macOS, where the system has no equivalent
 notification-area icon (the same rule QUILL itself follows).</p>
+<h2
+id="user-guide-undo-recent-problems-quiet-hours-and-setup-transfer">User
+guide: undo, Recent Problems, quiet hours and setup transfer</h2>
+<p><em>Moved from the standalone user guides, where the full sections
+live. Summarised here because these four surfaces are shared with Quill
+Radio and QUILL, and a reader of QUILL’s own docs needs to know they
+exist and that they behave identically in each.</em></p>
+<ul>
+<li><strong>Ctrl+Z</strong> takes back the last destructive step, once,
+and says what came back. Deleted files are moved aside rather than
+unlinked, so an undo restores the bytes. <strong>QUILL itself does not
+take part</strong>: its Ctrl+Z is the editor’s undo, and nothing is held
+aside there.</li>
+<li><strong>Help &gt; Recent Problems…</strong> is a bounded local list
+of what has failed recently – feeds, downloads, dropped streams – each
+with its reason, its time and a Retry. It exists because announcements
+are transient: before it, a spoken failure that was missed was gone for
+good.</li>
+<li><strong>Help &gt; Quiet Hours…</strong> silences the announcements
+the apps make <em>on their own</em> inside a window you choose. Feeds
+are still checked and downloads still run; anything you press a key for
+still answers; failures always speak. One window, shared by the
+family.</li>
+<li><strong>Help &gt; Export / Import My Setup…</strong> carries
+subscriptions, folders, favorites, places, settings and bookmarks
+between machines in one <code>.quillsetup</code> file. Passwords are
+never in it, and import replaces rather than merges.</li>
+</ul>
 <h2 id="user-guide-background-podcast-feed-checks">User guide:
 background podcast-feed checks</h2>
 <p><em>Moved from the user guide’s “Background checks: how often, how

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Cast 2.0 -- Release Notes</title>
   <style>
@@ -459,6 +459,201 @@ there and then. Quill Radio gets the same window on its own lists, from
 the same code: Quick Actions, listening statistics and folder actions
 all had to be carried across from one app to the other after being built
 twice, and this one was shared on the first day.</p>
+<h2 id="a-first-launch-that-says-hello">A first launch that says
+hello</h2>
+<p>Three screens on a genuinely first launch: welcome, add your first
+podcast, you’re set. One window with the words in a read-only text area
+you can arrow through and copy, and Back / Next / Skip beneath it.</p>
+<p><strong>Skip is a first-class button, not a small link.</strong>
+Somebody who already knows what a podcast player is should be able to
+leave in one keystroke, and making that awkward is a way of insisting
+they read something they do not need. Skipping counts as done – you
+chose it, and asking again next launch would be overriding that choice
+with a guess about what you meant.</p>
+<p>It stays away entirely from anybody who already has podcasts, however
+they got there: an imported OPML, a restored setup, an upgrade.
+Explaining how to add a first podcast to somebody with two hundred is a
+way of saying nobody checked.</p>
+<p>These screens were written for 1.1 and never once shown, because
+nothing in the app ever called them. That is the kind of thing tests do
+not catch: every one of them passed, on a feature nobody could
+reach.</p>
+<h2 id="when-something-goes-wrong-or-you-change-your-mind">When
+something goes wrong, or you change your mind</h2>
+<p>Everything above is about places Cast could not reach. This part is
+about moments it handled badly – and none of them are features anybody
+goes looking for. Each is something Cast owed you and was quietly not
+paying.</p>
+<h3 id="you-can-take-it-back">You can take it back</h3>
+<p>Press <strong>Ctrl+Z</strong>.</p>
+<p>Unsubscribe, Remove All Episodes, Mark All as Played, Remove All
+Downloads – the last one comes back, and Cast says what came back:
+<em>“Undid Unsubscribe. Brought back The Daily, with 412 episodes and 3
+downloaded files.”</em></p>
+<p>The alternative, and the thing this deliberately is not, was asking
+you first every single time. A confirmation prompt costs a keystroke and
+a sentence on every one of the nine hundred occasions you meant it, and
+it cannot help you on the one occasion that matters – because on that
+occasion you read the question, thought about a different show, and
+pressed Yes. The prompt was never protecting you from a slip of the
+finger; it was protecting you from a slip of attention, which is the
+thing it cannot see.</p>
+<p><strong>Deleted files genuinely come back.</strong> A downloaded
+episode Cast removes on your behalf is moved aside rather than unlinked,
+so an undo restores the audio rather than the intention to fetch it
+again. That includes the ones removed <em>for</em> you: if marking a
+show played fired your delete-after-play rule, those files come back
+too.</p>
+<p><strong>It is one step, not a stack</strong> – press Ctrl+Z twice and
+the second press says “Nothing to undo” rather than quietly rewinding
+something older. And <strong>it says what it cannot bring back</strong>:
+unsubscribing from a private feed deletes the password stored for it,
+deliberately, so no orphaned secret is left behind, and the offer says
+the password has to be entered again.</p>
+<p>Every action that can be undone ends its announcement with “Ctrl+Z
+undoes this”, so you never have to remember which ones were on the
+list.</p>
+<h3 id="recent-problems">Recent Problems</h3>
+<p><strong>Help &gt; Recent Problems…</strong> (Ctrl+Alt+Shift+P).</p>
+<p>Cast talks. A feed fails, a download dies overnight, and it tells you
+– once, at the moment it happens. That is right almost always, and
+completely wrong the one time the sentence went past while you were in
+another window, or asleep.</p>
+<p>This was the one place this app was not built the way the rest of it
+is. Somebody who can see the screen still had a list to scroll back
+through. Somebody listening had nothing: the announcement had been made,
+so as far as the app was concerned the job was done.</p>
+<p>Every failure worth a second look is now written down as well as
+spoken – what failed, why, when, newest first. <strong>Retry</strong>
+re-reads the feed or re-queues the download. <strong>Copy All</strong>
+takes the list as text for a bug report; it carries addresses and error
+messages, never passwords. A feed that has failed on each of the last
+six checks reads as one row with a fresh time, but a <em>different</em>
+reason gets its own row, because “404 Not Found” and “timed out” are not
+the same news.</p>
+<p>Nothing in this list leaves your computer.</p>
+<h3 id="quiet-hours">Quiet hours</h3>
+<p><strong>Help &gt; Quiet Hours…</strong> (Ctrl+Alt+Shift+Z), 22:00 to
+07:00 by default, and a window may cross midnight.</p>
+<p>Inside it, Cast stops speaking <strong>on its own</strong>: the
+heartbeat of a feed check, “three new episodes of The Daily”, a download
+landing.</p>
+<p>Three things it does not mean, all of which the window says out
+loud:</p>
+<ul>
+<li><strong>Nothing stops happening.</strong> Feeds are still checked,
+downloads still run, new episodes still arrive and are still queued.
+Only the sentences wait.</li>
+<li><strong>Anything you press a key for still answers.</strong> Press
+Play at three in the morning and you hear what is playing. Quiet hours
+never silence a reply to something you asked for. That is the line the
+whole feature is built around, and it is why every announcement had to
+opt in by name rather than everything being switched off at a single
+point.</li>
+<li><strong>Failures always speak.</strong></li>
+</ul>
+<p>One override, for the one thing people legitimately want through a
+quiet window: reminders can be let through anyway.</p>
+<p>The window is shared with Quill Radio and the rest of the family, so
+you set it once.</p>
+<h3 id="move-your-setup-to-another-machine">Move your setup to another
+machine</h3>
+<p><strong>Help &gt; Export My Setup…</strong> (Ctrl+Alt+Shift+X) writes
+one file; <strong>Import My Setup…</strong> (Ctrl+Alt+Shift+N) reads it
+on the other machine.</p>
+<p>Inside it: your subscriptions, your folders, your playlists, your
+settings, your Quick Action order, the confirmations you asked not to
+see again, your bookmarks, and any keys you rebound.</p>
+<p>OPML has always moved subscriptions and nothing else – the part that
+was easy to standardise, leaving behind the part you had actually
+built.</p>
+<p>The file is an ordinary ZIP with a readable manifest, deliberately:
+you should be able to see what you are carrying between machines. It
+holds a <strong>declared list</strong> of files rather than whatever
+happens to be in the data folder, because a sweep of a folder eventually
+carries a cache, a lock file, or a credential nobody meant to move.</p>
+<p><strong>Passwords are not in it</strong>, and the confirmation says
+so before it acts. Importing <strong>replaces</strong> what is on the
+other machine rather than merging with it, and says that too: merging
+two libraries is a different job with different questions.</p>
+<h3 id="your-place-follows-you-into-quill-radio-and-back">Your place
+follows you into Quill Radio, and back</h3>
+<p>Both apps can play the same subscribed episode. Until now half an
+episode heard in Radio reached Cast at Cast’s next launch – the one
+moment you are least likely to be mid-episode – and nothing went the
+other way at all.</p>
+<p>They now share one place per episode on this computer, written
+<strong>when you pause</strong> as well as on stop, switch and shutdown.
+Open an episode you were part-way through in the other app and it picks
+up where you left off, and says so.</p>
+<p>The <strong>later</strong> decision wins, not the furthest through
+the episode. Somebody who skipped to the outro to check something and
+went back to the middle has decided the middle is where they are; an app
+that dragged them forward again on the grounds that it was further in
+would be overruling them with arithmetic. An episode either app has
+finished stays finished.</p>
+<h3 id="find-an-episode-inside-one-show">Find an episode inside one
+show</h3>
+<p>The episode list has a <strong>Find</strong> box beside its
+filter.</p>
+<p>There was a filter by state and there was Search Everywhere across
+the whole library, and nothing in between – so <em>which episode of this
+show was the one about the harbour</em> had no answer except arrowing
+two hundred rows.</p>
+<p>It matches <strong>titles and show notes</strong>, because a podcast
+that numbers its episodes and describes them in the notes – most
+interview shows – is exactly the one a title-only search cannot help
+with. It <strong>narrows what the filter and sort already chose</strong>
+rather than replacing them, so “unplayed episodes about the harbour,
+newest first” is three controls you set independently.</p>
+<p>Typing narrows the list quietly, so nothing talks over you.
+<strong>Enter</strong> says how many matched out of how many were
+searched. A search that found nothing says so <em>and</em> tells you the
+filter above may be the reason, rather than announcing a zero and
+leaving you to work out why.</p>
+<h3 id="skip-silence-while-you-are-listening">Skip Silence, while you
+are listening</h3>
+<p><strong>Ctrl+Shift+9.</strong></p>
+<p>Cast has had this as <strong>Smart Speed</strong> for a long time – a
+per-show setting in Podcast Settings. What it did not have was any way
+to reach it while an episode was playing, which is the only moment
+anybody forms an opinion about it. It applies to the playing show (or,
+with nothing playing, to every podcast), takes effect on the episode in
+progress, and keeps your place: somebody forty minutes in who turns it
+on is not sent back to the beginning to get it.</p>
+<p>Quill Radio gained the same key for the same thing.</p>
+<h3 id="go-to-position">Go to Position</h3>
+<p><strong>Ctrl+Alt+J</strong>, or Episode &gt; Go to Position…</p>
+<p>Cast could already jump to a typed time – from a Winamp letter key,
+which means it existed for whoever had those keys turned on and knew
+about them, and for nobody else. It is a menu item and a command palette
+entry now, over the same labelled Hours / Minutes / Seconds window Quill
+Radio opens.</p>
+<p><code>1:02:03</code>, <code>62:03</code> and <code>3723</code> all
+mean the same moment, in both apps. They did not: the two apps had two
+parsers that disagreed about what you could type.</p>
+<h3 id="smaller-things-that-were-quietly-wrong">Smaller things that were
+quietly wrong</h3>
+<p><strong>F1 answers with Cast’s own words.</strong> Press F1 anywhere
+and the help opens with what <em>that window</em> is for, the way Quill
+Radio’s has since its 3.0. Every Cast window had been answering with a
+generic sentence: true, and useless. A build gate now means a new Cast
+window cannot ship without one.</p>
+<p><strong>A dimmed menu item tells you why.</strong> Cast dims a great
+deal on purpose – Analyse Chapters on an episode whose audio is not here
+yet, Mark All as Played with nothing unheard – and a screen reader says
+“dimmed” and stops. Each now carries its reason: <em>“Analyse Chapters:
+this episode is not downloaded yet, so there is nothing to
+analyse.”</em> Pressing a Quick Action number on a dimmed row says the
+same rather than “that Quick Action is not available”, and so does the
+command palette.</p>
+<p><strong>Adding a podcast you already follow says which one, out loud,
+and goes to it.</strong> The refusal was a line of text in the dialog,
+which a screen reader does not read when it changes – so in practice it
+was nothing happening. It now names the show, announces it, and moves
+the Podcast Manager’s cursor to the row you already have.</p>
+<p><strong>Pause All Downloads says how many are waiting</strong>, and
+that the one already transferring will finish.</p>
 <h2 id="smaller-things-that-were-missing">Smaller things that were
 missing</h2>
 <ul>

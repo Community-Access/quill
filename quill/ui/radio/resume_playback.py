@@ -139,6 +139,9 @@ def _handoff_to_cast(station: Any, position_ms: int, duration_ms: int) -> None:
         return  # at the beginning: nothing worth telling anyone
     record_listen(
         app_data_dir(),
+        # Stamped as Radio's, so Cast can say where a place came from and the
+        # two can decide which is the later word (11.11).
+        app="radio",
         # A feed episode's homepage *is* its feed address (see
         # browse_libraries._feed_episode_leaves), which is exactly the key
         # Cast finds the show by.

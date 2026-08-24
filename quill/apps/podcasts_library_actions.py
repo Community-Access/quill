@@ -197,14 +197,26 @@ class CastLibraryActionsMixin:
         ):
             self._save_podcast_library()
 
+    def _save_and_reload_library(self) -> None:
+        """Persist the library and rebuild the tree -- what a destructive verb
+        and its Ctrl+Z both need doing afterwards (11.3)."""
+        self._save_podcast_library()
+        self._reload_library_tree()
+
     def _on_library_remove_all_episodes(self) -> None:
         from quill.ui.podcasts.show_actions import remove_all_episodes_prompt
 
         show = self._selected_show()
         if show is None:
             return
+        # on_change runs after the removal *and* after Ctrl+Z, so the saved
+        # library and the tree agree either way (11.3).
         if remove_all_episodes_prompt(
-            self.frame, self._podcast_download_queue, show, announce=self._announce
+            self.frame,
+            self._podcast_download_queue,
+            show,
+            announce=self._announce,
+            on_change=self._save_and_reload_library,
         ):
             self._save_podcast_library()
 
@@ -416,7 +428,11 @@ class CastLibraryActionsMixin:
         if kind == "show":
             show = self._podcast_library.find_show(key)
             if show is not None and unsubscribe_show_prompt(
-                self.frame, self._podcast_library, show, announce=self._announce
+                self.frame,
+                self._podcast_library,
+                show,
+                announce=self._announce,
+                on_change=self._save_and_reload_library,
             ):
                 self._save_podcast_library()
         elif kind == "folder":

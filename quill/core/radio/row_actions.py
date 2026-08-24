@@ -35,8 +35,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from quill.core import dimmed_reason
 from quill.core.radio import transport_commands
 from quill.core.radio.cast_handoff import CAST_HANDOFFS
+from quill.core.radio.row_state import FolderState as FolderState
 
 # --- action ids ---------------------------------------------------------------
 # Stable strings rather than an enum: the UI maps them to handlers, tests
@@ -136,51 +138,24 @@ class RowAction:
     thing has no item for it": Mark All as Played with nothing unheard is a
     *state* of a verb the row genuinely owns, and a dimmed item teaches that
     state -- where a vanishing one would read as the feature coming and going.
+
+    ``reason`` is the other half of that bargain, added 2026-08-24: a dimmed
+    item teaches the state only if it *says* the state. One lower-case clause
+    from :mod:`quill.core.dimmed_reason`, spent by the menu's help string and
+    by any surface that has to refuse the action out loud. A dimmed action
+    with no reason fails ``tests/unit/ui/test_dimmed_action_reasons.py``.
     """
 
     id: str
     label: str
     enabled: bool = True
+    reason: str = ""
 
+    def unavailable_sentence(self) -> str:
+        """What to say when this action is asked for and cannot run."""
+        from quill.core import dimmed_reason
 
-@dataclass(frozen=True, slots=True)
-class FolderState:
-    """What the window already knows about a folder, without fetching it.
-
-    Every field answers from rows already loaded, so building a menu never
-    reaches the network.
-    """
-
-    #: Playable rows already loaded under this folder.
-    loaded_stations: int = 0
-    #: Of those, how many can actually be saved to disk.
-    savable: int = 0
-    #: A podcast show, whose episodes come from a publisher's own feed.
-    is_podcast_show: bool = False
-    #: Already subscribed in the shared podcast library.
-    subscribed: bool = False
-    #: A channel the listener chose to follow (so it can be unfollowed).
-    is_followed_channel: bool = False
-    #: Whether the tree row is currently expanded (Open reads as Close then).
-    expanded: bool = False
-    #: A top-level source branch (Popular Stations, Podcasts, ...) -- the
-    #: rows that can be hidden in place instead of via Choose Browse Sources.
-    root_source: bool = False
-    #: Unplayed episodes in this subscribed show, from the shared library
-    #: (a local read). Drives Mark All as Played's enabled state: the verb
-    #: is always on a subscribed show's menu, dimmed when nothing is unheard.
-    unheard: int = 0
-    #: Episodes the shared library holds for this subscribed show (a local
-    #: read). Lets Download All Episodes appear before the branch is ever
-    #: expanded -- the library already knows the list.
-    library_episodes: int = 0
-    #: Files sitting in this show's downloads folder on disk (a local read).
-    #: Drives Remove All Downloads: always on a subscribed show's menu,
-    #: dimmed when there is nothing to remove -- same rule as Mark All.
-    downloaded_files: int = 0
-    #: This branch is already saved in Favorites as a place (a show, a book, a
-    #: channel), so the menu offers to remove it rather than to add it again.
-    saved_place: bool = False
+        return dimmed_reason.explain(self.label, self.reason)
 
 
 #: Node kinds that name a podcast show rather than a shelf of them.
@@ -441,7 +416,12 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
         # Always present, dimmed when there is nothing unheard: the same verb
         # Quill Cast's Episode menu carries, acting on the same shared state.
         actions.append(
-            RowAction(MARK_ALL_PLAYED, "Mark All as Pla&yed...", enabled=state.unheard > 0)
+            RowAction(
+                MARK_ALL_PLAYED,
+                "Mark All as Pla&yed...",
+                enabled=state.unheard > 0,
+                reason=dimmed_reason.nothing_unheard(state.library_episodes),
+            )
         )
         # The download pair, same shape as Quill Cast's show menu. The count
         # comes from the shared library, so the verb works without ever
@@ -453,6 +433,7 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
                 DOWNLOAD_ALL_EPISODES,
                 f"Download All {count} Episo&des..." if count else "Download All Episo&des...",
                 enabled=count > 0,
+                reason=dimmed_reason.no_episodes_yet(),
             )
         )
         actions.append(
@@ -460,6 +441,7 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
                 REMOVE_DOWNLOADS,
                 "Remove All Do&wnloads...",
                 enabled=state.downloaded_files > 0,
+                reason=dimmed_reason.nothing_downloaded(),
             )
         )
 

@@ -44,12 +44,31 @@ def remove_selected(dialog: Any) -> None:
     removed_index = dialog._list.GetFirstSelected()
     if not confirm(dialog._wx, dialog.dialog, entry):
         return
-    try:
-        entry.path.unlink()
-    except OSError as error:
-        dialog._announce(f"Could not delete the file: {error}.")
-        return
-    dialog._announce(f"Removed recording {entry.name}.")
+    from quill.ui import undo_last_ui
+
+    # Moved aside, not unlinked, so Ctrl+Z brings the recording itself back
+    # and not just its name (11.3). Without an app owning undo this is still
+    # an ordinary delete.
+    held = undo_last_ui.hold_or_delete([entry.path])
+    if not held and entry.path.exists():
+        try:
+            entry.path.unlink()
+        except OSError as error:
+            dialog._announce(f"Could not delete the file: {error}.")
+            return
+
+    def _undo() -> None:
+        undo_last_ui.restore(held)
+        dialog._refresh(keep_selection=False)
+
+    undo_last_ui.remember(
+        "Delete Recording",
+        entry.name,
+        entry.size_display,
+        _undo,
+        dispose=lambda: undo_last_ui.discard(held),
+    )
+    dialog._announce(undo_last_ui.offer(f"Removed recording {entry.name}."))
     dialog._refresh(keep_selection=True)
     target = index_after_removal(removed_index, dialog._list.GetItemCount())
     if target is None:

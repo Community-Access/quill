@@ -19,12 +19,12 @@ control carries an accessible name.
 from __future__ import annotations
 
 from quill.core.podcasts.filtering import (
-    filter_episodes,
     filter_shows,
     search_everywhere,
 )
 from quill.core.podcasts.models import Playlist, PodcastEpisode, PodcastShow
 from quill.core.podcasts.virtual_views import virtual_view_pairs
+from quill.ui.podcasts.episode_search import EpisodeSearchMixin
 from quill.ui.podcasts.manager_expired import ManagerExpiredMixin
 
 _EPISODE_FILTER_LABELS = (
@@ -70,7 +70,7 @@ _PINNED_VIEWS = (
 _MAX_CROSS_SHOW_ROWS = 1000
 
 
-class ManagerPhase4Mixin(ManagerExpiredMixin):
+class ManagerPhase4Mixin(ManagerExpiredMixin, EpisodeSearchMixin):
     """Phase 4 wiring; mixed into PodcastManagerDialog."""
 
     # -- filter row -----------------------------------------------------------
@@ -87,10 +87,22 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
         self._boost_choice = wx.Choice(self.dialog, choices=list(_BOOST_LABELS))
         self._boost_choice.SetName("Volume boost for quiet audio; playback gain only")
         self._boost_choice.SetSelection(0)
+        # Find in this show -- see episode_search.py for what it composes with.
+        self._episode_search_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
+        self._episode_search_ctrl.SetName("Find in this podcast, by title or description")
+        self._episode_search_ctrl.SetHelpText(
+            "Narrows the episode list of the podcast you are on, matching "
+            "episode titles and the show notes. It searches this podcast only "
+            "-- Search Everywhere is the one that crosses your whole library "
+            "-- and it narrows whatever the filter and sort above already "
+            "chose rather than replacing them. Enter says how many matched."
+        )
         search_btn = wx.Button(self.dialog, label="Search &Everywhere...")
         queue_btn = wx.Button(self.dialog, label="Play &Queue...")
         row.Add(wx.StaticText(self.dialog, label="Ep&isodes:"), 0, wx.ALIGN_CENTER_VERTICAL)
         row.Add(self._episode_filter_choice, 0, wx.LEFT | wx.RIGHT, 4)
+        row.Add(wx.StaticText(self.dialog, label="Fi&nd:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        row.Add(self._episode_search_ctrl, 1, wx.LEFT | wx.RIGHT, 4)
         row.Add(wx.StaticText(self.dialog, label="S&hows:"), 0, wx.ALIGN_CENTER_VERTICAL)
         row.Add(self._show_filter_choice, 0, wx.LEFT | wx.RIGHT, 4)
         row.Add(self._boost_choice, 0, wx.RIGHT, 4)
@@ -104,6 +116,8 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
         self._boost_choice.Bind(wx.EVT_CHOICE, self._on_boost_choice)
         search_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_search_everywhere())
         queue_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_open_play_queue())
+        self._episode_search_ctrl.Bind(wx.EVT_TEXT, self._on_episode_search_typed)
+        self._episode_search_ctrl.Bind(wx.EVT_TEXT_ENTER, self._on_episode_search_submit)
 
     def _selected_episode_filter(self) -> str:
         choice = getattr(self, "_episode_filter_choice", None)
@@ -118,9 +132,6 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
             return "all"
         index = choice.GetSelection()
         return _SHOW_FILTER_MODES[index] if index >= 0 else "all"
-
-    def _apply_episode_filter(self, episodes: list[PodcastEpisode]) -> list[PodcastEpisode]:
-        return filter_episodes(episodes, self._selected_episode_filter())
 
     def _apply_show_filter(self, shows: list[PodcastShow]) -> list[PodcastShow]:
         return filter_shows(shows, self._selected_show_filter())
@@ -439,7 +450,9 @@ class ManagerPhase4Mixin(ManagerExpiredMixin):
     def _play_pair(self, show: PodcastShow, episode: PodcastEpisode) -> None:
         from quill.ui.podcasts.show_actions import start_episode_playback
 
-        start_episode_playback(self._controller, self._library, show, episode)
+        start_episode_playback(
+            self._controller, self._library, show, episode, announce=self._announce
+        )
 
     # -- context-menu additions -----------------------------------------------
 

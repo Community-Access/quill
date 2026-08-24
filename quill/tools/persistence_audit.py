@@ -69,6 +69,11 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/recovery.py::_save_state": "framework",
     "core/speech/dictation/recovery.py::save_metadata": "framework",
     # --- export / output (user picks the file) ---
+    # "Move my setup to another machine" (11.10): the import writes each store
+    # the user chose to bring, from a file they chose, over a declared
+    # inventory -- the read half of an export rather than a store of its own.
+    # Every file it writes is one the audit already classifies on its own line.
+    "core/setup_transfer.py::import_setup": "export",
     "core/keymap.py::export_keyboard_pack": "export",
     "core/keymap.py::export_keymap": "export",
     "core/features.py::export_feature_profile_file": "export",
@@ -262,10 +267,19 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # (start clean, never migrate/blend), so losing it just recomputes -- no
     # schema-migration concern.
     "core/ai/resume_record.py::_write": "cache",
+    # Recent Problems (11.5): a bounded, newest-first log of what failed, kept
+    # so a spoken failure that was missed is still findable. Regenerable in the
+    # only sense that matters -- losing it costs the record of past failures,
+    # never a setting or anything the user made.
+    "core/problem_log.py::save_problems": "cache",
     # --- marker / small state flags ---
     # Radio's active-recording resume marker (R1-R4): transient state written
     # when a recording starts and cleared on clean stop; absent by default, and
     # its loss just means no resume offer on the next launch.
+    # Quiet hours (11.9): four small flags -- on/off, two clock strings and one
+    # override. Trivially defaulted (off, 22:00-07:00), and a lost file means
+    # the apps speak, which is the shipped behaviour rather than a surprise.
+    "core/quiet_hours.py::save_quiet_hours": "marker",
     "core/radio/recording_resume.py::save_marker": "marker",
     "core/onboarding.py::mark_assistant_onboarding_complete": "marker",
     "core/onboarding.py::mark_glow_onboarding_complete": "marker",

@@ -39,6 +39,12 @@ class _History:
 class _Host:
     def __init__(self, *, favorites: int = 0, state: RadioOnboardingState | None = None) -> None:
         self.frame = wx.Frame(None)
+        # Shown, because the flow now refuses over a window that is not on
+        # screen -- a deferred modal with nothing behind it is a hang, not a
+        # welcome (see test_first_run_needs_a_window.py). A real launch shows
+        # the main window before the deferred call runs, so this is the state
+        # the flow is actually asked from.
+        self.frame.Show()
         self._radio_history = _History(state)
         self._radio_favorites = _Favorites(favorites)
         self.said: list[str] = []

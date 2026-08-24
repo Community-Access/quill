@@ -710,7 +710,14 @@ class BrowseTreeDialog:
 
     def _add_favorite_station(self, station: RadioStation) -> None:
         if self._favorites.contains(station):
-            self._announce(f"{station.display_name} is already in your Favorites.")
+            # 11.6: go to the one you have. Saying "already in your Favorites"
+            # and leaving the cursor where it was answers the wrong question --
+            # somebody adds a station twice because they could not find it.
+            from quill.core import duplicate_add
+            from quill.ui.radio import browse_reveal
+
+            moved = browse_reveal.reveal_favorite(self, station.display_name)
+            self._announce(duplicate_add.already_have("station", station.display_name, moved=moved))
             return
         self._favorites.add(station)
         self._announce(f"Added {station.display_name} to Favorites.")

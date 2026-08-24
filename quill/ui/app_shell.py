@@ -34,6 +34,7 @@ from quill.platform.announce_engine import AnnouncementEngine
 from quill.stability.task_manager import TaskManager
 from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
+from quill.ui.app_availability import CommandAvailabilityMixin
 from quill.ui.app_shell_components import ComponentDownloadsMixin
 from quill.ui.companion_cues import init_app_sound
 from quill.ui.dialog_contract import (
@@ -44,7 +45,9 @@ from quill.ui.dialog_contract import (
 from quill.ui.keybinding_parse import KeybindingParseMixin
 
 
-class AppShellFrame(AnnounceCommandsMixin, ComponentDownloadsMixin, KeybindingParseMixin):
+class AppShellFrame(
+    AnnounceCommandsMixin, ComponentDownloadsMixin, KeybindingParseMixin, CommandAvailabilityMixin
+):
     """Mixin: implements the MainFrame host protocol for standalone apps.
 
     Inheriting :class:`KeybindingParseMixin` gives the companion app frames the
@@ -76,6 +79,8 @@ class AppShellFrame(AnnounceCommandsMixin, ComponentDownloadsMixin, KeybindingPa
         self.settings = load_settings()
         self.keymap = dict(DEFAULT_KEYMAP) if safe_mode else load_keymap()
         self.commands = CommandRegistry()
+        # 11.2: see CommandAvailabilityMixin.
+        self.commands.set_availability_probe(self._command_unavailable_reason)
         self._task_manager = TaskManager()
         self._region_tracker = RegionTracker()
         # Same unlock store and kill-switch cache MainFrame consults, so a
@@ -218,13 +223,6 @@ class AppShellFrame(AnnounceCommandsMixin, ComponentDownloadsMixin, KeybindingPa
         frame binding -- the 'About opens at random' bug. Every menu builder
         passes its id refs here."""
         self._menu_id_refs.extend(refs)
-
-    def _feature_enabled(self, feature_id: str) -> bool:
-        locks = getattr(self, "_feature_locks", None)
-        if locks is not None and locks.is_locked(feature_id):
-            return False
-        features = getattr(self, "features", None)
-        return True if features is None else features.is_enabled(feature_id)
 
     def _apply_app_keymap(self, app_id: str) -> None:
         """Merge this app's own menu accelerators in as defaults (in memory).

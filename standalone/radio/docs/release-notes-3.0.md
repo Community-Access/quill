@@ -1073,6 +1073,204 @@ considers mission-critical rather than merely valuable.
 
 ---
 
+## Part Three: When something goes wrong, or you change your mind
+
+Everything above is about what the app can do. This part is about the moments
+it used to handle badly -- and none of them are features anybody goes looking
+for. Each is something Quill Radio owed you and was quietly not paying.
+
+### You can take it back
+
+Press **Ctrl+Z**.
+
+Unsubscribe, Remove All Downloads, Delete Recording, Mark All as Played --
+the last one comes back, and the app says what came back: *"Undid Unsubscribe.
+Brought back The Daily, with 412 episodes and 3 downloaded files."*
+
+The alternative, and the thing this deliberately is not, was asking you first
+every single time. A confirmation prompt costs a keystroke and a sentence on
+every one of the nine hundred occasions you meant it, and it still cannot help
+you on the one occasion that matters -- because on that occasion you read the
+question, thought about a different row, and pressed Yes. The prompt was never
+protecting you from a slip of the finger; it was protecting you from a slip of
+attention, which is exactly the thing it cannot see.
+
+Three things worth knowing.
+
+**It is one step, not a stack.** Press Ctrl+Z twice and the second press says
+"Nothing to undo" rather than quietly rewinding something older that you had
+forgotten about. If you have to count how many times to press it, you have
+been handed a puzzle rather than an undo.
+
+**Deleted files genuinely come back.** A file Quill Radio deletes on your
+behalf is moved aside rather than unlinked, so undoing a Delete Recording
+restores the recording itself and not merely its name in a list. What was held
+is released for good when you do the next destructive thing -- which is
+precisely what makes a single step safe to offer without asking first.
+
+**It tells you what it cannot bring back.** Unsubscribing from a private feed
+deletes the password stored for it, deliberately, so no orphaned secret is
+left behind. The undo restores the subscription and says the password has to
+be entered again. That sentence is in the offer, not in a support email.
+
+Every action that can be undone ends its own announcement with "Ctrl+Z undoes
+this", so you never have to remember which ones were on the list.
+
+### Recent Problems
+
+**Help > Recent Problems...** (Ctrl+Alt+Shift+P).
+
+Quill Radio talks. A feed fails, a download dies, a stream drops and cannot be
+reconnected, and it tells you -- once, at the moment it happens. That is right
+almost always, and completely wrong the one time the sentence went past while
+you were in another window, or asleep, or making tea.
+
+This was the one place this app was not built the way the rest of it is.
+Somebody who can see the screen still has a list to scroll back through.
+Somebody listening had nothing at all: the announcement had been made, so as
+far as the app was concerned the job was done.
+
+Now every failure worth a second look is written down as well as spoken: what
+failed, why, and when, newest first. **Retry** tries the highlighted row again
+-- plays the station, re-queues the download. **Copy All** takes the list as
+text, which is the thing to paste into a bug report; it carries addresses and
+error messages, never passwords. **Clear List** empties it, and does not fix
+anything or stop the same problem being recorded again next time.
+
+A feed that has failed on each of the last six checks reads as one row with a
+fresh time rather than six identical rows, so a feed checked every fifteen
+minutes cannot bury everything else. A *different* reason gets its own row,
+because "404 Not Found" and "timed out" are not the same news.
+
+Nothing in this list leaves your computer.
+
+### Quiet hours
+
+**Help > Quiet Hours...** (Ctrl+Alt+Shift+Z). 22:00 to 07:00 by default, and a
+window may cross midnight.
+
+Inside it, Quill Radio stops speaking **on its own**: the heartbeat of a feed
+check, the announcement that new episodes arrived.
+
+Three things it does not mean, all of which the window says out loud, because
+the name invites exactly these misreadings:
+
+- **Nothing stops happening.** Feeds are still checked. Downloads still run.
+  Recordings still record. Only the announcements wait.
+- **Anything you press a key for still answers.** Press Play at three in the
+  morning and you hear what is playing. Quiet hours never silence a reply to
+  something you asked for -- they hold back only the speech nobody asked for.
+  That is not a detail of the implementation, it is the line the whole feature
+  is built around, and it is why every announcement had to opt in by name
+  rather than everything being switched off at a single point.
+- **Failures always speak.** A recording that stopped at 3 a.m. is precisely
+  what somebody sets an alarm-clock radio for.
+
+One override, for the one thing people legitimately want through a quiet
+window: reminders can be let through anyway.
+
+The window is shared with QUILL Cast and the rest of the family, so you set it
+once.
+
+### Move your setup to another machine
+
+**Help > Export My Setup...** (Ctrl+Alt+Shift+X) writes one file. **Help >
+Import My Setup...** (Ctrl+Alt+Shift+N) reads it on the other machine.
+
+Inside it: your favorite stations and the folders you filed them into, your
+saved places, your settings, your Go To list in the order you put it, your own
+streaming servers, your scheduled recordings, your recording settings, your
+YouTube rows and channels, your bookmarks, and any keys you rebound.
+
+An OPML export has always moved your podcast subscriptions and nothing else --
+which is to say it moved the part that was easy to standardise and left behind
+the part you had actually built.
+
+The file is an ordinary ZIP with a readable manifest, deliberately: you should
+be able to see what you are carrying, and somebody who no longer runs this
+software should still be able to get their subscription list out of it. It
+carries a **declared list** of files rather than whatever happens to be in the
+data folder, because a sweep of a folder eventually carries a cache, a lock
+file, or a credential nobody meant to move.
+
+**Passwords are not in it.** Private-feed sign-ins, server credentials and
+unlock codes stay on the machine that holds them. The confirmation says so
+before it does anything, rather than leaving you to find out when a feed stops
+working.
+
+Importing **replaces** what is on the other machine rather than merging with
+it, and says so first. Merging two libraries is a different job with different
+questions, and pretending this one does it would be the expensive kind of
+kindness.
+
+### Your place follows you into QUILL Cast, and back
+
+Both apps can play the same subscribed episode. Until now, half an episode
+heard here reached Cast at Cast's next launch -- the one moment you are least
+likely to be mid-episode -- and nothing came back the other way at all.
+
+They now share one place per episode on this computer, written **when you
+pause** as well as when you stop. Quill Radio never wrote a position on pause
+at all, so what it reported was always from whenever you had last pressed
+Stop.
+
+Open an episode you were part-way through in the other app and it picks up
+where you left off, and says so: *"Picking up where you left off in QUILL
+Cast, at 1 hour 2 minutes 3 seconds."* Resuming where you left off in *this*
+app stays silent, because that is ordinary and does not need narrating; it is
+the cross-app jump that is surprising, and a jump nobody explained is
+indistinguishable from a bug.
+
+The **later** decision wins, not the furthest through the episode. If you
+skipped to the outro to check something and then went back to the middle, the
+middle is where you are. An app that dragged you forward again on the grounds
+that it was further in would be overruling you with arithmetic.
+
+### Skip Silence, and a speed that sticks
+
+Two things the playback engine could always do, and Quill Radio never offered
+outside podcasts.
+
+**Skip Silence** (Playback > Skip Silence, Ctrl+Shift+9) shortens the long
+pauses in a recording, a YouTube row or a podcast episode as it plays. It
+takes effect on what is already playing, with no interruption and without
+losing your place. On live radio it says plainly that it will do nothing -- a
+broadcast plays at broadcast speed and its pauses have already gone out --
+rather than appearing to work and not working.
+
+**Play Faster is remembered.** A speed chosen during a recording applies to
+recordings; one chosen on a YouTube row applies to YouTube rows. Per kind
+rather than per row, because what somebody means by "1.5x for recordings" is
+every recording, and asking them to set it again for each captured hour would
+be the same feature with the cost moved onto them.
+
+### Smaller things that were quietly wrong
+
+**A dimmed menu item now tells you why.** Quill Radio dims a great deal on
+purpose -- Mark All as Played with nothing unheard is a *state* of a verb that
+row genuinely owns, and an item that vanished would read as the feature coming
+and going. But a screen reader says "dimmed" and stops. Each now carries its
+reason: *"Remove All Downloads: nothing is downloaded for this show."* The
+command palette says it too, instead of a bare "(unavailable)".
+
+**Add to Favorites stopped lying.** The favorites store answered the same
+thing whether or not it had added anything, so adding a station you already
+had announced "Added WQXR to Favorites" over nothing happening. It now says
+you already have it -- and moves the cursor to the one you have, which is the
+question you were actually asking, since the reason anybody adds a thing twice
+is that they could not find the first one.
+
+**Download All counts.** It queued the lot and said whatever the queue said
+next, so a folder of forty chapters with thirty-nine already on disk reported
+the same thing as a folder of forty new ones. It now says how many were
+eligible, how many started and how many it skipped -- which required teaching
+it, for the first time, how to tell whether a row was already here.
+
+**Find in this folder searches descriptions.** Ctrl+F matched a row's name
+only. On a podcast show's branch that is episode search, and a show that
+numbers its episodes and puts the subject in its show notes -- most interview
+podcasts -- was a show you could not search at all.
+
 ## The rest
 
 ### What is not in 3.0, and why saying so matters
