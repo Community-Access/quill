@@ -9,6 +9,11 @@ managing its own copy**. Save Episode Audio As copies; it must never move the
 managed file, or resume, retention and the storage cap all quietly lose track
 of it.
 
+Save Episode Audio As has since learned to **wait** for a download rather than
+telling the listener to run the command again, and moved to
+``ui/podcasts/export_audio.py`` (list.md 2.2). The wait itself is pinned in
+test_podcast_export_wait.py; what is here is the save, which did not change.
+
 No real wx.App: the clipboard, the message box and the file dialog are all
 monkeypatched, and the download queue is a fake.
 """
@@ -20,13 +25,10 @@ from pathlib import Path
 import pytest
 import wx
 
+from quill.core.podcasts.audio_export import suggested_filename
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
-from quill.ui.podcasts.share_actions import (
-    _safe_audio_filename,
-    copy_show_link,
-    reveal_episode_in_file_manager,
-    save_episode_audio_as,
-)
+from quill.ui.podcasts.export_audio import export_episode_audio
+from quill.ui.podcasts.share_actions import copy_show_link, reveal_episode_in_file_manager
 
 
 def _episode(guid: str = "ep1", *, downloaded: str = "") -> PodcastEpisode:
@@ -198,7 +200,7 @@ def test_saving_copies_and_leaves_the_managed_file_alone(
     announced: list[str] = []
     episode = _episode(downloaded=str(managed))
 
-    saved = save_episode_audio_as(
+    saved = export_episode_audio(
         None, _FakeQueue(), tmp_path, _show(), episode, announce=announced.append
     )
 
@@ -224,7 +226,7 @@ def test_cancelling_the_save_dialog_does_nothing(
     announced: list[str] = []
 
     assert (
-        save_episode_audio_as(
+        export_episode_audio(
             None,
             _FakeQueue(),
             tmp_path,
@@ -235,60 +237,6 @@ def test_cancelling_the_save_dialog_does_nothing(
         is False
     )
     assert announced == []
-
-
-def test_a_streamed_episode_offers_to_download_first(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """No audio file exists yet, so there is nothing to copy. Offering the
-    download beats a modal progress bar the listener cannot escape."""
-    monkeypatch.setattr(wx, "MessageBox", lambda *_a, **_k: wx.YES)
-    queue = _FakeQueue()
-    announced: list[str] = []
-    episode = _episode()
-
-    saved = save_episode_audio_as(
-        None, queue, tmp_path, _show(), episode, announce=announced.append
-    )
-
-    assert saved is False, "nothing has been saved yet -- the download only just started"
-    assert queue.enqueued == [episode.guid]
-    assert "again when it finishes" in announced[0]
-
-
-def test_declining_the_offered_download_enqueues_nothing(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    monkeypatch.setattr(wx, "MessageBox", lambda *_a, **_k: wx.NO)
-    queue = _FakeQueue()
-    announced: list[str] = []
-
-    assert (
-        save_episode_audio_as(None, queue, tmp_path, _show(), _episode(), announce=announced.append)
-        is False
-    )
-    assert queue.enqueued == []
-    assert announced == []
-
-
-def test_a_download_recorded_but_missing_is_treated_as_not_downloaded(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    """The episode says it has a file; the disk disagrees. Offering to fetch
-    it again is the useful answer, not a copy that raises."""
-    monkeypatch.setattr(wx, "MessageBox", lambda *_a, **_k: wx.YES)
-    queue = _FakeQueue()
-    announced: list[str] = []
-
-    save_episode_audio_as(
-        None,
-        queue,
-        tmp_path,
-        _show(),
-        _episode(downloaded=str(tmp_path / "vanished.mp3")),
-        announce=announced.append,
-    )
-    assert queue.enqueued != []
 
 
 def test_an_unwritable_destination_is_announced_not_raised(
@@ -306,7 +254,7 @@ def test_an_unwritable_destination_is_announced_not_raised(
     announced: list[str] = []
 
     assert (
-        save_episode_audio_as(
+        export_episode_audio(
             None,
             _FakeQueue(),
             tmp_path,
@@ -323,7 +271,7 @@ def test_an_unwritable_destination_is_announced_not_raised(
 
 
 def test_the_suggested_name_reads_as_show_then_episode(tmp_path: Path) -> None:
-    name = _safe_audio_filename(_show(), _episode(), Path("x.mp3"))
+    name = suggested_filename(_show(), _episode(), ".mp3")
     assert name == "Test Show - Episode One.mp3"
 
 
@@ -334,7 +282,7 @@ def test_characters_windows_rejects_are_replaced(tmp_path: Path) -> None:
     episode = _episode()
     episode.title = "Part 1/2 <live>"
 
-    name = _safe_audio_filename(show, episode, Path("x.mp3"))
+    name = suggested_filename(show, episode, ".mp3")
 
     assert not any(character in name[:-4] for character in '<>:"/\\|?*')
     assert name.endswith(".mp3")
@@ -348,7 +296,7 @@ def test_a_very_long_title_is_bounded(tmp_path: Path) -> None:
     episode = _episode()
     episode.title = "E" * 200
 
-    name = _safe_audio_filename(show, episode, Path("x.m4a"))
+    name = suggested_filename(show, episode, ".m4a")
 
     assert len(name) <= 124
     assert name.endswith(".m4a")
@@ -359,4 +307,4 @@ def test_an_empty_title_still_yields_a_usable_name() -> None:
     episode = _episode()
     episode.title = ""
 
-    assert _safe_audio_filename(show, episode, Path("x.mp3")) == "episode.mp3"
+    assert suggested_filename(show, episode, ".mp3") == "episode.mp3"

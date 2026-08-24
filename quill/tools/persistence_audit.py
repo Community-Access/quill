@@ -176,7 +176,14 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # file and reads everyone else's, which is what stops a cloud drive
     # producing a conflicted copy.
     "core/sync/listening_places.py::write_device_file": "content",
+    # Quill Radio's own record: recently played, resume-on-launch, the sound
+    # enhancements, the subscribed-feed cadence. User-authored settings that
+    # would have to be set again by hand, so content rather than cache. The
+    # write moved to history_store when the record and the file were split
+    # under GATE-11; history.py re-exports it, and both spellings are listed
+    # so an importer of either is covered.
     "core/radio/history.py::save_history": "content",
+    "core/radio/history_store.py::save_history": "content",
     # An observed log of what each station played, not user-authored config:
     # every field is additive with a tolerant loader, there is no default whose
     # meaning could silently change, and losing it costs only the "what was that

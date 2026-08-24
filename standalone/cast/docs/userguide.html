@@ -1100,6 +1100,55 @@ otherwise turning the check on here would turn it on there, with no way
 to say “let Radio do it” – but they share the record of when a check
 last happened, so whichever one goes first, the other finds the work
 already done and stays quiet. There is nothing to configure.</p>
+<h2 id="lineups-saving-the-order-you-listen-in">Lineups: saving the
+order you listen in</h2>
+<p>A lineup is “the order I listen in on a Tuesday” – four shows, in a
+sequence that took a minute to arrange and disappears the moment the
+queue is used for something else.</p>
+<p>In the Play Queue window, <strong>Save Lineup…</strong> keeps the
+current order under a name you choose. <strong>Apply Lineup…</strong>
+puts it back later.</p>
+<p>Applying <strong>moves; it never replaces</strong>. The queue you
+have is a decision you made, so:</p>
+<ul>
+<li>every episode in the lineup that is still available and unplayed
+moves to the <strong>front</strong>, in the lineup’s order, whether it
+was already queued or not;</li>
+<li>everything else in the queue <strong>stays</strong>, in the order it
+already had, behind them;</li>
+<li>anything you have since played, or that has left your library, is
+<strong>skipped</strong> – and counted, so you hear “applied 3, skipped
+2” rather than a silence that looks the same whether it worked or
+half-worked.</li>
+</ul>
+<p>Episodes keep the age they had, so queue expiry still measures how
+long something has really been waiting rather than how recently it was
+reordered. Re-saving a lineup under a name you already used replaces it:
+saving “Tuesday” again means <em>this</em> is Tuesday now.</p>
+<p>Lineups are saved playlists, so everything the Playlists branch does
+works on them – rename, delete, and they travel in an export.</p>
+<h2 id="selecting-more-than-one-episode">Selecting more than one
+episode</h2>
+<p>Every episode list takes a multiple selection, the Play Queue
+included. Shift and an arrow extend the selection, Ctrl and Space adds
+or removes one, and Select All takes the lot. The count is spoken as you
+go, and any verb that acts on the selection says how many rows it
+touched – “Removed: 6 episodes eligible, 6 done” rather than
+“Removed”.</p>
+<h2 id="being-told-when-downloads-finish">Being told when downloads
+finish</h2>
+<p>Off by default, in <strong>Podcast Settings</strong>: <em>Notify me
+when downloads finish</em>.</p>
+<p>One desktop notification when the download queue goes
+<strong>quiet</strong>, not one per episode – a forty-episode batch is
+one event to you, however many rows it had. Nothing leaves this
+computer; this is the Windows notification centre, not a service and not
+an account.</p>
+<p>It goes through <strong>quiet hours</strong> like any other
+background news. The downloads themselves still run; what is held back
+is the interruption about them. That is the whole point: an overnight
+batch was otherwise the one thing here that could wake you at three in
+the morning.</p>
 <h2 id="grouping-the-play-queue">Grouping the Play Queue</h2>
 <p>The Play Queue has a <strong>Group by</strong> control: Nothing,
 Podcast, or Library folder.</p>
@@ -1290,20 +1339,27 @@ typing is never swallowed. Turn the letters off in Preferences (Ctrl+,)
 if you would rather use them for list typeahead; Ctrl+Up and Ctrl+Down
 for volume always work either way.</p>
 <h2 id="getting-an-episode-back-out">Getting an episode back out</h2>
-<p>Three commands, all of them <strong>Quick Actions</strong> entries –
+<p>Four commands, all of them <strong>Quick Actions</strong> entries –
 so they can be reordered, made the Enter default, or reached on Ctrl+1
 to Ctrl+9 like everything else on those menus.</p>
 <p><strong>Save Episode Audio As…</strong> saves a copy of the episode’s
 audio wherever you choose. It copies rather than moves: QUILL Cast goes
 on managing its own downloaded copy, so retention, the storage cap,
 resume and Remove Downloaded Copy all still apply to it, and your saved
-copy sits outside all of that. If the episode is not downloaded yet
-there is no audio file to copy, so QUILL Cast offers to fetch it and
-says to run the command again when it finishes – rather than holding you
-behind a progress bar you cannot escape. The filename is suggested as
-“Show - Episode”; characters Windows will not accept are replaced, and
-very long titles are shortened, so the Save dialog never opens with a
-name the system would reject.</p>
+copy sits outside all of that. The filename is suggested as “Show -
+Episode”; characters Windows will not accept are replaced, and very long
+titles are shortened, so the Save dialog never opens with a name the
+system would reject.</p>
+<p>If the episode is not downloaded yet, it says <strong>“Preparing
+audio file for export”</strong>, fetches it, and opens the save dialog
+when the file arrives – you press the key once rather than twice. It
+used to ask you to run the command again afterwards, which made you the
+scheduler. The wait can end four ways and it says which: the file
+arrives, the download fails and names the reason, you cancel it from the
+Downloads window, or it takes long enough that going on waiting silently
+would be indistinguishable from a hang – in which case it says the
+download is carrying on without it and to use the command again once it
+has finished.</p>
 <p><strong>Copy Podcast Link</strong> copies the show’s feed address,
 next to the existing <strong>Copy Episode Link</strong>. The feed
 address rather than the show’s website, because a feed address is what
@@ -1313,6 +1369,12 @@ so.</p>
 downloaded episode with the file selected. An episode you are streaming
 has no file to show, and says that instead of opening some other
 folder.</p>
+<p><strong>Copy File Path</strong> puts a downloaded episode’s location
+on the clipboard, for an upload box, a terminal, or a message to
+somebody – the half of handing a file off that needs no file manager at
+all. It reads back the file name and the folder rather than the whole
+path, because a path spoken aloud is mostly separators. An episode with
+no file says so: a path to nothing is worse than no path.</p>
 <h2 id="picking-up-where-you-left-off">Picking up where you left
 off</h2>
 <p>Every episode remembers where you stopped, and playing it again

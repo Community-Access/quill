@@ -18,7 +18,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import replace
 
-from quill.core.radio import download_prefs
+from quill.core.radio import download_prefs, settings_help
 from quill.core.radio.download_prefs import DownloadPrefs
 from quill.ui.dialog_contract import apply_modal_ids
 
@@ -58,11 +58,12 @@ class DownloadPrefsDialog:
         folder_row = wx.BoxSizer(wx.HORIZONTAL)
         self._root_ctrl = wx.TextCtrl(panel, value=prefs.root)
         self._root_ctrl.SetName(
-            f"Downloads folder; leave blank for the default, {download_prefs.default_root()}"
+            f"{settings_help.DOWNLOAD_HELP['folder']} The default is "
+            f"{download_prefs.default_root()}."
         )
         folder_row.Add(self._root_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         browse_btn = wx.Button(panel, label="B&rowse...")
-        browse_btn.SetName("Choose the downloads folder")
+        browse_btn.SetName(settings_help.DOWNLOAD_HELP["folder_button"])
         folder_row.Add(browse_btn, 0)
         root.Add(folder_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -77,6 +78,17 @@ class DownloadPrefsDialog:
         self._always_ask = wx.CheckBox(
             panel, label="As&k where to save each download instead of filing it automatically"
         )
+        # Five checkboxes that carried no help at all: their labels said what
+        # each did, and nothing said what it did *not* do -- which for a filing
+        # rule is the whole question (section 3).
+        for box, key in (
+            (self._per_show, "per_show"),
+            (self._per_book, "per_book"),
+            (self._by_author, "by_author"),
+            (self._keep_going, "keep_going"),
+            (self._always_ask, "always_ask"),
+        ):
+            box.SetName(settings_help.DOWNLOAD_HELP[key])
         self._per_show.SetValue(prefs.folder_per_show)
         self._per_book.SetValue(prefs.folder_per_book)
         self._by_author.SetValue(prefs.group_books_by_author)

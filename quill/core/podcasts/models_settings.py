@@ -207,6 +207,14 @@ class PodcastSettings:
     #: nobody's downloads stop on upgrade; the guard only ever *holds* an
     #: automatic download, never a one you asked for by name.
     download_on_metered: bool = True
+    #: Show a desktop notification when the download queue goes quiet
+    #: (list.md 2.5). Off by default -- a notification is an interruption
+    #: somebody else chose for you, and the earcon that already exists is
+    #: unchanged either way. Local only: the OS notification centre, no
+    #: service and no account. Held back during quiet hours as the
+    #: ``download`` kind, because a forty-episode overnight batch is
+    #: otherwise the first thing in the family to wake somebody at 3 a.m.
+    download_notify: bool = False
     #: Streaks and Year in Review. Off, matching the app it came from: a
     #: listening streak is a nudge, and a nudge nobody asked for is pressure.
     stats_streaks_enabled: bool = False
@@ -342,6 +350,7 @@ class PodcastSettings:
             "chapters_preview_seconds": self.chapters_preview_seconds,
             "history_retention_days": self.history_retention_days,
             "download_on_metered": self.download_on_metered,
+            "download_notify": self.download_notify,
             "stats_streaks_enabled": self.stats_streaks_enabled,
             "directory_source": self.directory_source,
             "queue_group_mode": self.queue_group_mode,
@@ -429,6 +438,7 @@ class PodcastSettings:
             ),
             history_retention_days=_coerce_int(data.get("history_retention_days"), 90),
             download_on_metered=bool(data.get("download_on_metered", True)),
+            download_notify=bool(data.get("download_notify", False)),
             stats_streaks_enabled=bool(data.get("stats_streaks_enabled", False)),
             directory_source=_one_of(
                 data.get("directory_source"), {"itunes", "podcast_index", "both"}, "both"

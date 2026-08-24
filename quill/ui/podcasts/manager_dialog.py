@@ -1108,17 +1108,25 @@ class PodcastManagerDialog(
         reveal_episode_in_file_manager(episode, announce=self._announce)
 
     def _on_save_episode_audio_as(self, show: PodcastShow, episode: PodcastEpisode) -> None:
-        from quill.ui.podcasts.share_actions import save_episode_audio_as
+        from quill.ui.podcasts.export_audio import export_episode_audio
 
-        save_episode_audio_as(
+        export_episode_audio(
             self.dialog,
             self._download_queue,
             self._download_root,
             show,
             episode,
             announce=self._announce,
+            wx=self._wx,
+            # However it ended: the download changed the row, and a wait that
+            # finished can be several minutes after the click.
+            on_finished=self._refresh_selected_episode_row,
         )
-        self._refresh_selected_episode_row()
+
+    def _on_copy_episode_path(self, episode: PodcastEpisode) -> None:
+        from quill.ui.podcasts.export_audio import copy_episode_path
+
+        copy_episode_path(episode, announce=self._announce, wx=self._wx)
 
     # ------------------------------------------------------------------
     # Subscriptions / folders / OPML

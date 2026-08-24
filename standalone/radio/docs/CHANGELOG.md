@@ -17,6 +17,19 @@ gone missing, and several long-standing silent faults are fixed. See
 
 ### Added
 
+- **Every recording and download setting now says what it does *not* do.** A
+  description that answers "what does this do?" and stops leaves the harder
+  question open, and the harder question is the one people get wrong. So: the
+  recording format and bitrate apply from the next recording on and re-encode
+  nothing already made; the destination folder and the filename pattern move
+  and rename nothing already saved; the length cap and the reconnect limit
+  *stop* a recording but never discard what it captured, which is the
+  difference between a safety net and a trapdoor; and recording the sound
+  enhancements is the one place where what you hear and what gets written are
+  deliberately different. Download Preferences had **no** help text at all on
+  its five filing checkboxes -- their labels said what each did, and nothing
+  said whether turning one on would rearrange what you had already saved. (It
+  does not.)
 - **Quill Radio checks your subscribed podcasts on its own, if you ask it to.**
   Until now a show's episode list was only as fresh as the last time you opened
   that show, so "what is new?" could only be answered by walking the

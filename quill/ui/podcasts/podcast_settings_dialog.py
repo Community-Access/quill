@@ -9,6 +9,7 @@ from __future__ import annotations
 import dataclasses
 from collections.abc import Callable
 
+from quill.core.podcasts import settings_help
 from quill.core.podcasts.models import SPEED_MAX, SPEED_MIN, PodcastSettings
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.podcasts.podcast_settings_choices import (
@@ -65,9 +66,7 @@ class PodcastSettingsDialog:
             wx.StaticText(self.dialog, label="Default &playback mode:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._playback_choice = wx.Choice(self.dialog, choices=list(_PLAYBACK_LABELS))
-        self._playback_choice.SetName(
-            "Whether new podcasts download episodes or stream them by default"
-        )
+        self._playback_choice.SetName(settings_help.HELP["playback_default"])
         if settings.playback_mode in _PLAYBACK_MODES:
             self._playback_choice.SetSelection(_PLAYBACK_MODES.index(settings.playback_mode))
         grid.Add(self._playback_choice, 1, wx.EXPAND)
@@ -76,9 +75,7 @@ class PodcastSettingsDialog:
             wx.StaticText(self.dialog, label="Default &retention:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._retention_choice = wx.Choice(self.dialog, choices=list(_RETENTION_LABELS))
-        self._retention_choice.SetName(
-            "What happens to downloaded episode files over time, by default"
-        )
+        self._retention_choice.SetName(settings_help.HELP["retention"])
         if settings.retention in _RETENTION_MODES:
             self._retention_choice.SetSelection(_RETENTION_MODES.index(settings.retention))
         grid.Add(self._retention_choice, 1, wx.EXPAND)
@@ -88,9 +85,7 @@ class PodcastSettingsDialog:
         )
         self._retention_count_ctrl = wx.SpinCtrl(self.dialog, min=1, max=999)
         self._retention_count_ctrl.SetValue(settings.retention_count)
-        self._retention_count_ctrl.SetName(
-            "How many recent episodes to keep, when retention is set to keep only the most recent"
-        )
+        self._retention_count_ctrl.SetName(settings_help.HELP["keep_last_n"])
         grid.Add(self._retention_count_ctrl, 0)
 
         grid.Add(
@@ -118,10 +113,7 @@ class PodcastSettingsDialog:
             wx.ALIGN_CENTER_VERTICAL,
         )
         self._auto_download_choice = wx.Choice(self.dialog, choices=list(_AUTO_DOWNLOAD_LABELS))
-        self._auto_download_choice.SetName(
-            "How many of a show's newest episodes to fetch without being asked, "
-            "on subscribe and on every refresh"
-        )
+        self._auto_download_choice.SetName(settings_help.HELP["auto_download"])
         effective = settings.effective_auto_download_count
         self._auto_download_choice.SetSelection(
             _AUTO_DOWNLOAD_VALUES.index(effective) if effective in _AUTO_DOWNLOAD_VALUES else 0
@@ -135,11 +127,7 @@ class PodcastSettingsDialog:
         )
         self._inbox_max_ctrl = wx.SpinCtrl(self.dialog, min=0, max=999)
         self._inbox_max_ctrl.SetValue(settings.inbox_max_episodes)
-        self._inbox_max_ctrl.SetName(
-            "At most this many episodes in the Inbox per show. Trimming never "
-            "deletes: episodes stay unplayed in their show's own list, and anything "
-            "played, started, or queued is never trimmed."
-        )
+        self._inbox_max_ctrl.SetName(settings_help.HELP["inbox_max"])
         grid.Add(self._inbox_max_ctrl, 0)
 
         grid.Add(
@@ -148,11 +136,7 @@ class PodcastSettingsDialog:
             wx.ALIGN_CENTER_VERTICAL,
         )
         self._history_choice = wx.Choice(self.dialog, choices=list(_HISTORY_LABELS))
-        self._history_choice.SetName(
-            "How long QUILL Cast keeps a record of what you listened to and when. "
-            "It never leaves this computer either way. Choosing not to keep one "
-            "means nothing is written at all, not that it is deleted afterwards."
-        )
+        self._history_choice.SetName(settings_help.HELP["history_days"])
         history_days = int(getattr(settings, "history_retention_days", 90))
         self._history_choice.SetSelection(
             _HISTORY_VALUES.index(history_days) if history_days in _HISTORY_VALUES else 2
@@ -162,22 +146,19 @@ class PodcastSettingsDialog:
         self._metered_check = wx.CheckBox(
             self.dialog, label="Download automatically on a &metered connection"
         )
-        self._metered_check.SetName(
-            "With this off, downloads QUILL Cast starts by itself wait until you "
-            "are off a metered connection. A download you ask for by name always "
-            "happens."
-        )
+        self._metered_check.SetName(settings_help.HELP["metered"])
         self._metered_check.SetValue(bool(getattr(settings, "download_on_metered", True)))
         grid.Add(self._metered_check, 0)
+
+        self._notify_check = wx.CheckBox(self.dialog, label="&Notify me when downloads finish")
+        self._notify_check.SetName(settings_help.HELP["download_notify"])
+        self._notify_check.SetValue(bool(getattr(settings, "download_notify", False)))
+        grid.Add(self._notify_check, 0)
 
         self._streaks_check = wx.CheckBox(
             self.dialog, label="Show listening &streaks in Statistics"
         )
-        self._streaks_check.SetName(
-            "Whether the Statistics window reports how many days in a row you "
-            "have listened. Off unless you ask for it: a streak is a nudge, and "
-            "a nudge nobody asked for is pressure."
-        )
+        self._streaks_check.SetName(settings_help.HELP["streaks"])
         self._streaks_check.SetValue(bool(getattr(settings, "stats_streaks_enabled", False)))
         grid.Add(self._streaks_check, 0)
 
@@ -188,10 +169,7 @@ class PodcastSettingsDialog:
         )
         self._retention_days_ctrl = wx.SpinCtrl(self.dialog, min=0, max=3650)
         self._retention_days_ctrl.SetValue(settings.download_retention_days)
-        self._retention_days_ctrl.SetName(
-            "Delete a downloaded file once it is this many days old. Queued and "
-            "part-played episodes are never deleted."
-        )
+        self._retention_days_ctrl.SetName(settings_help.HELP["delete_after_days"])
         grid.Add(self._retention_days_ctrl, 0)
 
         grid.Add(
@@ -200,13 +178,7 @@ class PodcastSettingsDialog:
             wx.ALIGN_CENTER_VERTICAL,
         )
         self._delete_played_check = wx.CheckBox(self.dialog, label="Delete its downloaded &file")
-        self._delete_played_check.SetName(
-            "Remove a downloaded file once you have finished the episode, however you "
-            "finish it -- playing it to the end, or marking it played. Not the age rule "
-            "above and not the storage cap: it composes with both. It never touches a "
-            "running download, and never goes back over episodes finished before you "
-            "switched it on."
-        )
+        self._delete_played_check.SetName(settings_help.HELP["delete_after_playing"])
         self._delete_played_check.SetValue(bool(getattr(settings, "delete_after_play", False)))
         grid.Add(self._delete_played_check, 0)
 
@@ -217,11 +189,7 @@ class PodcastSettingsDialog:
         )
         self._storage_cap_ctrl = wx.SpinCtrl(self.dialog, min=0, max=1_000_000)
         self._storage_cap_ctrl.SetValue(settings.storage_cap_mb)
-        self._storage_cap_ctrl.SetName(
-            "A ceiling on total podcast download storage. When it is exceeded, "
-            "already-played downloads are removed oldest first; a queued or "
-            "part-played episode is never removed."
-        )
+        self._storage_cap_ctrl.SetName(settings_help.HELP["storage_cap"])
         grid.Add(self._storage_cap_ctrl, 0)
 
         # Worded as reliability, not disk management, because that is what it
@@ -234,12 +202,7 @@ class PodcastSettingsDialog:
             self.dialog, label="Keep streamed episodes ready while they play"
         )
         self._playback_cache_ctrl.SetValue(settings.playback_cache)
-        self._playback_cache_ctrl.SetName(
-            "Save a streamed episode's audio as it plays, so playback continues "
-            "through a dropped connection, chapters can be found in it, and "
-            "keeping it costs no second download. The audio is removed "
-            "automatically; nothing you are listening to is ever removed."
-        )
+        self._playback_cache_ctrl.SetName(settings_help.HELP["playback_cache"])
         grid.Add(self._playback_cache_ctrl, 0)
 
         grid.Add(
@@ -249,18 +212,14 @@ class PodcastSettingsDialog:
         )
         self._playback_cache_cap_ctrl = wx.SpinCtrl(self.dialog, min=0, max=1_000_000)
         self._playback_cache_cap_ctrl.SetValue(settings.playback_cache_cap_mb)
-        self._playback_cache_cap_ctrl.SetName(
-            "How much room streamed episodes may use between them. The "
-            "least-recently-played is removed first, and the episode playing "
-            "now is never removed."
-        )
+        self._playback_cache_cap_ctrl.SetName(settings_help.HELP["playback_cache_cap"])
         grid.Add(self._playback_cache_cap_ctrl, 0)
 
         grid.Add(
             wx.StaticText(self.dialog, label="Start on this &view:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._launch_view_choice = wx.Choice(self.dialog, choices=list(_LAUNCH_VIEW_LABELS))
-        self._launch_view_choice.SetName("Which part of the library QUILL Cast opens on")
+        self._launch_view_choice.SetName(settings_help.HELP["launch_view"])
         self._launch_view_choice.SetSelection(
             _LAUNCH_VIEW_VALUES.index(settings.default_launch_view)
             if settings.default_launch_view in _LAUNCH_VIEW_VALUES
@@ -273,11 +232,9 @@ class PodcastSettingsDialog:
         )
         dest_row = wx.BoxSizer(wx.HORIZONTAL)
         self._download_root_ctrl = wx.TextCtrl(self.dialog, value=settings.download_root)
-        self._download_root_ctrl.SetName(
-            "Where downloaded episodes are saved; blank uses the default podcasts folder"
-        )
+        self._download_root_ctrl.SetName(settings_help.HELP["download_folder"])
         browse_btn = wx.Button(self.dialog, label="&Browse...")
-        browse_btn.SetName("Choose a download location")
+        browse_btn.SetName(settings_help.HELP["download_folder_button"])
         dest_row.Add(self._download_root_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         dest_row.Add(browse_btn, 0)
         grid.Add(dest_row, 1, wx.EXPAND)
@@ -288,9 +245,7 @@ class PodcastSettingsDialog:
             wx.ALIGN_CENTER_VERTICAL,
         )
         self._delete_choice = wx.Choice(self.dialog, choices=list(_DELETE_LABELS))
-        self._delete_choice.SetName(
-            "What to do with a show's downloaded episode files when you unsubscribe from it"
-        )
+        self._delete_choice.SetName(settings_help.HELP["unsubscribe_files"])
         if settings.delete_files_on_remove in _DELETE_POLICIES:
             self._delete_choice.SetSelection(
                 _DELETE_POLICIES.index(settings.delete_files_on_remove)
@@ -302,20 +257,14 @@ class PodcastSettingsDialog:
         self._auto_download_queued_check = wx.CheckBox(
             self.dialog, label="Also download anything you add to the Play &Queue"
         )
-        self._auto_download_queued_check.SetName(
-            "An episode you queue is one you mean to play, so fetch it even if it is "
-            "older than the automatic download count"
-        )
+        self._auto_download_queued_check.SetName(settings_help.HELP["download_queued"])
         self._auto_download_queued_check.SetValue(settings.auto_download_queued)
         root.Add(self._auto_download_queued_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._auto_download_inbox_check = wx.CheckBox(
             self.dialog, label="Also download everything routed to the In&box"
         )
-        self._auto_download_inbox_check.SetName(
-            "Off by default: the Inbox is where episodes wait to be triaged, not a "
-            "commitment to listen to them"
-        )
+        self._auto_download_inbox_check.SetName(settings_help.HELP["download_inbox"])
         self._auto_download_inbox_check.SetValue(settings.auto_download_inbox)
         root.Add(self._auto_download_inbox_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -336,10 +285,7 @@ class PodcastSettingsDialog:
                 "Every show except the ones I exclude",
             ],
         )
-        self._inbox_mode.SetName(
-            "Which shows the Inbox holds. Choosing every show suits a large library "
-            "you triage; choosing only some suits a few shows you follow closely"
-        )
+        self._inbox_mode.SetName(settings_help.HELP["inbox_mode"])
         self._inbox_mode.SetSelection(1 if settings.inbox_mode == "exclude" else 0)
         root.Add(self._inbox_mode, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -356,30 +302,20 @@ class PodcastSettingsDialog:
         self._continue_queue_check = wx.CheckBox(
             self.dialog, label="Play the next episode in the Play &Queue"
         )
-        self._continue_queue_check.SetName(
-            "Auto-advance through the Play Queue. On by default -- this is what "
-            "QUILL Cast has always done."
-        )
+        self._continue_queue_check.SetName(settings_help.HELP["continue_queue"])
         self._continue_queue_check.SetValue(settings.continue_after_queue)
         session_box.Add(self._continue_queue_check, 0, wx.ALL, 6)
 
         self._prebuffer_check = wx.CheckBox(
             self.dialog, label="Start loading the ne&xt episode before this one ends"
         )
-        self._prebuffer_check.SetName(
-            "Removes the pause between queued episodes. Off by default because it "
-            "uses data speculatively, which matters on a metered connection"
-        )
+        self._prebuffer_check.SetName(settings_help.HELP["prebuffer"])
         self._prebuffer_check.SetValue(settings.prebuffer_next)
         session_box.Add(self._prebuffer_check, 0, wx.ALL, 6)
         self._continue_group_check = wx.CheckBox(
             self.dialog, label="When the queue is empty, keep going with the same podcast"
         )
-        self._continue_group_check.SetName(
-            "Carry on with the show's next unplayed episode once the queue runs out. "
-            "Off by default: with both of these off, playback stops at the end of "
-            "the episode you started."
-        )
+        self._continue_group_check.SetName(settings_help.HELP["continue_group"])
         self._continue_group_check.SetValue(settings.continue_after_group)
         session_box.Add(self._continue_group_check, 0, wx.LEFT | wx.BOTTOM, 6)
         root.Add(session_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -387,10 +323,7 @@ class PodcastSettingsDialog:
         self._name_first_check = wx.CheckBox(
             self.dialog, label="Read the podcast &name before the episode title in mixed lists"
         )
-        self._name_first_check.SetName(
-            "In the Inbox, New Episodes, and other cross-show lists, put the podcast "
-            "name first so rows group by show when you skim by first letter"
-        )
+        self._name_first_check.SetName(settings_help.HELP["name_first"])
         self._name_first_check.SetValue(settings.announce_show_name_first)
         root.Add(self._name_first_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -398,10 +331,7 @@ class PodcastSettingsDialog:
             self.dialog,
             label="Always s&ync the full catalog (download every episode the feed offers)",
         )
-        self._always_sync_check.SetName(
-            "Always Sync: backfill and download the show's whole catalog, not just new episodes; "
-            "works best with retention set to keep all"
-        )
+        self._always_sync_check.SetName(settings_help.HELP["always_sync"])
         self._always_sync_check.SetValue(settings.always_sync_full_catalog)
         self._always_sync_check.Bind(wx.EVT_CHECKBOX, self._on_always_sync_toggle)
         root.Add(self._always_sync_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -409,18 +339,14 @@ class PodcastSettingsDialog:
         self._auto_trim_check = wx.CheckBox(
             self.dialog, label="Auto-&trim silence from downloaded episodes"
         )
-        self._auto_trim_check.SetName(
-            "Trim leading and trailing silence from each finished download"
-        )
+        self._auto_trim_check.SetName(settings_help.HELP["auto_trim"])
         self._auto_trim_check.SetValue(settings.auto_trim_silence)
         root.Add(self._auto_trim_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._normalize_check = wx.CheckBox(
             self.dialog, label="&Normalize loudness of downloaded episodes"
         )
-        self._normalize_check.SetName(
-            "Even out volume across downloaded episodes using the audiobook builder's loudness pass"
-        )
+        self._normalize_check.SetName(settings_help.HELP["normalize"])
         self._normalize_check.SetValue(settings.normalize_loudness)
         root.Add(self._normalize_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -430,10 +356,7 @@ class PodcastSettingsDialog:
         self._reconnect_check = wx.CheckBox(
             self.dialog, label="&Reconnect and keep downloading automatically"
         )
-        self._reconnect_check.SetName(
-            "When the internet hiccups mid-download, retry automatically instead of "
-            "landing in Failed status; the partial file resumes from where it left off"
-        )
+        self._reconnect_check.SetName(settings_help.HELP["reconnect"])
         self._reconnect_check.SetValue(settings.reconnect_enabled)
         reconnect_box.Add(self._reconnect_check, 0, wx.ALL, 6)
         reconnect_grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
@@ -442,9 +365,7 @@ class PodcastSettingsDialog:
         )
         self._reconnect_attempts_ctrl = wx.SpinCtrl(self.dialog, min=1, max=99)
         self._reconnect_attempts_ctrl.SetValue(max(1, settings.reconnect_max_attempts))
-        self._reconnect_attempts_ctrl.SetName(
-            "How many times to try reconnecting before giving up on the download"
-        )
+        self._reconnect_attempts_ctrl.SetName(settings_help.HELP["reconnect_attempts"])
         reconnect_grid.Add(self._reconnect_attempts_ctrl, 0)
         reconnect_grid.Add(
             wx.StaticText(self.dialog, label="Seconds &between attempts:"),
@@ -453,7 +374,7 @@ class PodcastSettingsDialog:
         )
         self._reconnect_wait_ctrl = wx.SpinCtrl(self.dialog, min=1, max=600)
         self._reconnect_wait_ctrl.SetValue(max(1, settings.reconnect_wait_seconds))
-        self._reconnect_wait_ctrl.SetName("How long to wait before each reconnect attempt")
+        self._reconnect_wait_ctrl.SetName(settings_help.HELP["reconnect_wait"])
         reconnect_grid.Add(self._reconnect_wait_ctrl, 0)
         reconnect_box.Add(reconnect_grid, 0, wx.LEFT | wx.BOTTOM, 6)
         root.Add(reconnect_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -547,6 +468,7 @@ class PodcastSettingsDialog:
             **self._chapters.values(),
             history_retention_days=_HISTORY_VALUES[max(0, self._history_choice.GetSelection())],
             download_on_metered=self._metered_check.GetValue(),
+            download_notify=self._notify_check.GetValue(),
             stats_streaks_enabled=self._streaks_check.GetValue(),
             download_retention_days=self._retention_days_ctrl.GetValue(),
             storage_cap_mb=self._storage_cap_ctrl.GetValue(),

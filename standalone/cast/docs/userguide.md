@@ -531,6 +531,56 @@ share the record of when a check last happened, so whichever one goes first, the
 other finds the work already done and stays quiet. There is nothing to
 configure.
 
+## Lineups: saving the order you listen in
+
+A lineup is "the order I listen in on a Tuesday" -- four shows, in a sequence
+that took a minute to arrange and disappears the moment the queue is used for
+something else.
+
+In the Play Queue window, **Save Lineup...** keeps the current order under a
+name you choose. **Apply Lineup...** puts it back later.
+
+Applying **moves; it never replaces**. The queue you have is a decision you
+made, so:
+
+- every episode in the lineup that is still available and unplayed moves to the
+  **front**, in the lineup's order, whether it was already queued or not;
+- everything else in the queue **stays**, in the order it already had, behind
+  them;
+- anything you have since played, or that has left your library, is **skipped**
+  -- and counted, so you hear "applied 3, skipped 2" rather than a silence that
+  looks the same whether it worked or half-worked.
+
+Episodes keep the age they had, so queue expiry still measures how long
+something has really been waiting rather than how recently it was reordered.
+Re-saving a lineup under a name you already used replaces it: saving "Tuesday"
+again means *this* is Tuesday now.
+
+Lineups are saved playlists, so everything the Playlists branch does works on
+them -- rename, delete, and they travel in an export.
+
+## Selecting more than one episode
+
+Every episode list takes a multiple selection, the Play Queue included. Shift
+and an arrow extend the selection, Ctrl and Space adds or removes one, and
+Select All takes the lot. The count is spoken as you go, and any verb that acts
+on the selection says how many rows it touched -- "Removed: 6 episodes eligible,
+6 done" rather than "Removed".
+
+## Being told when downloads finish
+
+Off by default, in **Podcast Settings**: *Notify me when downloads finish*.
+
+One desktop notification when the download queue goes **quiet**, not one per
+episode -- a forty-episode batch is one event to you, however many rows it had.
+Nothing leaves this computer; this is the Windows notification centre, not a
+service and not an account.
+
+It goes through **quiet hours** like any other background news. The downloads
+themselves still run; what is held back is the interruption about them. That is
+the whole point: an overnight batch was otherwise the one thing here that could
+wake you at three in the morning.
+
 ## Grouping the Play Queue
 
 The Play Queue has a **Group by** control: Nothing, Podcast, or Library folder.
@@ -676,13 +726,17 @@ They are on by default and never fire while a text box has focus, so typing is n
 
 ## Getting an episode back out
 
-Three commands, all of them **Quick Actions** entries -- so they can be reordered, made the Enter default, or reached on Ctrl+1 to Ctrl+9 like everything else on those menus.
+Four commands, all of them **Quick Actions** entries -- so they can be reordered, made the Enter default, or reached on Ctrl+1 to Ctrl+9 like everything else on those menus.
 
-**Save Episode Audio As...** saves a copy of the episode's audio wherever you choose. It copies rather than moves: QUILL Cast goes on managing its own downloaded copy, so retention, the storage cap, resume and Remove Downloaded Copy all still apply to it, and your saved copy sits outside all of that. If the episode is not downloaded yet there is no audio file to copy, so QUILL Cast offers to fetch it and says to run the command again when it finishes -- rather than holding you behind a progress bar you cannot escape. The filename is suggested as "Show - Episode"; characters Windows will not accept are replaced, and very long titles are shortened, so the Save dialog never opens with a name the system would reject.
+**Save Episode Audio As...** saves a copy of the episode's audio wherever you choose. It copies rather than moves: QUILL Cast goes on managing its own downloaded copy, so retention, the storage cap, resume and Remove Downloaded Copy all still apply to it, and your saved copy sits outside all of that. The filename is suggested as "Show - Episode"; characters Windows will not accept are replaced, and very long titles are shortened, so the Save dialog never opens with a name the system would reject.
+
+If the episode is not downloaded yet, it says **"Preparing audio file for export"**, fetches it, and opens the save dialog when the file arrives -- you press the key once rather than twice. It used to ask you to run the command again afterwards, which made you the scheduler. The wait can end four ways and it says which: the file arrives, the download fails and names the reason, you cancel it from the Downloads window, or it takes long enough that going on waiting silently would be indistinguishable from a hang -- in which case it says the download is carrying on without it and to use the command again once it has finished.
 
 **Copy Podcast Link** copies the show's feed address, next to the existing **Copy Episode Link**. The feed address rather than the show's website, because a feed address is what another podcast app can be given. A local podcast has no feed and says so.
 
 **Show in File Explorer** opens the folder holding a downloaded episode with the file selected. An episode you are streaming has no file to show, and says that instead of opening some other folder.
+
+**Copy File Path** puts a downloaded episode's location on the clipboard, for an upload box, a terminal, or a message to somebody -- the half of handing a file off that needs no file manager at all. It reads back the file name and the folder rather than the whole path, because a path spoken aloud is mostly separators. An episode with no file says so: a path to nothing is worse than no path.
 
 ## Picking up where you left off
 

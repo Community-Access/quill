@@ -128,6 +128,51 @@ class PodcastTransfersMixin:
         self._refresh_statusbar()
         if self._podcast_manager_dialog is not None:
             self._podcast_manager_dialog.on_download_completed(item)
+        self._maybe_notify_downloads_finished(item)
+
+    def _maybe_notify_downloads_finished(self, item: DownloadItem) -> None:
+        """One desktop notification when the queue goes quiet (list.md 2.5).
+
+        Counted here rather than in the notice, because the tally is a fact
+        about this run: a forty-episode batch is one event to a listener,
+        however many rows it had, and forty toasts would be a fault with a
+        friendly icon. The count resets as the queue drains, so the next batch
+        starts from nothing.
+        """
+        from quill.core.podcasts import download_notice
+
+        finished = int(getattr(self, "_podcast_downloads_finished", 0)) + 1
+        self._podcast_downloads_finished = finished
+        queue = getattr(self, "_podcast_download_queue", None)
+        still = int(queue.active_count()) if queue is not None else 0
+        # getattr, because a host can reach here with a library that has no
+        # settings record yet -- and "no settings" must read as "not asked
+        # for", which is what wants_notice answers for anything it does not
+        # recognise.
+        settings = getattr(self._podcast_library, "settings", None)
+        if not download_notice.should_notify(settings, still_downloading=still, finished=finished):
+            return
+        self._podcast_downloads_finished = 0
+        # Quiet hours, as the ``download`` kind. The download itself already
+        # happened; what is held back is the interruption about it.
+        from quill.core.quiet_hours import Kind
+        from quill.ui.quiet_hours_ui import held_back
+
+        if held_back(Kind.DOWNLOAD):
+            return
+        show = self._podcast_library.find_show(item.show_id)
+        episode = show.find_episode(item.episode_guid) if show is not None else None
+        from quill.ui.toast import show_toast
+
+        show_toast(
+            download_notice.TITLE,
+            download_notice.notice(
+                finished,
+                str(getattr(episode, "title", "") or ""),
+                str(getattr(show, "title", "") or ""),
+            ),
+            parent=self.frame,
+        )
 
     # -- the playback cache -------------------------------------------------
 

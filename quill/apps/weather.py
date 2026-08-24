@@ -538,13 +538,13 @@ def _show_alert_toast(title: str, body: str) -> None:
     try:
         import wx.adv
 
+        from quill.ui.toast import show_toast
+
+        # The App and the pump below are this call site's own concern -- a
+        # headless check has no window and no loop -- but the notification
+        # itself is the shared one (quill/ui/toast.py).
         app = wx.App(False)
-        note = wx.adv.NotificationMessage(title, body)
-        try:
-            note.SetFlags(wx.ICON_WARNING)
-        except Exception:  # noqa: BLE001 - flags are cosmetic
-            pass
-        note.Show(timeout=wx.adv.NotificationMessage.Timeout_Auto)
+        show_toast(title, body, icon=wx.ICON_WARNING)
         # Give the OS a moment to hand the toast off before the process exits.
         wx.CallLater(1500, app.ExitMainLoop)
         app.MainLoop()

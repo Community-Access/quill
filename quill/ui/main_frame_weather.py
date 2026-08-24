@@ -659,17 +659,9 @@ class WeatherMixin:
     def _show_weather_toast(self, title: str, body: str) -> None:
         """Show a Windows notification-area toast (screen readers announce it).
         Best-effort; a toast failure never disrupts the rest of the alert."""
-        try:
-            import wx.adv
+        from quill.ui.toast import show_toast
 
-            note = wx.adv.NotificationMessage(title, body, self.frame)
-            try:
-                note.SetFlags(self._wx.ICON_WARNING)
-            except Exception:  # noqa: BLE001 - flags are cosmetic
-                pass
-            note.Show(timeout=wx.adv.NotificationMessage.Timeout_Auto)
-        except Exception:  # noqa: BLE001 - a toast must never crash the caller
-            pass
+        show_toast(title, body, parent=self.frame, icon=self._wx.ICON_WARNING)
 
     def _play_weather_alert_sound(self) -> None:
         """Play the alert cue for a newly-issued alert, honoring the user's

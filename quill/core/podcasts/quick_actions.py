@@ -44,12 +44,17 @@ EPISODE_ACTIONS: tuple[QuickAction, ...] = (
     QuickAction(
         "save_audio_as",
         "Save Episode Audio As...",
-        "Keep your own copy of the audio wherever you choose.",
+        "Keep your own copy of the audio wherever you choose; downloads it first if need be.",
     ),
     QuickAction(
         "show_in_explorer",
         "Show in File Explorer",
         "Open the folder holding the downloaded file, with it selected.",
+    ),
+    QuickAction(
+        "copy_path",
+        "Copy File Path",
+        "Copy where the downloaded file is, to paste somewhere else.",
     ),
     QuickAction("file_to_inbox", "File to Inbox Folder...", "Move it inside your Inbox tree."),
     QuickAction(

@@ -160,6 +160,8 @@ def episode_actions(
             "Share This &Moment",
             lambda: dialog._on_share_moment(show, episode),
         ),
+        # Never dimmed for "not downloaded": this one *fetches* first and
+        # waits, which is the whole difference between it and the two below.
         action(
             "save_audio_as",
             "&Save Episode Audio As...",
@@ -171,6 +173,16 @@ def episode_actions(
             lambda: dialog._on_show_episode_in_explorer(episode),
             enabled=downloaded,
             reason=dimmed_reason.not_downloaded("show"),
+        ),
+        action(
+            "copy_path",
+            "Cop&y File Path",
+            lambda: dialog._on_copy_episode_path(episode),
+            # The handoff that needs no file manager -- an upload box, a
+            # terminal, a message to somebody. A path to nothing is worse
+            # than no path, so this waits for the file like the others.
+            enabled=downloaded,
+            reason=dimmed_reason.not_downloaded("copy the path of"),
         ),
         action(
             "file_to_inbox",

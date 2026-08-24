@@ -18,6 +18,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.core.podcasts import settings_help
 from quill.core.podcasts.models import SPEED_MAX, SPEED_MIN, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids
@@ -122,9 +123,7 @@ class ShowSettingsDialog:
         self._auto_download = add_row(
             "Auto-&download:", lambda: wx.Choice(self.dialog, choices=list(_AUTO_DOWNLOAD_LABELS))
         )
-        self._auto_download.SetName(
-            "How many of this show's newest episodes to download automatically"
-        )
+        self._auto_download.SetName(settings_help.SHOW_HELP["auto_download"])
         self._auto_download.SetSelection(
             _index_for(
                 _AUTO_DOWNLOAD_VALUES,
@@ -136,29 +135,20 @@ class ShowSettingsDialog:
             "",
             lambda: wx.CheckBox(self.dialog, label="New episodes go straight to the Play &Queue"),
         )
-        self._auto_queue.SetName(
-            "Auto-Queue: a new episode of this show joins the Play Queue on refresh, "
-            "skipping the Inbox"
-        )
+        self._auto_queue.SetName(settings_help.SHOW_HELP["auto_queue"])
         self._auto_queue.SetValue(show.auto_queue)
 
         self._notify = add_row(
             "", lambda: wx.CheckBox(self.dialog, label="&Announce new episodes by name")
         )
-        self._notify.SetName(
-            "Speak and braille this show's new episode titles when the background "
-            "check finds them, and show a tray notification"
-        )
+        self._notify.SetName(settings_help.SHOW_HELP["notify"])
         self._notify.SetValue(show.notify_new_episodes)
 
         self._queue_age = add_row(
             "&Expire from the queue:",
             lambda: wx.Choice(self.dialog, choices=list(_QUEUE_AGE_LABELS)),
         )
-        self._queue_age.SetName(
-            "Remove this show's episodes from the Play Queue once they have waited "
-            "this long; they go to Recently Expired, where they can be restored"
-        )
+        self._queue_age.SetName(settings_help.SHOW_HELP["queue_expiry"])
         self._queue_age.SetSelection(_index_for(_QUEUE_AGE_VALUES, settings.queue_age_limit_days))
 
         self._speed = add_row(
@@ -175,18 +165,13 @@ class ShowSettingsDialog:
             lambda: wx.SpinCtrl(self.dialog, min=0, max=999),
         )
         self._inbox_max.SetValue(settings.inbox_max_episodes)
-        self._inbox_max.SetName(
-            "At most this many of this show's episodes in the Inbox; 0 means no limit. "
-            "Trimming never deletes: episodes stay unplayed in the show's own list."
-        )
+        self._inbox_max.SetName(settings_help.SHOW_HELP["inbox_max"])
 
         self._inbox_age = add_row(
             "Inbox: drop episodes &older than:",
             lambda: wx.Choice(self.dialog, choices=list(_INBOX_AGE_LABELS)),
         )
-        self._inbox_age.SetName(
-            "Drop this show's episodes out of the Inbox once they are older than this"
-        )
+        self._inbox_age.SetName(settings_help.SHOW_HELP["inbox_age"])
         self._inbox_age.SetSelection(_index_for(_INBOX_AGE_VALUES, settings.inbox_age_limit_hours))
 
         self._retention_days = add_row(
@@ -194,10 +179,7 @@ class ShowSettingsDialog:
             lambda: wx.SpinCtrl(self.dialog, min=0, max=3650),
         )
         self._retention_days.SetValue(settings.download_retention_days)
-        self._retention_days.SetName(
-            "Delete this show's downloaded files once they are this many days old; "
-            "0 means never. Queued and part-played episodes are never deleted."
-        )
+        self._retention_days.SetName(settings_help.SHOW_HELP["delete_after_days"])
 
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -209,10 +191,7 @@ class ShowSettingsDialog:
             self.dialog, label="&Keep streamed episodes of this podcast ready while they play"
         )
         self._playback_cache.SetValue(settings.playback_cache)
-        self._playback_cache.SetName(
-            "Save this podcast's streamed audio as it plays, so playback continues "
-            "through a dropped connection and chapters can be found in it"
-        )
+        self._playback_cache.SetName(settings_help.SHOW_HELP["playback_cache"])
         root.Add(self._playback_cache, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._favorite = wx.CheckBox(self.dialog, label="A &favorite podcast")
@@ -222,9 +201,7 @@ class ShowSettingsDialog:
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         ok_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
         clear_btn = wx.Button(self.dialog, label="&Follow the Shared Defaults")
-        clear_btn.SetName(
-            "Drop every override for this podcast so it follows Podcast Settings again"
-        )
+        clear_btn.SetName(settings_help.SHOW_HELP["reset"])
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         btn_row.Add(clear_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()

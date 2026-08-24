@@ -4,6 +4,79 @@ All notable changes to QUILL Cast are documented here. See `docs/release-notes-2
 
 ## 2.0.0
 
+### Every setting now says what it does *not* do (2026-08-24)
+
+A settings description that answers "what does this do?" and stops leaves the
+harder question open, and the harder question is the one people get wrong:
+whether a change applies to what you already have or only to what comes next;
+whether "keep" means the episode or just the downloaded file; whether off means
+never or only not-by-itself.
+
+So every podcast, download and per-show setting was rewritten to the same rule
+-- **what it does, then the misreading it prevents, in that order, in one added
+sentence**. A few examples of what was missing:
+
+- **Retention** never removes an episode from a show's list, unsubscribes you,
+  or forgets where you had got to. What goes is the file.
+- **Automatic downloads** go newest-first and never backwards -- collecting a
+  show's back catalogue is what Always Sync is for.
+- **Auto-trim silence** and **normalise volume** rewrite the downloaded file as
+  it lands, so they apply to new downloads and never to what is already there.
+- **The storage cap** would rather be exceeded than remove something you have
+  queued or half-played.
+- **The Inbox limit** trims the Inbox, not the library: episodes stay unplayed
+  in their show's own list.
+
+The strings moved into one table so they could be *checked*, and a new test
+asserts that every one of them carries the second half. A setting added without
+it fails the build.
+
+### Getting an episode out, and getting a queue back (2026-08-24)
+
+**Save Episode Audio As waits for the download now.** It used to ask "download
+it now? then run this command again", which is honest about not blocking the
+window on a download of unknown length and makes you the scheduler: press the
+key, listen for a completion you have to be watching for, remember what you
+were doing, press the key again. It now says **"Preparing audio file for
+export"** and opens the save dialog when the bytes land. One keystroke, one
+wait, one outcome.
+
+A wait has four endings, and it says which one it got: the file arrives, the
+download fails and names the reason, you cancel it from the Downloads window,
+or it takes long enough that continuing to wait silently would be
+indistinguishable from a hang -- in which case it says the download is carrying
+on without it, because that is true. And the copy is still a copy: QUILL Cast
+goes on managing its own downloaded file, and yours is outside all of that.
+
+**Copy File Path**, on every downloaded episode. The half of handing a file off
+that needs no file manager -- an upload box, a terminal, a message to somebody.
+It reads back the file name and the folder rather than the whole path, because
+a path spoken aloud is a line of separators.
+
+**Lineups: the Play Queue order, saved.** *Save Lineup...* keeps the order you
+have arranged under a name; *Apply Lineup...* puts it back. Applying **moves,
+it never replaces**: the lineup's available unplayed episodes go to the front
+in the lineup's order, everything else stays behind them in the order it
+already had, and anything played or gone is skipped -- and counted, because
+"applied 3, skipped 2" is the difference between a lineup that worked and one
+that quietly half-worked. Episodes keep the age they had, so Queue Expiration
+still measures how long they have really been waiting.
+
+A lineup is a saved playlist, deliberately: it renames, deletes, appears in the
+tree and travels in an export because it *is* one of those, not a second thing
+that looks like one.
+
+**The Play Queue takes more than one selection.** Every other episode list in
+Cast already did. Shift and arrow extend, Ctrl and Space adds one, and Remove
+takes everything selected and says how many it took.
+
+**Tell me when downloads finish.** Off by default, in Podcast Settings. One
+desktop notification when the download queue goes *quiet* -- not one per
+episode, because forty toasts is a fault with a friendly icon. Nothing leaves
+this computer. And it goes through quiet hours as a download, which is the
+whole reason that category exists: an overnight batch of forty episodes was
+otherwise the first thing in the family that could wake somebody at 3 a.m.
+
 ### Check All Feeds Now, and one check rather than two (2026-08-24)
 
 **A verb for the question the per-show Refresh could not answer.** Refresh Feed

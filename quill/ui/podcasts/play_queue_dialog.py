@@ -62,8 +62,16 @@ class PlayQueueDialog:
         group_row.Add(self._group_choice, 1, wx.EXPAND)
         root.Add(group_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
 
-        self._list = wx.ListBox(self.dialog)
-        self._list.SetName("Play Queue in play order; Enter plays the selected episode now")
+        # Extended, not multiple (list.md 2.4): Shift and Ctrl behave the way
+        # they do in every other list on the system, and a single click still
+        # replaces the selection -- LB_MULTIPLE toggles on plain arrow keys,
+        # which silently turns "move down the queue" into "select the queue".
+        self._list = wx.ListBox(self.dialog, style=wx.LB_EXTENDED)
+        self._list.SetName(
+            "Play Queue in play order; Enter plays the selected episode now. "
+            "Shift and arrow extend the selection, Ctrl and Space adds one, "
+            "and Remove takes everything selected."
+        )
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
@@ -76,6 +84,9 @@ class PlayQueueDialog:
             ("Move Marked &Below", lambda: self._move_marked(above=False)),
             ("&Remove", self._on_remove),
             ("&Clear Queue", self._on_clear),
+            # Lineups: the order you listen in, saved (list.md 2.3).
+            ("&Save Lineup...", self._on_save_lineup),
+            ("Appl&y Lineup...", self._on_apply_lineup),
         )
         for label, handler in specs:
             button = wx.Button(self.dialog, label=label)
@@ -137,7 +148,7 @@ class PlayQueueDialog:
         *select* is a **queue index**, not a row: an episode that moved should
         be followed, and in a grouped list its row number is not its position.
         """
-        current_row = self._list.GetSelection()
+        current_row = self._first_selected_row()
         mode = queue_ops.GROUP_MODES[max(0, self._group_choice.GetSelection())]
         labels: list[str] = []
         self._rows: list[tuple[int | None, str]] = []
@@ -153,15 +164,39 @@ class PlayQueueDialog:
         if not labels:
             return
         if select is None:
-            self._list.SetSelection(max(0, min(current_row, len(labels) - 1)))
+            self._select_only(max(0, min(current_row, len(labels) - 1)))
             return
         for row, (index, _label) in enumerate(self._rows):
             if index == select:
-                self._list.SetSelection(row)
+                self._select_only(row)
                 return
-        self._list.SetSelection(0)
+        self._select_only(0)
+
+    def _select_only(self, row: int) -> None:
+        """Land on exactly one row.
+
+        ``SetSelection`` *adds* on an extended list rather than replacing, so
+        without clearing first a reload accumulates every row it ever landed
+        on -- and the next Remove takes the lot. ``wx.ListBox`` offers no
+        DeselectAll, only ``Deselect`` per row, so the clear is a loop over
+        what is actually selected rather than over the whole list.
+        """
+        for selected in list(self._list.GetSelections()):
+            self._list.Deselect(selected)
+        self._list.SetSelection(row)
 
     # -- actions ---------------------------------------------------------------
+
+    def _first_selected_row(self) -> int:
+        """The topmost selected line, or -1.
+
+        ``GetSelection`` answers ``wxNOT_FOUND`` on an extended-selection
+        list, whatever is highlighted -- so every single-row verb here reads
+        the selection list instead. Missing that is how making a list
+        multi-select silently disables half its buttons.
+        """
+        selections = self._list.GetSelections()
+        return min(selections) if selections else -1
 
     def _selected(self) -> int:
         """The queue index of the selected line, or -1 on a header or nothing.
@@ -170,12 +205,30 @@ class PlayQueueDialog:
         header because it happened to be selected is how somebody removes an
         episode they never chose.
         """
-        row = self._list.GetSelection()
+        row = self._first_selected_row()
         rows = getattr(self, "_rows", [])
         if not (0 <= row < len(rows)):
             return -1
         index = rows[row][0]
         return -1 if index is None else int(index)
+
+    def _selected_indexes(self) -> list[int]:
+        """Every selected episode's queue index, in queue order.
+
+        Headers are dropped rather than mapped to the row beneath them, for
+        the same reason :meth:`_selected` answers -1 on one: a selection
+        somebody made by dragging past a group title must not act on an
+        episode they never chose.
+        """
+        rows = getattr(self, "_rows", [])
+        found: list[int] = []
+        for row in self._list.GetSelections():
+            if not (0 <= row < len(rows)):
+                continue
+            index = rows[row][0]
+            if index is not None:
+                found.append(int(index))
+        return sorted(set(found))
 
     def _on_play_now(self) -> None:
         index = self._selected()
@@ -233,13 +286,28 @@ class PlayQueueDialog:
         self._announce(f"Moved to position {new_index + 1} of {len(self._library.queue)}")
 
     def _on_remove(self) -> None:
-        index = self._selected()
-        if queue_ops.remove_at(self._library, index):
-            if self._marked_index == index:
-                self._marked_index = None
-            self._on_library_changed()
-            self._reload(select=index)
-            self._announce("Removed from the queue")
+        """Remove everything selected -- one row or twenty (list.md 2.4)."""
+        from quill.core.counted import Counted
+
+        indexes = self._selected_indexes()
+        if not indexes:
+            self._announce("Nothing is selected.")
+            return
+        # Back to front, because removing position 2 renumbers everything
+        # after it: front to back would take out the wrong slots from the
+        # second one onward, and quietly.
+        removed = 0
+        for index in reversed(indexes):
+            if queue_ops.remove_at(self._library, index):
+                removed += 1
+                if self._marked_index == index:
+                    self._marked_index = None
+        if not removed:
+            return
+        self._on_library_changed()
+        self._reload(select=min(indexes))
+        counted = Counted(done=removed, _eligible=len(indexes))
+        self._announce(counted.sentence("Removed", noun="episode"))
 
     def _on_clear(self) -> None:
         removed = queue_ops.clear_queue(self._library)
@@ -247,6 +315,57 @@ class PlayQueueDialog:
         self._on_library_changed()
         self._reload()
         self._announce(f"Queue cleared ({removed} item(s) removed)")
+
+    # -- lineups ---------------------------------------------------------------
+
+    def _on_save_lineup(self) -> None:
+        """Keep this order under a name, so it can be put back next Tuesday."""
+        from quill.core.podcasts.queue_lineups import find_lineup, save_lineup
+
+        wx = self._wx
+        if not self._library.queue:
+            self._announce("The queue is empty, so there is no order to save.")
+            return
+        with wx.TextEntryDialog(self.dialog, "Lineup name:", "Save Lineup") as dialog:
+            if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+                return
+            name = dialog.GetValue().strip()
+        if not name:
+            return
+        replacing = find_lineup(self._library, name) is not None
+        saved = save_lineup(self._library, name)
+        if saved is None:
+            self._announce("That lineup could not be saved.")
+            return
+        self._on_library_changed()
+        verb = "Replaced" if replacing else "Saved"
+        # Counted, because "saved" on its own does not say how much of the
+        # queue went in -- and re-saving over a nine-episode lineup with two
+        # episodes queued is exactly the moment somebody wants to know.
+        self._announce(f"{verb} lineup {name}: {len(saved.items)} episode(s), in this order.")
+
+    def _on_apply_lineup(self) -> None:
+        """Put a saved order back at the front, leaving the rest alone."""
+        from quill.core.podcasts.queue_lineups import apply_lineup, lineup_names
+
+        wx = self._wx
+        names = lineup_names(self._library)
+        if not names:
+            self._announce("No lineups have been saved yet. Use Save Lineup first.")
+            return
+        with wx.SingleChoiceDialog(
+            self.dialog, "Apply which lineup?", "Apply Lineup", names
+        ) as dialog:
+            if dialog.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+                return
+            chosen = dialog.GetStringSelection()
+        playlist = next((p for p in self._library.playlists if p.name == chosen), None)
+        if playlist is None:
+            return
+        counted = apply_lineup(self._library, playlist)
+        self._on_library_changed()
+        self._reload(select=0)
+        self._announce(counted.sentence("Applied", chosen, noun="episode"))
 
     def _on_list_key(self, event: object) -> None:
         wx = self._wx

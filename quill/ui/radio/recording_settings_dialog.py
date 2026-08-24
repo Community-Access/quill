@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+from quill.core.radio import settings_help
 from quill.core.radio.recording import (
     RECORD_FORMAT_LABELS,
     RECORD_FORMATS,
@@ -48,11 +49,7 @@ class RecordingSettingsDialog:
         self._format_choice = wx.Choice(
             self.dialog, choices=[RECORD_FORMAT_LABELS[f] for f in RECORD_FORMATS]
         )
-        self._format_choice.SetName(
-            "Audio format for recordings. Raw stream saves exactly what the "
-            "station sends, with no re-encoding -- the most lossless capture, "
-            "for your own editing"
-        )
+        self._format_choice.SetName(settings_help.HELP["format"])
         if settings.format in RECORD_FORMATS:
             self._format_choice.SetSelection(RECORD_FORMATS.index(settings.format))
         # Bitrate only applies to the lossy re-encode formats; toggle its row's
@@ -66,9 +63,7 @@ class RecordingSettingsDialog:
         self._bitrate_choice = wx.Choice(
             self.dialog, choices=[f"{b} kbps" for b in _BITRATE_CHOICES]
         )
-        self._bitrate_choice.SetName(
-            "Bitrate for MP3/OGG recordings; ignored for lossless and raw stream formats"
-        )
+        self._bitrate_choice.SetName(settings_help.HELP["bitrate"])
         closest = min(_BITRATE_CHOICES, key=lambda b: abs(b - settings.bitrate_kbps))
         self._bitrate_choice.SetSelection(_BITRATE_CHOICES.index(closest))
         grid.Add(self._bitrate_choice, 1, wx.EXPAND)
@@ -78,11 +73,9 @@ class RecordingSettingsDialog:
         )
         dest_row = wx.BoxSizer(wx.HORIZONTAL)
         self._destination_ctrl = wx.TextCtrl(self.dialog, value=settings.destination_root)
-        self._destination_ctrl.SetName(
-            "Where recordings are saved; blank uses the default recordings folder"
-        )
+        self._destination_ctrl.SetName(settings_help.HELP["folder"])
         browse_btn = wx.Button(self.dialog, label="&Browse...")
-        browse_btn.SetName("Choose a destination folder")
+        browse_btn.SetName(settings_help.HELP["folder_button"])
         dest_row.Add(self._destination_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         dest_row.Add(browse_btn, 0)
         grid.Add(dest_row, 1, wx.EXPAND)
@@ -94,13 +87,9 @@ class RecordingSettingsDialog:
         )
         temp_row = wx.BoxSizer(wx.HORIZONTAL)
         self._temp_dir_ctrl = wx.TextCtrl(self.dialog, value=settings.temp_dir)
-        self._temp_dir_ctrl.SetName(
-            "Where a recording is written while in progress, then moved to the "
-            "destination folder when it finishes; blank records straight to the "
-            "destination folder"
-        )
+        self._temp_dir_ctrl.SetName(settings_help.HELP["temp_folder"])
         temp_browse_btn = wx.Button(self.dialog, label="B&rowse...")
-        temp_browse_btn.SetName("Choose a temporary folder")
+        temp_browse_btn.SetName(settings_help.HELP["temp_folder_button"])
         temp_row.Add(self._temp_dir_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         temp_row.Add(temp_browse_btn, 0)
         grid.Add(temp_row, 1, wx.EXPAND)
@@ -109,9 +98,7 @@ class RecordingSettingsDialog:
             wx.StaticText(self.dialog, label="Filename &pattern:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._pattern_ctrl = wx.TextCtrl(self.dialog, value=settings.filename_pattern)
-        self._pattern_ctrl.SetName(
-            "Filename pattern; use {station}, {date}, and {time} as placeholders"
-        )
+        self._pattern_ctrl.SetName(settings_help.HELP["filename"])
         grid.Add(self._pattern_ctrl, 1, wx.EXPAND)
 
         grid.Add(
@@ -121,9 +108,7 @@ class RecordingSettingsDialog:
         )
         self._max_duration_ctrl = wx.SpinCtrl(self.dialog, min=1, max=1440)
         self._max_duration_ctrl.SetValue(settings.max_duration_minutes)
-        self._max_duration_ctrl.SetName(
-            "Safety cap: every recording stops automatically after this many minutes"
-        )
+        self._max_duration_ctrl.SetName(settings_help.HELP["max_minutes"])
         grid.Add(self._max_duration_ctrl, 0)
 
         grid.Add(
@@ -133,11 +118,7 @@ class RecordingSettingsDialog:
         )
         self._max_concurrent_ctrl = wx.SpinCtrl(self.dialog, min=0, max=99)
         self._max_concurrent_ctrl.SetValue(max(0, settings.max_concurrent_recordings))
-        self._max_concurrent_ctrl.SetName(
-            "How many recordings may run at the same time. Zero means unlimited "
-            "-- every recording you or the schedule asks for starts. Set a number "
-            "to cap it on a slower machine or a metered connection"
-        )
+        self._max_concurrent_ctrl.SetName(settings_help.HELP["concurrent"])
         grid.Add(self._max_concurrent_ctrl, 0)
 
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
@@ -146,10 +127,7 @@ class RecordingSettingsDialog:
         self._reconnect_check = wx.CheckBox(
             self.dialog, label="&Reconnect and keep recording automatically"
         )
-        self._reconnect_check.SetName(
-            "When the internet hiccups mid-recording, ride it out and resume "
-            "into a continuation part file instead of losing the rest of the show"
-        )
+        self._reconnect_check.SetName(settings_help.HELP["reconnect"])
         self._reconnect_check.SetValue(settings.reconnect_enabled)
         reconnect_box.Add(self._reconnect_check, 0, wx.ALL, 6)
         reconnect_grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
@@ -158,9 +136,7 @@ class RecordingSettingsDialog:
         )
         self._reconnect_attempts_ctrl = wx.SpinCtrl(self.dialog, min=1, max=99)
         self._reconnect_attempts_ctrl.SetValue(max(1, settings.reconnect_max_attempts))
-        self._reconnect_attempts_ctrl.SetName(
-            "How many times to try reconnecting before giving up on the recording"
-        )
+        self._reconnect_attempts_ctrl.SetName(settings_help.HELP["reconnect_attempts"])
         reconnect_grid.Add(self._reconnect_attempts_ctrl, 0)
         reconnect_grid.Add(
             wx.StaticText(self.dialog, label="Seconds &between attempts:"),
@@ -169,10 +145,7 @@ class RecordingSettingsDialog:
         )
         self._reconnect_wait_ctrl = wx.SpinCtrl(self.dialog, min=1, max=600)
         self._reconnect_wait_ctrl.SetValue(max(1, settings.reconnect_wait_seconds))
-        self._reconnect_wait_ctrl.SetName(
-            "How long to wait before each reconnect attempt; also how long "
-            "ffmpeg itself rides out short gaps"
-        )
+        self._reconnect_wait_ctrl.SetName(settings_help.HELP["reconnect_wait"])
         reconnect_grid.Add(self._reconnect_wait_ctrl, 0)
         reconnect_box.Add(reconnect_grid, 0, wx.LEFT | wx.BOTTOM, 6)
         root.Add(reconnect_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -180,10 +153,7 @@ class RecordingSettingsDialog:
         self._apply_enhancements_check = wx.CheckBox(
             self.dialog, label="Apply Sound Enhancements to &recordings"
         )
-        self._apply_enhancements_check.SetName(
-            "Record the EQ preset and compressor from Playback > Sound Enhancements "
-            "instead of an unfiltered archival copy"
-        )
+        self._apply_enhancements_check.SetName(settings_help.HELP["filters"])
         self._apply_enhancements_check.SetValue(settings.apply_sound_enhancements)
         root.Add(self._apply_enhancements_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -199,12 +169,12 @@ class RecordingSettingsDialog:
         root.Add(hint, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._status = wx.StaticText(self.dialog, label="")
-        self._status.SetName("Status")
+        self._status.SetName(settings_help.HELP["status"])
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         save_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
-        save_btn.SetName("Save these recording settings")
+        save_btn.SetName(settings_help.HELP["save_button"])
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         cancel_btn.SetHelpText("Closes without changing how recordings are made.")
         btn_row.AddStretchSpacer()
