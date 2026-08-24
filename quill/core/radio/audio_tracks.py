@@ -74,6 +74,12 @@ class AudioTrack:
     #: stream, not a channel of one -- so selecting it is a reload, and this is
     #: what gets reloaded.
     stream_url: str = ""
+    #: The video's own original language -- the track that was recorded rather
+    #: than dubbed. YouTube marks it (``language_preference``, and "original" in
+    #: the note); it is worth keeping because a listener choosing between
+    #: twenty-four dubs is nearly always choosing between one real performance
+    #: and twenty-three synthesised ones.
+    is_default: bool = False
 
     @property
     def is_described(self) -> bool:
@@ -254,10 +260,10 @@ def described_track(tracks: list[AudioTrack]) -> AudioTrack | None:
 def tracks_from_info(info: dict[str, object]) -> list[AudioTrack]:
     """Every audio rendition in a yt-dlp info dict (pure).
 
-    Audio-only formats, deduplicated by language plus label, in yt-dlp's own
-    order except that a described track is **not** promoted -- promotion is the
-    preference's job, and doing it here would hide the ordinary track from
-    somebody who did not ask.
+    Audio-only formats, deduplicated by language plus label, then ordered by
+    :func:`order_tracks` -- a described track is **not** promoted, because
+    promotion is the preference's job and doing it here would hide the ordinary
+    track from somebody who did not ask.
     """
     formats = info.get("formats")
     if not isinstance(formats, list):
@@ -298,9 +304,62 @@ def tracks_from_info(info: dict[str, object]) -> list[AudioTrack]:
                 language=language,
                 label=label,
                 stream_url=str(entry.get("url") or ""),
+                is_default=_is_original(entry, audio_track, label),
             )
         )
-    return tracks
+    return order_tracks(tracks)
+
+
+def _is_original(entry: dict, audio_track: dict, label: str) -> bool:
+    """Whether this rendition is the video's own recorded audio (pure).
+
+    Three signals because no single one is reliable across extractors:
+    ``audio_track.audio_is_default`` where the extractor fills it in, yt-dlp's
+    ``language_preference`` (10 for the default track), and the word YouTube
+    writes into the note it hands us.
+    """
+    if bool(audio_track.get("audio_is_default")):
+        return True
+    preference = entry.get("language_preference")
+    if isinstance(preference, (int, float)) and not isinstance(preference, bool):
+        if int(preference) >= 10:
+            return True
+    return "original" in label.lower()
+
+
+def order_tracks(tracks: list[AudioTrack], *, preferred: str = "en") -> list[AudioTrack]:
+    """The order these rows should be read in (pure).
+
+    yt-dlp's own order is the order YouTube happens to serve formats in, which
+    for a video with twenty-four dubs is effectively arbitrary -- so the track
+    somebody actually wants was somewhere in a list they had to arrow through
+    ("It does show the 24 languages, and, oh, English should always be at the
+    top", 2026-08-23). Three rules, in this order:
+
+    1. **The language you read the app in first** (*preferred*, "en" unless a
+       caller says otherwise). A list of dubs is a list of languages, and the
+       one you speak is not a preference to be discovered at position nineteen.
+    2. **Then the video's own original track**, which is a real performance
+       where the rest are dubs -- and is what somebody who wants "the actual
+       video" is looking for.
+    3. **Then alphabetically by the name that is read aloud**, so the remaining
+       twenty-two are somewhere findable rather than somewhere arbitrary.
+
+    Stable within each rank, so two tracks that tie keep the order the
+    publisher listed them in -- which is what keeps a described track beside
+    the ordinary track of the same language.
+    """
+    base = (preferred or "en").split("-", 1)[0].lower()
+
+    def rank(track: AudioTrack) -> tuple[int, int, str]:
+        language = (track.language or "").split("-", 1)[0].lower()
+        return (
+            0 if language == base else 1,
+            0 if track.is_default else 1,
+            track.display_name.lower(),
+        )
+
+    return sorted(tracks, key=rank)
 
 
 def summarise(tracks: list[AudioTrack]) -> str:

@@ -107,6 +107,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.accessible_name_audit"),
     ),
     Gate(
+        "radio-help",
+        "GATE-RADIO-HELP: every radio surface and control answers F1",
+        (sys.executable, "-m", "quill.tools.radio_help_audit"),
+    ),
+    Gate(
         "announce-gap",
         "user-visible outcomes are announced",
         (sys.executable, "-m", "quill.tools.check_announce_gap"),

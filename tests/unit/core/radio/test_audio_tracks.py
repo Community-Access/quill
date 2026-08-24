@@ -403,8 +403,66 @@ def test_a_dubbed_language_the_map_cannot_name_uses_its_own_label() -> None:
             _youtube_format("251-2", "fil", "Filipino, medium"),
         ]
     }
-    assert [track.display_name for track in tracks_from_info(info)] == [
+    # Sorted, because the rows are now ordered by order_tracks rather than by
+    # whatever order YouTube served the formats in. This test is about the
+    # names; test_english_leads_a_wall_of_dubs below is about the order.
+    assert sorted(track.display_name for track in tracks_from_info(info)) == [
+        "Filipino",
         "Tamil",
         "Telugu",
-        "Filipino",
     ]
+
+
+# -- the order twenty-four dubs are read in ---------------------------------------
+
+
+def test_english_leads_a_wall_of_dubs() -> None:
+    """Reported 2026-08-23: "It does show the 24 languages, and, oh, English
+    should always be at the top."
+
+    yt-dlp's order is the order YouTube happened to serve the formats in, which
+    for a heavily dubbed video is effectively arbitrary -- so the one track the
+    listener can understand sat somewhere in a list they had to arrow through.
+    """
+    info = {
+        "formats": [
+            _youtube_format("251-0", "es", "Spanish, medium"),
+            _youtube_format("251-1", "fr", "French, medium"),
+            _youtube_format("251-2", "en", "English original, medium"),
+            _youtube_format("251-3", "de", "German, medium"),
+        ]
+    }
+
+    rows = [track.display_name for track in tracks_from_info(info)]
+
+    assert rows[0] == "English"
+    # And the rest are findable rather than arbitrary.
+    assert rows[1:] == sorted(rows[1:])
+
+
+def test_the_original_track_leads_when_the_listener_speaks_another_language() -> None:
+    """Rule two: a real performance beats a synthesised dub."""
+    from quill.core.radio.audio_tracks import order_tracks
+
+    info = {
+        "formats": [
+            _youtube_format("251-0", "de", "German, medium"),
+            _youtube_format("251-1", "ja", "Japanese original, medium"),
+        ]
+    }
+
+    rows = [t.display_name for t in order_tracks(tracks_from_info(info), preferred="pt")]
+
+    assert rows[0] == "Japanese"
+
+
+def test_the_original_track_is_recognised_from_yt_dlps_own_preference() -> None:
+    """Not every extractor writes "original" into the note."""
+    marked = _youtube_format("251-0", "ja", "Japanese, medium")
+    marked["language_preference"] = 10
+    info = {"formats": [_youtube_format("251-1", "de", "German, medium"), marked]}
+
+    tracks = {t.language: t.is_default for t in tracks_from_info(info)}
+
+    assert tracks["ja"] is True
+    assert tracks["de"] is False

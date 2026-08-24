@@ -19,7 +19,12 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio.favorites import FavoriteStation, RadioFavoritesStore
-from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_modal_dialog
+from quill.ui.dialog_contract import (
+    announce_surface_exit,
+    apply_modal_ids,
+    bind_close_button,
+    show_modal_dialog,
+)
 
 _TOP_LEVEL_CHOICE = "(Top level -- no folder)"
 _NEW_FOLDER_CHOICE = "(New folder...)"
@@ -106,8 +111,10 @@ class FavoritesManagerDialog:
         self._windows = windows
         self._modeless = windows is not None
         if self._modeless:
+            # No parent, on purpose: an owned frame floats glued above its
+            # owner and reads as an overlay; a peer window stands on its own.
             self._win = wx.Frame(
-                parent, title="Manage Favorite Stations", style=wx.DEFAULT_FRAME_STYLE
+                None, title="Manage Favorite Stations", style=wx.DEFAULT_FRAME_STYLE
             )
             self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
             self._build_surface_menu_bar()
@@ -222,12 +229,13 @@ class FavoritesManagerDialog:
             "Remove every favorite (folders are kept); a backup is saved so it can be undone",
         )
         row2.AddStretchSpacer()
-        close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
-        # A frame gets no free ID_CANCEL handling: wire it, or the
-        # button that looks like the way out does nothing.
-        bind_close_button(self._win, close_btn, modeless=self._modeless)
-        close_btn.SetName("Close the favorites manager")
-        row2.Add(close_btn)
+        if not self._modeless:
+            # Only the modal dialog carries a Close button: a real window
+            # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape (2026-08-23).
+            close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
+            bind_close_button(self._win, close_btn, modeless=False)
+            close_btn.SetName("Close the favorites manager")
+            row2.Add(close_btn)
         root.Add(row2, 0, wx.EXPAND | wx.ALL, 10)
 
         self._surface.SetSizer(root)
@@ -271,7 +279,9 @@ class FavoritesManagerDialog:
         self._menu_id_refs.append(close_id)
 
     def _on_char_hook(self, event: object) -> None:
-        if event.GetKeyCode() == self._wx.WXK_ESCAPE:
+        if event.GetKeyCode() == self._wx.WXK_ESCAPE or (
+            event.GetKeyCode() == self._wx.WXK_F4 and event.ControlDown()
+        ):
             self._win.Close()
             return
         event.Skip()
@@ -279,7 +289,7 @@ class FavoritesManagerDialog:
     def _on_close(self, event: object) -> None:
         previous = self._windows.previous_key(self._win)
         self._windows.unregister(self._win)
-        self._announce("Exited Manage Favorites.")
+        announce_surface_exit("Manage Favorites", self._announce)
         self._on_changed()
         event.Skip()
         self._win.Destroy()
@@ -291,6 +301,14 @@ class FavoritesManagerDialog:
         if self._modeless:
             from quill.ui.dialog_contract import show_modeless_surface
 
+            # The transport keyboard here too -- with the WindowManager's
+            # Ctrl+Tab / Ctrl+1..9 rows folded into the same table, because
+            # setting an accelerator table replaces the previous one.
+            from quill.ui.radio import transport_keys
+
+            transport_keys.install(
+                self._win, self, wx=self._wx, extra_entries=self._windows.accelerator_entries()
+            )
             self._windows.register(self._win, "Manage Favorites")
             show_modeless_surface(self._win, "Manage Favorites", announce=self._announce)
             return

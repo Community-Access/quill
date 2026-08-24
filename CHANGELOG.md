@@ -6,6 +6,158 @@ The most recent work first: a reliability pass driven entirely by what people
 reported (a full disk that could lose a document, an editor doing too much work
 between keystrokes), then the release as originally scoped below.
 
+### Radio window behaviour: exit cues, the startup window, Ctrl+Tab focus (2026-08-23)
+
+- **`dialog_contract.announce_surface_exit`** -- the exit cue now asks
+  `announce_dialog_transitions`, as the entry cue always did. All nine radio
+  surfaces route through it, and a test scans `quill/ui/radio/*.py` for any
+  handler that says "Exited ..." on its own.
+- **`core/radio/startup_window.py` + `apps/radio_startup_window.py`** -- the
+  startup checkbox becomes a one-of-six-or-none choice; `RadioHistory.startup_window`
+  migrates from `open_browse_at_startup` and keeps it in step.
+- **`window_menu.activate`** defers a second `_focus_into` through `wx.CallAfter`:
+  wxMSW hands a newly raised frame the focus after `Raise` returns, so the inline
+  `SetFocus` was being overwritten and Ctrl+Tab landed on a bare frame.
+
+### Podcast Index, with the app's own credential (2026-08-23)
+
+Reverses the non-goal recorded in `apple_podcasts.py` on 2026-08-13 ("Podcast
+Index is deliberately not used anywhere in QUILL"), and answers its reasoning
+rather than overruling it: the objection was that a key the listener has to go
+and get is a feature most people do not have, so **the app carries its own**.
+
+- **`tools/generate_podcast_index_key.py`** bakes an application key and secret
+  into the gitignored `quill/_podcast_index_key.py` at build time (wired into
+  `build_windows_distribution.py`, lenient like the ADP client key). The secret
+  is never in the repository; `.gitignore` covers the generated module.
+  `podcast_index.credentials()` prefers a listener's own pair from the platform
+  credential store, which keeps a rotation lever that needs no new build.
+- **`podcast_index.search_podcasts` takes an optional pair**, falling back to
+  the resolved credential -- so every existing caller lit up at once, and
+  `preview_command.podcast_index_credentials` now delegates to the client.
+- **New `podcast_index_catalog.py`** (split from the client under GATE-11): the
+  catalogue half -- `show_facts`, `episodes_for_feed`, `trending`, `categories`
+  -- with total parsers, `directory_cache` caching, and one shared egress site.
+- **New `core/radio/browse_podcast_index.py`**: the browse branch. Shows are
+  folders that open into their episodes *unsubscribed*, episodes are ordinary
+  `RadioStation` rows (`is_recording=True`), and `pishow` joins
+  `PODCAST_SHOW_KINDS` so Subscribe appears -- and needs no feed lookup,
+  because the node id is the feed.
+- **`federated_browse`** asks the index alongside Apple for every podcast
+  search; `branch_find` routes the four `pi*` kinds to it.
+- **`PodcastSettings.directory_source` defaults to `both`** for a new profile.
+  A saved choice is never overridden.
+- The egress entry now covers the catalogue and records what the bundled
+  credential is: an application identifier for public data, sending no listener
+  data at all.
+
+### A saved YouTube video shows its name, and says why it will not play (2026-08-23)
+
+Three reports, one branch of Quill Radio's browse tree.
+
+**A video added by URL showed the URL.** `SavedItem` now carries the video's
+title, channel, length and description; `youtube_saved.fetch_video_details`
+asks for them at add time (one resolve, off the UI thread, saved *after* the
+row so a failed lookup can never lose the link), and the browse tree renders
+the title as the label, the channel and length as the spoken note, and the
+description into `RadioStation.notes` for the details panel. A playlist gets
+its real name and video count the same way, and a row saved by an older build
+names itself the first time it plays.
+
+**The YouTube branch's three "Add a ..." rows are on its context menu too**
+(`row_actions.youtube_add_actions`), including on the three action rows
+themselves -- which had no context menu at all.
+
+**A YouTube link would not play, and the player said nothing.** Three faults
+underneath: the one-time YouTube consent was asked only by Add Custom Station,
+so every other route refused at play time with a message naming a dialog the
+listener was not in (now asked in `play_station`, on the UI thread, before the
+resolve); `playback_status.transition_announcement` spoke reconnects but not
+*failures*, so a failed play was indistinguishable from a hung one ("it just
+freezes: Radio: connecting to ..."); and a resolved-but-refused YouTube address
+-- what a stale yt-dlp produces, since YouTube issues addresses per player
+client -- now reads as the repair it is: "use Station, then Update YouTube
+Support."
+
+Extractions that paid for the growth: `ui/radio/browse_youtube_menu.py` (the
+YouTube row verbs), `engine_selection.on_load_error` (the load-failure
+decision) and `youtube_playback.consent_granted`.
+
+And the cause itself: **the bundled yt-dlp floor moves to 2026.8.19** (from
+2026.7.4) in the pyproject `youtube` extra, which `[runtime]` collects, so the
+shared QuillVille Runtime ships it and `check_build_env.py` now fails a build
+machine that is behind. `engine_install._YT_DLP_REQUIREMENTS` moves with it --
+an engine-pack copy *shadows* the bundled one, so an upgrade path allowed to
+resolve older than what shipped is a repair that breaks YouTube; a packaging
+test now pins the two together. The live regression
+(`tests/integration/test_youtube_audio_tracks_live.py`) gained the assertion
+whose absence made a stale helper look healthy: it **fetches** a range of the
+resolved address rather than checking that a string came back.
+
+### Quill Radio video, captions and keys (2026-08-23)
+
+A second report pass over the same branch, and most of it was one class of bug:
+a host-shaped assumption that only the app frame satisfied.
+
+- **`bounded_playback_ui._controller` required `host._radio_controller`**, which
+  only the frame has -- so every timeline verb (chapters, go-to-position, skip,
+  speed, Where Am I) raised `AttributeError` inside an accelerator handler on
+  every modeless surface. wx swallows that, so the keys did nothing at all.
+  Now the same cascade `transport_keys._controller_of` uses, plus `_parent` and
+  `_show_modal` for the two dialogs it raises.
+- **New `ui/radio/media_keys.py`**: Show Video, Captions, Transcript, Audio and
+  Described Audio, Video Information as accelerators on every window that
+  installs the transport, gated on the host's player being Radio's (asked by
+  capability, so Quill Cast -- which binds Ctrl+Shift+K itself -- gets none).
+- **New `ui/radio/captions_window.py` + `core/radio/live_captions.py`**: captions
+  as a running, followable text window rather than pixels drawn into the video.
+  Works on either engine, with or without the picture.
+- **`video_commands.install_window_keys`**: the Video Window binds its own verbs
+  plus the transport; closing it by hand now detaches the engine.
+- **`MpvRadioEngine.load` clears `audio-files`.** It is a client-wide option, not
+  a property of the loaded file, so the last video whose picture was shown kept
+  supplying the audio for everything played afterwards.
+- **New `ui/radio/browse_delete.py` + `browse_keys.py`**: Delete removes what the
+  row's own menu removes, asks first, and reloads the branch;
+  `browse_refresh.reload_source_branch(..., select=)` lands the cursor on a named
+  row once it arrives, and `reload_open_browse` lets the frame refresh a Browse
+  window it is not in.
+- **`audio_tracks.order_tracks`**: preferred language, then the original
+  rendition (now detected), then alphabetical.
+- **`youtube_ui.offer_stale_component_update`**: a refused YouTube stream offers
+  the yt-dlp update once per session and replays the station on success; the
+  menu command shares that implementation and reports in a dialog.
+- **`track_selection.play_audio_track` goes through `_play_resolved_station`**
+  instead of `engine.load` -- the enhancement relay is built per URL, so the
+  short route left it pointing at the rendition being switched away from.
+- **`browse_refresh._refetch` drops the prefetch cache *before* the expand.**
+  wx fires EVT_TREE_ITEM_EXPANDING inside `Expand`, and that handler consumes
+  the prefetched (pre-edit) answer, so clearing it afterwards was one
+  instruction too late: the branch reloaded straight back to its old rows.
+- **`RadioHistory.confirm_browse_delete` / `explain_browse_delete`**: the Delete
+  question and the not-deletable explanation each carry a "don't ask again"
+  checkbox (`wx.RichMessageDialog`), unticked, No-defaulted, persisted.
+
+### F1 context help, family-wide (2026-08-23)
+
+Quill Radio's F1 experience -- press F1 anywhere and hear what the window is
+for, then what the control under focus does -- is now wired into **every**
+app. The engine (`quill/ui/app_context_help.py`) registers with the dialog
+contract, whose show paths bind F1 on every window they open; the app shell
+activates it for all seven standalone apps, and QUILL registers it for its
+own dialogs (its topic-based F1 keeps the editor, the Preferences hub, and
+the Command Palette, which mark themselves so the generic answer never
+shadows an authored one). Each app can hand the engine an authored
+window-purpose catalogue -- Radio's is written and gated; the others fall
+back to a graceful generic line until theirs are authored.
+
+Two fixes rode along. **Every `SetHelpText` in the family was silently
+dead**: wx stores help text only when a `wx.HelpProvider` exists, and none
+was ever installed -- measured, then fixed at both activation points, which
+turned years of authored help text live. And a window's controls now compose
+a real F1 answer even with nothing authored: accessible name, help text
+where present, and a role sentence that teaches the control's keyboard.
+
 ### The columns are the sentence (2026-08-21)
 
 A report list is read out one column at a time. That makes the column set of a

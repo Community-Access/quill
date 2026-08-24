@@ -19,6 +19,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.radio.browse_nodes import split_id
+from quill.ui.radio import browse_refresh
 
 #: The Subscriptions subtree's node kinds -- the only levels a reveal walks.
 _SUBSCRIPTION_LEVELS = frozenset({"mypodcasts", "mypodcastfolder"})
@@ -88,8 +89,6 @@ def refetch_subscriptions(dialog: Any) -> bool:
     node = _subscriptions_ancestor(dialog) or _subscriptions_anywhere(dialog)
     if node is None:
         return False
-    from quill.ui.radio import browse_refresh
-
     data = dialog._node_data(node)
     if data is None:
         return False
@@ -126,6 +125,11 @@ def on_children_added(dialog: Any, node: Any) -> None:
     otherwise expand the level's folders (a local library read, no network)
     so the next load looks deeper. One-shot -- found clears it.
     """
+    # The generic half first: a reload that named a row to land on (a link the
+    # listener has just added) is not a podcast reveal and has no subtree to
+    # walk -- browse_refresh owns it, and this is the one hook that runs as
+    # each level's rows arrive.
+    browse_refresh.apply_pending_select(dialog, node)
     pending = getattr(dialog, "_pending_reveal", None)
     if not pending:
         return

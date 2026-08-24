@@ -1,29 +1,31 @@
-"""The player, summoned where you are and gone when you are done.
+"""The player: a real window in the standalone apps, a summons everywhere else.
 
-The question this answers (2026-08-18): *"should the player be its own window?
-Can we make that magical some how?"*
+The question this answered first (2026-08-18) was *"should the player be its
+own window?"* -- and the first answer was no: a permanent player window costs a
+third citizen in the Alt+Tab rotation, so the player became a modal panel
+summoned with Go to Player and dismissed with Escape.
 
-A permanent player window buys one obvious place and costs a third citizen in
-the Alt+Tab rotation -- which is the thing that was being complained about in
-the first place ("when in the browse window the main window showing the player
-is in the alt+tab order"). And with the transport keyboard now working in every
-window (:mod:`quill.ui.radio.transport_keys`), an always-open player is mostly
-furniture.
+That answer was half right, and the wrong half got reported (2026-08-23): *"the
+player is not showing... it should come to the front"*. A modal panel cannot be
+Ctrl+Tabbed to, cannot sit beside the Browse window while you compare, and
+under a screen reader's keyboard hook a ShowModal summoned from an accelerator
+can silently fail to appear at all. So in the standalone apps -- wherever a
+:class:`~quill.ui.window_menu.WindowManager` exists -- the player is now a
+**modeless frame**, a peer of Browse and the managers:
 
-So the player has no window. It has a **summons**:
+* **Go to Player opens it, and if it is already open, brings it to the
+  front.** One key, one place, always.
+* It joins the shared &Window menu and the Ctrl+Tab / Ctrl+1..9 rotation like
+  every other radio window.
+* **Escape (or Close) closes it and returns you to the window you came
+  from**, exactly as the other modeless surfaces do.
 
-* One key (Go to Player) opens this panel *wherever you already are*.
-* It holds the whole transport plus a readout of what is playing, where you are
-  in it, and how fast -- the facts a menu makes you hunt for.
-* **Escape closes it and puts focus back exactly where it was**, to the control
-  and the character. It is a visit, not a destination.
-* It never joins the Alt+Tab rotation as something to manage: it is modal to
-  the window that summoned it, so closing it cannot leave you somewhere else.
+Embedded QUILL passes no window manager and keeps the modal summons unchanged.
 
-Every button runs the same dispatcher the keys and the menus run
-(:func:`quill.ui.radio.transport_keys.perform`), so this panel cannot drift from
-them -- and a verb the thing playing cannot do refuses out loud here exactly as
-it does everywhere else.
+Either shape, every button runs the same dispatcher the keys and the menus run
+(:func:`quill.ui.radio.transport_keys.perform`), so this panel cannot drift
+from them -- and a verb the thing playing cannot do refuses out loud here
+exactly as it does everywhere else.
 
 The buttons are laid out in the order somebody reaches for them, not in the
 order the table happens to list them: the transport first, then position, then
@@ -36,7 +38,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import transport_commands as tc
-from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
 
 #: The buttons, in reaching order, as ``(command id, label)``. The labels are
 #: this panel's own: the table's are written for a Playback menu, and here they
@@ -75,7 +77,7 @@ BUTTONS: tuple[tuple[str, str], ...] = (
 NOT_BUTTONS: frozenset[str] = frozenset({tc.GO_TO_PLAYER, tc.COMMAND_PALETTE})
 
 
-#: The panel currently on screen, if any.
+#: The modal panel currently on screen, if any.
 #:
 #: The transport keyboard is installed on this panel too, so a key does not stop
 #: working merely because you are standing in the player -- which is the whole
@@ -85,12 +87,42 @@ NOT_BUTTONS: frozenset[str] = frozenset({tc.GO_TO_PLAYER, tc.COMMAND_PALETTE})
 #: leaves you in the other, having pressed nothing to get there.
 _OPEN: PlayerPanel | None = None
 
+#: The modeless player window currently open, if any. One per process, which is
+#: one per app: the standalone apps each run in their own process, and embedded
+#: QUILL (no WindowManager) never takes this path.
+_OPEN_WINDOW: PlayerPanel | None = None
+
+
+def _window_alive(panel: PlayerPanel | None) -> bool:
+    """True when *panel*'s frame still exists (wx dead-object safe)."""
+    if panel is None:
+        return False
+    try:
+        return bool(panel.window)  # a destroyed wx window is falsy
+    except Exception:  # noqa: BLE001 - a half-torn-down window counts as gone
+        return False
+
 
 def summon(host: Any, parent: Any = None) -> None:
-    """Open the panel over *parent*, and give focus back when it closes."""
+    """Open the player over *parent* -- or raise the open player window.
+
+    With a :class:`~quill.ui.window_menu.WindowManager` on *host* (the
+    standalone apps), the player is a modeless frame: already open means come
+    to the front, not a second copy. Without one (embedded QUILL), the player
+    stays the modal panel that gives focus back when it closes.
+    """
     import wx
 
-    global _OPEN
+    global _OPEN, _OPEN_WINDOW
+    windows = getattr(host, "_windows", None)
+    if windows is not None:
+        if _window_alive(_OPEN_WINDOW):
+            windows.activate(windows.key_for(_OPEN_WINDOW.window))
+            return
+        panel = PlayerPanel(None, host, windows=windows)
+        _OPEN_WINDOW = panel
+        panel.show()
+        return
     if _OPEN is not None:
         # Pressed from inside the player. Saying so beats both alternatives: a
         # second panel is a trap, and doing nothing is how a key teaches
@@ -118,17 +150,52 @@ def summon(host: Any, parent: Any = None) -> None:
             pass
 
 
-class PlayerPanel:
-    """A small modal surface holding the whole player."""
+def refresh_open(host: Any = None) -> None:
+    """Re-read whichever player is on screen, if any.
 
-    def __init__(self, parent: Any, host: Any, *, announce: Callable[[str], None] | None = None):
+    The modeless window has no modal loop keeping it honest: playback can
+    change from the main window, the Browse tree, or a media key while it sits
+    open, so the app's own status refresh calls this to keep the readout (and
+    the favorites label) telling the current truth. Cheap and dead-widget safe;
+    a no-op when no player is open.
+    """
+    for panel in (_OPEN, _OPEN_WINDOW):
+        if panel is not None and _window_alive(panel):
+            panel._refresh()
+
+
+class PlayerPanel:
+    """The whole player on one small surface -- modal panel or modeless frame."""
+
+    def __init__(
+        self,
+        parent: Any,
+        host: Any,
+        *,
+        announce: Callable[[str], None] | None = None,
+        windows: Any = None,
+    ):
         import wx
 
         self._wx = wx
         self._host = host
         self._announce = announce or getattr(host, "_announce", None) or (lambda _m: None)
-
-        self.dialog = wx.Dialog(parent, title="Player")
+        # Modeless (a WindowManager was supplied): a top-level peer frame with
+        # no parent, so it never floats glued over the window that opened it
+        # and takes its own place in the Ctrl+Tab rotation. Modal: the summons.
+        self._windows = windows
+        self._modeless = windows is not None
+        self._menu_ids: list[object] = []
+        if self._modeless:
+            self._win = wx.Frame(None, title="Player", style=wx.DEFAULT_FRAME_STYLE)
+            self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
+            self._build_surface_menu_bar()
+            self._win.Bind(wx.EVT_CLOSE, self._on_close)
+            self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        else:
+            self._win = wx.Dialog(parent, title="Player")
+            self._surface = self._win
+        self.dialog = self._win  # back-compat alias: this was always .dialog
         root = wx.BoxSizer(wx.VERTICAL)
 
         # The readout first, and read-only: what is playing, where, how fast.
@@ -138,9 +205,9 @@ class PlayerPanel:
         # at every font size, so the listener who has turned the system font up
         # -- the listener most likely to be reading this box rather than hearing
         # it -- is the one whose text clips.
-        char_width, char_height = self.dialog.GetTextExtent("M")
+        char_width, char_height = self._win.GetTextExtent("M")
         self._status = wx.TextCtrl(
-            self.dialog,
+            self._surface,
             value=self.status_text(),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
             size=(char_width * 46, char_height * 4 + 8),
@@ -151,7 +218,7 @@ class PlayerPanel:
         grid = wx.GridSizer(0, 3, 6, 6)
         for command_id, label in BUTTONS:
             command = tc.command(command_id)
-            button = wx.Button(self.dialog, label=label)
+            button = wx.Button(self._surface, label=label)
             if command is not None:
                 button.SetName(f"{label.replace('&', '')} ({command.key})")
             button.Bind(wx.EVT_BUTTON, lambda _e, cid=command_id: self._run(cid))
@@ -162,25 +229,46 @@ class PlayerPanel:
         # Station menu: this panel is "everything about what is playing", and
         # that is the one fact the decision turns on. One handler, two doors --
         # the label flips exactly as the menu item's does.
-        self._fav_btn = wx.Button(self.dialog, label="Add to &Favorites")
+        self._fav_btn = wx.Button(self._surface, label="Add to &Favorites")
+        self._fav_btn.SetHelpText(
+            "Saves the station that is playing right now to your favorites -- "
+            "or removes it, when it is already there. The label says which."
+        )
         self._fav_btn.Bind(wx.EVT_BUTTON, lambda _e: self._toggle_favorite())
         fav_row = wx.BoxSizer(wx.HORIZONTAL)
         fav_row.Add(self._fav_btn, 0)
         root.Add(fav_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
         self._refresh_favorite_button()
 
-        # A sizer with a stretch spacer, not wx.ALIGN_RIGHT: the banned-pattern
-        # gate rejects that alignment in quill/ui because of how it reports to
-        # a screen reader (A11Y-4, the dialog contract).
-        close_row = wx.BoxSizer(wx.HORIZONTAL)
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cl&ose")
-        bind_close_button(self.dialog, close_btn)
-        close_row.AddStretchSpacer()
-        close_row.Add(close_btn)
-        root.Add(close_row, 0, wx.EXPAND | wx.ALL, 10)
+        if not self._modeless:
+            # Only the modal panel carries a Close button: a real window
+            # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape. A sizer with a
+            # stretch spacer, not wx.ALIGN_RIGHT: the banned-pattern gate
+            # rejects that alignment in quill/ui because of how it reports to
+            # a screen reader (A11Y-4, the dialog contract).
+            close_row = wx.BoxSizer(wx.HORIZONTAL)
+            close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Cl&ose")
+            close_btn.SetHelpText(
+                "Closes the player and puts focus back where you came from. "
+                "Playback is not touched."
+            )
+            # ``modeless`` is spelled out because a frame answers ID_CANCEL
+            # with nothing. (Left implicit once, and the required keyword made
+            # every summon raise TypeError before the window ever showed --
+            # the "player is not showing" report, 2026-08-23.)
+            bind_close_button(self._win, close_btn, modeless=False)
+            close_row.AddStretchSpacer()
+            close_row.Add(close_btn)
+            root.Add(close_row, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizerAndFit(root)
-        apply_modal_ids(self.dialog, cancel_id=wx.ID_CANCEL)
+        if self._modeless:
+            self._surface.SetSizer(root)
+            outer = wx.BoxSizer(wx.VERTICAL)
+            outer.Add(self._surface, 1, wx.EXPAND)
+            self._win.SetSizerAndFit(outer)
+        else:
+            self._win.SetSizerAndFit(root)
+            apply_modal_ids(self._win, cancel_id=wx.ID_CANCEL)
 
         # The transport keyboard, on the player itself. Without this the panel
         # was the one window in the app where the keys stopped working: a modal
@@ -190,7 +278,60 @@ class PlayerPanel:
         # ``after`` is the refresh the buttons already use.
         from quill.ui.radio import transport_keys
 
-        transport_keys.install(self.dialog, host, wx=wx, after=self._refresh)
+        transport_keys.install(
+            self._win,
+            host,
+            wx=wx,
+            after=self._refresh,
+            extra_entries=self._windows.accelerator_entries() if self._modeless else (),
+        )
+
+    @property
+    def window(self) -> Any:
+        """The top-level wx window (frame or dialog) this panel lives on."""
+        return self._win
+
+    # -- modeless lifecycle ------------------------------------------------------
+
+    def _build_surface_menu_bar(self) -> None:
+        """Menu bar for the modeless frame: &Close + the shared &Window menu,
+        so Alt lands on a real menu and Ctrl+Tab / Ctrl+1..9 reach every open
+        window from here too."""
+        wx = self._wx
+        menu_bar = wx.MenuBar()
+        player_menu = wx.Menu()
+        close_id = wx.NewIdRef()
+        player_menu.Append(close_id, "&Close\tCtrl+W")
+        self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
+        menu_bar.Append(player_menu, "&Player")
+        self._windows.install(self._win, menu_bar)
+        self._win.SetMenuBar(menu_bar)
+        self._menu_ids.append(close_id)
+
+    def _on_char_hook(self, event: Any) -> None:
+        # A frame has no automatic Escape->Cancel; wire it to close, keeping
+        # the "visit" contract the modal shape established. Ctrl+F4 closes
+        # like any document window (Alt+F4 already works natively).
+        if event.GetKeyCode() == self._wx.WXK_ESCAPE or (
+            event.GetKeyCode() == self._wx.WXK_F4 and event.ControlDown()
+        ):
+            self._win.Close()
+            return
+        event.Skip()
+
+    def _on_close(self, event: Any) -> None:
+        global _OPEN_WINDOW
+        previous = self._windows.previous_key(self._win)
+        self._windows.unregister(self._win)
+        if _OPEN_WINDOW is self:
+            _OPEN_WINDOW = None
+        announce_surface_exit("Player", self._announce)
+        event.Skip()
+        self._win.Destroy()
+        if previous:
+            self._windows.activate(previous)
+
+    # -- shared behaviour --------------------------------------------------------
 
     def _toggle_favorite(self) -> None:
         """Run the host's one favorites handler, then re-read the label."""
@@ -242,12 +383,12 @@ class PlayerPanel:
         """
         # Every transport key runs through here, so the favorites label follows
         # a station change made from the panel as well as one made outside it.
-        self._refresh_favorite_button()
         try:
+            self._refresh_favorite_button()
             fresh = self.status_text()
             if fresh != self._status.GetValue():
                 self._status.SetValue(fresh)
-        except Exception:  # noqa: BLE001 - the dialog may be closing
+        except Exception:  # noqa: BLE001 - the window may be closing
             return
 
     def _run(self, command_id: str) -> None:
@@ -258,10 +399,16 @@ class PlayerPanel:
         self._refresh()
 
     def show(self) -> int:
+        if self._modeless:
+            from quill.ui.dialog_contract import show_modeless_surface
+
+            self._windows.register(self._win, "Player")
+            show_modeless_surface(self._win, "Player", announce=self._announce)
+            return 0
         from quill.ui.dialog_contract import show_modal_dialog
 
-        self.dialog.CentreOnParent()
+        self._win.CentreOnParent()
         try:
-            return int(show_modal_dialog(self.dialog, "Player", announce=self._announce))
+            return int(show_modal_dialog(self._win, "Player", announce=self._announce))
         finally:
-            self.dialog.Destroy()
+            self._win.Destroy()

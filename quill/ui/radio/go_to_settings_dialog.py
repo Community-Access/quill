@@ -79,16 +79,31 @@ def edit(host: Any, layout: go_to.GoToLayout, data_dir: Path) -> bool:
 
     moves = wx.BoxSizer(wx.HORIZONTAL)
     up_btn = wx.Button(dialog, label="Move &Up")
+    up_btn.SetHelpText(
+        "Moves the highlighted place one position earlier -- toward 1, the "
+        "number your hand reaches first."
+    )
     down_btn = wx.Button(dialog, label="Move &Down")
+    down_btn.SetHelpText("Moves the highlighted place one position later in the menu.")
     remove_btn = wx.Button(dialog, label="&Remove")
+    remove_btn.SetHelpText(
+        "Takes the highlighted place out of the menu and back into the pool. "
+        "It stays reachable from its own key and menu item."
+    )
     add_btn = wx.Button(dialog, label="&Add")
+    add_btn.SetHelpText(
+        "Puts the highlighted pool entry into the menu, at the end. Ten "
+        "places at most -- the number row is the ceiling."
+    )
     for button in (up_btn, down_btn, remove_btn, add_btn):
         moves.Add(button, 0, wx.RIGHT, 6)
     root.Add(moves, 0, wx.ALL, 10)
 
     buttons = wx.BoxSizer(wx.HORIZONTAL)
     ok_btn = wx.Button(dialog, wx.ID_OK, "&OK")
+    ok_btn.SetHelpText("Saves this arrangement; Ctrl+G shows it immediately.")
     cancel_btn = wx.Button(dialog, wx.ID_CANCEL, "Cancel")
+    cancel_btn.SetHelpText("Closes without changing your Go To menu.")
     buttons.AddStretchSpacer()
     buttons.Add(ok_btn, 0, wx.RIGHT, 6)
     buttons.Add(cancel_btn)

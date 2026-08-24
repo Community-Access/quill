@@ -108,9 +108,16 @@ class BrowseSourcesDialog:
 
         row = wx.BoxSizer(wx.HORIZONTAL)
         self._toggle_btn = wx.Button(panel, label="&Turn On or Off")
+        self._toggle_btn.SetHelpText(
+            "Flips the highlighted source. Off means gone from the Browse "
+            "tree entirely -- and never contacted."
+        )
         all_btn = wx.Button(panel, label="Turn On &All")
+        all_btn.SetHelpText("Turns every source on, restoring the full Browse tree.")
         reset_btn = wx.Button(panel, label="&Reset to Default")
+        reset_btn.SetHelpText("Returns the source list to what a fresh install shows.")
         close_btn = wx.Button(panel, wx.ID_CLOSE, label="C&lose")
+        close_btn.SetHelpText("Closes this window; your source choices are already saved.")
         for button in (self._toggle_btn, all_btn, reset_btn, close_btn):
             row.Add(button, 0, wx.RIGHT, 6)
         root.Add(row, 0, wx.ALL, 8)

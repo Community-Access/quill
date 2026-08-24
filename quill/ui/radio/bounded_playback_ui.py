@@ -81,12 +81,53 @@ def describe_position(controller: Any) -> str:
 
 
 def _controller(host: Any) -> Any:
-    return host._radio_controller
+    """The player, whichever kind of host is asking. ``None`` when there is none.
+
+    ``host._radio_controller`` was the only shape this accepted, and the app
+    frame is the only object that has it -- so every verb in this module was
+    dead on the modeless surfaces, which are exactly the windows
+    :mod:`quill.ui.radio.transport_keys` exists to serve. The failure was the
+    worst kind: an ``AttributeError`` inside an accelerator handler, which wx
+    swallows, so Chapters in the Browse window did *nothing at all* rather than
+    refusing out loud (reported 2026-08-23: "ctrl+shift+c doesn't work in the
+    browse window"). Same cascade as ``transport_keys._controller_of`` and
+    ``book_playback``; keeping the three in step is the point.
+    """
+    return (
+        getattr(host, "_radio_controller", None)
+        or getattr(host, "_controller", None)
+        or getattr(host, "_podcast_controller", None)
+    )
+
+
+def _parent(host: Any) -> Any:
+    """The window a dialog raised from here should belong to.
+
+    The app frame answers ``frame``; a modeless radio surface answers ``_win``.
+    ``None`` is a valid answer -- a parentless dialog still shows.
+    """
+    return getattr(host, "frame", None) or getattr(host, "_win", None)
+
+
+def _show_modal(host: Any, dialog: Any, title: str) -> int:
+    """Show *dialog* through the host's modal helper, or plainly if it has none.
+
+    Every app frame carries ``_show_modal_dialog`` (the keyboard contract); the
+    modeless surfaces do not, and a verb reached from one of them must still be
+    able to open its dialog rather than raising into an accelerator handler.
+    """
+    helper = getattr(host, "_show_modal_dialog", None)
+    if callable(helper):
+        return int(helper(dialog, title))
+    return int(dialog.ShowModal())  # dialog_button_contract: exempt
 
 
 def _refuse(host: Any) -> bool:
     """Say why a transport command does not apply, and report that it did."""
     controller = _controller(host)
+    if controller is None:
+        host._announce("Nothing is playing.")
+        return True
     if controller.is_seekable():
         return False
     host._announce(LIVE_REFUSAL if controller.state.station is not None else "Nothing is playing.")
@@ -139,7 +180,7 @@ def go_to_position(host: Any) -> None:
 
     controller = _controller(host)
     dialog = GoToPositionDialog(
-        host.frame,
+        _parent(host),
         duration_ms=controller.duration_ms(),
         current_ms=controller.position_ms(),
         announce=host._announce,
@@ -147,7 +188,7 @@ def go_to_position(host: Any) -> None:
     try:
         import wx
 
-        if host._show_modal_dialog(dialog, GO_TO_POSITION_TITLE) != wx.ID_OK:
+        if _show_modal(host, dialog, GO_TO_POSITION_TITLE) != wx.ID_OK:
             return
         target = dialog.get_target_ms()
         clamped = dialog.clamped_message()
@@ -310,10 +351,10 @@ def open_chapters(host: Any) -> None:
     from quill.ui.radio.chapter_list_dialog import ChapterListDialog
 
     dialog = ChapterListDialog(
-        host.frame,
+        _parent(host),
         chapters=chapters,
         current_index=controller.current_chapter_index(),
-        show_modal_dialog=host._show_modal_dialog,
+        show_modal_dialog=lambda d, title: _show_modal(host, d, title),
         announce=host._announce,
         go_to_chapter=controller.go_to_chapter,
         transport_host=host,

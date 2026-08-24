@@ -93,6 +93,7 @@ def _install_fake_dialog(monkeypatch, host: _Host) -> None:
             *,
             title="Now Playing",
             transport_host=None,
+            windows=None,
         ):
             # transport_host carries the shared transport keyboard into this
             # window; the real dialog installs it, and the double records that

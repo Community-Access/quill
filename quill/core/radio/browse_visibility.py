@@ -124,6 +124,13 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         group="Spoken word",
     ),
     BrowseSourceInfo(
+        "podcastindex",
+        "Podcast Index",
+        "The open podcast index: trending, 112 categories, and any show's "
+        "episodes without subscribing to it.",
+        group="Spoken word",
+    ),
+    BrowseSourceInfo(
         "archive", "Internet Archive", "Old Time Radio, concerts, lectures.", group="Spoken word"
     ),
     BrowseSourceInfo(
@@ -175,6 +182,58 @@ def label(source_id: str) -> str:
     """The display label for a branch id, falling back to the id itself."""
     info = _BY_ID.get(source_id)
     return info.label if info is not None else source_id
+
+
+#: Branches added *after* the shipped default set stopped being the whole
+#: story, newest epoch last. A stored "these are my browse sources" list can
+#: only ever name branches that existed when it was saved, so a branch added
+#: later is missing from it -- and :func:`normalize` drops anything it does not
+#: name. Without this, every source added from now on would be invisible to
+#: everybody who had ever opened Choose Browse Sources, which is the quietest
+#: possible way to ship a feature nobody receives (found 2026-08-23, when the
+#: Podcast Index branch did exactly that).
+#:
+#: A branch appears here **once**, in the epoch that introduced it. Bump
+#: :data:`SOURCES_EPOCH` in the same change.
+INTRODUCED_BY_EPOCH: dict[int, tuple[str, ...]] = {
+    1: ("podcastindex",),
+}
+
+#: The highest epoch this build knows. A profile stamped with a lower one is
+#: shown the branches introduced since, once, and then stamped with this.
+SOURCES_EPOCH = 1
+
+
+def introduced_since(epoch: int) -> tuple[str, ...]:
+    """Default-on branches introduced after *epoch* (pure).
+
+    Only default-on ones: a branch that ships switched off was never going to
+    appear on its own, and adding it to somebody's list would be turning
+    something on under them.
+    """
+    added: list[str] = []
+    for stamp, ids in sorted(INTRODUCED_BY_EPOCH.items()):
+        if stamp <= epoch:
+            continue
+        added.extend(
+            source_id
+            for source_id in ids
+            if (info := _BY_ID.get(source_id)) is not None and info.default_on
+        )
+    return tuple(added)
+
+
+def with_new_sources(enabled: object, epoch: int) -> tuple[str, ...]:
+    """A stored choice, plus any branch introduced since it was made (pure).
+
+    ``None`` (never chosen) already answers with the defaults, which include
+    every branch, so this only has work to do for a listener who *has* chosen.
+    A branch they hid stays hidden -- it is named in their list's absence
+    *and* in an epoch they have already been stamped with.
+    """
+    if enabled is None:
+        return default_enabled()
+    return normalize([*normalize(enabled), *introduced_since(epoch)])
 
 
 def default_enabled() -> tuple[str, ...]:

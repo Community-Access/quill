@@ -14,6 +14,7 @@ import wx
 
 from quill.apps import radio_audio_menu, radio_go_to
 from quill.apps import radio_now_playing as now_playing_readout
+from quill.apps.radio_startup_window import open_startup_window
 from quill.core import http_client
 from quill.core.app_features import AppArea, load_app_features
 from quill.core.radio import reading_services
@@ -165,6 +166,13 @@ class RadioAppFrame(
         from quill.ui.dialog_contract import set_transition_announcement_policy
 
         set_transition_announcement_policy(lambda: self._radio_history.announce_dialog_transitions)
+        # F1 context help with Radio's authored purpose catalogue. The app
+        # shell already activated the shared engine (provider + dialog-contract
+        # hook + main-frame F1); this re-activation swaps in Radio's
+        # window-purpose resolver so the authored paragraphs lead every answer.
+        from quill.ui.radio import context_help
+
+        context_help.activate()
         self._init_media_sleep_timer()
         from quill.ui.window_menu import WindowManager
 
@@ -235,10 +243,8 @@ class RadioAppFrame(
         from quill.ui.radio.media_preflight import surface_media_health_startup
 
         wx.CallAfter(surface_media_health_startup, self)
-        # Over the main window, never instead of it: closing Browse has to
-        # leave you somewhere real rather than nowhere.
-        if self._radio_history.open_browse_at_startup:
-            wx.CallAfter(self.open_browse_stations)
+        # One window, or none (radio_startup_window), over the main window.
+        wx.CallAfter(open_startup_window, self)
         # First run: three screens for somebody who has never used this before,
         # and nothing at all for anybody who already has favorites. Modal rather
         # than spoken, unlike the line above -- it is the whole content of a
@@ -333,6 +339,10 @@ class RadioAppFrame(
         # different answers to "how do I mute this?".
         self._mute_btn = wx.ToggleButton(panel, label="&Mute")
         set_accessible_name(self._mute_btn, "Mute (Ctrl+M)")
+        self._mute_btn.SetHelpText(
+            "Silences the radio without stopping it; press again to unmute. "
+            "It follows Ctrl+M and every other mute in the app."
+        )
         self._mute_btn.SetValue(bool(getattr(controller, "state", None) and controller.state.muted))
         self._mute_btn.Bind(wx.EVT_TOGGLEBUTTON, lambda _e: self.radio_mute_toggle())
         buttons.Add(self._mute_btn, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
@@ -340,6 +350,11 @@ class RadioAppFrame(
             panel, value=start_volume, minValue=0, maxValue=100, style=wx.SL_HORIZONTAL
         )
         set_accessible_name(self._volume_slider, "Volume, percent")
+        self._volume_slider.SetHelpText(
+            "The radio's volume. Arrow keys nudge it, Page Up and Page Down "
+            "move it in bigger steps -- and it stays in step with Ctrl+Up and "
+            "Ctrl+Down and each station's remembered level."
+        )
         self._volume_slider.Bind(wx.EVT_SLIDER, self._on_volume_slider)
         buttons.Add(self._volume_slider, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
@@ -625,6 +640,7 @@ class RadioAppFrame(
             self._announce,
             title=f"Details: {favorite.display_name}",
             transport_host=self,
+            windows=getattr(self, "_windows", None),
         ).show()
 
     def _on_mark_favorite(self) -> None:
@@ -1365,10 +1381,17 @@ class RadioAppFrame(
         # name, so it needs a door of its own -- a document nobody can open from
         # the Help menu is a document that does not really ship.
         notes_depth_id = wx.NewIdRef()
-        help_menu.Append(guide_id, "&User Guide\tF1")
+        # F1 is context help now (What Is This?), matching QUILL's editor: F1
+        # answers for the control you are on, Ctrl+F1 opens the User Guide.
+        # The guide moved from F1 to Ctrl+F1 for that convention; the PRD --
+        # the least reached-for document here -- moved to Ctrl+Alt+F1.
+        what_is_this_id = wx.NewIdRef()
+        help_menu.Append(what_is_this_id, "&What Is This?\tF1")
+        help_menu.Append(guide_id, "&User Guide\tCtrl+F1")
         help_menu.Append(notes_id, "&Release Notes\tShift+F1")
         help_menu.Append(notes_depth_id, "Release Notes: The &Long Version\tCtrl+Shift+F1")
-        help_menu.Append(prd_id, "&Product Requirements...\tCtrl+F1")
+        help_menu.Append(prd_id, "&Product Requirements...\tCtrl+Alt+F1")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_show_context_help(), id=what_is_this_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("userguide"), id=guide_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._open_radio_doc("release-notes-3.0"), id=notes_id
@@ -1502,7 +1525,9 @@ class RadioAppFrame(
         # the numbered traversal reaches every open radio window.
         self._windows.install(self.frame, menu_bar)
         self.frame.SetMenuBar(menu_bar)
-        self._windows.register(self.frame, _TITLE)
+        # focus= so Ctrl+Tab into the main window lands on the favorites tree
+        # (its default control), not on the bare frame.
+        self._windows.register(self.frame, _TITLE, focus=self._focus_initial_control)
         # Pin every menu id for the frame's lifetime (see _keep_menu_ids).
         self._keep_menu_ids(
             sources_id,
@@ -1550,6 +1575,7 @@ class RadioAppFrame(
             palette_id,
             bug_id,
             ffmpeg_id,
+            what_is_this_id,
             guide_id,
             notes_id,
             notes_depth_id,
@@ -1615,6 +1641,12 @@ class RadioAppFrame(
         """
         from quill.ui.radio import download_menu
 
+        # The whole app tucks away, not just the main window: the modeless
+        # surfaces are parentless peers now, and a "tray" that leaves Browse
+        # standing on the taskbar is not the tray.
+        windows = getattr(self, "_windows", None)
+        if windows is not None:
+            windows.hide_all()
         self.frame.Hide()
         self._announce(download_menu.tray_message(self))
 
@@ -1882,6 +1914,13 @@ class RadioAppFrame(
             return
         event.Skip()
 
+    def _radio_show_context_help(self) -> None:
+        """Help > What Is This? (F1): this window's purpose, then the focused
+        control's -- the same two-part answer QUILL's editor gives."""
+        from quill.ui.radio import context_help
+
+        context_help.show_help(self.frame)
+
     def _radio_go_to_player(self) -> None:
         """Playback > Go to Player. Runs the same dispatcher every other window
         runs, so the main window cannot answer this key differently from the
@@ -1994,7 +2033,8 @@ class RadioAppFrame(
             f"https://github.com/{_REPO}\n\n"
             "Credits and thanks:\n"
             "- Broadcast polish adapted from OptiLab Core by dgl1984 "
-            "(https://github.com/dgl1984/optilab, Apache-2.0).",
+            "(https://github.com/dgl1984/optilab, Apache-2.0).\n"
+            "- Podcast data from the Podcast Index (podcastindex-org.github.io).",
             f"About {_TITLE}",
             wx.ICON_INFORMATION | wx.OK,
         )
@@ -2058,6 +2098,11 @@ class RadioAppFrame(
         from quill.apps import radio_chapter_buttons
 
         radio_chapter_buttons.refresh(self)
+        # The modeless player window has no modal loop keeping its readout
+        # honest, so every status refresh re-reads it too (no-op when closed).
+        from quill.ui.radio import player_panel
+
+        player_panel.refresh_open(self)
 
     def _save_radio_favorites(self) -> None:
         # Every favorites mutation -- the toggle button, tree actions, the
@@ -2073,16 +2118,17 @@ class RadioAppFrame(
     def _on_radio_app_close(self, event: wx.CloseEvent) -> None:
         # Thin wrapper over the shared close flow (AppShellFrame.handle_app_close),
         # which never ShowModals from inside EVT_CLOSE -- it vetoes and defers the
-        # confirm dialog so Alt+F4 works while a station plays. "Ask" only prompts
-        # when there's something to protect (live playback or a recording).
-        from quill.ui.radio.playback_state import ACTIVE_STATES
-
+        # confirm dialog so Alt+F4 works while a recording runs. Only a recording
+        # is protected: a live stream is not work that can be lost, and gating
+        # Alt+F4 on it meant the most common close -- while listening -- had to
+        # go through a dialog. Alt+F4 while playing now just closes the app
+        # (2026-08-23, reported: "I still can not alt+f4 out of the app when
+        # things are playing"). Playback stops in shutdown like any media app.
         recording_active = bool(getattr(self._radio_recorder, "is_recording", False))
-        playback_active = self._radio_controller.state.state in ACTIVE_STATES
         self.handle_app_close(
             event,
             close_action=self._radio_history.close_action,
-            protected=recording_active or playback_active,
+            protected=recording_active,
             confirm=self._radio_close_confirm,
             shutdown=self._radio_shutdown,
         )
@@ -2120,6 +2166,12 @@ class RadioAppFrame(
             self._app_host.shutdown()
         except Exception:  # noqa: BLE001 - Quillin teardown must never block exit
             pass
+        # The modeless surfaces are parentless peer frames: nothing destroys
+        # them with the main window, and any left alive would keep the process
+        # running after Exit.
+        windows = getattr(self, "_windows", None)
+        if windows is not None:
+            windows.destroy_all_except(self.frame)
         self._stamp_radio_last_seen()
         # Stop Weather Guardian's timer without flipping its persisted on state,
         # so a clean exit resumes monitoring on the next launch.

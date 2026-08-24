@@ -115,6 +115,9 @@ class ChapterListDialog:
 
         row = wx.BoxSizer(wx.HORIZONTAL)
         self._go_btn = wx.Button(panel, label="&Go To")
+        self._go_btn.SetHelpText(
+            "Jumps playback to the highlighted chapter and keeps playing from there."
+        )
         row.Add(self._go_btn, 0, wx.RIGHT, 6)
         if self._preview is not None:
             self._preview_btn = wx.Button(panel, label="&Preview This Mark")
@@ -123,11 +126,13 @@ class ChapterListDialog:
                 "then stop. Your place is not changed."
             )
             stop_btn = wx.Button(panel, label="&Stop Preview")
+            stop_btn.SetHelpText("Ends a running preview early; your place is unchanged.")
             row.Add(self._preview_btn, 0, wx.RIGHT, 6)
             row.Add(stop_btn, 0, wx.RIGHT, 6)
             self._preview_btn.Bind(wx.EVT_BUTTON, lambda _e: self._preview_mark())
             stop_btn.Bind(wx.EVT_BUTTON, lambda _e: self._stop_preview())
         close_btn = wx.Button(panel, wx.ID_CLOSE, label="C&lose")
+        close_btn.SetHelpText("Closes the chapter list without moving playback.")
         row.Add(close_btn, 0, wx.RIGHT, 6)
         root.Add(row, 0, wx.ALL, 8)
 

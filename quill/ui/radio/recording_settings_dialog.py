@@ -206,6 +206,7 @@ class RecordingSettingsDialog:
         save_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
         save_btn.SetName("Save these recording settings")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
+        cancel_btn.SetHelpText("Closes without changing how recordings are made.")
         btn_row.AddStretchSpacer()
         btn_row.Add(save_btn, 0, wx.RIGHT, 6)
         btn_row.Add(cancel_btn)

@@ -68,6 +68,11 @@ class _Tree:
     def SetItemData(self, item: _Item, data: dict) -> None:  # noqa: N802
         item.data = data
 
+    def Collapse(self, item: _Item) -> None:  # noqa: N802
+        # A refetch collapses before it expands: wx fires no expanding event
+        # for a node it already considers open, and that event is the reload.
+        item.expanded = False
+
     def Expand(self, item: _Item) -> None:  # noqa: N802
         item.expanded = True
 

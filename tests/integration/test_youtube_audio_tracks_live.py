@@ -161,3 +161,44 @@ def test_the_descriptive_videos_keep_their_described_track() -> None:
         f"reaches: {missing}. The likely cause is the iOS player client no "
         "longer being served the alternate renditions."
     )
+
+
+@pytest.mark.parametrize("name", sorted(ORDINARY))
+def test_the_resolved_address_can_actually_be_fetched(name: str) -> None:
+    """A resolve that succeeds is not the same as a video that plays.
+
+    This is the check that was missing on 2026-08-23, and its absence is why a
+    stale yt-dlp looked healthy from inside the app. Every assertion above was
+    green on yt-dlp 2026.7.4 -- the page resolved, the title, length, chapters
+    and track list all came back -- and the googlevideo address it handed over
+    answered **403 Forbidden** to every client, yt-dlp's own downloader
+    included. Quill Radio hands that address to mpv (or to ffmpeg, for a
+    recording or a Sound Enhancements relay), so "there is a URL" is not the
+    invariant worth guarding; "the URL serves bytes" is.
+
+    A range request, so this costs a kilobyte rather than a video.
+    """
+    import urllib.error
+    import urllib.request
+
+    try:
+        stream = resolve_youtube_stream(ORDINARY[name])
+    except YouTubeError as error:
+        pytest.skip(f"{name} did not resolve: {error}")
+    assert stream.stream_url, f"{name} resolved with no stream address"
+
+    request = urllib.request.Request(  # noqa: S310 - https, from the resolver
+        stream.stream_url, headers={"Range": "bytes=0-1023"}
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:  # noqa: S310
+            status, payload = response.status, response.read()
+    except urllib.error.HTTPError as error:
+        pytest.fail(
+            f"{name} resolved but its audio address answered HTTP {error.code}. "
+            "YouTube issues stream addresses per player client and stops "
+            "honouring them for the others; the usual cause is a yt-dlp that "
+            "has fallen behind (Station > Update YouTube Support)."
+        )
+    assert status in (200, 206), f"{name} answered HTTP {status}"
+    assert payload, f"{name} answered {status} with no audio bytes"

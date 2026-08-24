@@ -906,14 +906,15 @@ implementation. <strong>Ten windows</strong> answer to the whole
 transport now.</p>
 <p><strong>Go to Player (Ctrl+Shift+G)</strong> came from one question –
 <em>“should the player be its own window? Can we make that magical some
-how?”</em> A permanent player window buys one obvious place and costs a
-third citizen in the Alt+Tab rotation, which was the thing being
-complained about in the first place. So the player has no window. It has
-a <strong>summons</strong>: press Ctrl+Shift+G from anywhere and a
-compact panel opens <em>over the window you are already in</em>, with
-the whole transport, what is playing, where you are in it, the speed and
-the volume. Close it and focus returns to the exact control you came
-from – not the top of the list you were halfway down.</p>
+how?”</em> The first answer was a summoned panel with no window of its
+own; listening changed it. The Player is now a <strong>real
+window</strong>: press Ctrl+Shift+G from anywhere and it opens – or, if
+it is already open somewhere behind you, <strong>comes to the
+front</strong>. It carries the whole transport, what is playing, where
+you are in it, the speed and the volume; it stands in the Window menu
+and the Ctrl+Tab rotation beside Browse and the managers; and its
+readout follows changes made in any other window. Escape closes it and
+focus returns to the window you came from.</p>
 <p><strong>Ctrl+Shift+P opens the Command Palette from every
 window</strong>, and the whole transport is in it. Every on/off command
 in the palette now carries its own state – <strong>“Announce Track
@@ -932,18 +933,27 @@ out.</p>
 Stations, Search Stations, Manage Favorites and Schedule Recording were
 dialogs, and a dialog cannot carry a menu bar – so opening one made the
 menu bar seem to vanish, and the modal ones locked you out of the main
-window entirely. They are proper <strong>windows</strong> now, each
-carrying the full menu bar, none holding the main window hostage. A new
+window entirely. They are proper <strong>windows</strong> now – each a
+real, independent window with its own place in the taskbar and the
+Alt+Tab order, not an overlay floating glued over the main one – each
+carrying a menu bar, none holding the main window hostage. A new
 <strong>Window</strong> menu lists everything you have open, with
 <strong>Ctrl+Tab</strong>, <strong>Ctrl+Shift+Tab</strong> and
 <strong>Ctrl+1</strong> through <strong>Ctrl+9</strong> to move between
-them.</p>
+them; moving to a window lands you on the control you last used there.
+Asking for a window that is already open brings it to the front rather
+than opening a second copy, and each closes the way windows close:
+<strong>Escape, Ctrl+W, Ctrl+F4, Alt+F4, or the titlebar</strong>.
+<strong>Recordings, Downloads, Song History and the Now Playing
+viewer</strong> are windows of the same kind, so the whole app now moves
+under one set of window keys.</p>
 <h3 id="every-menu-item-tells-you-its-key">Every menu item tells you its
 key</h3>
 <p>Open any menu in 3.0 and every item ends with the way to reach it
 from the keyboard. Browse Stations is <strong>Ctrl+B</strong>, Find
-Stations <strong>Ctrl+F</strong>, Recordings <strong>Ctrl+G</strong>.
-All 115 items, menus and submenus alike.</p>
+Stations <strong>Ctrl+F</strong>, Recordings
+<strong>Ctrl+Shift+R</strong>, Go To <strong>Ctrl+G</strong>. All 115
+items, menus and submenus alike.</p>
 <p>This was not a polish pass. Forty-nine items had no shortcut at all,
 which meant the only way to learn there was no faster route was to arrow
 through the whole menu and reach the end – a cost paid on every visit.
@@ -955,11 +965,12 @@ menu promising a shortcut that could never fire.</p>
 <strong>the key you actually have bound</strong>. A build check now
 fails if any menu item ships without a working, unique key, so this
 stays true.</p>
-<p>Every button on the main window has an Alt key now, too –
-<strong>Alt+L</strong> plays, <strong>Alt+T</strong> stops,
-<strong>Alt+F</strong> favorites, <strong>Alt+O</strong> records,
-<strong>Alt+B</strong> browses – each using a letter the menu bar has
-not claimed, with a build check refusing any that does.</p>
+<p>The main window’s own controls carry Alt keys too –
+<strong>Alt+M</strong> mutes, <strong>Alt+U</strong> reaches the volume
+slider – each using a letter the menu bar has not claimed, with a build
+check refusing any that does. (The transport buttons themselves left the
+main window in the surface redesign; their verbs live on the keys, the
+menus, and the Player window.)</p>
 <h3 id="things-that-were-quietly-wrong-and-are-not-now">Things that were
 quietly wrong, and are not now</h3>
 <p>Five worth knowing about, because every one of them was broken and
@@ -1168,6 +1179,66 @@ points the shared Quill data folder at something Dropbox, OneDrive,
 Google Drive or iCloud already syncs. There is no Quill account, no API
 and nothing new talking to the network: Quill writes to the folder and
 the sync client you already run does the carrying.</p>
+<h3 id="a-podcast-you-can-look-at-before-you-decide">A podcast you can
+look at before you decide</h3>
+<p>There is a new branch in Browse Stations called <strong>Podcast
+Index</strong>, and it does the one thing no podcast surface in this app
+could do before: it lets you look at a show without subscribing to
+it.</p>
+<p>That sounds small. It is not. Until now, a show was a name and a
+description, and the only way to find out what it actually published –
+how long the episodes are, how often they come, whether the last one was
+three years ago – was to subscribe, go to your subscriptions, and read
+the list. You had to commit in order to ask a question. If the answer
+was no, you unsubscribed and the show left a mark in your library on the
+way out.</p>
+<p>Open a show in this branch and its episodes are simply there. Arrow
+through them. Press Enter on one and it plays. Add it to Favorites,
+download it, read its transcript – they are ordinary rows, and
+everything that works anywhere else in the tree works here. Then
+subscribe, if you want to. Or do not, and nothing was spent.</p>
+<p>The rows say what they are before you open them. A show tells you who
+makes it, how many episodes it has, and what it is about. It also tells
+you, plainly, when the index can no longer read the feed – which is
+exactly the thing you want to know <em>before</em> subscribing to a show
+that will never publish again, and exactly the thing a store listing
+will never say.</p>
+<p>Three ways in:</p>
+<ul>
+<li><strong>Trending Now</strong> – what people are actually listening
+to today. Nothing else in the tree could answer that for podcasts.</li>
+<li><strong>By Category</strong> – the index’s own hundred and twelve
+categories, each one a trending list narrowed down.</li>
+<li><strong>Search the Podcast Index…</strong> – answered inside the
+tree, like every other search here, so finding a show does not take the
+tree away from you.</li>
+</ul>
+<p><strong>Searching for a podcast now asks both directories.</strong>
+Search for a Podcast, and Find Stations, ask Apple <em>and</em> the
+Podcast Index, and merge what comes back. The index is where the
+independent, the self-hosted and the de-listed shows live – the ones a
+store does not carry. If one directory cannot answer, the other’s
+results still arrive and the status line says which one was quiet.</p>
+<p><strong>Subscribing from an index row is instant.</strong> Its rows
+carry the feed address itself, where a store row carries an id that has
+to be looked up first, so Subscribe files the show into the library you
+share with QUILL Cast – artwork, site and all – with nothing further to
+fetch.</p>
+<p><strong>Nothing was asked of you to switch this on.</strong> Quill
+Radio carries its own credential for the Podcast Index, so there is no
+key to register for, no account to make, and no settings page you needed
+to find. The credential identifies <em>the app</em> to a directory of
+public information: it reads no account, it authorises nothing on your
+behalf, and a search sends the words you typed and nothing else – not
+who you are, not what you are subscribed to, not what you have played.
+If you would rather use a key of your own, you can, and it takes
+precedence.</p>
+<p>And nothing depends on it. Turn the branch off in <strong>Choose
+Browse Sources</strong> and podcasts work exactly as they did; Apple
+remains the keyless default everywhere it was before. The Podcast Index
+is credited in <strong>Help &gt; About</strong> – it is an open,
+independent project that exists to keep podcasting open, and this app is
+a guest there.</p>
 <h3 id="radio-and-cast-two-apps-one-library">Radio and Cast: two apps,
 one library</h3>
 <p>Quill Radio plays podcasts now, and QUILL Cast is an entire podcast

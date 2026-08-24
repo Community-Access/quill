@@ -32,6 +32,9 @@ Node id grammar, all opaque to the caller (see :mod:`browse_nodes`)::
     m3u | m3u:<slug>                Community M3U catalog
     xiph | xiph:<genre>             Xiph / Icecast directory
     apple | apple:<storefront>      Apple Podcasts, keyless
+    podcastindex | pitrending | pitrending:<category> | picategories
+    pishow:<feed-url>               a Podcast Index show's episodes, unsubscribed
+    piepisode:<audio-url>           ...one of them, playable
     applegenre:<storefront>\\t<genre-id>
     appleshow:<collection-id>       ...then that show's episodes
     mypodcasts | mypodcastfolder:<folder-id> | mypodcastshow:<feed-url>
@@ -141,6 +144,14 @@ from quill.core.radio.browse_nodes import (
     make_id,
     split_id,
 )
+
+# The Podcast Index branch: shows you can open without subscribing to them.
+from quill.core.radio.browse_podcast_index import (
+    browse_categories,
+    browse_root,
+    browse_show,
+    browse_trending,
+)
 from quill.core.radio.models import RadioStation
 
 #: The top-level branches, in tree order.
@@ -164,6 +175,7 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("m3u", "Community M3U (Music Genres)"),
     ("xiph", "Xiph / Icecast Directory"),
     ("apple", "Podcasts (Apple)"),
+    ("podcastindex", "Podcast Index"),
     ("archive", "Internet Archive"),
     ("librivox", "LibriVox Audiobooks"),
     ("gutenberg", "Project Gutenberg Audiobooks"),
@@ -520,11 +532,11 @@ def _browse_youtube(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
         ]
         saved = youtube_saved.SavedStore()
         nodes += [
-            folder(make_id("ytplaylist", item.url, "1"), item.display_name)
+            folder(make_id("ytplaylist", item.url, "1"), item.display_name, note=item.note)
             for item in saved.all(youtube_saved.PLAYLIST)
         ]
         for item in saved.all(youtube_saved.VIDEO):
-            live = not item.url.startswith("https://www.youtube.com/watch")
+            live = item.is_live or not item.url.startswith("https://www.youtube.com/watch")
             nodes.append(
                 leaf(
                     RadioStation(
@@ -535,13 +547,25 @@ def _browse_youtube(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
                         # A watch link is a finished video (seeks, resumes); a
                         # channel-live page is a broadcast that is simply on.
                         is_recording=not live,
+                        # What the video is *about*, straight into the details
+                        # panel -- the one thing an address could never say.
+                        notes=item.description,
                     ),
                     node_id=make_id("ytvideo", item.url),
+                    # "TED, 20 minutes 3 seconds", spoken after the title.
+                    note=item.note,
                 )
             )
-        nodes.append(action("addchannel", "Add a Channel...", note="paste a channel address"))
-        nodes.append(action("addplaylist", "Add a Playlist...", note="paste a playlist link"))
-        nodes.append(action("addvideo", "Add a Video...", note="paste a video link"))
+        if not nodes:
+            # Only while there is nothing here. Three permanent "Add a ..."
+            # rows at the bottom of a growing list are three rows to arrow
+            # past on every visit, for a thing you do rarely -- and they are
+            # on this branch's context menu (and every row's) now, which is
+            # where a verb belongs once the list has content in it. Same shape
+            # as the empty Subscriptions branch's three ways in.
+            nodes.append(action("addchannel", "Add a Channel...", note="paste a channel address"))
+            nodes.append(action("addplaylist", "Add a Playlist...", note="paste a playlist link"))
+            nodes.append(action("addvideo", "Add a Video...", note="paste a video link"))
         return nodes
     return []
 
@@ -703,6 +727,12 @@ _HANDLERS: dict[str, Callable[..., list[BrowseNode]]] = {
     "networkgroup": _browse_network_group,
     "network": _browse_network,
     "apple": _browse_apple,
+    # The Podcast Index branch (GATE-11 extraction, browse_podcast_index.py):
+    # shows you can open without subscribing to them.
+    "podcastindex": browse_root,
+    "pitrending": browse_trending,
+    "picategories": browse_categories,
+    "pishow": browse_show,
     "applegenre": _browse_apple_genre,
     "appleshow": _browse_apple_show,
     "mypodcasts": _browse_my_podcasts,

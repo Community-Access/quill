@@ -404,6 +404,20 @@ class MpvRadioEngine(VideoOutputMixin):
             from quill.core.radio.stream_headers import referrer_for
 
             self._mpv.set_str("referrer", referrer_for(path))
+            # And the same rule for the external audio track. Showing the
+            # picture for a YouTube video sets ``audio-files`` to that video's
+            # separate audio stream (YouTube serves the two apart) -- and
+            # ``audio-files`` is a client-wide OPTION, not a property of the
+            # loaded file, so it survived every later load. mpv then attached
+            # the previous video's audio to the new one and selected it, which
+            # is why playing a second saved video played the first one's sound
+            # ("I added a second video and it always seems to play the one
+            # played before it", 2026-08-23) -- and why, hours later when
+            # YouTube's addresses expire, it would have played nothing at all.
+            # Cleared here rather than when the picture is hidden: hiding the
+            # picture must not silence a video whose audio IS the external
+            # track. Same reasoning, and same line, as the referrer above.
+            self._mpv.set_str("audio-files", "")
             self._mpv.command("loadfile", path, "replace")
         except Exception:  # noqa: BLE001 - a bad URL must not crash the app
             _log.exception("mpv loadfile failed")

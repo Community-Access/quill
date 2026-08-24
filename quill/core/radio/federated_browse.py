@@ -85,6 +85,10 @@ TARGETS: tuple[SearchTarget, ...] = (
     SearchTarget("soma", "SomaFM", "Station"),
     SearchTarget("wx", "NOAA Weather Radio", "Weather station"),
     SearchTarget("apple", "Apple Podcasts", "Podcast"),
+    # Two podcast directories, asked together: the index finds independent,
+    # self-hosted and de-listed shows the store does not carry, and its rows
+    # open into episodes without subscribing.
+    SearchTarget("podcastindex", "Podcast Index", "Podcast"),
     SearchTarget("librivox", "LibriVox", "Audiobook"),
     SearchTarget("gutenberg", "Project Gutenberg", "Audiobook"),
     SearchTarget("archive", "Internet Archive", "Recording"),

@@ -7,11 +7,25 @@ encoding), so Radio grows its own small, self-contained version here rather
 than inheriting a bar full of cells that mean nothing to a radio.
 
 The bar is a row of buttons -- one per cell -- along the bottom of the main
-window. Each cell shows a live piece of "what is going on" (what is playing,
-the volume, whether a recording is running, the sleep timer, how many favorites
-you have, the time). Focus lands on it with F6, moves cell to cell with the
-arrow keys (Home/End jump to the ends), activates with Enter or Space, offers a
-right-click context menu, and Escape returns to the favorites list.
+window. Redesigned 2026-08-23 on live feedback: a status bar of *buttons*
+should lead with actions, because a button whose label is a bare readout ("a
+button that says stopped", "Favorites 1") promises an action it does not
+perform. The action cells' labels ARE their actions and flip with the state --
+Play/Stop, Mute/Unmute, Record Now/Stop Recording -- and the readouts that
+remain (Volume, Sleep timer, Time) each answer Enter with something useful.
+Every cell that has more to offer carries a rich right-click menu: the Play
+cell offers your favorites and recent stations, the volume pair offers boost
+and the output device, Record offers scheduling and the Recordings window.
+
+The now-playing readout came *off* the bar the same day: the main window's own
+Now playing field (top of the window) and Ctrl+T already answer it, and here
+it was one more button that was not a button.
+
+Focus lands on the bar with F6 -- and only F6: the cells refuse Tab focus, so
+tabbing around the main window never detours through six extra stops. Inside,
+arrow keys move cell to cell (Home/End jump to the ends), Enter or Space
+activates, right-click (or the Applications key) opens the cell's menu, and
+Escape returns to the favorites list.
 
 The class takes a *host* -- the ``RadioAppFrame`` -- and reads live state and
 calls actions through it (``_radio_controller``, ``_radio_recorder``,
@@ -50,6 +64,14 @@ class CellSpec:
     activate: Callable[[], None]
     help: str
     build_menu: Callable[[Any], None] | None = None
+    #: An *action* cell supplies its live button label here -- "Play"/"Stop",
+    #: "Mute"/"Unmute" -- and leaves ``text`` returning "". The label is the
+    #: action because the control is a button, and a button whose label is a
+    #: readout promises an action it does not perform.
+    action_label: Callable[[], str] | None = None
+    #: The keyboard shortcut an action cell teaches ("Ctrl+P"), folded into
+    #: its accessible name so the bar quietly teaches the key.
+    key_hint: str = ""
     #: A cell whose hint depends on live state supplies it here, and ``refresh``
     #: keeps it current. The Recording cell needs this because "12 min left" and
     #: "18 min so far" are two different measurements sharing one cell, and
@@ -86,6 +108,10 @@ class RadioStatusBar:
         #: F6) can hand it straight back rather than guessing.
         self._return_focus: Any = None
         self._entering = False
+        #: True while somebody is visiting the bar (F6, or a mouse click on a
+        #: cell). Gates keyboard focusability: False keeps Tab traversal out
+        #: of the bar entirely; True lets SetFocus land while arrowing inside.
+        self._inside_bar = False
         self._specs: list[CellSpec] = self._build_specs()
 
     # -- construction ---------------------------------------------------------
@@ -95,9 +121,34 @@ class RadioStatusBar:
 
         The panel is a thin horizontal strip of buttons. It is created hidden
         when the setting is off; the caller adds it to the window's sizer.
+
+        **Why focusability is dynamic.** The bar must be out of the main
+        window's Tab order (F6 is the door in, reported 2026-08-23) -- but a
+        control that *statically* refuses keyboard focus on wxMSW also refuses
+        ``SetFocus``, which broke F6 entry and cell-to-cell arrowing the same
+        day it shipped ("F6 is not letting me arrow across the status bar").
+        Measured, not assumed: with the override returning a constant False,
+        ``cell.SetFocus()`` left focus where it was. So the cells (and the
+        panel) refuse keyboard focus only while focus is *outside* the bar:
+        Tab never wanders in, and the moment F6 (or a mouse click) opens a
+        visit, everything focuses normally until focus leaves again.
         """
         wx = self._wx
-        panel = wx.Panel(parent, style=wx.TAB_TRAVERSAL)
+        bar = self
+
+        class _CellButton(wx.Button):
+            """A cell you visit (F6, click), never a Tab stop on the way by."""
+
+            def AcceptsFocusFromKeyboard(self) -> bool:  # noqa: N802 - wx override
+                return bar._inside_bar
+
+        class _BarPanel(wx.Panel):
+            """Skipped whole by Tab while nobody is visiting the bar."""
+
+            def AcceptsFocusFromKeyboard(self) -> bool:  # noqa: N802 - wx override
+                return bar._inside_bar
+
+        panel = _BarPanel(parent, style=wx.TAB_TRAVERSAL)
         panel.SetName("Status bar")
         sizer = wx.BoxSizer(wx.HORIZONTAL)
         self._panel = panel
@@ -105,12 +156,13 @@ class RadioStatusBar:
         self._cells = []
         context_event = getattr(wx, "EVT_CONTEXT_MENU", None)
         for spec in self._specs:
-            button = wx.Button(panel, label=self._button_label(spec), style=wx.BU_EXACTFIT)
+            button = _CellButton(panel, label=self._button_label(spec), style=wx.BU_EXACTFIT)
             button.SetName(self._button_name(spec))
             button.SetHelpText(self._cell_help(spec))
             button.Bind(wx.EVT_BUTTON, lambda _e, s=spec: self._activate(s))
             button.Bind(wx.EVT_KEY_DOWN, lambda e, s=spec: self._on_key_down(e, s))
             button.Bind(wx.EVT_SET_FOCUS, lambda e, s=spec: self._on_cell_focus(e, s))
+            button.Bind(wx.EVT_KILL_FOCUS, self._on_cell_blur)
             if context_event is not None:
                 button.Bind(context_event, lambda e, s=spec: self._on_context_menu(e, s))
             sizer.Add(button, 0, wx.EXPAND | wx.ALL, 2)
@@ -118,22 +170,52 @@ class RadioStatusBar:
         panel.SetSizer(sizer)
         return panel
 
+    def _on_cell_blur(self, event: Any) -> None:
+        """Focus left a cell: if it left the bar entirely, close the visit so
+        Tab traversal skips the bar again."""
+        gaining = None
+        get_window = getattr(event, "GetWindow", None)
+        if callable(get_window):
+            gaining = get_window()
+        if gaining is None or not self._is_bar_window(gaining):
+            self._inside_bar = False
+        event.Skip()
+
+    def _is_bar_window(self, window: Any) -> bool:
+        return window is self._panel or any(cell.button is window for cell in self._cells)
+
     # -- cell definitions -----------------------------------------------------
 
     def _build_specs(self) -> list[CellSpec]:
         host = self._host
         return [
             CellSpec(
-                key="now_playing",
-                name="Now playing",
-                text=self._text_now_playing,
-                activate=lambda: _call(host, "radio_now_playing_full_details"),
+                key="play_stop",
+                name="Play or stop",
+                text=lambda: "",
+                action_label=self._label_play_stop,
+                key_hint="Ctrl+P",
+                activate=lambda: _call(host, "radio_play_stop_toggle"),
                 help=(
-                    "What's playing. Press Enter for full details -- station, "
-                    "format, stream, and the current track; right-click for "
-                    "Play/Pause, Mute, Record, and favorites."
+                    "Play the selected station, or stop what is playing. "
+                    "Right-click for your favorites, recent stations, "
+                    "recording, and Browse Stations."
                 ),
-                build_menu=self._menu_now_playing,
+                build_menu=self._menu_play,
+            ),
+            CellSpec(
+                key="mute",
+                name="Mute or unmute",
+                text=lambda: "",
+                action_label=self._label_mute,
+                key_hint="Ctrl+M",
+                activate=lambda: _call(host, "radio_mute_toggle"),
+                help=(
+                    "Silence the radio without stopping it. Right-click for "
+                    "Volume Up, Volume Down, Volume Boost, the output device, "
+                    "and Sound Enhancements."
+                ),
+                build_menu=self._menu_volume,
             ),
             CellSpec(
                 key="volume",
@@ -142,18 +224,22 @@ class RadioStatusBar:
                 activate=lambda: _call(host, "radio_mute_toggle"),
                 help=(
                     "Volume level. Press Enter to mute or unmute; right-click "
-                    "for Volume Up, Volume Down, and Volume Boost."
+                    "for Volume Up, Volume Down, Volume Boost, the output "
+                    "device, and Sound Enhancements."
                 ),
                 build_menu=self._menu_volume,
             ),
             CellSpec(
                 key="recording",
-                name="Recording",
-                text=self._text_recording,
+                name="Record",
+                text=lambda: "",
+                action_label=self._label_record,
+                key_hint="Ctrl+R",
                 activate=lambda: _call(host, "radio_record_toggle"),
                 help=(
-                    "Recording status. Press Enter to start or stop recording "
-                    "the current station; right-click to stop all recordings."
+                    "Record the playing station, or stop the recording being "
+                    "made. Right-click for scheduling, the Recordings window, "
+                    "and recording settings."
                 ),
                 build_menu=self._menu_recording,
                 live_help=self._help_recording,
@@ -163,14 +249,11 @@ class RadioStatusBar:
                 name="Sleep timer",
                 text=self._text_sleep_timer,
                 activate=lambda: _call(host, "open_sleep_timer_dialog"),
-                help="Sleep timer. Press Enter to set or cancel the sleep timer.",
-            ),
-            CellSpec(
-                key="favorites",
-                name="Favorites",
-                text=self._text_favorites,
-                activate=self._focus_favorites,
-                help="How many favorite stations you have. Press Enter to jump to the list.",
+                help=(
+                    "Sleep timer. Press Enter to set or cancel it; "
+                    "right-click for the wake-up timer too."
+                ),
+                build_menu=self._menu_sleep_timer,
             ),
             CellSpec(
                 key="clock",
@@ -181,11 +264,32 @@ class RadioStatusBar:
             ),
         ]
 
-    # -- cell text ------------------------------------------------------------
+    # -- action labels --------------------------------------------------------
 
-    def _text_now_playing(self) -> str:
-        text = _call_value(self._host, "_radio_status_text", "")
-        return text or "Stopped"
+    def _label_play_stop(self) -> str:
+        from quill.ui.radio.playback_state import ACTIVE_STATES
+
+        state = self._controller_state()
+        playing = state is not None and getattr(state, "state", None) in ACTIVE_STATES
+        return "Stop" if playing else "Play"
+
+    def _label_mute(self) -> str:
+        state = self._controller_state()
+        return "Unmute" if state is not None and getattr(state, "muted", False) else "Mute"
+
+    def _label_record(self) -> str:
+        """The verb pressing it performs, wearing the live progress when on.
+
+        "Record Now" idle; "Stop Recording (42 min left)" while a capture runs
+        -- the action first, because this is a button, with the one number
+        worth knowing folded in rather than shown as a separate readout.
+        """
+        progress = self._recording_progress()
+        if not progress:
+            return "Record Now"
+        return f"Stop Recording ({recording_cell_text(progress, datetime.now())})"
+
+    # -- cell text ------------------------------------------------------------
 
     def _text_volume(self) -> str:
         state = self._controller_state()
@@ -225,9 +329,6 @@ class RadioStatusBar:
             )
         return progress
 
-    def _text_recording(self) -> str:
-        return recording_cell_text(self._recording_progress(), datetime.now())
-
     def _help_recording(self) -> str:
         return recording_cell_help(self._recording_progress(), datetime.now())
 
@@ -238,14 +339,6 @@ class RadioStatusBar:
         seconds = int(getattr(timer, "remaining_seconds", 0) or 0)
         minutes = (seconds + 59) // 60
         return f"{minutes} min left" if minutes != 1 else "1 min left"
-
-    def _text_favorites(self) -> str:
-        store = getattr(self._host, "_radio_favorites", None)
-        favorites = getattr(store, "favorites", None)
-        if favorites is None:
-            return ""
-        count = len(favorites)
-        return "1 station" if count == 1 else f"{count} stations"
 
     def _text_clock(self) -> str:
         try:
@@ -259,7 +352,10 @@ class RadioStatusBar:
 
     # -- context menus --------------------------------------------------------
 
-    def _menu_now_playing(self, menu: Any) -> None:
+    def _menu_play(self, menu: Any) -> None:
+        """The rich transport menu the host already builds: Play/Stop, Mute,
+        the favorites and recent-stations submenus, the record group, and
+        Browse Stations -- everything "play something" might mean."""
         builder = getattr(self._host, "_build_radio_status_bar_menu", None)
         if builder is not None:
             builder(menu)
@@ -283,6 +379,17 @@ class RadioStatusBar:
         menu.Bind(wx.EVT_MENU, lambda _e: _call(host, "radio_volume_down"), id=down_id)
         menu.Bind(wx.EVT_MENU, lambda _e: _call(host, "radio_mute_toggle"), id=mute_id)
         menu.Bind(wx.EVT_MENU, lambda _e: _call(host, "radio_toggle_volume_boost"), id=boost_id)
+        menu.AppendSeparator()
+        device_id, enhance_id = wx.NewIdRef(), wx.NewIdRef()
+        menu.Append(device_id, "Output Device...")
+        menu.Append(enhance_id, "Sound Enhancements...")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._open_output_device(), id=device_id)
+        menu.Bind(wx.EVT_MENU, lambda _e: _call(host, "open_sound_enhancements"), id=enhance_id)
+
+    def _open_output_device(self) -> None:
+        from quill.ui.radio.output_device_ui import choose_output_device
+
+        choose_output_device(self._host)
 
     def _menu_recording(self, menu: Any) -> None:
         wx = self._wx
@@ -299,14 +406,42 @@ class RadioStatusBar:
                 lambda _e: _call(host, "radio_stop_all_recordings"),
                 id=stop_all_id,
             )
+        menu.AppendSeparator()
+        schedule_id, list_id, settings_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        menu.Append(schedule_id, "Schedule Recording...")
+        menu.Append(list_id, "Recordings...")
+        menu.Append(settings_id, "Recording Settings...")
+        menu.Bind(
+            wx.EVT_MENU, lambda _e: _call(host, "_radio_open_schedule_recording"), id=schedule_id
+        )
+        menu.Bind(wx.EVT_MENU, lambda _e: _call(host, "open_radio_recordings"), id=list_id)
+        menu.Bind(
+            wx.EVT_MENU, lambda _e: _call(host, "_radio_open_recording_settings"), id=settings_id
+        )
+
+    def _menu_sleep_timer(self, menu: Any) -> None:
+        wx = self._wx
+        host = self._host
+        sleep_id, wake_id = wx.NewIdRef(), wx.NewIdRef()
+        timer = getattr(host, "_sleep_timer_controller", None)
+        active = bool(getattr(timer, "is_active", False))
+        menu.Append(sleep_id, "Change Sleep Timer..." if active else "Sleep Timer...")
+        menu.Append(wake_id, "Wake-Up Timer...")
+        menu.Bind(wx.EVT_MENU, lambda _e: _call(host, "open_sleep_timer_dialog"), id=sleep_id)
+        menu.Bind(wx.EVT_MENU, lambda _e: _call(host, "open_wake_timer_dialog"), id=wake_id)
 
     # -- navigation and activation --------------------------------------------
 
     def _button_label(self, spec: CellSpec) -> str:
+        if spec.action_label is not None:
+            return spec.action_label()
         value = spec.text()
         return f"{spec.name}: {value}" if value else spec.name
 
     def _button_name(self, spec: CellSpec) -> str:
+        if spec.action_label is not None:
+            label = spec.action_label()
+            return f"{label} ({spec.key_hint})" if spec.key_hint else label
         value = spec.text()
         return f"{spec.name}, {value}" if value else spec.name
 
@@ -385,6 +520,9 @@ class RadioStatusBar:
             return
         self._return_focus = return_focus
         self._entering = True
+        # Open the visit BEFORE asking for focus: wxMSW refuses SetFocus on a
+        # window whose AcceptsFocusFromKeyboard answers False (measured).
+        self._inside_bar = True
         self._focus_cell(self._active_index)
 
     def _focus_cell(self, index: int) -> None:
@@ -400,6 +538,9 @@ class RadioStatusBar:
         return 0
 
     def _on_cell_focus(self, event: Any, spec: CellSpec) -> None:
+        # Any arrival -- F6, or a mouse click -- opens the visit, so the
+        # arrows' SetFocus is accepted for as long as focus stays inside.
+        self._inside_bar = True
         self._active_index = self._cell_index(spec)
         entering = self._entering
         self._entering = False
@@ -407,19 +548,24 @@ class RadioStatusBar:
         event.Skip()
 
     def _announce_cell(self, spec: CellSpec, *, with_region: bool) -> None:
-        value = spec.text()
+        # The same words the button's accessible name carries, so what focus
+        # announces and what a screen reader reads off the control agree.
         prefix = "Status bar, " if with_region else ""
-        message = f"{prefix}{spec.name}, {value}" if value else f"{prefix}{spec.name}"
-        _call(self._host, "_announce", message)
+        _call(self._host, "_announce", f"{prefix}{self._button_name(spec)}")
 
     def _on_key_down(self, event: Any, spec: CellSpec) -> None:
         wx = self._wx
         code = event.GetKeyCode()
         index = self._cell_index(spec)
-        if code == wx.WXK_LEFT:
+        # All four arrows stay inside the bar. Up and Down matter as much as
+        # Left and Right: an unhandled arrow in a TAB_TRAVERSAL panel is a
+        # NAVIGATION key on wxMSW, and it walked focus clean out of the bar
+        # into the main window's now-playing readout (reported 2026-08-23,
+        # "are we leaking with keyboard navigation here?"). They were.
+        if code in (wx.WXK_LEFT, wx.WXK_UP):
             self._focus_cell(index - 1)
             return
-        if code == wx.WXK_RIGHT:
+        if code in (wx.WXK_RIGHT, wx.WXK_DOWN):
             self._focus_cell(index + 1)
             return
         if code == wx.WXK_HOME:
@@ -429,11 +575,10 @@ class RadioStatusBar:
             self._focus_cell(len(self._cells) - 1)
             return
         if code == wx.WXK_TAB:
-            # The whole status bar is one stop in the window's Tab order, not one
-            # stop per cell -- Tab / Shift+Tab hand off to the next / previous
-            # control (the arrow keys above are what move cell to cell). Navigate
-            # on the panel moves past the bar to its sibling, rather than to the
-            # next cell button inside it.
+            # Tab leaves the bar (arrows move cell to cell): close the visit
+            # first so traversal does not consider the bar's own cells, then
+            # navigate from the panel to its sibling.
+            self._inside_bar = False
             forward = not event.ShiftDown()
             flag = wx.NavigationKeyEvent.IsForward if forward else wx.NavigationKeyEvent.IsBackward
             self._panel.Navigate(flag)
@@ -447,6 +592,7 @@ class RadioStatusBar:
         event.Skip()
 
     def _leave_bar(self) -> None:
+        self._inside_bar = False
         target = self._return_focus
         if target is not None:
             try:
@@ -462,9 +608,6 @@ class RadioStatusBar:
             spec.activate()
         except Exception:  # noqa: BLE001 - a bad cell action must not crash the bar
             _call(self._host, "_announce", f"Could not open {spec.name}")
-
-    def _focus_favorites(self) -> None:
-        _call(self._host, "_focus_initial_control")
 
     def _announce_clock(self) -> None:
         try:
@@ -499,14 +642,3 @@ def _call(host: object, name: str, *args: object) -> None:
     method = getattr(host, name, None)
     if callable(method):
         method(*args)
-
-
-def _call_value(host: object, name: str, default: str) -> str:
-    method = getattr(host, name, None)
-    if callable(method):
-        try:
-            value = method()
-        except Exception:  # noqa: BLE001
-            return default
-        return value if isinstance(value, str) else default
-    return default

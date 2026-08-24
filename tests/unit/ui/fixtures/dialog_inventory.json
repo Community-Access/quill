@@ -594,6 +594,7 @@
   "quill/ui/radio/backup_ui.py::back_up_radio_data::wx.FileDialog": "native",
   "quill/ui/radio/backup_ui.py::restore_radio_data::wx.FileDialog": "native",
   "quill/ui/radio/browse_actions.py::_ask::wx.TextEntryDialog": "native",
+  "quill/ui/radio/browse_delete.py::_ask::wx.RichMessageDialog": "native",
   "quill/ui/radio/browse_podcast_actions.py::import_opml::wx.FileDialog": "native",
   "quill/ui/radio/browse_podcast_actions.py::new_podcast_folder::wx.TextEntryDialog": "native",
   "quill/ui/radio/browse_podcast_actions.py::rename_podcast_folder::wx.TextEntryDialog": "native",

@@ -681,14 +681,14 @@ are all built from it. Four doors, one implementation. **Ten windows** answer
 to the whole transport now.
 
 **Go to Player (Ctrl+Shift+G)** came from one question -- *"should the player
-be its own window? Can we make that magical some how?"* A permanent player
-window buys one obvious place and costs a third citizen in the Alt+Tab
-rotation, which was the thing being complained about in the first place. So the
-player has no window. It has a **summons**: press Ctrl+Shift+G from anywhere
-and a compact panel opens *over the window you are already in*, with the whole
-transport, what is playing, where you are in it, the speed and the volume.
-Close it and focus returns to the exact control you came from -- not the top of
-the list you were halfway down.
+be its own window? Can we make that magical some how?"* The first answer was a
+summoned panel with no window of its own; listening changed it. The Player is
+now a **real window**: press Ctrl+Shift+G from anywhere and it opens -- or, if
+it is already open somewhere behind you, **comes to the front**. It carries
+the whole transport, what is playing, where you are in it, the speed and the
+volume; it stands in the Window menu and the Ctrl+Tab rotation beside Browse
+and the managers; and its readout follows changes made in any other window.
+Escape closes it and focus returns to the window you came from.
 
 **Ctrl+Shift+P opens the Command Palette from every window**, and the whole
 transport is in it. Every on/off command in the palette now carries its own
@@ -708,15 +708,22 @@ stream dropping out.
 Manage Favorites and Schedule Recording were dialogs, and a dialog cannot carry
 a menu bar -- so opening one made the menu bar seem to vanish, and the modal
 ones locked you out of the main window entirely. They are proper **windows**
-now, each carrying the full menu bar, none holding the main window hostage. A
-new **Window** menu lists everything you have open, with **Ctrl+Tab**,
-**Ctrl+Shift+Tab** and **Ctrl+1** through **Ctrl+9** to move between them.
+now -- each a real, independent window with its own place in the taskbar and
+the Alt+Tab order, not an overlay floating glued over the main one -- each
+carrying a menu bar, none holding the main window hostage. A new **Window**
+menu lists everything you have open, with **Ctrl+Tab**, **Ctrl+Shift+Tab** and
+**Ctrl+1** through **Ctrl+9** to move between them; moving to a window lands
+you on the control you last used there. Asking for a window that is already
+open brings it to the front rather than opening a second copy, and each closes
+the way windows close: **Escape, Ctrl+W, Ctrl+F4, Alt+F4, or the titlebar**.
+**Recordings, Downloads, Song History and the Now Playing viewer** are windows
+of the same kind, so the whole app now moves under one set of window keys.
 
 ### Every menu item tells you its key
 
 Open any menu in 3.0 and every item ends with the way to reach it from the
 keyboard. Browse Stations is **Ctrl+B**, Find Stations **Ctrl+F**, Recordings
-**Ctrl+G**. All 115 items, menus and submenus alike.
+**Ctrl+Shift+R**, Go To **Ctrl+G**. All 115 items, menus and submenus alike.
 
 This was not a polish pass. Forty-nine items had no shortcut at all, which
 meant the only way to learn there was no faster route was to arrow through the
@@ -730,10 +737,11 @@ Where an item has a shortcut you can change, the menu shows **the key you
 actually have bound**. A build check now fails if any menu item ships without a
 working, unique key, so this stays true.
 
-Every button on the main window has an Alt key now, too -- **Alt+L** plays,
-**Alt+T** stops, **Alt+F** favorites, **Alt+O** records, **Alt+B** browses --
-each using a letter the menu bar has not claimed, with a build check refusing
-any that does.
+The main window's own controls carry Alt keys too -- **Alt+M** mutes, **Alt+U**
+reaches the volume slider -- each using a letter the menu bar has not claimed,
+with a build check refusing any that does. (The transport buttons themselves
+left the main window in the surface redesign; their verbs live on the keys, the
+menus, and the Player window.)
 
 ### Things that were quietly wrong, and are not now
 
@@ -914,6 +922,65 @@ Data Folder...** points the shared Quill data folder at something Dropbox,
 OneDrive, Google Drive or iCloud already syncs. There is no Quill account, no
 API and nothing new talking to the network: Quill writes to the folder and the
 sync client you already run does the carrying.
+
+### A podcast you can look at before you decide
+
+There is a new branch in Browse Stations called **Podcast Index**, and it does
+the one thing no podcast surface in this app could do before: it lets you look
+at a show without subscribing to it.
+
+That sounds small. It is not. Until now, a show was a name and a description,
+and the only way to find out what it actually published -- how long the
+episodes are, how often they come, whether the last one was three years ago --
+was to subscribe, go to your subscriptions, and read the list. You had to
+commit in order to ask a question. If the answer was no, you unsubscribed and
+the show left a mark in your library on the way out.
+
+Open a show in this branch and its episodes are simply there. Arrow through
+them. Press Enter on one and it plays. Add it to Favorites, download it, read
+its transcript -- they are ordinary rows, and everything that works anywhere
+else in the tree works here. Then subscribe, if you want to. Or do not, and
+nothing was spent.
+
+The rows say what they are before you open them. A show tells you who makes it,
+how many episodes it has, and what it is about. It also tells you, plainly, when
+the index can no longer read the feed -- which is exactly the thing you want to
+know *before* subscribing to a show that will never publish again, and exactly
+the thing a store listing will never say.
+
+Three ways in:
+
+- **Trending Now** -- what people are actually listening to today. Nothing else
+  in the tree could answer that for podcasts.
+- **By Category** -- the index's own hundred and twelve categories, each one a
+  trending list narrowed down.
+- **Search the Podcast Index...** -- answered inside the tree, like every other
+  search here, so finding a show does not take the tree away from you.
+
+**Searching for a podcast now asks both directories.** Search for a Podcast, and
+Find Stations, ask Apple *and* the Podcast Index, and merge what comes back. The
+index is where the independent, the self-hosted and the de-listed shows live --
+the ones a store does not carry. If one directory cannot answer, the other's
+results still arrive and the status line says which one was quiet.
+
+**Subscribing from an index row is instant.** Its rows carry the feed address
+itself, where a store row carries an id that has to be looked up first, so
+Subscribe files the show into the library you share with QUILL Cast -- artwork,
+site and all -- with nothing further to fetch.
+
+**Nothing was asked of you to switch this on.** Quill Radio carries its own
+credential for the Podcast Index, so there is no key to register for, no account
+to make, and no settings page you needed to find. The credential identifies *the
+app* to a directory of public information: it reads no account, it authorises
+nothing on your behalf, and a search sends the words you typed and nothing else
+-- not who you are, not what you are subscribed to, not what you have played. If
+you would rather use a key of your own, you can, and it takes precedence.
+
+And nothing depends on it. Turn the branch off in **Choose Browse Sources** and
+podcasts work exactly as they did; Apple remains the keyless default everywhere
+it was before. The Podcast Index is credited in **Help > About** -- it is an
+open, independent project that exists to keep podcasting open, and this app is a
+guest there.
 
 ### Radio and Cast: two apps, one library
 

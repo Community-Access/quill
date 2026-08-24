@@ -238,6 +238,16 @@ class ContextHelpMixin:
     def _init_context_help(self) -> None:
         self._last_focused_ctrl: wx.Window | None = None
         self._help_frame.Bind(wx.EVT_CHILD_FOCUS, self._on_child_focus_for_help)
+        # Family-wide F1 (2026-08-23): install the wx help provider --
+        # SetHelpText silently stores NOTHING without one (measured), so every
+        # help text ever written here was dead -- and register the shared
+        # generic handler the dialog contract binds on every dialog it shows.
+        # QUILL's own topic-based F1 keeps the main frame (bound above via the
+        # menu path) and any dialog marked ``_quill_owns_f1`` (the Preferences
+        # hub, the Command Palette); everything else gains F1 for free.
+        from quill.ui import app_context_help
+
+        app_context_help.activate()
 
     def _on_child_focus_for_help(self, event: wx.ChildFocusEvent) -> None:
         win = event.GetWindow()

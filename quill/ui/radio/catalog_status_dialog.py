@@ -102,12 +102,17 @@ def show_catalog_status(host: Any) -> None:
 
     row = wx.BoxSizer(wx.HORIZONTAL)
     update_btn = wx.Button(dialog, label="&Update Now")
+    update_btn.SetHelpText(
+        "Refreshes the stored catalog from the live directories right now, "
+        "and says what changed when it finishes."
+    )
     rebuild_btn = wx.Button(dialog, label="&Rebuild From Shipped Snapshot")
     rebuild_btn.SetName(
         "Rebuild the catalog from the copy that shipped with this version; "
         "your favorites and custom stations are untouched"
     )
     close_btn = wx.Button(dialog, wx.ID_CLOSE, label="C&lose")
+    close_btn.SetHelpText("Closes this report; the catalog keeps refreshing on its own schedule.")
     for button in (update_btn, rebuild_btn, close_btn):
         row.Add(button, 0, wx.RIGHT, 6)
     root.Add(row, 0, wx.ALL, 8)

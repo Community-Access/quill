@@ -65,6 +65,10 @@ UNFOLLOW_CHANNEL = "channel.unfollow"
 HIDE_SOURCE = "source.hide"
 RESET_SOURCES = "source.reset"
 REMOVE_SAVED = "youtube.remove_saved"
+#: The YouTube branch's three ways in (rows only while it is empty).
+ADD_YOUTUBE_CHANNEL = "youtube.add_channel"
+ADD_YOUTUBE_PLAYLIST = "youtube.add_playlist"
+ADD_YOUTUBE_VIDEO = "youtube.add_video"
 VIEW_TRANSCRIPT = "view.transcript"
 NEW_PODCAST_FOLDER = "podcastfolder.new"
 RENAME_PODCAST_FOLDER = "podcastfolder.rename"
@@ -180,7 +184,7 @@ class FolderState:
 
 
 #: Node kinds that name a podcast show rather than a shelf of them.
-PODCAST_SHOW_KINDS = frozenset({"appleshow", "mypodcastshow"})
+PODCAST_SHOW_KINDS = frozenset({"appleshow", "mypodcastshow", "pishow"})
 
 #: Node kinds that are a channel the listener follows.
 FOLLOWED_CHANNEL_KINDS = frozenset({"youtubechannel"})
@@ -221,6 +225,7 @@ FOLDER_CONTENTS: dict[str, str] = {
     "mixcloud": "Shows",
     "mixcloudcat": "Shows",
     "mixcloudfmt": "Shows",
+    "pishow": "Episodes",
     "wx": "Forecasts",
     "youtube": "Channels",
     "youtubechannel": "Videos",
@@ -486,6 +491,9 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
         # A saved playlist: removable from the same menu that plays it.
         actions.append(RowAction(REMOVE_SAVED, "Remo&ve from YouTube"))
 
+    if kind in YOUTUBE_ROWS:
+        actions.extend(youtube_add_actions())
+
     # "&Add", not "to &Favorites": Copy Feed Address already claims F on a
     # podcast show, and that collision was live on the one menu this module
     # was written for. Only when something is actually loaded: with nothing
@@ -538,6 +546,23 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
     return actions
 
 
+#: Every row in the branch offers them; the rows leave once it has content.
+YOUTUBE_ROWS = frozenset({"youtube", "youtubechannel", "youtubevideos", "ytplaylist", "ytvideo"})
+
+
+def youtube_add_actions() -> list[RowAction]:
+    """Add a Channel / Playlist / Video, in the order the branch lists them.
+
+    "&e", "&l", "&U" are free on a root source's menu (&A/&C/&O/&R/&S/&H/&t
+    are taken) *and* on a saved row's (&V is "Remo&ve from YouTube").
+    """
+    return [
+        RowAction(ADD_YOUTUBE_CHANNEL, "Add a Chann&el..."),
+        RowAction(ADD_YOUTUBE_PLAYLIST, "Add a Play&list..."),
+        RowAction(ADD_YOUTUBE_VIDEO, "Add a Video &URL..."),
+    ]
+
+
 def actions_for(
     kind: str,
     *,
@@ -584,10 +609,9 @@ def actions_for(
                 # (the same request playing would make) fetches them, no
                 # playback required.
                 actions.append(RowAction(VIEW_TRANSCRIPT, "View Transcr&ipt..."))
-        if kind == "ytvideo":
-            # A saved single video: removable from the same menu, like a
-            # followed channel.
+        if kind == "ytvideo":  # removable from the menu that plays it
             actions.append(RowAction(REMOVE_SAVED, "Remo&ve from YouTube"))
+            actions.extend(youtube_add_actions())
         return actions
     if resolve_lazily:
         return lazy_leaf_actions(saved=saved)

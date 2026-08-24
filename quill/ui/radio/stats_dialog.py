@@ -67,8 +67,14 @@ class RadioStatsDialog:
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         copy_btn = wx.Button(self.dialog, label="&Copy")
+        copy_btn.SetHelpText("Copies the whole report to the clipboard as plain text.")
         export_btn = wx.Button(self.dialog, label="&Save as CSV...")
+        export_btn.SetHelpText("Saves the listening history as a CSV file a spreadsheet can open.")
         clear_btn = wx.Button(self.dialog, label="&Delete My History...")
+        clear_btn.SetHelpText(
+            "Erases the local listening history after a confirmation. Nothing "
+            "about your listening ever leaves this computer either way."
+        )
         clear_btn.SetName("Remove every listening session Quill Radio has recorded")
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "C&lose")
         for widget in (copy_btn, export_btn, clear_btn):

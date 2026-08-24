@@ -22,8 +22,11 @@ STILL_RUNNING = "Quill Radio is still running in the system tray."
 def open_queue(host: Any) -> None:
     """Show the queue, and keep it refreshed while it is open."""
     from quill.ui.radio import download_runner
-    from quill.ui.radio.download_queue_dialog import DownloadQueueDialog
+    from quill.ui.radio.download_queue_dialog import TITLE, DownloadQueueDialog
 
+    windows = getattr(host, "_windows", None)
+    if windows is not None and windows.activate_title(TITLE):
+        return  # already open means come to the front, not a second copy
     dialog = DownloadQueueDialog(
         host.frame,
         queue=download_runner.queue_of(host),

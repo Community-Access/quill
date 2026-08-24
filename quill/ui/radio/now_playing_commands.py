@@ -107,6 +107,7 @@ def show_whats_playing_details(host: Any) -> None:
             host._announce,
             title=title,
             transport_host=host,
+            windows=getattr(host, "_windows", None),
         ).show()
 
     resolve_now_playing_text(host, _show)

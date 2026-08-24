@@ -26,12 +26,22 @@ which ``feed_reader.py`` parses and whose ``<podcast:transcript>`` tag
 ``transcripts.py`` fetches. Apple is a way to find the feed and nothing more, so
 switching this source off costs discovery and never playback.
 
-**Podcast Index is deliberately not used anywhere in QUILL.** Jeff's decision,
-2026-08-13: iTunes for everything. Nothing here needs a key, an account, or a
-registration, and no transcript, subscription, or episode depends on a directory
--- see the chain above. Do not add a Podcast Index client "as an option"; the
-point of a single keyless directory is that there is no second path to maintain,
-no key to configure, and no feature that quietly requires one.
+**That non-goal was reversed on 2026-08-23.** This module said, from
+2026-08-13, that Podcast Index was "deliberately not used anywhere in QUILL...
+do not add a Podcast Index client as an option", and the reason was sound: a
+single keyless directory means no second path to maintain, no key to configure,
+and no feature that quietly requires one. Jeff supplied an *application*
+credential, which answers the objection rather than overruling it -- the app
+carries the key, so nobody configures anything, and everything the index adds
+is additive. Apple stays exactly as described above: the default in Cast's Add
+Podcast, a full browse tree here, and the only directory anything depends on.
+Switch the Podcast Index branch off and this module carries on alone.
+
+What changed the calculation is what the other index knows: Podcasting 2.0 tags
+(transcripts, chapters, funding, people), a show's whole fact sheet, and its
+episodes *without subscribing to it*. See
+:mod:`quill.core.podcasts.podcast_index` and
+:mod:`quill.core.podcasts.podcast_index_catalog`.
 
 These are Apple's own public marketing and store-services endpoints, read as
 published, returning only what Apple already serves to its own web surfaces --

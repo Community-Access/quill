@@ -67,8 +67,16 @@ class RadioCloseConfirmDialog:
         # Exit menu item. Minimize is the interesting alternative here, not the
         # expected answer.
         exit_btn = wx.Button(self.dialog, self._exit_id, "E&xit")
+        exit_btn.SetHelpText(
+            "Finishes the recording file and quits Quill Radio. Nothing already captured is lost."
+        )
         minimize_btn = wx.Button(self.dialog, self._minimize_id, "&Minimize to Tray")
+        minimize_btn.SetHelpText(
+            "Keeps recording with the window tucked into the system tray; the "
+            "tray icon brings it back."
+        )
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
+        cancel_btn.SetHelpText("Returns to Quill Radio with everything as it was.")
         buttons.Add(exit_btn, 0, wx.RIGHT, 6)
         buttons.Add(minimize_btn, 0, wx.RIGHT, 6)
         buttons.Add(cancel_btn)

@@ -33,7 +33,7 @@ from quill.core.radio.recording_schedule import RecordingScheduler
 from quill.core.sound_events import SoundEvent
 from quill.core.speech.ffmpeg import ffmpeg_available
 from quill.ui.main_frame_radio_status import RadioStatusWindowsMixin
-from quill.ui.radio import playback_status, quick_play, stats_session
+from quill.ui.radio import playback_status, quick_play, stats_session, youtube_ui
 from quill.ui.radio.add_station_dialog import AddStationDialog
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.playback_state import RadioPlaybackState
@@ -108,6 +108,7 @@ class RadioMixin(RadioStatusWindowsMixin):
             on_buffering=lambda: self._wx.CallAfter(self._radio_announce_buffering),
             spotify_token_provider=self._spotify_session.access_token,
             resolve_youtube=self._radio_resolve_youtube,
+            youtube_consent=self._radio_youtube_consent,
         )
         self._radio_controller.set_enhancement(
             bass_db=self._radio_history.eq_bass_db,
@@ -743,6 +744,9 @@ class RadioMixin(RadioStatusWindowsMixin):
         self._announce("Recording settings saved")
 
     def _radio_open_schedule_recording(self, *, station: Any = None) -> None:
+        windows = getattr(self, "_windows", None)
+        if windows is not None and windows.activate_title("Schedule Recording"):
+            return  # already open means come to the front, not a second copy
         if station is None:
             controller = getattr(self, "_radio_controller", None)
             station = controller.state.station if controller is not None else None
@@ -795,6 +799,7 @@ class RadioMixin(RadioStatusWindowsMixin):
         )
         self._radio_last_state_name = state.state.name
         self._radio_last_state_message = state.message
+        youtube_ui.offer_stale_component_update(self, state)
         if words:
             self._announce(words)
         # A real playback transition re-arms the buffering earcon (#1302) --
@@ -1175,6 +1180,7 @@ class RadioMixin(RadioStatusWindowsMixin):
             self._announce,
             title=f"Now Playing: {station.display_name}",
             transport_host=self,
+            windows=getattr(self, "_windows", None),
         ).show()
 
     # -- live DVR (mpv engine): rewind / forward / back to live -----------------
@@ -1790,18 +1796,13 @@ class RadioMixin(RadioStatusWindowsMixin):
 
     def _radio_youtube_consent(self) -> bool:
         """One-time consent before QUILL ever reaches YouTube (see youtube_ui)."""
-        from quill.ui.radio.youtube_ui import ask_youtube_consent
-
-        return ask_youtube_consent(self)
+        return youtube_ui.ask_youtube_consent(self)
 
     def _radio_resolve_youtube(self, page_url: str) -> Any:
         """Resolve a saved YouTube link to a playable stream (worker thread).
-
-        Returns the whole YouTubeStream so the controller can tell a finished
+        Returns the whole YouTubeStream, so the controller can tell a finished
         video (seekable, chaptered) from a live broadcast (neither)."""
-        from quill.ui.radio.youtube_ui import resolve_youtube_for_host
-
-        return resolve_youtube_for_host(self, page_url)
+        return youtube_ui.resolve_youtube_for_host(self, page_url)
 
     def _radio_enhance_context_favorite(self) -> FavoriteStation | None:
         """The favorite Sound Enhancements edits right now: the currently
@@ -1990,6 +1991,9 @@ class RadioMixin(RadioStatusWindowsMixin):
         change persists immediately through the same store both read."""
         from quill.ui.radio.favorites_manager_dialog import FavoritesManagerDialog
 
+        windows = getattr(self, "_windows", None)
+        if windows is not None and windows.activate_title("Manage Favorites"):
+            return  # already open means come to the front, not a second copy
         dlg = FavoritesManagerDialog(
             self.frame,
             favorites=self._radio_favorites,
@@ -2020,6 +2024,9 @@ class RadioMixin(RadioStatusWindowsMixin):
         """Recordings...: made, in-progress (live status), and scheduled."""
         from quill.ui.radio.recordings_manager_dialog import RecordingsManagerDialog
 
+        windows = getattr(self, "_windows", None)
+        if windows is not None and windows.activate_title("Radio Recordings"):
+            return  # already open means come to the front, not a second copy
         dlg = RecordingsManagerDialog(
             self.frame,
             recorder=self._radio_recorder,
@@ -2029,6 +2036,7 @@ class RadioMixin(RadioStatusWindowsMixin):
             announce_cb=self._announce,
             history=self._radio_history,
             on_history_changed=self._save_radio_history,
+            windows=windows,
         )
         dlg.show()
         self._refresh_statusbar()
@@ -2048,6 +2056,9 @@ class RadioMixin(RadioStatusWindowsMixin):
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
             )
             return
+        windows = getattr(self, "_windows", None)
+        if windows is not None and windows.activate_title("Search Stations"):
+            return  # already open means come to the front, not a second copy
         dlg = StationBrowserDialog(
             self.frame,
             controller=self._radio_controller,
@@ -2086,6 +2097,9 @@ class RadioMixin(RadioStatusWindowsMixin):
         from quill.ui.radio import catalog_ui
         from quill.ui.radio.browse_tree_dialog import BrowseTreeDialog
 
+        windows = getattr(self, "_windows", None)
+        if windows is not None and windows.activate_title("Browse Stations"):
+            return  # already open means come to the front, not a second copy
         dlg = BrowseTreeDialog(
             self.frame,
             controller=self._radio_controller,
@@ -2106,6 +2120,9 @@ class RadioMixin(RadioStatusWindowsMixin):
             catalog=catalog_ui.catalog_for(self),
             on_offline_catalog=lambda: catalog_ui.note_offline_serving(self),
         )
+        # Kept so an add made from elsewhere (Station > Add YouTube Link...)
+        # can refresh the branch it changed -- see browse_refresh.
+        self._radio_browse_dialog = dlg
         dlg.show(initial_source=initial_source)
         self._refresh_statusbar()
 

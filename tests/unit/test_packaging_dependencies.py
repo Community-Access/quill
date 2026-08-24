@@ -363,3 +363,34 @@ def test_github_extra_is_bundled_in_the_windows_installer() -> None:
         "inferred from a transcript, and an engine that has to be downloaded "
         "first means the feature's first answer is always 'none could be found'"
     )
+
+
+def test_the_yt_dlp_upgrade_floor_matches_the_bundled_pin(project: dict) -> None:
+    """An "update" must never resolve older than what already shipped.
+
+    yt-dlp is bundled (the ``youtube`` extra) *and* installable into an
+    engine-pack by Station > Update YouTube Support -- and the pack copy
+    deliberately shadows the bundled one
+    (``engine_install.prefer_engine_pack_yt_dlp``). So if the installer's floor
+    is allowed to drift below the bundled pin, the repair path can quietly
+    install a yt-dlp older than the one it is replacing, which is precisely the
+    state that stops YouTube playing (measured 2026-08-23: 2026.7.4 resolved
+    every video perfectly and returned stream addresses that answered 403).
+    """
+    import re
+
+    from quill.core.speech import engine_install
+
+    bundled = [r for r in project["optional-dependencies"]["youtube"] if r.startswith("yt-dlp")]
+    assert len(bundled) == 1, bundled
+    pack = [r for r in engine_install._YT_DLP_REQUIREMENTS if r.startswith("yt-dlp")]
+    assert len(pack) == 1, pack
+
+    def _floor(requirement: str) -> tuple[int, ...]:
+        match = re.search(r">=\s*([0-9.]+)", requirement)
+        assert match, requirement
+        return tuple(int(part) for part in match.group(1).split("."))
+
+    assert _floor(pack[0]) >= _floor(bundled[0]), (
+        f"the engine-pack floor {pack[0]!r} is below the bundled pin {bundled[0]!r}"
+    )

@@ -6,16 +6,39 @@ the Podcasting 2.0 tags Cast has built a great deal on: chapters documents,
 transcripts, soundbites, funding, people. Podcast Index does, because it is the
 index those tags were defined for.
 
-**Two directories, not a replacement.** iTunes stays the default and stays
-keyless. Podcast Index needs credentials, which most people will never get, and
-a feature that only works after somebody registers for an API key is a feature
-most people do not have. So the source is a choice, it defaults to the one that
-needs nothing, and the other simply does not appear until it can work.
+**Two directories, not a replacement.** iTunes stays keyless and stays in the
+list. Podcast Index answers alongside it.
 
-**Credentials never touch a settings file.** They go through the platform
-credential store (DPAPI on Windows) exactly like every other secret in QUILL,
-and the *absence* of credentials is a missing option with a one-line
-explanation -- never an error, and never a dialog somebody has to dismiss.
+**The credential is the application's, not the listener's (2026-08-23).** This
+module shipped with one rule -- credentials come from the platform store, and
+until somebody registers for their own the directory "simply does not appear"
+-- and that rule made the richest podcast data in the world available only to
+people willing to visit a developer console first. Jeff supplied an application
+credential, so the app now carries one: :func:`credentials` answers with the
+listener's own pair if they set one and the bundled pair otherwise, and
+:func:`available` is true out of the box.
+
+An extractable shipped key is a casual-abuse and rotation barrier rather than
+authentication -- the same stance the ADP client key documents
+(``quill/core/adp/client.py``). It identifies *the app* to a directory of public
+data: it authorises nothing on anyone's behalf, reads no account, and carries no
+personal data. A search sends the search term and nothing else. It is baked in
+at build time by ``tools/generate_podcast_index_key.py`` into a gitignored
+module, so the secret is never in the repository, and a listener who wants their
+own can still paste one in -- theirs always wins, which makes it a rotation
+lever that does not need a new build.
+
+**A listener's own credentials never touch a settings file.** They go through
+the platform credential store (DPAPI on Windows) exactly like every other secret
+in QUILL, and the absence of any credential at all is a missing option with a
+one-line explanation -- never an error, and never a dialog somebody has to
+dismiss.
+
+**More than search.** The index is a catalogue, and the catalogue is the point
+-- what a show *is*, what it has published without subscribing to it, what is
+trending, what categories exist. That half lives in
+:mod:`quill.core.podcasts.podcast_index_catalog`, built on this module's
+credential, signature and single egress site.
 
 **The result type is iTunes'.** :class:`~quill.core.podcasts.itunes_search.PodcastSearchResult`
 is imported rather than redefined, so the dialog, the merge and every consumer
@@ -23,7 +46,10 @@ downstream cannot tell which directory answered. A second result class would be
 two things to keep in step for no gain.
 
 Every request funnels through one reviewed egress site, HTTPS-only with a
-verified TLS context, and refuses in Safe Mode. wx-free, strict-typed.
+verified TLS context, and refuses in Safe Mode. Catalogue answers are cached
+through :mod:`quill.core.radio.directory_cache` -- a directory's facts about a
+show change on the order of days, and a browse tree must not spend a request per
+keypress. wx-free, strict-typed.
 """
 
 from __future__ import annotations
@@ -44,8 +70,12 @@ from quill.core.podcasts.itunes_search import PodcastSearchResult
 __all__ = [
     "CREDENTIAL_KEY",
     "CREDENTIAL_KEY_SECRET",
+    "SIGNUP_URL",
     "PodcastIndexError",
     "auth_headers",
+    "available",
+    "bundled_credentials",
+    "credentials",
     "merge_results",
     "refuse_in_safe_mode",
     "results_from_json",
@@ -53,9 +83,18 @@ __all__ = [
 ]
 
 _USER_AGENT = f"QUILL/{__version__} (https://github.com/Community-Access/quill)"
-_BASE_URL = "https://api.podcastindex.org/api/1.0/search/byterm"
+#: The API root; every endpoint below hangs off it. Documented in full at
+#: https://podcastindex-org.github.io/docs-api/ -- the project the About box
+#: credits, because a free open index deserves the attribution.
+API_ROOT = "https://api.podcastindex.org/api/1.0"
+_BASE_URL = f"{API_ROOT}/search/byterm"
 _TIMEOUT_SECONDS = 10.0
 _DEFAULT_LIMIT = 25
+
+#: Where a listener goes for a credential of their own. Named in full in the
+#: refusal, because that refusal is the only place they will see it.
+SIGNUP_URL = "https://api.podcastindex.org/signup"
+
 
 #: Where the two halves of the credential live in the platform store. Two
 #: entries rather than one joined string, so neither can be logged by accident
@@ -68,6 +107,69 @@ class PodcastIndexError(CodedError):
     """A Podcast Index request failed, or was refused."""
 
     code = "QUILL-PODCASTS-PODCASTINDEX"
+
+
+def bundled_credentials() -> tuple[str, str]:
+    """The application credential baked in at build time, or ``("", "")``.
+
+    Written by ``tools/generate_podcast_index_key.py`` into the gitignored
+    ``quill._podcast_index_key`` module, so the secret is never in the
+    repository and a shipped build reaches the index with no user setup. See
+    the module docstring for what this credential is and is not.
+    """
+    try:
+        from quill._podcast_index_key import (  # type: ignore[import-untyped]
+            BUNDLED_PODCAST_INDEX_KEY,
+            BUNDLED_PODCAST_INDEX_SECRET,
+        )
+    except ImportError:
+        return "", ""
+    return (BUNDLED_PODCAST_INDEX_KEY or "").strip(), (BUNDLED_PODCAST_INDEX_SECRET or "").strip()
+
+
+def stored_credentials() -> tuple[str, str]:
+    """The listener's *own* pair from the platform credential store, or ``("", "")``.
+
+    Two entries rather than one joined string, so neither can be logged by
+    accident while the other is redacted.
+    """
+    try:
+        from quill.platform.windows.credential_manager import load_generic_credential
+    except ImportError:
+        return "", ""
+    try:
+        key = load_generic_credential(CREDENTIAL_KEY)
+        secret = load_generic_credential(CREDENTIAL_KEY_SECRET)
+    except OSError:  # pragma: no cover - platform dependent
+        return "", ""
+    return (
+        str(getattr(key, "secret", "") or "").strip() if key is not None else "",
+        str(getattr(secret, "secret", "") or "").strip() if secret is not None else "",
+    )
+
+
+def credentials() -> tuple[str, str]:
+    """``(key, secret)`` to sign a request with; ``("", "")`` when there is none.
+
+    The listener's own pair wins over the bundled one. That order is the whole
+    reason a bundled credential is safe to ship: pasting a key is always a
+    rotation lever, for a listener who wants their own or who has run into a
+    rate limit on the shared one.
+    """
+    key, secret = stored_credentials()
+    if key and secret:
+        return key, secret
+    return bundled_credentials()
+
+
+def available() -> bool:
+    """Whether Podcast Index features can be offered at all.
+
+    Asked *before* anything is shown, so a build with no credential offers a
+    branch that is not there rather than a row that fails when pressed.
+    """
+    key, secret = credentials()
+    return bool(key and secret)
 
 
 def refuse_in_safe_mode(safe_mode: bool) -> None:
@@ -163,22 +265,30 @@ def results_from_json(data: object) -> list[PodcastSearchResult]:
 def search_podcasts(
     query: str,
     *,
-    key: str,
-    secret: str,
+    key: str = "",
+    secret: str = "",
     limit: int = _DEFAULT_LIMIT,
     safe_mode: bool = False,
 ) -> list[PodcastSearchResult]:
     """Shows matching *query* on Podcast Index.
 
+    *key* and *secret* are optional now that the app carries its own: an empty
+    pair means "use whatever :func:`credentials` resolves", which is the
+    listener's own credential if they set one and the bundled one otherwise.
+    Callers that hold a specific pair (the tests, and the credentials dialog
+    checking a pasted one) still pass it explicitly.
+
     Raises :class:`PodcastIndexError` with a sentence somebody can act on when
-    the credentials are missing, rather than sending an unauthenticated request
-    and reporting whatever the server says about it.
+    there is no credential at all, rather than sending an unauthenticated
+    request and reporting whatever the server says about it.
     """
     refuse_in_safe_mode(safe_mode)
+    if not (key and secret):
+        key, secret = credentials()
     if not key or not secret:
         raise PodcastIndexError(
-            "Podcast Index needs a key and secret. Add them in Podcast Settings, "
-            "or search iTunes instead."
+            "This build has no Podcast Index credential. A free developer key from "
+            f"{SIGNUP_URL} can be added in Podcast Settings, or search iTunes instead."
         )
     if not query.strip():
         return []

@@ -131,6 +131,24 @@ class _Window:
         return self.full_screen
 
 
+class _Tasks:
+    """Runs submitted work immediately, so a test reads top to bottom."""
+
+    def __init__(self) -> None:
+        self.submitted: list[str] = []
+
+    def submit(self, name: str, work: Any, *, on_success: Any = None, on_failure: Any = None):
+        self.submitted.append(name)
+        try:
+            result = work()
+        except Exception as exc:  # noqa: BLE001 - mirrors the task manager
+            if on_failure is not None:
+                on_failure(name, exc)
+            return
+        if on_success is not None:
+            on_success(name, result)
+
+
 class _Host:
     def __init__(self, engine: Any = None, stream: Any = None, **kwargs: Any) -> None:
         self._radio_controller = (
@@ -139,9 +157,53 @@ class _Host:
         self.frame = object()
         self.said: list[str] = []
         self._video_window: Any = None
+        self._captions_window: Any = None
+        self._task_manager = _Tasks()
 
     def _announce(self, message: str) -> None:
         self.said.append(message)
+
+
+class _Cue:
+    def __init__(self, start_ms: int, text: str) -> None:
+        self.start_ms = start_ms
+        self.end_ms = start_ms + 1000
+        self.text = text
+
+
+class _CaptionsWindow:
+    """Stands in for the Captions window."""
+
+    def __init__(self, host: Any, cues: list, automatic: bool) -> None:
+        self.host = host
+        self.cues = cues
+        self.automatic = automatic
+        self.closed = False
+
+    def close(self) -> None:
+        self.closed = True
+
+
+def _fake_captions_window(monkeypatch: Any, cues: list | None = None) -> list:
+    """Replace the real window and the fetch; return the windows opened."""
+    from quill.core.podcasts import transcripts as transcripts_module
+
+    opened: list[_CaptionsWindow] = []
+    rows = cues if cues is not None else [_Cue(0, "Hello"), _Cue(2000, "World")]
+    monkeypatch.setattr(transcripts_module, "fetch_transcript_cues", lambda _url, _mime: list(rows))
+
+    def _open(host: Any, found: list, *, automatic: bool) -> None:
+        window = _CaptionsWindow(host, found, automatic)
+        host._captions_window = window
+        opened.append(window)
+        host._announce(
+            "Captions on, in the Captions window. These are automatic captions, so expect mistakes."
+            if automatic
+            else "Captions on, in the Captions window."
+        )
+
+    monkeypatch.setattr(video_commands, "_open_captions_window", _open)
+    return opened
 
 
 def test_the_classic_engine_says_video_needs_mpv() -> None:
@@ -188,9 +250,10 @@ def test_a_video_with_no_captions_says_so_rather_than_greying_out() -> None:
     assert any("no captions published" in m for m in host.said)
 
 
-def test_automatic_captions_are_announced_as_automatic() -> None:
+def test_automatic_captions_are_announced_as_automatic(monkeypatch) -> None:
     engine = _Engine()
     host = _Host(engine, _Stream(), captions="https://cc", automatic=True)
+    _fake_captions_window(monkeypatch)
 
     video_commands.toggle_captions(host)
 
@@ -198,19 +261,88 @@ def test_automatic_captions_are_announced_as_automatic() -> None:
     assert any("automatic captions, so expect mistakes" in m for m in host.said)
 
 
-def test_written_captions_are_not_called_automatic() -> None:
+def test_written_captions_are_not_called_automatic(monkeypatch) -> None:
     host = _Host(_Engine(), _Stream(), captions="https://cc", automatic=False)
+    _fake_captions_window(monkeypatch)
+
     video_commands.toggle_captions(host)
-    assert "Captions on." in host.said
+
+    assert "Captions on, in the Captions window." in host.said
+    assert not any("automatic" in m for m in host.said)
 
 
-def test_captions_toggle_off_again() -> None:
+def test_captions_toggle_off_again(monkeypatch) -> None:
     engine = _Engine()
     host = _Host(engine, _Stream(), captions="https://cc")
+    opened = _fake_captions_window(monkeypatch)
+
     video_commands.toggle_captions(host)
     video_commands.toggle_captions(host)
+
     assert "Captions off." in host.said
     assert engine.visible[-1] is False
+    assert opened[0].closed and host._captions_window is None
+
+
+# -- captions you can read ---------------------------------------------------------
+
+
+def test_captions_open_a_window_with_the_fetched_lines(monkeypatch) -> None:
+    """Reported 2026-08-23: captions went into the picture and nowhere else.
+
+    mpv draws them as pixels -- unreadable by a screen reader, unreachable by a
+    braille display, and invisible to anyone listening without the Video Window
+    open, which is most people here.
+    """
+    host = _Host(_Engine(), _Stream(), captions="https://cc")
+    opened = _fake_captions_window(monkeypatch, [_Cue(0, "One"), _Cue(1000, "Two")])
+
+    video_commands.toggle_captions(host)
+
+    assert len(opened) == 1
+    assert [c.text for c in opened[0].cues] == ["One", "Two"]
+    assert host._captions_window is opened[0]
+
+
+def test_captions_do_not_need_mpv_or_a_picture(monkeypatch) -> None:
+    """The readable half works on the classic engine, audio-only.
+
+    This is the case the old implementation refused outright ("Video needs the
+    mpv playback engine"), which meant captions were unavailable to anyone not
+    watching a picture -- the opposite of who captions in a window are for.
+    """
+    host = _Host(_WxEngine(), _Stream(), captions="https://cc")
+    opened = _fake_captions_window(monkeypatch)
+
+    video_commands.toggle_captions(host)
+
+    assert opened, "captions refused without mpv"
+    assert video_commands.NEEDS_MPV not in host.said
+
+
+def test_closing_the_captions_window_turns_captions_off(monkeypatch) -> None:
+    engine = _Engine()
+    host = _Host(engine, _Stream(), captions="https://cc")
+    _fake_captions_window(monkeypatch)
+    video_commands.toggle_captions(host)
+
+    video_commands._captions_window_closed(host)
+
+    assert host._captions_window is None
+    assert host._captions_on is False
+    assert engine.visible[-1] is False
+    assert "Captions off." in host.said
+
+
+def test_a_caption_track_that_cannot_be_read_says_so(monkeypatch) -> None:
+    from quill.core.podcasts import transcripts as transcripts_module
+
+    monkeypatch.setattr(transcripts_module, "fetch_transcript_cues", lambda _u, _m: [])
+    host = _Host(_Engine(), _Stream(), captions="https://cc")
+
+    video_commands.toggle_captions(host)
+
+    assert any("none could be read" in m for m in host.said)
 
 
 def test_dimming_is_clamped_and_spoken() -> None:

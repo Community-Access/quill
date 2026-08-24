@@ -131,12 +131,18 @@ def test_open_browse_at_startup_defaults_off_and_round_trips(tmp_path: Path) -> 
     assert radio_history.load_history(tmp_path).open_browse_at_startup is True
 
 
-def test_browse_opens_over_the_main_window_not_instead_of_it() -> None:
-    """Closing Browse has to leave you somewhere real rather than nowhere."""
+def test_the_startup_window_opens_over_the_main_window_not_instead_of_it() -> None:
+    """Closing it has to leave you somewhere real rather than nowhere.
+
+    The checkbox this used to check became a choice of one window or none
+    (2026-08-23), so the launch path is now one call into
+    ``apps/radio_startup_window`` rather than a branch on a flag.
+    """
     # parents[4], not [3]: this file is four directories deep under the repo
     # root (tests/unit/core/radio), one deeper than tests/unit/ui.
     radio = (Path(__file__).resolve().parents[4] / "quill" / "apps" / "radio.py").read_text(
         encoding="utf-8"
     )
-    assert "if self._radio_history.open_browse_at_startup:" in radio
-    assert "wx.CallAfter(self.open_browse_stations)" in radio
+    assert "wx.CallAfter(open_startup_window, self)" in radio
+    # The main window is shown and focused unconditionally, before any of this.
+    assert "frame.frame.Show()" in radio

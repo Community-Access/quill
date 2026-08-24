@@ -313,6 +313,51 @@ def _transition_cues_enabled() -> bool:
         return True
 
 
+# The app-wide F1 handler, registered once at startup (Quill Radio's
+# context_help.activate()). When set, every window shown through
+# show_modal_dialog / show_modeless_surface answers F1 with context help --
+# which is what makes "every new surface has F1 help" true by construction:
+# the dialog gate already forces new surfaces through these two paths.
+_context_help_handler: Callable[[object], None] | None = None
+
+
+def set_context_help_handler(handler: Callable[[object], None] | None) -> None:
+    """Register the app-wide F1 context-help handler (None resets)."""
+    global _context_help_handler
+    _context_help_handler = handler
+
+
+def _install_context_help(window: object) -> None:
+    """Bind F1 on *window* once, when an app has registered a handler.
+
+    A window that answers F1 itself -- QUILL's Preferences hub and Command
+    Palette carry their own topic-based help -- marks itself with
+    ``_quill_owns_f1 = True`` and is left alone: the generic answer must never
+    shadow an authored one.
+    """
+    if _context_help_handler is None:
+        return
+    if getattr(window, "_quill_owns_f1", False):
+        return
+    if getattr(window, "_quill_f1_help_bound", False):
+        return
+    try:
+        import wx
+
+        def _on_char_hook(event: object, _window: object = window) -> None:
+            if event.GetKeyCode() == wx.WXK_F1 and not event.HasAnyModifiers():
+                handler = _context_help_handler
+                if handler is not None:
+                    handler(_window)
+                return
+            event.Skip()
+
+        window.Bind(wx.EVT_CHAR_HOOK, _on_char_hook)  # type: ignore[attr-defined]
+        window._quill_f1_help_bound = True  # type: ignore[attr-defined]
+    except Exception:  # noqa: BLE001 - a help hook must never block a window
+        return
+
+
 def show_modal_dialog(
     dialog: object,
     label: str,
@@ -322,6 +367,7 @@ def show_modal_dialog(
     exit_region: Callable[[str], None] | None = None,
 ) -> int:
     """Show a modal dialog with optional region and announcement hooks."""
+    _install_context_help(dialog)
     # macOS VoiceOver announces a control only by its own accessible name;
     # the neighbouring StaticText that Windows screen readers use is not
     # linked (#1012). Every modal dialog routes through here, so inferring
@@ -369,6 +415,7 @@ def show_modeless_surface(
         ensure_accessible_names(frame)
     except Exception:  # noqa: BLE001 - a naming failure must never block the window
         pass
+    _install_context_help(frame)
     if enter_region is not None:
         enter_region(label)
     if announce is not None and _transition_cues_enabled():
@@ -377,6 +424,25 @@ def show_modeless_surface(
     if callable(show):
         show()
     focus_primary_control(frame)
+
+
+def announce_surface_exit(label: str, announce: Callable[[str], None] | None) -> bool:
+    """Say "Exited <label>." if the listener asked for transition cues.
+
+    The exit half of :func:`show_modeless_surface`. That function honours
+    ``announce_dialog_transitions`` on the way *in* and leaves the way out to
+    each frame's own ``EVT_CLOSE`` handler -- and every one of those handlers
+    announced unconditionally, so a listener who had switched the cues off
+    still heard "Exited Browse Stations." every time they closed a window
+    (reported 2026-08-23). One helper, so the two halves of the same preference
+    cannot disagree again, and so a new surface gets the rule for free.
+
+    Returns whether anything was said, which is what a test asserts on.
+    """
+    if announce is None or not _transition_cues_enabled():
+        return False
+    announce(f"Exited {label}.")
+    return True
 
 
 def show_message_box(

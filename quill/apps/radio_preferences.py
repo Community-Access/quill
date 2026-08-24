@@ -15,6 +15,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.radio import startup_window
+
 
 def _open_data_folder(app: Any) -> None:
     from quill.apps.radio import _TITLE
@@ -117,13 +119,6 @@ def open_preferences(app: Any) -> None:
                 history.alt_f4_to_tray,
             ),
             PreferenceCheckbox(
-                "Open &Browse Stations at startup",
-                "When on, Quill Radio opens Browse Stations over the main "
-                "window at launch. It opens over it, never instead of it, so "
-                "closing Browse leaves you somewhere real rather than nowhere",
-                history.open_browse_at_startup,
-            ),
-            PreferenceCheckbox(
                 "Verbose logging (&debug mode)",
                 "Write detailed radio diagnostics -- playback, recording, and "
                 "stream recovery -- to quill.log, for tracking down a "
@@ -175,6 +170,16 @@ def open_preferences(app: Any) -> None:
             ),
         ],
         choices=[
+            PreferenceChoice(
+                "&Open this window at startup:",
+                "Which one window Quill Radio opens for you at launch, over "
+                "the main window and never instead of it. Everything else "
+                "stays closed until you ask for it. None is the default -- an "
+                "app that opens a window you did not ask for is an app you "
+                "have to close a window to start using",
+                [label for _wid, label in startup_window.STARTUP_WINDOWS],
+                startup_window.index_of(history.startup_window),
+            ),
             PreferenceChoice(
                 "When &closing the window:",
                 "When closing the window",
@@ -260,7 +265,6 @@ def open_preferences(app: Any) -> None:
         history.announce_dialog_transitions,
         history.recover_from_website,
         history.alt_f4_to_tray,
-        history.open_browse_at_startup,
         history.debug_mode,
         history.prevent_sleep,
         history.keep_awake_before_recording,
@@ -274,21 +278,25 @@ def open_preferences(app: Any) -> None:
     from quill.core.radio.radio_logging import set_radio_debug
 
     set_radio_debug(history.debug_mode)
-    history.close_action = _CLOSE_ACTION_VALUES[choice_indices[0]]
-    chosen_engine = _ENGINE_VALUES[choice_indices[1]]
+    history.startup_window = startup_window.from_index(choice_indices[0])
+    # Kept in step so a downgrade, or anything still reading the old flag,
+    # sees an answer that matches the choice.
+    history.open_browse_at_startup = history.startup_window == "browse"
+    history.close_action = _CLOSE_ACTION_VALUES[choice_indices[1]]
+    chosen_engine = _ENGINE_VALUES[choice_indices[2]]
     if chosen_engine != history.playback_engine:
         history.playback_engine = chosen_engine
         # A playing station reconnects through the newly chosen backend.
         app._radio_controller.set_playback_engine(chosen_engine)
-    chosen_device = device_names[choice_indices[2]]
+    chosen_device = device_names[choice_indices[3]]
     if chosen_device != history.output_device:
         history.output_device = chosen_device
         # Reconnects a playing station through the right engine; a
         # station already on air moves to the new device immediately.
         app._radio_controller.set_output_device(chosen_device)
-    chosen_sort = _FAVORITES_SORT_VALUES[choice_indices[3]]
-    history.catalog_refresh_hours = catalog_interval_values[choice_indices[4]]
-    history.subscription_episode_limit = episode_limit_values[choice_indices[5]]
+    chosen_sort = _FAVORITES_SORT_VALUES[choice_indices[4]]
+    history.catalog_refresh_hours = catalog_interval_values[choice_indices[5]]
+    history.subscription_episode_limit = episode_limit_values[choice_indices[6]]
     if chosen_sort != history.favorites_sort:
         history.favorites_sort = chosen_sort
         app._reload_favorites_tree()

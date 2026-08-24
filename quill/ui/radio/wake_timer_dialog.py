@@ -95,6 +95,7 @@ class WakeUpTimerDialog:
         save_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
         save_btn.SetName("Save this wake-up timer")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
+        cancel_btn.SetHelpText("Closes without changing the wake-up timer.")
         buttons.Add(save_btn, 0, wx.RIGHT, 6)
         buttons.Add(cancel_btn)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)

@@ -32,18 +32,34 @@ def test_the_settings_round_trip_and_tolerate_junk() -> None:
         "directory_source": "carrier pigeon",
         "queue_group_mode": "spiral",
     })
-    assert junk.directory_source == "itunes"
+    # Junk reads as the shipped default, which is "both" since the app began
+    # carrying its own Podcast Index credential (2026-08-23).
+    assert junk.directory_source == "both"
     assert junk.queue_group_mode == "none"
 
 
 def test_the_shipped_defaults_change_nobody_s_behaviour() -> None:
-    """An upgrade must not turn anything on or off under somebody."""
+    """An upgrade must not turn anything on or off under somebody.
+
+    ``directory_source`` moved from "itunes" to "both" on 2026-08-23, and it is
+    the exception that proves the rule rather than a breach of it: a library
+    that has ever been saved carries the key, so an existing listener keeps
+    exactly the directory they had. This is the answer for a *new* profile,
+    and it changed because the second directory stopped needing a key the
+    listener had to go and get.
+    """
     settings = PodcastSettings()
     assert settings.history_retention_days == 90
     assert settings.download_on_metered is True
     assert settings.stats_streaks_enabled is False
-    assert settings.directory_source == "itunes"
+    assert settings.directory_source == "both"
     assert settings.queue_group_mode == "none"
+
+
+def test_a_stored_directory_choice_is_never_overridden() -> None:
+    """The half of the rule above that must not bend: a saved answer stands."""
+    kept = PodcastSettings.from_dict({"directory_source": "itunes"})
+    assert kept.directory_source == "itunes"
 
 
 # -- C10: the metered guard --------------------------------------------------

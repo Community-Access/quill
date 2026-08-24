@@ -104,14 +104,14 @@ _MP3_PACK = "mp3-support"
 _MP3_MODULE = "mutagen"
 _MP3_REQUIREMENTS: tuple[str, ...] = ("mutagen>=1.48.1",)
 
-#: On-demand yt-dlp (the audio-converter URL import, #1255 §4.6). Pure-Python,
-#: updates frequently, and reaches arbitrary media hosts -- so it is never
-#: bundled: it installs on demand into an engine-pack like the others and is
-#: gated behind an explicit consent notice at the call site. Pin a floor only;
-#: yt-dlp's whole value is staying current with site changes.
+#: yt-dlp (Quill Radio's YouTube stations; the audio-converter URL import,
+#: #1255 §4.6). Now *bundled* (pyproject's ``youtube`` extra), so this is the
+#: **upgrade** path, and still consent-gated at the call site. The floor tracks
+#: the bundled pin -- an engine-pack copy *shadows* the bundled one, so a pack
+#: resolved older would be an "update" that breaks YouTube (pinned by a test).
 _YT_DLP_PACK = "yt-dlp"
 _YT_DLP_MODULE = "yt_dlp"
-_YT_DLP_REQUIREMENTS: tuple[str, ...] = ("yt-dlp>=2024.1.1",)
+_YT_DLP_REQUIREMENTS: tuple[str, ...] = ("yt-dlp>=2026.8.19",)
 
 _INSTALL_TIMEOUT_S = 1800.0
 

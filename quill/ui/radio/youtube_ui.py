@@ -209,7 +209,63 @@ def update_youtube_support(host: Any) -> None:
     )
     if answer != wx.YES:
         return
+    _install_youtube_support(host)
 
+
+def offer_stale_component_update(host: Any, state: Any) -> bool:
+    """A YouTube play that failed offers the one-click repair, once per run.
+
+    "If a video doesn't play, can't we prompt the user to update the component
+    automagically?" (2026-08-23) -- and it is the right question, because this
+    particular failure has exactly one cause and exactly one fix. YouTube
+    issues stream addresses per player client and stops honouring them for the
+    others, so when the bundled yt-dlp falls behind, the resolve still succeeds
+    (title, length, chapters all correct) and the address it hands back is
+    refused. Nothing else about the app is wrong, and nothing the listener can
+    do in the player will help.
+
+    Asked once per session, and only for this failure: a dialog that appears
+    every time a stream is unreachable would be an app arguing with somebody
+    about their network. Answering Yes installs the current yt-dlp and offers
+    to play the thing that failed.
+    """
+    from quill.ui.radio.youtube_playback import STALE_COMPONENT_MESSAGE
+
+    if str(getattr(getattr(state, "state", None), "name", "")) != "ERROR":
+        return False
+    if STALE_COMPONENT_MESSAGE.split(".")[0] not in str(getattr(state, "message", "")):
+        return False
+    if getattr(host, "_youtube_update_offered", False):
+        return False
+    host._youtube_update_offered = True
+    wx = host._wx
+    if bool(getattr(host, "_safe_mode", False)):
+        return False
+    station = getattr(state, "station", None)
+    answer = host._show_message_box(
+        "That video did not play, and the reason is almost certainly the "
+        "YouTube support component: YouTube changes how it serves audio far "
+        "more often than Quill Radio ships releases, and when it does, the "
+        "built-in helper stops working until it is updated.\n\n"
+        "Download the current version now (about 3 MB) and try again?",
+        UPDATE_TITLE,
+        wx.ICON_QUESTION | wx.YES_NO,
+    )
+    if answer != wx.YES:
+        host._announce("Left as it is. Station, Update YouTube Support does this at any time.")
+        return False
+    _install_youtube_support(host, retry=station)
+    return True
+
+
+def _install_youtube_support(host: Any, *, retry: Any = None) -> None:
+    """Fetch the current yt-dlp off-thread, then say what happened.
+
+    Shared by the menu command and the offer above, so the repair is one
+    implementation with one set of words. *retry*, when given, is the station
+    to play again once the new component is in place -- the failed play is the
+    reason the listener said yes, so finishing it is the actual answer.
+    """
     host._announce("Updating YouTube support...")
 
     def _work(**_kwargs: object) -> object:
@@ -220,21 +276,48 @@ def update_youtube_support(host: Any) -> None:
 
         return youtube_version()
 
+    def _report(message: str, icon: int) -> None:
+        host._show_message_box(message, UPDATE_TITLE, icon | host._wx.OK)
+
     def _done(_op: str, result: object) -> None:
         version = str(result or "")
+        named = (
+            f"YouTube support is now version {version}."
+            if version
+            else "YouTube support was updated."
+        )
+        if retry is not None:
+            host._wx.CallAfter(_finish_update_and_retry, host, named, retry)
+            return
         host._wx.CallAfter(
-            host._announce,
-            f"YouTube support updated to {version}." if version else "YouTube support updated.",
+            _report,
+            f"{named}\n\nIt is in use from now on, in place of the built-in copy. "
+            "If a video was refusing to play, try it again.",
+            host._wx.ICON_INFORMATION,
         )
 
     def _failed(*args: object) -> None:
         detail = str(args[-1]) if args else ""
         host._wx.CallAfter(
-            host._announce,
-            detail or "YouTube support could not be updated. The built-in version is still in use.",
+            _report,
+            "YouTube support could not be updated, so the built-in version is still in use."
+            + (f"\n\n{detail}" if detail else ""),
+            host._wx.ICON_ERROR,
         )
 
     host._task_manager.submit("youtube-update", _work, on_success=_done, on_failure=_failed)
+
+
+def _finish_update_and_retry(host: Any, named: str, station: Any) -> None:
+    """Say the component is new, then play the thing that failed."""
+    host._show_message_box(
+        f"{named}\n\nQuill Radio will try that video again now.",
+        UPDATE_TITLE,
+        host._wx.ICON_INFORMATION | host._wx.OK,
+    )
+    controller = getattr(host, "_radio_controller", None)
+    if controller is not None and station is not None:
+        controller.play_station(station)
 
 
 def _open_playlist_picker(host: Any, result: object, url: str) -> None:
@@ -322,10 +405,33 @@ def resolve_youtube_for_host(host: Any, page_url: str) -> Any:
         raise YouTubeError("YouTube stations are unavailable in Safe Mode.")
     if not bool(getattr(host._radio_history, "youtube_consented", False)):
         raise YouTubeError(
-            "This YouTube station needs the one-time yt-dlp consent. "
-            "Add it again from Add Custom Station to accept it."
+            "This YouTube station needs the one-time YouTube consent, which has "
+            "not been given yet. Press Enter on it again to be asked."
         )
-    return ensure_and_resolve(page_url)
+    stream = ensure_and_resolve(page_url)
+    _backfill_saved_name(page_url, stream)
+    return stream
+
+
+def _backfill_saved_name(page_url: str, stream: object) -> None:
+    """Name a saved video that was filed before its details were fetched.
+
+    Rows added by an older build (or while YouTube was unreachable) carry the
+    address as their label. Playing one answers the same question the add-time
+    fetch asks, so the shelf heals itself rather than keeping an unreadable row
+    forever. Best effort: a failure here must never break playback.
+    """
+    from quill.core.radio import youtube_saved
+
+    try:
+        store = youtube_saved.SavedStore()
+        existing = next(
+            (i for i in store.all(youtube_saved.VIDEO) if i.url == page_url and not i.name), None
+        )
+        if existing is not None:
+            store.describe(youtube_saved.details_from_stream(page_url, stream))
+    except Exception:  # noqa: BLE001 - naming a row is never worth a failed play
+        return
 
 
 #: Prompt for the one add-anything command (QA: a pasted YouTube link had no
@@ -373,8 +479,47 @@ def add_youtube_link(host: Any) -> None:
         return
     if kind == "channel":
         ChannelStore().add(canonical)
+        _refresh_browse(host)
         host._announce("Following that channel. Find it under Browse Stations, YouTube.")
         return
     youtube_saved.SavedStore().add(kind, canonical)
+    _refresh_browse(host)
     what = "playlist" if kind == youtube_saved.PLAYLIST else "video"
     host._announce(f"Added the {what}. Find it under Browse Stations, YouTube.")
+    _name_saved_link(host, kind, canonical, what)
+
+
+def _refresh_browse(host: Any) -> None:
+    """Show the new row in the Browse window, if one is open."""
+    from quill.ui.radio import browse_refresh
+
+    browse_refresh.reload_open_browse(host, "youtube")
+
+
+def _name_saved_link(host: Any, kind: str, url: str, what: str) -> None:
+    """Learn what the link *is*, off-thread, and say its name when it lands.
+
+    Without this the shelf keeps the address as the row's label, and a saved
+    video reads back as eleven characters of video id spelled out one at a
+    time. The request is the same one playing it would make; consent was given
+    above, so nothing new is being asked of the listener.
+    """
+    from quill.core.radio import youtube_saved
+
+    def _work(**_kwargs: object) -> object:
+        if kind == youtube_saved.PLAYLIST:
+            return youtube_saved.fetch_playlist_details(url)
+        return youtube_saved.fetch_video_details(url)
+
+    def _ok(_op: str, result: object) -> None:
+        if not isinstance(result, youtube_saved.SavedItem) or not result.name:
+            return
+        youtube_saved.SavedStore().describe(result)
+        host._wx.CallAfter(_refresh_browse, host)
+        note = f", {result.note}" if result.note else ""
+        host._wx.CallAfter(host._announce, f"That {what} is {result.name}{note}.")
+
+    def _failed(*_args: object) -> None:
+        return  # the row is saved and plays; its name is the only thing missing
+
+    host._task_manager.submit("youtube-link-details", _work, on_success=_ok, on_failure=_failed)

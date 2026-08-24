@@ -28,7 +28,11 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.radio.download_queue import DONE, RUNNING, WAITING, DownloadQueue, QueueItem
-from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dialog_contract import (
+    announce_surface_exit,
+    apply_listbox_activation,
+    apply_modal_ids,
+)
 
 TITLE = "Downloads"
 
@@ -52,6 +56,8 @@ class DownloadQueueDialog:
         open_folder: Callable[[str], bool] | None = None,
         open_preferences: Callable[[], None] | None = None,
         transport_host: object | None = None,
+        windows: object | None = None,
+        on_closed: Callable[[], None] | None = None,
     ) -> None:
         import wx
 
@@ -65,26 +71,57 @@ class DownloadQueueDialog:
         self._open_folder = open_folder
         self._open_preferences = open_preferences
         self._rows: list[QueueItem] = []
+        self._menu_id_refs: list[object] = []
+        #: Runs when the modeless window closes, so the opener can stop
+        #: pointing background refreshes at a dead window.
+        self._on_closed = on_closed or (lambda: None)
 
-        self._dialog = wx.Dialog(
-            parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
+        # Modeless parentless wx.Frame (a peer window in the taskbar, the
+        # &Window menu and Ctrl+Tab) when standalone Radio supplies a
+        # WindowManager; an unchanged modal wx.Dialog for embedded QUILL.
+        self._windows = windows
+        self._modeless = windows is not None
+        if self._modeless:
+            self._dialog = wx.Frame(None, title=TITLE, style=wx.DEFAULT_FRAME_STYLE)
+            self._surface = wx.Panel(self._dialog, style=wx.TAB_TRAVERSAL)
+            self._build_surface_menu_bar()
+            self._dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+            self._dialog.Bind(wx.EVT_CLOSE, self._on_close)
+        else:
+            self._dialog = wx.Dialog(
+                parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+            )
+            self._surface = self._dialog
         root = wx.BoxSizer(wx.VERTICAL)
 
-        self._heading = wx.StaticText(self._dialog, label="")
+        self._heading = wx.StaticText(self._surface, label="")
         root.Add(self._heading, 0, wx.ALL, 10)
 
-        root.Add(wx.StaticText(self._dialog, label="&Downloads:"), 0, wx.LEFT | wx.RIGHT, 10)
-        self._list = wx.ListBox(self._dialog, style=wx.LB_SINGLE)
+        root.Add(wx.StaticText(self._surface, label="&Downloads:"), 0, wx.LEFT | wx.RIGHT, 10)
+        self._list = wx.ListBox(self._surface, style=wx.LB_SINGLE)
         self._list.SetName("Everything queued for download, and where each one has got to")
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        self._open_btn = wx.Button(self._dialog, label="&Open Containing Folder")
-        self._cancel_btn = wx.Button(self._dialog, label="&Cancel This One")
-        self._remove_btn = wx.Button(self._dialog, label="&Remove From List")
-        self._clear_btn = wx.Button(self._dialog, label="Clear &Finished")
-        self._clear_all_btn = wx.Button(self._dialog, label="Clear &All")
+        self._open_btn = wx.Button(self._surface, label="&Open Containing Folder")
+        self._open_btn.SetHelpText(
+            "Shows the highlighted download's saved file in Explorer. Only a "
+            "finished download has a folder to show."
+        )
+        self._cancel_btn = wx.Button(self._surface, label="&Cancel This One")
+        self._cancel_btn.SetHelpText(
+            "Stops the highlighted download. Anything already saved is kept."
+        )
+        self._remove_btn = wx.Button(self._surface, label="&Remove From List")
+        self._remove_btn.SetHelpText(
+            "Takes the highlighted row off the list without touching any saved file."
+        )
+        self._clear_btn = wx.Button(self._surface, label="Clear &Finished")
+        self._clear_btn.SetHelpText("Removes every finished row; the saved files stay on disk.")
+        self._clear_all_btn = wx.Button(self._surface, label="Clear &All")
+        self._clear_all_btn.SetHelpText(
+            "Empties the whole list, stopping anything still going. Saved files are kept."
+        )
         for button in (
             self._open_btn,
             self._cancel_btn,
@@ -97,26 +134,48 @@ class DownloadQueueDialog:
             # Where things land and whether closing keeps the queue going are
             # decided in Download Preferences; the queue window is where the
             # question occurs to people, so the door is here too.
-            prefs_btn = wx.Button(self._dialog, label="&Preferences...")
+            prefs_btn = wx.Button(self._surface, label="&Preferences...")
             prefs_btn.SetName("Download Preferences: folders, filing, and background downloads")
             prefs_btn.Bind(wx.EVT_BUTTON, lambda _e: open_preferences())
             buttons.Add(prefs_btn, 0, wx.RIGHT, 6)
-        buttons.Add(wx.Button(self._dialog, wx.ID_CANCEL, "Cl&ose"), 0)
+        if not self._modeless:
+            # Only the modal dialog carries a Close button: a real window
+            # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape (2026-08-23).
+            from quill.ui.dialog_contract import bind_close_button
+
+            close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Cl&ose")
+            close_btn.SetHelpText(
+                "Closes the queue window. Whether downloads keep going is the "
+                "background-downloads preference."
+            )
+            bind_close_button(self._dialog, close_btn, modeless=False)
+            buttons.Add(close_btn, 0)
         root.Add(buttons, 0, wx.ALL, 10)
 
-        self._dialog.SetSizer(root)
+        self._surface.SetSizer(root)
+        if self._modeless:
+            outer = wx.BoxSizer(wx.VERTICAL)
+            outer.Add(self._surface, 1, wx.EXPAND)
+            self._dialog.SetSizer(outer)
         self._dialog.SetMinSize((680, 420))
         self._dialog.Fit()
-        apply_modal_ids(self._dialog, cancel_id=wx.ID_CANCEL, cancel_label="Close")
+        if not self._modeless:
+            apply_modal_ids(self._dialog, cancel_id=wx.ID_CANCEL, cancel_label="Close")
 
         # The transport keyboard, when the surface that opened this one knows
         # about the player. It was installed in the browse tree and nowhere
         # else, so every other Radio dialog was a window where the keys that
-        # work everywhere stopped working.
+        # work everywhere stopped working. The WindowManager's Ctrl+Tab /
+        # Ctrl+1..9 rows ride in the same table when this is a peer window.
         if self._transport_host is not None:
             from quill.ui.radio import transport_keys
 
-            transport_keys.install(self._dialog, self._transport_host, wx=wx)
+            transport_keys.install(
+                self._dialog,
+                self._transport_host,
+                wx=wx,
+                extra_entries=self._windows.accelerator_entries() if self._modeless else (),
+            )
 
         self._open_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_selected())
         self._cancel_btn.Bind(wx.EVT_BUTTON, lambda _e: self.cancel_selected())
@@ -134,6 +193,41 @@ class DownloadQueueDialog:
     @property
     def dialog(self) -> Any:
         return self._dialog
+
+    def _build_surface_menu_bar(self) -> None:
+        """Menu bar for the modeless frame: &Close + the shared &Window menu."""
+        wx = self._wx
+        menu_bar = wx.MenuBar()
+        surface_menu = wx.Menu()
+        close_id = wx.NewIdRef()
+        surface_menu.Append(close_id, "&Close\tCtrl+W")
+        self._dialog.Bind(wx.EVT_MENU, lambda _e: self._dialog.Close(), id=close_id)
+        menu_bar.Append(surface_menu, "&Downloads")
+        self._windows.install(self._dialog, menu_bar)
+        self._dialog.SetMenuBar(menu_bar)
+        self._menu_id_refs.append(close_id)
+
+    def _on_char_hook(self, event: Any) -> None:
+        # A frame has no automatic Escape->Cancel; wire it (and Ctrl+F4, the
+        # document-window close key) to close, like every peer window.
+        wx = self._wx
+        if event.GetKeyCode() == wx.WXK_ESCAPE or (
+            event.GetKeyCode() == wx.WXK_F4 and event.ControlDown()
+        ):
+            self._dialog.Close()
+            return
+        event.Skip()
+
+    def _on_close(self, event: Any) -> None:
+        # First thing: stop the runner pointing background refreshes here.
+        self._on_closed()
+        previous = self._windows.previous_key(self._dialog)
+        self._windows.unregister(self._dialog)
+        announce_surface_exit(TITLE, self._announce)
+        event.Skip()
+        self._dialog.Destroy()
+        if previous:
+            self._windows.activate(previous)
 
     def refresh(self) -> None:
         """Redraw from the queue, keeping the cursor on the same row.
@@ -153,6 +247,7 @@ class DownloadQueueDialog:
             )
             self._list.SetSelection(min(index, len(self._rows) - 1))
         self._sync_buttons()
+        self._surface.Layout()
         self._dialog.Layout()
 
     def selected(self) -> QueueItem | None:
@@ -236,7 +331,14 @@ class DownloadQueueDialog:
         return removed
 
     def show(self) -> int:
-        """Show the window, and always destroy it afterwards (A11Y-4)."""
+        """Show the window; the modal shape is destroyed afterwards (A11Y-4),
+        the modeless one when its own close handler runs."""
+        if self._modeless:
+            from quill.ui.dialog_contract import show_modeless_surface
+
+            self._windows.register(self._dialog, TITLE)
+            show_modeless_surface(self._dialog, TITLE, announce=self._announce)
+            return 0
         try:
             if self._show_modal_dialog is not None:
                 return int(self._show_modal_dialog(self._dialog, TITLE))

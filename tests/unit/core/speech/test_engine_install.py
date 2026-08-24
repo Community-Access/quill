@@ -181,6 +181,11 @@ def test_activate_engine_packs_adds_nonempty_dir(monkeypatch, tmp_path: Path) ->
     pack.mkdir()
     (pack / "marker.txt").write_text("x", encoding="utf-8")
     monkeypatch.setattr(ei, "faster_whisper_pack_dir", lambda: pack)
+    # Never the real one: activate_engine_packs also installs the yt-dlp
+    # import override, and on a machine that has run Update YouTube Support
+    # that finder is real and outlives this test (test_yt_dlp_pack_priority
+    # then measures the wrong thing).
+    monkeypatch.setattr(ei, "yt_dlp_pack_dir", lambda: tmp_path / "no-yt-dlp")
     ei.activate_engine_packs()
     assert str(pack) in sys.path
     # Idempotent: a second call does not duplicate the entry.
@@ -192,6 +197,7 @@ def test_activate_engine_packs_skips_missing_or_empty(monkeypatch, tmp_path: Pat
     empty = tmp_path / "empty"
     empty.mkdir()
     monkeypatch.setattr(ei, "faster_whisper_pack_dir", lambda: empty)
+    monkeypatch.setattr(ei, "yt_dlp_pack_dir", lambda: tmp_path / "no-yt-dlp")
     ei.activate_engine_packs()
     assert str(empty) not in sys.path
     missing = tmp_path / "missing"

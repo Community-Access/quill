@@ -622,23 +622,17 @@ def test_close_skips_dialog_and_exits_when_nothing_playing_or_recording(
 
 
 @pytest.mark.parametrize(
-    "recording_active,player_state",
-    [
-        (True, RadioPlayerState.STOPPED),
-        (False, RadioPlayerState.PLAYING),
-        (False, RadioPlayerState.CONNECTING),
-    ],
+    "player_state",
+    [RadioPlayerState.STOPPED, RadioPlayerState.PLAYING],
 )
-def test_close_defers_prompt_when_recording_or_playback_active(
-    monkeypatch: pytest.MonkeyPatch, recording_active: bool, player_state: RadioPlayerState
+def test_close_defers_prompt_only_while_recording(
+    monkeypatch: pytest.MonkeyPatch, player_state: RadioPlayerState
 ) -> None:
-    # Closing while something is playing/recording must NOT ShowModal from inside
-    # the EVT_CLOSE handler (unreliable on wxMSW -- Alt+F4 did nothing while a
+    # Closing while a recording runs must NOT ShowModal from inside the
+    # EVT_CLOSE handler (unreliable on wxMSW -- Alt+F4 did nothing while a
     # station played). It vetoes the close and schedules the confirm dialog via
     # CallAfter; nothing is shown or shut down synchronously.
-    frame, calls = _close_frame(
-        monkeypatch, recording_active=recording_active, player_state=player_state
-    )
+    frame, calls = _close_frame(monkeypatch, recording_active=True, player_state=player_state)
     event, skipped, vetoed = _close_event()
 
     frame._on_radio_app_close(event)
@@ -656,19 +650,44 @@ def test_close_defers_prompt_when_recording_or_playback_active(
     assert args == (frame._radio_close_confirm,)
 
 
+@pytest.mark.parametrize(
+    "player_state",
+    [RadioPlayerState.PLAYING, RadioPlayerState.CONNECTING, RadioPlayerState.BUFFERING],
+)
+def test_close_while_only_playing_exits_without_a_prompt(
+    monkeypatch: pytest.MonkeyPatch, player_state: RadioPlayerState
+) -> None:
+    # 2026-08-23: "I still can not alt+f4 out of the app when things are
+    # playing." A live stream is not work that can be lost, so playback alone
+    # must never gate the close behind a dialog: Alt+F4 while listening closes
+    # the app like any other window. Only an active recording defers a prompt.
+    frame, calls = _close_frame(monkeypatch, recording_active=False, player_state=player_state)
+    event, skipped, vetoed = _close_event()
+
+    frame._on_radio_app_close(event)
+
+    assert _FakeCloseConfirmDialog.instances == [], "playing-only close must not prompt"
+    assert skipped == [True], "the close proceeds to a real exit"
+    assert vetoed == []
+    assert "controller.shutdown" in calls, "shutdown stops the stream on the way out"
+
+
 def test_deferred_cancel_keeps_window_open_and_resets_guard(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # The confirm dialog's default result is None (Cancel): the window stays open,
     # nothing shuts down, and the guard resets so a later close still works.
-    frame, calls = _close_frame(monkeypatch, player_state=RadioPlayerState.PLAYING)
+    # recording_active: only a recording defers the prompt now.
+    frame, calls = _close_frame(
+        monkeypatch, recording_active=True, player_state=RadioPlayerState.PLAYING
+    )
     event, _skipped, _vetoed = _close_event()
     frame._on_radio_app_close(event)
 
     _run_deferred(frame)
 
     assert len(_FakeCloseConfirmDialog.instances) == 1
-    assert _FakeCloseConfirmDialog.instances[0].recording_active is False
+    assert _FakeCloseConfirmDialog.instances[0].recording_active is True
     assert calls == [], "cancel leaves everything as-is"
     assert frame._closed == [], "cancel does not close the frame"
     assert frame._closing_in_progress is False, "guard resets so a later close works"
@@ -703,7 +722,9 @@ def test_deferred_exit_triggers_a_real_close(monkeypatch: pytest.MonkeyPatch) ->
 def test_deferred_minimize_with_dont_ask_persists_and_goes_to_tray(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    frame, calls = _close_frame(monkeypatch, player_state=RadioPlayerState.PLAYING)
+    frame, calls = _close_frame(
+        monkeypatch, recording_active=True, player_state=RadioPlayerState.PLAYING
+    )
 
     orig_init = _FakeCloseConfirmDialog.__init__
 

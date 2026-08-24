@@ -61,10 +61,52 @@ def test_safe_mode_refuses_before_anything_is_formed() -> None:
         podcast_index.search_podcasts("news", key="k", secret="s", safe_mode=True)
 
 
-def test_missing_credentials_are_a_sentence_not_a_server_error() -> None:
+def test_missing_credentials_are_a_sentence_not_a_server_error(monkeypatch) -> None:
+    """With no credential anywhere -- not even a bundled one -- say what to do."""
+    monkeypatch.setattr(podcast_index, "credentials", lambda: ("", ""))
     with pytest.raises(podcast_index.PodcastIndexError) as caught:
         podcast_index.search_podcasts("news", key="", secret="")
-    assert "Podcast Settings" in str(caught.value)
+    said = str(caught.value)
+    assert "Podcast Settings" in said
+    assert podcast_index.SIGNUP_URL in said
+
+
+def test_an_empty_pair_falls_back_to_the_resolved_credential(monkeypatch) -> None:
+    """The app carries its own key (2026-08-23), so callers need not hold one.
+
+    Before this, every caller had to fetch the credential itself and pass it
+    in, which meant every new surface had to remember to -- and a surface that
+    forgot got the "add them in Podcast Settings" refusal with a perfectly good
+    credential sitting in the build.
+    """
+    monkeypatch.setattr(podcast_index, "credentials", lambda: ("bundled-key", "bundled-secret"))
+    seen: dict[str, object] = {}
+
+    def _fake(url: str, headers: dict[str, str]) -> object:
+        seen["headers"] = headers
+        return {"feeds": []}
+
+    monkeypatch.setattr(podcast_index, "_http_json", _fake)
+    podcast_index.search_podcasts("news")
+
+    assert seen["headers"]["X-Auth-Key"] == "bundled-key"
+
+
+def test_the_listeners_own_credential_wins_over_the_bundled_one(monkeypatch) -> None:
+    """Which is what makes shipping one safe: pasting a key is a rotation lever."""
+    monkeypatch.setattr(podcast_index, "stored_credentials", lambda: ("mine", "my-secret"))
+    monkeypatch.setattr(podcast_index, "bundled_credentials", lambda: ("theirs", "their-secret"))
+
+    assert podcast_index.credentials() == ("mine", "my-secret")
+    assert podcast_index.available() is True
+
+
+def test_half_a_credential_is_no_credential(monkeypatch) -> None:
+    monkeypatch.setattr(podcast_index, "stored_credentials", lambda: ("mine", ""))
+    monkeypatch.setattr(podcast_index, "bundled_credentials", lambda: ("", ""))
+
+    assert podcast_index.credentials() == ("", "")
+    assert podcast_index.available() is False
 
 
 def test_a_non_https_url_is_refused() -> None:

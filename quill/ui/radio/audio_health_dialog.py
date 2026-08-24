@@ -244,9 +244,16 @@ def show_audio_health(host: Any) -> None:
     refresh_btn = wx.Button(dialog, label="&Check Again")
     refresh_btn.SetName("Re-read every row, after plugging in a device or reinstalling a tool")
     ffmpeg_btn = wx.Button(dialog, label="&Get FFmpeg...")
+    ffmpeg_btn.SetHelpText(
+        "Downloads FFmpeg, the converter recording needs. Offered only when "
+        "this installation is missing it."
+    )
     mpv_btn = wx.Button(dialog, label="Get &mpv...")
     mpv_btn.SetName("Download the mpv playback engine, which this installation is missing")
     close_btn = wx.Button(dialog, wx.ID_CLOSE, label="C&lose")
+    close_btn.SetHelpText(
+        "Closes Audio Health. Nothing here changes anything until a Get button runs."
+    )
     for button in (refresh_btn, ffmpeg_btn, mpv_btn, close_btn):
         row_sizer.Add(button, 0, wx.RIGHT, 6)
     root.Add(row_sizer, 0, wx.ALL, 8)

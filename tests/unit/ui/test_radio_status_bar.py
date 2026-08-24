@@ -43,12 +43,55 @@ def test_clamp_index_bounds() -> None:
     assert clamp_index(4, 0) == 0
 
 
-def test_now_playing_falls_back_to_stopped() -> None:
-    bar = RadioStatusBar(_host())
-    assert _spec_text(bar, "now_playing") == "Stopped"
+def _spec(bar: RadioStatusBar, key: str):
+    return next(s for s in bar._specs if s.key == key)
 
-    playing = RadioStatusBar(_host(_radio_status_text=lambda: "Radio: playing Jazz"))
-    assert _spec_text(playing, "now_playing") == "Radio: playing Jazz"
+
+def test_the_bar_leads_with_actions_and_dropped_the_readout_cells() -> None:
+    # 2026-08-23 redesign: a bar of buttons leads with actions. The
+    # now-playing readout (a "button that says stopped") and the favorites
+    # count ("Favorites 1 button") came off; Play/Stop and Mute/Unmute came on.
+    bar = RadioStatusBar(_host())
+    keys = [s.key for s in bar._specs]
+    assert keys == ["play_stop", "mute", "volume", "recording", "sleep_timer", "clock"]
+
+
+def test_play_stop_cell_label_is_the_action_it_would_perform() -> None:
+    from quill.ui.radio.playback_state import RadioPlayerState
+
+    stopped = RadioStatusBar(_host())
+    assert stopped._button_label(_spec(stopped, "play_stop")) == "Play"
+    assert stopped._button_name(_spec(stopped, "play_stop")) == "Play (Ctrl+P)"
+
+    playing = RadioStatusBar(
+        _host(
+            _radio_controller=SimpleNamespace(
+                state=SimpleNamespace(
+                    state=RadioPlayerState.PLAYING, volume_percent=80, muted=False
+                )
+            )
+        )
+    )
+    assert playing._button_label(_spec(playing, "play_stop")) == "Stop"
+
+
+def test_mute_cell_label_follows_the_muted_state() -> None:
+    bar = RadioStatusBar(_host())
+    assert bar._button_label(_spec(bar, "mute")) == "Mute"
+    muted = RadioStatusBar(
+        _host(
+            _radio_controller=SimpleNamespace(state=SimpleNamespace(volume_percent=0, muted=True))
+        )
+    )
+    assert muted._button_label(_spec(muted, "mute")) == "Unmute"
+    assert muted._button_name(_spec(muted, "mute")) == "Unmute (Ctrl+M)"
+
+
+def test_record_cell_says_the_verb_and_wears_the_progress() -> None:
+    idle = RadioStatusBar(_host())
+    assert idle._button_label(_spec(idle, "recording")) == "Record Now"
+    running = RadioStatusBar(_host(_radio_recorder=_recorder(_job(18, 60, requested=True))))
+    assert running._button_label(_spec(running, "recording")) == "Stop Recording (42 min left)"
 
 
 def test_volume_cell_reports_percent_mute_and_boost() -> None:
@@ -75,15 +118,14 @@ def _job(minutes_ago: int, minutes: int, requested: bool) -> SimpleNamespace:
     )
 
 
-def test_recording_cell_counts_active_jobs_and_says_how_long() -> None:
-    assert _spec_text(RadioStatusBar(_host()), "recording") == "Idle"
+def test_record_label_counts_active_jobs_and_says_how_long() -> None:
     # A capture with a length the listener chose counts down to it...
     one = _host(_radio_recorder=_recorder(_job(18, 60, requested=True)))
-    assert _spec_text(RadioStatusBar(one), "recording") == "42 min left"
+    assert RadioStatusBar(one)._label_record() == "Stop Recording (42 min left)"
     # ...and one started with Record Now counts up, because its `minutes` is a
     # disk-safety cap rather than a plan. See core.radio.recording_progress.
     open_ended = _host(_radio_recorder=_recorder(_job(18, 180, requested=False)))
-    assert _spec_text(RadioStatusBar(open_ended), "recording") == "18 min so far"
+    assert RadioStatusBar(open_ended)._label_record() == "Stop Recording (18 min so far)"
     many = _host(
         _radio_recorder=_recorder(
             _job(18, 60, requested=True),
@@ -91,17 +133,17 @@ def test_recording_cell_counts_active_jobs_and_says_how_long() -> None:
             _job(2, 180, requested=False),
         )
     )
-    assert _spec_text(RadioStatusBar(many), "recording") == "3 recordings, 25 min left"
+    assert RadioStatusBar(many)._label_record() == "Stop Recording (3 recordings, 25 min left)"
 
 
-def test_a_recorder_without_job_snapshots_degrades_to_idle() -> None:
+def test_a_recorder_without_job_snapshots_degrades_to_record_now() -> None:
     """A cell repainted on a timer must never take the bar down.
 
     A recorder mid-teardown (and any older fake) has no ``active_jobs``, and the
     only acceptable answer to that is a quiet one.
     """
     stale = _host(_radio_recorder=SimpleNamespace(active_count=2))
-    assert _spec_text(RadioStatusBar(stale), "recording") == "Idle"
+    assert RadioStatusBar(stale)._label_record() == "Record Now"
 
 
 def test_the_recording_hint_follows_what_the_cell_is_showing() -> None:
@@ -116,14 +158,6 @@ def test_sleep_timer_cell_off_and_remaining() -> None:
     active = _host(_sleep_timer_controller=SimpleNamespace(is_active=True, remaining_seconds=90))
     # 90 s rounds up to 2 minutes left.
     assert _spec_text(RadioStatusBar(active), "sleep_timer") == "2 min left"
-
-
-def test_favorites_cell_pluralizes() -> None:
-    assert _spec_text(RadioStatusBar(_host()), "favorites") == "0 stations"
-    one = _host(_radio_favorites=SimpleNamespace(favorites=[object()]))
-    assert _spec_text(RadioStatusBar(one), "favorites") == "1 station"
-    three = _host(_radio_favorites=SimpleNamespace(favorites=[object(), object(), object()]))
-    assert _spec_text(RadioStatusBar(three), "favorites") == "3 stations"
 
 
 # ---------------------------------------------------------------------------
@@ -163,7 +197,9 @@ def _wx_key_stub() -> SimpleNamespace:
     # The key codes _on_key_down compares against, plus the Navigate flags.
     return SimpleNamespace(
         WXK_LEFT=314,
+        WXK_UP=315,
         WXK_RIGHT=316,
+        WXK_DOWN=317,
         WXK_HOME=313,
         WXK_END=312,
         WXK_TAB=9,
@@ -209,8 +245,23 @@ def test_shift_tab_navigates_out_of_the_bar_backward() -> None:
 def test_arrow_keys_still_move_cell_to_cell() -> None:
     # Regression guard: the Tab change must not disturb Left/Right cell movement.
     bar, panel, focused = _bar_with_panel()
-    spec = bar._specs[2]  # the "recording" cell (index 2)
+    spec = bar._specs[2]  # the "volume" cell (index 2)
     bar._on_key_down(_KeyDownEvent(316), spec)  # Right
     bar._on_key_down(_KeyDownEvent(314), spec)  # Left
     assert focused == ["cell:3", "cell:1"], "arrows still move between cells"
     assert panel.navigations == [], "arrows never leave the bar"
+
+
+def test_up_and_down_arrows_are_consumed_and_move_cells_too() -> None:
+    # 2026-08-23: an unhandled Up/Down in a TAB_TRAVERSAL panel is a
+    # navigation key on wxMSW -- it walked focus out of the bar into the main
+    # window's now-playing readout. All four arrows must be consumed.
+    bar, panel, focused = _bar_with_panel()
+    spec = bar._specs[2]
+    up = _KeyDownEvent(315)  # WXK_UP
+    down = _KeyDownEvent(317)  # WXK_DOWN
+    bar._on_key_down(down, spec)
+    bar._on_key_down(up, spec)
+    assert focused == ["cell:3", "cell:1"], "Up and Down move between cells like Left and Right"
+    assert not up.skipped and not down.skipped, "consumed -- never handed to wx navigation"
+    assert panel.navigations == []

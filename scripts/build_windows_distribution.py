@@ -1827,6 +1827,20 @@ def bundle_embedded_python(
         check=True,
     )
 
+    # Bundle the Podcast Index application credential
+    # (quill/_podcast_index_key.py) so a shipped build reaches the open podcast
+    # index with no user setup. LENIENT for the same reason as the ADP key
+    # above: unset QUILL_PODCAST_INDEX_KEY/SECRET bakes an empty pair, and
+    # every Podcast Index feature reports itself unavailable rather than
+    # failing -- iTunes discovery, subscriptions and playback are untouched.
+    # The module is gitignored, never committed; the values live only in the
+    # build environment. See tools/generate_podcast_index_key.py.
+    print("Generating bundled Podcast Index credential (quill/_podcast_index_key.py)...")
+    subprocess.run(
+        [str(python_exe), str(source_root / "tools" / "generate_podcast_index_key.py")],
+        check=True,
+    )
+
     # Offline Edition marker. A build-time-generated module read by
     # quill.build_info.is_offline_edition() so the running app knows it is the
     # self-contained Offline Edition and suppresses Download Optional Components

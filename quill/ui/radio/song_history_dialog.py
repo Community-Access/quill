@@ -27,7 +27,7 @@ from collections.abc import Callable
 from datetime import datetime
 
 from quill.core.radio.song_history import BACKGROUND_DISCLAIMER, SongHistory, SongPlay
-from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids
 
 
 def _heard_at(iso: str) -> str:
@@ -77,11 +77,15 @@ class SongHistoryDialog:
         on_changed: Callable[[], None],
         title: str = "Song History",
         transport_host: object | None = None,
+        windows: object | None = None,
     ) -> None:
         import wx
 
         self._wx = wx
         self._transport_host = transport_host
+        self._windows = windows
+        self._modeless = windows is not None
+        self._menu_id_refs: list[object] = []
         self._history = history
         self._show_modal = show_modal_dialog
         self._copy = copy_to_clipboard
@@ -102,20 +106,65 @@ class SongHistoryDialog:
                 self._station_index = index
                 break
 
-        self.dialog = wx.Dialog(
-            parent,
-            title=title,
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        self.dialog.SetSize(wx.Size(620, 520))
+        # Modeless parentless wx.Frame (a peer window in the taskbar, the
+        # &Window menu and Ctrl+Tab) when standalone Radio supplies a
+        # WindowManager; an unchanged modal wx.Dialog for embedded QUILL.
+        if self._modeless:
+            self._win = wx.Frame(None, title=title, style=wx.DEFAULT_FRAME_STYLE)
+            self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
+            self._build_surface_menu_bar()
+            self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+            self._win.Bind(wx.EVT_CLOSE, self._on_close)
+        else:
+            self._win = wx.Dialog(
+                parent,
+                title=title,
+                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+            )
+            self._surface = self._win
+        self.dialog = self._win  # top-level window; child dialogs parent to it
+        self._win.SetSize(wx.Size(620, 520))
         self._build_ui()
         self._reload_songs()
 
     # -- construction --
 
+    def _build_surface_menu_bar(self) -> None:
+        """Menu bar for the modeless frame: &Close + the shared &Window menu."""
+        wx = self._wx
+        menu_bar = wx.MenuBar()
+        surface_menu = wx.Menu()
+        close_id = wx.NewIdRef()
+        surface_menu.Append(close_id, "&Close\tCtrl+W")
+        self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
+        menu_bar.Append(surface_menu, "&Songs")
+        self._windows.install(self._win, menu_bar)
+        self._win.SetMenuBar(menu_bar)
+        self._menu_id_refs.append(close_id)
+
+    def _on_char_hook(self, event: object) -> None:
+        # A frame has no automatic Escape->Cancel; wire it (and Ctrl+F4, the
+        # document-window close key) to close, like every peer window.
+        wx = self._wx
+        if event.GetKeyCode() == wx.WXK_ESCAPE or (
+            event.GetKeyCode() == wx.WXK_F4 and event.ControlDown()
+        ):
+            self._win.Close()
+            return
+        event.Skip()
+
+    def _on_close(self, event: object) -> None:
+        previous = self._windows.previous_key(self._win)
+        self._windows.unregister(self._win)
+        announce_surface_exit(self._title, self._announce)
+        event.Skip()
+        self._win.Destroy()
+        if previous:
+            self._windows.activate(previous)
+
     def _build_ui(self) -> None:
         wx = self._wx
-        panel = self.dialog
+        panel = self._surface
         root = wx.BoxSizer(wx.VERTICAL)
 
         station_label = wx.StaticText(panel, label="&Station:")
@@ -146,37 +195,72 @@ class SongHistoryDialog:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._copy_btn = wx.Button(panel, label="&Copy")
+        self._copy_btn.SetHelpText(
+            "Copies the highlighted song, title and artist, to the clipboard."
+        )
         self._clip_btn = wx.Button(panel, label="Send to Clip &Library")
+        self._clip_btn.SetHelpText(
+            "Keeps the highlighted song in the Clip Library, the shared "
+            "scrapbook every Quill app can read."
+        )
         self._background_btn = wx.Button(panel, label="&Background")
+        self._background_btn.SetHelpText(
+            "Asks your configured AI provider for background on the song. The "
+            "answer is model-written and says so -- it is not the station's "
+            "own information."
+        )
         self._facts_btn = wx.Button(panel, label="Song &Details")
+        self._facts_btn.SetHelpText(
+            "Looks the song up on MusicBrainz -- which release, what year, how "
+            "long. Keyless and off in Safe Mode."
+        )
         self._clear_btn = wx.Button(panel, label="Clea&r...")
-        close_btn = wx.Button(panel, wx.ID_CLOSE, label="C&lose")
+        self._clear_btn.SetHelpText(
+            "Erases the logged songs -- for this station or for every station; "
+            "a confirmation asks which."
+        )
         for button in (
             self._copy_btn,
             self._clip_btn,
             self._background_btn,
             self._facts_btn,
             self._clear_btn,
-            close_btn,
         ):
             btn_row.Add(button, 0, wx.RIGHT, 6)
+        if not self._modeless:
+            # Only the modal dialog carries a Close button: a real window
+            # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape (2026-08-23).
+            close_btn = wx.Button(panel, wx.ID_CLOSE, label="C&lose")
+            close_btn.SetHelpText("Closes Song History; logging continues while stations play.")
+            btn_row.Add(close_btn, 0, wx.RIGHT, 6)
+            apply_modal_ids(
+                self._win,
+                affirmative_id=close_btn.GetId(),
+                escape_id=close_btn.GetId(),
+            )
+            close_btn.Bind(wx.EVT_BUTTON, lambda _e: self._win.EndModal(wx.ID_CLOSE))
         root.Add(btn_row, 0, wx.ALL, 8)
 
-        apply_modal_ids(
-            self.dialog,
-            affirmative_id=close_btn.GetId(),
-            escape_id=close_btn.GetId(),
-        )
         # The transport keyboard, when the surface that opened this one knows
         # about the player. It was installed in the browse tree and nowhere
         # else, so every other Radio dialog was a window where the keys that
-        # work everywhere stopped working.
+        # work everywhere stopped working. The WindowManager's Ctrl+Tab /
+        # Ctrl+1..9 rows ride in the same table when this is a peer window.
         if self._transport_host is not None:
             from quill.ui.radio import transport_keys
 
-            transport_keys.install(self.dialog, self._transport_host, wx=wx)
+            transport_keys.install(
+                self._win,
+                self._transport_host,
+                wx=wx,
+                extra_entries=self._windows.accelerator_entries() if self._modeless else (),
+            )
 
-        self.dialog.SetSizer(root)
+        self._surface.SetSizer(root)
+        if self._modeless:
+            outer = wx.BoxSizer(wx.VERTICAL)
+            outer.Add(self._surface, 1, wx.EXPAND)
+            self._win.SetSizer(outer)
 
         self._station_choice.Bind(self._wx.EVT_CHOICE, lambda _e: self._reload_songs())
         self._facts_btn.Bind(self._wx.EVT_BUTTON, self._on_song_facts)
@@ -185,7 +269,6 @@ class SongHistoryDialog:
         self._clip_btn.Bind(self._wx.EVT_BUTTON, self._on_clip)
         self._background_btn.Bind(self._wx.EVT_BUTTON, self._on_background)
         self._clear_btn.Bind(self._wx.EVT_BUTTON, self._on_clear)
-        close_btn.Bind(self._wx.EVT_BUTTON, lambda _e: self.dialog.EndModal(self._wx.ID_CLOSE))
         self._wx.CallAfter(self._songs.SetFocus)
 
     @staticmethod
@@ -330,6 +413,12 @@ class SongHistoryDialog:
         self._reload_songs()
 
     def show(self) -> int:
-        result = self._show_modal(self.dialog, self._title)
-        self.dialog.Destroy()
+        if self._modeless:
+            from quill.ui.dialog_contract import show_modeless_surface
+
+            self._windows.register(self._win, self._title)
+            show_modeless_surface(self._win, self._title, announce=self._announce)
+            return 0
+        result = self._show_modal(self._win, self._title)
+        self._win.Destroy()
         return result

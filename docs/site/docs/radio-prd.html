@@ -2755,6 +2755,273 @@ station browser guards on the country facet: name and tag empty with a
 country chosen is still a live query. Any new search surface with a
 separate results list binds the same helper.</li>
 </ul></li>
+<li><p><strong>Three things the windows decided for themselves
+(2026-08-23; <code>ui/dialog_contract.py</code>,
+<code>core/radio/startup_window.py</code>,
+<code>apps/radio_startup_window.py</code>,
+<code>ui/window_menu.py</code>).</strong></p>
+<ul>
+<li><em>Half a preference.</em> <code>show_modeless_surface</code>
+consults <code>announce_dialog_transitions</code> before the entry cue
+and leaves the exit cue to each frame’s own <code>EVT_CLOSE</code>; all
+nine radio surfaces then said “Exited …” unconditionally, so switching
+the cues off silenced half of them.
+<code>dialog_contract.announce_surface_exit</code> now owns it, and a
+test scans <code>quill/ui/radio/*.py</code> for a handler that says it
+directly – the failure mode is a <em>tenth</em> window reinventing the
+unconditional cue.</li>
+<li><em>A checkbox that could only answer for one window.</em> “Open
+Browse Stations at startup” predates the window model; with six windows
+there is one question (“which one, if any”) and a checkbox cannot ask
+it. <code>startup_window</code> is the pure choice (ids, labels, index
+round-trip, and <code>migrate_from_checkbox</code>, so a ticked box
+still means Browse),
+<code>radio_startup_window.open_startup_window</code> is the app half,
+and everything not chosen stays closed. None remains the default. The
+opener table is checked against real app methods by a test, so a renamed
+command cannot leave a dead row in Preferences.</li>
+<li><em>Focus set a moment too early.</em> wxMSW hands a newly raised
+frame the focus <strong>after</strong> <code>Raise</code> returns, so
+<code>WindowManager.activate</code>’s inline <code>SetFocus</code> was
+overwritten and Ctrl+Tab landed on a bare frame – which reads as
+silence. The same landing is repeated through <code>wx.CallAfter</code>;
+<code>_focus_into</code> is idempotent and gives up on a window
+destroyed in between.</li>
+</ul></li>
+<li><p><strong>The Podcast Index, with the application’s own credential
+(2026-08-23; <code>core/podcasts/podcast_index.py</code>,
+<code>core/podcasts/podcast_index_catalog.py</code>,
+<code>core/radio/browse_podcast_index.py</code>,
+<code>tools/generate_podcast_index_key.py</code>).</strong> A recorded
+non-goal, reversed with its own reasoning answered.</p>
+<ul>
+<li><em>What the decision was, and why it changed.</em>
+<code>apple_podcasts.py</code> has said since 2026-08-13 that Podcast
+Index is “deliberately not used anywhere in QUILL… do not add a Podcast
+Index client as an option”: one keyless directory means no second path
+to maintain, no key to configure, and no feature that quietly requires
+one. The objection was never about the index – it was about the key.
+Jeff supplied an <strong>application</strong> credential on 2026-08-23,
+so nobody configures anything, and the objection is answered rather than
+overruled. Apple remains the keyless default and the only directory
+anything depends on; every Podcast Index feature is additive and
+switchable off.</li>
+<li><em>How the credential ships.</em>
+<code>tools/generate_podcast_index_key.py</code> bakes the key and
+secret into the gitignored <code>quill/_podcast_index_key.py</code> at
+build time, exactly as the ADP client key is baked in, and the build
+script calls it leniently – an unset pair bakes empty, and the feature
+reports itself unavailable instead of breaking anything. The secret is
+never in the repository. <code>credentials()</code> prefers a listener’s
+own pair from the platform credential store (DPAPI), so pasting a key is
+a rotation lever that needs no release. What is shipped is an
+<em>application identifier for public data</em>: it authorises nothing
+on anyone’s behalf, reads no account, and sends no listener data – a
+search carries the term and nothing else. An extractable shipped key is
+a casual-abuse and rotation barrier, which is the same stance the ADP
+client key documents.</li>
+<li><em>A show you can look at before you commit to it.</em> The gap the
+podcast-directory review named: a show’s episodes were visible only
+after subscribing. <code>episodes_for_feed</code> answers for any feed,
+and the browse branch renders them as ordinary <code>RadioStation</code>
+rows (<code>is_recording=True</code>, the feed as <code>homepage</code>)
+– so play, favourites, downloads, transcripts and Subscribe all work
+with no special case anywhere downstream.</li>
+<li><em>What a row knows.</em> <code>IndexShow.summary</code> speaks the
+author, the episode count and the categories on the row;
+<code>show_details</code> composes the fact sheet (language, latest
+episode, explicit marking, the publisher’s funding link, and the index’s
+own “this feed can no longer be read” verdict). Facts arrive before the
+commitment does.</li>
+<li><em>Two directories, asked together.</em>
+<code>federated_browse</code> gains a Podcast Index target beside Apple,
+so every podcast search asks both and the status line names whichever
+could not answer; <code>branch_find</code> routes the four
+<code>pi*</code> kinds to the index’s own search.
+<code>PodcastSettings.directory_source</code> defaults to
+<code>both</code> for a new profile, and a stored choice is never
+overridden.</li>
+<li><em>Cost control.</em> Catalogue answers cache through
+<code>directory_cache</code> (a day for a show, three hours for its
+episodes, an hour for trending, a week for the taxonomy), the branch
+pages at 50 shows and 100 episodes, and a hidden branch is never
+contacted at all.</li>
+<li><em>GATE-11.</em> The catalogue split out of the client rather than
+growing it, and the browse branch is its own module with four thin
+registrations in <code>browse_sources</code>.</li>
+</ul></li>
+<li><p><strong>A saved YouTube link is what it <em>is</em>, not where it
+lives (2026-08-23; <code>core/radio/youtube_saved.py</code>,
+<code>core/radio/row_actions.py</code>,
+<code>ui/radio/browse_actions.py</code>,
+<code>ui/radio/browse_youtube_menu.py</code>,
+<code>ui/radio/playback_status.py</code>,
+<code>ui/radio/youtube_playback.py</code>,
+<code>ui/radio/engine_selection.py</code>).</strong> Three reports
+against one branch, and they share a cause: the branch stored an address
+and hoped the listener would recognise it.</p>
+<ul>
+<li><em>A saved video carries the video’s facts.</em>
+<code>SavedItem</code> gained <code>uploader</code>,
+<code>duration_ms</code>, <code>is_live</code>, <code>description</code>
+and <code>item_count</code>, and <code>fetch_video_details</code> /
+<code>fetch_playlist_details</code> ask for them once, at add time. The
+row is <strong>stored first and described second</strong> – a network
+round trip that fails must never lose a link somebody pasted – so an
+unreadable video is still saved, still plays, and falls back to its
+address; the branch is refreshed twice, once so the row appears and once
+so it appears named. The tree renders the title as the label,
+<code>SavedItem.note</code> (“TED, 20 minutes 3 seconds”) as the spoken
+note, and the description into <code>RadioStation.notes</code>, which
+the details panel already reads. Descriptions are collapsed and capped
+at 2,000 characters: a details panel is not a web page. A row written
+before this shipped heals on first play
+(<code>youtube_ui._backfill_saved_name</code>), from the answer the
+resolve already returned.</li>
+<li><em>The three ways in are on the menu as well as in the list.</em>
+<code>row_actions.youtube_add_actions()</code> puts <strong>Add a
+Channel/Playlist/Video…</strong> on the YouTube root’s context menu, and
+<code>browse_tree_menu</code> gives the three action <em>rows</em> the
+same menu – the one place an action row gets one, because the three are
+a set and somebody who right-clicked one looking for another should find
+it.</li>
+<li><em>The one-time YouTube consent is asked wherever Play is
+pressed.</em> It was asked only by Add Custom Station, so every other
+route (a saved video, a followed channel’s upload, a favorite, a search
+result) refused at play time with a message naming a dialog the listener
+was not in. <code>RadioPlayerController.play_station</code> now asks
+through <code>youtube_playback.consent_granted</code> – UI thread only,
+since an auto-advance can reach <code>play_station</code> off-thread and
+a modal there would be a hang – and the browse tree asks before it
+stores anything.</li>
+<li><em>A failure is spoken.</em>
+<code>playback_status.transition_announcement</code> answered
+<code>""</code> for ERROR by the same rule that keeps ordinary
+transitions silent, so a failed play was an earcon and a status cell
+nobody was told to read: “it just freezes: Radio: connecting to …”. A
+failure is news by definition and is now spoken once, deduplicated on
+the message like a reconnect.</li>
+<li><em>And a refused stream names its own repair.</em> YouTube issues
+stream addresses per player client and stops honouring them for everyone
+else, so a stale yt-dlp resolves perfectly – title, length, chapters –
+and hands back an address the engine gets a 403 for.
+<code>youtube_playback.playback_failure_message</code> turns that into
+“use Station, then Update YouTube Support”, which is the menu item that
+fixes it. Everything non-YouTube keeps the engine’s own words.</li>
+<li><em>And the cause, fixed where it ships from.</em> The bundled
+yt-dlp floor moves to <code>&gt;=2026.8.19</code> in the pyproject
+<code>youtube</code> extra, which <code>[runtime]</code> collects, so
+the shared QuillVille Runtime carries it and
+<code>check_build_env.py</code> fails a build machine that is behind.
+<code>engine_install._YT_DLP_REQUIREMENTS</code> moves with it and a
+packaging test pins the two together: an engine-pack copy
+<em>shadows</em> the bundled one
+(<code>prefer_engine_pack_yt_dlp</code>), so an upgrade path allowed to
+resolve older than what shipped is a repair that breaks YouTube. The
+live regression gained the assertion whose absence made a stale helper
+look healthy – it <strong>fetches</strong> a kilobyte of the resolved
+address instead of asserting a string came back, because Quill Radio
+hands that address to mpv, or to ffmpeg for a recording or a Sound
+Enhancements relay, and “there is a URL” was never the invariant that
+mattered.</li>
+<li><em>GATE-11 was paid, not deferred</em>: the YouTube row verbs
+extracted to <code>ui/radio/browse_youtube_menu.py</code>, the
+load-failure decision to <code>engine_selection.on_load_error</code>,
+and the consent ask to <code>youtube_playback.consent_granted</code>;
+<code>main_frame_radio.py</code> came <em>down</em> by hoisting two lazy
+imports. <code>core/radio/row_actions.py</code> takes its first reviewed
+budget entry – menu vocabulary is what that module is, and a second core
+module answering “what does this row offer?” is the drift it was written
+to end.</li>
+</ul></li>
+<li><p><strong>The video branch, told what it was doing wrong
+(2026-08-23; <code>ui/radio/captions_window.py</code>,
+<code>core/radio/live_captions.py</code>,
+<code>ui/radio/media_keys.py</code>,
+<code>ui/radio/video_commands.py</code>,
+<code>ui/radio/browse_delete.py</code>,
+<code>ui/radio/browse_keys.py</code>,
+<code>ui/radio/track_selection.py</code>,
+<code>ui/radio/mpv_radio_engine.py</code>,
+<code>core/radio/audio_tracks.py</code>).</strong> A second report pass,
+and most of it was one shape of defect: an assumption that the host is
+the app frame, or that an mpv option belongs to the file that happens to
+be loaded.</p>
+<ul>
+<li><em>Captions were pixels.</em> mpv drew them into the picture, which
+is unreadable by a screen reader, unreachable by a braille display,
+uncopyable and unsearchable – and invisible to the majority who never
+open the Video Window. Captions now also open a <strong>Captions
+window</strong>: a running transcript that follows the player, the
+current line marked with a character (never a colour), a Follow Playback
+checkbox so reading back does not fight the player, and no announcement
+ever (the read-on-demand rule the video status line already follows). It
+needs neither mpv nor the picture, so it works for exactly the listeners
+the old implementation refused. The model is pure
+(<code>live_captions</code>); the window is thin.</li>
+<li><em>A menu accelerator only fires for the frame that owns the menu
+bar.</em> So the Video Window answered no keys at all – including the
+transcript key its own accessible description advertised – and the media
+commands existed nowhere but the main window.
+<code>video_commands.install_window_keys</code> gives the picture its
+own table (plus the transport), and the new <code>media_keys</code>
+module rides the shared installer so Show Video, Captions, Transcript,
+Audio and Described Audio and Video Information work from every Radio
+window. Deliberately <em>not</em> rows in
+<code>transport_commands</code>: that table is shared with Quill Cast,
+which binds Ctrl+Shift+K to Audio Output Device, so the keys are gated
+on the host’s player being Radio’s (asked by capability).</li>
+<li><em>Every timeline verb was dead outside the main window.</em>
+<code>bounded_playback_ui._controller</code> read
+<code>host._radio_controller</code>, which only the frame has, so
+chapters, go-to-position, skip, speed and Where Am I raised
+<code>AttributeError</code> inside an accelerator handler – swallowed by
+wx, so the key did nothing rather than refusing out loud. Fixed with the
+same cascade <code>transport_keys</code> uses, plus
+<code>_parent</code>/<code>_show_modal</code> for the two dialogs it
+raises.</li>
+<li><em><code>audio-files</code> is a client-wide mpv option</em>, not a
+property of the loaded file. Showing a YouTube video’s picture sets it
+(YouTube serves picture and sound apart) and nothing cleared it, so
+every later load kept the previous video’s audio attached and mpv
+selected it – “it is like it is caching whatever the last video was that
+worked”. <code>load</code> now clears it, beside the referrer that was
+cleared for the same reason.</li>
+<li><em>Switching audio renditions went around the player.</em>
+<code>play_audio_track</code> called <code>engine.load</code> directly,
+so the Sound Enhancements relay stayed built around the rendition being
+left behind, the station’s volume and speed were not re-applied, and a
+failed switch got neither the cross-engine rescue nor a spoken reason.
+It replays through <code>_play_resolved_station</code> and records the
+chosen track afterwards (that method clears it by design).</li>
+<li><em>Delete did nothing.</em> Every removable row had a verb
+reachable only by opening a context menu. Delete now runs that same verb
+after a named question – <code>wx.RichMessageDialog</code> with an
+unticked “Don’t ask me again” and No as the default, persisted on
+<code>RadioHistory</code> – and reloads the branch. A row with nothing
+to remove explains itself (same checkbox) and points at Hide This
+Source. The window’s four keys moved to <code>browse_keys</code>
+(GATE-11), because “what a key means depends on where focus is” is one
+subject.</li>
+<li><em>And the reload was answering from before the change.</em> The
+tree prefetches a branch when the cursor lands on it, and
+<code>_refetch</code>’s own <code>Expand</code> consumed that pre-edit
+answer on its way through – so deleting the last row left it on screen
+and adding a row left it missing until Refresh was pressed by hand. The
+cache is dropped <strong>before</strong> the expand, and the branch is
+collapsed first so the expanding event fires at all.</li>
+<li><em>The three “Add a …” rows</em> now appear only while the branch
+is empty (as Subscriptions’ three do) and live on the context menu of
+every row in the branch; a reload can name a row to land the cursor on
+(<code>browse_refresh.reload_source_branch(select=)</code>), and
+<code>reload_open_browse</code> lets Station &gt; Add YouTube Link
+refresh a Browse window it is not in.</li>
+<li><em>Twenty-four dubs in arbitrary order.</em>
+<code>audio_tracks.order_tracks</code>: the app’s language first, then
+the video’s own original rendition (now detected from
+<code>audio_is_default</code>, <code>language_preference</code> or the
+note), then alphabetically by the name that is read aloud.</li>
+</ul></li>
 <li><p><strong>Seven things the app could not say about itself (3.0.0;
 <code>core/radio/recording_progress.py</code>,
 <code>search_history.py</code>, <code>now_playing_source.py</code>,
@@ -4393,6 +4660,74 @@ and not a regression), and a universal version of this across every list
 in QUILL – named as the next step rather than done here, because the two
 apps a listener uses for the same job an hour apart are where the
 inconsistency actually hurt.</p>
+<h2 id="14-f1-answers-everywhere-the-context-help-system-2026-08-23">14.
+F1 answers everywhere: the context-help system (2026-08-23)</h2>
+<p><strong>Requirement.</strong> Press F1 on any control, in any Quill
+Radio window, and a help window opens carrying two things, read by a
+screen reader in one pass: the purpose of the window you are standing
+in, then the purpose of the control under focus and how to drive its
+kind. The display is a read-only, multi-line text field – reviewable by
+character, copyable – with Escape returning focus exactly where it was.
+This models the QUILL editor’s F1 experience; the two apps share the
+same help window class so they read identically.</p>
+<p><strong>Where the words live.</strong> Three layers compose, and each
+has one home:</p>
+<ol type="1">
+<li><strong>Surface purposes</strong> – one authored paragraph per
+window title, in <code>quill/core/radio/surface_help.py</code>
+(<code>PURPOSES</code>, with <code>PREFIX_PURPOSES</code> for live
+titles like “Now Playing: WQXR”). Keyed by window title because the
+title is the identity a window already announces, the raise-if-open
+guards already key on it, and it is what a listener quotes in a bug
+report.</li>
+<li><strong>Control help</strong> – <code>SetHelpText</code> beside the
+control it describes, in the surface’s own module. Where none is
+authored, the control’s accessible name stands in – in this app the
+names are already teaching sentences (“Reload the highlighted source
+from the internet”).</li>
+<li><strong>Role usage</strong> – one sentence per control kind (“A
+tree: Up and Down move between rows, Right expands…”) from
+<code>surface_help.role_usage</code>, so even a bare control teaches its
+keyboard.</li>
+</ol>
+<p><strong>Wiring is inherited, not per-dialog.</strong>
+<code>quill/ui/dialog_contract.py</code> binds F1 on every window that
+passes through its two show paths – which, by the existing dialog gate,
+is every window – whenever an app has registered a handler via
+<code>set_context_help_handler</code>. Quill Radio registers at startup
+(<code>quill/ui/radio/context_help.activate()</code>), which also
+installs <code>wx.SimpleHelpProvider</code>: without a provider,
+<code>SetHelpText</code> silently stores nothing (measured), so every
+help text in the codebase was dead until this. The main window binds F1
+directly and carries <strong>Help &gt; What Is This? (F1)</strong>; the
+User Guide moved to <strong>Ctrl+F1</strong> (QUILL’s convention) and
+the PRD to <strong>Ctrl+Alt+F1</strong>.</p>
+<p><strong>The gate (GATE-RADIO-HELP).</strong>
+<code>quill/tools/radio_help_audit.py</code>, enforced by
+<code>tests/unit/tools/test_radio_help_audit.py</code>:</p>
+<ul>
+<li>every <code>wx.Frame</code>/<code>wx.Dialog</code> title constructed
+in the radio UI must resolve to a purpose
+(<code>surface_help.is_known_title</code>); titles are resolved from
+literals, f-string prefixes, module constants, <code>title=</code>
+parameter defaults and <code>self._title</code> assignments, with a
+reasoned exemption list for the rest;</li>
+<li>every helpable-control construction site carries one status in the
+committed inventory
+(<code>tests/unit/ui/fixtures/radio_help_inventory.json</code>):
+<code>helped</code> (authors <code>SetHelpText</code> inline –
+auto-verified), <code>named-help</code> (its accessible name is the
+teaching sentence), <code>help-elsewhere</code>, or
+<code>opt-out</code>. A brand-new site is <code>missing</code> until a
+human authors help or classifies it, and <code>missing</code> fails the
+build – <strong>new features must ship their help</strong>;</li>
+<li>the wiring itself is pinned as source, so a refactor cannot silently
+ship an app in which no window answers F1.</li>
+</ul>
+<p>Regenerate the inventory with
+<code>python -m quill.tools.radio_help_audit --write</code> and review
+the diff; the tool run also prints title violations and missing sites
+directly.</p>
 </main>
 </body>
 </html>

@@ -43,6 +43,10 @@ def prompt_import_target(parent: object, folders: list[str], station_count: int)
     )
     combo = wx.ComboBox(dialog, choices=[_TOP_LEVEL, *folders], style=wx.CB_DROPDOWN)
     combo.SetName("Target folder")
+    combo.SetHelpText(
+        "Where the imported stations land in your favorites: pick an existing "
+        "folder, or type a new name to create one."
+    )
     combo.SetValue(_TOP_LEVEL)
     root.Add(combo, 0, wx.EXPAND | wx.ALL, 10)
 

@@ -59,6 +59,16 @@ class AppShellFrame(AnnounceCommandsMixin, ComponentDownloadsMixin, KeybindingPa
         self._wx = wx
         self._safe_mode = safe_mode
         self.frame = wx.Frame(None, title=title, size=size)
+        # F1 context help, on every shell app from day one: install the wx
+        # help provider (SetHelpText stores nothing without one) and register
+        # the shared handler the dialog contract binds onto every window it
+        # shows; the main frame binds F1 directly since no show path wraps it.
+        # An app with an authored purpose catalogue (Quill Radio) re-activates
+        # with its own resolver afterwards -- last registration wins.
+        from quill.ui import app_context_help
+
+        app_context_help.activate()
+        app_context_help.install(self.frame, wx=wx)
         self._app_icon = self._load_app_icon()
         if self._app_icon is not None:
             self.frame.SetIcon(self._app_icon)

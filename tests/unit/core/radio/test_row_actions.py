@@ -474,3 +474,51 @@ def test_a_downloaded_row_keeps_one_accelerator_per_key() -> None:
         label.split("&", 1)[1][0].lower() for label in (a.label for a in actions) if "&" in label
     ]
     assert len(keys) == len(set(keys)), sorted(keys)
+
+
+# --- the YouTube branch's three ways in ----------------------------------------
+
+
+def test_the_youtube_branch_offers_its_three_adds_on_its_menu() -> None:
+    """The three "Add a ..." rows are on the branch's context menu too.
+
+    Reported 2026-08-23. A feature that exists only as a row a listener has to
+    arrow down to is a feature half the people looking for it miss.
+    """
+    actions = row_actions.actions_for(
+        "youtube",
+        is_folder=True,
+        folder_state=row_actions.FolderState(root_source=True),
+    )
+    ids = [a.id for a in actions]
+
+    assert row_actions.ADD_YOUTUBE_CHANNEL in ids
+    assert row_actions.ADD_YOUTUBE_PLAYLIST in ids
+    assert row_actions.ADD_YOUTUBE_VIDEO in ids
+    # In the order the branch lists them, so the menu and the rows agree.
+    assert ids.index(row_actions.ADD_YOUTUBE_CHANNEL) < ids.index(row_actions.ADD_YOUTUBE_PLAYLIST)
+    assert ids.index(row_actions.ADD_YOUTUBE_PLAYLIST) < ids.index(row_actions.ADD_YOUTUBE_VIDEO)
+
+
+def test_the_adds_claim_no_mnemonic_another_item_on_that_menu_wants() -> None:
+    actions = row_actions.actions_for(
+        "youtube",
+        is_folder=True,
+        folder_state=row_actions.FolderState(root_source=True, loaded_stations=3, savable=3),
+    )
+    keys = [
+        label.split("&", 1)[1][:1].lower() for label in (a.label for a in actions) if "&" in label
+    ]
+
+    assert len(keys) == len(set(keys)), keys
+
+
+def test_another_source_does_not_offer_them() -> None:
+    ids = [
+        a.id
+        for a in row_actions.actions_for(
+            "soma", is_folder=True, folder_state=row_actions.FolderState(root_source=True)
+        )
+    ]
+
+    assert row_actions.ADD_YOUTUBE_VIDEO not in ids

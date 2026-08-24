@@ -29,6 +29,7 @@ from quill.core.radio.browse_nodes import make_id, split_id
 from quill.core.radio.spotify_search import open_link_label
 from quill.ui.radio import browse_download_actions as downloads
 from quill.ui.radio import browse_places as places
+from quill.ui.radio import browse_youtube_menu as yt_menu
 
 
 def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_actions.FolderState:
@@ -159,11 +160,12 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     handlers[row_actions.HIDE_SOURCE] = lambda: _hide_source(dialog, kind)
     handlers[row_actions.RESET_SOURCES] = lambda: _reset_sources(dialog)
     handlers[row_actions.SUBSCRIBE_PODCAST] = lambda: _subscribe(dialog, node, kind, args)
-    handlers[row_actions.UNSUBSCRIBE_PODCAST] = lambda: _unsubscribe(dialog, node, kind, args)
+    handlers[row_actions.UNSUBSCRIBE_PODCAST] = lambda: unsubscribe(dialog, node, kind, args)
     handlers[row_actions.COPY_FEED] = lambda: _copy_feed(dialog, kind, args)
-    handlers[row_actions.UNFOLLOW_CHANNEL] = lambda: _unfollow(dialog, node, args)
-    handlers[row_actions.REMOVE_SAVED] = lambda: _remove_saved(dialog, node, args)
+    handlers[row_actions.UNFOLLOW_CHANNEL] = lambda: yt_menu.unfollow_channel(dialog, node, args)
+    handlers[row_actions.REMOVE_SAVED] = lambda: yt_menu.remove_saved(dialog, node, args)
     handlers[row_actions.VIEW_TRANSCRIPT] = lambda: _view_transcript(dialog, kind, args, station)
+    handlers.update(yt_menu.add_handlers(dialog))
     # The subscription-library verbs (folders, OPML, Mark All as Played) live
     # in browse_podcast_actions -- one concern, one module (GATE-11).
     from quill.ui.radio import browse_podcast_actions as podcast_acts
@@ -266,7 +268,6 @@ def target_node(dialog: Any, event: Any) -> Any:
 
 
 def show_for_event(dialog: Any, event: Any) -> None:
-    wx = dialog._wx
     # PopupMenu pumps events; without this a second context-menu event (the
     # keyboard fallback firing after the tree's own) would stack a second menu.
     if getattr(dialog, "_context_menu_open", False):
@@ -276,9 +277,18 @@ def show_for_event(dialog: Any, event: Any) -> None:
         return
     dialog._tree.SelectItem(node)
     data = dialog._node_data(node)
-    if data is None or data.get("is_action"):
+    if data is None:
         return
-    kind, args = split_id(str(data.get("node_id") or ""))
+    node_id = str(data.get("node_id") or "")
+    if data.get("is_action"):
+        # An action row has no menu of its own -- it *is* one verb. The three
+        # YouTube adds are the exception: they are a set, and somebody who
+        # right-clicked "Add a Video..." looking for "Add a Playlist..." should
+        # find it rather than nothing at all.
+        if node_id in yt_menu.ADD_IDS:
+            _popup(dialog, row_actions.youtube_add_actions(), yt_menu.add_handlers(dialog))
+        return
+    kind, args = split_id(node_id)
     station = data.get("station")
     from quill.ui.radio import browse_podcast_actions, download_command
 
@@ -318,7 +328,14 @@ def show_for_event(dialog: Any, event: Any) -> None:
     if not entries:
         return
 
-    handlers = _handlers(dialog, node, data, kind, args)
+    _popup(dialog, entries, _handlers(dialog, node, data, kind, args))
+
+
+def _popup(dialog: Any, entries: list, handlers: dict) -> None:
+    """Build and show the popup for *entries*, binding only what has a handler."""
+    wx = dialog._wx
+    if not entries:
+        return
     menu = wx.Menu()
     id_refs = []
     for action in entries:
@@ -348,8 +365,10 @@ def show_for_event(dialog: Any, event: Any) -> None:
 
 def _resolve_feed(dialog: Any, kind: str, args: list[str]) -> str:
     """The show's own RSS address, cached per window after the first ask."""
-    if kind == "mypodcastshow":
-        # A subscribed show's node id is the feed address already.
+    if kind in ("mypodcastshow", "pishow"):
+        # A subscribed show's node id is the feed address already -- and so is
+        # a Podcast Index show's, which is the whole advantage of a directory
+        # that indexes feeds rather than store listings.
         return args[0] if args else ""
     collection = args[0] if args else ""
     if not collection:
@@ -376,7 +395,20 @@ def _subscribe(dialog: Any, node: Any, kind: str, args: list[str]) -> None:
     # show arrives in Quill Cast with a tile and a site link rather than a
     # bare title. Same lookup request the feed alone would have cost.
     artwork, homepage = "", ""
-    if kind == "mypodcastshow":
+    if kind == "pishow":
+        # The catalogue already knows this show, and the answer is cached from
+        # rendering the row -- so the artwork and site arrive with no second
+        # request, and the subscription lands in Quill Cast complete.
+        from quill.core.podcasts import podcast_index_catalog as catalog
+
+        feed = args[0] if args else ""
+        try:
+            facts = catalog.show_facts(feed, safe_mode=dialog._safe_mode)
+        except Exception:  # noqa: BLE001 - a menu action reports, never crashes
+            facts = None
+        if facts is not None:
+            artwork, homepage = facts.artwork_url, facts.homepage
+    elif kind == "mypodcastshow":
         feed = _resolve_feed(dialog, kind, args)
     else:
         from quill.core.podcasts import apple_podcasts
@@ -415,7 +447,7 @@ def _subscribe(dialog: Any, node: Any, kind: str, args: list[str]) -> None:
     dialog._announce(result.spoken)
 
 
-def _unsubscribe(dialog: Any, node: Any, kind: str, args: list[str]) -> None:
+def unsubscribe(dialog: Any, node: Any, kind: str, args: list[str]) -> None:
     """Drop this show from the shared library, from the same menu slot that
     subscribed it."""
     feed = _resolve_feed(dialog, kind, args)
@@ -483,18 +515,6 @@ def _apply_visible_sources(dialog: Any, updated: tuple, spoken: str) -> None:
         callback(updated)
     dialog._rebuild_sources()
     dialog._announce(spoken)
-
-
-def _unfollow(dialog: Any, node: Any, args: list[str]) -> None:
-    """Stop following a channel, from the same menu that added it."""
-    from quill.core.radio.youtube_channels import ChannelStore
-
-    url = args[0] if args else ""
-    if not url:
-        return
-    name = dialog._tree.GetItemText(node).split("  (")[0]
-    ChannelStore().remove(url)
-    dialog._announce(f"Stopped following {name}. Refresh to update the list.")
 
 
 def _view_transcript(dialog: Any, kind: str, args: list[str], station: Any) -> None:
@@ -565,15 +585,3 @@ def _open_transcript_reader(dialog: Any, station: Any, cues: object, is_automati
         is_automatic=is_automatic,
     )
     reader.show()
-
-
-def _remove_saved(dialog: Any, node: Any, args: list[str]) -> None:
-    """Drop a saved YouTube playlist or video, from the same menu that plays it."""
-    from quill.core.radio.youtube_saved import SavedStore
-
-    url = args[0] if args else ""
-    if not url:
-        return
-    name = dialog._tree.GetItemText(node).split("  (")[0]
-    SavedStore().remove(url)
-    dialog._announce(f"Removed {name} from YouTube. Refresh to update the list.")

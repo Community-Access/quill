@@ -161,3 +161,36 @@ def attempt_fallback(host: Any) -> bool:
     host._set_state(RadioPlayerState.CONNECTING, message="")
     url = host._resolve_playback_url(station)
     return bool(host._engine.load(url))
+
+
+def on_load_error(host: Any, message: str) -> None:
+    """A load failed: rescue it on the other engine, or report why it will not.
+
+    The second half of this module's one concern -- :func:`select` decides who
+    plays it, :func:`attempt_fallback` decides who plays it *next*, and this
+    decides when there is nobody left to try. It moved out of
+    ``player_controller`` for GATE-11, and reads better here anyway: "what
+    happens when a stream will not open" was already the sentence at the top of
+    this file.
+
+    RECONNECTING as well as CONNECTING: a reconnect used to *be* CONNECTING, so
+    it reached the cross-engine rescue. Splitting the two without this would
+    have quietly taken that rescue away from exactly the case that needs it
+    most -- a stream that has already dropped once.
+    """
+    from quill.ui.radio.playback_state import RadioPlayerState
+    from quill.ui.radio.youtube_playback import playback_failure_message
+
+    if (
+        host._state.state in (RadioPlayerState.CONNECTING, RadioPlayerState.RECONNECTING)
+        and host._attempt_engine_fallback()
+    ):
+        # A stream WMP cannot decode (Ogg/Opus/HLS) often plays fine on mpv,
+        # and a misbehaving mpv falls back to WMP. One rescue per attempt.
+        return
+    # Both engines have refused it. For a YouTube station that is a diagnosis
+    # rather than a bare failure -- see youtube_playback.
+    host._set_state(
+        RadioPlayerState.ERROR,
+        message=playback_failure_message(host._state.station, message),
+    )

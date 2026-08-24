@@ -61,6 +61,10 @@ def build(app: Any, panel: Any, buttons: Any, wx: Any) -> None:
             continue
         button = wx.Button(panel, label=label)
         set_accessible_name(button, f"{label.replace('&', '')} ({command.key})")
+        button.SetHelpText(
+            "A chapter control; it appears only while what is playing has "
+            "chapters, and runs the same command as its key."
+        )
         button.Bind(
             wx.EVT_BUTTON,
             lambda _event, cid=command_id: _act(app, cid),

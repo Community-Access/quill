@@ -196,3 +196,94 @@ def test_switching_stations_mid_resolve_plays_the_second_one(wx_app) -> None:
 
     assert engine.loads == ["https://media.test/second.m4a"]
     frame.Destroy()
+
+
+# --- the consent that was only ever asked by one dialog ------------------------
+
+
+def test_the_consent_is_asked_before_the_resolve_starts(wx_app) -> None:
+    """Every route to a YouTube row asks, not just Add Custom Station.
+
+    Reported 2026-08-23: a video saved from the browse tree refused at play
+    time with "add it again from Add Custom Station" -- a dead end naming a
+    dialog the listener was not in.
+    """
+    frame = wx.Frame(None)
+    engine = _FakeEngine()
+    asked: list[int] = []
+    controller = RadioPlayerController(
+        frame,
+        playback_engine="wx",
+        resolve_youtube=lambda _url: _RESOLVED,
+        youtube_consent=lambda: bool(asked.append(1)) or True,
+    )
+    controller._wx_engine = engine  # type: ignore[assignment]
+    controller._engine = engine  # type: ignore[assignment]
+
+    controller.play_station(_youtube_station())
+    _pump(lambda: bool(engine.loads))
+
+    assert asked == [1]
+    assert engine.loads == [_RESOLVED]
+    frame.Destroy()
+
+
+def test_declining_the_consent_plays_nothing_at_all(wx_app) -> None:
+    frame = wx.Frame(None)
+    engine = _FakeEngine()
+    controller = RadioPlayerController(
+        frame,
+        playback_engine="wx",
+        resolve_youtube=lambda _url: _RESOLVED,
+        youtube_consent=lambda: False,
+    )
+    controller._wx_engine = engine  # type: ignore[assignment]
+    controller._engine = engine  # type: ignore[assignment]
+
+    controller.play_station(_youtube_station())
+
+    assert engine.loads == []
+    # Not even CONNECTING: the ask itself said why, and a player left claiming
+    # it is connecting to something it never contacted is the bug being fixed.
+    assert controller.state.state is not RadioPlayerState.CONNECTING
+    frame.Destroy()
+
+
+def test_an_ordinary_station_never_asks(wx_app) -> None:
+    frame = wx.Frame(None)
+    engine = _FakeEngine()
+    asked: list[int] = []
+    controller = RadioPlayerController(
+        frame, playback_engine="wx", youtube_consent=lambda: bool(asked.append(1))
+    )
+    controller._wx_engine = engine  # type: ignore[assignment]
+    controller._engine = engine  # type: ignore[assignment]
+
+    controller.play_station(RadioStation(name="KFI", stream_url="http://stream.test/kfi"))
+
+    assert asked == []
+    assert engine.loads == ["http://stream.test/kfi"]
+    frame.Destroy()
+
+
+def test_a_youtube_failure_names_the_repair(wx_app) -> None:
+    """A resolved YouTube address that the engine will not open is a diagnosis.
+
+    YouTube issues its stream addresses per player client and they stop working
+    for everyone else; when the yt-dlp component falls behind, the resolve still
+    succeeds and the address it hands back is refused (403). The player used to
+    sit on "connecting" with no hint that the fix is one menu item away.
+    """
+    from quill.ui.radio.youtube_playback import STALE_COMPONENT_MESSAGE, playback_failure_message
+
+    spoken = playback_failure_message(_youtube_station(), "the engine gave up")
+
+    assert "Update YouTube Support" in spoken
+    assert spoken.startswith(STALE_COMPONENT_MESSAGE)
+    # Everything else keeps the engine's own words.
+    assert (
+        playback_failure_message(
+            RadioStation(name="KFI", stream_url="http://stream.test/kfi"), "the engine gave up"
+        )
+        == "the engine gave up"
+    )

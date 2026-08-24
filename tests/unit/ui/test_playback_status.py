@@ -131,11 +131,48 @@ def test_re_entering_the_same_attempt_is_not_said_twice() -> None:
 
 def test_ordinary_playback_transitions_stay_silent() -> None:
     # They are cued with earcons on purpose. A radio that says "playing" every
-    # time it starts is a radio nobody can write a document beside.
-    for state in ("PLAYING", "BUFFERING", "CONNECTING", "STOPPED", "PAUSED", "ERROR"):
+    # time it starts is a radio nobody can write a document beside. ERROR is
+    # NOT in this list -- see below.
+    for state in ("PLAYING", "BUFFERING", "CONNECTING", "STOPPED", "PAUSED"):
         assert (
             transition_announcement(
                 state=state, message="anything", previous_state="STOPPED", previous_message=""
             )
             == ""
         )
+
+
+def test_a_failure_is_spoken_with_its_reason() -> None:
+    # Reported 2026-08-23: "it just freezes: Radio: connecting to <url>...".
+    # It had not frozen -- the play had failed, with a perfectly good reason,
+    # into a status cell nobody was told to go and read.
+    words = transition_announcement(
+        state="ERROR",
+        message="That YouTube link could not be opened.",
+        previous_state="CONNECTING",
+        previous_message="",
+    )
+    assert words == "Could not play. That YouTube link could not be opened."
+
+
+def test_a_failure_without_a_reason_stays_silent() -> None:
+    # The earcon already said something went wrong; "Could not play." on its
+    # own adds nothing a listener can act on.
+    assert (
+        transition_announcement(
+            state="ERROR", message="", previous_state="CONNECTING", previous_message=""
+        )
+        == ""
+    )
+
+
+def test_the_same_failure_is_not_said_twice() -> None:
+    assert (
+        transition_announcement(
+            state="ERROR",
+            message="No audio stream.",
+            previous_state="ERROR",
+            previous_message="No audio stream.",
+        )
+        == ""
+    )

@@ -59,6 +59,12 @@ class CommandPaletteDialog:
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.dialog.SetName("Command Palette — type to search, Enter to run, Escape to close")
+        # When a host supplies topic-based help, this dialog answers F1 itself;
+        # the marker keeps the dialog contract's generic F1 hook from shadowing
+        # it. Hosts without on_help (the standalone apps' palettes) leave the
+        # generic hook in place, which is how their palettes gained F1 at all.
+        if on_help is not None:
+            self.dialog._quill_owns_f1 = True
         self.dialog.SetSize((700, 500))
 
         root = wx.BoxSizer(wx.VERTICAL)

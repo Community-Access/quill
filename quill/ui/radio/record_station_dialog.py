@@ -81,7 +81,12 @@ class RecordStationDialog:
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
         start_btn = wx.Button(self.dialog, wx.ID_OK, "&Start Recording")
+        start_btn.SetHelpText(
+            "Begins capturing now, in the background. The Recordings window "
+            "and the status bar both show the progress."
+        )
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
+        cancel_btn.SetHelpText("Closes without recording anything.")
         buttons.Add(start_btn, 0, wx.RIGHT, 6)
         buttons.Add(cancel_btn)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)

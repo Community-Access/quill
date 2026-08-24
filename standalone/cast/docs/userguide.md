@@ -440,24 +440,22 @@ quietly declining.
 
 - **iTunes** is the default and needs nothing. It indexes very nearly every
   podcast there is.
-- **Podcast Index** needs a free key, which is why it is not the default -- and
-  why it does not appear at all until you have one. It is the index the
-  Podcasting 2.0 tags were defined for, so it knows about chapter documents,
-  transcripts, marked moments and credits, which is a good deal of what QUILL
-  Cast is built on.
-- **Both** searches each and merges the results by feed address, and says where
-  they came from: "12 results: 9 from iTunes, 3 from Podcast Index."
+- **Podcast Index** answers out of the box. QUILL Cast carries its own
+  credential for it, so there is nothing to register for and nothing to set up,
+  and **Both** is what a new library searches. It is the index the Podcasting
+  2.0 tags were defined for -- chapters, transcripts, funding, credits -- and it
+  is where independent, self-hosted and de-listed shows live, which is why
+  asking both finds shows a store alone does not.
+- Searching both merges results by feed address and says where they came from:
+  "12 results: 9 from iTunes, 3 from Podcast Index." A directory that fails does
+  not fail the search -- you keep what arrived, and the status line names the
+  one that was quiet.
 
-If one directory does not answer, the other's results still arrive, with a
-sentence about the one that failed. A search that finds nothing says so.
-
-To add a Podcast Index key, register free at podcastindex.org and put the key
-and secret into **Subscriptions > Podcast Index Credentials...**. They go into
-Windows' own credential store, never into a settings file, and they are scrubbed
-out of crash reports. **Read It Back** says the secret once, four characters at
-a time, so a long random string copied from another window can be checked; the
-box is masked otherwise. Clearing both boxes and saving removes them, and
-searches go back to iTunes.
+You can still use a key of your own. Register free at podcastindex.org and put
+the key and secret into **Subscriptions > Podcast Index Credentials...**; yours
+takes precedence over the built-in one, and goes into Windows' credential store
+rather than a settings file, scrubbed from crash reports. That is now a way to
+use your own quota rather than something you must do before the feature works.
 
 ## Looking at a podcast before subscribing
 

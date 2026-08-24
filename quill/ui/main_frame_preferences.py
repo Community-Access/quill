@@ -136,6 +136,10 @@ class PreferencesMixin:
         chosen: dict[str, Callable[[], None] | None] = {"handler": None}
 
         with wx.Dialog(self.frame, title="Preferences") as dialog:
+            # This hub answers F1 itself with topic-based help (its char hook
+            # below); the marker keeps the dialog contract's generic F1 hook
+            # from shadowing that authored answer.
+            dialog._quill_owns_f1 = True
             outer = wx.BoxSizer(wx.VERTICAL)
             book = wx.Listbook(dialog, style=wx.BK_LEFT)
             book.SetName("Preferences categories")

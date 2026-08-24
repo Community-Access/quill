@@ -795,7 +795,10 @@ class PodcastsAppFrame(
             "Podcasts from Quill, as a standalone app.\n\n"
             "Runs the same podcast feature code as QUILL itself and shares "
             "its settings, subscriptions, and downloads.\n"
-            f"https://github.com/{_REPO}",
+            f"https://github.com/{_REPO}\n\n"
+            "Credits and thanks:\n"
+            "- Podcast data from the Podcast Index, an open, independent "
+            "podcast directory (https://podcastindex-org.github.io/docs-api/).",
             f"About {_TITLE}",
             wx.ICON_INFORMATION | wx.OK,
         )

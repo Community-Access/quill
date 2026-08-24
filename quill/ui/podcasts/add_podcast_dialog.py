@@ -190,9 +190,9 @@ class AddPodcastDialog:
         )
 
     def _source_index(self) -> int:
-        """Which directory the library last chose (iTunes when it has not)."""
+        """Which directory the library last chose (both, when it has not)."""
         settings = getattr(self._library, "settings", None)
-        wanted = str(getattr(settings, "directory_source", "itunes") or "itunes")
+        wanted = str(getattr(settings, "directory_source", "both") or "both")
         return directory_search.SOURCES.index(wanted) if wanted in directory_search.SOURCES else 0
 
     def _on_search_done(

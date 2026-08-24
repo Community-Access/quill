@@ -95,12 +95,20 @@ def transition_announcement(
     silence that is indistinguishable from a hung player. That is the exact
     complaint the module was written to answer.
 
+    **And the other one that was getting neither: a failure.** A play that
+    cannot happen ended in ERROR with a perfectly good sentence in ``message``
+    -- "could not open that YouTube link", "no audio stream" -- and nothing
+    said it. What a listener got was a connecting earcon, an error earcon, and
+    a status cell they would have to go and read, which is indistinguishable
+    from a hung player (reported 2026-08-23: "it just freezes: Radio:
+    connecting to ..."). A failure is news by definition; it is spoken.
+
     Deduplicated on the message, not the state: three attempts are three
     different sentences and all three are news, while a re-entry into the same
     attempt is not.
     """
-    if state != "RECONNECTING" or not message:
+    if state not in ("RECONNECTING", "ERROR") or not message:
         return ""
     if previous_state == state and previous_message == message:
         return ""
-    return message
+    return message if state == "RECONNECTING" else f"Could not play. {message}"

@@ -96,9 +96,15 @@ class AudioTrackDialog:
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._play_btn = wx.Button(self._dialog, wx.ID_OK, "&Play This Track")
+        self._play_btn.SetHelpText(
+            "Switches playback to the highlighted audio track -- described "
+            "audio, another language, a commentary -- without stopping."
+        )
         self._play_btn.Enable(bool(self._tracks) and play_track is not None)
         buttons.Add(self._play_btn, 0, wx.RIGHT, 6)
-        buttons.Add(wx.Button(self._dialog, wx.ID_CANCEL, "Cl&ose"), 0)
+        close_btn = wx.Button(self._dialog, wx.ID_CANCEL, "Cl&ose")
+        close_btn.SetHelpText("Closes the track list; whatever is playing keeps its current track.")
+        buttons.Add(close_btn, 0)
         root.Add(buttons, 0, wx.ALL, 10)
 
         self._dialog.SetSizer(root)

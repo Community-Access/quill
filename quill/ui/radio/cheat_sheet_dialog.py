@@ -95,6 +95,7 @@ def show_cheat_sheet(host: Any) -> None:
     edit_btn = wx.Button(dialog, label="Change &Shortcuts...")
     edit_btn.SetName("Open the Keyboard Shortcuts editor to rebind a key")
     close_btn = wx.Button(dialog, wx.ID_CLOSE, label="C&lose")
+    close_btn.SetHelpText("Closes the sheet; press Ctrl+Alt+Shift+K to open it again anywhere.")
     for button in (copy_btn, edit_btn, close_btn):
         row_sizer.Add(button, 0, wx.RIGHT, 6)
     root.Add(row_sizer, 0, wx.ALL, 8)

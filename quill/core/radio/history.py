@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.audio_enhance import EQ_PRESETS
-from quill.core.radio.browse_visibility import normalize as normalize_browse_sources
+from quill.core.radio import browse_visibility
 from quill.core.radio.models import RadioStation
 from quill.core.radio.onboarding import RadioOnboardingState
 from quill.core.radio.play_queue import normalize_repeat_mode
@@ -79,6 +79,14 @@ class RadioHistory:
     #: Show the read-only Station Details pane in Browse/Search Stations. On by
     #: default; View > Show Station Details toggles it, honored by every surface.
     show_station_details: bool = True
+    #: Ask before the Delete key removes a browse row. Off means the listener
+    #: ticked "Don't ask me again" in that question -- a preference they set
+    #: from inside the thing it governs, which is the only place anybody would
+    #: look for it.
+    confirm_browse_delete: bool = True
+    #: Explain, in a dialog, when Delete lands on a row that has nothing to
+    #: remove. Same checkbox, same reasoning: useful once, noise forever.
+    explain_browse_delete: bool = True
     #: Winamp classic-skin playback keys in the Recordings player (#1344):
     #: Z X C V B along the bottom row, arrows to seek, T for elapsed/remaining,
     #: J to jump. On by default -- every key it claims was otherwise unused in
@@ -112,6 +120,11 @@ class RadioHistory:
     #: that predates it. A branch that is off is not in the tree at all and is
     #: never contacted -- see quill.core.radio.browse_visibility.
     browse_sources_enabled: tuple[str, ...] | None = None
+    #: Which generation of the browse-source list this choice was made against.
+    #: A branch added later cannot be named in a list saved earlier, so the
+    #: loader shows the newcomers once and stamps this forward. 0 = a profile
+    #: that predates the stamp entirely.
+    browse_sources_epoch: int = 0
     #: Show the arrow-navigable status bar along the bottom of the main window.
     #: On by default; View > Show Status Bar toggles it. F6 moves focus into it.
     show_status_bar: bool = True
@@ -259,6 +272,10 @@ class RadioHistory:
     #: months ago and half-remembered. Browse is already Ctrl+B away, so this
     #: is a convenience rather than a fix.
     open_browse_at_startup: bool = False
+    #: Which single window opens at launch ("" = none). Replaces the
+    #: open_browse_at_startup checkbox, which could only ever answer for one of
+    #: the six windows there now; the flag is still read once, to migrate.
+    startup_window: str = ""
     #: Verbose radio logging (quill-radio #5). When on, the radio logger
     #: subtrees drop to DEBUG (via radio_logging.set_radio_debug) and recording
     #: runs ffmpeg at -loglevel verbose, so a hard-to-reproduce playback or
@@ -331,6 +348,8 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.resume_on_launch = bool(raw.get("resume_on_launch", False))
         history.announce_track_titles = bool(raw.get("announce_track_titles", False))
         history.show_station_details = bool(raw.get("show_station_details", True))
+        history.confirm_browse_delete = bool(raw.get("confirm_browse_delete", True))
+        history.explain_browse_delete = bool(raw.get("explain_browse_delete", True))
         history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
         history.recordings_shuffle = bool(raw.get("recordings_shuffle", False))
         history.recordings_repeat = normalize_repeat_mode(raw.get("recordings_repeat"))
@@ -339,9 +358,15 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.recent_searches = search_history_from_json(raw.get("recent_searches"))
         # Present-vs-absent is load-bearing: absent stays None ("never set").
         if "browse_sources_enabled" in raw:
-            history.browse_sources_enabled = normalize_browse_sources(
-                raw.get("browse_sources_enabled")
+            stored_epoch = raw.get("browse_sources_epoch")
+            epoch = int(stored_epoch) if isinstance(stored_epoch, (int, float)) else 0
+            # A branch introduced since this choice was made was never rejected
+            # -- it did not exist. Shown once, then stamped, so hiding it
+            # afterwards sticks.
+            history.browse_sources_enabled = browse_visibility.with_new_sources(
+                raw.get("browse_sources_enabled"), epoch
             )
+            history.browse_sources_epoch = browse_visibility.SOURCES_EPOCH
         history.show_status_bar = bool(raw.get("show_status_bar", True))
         history.ui_font_scale = min(2.0, max(1.0, _coerce_float(raw.get("ui_font_scale"), 1.0)))
         history.prevent_sleep = bool(raw.get("prevent_sleep", True))
@@ -439,6 +464,15 @@ def load_history(data_dir: Path) -> RadioHistory:
         )
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         history.open_browse_at_startup = bool(raw.get("open_browse_at_startup", False))
+        from quill.core.radio import startup_window as startup
+
+        # The choice if it has been made, else the old checkbox once -- somebody
+        # who ticked "open Browse at startup" still gets Browse.
+        history.startup_window = (
+            startup.normalize(raw.get("startup_window"))
+            if "startup_window" in raw
+            else startup.migrate_from_checkbox(history.open_browse_at_startup)
+        )
         history.debug_mode = bool(raw.get("debug_mode", False))
         history.last_seen = str(raw.get("last_seen", ""))
         history.log_dir = str(raw.get("log_dir", ""))
@@ -469,6 +503,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "resume_on_launch": history.resume_on_launch,
             "announce_track_titles": history.announce_track_titles,
             "show_station_details": history.show_station_details,
+            "confirm_browse_delete": history.confirm_browse_delete,
+            "explain_browse_delete": history.explain_browse_delete,
             "winamp_playback_keys": history.winamp_playback_keys,
             "recordings_shuffle": history.recordings_shuffle,
             "recordings_repeat": history.recordings_repeat,
@@ -476,7 +512,10 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "search_source_facet": history.search_source_facet,
             "recent_searches": search_history_to_json(history.recent_searches),
             **(
-                {"browse_sources_enabled": list(history.browse_sources_enabled)}
+                {
+                    "browse_sources_enabled": list(history.browse_sources_enabled),
+                    "browse_sources_epoch": history.browse_sources_epoch,
+                }
                 if history.browse_sources_enabled is not None
                 else {}
             ),
@@ -521,6 +560,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "optilab_exact_live": history.optilab_exact_live,
             "alt_f4_to_tray": history.alt_f4_to_tray,
             "open_browse_at_startup": history.open_browse_at_startup,
+            "startup_window": history.startup_window,
             "debug_mode": history.debug_mode,
             "last_seen": history.last_seen,
             "log_dir": history.log_dir,

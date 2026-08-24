@@ -299,3 +299,160 @@ def test_a_channel_address_that_is_not_one_is_refused_before_the_network() -> No
 
     assert host._task_manager.submitted == []
     assert any("does not look like a channel address" in m for m in host.said)
+
+
+# --- a saved video is a *video*, not an address --------------------------------
+
+
+def test_adding_a_video_stores_it_then_names_it(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The row is saved first and described second, and the title is spoken.
+
+    Reported 2026-08-23: "when you add a video by url it doesn't show the name
+    of the video in the app". It showed the address, which for a screen reader
+    is eleven characters of video id read one at a time.
+    """
+    from quill.core.radio import youtube_saved
+
+    added: list[tuple[str, str]] = []
+    described: list[youtube_saved.SavedItem] = []
+    monkeypatch.setattr(
+        youtube_saved.SavedStore,
+        "add",
+        lambda self, kind, url, name="": (
+            added.append((kind, url)) or youtube_saved.SavedItem(kind=kind, url=url)
+        ),
+    )
+    monkeypatch.setattr(
+        youtube_saved.SavedStore, "describe", lambda self, details: described.append(details)
+    )
+    monkeypatch.setattr(
+        youtube_saved,
+        "fetch_video_details",
+        lambda url, resolver=None: youtube_saved.SavedItem(
+            kind=youtube_saved.VIDEO,
+            url=url,
+            name="Do schools kill creativity?",
+            uploader="TED",
+            duration_ms=1_203_000,
+            description="Sir Ken Robinson makes an entertaining case...",
+        ),
+    )
+
+    host = _Host(typed="https://www.youtube.com/watch?v=iG9CE55wbtY")
+    browse_actions.perform(host, "addvideo")
+
+    assert added == [(youtube_saved.VIDEO, "https://www.youtube.com/watch?v=iG9CE55wbtY")]
+    assert described and described[0].name == "Do schools kill creativity?"
+    # The name AND the facts worth knowing before pressing Enter.
+    assert any("Do schools kill creativity?" in m for m in host.said)
+    assert any("TED" in m and "20 minutes" in m for m in host.said)
+    # The branch is refreshed twice: once so the row appears at all, once so it
+    # appears with its name.
+    assert host.reloaded == ["youtube", "youtube"]
+
+
+def test_a_video_whose_details_cannot_be_read_is_still_saved(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from quill.core.radio import youtube_saved
+    from quill.core.radio.youtube import YouTubeError
+
+    added: list[str] = []
+    monkeypatch.setattr(
+        youtube_saved.SavedStore,
+        "add",
+        lambda self, kind, url, name="": (
+            added.append(url) or youtube_saved.SavedItem(kind=kind, url=url)
+        ),
+    )
+
+    def _boom(url: str, resolver: object = None) -> None:
+        raise YouTubeError("that video is private")
+
+    monkeypatch.setattr(youtube_saved, "fetch_video_details", _boom)
+
+    host = _Host(typed="https://www.youtube.com/watch?v=iG9CE55wbtY")
+    browse_actions.perform(host, "addvideo")
+
+    # Saved anyway: a failed lookup must never lose the link somebody pasted.
+    assert added == ["https://www.youtube.com/watch?v=iG9CE55wbtY"]
+    assert any("private" in m for m in host.said)
+
+
+def test_adding_a_playlist_reads_its_name(monkeypatch: pytest.MonkeyPatch) -> None:
+    from quill.core.radio import youtube_saved
+
+    monkeypatch.setattr(
+        youtube_saved.SavedStore,
+        "add",
+        lambda self, kind, url, name="": youtube_saved.SavedItem(kind=kind, url=url),
+    )
+    monkeypatch.setattr(youtube_saved.SavedStore, "describe", lambda self, details: details)
+    monkeypatch.setattr(
+        youtube_saved,
+        "fetch_playlist_details",
+        lambda url, resolver=None: youtube_saved.SavedItem(
+            kind=youtube_saved.PLAYLIST, url=url, name="Best of TED", item_count=42
+        ),
+    )
+
+    host = _Host(typed="https://www.youtube.com/playlist?list=PL123")
+    browse_actions.perform(host, "addplaylist")
+
+    assert any("Best of TED" in m and "42 videos" in m for m in host.said)
+
+
+def test_the_youtube_adds_ask_for_consent_first(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Nothing is stored behind a consent the listener declined.
+
+    The tree used to store the link without ever asking, so the refusal landed
+    at play time instead -- "add it again from Add Custom Station", for a row
+    that looked perfectly ordinary (reported 2026-08-23).
+    """
+    from quill.core.radio import youtube_saved
+    from quill.ui.radio import youtube_ui
+
+    class _Frame:
+        _radio_history = object()
+
+        def _show_message_box(self, *_args: Any, **_kwargs: Any) -> int:
+            return 0
+
+    added: list[str] = []
+    monkeypatch.setattr(
+        youtube_saved.SavedStore, "add", lambda self, kind, url, name="": added.append(url)
+    )
+    monkeypatch.setattr(youtube_ui, "ask_youtube_consent", lambda _frame: False)
+
+    host = _Host(typed="https://www.youtube.com/watch?v=iG9CE55wbtY")
+    host._download_host = _Frame()
+    browse_actions.perform(host, "addvideo")
+
+    assert added == []
+    assert host._task_manager.submitted == []
+
+
+def test_the_podcast_index_search_row_asks_that_one_directory(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Search the Podcast Index...: answered inside the tree, narrowed to it."""
+    from quill.core.radio import federated_browse
+    from quill.ui.radio import browse_search_all
+
+    runs: list[tuple[str, tuple[str, ...]]] = []
+    monkeypatch.setattr(
+        browse_search_all,
+        "run",
+        lambda host, *, what="", targets=(), **_kwargs: runs.append((
+            what,
+            tuple(t.label for t in targets),
+        )),
+    )
+    host = _Host()
+
+    assert browse_actions.is_action_id("searchpodcastindex")
+    browse_actions.perform(host, "searchpodcastindex")
+
+    assert runs == [("the Podcast Index", ("Podcast Index",))]
+    # Derived from the source table rather than a second list to keep in step.
+    assert any(t.seed_id == "podcastindex" for t in federated_browse.TARGETS)

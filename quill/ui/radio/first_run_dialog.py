@@ -86,9 +86,20 @@ class RadioFirstRunDialog:
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._back_btn = wx.Button(self._dialog, label="&Back")
+        self._back_btn.SetHelpText("Returns to the previous screen of the tour.")
         self._next_btn = wx.Button(self._dialog, label="&Next")
+        self._next_btn.SetHelpText(
+            "Moves to the next screen; the last screen's Next finishes the tour."
+        )
         self._browse_btn = wx.Button(self._dialog, label="Browse &Stations Now...")
+        self._browse_btn.SetHelpText(
+            "Skips the rest of the tour and opens Browse Stations, the tree "
+            "of everything there is to listen to."
+        )
         self._skip_btn = wx.Button(self._dialog, wx.ID_CANCEL, "&Skip")
+        self._skip_btn.SetHelpText(
+            "Leaves the tour. Nothing is lost: every door it shows has a key and a menu item."
+        )
         for button in (self._back_btn, self._next_btn, self._browse_btn, self._skip_btn):
             buttons.Add(button, 0, wx.RIGHT, 6)
         root.Add(buttons, 0, wx.ALL, 12)

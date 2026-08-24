@@ -297,8 +297,8 @@ class PodcastSettings:
     #: Streaks and Year in Review. Off, matching the app it came from: a
     #: listening streak is a nudge, and a nudge nobody asked for is pressure.
     stats_streaks_enabled: bool = False
-    #: Which directory Add Podcast searches: iTunes, Podcast Index, or both.
-    directory_source: str = "itunes"
+    #: iTunes, Podcast Index, or both -- "both" since the app carries its own key.
+    directory_source: str = "both"
     #: How the Play Queue is grouped: none, by podcast, or by library folder.
     queue_group_mode: str = "none"
     #: Queue Expiration (1.1.0): a queued episode older than this many days
@@ -492,7 +492,7 @@ class PodcastSettings:
             download_on_metered=bool(data.get("download_on_metered", True)),
             stats_streaks_enabled=bool(data.get("stats_streaks_enabled", False)),
             directory_source=_one_of(
-                data.get("directory_source"), {"itunes", "podcast_index", "both"}, "itunes"
+                data.get("directory_source"), {"itunes", "podcast_index", "both"}, "both"
             ),
             queue_group_mode=_one_of(
                 data.get("queue_group_mode"), {"none", "show", "folder"}, "none"

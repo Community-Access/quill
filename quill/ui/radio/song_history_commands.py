@@ -153,6 +153,9 @@ def open_song_history(host: Any) -> None:
     current_key = ""
     if station is not None:
         current_key = station.station_uuid or station.stream_url
+    windows = getattr(host, "_windows", None)
+    if windows is not None and windows.activate_title("Song History"):
+        return  # already open means come to the front, not a second copy
     dialog = SongHistoryDialog(
         host.frame,
         history=history,
@@ -167,5 +170,6 @@ def open_song_history(host: Any) -> None:
         request_facts=lambda song, show: song_facts.request(host, song, show),
         on_changed=lambda: save(host),
         transport_host=host,
+        windows=windows,
     )
     dialog.show()

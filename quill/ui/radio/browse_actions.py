@@ -34,6 +34,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.core.radio.browse_nodes import make_id
+
 #: The clipboard is offered as the default because the address somebody is
 #: adding is almost always the one they just copied from a station's website.
 _URL_PREFIXES = ("http://", "https://", "www.")
@@ -98,15 +100,45 @@ def _refuse_in_safe_mode(host: Any, what: str) -> bool:
     return True
 
 
-def _reload_branch(host: Any, node_id: str) -> None:
+def _youtube_allowed(host: Any) -> bool:
+    """The one-time YouTube consent, asked from the row that needs it.
+
+    Adding a YouTube link from this tree used to store it without ever asking,
+    and the refusal then arrived at the worst possible moment: pressing Enter
+    on the saved row answered "this YouTube station needs the one-time consent,
+    add it again from Add Custom Station" -- a dead end pointing at a different
+    dialog, for a row that looked perfectly ordinary (reported 2026-08-23).
+    Asking here, before anything is stored, is the same rule Add YouTube Link
+    already follows.
+
+    A dialog embedded in a test has no frame to ask through; nothing is stored
+    behind a prompt that cannot be shown, so it is allowed.
+    """
+    frame = getattr(host, "_download_host", host)
+    if not hasattr(frame, "_radio_history") or not hasattr(frame, "_show_message_box"):
+        return True
+    from quill.ui.radio.youtube_ui import ask_youtube_consent
+
+    return bool(ask_youtube_consent(frame))
+
+
+def _reload_branch(host: Any, node_id: str, *, select: str = "") -> None:
     """Re-fetch the branch that owns this action, so the new row appears.
 
     Without this the listener adds a server and the tree still shows the list
     they had a moment ago, which reads as the add having failed.
+
+    *select* names the row to land the cursor on once it arrives -- the thing
+    that was just added. Adding something and then having to go and find it is
+    the other half of the same complaint.
     """
     reload_branch = getattr(host, "_reload_source_branch", None)
-    if reload_branch is not None:
-        reload_branch(node_id)
+    if reload_branch is None:
+        return
+    if select:
+        # Read by browse_refresh.apply_pending_select when the rows arrive.
+        host._pending_select = select
+    reload_branch(node_id)
 
 
 # --- My Servers ---------------------------------------------------------------
@@ -208,7 +240,7 @@ def _add_channel(host: Any) -> None:
         channel = yt.ChannelStore().add(normalized)
         name = channel.display_name if channel is not None else normalized
         host._announce(f"Added {name}.")
-        _reload_branch(host, "youtube")
+        _reload_branch(host, "youtube", select=make_id("youtubechannel", normalized))
 
     def _failed(_op: str, error: BaseException) -> None:
         if host._tree:
@@ -238,10 +270,21 @@ def _add_playlist(host: Any) -> None:
             "That does not look like a playlist link. It should carry list= in the address."
         )
         return
+    if not _youtube_allowed(host):
+        return
     item = youtube_saved.SavedStore().add(youtube_saved.PLAYLIST, normalized)
-    if item is not None:
-        host._announce("Added the playlist. Open it under YouTube to hear it.")
-    _reload_branch(host, "youtube")
+    if item is None:
+        return
+    host._announce("Added the playlist. Reading its name...")
+    _reload_branch(host, "youtube", select=make_id("ytplaylist", normalized, "1"))
+    _describe_saved(
+        host,
+        fetch=lambda: youtube_saved.fetch_playlist_details(normalized),
+        fallback="Added the playlist. Open it under YouTube to hear it.",
+        tail="Open it to hear its videos.",
+        node_kind="ytplaylist",
+        node_args=(normalized, "1"),
+    )
 
 
 def _add_video(host: Any) -> None:
@@ -263,10 +306,68 @@ def _add_video(host: Any) -> None:
             "https://www.youtube.com/watch?v=... or https://youtu.be/..."
         )
         return
+    if not _youtube_allowed(host):
+        return
     item = youtube_saved.SavedStore().add(youtube_saved.VIDEO, normalized)
-    if item is not None:
-        host._announce("Added the video. It is now a row under YouTube; Enter plays it.")
-    _reload_branch(host, "youtube")
+    if item is None:
+        return
+    # Stored first, described second. A network round trip that fails must
+    # never lose the link somebody just pasted -- the row exists and plays
+    # either way; the title is what improves when the answer arrives.
+    host._announce("Added the video. Reading its details...")
+    _reload_branch(host, "youtube", select=make_id("ytvideo", normalized))
+    _describe_saved(
+        host,
+        fetch=lambda: youtube_saved.fetch_video_details(normalized),
+        fallback="Added the video. It is now a row under YouTube; Enter plays it.",
+        tail="Enter plays it.",
+        node_kind="ytvideo",
+        node_args=(normalized,),
+    )
+
+
+def _describe_saved(
+    host: Any,
+    *,
+    fetch: Callable[[], Any],
+    fallback: str,
+    tail: str,
+    node_kind: str,
+    node_args: tuple[str, ...],
+) -> None:
+    """Fetch a saved link's own facts off-thread, then say what was added.
+
+    Never on the UI thread: this is the same yt-dlp round trip playing the
+    link would make, and a frozen window is not an acceptable way to spend it
+    (the rule every action in this module follows). A failure is not an error
+    the listener has to act on -- the row is already saved and still plays --
+    so it degrades to the address and says so plainly.
+    """
+    from quill.core.radio import youtube_saved
+
+    def _work(**_kwargs: Any) -> Any:
+        return fetch()
+
+    def _ok(_op: str, result: object) -> None:
+        if not host._tree:  # the window closed while the request was running
+            return
+        details = result if isinstance(result, youtube_saved.SavedItem) else None
+        if details is None or not details.name:
+            host._announce(fallback)
+            return
+        youtube_saved.SavedStore().describe(details)
+        _reload_branch(host, "youtube", select=make_id(node_kind, *node_args))
+        spoken = f"Added {details.name}"
+        if details.note:
+            spoken += f", {details.note}"
+        # announce-punctuation: exempt -- every tail below ends in a full stop.
+        host._announce(f"{spoken}. {tail}")
+
+    def _failed(_op: str, error: BaseException) -> None:
+        if host._tree:
+            host._announce(f"{fallback} Its details could not be read: {error}.")
+
+    host._task_manager.submit("radio-youtube-details", _work, on_success=_ok, on_failure=_failed)
 
 
 # --- Search --------------------------------------------------------------------
@@ -335,6 +436,27 @@ def _search_podcasts(host: Any) -> None:
     )
 
 
+def _search_podcast_index(host: Any) -> None:
+    """Search the Podcast Index..., answered inside the tree.
+
+    The same in-tree search every other search row uses, narrowed to the one
+    directory -- so finding a show does not take the tree away from you, and
+    the rows it answers with are ordinary browse rows with Subscribe on them.
+    """
+    from quill.core.radio import federated_browse
+    from quill.ui.radio import browse_search_all
+
+    browse_search_all.run(
+        host,
+        title="Search the Podcast Index",
+        prompt="Show name, host, or topic:",
+        what="the Podcast Index",
+        targets=tuple(
+            target for target in federated_browse.TARGETS if target.seed_id == "podcastindex"
+        ),
+    )
+
+
 #: Action node id -> what it does. A new "Add..." row is one entry here.
 _ACTIONS: dict[str, Callable[[Any], None]] = {
     "addserver": _add_server,
@@ -345,4 +467,5 @@ _ACTIONS: dict[str, Callable[[Any], None]] = {
     "addpodcasturl": _add_podcast_url,
     "importpodcastsopml": _import_podcasts_opml,
     "searchpodcasts": _search_podcasts,
+    "searchpodcastindex": _search_podcast_index,
 }

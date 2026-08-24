@@ -138,6 +138,38 @@ def test_youtube_lists_saved_playlists_and_videos(monkeypatch, tmp_path) -> None
     assert video.station.stream_url == "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 
+def test_a_described_video_reads_as_a_video_and_not_as_an_address(monkeypatch, tmp_path) -> None:
+    """The row shows what YouTube says the video IS (reported 2026-08-23)."""
+    from quill.core.radio import youtube_channels as yt
+    from quill.core.radio import youtube_saved
+
+    real = yt.ChannelStore
+    monkeypatch.setattr(yt, "ChannelStore", lambda *a, **k: real(tmp_path))
+    real_saved = youtube_saved.SavedStore
+    monkeypatch.setattr(youtube_saved, "SavedStore", lambda *a, **k: real_saved(tmp_path))
+    url = "https://www.youtube.com/watch?v=iG9CE55wbtY"
+    store = real_saved(tmp_path)
+    store.add(youtube_saved.VIDEO, url)
+    store.describe(
+        youtube_saved.SavedItem(
+            kind=youtube_saved.VIDEO,
+            url=url,
+            name="Do schools kill creativity?",
+            uploader="TED",
+            duration_ms=1_203_000,
+            description="Sir Ken Robinson makes an entertaining case...",
+        )
+    )
+
+    video = next(n for n in bs.browse("youtube") if n.node_id.startswith("ytvideo:"))
+
+    assert video.label == "Do schools kill creativity?"
+    assert video.note == "TED, 20 minutes 3 seconds"
+    # And the description reaches the details panel, which had only an address.
+    assert video.station is not None
+    assert "Sir Ken Robinson" in video.station.details_text
+
+
 def test_a_channel_lists_uploads_then_its_playlists(monkeypatch) -> None:
     from quill.core.radio import youtube_channels as yt
 

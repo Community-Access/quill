@@ -45,6 +45,53 @@ def is_youtube_station(station: RadioStation | None) -> bool:
     return is_youtube_url(station.stream_url)
 
 
+#: Spoken when a *resolved* YouTube stream is refused by the audio engine.
+#: YouTube's stream addresses are issued per player client and stop working
+#: for everyone else; when the yt-dlp component falls behind, the resolve still
+#: succeeds -- title, length and all -- and the address it hands back is dead
+#: on arrival (a 403 from googlevideo). The player then looked like it had hung
+#: on "connecting", with no way to tell that the fix is one menu item away.
+STALE_COMPONENT_MESSAGE = (
+    "YouTube refused the stream address. That usually means the YouTube support "
+    "component is out of date: use Station, then Update YouTube Support, and try again."
+)
+
+
+def playback_failure_message(station: RadioStation | None, message: str) -> str:
+    """The failure sentence a listener can act on (pure).
+
+    A YouTube station that fails *after* its resolve succeeded is almost never
+    the network and never the station: it is the component. Everything else
+    keeps the engine's own words.
+    """
+    if not is_youtube_station(station):
+        return message
+    return f"{STALE_COMPONENT_MESSAGE} ({message})" if message else STALE_COMPONENT_MESSAGE
+
+
+def consent_granted(controller: Any) -> bool:
+    """Whether YouTube may be contacted for this play (asks once, ever).
+
+    Asked on the UI thread, before the resolve starts. It used to be asked only
+    by Add Custom Station, so every other way to reach a YouTube row -- a
+    followed channel's uploads, a saved video, a favorite, a search result --
+    refused at play time with a message naming a dialog the listener was not
+    in (reported 2026-08-23).
+
+    Only from the UI thread: an auto-advance or a queue step can reach
+    ``play_station`` off-thread, and a modal question there would be a hang.
+    Off-thread the answer is "carry on", and the resolver's own consent guard
+    reports it cleanly instead.
+    """
+    ask = controller._youtube_consent  # noqa: SLF001 - documented seam
+    if ask is None or not wx.IsMainThread():
+        return True
+    try:
+        return bool(ask())
+    except Exception:  # noqa: BLE001 - a failed ask must never block playback
+        return True
+
+
 def begin_youtube_play(
     controller: RadioPlayerController, station: RadioStation, *, token: int
 ) -> None:

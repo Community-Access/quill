@@ -64,6 +64,19 @@ def _find_apple(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
     return nodes, "searched the whole podcast directory"
 
 
+def _find_podcast_index(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
+    """Search the open index rather than the store.
+
+    Its rows are *feeds*, so each one opens straight into that show's episodes
+    -- no subscription, and no second lookup to find the feed the way an Apple
+    collection id needs one.
+    """
+    from quill.core.radio import browse_podcast_index
+
+    nodes = browse_podcast_index.search(query, safe_mode=safe_mode)
+    return nodes, "searched the Podcast Index"
+
+
 def _find_catalog(
     catalog: Any, kind: str, args: list[str], query: str
 ) -> tuple[list[BrowseNode], str] | None:
@@ -185,6 +198,12 @@ _PREFIX_ROUTES: tuple[tuple[str, Any], ...] = (
     ("audius", _find_free_music),
     ("mixcloud", _find_free_music),
     ("ccmixter", _find_free_music),
+    # Before "pi" would ever collide with anything: the four Podcast Index
+    # kinds all begin with it, and all of them search the same way.
+    ("podcastindex", _find_podcast_index),
+    ("pitrending", _find_podcast_index),
+    ("picategories", _find_podcast_index),
+    ("pishow", _find_podcast_index),
 )
 
 

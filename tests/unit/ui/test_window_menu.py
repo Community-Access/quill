@@ -101,6 +101,12 @@ class _FakeFrame:
     def Show(self) -> None:  # noqa: N802
         self.calls.append("Show")
 
+    def Hide(self) -> None:  # noqa: N802
+        self.calls.append("Hide")
+
+    def Destroy(self) -> None:  # noqa: N802
+        self.calls.append("Destroy")
+
     def Raise(self) -> None:  # noqa: N802
         self.calls.append("Raise")
 
@@ -166,6 +172,96 @@ def test_activate_unknown_key_is_safe() -> None:
     assert wm.activate("999") is None
 
 
+def test_activate_title_raises_the_open_window_and_refuses_unknown() -> None:
+    # "Already open means come to the front, not a second copy": every open_*
+    # method asks by title before building a new surface.
+    a, b = _FakeFrame(1), _FakeFrame(2)
+    wm = _wm_with(a, b)  # registered as Main, Browse
+    assert wm.activate_title("Browse") is b
+    assert b.calls == ["Show", "Raise", "SetFocus"]
+    assert wm.activate_title("Not Open") is None
+
+
+def test_hide_all_hides_every_registered_window() -> None:
+    # Send to Tray tucks the whole app away: the peer frames have no parent,
+    # so hiding only the main window would leave them on the taskbar.
+    a, b, c = _FakeFrame(1), _FakeFrame(2), _FakeFrame(3)
+    wm = _wm_with(a, b, c)
+    wm.hide_all()
+    assert a.calls == ["Hide"] and b.calls == ["Hide"] and c.calls == ["Hide"]
+
+
+def test_destroy_all_except_spares_the_kept_frame_and_unregisters_the_rest() -> None:
+    # App shutdown: parentless peers left alive would keep the process running
+    # after Exit. Everything but the main window is destroyed and unregistered.
+    a, b, c = _FakeFrame(1), _FakeFrame(2), _FakeFrame(3)
+    wm = _wm_with(a, b, c)
+    wm.destroy_all_except(a)
+    assert a.calls == []
+    assert b.calls == ["Destroy"] and c.calls == ["Destroy"]
+    assert len(wm) == 1
+    assert wm.activate("1") is a
+
+
+class _FocusableControl:
+    """A child control that records SetFocus (a live wx window is truthy)."""
+
+    def __init__(self) -> None:
+        self.focused = 0
+
+    def SetFocus(self) -> None:  # noqa: N802 - wx shape
+        self.focused += 1
+
+
+def test_activate_lands_on_the_default_control_then_the_remembered_one() -> None:
+    # 2026-08-23: "when using ctrl+tab ... the default control sometimes does
+    # not take focus or the control the user was last in does not take focus."
+    # First visit -> the registered default control; afterwards -> whatever
+    # control the user left the window on. Never the bare frame.
+    wm = WindowManager(_FakeWx())
+    frame = _FakeFrame(1)
+    landed: list[str] = []
+    wm.register(frame, "Main", focus=lambda: landed.append("default"))
+
+    wm.activate("1")
+    assert landed == ["default"], "first visit lands on the default control"
+    assert "SetFocus" not in frame.calls, "focus goes to a control, not the bare frame"
+
+    remembered = _FocusableControl()
+    wm._last_focus["1"] = remembered
+    wm.activate("1")
+    assert remembered.focused == 1, "a remembered control wins over the default"
+    assert landed == ["default"], "the default is not re-run once there is a memory"
+
+
+def test_activate_drops_a_dead_remembered_control_and_falls_back() -> None:
+    class _DeadControl:
+        def __bool__(self) -> bool:  # a destroyed wx window is falsy
+            return False
+
+        def SetFocus(self) -> None:  # noqa: N802 - must not be reached
+            raise AssertionError("a dead control must never be focused")
+
+    wm = WindowManager(_FakeWx())
+    frame = _FakeFrame(1)
+    landed: list[str] = []
+    wm.register(frame, "Main", focus=lambda: landed.append("default"))
+    wm._last_focus["1"] = _DeadControl()
+    wm.activate("1")
+    assert landed == ["default"], "a dead memory falls back to the default control"
+    assert "1" not in wm._last_focus, "the dead memory is forgotten"
+
+
+def test_accelerator_entries_cover_traversal_and_are_reusable() -> None:
+    # Ctrl+Tab, Ctrl+Shift+Tab, and Ctrl+1..9 -- eleven rows a surface folds
+    # into its own accelerator table (setting a table replaces the last one,
+    # so the transport table must carry these or traversal dies there).
+    wm = WindowManager(_FakeWx())
+    entries = wm.accelerator_entries()
+    assert len(entries) == 11
+    assert entries == wm.accelerator_entries(), "stable ids: the rows can be rebuilt anywhere"
+
+
 def _installed_manager() -> tuple[WindowManager, _FakeFrame, _FakeMenuBar]:
     wm = WindowManager(_FakeWx())
     frame = _FakeFrame(1)
@@ -198,3 +294,59 @@ def test_menu_open_leaves_popup_context_menus_alone() -> None:
     frame.menu_open_handler(event)
     assert [item.label for item in popup.items] == ["&Play", "&Remove...\tDelete"]
     assert event.skipped
+
+
+def test_activating_a_window_tries_the_focus_again_once_it_has_settled() -> None:
+    """Ctrl+Tab landing on a bare frame was the report (2026-08-23).
+
+    On wxMSW, raising a window that is not already the foreground one hands it
+    the focus *after* ``Raise`` returns, so a ``SetFocus`` made inline is
+    overwritten a moment later -- and the listener lands on a frame, which
+    reads as silence. The deferred second pass is what makes it stick.
+    """
+    deferred: list[tuple] = []
+
+    class _Wx(_FakeWx):
+        Window = None
+
+        @staticmethod
+        def CallAfter(fn, *args):  # noqa: N802 - wx's own casing
+            deferred.append((fn, args))
+
+    class _Control:
+        def __init__(self) -> None:
+            self.focused = 0
+
+        def SetFocus(self) -> None:  # noqa: N802
+            self.focused += 1
+
+    manager = WindowManager(wx=_Wx())
+    frame = _FakeFrame(7)
+    control = _Control()
+    manager.register(frame, "Browse Stations", focus=control.SetFocus)
+
+    manager.activate(manager.key_for(frame))
+
+    assert control.focused == 1
+    # ...and the same landing is queued for after the activation settles.
+    assert len(deferred) == 1
+    deferred[0][0](*deferred[0][1])
+    assert control.focused == 2
+
+
+def test_the_deferred_focus_gives_up_on_a_window_that_has_gone() -> None:
+    """Closing the window between the two passes must not raise."""
+
+    class _Wx(_FakeWx):
+        Window = None
+
+        @staticmethod
+        def CallAfter(fn, *args):  # noqa: N802
+            return None
+
+    class _Dead:
+        def __bool__(self) -> bool:
+            return False
+
+    manager = WindowManager(wx=_Wx())
+    manager._focus_into("gone", _Dead())  # must not raise

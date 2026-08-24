@@ -61,6 +61,7 @@ def open_popup(host: Any, layout: go_to.GoToLayout) -> str | None:
     settings_btn = wx.Button(dialog, label="&Settings...")
     settings_btn.SetName("Choose which places are in this menu, and in what order")
     close_btn = wx.Button(dialog, wx.ID_CANCEL, "C&lose")
+    close_btn.SetHelpText("Closes Go To and puts focus back exactly where it was.")
     bind_close_button(dialog, close_btn, modeless=False)
     buttons.Add(settings_btn, 0, wx.RIGHT, 6)
     buttons.AddStretchSpacer()

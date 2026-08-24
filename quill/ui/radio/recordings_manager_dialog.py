@@ -36,7 +36,7 @@ from quill.core.radio.recordings_index import (
     list_recordings,
     recordings_dir,
 )
-from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, show_modal_dialog
 from quill.ui.radio.recordings_queue import RecordingsQueueMixin
 from quill.ui.radio.recordings_row_view import RecordingsRowViewMixin
 
@@ -57,6 +57,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         announce_cb: Callable[[str], None] | None = None,
         history: object | None = None,
         on_history_changed: Callable[[], None] | None = None,
+        windows: object | None = None,
     ) -> None:
         import wx
 
@@ -73,22 +74,35 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         self._entries: list[RecordingEntry] = []
         #: #1344: whether T reads out time remaining rather than time elapsed.
         self._speak_remaining = False
+        self._menu_id_refs: list[object] = []
 
-        self.dialog = wx.Dialog(
-            parent,
-            title="Radio Recordings",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        self.dialog.SetMinSize((760, 520))
+        # Modeless parentless wx.Frame (a peer window in the taskbar, the
+        # &Window menu and Ctrl+Tab) when standalone Radio supplies a
+        # WindowManager; an unchanged modal wx.Dialog for embedded QUILL.
+        self._windows = windows
+        self._modeless = windows is not None
+        if self._modeless:
+            self._win = wx.Frame(None, title="Radio Recordings", style=wx.DEFAULT_FRAME_STYLE)
+            self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
+            self._build_surface_menu_bar()
+        else:
+            self._win = wx.Dialog(
+                parent,
+                title="Radio Recordings",
+                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
+            )
+            self._surface = self._win
+        self.dialog = self._win  # top-level window; child dialogs parent to it
+        self._win.SetMinSize((760, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(
-            wx.StaticText(self.dialog, label="&Recordings (made, in progress, and scheduled)"),
+            wx.StaticText(self._surface, label="&Recordings (made, in progress, and scheduled)"),
             0,
             wx.LEFT | wx.TOP,
             10,
         )
-        self._list = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
+        self._list = wx.ListCtrl(self._surface, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._list.SetName(
             "Recordings; the row's status column reads Recording, Recorded, "
             "Scheduled, or Completed. Enter plays a finished recording, Delete "
@@ -98,7 +112,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         self._build_columns()
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
-        self._status = wx.StaticText(self.dialog, label="")
+        self._status = wx.StaticText(self._surface, label="")
         self._status.SetName("Status")
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
 
@@ -127,12 +141,22 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         )
         self._button(buttons, "Re&fresh", self._on_refresh_button, "Reload the recordings list now")
         buttons.AddStretchSpacer()
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
-        close_btn.SetName("Close (recordings continue)")
-        buttons.Add(close_btn)
+        if not self._modeless:
+            # Only the modal dialog carries a Close button: a real window
+            # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape (2026-08-23).
+            from quill.ui.dialog_contract import bind_close_button
+
+            close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
+            bind_close_button(self._win, close_btn, modeless=False)
+            close_btn.SetName("Close (recordings continue)")
+            buttons.Add(close_btn)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
 
-        self.dialog.SetSizer(root)
+        self._surface.SetSizer(root)
+        if self._modeless:
+            outer = wx.BoxSizer(wx.VERTICAL)
+            outer.Add(self._surface, 1, wx.EXPAND)
+            self._win.SetSizer(outer)
         # Stop All starts hidden; the first refresh reveals it only when two or
         # more recordings are running (concurrent recording).
         self._stop_all_btn.Show(False)
@@ -160,30 +184,63 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
 
     def _button(self, sizer: Any, label: str, handler: Callable[[], None], name: str) -> Any:
         wx = self._wx
-        button = wx.Button(self.dialog, label=label)
+        button = wx.Button(self._surface, label=label)
         button.SetName(name)
         button.Bind(wx.EVT_BUTTON, lambda _e: handler())
         sizer.Add(button, 0, wx.RIGHT, 6)
         return button
 
+    def _build_surface_menu_bar(self) -> None:
+        """Menu bar for the modeless frame: &Close + the shared &Window menu."""
+        wx = self._wx
+        menu_bar = wx.MenuBar()
+        surface_menu = wx.Menu()
+        close_id = wx.NewIdRef()
+        surface_menu.Append(close_id, "&Close\tCtrl+W")
+        self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
+        menu_bar.Append(surface_menu, "&Recordings")
+        self._windows.install(self._win, menu_bar)
+        self._win.SetMenuBar(menu_bar)
+        self._menu_id_refs.append(close_id)
+
     def show(self) -> None:
         wx = self._wx
-        self.dialog.CentreOnParent()
-        apply_modal_ids(self.dialog, cancel_id=wx.ID_CANCEL)
         # The transport keyboard (transport_keys), so the player stays reachable
         # from a window a listener browses in while something is playing.
         from quill.ui.radio import transport_keys
 
-        transport_keys.install(self.dialog, self, wx=wx)
+        if self._modeless:
+            from quill.ui.dialog_contract import show_modeless_surface
+
+            # The WindowManager's Ctrl+Tab / Ctrl+1..9 rows ride in the same
+            # table -- setting a table replaces the previous one.
+            transport_keys.install(
+                self._win, self, wx=wx, extra_entries=self._windows.accelerator_entries()
+            )
+            self._windows.register(self._win, "Radio Recordings")
+            show_modeless_surface(self._win, "Radio Recordings", announce=self._announce)
+            return
+        self._win.CentreOnParent()
+        apply_modal_ids(self._win, cancel_id=wx.ID_CANCEL)
+        transport_keys.install(self._win, self, wx=wx)
         try:
-            show_modal_dialog(self.dialog, "Radio Recordings", announce=self._announce)
+            show_modal_dialog(self._win, "Radio Recordings", announce=self._announce)
         finally:
             self._timer.Stop()
-            self.dialog.Destroy()
+            self._win.Destroy()
 
     def _on_close(self, event: Any) -> None:
         self._timer.Stop()
+        if not self._modeless:
+            event.Skip()
+            return
+        previous = self._windows.previous_key(self._win)
+        self._windows.unregister(self._win)
+        announce_surface_exit("Radio Recordings", self._announce)
         event.Skip()
+        self._win.Destroy()
+        if previous:
+            self._windows.activate(previous)
 
     def _on_refresh_button(self) -> None:
         """Manual Refresh keeps the selection (R1/9 -- never jumps to top)."""
@@ -399,6 +456,14 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         ctrl = bool(event.ControlDown())
         shift = bool(event.ShiftDown())
         alt = bool(event.AltDown())
+        # A frame has no automatic Escape->Cancel; wire it (and Ctrl+F4, the
+        # document-window close key) to close, like every peer window.
+        # getattr: the winamp-key tests drive this hook on a bare fake.
+        if getattr(self, "_modeless", False) and (
+            code == wx.WXK_ESCAPE or (code == wx.WXK_F4 and ctrl)
+        ):
+            self._win.Close()
+            return
         key = normalize_key_code(code, wx)
         # Volume is not part of the opt-out: it predates #1344 and Ctrl+arrow can
         # never collide with typing.

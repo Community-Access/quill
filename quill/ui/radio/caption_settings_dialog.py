@@ -99,8 +99,15 @@ class CaptionSettingsDialog:
         )
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        buttons.Add(wx.Button(self._dialog, wx.ID_OK, "&Save"), 0, wx.RIGHT, 6)
-        buttons.Add(wx.Button(self._dialog, wx.ID_CANCEL, "&Cancel"), 0)
+        save_btn = wx.Button(self._dialog, wx.ID_OK, "&Save")
+        save_btn.SetHelpText(
+            "Applies these caption looks to every video from now on, "
+            "including one playing right now."
+        )
+        cancel_btn = wx.Button(self._dialog, wx.ID_CANCEL, "&Cancel")
+        cancel_btn.SetHelpText("Closes without changing how captions look.")
+        buttons.Add(save_btn, 0, wx.RIGHT, 6)
+        buttons.Add(cancel_btn, 0)
         root.Add(buttons, 0, wx.ALL, 12)
 
         self._dialog.SetSizer(root)

@@ -114,8 +114,13 @@ class YouTubePlaylistDialog:
 
         row = wx.BoxSizer(wx.HORIZONTAL)
         self._add_btn = wx.Button(panel, label="Add &Selected")
+        self._add_btn.SetHelpText(
+            "Adds the checked entries to your favorites, each as its own row."
+        )
         self._add_all_btn = wx.Button(panel, label="Add &All")
+        self._add_all_btn.SetHelpText("Adds every entry of the playlist to your favorites.")
         close_btn = wx.Button(panel, wx.ID_CLOSE, label="C&lose")
+        close_btn.SetHelpText("Closes without adding anything more.")
         for button in (self._add_btn, self._add_all_btn, close_btn):
             row.Add(button, 0, wx.RIGHT, 6)
         root.Add(row, 0, wx.ALL, 8)

@@ -676,10 +676,21 @@ source, for its Podcasting 2.0 metadata. This reverses the 2026-08-13 decision
 not to integrate it; the reversal is recorded in the egress audit beside the
 call site so a stale rationale cannot keep asserting itself.
 
-- **iTunes stays the default and stays keyless.** Podcast Index requires
-  credentials, and the source is simply absent from the picker until they exist
-  -- a feature that only works after registering for an API key is a feature
-  most people do not have.
+- **The credential became the application's (2026-08-23).** This section
+  shipped saying iTunes stays the default because "Podcast Index requires" a key
+  the listener has to register for -- and that was the right call while the key
+  was theirs to get. It is now the app's: `tools/generate_podcast_index_key.py`
+  bakes a key and secret into the gitignored `quill/_podcast_index_key.py` at
+  build time (never committed; the same shape as the ADP client key), and
+  `podcast_index.credentials()` prefers a listener's own pair from the platform
+  credential store, so pasting a key is a rotation lever rather than an entry
+  fee. `directory_source` therefore defaults to `both` for a new library, while
+  a stored choice is never overridden. What ships is an application identifier
+  for public data: it authorises nothing on anyone's behalf, reads no account,
+  and sends no listener data -- a search carries the term alone. The catalogue
+  half (`podcast_index_catalog.py`: a show's fact sheet, its episodes without
+  subscribing, trending, the taxonomy) is shared with Quill Radio's Podcast
+  Index browse branch.
 - **Credentials go to the platform credential store**, never `podcasts.json`,
   and must survive `stability/redaction.py` scrubbing.
 - **One directory failing is not the search failing.**

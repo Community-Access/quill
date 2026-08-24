@@ -21,28 +21,27 @@ __all__ = ["podcast_index_credentials", "preview_search_result"]
 
 
 def podcast_index_credentials() -> tuple[str, str]:
-    """The Podcast Index key and secret, or two empty strings.
+    """The Podcast Index key and secret to search with, or two empty strings.
 
-    From the platform credential store, never from a settings file: they are
-    secrets, and they are treated the way every other secret in QUILL is. No
-    credentials is not an error -- it is a directory that simply cannot be
+    The listener's own pair from the platform credential store if they set one
+    -- never from a settings file; they are secrets, and they are treated the
+    way every other secret in QUILL is -- and the application credential the
+    build carries otherwise. Resolution lives in the client
+    (:func:`quill.core.podcasts.podcast_index.credentials`) so every surface
+    asks the same question and gets the same answer.
+
+    Two empty strings is not an error: it is a directory that cannot be
     searched, which the caller reports as a missing option rather than a
     failure.
     """
     try:
-        from quill.core.podcasts.podcast_index import CREDENTIAL_KEY, CREDENTIAL_KEY_SECRET
-        from quill.platform.windows.credential_manager import load_generic_credential
+        from quill.core.podcasts.podcast_index import credentials
     except ImportError:
         return ("", "")
     try:
-        key = load_generic_credential(CREDENTIAL_KEY)
-        secret = load_generic_credential(CREDENTIAL_KEY_SECRET)
+        return credentials()
     except OSError:  # pragma: no cover - platform dependent
         return ("", "")
-    return (
-        str(getattr(key, "secret", "") or "") if key is not None else "",
-        str(getattr(secret, "secret", "") or "") if secret is not None else "",
-    )
 
 
 def preview_search_result(dialog: Any, result: Any, result_index: int) -> None:

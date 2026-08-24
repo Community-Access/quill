@@ -53,7 +53,24 @@ def selected_audio_track(host: Any) -> Any:
 
 
 def play_audio_track(host: Any, track: Any) -> bool:
-    """Switch to *track*. True when playback moved to it."""
+    """Switch to *track*. True when playback moved to it.
+
+    Through the controller's ordinary play path, **not** straight into the
+    engine. Loading the rendition's URL directly was the shorter route and it
+    quietly skipped everything that path does: it left Sound Enhancements
+    pointing at the previous rendition (the relay is built per URL, so the
+    listener either lost their enhancement or kept hearing the old track
+    through a relay nobody stopped), it skipped the volume and speed the
+    station is due, and it lost the one cross-engine rescue and the spoken
+    error that every other failed load gets. Switching to described audio and
+    hearing the ordinary track -- or nothing -- was the report (2026-08-23).
+
+    ``_play_resolved_station`` clears the chosen track by design (a *new*
+    station has no rendition chosen yet), so the choice is recorded after it
+    rather than before.
+    """
+    from quill.ui.radio.playback_state import RadioPlayerState
+
     station = host._state.station
     url = str(getattr(track, "stream_url", "") or "")
     if station is None or not url:
@@ -62,16 +79,16 @@ def play_audio_track(host: Any, track: Any) -> bool:
     previous_override = host._playback_url_override
     previous_track = host._selected_audio_track
     host._playback_url_override = url
-    host._selected_audio_track = track
-    if not host._engine.load(url):
-        # The old rendition is still the one playing, so the old answers must
-        # stay true: leaving the failed URL as the override would hand it to
-        # the next reconnect, and the picker would claim a track that never
-        # loaded.
+    host._play_resolved_station(station)
+    if host._state.state is RadioPlayerState.ERROR:
+        # The old rendition is still the one the listener had, so the old
+        # answers must stay true: leaving the failed URL as the override would
+        # hand it to the next reconnect, and the picker would claim a track
+        # that never loaded.
         host._playback_url_override = previous_override
         host._selected_audio_track = previous_track
         return False
-    host._declare_source_shape()
+    host._selected_audio_track = track
     if resume_at > 0:
         # Put them back where they were. The reload starts at zero otherwise,
         # and "switch to described audio" would cost you your place every time.

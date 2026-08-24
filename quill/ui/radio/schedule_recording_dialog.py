@@ -12,7 +12,7 @@ from zoneinfo import available_timezones
 
 from quill.core.radio.recording_schedule import RecordingScheduleEntry, new_id, next_occurrence
 from quill.core.radio.wake_timer import parse_time_of_day
-from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
 
 _WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
@@ -139,7 +139,9 @@ class ScheduleRecordingDialog:
         self._windows = windows
         self._modeless = windows is not None
         if self._modeless:
-            self._win = wx.Frame(parent, title="Schedule Recording", style=wx.DEFAULT_FRAME_STYLE)
+            # No parent, on purpose: an owned frame floats glued above its
+            # owner and reads as an overlay; a peer window stands on its own.
+            self._win = wx.Frame(None, title="Schedule Recording", style=wx.DEFAULT_FRAME_STYLE)
             self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
             self._build_surface_menu_bar()
             self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
@@ -304,17 +306,25 @@ class ScheduleRecordingDialog:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._add_btn = wx.Button(self._surface, label="&Add Schedule")
+        self._add_btn.SetHelpText(
+            "Saves the form as a scheduled recording -- or saves your changes, "
+            "when you are editing an existing one; the label says which."
+        )
         self._new_btn = wx.Button(self._surface, label="Ne&w")
         self._new_btn.SetName("Clear the form and stop editing")
         self._new_btn.Enable(False)
-        close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
-        # A frame gets no free ID_CANCEL handling: wire it, or the
-        # button that looks like the way out does nothing.
-        bind_close_button(self._win, close_btn, modeless=self._modeless)
         btn_row.Add(self._add_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._new_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
-        btn_row.Add(close_btn)
+        if not self._modeless:
+            # Only the modal dialog carries a Close button: a real window
+            # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape (2026-08-23).
+            close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
+            close_btn.SetHelpText(
+                "Closes this window. Every schedule in the list stays armed and fires at its time."
+            )
+            bind_close_button(self._win, close_btn, modeless=False)
+            btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
         self._surface.SetSizer(root)
@@ -412,7 +422,9 @@ class ScheduleRecordingDialog:
         self._menu_id_refs.append(close_id)
 
     def _on_char_hook(self, event: object) -> None:
-        if event.GetKeyCode() == self._wx.WXK_ESCAPE:
+        if event.GetKeyCode() == self._wx.WXK_ESCAPE or (
+            event.GetKeyCode() == self._wx.WXK_F4 and event.ControlDown()
+        ):
             self._win.Close()
             return
         event.Skip()
@@ -420,7 +432,7 @@ class ScheduleRecordingDialog:
     def _on_close(self, event: object) -> None:
         previous = self._windows.previous_key(self._win)
         self._windows.unregister(self._win)
-        self._announce("Exited Schedule Recording.")
+        announce_surface_exit("Schedule Recording", self._announce)
         event.Skip()
         self._win.Destroy()
         if previous:

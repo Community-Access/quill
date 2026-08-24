@@ -62,7 +62,12 @@ def unparsable_keys(wx: Any) -> list[str]:
 
 
 def install(
-    window: Any, host: Any, *, wx: Any = None, after: Callable[[], None] | None = None
+    window: Any,
+    host: Any,
+    *,
+    wx: Any = None,
+    after: Callable[[], None] | None = None,
+    extra_entries: Any = (),
 ) -> int:
     """Give *window* the whole transport keyboard. Returns how many keys landed.
 
@@ -77,14 +82,24 @@ def install(
     pressed, so a key and a button leave the panel saying the same thing.
 
     The existing accelerator table is *replaced*, not merged: wx has no
-    "append", and every window that calls this either has no table of its own
-    or has one built from these same rows.
+    "append". A window that already carries accelerators it must keep -- the
+    modeless radio surfaces carry the WindowManager's Ctrl+Tab / Ctrl+1..9
+    traversal -- passes them as *extra_entries* so one table holds both.
+    Leaving them out silently killed window traversal on every surface that
+    installed the transport (reported 2026-08-23: windows could not be
+    Ctrl+Tabbed between).
     """
     if wx is None:
         import wx as wx_module
 
         wx = wx_module
-    entries = []
+    from quill.ui.radio import media_keys
+
+    entries = list(extra_entries)
+    # Radio's own media keys ride the same table (see media_keys); Cast's
+    # player has no caption track, so it acquires none of them.
+    entries.extend(media_keys.entries(window, host, wx))
+    carried = len(entries)
     for command in transport_commands.COMMANDS:
         command_id = wx.NewIdRef()
         entry = _accelerator(wx, command.key, int(command_id))
@@ -104,7 +119,7 @@ def install(
             refs = window._transport_id_refs = []
         refs.append(command_id)
     window.SetAcceleratorTable(wx.AcceleratorTable(entries))
-    return len(entries)
+    return len(entries) - carried
 
 
 def _fire(host: Any, command_id: str, after: Callable[[], None] | None) -> bool:

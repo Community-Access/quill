@@ -56,7 +56,7 @@ from quill.ui.radio.playback_state import (
     RadioPlaybackState,
     RadioPlayerState,
 )
-from quill.ui.radio.youtube_playback import begin_youtube_play, is_youtube_station
+from quill.ui.radio.youtube_playback import begin_youtube_play, consent_granted, is_youtube_station
 
 if TYPE_CHECKING:
     from quill.ui.spotify.web_player import SpotifyWebEngine
@@ -135,6 +135,7 @@ class RadioPlayerController:
         on_buffering: Callable[[], None] | None = None,
         spotify_token_provider: Callable[[], str] | None = None,
         resolve_youtube: Callable[[str], Any] | None = None,
+        youtube_consent: Callable[[], bool] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed
         #: Best-effort RadioBrowser click-vote hook; injected so this module
@@ -184,6 +185,15 @@ class RadioPlayerController:
         #: means YouTube support is unavailable and such a station reports a
         #: clean error instead of loading a web page into the audio engine.
         self._resolve_youtube = resolve_youtube
+        #: Asks the listener's one-time YouTube consent, on the UI thread,
+        #: *before* the resolve is started. It used to be asked only by Add
+        #: Custom Station, so every other way to reach a YouTube row -- a
+        #: followed channel's uploads, a saved video, a favorite, a search
+        #: result -- refused at play time with a message naming a dialog the
+        #: listener was not in. Returning False means they declined and
+        #: nothing plays; None (an embedded controller with no host) means
+        #: the question cannot be asked, and the resolver's own guard stands.
+        self._youtube_consent = youtube_consent
         #: The short-lived URL the engine is actually loading when it differs
         #: from the station's own (a resolved YouTube stream). Kept apart from
         #: ``_state.station`` so favorites, the recorder, and the now-playing
@@ -282,6 +292,8 @@ class RadioPlayerController:
         on a worker thread, and playback starts when it lands. Every other
         station plays synchronously, exactly as before.
         """
+        if is_youtube_station(station) and not consent_granted(self):
+            return  # declined: the ask says so out loud, and nothing changes
         self._play_token += 1
         self._playback_url_override = ""
         # Last play's video facts must not describe this one: a station tuned
@@ -1058,19 +1070,10 @@ class RadioPlayerController:
         wx.CallLater(delay_ms, work)
 
     def _on_error(self, message: str) -> None:
-        # Before giving up, try the one cross-engine rescue: a stream WMP
-        # cannot decode (Ogg/Opus/HLS) often plays fine on mpv, and vice
-        # versa a misbehaving mpv falls back to WMP.
-        # RECONNECTING as well as CONNECTING: a reconnect used to *be*
-        # CONNECTING, so it reached the cross-engine rescue. Splitting the two
-        # without this would have quietly taken that rescue away from exactly
-        # the case that needs it most -- a stream that has already dropped once.
-        if (
-            self._state.state in (RadioPlayerState.CONNECTING, RadioPlayerState.RECONNECTING)
-            and self._attempt_engine_fallback()
-        ):
-            return
-        self._set_state(RadioPlayerState.ERROR, message=message)
+        """A load failed. What happens next lives in engine_selection."""
+        from quill.ui.radio import engine_selection
+
+        engine_selection.on_load_error(self, message)
 
     def _handle_buffering(self, active: bool) -> None:
         """The engine's stall report, turned into a state as well as a sentence.

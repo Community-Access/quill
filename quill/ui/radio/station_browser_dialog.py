@@ -45,7 +45,7 @@ from quill.core.radio.spotify_search import (
     spotify_search_stations,
     youtube_search_stations,
 )
-from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
 from quill.ui.media.list_columns_view import build_columns
 from quill.ui.radio import library_search, transport_keys
 from quill.ui.radio.results_view import ALL_SOURCES as _ALL_SOURCES
@@ -269,7 +269,9 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         self._windows = windows
         self._modeless = windows is not None
         if self._modeless:
-            self._win = wx.Frame(parent, title="Internet Radio", style=wx.DEFAULT_FRAME_STYLE)
+            # No parent, on purpose: an owned frame floats glued above its
+            # owner and reads as an overlay; a peer window stands on its own.
+            self._win = wx.Frame(None, title="Internet Radio", style=wx.DEFAULT_FRAME_STYLE)
             self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
             self._build_surface_menu_bar()
             self._win.Bind(wx.EVT_CLOSE, self._on_close)
@@ -455,11 +457,6 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
             "Re-fetch the current source from the internet -- the Music Genres "
             "list/stations, or the iHeart directory used by search"
         )
-        close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
-        # A frame gets no free ID_CANCEL handling: wire it, or the
-        # button that looks like the way out does nothing.
-        bind_close_button(self._win, close_btn, modeless=self._modeless)
-        close_btn.SetName("Close (playback continues)")
         btn_row.Add(self._play_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._favorite_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._more_btn, 0, wx.RIGHT, 6)
@@ -467,7 +464,13 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         btn_row.Add(link_finder_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._refresh_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
-        btn_row.Add(close_btn)
+        if not self._modeless:
+            # Only the modal dialog carries a Close button: a real window
+            # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape (2026-08-23).
+            close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
+            bind_close_button(self._win, close_btn, modeless=False)
+            close_btn.SetName("Close (playback continues)")
+            btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
         self._surface.SetSizer(root)
@@ -589,7 +592,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
     def _on_close(self, event: object) -> None:
         previous = self._windows.previous_key(self._win)
         self._windows.unregister(self._win)
-        self._announce("Exited Search Stations.")
+        announce_surface_exit("Search Stations", self._announce)
         self._on_favorites_changed()
         event.Skip()
         self._win.Destroy()
@@ -607,6 +610,12 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         if self._modeless:
             from quill.ui.dialog_contract import show_modeless_surface
 
+            # The transport keyboard here too -- with the WindowManager's
+            # Ctrl+Tab / Ctrl+1..9 rows folded into the same table, because
+            # setting an accelerator table replaces the previous one.
+            transport_keys.install(
+                self._win, self, wx=self._wx, extra_entries=self._windows.accelerator_entries()
+            )
             self._windows.register(self._win, "Search Stations")
             show_modeless_surface(self._win, "Search Stations", announce=self._announce)
             return
@@ -1390,7 +1399,10 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         """Handle Ctrl+Up/Ctrl+Down as Volume Up/Down from anywhere in the
         dialog (#1070); Escape closes the modeless frame; else pass through."""
         wx = self._wx
-        if self._modeless and event.GetKeyCode() == wx.WXK_ESCAPE:
+        if self._modeless and (
+            event.GetKeyCode() == wx.WXK_ESCAPE
+            or (event.GetKeyCode() == wx.WXK_F4 and event.ControlDown())
+        ):
             self._win.Close()
             return
         if event.ControlDown() and not event.ShiftDown() and not event.AltDown():

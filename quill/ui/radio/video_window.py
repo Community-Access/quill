@@ -42,8 +42,10 @@ from typing import Any
 #: What the video surface tells assistive technology it is. Not "graphic": it is
 #: a container the application draws into, and there is no alt text to find.
 SURFACE_DESCRIPTION = (
-    "Video image. All playback controls are on the Playback menu. "
-    "Press Ctrl+Shift+T for the transcript."
+    "Video image. All playback controls are on the Playback menu, and work from "
+    "this window. Ctrl+Shift+T reads the transcript, Ctrl+Shift+K toggles "
+    "captions, F11 is full screen, and Ctrl+Shift+V or Escape closes the picture "
+    "without stopping the sound."
 )
 
 
@@ -91,6 +93,10 @@ class VideoWindow:
             self._frame, style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_NO_VSCROLL
         )
         self._status.SetName("Video status: title, position, chapter and audio track")
+        self._status.SetHelpText(
+            "A read-on-demand status line -- it never announces itself. Arrow "
+            "through it for the title, position, chapter and audio track."
+        )
         self._status.SetMinSize((-1, 56))
         root.Add(self._status, 0, wx.EXPAND)
 
@@ -170,8 +176,13 @@ class VideoWindow:
         if key == wx.WXK_F11:
             self.toggle_full_screen()
             return
-        if key == wx.WXK_ESCAPE and self.is_full_screen():
-            self.toggle_full_screen()
+        if key == wx.WXK_ESCAPE:
+            # Full screen first: Escape's job there is to get you back to a
+            # window, not to take the picture away entirely.
+            if self.is_full_screen():
+                self.toggle_full_screen()
+            else:
+                self.close()
             return
         event.Skip()
 

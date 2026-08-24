@@ -41,6 +41,12 @@ class WindowManager:
         self._next_id = wx.NewIdRef()
         self._prev_id = wx.NewIdRef()
         self._num_ids = [wx.NewIdRef() for _ in range(9)]
+        #: Per window: the child control focus was last on, remembered as
+        #: traversal leaves it, so coming back lands where you were -- not on
+        #: the bare frame (which reads as nothing under a screen reader).
+        self._last_focus: dict[str, Any] = {}
+        #: Per window: the "default control" callable for a first visit.
+        self._default_focus: dict[str, Any] = {}
 
     # -- identity ----------------------------------------------------------------
 
@@ -51,10 +57,18 @@ class WindowManager:
 
     # -- membership --------------------------------------------------------------
 
-    def register(self, frame: Any, title: str) -> None:
-        """Add (or refresh the title of) *frame* in the shared window list."""
+    def register(self, frame: Any, title: str, *, focus: Any = None) -> None:
+        """Add (or refresh the title of) *frame* in the shared window list.
+
+        *focus*, when given, is a zero-argument callable that puts keyboard
+        focus on the window's default control (the favorites tree, say) --
+        used the first time the window is reached by traversal, before there
+        is a remembered control to return to.
+        """
         key = self.key_for(frame)
         self._frames[key] = frame
+        if focus is not None:
+            self._default_focus[key] = focus
         self._registry.register(key, title)
 
     def unregister(self, frame: Any) -> None:
@@ -62,6 +76,8 @@ class WindowManager:
         key = self.key_for(frame)
         self._frames.pop(key, None)
         self._window_menus.pop(key, None)
+        self._default_focus.pop(key, None)
+        self._last_focus.pop(key, None)
         self._registry.unregister(key)
 
     def __len__(self) -> int:
@@ -70,18 +86,109 @@ class WindowManager:
     # -- navigation (pure selection -> thin wx activation) -----------------------
 
     def activate(self, key: str) -> Any:
-        """Raise, show, and focus the window with *key*; returns it (or None)."""
+        """Raise, show, and focus the window with *key*; returns it (or None).
+
+        Focus goes to a *control*, not the bare frame: the control you left
+        the window on last time, else the window's registered default control,
+        else its first content control. A frame with the focus reads as
+        nothing under a screen reader, and "Ctrl+Tab landed me nowhere" was
+        exactly the report (2026-08-23).
+        """
         frame = self._frames.get(key)
         if frame is None:
             return None
-        for method in ("Show", "Raise", "SetFocus"):
+        self._remember_focus()
+        for method in ("Show", "Raise"):
             call = getattr(frame, method, None)
             if callable(call):
                 try:
                     call()
                 except Exception:  # noqa: BLE001 - a dying window must not crash traversal
                     return None
+        self._focus_into(key, frame)
+        # And again once the activation has settled. On wxMSW, raising a window
+        # that is not already the foreground one hands it the focus *after* this
+        # call returns -- so a SetFocus made here is overwritten a moment later
+        # by whatever the frame itself decides, which is usually nothing, and
+        # the listener lands on a bare frame that reads as silence ("ctrl+tab
+        # does not set focus to the first control", 2026-08-23). Deferring a
+        # second, identical attempt costs nothing when the first one held.
+        call_after = getattr(self._wx, "CallAfter", None)
+        if callable(call_after):
+            try:
+                call_after(self._focus_into, key, frame)
+            except Exception:  # noqa: BLE001 - the deferred pass is a nicety
+                pass
         return frame
+
+    def _remember_focus(self) -> None:
+        """Record which control holds focus, keyed by its registered top-level
+        window, so traversal back into that window can land on it again."""
+        window_cls = getattr(self._wx, "Window", None)
+        find_focus = getattr(window_cls, "FindFocus", None)
+        if not callable(find_focus):
+            return
+        try:
+            focused = find_focus()
+        except Exception:  # noqa: BLE001 - focus memory is a nicety, never a crash
+            return
+        if focused is None:
+            return
+        owners = {id(frame): key for key, frame in self._frames.items()}
+        window = focused
+        while window is not None:
+            key = owners.get(id(window))
+            if key is not None:
+                self._last_focus[key] = focused
+                return
+            parent = getattr(window, "GetParent", None)
+            window = parent() if callable(parent) else None
+
+    def _focus_into(self, key: str, frame: Any) -> None:
+        """Land keyboard focus inside *frame*: remembered control, registered
+        default, first content control, bare frame -- in that order.
+
+        Called twice per activation (once now, once deferred); it is
+        idempotent, and the second pass is what makes the focus stick on
+        wxMSW. A frame that has been destroyed in between is falsy, and
+        answering nothing is the right thing to do about it.
+        """
+        if frame is None:
+            return
+        try:
+            if not bool(frame):  # a destroyed wx window is falsy
+                return
+        except Exception:  # noqa: BLE001 - a stand-in without __bool__ is fine
+            pass
+        last = self._last_focus.get(key)
+        if last is not None:
+            try:
+                if bool(last):  # a destroyed wx window is falsy
+                    last.SetFocus()
+                    return
+            except Exception:  # noqa: BLE001 - the control may be half-dead
+                pass
+            self._last_focus.pop(key, None)
+        default = self._default_focus.get(key)
+        if callable(default):
+            try:
+                default()
+                return
+            except Exception:  # noqa: BLE001 - fall through to the generic pick
+                pass
+        try:
+            from quill.ui.dialog_contract import focus_primary_control
+
+            if focus_primary_control(frame) is not None:
+                return
+        except Exception:  # noqa: BLE001 - fall through to the frame itself
+            pass
+        set_focus = getattr(frame, "SetFocus", None)
+        if callable(set_focus):
+            try:
+                set_focus()
+            except Exception:  # noqa: BLE001 - a dying window must not crash traversal
+                pass
 
     def activate_next(self, frame: Any) -> Any:
         """Cycle to the window after *frame* (Ctrl+Tab)."""
@@ -97,6 +204,51 @@ class WindowManager:
         """Jump to the *number*-th window (Ctrl+<number>)."""
         target = self._registry.by_number(number)
         return self.activate(target) if target else None
+
+    def activate_title(self, title: str) -> Any:
+        """Raise the open window registered as *title*, or None if not open.
+
+        Already open means come to the front, not a second copy -- the guard
+        every open_* method runs before building a new surface. Title is the
+        stable identity a caller has; the wx ids are not knowable in advance.
+        """
+        for entry in self._registry.items():
+            if entry.title == title:
+                return self.activate(entry.key)
+        return None
+
+    def hide_all(self) -> None:
+        """Hide every registered window (Send to Tray tucks the whole app away).
+
+        The peer frames have no parent, so hiding the main window alone would
+        leave them standing on the taskbar while the app claims to be in the
+        tray. They come back through the tray icon, the &Window menu, or
+        Ctrl+Tab -- :meth:`activate` shows before it raises.
+        """
+        for frame in list(self._frames.values()):
+            try:
+                frame.Hide()
+            except Exception:  # noqa: BLE001 - a dying window must not block the tray
+                continue
+
+    def destroy_all_except(self, keep: Any) -> None:
+        """Destroy every registered window except *keep* (app shutdown).
+
+        The peer frames have no parent, so nothing destroys them when the main
+        window closes; left alive they keep the process -- and their timers --
+        running after Exit. Destroyed directly rather than Closed: this runs
+        on the way out, and a close handler that announces or re-activates
+        siblings has nothing left to talk to.
+        """
+        keep_key = self.key_for(keep) if keep is not None else None
+        for key, frame in list(self._frames.items()):
+            if key == keep_key:
+                continue
+            self.unregister(frame)
+            try:
+                frame.Destroy()
+            except Exception:  # noqa: BLE001 - shutdown must never block exit
+                continue
 
     def previous_key(self, frame: Any) -> str | None:
         """The window to fall back to when *frame* closes (or None)."""
@@ -119,7 +271,17 @@ class WindowManager:
             lambda event, f=frame: self._on_menu_open(event, f),
         )
 
-    def _bind_accelerators(self, frame: Any) -> None:
+    def accelerator_entries(self) -> list[Any]:
+        """Fresh AcceleratorEntry rows for the traversal keys (Ctrl+Tab /
+        Ctrl+Shift+Tab / Ctrl+1..9), for any table that must *include* them.
+
+        A wx accelerator table cannot be appended to -- setting one replaces
+        the last -- so a surface that installs its own table (the transport
+        keys) must fold these rows in, or window traversal silently dies on
+        that surface the moment its table lands. The command ids are stable and
+        the EVT_MENU handlers are bound per-frame in :meth:`install`, so the
+        same rows work in any table on any registered frame.
+        """
         wx = self._wx
         entries = [
             wx.AcceleratorEntry(wx.ACCEL_CTRL, wx.WXK_TAB, int(self._next_id)),
@@ -127,7 +289,11 @@ class WindowManager:
         ]
         for index, num_id in enumerate(self._num_ids):
             entries.append(wx.AcceleratorEntry(wx.ACCEL_CTRL, ord("1") + index, int(num_id)))
-        frame.SetAcceleratorTable(wx.AcceleratorTable(entries))
+        return entries
+
+    def _bind_accelerators(self, frame: Any) -> None:
+        wx = self._wx
+        frame.SetAcceleratorTable(wx.AcceleratorTable(self.accelerator_entries()))
         nxt, prv = int(self._next_id), int(self._prev_id)
         frame.Bind(wx.EVT_MENU, lambda _e, f=frame: self.activate_next(f), id=nxt)
         frame.Bind(wx.EVT_MENU, lambda _e, f=frame: self.activate_previous(f), id=prv)

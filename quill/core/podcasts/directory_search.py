@@ -27,13 +27,17 @@ from quill.core.podcasts.itunes_search import PodcastSearchResult
 
 __all__ = ["SOURCE_LABELS", "SOURCES", "DirectorySearch", "search"]
 
-#: The three answers to "which directory". ``itunes`` needs nothing;
-#: ``podcast_index`` needs a key; ``both`` asks whichever can answer.
+#: The three answers to "which directory". ``both`` asks whichever can answer
+#: and is the sensible default now that neither needs anything of the listener.
 SOURCES: tuple[str, ...] = ("itunes", "podcast_index", "both")
 
 SOURCE_LABELS: tuple[tuple[str, str], ...] = (
-    ("itunes", "iTunes (no key needed)"),
-    ("podcast_index", "Podcast Index (needs a key)"),
+    ("itunes", "iTunes"),
+    # Not "(needs a key)" any more: the app carries its own application
+    # credential (2026-08-23), so this directory answers out of the box. A
+    # listener can still paste their own, which wins -- see
+    # ``podcast_index.credentials``.
+    ("podcast_index", "Podcast Index (open directory, Podcasting 2.0 tags)"),
     ("both", "Both directories"),
 )
 

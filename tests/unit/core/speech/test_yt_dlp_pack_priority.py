@@ -34,6 +34,32 @@ def _make_pack(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, marker: str) 
     return pack
 
 
+@pytest.fixture(autouse=True)
+def _own_the_meta_path():
+    """Every test here starts with no yt_dlp override installed, and leaves none.
+
+    ``prefer_pack_module`` is idempotent *by module name*: a finder another
+    test installed -- ``activate_engine_packs`` installs a real one, pointing
+    at the real engine-pack -- makes this module's own install a no-op, and
+    the import under test then resolves to whatever that stale finder points
+    at. On a machine where the listener has actually run Update YouTube
+    Support, that is the real yt-dlp, and the assertion fails for a reason
+    that has nothing to do with the code being tested (found 2026-08-23).
+    """
+    from quill.core.speech.engine_pack_imports import EnginePackPriorityFinder
+
+    saved = list(sys.meta_path)
+    sys.meta_path[:] = [
+        finder
+        for finder in sys.meta_path
+        if not (isinstance(finder, EnginePackPriorityFinder) and finder.module_name == "yt_dlp")
+    ]
+    try:
+        yield
+    finally:
+        sys.meta_path[:] = saved
+
+
 def test_no_pack_means_no_override(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """The normal case: nobody has pressed update, so nothing is installed."""
     monkeypatch.setattr(engine_install, "yt_dlp_pack_dir", lambda: tmp_path / "absent")

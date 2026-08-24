@@ -36,8 +36,8 @@ from quill.core.radio import browse_helpers, browse_sources, transport_commands
 from quill.core.radio.browse_nodes import BrowseNode
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
-from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
-from quill.ui.radio import browse_feedback, browse_position, transport_keys
+from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
+from quill.ui.radio import browse_feedback, browse_keys, browse_position, transport_keys
 
 #: Item data for the "Loading..." child that makes a node look expandable.
 _PLACEHOLDER = {"kind": "placeholder"}
@@ -104,7 +104,12 @@ class BrowseTreeDialog:
         self._windows = windows
         self._modeless = windows is not None
         if self._modeless:
-            self._win = wx.Frame(parent, title="Browse Stations", style=wx.DEFAULT_FRAME_STYLE)
+            # No parent, on purpose: an owned frame floats glued above its
+            # owner, so Browse read as an overlay on the main window rather
+            # than a window of its own (reported 2026-08-23). A top-level peer
+            # stands in the taskbar and the Alt+Tab order like any real window;
+            # Ctrl+Tab and the &Window menu still tie the family together.
+            self._win = wx.Frame(None, title="Browse Stations", style=wx.DEFAULT_FRAME_STYLE)
             self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
             self._build_surface_menu_bar()
             self._win.Bind(wx.EVT_CLOSE, self._on_close)
@@ -174,6 +179,10 @@ class BrowseTreeDialog:
         self._volume_slider.SetName("Internet Radio volume")
         volume_row.Add(self._volume_slider, 1, wx.EXPAND | wx.RIGHT, 6)
         self._mute_btn = wx.ToggleButton(self._surface, label="&Mute")
+        self._mute_btn.SetHelpText(
+            "Silences the radio without stopping it; press again to unmute. "
+            "The same Mute as the main window and Ctrl+M."
+        )
         volume_row.Add(self._mute_btn, 0)
         root.Add(volume_row, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -191,19 +200,28 @@ class BrowseTreeDialog:
             f"Go to the player window ({go_to_player.key})" if go_to_player else "Go to the player"
         )
         self._favorite_btn = wx.Button(self._surface, label="Add to &Favorites")
+        self._favorite_btn.SetHelpText(
+            "Saves the highlighted station to your favorites -- or removes it "
+            "when it is already there; the label says which."
+        )
         self._favorite_btn.Enable(False)
         self._refresh_btn = wx.Button(self._surface, label="&Refresh")
         self._refresh_btn.SetName("Reload the highlighted source from the internet")
-        close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
-        # A frame gets no free ID_CANCEL handling: wire it, or the
-        # button that looks like the way out does nothing.
-        bind_close_button(self._win, close_btn, modeless=self._modeless)
-        close_btn.SetName("Close (playback continues)")
         btn_row.Add(self._player_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._favorite_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._refresh_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
-        btn_row.Add(close_btn)
+        if not self._modeless:
+            # Only the modal dialog carries a Close button. A real window
+            # closes the way windows close -- Alt+F4/Ctrl+F4, Ctrl+W, Escape --
+            # and a Close button on one reads as a control that must do
+            # something more (reported 2026-08-23).
+            close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
+            # A dialog answers ID_CANCEL for free, but wire it through the one
+            # seam anyway so both shapes stay honest.
+            bind_close_button(self._win, close_btn, modeless=False)
+            close_btn.SetName("Close (playback continues)")
+            btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
         self._surface.SetSizer(root)
@@ -241,8 +259,15 @@ class BrowseTreeDialog:
 
         # The whole transport, on this window's own accelerator table: speed,
         # skip, chapters and play/pause were menu items on the main frame, so
-        # standing here half the player did not exist (2026-08-18).
-        transport_keys.install(self._win, self, wx=wx)
+        # standing here half the player did not exist (2026-08-18). The window
+        # manager's Ctrl+Tab / Ctrl+1..9 rows ride in the same table -- setting
+        # a table replaces the last one, so leaving them out killed traversal.
+        transport_keys.install(
+            self._win,
+            self,
+            wx=wx,
+            extra_entries=self._windows.accelerator_entries() if self._modeless else (),
+        )
 
         self._populate_sources()
 
@@ -264,33 +289,14 @@ class BrowseTreeDialog:
         self._menu_id_refs.append(close_id)
 
     def _on_char_hook(self, event: object) -> None:
-        wx = self._wx
-        # Ctrl+F: straight to the Find box, from wherever focus is.
-        if (
-            event.ControlDown()
-            and not event.ShiftDown()
-            and not event.AltDown()
-            and event.GetKeyCode() == ord("F")
-        ):
-            self._find_ctrl.SetFocus()
-            self._find_ctrl.SelectAll()
-            self._announce("Find in this folder.")
-            return
-        # Escape in the Find box clears the search (the old Clear button).
-        if event.GetKeyCode() == wx.WXK_ESCAPE and self._win.FindFocus() is self._find_ctrl:
-            if self._find_active or self._find_ctrl.GetValue():
-                self._clear_find()
-                return
-        # A frame has no automatic Escape->Cancel; wire it to close.
-        if self._modeless and event.GetKeyCode() == wx.WXK_ESCAPE:
-            self._win.Close()
-            return
-        event.Skip()
+        """Ctrl+F, Delete, Escape, Ctrl+F4 -- see :mod:`quill.ui.radio.browse_keys`."""
+        if not browse_keys.handle(self, event):
+            event.Skip()
 
     def _on_close(self, event: object) -> None:
         previous = self._windows.previous_key(self._win)
         self._windows.unregister(self._win)
-        self._announce("Exited Browse Stations.")
+        announce_surface_exit("Browse Stations", self._announce)
         self._on_favorites_changed()
         event.Skip()
         self._win.Destroy()
