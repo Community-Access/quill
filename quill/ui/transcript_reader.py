@@ -56,6 +56,12 @@ from quill.ui.radio.bounded_playback_ui import spoken_duration
 #: is what most people want; the two subtitle formats because somebody keeping
 #: a transcript very often wants it in a form another player can follow.
 _SAVE_FORMATS: tuple[tuple[str, str, Callable[[Sequence[TranscriptCue]], str]], ...] = (
+    # Markdown first, and it is not a nicety: text, WebVTT and SubRip are the
+    # formats another *player* wants, and Markdown is the one a **person**
+    # wants -- it opens in anything, keeps the speakers as words rather than as
+    # a subtitle convention, and is what somebody quoting an episode in an
+    # email or a document is going to paste. See core/podcasts/transcript_export.
+    ("Markdown", "md", None),  # filled in at call time: it needs the detail setting
     ("Plain text", "txt", cues_to_text),
     ("WebVTT", "vtt", cues_to_vtt),
     ("SubRip", "srt", cues_to_srt),
@@ -129,11 +135,23 @@ class TranscriptReader:
         show_modal_dialog: Callable[[Any, str], int] | None = None,
         on_send_to_quill: Callable[[str], None] | None = None,
         is_automatic: bool = False,
+        show_title: str = "",
+        source_url: str = "",
+        transcript_detail: str = "",
     ) -> None:
         import wx
 
         self._wx = wx
         self._cues = list(cues)
+        # For the exported file: what it is called, what it came from, and how
+        # much scaffolding to keep. The host supplies the last one from its own
+        # preference (RadioHistory / PodcastHistory), so a transcript saved
+        # from either app comes out the same shape.
+        self._title = title
+        self._show_title = show_title
+        self._source_url = source_url
+        self._is_automatic = is_automatic
+        self._transcript_detail = transcript_detail
         self._offsets = line_starts(self._cues)
         self._position_ms = position_ms
         self._seek_to_ms = seek_to_ms
@@ -353,6 +371,35 @@ class TranscriptReader:
         self._announce("Copied the selection." if selected else "Copied the whole transcript.")
         return text
 
+    def _markdown_writer(self) -> Callable[[Sequence[TranscriptCue]], str]:
+        """The Markdown writer, closed over this transcript's own facts.
+
+        Kept out of :data:`_SAVE_FORMATS` because it is the only format that
+        needs more than the cues: the episode and show it belongs to, where it
+        came from, whether it is automatic, and how much scaffolding the
+        listener asked to keep.
+        """
+        from quill.core.podcasts import transcript_export
+
+        return lambda cues: transcript_export.cues_to_markdown(
+            cues,
+            detail=transcript_export.normalize_detail(self._transcript_detail),
+            show=self._show_title,
+            episode=self._title,
+            source_url=self._source_url,
+            is_automatic=self._is_automatic,
+        )
+
+    def suggested_filename(self, extension: str = "md") -> str:
+        """``Show - Episode.md`` -- what the Save dialog should start with.
+
+        A transcript lands in a folder among a hundred others and has to be
+        recognisable there a month later, which "transcript.md" never is.
+        """
+        from quill.core.podcasts import transcript_export
+
+        return transcript_export.safe_filename(self._show_title, self._title, extension=extension)
+
     def save_as(self) -> str:
         """Write the transcript to a file the listener chooses. Returns the path."""
         wx = self._wx
@@ -360,6 +407,7 @@ class TranscriptReader:
         dialog = wx.FileDialog(
             self._dialog,
             "Save Transcript As",
+            defaultFile=self.suggested_filename(_SAVE_FORMATS[0][1]),
             wildcard=wildcard,
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
         )
@@ -372,6 +420,8 @@ class TranscriptReader:
             dialog.Destroy()
         if not path.lower().endswith(f".{extension}"):
             path = f"{path}.{extension}"
+        if writer is None:  # Markdown: the one format that needs more than cues
+            writer = self._markdown_writer()
         try:
             from pathlib import Path
 

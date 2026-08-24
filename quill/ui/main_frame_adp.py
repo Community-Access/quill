@@ -37,24 +37,57 @@ class AdpMixin:
     # -- menu ------------------------------------------------------------------
 
     def _build_adp_menu(self) -> object | None:
-        """Top-level Audio Description Project menu, shared by QUILL and the
-        companion apps (Quill Radio, QUILL Cast). Returns ``None`` when
-        ``future.adp_assistant`` is off (default is on), so the caller appends
-        nothing and no menu appears on the bar at all."""
+        """The top-level **Community** menu, shared by QUILL and the companion
+        apps (Quill Radio, QUILL Cast, Audio Studio, Quill Weather).
+
+        Renamed from "Audio Description Project" on 2026-08-23. The menu had one
+        subject and now has two -- the Audio Description Project, and ACB
+        Community Events -- and both are the same *kind* of thing: places this
+        community already goes, brought inside the app. A menu named after one
+        of its items is a menu that cannot grow, and "Community" is what a
+        listener is actually looking for when they want either.
+
+        Returns ``None`` when ``future.adp_assistant`` is off (default is on),
+        so the caller appends nothing and no menu appears on the bar at all.
+        """
         if not self._feature_enabled("future.adp_assistant"):
             return None
         wx = self._wx
         menu = wx.Menu()
         ask_id = wx.NewIdRef()
-        menu.Append(ask_id, self._menu_label("&Ask ADP...", "adp.ask"))
+        menu.Append(ask_id, self._menu_label("&Ask the Audio Description Project...", "adp.ask"))
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_ask_adp(), id=ask_id)
         settings_id = wx.NewIdRef()
-        menu.Append(settings_id, "ADP Se&ttings...	Ctrl+Alt+Shift+A")
+        menu.Append(settings_id, "Audio Description Project Se&ttings...\tCtrl+Alt+Shift+A")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_adp_settings(), id=settings_id)
+        kept = [ask_id, settings_id]
+        events = self._build_community_events_item(menu)
+        if events is not None:
+            kept.append(events)
         keep = getattr(self, "_keep_menu_ids", None)
         if keep is not None:
-            keep(ask_id, settings_id)
+            keep(*kept)
         return menu
+
+    def _build_community_events_item(self, menu: object) -> object | None:
+        """**ACB Community Events...** on the Community menu, where the host has it.
+
+        Only Quill Radio can open the events window today (it is the app with a
+        player, a recorder and a schedule to hang an event on), so the item
+        appears only where ``open_acb_community_events`` exists rather than
+        being present-and-dead everywhere else. A menu item that explains it
+        cannot work is better than one that does nothing -- but an item that
+        was never the right app's is better still.
+        """
+        opener = getattr(self, "open_acb_community_events", None)
+        if not callable(opener):
+            return None
+        wx = self._wx
+        menu.AppendSeparator()
+        events_id = wx.NewIdRef()
+        menu.Append(events_id, "ACB Community &Events...\tCtrl+Alt+Shift+E")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: opener(), id=events_id)
+        return events_id
 
     def _register_adp_commands(self) -> None:
         self.commands.try_register(

@@ -160,7 +160,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         # until a signed unlock code is redeemed. Undocumented until launch.
         adp_menu = self._build_adp_menu()
         if adp_menu is not None:
-            menu_bar.Append(adp_menu, "A&udio Description Project")
+            menu_bar.Append(adp_menu, "&Community")
 
         from quill.ui.quillville_menu import build_quillville_menu
 

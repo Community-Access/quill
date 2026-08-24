@@ -14,6 +14,8 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from quill.core.podcasts import transcript_export
+
 _FILE_NAME = "podcast_history.json"
 _MAX_ENTRIES = 15
 
@@ -69,6 +71,12 @@ class PodcastHistory:
     #: dialog_contract.show_modal_dialog's "no policy set" fallback always
     #: spoke it, unlike full QUILL where it is opt-in.
     announce_dialog_transitions: bool = False
+    #: How much scaffolding an exported transcript keeps: speakers, timestamps,
+    #: both, or just the words. Per install, and named the same in both apps
+    #: (the same shape announce_dialog_transitions has) so a transcript saved
+    #: from Quill Radio and one saved from QUILL Cast come out alike.
+    #: See quill.core.podcasts.transcript_export.
+    transcript_detail: str = "speakers"
     #: Alt+F4 sends QUILL Cast to the system tray (still playing) instead
     #: of closing the window. Off by default; mirrors Quill Radio's
     #: RadioHistory.alt_f4_to_tray.
@@ -119,6 +127,7 @@ def load_history(data_dir: Path) -> PodcastHistory:
         history.check_updates_on_startup = bool(raw.get("check_updates_on_startup", True))
         history.last_update_check = str(raw.get("last_update_check", ""))
         history.announce_dialog_transitions = bool(raw.get("announce_dialog_transitions", False))
+        history.transcript_detail = transcript_export.normalize_detail(raw.get("transcript_detail"))
         history.alt_f4_to_tray = bool(raw.get("alt_f4_to_tray", False))
         history.winamp_playback_keys = bool(raw.get("winamp_playback_keys", True))
         entries = raw.get("episodes")

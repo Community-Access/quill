@@ -1020,7 +1020,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         # until a signed unlock code is redeemed. Undocumented until launch.
         adp_menu = self._build_adp_menu()
         if adp_menu is not None:
-            menu_bar.Append(adp_menu, "A&udio Description Project")
+            menu_bar.Append(adp_menu, "&Community")
 
         view_menu = wx.Menu()
         self._status_bar_item_id = wx.NewIdRef()

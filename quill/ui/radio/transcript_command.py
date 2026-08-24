@@ -93,6 +93,11 @@ def _open_reader(host: Any, controller: Any, cues: object, is_automatic: bool) -
         show_modal_dialog=getattr(host, "_show_modal_dialog", None),
         on_send_to_quill=getattr(host, "_radio_send_text_to_quill", None),
         is_automatic=is_automatic,
+        show_title=str(getattr(station, "source", "") or ""),
+        source_url=str(getattr(station, "homepage", "") or ""),
+        transcript_detail=str(
+            getattr(getattr(host, "_radio_history", None), "transcript_detail", "") or ""
+        ),
     )
     reader.show()
 

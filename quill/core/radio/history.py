@@ -13,6 +13,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.audio_enhance import EQ_PRESETS
+from quill.core.podcasts import transcript_export
 from quill.core.radio import browse_visibility
 from quill.core.radio.models import RadioStation
 from quill.core.radio.onboarding import RadioOnboardingState
@@ -187,6 +188,12 @@ class RadioHistory:
     #: dialog_contract.show_modal_dialog's "no policy set" fallback always
     #: spoke it, unlike full QUILL where it is opt-in.
     announce_dialog_transitions: bool = False
+    #: How much scaffolding an exported transcript keeps: speakers, timestamps,
+    #: both, or just the words. Per install, and named the same in both apps
+    #: (the same shape announce_dialog_transitions has) so a transcript saved
+    #: from Quill Radio and one saved from QUILL Cast come out alike.
+    #: See quill.core.podcasts.transcript_export.
+    transcript_detail: str = "speakers"
     #: How "What's Playing" (Ctrl+T) reads a track, as a token template over
     #: quill.core.radio.now_playing (#1068). The default cleans up the raw
     #: broadcast metadata some stations send ("YOUR SONG by Elton John"
@@ -400,6 +407,7 @@ def load_history(data_dir: Path) -> RadioHistory:
             close_action if close_action in ("ask", "exit", "minimize") else "ask"
         )
         history.announce_dialog_transitions = bool(raw.get("announce_dialog_transitions", False))
+        history.transcript_detail = transcript_export.normalize_detail(raw.get("transcript_detail"))
         template = raw.get("now_playing_template")
         if isinstance(template, str) and template.strip():
             history.now_playing_template = template
@@ -537,6 +545,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "compressor_enabled": history.compressor_enabled,
             "close_action": history.close_action,
             "announce_dialog_transitions": history.announce_dialog_transitions,
+            "transcript_detail": history.transcript_detail,
             "now_playing_template": history.now_playing_template,
             "recover_from_website": history.recover_from_website,
             "output_device": history.output_device,

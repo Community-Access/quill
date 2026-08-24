@@ -277,7 +277,7 @@ class CastMenuBarMixin:
         # QUILL -- they share one unlock store). Undocumented until launch.
         adp_menu = self._build_adp_menu()
         if adp_menu is not None:
-            menu_bar.Append(adp_menu, "A&udio Description Project")
+            menu_bar.Append(adp_menu, "&Community")
 
         menu_bar.Append(self._build_quillins_menu(), "&Quillins")
 

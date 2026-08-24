@@ -1330,7 +1330,7 @@ class RadioAppFrame(
         # QUILL -- they share one unlock store). Undocumented until launch.
         adp_menu = self._build_adp_menu()
         if adp_menu is not None:
-            menu_bar.Append(adp_menu, "A&udio Description Project\tCtrl+Alt+A")
+            menu_bar.Append(adp_menu, "&Community\tCtrl+Alt+A")
 
         help_menu = wx.Menu()
         palette_id, updates_id, about_id = (

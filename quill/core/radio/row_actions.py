@@ -185,6 +185,8 @@ class FolderState:
 
 #: Node kinds that name a podcast show rather than a shelf of them.
 PODCAST_SHOW_KINDS = frozenset({"appleshow", "mypodcastshow", "pishow"})
+#: Rows whose node id carries a transcript address, so it needs no playback.
+TRANSCRIPT_IN_ID_KINDS = frozenset({"podepisode", "piepisode"})
 
 #: Node kinds that are a channel the listener follows.
 FOLLOWED_CHANNEL_KINDS = frozenset({"youtubechannel"})
@@ -597,9 +599,7 @@ def actions_for(
             has_chapters=has_chapters,
             has_captions=has_captions,
         )
-        if kind == "podepisode":
-            # The row's node id carries the feed's transcript address, so the
-            # transcript is readable without playing the episode.
+        if kind in TRANSCRIPT_IN_ID_KINDS:  # and, on pi rows, unsubscribed
             actions.append(RowAction(VIEW_TRANSCRIPT, "View Transcr&ipt..."))
         else:
             from quill.core.radio.youtube_urls import is_youtube_url

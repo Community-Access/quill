@@ -28,6 +28,20 @@ from __future__ import annotations
 from typing import Any
 
 
+def _transcript_detail(host: Any) -> str:
+    """How much scaffolding an exported transcript keeps, per this install.
+
+    From QUILL Cast's own history, which carries the same field under the same
+    name as Quill Radio's -- so a transcript saved from either app comes out
+    the same shape. "" reads as the shipped default.
+    """
+    for owner in (host, getattr(host, "_host", None)):
+        detail = getattr(getattr(owner, "_podcast_history", None), "transcript_detail", "")
+        if detail:
+            return str(detail)
+    return ""
+
+
 def read_transcript(host: Any, show: Any, episode: Any) -> None:
     """Open the episode's transcript in the shared reader.
 
@@ -69,7 +83,7 @@ def read_transcript(host: Any, show: Any, episode: Any) -> None:
         return cues
 
     def _ok(_op: str, cues: object) -> None:
-        host._wx.CallAfter(_open_reader, host, episode, cues)
+        host._wx.CallAfter(_open_reader, host, show, episode, cues)
 
     def _failed(_op: str, error: object) -> None:
         host._wx.CallAfter(host._announce, f"Transcript failed: {error}")
@@ -77,7 +91,7 @@ def read_transcript(host: Any, show: Any, episode: Any) -> None:
     host._task_manager.submit("podcast-transcript-cues", _work, on_success=_ok, on_failure=_failed)
 
 
-def _open_reader(host: Any, episode: Any, cues: object) -> None:
+def _open_reader(host: Any, show: Any, episode: Any, cues: object) -> None:
     from quill.ui.transcript_reader import TranscriptReader
 
     rows = list(cues) if isinstance(cues, list) else []
@@ -102,6 +116,9 @@ def _open_reader(host: Any, episode: Any, cues: object) -> None:
         announce=host._announce,
         show_modal_dialog=getattr(host, "_show_modal_dialog", None),
         on_send_to_quill=getattr(host, "_on_send_show_notes", None),
+        show_title=str(getattr(show, "title", "") or ""),
+        source_url=str(getattr(episode, "audio_url", "") or ""),
+        transcript_detail=_transcript_detail(host),
     )
     reader.show()
 

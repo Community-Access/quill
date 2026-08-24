@@ -145,8 +145,25 @@ def show_folder(show: object) -> BrowseNode:
 
 
 def episode_leaf(episode: object, show_title: str, feed_url: str) -> BrowseNode:
-    """One episode as a playable row -- an ordinary station, like every other."""
+    """One episode as a playable row -- an ordinary station, like every other.
+
+    When the index knows the episode's transcript, the node id carries its
+    address and type, exactly as a subscribed episode's row does
+    (``browse_libraries._episode_leaves``) -- so **View Transcript works on a
+    show nobody is subscribed to**. That is the one transcript source neither
+    Earshot nor Cast has: Earshot can only read the tag out of a feed it has
+    followed and refreshed, and the index is holding the same tag for every
+    feed in the catalogue.
+    """
     audio = str(getattr(episode, "audio_url", "") or "")
+    transcript_url = str(getattr(episode, "transcript_url", "") or "")
+    node_id = (
+        make_id(
+            "piepisode", audio, transcript_url, str(getattr(episode, "transcript_type", "") or "")
+        )
+        if transcript_url
+        else make_id("piepisode", audio)
+    )
     return leaf(
         RadioStation(
             name=str(getattr(episode, "display_name", "") or ""),
@@ -161,7 +178,7 @@ def episode_leaf(episode: object, show_title: str, feed_url: str) -> BrowseNode:
             notes=str(getattr(episode, "description", "") or ""),
             tags=(show_title,) if show_title else (),
         ),
-        node_id=make_id("piepisode", audio),
+        node_id=node_id,
         note=episode_note(episode),
     )
 
