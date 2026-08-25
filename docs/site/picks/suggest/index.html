@@ -65,8 +65,8 @@
           <label for="url">Address</label><br>
           <span id="url-hint" class="hint">
             The stream address for a station, or the feed address for a podcast.
-            It must start with https:// &mdash; a plain http address can be
-            tampered with between the station and the listener.
+            Either https:// or http:// is fine &mdash; plenty of community
+            stations are http-only, and we would rather list them.
           </span><br>
           <input type="url" id="url" name="url" required
                  aria-describedby="url-hint" autocomplete="off"
@@ -121,16 +121,24 @@
 
       <h2>What happens next</h2>
       <p>
-        A person reads every suggestion. Approved ones are published to the
-        list within a day, and appear in everybody's app the next time it
-        refreshes &mdash; no update required.
+        Sending opens your suggestion as an issue on GitHub, already filled in
+        &mdash; press <strong>Submit new issue</strong> there to finish. A
+        person reads every one. Approved suggestions are published within a
+        day and appear in everybody's app the next time it refreshes, with no
+        update required.
+      </p>
+      <p>
+        <strong>That last step needs a GitHub account.</strong> If you do not
+        have one and do not want one, Quill Radio can send the whole thing for
+        you: <strong>Community &gt; Suggest a Station or Podcast&hellip;</strong>
+        needs no account and never leaves the app.
       </p>
 
-      <h2 id="other-ways">If you would rather not use this form</h2>
+      <h2 id="other-ways">Other ways</h2>
       <ul>
         <li>
-          <a href="https://github.com/Community-Access/quill/issues/new?template=community_pick.yml">Open
-          an issue on GitHub</a> (needs a GitHub account).
+          <a href="https://github.com/Community-Access/quill/issues/new?template=community_pick.yml">Fill
+          in the GitHub issue form directly</a>.
         </li>
         <li>Use <strong>Community &gt; Suggest a Station or Podcast&hellip;</strong> inside Quill Radio.</li>
       </ul>

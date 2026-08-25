@@ -93,12 +93,22 @@ def test_an_entry_with_nothing_to_point_at_is_skipped_with_a_warning() -> None:
     assert any("broken" in warning for warning in catalogue.warnings)
 
 
-def test_a_non_https_url_is_dropped_rather_than_followed() -> None:
-    """A catalogue that can point the app at plain HTTP is one that can be
-    rewritten by anybody on the path between here and the listener."""
+def test_a_plain_http_station_is_offered_rather_than_hidden() -> None:
+    """Measured 2026-08-25: 41% of the most-played stations in the directory
+    Radio already browses are http-only, Team-FM among them. A catalogue
+    stricter than the rest of the app would exclude exactly the stations this
+    project exists for. The protection is one level up -- the catalogue itself
+    arrives over https and signed."""
     catalogue = parse(_doc(_stream(stream_url="http://example.com/live")))
 
-    assert catalogue.is_empty
+    assert [pick.title for pick in catalogue.all_picks] == ["ACB Media 1"]
+
+
+def test_a_scheme_that_is_not_the_web_is_refused() -> None:
+    """javascript:, file: and data: must never reach a listener, however the
+    entry got into the file."""
+    for bad in ("javascript:alert(1)", "file:///etc/passwd", "data:text/html,x"):
+        assert parse(_doc(_stream(stream_url=bad))).is_empty, bad
 
 
 def test_a_malformed_entry_costs_that_entry_and_not_the_window() -> None:

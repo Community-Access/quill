@@ -135,14 +135,17 @@
 
   function safeLink(url) {
     var text = String(url || "");
-    if (text.toLowerCase().indexOf("https://") !== 0) {
-      // Shown, not linked: an address we would not follow is one we should not
-      // invite a click on either.
-      return document.createTextNode(text + " (not https — will be rejected)");
+    var lowered = text.toLowerCase();
+    var web = lowered.indexOf("https://") === 0 || lowered.indexOf("http://") === 0;
+    if (!web) {
+      // Shown, never linked. This is the guard that matters: an href the
+      // suggester controls is the other way to run script on a page holding a
+      // token, so anything that is not plainly the web stays inert text.
+      return document.createTextNode(text + " (not a web address — will be rejected)");
     }
     var link = document.createElement("a");
     link.href = text;
-    link.textContent = text;
+    link.textContent = text + (lowered.indexOf("http://") === 0 ? " (http)" : "");
     link.rel = "noopener noreferrer";
     return link;
   }
@@ -308,8 +311,11 @@
     };
     var errors = [];
     if (!pick.title) { errors.push("Give it a name."); }
-    if (pick.url.toLowerCase().indexOf("https://") !== 0) {
-      errors.push("The address must start with https://.");
+    if (
+      pick.url.toLowerCase().indexOf("https://") !== 0 &&
+      pick.url.toLowerCase().indexOf("http://") !== 0
+    ) {
+      errors.push("The address should start with https:// or http://.");
     }
     if (!pick.description) { errors.push("Add a description."); }
 

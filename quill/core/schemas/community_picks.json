@@ -62,14 +62,14 @@
         },
         "language": { "type": "string" },
         "tags": { "type": "array", "items": { "type": "string" } },
-        "homepage": { "$ref": "#/$defs/httpsUrl" },
-        "artwork_url": { "$ref": "#/$defs/httpsUrl" },
+        "homepage": { "$ref": "#/$defs/url" },
+        "artwork_url": { "$ref": "#/$defs/url" },
         "stream_url": {
-          "$ref": "#/$defs/httpsUrl",
+          "$ref": "#/$defs/url",
           "description": "Required when type is stream."
         },
         "feed_url": {
-          "$ref": "#/$defs/httpsUrl",
+          "$ref": "#/$defs/url",
           "description": "Required when type is podcast."
         },
         "node_id": {
@@ -115,11 +115,11 @@
       "pattern": "^[a-z0-9][a-z0-9-]*$",
       "description": "Lower-case, hyphenated, stable."
     },
-    "httpsUrl": {
+    "url": {
       "type": "string",
       "format": "uri",
-      "pattern": "^https://",
-      "description": "HTTPS only. A catalogue that can point the app at plain HTTP is a catalogue that can be rewritten in transit."
+      "pattern": "^https?://",
+      "description": "http or https. NOT https-only, deliberately: 41% of the most-played stations in the directory Radio already browses stream over plain http, including small community stations like Team-FM, and a catalogue stricter than the rest of the app would exclude exactly the stations this project exists for. The protection lives one level up -- the catalogue itself is fetched over https and Ed25519-signed, so nobody can substitute the list of addresses. Anything that is not http(s) is refused, so javascript:, file: and data: can never reach a listener."
     }
   }
 }

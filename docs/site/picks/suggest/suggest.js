@@ -1,28 +1,33 @@
 /*
  * The public Community Picks suggestion form.
  *
- * Validates in the browser, then hands the finished suggestion to the
- * visitor's own mail client. That is deliberate and it is the honest shape for
- * a static site: GitHub Pages serves files and cannot receive a submission, so
- * something has to accept the POST and hold a credential that can write to the
- * repo -- and that credential can never live in a public page.
+ * Validates in the browser, then sends the finished suggestion straight into
+ * the GitHub workflow -- as an issue, labelled pick:suggestion, exactly where
+ * the review page and picks-build.yml already look. No email anywhere.
  *
- * A mail client is the one receiver every visitor already has, needs no
- * account, and is an interface they already know how to drive with a screen
- * reader. When a small serverless endpoint is worth the moving part, only
- * SUBMIT_URL below changes; the form, the validation and the body are already
- * shared with the in-app dialog.
+ * Two routes, in order of preference:
  *
- * The composed body is byte-identical in shape to the one
- * quill/core/pick_suggestion.py produces, so picks-build.yml parses one format
- * however a suggestion arrived.
+ * 1. SUBMIT_URL, when one is configured: a small receiver POSTs the issue on
+ *    the visitor's behalf, so they need no GitHub account at all. GitHub Pages
+ *    is static and cannot do this itself -- something has to hold a credential
+ *    that can write to the repo, and that credential can never live in a
+ *    public page. See workers/picks-submit.js for a ready-to-deploy receiver.
+ *
+ * 2. Otherwise, GitHub's own new-issue form, pre-filled from what was typed.
+ *    Zero infrastructure and it lands in the same place; the cost is that the
+ *    visitor needs a GitHub account, which the page says plainly.
+ *
+ * Either way the body is the shape quill/core/pick_suggestion.py produces, so
+ * picks-build.yml parses one format however a suggestion arrived.
  */
 (function () {
   "use strict";
 
-  // Set this to a POST endpoint to upgrade from mailto: to a real submit.
+  // Set this to a deployed receiver (workers/picks-submit.js) and the form
+  // files the issue itself, with no GitHub account needed. Empty = fall back
+  // to GitHub's own pre-filled new-issue form.
   var SUBMIT_URL = "";
-  var MAILTO = "picks@quillforall.org";
+  var REPO = "Community-Access/quill";
 
   var form = document.getElementById("suggest-form");
   var errorBox = document.getElementById("errors");
@@ -45,11 +50,12 @@
       errors.push(
         pick.type === "podcast" ? "Add the feed address." : "Add the stream address."
       );
-    } else if (pick.url.toLowerCase().indexOf("https://") !== 0) {
-      errors.push(
-        "The address must start with https:// — a plain http address can be " +
-          "tampered with between the station and the listener."
-      );
+    } else if (
+      pick.url.toLowerCase().indexOf("https://") !== 0 &&
+      pick.url.toLowerCase().indexOf("http://") !== 0
+    ) {
+      // http is accepted deliberately: many community stations are http-only.
+      errors.push("The address should start with https:// or http://.");
     } else if (pick.url.indexOf(" ") !== -1) {
       errors.push("The address has a space in it. Check it was pasted whole.");
     }
@@ -175,18 +181,20 @@
       return;
     }
 
-    // mailto: the receiver every visitor already has.
+    // No receiver configured: hand it to GitHub's own new-issue form, already
+    // filled in. It lands as a labelled issue, which is the whole point --
+    // reviewable on the review page and picked up by picks-build.yml.
     var href =
-      "mailto:" +
-      MAILTO +
-      "?subject=" +
+      "https://github.com/" +
+      REPO +
+      "/issues/new?labels=pick%3Asuggestion&title=" +
       encodeURIComponent(title) +
       "&body=" +
       encodeURIComponent(body);
-    window.location.href = href;
+    window.open(href, "_blank", "noopener");
     succeed(
-      "Your email program should now be opening with the suggestion ready to send.",
-      "If nothing happened, your browser may have no mail program set up — the other ways to send it are listed below."
+      "Your suggestion is ready on GitHub in a new tab — press Submit new issue there to send it.",
+      "That step needs a GitHub account. If you do not have one, Quill Radio itself can send the suggestion for you with no account at all."
     );
   });
 })();

@@ -91,11 +91,14 @@ def validate(suggestion: Suggestion, *, known_urls: set[str] | None = None) -> V
         errors.append(
             "Add the feed address." if suggestion.is_podcast else "Add the stream address."
         )
-    elif not url.lower().startswith("https://"):
-        errors.append(
-            "The address must start with https:// -- a plain http address can be "
-            "tampered with between the station and the listener."
-        )
+    elif not url.lower().startswith(("https://", "http://")):
+        # http is accepted on purpose. 41% of the most-played stations in the
+        # directory Radio already browses are http-only, among them small
+        # community stations like Team-FM -- refusing them here would exclude
+        # exactly the stations this project exists for, and would be stricter
+        # than every other way Radio finds a station. What is refused is a
+        # scheme that is not the web: javascript:, file:, data:.
+        errors.append("The address should start with https:// or http://.")
     elif " " in url:
         errors.append("The address has a space in it. Check it was pasted whole.")
 

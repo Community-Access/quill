@@ -203,10 +203,10 @@ def _pick(raw: dict[str, Any], kind: str) -> Pick | None:
         title=str(raw.get("title", "")).strip(),
         description=str(raw.get("description", "")).strip(),
         language=str(raw.get("language", "")).strip(),
-        homepage=_https_only(raw.get("homepage")),
-        artwork_url=_https_only(raw.get("artwork_url")),
-        stream_url=_https_only(raw.get("stream_url")),
-        feed_url=_https_only(raw.get("feed_url")),
+        homepage=_web_url(raw.get("homepage")),
+        artwork_url=_web_url(raw.get("artwork_url")),
+        stream_url=_web_url(raw.get("stream_url")),
+        feed_url=_web_url(raw.get("feed_url")),
         node_id=str(raw.get("node_id", "")).strip(),
         tags=tuple(str(tag) for tag in raw.get("tags") or [] if str(tag).strip()),
         added=str(raw.get("added", "")).strip(),
@@ -216,15 +216,24 @@ def _pick(raw: dict[str, Any], kind: str) -> Pick | None:
     return pick
 
 
-def _https_only(value: Any) -> str:
-    """A URL, or "" if it is not plainly HTTPS.
+def _web_url(value: Any) -> str:
+    """An http(s) URL, or "" for anything else.
 
-    Not fussiness: a catalogue that can point the app at plain HTTP is a
-    catalogue that can be rewritten by anybody on the path between here and
-    the listener.
+    **Not https-only, and that is deliberate.** 41% of the most-played stations
+    in the directory Radio already browses stream over plain http, among them
+    small community stations like Team-FM; a catalogue held to a stricter
+    standard than the rest of the app would quietly exclude exactly the
+    stations this project exists for.
+
+    The protection lives one level up: the catalogue *itself* arrives over
+    https and is Ed25519-signed, so nobody can substitute the list of
+    addresses. What this refuses is a scheme that is not the web at all --
+    ``javascript:``, ``file:``, ``data:`` -- which must never reach a listener
+    however the entry got into the file.
     """
     text = str(value or "").strip()
-    return text if text.lower().startswith("https://") else ""
+    lowered = text.lower()
+    return text if lowered.startswith(("https://", "http://")) else ""
 
 
 def verify(document_bytes: bytes, signature_bytes: bytes) -> tuple[bool, str]:

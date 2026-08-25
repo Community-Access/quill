@@ -103,15 +103,26 @@ def test_an_issue_with_no_pick_block_is_skipped() -> None:
     assert len(after["collections"]) == len(before["collections"])
 
 
-def test_a_plain_http_address_never_reaches_the_catalogue() -> None:
-    """Rejected in the dialog, in the schema, and here: the one place public
-    text turns into something the app will fetch."""
+def test_a_plain_http_address_is_published() -> None:
+    """41% of the stations Radio can already play are http-only. Refusing them
+    here would make the catalogue useless for small community stations."""
     module = _module()
 
     document = module.build([_issue(1, _suggestion_body(url="http://example.org/feed"))])
 
     titles = [item["title"] for c in document["collections"] for item in c["items"]]
-    assert "A Brand New Show" not in titles
+    assert "A Brand New Show" in titles
+
+
+def test_a_scheme_that_is_not_the_web_never_reaches_the_catalogue() -> None:
+    """The guard that does matter, at the one place public text becomes
+    something the app will fetch."""
+    module = _module()
+
+    for bad in ("javascript:alert(1)", "file:///etc/passwd"):
+        document = module.build([_issue(1, _suggestion_body(url=bad))])
+        titles = [item["title"] for c in document["collections"] for item in c["items"]]
+        assert "A Brand New Show" not in titles, bad
 
 
 def test_a_duplicate_address_is_skipped_rather_than_listed_twice() -> None:

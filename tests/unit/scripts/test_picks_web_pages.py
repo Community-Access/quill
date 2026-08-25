@@ -67,13 +67,18 @@ def test_the_review_page_uses_text_nodes_for_public_fields() -> None:
     assert "createTextNode" in source
 
 
-def test_a_suggested_address_is_only_linked_when_it_is_https() -> None:
-    """An address we would refuse to fetch is one we should not invite a click
-    on either -- and javascript: in an href is the other way to run script."""
+def test_a_suggested_address_is_only_linked_when_it_is_the_web() -> None:
+    """An href the suggester controls is the other way to run script on a page
+    holding a token, so javascript:, file: and data: stay inert text.
+
+    http IS linked: 41% of the stations Radio can already play are http-only,
+    and refusing them would exclude exactly the community stations this is for.
+    """
     source = _read(_REVIEW_JS)
     block = source[source.index("function safeLink") : source.index("function render")]
 
-    assert 'indexOf("https://") !== 0' in block
+    assert 'indexOf("https://") === 0' in block
+    assert 'indexOf("http://") === 0' in block
     assert "createTextNode" in block
 
 
@@ -102,9 +107,17 @@ def test_the_review_page_can_only_talk_to_github() -> None:
 
 @pytest.mark.parametrize("path", _PAGES, ids=lambda p: p.name)
 def test_no_third_party_anything(path: Path) -> None:
-    """No CDN, no fonts, no analytics: every request this page makes is to us."""
+    """No CDN, no fonts, no analytics: every request this page makes is to us.
+
+    Checks src/href attributes rather than the whole file, because the page
+    legitimately mentions "http://" in prose when explaining that an http
+    station address is acceptable.
+    """
     source = _read(path)
-    for external in ("http://", "cdn.", "googleapis", "gstatic", "unpkg", "jsdelivr"):
+    refs = re.findall(r'(?:src|href)="([^"]+)"', source)
+    for ref in refs:
+        assert not ref.startswith("http://"), f"{path.name} loads {ref} over http"
+    for external in ("cdn.", "googleapis", "gstatic", "unpkg", "jsdelivr"):
         assert external not in source, f"{path.name} reaches {external}"
 
 

@@ -72,7 +72,9 @@ def _item_from_issue(issue: dict[str, Any]) -> tuple[str, dict[str, Any]] | None
     kind = (payload.get("type") or "").strip()
     if not title or not url or kind not in ("stream", "podcast"):
         return None
-    if not url.lower().startswith("https://"):
+    # http allowed: see the "url" definition in the schema for why refusing it
+    # would exclude 41% of the stations Radio can already play.
+    if not url.lower().startswith(("https://", "http://")):
         return None
 
     item: dict[str, Any] = {
