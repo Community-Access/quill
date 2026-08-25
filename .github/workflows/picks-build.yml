@@ -23,6 +23,7 @@ on:
 permissions:
   contents: write
   issues: read
+  pull-requests: write
 
 concurrency:
   # A burst of approvals is one rebuild, not five racing commits.
@@ -93,14 +94,33 @@ jobs:
           python -m pip install --quiet pynacl
           python scripts/sign_community_picks.py
 
-      - name: Commit if anything changed
+      - name: Publish if anything changed
+        # main requires a pull request, and github-actions[bot] is not a bypass
+        # actor -- deliberately, because weakening branch protection to save a
+        # click is the wrong trade. So: push a branch and open a PR, with
+        # auto-merge requested so it lands by itself once checks pass. Found by
+        # running the pipeline end to end on 2026-08-25; the build was correct
+        # and only the push was refused.
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git add -A docs/site/picks/v1 quill/core/data/community_picks.json
           if git diff --cached --quiet; then
-            echo "catalogue unchanged; nothing to commit"
+            echo "catalogue unchanged; nothing to publish"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          BRANCH="picks/rebuild-${{ github.run_id }}"
+          git checkout -b "$BRANCH"
           git commit -m "chore(picks): rebuild the Community Picks catalogue"
-          git push
+          git push --set-upstream origin "$BRANCH"
+          gh pr create \
+            --base main --head "$BRANCH" \
+            --title "chore(picks): rebuild the Community Picks catalogue" \
+            --body "Rebuilt from docs/picks-source.json plus every issue labelled \`pick:approved\`, validated against quill/core/schemas/community_picks.json and signed. Opened by picks-build.yml." \
+            --label "dependencies"
+          # Best effort: lands on its own where auto-merge is enabled, and
+          # simply waits for a human where it is not.
+          gh pr merge --auto --squash "$BRANCH" || \
+            echo "auto-merge unavailable; the PR is open for review"

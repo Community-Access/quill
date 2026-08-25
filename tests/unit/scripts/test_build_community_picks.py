@@ -195,13 +195,23 @@ def test_the_workflow_publishes_approved_issues_whether_open_or_closed() -> None
     assert "--state all" in workflow
 
 
-def test_the_workflow_validates_before_it_commits() -> None:
+def test_the_workflow_validates_and_signs_before_it_publishes() -> None:
     workflow = (_ROOT / ".github" / "workflows" / "picks-build.yml").read_text(encoding="utf-8")
-    build_at = workflow.index("build_community_picks.py")
-    commit_at = workflow.index("git commit")
 
-    assert build_at < commit_at
+    assert workflow.index("build_community_picks.py") < workflow.index("sign_community_picks.py")
+    assert workflow.index("sign_community_picks.py") < workflow.index("git commit")
     assert "jsonschema" in workflow
+
+
+def test_the_workflow_opens_a_pull_request_rather_than_pushing_to_main() -> None:
+    """main requires a PR and github-actions[bot] is not a bypass actor --
+    deliberately. Found by running the pipeline end to end: the build was
+    correct and only the push was refused."""
+    workflow = (_ROOT / ".github" / "workflows" / "picks-build.yml").read_text(encoding="utf-8")
+
+    assert "gh pr create" in workflow
+    assert "pull-requests: write" in workflow
+    assert "git push --set-upstream origin" in workflow
 
 
 def test_the_source_file_validates_as_written() -> None:
