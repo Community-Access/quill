@@ -1,7 +1,7 @@
 {
   "format": "quillville-picks",
   "version": 1,
-  "updated": "2026-08-25T18:55:36Z",
+  "updated": "2026-08-25T20:01:11Z",
   "title": "QuillVille Community Picks",
   "description": "Stations, podcasts and places the community recommends.",
   "collections": [
@@ -516,6 +516,23 @@
           "added": "2026-08-25",
           "language": "en-US",
           "homepage": "https://wcb-newsline-unleashed.pinecast.co"
+        }
+      ]
+    },
+    {
+      "id": "community-radio",
+      "title": "Community Radio",
+      "description": "Suggested by the community and approved.",
+      "items": [
+        {
+          "id": "team-fm",
+          "type": "stream",
+          "title": "Team-FM",
+          "added": "2026-08-25",
+          "description": "A 24-hour internet radio station playing sixty years of music across ten categories, with weekend shows from presenters who know their subject. Run by station manager Brian Hartgen, with blind and visually impaired staff.",
+          "language": "en",
+          "homepage": "https://www.team-fm.com/",
+          "stream_url": "http://s1.autopo.st:8124/live"
         }
       ]
     }
