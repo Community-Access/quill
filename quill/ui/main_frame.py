@@ -8637,6 +8637,7 @@ class MainFrame(
             self.features,
             announce_fn=self._announce,
             on_help=self.show_help_on_control,
+            binding_for=self._binding_for,
         )
         dialog.show_modal_and_run()
         command_id = dialog.last_run_command_id()

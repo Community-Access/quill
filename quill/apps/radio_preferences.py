@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.core.radio import reminders, startup_window
+from quill.core.radio import main_view, reminders
 
 
 def _open_data_folder(app: Any) -> None:
@@ -207,14 +207,17 @@ def open_preferences(app: Any) -> None:
         ],
         choices=[
             PreferenceChoice(
-                "&Open this window at startup:",
-                "Which one window Quill Radio opens for you at launch, over "
-                "the main window and never instead of it. Everything else "
-                "stays closed until you ask for it. None is the default -- an "
-                "app that opens a window you did not ask for is an app you "
-                "have to close a window to start using",
-                [label for _wid, label in startup_window.STARTUP_WINDOWS],
-                startup_window.index_of(history.startup_window),
+                "&Main window shows:",
+                "What the main window itself shows, between the now-playing "
+                "line and the volume row -- your favorites, Browse, Search, "
+                "Recordings or the Player. The menu bar, the status bar and "
+                "the transport stay wherever you put yourself, which is the "
+                "point: this replaces opening a second window on top of the "
+                "one with the menus on it. Everything is still its own window "
+                "on demand, and nothing opens itself at launch. Also on View "
+                "> Main Window Shows",
+                [label for _vid, label in main_view.MAIN_VIEWS],
+                main_view.index_of(history.main_view),
             ),
             PreferenceChoice(
                 "When &closing the window:",
@@ -341,9 +344,20 @@ def open_preferences(app: Any) -> None:
     from quill.core.radio.radio_logging import set_radio_debug
 
     set_radio_debug(history.debug_mode)
-    history.startup_window = startup_window.from_index(choice_indices[0])
-    # Kept in step so a downgrade, or anything still reading the old flag,
-    # sees an answer that matches the choice.
+    chosen_view = main_view.from_index(choice_indices[0])
+    if chosen_view != history.main_view:
+        history.main_view = chosen_view
+        # Applied now, not at the next launch: a setting that changes where you
+        # land and then does not is worse than one never offered.
+        host = getattr(app, "_main_view_host", None)
+        if host is not None:
+            from quill.ui.radio import main_view_menu
+
+            host.show(chosen_view)
+            main_view_menu.sync_checkmarks(app)
+    # The old keys, kept in step so a downgrade -- or anything still reading
+    # them -- sees an answer that matches the choice.
+    history.startup_window = "" if chosen_view == main_view.FAVORITES else chosen_view
     history.open_browse_at_startup = history.startup_window == "browse"
     history.close_action = _CLOSE_ACTION_VALUES[choice_indices[1]]
     chosen_engine = _ENGINE_VALUES[choice_indices[2]]

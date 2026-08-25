@@ -25,7 +25,7 @@
 
 Internet radio plays live streams in the background — the station browser, favorites, recording, scheduling, and everything else described in this chapter. In QUILL 1.0.0 it runs as the standalone **Quill Radio** app rather than inside the editor; see *Quill Radio: the standalone app* (below) for how to launch it. It is disabled entirely in Safe Mode, since it is a network feature.
 
-> **The browsing described in this chapter is the older, in-editor dialog.** Quill Radio 3.0 replaced it with a tree of twenty-eight branches you can wander without searching for anything: the station directory by country, by language, by what is trending today; podcasts by country and genre with no account anywhere; and whole libraries — the Internet Archive, LibriVox, Project Gutenberg, Audius, Mixcloud, ccMixter — plus browse axes drawn from Wikidata (by city, by format, or where a station sits on the dial). None of it needs a key or a sign-in. It is all documented in the **Quill Radio User Guide**, which the standalone app opens from its own Help menu.
+> **The browsing described in this chapter is the older, in-editor dialog.** Quill Radio 3.0 replaced it with a tree of thirty branches you can wander without searching for anything: the station directory by country, by language, by what is trending today; podcasts by country and genre with no account anywhere; and whole libraries — the Internet Archive, LibriVox, Project Gutenberg, Audius, Mixcloud, ccMixter — plus browse axes drawn from Wikidata (by city, by format, or where a station sits on the dial). None of it needs a key or a sign-in. It is all documented in the **Quill Radio User Guide**, which the standalone app opens from its own Help menu.
 
 ### Finding and playing a station
 

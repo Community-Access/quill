@@ -55,8 +55,14 @@ from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bin
 #: doubles as the Refresh this panel would otherwise need -- every button re-reads
 #: the status line, so the one verb that changes nothing is how you ask again.
 BUTTONS: tuple[tuple[str, str], ...] = (
-    (tc.PLAY_PAUSE, "&Play/Pause"),
-    (tc.STOP, "&Stop"),
+    # The two transport slots. Their labels here are only the *resting* ones:
+    # both are re-read from ``transport_commands.primary_face`` /
+    # ``pause_face`` on every refresh, which is why the ids look swapped. The
+    # first slot is the Play/Stop button, so it is listed under STOP (the verb
+    # it spends most of its life offering); the second is Pause/Resume, which
+    # is PLAY_PAUSE in both of its states. See TRANSPORT_SLOTS below.
+    (tc.STOP, "&Play"),
+    (tc.PLAY_PAUSE, "Pau&se"),
     (tc.SKIP_BACK, "Skip &Back"),
     (tc.SKIP_FORWARD, "Skip &Forward"),
     (tc.ANNOUNCE_POSITION, "Where Am &I?"),
@@ -79,6 +85,34 @@ BUTTONS: tuple[tuple[str, str], ...] = (
 #: test that keeps this panel in step with the table can tell "deliberately
 #: absent" from "added to the table and forgotten here".
 NOT_BUTTONS: frozenset[str] = frozenset({tc.GO_TO_PLAYER, tc.COMMAND_PALETTE})
+
+#: The two buttons whose label, accessible name, enabled state and *verb* are
+#: resolved at refresh time rather than read from :data:`BUTTONS`.
+#:
+#: There used to be a Play/Pause button and a Stop button side by side, and on
+#: live radio one of them was always wrong: a live stream cannot be paused, so
+#: Play/Pause meant Play/Restart. Now the first button always starts and always
+#: ends (Play, then Stop -- Alt+P either way) and the second owns pause, which
+#: is the verb only a podcast, a recording or a local file has. On a live
+#: station the second is present and dimmed and says why, rather than
+#: disappearing: this grid is navigated by Tab, and a control that comes and
+#: goes moves every control after it.
+TRANSPORT_SLOTS: frozenset[str] = frozenset({tc.STOP, tc.PLAY_PAUSE})
+
+#: What each transport slot is *for*, spoken by F1 and by the help text. Two
+#: sentences rather than one because the pair is easy to confuse until somebody
+#: has been told the difference: one ends playback, the other holds your place.
+_TRANSPORT_HELP: dict[str, str] = {
+    tc.STOP: (
+        "Starts what is selected, and stops whatever is playing. The label says "
+        "which: Play when nothing is on, Stop when something is."
+    ),
+    tc.PLAY_PAUSE: (
+        "Holds a podcast, recording or local file where it is and picks it up "
+        "there. Live radio cannot be paused -- it is going out now -- so this is "
+        "dimmed on a station, and Stop is what ends one."
+    ),
+}
 
 
 #: The modal panel currently on screen, if any.
@@ -105,6 +139,20 @@ def _window_alive(panel: PlayerPanel | None) -> bool:
         return bool(panel.window)  # a destroyed wx window is falsy
     except Exception:  # noqa: BLE001 - a half-torn-down window counts as gone
         return False
+
+
+def embed(host: Any, page: Any) -> Any:
+    """Build the player *into* the main window's page (main_view).
+
+    Not registered as ``_OPEN`` or ``_OPEN_WINDOW``: those track the player
+    *window*, and this is not one. Go to Player while the player is the main
+    view focuses it rather than summoning a second copy -- the check lives in
+    the app's opener, which is the one place that knows what the main window is
+    currently showing.
+    """
+    panel = PlayerPanel(None, host, windows=getattr(host, "_windows", None), embed_in=page)
+    panel.show()
+    return panel
 
 
 def summon(host: Any, parent: Any = None) -> None:
@@ -178,6 +226,7 @@ class PlayerPanel:
         *,
         announce: Callable[[str], None] | None = None,
         windows: Any = None,
+        embed_in: Any = None,
     ):
         import wx
 
@@ -188,9 +237,15 @@ class PlayerPanel:
         # no parent, so it never floats glued over the window that opened it
         # and takes its own place in the Ctrl+Tab rotation. Modal: the summons.
         self._windows = windows
-        self._modeless = windows is not None
+        #: Hosted in the main window, not a window at all: see main_view_host.
+        self._embedded = embed_in is not None
+        self._modeless = windows is not None and not self._embedded
         self._menu_ids: list[object] = []
-        if self._modeless:
+        if self._embedded:
+            self._surface = embed_in
+            self._win = self._surface.GetTopLevelParent()
+            self._surface.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        elif self._modeless:
             self._win = wx.Frame(None, title="Player", style=wx.DEFAULT_FRAME_STYLE)
             self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
             self._build_surface_menu_bar()
@@ -220,14 +275,19 @@ class PlayerPanel:
         root.Add(self._status, 0, wx.EXPAND | wx.ALL, 10)
 
         grid = wx.GridSizer(0, 3, 6, 6)
+        #: The two slots whose face is state, not text: {command id: button}.
+        self._transport_buttons: dict[str, Any] = {}
         for command_id, label in BUTTONS:
             command = tc.command(command_id)
             button = wx.Button(self._surface, label=label)
             if command is not None:
                 button.SetName(f"{label.replace('&', '')} ({command.key})")
+            if command_id in TRANSPORT_SLOTS:
+                self._transport_buttons[command_id] = button
             button.Bind(wx.EVT_BUTTON, lambda _e, cid=command_id: self._run(cid))
             grid.Add(button, 0, wx.EXPAND)
         root.Add(grid, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+        self._refresh_transport_buttons()
 
         # Saving the station you are listening to belongs here as much as on the
         # Station menu: this panel is "everything about what is playing", and
@@ -377,6 +437,36 @@ class PlayerPanel:
 
         return transport_keys.describe_now_playing(self._host)
 
+    def _transport_face(self, command_id: str) -> Any:
+        """What one of the two transport slots should read and run right now."""
+        from quill.ui.radio import transport_face
+
+        primary, pause = transport_face.faces(self._host)
+        return primary if command_id == tc.STOP else pause
+
+    def _refresh_transport_buttons(self) -> None:
+        """Put the current truth on Play/Stop and Pause/Resume. Never raises.
+
+        The accessible name carries the key as well as the label, because these
+        two are the only buttons here whose *verb* changes underneath the
+        listener -- the name has to say Stop (Ctrl+.) rather than keep
+        advertising Ctrl+P after the label flipped.
+        """
+        for command_id, button in getattr(self, "_transport_buttons", {}).items():
+            try:
+                face = self._transport_face(command_id)
+                if button.GetLabel() != face.label:
+                    button.SetLabel(face.label)
+                button.SetName(f"{face.plain} ({face.key})")
+                button.Enable(face.enabled)
+                button.SetHelpText(
+                    _TRANSPORT_HELP[command_id]
+                    if face.enabled
+                    else f"Not available: {face.reason}."
+                )
+            except Exception:  # noqa: BLE001 - the window may be closing
+                return
+
     def _refresh(self) -> None:
         """Re-read the status line, and only write it when it actually changed.
 
@@ -389,6 +479,7 @@ class PlayerPanel:
         # a station change made from the panel as well as one made outside it.
         try:
             self._refresh_favorite_button()
+            self._refresh_transport_buttons()
             fresh = self.status_text()
             if fresh != self._status.GetValue():
                 self._status.SetValue(fresh)
@@ -396,13 +487,34 @@ class PlayerPanel:
             return
 
     def _run(self, command_id: str) -> None:
-        """Run a verb, then re-read the panel so it tells the new truth."""
+        """Run a verb, then re-read the panel so it tells the new truth.
+
+        The two transport slots run the verb their *current face* names, not
+        the id they are listed under: the button reading Stop must call stop
+        even though :data:`BUTTONS` files it under nothing of the sort.
+        """
         from quill.ui.radio import transport_keys
 
+        if command_id in TRANSPORT_SLOTS:
+            command_id = self._transport_face(command_id).command_id
         transport_keys.perform(self._host, command_id)
         self._refresh()
 
+    def focus_default_control(self) -> None:
+        """Keyboard focus where this surface expects it: the readout."""
+        for name in ("_readout", "_status_text", "_surface"):
+            control = getattr(self, name, None)
+            if control is None:
+                continue
+            try:
+                control.SetFocus()
+            except Exception:  # noqa: BLE001 - focus is best-effort
+                continue
+            return
+
     def show(self) -> int:
+        if self._embedded:
+            return 0
         if self._modeless:
             from quill.ui.dialog_contract import show_modeless_surface
 

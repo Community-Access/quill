@@ -186,7 +186,34 @@ def _unescape(value: str) -> str:
             continue
         out.append(char)
         index += 1
-    return "".join(out).strip()
+    return _decode_entities("".join(out).strip())
+
+
+def _decode_entities(value: str) -> str:
+    """Turn HTML entities in a calendar's text back into characters.
+
+    ACB's feed is generated from WordPress post content, and it arrives
+    **double-encoded**: a curly apostrophe reaches us as ``&amp;#8217;``, which
+    a screen reader reads out as "ampersand hash eight two one seven
+    semicolon" in the middle of a programme title. One pass gives ``&#8217;``,
+    which is no better; two give the apostrophe.
+
+    Bounded at three passes and stopped as soon as it settles, because
+    unescaping until nothing changes is how a title that legitimately contains
+    ``&amp;amp;`` gets eaten -- and because an unbounded loop on hostile input
+    is not something a calendar needs to own.
+    """
+    if "&" not in value:
+        return value
+    import html
+
+    text = value
+    for _pass in range(3):
+        decoded = html.unescape(text)
+        if decoded == text:
+            break
+        text = decoded
+    return text
 
 
 def _tzid_of(line: str) -> str:

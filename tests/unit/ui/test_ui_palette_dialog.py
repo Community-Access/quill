@@ -259,3 +259,58 @@ def test_palette_speaks_why_a_command_is_unavailable() -> None:
     dialog.results.SetSelection(0)
     dialog._run_selected()  # noqa: SLF001
     assert "Turned off by a safety update: sync bug." in dialog.status.label
+
+
+def test_palette_shows_a_key_the_registry_never_carried() -> None:
+    """Reported 2026-08-24: Quill Radio's palette listed everything with no key.
+
+    A command carries a binding only when whoever registered it passed one, and
+    the companion apps register most of theirs with a title and a handler
+    alone. The keys are in the keymap the menus are built from, so the palette
+    asks for them the same way -- and the row, the status line and the spoken
+    announcement all have to say it, because a palette that teaches the
+    keystroke only to whoever can see the list teaches half its audience
+    nothing.
+    """
+    _install_fake_wx()
+    registry = CommandRegistry()
+    registry.register("radio.acb_calendar", "ACB Media Schedule...", lambda: None)
+    dialog = CommandPaletteDialog(
+        parent=object(),
+        command_registry=registry,
+        binding_for=lambda cid: "Ctrl+Shift+N" if cid == "radio.acb_calendar" else None,
+    )
+
+    assert dialog.results._items == ["ACB Media Schedule... [Ctrl+Shift+N]"]
+    assert "Ctrl+Shift+N" in dialog.status.label
+
+    dialog._announce_at(0)  # noqa: SLF001
+    assert "Ctrl+Shift+N" in dialog.status.label
+
+
+def test_palette_prefers_the_live_keymap_over_the_registered_key() -> None:
+    """A rebind has to reach the palette. The keymap is what a rebind writes."""
+    _install_fake_wx()
+    registry = CommandRegistry()
+    registry.register("edit.find", "Find", lambda: None, "Ctrl+F")
+    dialog = CommandPaletteDialog(
+        parent=object(),
+        command_registry=registry,
+        binding_for=lambda _cid: "F3",
+    )
+
+    assert dialog.results._items == ["Find [F3]"]
+
+
+def test_palette_falls_back_when_the_keymap_lookup_fails() -> None:
+    """A broken resolver must cost a keystroke, never the list."""
+    _install_fake_wx()
+    registry = CommandRegistry()
+    registry.register("edit.find", "Find", lambda: None, "Ctrl+F")
+
+    def _boom(_cid: str) -> str:
+        raise RuntimeError("no keymap")
+
+    dialog = CommandPaletteDialog(parent=object(), command_registry=registry, binding_for=_boom)
+
+    assert dialog.results._items == ["Find [Ctrl+F]"]

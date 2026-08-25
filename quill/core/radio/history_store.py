@@ -187,6 +187,16 @@ def load_history(data_dir: Path) -> RadioHistory:
             if "startup_window" in raw
             else startup.migrate_from_checkbox(history.open_browse_at_startup)
         )
+        from quill.core.radio import main_view as main_views
+
+        # The main view if it has been chosen, else the startup-window choice
+        # once -- somebody who asked to launch into Browse now opens *in*
+        # Browse, with the menu bar, instead of behind a second window.
+        history.main_view = (
+            main_views.normalize(raw.get("main_view"))
+            if "main_view" in raw
+            else main_views.migrate_from_startup_window(history.startup_window)
+        )
         history.debug_mode = bool(raw.get("debug_mode", False))
         history.last_seen = str(raw.get("last_seen", ""))
         history.log_dir = str(raw.get("log_dir", ""))
@@ -283,6 +293,7 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "alt_f4_to_tray": history.alt_f4_to_tray,
             "open_browse_at_startup": history.open_browse_at_startup,
             "startup_window": history.startup_window,
+            "main_view": history.main_view,
             "debug_mode": history.debug_mode,
             "last_seen": history.last_seen,
             "log_dir": history.log_dir,

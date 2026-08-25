@@ -158,6 +158,130 @@ def _check_changelog(repo_root: Path, canonical: str) -> list[str]:
     return errors
 
 
+#: ``standalone/`` entries that are not an app with a version of its own.
+#: ``runtime`` is the shared CPython the thin installers download; its
+#: "AppVersion" is the Python version (3.13) and has nothing to do with any
+#: app's release number.
+_STANDALONE_NOT_AN_APP = frozenset({"runtime"})
+
+
+def _iss_version_errors(iss: Path, canonical: str, label: str) -> list[str]:
+    """AppVersion, VersionInfoVersion and OutputBaseFilename against *canonical*."""
+    errors: list[str] = []
+    text = iss.read_text(encoding="utf-8")
+
+    match = re.search(r'#define AppVersion "([^"]+)"', text)
+    if match and match.group(1) != canonical:
+        errors.append(f'{label}: #define AppVersion is "{match.group(1)}", expected "{canonical}".')
+
+    # Windows file properties. Four-part (3.0.0.0), so compare the first three:
+    # this is the number a listener sees in the .exe's Details tab and the one
+    # Windows uses to decide whether an upgrade is an upgrade.
+    match = re.search(r"VersionInfoVersion=([0-9.]+)", text)
+    if match:
+        parts = match.group(1).split(".")
+        if ".".join(parts[:3]) != canonical:
+            errors.append(
+                f"{label}: VersionInfoVersion is {match.group(1)}, "
+                f"which is not {canonical} -- the version Windows shows in the "
+                "file's Details tab and uses to order upgrades."
+            )
+    return errors
+
+
+def _top_changelog_release(path: Path) -> tuple[str, str] | None:
+    """``(version, date)`` from the first ``## [X.Y.Z] - DATE`` heading, or None.
+
+    Both bracketed (Keep a Changelog) and bare headings are accepted, and the
+    date is optional -- a missing date is not an error here, a *disagreeing*
+    one is. Only an ISO date counts as a date: Quill Weather's heading reads
+    ``## 2.2.0 -- first release``, and a looser pattern read "first" as the day
+    it shipped and then reported it as a disagreement.
+    """
+    if not path.exists():
+        return None
+    match = re.search(
+        r"^##\s*\[?(\d+\.\d+\.\d+)\]?\s*(?:-+\s*(\d{4}-\d{2}-\d{2}))?",
+        path.read_text(encoding="utf-8"),
+        re.M,
+    )
+    if not match:
+        return None
+    return match.group(1), (match.group(2) or "")
+
+
+def _check_standalone_apps(repo_root: Path) -> list[str]:
+    """Every ``standalone/<app>`` agrees with its own pyproject version.
+
+    The main app has had this since 0.7.0; the standalone apps never did, and
+    on 2026-08-25 -- readying Quill Radio 3.0.0 -- an audit by hand found three
+    siblings shipping a wrong number: QUILL Cast's installer stamped
+    VersionInfoVersion 1.0.1.0 onto a 2.0.0 release, Audio Studio's full
+    installer said 1.0.0 for 2.2.0, and Quill Inkwell's said 2.2.0 for 1.0.0.
+    None of it was catchable, because nothing looked.
+
+    Each app is checked against **its own** ``pyproject.toml``; there is no
+    repo-wide number to agree on, because the apps release independently.
+    """
+    errors: list[str] = []
+    root = repo_root / "standalone"
+    if not root.is_dir():
+        return errors
+
+    for app_dir in sorted(p for p in root.iterdir() if p.is_dir()):
+        app = app_dir.name
+        if app in _STANDALONE_NOT_AN_APP:
+            continue
+        pyproject = app_dir / "pyproject.toml"
+        if not pyproject.exists():
+            continue
+        with pyproject.open("rb") as fh:
+            canonical = str(tomllib.load(fh).get("project", {}).get("version", "")).strip()
+        if not canonical:
+            continue
+
+        build_ps1 = app_dir / "scripts" / "build_release.ps1"
+        if build_ps1.exists():
+            match = re.search(
+                r'^\$version\s*=\s*"([^"]+)"', build_ps1.read_text(encoding="utf-8"), re.M
+            )
+            if match and match.group(1) != canonical:
+                errors.append(
+                    f"standalone/{app}/scripts/build_release.ps1: $version is "
+                    f'"{match.group(1)}", expected "{canonical}" (from its pyproject.toml).'
+                )
+
+        for iss in sorted((app_dir / "installer").glob("*.iss")):
+            errors.extend(
+                _iss_version_errors(iss, canonical, f"standalone/{app}/installer/{iss.name}")
+            )
+
+        # The two changelogs an app can carry: the narrative one at its root and
+        # the Keep a Changelog mirror under docs/. They must name the same
+        # release, on the same day -- a release with two dates is a release
+        # nobody can cite.
+        releases = {}
+        for rel in ("CHANGELOG.md", "docs/CHANGELOG.md"):
+            found = _top_changelog_release(app_dir / rel)
+            if found is not None:
+                releases[rel] = found
+        for rel, (version, _date) in releases.items():
+            if version != canonical:
+                errors.append(
+                    f'standalone/{app}/{rel}: top version heading is "{version}", '
+                    f'expected "{canonical}" (from its pyproject.toml).'
+                )
+        dates = {rel: date for rel, (_v, date) in releases.items() if date}
+        if len(set(dates.values())) > 1:
+            spelled = ", ".join(f"{rel} says {date}" for rel, date in sorted(dates.items()))
+            errors.append(
+                f"standalone/{app}: the changelogs disagree about the release date "
+                f"({spelled}). One release, one date."
+            )
+
+    return errors
+
+
 def main() -> int:
     repo_root = Path(__file__).resolve().parents[2]
     try:
@@ -170,6 +294,9 @@ def main() -> int:
     errors.extend(_check_pyproject(repo_root, canonical))
     errors.extend(_check_iss(repo_root, canonical))
     errors.extend(_check_changelog(repo_root, canonical))
+    # The standalone apps release independently, so each is checked against
+    # its own pyproject version rather than against QUILL's.
+    errors.extend(_check_standalone_apps(repo_root))
 
     if errors:
         print("GATE-VC FAIL: version inconsistency detected.", file=sys.stderr)

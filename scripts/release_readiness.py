@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib.util
 import os
 import re
 import shutil
@@ -256,9 +257,28 @@ def _require_tool(tool_name: str, *, install_hint: str) -> None:
         )
 
 
+def _require_module(module: str, *, install_hint: str) -> None:
+    """Require *module* in **this** interpreter, not merely somewhere on PATH.
+
+    ``shutil.which("pip-audit")`` finds whichever copy PATH happens to reach
+    first, and that is not the interpreter the release is built with. On the
+    2026-08-25 readiness run it resolved to a second Python install whose
+    packages were months stale, so the audit reported six vulnerable packages
+    that the build environment did not have -- and, far worse, would equally
+    have stayed silent about a real one in the environment that ships. An audit
+    of the wrong environment is not a weaker audit; it is a misleading one.
+    """
+    if importlib.util.find_spec(module) is None:
+        raise RuntimeError(
+            f"{module} is required for release readiness, in THIS interpreter "
+            f"({sys.executable}) -- the one the release is built with. "
+            f"Install with: {install_hint}"
+        )
+
+
 def main() -> int:
     repo_root = Path(__file__).resolve().parents[1]
-    _require_tool("pip-audit", install_hint="python -m pip install pip-audit")
+    _require_module("pip_audit", install_hint=f'"{sys.executable}" -m pip install pip-audit')
 
     _run_step(
         "Checking version consistency (GATE-VC)",
@@ -266,7 +286,24 @@ def main() -> int:
         cwd=repo_root,
     )
     _run_step("Running lint", ["ruff", "check", "."], cwd=repo_root)
-    _run_step("Running dependency audit", ["pip-audit", "--strict"], cwd=repo_root)
+    # Two corrections, both made 2026-08-25 readying Quill Radio 3.0.0.
+    #
+    # ``sys.executable -m pip_audit`` rather than the bare command: audit the
+    # interpreter that builds the release (see _require_module for what PATH
+    # resolution cost us).
+    #
+    # And ``repo_root`` as the project path rather than auditing the whole
+    # environment. QUILL is developed against a shared system Python that also
+    # hosts other projects' privately-published packages, and --strict rightly
+    # refuses to pass when a dependency cannot be resolved on PyPI -- so the
+    # audit failed on a package that is not QUILL's and never ships with it.
+    # Auditing the *project* asks the question the release actually needs
+    # answered: are the dependencies QUILL declares known-vulnerable?
+    _run_step(
+        "Running dependency audit",
+        [sys.executable, "-m", "pip_audit", "--strict", str(repo_root)],
+        cwd=repo_root,
+    )
     _run_step(
         "Running tests",
         [

@@ -221,3 +221,79 @@ def refusal(command_id: str, *, playing: bool, bounded: bool) -> str:
             "chapters or position to move through."
         )
     return ""
+
+
+# -- the two transport controls ------------------------------------------------
+#
+# **One button that starts and ends, one that pauses** (2026-08-25). Every
+# surface in both apps used to carry Play/Pause *and* Stop as two separate
+# controls, and on live radio one of them was always a lie: a live stream
+# cannot be paused, so Play/Pause was Play/Restart, and Stop was the only
+# control that ended anything. The ACB Media Schedule window had already
+# settled this the right way -- one button reading Play, then Stop -- and this
+# is that rule, generalised to the content the schedule window does not have.
+#
+# The split is by *what the control promises*, not by what the engine can do:
+#
+# * The **primary** control always answers "start this" / "end this". It says
+#   Play when nothing is on and Stop when anything is, live or recorded. Alt+P
+#   presses it in both states ("&Play", "Sto&p"), so the mnemonic a listener
+#   learns does not move when the label does.
+# * The **pause** control is the verb only *bounded* content has -- a podcast,
+#   a recording, a downloaded or local file, a finished video. Alt+S in both
+#   states ("Pau&se", "Re&sume"). On a live station it is present and dimmed,
+#   and it says why, because a control that comes and goes changes the shape of
+#   a surface navigated by Tab (11.2).
+#
+# Both resolve to verbs the table already has -- STOP and PLAY_PAUSE -- so no
+# key, keymap id or Cast method changes: Ctrl+P is still play/pause and Ctrl+.
+# is still stop. What changes is only which of them a *control* is offering.
+
+
+@dataclass(frozen=True, slots=True)
+class TransportFace:
+    """What one transport control should read, and run, right now."""
+
+    label: str
+    #: The verb pressing it performs, resolved from the same state as the label
+    #: so a button that says Stop can never call play.
+    command_id: str
+    key: str
+    enabled: bool = True
+    #: Why it is dimmed, lower-case and reason-shaped (11.2). "" when enabled.
+    reason: str = ""
+
+    @property
+    def plain(self) -> str:
+        """The label without its mnemonic marker, for an accessible name."""
+        return self.label.replace("&", "")
+
+
+def _key(command_id: str) -> str:
+    found = _BY_ID.get(command_id)
+    return found.key if found is not None else ""
+
+
+def primary_face(*, playing: bool, paused: bool = False) -> TransportFace:
+    """The Play/Stop control. Alt+P in both states, Play when nothing is on."""
+    if playing or paused:
+        return TransportFace("Sto&p", STOP, _key(STOP))
+    return TransportFace("&Play", PLAY_PAUSE, _key(PLAY_PAUSE))
+
+
+def pause_face(*, playing: bool, bounded: bool, paused: bool) -> TransportFace:
+    """The Pause/Resume control. Alt+S in both states; dimmed on live radio."""
+    key = _key(PLAY_PAUSE)
+    if paused:
+        return TransportFace("Re&sume", PLAY_PAUSE, key)
+    if not playing:
+        return TransportFace("Pau&se", PLAY_PAUSE, key, enabled=False, reason="nothing is playing")
+    if not bounded:
+        return TransportFace(
+            "Pau&se",
+            PLAY_PAUSE,
+            key,
+            enabled=False,
+            reason="live radio is going out now, so there is nothing to pause -- Stop ends it",
+        )
+    return TransportFace("Pau&se", PLAY_PAUSE, key)

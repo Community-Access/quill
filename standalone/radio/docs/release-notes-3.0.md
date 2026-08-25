@@ -75,7 +75,7 @@ they are gone. Unchecking the box switches all of them off permanently.
 
 ### Somewhere to start
 
-Press **Ctrl+B** and Browse Stations opens onto twenty-eight branches. In 2.1
+Press **Ctrl+B** and Browse Stations opens onto thirty branches. In 2.1
 there were thirteen.
 
 Four of the new ones are axes the station directory always had and nobody had
@@ -989,7 +989,7 @@ application. That sounds like duplication and it is not, so here is the line
 between them, plainly.
 
 **Quill Radio is the app for finding things.** Sixty-two thousand stations,
-twenty-eight branches, live broadcast, recording on a schedule, YouTube, your
+thirty branches, live broadcast, recording on a schedule, YouTube, your
 own Icecast box. Its podcast support is deliberately the *lite* half: walk
 Apple's entire directory with no key and no account, subscribe, play, read a
 transcript, keep the newest twenty-five episodes of a show in view. That

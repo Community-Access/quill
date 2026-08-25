@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
 
-## [3.0.0] - 2026-08-17
+## [3.0.0] - 2026-08-25
 
 Major: Browse Stations becomes a browsable directory rather than a list of
 sources, the whole station directory now ships inside the app and answers
@@ -757,7 +757,7 @@ gone missing, and several long-standing silent faults are fixed. See
   shape of any source; it renders folders and leaves. Adding a source is one
   registry entry and one handler, not a node kind plus edits in six places.
   `browse_tree_dialog.py` is 199 lines smaller while the tree it serves grew
-  from thirteen root branches to twenty-eight, and its GATE-11 budget was
+  from thirteen root branches to thirty, and its GATE-11 budget was
   **ratcheted down** to match.
 - **An empty branch distinguishes "nothing here" from "could not be reached"**,
   and Safe Mode says so per branch rather than showing an empty folder.

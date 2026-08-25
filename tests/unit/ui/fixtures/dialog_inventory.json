@@ -612,7 +612,7 @@
   "quill/ui/radio/browse_tree_dialog.py::BrowseTreeDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/calendar_dialog.py::_CalendarWindow.show::wx.Dialog": "hardened_custom",
   "quill/ui/radio/calendar_verbs.py::_details::wx.MessageBox": "native",
-  "quill/ui/radio/calendar_verbs.py::export_week::wx.FileDialog": "native",
+  "quill/ui/radio/calendar_verbs.py::export_schedule::wx.FileDialog": "native",
   "quill/ui/radio/caption_settings_dialog.py::CaptionSettingsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/catalog_status_dialog.py::show_catalog_status::wx.Dialog": "hardened_custom",
   "quill/ui/radio/chapter_list_dialog.py::ChapterListDialog.__init__::wx.Dialog": "hardened_custom",

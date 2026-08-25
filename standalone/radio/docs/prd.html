@@ -1147,11 +1147,11 @@ question – <em>what is inside this folder</em> – through one registry
 that a row is something to open or something to play. Adding a source is
 one registry entry and one function, both testable with no wx at all.
 The window ended <strong>199 lines smaller while the tree it serves grew
-from thirteen root branches to twenty-eight</strong>, and its GATE-11
-budget was ratcheted down to hold that: a change that puts a
-source-specific branch back inside it fails the build. Three behaviours
-came with the refactor: an empty branch distinguishes “this genre has no
-stations” from “that directory could not be reached” (they used to be
+from thirteen root branches to thirty</strong>, and its GATE-11 budget
+was ratcheted down to hold that: a change that puts a source-specific
+branch back inside it fails the build. Three behaviours came with the
+refactor: an empty branch distinguishes “this genre has no stations”
+from “that directory could not be reached” (they used to be
 indistinguishable, which is how a listener concludes a working source is
 broken); a folder announces its size with its name where the source can
 say cheaply; and <code>directory_cache</code> adds the fourth cache tier
@@ -5033,6 +5033,201 @@ loses: a <code>TZID</code> parameter that looks like metadata, and the
 double spacing ACB’s exporter emits.
 <code>tests/unit/core/radio/fixtures/acb-2026-08-recurring.ics</code> is
 three events copied out of the live feed untouched.</p>
+<h2 id="17-a-schedule-that-is-empty-must-say-why-2026-08-24">17. A
+schedule that is empty must say why (2026-08-24)</h2>
+<p>Reported the same day section 16 landed: “nothing is showing up when
+arrowing to today. There appears to be no data.”</p>
+<p>There was data. The window was a week – Sunday to Saturday, a heading
+for each day, paged with Previous/Next – and the week containing 24
+August was empty, because <strong>ACB publishes a fortnight of listings
+at a time and then stops.</strong> The live feed on 23 and again on 24
+August ran out on 15 August, and ACB’s own calendar page showed the
+same. Nothing was broken and nothing said so.</p>
+<h3 id="171-the-shape-follows-the-data-not-the-noun">17.1 The shape
+follows the data, not the noun</h3>
+<p><strong>Requirement.</strong> A view of a schedule is a list of what
+is published, not a grid of every date that could hold something.</p>
+<p>A calendar shape makes a claim: that these cells are the schedule,
+and an empty one means nothing is on. For a source that posts in bursts,
+most cells are empty most of the time, and the claim is false in the one
+direction that matters – it reads as an app with no data rather than as
+a source with none.</p>
+<p>The window is now one list, ordered by date, every row carrying its
+own date, time, programme and channel; it opens on the next programme
+still to come. The week’s filters survive and gain one: a
+<strong>Date</strong> picker offering only the dates that actually have
+programmes, each with its count, which is the “jump to a day” the week
+paging was really for.</p>
+<h3 id="172-the-summary-always-states-the-published-range">17.2 The
+summary always states the published range</h3>
+<p><strong>Requirement.</strong> The window says how far the published
+listings run, on every load, and says plainly when that is already
+behind us.</p>
+<p>“49 programmes published. The published schedule runs 1 August to 15
+August. Nothing is published for today or later – ACB last posted a
+schedule through 15 August.” A reader who cannot see the list gets the
+same fact the list would have given a reader who can scroll it, and the
+difference between “no data yet” and “broken” stops being something they
+have to work out.</p>
+<h3 id="173-an-unpublished-month-falls-back-to-the-published-one">17.3
+An unpublished month falls back to the published one</h3>
+<p><strong>Requirement.</strong> When the requested month has no
+listings, show the previous month’s rather than nothing – and never
+present it as current.</p>
+<p>My Calendar serves a month window, so on the 1st of a month ACB has
+not posted yet, the only schedule that exists is last month’s. The
+summary line from 17.2 is what makes this safe: an older schedule
+arrives already labelled with its own range.</p>
+<h3 id="174-programme-titles-are-read-as-text-not-as-markup">17.4
+Programme titles are read as text, not as markup</h3>
+<p><strong>Requirement.</strong> Text from a feed reaches the screen
+reader as characters.</p>
+<p>ACB’s feed is generated from WordPress content and arrives
+<strong>double-encoded</strong>: a curly apostrophe reaches us as
+<code>&amp;amp;#8217;</code>, which a screen reader reads out as
+“ampersand hash eight two one seven semicolon” in the middle of a
+programme title. The parser now decodes entities after RFC 5545
+unescaping, bounded at three passes and stopped as soon as it settles,
+so a title that legitimately contains a literal escaped ampersand is not
+eaten.</p>
+<h3 id="175-the-schedule-belongs-on-the-community-menu">17.5 The
+schedule belongs on the Community menu</h3>
+<p><strong>Requirement.</strong> A surface lives on the menu named for
+what it is.</p>
+<p>The three schedule items were on Station, on the argument that a
+schedule is about what is <em>on</em>. Station is the menu of everything
+Quill Radio can tune and it had passed twenty items. The Community menu
+is “places this community already goes, brought inside the app”, which
+is precisely what an ACB Media schedule is; it now sits beside ACB
+Community Events. The menu is built even when the ADP assistant is
+switched off, because Radio always has the schedule.</p>
+<h3 id="176-play-is-a-toggle-and-its-label-says-which">17.6 Play is a
+toggle, and its label says which</h3>
+<p><strong>Requirement.</strong> A Play verb aimed at the channel
+already playing stops it.</p>
+<p>It called <code>play_station</code> regardless, which tears the
+stream down and rebuilds it: a few seconds of silence, the same audio
+back, and no way to stop from this window at all. The verb now reads
+<strong>Stop</strong> when the highlighted programme’s channel is the
+one playing, on the button and on the context menu alike – both are
+built from one <code>actions_for</code> call given the player’s current
+channel, so the label and the action cannot disagree. Channels are
+matched by number (<code>acb_calendar.same_stream</code>), because the
+calendar’s category says “ACB Media 5” while the playable station’s own
+name need not be spelled identically, and a programme naming no channel
+matches nothing.</p>
+<h3 id="177-a-marker-on-every-row-marks-nothing">17.7 A marker on every
+row marks nothing</h3>
+<p><strong>Requirement.</strong> A row annotation distinguishes that row
+from the others.</p>
+<p>Rows carried a “finished” suffix for anything already past. Because
+ACB publishes a fortnight and stops, that was routinely <em>every row in
+the window</em> – a word repeated forty-nine times that separated no row
+from any other, and one more thing to listen past on each. It is gone;
+the date at the front of the row already says it. “on now” stays,
+because only one row can ever say it.</p>
+<h3 id="178-a-row-says-both-ends-of-the-programme">17.8 A row says both
+ends of the programme</h3>
+<p><strong>Requirement.</strong> A listing that carries a start and an
+end shows both.</p>
+<p>A start time alone answers “when do I tune in” and leaves “how long
+is this” to be found by opening the row. For a schedule somebody is
+planning an evening around, the length is half of what they came for.
+ACB’s listings carry <code>DTEND</code> on nearly everything; where they
+do not, the row shows one time rather than inventing a second.</p>
+<h3 id="179-the-summary-is-focusable">17.9 The summary is focusable</h3>
+<p><strong>Requirement.</strong> A sentence that explains what a window
+is showing can be returned to.</p>
+<p>The summary was a <code>StaticText</code>, which cannot be tabbed to,
+arrowed through, or re-read a word at a time – so somebody who missed it
+as it was spoken had no way back to it, and it is the one place the
+empty-list reason lives. It is now a read-only multi-line
+<code>wx.TextCtrl</code>: read-only rather than disabled, because a
+disabled control refuses focus as well as edits.</p>
+<h2 id="18-the-command-palette-shows-the-keys-2026-08-24">18. The
+Command Palette shows the keys (2026-08-24)</h2>
+<p><strong>Requirement.</strong> Every command the palette lists shows
+and speaks its keystroke, if it has one.</p>
+<p>A <code>Command</code> carries a binding only when whoever registered
+it passed one, and the companion apps register most of theirs with a
+title and a handler alone – their keys live in <code>APP_KEYMAPS</code>,
+which is what the menu labels are built from. So Quill Radio’s menus
+showed the keys correctly while its palette showed none at all, which is
+the wrong way round: the palette is where somebody goes to <em>find</em>
+a command, and it is the one place teaching the keystroke costs
+nothing.</p>
+<p><code>CommandPaletteDialog</code> now takes an optional binding
+resolver and asks the keymap first, falling back to whatever the
+registration carried. Reading the keymap rather than the registry also
+means a rebind reaches the palette, which it did not before. QUILL
+passes the same resolver, so the fix is family-wide.</p>
+<h2 id="19-the-main-window-shows-what-you-chose-2026-08-24">19. The main
+window shows what you chose (2026-08-24)</h2>
+<p>Reported in two steps. First: “the favorites and browse window are
+showing, shouldn’t favorites be hidden unless called upon?” Then,
+exactly: “shouldn’t we be able to show any of the windows in the main
+frame of the app with a menu bar based on the selection in
+settings?”</p>
+<p>Yes. The setting existed and was answering the wrong question.</p>
+<h3
+id="191-the-choice-is-what-the-main-window-shows-not-what-else-opens">19.1
+The choice is what the main window shows, not what else opens</h3>
+<p><strong>Requirement.</strong> Choosing a surface puts you <em>in</em>
+it, with the menu bar.</p>
+<p><code>startup_window</code> opened one chosen window
+<strong>over</strong> the main one, so the listener got two windows
+before pressing anything – and the menu bar was on the one they had not
+asked for, because the main window is the only surface that carries it.
+A peer window’s menu bar is <code>&amp;Close</code> plus
+<code>&amp;Window</code>.</p>
+<p>The main window’s middle – between the now-playing line and the
+volume row – is now a <code>wx.Simplebook</code> whose pages are
+Favorites (the built-in tree), Browse, Search, Recordings and the
+Player. Everything else about the frame is unchanged, which is what
+makes this a smaller change than it sounds: the menu bar, the
+now-playing readout, Mute and Volume, the status bar, the tray and the
+transport keys are all frame-level and all shared.</p>
+<p><code>main_view</code> migrates from <code>startup_window</code>, so
+somebody who chose Browse at launch opens <strong>in</strong> Browse. An
+upgrade must not take away a surface somebody chose, and must not add
+one they did not.</p>
+<h3 id="192-a-hosted-surface-is-the-same-surface">19.2 A hosted surface
+is the same surface</h3>
+<p><strong>Requirement.</strong> Browse behaves identically whether it
+is a window or the main view.</p>
+<p>Each surface class gained one keyword (<code>embed_in</code>) and one
+method (<code>focus_default_control</code>). What an embedded surface
+does <em>not</em> get is a frame, a menu bar of its own, a Close button
+or an entry in the window list – the main window already has all
+four.</p>
+<p>The host builds them by calling the app’s <strong>own
+openers</strong> with <code>embed_in</code> set, not by copying their
+argument lists. Those lists are fifteen keywords long and carry real
+decisions – which download queue, which catalog, which visible sources –
+so a copy would drift, and drift invisibly: Browse-as-a-window and
+Browse-as-the-main-view would quietly differ.</p>
+<h3 id="193-a-menu-item-whose-surface-is-the-main-view-goes-there">19.3
+A menu item whose surface is the main view goes there</h3>
+<p><strong>Requirement.</strong> Ctrl+B while Browse <em>is</em> the
+main window focuses it.</p>
+<p>Otherwise the original complaint returns in a new place: a second
+copy stacked on top of the one already in front of you. Each opener asks
+<code>_main_view_is</code> first; hosts without a main view (embedded
+QUILL) answer False and behave exactly as before.</p>
+<h3 id="194-the-main-window-is-never-empty">19.4 The main window is
+never empty</h3>
+<p><strong>Requirement.</strong> A surface that will not build leaves
+the window on whatever it was showing, and says so.</p>
+<p>An empty main window is the one state a listener cannot get out of by
+keyboard. An unreadable stored value reads as Favorites, and a failed
+build announces the fallback and stores it – a checkmark on a view that
+failed is a menu lying about where you are.</p>
+<h3 id="195-built-once-kept">19.5 Built once, kept</h3>
+<p><strong>Requirement.</strong> Switching back shows the page you
+left.</p>
+<p>Rebuilding is simpler and throws away the tree somebody spent time
+expanding, which is the same reason the browse tree remembers its
+position at all.</p>
 </main>
 </body>
 </html>

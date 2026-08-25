@@ -36,7 +36,12 @@ from quill.core.radio import browse_helpers, browse_sources, transport_commands
 from quill.core.radio.browse_nodes import BrowseNode
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
-from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
+from quill.ui.dialog_contract import (
+    announce_surface_exit,
+    apply_modal_ids,
+    bind_close_button,
+    dialog_alive,
+)
 from quill.ui.radio import browse_feedback, browse_keys, browse_position, transport_keys
 
 #: Item data for the "Loading..." child that makes a node look expandable.
@@ -64,6 +69,7 @@ class BrowseTreeDialog:
         on_visible_sources_changed: Callable[[tuple[str, ...]], None] | None = None,
         catalog: object | None = None,
         on_offline_catalog: object | None = None,
+        embed_in: object | None = None,
     ) -> None:
         import wx
 
@@ -102,8 +108,13 @@ class BrowseTreeDialog:
         # its controls on an inner panel for keyboard traversal; otherwise
         # (embedded QUILL) it stays a modal wx.Dialog, unchanged.
         self._windows = windows
-        self._modeless = windows is not None
-        if self._modeless:
+        #: Hosted in the main window, not a window at all: see main_view_host.
+        self._embedded = embed_in is not None
+        self._modeless = windows is not None and not self._embedded
+        if self._embedded:
+            self._surface = embed_in
+            self._win = self._surface.GetTopLevelParent()
+        elif self._modeless:
             # No parent, on purpose: an owned frame floats glued above its
             # owner, so Browse read as an overlay on the main window rather
             # than a window of its own (reported 2026-08-23). A top-level peer
@@ -119,9 +130,11 @@ class BrowseTreeDialog:
             )
             self._surface = self._win
         self.dialog = self._win  # back-compat alias for callers that reference it
-        # Both shapes: Ctrl+F jumps to the Find box from anywhere in the window.
-        self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
-        self._win.SetMinSize((560, 460))
+        # Ctrl+F jumps to the Find box. On the panel when embedded, never the
+        # frame: the main window's own Ctrl+F is Search Stations.
+        (self._surface if self._embedded else self._win).Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        if not self._embedded:
+            self._win.SetMinSize((560, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         # Above the tree, and one control rather than three: see
@@ -205,13 +218,14 @@ class BrowseTreeDialog:
             "when it is already there; the label says which."
         )
         self._favorite_btn.Enable(False)
-        self._refresh_btn = wx.Button(self._surface, label="&Refresh")
+        # Re&fresh: as the main view, Alt+R is the Record menu and wins.
+        self._refresh_btn = wx.Button(self._surface, label="Re&fresh")
         self._refresh_btn.SetName("Reload the highlighted source from the internet")
         btn_row.Add(self._player_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._favorite_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._refresh_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
-        if not self._modeless:
+        if not self._modeless and not self._embedded:
             # Only the modal dialog carries a Close button. A real window
             # closes the way windows close -- Alt+F4/Ctrl+F4, Ctrl+W, Escape --
             # and a Close button on one reads as a control that must do
@@ -288,6 +302,13 @@ class BrowseTreeDialog:
         self._win.SetMenuBar(menu_bar)
         self._menu_id_refs.append(close_id)
 
+    def focus_default_control(self) -> None:
+        """Put keyboard focus where this surface expects it: the tree."""
+        try:
+            self._tree.SetFocus()
+        except Exception:  # noqa: BLE001 - focus is best-effort
+            pass
+
     def _on_char_hook(self, event: object) -> None:
         """Ctrl+F, Delete, Escape, Ctrl+F4 -- see :mod:`quill.ui.radio.browse_keys`."""
         if not browse_keys.handle(self, event):
@@ -306,6 +327,8 @@ class BrowseTreeDialog:
     def show(self, *, initial_source: str | None = None) -> None:
         if initial_source is not None:
             self._expand_source(initial_source)
+        if self._embedded:
+            return  # already on screen: it is part of the main window
         if self._modeless:
             from quill.ui.dialog_contract import show_modeless_surface
 
@@ -637,6 +660,14 @@ class BrowseTreeDialog:
         browse_refresh.reload_source_branch(self, node_id)
 
     def _on_selected(self, _event: Any) -> None:
+        # Closing the window emits a last selection change *after* wx has
+        # destroyed the tree, so every exit with Browse open printed three
+        # copies of "RuntimeError: wrapped C/C++ object of type TreeCtrl has
+        # been deleted" (seen 2026-08-24 on a launch whose startup window is
+        # Browse). Nothing to remember about a tree that is gone -- and the
+        # position was already written on the selection before this one.
+        if not dialog_alive(self._tree):
+            return
         browse_position.remember(self._tree, self._tree.GetSelection())
         data = self._selected_data()
         from quill.ui.radio import browse_details, browse_prefetch

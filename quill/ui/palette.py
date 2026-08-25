@@ -32,6 +32,7 @@ class CommandPaletteDialog:
         feature_manager: FeatureManager | None = None,
         announce_fn: Callable[[str], None] | None = None,
         on_help: Callable[[], None] | None = None,
+        binding_for: Callable[[str], str | None] | None = None,
     ) -> None:
         import wx
 
@@ -40,6 +41,16 @@ class CommandPaletteDialog:
         self._features = feature_manager
         self._announce_fn = announce_fn
         self._on_help = on_help
+        # How this palette finds a command's keystroke. A command carries one
+        # only if whoever registered it passed one, and most of the companion
+        # apps' commands do not -- Quill Radio registers three dozen with a
+        # title and a handler and nothing else, so its palette listed every
+        # one of them with no key at all while the menus beside it showed the
+        # keys correctly. The keymap is the real answer: it is what the menu
+        # labels are built from, it already carries the per-app defaults, and
+        # it follows the listener when they rebind something. So ask it first
+        # and fall back to whatever the registration happened to carry.
+        self._binding_for = binding_for
         # Show only commands whose feature is visible in the current profile.
         # Commands for OFF features are omitted entirely; the palette should
         # reflect the user's chosen experience, not the full catalogue.
@@ -94,6 +105,17 @@ class CommandPaletteDialog:
         self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
 
         self._refresh_results()
+
+    def _binding(self, command: Command) -> str:
+        """This command's keystroke, live from the keymap where there is one."""
+        if self._binding_for is not None:
+            try:
+                resolved = self._binding_for(command.id)
+            except Exception:  # noqa: BLE001 - a keymap lookup must not break the list
+                resolved = None
+            if resolved:
+                return str(resolved)
+        return command.keybinding or ""
 
     def _set_status(self, msg: str) -> None:
         self.status.SetLabel(msg)
@@ -190,7 +212,8 @@ class CommandPaletteDialog:
             # Speak the shortcut with the title so the palette teaches the
             # keystroke while it dispatches -- the visual list already shows
             # it, and screen-reader users must hear the same information.
-            binding_part = f", {command.keybinding}" if command.keybinding else ""
+            binding = self._binding(command)
+            binding_part = f", {binding}" if binding else ""
             msg = f"{command.title}{binding_part}{suffix}"
             if self._announce_fn is not None:
                 self._announce_fn(msg)
@@ -200,7 +223,7 @@ class CommandPaletteDialog:
     def _refresh_results(self) -> None:
         labels = []
         for command in self._filtered_commands:
-            binding = command.keybinding or ""
+            binding = self._binding(command)
             label = f"{command.title} [{binding}]" if binding else command.title
             labels.append(label)
         self.results.Set(labels)
@@ -208,7 +231,8 @@ class CommandPaletteDialog:
             self.results.SetSelection(0)
             top = self._filtered_commands[0]
             available_count = sum(1 for cmd in self._filtered_commands if self._is_available(cmd))
-            top_binding = f", {top.keybinding}" if top.keybinding else ""
+            top_key = self._binding(top)
+            top_binding = f", {top_key}" if top_key else ""
             self._set_status(
                 f"{len(labels)} command(s), {available_count} available. "
                 f"Top match: {top.title}{top_binding}. "
@@ -224,7 +248,8 @@ class CommandPaletteDialog:
         if selected < len(self._filtered_commands):
             command = self._filtered_commands[selected]
             suffix = self._unavailable_suffix(command)
-            binding_part = f", {command.keybinding}" if command.keybinding else ""
+            binding = self._binding(command)
+            binding_part = f", {binding}" if binding else ""
             self._set_status(f"Selected: {command.title}{binding_part}{suffix}")
 
     def _run_selected(self) -> None:

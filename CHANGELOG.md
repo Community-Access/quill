@@ -6,6 +6,115 @@ The most recent work first: a reliability pass driven entirely by what people
 reported (a full disk that could lose a document, an editor doing too much work
 between keystrokes), then the release as originally scoped below.
 
+### Quill Radio's main window learns to pause (2026-08-25)
+
+- **Playback > Pause / Resume, on Ctrl+Space.** The main window had one
+  transport row -- Play/Stop on Ctrl+P -- wired to a handler that stops, so
+  Ctrl+P there *ended* a recording or a downloaded file where the same key in
+  every other window paused it. Play/Stop keeps Ctrl+P and keeps its behaviour;
+  Pause is a second row beneath it, dimmed with a reason on a live station. The
+  rows, their handler and their refresh live in the new
+  `quill/apps/radio_transport_menu.py`, so `radio.py` came down five lines
+  under its GATE-11 ceiling rather than going over it.
+
+### Quill Radio's schedule: the Play button, and whose clock the times are on (2026-08-25)
+
+- **Play now becomes Stop on the ACB Media Schedule**, including while the
+  stream is still connecting. Three causes at once -- the window asked whether
+  playback was *running* rather than "on the air or on its way to it", the Play
+  verb re-faced the window only when it stopped something, and nothing re-read
+  the label when connecting turned into playing on a background thread. Fixing
+  any one alone would still have left the button reading Play for the whole
+  broadcast.
+
+- **The schedule now says which clock its times are on.** ACB publishes in US
+  Central and Quill Radio converts to yours -- correctly, and invisibly, which
+  is why it read as a bug. The summary line names the reader's zone and ACB's,
+  and says nothing at all where the two already match. It matters most where
+  the gap moves: Arizona keeps MST all year, so it is two hours behind Central
+  in summer and one in winter.
+
+### One transport control that starts and ends, and one that pauses (2026-08-25)
+
+- **Play becomes Stop.** Quill Radio's player, tray menu and status-bar menu
+  each carried a Play/Pause control *and* a Stop control side by side, and on a
+  live station one of the pair was always wrong -- a live stream cannot be
+  paused, so Play/Pause meant Play/Restart. There is now one control that says
+  **Play** when nothing is on and **Stop** when something is, live or recorded,
+  and Alt+P presses it in both states so the key does not move when the label
+  does. It is the rule the ACB Media Schedule window already used.
+
+- **Pause is its own control, for the content that has one.** A podcast, a
+  recording, a downloaded or a local file gets **Pause**, then **Resume** --
+  Alt+S in both states. On a live station it is present and dimmed and says why
+  ("live radio is going out now, so there is nothing to pause -- Stop ends it")
+  rather than disappearing, because a control that comes and goes moves every
+  control after it for somebody navigating by Tab.
+
+- **The tray menu had three transport rows for one player** -- Play / Pause,
+  Stop, and a third Play-or-Stop row from the shared status-bar block. It now
+  offers the same two the rest of the app does. No keys changed: Ctrl+P is
+  still play/pause and Ctrl+. is still stop, in Quill Radio and QUILL Cast
+  alike.
+
+### Edit sits where Windows keeps it, and Community stops claiming a key (2026-08-25)
+
+- **The Edit menu moved to just after the app's own first menu** -- Station in
+  Quill Radio, Subscriptions in QUILL Cast. It was being inserted at whatever
+  index the menu bar had reached, which left it between Community and
+  QuillVille: somewhere no Windows application has ever kept Edit, and a menu
+  found by counting Alt+Right presses is a menu whose position is the whole of
+  how it is found. Radio's bar now reads Station, Edit, View.
+
+- **Quill Radio's Community menu no longer advertises Ctrl+Alt+A** in its
+  title. That chord is Bookmark This Moment; the menu had carried it since it
+  was the Audio Description Project menu. Alt+C opens Community as it always
+  did, and no other menu on the bar puts a chord in its title.
+
+### Quill Radio's main window shows what you chose (2026-08-24)
+
+- **View > Main Window Shows** (Ctrl+Shift+1 to Ctrl+Shift+5, or Preferences).
+  The main window's middle is now your Favorites, Browse Stations, Search
+  Stations, Radio Recordings or the Player, with the menu bar, now-playing
+  line, Mute/Volume and status bar unchanged around it. The old "open this
+  window at startup" opened your choice as a *second* window over the main one,
+  so you got two windows before pressing anything and the menu bar sat on the
+  one you had not asked for. The setting migrates, so a Browse-at-startup
+  choice now opens *in* Browse. Everything is still its own window on demand;
+  pressing Ctrl+B while Browse is the main view takes you there rather than
+  stacking a copy. Details in the Radio PRD section 19.
+
+### The ACB Media schedule is a list, and the palette shows its keys (2026-08-24)
+
+- **Quill Radio's ACB Media Schedule is one flat list**, not a Sunday-to-Saturday
+  calendar. ACB publishes a fortnight of listings at a time and then stops, so
+  the week containing today is routinely empty and the window read as an app
+  with no data in it. Every published programme now appears in one date-ordered
+  list that opens on the next thing still to come, with a Date picker offering
+  only the dates that have programmes, and a summary line that always states how
+  far the published listings run -- and says so plainly when that is already
+  behind us. An unpublished month falls back to the last published one rather
+  than showing nothing. The three schedule items moved from Station to the
+  **Community** menu, beside ACB Community Events. Details in the Radio PRD
+  section 17.
+
+- **Play in the ACB Media schedule is a toggle.** Pressing it on the channel
+  already playing stops it rather than restarting the stream, and the button
+  says **Stop** when that is what it will do. Rows also stopped labelling every
+  past programme "finished" -- with a fortnight published and then nothing, that
+  was every row.
+
+- **Calendar text is decoded before it is spoken.** ACB's feed is double-encoded,
+  so a curly apostrophe reached screen readers as "ampersand hash eight two one
+  seven semicolon" mid-title.
+
+- **The Command Palette shows and speaks each command's keystroke.** A command
+  carries a binding only if whoever registered it passed one, and the companion
+  apps keep theirs in the keymap the menu labels are built from -- so Quill
+  Radio's palette listed several dozen commands with no key at all while the
+  menus beside it were correct. The palette now reads the keymap first, in QUILL
+  and in every companion app, which also means a shortcut you rebind reaches it.
+
 ### Six things Quill Radio had and QUILL Cast did not (2026-08-24)
 
 A Keyboard Shortcuts Sheet, Go To, a word when FFmpeg is missing, three

@@ -399,3 +399,90 @@ def test_a_high_priority_reminder_comes_through_quiet_hours(frame, tmp_path, mon
     assert said and "Board meeting" in said[0]
     assert seen == [True, False], "the priority reaches quiet hours per reminder"
     monitor.stop()
+
+
+# -- play is a toggle (2026-08-24) -----------------------------------------------
+#
+# Reported: "The Play button on the community schedule simply restarts the
+# stream and does not stop." It called play_station regardless, so pressing it
+# on the channel already playing tore the stream down and rebuilt it -- a few
+# seconds of silence, the same audio back, and no way to stop from this window.
+
+
+class _StatefulController(_Controller):
+    """A controller that remembers what it is playing, like the real one."""
+
+    def __init__(self, playing: str = "") -> None:
+        super().__init__()
+        from quill.ui.radio.playback_state import RadioPlayerState
+
+        self.stopped = 0
+        station = SimpleNamespace(name=playing) if playing else None
+        self.state = SimpleNamespace(
+            station=station,
+            state=RadioPlayerState.PLAYING if playing else RadioPlayerState.STOPPED,
+        )
+
+    def stop(self) -> None:
+        from quill.ui.radio.playback_state import RadioPlayerState
+
+        self.stopped += 1
+        self.state.station = None
+        self.state.state = RadioPlayerState.STOPPED
+
+
+def test_play_on_the_channel_already_playing_stops_it() -> None:
+    host = _Host(controller=_StatefulController(playing="ACB Media 4"))
+
+    calendar_verbs.run(host, _Window(), calendar_actions.PLAY, _event())
+
+    assert host._radio_controller.stopped == 1
+    assert host._radio_controller.played == [], "it must not restart the stream"
+    assert "Stopped ACB Media 4" in host.said[-1]
+
+
+def test_play_on_a_different_channel_still_switches_to_it() -> None:
+    host = _Host(controller=_StatefulController(playing="ACB Media 9"))
+
+    calendar_verbs.run(host, _Window(), calendar_actions.PLAY, _event())
+
+    assert host._radio_controller.stopped == 0
+    assert [s.name for s in host._radio_controller.played] == ["ACB Media 4"]
+
+
+def test_a_stopped_player_is_not_treated_as_playing_anything() -> None:
+    host = _Host(controller=_StatefulController())
+
+    calendar_verbs.run(host, _Window(), calendar_actions.PLAY, _event())
+
+    assert [s.name for s in host._radio_controller.played] == ["ACB Media 4"]
+
+
+def test_the_verb_says_stop_when_that_channel_is_on() -> None:
+    """The label and the action come from one place, so they cannot disagree."""
+    actions = {
+        action.action_id: action
+        for action in calendar_actions.actions_for(_event(), NOW, playing_stream="ACB Media 4")
+    }
+
+    assert actions[calendar_actions.PLAY].label == "&Stop"
+
+
+def test_the_verb_says_play_for_any_other_channel() -> None:
+    actions = {
+        action.action_id: action
+        for action in calendar_actions.actions_for(_event(), NOW, playing_stream="ACB Media 9")
+    }
+
+    assert "Play" in actions[calendar_actions.PLAY].label
+
+
+def test_a_programme_on_no_channel_never_matches_whatever_is_playing() -> None:
+    """Otherwise every unassigned programme would offer Stop."""
+    actions = {
+        action.action_id: action
+        for action in calendar_actions.actions_for(_event(stream=""), NOW, playing_stream="")
+    }
+
+    assert "Play" in actions[calendar_actions.PLAY].label
+    assert actions[calendar_actions.PLAY].enabled is False

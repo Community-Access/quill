@@ -137,7 +137,32 @@ def fetch_schedule(
         refresh=refresh,
         empty=[],
     )
+    events = _events_from(payload)
+    if events:
+        return (events, age)
+
+    # Nothing published for this month. Fall back one month rather than showing
+    # an empty window: ACB posts a fortnight of listings at a time and then
+    # stops, so on the 1st of a month whose schedule is not up yet the *only*
+    # schedule that exists is last month's -- and a window that answers
+    # "nothing" when a schedule demonstrably exists is the failure this whole
+    # feature is for. The summary line says how far the listings actually run,
+    # so the older month is never presented as current.
+    before = _previous_month(moment)
+    payload, age = directory_cache.resolve(
+        cache_key(before),
+        lambda: _fetch_ics(before),
+        max_age_seconds=MAX_AGE_SECONDS,
+        refresh=refresh,
+        empty=[],
+    )
     return (_events_from(payload), age)
+
+
+def _previous_month(moment: datetime) -> datetime:
+    """The first of the month before *moment*'s."""
+    first = moment.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    return first - timedelta(days=1)
 
 
 def _fetch_ics(moment: datetime) -> list[dict[str, Any]]:
@@ -324,6 +349,19 @@ def station_for(event: CalendarEvent) -> Any:
     return None
 
 
+def same_stream(first: object, second: object) -> bool:
+    """True when two names mean the same ACB Media channel.
+
+    By number, not by string: the calendar's CATEGORIES say "ACB Media 5"
+    while the playable station's own name may carry a suffix, and "acb media 5"
+    and "ACB  Media 5" are the same channel written differently. Two names
+    that name no channel at all are never "the same channel" -- that would make
+    every unassigned programme look like whatever is playing.
+    """
+    left, right = _stream_number(first), _stream_number(second)
+    return left is not None and left == right
+
+
 def _stream_number(name: object) -> int | None:
     match = _STREAM_RE.search(str(name or ""))
     return int(match.group(1)) if match else None
@@ -435,6 +473,7 @@ __all__ = [
     "deduplicate",
     "fetch_schedule",
     "on_now",
+    "same_stream",
     "search",
     "station_for",
     "stream_for",

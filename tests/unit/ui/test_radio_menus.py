@@ -60,3 +60,31 @@ def test_listening_statistics_is_a_report_and_lives_in_view() -> None:
     extras = (_APPS / "radio_playback_extras.py").read_text(encoding="utf-8")
     assert "stats_home = view_menu if view_menu is not None else menu" in extras
     assert 'stats_home.Append(stats_id, "Listening Stati&stics...' in extras
+
+
+def test_edit_sits_directly_after_the_app_menu_rather_than_at_the_end() -> None:
+    """Alt+E is hunted for at the front of the bar, not between Community and
+    QuillVille -- which is where ``position=menu_bar.GetMenuCount()`` put it."""
+    support = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "support_menu.py").read_text(
+        encoding="utf-8"
+    )
+
+    # No ``position=`` argument: the default is 1, immediately after the
+    # app's own first menu. It used to be passed GetMenuCount().
+    assert "\n    insert_edit_menu(host, menu_bar, wx)\n" in support
+    assert "position: int = 1" in support
+    # View is built late (its Text Size radio items need the font scale), so it
+    # inserts *after* Edit has already taken index 1: Station, Edit, View.
+    assert 'menu_bar.Insert(2, view_menu, "&View")' in _RADIO
+
+
+def test_the_community_menu_does_not_advertise_a_chord_that_is_someone_elses() -> None:
+    """Its title carried "Ctrl+Alt+A" -- which is Bookmark This Moment.
+
+    Left over from when the menu was the Audio Description Project's. A
+    top-level menu is opened by its mnemonic (Alt+C here), and no other menu on
+    this bar puts a chord in its title.
+    """
+    assert 'menu_bar.Append(adp_menu, "&Community")' in _RADIO
+    titles = [line for line in _RADIO.splitlines() if "menu_bar.Append(" in line]
+    assert not [line for line in titles if "Ctrl+" in line], titles

@@ -177,7 +177,7 @@ Reopening any of this needs a new reason, not a new email.
 - **Directories say when they are down, instead of looking empty (3.0.0; `core/radio/browse_failure.py`, `core/radio/directory_cache.py`, `core/radio/internet_archive.py`, `core/media/librivox.py`, `ui/radio/browse_feedback.py`).** The empty-versus-broken distinction the browse contract promises was leaking in two places. Every source wraps transport failures in its own coded error and the classifier matched only the outermost type, so LibriVox being unreachable for a day (Cloudflare 522 after a ~19.5 s hold) reported "no data in the folder" on every shelf; it now walks the `__cause__`/`__context__` chain. And the Internet Archive answers a failed search with **HTTP 200** plus `{"error": "[BACKEND_ERROR] ..."}`, which parsed to zero docs -- Radio Programs reported itself empty, and because that empty payload was a truthy dict it was **cached**, outliving the outage; the error body now raises (`service_unreachable`), empty listings are never cached, and `directory_cache` records a swallowed refresh failure so `browse` can still tell empty from broken without the cache layer having to raise into a tree. LibriVox browse also drops from the 20 s book-download budget to 8 s, and a branch names itself while loading and speaks up if it passes three seconds, because slow and hung are the same experience in silence.
 - **AudioPub as a Community Audio source, v1 = Discover only (3.0.0; `core/radio/audiopub.py`, handlers in `core/radio/browse_libraries.py`).** AudioPub (audiopub.site) is an open-source (AGPL-3.0) platform whose agreement says uploads are publicly streamable and downloadable. Its own client code implements one JSON endpoint -- `GET /quickfeed/api?page=N`, 50 items per page, deliberately randomized server-side -- so v1 is exactly that: a **Discover** shelf (a random fifty, different every time, with a "More to discover" row), each row playable with a timeline and carrying its creator and play count. Two boundaries, both deliberate: (1) the software being open source does not make the *audio* freely licensed -- uploaders keep their rights, so AudioPub is live-only, excluded from the station catalog, and the Status view says why; (2) newest/popular/search/live-streams all exist server-side but have no public API, and the plan of record is to **ask the AudioPub developer to bless a small read-only API** for them rather than screen-scrape an internal one that can change. Live Now (Icecast at live.audiopub.site:8000, mount = user id) is the most interesting v2 branch once blessed -- playback is infrastructure Quill Radio already speaks.
 - **Find became branch-smart, and the tree learned to read ahead (3.0.0; `core/radio/branch_find.py`, `ui/radio/browse_prefetch.py`, scoped filters on `catalog.store.search`).** *Find in this folder* used to answer one way everywhere: crawl the subtree and match labels -- which anchored on Podcasts meant crawling chart pages and never asking Apple's search engine (how a show as findable as Double Tap came back "no matches", reported 2026-08-16). Find now routes to the fastest honest channel for the anchor: the Podcasts branch asks the real iTunes Search API and answers with show *folders* that expand into episodes; a catalog-served Radio Browser axis answers from the local FTS index, scoped to the anchored country/state/language/genre/codec -- instant and offline; LibriVox, the Internet Archive, Project Gutenberg, SomaFM, TuneIn, iHeart, NOAA, Audius, Mixcloud and ccMixter each route to their own search engine (books and Archive items as drillable folders, TuneIn rows stream-resolved); only engine-less branches keep the bounded crawl, and an unreachable directory reports itself rather than posing as "no matches". Ctrl+F focuses the box from anywhere in the window. Every answer states its origin out loud ("Searched the whole podcast directory", "From your catalog"). The Find box moved **above** the tree -- one Shift+Tab away -- and the tree got **predictive prefetch**: highlighting a collapsed folder starts its fetch immediately and a just-opened folder's first child folders fetch behind it, so expands the listener was about to make open instantly. Prefetch is driven only by where the cursor actually is: hidden sources stay uncontacted, Safe Mode fetches nothing. Related fix: a Find Stations result that is a *work* rather than a stream (an Apple show, a LibriVox book) used to hand the player an empty URL and silently do nothing; Play now resolves it off-thread and starts the show's latest episode or the book's first section, announced by name.
-- **Browse as a contract, not a window (3.0.0; upstream `core/radio/browse_nodes.py`, `core/radio/browse_sources.py`, `core/radio/browse_visibility.py`, `core/radio/directory_cache.py`, `ui/radio/browse_tree_dialog.py`).** The Browse Stations window knew the shape of all thirteen sources in it: adding iHeart had cost three internal node-kind strings and edits in six places, and *Find in this folder* carried a **second** copy of the same knowledge, hand-synchronised -- so a source added to the display and forgotten there was silently unsearchable, with no error to notice. `BrowseNode` is now the whole contract (folder / leaf / action, plus `note` and an optional `child_count`), every source answers exactly one question -- *what is inside this folder* -- through one registry (`ROOT_SOURCES` plus one handler), and the dialog knows only that a row is something to open or something to play. Adding a source is one registry entry and one function, both testable with no wx at all. The window ended **199 lines smaller while the tree it serves grew from thirteen root branches to twenty-eight**, and its GATE-11 budget was ratcheted down to hold that: a change that puts a source-specific branch back inside it fails the build. Three behaviours came with the refactor: an empty branch distinguishes "this genre has no stations" from "that directory could not be reached" (they used to be indistinguishable, which is how a listener concludes a working source is broken); a folder announces its size with its name where the source can say cheaply; and `directory_cache` adds the fourth cache tier (fresh -> live -> stale) so a level survives a session, a failed refresh keeps what was there rather than blanking a working branch, and a cached answer reports its own age instead of implying it is current. `LOCAL_SOURCES` is what Safe Mode reads, per branch, rather than a single app-wide switch.
+- **Browse as a contract, not a window (3.0.0; upstream `core/radio/browse_nodes.py`, `core/radio/browse_sources.py`, `core/radio/browse_visibility.py`, `core/radio/directory_cache.py`, `ui/radio/browse_tree_dialog.py`).** The Browse Stations window knew the shape of all thirteen sources in it: adding iHeart had cost three internal node-kind strings and edits in six places, and *Find in this folder* carried a **second** copy of the same knowledge, hand-synchronised -- so a source added to the display and forgotten there was silently unsearchable, with no error to notice. `BrowseNode` is now the whole contract (folder / leaf / action, plus `note` and an optional `child_count`), every source answers exactly one question -- *what is inside this folder* -- through one registry (`ROOT_SOURCES` plus one handler), and the dialog knows only that a row is something to open or something to play. Adding a source is one registry entry and one function, both testable with no wx at all. The window ended **199 lines smaller while the tree it serves grew from thirteen root branches to thirty**, and its GATE-11 budget was ratcheted down to hold that: a change that puts a source-specific branch back inside it fails the build. Three behaviours came with the refactor: an empty branch distinguishes "this genre has no stations" from "that directory could not be reached" (they used to be indistinguishable, which is how a listener concludes a working source is broken); a folder announces its size with its name where the source can say cheaply; and `directory_cache` adds the fourth cache tier (fresh -> live -> stale) so a level survives a session, a failed refresh keeps what was there rather than blanking a working branch, and a cached answer reports its own age instead of implying it is current. `LOCAL_SOURCES` is what Safe Mode reads, per branch, rather than a single app-wide switch.
 - **Nine new browse branches, none of them needing a key (3.0.0; upstream `core/radio/radio_browser.py`, `core/podcasts/apple_podcasts.py`, `core/radio/internet_archive.py`, `core/media/librivox.py`, `core/radio/gutendex.py`, `core/radio/free_music.py`, `core/radio/wikidata.py`).** The access rule is the organising principle: no API key, no account, no developer registration, no business relationship.
   - *Four axes the directory already published.* **By Country** -> state/region (the `/json/states/{country}/` **trailing slash is required** -- without it the API answers "this country has no states" rather than an error, which is a fault no unit test would have caught), **By Language**, **Trending Now** (`topclick`, genuinely distinct from `topvote` behind Popular Stations), and **Recently Added or Changed**. No new egress host: this is data Quill Radio was already downloading to fill two dropdowns.
   - *Apple Podcasts, keyless.* Storefront -> genre tree -> subgenre -> charts -> lazy `lookup` -> `feedUrl`. Genre tree cached a week, charts six hours, feed URLs a month; one chart request serves every genre in a storefront. **A chart row is tagged with its leaf genre and never its ancestors**, so filtering the US top 100 by Arts returned zero -- `genre_id_set` expands a genre to its subtree. Apple is discovery only: a show resolves to the publisher's own RSS and everything after that (episodes, audio, transcripts) comes from the feed, so the branch is switchable off at no cost to playback. **Podcast Index is out** -- decision 2026-08-13, reversing the earlier plan: it needs a free key, which means a key to configure, to support, and to explain to somebody at the worst moment, and transcripts never came from a directory in the first place.
@@ -1916,3 +1916,207 @@ Both faults above live in exactly the parts a tidied-up fixture loses: a
 `TZID` parameter that looks like metadata, and the double spacing ACB's
 exporter emits. `tests/unit/core/radio/fixtures/acb-2026-08-recurring.ics` is
 three events copied out of the live feed untouched.
+
+## 17. A schedule that is empty must say why (2026-08-24)
+
+Reported the same day section 16 landed: "nothing is showing up when arrowing
+to today. There appears to be no data."
+
+There was data. The window was a week -- Sunday to Saturday, a heading for each
+day, paged with Previous/Next -- and the week containing 24 August was empty,
+because **ACB publishes a fortnight of listings at a time and then stops.** The
+live feed on 23 and again on 24 August ran out on 15 August, and ACB's own
+calendar page showed the same. Nothing was broken and nothing said so.
+
+### 17.1 The shape follows the data, not the noun
+
+**Requirement.** A view of a schedule is a list of what is published, not a
+grid of every date that could hold something.
+
+A calendar shape makes a claim: that these cells are the schedule, and an empty
+one means nothing is on. For a source that posts in bursts, most cells are
+empty most of the time, and the claim is false in the one direction that
+matters -- it reads as an app with no data rather than as a source with none.
+
+The window is now one list, ordered by date, every row carrying its own date,
+time, programme and channel; it opens on the next programme still to come. The
+week's filters survive and gain one: a **Date** picker offering only the dates
+that actually have programmes, each with its count, which is the "jump to a
+day" the week paging was really for.
+
+### 17.2 The summary always states the published range
+
+**Requirement.** The window says how far the published listings run, on every
+load, and says plainly when that is already behind us.
+
+"49 programmes published. The published schedule runs 1 August to 15 August.
+Nothing is published for today or later -- ACB last posted a schedule through
+15 August." A reader who cannot see the list gets the same fact the list would
+have given a reader who can scroll it, and the difference between "no data yet"
+and "broken" stops being something they have to work out.
+
+### 17.3 An unpublished month falls back to the published one
+
+**Requirement.** When the requested month has no listings, show the previous
+month's rather than nothing -- and never present it as current.
+
+My Calendar serves a month window, so on the 1st of a month ACB has not posted
+yet, the only schedule that exists is last month's. The summary line from 17.2
+is what makes this safe: an older schedule arrives already labelled with its
+own range.
+
+### 17.4 Programme titles are read as text, not as markup
+
+**Requirement.** Text from a feed reaches the screen reader as characters.
+
+ACB's feed is generated from WordPress content and arrives **double-encoded**:
+a curly apostrophe reaches us as `&amp;#8217;`, which a screen reader reads out
+as "ampersand hash eight two one seven semicolon" in the middle of a programme
+title. The parser now decodes entities after RFC 5545 unescaping, bounded at
+three passes and stopped as soon as it settles, so a title that legitimately
+contains a literal escaped ampersand is not eaten.
+
+### 17.5 The schedule belongs on the Community menu
+
+**Requirement.** A surface lives on the menu named for what it is.
+
+The three schedule items were on Station, on the argument that a schedule is
+about what is *on*. Station is the menu of everything Quill Radio can tune and
+it had passed twenty items. The Community menu is "places this community
+already goes, brought inside the app", which is precisely what an ACB Media
+schedule is; it now sits beside ACB Community Events. The menu is built even
+when the ADP assistant is switched off, because Radio always has the schedule.
+
+### 17.6 Play is a toggle, and its label says which
+
+**Requirement.** A Play verb aimed at the channel already playing stops it.
+
+It called `play_station` regardless, which tears the stream down and rebuilds
+it: a few seconds of silence, the same audio back, and no way to stop from this
+window at all. The verb now reads **Stop** when the highlighted programme's
+channel is the one playing, on the button and on the context menu alike -- both
+are built from one `actions_for` call given the player's current channel, so
+the label and the action cannot disagree. Channels are matched by number
+(`acb_calendar.same_stream`), because the calendar's category says "ACB Media
+5" while the playable station's own name need not be spelled identically, and
+a programme naming no channel matches nothing.
+
+### 17.7 A marker on every row marks nothing
+
+**Requirement.** A row annotation distinguishes that row from the others.
+
+Rows carried a "finished" suffix for anything already past. Because ACB
+publishes a fortnight and stops, that was routinely *every row in the window* --
+a word repeated forty-nine times that separated no row from any other, and one
+more thing to listen past on each. It is gone; the date at the front of the row
+already says it. "on now" stays, because only one row can ever say it.
+
+### 17.8 A row says both ends of the programme
+
+**Requirement.** A listing that carries a start and an end shows both.
+
+A start time alone answers "when do I tune in" and leaves "how long is this"
+to be found by opening the row. For a schedule somebody is planning an evening
+around, the length is half of what they came for. ACB's listings carry `DTEND`
+on nearly everything; where they do not, the row shows one time rather than
+inventing a second.
+
+### 17.9 The summary is focusable
+
+**Requirement.** A sentence that explains what a window is showing can be
+returned to.
+
+The summary was a `StaticText`, which cannot be tabbed to, arrowed through, or
+re-read a word at a time -- so somebody who missed it as it was spoken had no
+way back to it, and it is the one place the empty-list reason lives. It is now
+a read-only multi-line `wx.TextCtrl`: read-only rather than disabled, because
+a disabled control refuses focus as well as edits.
+
+## 18. The Command Palette shows the keys (2026-08-24)
+
+**Requirement.** Every command the palette lists shows and speaks its
+keystroke, if it has one.
+
+A `Command` carries a binding only when whoever registered it passed one, and
+the companion apps register most of theirs with a title and a handler alone --
+their keys live in `APP_KEYMAPS`, which is what the menu labels are built from.
+So Quill Radio's menus showed the keys correctly while its palette showed none
+at all, which is the wrong way round: the palette is where somebody goes to
+*find* a command, and it is the one place teaching the keystroke costs nothing.
+
+`CommandPaletteDialog` now takes an optional binding resolver and asks the
+keymap first, falling back to whatever the registration carried. Reading the
+keymap rather than the registry also means a rebind reaches the palette, which
+it did not before. QUILL passes the same resolver, so the fix is family-wide.
+
+
+## 19. The main window shows what you chose (2026-08-24)
+
+Reported in two steps. First: "the favorites and browse window are showing,
+shouldn't favorites be hidden unless called upon?" Then, exactly: "shouldn't we
+be able to show any of the windows in the main frame of the app with a menu bar
+based on the selection in settings?"
+
+Yes. The setting existed and was answering the wrong question.
+
+### 19.1 The choice is what the main window shows, not what else opens
+
+**Requirement.** Choosing a surface puts you *in* it, with the menu bar.
+
+`startup_window` opened one chosen window **over** the main one, so the
+listener got two windows before pressing anything -- and the menu bar was on
+the one they had not asked for, because the main window is the only surface
+that carries it. A peer window's menu bar is `&Close` plus `&Window`.
+
+The main window's middle -- between the now-playing line and the volume row --
+is now a `wx.Simplebook` whose pages are Favorites (the built-in tree), Browse,
+Search, Recordings and the Player. Everything else about the frame is
+unchanged, which is what makes this a smaller change than it sounds: the menu
+bar, the now-playing readout, Mute and Volume, the status bar, the tray and the
+transport keys are all frame-level and all shared.
+
+`main_view` migrates from `startup_window`, so somebody who chose Browse at
+launch opens **in** Browse. An upgrade must not take away a surface somebody
+chose, and must not add one they did not.
+
+### 19.2 A hosted surface is the same surface
+
+**Requirement.** Browse behaves identically whether it is a window or the main
+view.
+
+Each surface class gained one keyword (`embed_in`) and one method
+(`focus_default_control`). What an embedded surface does *not* get is a frame,
+a menu bar of its own, a Close button or an entry in the window list -- the
+main window already has all four.
+
+The host builds them by calling the app's **own openers** with `embed_in` set,
+not by copying their argument lists. Those lists are fifteen keywords long and
+carry real decisions -- which download queue, which catalog, which visible
+sources -- so a copy would drift, and drift invisibly: Browse-as-a-window and
+Browse-as-the-main-view would quietly differ.
+
+### 19.3 A menu item whose surface is the main view goes there
+
+**Requirement.** Ctrl+B while Browse *is* the main window focuses it.
+
+Otherwise the original complaint returns in a new place: a second copy stacked
+on top of the one already in front of you. Each opener asks `_main_view_is`
+first; hosts without a main view (embedded QUILL) answer False and behave
+exactly as before.
+
+### 19.4 The main window is never empty
+
+**Requirement.** A surface that will not build leaves the window on whatever it
+was showing, and says so.
+
+An empty main window is the one state a listener cannot get out of by keyboard.
+An unreadable stored value reads as Favorites, and a failed build announces the
+fallback and stores it -- a checkmark on a view that failed is a menu lying
+about where you are.
+
+### 19.5 Built once, kept
+
+**Requirement.** Switching back shows the page you left.
+
+Rebuilding is simpler and throws away the tree somebody spent time expanding,
+which is the same reason the browse tree remembers its position at all.

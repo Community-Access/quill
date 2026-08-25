@@ -87,6 +87,15 @@ def wire_support_surfaces(host: Any, menu_bar: Any, help_menu: Any, wx: Any) -> 
     four surfaces arrive together, are shared between the apps, and a frame
     that wired three of them would be a frame with a missing key nobody
     noticed until somebody pressed it.
+
+    **Edit goes at index 1, not at the end** (2026-08-25). This used to pass
+    ``position=menu_bar.GetMenuCount()``, which put Edit wherever the frame
+    happened to have got to -- in Quill Radio that was between Community and
+    QuillVille, in QUILL Cast between Quillins and Help. Both are places no
+    Windows app has ever kept Edit, and a menu found by counting Alt+Right
+    presses is a menu whose position is the whole of its discoverability.
+    Index 1 is immediately after the app's own first menu (Station in Radio,
+    Subscriptions in Cast), which is where File/Edit sits everywhere else.
     """
-    insert_edit_menu(host, menu_bar, wx, position=menu_bar.GetMenuCount())
+    insert_edit_menu(host, menu_bar, wx)
     append_support_items(host, help_menu, wx)

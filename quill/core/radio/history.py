@@ -306,10 +306,14 @@ class RadioHistory:
     #: months ago and half-remembered. Browse is already Ctrl+B away, so this
     #: is a convenience rather than a fix.
     open_browse_at_startup: bool = False
-    #: Which single window opens at launch ("" = none). Replaces the
-    #: open_browse_at_startup checkbox, which could only ever answer for one of
-    #: the six windows there now; the flag is still read once, to migrate.
+    #: Which single window opens at launch ("" = none). Superseded on
+    #: 2026-08-24 by main_view: opening a *second* window at launch was the
+    #: problem, not the solution. Still read once, to migrate.
     startup_window: str = ""
+    #: What the main window shows between the now-playing line and the volume
+    #: row -- the favorites tree (default), Browse, Search, Recordings or the
+    #: Player. See quill.core.radio.main_view. Nothing else opens by itself.
+    main_view: str = "favorites"
     #: Verbose radio logging (quill-radio #5). When on, the radio logger
     #: subtrees drop to DEBUG (via radio_logging.set_radio_debug) and recording
     #: runs ffmpeg at -loglevel verbose, so a hard-to-reproduce playback or

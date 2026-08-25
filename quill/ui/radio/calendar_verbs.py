@@ -40,13 +40,55 @@ def run(host: Any, window: Any, action_id: str, event: Any) -> None:
         host._announce(f"That could not be done: {error}.")
 
 
+def playing_stream_name(host: Any) -> str:
+    """The ACB channel the player is on right now, or ``""``.
+
+    The window asks this to label its Play button, and :func:`_play` asks it
+    again to decide what pressing that button does. One function so the label
+    and the action can never disagree -- a button that says Stop and restarts
+    is worse than one that only ever said Play.
+    """
+    controller = getattr(host, "_radio_controller", None)
+    state = getattr(controller, "state", None)
+    station = getattr(state, "station", None)
+    name = str(getattr(station, "name", "") or "")
+    if not name:
+        return ""
+    # ACTIVE_STATES, not RUNNING_STATES (fixed 2026-08-25). RUNNING is PLAYING
+    # and BUFFERING only, so for the second or two a stream spends CONNECTING
+    # this said "nothing is on" -- and the button, which is only relabelled
+    # when something happens, then sat reading Play for the whole broadcast
+    # (reported: *"the play button label does not become stop when Play is
+    # pressed on the community screen"*). Every other surface that flips a
+    # Play button -- the Favorites Manager, Browse Stations, the station
+    # browser -- asks ACTIVE_STATES, which is the set that means "on the air,
+    # or on its way to it". This one asked a narrower question and got a
+    # narrower answer.
+    from quill.ui.radio.playback_state import ACTIVE_STATES, RadioPlayerState
+
+    current = getattr(state, "state", None)
+    if current not in (ACTIVE_STATES | {RadioPlayerState.PAUSED}):
+        return ""
+    return name
+
+
 def _play(host: Any, _window: Any, event: Any) -> None:
-    """Tune in to the programme's channel (6.5).
+    """Tune in to the programme's channel -- or stop it, if it is already on.
 
     The *channel*, not the programme: a live stream has one thing on it at a
     time, and what that is depends on when you arrive. Playing a Thursday show
     on Tuesday is not a thing the medium can do, and the announcement says
     which it did.
+
+    **Pressing it on the channel you are already listening to stops.** It used
+    to call ``play_station`` regardless, which tore the stream down and rebuilt
+    it: a few seconds of silence, the same audio back, and no way to stop from
+    this window at all (reported 2026-08-24).
+
+    Neither branch re-faces the window any more: :meth:`_invoke` syncs after
+    *every* verb, because "this verb changed what this row can do" is true of
+    all of them and the stop branch doing it alone is how Play came to be the
+    one that did not (2026-08-25).
     """
     station = acb_calendar.station_for(event)
     if station is None:
@@ -55,6 +97,10 @@ def _play(host: Any, _window: Any, event: Any) -> None:
     controller = getattr(host, "_radio_controller", None)
     if controller is None:
         host._announce("Nothing here can play that.")
+        return
+    if acb_calendar.same_stream(playing_stream_name(host), station.name):
+        controller.stop()
+        host._announce(f"Stopped {station.name}.")
         return
     controller.play_station(station)
     now = datetime.now(UTC)
@@ -228,27 +274,27 @@ def _details(host: Any, window: Any, event: Any) -> None:
     )
 
 
-def export_week(host: Any, parent: Any, days: list[Any], anchor: Any) -> None:
-    """Write the visible week to Markdown.
+def export_schedule(host: Any, parent: Any, events: list[Any]) -> None:
+    """Write what is listed to Markdown.
 
-    The *visible* week -- filtered by channel and by the search box -- because
-    what somebody exports is what they are looking at. Exporting the unfiltered
-    week from a filtered window would be the app answering a question nobody
-    asked.
+    What is *listed* -- filtered by channel, date and the search box -- because
+    what somebody exports is what they are looking at. Exporting the whole
+    published schedule from a filtered window would be the app answering a
+    question nobody asked.
     """
     from pathlib import Path
 
     import wx
 
-    total = sum(len(events) for _midnight, events in days)
-    if not total:
-        host._announce("There is nothing in this week to export.")
+    if not events:
+        host._announce("There is nothing listed to export.")
         return
-    start = acb_calendar.week_start(anchor).astimezone()
-    default = f"acb-media-{start.strftime('%Y-%m-%d')}.md"
+    ordered = sorted(events, key=lambda event: event.start)
+    first = ordered[0].start.astimezone()
+    default = f"acb-media-{first.strftime('%Y-%m-%d')}.md"
     with wx.FileDialog(
         parent,
-        message="Export this week",
+        message="Export this schedule",
         defaultFile=default,
         wildcard="Markdown (*.md)|*.md|Text (*.txt)|*.txt|All files (*.*)|*.*",
         style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
@@ -256,15 +302,16 @@ def export_week(host: Any, parent: Any, days: list[Any], anchor: Any) -> None:
         if chooser.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
             return
         destination = Path(chooser.GetPath())
-    heading = f"ACB Media schedule, week of {start.strftime('%d %B %Y')}"
+    spread = calendar_actions.published_range(ordered)
+    heading = f"ACB Media schedule, {spread}" if spread else "ACB Media schedule"
     try:
         destination.write_text(
-            calendar_actions.week_markdown(days, heading=heading), encoding="utf-8"
+            calendar_actions.schedule_markdown(ordered, heading=heading), encoding="utf-8"
         )
     except OSError as error:
-        host._announce(f"The week could not be exported. {error}.")
+        host._announce(f"The schedule could not be exported. {error}.")
         return
-    host._announce(f"Exported {total} programme(s) to {destination.name}.")
+    host._announce(f"Exported {len(ordered)} programme(s) to {destination.name}.")
 
 
-__all__ = ["export_week", "run"]
+__all__ = ["export_schedule", "playing_stream_name", "run"]

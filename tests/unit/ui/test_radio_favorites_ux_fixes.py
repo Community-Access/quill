@@ -79,6 +79,11 @@ def test_no_control_on_the_main_window_claims_a_menu_bar_mnemonic() -> None:
     for claimed in ("&S", "&P", "&V", "&R", "&A", "&H", "&Q"):
         forbidden = f'label="{claimed}'
         assert forbidden not in panel, f"a main-window control claims a menu-bar key: {claimed}"
-    # The transport keeps its route, in the menu where it now lives.
-    assert 'menu_label = "&Stop" if stopping else "&Play"' in src
-    assert "Ctrl+P" in src
+    # The transport keeps its route, in the menu where it now lives -- which
+    # since 2026-08-25 is radio_transport_menu, extracted so the Playback menu
+    # could grow a Pause row without radio.py going over its GATE-11 ceiling.
+    # The rule under test is "&Stop"/"&Play" stay MENU labels rather than
+    # becoming control labels again, so it is checked wherever they are built.
+    menu_src = _read("quill/apps/radio_transport_menu.py")
+    assert 'f"&{primary.plain}' in menu_src
+    assert "Ctrl+P" in menu_src

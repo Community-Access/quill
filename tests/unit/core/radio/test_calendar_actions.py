@@ -240,3 +240,143 @@ def test_on_now_names_each_programme_and_its_channel() -> None:
 def test_on_now_with_nothing_on_still_answers() -> None:
     assert ca.on_now_sentence([]) == ca.nothing_on_now()
     assert "Nothing" in ca.nothing_on_now()
+
+
+# -- the flat list (2026-08-24) --------------------------------------------------
+#
+# The window was a week and is now one list. These pin the part the week got
+# wrong: an empty view has to say WHY it is empty, because ACB publishes a
+# fortnight and then stops, and "I arrowed to today and there was nothing" is
+# the first thing anybody meets.
+
+
+def _at(day: int, hour: int = 12, *, summary: str = "Programme") -> CalendarEvent:
+    start = datetime(2026, 8, day, hour, tzinfo=UTC)
+    return CalendarEvent(
+        uid=f"uid-{day}-{hour}",
+        summary=summary,
+        start=start,
+        end=start + timedelta(hours=1),
+        categories=("ACB Media 5",),
+    )
+
+
+def test_the_summary_says_how_far_the_published_schedule_runs() -> None:
+    events = [_at(2), _at(15)]
+
+    said = ca.summarise_schedule(events, events, datetime(2026, 8, 10, tzinfo=UTC), None)
+
+    assert "2 August to 15 August" in said
+
+
+def test_an_empty_today_is_explained_rather_than_left_silent() -> None:
+    """The whole reason the week view was replaced."""
+    events = [_at(2), _at(15)]
+
+    said = ca.summarise_schedule(events, events, datetime(2026, 8, 24, tzinfo=UTC), None)
+
+    assert "Nothing is published for today or later" in said
+    assert "15 August" in said
+
+
+def test_a_schedule_that_reaches_past_now_does_not_claim_to_be_stale() -> None:
+    events = [_at(2), _at(28)]
+
+    said = ca.summarise_schedule(events, events, datetime(2026, 8, 24, tzinfo=UTC), None)
+
+    assert "Nothing is published" not in said
+
+
+def test_no_schedule_at_all_says_ACB_published_none() -> None:
+    said = ca.summarise_schedule([], [], datetime(2026, 8, 24, tzinfo=UTC), None)
+
+    assert "ACB has published no schedule" in said
+
+
+def test_a_filtered_list_says_how_many_of_how_many() -> None:
+    events = [_at(2), _at(3), _at(4)]
+
+    said = ca.summarise_schedule(
+        events[:1], events, datetime(2026, 8, 1, tzinfo=UTC), None, filtered=True
+    )
+
+    assert "1 of 3 programmes match" in said
+
+
+def test_the_date_picker_offers_only_dates_that_have_programmes() -> None:
+    """A picker that mostly answers "nothing" is the calendar this replaced."""
+    choices = ca.date_choices([_at(2), _at(2, 15), _at(5)])
+
+    assert [key for key, _label in choices] == ["2026-08-02", "2026-08-05"]
+    assert "2 programmes" in choices[0][1]
+
+
+def test_a_date_filters_to_that_date() -> None:
+    events = [_at(2), _at(5)]
+
+    assert ca.on_date(events, "2026-08-05") == [events[1]]
+    assert ca.on_date(events, "") == events
+
+
+def test_the_list_opens_on_the_next_programme_still_to_come() -> None:
+    events = [_at(2), _at(20), _at(28)]
+
+    index = ca.first_upcoming_index(events, datetime(2026, 8, 24, tzinfo=UTC))
+
+    assert index == 2
+
+
+def test_a_wholly_finished_schedule_opens_on_its_last_row() -> None:
+    events = [_at(2), _at(15)]
+
+    index = ca.first_upcoming_index(events, datetime(2026, 8, 24, tzinfo=UTC))
+
+    assert index == 1
+
+
+def test_every_row_carries_its_own_date_because_there_are_no_day_headings() -> None:
+    row = ca.full_row_label(_at(4, 9), datetime(2026, 8, 24, tzinfo=UTC))
+
+    assert row.startswith("Tuesday 4 August, ")
+    assert "ACB Media 5" in row
+
+
+def test_a_row_says_both_ends_of_the_programme() -> None:
+    """How long it runs is half of what a schedule is read for."""
+    row = ca.full_row_label(_at(4, 9), datetime(2026, 8, 24, tzinfo=UTC))
+
+    assert " to " in row, row
+
+
+def test_a_listing_with_no_end_says_one_time_rather_than_inventing_a_second() -> None:
+    from datetime import timedelta as _td
+
+    start = datetime(2026, 8, 4, 9, tzinfo=UTC)
+    open_ended = CalendarEvent(uid="u", summary="Programme", start=start, end=None)
+
+    row = ca.full_row_label(open_ended, start + _td(days=1))
+
+    assert " to " not in row
+
+
+def test_a_past_programme_is_not_labelled_finished_on_every_row() -> None:
+    """ACB publishes a fortnight and stops, so "finished" was on all 49 rows --
+    a word repeated everywhere distinguishes nothing, and the date already
+    says it."""
+    row = ca.full_row_label(_at(4, 9), datetime(2026, 8, 24, tzinfo=UTC))
+
+    assert "finished" not in row
+
+
+def test_the_one_programme_on_air_still_says_so() -> None:
+    """ "on now" earns its place: only one row can say it."""
+    row = ca.full_row_label(_at(24, 12), datetime(2026, 8, 24, 12, 30, tzinfo=UTC))
+
+    assert row.endswith("on now")
+
+
+def test_the_markdown_export_groups_the_flat_list_by_date() -> None:
+    text = ca.schedule_markdown([_at(2), _at(2, 15), _at(5)])
+
+    assert text.count("## ") == 2
+    assert text.startswith("# ACB Media schedule")

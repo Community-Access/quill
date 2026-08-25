@@ -1556,18 +1556,16 @@ class RadioMixin(RadioStatusWindowsMixin):
             self.radio_toggle_play_pause()
 
     def _build_radio_status_bar_menu(self, menu: object) -> None:
-        from quill.ui.radio.playback_state import ACTIVE_STATES
+        from quill.ui.radio import transport_face
 
         wx = self._wx
-        play_id, mute_id = wx.NewIdRef(), wx.NewIdRef()
-        controller = getattr(self, "_radio_controller", None)
-        playing = controller is not None and controller.state.state in ACTIVE_STATES
-        # One transport item (this menu is rebuilt on every popup, so the
-        # label is always current): Stop while playing, Play otherwise --
-        # the same single-button rule as the main panel and Playback menu.
-        menu.Append(play_id, "Stop" if playing else "Play")
+        # Two transport rows, rebuilt on every popup so both labels are always
+        # current: one that starts and ends (Play, then Stop) and one that
+        # pauses, dimmed on a live station. Same pair the player panel's
+        # buttons wear, resolved by the same module.
+        play_id, pause_id = transport_face.append_menu_rows(self, menu, wx)
+        mute_id = wx.NewIdRef()
         menu.Append(mute_id, "Mute/Unmute")
-        menu.Bind(wx.EVT_MENU, lambda _e: self.radio_play_stop_toggle(), id=play_id)
         menu.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self._append_radio_favorites_submenu(menu)
         self._append_radio_recent_submenu(menu)
@@ -1594,7 +1592,7 @@ class RadioMixin(RadioStatusWindowsMixin):
         menu.Append(browse_id, "Browse Stations...")
         menu.Bind(wx.EVT_MENU, lambda _e: self.open_internet_radio(), id=browse_id)
         self._retain_radio_menu_ids(
-            play_id, mute_id, record_id, schedule_id, rec_settings_id, browse_id
+            play_id, pause_id, mute_id, record_id, schedule_id, rec_settings_id, browse_id
         )
 
     def _retain_radio_menu_ids(self, *refs: object) -> None:
@@ -1669,13 +1667,12 @@ class RadioMixin(RadioStatusWindowsMixin):
         )
         menu.Enable(now_playing_id, False)
         self._retain_radio_menu_ids(now_playing_id)
-        # Quick transport straight from the tray.
-        play_id, stop_id = wx.NewIdRef(), wx.NewIdRef()
-        menu.Append(play_id, "Play / Pause")
-        menu.Append(stop_id, "Stop")
-        menu.Bind(wx.EVT_MENU, lambda _e: self.radio_toggle_play_pause(), id=play_id)
-        menu.Bind(wx.EVT_MENU, lambda _e: self.radio_stop(), id=stop_id)
-        self._retain_radio_menu_ids(play_id, stop_id)
+        # No transport rows of its own any more (2026-08-25). The tray menu used
+        # to open with "Play / Pause" and "Stop" and *then* call the status-bar
+        # builder, which appends its own Play-or-Stop row -- three transport
+        # entries in a menu with one player behind it, two of them saying the
+        # same thing. The shared builder now carries the whole transport, so
+        # the tray and the status bar offer exactly the same pair.
         self._build_radio_status_bar_menu(menu)
         # Reach the sibling apps without leaving the tray.
         menu.AppendSeparator()
@@ -1989,6 +1986,20 @@ class RadioMixin(RadioStatusWindowsMixin):
             optilab_exact_live=options.optilab_exact_live,
         )
 
+    def _main_view_is(self, view_id: str) -> bool:
+        """True when the main window is already showing that surface.
+
+        Asked by every opener before it builds a window: a menu item whose
+        surface is the main view should take you *there*, not stack a second
+        copy on top of the one already in front of you. Hosts without a main
+        view (embedded QUILL) answer False and behave exactly as before.
+        """
+        host = getattr(self, "_main_view_host", None)
+        if host is None or host.current != view_id:
+            return False
+        host.focus_current()
+        return True
+
     def open_manage_radio_favorites(self) -> None:
         """Manage Favorites...: search, play, remove, reorder, nested folders.
 
@@ -2025,13 +2036,15 @@ class RadioMixin(RadioStatusWindowsMixin):
         self._radio_history.folder_sort_orders = {}
         radio_history.save_history(app_data_dir(), self._radio_history)
 
-    def open_radio_recordings(self) -> None:
+    def open_radio_recordings(self, *, embed_in: object | None = None) -> object | None:
         """Recordings...: made, in-progress (live status), and scheduled."""
         from quill.ui.radio.recordings_manager_dialog import RecordingsManagerDialog
 
         windows = getattr(self, "_windows", None)
-        if windows is not None and windows.activate_title("Radio Recordings"):
-            return  # already open means come to the front, not a second copy
+        if embed_in is None and self._main_view_is("recordings"):
+            return None
+        if embed_in is None and windows is not None and windows.activate_title("Radio Recordings"):
+            return None  # already open means come to the front, not a second copy
         dlg = RecordingsManagerDialog(
             self.frame,
             recorder=self._radio_recorder,
@@ -2042,9 +2055,11 @@ class RadioMixin(RadioStatusWindowsMixin):
             history=self._radio_history,
             on_history_changed=self._save_radio_history,
             windows=windows,
+            embed_in=embed_in,
         )
         dlg.show()
         self._refresh_statusbar()
+        return dlg
 
     def open_internet_radio(
         self,
@@ -2052,7 +2067,8 @@ class RadioMixin(RadioStatusWindowsMixin):
         initial_category: str | None = None,
         focus_search: bool = False,
         source_facet: str | None = None,
-    ) -> None:
+        embed_in: object | None = None,
+    ) -> object | None:
         """*source_facet* pre-narrows the Source filter for this opening only
         (Search This Source... from the browse tree); the listener's own
         remembered facet is untouched unless they change it in the dialog."""
@@ -2060,10 +2076,12 @@ class RadioMixin(RadioStatusWindowsMixin):
             self._show_message_box(
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
             )
-            return
+            return None
         windows = getattr(self, "_windows", None)
-        if windows is not None and windows.activate_title("Search Stations"):
-            return  # already open means come to the front, not a second copy
+        if embed_in is None and self._main_view_is("search"):
+            return None
+        if embed_in is None and windows is not None and windows.activate_title("Search Stations"):
+            return None  # already open means come to the front, not a second copy
         dlg = StationBrowserDialog(
             self.frame,
             controller=self._radio_controller,
@@ -2086,11 +2104,15 @@ class RadioMixin(RadioStatusWindowsMixin):
             on_search_prefs_changed=self._radio_save_search_prefs,
             recent_searches=self._radio_history.recent_searches,
             on_recent_searches_changed=self._radio_save_recent_searches,
+            embed_in=embed_in,
         )
         dlg.show(initial_category=initial_category, focus_search=focus_search)
         self._refresh_statusbar()
+        return dlg
 
-    def open_browse_stations(self, *, initial_source: str | None = None) -> None:
+    def open_browse_stations(
+        self, *, initial_source: str | None = None, embed_in: object | None = None
+    ) -> object | None:
         """The dedicated, search-free Browse Stations tree: every source as a
         branch you expand to reveal its stations (Search Stations... stays the
         field-based dialog)."""
@@ -2098,13 +2120,18 @@ class RadioMixin(RadioStatusWindowsMixin):
             self._show_message_box(
                 _SAFE_MODE_MESSAGE, "Internet Radio", self._wx.ICON_INFORMATION | self._wx.OK
             )
-            return
+            return None
         from quill.ui.radio import catalog_ui
         from quill.ui.radio.browse_tree_dialog import BrowseTreeDialog
 
         windows = getattr(self, "_windows", None)
-        if windows is not None and windows.activate_title("Browse Stations"):
-            return  # already open means come to the front, not a second copy
+        # Already the main window's view? Go there. Building a second copy on
+        # top of the one you are looking at is the exact thing main_view exists
+        # to stop (see ui/radio/main_view_host.py).
+        if embed_in is None and self._main_view_is("browse"):
+            return None
+        if embed_in is None and windows is not None and windows.activate_title("Browse Stations"):
+            return None  # already open means come to the front, not a second copy
         dlg = BrowseTreeDialog(
             self.frame,
             controller=self._radio_controller,
@@ -2124,12 +2151,14 @@ class RadioMixin(RadioStatusWindowsMixin):
             on_visible_sources_changed=self._set_browse_sources_enabled,
             catalog=catalog_ui.catalog_for(self),
             on_offline_catalog=lambda: catalog_ui.note_offline_serving(self),
+            embed_in=embed_in,
         )
         # Kept so an add made from elsewhere (Station > Add YouTube Link...)
         # can refresh the branch it changed -- see browse_refresh.
         self._radio_browse_dialog = dlg
         dlg.show(initial_source=initial_source)
         self._refresh_statusbar()
+        return dlg
 
     def _set_browse_sources_enabled(self, updated: tuple[str, ...]) -> None:
         """Persist a Hide This Source / Reset change made inside the browse

@@ -206,6 +206,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         on_search_prefs_changed: Callable[[tuple[str, ...], str], None] | None = None,
         recent_searches: object = None,
         on_recent_searches_changed: Callable[[tuple[SearchQuery, ...]], None] | None = None,
+        embed_in: object | None = None,
     ) -> None:
         import wx
 
@@ -267,8 +268,13 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         # on an inner panel) when a WindowManager is supplied by standalone Radio;
         # otherwise an unchanged modal wx.Dialog for embedded QUILL.
         self._windows = windows
-        self._modeless = windows is not None
-        if self._modeless:
+        #: Hosted in the main window, not a window at all: see main_view_host.
+        self._embedded = embed_in is not None
+        self._modeless = windows is not None and not self._embedded
+        if self._embedded:
+            self._surface = embed_in
+            self._win = self._surface.GetTopLevelParent()
+        elif self._modeless:
             # No parent, on purpose: an owned frame floats glued above its
             # owner and reads as an overlay; a peer window stands on its own.
             self._win = wx.Frame(None, title="Internet Radio", style=wx.DEFAULT_FRAME_STYLE)
@@ -281,8 +287,9 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
             )
             self._surface = self._win
         self.dialog = self._win  # back-compat alias for callers that reference it
-        self._win.SetMinSize((700, 520))
-        self._win.SetSize((820, 600))
+        if not self._embedded:
+            self._win.SetMinSize((700, 520))
+            self._win.SetSize((820, 600))
         root = wx.BoxSizer(wx.VERTICAL)
 
         search_box = wx.StaticBoxSizer(wx.HORIZONTAL, self._surface, "Search Stations")
@@ -516,7 +523,9 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         # CHAR_HOOK catches the Ctrl chord before any child control sees it,
         # regardless of where focus sits (list, slider, buttons), and leaves
         # bare Up/Down untouched so list navigation and the slider still work.
-        self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        # On the panel when embedded: a hosted surface must not take a key off
+        # the window hosting it.
+        (self._surface if self._embedded else self._win).Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
 
         state = getattr(self._controller, "state", None)
         if state is not None:
@@ -599,6 +608,13 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         if previous:
             self._windows.activate(previous)
 
+    def focus_default_control(self) -> None:
+        """Keyboard focus where this surface expects it: the search box."""
+        try:
+            self._name_ctrl.SetFocus()
+        except Exception:  # noqa: BLE001 - focus is best-effort
+            pass
+
     def show(self, *, initial_category: str | None = None, focus_search: bool = False) -> None:
         # Opened straight to a browse source (the Station menu's Browse submenu),
         # or focused on the search box (Search Stations...). Default stays the
@@ -607,6 +623,8 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
             self._show_category(initial_category)
         if focus_search:
             self._wx.CallAfter(self._name_ctrl.SetFocus)
+        if self._embedded:
+            return  # already on screen: it is part of the main window
         if self._modeless:
             from quill.ui.dialog_contract import show_modeless_surface
 

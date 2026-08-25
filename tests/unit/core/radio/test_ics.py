@@ -312,3 +312,43 @@ def _event(
         lines.append(f"CATEGORIES:{categories}")
     lines += ["END:VEVENT", "END:VCALENDAR", ""]
     return "\n".join(lines)
+
+
+def test_double_encoded_html_entities_are_read_back_as_characters() -> None:
+    """ACB's feed is generated from WordPress content and arrives double-encoded.
+
+    A curly apostrophe reaches us as ``&amp;#8217;``, which a screen reader
+    reads out as "ampersand hash eight two one seven semicolon" in the middle
+    of a programme title. One unescaping pass gives ``&#8217;``, which is no
+    better; two give the apostrophe.
+    """
+    text = (
+        "BEGIN:VCALENDAR\r\n"
+        "BEGIN:VEVENT\r\n"
+        "UID:1\r\n"
+        "DTSTART:20260804T130000Z\r\n"
+        "SUMMARY:Herbie&amp;#8217;s Community Cooking Corner\r\n"
+        "END:VEVENT\r\n"
+        "END:VCALENDAR\r\n"
+    )
+
+    (event,) = parse_calendar(text)
+
+    assert event.summary == "Herbie’s Community Cooking Corner"
+
+
+def test_an_ampersand_that_means_an_ampersand_survives() -> None:
+    """Unescaping until nothing changes is how a real ``&amp;`` gets eaten."""
+    text = (
+        "BEGIN:VCALENDAR\r\n"
+        "BEGIN:VEVENT\r\n"
+        "UID:1\r\n"
+        "DTSTART:20260804T130000Z\r\n"
+        "SUMMARY:Rhythm & Blues\r\n"
+        "END:VEVENT\r\n"
+        "END:VCALENDAR\r\n"
+    )
+
+    (event,) = parse_calendar(text)
+
+    assert event.summary == "Rhythm & Blues"

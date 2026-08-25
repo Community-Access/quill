@@ -467,3 +467,37 @@ def test_deduplication_happens_on_the_way_out_of_the_cache_too(monkeypatch) -> N
     events, _age = acb_calendar.fetch_schedule()
 
     assert [e.summary for e in events] == ["Twice"]
+
+
+def test_an_unpublished_month_falls_back_to_the_one_before(monkeypatch) -> None:
+    """ACB posts a fortnight and stops, so on the 1st the only schedule that
+    exists is last month's. A window that answers "nothing" when a schedule
+    demonstrably exists is the failure this feature is for; the summary line is
+    what keeps the older month from being presented as current."""
+    asked: list[tuple[int, int]] = []
+
+    def _by_month(when):
+        asked.append((when.year, when.month))
+        return [_row("July programme")] if when.month == 7 else []
+
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", _by_month)
+
+    events, _age = acb_calendar.fetch_schedule(when=datetime(2026, 8, 1, tzinfo=UTC))
+
+    assert [e.summary for e in events] == ["July programme"]
+    assert asked == [(2026, 8), (2026, 7)]
+
+
+def test_a_month_that_has_listings_never_reaches_for_the_one_before(monkeypatch) -> None:
+    asked: list[tuple[int, int]] = []
+
+    def _by_month(when):
+        asked.append((when.year, when.month))
+        return [_row("August programme")]
+
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", _by_month)
+
+    events, _age = acb_calendar.fetch_schedule(when=datetime(2026, 8, 24, tzinfo=UTC))
+
+    assert [e.summary for e in events] == ["August programme"]
+    assert asked == [(2026, 8)]

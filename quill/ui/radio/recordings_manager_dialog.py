@@ -58,6 +58,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         history: object | None = None,
         on_history_changed: Callable[[], None] | None = None,
         windows: object | None = None,
+        embed_in: object | None = None,
     ) -> None:
         import wx
 
@@ -80,8 +81,13 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         # &Window menu and Ctrl+Tab) when standalone Radio supplies a
         # WindowManager; an unchanged modal wx.Dialog for embedded QUILL.
         self._windows = windows
-        self._modeless = windows is not None
-        if self._modeless:
+        #: Hosted in the main window, not a window at all: see main_view_host.
+        self._embedded = embed_in is not None
+        self._modeless = windows is not None and not self._embedded
+        if self._embedded:
+            self._surface = embed_in
+            self._win = self._surface.GetTopLevelParent()
+        elif self._modeless:
             self._win = wx.Frame(None, title="Radio Recordings", style=wx.DEFAULT_FRAME_STYLE)
             self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
             self._build_surface_menu_bar()
@@ -93,7 +99,8 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
             )
             self._surface = self._win
         self.dialog = self._win  # top-level window; child dialogs parent to it
-        self._win.SetMinSize((760, 520))
+        if not self._embedded:
+            self._win.SetMinSize((760, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(
@@ -169,7 +176,9 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         # -- a played recording runs through the same controller/engine as live
         # radio, so it can be turned down just like a live stream (the modal
         # otherwise hides the Playback menu's volume shortcuts).
-        self.dialog.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        (self._surface if self._embedded else self.dialog).Bind(
+            wx.EVT_CHAR_HOOK, self._on_char_hook
+        )
 
         # Live status: the active row's size and elapsed grow and a Recording
         # flips to Recorded without a manual refresh. The in-place diff means
@@ -203,8 +212,23 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         self._win.SetMenuBar(menu_bar)
         self._menu_id_refs.append(close_id)
 
+    def focus_default_control(self) -> None:
+        """Keyboard focus where this surface expects it: the recordings list."""
+        for name in ("_list", "_recordings_list", "_tree"):
+            control = getattr(self, name, None)
+            if control is None:
+                continue
+            try:
+                control.SetFocus()
+            except Exception:  # noqa: BLE001 - focus is best-effort
+                continue
+            return
+
     def show(self) -> None:
         wx = self._wx
+        if self._embedded:
+            return  # already on screen: it is part of the main window
+
         # The transport keyboard (transport_keys), so the player stays reachable
         # from a window a listener browses in while something is playing.
         from quill.ui.radio import transport_keys

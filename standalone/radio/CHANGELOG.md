@@ -2,7 +2,156 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-3.0.md` for the fuller narrative version of the latest release, and `docs/release-notes-3.0-in-depth.md` for the reasoning behind it.
 
-## [3.0.0] - 2026-08-15
+## [3.0.0] - 2026-08-25
+
+### The main window learns to pause (2026-08-25)
+
+- **Playback > Pause / Resume, on Ctrl+Space.** The main window could not pause
+  anything. Its Playback menu carried one transport row -- Play/Stop on Ctrl+P
+  -- wired to the button handler, which *stops*: so pressing Ctrl+P there ended
+  a recording, a downloaded file or a finished video, where the very same key
+  in every other window of the app paused it. One key, two meanings, decided by
+  which window happened to have focus.
+
+- **Play/Stop keeps Ctrl+P and keeps doing exactly what it did.** Moving it
+  would have changed what that key does for anybody who has been pressing it
+  since 1.0, and a fix that rewrites muscle memory is not a fix. Pause is a
+  second row directly beneath it -- they are the two halves of one question --
+  and it is dimmed with a reason on a live station, which cannot be paused.
+
+- Ctrl+Space because it is what a media player has meant by pause for as long
+  as there have been media players, and because this menu bar had almost
+  nothing left: every Ctrl+Shift letter is spoken for and Ctrl+Alt has one.
+
+### The schedule's Play button, and whose clock its times are on (2026-08-25)
+
+- **Play now becomes Stop on the ACB Media Schedule.** It did not, and there
+  were three reasons at once: the window asked whether the stream was
+  *running*, which excludes the second or two it spends connecting; the Play
+  verb re-faced the window only in its stop branch, so nothing re-read the
+  label after starting anything; and nothing re-read it when connecting turned
+  into playing either, because that arrives on a background thread. Any one of
+  those left alone would still have left the button reading Play for the whole
+  broadcast. It now asks the same "on the air, or on its way to it" question
+  every other Play button in the app asks, re-faces after every verb, and
+  follows a stream that starts, stalls, reconnects or dies on its own.
+
+- **The schedule says which clock its times are on.** ACB publishes in US
+  Central and the window converts to yours, which is right and was invisible:
+  a bare "7:00 AM" gives no way to tell a correct conversion from a missing
+  one. The summary line now reads "Times are shown in US Mountain Standard
+  Time. ACB publishes in US Central time." -- and says nothing at all to a
+  reader whose clock already matches Central, because there it would be a
+  sentence read out on every reload for nothing. It matters most where the gap
+  *moves*: Arizona keeps MST all year, so it is two hours behind Central in
+  summer and one in winter, and nobody should have to do that arithmetic to
+  trust the window.
+
+### One button that starts and ends, one that pauses (2026-08-25)
+
+- **Play becomes Stop, everywhere it appears.** The player, the tray menu and
+  the status-bar menu each carried a Play/Pause control *and* a Stop control
+  side by side -- and on a live station one of them was always wrong, because a
+  live stream cannot be paused. There is now one control that starts what is
+  selected and ends what is on: it says **Play** when nothing is playing and
+  **Stop** when something is, live or recorded. Alt+P presses it in both
+  states, so the key does not move when the label does. This is the same rule
+  the ACB Media Schedule window has used since it grew a Play button.
+
+- **Pause is its own control, for the content that has one.** A podcast, a
+  recording, a downloaded or a local file can be held where it is and picked up
+  there: **Pause**, then **Resume**, Alt+S in both states. On a live station it
+  is present and dimmed and says why -- "live radio is going out now, so there
+  is nothing to pause -- Stop ends it" -- rather than disappearing, because a
+  control that comes and goes moves every control after it.
+
+- **The tray menu had three transport rows for one player.** Play / Pause,
+  Stop, and then a third Play-or-Stop row from the shared status-bar block. It
+  now offers the same two the rest of the app does.
+
+- No keys changed. Ctrl+P is still play/pause and Ctrl+. is still stop, in both
+  Quill Radio and QUILL Cast; what changed is which of them a *control* offers.
+
+### Edit sits where Windows keeps it, and Community stops claiming a key (2026-08-25)
+
+- **The Edit menu moved to just after Station.** It was being inserted wherever
+  the menu bar happened to have got to, which put it between Community and
+  QuillVille -- somewhere no Windows application has ever kept Edit, and a menu
+  found by counting Alt+Right presses is a menu whose position is the whole of
+  how it is found. The front of the bar now reads Station, Edit, View. QUILL
+  Cast's Edit menu moved to the same place for the same reason.
+
+- **The Community menu no longer advertises Ctrl+Alt+A.** That chord is
+  Bookmark This Moment; the menu had been carrying it in its title since it was
+  the Audio Description Project menu. Alt+C opens Community, as it always did,
+  and no other menu on the bar puts a chord in its title.
+
+### The main window shows what you chose (2026-08-24)
+
+- **View > Main Window Shows** (Ctrl+Shift+1 to Ctrl+Shift+5, or Preferences):
+  the main window's middle is now your Favorites, Browse Stations, Search
+  Stations, Radio Recordings or the Player -- and the menu bar, the now-playing
+  line, Mute and Volume, and the status bar stay exactly where they are around
+  it. The old "open this window at startup" opened your choice as a *second*
+  window over the main one, so you got two windows before pressing anything and
+  the menu bar was on the one you did not want. If you had it set to Browse,
+  your main window now opens showing Browse, and nothing else opens by itself.
+
+- Everything is still its own window on demand. Ctrl+B is still Browse; the
+  difference is that pressing it while Browse *is* your main window takes you
+  there instead of opening a second copy on top of it. The switch is immediate,
+  it is remembered, and a view you have already visited keeps its state.
+
+### The schedule is a list, and the palette shows its keys (2026-08-24)
+
+- **The ACB Media Schedule is one list, not a week.** It was a Sunday-to-Saturday
+  calendar, and arrowing to today showed nothing -- because **ACB publishes a
+  fortnight of listings at a time and then stops**, so most weeks have nothing
+  posted in them at all. Shown as a calendar that read as an app with no data.
+  It is now every published programme in one list, oldest first, each row
+  carrying its own date, time, programme and channel, opening on the next thing
+  still to come. A **Date** picker offering only the dates that actually have
+  programmes replaces Previous/Next Week, and the Search and Channel filters
+  are unchanged.
+
+- **The line above the list always says how far the published schedule runs**,
+  and says plainly when that is already behind us: "Nothing is published for
+  today or later -- ACB last posted a schedule through 15 August." The
+  difference between "no data yet" and "broken" is not something a listener
+  should have to work out.
+
+- **An unpublished month falls back to the published one.** On the 1st of a
+  month ACB has not posted yet, the window shows last month's listings rather
+  than nothing -- with the same line above it saying what they are, so an older
+  schedule is never presented as a current one.
+
+- **Programme titles read as words again.** ACB's feed arrives double-encoded,
+  so a curly apostrophe was reaching screen readers as "ampersand hash eight two
+  one seven semicolon" in the middle of a title.
+
+- **Play in the schedule is a toggle.** Pressing it on the channel you are
+  already listening to now stops it, instead of tearing the stream down and
+  restarting the same audio; the button and the context menu both read **Stop**
+  when that is what they will do.
+
+- **Rows no longer all say "finished".** With a fortnight published and then
+  nothing, that marker was on every row in the window and told you nothing the
+  date had not. "on now" stays.
+
+- **Each row shows both times** -- "Tuesday 4 August, 8:00 AM to 9:30 AM, ..." --
+  and the summary line above the list is now a read-only edit field, so you can
+  tab to it and arrow through it rather than having one chance to hear it.
+
+- **The schedule moved to the Community menu**, beside ACB Community Events,
+  where somebody looking for either now finds both. Same three items, same keys:
+  ACB Media Schedule (Ctrl+Shift+N), What Is On Now (Ctrl+Alt+H), Upcoming
+  (Ctrl+Alt+Shift+F). Station had passed twenty items.
+
+- **The Command Palette shows and speaks each command's keystroke.** It showed
+  none at all in Quill Radio, Cast, Weather, Studio, Beacon and Inkwell: a
+  command only carries a key if whoever registered it passed one, and the
+  companion apps keep theirs in the keymap the menus are built from. The palette
+  now reads the keymap, which also means a shortcut you rebind reaches it.
 
 ### Undo, Recent Problems, quiet hours, and a setup that travels (2026-08-24)
 
@@ -316,7 +465,7 @@ Switching to a described track loaded its address straight into the audio engine
 - **The YouTube branch takes anything YouTube, not just channels.** It was "YouTube Channels" and it is now simply **YouTube**: followed channels first, then playlists and single videos you saved, each with its own **Add a...** row -- because a pasted link had no easy way in without searching, and the QA pass said so. **Station > Add YouTube Link... (Ctrl+Alt+N)** is the one-command version: paste anything and it is filed by what the link is -- a video becomes a playable row, a playlist a folder of its videos, a channel page a followed channel. The reading is deliberate at the edges: `@name` follows the channel, while `@name/live` saves the broadcast, because that is what each of those links names. A saved playlist or video offers **Remove from YouTube** on the same menu that plays it.
 - **Subscriptions says how many, and each show says how much is waiting.** The node under Podcasts read "Subscriptions (shows you follow, shared with Quill Cast)" -- a sentence glued to a name, paid on every visit. It now reads "Subscriptions (3)": the badge is your follow count. Each subscribed show wears "(2 unheard)" from the shared library's own episode state -- the same count Quill Cast shows -- so what is waiting is visible from the app you happen to be in.
 - **Read the transcript without playing anything.** A podcast episode whose feed publishes a transcript, and any YouTube row, now offer **View Transcript...** on the context menu. The episode's transcript address rides on the row itself, so the fetch costs one request; a YouTube row costs the same resolve playing it would, minus the playback. Both open the shared transcript reader -- the window Playback > Transcript... and Quill Cast already use -- with an automatic caption track announced as automatic in its heading. No follow, no jump-to-line: nothing is playing, and seeking a live player to a row of something it is not playing would be worse than not offering it.
-- **Hide a branch from the branch itself.** Choose Browse Sources could always hide any of the twenty-eight branches; now the branch's own right-click offers **Hide This Source**, one keystroke from where the clutter actually is, under the same rule (a hidden branch is not in the tree and is never contacted). **Reset Sources to Default** rides on the same menu, so the way back lives where the hiding happened -- nobody should have to remember which dialog restores the standard set.
+- **Hide a branch from the branch itself.** Choose Browse Sources could always hide any of the thirty branches; now the branch's own right-click offers **Hide This Source**, one keystroke from where the clutter actually is, under the same rule (a hidden branch is not in the tree and is never contacted). **Reset Sources to Default** rides on the same menu, so the way back lives where the hiding happened -- nobody should have to remember which dialog restores the standard set.
 - **An emptied search field empties its results.** In the station browser (and every search surface across the family -- LibriVox, weather locations, Spotify, the GitHub browser, the book library), deleting your query used to leave the old results looking current. Clearing the fields now clears the list at once, exactly as a blank search would; the station browser waits until the name, tag *and* country are all empty, because a country facet alone is still a live query.
 
 ### You can see the picture now
@@ -458,7 +607,7 @@ A dozen gaps, each one a question the app could not answer about itself. They ca
 
 ### Underneath
 
-- **Adding a station source no longer means editing the Browse window.** Every source now answers a single question -- what is inside this folder -- through one shared contract, and the Browse window knows only that a row is something to open or something to play. It used to know the shape of all thirteen sources: adding iHeart had cost three new internal categories and edits in six places, and the search-within-a-folder feature needed a *second* copy of that knowledge, kept in step by hand, so a source anybody forgot to add there was silently unsearchable. The Browse window is 199 lines smaller than it was while the tree it serves grew to twenty-eight branches, and the rule is enforced by its size budget rather than by anyone remembering it.
+- **Adding a station source no longer means editing the Browse window.** Every source now answers a single question -- what is inside this folder -- through one shared contract, and the Browse window knows only that a row is something to open or something to play. It used to know the shape of all thirteen sources: adding iHeart had cost three new internal categories and edits in six places, and the search-within-a-folder feature needed a *second* copy of that knowledge, kept in step by hand, so a source anybody forgot to add there was silently unsearchable. The Browse window is 199 lines smaller than it was while the tree it serves grew to thirty branches, and the rule is enforced by its size budget rather than by anyone remembering it.
 - **An empty branch now tells you which kind of empty it is.** "There are no stations in this genre" and "that directory could not be reached" used to look identical, which is how a listener concludes that a working source is broken -- or, worse, the reverse.
 - **A folder says how big it is before you open it.** Where a source can tell us cheaply, a folder announces its size along with its name, so you can decide whether to spend the wait before you have spent it.
 - **Every external service is now checked by a runnable probe.** Thirty-seven of them, one per service, each asserting something specific -- not "the server answered" but "that station id came back with an address that plays". They caught an Apple genre filter that matched nothing, a station directory that answers "this country has no states" instead of an error when a request is malformed, and a documented bulk endpoint whose answer changed depending on which fields you asked it for. All three would have shipped.

@@ -1,36 +1,53 @@
-"""The ACB Media Schedule window: a week you can act on (list.md section 6).
+"""The ACB Media Schedule window: one flat list of what is published.
 
-A week of radio, Sunday to Saturday, in one list with a day heading before each
-day's programmes -- the same shape the Play Queue uses for its groups, because
-a screen-reader user arrowing down a week needs the day announced once rather
-than repeated on every row.
+**It was a week, and a week was wrong** (rewritten 2026-08-24). The window
+used to page Sunday to Saturday with a day heading before each day. That shape
+assumes a calendar which is always populated, and ACB's is not: they post a
+fortnight of listings at a time and then stop, so the week containing *today*
+is routinely empty. Arrowing to today and finding nothing is then
+indistinguishable from a broken feed -- and it was reported as one. Confirmed
+against the live feed on 2026-08-23 and again on 2026-08-24: the published
+schedule ran out on 15 August both times.
+
+So: every published programme, in one list, sorted by date. Three filters
+above it -- a search box, a date picker holding only the dates that *have*
+programmes, and a channel picker -- and a summary line that always says how
+far the published listings actually run, and says plainly when that is already
+in the past. A window that cannot tell "nothing posted yet" from "broken"
+makes its reader do it.
 
 Everything a listener can do here they can do three ways, which is 6.6 and is
 not negotiable: the context menu (Applications key or Shift+F10), the buttons
 below the list (tabbable, in the same order), and Enter on the row for the
-obvious verb. A window whose verbs live only in a right-click menu is a window
-half its audience cannot use.
+obvious verb.
 
-**The week never blocks.** Loading goes through the task manager, and the
+**The list never blocks.** Loading goes through the task manager, and the
 schedule comes from ``acb_calendar``, which answers from the cache when the
 network is not there and says how old its answer is. A failure is recorded in
-Recent Problems rather than raised, so a week that will not load is an empty
-week with a sentence, never a window that dies.
-
-**Search filters the week in place** (6.3) rather than opening a second
-surface: the day headings stay, the counts follow, and clearing the box puts
-the week back -- the search-reset rule the family already follows.
+Recent Problems rather than raised, so a schedule that will not load is an
+empty list with a sentence, never a window that dies.
 """
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Any
 
 from quill.core.radio import acb_calendar, calendar_actions
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
 
 TITLE = "ACB Media Schedule"
+
+
+#: The schedule window currently on screen, if any. One per process.
+#:
+#: Playback is asynchronous: pressing Play leaves the stream CONNECTING and the
+#: PLAYING transition arrives a second or two later, from a background thread.
+#: A window that only re-faces its buttons when somebody presses something
+#: therefore cannot follow a stream that starts, stalls, reconnects or dies on
+#: its own -- so the app's state handler calls :func:`refresh_open`, exactly as
+#: it already does for the player window.
+_OPEN: Any = None
 
 
 def show_calendar(host: Any) -> None:
@@ -40,16 +57,28 @@ def show_calendar(host: Any) -> None:
     _CalendarWindow(host, wx).show()
 
 
+def refresh_open(_host: Any = None) -> None:
+    """Re-face the open schedule's buttons. A no-op when none is open."""
+    window = _OPEN
+    if window is None:
+        return
+    try:
+        window._sync()
+    except Exception:  # noqa: BLE001 - a closing window must not break playback
+        return
+
+
 class _CalendarWindow:
-    """The window's state: which week, which stream, which query."""
+    """The window's state: which date, which channel, which query."""
 
     def __init__(self, host: Any, wx: Any) -> None:
         self._host = host
         self._wx = wx
         self._events: list[Any] = []
         self._age: float | None = None
-        self._rows: list[tuple[int | None, Any]] = []
-        self._anchor = datetime.now(UTC)
+        self._rows: list[Any] = []
+        self._dates: list[tuple[str, str]] = []
+        self._date = ""
         self._stream = ""
         self._query = ""
 
@@ -67,11 +96,35 @@ class _CalendarWindow:
         self.dialog = wx.Dialog(
             self._host.frame, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetSize(wx.Size(820, 520))
+        self.dialog.SetSize(wx.Size(860, 560))
         root = wx.BoxSizer(wx.VERTICAL)
 
-        self._summary = wx.StaticText(self.dialog, label="Loading the schedule...")
-        root.Add(self._summary, 0, wx.ALL, 8)
+        # A read-only edit field, not a StaticText. The summary is the sentence
+        # that explains an empty list -- how far ACB's published schedule runs,
+        # and that nothing is posted for today -- and static text cannot be
+        # tabbed to, arrowed through, or re-read a word at a time. Somebody who
+        # missed it as it was spoken had no way back to it (reported
+        # 2026-08-24). Read-only rather than disabled, so it takes focus and the
+        # review cursor while refusing edits.
+        self._summary = wx.TextCtrl(
+            self.dialog,
+            value="Loading the schedule...",
+            style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_NO_VSCROLL,
+            size=wx.Size(-1, 48),
+        )
+        # SetName is what focus announces; SetHelpText is what F1
+        # answers. Different mechanisms, so both, spelled out -- the
+        # radio-help audit reads the source for the second.
+        _help = (
+            "What this schedule contains, in a sentence: how many programmes "
+            "are listed, how far ACB's published listings run, and how old this "
+            "copy is. When the list is empty this is where the reason is. It is "
+            "read-only -- you can tab to it and arrow through it, but not change "
+            "it."
+        )
+        self._summary.SetName(_help)
+        self._summary.SetHelpText(_help)
+        root.Add(self._summary, 0, wx.EXPAND | wx.ALL, 8)
 
         filters = wx.BoxSizer(wx.HORIZONTAL)
         filters.Add(
@@ -82,14 +135,33 @@ class _CalendarWindow:
         # answers. Different mechanisms, so both, spelled out -- the
         # radio-help audit reads the source for the second.
         _help = (
-            "Filters this week by programme name, description or channel. Every "
-            "word has to appear somewhere, in any order. It narrows what is "
-            "listed and changes nothing about what is playing; clearing the box "
-            "puts the whole week back."
+            "Filters the schedule by programme name, description or channel. "
+            "Every word has to appear somewhere, in any order. It narrows what "
+            "is listed and changes nothing about what is playing; clearing the "
+            "box puts the whole schedule back."
         )
         self._search.SetName(_help)
         self._search.SetHelpText(_help)
         filters.Add(self._search, 1, wx.EXPAND | wx.RIGHT, 12)
+
+        filters.Add(
+            wx.StaticText(self.dialog, label="&Date:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+        )
+        self._date_choice = wx.Choice(self.dialog, choices=["All dates"])
+        # SetName is what focus announces; SetHelpText is what F1
+        # answers. Different mechanisms, so both, spelled out -- the
+        # radio-help audit reads the source for the second.
+        _help = (
+            "Jumps to one date. Only dates that actually have programmes are "
+            "offered, and each says how many -- a picker that mostly answers "
+            "'nothing' is the calendar this window replaced. Choose All dates "
+            "to see the whole published schedule again."
+        )
+        self._date_choice.SetName(_help)
+        self._date_choice.SetHelpText(_help)
+        self._date_choice.SetSelection(0)
+        filters.Add(self._date_choice, 0, wx.RIGHT, 12)
+
         filters.Add(
             wx.StaticText(self.dialog, label="C&hannel:"),
             0,
@@ -101,7 +173,7 @@ class _CalendarWindow:
         # answers. Different mechanisms, so both, spelled out -- the
         # radio-help audit reads the source for the second.
         _help = (
-            "Narrows the week to one ACB Media channel. It filters what is "
+            "Narrows the schedule to one ACB Media channel. It filters what is "
             "listed and changes nothing about what is playing."
         )
         self._streams.SetName(_help)
@@ -115,10 +187,12 @@ class _CalendarWindow:
         # answers. Different mechanisms, so both, spelled out -- the
         # radio-help audit reads the source for the second.
         _help = (
-            "This week's programmes, Sunday to Saturday, with a heading before "
-            "each day. Enter tunes in to the highlighted programme's channel; "
-            "Shift+F10 offers the rest. A day heading is not a programme and no "
-            "verb acts on one."
+            "Every published programme, oldest first, each row carrying its own "
+            "date, time, name and channel. It opens on the next programme still "
+            "to come. Enter tunes in to the highlighted programme's channel; "
+            "Shift+F10 offers the rest. When the list is empty the line above "
+            "says why -- most often that ACB has not posted listings this far "
+            "ahead yet."
         )
         self._list.SetName(_help)
         self._list.SetHelpText(_help)
@@ -131,6 +205,7 @@ class _CalendarWindow:
         self.dialog.SetSizer(root)
 
         self._search.Bind(wx.EVT_TEXT, lambda _e: self._on_query())
+        self._date_choice.Bind(wx.EVT_CHOICE, lambda _e: self._on_date())
         self._streams.Bind(wx.EVT_CHOICE, lambda _e: self._on_stream())
         self._list.Bind(wx.EVT_LISTBOX, lambda _e: self._sync())
         self._list.Bind(wx.EVT_CONTEXT_MENU, lambda _e: self._popup())
@@ -138,9 +213,12 @@ class _CalendarWindow:
 
         self._load()
         self._wx.CallAfter(self._list.SetFocus)
+        global _OPEN
+        _OPEN = self
         try:
             self._host._show_modal_dialog(self.dialog, TITLE)
         finally:
+            _OPEN = None
             self.dialog.Destroy()
 
     def _buttons(self) -> Any:
@@ -151,7 +229,12 @@ class _CalendarWindow:
         # audience does not have.
         self._verb_buttons: list[tuple[str, Any]] = []
         for action_id, label, help_text in (
-            (calendar_actions.PLAY, "&Play", "Tunes in to the highlighted programme's channel."),
+            (
+                calendar_actions.PLAY,
+                "&Play",
+                "Tunes in to the highlighted programme's channel, and stops it if "
+                "that channel is already playing. The button says which.",
+            ),
             (
                 calendar_actions.RECORD,
                 "&Record...",
@@ -178,11 +261,13 @@ class _CalendarWindow:
             self._verb_buttons.append((action_id, button))
 
         for label, handler, help_text in (
-            ("&Previous Week", lambda: self._step(-7), "The seven days before this one."),
-            ("&Next Week", lambda: self._step(7), "The seven days after this one."),
-            ("&Today", lambda: self._step(None), "Back to the week containing today."),
+            (
+                "&Next Programme",
+                self._go_next,
+                "Moves to the next programme that has not finished yet.",
+            ),
             ("Re&fresh", self._refresh, "Reads the schedule from ACB again, now."),
-            ("E&xport...", self._export, "Writes this week to a Markdown file."),
+            ("E&xport...", self._export, "Writes what is listed to a Markdown file."),
         ):
             button = wx.Button(self.dialog, label=label)
             button.SetHelpText(help_text)
@@ -202,19 +287,16 @@ class _CalendarWindow:
         tasks = getattr(self._host, "_task_manager", None)
         safe = bool(getattr(self._host, "_safe_mode", False))
 
-        # The anchor decides which month is fetched: My Calendar serves a
-        # window, so stepping into September has to ask for September rather
-        # than re-reading August from the cache.
-        when = self._anchor
-
         def _work(**_kwargs: Any) -> Any:
-            return acb_calendar.fetch_schedule(when=when, refresh=refresh, safe_mode=safe)
+            return acb_calendar.fetch_schedule(refresh=refresh, safe_mode=safe)
 
         def _done(_op: str, result: Any) -> None:
             events, age = result if isinstance(result, tuple) else ([], None)
-            self._events, self._age = list(events), age
+            self._events = sorted(events, key=lambda event: event.start)
+            self._age = age
             self._fill_streams()
-            self._reload(announce=True)
+            self._fill_dates()
+            self._reload(announce=True, select=None)
 
         if tasks is None:
             _done("", _work())
@@ -227,9 +309,9 @@ class _CalendarWindow:
         )
 
     def _failed(self, error: BaseException) -> None:
-        # Never raised into the window: an empty week with a sentence beats a
+        # Never raised into the window: an empty list with a sentence beats a
         # window that dies. The reason is already in Recent Problems.
-        self._summary.SetLabel("The schedule could not be read.")
+        self._summary.SetValue("The schedule could not be read.")
         self._host._announce(f"The ACB Media schedule could not be read. {error}.")
 
     def _refresh(self) -> None:
@@ -238,51 +320,68 @@ class _CalendarWindow:
 
     # -- the list ---------------------------------------------------------------
 
-    def _visible(self) -> list[tuple[datetime, list[Any]]]:
+    def _visible(self) -> list[Any]:
         events = acb_calendar.by_stream(self._events, self._stream)
-        events = acb_calendar.search(events, self._query)
-        return acb_calendar.days_of(events, self._anchor)
+        events = calendar_actions.on_date(events, self._date)
+        return acb_calendar.search(events, self._query)
 
-    def _reload(self, *, announce: bool = False, select: int = 0) -> None:
-        days = self._visible()
-        labels: list[str] = []
-        self._rows = []
+    def _reload(self, *, announce: bool = False, select: int | None = 0) -> None:
+        """Rebuild the list. ``select=None`` means "the next programme"."""
+        events = self._visible()
         now = datetime.now(UTC)
-        for midnight, events in days:
-            labels.append(calendar_actions.day_label(midnight, len(events)))
-            self._rows.append((None, midnight))
-            for event in events:
-                labels.append("    " + calendar_actions.row_label(event, now))
-                self._rows.append((len(self._rows), event))
-        self._list.Set(labels)
-        said = calendar_actions.summarise_week(days, self._age)
-        self._summary.SetLabel(said)
-        if labels:
-            self._list.SetSelection(max(0, min(select, len(labels) - 1)))
+        self._rows = events
+        self._list.Set([calendar_actions.full_row_label(event, now) for event in events])
+        filtered = bool(self._query or self._stream or self._date)
+        said = calendar_actions.summarise_schedule(
+            events, self._events, now, self._age, filtered=filtered
+        )
+        self._summary.SetValue(said)
+        if events:
+            index = calendar_actions.first_upcoming_index(events, now) if select is None else select
+            self._list.SetSelection(max(0, min(index, len(events) - 1)))
         self._sync()
         if announce:
             self._host._announce(said)
+
+    def _go_next(self) -> None:
+        """Put the cursor on the next programme still to come."""
+        if not self._rows:
+            self._host._announce("There is nothing listed to move to.")
+            return
+        now = datetime.now(UTC)
+        index = calendar_actions.first_upcoming_index(self._rows, now)
+        self._list.SetSelection(index)
+        self._sync()
+        self._host._announce(calendar_actions.full_row_label(self._rows[index], now))
 
     def _selected(self) -> Any:
         row = self._list.GetSelection()
         if row == self._wx.NOT_FOUND or row >= len(self._rows):
             return None
-        index, payload = self._rows[row]
-        # A day heading is not a programme. Acting on one because it happened
-        # to be selected is how somebody records a Wednesday.
-        return payload if index is not None else None
+        return self._rows[row]
+
+    def _actions_for(self, event: Any, now: datetime) -> list[Any]:
+        """This programme's verbs, told what the player is currently on.
+
+        The Play verb turns into Stop for the channel you are already
+        listening to, so every route to it -- button, context menu, Enter --
+        has to be built from the same answer.
+        """
+        from quill.ui.radio import calendar_verbs
+
+        return calendar_actions.actions_for(
+            event,
+            now,
+            has_reminder=self._has_reminder(event),
+            playing_stream=calendar_verbs.playing_stream_name(self._host),
+        )
 
     def _sync(self) -> None:
         event = self._selected()
         now = datetime.now(UTC)
         by_id = {}
         if event is not None:
-            by_id = {
-                action.action_id: action
-                for action in calendar_actions.actions_for(
-                    event, now, has_reminder=self._has_reminder(event)
-                )
-            }
+            by_id = {action.action_id: action for action in self._actions_for(event, now)}
         for action_id, button in self._verb_buttons:
             action = by_id.get(action_id)
             if action_id == calendar_actions.REMIND and calendar_actions.UNREMIND in by_id:
@@ -290,6 +389,10 @@ class _CalendarWindow:
                 button.SetLabel("Re&move Reminder")
             elif action_id == calendar_actions.REMIND:
                 button.SetLabel("Re&mind Me...")
+            elif action_id == calendar_actions.PLAY and action is not None:
+                # "Play" and "Stop" are different promises. A button that says
+                # Play while the channel is on is the bug this fixes.
+                button.SetLabel(action.label)
             button.Enable(action is not None and action.enabled)
             if action is not None and not action.enabled:
                 button.SetHelpText(f"Not available: {action.reason}.")
@@ -299,14 +402,12 @@ class _CalendarWindow:
     def _popup(self) -> None:
         event = self._selected()
         if event is None:
-            self._host._announce("That is a day heading, not a programme.")
+            self._host._announce("No programme is selected.")
             return
         wx = self._wx
         menu = wx.Menu()
         now = datetime.now(UTC)
-        for action in calendar_actions.actions_for(
-            event, now, has_reminder=self._has_reminder(event)
-        ):
+        for action in self._actions_for(event, now):
             item = menu.Append(wx.ID_ANY, action.label)
             item.Enable(action.enabled)
             if not action.enabled:
@@ -323,9 +424,7 @@ class _CalendarWindow:
         wanted = action_id
         if action_id == calendar_actions.REMIND and self._has_reminder(event):
             wanted = calendar_actions.UNREMIND
-        for action in calendar_actions.actions_for(
-            event, datetime.now(UTC), has_reminder=self._has_reminder(event)
-        ):
+        for action in self._actions_for(event, datetime.now(UTC)):
             if action.action_id == wanted:
                 self._invoke(action)
                 return
@@ -342,8 +441,13 @@ class _CalendarWindow:
         from quill.ui.radio import calendar_verbs
 
         calendar_verbs.run(self._host, self, action.action_id, event)
+        # Every verb, not just the ones that used to remember to. Play changes
+        # what this row offers as surely as Set a Reminder does, and it was the
+        # one that did not say so: the button went on reading Play through the
+        # whole broadcast.
+        self._sync()
 
-    # -- filters and weeks ------------------------------------------------------
+    # -- filters ----------------------------------------------------------------
 
     def _on_query(self) -> None:
         self._query = self._search.GetValue().strip()
@@ -354,22 +458,22 @@ class _CalendarWindow:
         self._stream = "" if index <= 0 else self._streams.GetString(index)
         self._reload(announce=True)
 
+    def _on_date(self) -> None:
+        index = self._date_choice.GetSelection()
+        self._date = "" if index <= 0 else self._dates[index - 1][0]
+        self._reload(announce=True)
+
     def _fill_streams(self) -> None:
         names = acb_calendar.stream_names(self._events)
         self._streams.Set(["Every channel", *names])
         self._streams.SetSelection(0)
         self._stream = ""
 
-    def _step(self, days: int | None) -> None:
-        before = self._anchor
-        self._anchor = datetime.now(UTC) if days is None else self._anchor + timedelta(days=days)
-        if (self._anchor.year, self._anchor.month) != (before.year, before.month):
-            # A different month is a different fetch. Reloading first would
-            # show an empty week for a second and then fill it, which reads as
-            # "nothing on" to anybody listening.
-            self._load()
-            return
-        self._reload(announce=True)
+    def _fill_dates(self) -> None:
+        self._dates = calendar_actions.date_choices(self._events)
+        self._date_choice.Set(["All dates", *(label for _key, label in self._dates)])
+        self._date_choice.SetSelection(0)
+        self._date = ""
 
     def _has_reminder(self, event: Any) -> bool:
         from quill.core.paths import app_data_dir
@@ -382,7 +486,7 @@ class _CalendarWindow:
     def _export(self) -> None:
         from quill.ui.radio import calendar_verbs
 
-        calendar_verbs.export_week(self._host, self.dialog, self._visible(), self._anchor)
+        calendar_verbs.export_schedule(self._host, self.dialog, self._visible())
 
 
 __all__ = ["TITLE", "show_calendar"]

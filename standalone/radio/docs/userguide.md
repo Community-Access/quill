@@ -203,6 +203,7 @@ Everything else is in the menus and the palette. These six carry the day:
 | What you want | Key |
 | --- | --- |
 | Play or stop | Ctrl+P |
+| Pause or resume (recordings, podcasts, local files) | Ctrl+Space |
 | Volume up or down | Ctrl+Up / Ctrl+Down |
 | Go to the player, from anywhere | Ctrl+Shift+G |
 | Do something by name | Ctrl+Shift+P |
@@ -243,7 +244,8 @@ That is over. Every window Quill Radio opens answers to the whole transport:
 - Find Streams from a Website
 - The player panel itself
 
-In all of them, **Ctrl+P** plays or stops, **Ctrl+.** stops outright,
+In all of them, **Ctrl+P** plays or stops, **Ctrl+Space** pauses and resumes
+anything with a timeline, **Ctrl+.** stops outright,
 **Ctrl+Up** and **Ctrl+Down** move the volume, **Ctrl+Shift+O** mutes and
 unmutes, **Ctrl+Shift+Left** and **Ctrl+Shift+Right** skip, **Ctrl+Shift+Up**
 and **Ctrl+Shift+Down** change speed, **Ctrl+Shift+,** and **Ctrl+Shift+.**
@@ -476,6 +478,7 @@ Each window opens only when you ask for it, and closing a window puts focus back
 
 - A live (disabled) now-playing line at the top, so the menu itself tells you what is on.
 - **Play / Stop** (Ctrl+P) -- one transport item that reads Play when idle and Stop while connecting or playing, exactly like the panel button.
+- **Pause / Resume** (Ctrl+Space) -- holds a podcast, a recording, a downloaded or local file, or a finished video where it is, and picks it up there. It sits directly under Play / Stop because the two are halves of one question: that one starts and ends, this one holds. On a **live station** it is present but dimmed, and says why -- live radio is going out now, so there is nothing to hold, and Stop is what ends it. Before version 3.0 the main window could not pause at all: Ctrl+P here *stopped* a recording, where the same key in every other window paused it.
 - **Mute/Unmute** (Ctrl+M), **Volume Up** (Ctrl+Up), **Volume Down** (Ctrl+Down). Ctrl+Up and Ctrl+Down work from **anywhere in the window** -- the favorites tree, a button, the status bar -- with one sensible exception: inside a text box, Ctrl+arrow still moves and edits text, as it should. Two things are remembered. Each **favorite** remembers the volume you set while it plays and gets it back the next time it starts, because stations are mastered wildly differently and you should only have to fix that once per station. And the **last level you set** is remembered across sessions for everything else, so a station that is not a favorite comes back where you left it rather than at full volume the next time you launch. (A favorite's own remembered level always wins over the general one.)
 - **Output Device...** (Ctrl+Shift+D) -- pick which sound card or headset the radio plays through, in one keystroke, without opening Preferences. Choose a device and the station moves to it immediately; the choice is remembered, and it is the same setting as **Radio output device** in Preferences, so the two always agree. Your screen reader and Quill Radio's own announcements stay on the system default device. Needs the mpv playback engine (the default).
 - **Volume Boost** (Ctrl+Shift+B, check item) -- amplifies up to 50% past full volume for stations that just broadcast quiet. Your 0-100 volume scale, per-station volume memories, and mute all behave exactly as before; the boost is applied on top. Needs the mpv playback engine (the default -- see Preferences below).
@@ -1126,23 +1129,91 @@ do it" -- but they share the record of *when* a check happened, so whichever app
 goes first, the other finds the work already done and stays quiet. There is
 nothing to set up and nothing to notice.
 
+## What the main window shows
+
+**View > Main Window Shows** (Ctrl+Shift+1 to Ctrl+Shift+5), or Preferences.
+Five choices:
+
+- **Favorite stations** (Ctrl+Shift+1) -- your own stations and folders. The
+  default, and what Quill Radio has always opened on.
+- **Browse Stations** (Ctrl+Shift+2) -- one tree of every source.
+- **Search Stations** (Ctrl+Shift+3) -- the field-based search.
+- **Radio Recordings** (Ctrl+Shift+4) -- everything you have recorded.
+- **Player** (Ctrl+Shift+5) -- what is on, where you are in it, the transport.
+
+Whichever you choose, the frame around it does not move: the menu bar, the
+now-playing line at the top, Mute and Volume, and the status bar are the same
+in every one. **That is the point.** Before this, choosing "open Browse at
+startup" opened Browse as a *second* window on top of the main one -- so you
+had two windows before pressing anything, and the one you actually wanted was
+the one without the menu bar on it. Now the surface you live in is the one that
+has the menus.
+
+If you had that setting turned on, your main window now opens showing Browse,
+and nothing else opens by itself.
+
+Everything is still a window of its own on demand: **Ctrl+B** still opens
+Browse, **Ctrl+F** still opens Search. The one difference is that pressing them
+while that surface is already your main window takes you *there* rather than
+opening a second copy on top of the one in front of you.
+
+The choice takes effect at once -- you do not have to restart -- and it is
+remembered. A view you have visited keeps its state, so switching away from
+Browse and back finds your tree still expanded.
+
 ## The ACB Media schedule
 
-**Station > ACB Media Schedule...** (Ctrl+Shift+N) shows what is on the ten ACB
-Media channels this week, Sunday to Saturday, with a heading before each day.
-Every day is listed, including the ones with nothing on -- "Wednesday, nothing
-scheduled" is an answer, and a week that quietly skipped Wednesday would read as
-a week that has no Wednesday.
+**Community > ACB Media Schedule...** (Ctrl+Shift+N) lists everything ACB has
+published for the ten ACB Media channels: one list, oldest first, each row
+carrying its own date, both its times, its programme and its channel --
+"Tuesday 4 August, 8:00 AM to 9:30 AM, Herbie's Community Cooking Corner, ACB
+Media 5". It opens on the next programme still to come, so you arrive at what
+is coming rather than at the start of a fortnight that may already have
+finished. The one programme on air right now ends with "on now".
 
-**Finding something.** Type in the Search box to narrow the week in place: every
-word has to appear somewhere, in any field, so "blues tuesday" finds the Tuesday
-blues show without your knowing which field holds which word. The Channel box
-narrows the week to one of the ten. Clearing either puts the week back. Both
-filter what is *listed* and change nothing about what is playing.
+It moved off the Station menu on 24 August 2026 and it stopped being a week.
+Both changes have the same cause, and it is worth knowing about because it
+will otherwise look like a fault: **ACB publishes a fortnight of listings at a
+time and then stops.** For much of any given month there is nothing posted for
+today at all. Shown as a calendar, that read as an app with no data in it. As a
+list with a sentence above it, it reads as what it is.
 
-**Moving around.** Previous Week, Next Week and Today. **Refresh** reads the
-schedule from ACB again. **Export...** writes what you are looking at -- the
-filters included -- to a Markdown file.
+**The line above the list always says how far the published schedule runs.** It
+is a read-only edit field rather than a label, so you can tab to it and arrow
+through it a word at a time if you missed it as it was spoken. It reads --
+"49 programmes published. The published schedule runs 1 August to 15 August." --
+and says so plainly when that is already behind us: "Nothing is published for
+today or later -- ACB last posted a schedule through 15 August." If that is what
+you see, nothing is broken; there is simply nothing yet to show. Press
+**Refresh** once ACB posts more.
+
+**And it says whose clock the times are on.** ACB publishes its schedule in US
+Central time; Quill Radio converts every programme to your own clock, so what
+you read is when it starts *where you are*. That conversion is right and it
+used to be invisible, which is worse than it sounds -- shown a bare "7:00 AM"
+you have no way to tell a correct conversion from a missing one. So the line
+adds "Times are shown in US Mountain Standard Time. ACB publishes in US Central
+time." when the two differ, and says nothing at all when you are already on
+Central. It matters most where the gap *moves*: Arizona keeps Mountain Standard
+Time all year, so it runs two hours behind Central in summer and one in winter,
+and you should not have to work that out to trust the window.
+
+**Finding something.** Three filters, all of which narrow what is *listed* and
+change nothing about what is playing:
+
+- **Search** -- every word has to appear somewhere, in any field, so "blues
+  tuesday" finds the Tuesday blues show without your knowing which field holds
+  which word.
+- **Date** -- jumps to one date. Only dates that actually have programmes are
+  offered, and each says how many.
+- **Channel** -- narrows to one of the ten.
+
+Clearing any of them puts the whole published schedule back.
+
+**Moving around.** **Next Programme** puts the cursor on the next thing that has
+not finished. **Refresh** reads the schedule from ACB again. **Export...** writes
+what you are looking at -- the filters included -- to a Markdown file, grouped by
+date.
 
 ### What you can do to a programme
 
@@ -1150,10 +1221,12 @@ Six things, and each is reachable three ways: from the context menu (Shift+F10
 or the Applications key), from the buttons below the list in the same order, and
 -- for Play -- by pressing Enter on the row.
 
-- **Play** tunes in to the programme's *channel*. That distinction matters:
-  live radio has one thing on it at a time, so Quill Radio tells you whether
-  the programme is on now or when it starts, rather than letting you think you
-  started a show that airs on Thursday.
+- **Play** tunes in to the programme's *channel* -- and **stops** it if that
+  channel is what you are already listening to. The button says which, so it
+  never restarts a stream you are in the middle of. The channel distinction
+  matters too: live radio has one thing on it at a time, so Quill Radio tells
+  you whether the programme is on now or when it starts, rather than letting
+  you think you started a show that airs on Thursday.
 - **Record** confirms the channel, the date, the time and the length -- the
   four things the calendar already knows -- and schedules it. It appears in
   Recordings and in Upcoming like any other scheduled recording.
@@ -1167,11 +1240,11 @@ or the Applications key), from the buttons below the list in the same order, and
 
 A verb that cannot run is dimmed and says why. A programme whose listing names
 no channel has nothing to play; one that finished this morning cannot be
-recorded. A day heading is not a programme, and no verb acts on one.
+recorded.
 
 ### What is on now
 
-**Station > What Is On Now** (Ctrl+Alt+H) answers in one sentence, across all
+**Community > What Is On Now** (Ctrl+Alt+H) answers in one sentence, across all
 ten channels, without opening anything. It answers from the stored schedule, so
 it answers straight away.
 
@@ -1182,8 +1255,13 @@ and the stored copy is more than an hour old, and whenever you press Refresh --
 never on a background timer. With no connection the window opens from what it
 has and tells you how old that is, rather than presenting three-day-old listings
 as though they were current. If the schedule cannot be read at all you get an
-empty week and a sentence saying so, and the reason is written into **Recent
+empty list and a sentence saying so, and the reason is written into **Recent
 Problems**.
+
+On the first of a month whose listings ACB has not posted yet, the window shows
+the previous month's rather than nothing -- with the same line above it saying
+how far those listings actually run, so an older schedule is never presented as
+a current one.
 
 One quirk worth knowing about, because it is theirs rather than ours: ACB's
 schedule sometimes lists the same programme twice -- the same title, at the same
@@ -1240,7 +1318,7 @@ sound has its own switch, separate from the general per-event sound list,
 because turning most earcons off is not the same as wanting to miss the one
 thing you asked to be interrupted by.
 
-**Station > Upcoming...** (Ctrl+Alt+Shift+F) is everything Quill Radio has
+**Community > Upcoming...** (Ctrl+Alt+Shift+F) is everything Quill Radio has
 planned -- your reminders and your scheduled recordings, together, soonest
 first, with the kind written on every row. **Snooze** pushes a reminder out by
 5, 10 or 30 minutes counted from now, and **Dismiss** forgets it.
@@ -1449,6 +1527,7 @@ rebound, which is more than this table can promise.
 | Playback menu | Alt+P |
 | Record menu | Alt+R |
 | View menu | Alt+V |
+| Community menu | Alt+C |
 | Help menu | Alt+H |
 
 **The transport keys work in every window**, not only the main one -- Browse

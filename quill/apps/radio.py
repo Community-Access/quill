@@ -284,12 +284,24 @@ class RadioAppFrame(
         )
         root.Add(self._now_playing_text, 0, wx.EXPAND | wx.ALL, 8)
 
-        favorites_label = wx.StaticText(panel, label="&Favorite stations:")
-        root.Add(favorites_label, 0, wx.LEFT | wx.RIGHT, 8)
+        # The swappable middle (main_view): the favorites tree by default, or
+        # Browse / Search / Recordings / the Player, whichever the listener
+        # chose. The frame around it -- menu bar, now-playing line, Mute and
+        # Volume, status bar -- is the same whichever view is showing, which is
+        # the point: the surface you live in gets the menu bar instead of
+        # sitting underneath a second window that has one.
+        from quill.ui.radio.main_view_host import MainViewHost
+
+        self._main_view_host = MainViewHost(self, wx)
+        favorites_page = wx.Panel(panel, style=wx.TAB_TRAVERSAL)
+        book = self._main_view_host.build(panel, favorites_page)
+        favorites_sizer = wx.BoxSizer(wx.VERTICAL)
+        favorites_label = wx.StaticText(favorites_page, label="&Favorite stations:")
+        favorites_sizer.Add(favorites_label, 0, wx.LEFT | wx.RIGHT, 8)
         # The same nested folder tree the Favorites Manager shows -- the
         # structure you build is right on the main page, not behind a dialog.
         self._favorites_tree = wx.TreeCtrl(
-            panel, style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT
+            favorites_page, style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT
         )
         # Keep the spoken name short -- a screen reader reads it on every focus,
         # and the old tutorial-style name ("...; Enter plays, Delete removes, F2
@@ -305,7 +317,9 @@ class RadioAppFrame(
         from quill.ui.radio.favorites_manager_dialog import apply_readable_tree_colours
 
         apply_readable_tree_colours(self._favorites_tree)
-        root.Add(self._favorites_tree, 1, wx.EXPAND | wx.ALL, 8)
+        favorites_sizer.Add(self._favorites_tree, 1, wx.EXPAND | wx.ALL, 8)
+        favorites_page.SetSizer(favorites_sizer)
+        root.Add(book, 1, wx.EXPAND)
         self._favorites_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_favorites_activated)
         self._favorites_tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_favorites_context_menu)
         self._favorites_tree.Bind(wx.EVT_KEY_DOWN, self._on_favorites_key)
@@ -369,13 +383,21 @@ class RadioAppFrame(
         self._reload_favorites_tree()
         self._status_bar.refresh()
         self._apply_text_size()
-        self._favorites_tree.SetFocus()
+        # The chosen view, without announcing it: at launch it is not news, and
+        # the launch flow already has things to say. Built here rather than
+        # deferred so the window is never briefly the wrong shape.
+        self._main_view_host.show(self._radio_history.main_view, announce=False, focus=False)
+        self._main_view_host.focus_current()
 
     def _focus_initial_control(self) -> None:
         """Land keyboard focus on the favorites tree after the window is shown so
         the menu bar is reachable straight away (#1193): a pre-show SetFocus does
         not stick, which left the window opening with no control focused -- the
         first Alt then opened the window's system menu instead of the app menu."""
+        host = getattr(self, "_main_view_host", None)
+        if host is not None:
+            host.focus_current()
+            return
         tree = getattr(self, "_favorites_tree", None)
         if tree is not None:
             try:
@@ -890,16 +912,14 @@ class RadioAppFrame(
         # the Playback menu, so the transport button takes Alt+L to play and
         # Alt+T to stop, and Ctrl+P still toggles from anywhere.
         button_label = "S&top" if stopping else "P&lay"
-        menu_label = "&Stop" if stopping else "&Play"
         button = getattr(self, "_play_stop_btn", None)
         if button is not None and button.GetLabel() != button_label:
             button.SetLabel(button_label)
             spoken = "Stop (Alt+T, or Ctrl+P)" if stopping else "Play (Alt+L, or Ctrl+P)"
             set_accessible_name(button, spoken)
-        menu_bar = self.frame.GetMenuBar()
-        item_id = getattr(self, "_play_menu_item_id", None)
-        if menu_bar is not None and item_id is not None:
-            menu_bar.SetLabel(int(item_id), f"{menu_label}\tCtrl+P")
+        from quill.apps import radio_transport_menu
+
+        radio_transport_menu.refresh_labels(self)
         self._refresh_favorite_toggle()
 
     def _refresh_record_button(self) -> None:
@@ -1158,9 +1178,6 @@ class RadioAppFrame(
         prefs_id = wx.NewIdRef()
         station_menu.Append(prefs_id, "&Preferences...\tCtrl+,")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_preferences(), id=prefs_id)
-        from quill.apps.radio_launch_tasks import append_calendar_menu
-
-        append_calendar_menu(self, station_menu, wx)
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         station_menu.Append(tray_id, "Send to &Tray\tCtrl+W")
         station_menu.Append(exit_id, "E&xit\tCtrl+Q")
@@ -1185,11 +1202,11 @@ class RadioAppFrame(
         playback_menu.Append(self._now_playing_item_id, "Radio: stopped")
         playback_menu.Enable(self._now_playing_item_id, False)
         playback_menu.AppendSeparator()
-        # One transport item mirroring the main panel's single button: it
-        # reads Play when idle and Stop while connecting/playing -- no
-        # separate, ambiguous Play/Pause + Stop pair.
-        self._play_menu_item_id = wx.NewIdRef()
-        playback_menu.Append(self._play_menu_item_id, "&Play\tCtrl+P")
+        # Two rows, adjacent: one that starts and ends (Play, then Stop) and
+        # one that pauses. Built and relabelled in radio_transport_menu.
+        from quill.apps import radio_transport_menu
+
+        radio_transport_menu.append_items(self, playback_menu, wx)
         mute_id, vol_up_id, vol_down_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         audio_menu.Append(mute_id, "&Mute/Unmute\tCtrl+M")
         audio_menu.Append(vol_up_id, "Volume &Up\tCtrl+Up")
@@ -1250,9 +1267,6 @@ class RadioAppFrame(
         from quill.ui.radio import bookmarks_wiring as bookmarks
 
         bookmarks.append_menu_item(self, playback_menu, wx)
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self._on_play_stop_button(), id=self._play_menu_item_id
-        )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_mute_toggle(), id=mute_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_up(), id=vol_up_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_volume_down(), id=vol_down_id)
@@ -1321,16 +1335,22 @@ class RadioAppFrame(
         if self._app_area_enabled("recording"):
             menu_bar.Append(record_menu, "&Record")
 
-        # Pre-release top-level Audio Description Project menu. The typed Ask
-        # ADP assistant (future.adp_assistant) is ON by default for testing, so
-        # this is present by default; _build_adp_menu returns None only if a
-        # profile turns it off. The hands-free conversational mode
-        # (future.adp_voice_mode) is the part that stays locked until a signed
-        # unlock code is redeemed (Help > Redeem Unlock Code..., here or in
-        # QUILL -- they share one unlock store). Undocumented until launch.
-        adp_menu = self._build_adp_menu()
-        if adp_menu is not None:
-            menu_bar.Append(adp_menu, "&Community\tCtrl+Alt+A")
+        # Pre-release top-level Audio Description Project menu. The typed Ask ADP
+        # assistant (future.adp_assistant) is ON by default for testing, so this is
+        # present by default; _build_adp_menu returns None only if a profile turns
+        # it off. The hands-free conversational mode (future.adp_voice_mode) stays
+        # locked until a signed unlock code is redeemed (Help > Redeem Unlock
+        # Code..., here or in QUILL -- one shared unlock store). The ACB Media
+        # schedule moved here from Station on 2026-08-24 (see
+        # radio_launch_tasks.append_calendar_menu), so this is built even with
+        # the ADP assistant off: Radio always has the schedule.
+        from quill.apps.radio_launch_tasks import append_calendar_menu
+
+        adp_menu = self._build_adp_menu() or wx.Menu()
+        append_calendar_menu(self, adp_menu, wx)
+        # No chord in the title (2026-08-25): Alt+C already opens this menu, and the
+        # Ctrl+Alt+A it used to advertise is Bookmark This Moment. ADP-era residue.
+        menu_bar.Append(adp_menu, "&Community")
 
         help_menu = wx.Menu()
         palette_id, updates_id, about_id = (
@@ -1485,6 +1505,11 @@ class RadioAppFrame(
         view_menu.Append(features_id, "&Customize Features...\tCtrl+Alt+C")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_app_features(), id=features_id)
         self._keep_menu_ids(features_id)
+        # What the main window shows (main_view): radio items, because it is a
+        # choice of exactly one and a checkmark is how a menu says which.
+        from quill.ui.radio import main_view_menu
+
+        self._keep_menu_ids(*main_view_menu.append(self, view_menu, wx))
         view_menu.AppendSeparator()
         # Text Size: scale the main window's fonts for low-vision listeners.
         text_menu = wx.Menu()
@@ -1496,10 +1521,9 @@ class RadioAppFrame(
             text_menu.Check(item_id, abs(self._radio_history.ui_font_scale - scale) < 0.01)
             self.frame.Bind(wx.EVT_MENU, lambda _e, s=scale: self._set_text_size(s), id=item_id)
         view_menu.AppendSubMenu(text_menu, "&Text Size")
-        # Insert rather than Append: View belongs directly after Station, but it
-        # cannot be *built* until here (its Text Size radio items need the font
-        # scale that later setup resolves). Index 1 is immediately after Station.
-        menu_bar.Insert(1, view_menu, "&View")
+        # Insert, not Append: View cannot be *built* until here (Text Size needs the
+        # font scale later setup resolves). Index 2: &Edit is already at 1.
+        menu_bar.Insert(2, view_menu, "&View")
         from quill.ui.quillville_menu import build_quillville_menu
 
         menu_bar.Append(
@@ -1916,14 +1940,20 @@ class RadioAppFrame(
 
         context_help.show_help(self.frame)
 
-    def _radio_go_to_player(self) -> None:
+    def _radio_go_to_player(self, *, embed_in: object | None = None) -> object | None:
         """Playback > Go to Player. Runs the same dispatcher every other window
         runs, so the main window cannot answer this key differently from the
-        browse tree or the managers."""
+        browse tree or the managers -- unless the player *is* the main window's
+        view, in which case going to it means going to it."""
         from quill.core.radio import transport_commands
-        from quill.ui.radio import transport_keys
+        from quill.ui.radio import player_panel, transport_keys
 
+        if embed_in is not None:
+            return player_panel.embed(self, embed_in)
+        if self._main_view_is("player"):
+            return None
         transport_keys.perform(self, transport_commands.GO_TO_PLAYER)
+        return None
 
     def _on_volume_boost_menu(self) -> None:
         """The Playback menu's Volume Boost check item: toggle, then pin the
@@ -2093,11 +2123,11 @@ class RadioAppFrame(
         from quill.apps import radio_chapter_buttons
 
         radio_chapter_buttons.refresh(self)
-        # The modeless player window has no modal loop keeping its readout
-        # honest, so every status refresh re-reads it too (no-op when closed).
-        from quill.ui.radio import player_panel
+        # Both re-read here (no-op closed): PLAYING arrives on a background thread.
+        from quill.ui.radio import calendar_dialog, player_panel
 
         player_panel.refresh_open(self)
+        calendar_dialog.refresh_open(self)
 
     def _save_radio_favorites(self) -> None:
         # Every favorites mutation -- the toggle button, tree actions, the

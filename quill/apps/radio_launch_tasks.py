@@ -75,15 +75,23 @@ def register_surfaces(app: Any) -> None:
     calendar_wiring.register(app)
 
 
-def append_calendar_menu(app: Any, station_menu: Any, wx: Any) -> None:
-    """The ACB Media schedule's three items, fenced by separators.
+def append_calendar_menu(app: Any, menu: Any, wx: Any) -> None:
+    """The ACB Media schedule's three items, fenced by a separator.
 
-    On the Station menu rather than Record: the schedule is about what is
-    *on*, and recording one programme is a verb inside it rather than the
-    reason to open it.
+    **On the Community menu** since 2026-08-24. They were on Station, on the
+    argument that a schedule is about what is *on*; but Station is the menu of
+    everything this app can tune, and it had grown past twenty items, while the
+    Community menu is precisely "places this community already goes, brought
+    inside the app" -- which is what an ACB Media schedule is. It now sits
+    beside ACB Community Events, where somebody looking for either will find
+    both.
+
+    The separator is only added when the menu already has something above,
+    so a profile with the ADP assistant turned off gets a Community menu that
+    opens on the schedule rather than on a rule.
     """
     from quill.ui.radio import calendar_wiring
 
-    station_menu.AppendSeparator()
-    calendar_wiring.append_menu_items(app, station_menu, wx)
-    station_menu.AppendSeparator()
+    if menu.GetMenuItemCount():
+        menu.AppendSeparator()
+    calendar_wiring.append_menu_items(app, menu, wx)

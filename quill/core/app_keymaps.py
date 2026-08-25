@@ -80,6 +80,14 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # place you name, Ctrl+Alt+Shift+J opens the places you saved.
         "app.bookmark_moment": "Ctrl+Alt+A",
         "app.bookmarks": "Ctrl+Alt+Shift+J",
+        # Pause / Resume on the Playback menu (2026-08-25). Ctrl+P is Play/Stop
+        # and stays that way -- moving it would change what the key does for
+        # somebody who has pressed it since 1.0 -- so pause needed a chord of
+        # its own, and this bar had almost none left: Ctrl+Shift is exhausted
+        # and Ctrl+Alt has one letter free. Ctrl+Space is what a media player
+        # has meant by pause for as long as there have been media players, and
+        # wx parses it (unlike, say, Ctrl+Shift+Plus, which it silently drops).
+        "radio.pause": "Ctrl+Space",
         # The ACB Media schedule (section 6). Three keys, not one window with
         # tabs: browsing a week, asking what is on *without leaving what you
         # are doing*, and reading what you have planned are three questions.

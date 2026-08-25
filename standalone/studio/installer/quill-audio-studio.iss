@@ -25,7 +25,7 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "1.0.0"
+  #define AppVersion "2.2.0"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill-audio-studio"
@@ -63,7 +63,7 @@ AppPublisher={#AppPublisher}
 AppPublisherURL={#AppURL}
 AppSupportURL={#AppURL}
 AppUpdatesURL={#AppURL}
-VersionInfoVersion=1.0.0.0
+VersionInfoVersion=2.2.0.0
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible audio production studio (shared runtime)
 DefaultDirName={autopf}\{#AppName}

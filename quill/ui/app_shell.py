@@ -773,8 +773,14 @@ class AppShellFrame(
         ADP, unlock codes), so the palette lists exactly this app's features."""
         from quill.ui.palette import CommandPaletteDialog
 
+        # binding_for: a companion app registers most commands with no binding,
+        # so without it the palette listed every command with no keystroke.
         dialog = CommandPaletteDialog(
-            self.frame, self.commands, self.features, announce_fn=self._announce
+            self.frame,
+            self.commands,
+            self.features,
+            announce_fn=self._announce,
+            binding_for=self._binding_for,
         )
         dialog.show_modal_and_run()
 
