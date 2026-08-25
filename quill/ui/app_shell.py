@@ -32,6 +32,7 @@ from quill.core.safety.feature_lock import load_feature_locks
 from quill.core.settings import load_settings
 from quill.platform.announce_engine import AnnouncementEngine
 from quill.stability.task_manager import TaskManager
+from quill.ui import modal_stack
 from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
 from quill.ui.app_availability import CommandAvailabilityMixin
@@ -179,16 +180,23 @@ class AppShellFrame(
         if bar is not None:
             bar.SetStatusText(message)
 
-    def _show_message_box(self, message: str, caption: str, style: int | None = None) -> int:
+    def _show_message_box(
+        self, message: str, caption: str, style: int | None = None, parent: object = None
+    ) -> int:
         if style is None:  # plain OK box like wx.MessageBox; None used to crash
             style = wx.OK | wx.ICON_INFORMATION
         self._region_tracker.enter(caption)
         try:
             return wx.MessageBox(  # MSGBOX-OK: app_shell's own implementation
-                message, caption, style, self.frame
+                message, caption, style, self._dialog_parent(parent)
             )
         finally:
             self._region_tracker.exit(caption)
+
+    def _dialog_parent(self, parent: object = None) -> object:
+        """The modal on top, else the frame. Dialogs, not just message boxes:
+        a file picker opened from a dialog has the same focus problem."""
+        return modal_stack.stack_of(self).parent_for(parent, fallback=self.frame)
 
     def _binding_for(self, command_id: str) -> str | None:
         binding = self.keymap.get(command_id)
@@ -285,12 +293,17 @@ class AppShellFrame(
         dialog_cls = getattr(self._wx, "Dialog", None)
         if dialog_cls is not None and type(dialog) is dialog_cls:
             focus_primary_control(dialog)
-        return show_modal_dialog(
-            dialog,
-            label,
-            enter_region=self._region_tracker.enter,
-            exit_region=self._region_tracker.exit,
-        )
+        stack = modal_stack.stack_of(self)
+        stack.push(dialog)
+        try:
+            return show_modal_dialog(
+                dialog,
+                label,
+                enter_region=self._region_tracker.enter,
+                exit_region=self._region_tracker.exit,
+            )
+        finally:
+            stack.pop(dialog)
 
     # -- system tray (mirrors MainFrame._ensure_tray_icon) -------------------
 

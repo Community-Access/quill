@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>community-picks</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1
+id="community-picks-a-curated-living-catalogue-radio-reads-from-the-web">Community
+Picks: a curated, living catalogue Radio reads from the web</h1>
+<p><strong>Status:</strong> proposal, 2026-08-25. Nothing here is built
+yet.</p>
+<h2 id="what-this-is-for">What this is for</h2>
+<p>Jeff wants a curated listing of stations, podcasts and places that
+Quill Radio offers from the <strong>Community</strong> menu, exactly as
+the ACB Media Podcasts picker does: see what is on offer, read a
+description, choose the ones you want, and have them land in Favorites
+and Subscriptions in the order you arranged them.</p>
+<p>Three things make it more than a bundled list:</p>
+<ol type="1">
+<li><strong>It updates without a release.</strong> Adding a station on a
+Tuesday reaches everybody on Tuesday, not at the next installer.</li>
+<li><strong>Anybody can suggest an addition</strong>, and nothing
+appears until Jeff approves it.</li>
+<li><strong>It is one file</strong>, so the same catalogue can serve
+Radio, Cast and whatever comes next.</li>
+</ol>
+<h2 id="the-happy-accident-most-of-this-already-exists">The happy
+accident: most of this already exists</h2>
+<p>This repo has already solved this shape once, for Quillins. Reusing
+it means no new infrastructure, no server, and no new trust
+decisions.</p>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>Already in the repo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static hosting that updates on merge</td>
+<td><code>.github/workflows/github-pages.yml</code> deploys
+<code>docs/site/**</code> to Pages on every push to
+<code>main</code></td>
+</tr>
+<tr>
+<td>A JSON feed the app reads from that site</td>
+<td><code>docs/site/updates/</code> already serves the app-updater
+feed</td>
+</tr>
+<tr>
+<td>A structured public submission form</td>
+<td><code>.github/ISSUE_TEMPLATE/quillin_submission.yml</code></td>
+</tr>
+<tr>
+<td><strong>Filing a GitHub issue for a user with no GitHub
+account</strong></td>
+<td>the bundled issues-only token behind Report a Bug
+(<code>core/feedback_token.py</code>,
+<code>AppShellFrame.report_app_bug</code>)</td>
+</tr>
+<tr>
+<td>An in-app “submit” dialog to model the surface on</td>
+<td><code>quill/ui/quillin_hub_submit.py</code></td>
+</tr>
+<tr>
+<td>A domain</td>
+<td><code>quillforall.org</code> (<code>hub.quillforall.org</code> is
+already in use)</td>
+</tr>
+<tr>
+<td>Age-aware caching of a fetched directory</td>
+<td><code>core/radio/acb_calendar.py</code>,
+<code>core/podcasts/directory_cache.py</code></td>
+</tr>
+<tr>
+<td><strong>Podcasts in Favorites, with episodes</strong></td>
+<td>already works — see below</td>
+</tr>
+<tr>
+<td>Picking, ordering, A-Z-until-moved</td>
+<td><code>core/podcasts/pick_list.py</code> (built 2026-08-25 for the
+ACB picker)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="favorites-already-exposes-podcasts-richly">Favorites already
+exposes podcasts richly</h3>
+<p>This part needs no design at all. Radio favorites can hold a
+<strong>place</strong> — a favorite that opens a browse branch instead
+of playing a stream (<code>favorites.place_station</code>, stored as
+<code>browse:&lt;node id&gt;</code>). The browse tree already
+understands <code>mypodcastshow:&lt;feed-url&gt;</code> and renders it
+as <strong>Episodes</strong> (<code>core/radio/browse_sources.py</code>,
+<code>row_actions.py</code>). So a podcast saved as a place favorite
+opens straight into its episode list, with the same row actions as any
+other podcast view.</p>
+<p>The picker just has to create those places. Nothing new.</p>
+<h2 id="the-file-format">The file format</h2>
+<p>JSON, not OPML. OPML is a subscription-list format: it carries
+podcasts well and has no vocabulary at all for a radio stream, a browse
+place, or the curation metadata (who suggested it, when it was added)
+this needs. We keep full OPML support for podcast import/export — this
+is a different job.</p>
+<p><code>https://quillforall.org/picks/v1/picks.json</code></p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;format&quot;</span><span class="fu">:</span> <span class="st">&quot;quillville-picks&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;version&quot;</span><span class="fu">:</span> <span class="dv">1</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;updated&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-08-25T16:00:00Z&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;QuillVille Community Picks&quot;</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Stations, podcasts and places the community recommends.&quot;</span><span class="fu">,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;collections&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">{</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;acb-media&quot;</span><span class="fu">,</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;ACB Media&quot;</span><span class="fu">,</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Everything ACB Media broadcasts and publishes.&quot;</span><span class="fu">,</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>      <span class="dt">&quot;items&quot;</span><span class="fu">:</span> <span class="ot">[</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;acb-media-1&quot;</span><span class="fu">,</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;stream&quot;</span><span class="fu">,</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;ACB Media 1&quot;</span><span class="fu">,</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Mainstream ACB programming and community events.&quot;</span><span class="fu">,</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;language&quot;</span><span class="fu">:</span> <span class="st">&quot;en&quot;</span><span class="fu">,</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;tags&quot;</span><span class="fu">:</span> <span class="ot">[</span><span class="st">&quot;blindness&quot;</span><span class="ot">,</span> <span class="st">&quot;community&quot;</span><span class="ot">]</span><span class="fu">,</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;stream_url&quot;</span><span class="fu">:</span> <span class="st">&quot;https://broadcast.acbmedia.org/acbmedia1&quot;</span><span class="fu">,</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;homepage&quot;</span><span class="fu">:</span> <span class="st">&quot;https://www.acbmedia.org/&quot;</span><span class="fu">,</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;added&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-08-25&quot;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;acb-community-podcast&quot;</span><span class="fu">,</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;podcast&quot;</span><span class="fu">,</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;ACB Community&quot;</span><span class="fu">,</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Content from ACB sponsored community events.&quot;</span><span class="fu">,</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;language&quot;</span><span class="fu">:</span> <span class="st">&quot;en-US&quot;</span><span class="fu">,</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;feed_url&quot;</span><span class="fu">:</span> <span class="st">&quot;https://pinecast.com/feed/acb-community&quot;</span><span class="fu">,</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;homepage&quot;</span><span class="fu">:</span> <span class="st">&quot;https://acb-community.pinecast.co&quot;</span><span class="fu">,</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;added&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-08-25&quot;</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span><span class="ot">,</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        <span class="fu">{</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;id&quot;</span><span class="fu">:</span> <span class="st">&quot;librivox-shelf&quot;</span><span class="fu">,</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;type&quot;</span><span class="fu">:</span> <span class="st">&quot;place&quot;</span><span class="fu">,</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;title&quot;</span><span class="fu">:</span> <span class="st">&quot;LibriVox Audiobooks&quot;</span><span class="fu">,</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;description&quot;</span><span class="fu">:</span> <span class="st">&quot;Public-domain audiobooks read by volunteers.&quot;</span><span class="fu">,</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;node_id&quot;</span><span class="fu">:</span> <span class="st">&quot;librivox&quot;</span><span class="fu">,</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>          <span class="dt">&quot;added&quot;</span><span class="fu">:</span> <span class="st">&quot;2026-08-25&quot;</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>        <span class="fu">}</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>      <span class="ot">]</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">}</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="ot">]</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<h3 id="rules-the-format-commits-to">Rules the format commits to</h3>
+<ul>
+<li><strong><code>id</code> is stable and forever.</strong> It is how
+“already added” is detected, so a renamed station is the same pick and a
+re-run adds nothing twice.</li>
+<li><strong><code>type</code> is open.</strong> A client <strong>must
+ignore an item whose <code>type</code> it does not understand</strong>,
+and skip it silently. That is what lets a <code>video</code> or
+<code>book</code> type ship later without breaking Radio 3.0.</li>
+<li><strong>The URL path carries the version</strong>
+(<code>/picks/v1/</code>). A breaking change means <code>/v2/</code>,
+and v1 clients keep reading a file that still means what it meant.
+<code>version</code> inside the document is for diagnostics, not
+negotiation.</li>
+<li><strong><code>added</code> is a date, not a timestamp</strong>, and
+exists so the app can offer <em>“3 new since you last looked”</em> — the
+thing that makes a living catalogue feel alive rather than merely
+present.</li>
+<li><strong>Descriptions are the publisher’s or the curator’s</strong>,
+never generated.</li>
+</ul>
+<p>Per-type required fields: <code>stream</code> →
+<code>stream_url</code>; <code>podcast</code> → <code>feed_url</code>;
+<code>place</code> → <code>node_id</code>. Everything else is
+optional.</p>
+<p>A JSON Schema lives at
+<code>quill/core/schemas/community_picks.json</code>, validated in CI
+exactly as <code>extension.json</code> is for Quillins.</p>
+<h2 id="how-the-app-reads-it">How the app reads it</h2>
+<p>Mirroring <code>acb_calendar.py</code>, which already got this
+right:</p>
+<ul>
+<li>One reviewed egress site, so the network-egress gate stays
+honest.</li>
+<li><strong>A bundled copy ships with the app</strong>, so the picker
+works on first run, offline, and if the site is ever down. The fetched
+copy supersedes it.</li>
+<li><code>ETag</code> / <code>If-None-Match</code>, cached under the app
+data dir with its age. The summary line says how old the copy is, the
+way the ACB schedule does.</li>
+<li><strong>Off in Safe Mode</strong>, via
+<code>refuse_in_safe_mode</code>.</li>
+<li>A fetch that fails is a sentence and a stale-but-usable list, never
+a dead window.</li>
+</ul>
+<h3 id="should-it-be-signed">Should it be signed?</h3>
+<p><strong>Yes, and this is the one genuinely new trust
+decision.</strong> This file causes the app to subscribe to feeds and
+add stations — anyone who could replace it could point users at content
+they did not choose. GitHub Pages over HTTPS with a custom domain is
+decent, but the repo already has Ed25519 artifact signing
+(<code>quill/tools/signing.py</code>) and an update-feed key, so a
+detached <code>picks.json.sig</code> verified against a bundled public
+key costs one CI step and removes the question. Recommend shipping
+signed from day one; verification failure falls back to the bundled copy
+and says so in Recent Problems.</p>
+<h2 id="suggestions-and-approval">Suggestions, and approval</h2>
+<p><strong>Nobody should need a GitHub account to suggest a radio
+station.</strong> An earlier draft of this document routed suggestions
+through the Quillin flow, which opens a pre-filled issue in the browser
+— and that quietly requires the person to have a GitHub login, create
+one, and understand what an issue is. For somebody who just heard a good
+station and wants to pass it on, that is not a submission flow, it is a
+wall.</p>
+<p>Radio already solved this. <strong>Report a Bug files a real GitHub
+issue for users who have never configured anything</strong>, using a
+bundled, fine-grained, issues-only token
+(<code>quill/core/feedback_token.py</code>,
+<code>tools/generate_feedback_token.py</code>,
+<code>AppShellFrame.report_app_bug</code>). A release build
+<em>fails</em> if that token is missing, precisely so the channel is
+never quietly broken in the field.</p>
+<p>So:</p>
+<ol type="1">
+<li><strong>Community &gt; Suggest a Station or Podcast…</strong> — an
+ordinary accessible wx dialog, one we control and can make good with a
+screen reader, rather than a web form somebody else designed. Type,
+title, URL, description, language, and why it belongs.</li>
+<li><strong>It checks what it can before sending</strong>: is the feed
+or stream reachable, does it already exist in the catalogue, is the URL
+well-formed. Rejecting a duplicate here costs one dialog; rejecting it
+after moderation costs a round trip through a person.</li>
+<li><strong>It posts the issue itself, with the bundled token.</strong>
+No account, no browser, no login — the submitter stays in Radio and gets
+a confirmation with the issue number. Falls back to opening a pre-filled
+issue in the browser only when the token is absent (dev builds) or the
+post fails, so the flow degrades instead of dying.</li>
+<li><strong><code>.github/ISSUE_TEMPLATE/community_pick.yml</code></strong>
+still exists, for people who <em>do</em> live on GitHub and would rather
+file it there. Same fields, so both routes produce the same
+machine-readable body.</li>
+<li><strong>Jeff approves by adding the <code>pick:approved</code>
+label.</strong> That is the whole moderation UI, and it is auditable
+forever.</li>
+<li><strong>A workflow rebuilds the catalogue.</strong> On label or
+issue close, <code>picks-build.yml</code> merges the approved issues
+with a hand-curated <code>docs/picks-source.json</code> (Jeff’s own
+additions, which need no issue), validates against the schema, signs,
+and writes <code>docs/site/picks/v1/picks.json</code>. The existing
+Pages workflow deploys it because <code>docs/**</code> changed.</li>
+</ol>
+<p>Time from “Jeff clicks a label” to “in everybody’s app”: one workflow
+run plus whatever the client’s cache TTL is.</p>
+<h2
+id="suggesting-from-the-website-with-no-app-and-no-account">Suggesting
+from the website, with no app and no account</h2>
+<p>Wanted: somebody hears about Quill Radio, visits quillforall.org, and
+suggests a station — no download, no GitHub, no login.</p>
+<p><strong>The hard limit is worth stating plainly: GitHub Pages is
+static and cannot receive a submission.</strong> It serves files.
+Something, somewhere, has to accept the POST and hold a credential that
+can write to the repo — and that credential can never be in the page,
+because the page is public. So there are exactly three honest shapes,
+and the form markup is identical in all three; only where it submits
+differs.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Submitter needs</th>
+<th>We run</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>mailto:</code> handoff</strong></td>
+<td>a mail client</td>
+<td>nothing at all</td>
+<td>Opens their own mail app with the body pre-filled. Perfectly
+accessible — it is their client, which they already know. Fails for
+webmail-only visitors with no handler registered, and Jeff retypes it
+into the review page’s Add form.</td>
+</tr>
+<tr>
+<td><strong>A tiny serverless function</strong></td>
+<td>nothing</td>
+<td>one Worker</td>
+<td>~40 lines on Cloudflare’s free tier, holding the token as a secret.
+Files the issue directly. Everyone gets a real form.</td>
+</tr>
+<tr>
+<td><strong>A hosted form service</strong></td>
+<td>nothing</td>
+<td>an account</td>
+<td>Formspree/Tally free tier emails Jeff. No code, but a third party in
+the path and their accessibility is theirs, not ours.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recommendation: build the form once, ship it on
+<code>mailto:</code> immediately, and upgrade the submit target to a
+Worker when it is worth the moving part.</strong> The page, the fields,
+the validation and the accessibility work are all shared; the upgrade is
+one URL and a <code>fetch</code>.</p>
+<p>If the Worker happens, two details matter for this audience:</p>
+<ul>
+<li><strong>Cloudflare Turnstile, not reCAPTCHA.</strong> Turnstile is
+usually invisible and requires no puzzle; reCAPTCHA’s image grids are
+exactly the barrier this whole project exists to remove. A spam control
+that locks out blind users to keep out bots has failed at the only job
+that matters here.</li>
+<li><strong>Rate-limit per IP and cap issue creation</strong>, so a bad
+afternoon costs a handful of closed issues rather than a repo full of
+them.</li>
+</ul>
+<p>The public form and the in-app Suggest dialog produce the
+<strong>same machine-readable issue body</strong>, so the pipeline
+behind them is one thing.</p>
+<h2 id="the-review-page">The review page</h2>
+<p>Labelling issues in GitHub’s own web UI is the obvious answer and the
+wrong one: that UI is hover-heavy, deeply nested and largely unusable
+with a screen reader — the reason this repo carries a whole suite of
+agents that exist to keep Jeff out of it. A review surface he cannot
+comfortably use is a review surface that does not get used, and then the
+catalogue never grows.</p>
+<p>So:
+<strong><code>https://quillforall.org/picks/review/</code></strong> —
+one static, accessible page on the same Pages site. No server, no
+backend, no database.</p>
+<h3 id="how-it-works">How it works</h3>
+<ul>
+<li><strong>Sign in</strong> by pasting a GitHub fine-grained personal
+access token, scoped to <code>Community-Access/quill</code> with
+<strong>Issues: read/write</strong> and nothing else. The page verifies
+it with <code>GET /user</code>, shows <em>“Signed in as jeffbis”</em>,
+and offers <strong>Sign out</strong>.</li>
+<li><strong>Held in <code>sessionStorage</code> by default</strong> —
+gone when the tab closes. <em>“Keep me signed in on this device”</em>
+opts into <code>localStorage</code>. On a shared machine the default is
+the safe one.</li>
+<li><strong>The list</strong> is every open issue labelled
+<code>pick:suggestion</code>, newest first, fetched straight from
+<code>api.github.com</code>. Each is an <code>&lt;article&gt;</code>
+with a real heading, the parsed fields (type, title, URL, description,
+language, why), and a link to the source.</li>
+<li><strong>Per suggestion: Approve · Decline · Needs info · Edit then
+approve.</strong> Approve adds <code>pick:approved</code> and closes.
+Edit lets Jeff correct a title or tighten a description <em>before</em>
+it reaches the catalogue, because the submitter’s wording becomes
+user-facing text.</li>
+<li><strong>After an action, focus moves to the next suggestion</strong>
+and a live region says <em>“Approved ACB Media 3. Four remaining.”</em>
+Keyboard-only throughout; no hover, no drag, no icon-only buttons.</li>
+</ul>
+<p>Approving is what triggers <code>picks-build.yml</code>, so the path
+from <em>“that looks good”</em> to <em>“it is in everybody’s Radio”</em>
+is one button and one workflow run.</p>
+<h3 id="adding-a-pick-from-the-page">Adding a pick from the page</h3>
+<p>The review page is also where Jeff <strong>adds</strong> picks of his
+own, without waiting for anybody to suggest one and without editing JSON
+by hand. Same form as the public one: type, title, URL, description,
+language, collection.</p>
+<p>It does this by <strong>creating an issue already labelled
+<code>pick:approved</code></strong> — not by committing to
+<code>picks-source.json</code> directly. Two reasons, and both
+matter:</p>
+<ul>
+<li>The token stays <strong>Issues-only</strong>. Writing to the repo
+would need <code>contents: write</code>, which is a much larger thing to
+leave in a browser.</li>
+<li>There is then exactly <strong>one</strong> path into the catalogue.
+Suggested-and-approved and added-by-Jeff arrive the same way, so
+<code>picks-build.yml</code> has one input to understand and the history
+of why every entry exists is in one place.</li>
+</ul>
+<p><code>picks-source.json</code> stays in the repo for bulk work —
+pasting in forty stations at once is a pull request, not forty form
+submissions.</p>
+<h3 id="why-this-is-secure-enough">Why this is secure enough</h3>
+<ul>
+<li><strong>The page holds no secret of its own.</strong> It is static
+HTML and JavaScript; anyone can read all of it and learn nothing.</li>
+<li><strong>Authority is GitHub’s, not ours.</strong> Only a token with
+write access can add a label. There is no permission logic on the page
+to get wrong — the API simply refuses.</li>
+<li><strong>Minimum scope, short life.</strong> One repo, Issues only,
+an expiry date. A leaked token can file and label issues in one repo and
+do nothing else.</li>
+<li><strong>The token never goes anywhere but
+<code>api.github.com</code></strong>, over HTTPS, from Jeff’s own
+origin. No analytics, no third-party scripts, no CDN.</li>
+</ul>
+<h3 id="the-one-real-threat-and-the-rule-that-closes-it">The one real
+threat, and the rule that closes it</h3>
+<p>Suggestions are written by the public and displayed on a page that
+holds a token. <strong>Any script injection on that origin steals
+it.</strong> So:</p>
+<blockquote>
+<p>Every field from an issue is rendered with <code>textContent</code>,
+never <code>innerHTML</code>, and URLs are shown as text with the scheme
+checked (<code>https:</code> only) before anything becomes a real
+link.</p>
+</blockquote>
+<p>Plus a strict <code>Content-Security-Policy</code>
+(<code>default-src 'none'</code>,
+<code>connect-src https://api.github.com</code>,
+<code>script-src 'self'</code>), which also means a successful injection
+could not exfiltrate anything anyway. Belt and braces, and both are
+cheap.</p>
+<p>If that still feels like too much token to leave in a browser, the
+fallback costs nothing: approve from the phone’s GitHub app, or run
+<code>gh issue edit &lt;n&gt; --add-label pick:approved</code>. The page
+is a convenience over an API that is already safe, not the thing holding
+the door shut.</p>
+<h3 id="what-the-bundled-token-costs">What the bundled token costs</h3>
+<p>It ships inside the installer, so it is extractable by anyone who
+cares to look. That is a known, accepted trade for Report a Bug and the
+reasoning carries over unchanged: the token is a fine-grained PAT scoped
+to <code>Community-Access/quill</code> with <strong>Issues: read/write
+and nothing else</strong>, so the worst case is issue spam in one repo —
+visible, revocable, and rate-limited by GitHub. It cannot read code,
+cannot write code, and cannot touch releases.</p>
+<p>Worth adding for picks specifically: the dialog should refuse an
+obviously empty or duplicate submission locally, so the cheapest spam is
+also the easiest to stop before it leaves the machine.</p>
+<h2 id="what-would-need-building">What would need building</h2>
+<table>
+<thead>
+<tr>
+<th>Piece</th>
+<th>Size</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>community_picks.json</code> schema +
+<code>core/community_picks.py</code> (fetch, cache, validate,
+parse)</td>
+<td>small</td>
+<td>mirrors <code>acb_calendar.py</code></td>
+</tr>
+<tr>
+<td>Bundled fallback copy + build wiring</td>
+<td>small</td>
+<td></td>
+</tr>
+<tr>
+<td>Picker dialog</td>
+<td><strong>reuses the ACB picker</strong></td>
+<td>same two-list surface, different source</td>
+</tr>
+<tr>
+<td>Apply picks → Favorites places + Subscriptions</td>
+<td>small</td>
+<td><code>place_station</code> + <code>add_show</code></td>
+</tr>
+<tr>
+<td><code>picks-source.json</code> + <code>picks-build.yml</code> +
+schema CI</td>
+<td>medium</td>
+<td></td>
+</tr>
+<tr>
+<td>Issue form + <code>pick:approved</code> label</td>
+<td>small</td>
+<td><code>label-sync.yml</code> already exists</td>
+</tr>
+<tr>
+<td>In-app Suggest… dialog</td>
+<td>small</td>
+<td><code>quillin_hub_submit.py</code> is the template</td>
+</tr>
+<tr>
+<td>Signing + verification</td>
+<td>small</td>
+<td>key infrastructure exists</td>
+</tr>
+<tr>
+<td>“New since you last looked”</td>
+<td>small</td>
+<td>needs a <code>picks_last_seen</code> in history</td>
+</tr>
+</tbody>
+</table>
+<p>The single biggest saving is that the <strong>picker dialog is the
+same dialog</strong>. If it is built once for ACB Media with the source
+passed in, Community Picks is mostly a second menu item and a different
+URL.</p>
+<h2 id="decisions-agreed-2026-08-25">Decisions (agreed 2026-08-25)</h2>
+<ol type="1">
+<li><strong>One catalogue, several collections.</strong> “ACB Media”,
+“Reading Services”, “Music” are groups inside one file, so there is one
+URL, one fetch, one cache and one signature to verify.</li>
+<li><strong><code>"retired": true</code> retires a pick
+centrally.</strong> A retired item stops being <em>offered</em> — it
+disappears from the picker — and <strong>nothing a user already added is
+touched</strong>. Their favorite stays, their subscription stays. Taking
+something out of a shop window is not the same as reaching into
+somebody’s house, and a catalogue that could delete a listener’s
+favorites would be one worth refusing to fetch. The picker may
+optionally note <em>“2 picks you have were retired”</em> in the summary
+line, and does nothing about it.</li>
+<li><strong>Cache for a day, Refresh always available.</strong> Long
+enough that opening the picker is instant and the site is not hammered;
+short enough that an approval lands the same day. The summary line
+always says how old the copy is, as the ACB schedule does, so “is this
+current?” is never a guess.</li>
+<li><strong>One file serves both apps, via <code>"apps"</code>.</strong>
+An item may carry <code>"apps": ["radio", "cast"]</code>; absent means
+every app. Cast is never offered a radio stream it cannot play, and
+Radio is never offered something that only makes sense in Cast — without
+maintaining two catalogues that drift.</li>
+</ol>
+</main>
+</body>
+</html>

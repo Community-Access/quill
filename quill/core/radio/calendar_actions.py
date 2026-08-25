@@ -378,6 +378,41 @@ def zone_note(now: datetime, local: tzinfo | None = None) -> str:
     return f"Times are shown in {name}. ACB publishes in US Central time."
 
 
+def pull_note(
+    age_seconds: float | None,
+    pulled_at: datetime | None,
+    now: datetime,
+) -> str:
+    """When this copy of the schedule came off ACB's feed, in a sentence (pure).
+
+    **It used to say nothing at all on the good path.** ``spoken_age`` answers
+    ``""`` for a live fetch, so a successful Refresh rewrote the summary to a
+    sentence identical to the one already there -- same words, same length, the
+    same thing spoken back. There was no way to tell a refresh that worked from
+    a button that did nothing, and it was reported as the latter (2026-08-25).
+
+    So the note is unconditional, and it carries a clock time as well as the
+    relative phrase. "Just now" is what a listener needs to hear to know the
+    press landed; the time is what they need an hour later to know it did not.
+    The date is added only when the pull was not today, because a timestamp
+    carrying a date every time is a timestamp nobody finishes listening to.
+    """
+    if pulled_at is None:
+        # Callers from before the note existed (and tests that pass an age
+        # alone) still get the old fragment rather than a wrong time.
+        from quill.core.radio.directory_cache import spoken_age
+
+        return spoken_age(age_seconds)
+    local = pulled_at.astimezone()
+    when = local.strftime("%I:%M %p").lstrip("0")
+    if local.date() != now.astimezone().date():
+        when = f"{when} on {local.day} {local.strftime('%B')}"
+    from quill.core.radio.directory_cache import spoken_age
+
+    ago = spoken_age(age_seconds if age_seconds is not None else 0.0)
+    return f"Pulled from ACB {ago}, at {when}."
+
+
 def summarise_schedule(
     shown: list[CalendarEvent],
     everything: list[CalendarEvent],
@@ -385,6 +420,7 @@ def summarise_schedule(
     age_seconds: float | None,
     *,
     filtered: bool = False,
+    pulled_at: datetime | None = None,
 ) -> str:
     """What the window says, including the reason it can be empty.
 
@@ -393,10 +429,12 @@ def summarise_schedule(
     then stops. So the summary says how far the published schedule runs, every
     time, and says plainly when that is already in the past. A window that
     cannot distinguish "no data yet" from "broken" makes its user do it.
-    """
-    from quill.core.radio.directory_cache import spoken_age
 
-    aged = spoken_age(age_seconds)
+    *pulled_at* is when this copy came off the feed -- see :func:`pull_note`.
+    It goes last, so the sentence a listener hears first is still about the
+    schedule rather than about the plumbing.
+    """
+    aged = pull_note(age_seconds, pulled_at, now)
     if not everything:
         return " ".join(
             part for part in ("ACB has published no schedule for this month.", aged) if part
@@ -463,10 +501,11 @@ __all__ = [
     "details_text",
     "first_upcoming_index",
     "full_row_label",
-    "on_date",
     "nothing_on_now",
+    "on_date",
     "on_now_sentence",
     "published_range",
+    "pull_note",
     "row_label",
     "schedule_markdown",
     "summarise_schedule",

@@ -30,7 +30,7 @@ empty list with a sentence, never a window that dies.
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from quill.core.radio import acb_calendar, calendar_actions
@@ -68,6 +68,23 @@ def refresh_open(_host: Any = None) -> None:
         return
 
 
+def reload_open() -> bool:
+    """Re-pull the open schedule from ACB. ``False`` when none is open.
+
+    What the Community menu's Refresh calls first: refreshing the feed while
+    the window is up and leaving the window showing the old rows would be the
+    same bug in a new place.
+    """
+    window = _OPEN
+    if window is None:
+        return False
+    try:
+        window._refresh()
+    except Exception:  # noqa: BLE001 - a closing window must not break the menu
+        return False
+    return True
+
+
 class _CalendarWindow:
     """The window's state: which date, which channel, which query."""
 
@@ -76,6 +93,11 @@ class _CalendarWindow:
         self._wx = wx
         self._events: list[Any] = []
         self._age: float | None = None
+        # When this copy came off the feed. Captured once, at the moment the
+        # load lands, rather than recomputed from *age* on every redraw -- the
+        # age was measured then, and subtracting it from a later "now" walks
+        # the timestamp forward every time somebody types in the search box.
+        self._pulled_at: datetime | None = None
         self._rows: list[Any] = []
         self._dates: list[tuple[str, str]] = []
         self._date = ""
@@ -117,10 +139,11 @@ class _CalendarWindow:
         # radio-help audit reads the source for the second.
         _help = (
             "What this schedule contains, in a sentence: how many programmes "
-            "are listed, how far ACB's published listings run, and how old this "
-            "copy is. When the list is empty this is where the reason is. It is "
-            "read-only -- you can tab to it and arrow through it, but not change "
-            "it."
+            "are listed, how far ACB's published listings run, and when this "
+            "copy was last pulled from ACB -- the time is here so you can tell "
+            "a Refresh that fetched something new from one that did not. When "
+            "the list is empty this is where the reason is. It is read-only -- "
+            "you can tab to it and arrow through it, but not change it."
         )
         self._summary.SetName(_help)
         self._summary.SetHelpText(_help)
@@ -211,7 +234,18 @@ class _CalendarWindow:
         self._list.Bind(wx.EVT_CONTEXT_MENU, lambda _e: self._popup())
         apply_listbox_activation(self._list, lambda _e=None: self._run(calendar_actions.PLAY))
 
-        self._load()
+        # refresh=True on open, deliberately. The cache stays fresh for an
+        # hour, and the window used to honour that -- so a listener who saw ACB
+        # move a programme, closed Quill Radio and opened it again got the same
+        # stale listings back, with nothing on screen admitting it (reported
+        # 2026-08-25). Opening this window *is* somebody asking for the
+        # schedule; that is the one moment a fetch is not "reaching out on a
+        # schedule nobody chose". It costs one small request, it does not
+        # block (the load is on the task manager), and when the network is not
+        # there ``resolve`` still falls back to the cache and says how old it
+        # is. The hour-long cache still serves What Is On Now, which has to
+        # answer instantly and does not open anything.
+        self._load(refresh=True)
         self._wx.CallAfter(self._list.SetFocus)
         global _OPEN
         _OPEN = self
@@ -266,7 +300,12 @@ class _CalendarWindow:
                 self._go_next,
                 "Moves to the next programme that has not finished yet.",
             ),
-            ("Re&fresh", self._refresh, "Reads the schedule from ACB again, now."),
+            (
+                "Re&fresh",
+                self._refresh,
+                "Reads the schedule from ACB again, now, ignoring every cached "
+                "copy. The line at the top then says what time it was pulled.",
+            ),
             ("E&xport...", self._export, "Writes what is listed to a Markdown file."),
         ):
             button = wx.Button(self.dialog, label=label)
@@ -294,6 +333,7 @@ class _CalendarWindow:
             events, age = result if isinstance(result, tuple) else ([], None)
             self._events = sorted(events, key=lambda event: event.start)
             self._age = age
+            self._pulled_at = datetime.now(UTC) - timedelta(seconds=age or 0.0)
             self._fill_streams()
             self._fill_dates()
             self._reload(announce=True, select=None)
@@ -311,7 +351,17 @@ class _CalendarWindow:
     def _failed(self, error: BaseException) -> None:
         # Never raised into the window: an empty list with a sentence beats a
         # window that dies. The reason is already in Recent Problems.
-        self._summary.SetValue("The schedule could not be read.")
+        #
+        # The pull note goes on the end even here, because a failed refresh is
+        # exactly when "what am I looking at, then?" matters: the rows below
+        # are still the copy from earlier, and a window that says only "could
+        # not be read" leaves somebody unable to tell whether they are reading
+        # today's schedule or Tuesday's.
+        said = "The schedule could not be read."
+        note = calendar_actions.pull_note(self._age, self._pulled_at, datetime.now(UTC))
+        if note:
+            said = f"{said} What is listed was {note[0].lower()}{note[1:]}"
+        self._summary.SetValue(said)
         self._host._announce(f"The ACB Media schedule could not be read. {error}.")
 
     def _refresh(self) -> None:
@@ -333,7 +383,7 @@ class _CalendarWindow:
         self._list.Set([calendar_actions.full_row_label(event, now) for event in events])
         filtered = bool(self._query or self._stream or self._date)
         said = calendar_actions.summarise_schedule(
-            events, self._events, now, self._age, filtered=filtered
+            events, self._events, now, self._age, filtered=filtered, pulled_at=self._pulled_at
         )
         self._summary.SetValue(said)
         if events:
@@ -400,19 +450,31 @@ class _CalendarWindow:
     # -- verbs ------------------------------------------------------------------
 
     def _popup(self) -> None:
-        event = self._selected()
-        if event is None:
-            self._host._announce("No programme is selected.")
-            return
+        """The row's verbs, and -- always -- Refresh.
+
+        **Refresh is on the menu even when nothing is selected**, which is the
+        whole reason this stopped being an early return. The moment a listener
+        most wants to re-read the feed is the moment the list is empty or looks
+        wrong, and that is precisely the moment there is no row to hang a menu
+        off: the old menu answered "No programme is selected" and shut, so the
+        only route left was a button eleventh in the tab order (reported
+        2026-08-25). A verb about *the schedule* does not need a programme.
+        """
         wx = self._wx
         menu = wx.Menu()
-        now = datetime.now(UTC)
-        for action in self._actions_for(event, now):
-            item = menu.Append(wx.ID_ANY, action.label)
-            item.Enable(action.enabled)
-            if not action.enabled:
-                item.SetHelp(f"Not available: {action.reason}.")
-            menu.Bind(wx.EVT_MENU, lambda _e, a=action: self._invoke(a), item)
+        event = self._selected()
+        if event is not None:
+            now = datetime.now(UTC)
+            for action in self._actions_for(event, now):
+                item = menu.Append(wx.ID_ANY, action.label)
+                item.Enable(action.enabled)
+                if not action.enabled:
+                    item.SetHelp(f"Not available: {action.reason}.")
+                menu.Bind(wx.EVT_MENU, lambda _e, a=action: self._invoke(a), item)
+            menu.AppendSeparator()
+        refresh_item = menu.Append(wx.ID_ANY, "Re&fresh the Schedule")
+        refresh_item.SetHelp("Reads the schedule from ACB again, now, ignoring every cached copy.")
+        menu.Bind(wx.EVT_MENU, lambda _e: self._refresh(), refresh_item)
         self._list.PopupMenu(menu)
         menu.Destroy()
 
@@ -489,4 +551,4 @@ class _CalendarWindow:
         calendar_verbs.export_schedule(self._host, self.dialog, self._visible())
 
 
-__all__ = ["TITLE", "show_calendar"]
+__all__ = ["TITLE", "refresh_open", "reload_open", "show_calendar"]

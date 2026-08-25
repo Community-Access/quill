@@ -14,6 +14,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui import modal_stack
+
 
 def choose_output_device(frame: Any) -> None:
     """Prompt for an audio output device and route playback to it immediately."""
@@ -43,7 +45,7 @@ def choose_output_device(frame: Any) -> None:
         return
 
     with wx.SingleChoiceDialog(
-        frame.frame,
+        modal_stack.parent_window(frame),
         "Send Quill Radio's audio to which device?",
         "Output Device",
         device_labels,

@@ -21,6 +21,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui import modal_stack
+
 #: The one-time consent + rights notice. Mirrors the converter's URL-import
 #: notice (#1255 §4.6): same component, same rights reminder.
 #:
@@ -129,7 +131,9 @@ def add_youtube_playlist(host: Any) -> None:
     prefill = _clipboard_text(host)
     if not is_youtube_playlist_url(prefill):
         prefill = ""
-    entry = wx.TextEntryDialog(host.frame, PLAYLIST_PROMPT, PLAYLIST_TITLE, value=prefill)
+    entry = wx.TextEntryDialog(
+        modal_stack.parent_window(host), PLAYLIST_PROMPT, PLAYLIST_TITLE, value=prefill
+    )
     try:
         if host._show_modal_dialog(entry, PLAYLIST_TITLE) != wx.ID_OK:
             return

@@ -132,7 +132,7 @@ def fetch_schedule(
 
     payload, age = directory_cache.resolve(
         key,
-        lambda: _fetch_ics(moment),
+        lambda: _fetch_ics(moment, no_cache=refresh),
         max_age_seconds=MAX_AGE_SECONDS,
         refresh=refresh,
         empty=[],
@@ -151,7 +151,7 @@ def fetch_schedule(
     before = _previous_month(moment)
     payload, age = directory_cache.resolve(
         cache_key(before),
-        lambda: _fetch_ics(before),
+        lambda: _fetch_ics(before, no_cache=refresh),
         max_age_seconds=MAX_AGE_SECONDS,
         refresh=refresh,
         empty=[],
@@ -165,20 +165,30 @@ def _previous_month(moment: datetime) -> datetime:
     return first - timedelta(days=1)
 
 
-def _fetch_ics(moment: datetime) -> list[dict[str, Any]]:
+def _fetch_ics(moment: datetime, *, no_cache: bool = False) -> list[dict[str, Any]]:
     """Read the feed and return events as JSON-safe rows.
 
     Rows rather than dataclasses because the cache is a JSON file: a
     ``CalendarEvent`` stored whole comes back a dict anyway, and pretending
     otherwise is how a cache round trip quietly changes a type.
+
+    *no_cache* is set when the listener asked for this fetch by name -- Refresh,
+    or opening the window. Our own disk cache is already bypassed by then, but
+    ours is not the only one between here and WordPress: a CDN or a company
+    proxy can answer a plain GET from a copy it made an hour ago, and the whole
+    point of pressing Refresh is that the answer is not an hour old. The two
+    headers are what HTTP gives you to say so (``Pragma`` for the HTTP/1.0
+    intermediaries that ignore ``Cache-Control``). They are omitted on an
+    unattended read, where a cached hop is a saving rather than a lie.
     """
     import ssl
     import urllib.request
 
-    request = urllib.request.Request(
-        ics_url(moment),
-        headers={"User-Agent": _USER_AGENT, "Accept": "text/calendar, text/plain"},
-    )
+    headers = {"User-Agent": _USER_AGENT, "Accept": "text/calendar, text/plain"}
+    if no_cache:
+        headers["Cache-Control"] = "no-cache"
+        headers["Pragma"] = "no-cache"
+    request = urllib.request.Request(ics_url(moment), headers=headers)
     with urllib.request.urlopen(  # noqa: S310 - literal HTTPS constant, no user input
         request, timeout=_TIMEOUT_SECONDS, context=ssl.create_default_context()
     ) as response:

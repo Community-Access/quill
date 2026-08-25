@@ -221,7 +221,7 @@ def _isolated_cache(monkeypatch, tmp_path):
 def test_a_schedule_that_will_not_load_is_no_events_rather_than_a_crash(monkeypatch) -> None:
     """A browse window that throws takes the window with it."""
 
-    def _boom(_when) -> list:
+    def _boom(_when, **_kwargs) -> list:
         raise OSError("acbmedia.org is unreachable")
 
     monkeypatch.setattr(acb_calendar, "_fetch_ics", _boom)
@@ -233,7 +233,7 @@ def test_a_schedule_that_will_not_load_is_no_events_rather_than_a_crash(monkeypa
 
 
 def test_a_fetched_schedule_comes_back_live_and_is_cached(monkeypatch) -> None:
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [_row("Main Menu")])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when, **_kwargs: [_row("Main Menu")])
 
     events, age = acb_calendar.fetch_schedule()
     assert [e.summary for e in events] == ["Main Menu"]
@@ -247,10 +247,10 @@ def test_a_fetched_schedule_comes_back_live_and_is_cached(monkeypatch) -> None:
 
 
 def test_refresh_goes_past_a_fresh_cache(monkeypatch) -> None:
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [_row("Old")])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when, **_kwargs: [_row("Old")])
     acb_calendar.fetch_schedule()
 
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [_row("New")])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when, **_kwargs: [_row("New")])
     events, age = acb_calendar.fetch_schedule(refresh=True)
 
     assert [e.summary for e in events] == ["New"]
@@ -259,10 +259,10 @@ def test_refresh_goes_past_a_fresh_cache(monkeypatch) -> None:
 
 def test_a_dead_network_falls_back_to_the_cache(monkeypatch) -> None:
     """Works offline from the cache -- the second half of 6.8."""
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [_row("Main Menu")])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when, **_kwargs: [_row("Main Menu")])
     acb_calendar.fetch_schedule()
 
-    def _boom(_when) -> list:
+    def _boom(_when, **_kwargs) -> list:
         raise OSError("no network")
 
     monkeypatch.setattr(acb_calendar, "_fetch_ics", _boom)
@@ -273,7 +273,7 @@ def test_a_dead_network_falls_back_to_the_cache(monkeypatch) -> None:
 
 
 def test_safe_mode_reads_the_cache_and_never_reaches_out(monkeypatch) -> None:
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [_row("Main Menu")])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when, **_kwargs: [_row("Main Menu")])
     acb_calendar.fetch_schedule()
 
     monkeypatch.setattr(acb_calendar, "_fetch_ics", _never)
@@ -293,7 +293,12 @@ def test_a_cache_written_by_an_older_build_reads_as_fewer_events(monkeypatch) ->
     monkeypatch.setattr(
         acb_calendar,
         "_fetch_ics",
-        lambda _when: [_row("Good"), {"summary": "No start"}, "not a row", {"start": "whenever"}],
+        lambda _when, **_kwargs: [
+            _row("Good"),
+            {"summary": "No start"},
+            "not a row",
+            {"start": "whenever"},
+        ],
     )
     events, _age = acb_calendar.fetch_schedule()
 
@@ -304,7 +309,7 @@ def test_the_cache_round_trip_keeps_every_field(monkeypatch) -> None:
     row = _row("Main Menu")
     row["description"] = "Technology news, reviews, and interviews."
     row["url"] = "https://acbmedia.org/show"
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [row])
+    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when, **_kwargs: [row])
     acb_calendar.fetch_schedule()
 
     monkeypatch.setattr(acb_calendar, "_fetch_ics", _never)
@@ -331,7 +336,7 @@ def _row(summary: str) -> dict:
     }
 
 
-def _never(_when=None) -> list:
+def _never(_when=None, **_kwargs) -> list:
     raise AssertionError("the network must not be reached here")
 
 
@@ -373,7 +378,7 @@ def test_each_month_gets_its_own_cache_entry() -> None:
 def test_a_different_month_is_a_different_fetch(monkeypatch) -> None:
     asked: list[int] = []
 
-    def _fetch(when):
+    def _fetch(when, **_kwargs):
         asked.append(when.month)
         return [_row(f"Month {when.month}")]
 
@@ -462,7 +467,9 @@ def test_a_repeat_that_differs_only_by_case_or_spacing_is_still_a_repeat() -> No
 def test_deduplication_happens_on_the_way_out_of_the_cache_too(monkeypatch) -> None:
     """A cache written before this existed must not replay the duplicates."""
     row = _row("Twice")
-    monkeypatch.setattr(acb_calendar, "_fetch_ics", lambda _when: [row, dict(row, uid="other")])
+    monkeypatch.setattr(
+        acb_calendar, "_fetch_ics", lambda _when, **_kwargs: [row, dict(row, uid="other")]
+    )
 
     events, _age = acb_calendar.fetch_schedule()
 
@@ -476,7 +483,7 @@ def test_an_unpublished_month_falls_back_to_the_one_before(monkeypatch) -> None:
     what keeps the older month from being presented as current."""
     asked: list[tuple[int, int]] = []
 
-    def _by_month(when):
+    def _by_month(when, **_kwargs):
         asked.append((when.year, when.month))
         return [_row("July programme")] if when.month == 7 else []
 
@@ -491,7 +498,7 @@ def test_an_unpublished_month_falls_back_to_the_one_before(monkeypatch) -> None:
 def test_a_month_that_has_listings_never_reaches_for_the_one_before(monkeypatch) -> None:
     asked: list[tuple[int, int]] = []
 
-    def _by_month(when):
+    def _by_month(when, **_kwargs):
         asked.append((when.year, when.month))
         return [_row("August programme")]
 

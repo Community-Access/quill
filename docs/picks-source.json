@@ -1,0 +1,519 @@
+{
+  "_comment": "Hand-curated Community Picks. picks-build.yml merges approved pick:approved issues into this and writes docs/site/picks/v1/picks.json plus quill/core/data/community_picks.json. Edit here for bulk work; use the review page or an issue for one-offs. Schema: quill/core/schemas/community_picks.json.",
+  "collections": [
+    {
+      "id": "acb-media-streams",
+      "title": "ACB Media (live)",
+      "description": "ACB Media's live channels.",
+      "items": [
+        {
+          "id": "acb-media-1",
+          "type": "stream",
+          "title": "ACB Media 1",
+          "description": "ACB Media 1, live from ACB Media.",
+          "language": "en",
+          "stream_url": "https://streaming.live365.com/a11911",
+          "added": "2026-08-25"
+        },
+        {
+          "id": "acb-media-2",
+          "type": "stream",
+          "title": "ACB Media 2",
+          "description": "ACB Media 2, live from ACB Media.",
+          "language": "en",
+          "stream_url": "https://streaming.live365.com/a27778",
+          "added": "2026-08-25"
+        },
+        {
+          "id": "acb-media-3",
+          "type": "stream",
+          "title": "ACB Media 3",
+          "description": "ACB Media 3, live from ACB Media.",
+          "language": "en",
+          "stream_url": "https://streaming.live365.com/a17972",
+          "added": "2026-08-25"
+        },
+        {
+          "id": "acb-media-4",
+          "type": "stream",
+          "title": "ACB Media 4",
+          "description": "ACB Media 4, live from ACB Media.",
+          "language": "en",
+          "stream_url": "https://streaming.live365.com/a89697",
+          "added": "2026-08-25"
+        },
+        {
+          "id": "acb-media-5",
+          "type": "stream",
+          "title": "ACB Media 5",
+          "description": "ACB Media 5, live from ACB Media.",
+          "language": "en",
+          "stream_url": "https://streaming.live365.com/a46090",
+          "added": "2026-08-25"
+        },
+        {
+          "id": "acb-media-6",
+          "type": "stream",
+          "title": "ACB Media 6",
+          "description": "ACB Media 6, live from ACB Media.",
+          "language": "en",
+          "stream_url": "https://streaming.live365.com/a36240",
+          "added": "2026-08-25"
+        },
+        {
+          "id": "acb-media-7",
+          "type": "stream",
+          "title": "ACB Media 7",
+          "description": "ACB Media 7, live from ACB Media.",
+          "language": "en",
+          "stream_url": "https://streaming.live365.com/a95398",
+          "added": "2026-08-25"
+        },
+        {
+          "id": "acb-media-8",
+          "type": "stream",
+          "title": "ACB Media 8",
+          "description": "ACB Media 8, live from ACB Media.",
+          "language": "en",
+          "stream_url": "https://streaming.live365.com/a18975",
+          "added": "2026-08-25"
+        },
+        {
+          "id": "acb-media-9",
+          "type": "stream",
+          "title": "ACB Media 9",
+          "description": "ACB Media 9, live from ACB Media.",
+          "language": "en",
+          "stream_url": "https://streaming.live365.com/a44175",
+          "added": "2026-08-25"
+        },
+        {
+          "id": "acb-media-10",
+          "type": "stream",
+          "title": "ACB Media 10",
+          "description": "ACB Media 10, live from ACB Media.",
+          "language": "en",
+          "stream_url": "https://streaming.live365.com/a85327",
+          "added": "2026-08-25"
+        }
+      ]
+    },
+    {
+      "id": "acb-media-podcasts",
+      "title": "ACB Media (podcasts)",
+      "description": "Everything ACB Media publishes as a podcast.",
+      "items": [
+        {
+          "id": "acb-advocacy-update",
+          "type": "podcast",
+          "title": "ACB Advocacy Update",
+          "description": "This feed provides updates from the American Council of the Blind on its advocacy efforts.",
+          "feed_url": "https://pinecast.com/feed/acb-advocacy-update",
+          "added": "2026-08-25",
+          "language": "en",
+          "homepage": "https://acb-advocacy-update.pinecast.co"
+        },
+        {
+          "id": "acb-braille-forum-and-e-forum",
+          "type": "podcast",
+          "title": "ACB Braille Forum and E-Forum",
+          "description": "The ACB Braille Forum is a magazine produced by the American Council of the Blind",
+          "feed_url": "https://pinecast.com/feed/acb-braille-forum-and-e-forum",
+          "added": "2026-08-25",
+          "language": "en",
+          "homepage": "https://acb-braille-forum-and-e-forum.pinecast.co"
+        },
+        {
+          "id": "acb-business",
+          "type": "podcast",
+          "title": "ACB Business",
+          "description": "ACB Board meetings and other ACB Business and Committee meetings open to the public.",
+          "feed_url": "https://pinecast.com/feed/acb-business",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-business.pinecast.co"
+        },
+        {
+          "id": "acb-community",
+          "type": "podcast",
+          "title": "ACB Community",
+          "description": "Welcome to the ACB Media Community Podcast, home to content from ACB sponsored community events. Our community is growing and we want everyone to find their place in it. From technology to the kitchen, from hobbies and sports to exercise and meditation, and timely discussions to formal presentations, we now have a place to share, learn, and grow. Although most social events will not be shared on this feed, topic driven content will be, and we invite everyone to take part in this ACB community.",
+          "feed_url": "https://pinecast.com/feed/acb-community",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-community.pinecast.co"
+        },
+        {
+          "id": "acb-conference-and-convention",
+          "type": "podcast",
+          "title": "ACB Conference and Convention",
+          "description": "ACB Conference and Convention materials and archives",
+          "feed_url": "https://pinecast.com/feed/acb-convention",
+          "added": "2026-08-25",
+          "language": "en",
+          "homepage": "https://acb-convention.pinecast.co"
+        },
+        {
+          "id": "acb-convention-audio-described-tours",
+          "type": "podcast",
+          "title": "ACB Convention: Audio Described Tours",
+          "description": "Welcome to the home of many of the Audio Described Tours that were presented during the ACB Virtual Conference and Convention.",
+          "feed_url": "https://pinecast.com/feed/acb-ad-tours",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-ad-tours.pinecast.co"
+        },
+        {
+          "id": "acb-convention-exhibits",
+          "type": "podcast",
+          "title": "ACB Convention: Exhibits",
+          "description": "This Podcast Feed contains the Virtual Exhibits presented in the Virtual Exhibit Hall at the ACB Virtual Conference and Convention.",
+          "feed_url": "https://pinecast.com/feed/acb-exhibits",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-exhibits.pinecast.co"
+        },
+        {
+          "id": "acb-diabetics-in-action",
+          "type": "podcast",
+          "title": "ACB Diabetics in Action",
+          "description": "Podcast feed for the ACB Diabetics in Action strategic initiative.",
+          "feed_url": "https://pinecast.com/feed/acb-diabetics-in-action",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-diabetics-in-action.pinecast.co"
+        },
+        {
+          "id": "acb-events",
+          "type": "podcast",
+          "title": "ACB Events",
+          "description": "The ACB Events feed brings you events that have been streamed live on ACB Media.",
+          "feed_url": "https://pinecast.com/feed/acb-events",
+          "added": "2026-08-25",
+          "language": "en",
+          "homepage": "https://acb-events.pinecast.co"
+        },
+        {
+          "id": "acb-focus-advocacy",
+          "type": "podcast",
+          "title": "ACB Focus: Advocacy",
+          "description": "ACB Conference and Convention recordings of sessions of the Advocacy Track",
+          "feed_url": "https://pinecast.com/feed/acb-focus-advocacy",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-focus-advocacy.pinecast.co"
+        },
+        {
+          "id": "acb-focus-audio-description",
+          "type": "podcast",
+          "title": "ACB Focus: Audio Description",
+          "description": "Welcome to the Audio Description Track of the ACB Focus Podcast Series. The Audio Description Track contains programming that involves the accessibility of the visual images of theater, television, movies, and other art forms for people who are blind, have low vision, or who are otherwise visually impaired.",
+          "feed_url": "https://pinecast.com/feed/acb-audio-description",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-audio-description.pinecast.co"
+        },
+        {
+          "id": "acb-focus-diversity-equity-and-inclusion",
+          "type": "podcast",
+          "title": "ACB Focus: Diversity, Equity, and Inclusion",
+          "description": "Welcome to the ACB Diversity, Equity, and Inclusion Track of the ACB Focus Podcast Series. ACB embraces Diversity, Equity and Inclusion in our Core Values. ACB welcomes members of all nationalities, ethnicities, sexual orientations, religions, political affiliations, disabilities, ages, genders, gender identities, and other minority groups to fully respect and represent the blind and visually impaired community in all the work we do.",
+          "feed_url": "https://pinecast.com/feed/acb-diversity-inclusion",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-diversity-inclusion.pinecast.co"
+        },
+        {
+          "id": "acb-focus-education",
+          "type": "podcast",
+          "title": "ACB Focus: Education",
+          "description": "ACB Annual Conference and Convention sessions associated with the Education Track",
+          "feed_url": "https://pinecast.com/feed/acb-focus-education",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-focus-education.pinecast.co"
+        },
+        {
+          "id": "acb-focus-education-and-employment-2021",
+          "type": "podcast",
+          "title": "ACB Focus: Education and Employment (2021)",
+          "description": "Welcome to the ACB Education and Employment Track of the ACB Focus Podcast Series. The Education and Employment Track contains programs with focus on pathways to personal and professional success and opportunity, spanning an engaging range of topics from braille and accessible books to career development and issues encompassing education and employment.",
+          "feed_url": "https://pinecast.com/feed/acb-education-and-employment",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-education-and-employment-t.pinecast.co"
+        },
+        {
+          "id": "acb-focus-employment",
+          "type": "podcast",
+          "title": "ACB Focus: Employment",
+          "description": "ACB Annual Conference and Convention Programs and sessions in the Employment Track",
+          "feed_url": "https://pinecast.com/feed/acb-focus-employment",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-focus-employment.pinecast.co"
+        },
+        {
+          "id": "acb-focus-entertainment",
+          "type": "podcast",
+          "title": "ACB Focus: Entertainment",
+          "description": "Welcome to the ACB Entertainment Track of the ACB Focus Podcast Series. The Entertainment Track contains programs for the purpose of entertainment and recreation during the convention, including featured and Prime-Time events.",
+          "feed_url": "https://pinecast.com/feed/acb-entertainment",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-entertainment.pinecast.co"
+        },
+        {
+          "id": "acb-focus-guide-dogs",
+          "type": "podcast",
+          "title": "ACB Focus: Guide Dogs",
+          "description": "American Council of the Blind Convention Events related to Guide Dogs",
+          "feed_url": "https://pinecast.com/feed/acb-focus-guide-dogs",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-focus-guide-dogs.pinecast.co"
+        },
+        {
+          "id": "acb-focus-health-and-wellness",
+          "type": "podcast",
+          "title": "ACB Focus: Health and Wellness",
+          "description": "Welcome to the Health and Wellness Track of the ACB Focus Podcast Series. The Health and Wellness Track contains programming that empowers individuals who are blind and visually impaired from under-represented communities and most at risk of additional physical, psychological, and social health complications to take command over their health.",
+          "feed_url": "https://pinecast.com/feed/acb-health-wellness",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-health-wellness.pinecast.co"
+        },
+        {
+          "id": "acb-focus-leadership",
+          "type": "podcast",
+          "title": "ACB Focus: Leadership",
+          "description": "ACB Annual Conference and Convention sessions pertaining to the Leadership Track",
+          "feed_url": "https://pinecast.com/feed/acb-focus-leadership",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-focus-leadership.pinecast.co"
+        },
+        {
+          "id": "acb-focus-literacy",
+          "type": "podcast",
+          "title": "ACB Focus: Literacy",
+          "description": "ACB Annual National Conference and Convention sessions pertaining to the Literacy Track",
+          "feed_url": "https://pinecast.com/feed/acb-focus-literacy",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-focus-literacy.pinecast.co"
+        },
+        {
+          "id": "acb-focus-technology",
+          "type": "podcast",
+          "title": "ACB Focus: Technology",
+          "description": "Welcome to the Technology Track of the ACB Focus Podcast Series. The Technology Track provides programming regarding how everyone can use the exact same technology as anyone else—regardless of vision status, mobility or how they process information.",
+          "feed_url": "https://pinecast.com/feed/acb-technology",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-technology.pinecast.co"
+        },
+        {
+          "id": "acb-focus-transportation",
+          "type": "podcast",
+          "title": "ACB Focus: Transportation",
+          "description": "Podcast feed for ACB Conference and Convention sessions related to the Transportation Track",
+          "feed_url": "https://pinecast.com/feed/acb-focus-transportation",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-focus-transportation.pinecast.co"
+        },
+        {
+          "id": "acb-focus-transportation-and-advocacy-2021",
+          "type": "podcast",
+          "title": "ACB Focus: Transportation and Advocacy (2021)",
+          "description": "Welcome to the ACB Transportation and Advocacy Track of the ACB Focus Podcast Series. ACB encourages transit systems, government services, and public accommodations to supplement existing informational and wayfinding technologies through the deployment of technology-based accessibility tools and strategies as one means of providing access to the built environment for people who are blind or have low vision.",
+          "feed_url": "https://pinecast.com/feed/acb-transportation",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-transportation-and-advocac.pinecast.co"
+        },
+        {
+          "id": "acb-reports",
+          "type": "podcast",
+          "title": "ACB Reports",
+          "description": "ACB Reports are monthly reports produced by the American Council of the Blind",
+          "feed_url": "https://pinecast.com/feed/acb-reports",
+          "added": "2026-08-25",
+          "language": "en",
+          "homepage": "https://acb-reports.pinecast.co"
+        },
+        {
+          "id": "art-parlor",
+          "type": "podcast",
+          "title": "art-parlor",
+          "description": "Friends in Art welcomes you to The Art Parlor where visually-impaired artists of all types will discuss their work. Pull up a chair, bring your beverage of choice, and listen to thoughtful, stimulating conversations with visually-impaired artists in all media and from all parts of the world.",
+          "feed_url": "https://pinecast.com/feed/artparlor",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://artparlor.pinecast.co"
+        },
+        {
+          "id": "business-of-bits",
+          "type": "podcast",
+          "title": "Business of BITS",
+          "description": "This is the Business of Bits, AKA BOB. Any business BITS is involved in will be published to this podcast feed. Want more information about BITS and member perks? visit https://joinbits.org/",
+          "feed_url": "https://pinecast.com/feed/bits-tips",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://bits-tips.pinecast.co"
+        },
+        {
+          "id": "cclvi-special-events",
+          "type": "podcast",
+          "title": "CCLVI Special Events",
+          "description": "Living well with low vision and visual impairments!  From discussions of strategies to coping with low vision, resources, and special speakers, this series offers encouragement and new ideas for your life. Most of these episodes have been recorded on our live Zoom calls which we hold several times a week for our extended community. All are welcome to join us! This occasional podcast of special events  is hosted by CCLVI, The Council of Citizens with Low Vision  International. Visit our virtual space to learn more about resources, our Zoom calls, and our member organization at www.cclvi.org",
+          "feed_url": "https://pinecast.com/feed/cclvi-special-events",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://cclvi-special-events.pinecast.co"
+        },
+        {
+          "id": "cclvi-let-s-talk-low-vision",
+          "type": "podcast",
+          "title": "CCLVI: Let's Talk Low Vision",
+          "description": "The focus is visual impairment,  and the format is dynamic! Join us for this interactive series which features interviews  and discussions among experts and individuals. Let's Talk Low Vision is a monthly podcast hosted by  Dr. Bill, a low vision specialist.  In each episode you will discover, resources, coping strategies, and support for individuals impacted by low vision/visual impairment. The series has a long history and rich archive, which is being added to the feed.  Let's Talk Low Vision is sponsored by CCLVI,  Council of Citizens with Low Vision International, which is an American Council of the Blind Special Interest Affiliate. Learn more about the  podcast at  https://cclvi.info/events/ltlv/",
+          "feed_url": "https://pinecast.com/feed/let-s-talk-low-vision-cclvi",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://let-s-talk-low-vision-cclvi.pinecast.co"
+        },
+        {
+          "id": "cclvi-vision-access",
+          "type": "podcast",
+          "title": "CCLVI: Vision Access",
+          "description": "Vision Access",
+          "feed_url": "https://pinecast.com/feed/cclvi-vision-access",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://cclvi-vision-access.pinecast.co"
+        },
+        {
+          "id": "crafters",
+          "type": "podcast",
+          "title": "Crafters",
+          "description": "We are a group of crafters making Crafting accessible for the blind and visually impaired. Join us on facebook https://www.facebook.com/groups/283307419481266/?ref=share",
+          "feed_url": "https://pinecast.com/feed/acb-crafters",
+          "added": "2026-08-25",
+          "language": "en",
+          "homepage": "https://acb-crafters.pinecast.co"
+        },
+        {
+          "id": "creative-journey",
+          "type": "podcast",
+          "title": "Creative Journey",
+          "description": "Creative Journey is a podcast where we explore creativity and mindfulness. We believe everyone is creative, and we want to help you discover and nurture your creativity. We also believe mindfulness is essential for the creative process, and we want to help you cultivate a more mindful approach to your work and life. Let’s grow and expand together. E-mail us at creativejourney.kc@gmail.com. Join the list serve by sending a blank e-mail to   creative–journey+subscribe@googlegroups.com.   To join us each week on zoom, Send an e-mail to Community@acb.org",
+          "feed_url": "https://pinecast.com/feed/creative-journey",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://creative-journey.pinecast.co"
+        },
+        {
+          "id": "fia-author-collective",
+          "type": "podcast",
+          "title": "FIA Author Collective",
+          "description": "Master the tools to meet your writing goals. Episodes about deep dives into the writing craft and the publishing world with established authors.",
+          "feed_url": "https://pinecast.com/feed/fia-author-collective",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://fia-author-collective.pinecast.co"
+        },
+        {
+          "id": "let-s-get-to-work",
+          "type": "podcast",
+          "title": "Let's get to Work",
+          "description": "The Employment Committee of The American Council of the Blind presents: Let’s Get to Work – a monthly podcast – wherein we interview visually-impaired people with unique career paths. We know about inaccessibility, we have heard all about barriers to employment, we've read the statistics. But what about success? It's alive and well, and comes in all forms! This is a podcast where we celebrate that. Wherever you are on your career path, there is hope. Let's get to work!",
+          "feed_url": "https://pinecast.com/feed/lets-get-to-work",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://lets-get-to-work.pinecast.co"
+        },
+        {
+          "id": "main-menu",
+          "type": "podcast",
+          "title": "Main Menu",
+          "description": "Technology from a Blindness Perspective",
+          "feed_url": "https://pinecast.com/feed/mainmenu",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://mainmenu.pinecast.co"
+        },
+        {
+          "id": "next-up-with-nextgen",
+          "type": "podcast",
+          "title": "Next Up With NextGen",
+          "description": "This is the podcast from the ACB Nextgen chapter",
+          "feed_url": "https://pinecast.com/feed/next-up-with-nextgen",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acbnextgeneration.org/"
+        },
+        {
+          "id": "podcasts-en-espanol-de-la-acb",
+          "type": "podcast",
+          "title": "Podcasts en español de la ACB",
+          "description": "Spanish language programs produced by the American Council of the Blind, Inc.",
+          "feed_url": "https://pinecast.com/feed/acb-espanol",
+          "added": "2026-08-25",
+          "language": "es-US",
+          "homepage": "https://acb-espanol.pinecast.co"
+        },
+        {
+          "id": "sound-prints",
+          "type": "podcast",
+          "title": "Sound Prints",
+          "description": "Sound Prints  is a weekly magazine provided by the Kentucky Council of the Blind.",
+          "feed_url": "https://pinecast.com/feed/sound-prints",
+          "added": "2026-08-25",
+          "language": "en",
+          "homepage": "https://sound-prints.pinecast.co"
+        },
+        {
+          "id": "speaking-out-for-the-blind",
+          "type": "podcast",
+          "title": "Speaking Out for the Blind",
+          "description": "Where Your Listening is Our Business",
+          "feed_url": "https://pinecast.com/feed/speaking-out-for-the-blind",
+          "added": "2026-08-25",
+          "language": "en",
+          "homepage": "https://speaking-out-for-the-blind.pinecast.co"
+        },
+        {
+          "id": "tuesday-topics",
+          "type": "podcast",
+          "title": "Tuesday Topics",
+          "description": "Tuesday Topics is a weekly exploration of a single topic from a blindness perspective brought to you by the American Council of the Blind. Co-hosted by Paul Edwards and Rick Morin, this two-hour podcast features panelists and live questions and comments from the zoom audience. We hope to fully explore any topic we cover! Divergent opinions are encouraged!",
+          "feed_url": "https://pinecast.com/feed/acb-tuesday-topics",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-tuesday-topics.pinecast.co"
+        },
+        {
+          "id": "visabilities",
+          "type": "podcast",
+          "title": "VISAbilities",
+          "description": "Welcome to VISAbilities, Visually Impaired Seniors’ Abilities. Each week we discuss topics of interest to people with either long time or recent sight loss or blindness. Our live program is held every Friday night at 7 PM Eastern. For additional information, please email to VISAbilities50@gmail.com or visit our website at www.VISAbilities.net. We love your feedback and suggestions.",
+          "feed_url": "https://pinecast.com/feed/acb-visabilities",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://acb-visabilities.pinecast.co"
+        },
+        {
+          "id": "wcb-newsline-unleashed",
+          "type": "podcast",
+          "title": "WCB Newsline Unleashed",
+          "description": "An occasional series of Interviews, Audio, Tech Reviews, and Adventures based in Blindness and Low Vision Experiences supporting the mission of Washington Council of the Blind",
+          "feed_url": "https://pinecast.com/feed/wcb-newsline-unleashed",
+          "added": "2026-08-25",
+          "language": "en-US",
+          "homepage": "https://wcb-newsline-unleashed.pinecast.co"
+        }
+      ]
+    }
+  ]
+}

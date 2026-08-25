@@ -1187,6 +1187,14 @@ today or later -- ACB last posted a schedule through 15 August." If that is what
 you see, nothing is broken; there is simply nothing yet to show. Press
 **Refresh** once ACB posts more.
 
+**And it always says when this copy was pulled from ACB**, with a clock time:
+"Pulled from ACB just now, at 9:47 AM", or "Pulled from ACB 3 hours ago, at
+6:47 AM". That sentence is there because of a fault reported on 25 August 2026:
+a successful Refresh used to rewrite the line to a sentence identical to the one
+already there, so there was no way to tell a refresh that fetched something new
+from a button that had done nothing at all. Now the time changes when the fetch
+lands, and does not when it does not.
+
 **And it says whose clock the times are on.** ACB publishes its schedule in US
 Central time; Quill Radio converts every programme to your own clock, so what
 you read is when it starts *where you are*. That conversion is right and it
@@ -1214,6 +1222,16 @@ Clearing any of them puts the whole published schedule back.
 not finished. **Refresh** reads the schedule from ACB again. **Export...** writes
 what you are looking at -- the filters included -- to a Markdown file, grouped by
 date.
+
+**Three ways to re-read the schedule**, because one was not enough. The
+**Refresh** button is one; **Shift+F10** (or the Applications key) on the list
+now offers **Refresh the Schedule** as well, and it is offered *even when
+nothing is selected* -- an empty or wrong-looking list is exactly when you want
+to re-read it and exactly when there is no row to right-click. And
+**Community > Refresh the Schedule** (**F5**) works from anywhere in Quill
+Radio, with the window open or shut: with it open it reloads the window, and
+with it shut it fetches quietly and speaks the result. All three ignore every
+cached copy, this computer's and any in between.
 
 ### What you can do to a programme
 
@@ -1246,13 +1264,22 @@ recorded.
 
 **Community > What Is On Now** (Ctrl+Alt+H) answers in one sentence, across all
 ten channels, without opening anything. It answers from the stored schedule, so
-it answers straight away.
+it answers straight away -- this is the one schedule surface that still prefers
+the stored copy, because a key that spends four seconds on a feed before
+speaking is a key nobody presses twice. Press **F5** first if you want it to go
+and look.
 
 ### Working offline
 
-The schedule is kept on this computer. It is read again when you open the window
-and the stored copy is more than an hour old, and whenever you press Refresh --
-never on a background timer. With no connection the window opens from what it
+The schedule is kept on this computer. **It is read again every time you open
+the window**, and whenever you refresh -- never on a background timer. It used
+to honour the stored copy for an hour on open, which meant that somebody who
+saw ACB move a programme, closed Quill Radio and opened it again got the same
+old listings back with nothing on screen admitting it (reported and fixed on
+25 August 2026). Opening the window is you asking for the schedule, so that is
+now when it goes and asks. The stored copy still answers **What Is On Now**,
+which has to answer instantly, and it is still what you get when there is no
+connection. With no connection the window opens from what it
 has and tells you how old that is, rather than presenting three-day-old listings
 as though they were current. If the schedule cannot be read at all you get an
 empty list and a sentence saying so, and the reason is written into **Recent

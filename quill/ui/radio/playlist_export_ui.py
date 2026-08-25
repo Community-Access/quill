@@ -14,6 +14,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from quill.ui import modal_stack
+
 
 def export_favorites_to_playlist(frame: Any) -> None:
     """Write the listener's favorite stations to an M3U playlist they choose."""
@@ -34,7 +36,7 @@ def export_favorites_to_playlist(frame: Any) -> None:
         return
 
     with wx.FileDialog(
-        frame.frame,
+        modal_stack.parent_window(frame),
         "Export favorites to a playlist",
         defaultFile="quill-radio-favorites.m3u",
         wildcard="M3U playlist (*.m3u)|*.m3u|All files (*.*)|*.*",

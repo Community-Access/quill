@@ -94,6 +94,32 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "radio.acb_calendar": "Ctrl+Shift+N",
         "radio.on_now": "Ctrl+Alt+H",
         "radio.upcoming": "Ctrl+Alt+Shift+F",
+        # Community > ACB Media Podcasts... (2026-08-25). NOT in the
+        # Ctrl+Alt+Shift family the other Community items use, because that
+        # space is now completely exhausted -- no letter and no digit is free.
+        # This bar claims 146 accelerators; compared canonically (wx ignores
+        # modifier order) the only gaps left anywhere are a handful under Ctrl,
+        # Ctrl+Shift+{O,6,7,8} and Ctrl+Alt+{I,0,8,9}. Ctrl+Shift+O is out: it
+        # is the transport table's Mute, so it would mean one thing here and
+        # another in every other window -- the exact split fixed on this same
+        # day for Ctrl+P. The letter carries no mnemonic and pretending
+        # otherwise would be worse; Alt+C then P is how anybody reaches this.
+        "radio.acb_podcasts": "Ctrl+Alt+I",
+        # The last two gaps on this bar (see the note above): after these,
+        # Ctrl+Alt has only digits left and a new menu item will need a
+        # rethink rather than a chord hunt.
+        "radio.community_picks": "Ctrl+Alt+0",
+        "radio.suggest_pick": "Ctrl+Alt+9",
+        # ...and a fourth: go and re-read ACB's feed, now.
+        #
+        # F5, and F5 is not a compromise. Every Ctrl+Alt+Shift letter on this
+        # menu bar is claimed (Ctrl+Alt+Shift+C is Choose Columns, which is how
+        # the accelerator gate caught the first attempt at this), and the two
+        # letters left anywhere -- Ctrl+Alt+I, Ctrl+Shift+O -- mean nothing.
+        # F5 has meant "fetch that again" for thirty years, it was completely
+        # unused in Quill Radio, and it is one key rather than four: the whole
+        # complaint was that re-reading the schedule took too much finding.
+        "radio.refresh_calendar": "F5",
     },
     # QUILL Cast had no app keymap at all until undo needed one: every other
     # Cast accelerator is either a shared default or baked into a menu label.

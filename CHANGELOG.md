@@ -34,6 +34,23 @@ between keystrokes), then the release as originally scoped below.
   the gap moves: Arizona keeps MST all year, so it is two hours behind Central
   in summer and one in winter.
 
+### A message box hands you back where you were (2026-08-25)
+
+- **Reported against Quill Radio's ACB Media Schedule**: choose Show Notes,
+  press OK, and focus landed on the main window while the schedule was still
+  open in front of you. Windows returns focus to a message box's *parent*, and
+  both hosts named the wrong one in the same way -- the companion-app shell
+  passed the main frame unconditionally, QUILL passed no parent at all -- so
+  any box raised from inside a dialog dropped the listener behind it.
+
+- **Fixed in the modal funnel rather than per message box.** Every dialog is
+  shown through one method, so it now records what is on screen and the box
+  asks; that corrects every existing caller and every future one. The rule
+  lives in the new wx-free `quill/ui/modal_stack.py` -- a stack, because a
+  dialog can open a dialog; a walk past destroyed windows, because a fix for a
+  focus bug must not become a crash. Three Radio helpers that open their own
+  picker or prompt were hardcoding the main frame too, and now ask the host.
+
 ### One transport control that starts and ends, and one that pauses (2026-08-25)
 
 - **Play becomes Stop.** Quill Radio's player, tray menu and status-bar menu

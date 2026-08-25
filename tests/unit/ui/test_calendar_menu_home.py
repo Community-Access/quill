@@ -8,7 +8,7 @@ is. It now sits beside ACB Community Events.
 
 Two things have to hold, and only one of them is placement:
 
-* the three items go on whichever menu they are handed, fenced by a separator
+* the four items go on whichever menu they are handed, fenced by a separator
   only when there is something above to fence off -- a profile with the ADP
   assistant switched off gets a Community menu that opens on the schedule
   rather than on a rule;
@@ -25,6 +25,7 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
+from quill.core.app_keymaps import APP_KEYMAPS  # noqa: E402
 from quill.ui.radio import calendar_wiring  # noqa: E402
 
 
@@ -43,12 +44,10 @@ class _Host:
         self.kept: list[Any] = []
 
     def _menu_label(self, title: str, command_id: str) -> str:
-        keys = {
-            "radio.acb_calendar": "Ctrl+Shift+N",
-            "radio.on_now": "Ctrl+Alt+H",
-            "radio.upcoming": "Ctrl+Alt+Shift+F",
-        }
-        return f"{title}\t{keys[command_id]}"
+        # Read from the real keymap rather than a copy of it. A local dict got
+        # this test to pass while the fourth item had no binding at all, which
+        # is the failure the accelerator rule exists to catch.
+        return f"{title}\t{APP_KEYMAPS['radio'][command_id]}"
 
     def _keep_menu_ids(self, *refs: Any) -> None:
         self.kept.extend(refs)
@@ -61,7 +60,7 @@ def host():
     frame.Destroy()
 
 
-def test_the_three_items_land_on_the_menu_they_are_given(host) -> None:
+def test_the_four_items_land_on_the_menu_they_are_given(host) -> None:
     community = wx.Menu()
 
     calendar_wiring.append_menu_items(host, community, wx)
@@ -70,6 +69,23 @@ def test_the_three_items_land_on_the_menu_they_are_given(host) -> None:
     assert any("Schedule" in label for label in labels)
     assert any("Now" in label for label in labels)
     assert any("Upcoming" in label for label in labels)
+    # GetItemLabelText, not GetItemLabel: the mnemonic sits inside the word
+    # ("Re&fresh"), so the raw label does not contain "Refresh" at all.
+    texts = [item.GetItemLabelText() for item in community.GetMenuItems()]
+    assert any("Refresh" in text for text in texts)
+
+
+def test_refresh_is_reachable_without_opening_the_schedule_first(host) -> None:
+    """The bug it fixes: the only Refresh was a button *inside* the window,
+    and the hour-long cache outlived the process, so relaunching the app
+    re-read nothing (2026-08-25)."""
+    community = wx.Menu()
+
+    calendar_wiring.append_menu_items(host, community, wx)
+
+    refresh = [i for i in community.GetMenuItems() if "Refresh" in i.GetItemLabelText()]
+    assert len(refresh) == 1
+    assert "\t" in refresh[0].GetItemLabel()
 
 
 def test_every_schedule_item_advertises_a_key(host) -> None:

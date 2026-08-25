@@ -369,6 +369,7 @@ from quill.stability.memory_watch import should_trace_memory, start_memory_traci
 from quill.stability.task_manager import TaskManager
 from quill.stability.ui_responsiveness import mark_wx_main_thread
 from quill.stability.wx_heartbeat import HeartbeatState, WxHeartbeatTimer, WxHeartbeatWatchdog
+from quill.ui import modal_stack
 from quill.ui.accessible_names import pin_macos_text_area_role
 from quill.ui.announce_commands import AnnounceCommandsMixin
 from quill.ui.announce_shim import build_announcement
@@ -5743,13 +5744,18 @@ class MainFrame(
             if getattr(getattr(self, "settings", None), "announce_dialog_transitions", False)
             else None
         )
-        result = show_modal_dialog(
-            dialog,
-            label,
-            announce=announce_transitions,
-            enter_region=self._region_tracker.enter,
-            exit_region=self._region_tracker.exit,
-        )
+        stack = modal_stack.stack_of(self)
+        stack.push(dialog)
+        try:
+            result = show_modal_dialog(
+                dialog,
+                label,
+                announce=announce_transitions,
+                enter_region=self._region_tracker.enter,
+                exit_region=self._region_tracker.exit,
+            )
+        finally:
+            stack.pop(dialog)
         if restore_editor_focus:
             editor = getattr(self, "editor", None)
             if editor is not None and hasattr(editor, "SetFocus"):
@@ -5772,7 +5778,13 @@ class MainFrame(
                     _safe_set_focus()
         return result
 
-    def _show_message_box(self, message: str, caption: str, style: int | None = None) -> int:
+    def _dialog_parent(self, parent: object = None) -> object:
+        """The window a new dialog belongs to: the modal on top, else the frame."""
+        return modal_stack.stack_of(self).parent_for(parent, fallback=getattr(self, "frame", None))
+
+    def _show_message_box(
+        self, message: str, caption: str, style: int | None = None, parent: object = None
+    ) -> int:
         # Default to a plain OK box (like wx.MessageBox itself) so callers that
         # only need to surface a message can omit the style -- omitting it used
         # to raise TypeError and crash the error path trying to report a failure.
@@ -5786,7 +5798,7 @@ class MainFrame(
             announce(f"Entered {caption} dialog")
         try:
             result = self._wx.MessageBox(  # MSGBOX-OK: _show_message_box implementation
-                message, caption, style
+                message, caption, style, self._dialog_parent(parent)
             )
         finally:
             if speak_transitions:

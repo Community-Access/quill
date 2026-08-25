@@ -23,9 +23,14 @@ class _DummyDialog:
 class _DummyWx:
     def __init__(self) -> None:
         self.calls: list[tuple[str, str, int]] = []
+        #: The parent each box was given. wxMSW returns focus here when the box
+        #: closes, so a box raised from inside a dialog must name that dialog
+        #: rather than the frame behind it -- see quill/ui/modal_stack.py.
+        self.parents: list[object] = []
 
-    def MessageBox(self, message: str, caption: str, style: int) -> int:
+    def MessageBox(self, message: str, caption: str, style: int, parent: object = None) -> int:
         self.calls.append((message, caption, style))
+        self.parents.append(parent)
         return 7
 
 

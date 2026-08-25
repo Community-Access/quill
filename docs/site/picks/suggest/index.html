@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Suggest a station or podcast - QuillVille Community Picks</title>
+  <meta name="description" content="Suggest a radio station or podcast for the Community Picks list that Quill Radio and QUILL Cast offer. No account needed.">
+  <!-- No third-party anything: no fonts, no analytics, no CDN. The only
+       script is this page's own, and it never leaves the origin. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self'; form-action 'none'; base-uri 'none'">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="/">
+        <span class="quill">QUILL</span>
+        <span class="tag">accessible software, built with you</span>
+      </a>
+      <nav class="site" aria-label="Primary">
+        <ul>
+          <li><a href="/index.html">QUILL home</a></li>
+          <li><a href="/radio.html">Quill Radio</a></li>
+          <li><a href="/faq.html">FAQ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap">
+      <h1>Suggest a station or podcast</h1>
+
+      <p>
+        Community Picks is the list Quill Radio and QUILL Cast offer from their
+        <strong>Community</strong> menu. Tell us about something worth adding.
+      </p>
+
+      <p>
+        <strong>Already using Quill Radio?</strong> You do not need this page at
+        all &mdash; <strong>Community &gt; Suggest a Station or Podcast&hellip;</strong>
+        sends it for you, with no account and without leaving the app.
+      </p>
+
+      <form id="suggest-form" novalidate>
+        <h2>What are you suggesting?</h2>
+
+        <p>
+          <label for="kind">What is it?</label><br>
+          <select id="kind" name="kind" required>
+            <option value="stream">A radio station (a live stream)</option>
+            <option value="podcast">A podcast (an RSS feed)</option>
+          </select>
+        </p>
+
+        <p>
+          <label for="title">Name</label><br>
+          <span id="title-hint" class="hint">What it should be called in the list.</span><br>
+          <input type="text" id="title" name="title" maxlength="120" required
+                 aria-describedby="title-hint" autocomplete="off">
+        </p>
+
+        <p>
+          <label for="url">Address</label><br>
+          <span id="url-hint" class="hint">
+            The stream address for a station, or the feed address for a podcast.
+            It must start with https:// &mdash; a plain http address can be
+            tampered with between the station and the listener.
+          </span><br>
+          <input type="url" id="url" name="url" required
+                 aria-describedby="url-hint" autocomplete="off"
+                 placeholder="https://">
+        </p>
+
+        <p>
+          <label for="description">Description</label><br>
+          <span id="description-hint" class="hint">
+            One or two sentences for somebody who has never heard it. This is
+            what people read when they are deciding, so plain and specific beats
+            promotional.
+          </span><br>
+          <textarea id="description" name="description" rows="4" maxlength="600"
+                    aria-describedby="description-hint"></textarea>
+        </p>
+
+        <p>
+          <label for="language">Language</label><br>
+          <span id="language-hint" class="hint">Such as en, or en-US. Optional.</span><br>
+          <input type="text" id="language" name="language" maxlength="16"
+                 aria-describedby="language-hint" autocomplete="off">
+        </p>
+
+        <p>
+          <label for="collection">Which group does it belong in?</label><br>
+          <span id="collection-hint" class="hint">
+            Such as ACB Media, or Reading Services. Optional &mdash; leave it to
+            us if you are unsure.
+          </span><br>
+          <input type="text" id="collection" name="collection" maxlength="64"
+                 aria-describedby="collection-hint" autocomplete="off">
+        </p>
+
+        <p>
+          <label for="why">Why does it belong?</label><br>
+          <span id="why-hint" class="hint">
+            Anything that would help us decide. Not published.
+          </span><br>
+          <textarea id="why" name="why" rows="3" maxlength="600"
+                    aria-describedby="why-hint"></textarea>
+        </p>
+
+        <div id="errors" role="alert" tabindex="-1"></div>
+
+        <p>
+          <button type="submit">Send suggestion</button>
+        </p>
+      </form>
+
+      <div id="result" role="status" aria-live="polite"></div>
+
+      <h2>What happens next</h2>
+      <p>
+        A person reads every suggestion. Approved ones are published to the
+        list within a day, and appear in everybody's app the next time it
+        refreshes &mdash; no update required.
+      </p>
+
+      <h2 id="other-ways">If you would rather not use this form</h2>
+      <ul>
+        <li>
+          <a href="https://github.com/Community-Access/quill/issues/new?template=community_pick.yml">Open
+          an issue on GitHub</a> (needs a GitHub account).
+        </li>
+        <li>Use <strong>Community &gt; Suggest a Station or Podcast&hellip;</strong> inside Quill Radio.</li>
+      </ul>
+    </div>
+  </main>
+
+  <script src="/picks/suggest/suggest.js"></script>
+</body>
+</html>

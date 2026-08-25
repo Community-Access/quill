@@ -233,6 +233,12 @@ class PodcastShow:
     feed_username: str = ""
     homepage: str = ""
     artwork_url: str = ""
+    # OPML 2.0's optional presentation attributes, stored so a subscription list
+    # survives a round trip -- export used to drop them, silently handing back a
+    # poorer file than it was given. Feed-derived, so cheap to carry.
+    description: str = ""
+    language: str = ""
+    category: str = ""
     is_local: bool = False
     folder_id: str | None = None
     paused: bool = False
@@ -272,6 +278,9 @@ class PodcastShow:
             "feed_username": self.feed_username,
             "homepage": self.homepage,
             "artwork_url": self.artwork_url,
+            "description": self.description,
+            "language": self.language,
+            "category": self.category,
             "is_local": self.is_local,
             "watched_folder": self.watched_folder,
             "folder_id": self.folder_id,
@@ -313,6 +322,9 @@ class PodcastShow:
             feed_username=str(data.get("feed_username", "")),
             homepage=str(data.get("homepage", "")),
             artwork_url=str(data.get("artwork_url", "")),
+            description=str(data.get("description", "")),
+            language=str(data.get("language", "")),
+            category=str(data.get("category", "")),
             is_local=bool(data.get("is_local", False)),
             watched_folder=str(data.get("watched_folder", "")),
             folder_id=str(folder_id) if isinstance(folder_id, str) and folder_id else None,

@@ -134,6 +134,32 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "leaves the device (no /api/speak, no /api/transcribe). Raises in Safe "
         "Mode."
     ),
+    "core/community_picks.py::_fetch": (
+        "Single egress site for the Community Picks catalogue: one HTTPS GET of "
+        "https://quillforall.org/picks/v1/picks.json, a static file on QUILL's "
+        "own GitHub Pages site. Nothing about the listener is sent -- no query, "
+        "no identifier, no cookie, only the User-Agent -- and the response is "
+        "parsed locally; nothing in it is fetched until the user picks it. "
+        "Reached only when the user opens Community > Community Picks. "
+        "Bounded timeout and response size over a verified TLS context, and a "
+        "copy of the catalogue ships with the app, so refusing this call in "
+        "Safe Mode (checked by the caller in community_picks_wiring) leaves the "
+        "picker working from the bundled list rather than empty."
+    ),
+    "ui/radio/suggest_pick_dialog.py::_post_issue": (
+        "The one place QUILL sends something OUT rather than fetching: a POST "
+        "to api.github.com creating an issue on Community-Access/quill, so "
+        "somebody can suggest a station without a GitHub account. What leaves "
+        "the machine is exactly what the user typed into the dialog (kind, "
+        "name, address, description, language, and why) plus the app name and "
+        "version -- composed by core/pick_suggestion.issue_body, which is pure "
+        "and unit-tested, so what is sent can be read in one function. It is "
+        "authenticated with the bundled issues-only token already used by "
+        "Report a Bug (fine-grained, one repo, Issues read/write, nothing "
+        "else). Reached only on an explicit Send Suggestion press, after local "
+        "validation; refused entirely in Safe Mode by open_suggest_dialog. A "
+        "failed post never retries silently -- it offers the browser instead."
+    ),
     "core/podcasts/acb_media_podcasts.py::_fetch_opml_bytes": (
         "Single egress site for the ACB Media podcast directory: fetches "
         "ACB's published OPML subscription list (parsed locally; feeds it "

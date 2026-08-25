@@ -1,0 +1,82 @@
+name: Suggest a station or podcast
+description: Propose something for the Community Picks list that Quill Radio and QUILL Cast offer.
+title: "[Pick]: "
+labels: ["pick:suggestion"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting something.
+
+        **You do not have to use this form.** Quill Radio can send a suggestion
+        for you without a GitHub account at all — **Community > Suggest a
+        Station or Podcast…**. This form is here for people who would rather
+        file it on GitHub directly.
+
+        Approved suggestions appear in everybody's app within a day, via
+        [`picks-build.yml`](https://github.com/Community-Access/quill/blob/main/.github/workflows/picks-build.yml).
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What is it?
+      options:
+        - A radio station (a live stream)
+        - A podcast (an RSS feed)
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: Name
+      description: What it should be called in the list.
+      placeholder: "ACB Community"
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Address
+      description: >-
+        The stream address for a station, or the feed address for a podcast.
+        It must start with https:// — a plain http address can be tampered with
+        between the station and the listener, so those are rejected.
+      placeholder: "https://pinecast.com/feed/acb-community"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: >-
+        One or two sentences for somebody who has never heard it. This is what
+        people read in the picker when they are deciding, so plain and specific
+        beats promotional.
+    validations:
+      required: true
+  - type: input
+    id: language
+    attributes:
+      label: Language
+      description: "Such as en, or en-US. Optional."
+      placeholder: "en"
+  - type: input
+    id: collection
+    attributes:
+      label: Which group does it belong in?
+      description: "Such as ACB Media, or Reading Services. Optional — leave it to us if unsure."
+  - type: textarea
+    id: why
+    attributes:
+      label: Why does it belong?
+      description: Anything that would help decide. Not published.
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Before you send
+      options:
+        - label: I have checked the address works and plays.
+          required: true
+        - label: >-
+            This is publicly available, and I am not aware of anything that
+            would make sharing it a problem.
+          required: true

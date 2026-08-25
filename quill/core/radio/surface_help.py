@@ -193,6 +193,35 @@ PURPOSES: dict[str, str] = {
         "A report of your listening: which stations, how long, and when. It "
         "reads your own local history and nothing leaves this computer."
     ),
+    "Community Picks": (
+        "Stations and podcasts the community recommends, kept as a list on the "
+        "web so it grows without waiting for an update. It works the same way "
+        "as ACB Media Podcasts: choose from the left, arrange on the right, and "
+        "Add These puts them in your Favorites and Subscriptions in that order. "
+        "When the list cannot be fetched the window says so and shows the copy "
+        "that came with the app, so it always opens. Anything you have already "
+        "added says so, and an entry the curators retire simply stops being "
+        "offered -- nothing you added is ever removed for you."
+    ),
+    "Suggest a Station or Podcast": (
+        "Tell us about something worth adding to the Community Picks list. You "
+        "do not need a GitHub account and you are not sent to a website: Quill "
+        "Radio files it for you and reads back the number it was given. It is "
+        "checked before it is sent, so a missing address or something already "
+        "on the list is caught here. Nothing is sent until you press Send "
+        "Suggestion, and nothing is sent at all in Safe Mode."
+    ),
+    "ACB Media Podcasts": (
+        "Everything ACB Media publishes, so you can choose what to keep. The "
+        "list on the left is the whole lineup, alphabetically; arrow it and the "
+        "Description box reads what each show is. Add moves one across, Add All "
+        "takes everything you do not already have. The list on the right is what "
+        "you are about to add: it stays alphabetical however you add to it, "
+        "until you use Move Up or Move Down, and from then on it stays exactly "
+        "as you arranged it. Add These subscribes to them and puts them in a "
+        "Favorites folder in that same order; a podcast there opens straight "
+        "into its episodes. Shows you already have are listed and say so."
+    ),
     "ACB Media Schedule": (
         "What is on the ten ACB Media channels this week, Sunday to Saturday, "
         "with a heading before each day. Enter tunes in to the highlighted "

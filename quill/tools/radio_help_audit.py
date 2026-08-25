@@ -69,6 +69,13 @@ TITLE_EXEMPT: dict[str, str] = {
         "titles come from onboarding.SCREEN_TITLES; all three screens are in "
         "surface_help.PURPOSES, pinned by test_surface_help"
     ),
+    "quill/ui/radio/catalogue_picker_dialog.py::_CataloguePicker.show": (
+        "one dialog, many catalogues: the title is the caller's, because the "
+        "same window serves ACB Media Podcasts and Community Picks. Each "
+        "caller's title is a literal in its own wiring module and is registered "
+        "in surface_help.PURPOSES; test_catalogue_picker pins that every caller "
+        "of choose_from_catalogue passes a title the catalogue knows"
+    ),
 }
 
 

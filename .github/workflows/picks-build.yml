@@ -1,0 +1,106 @@
+name: Build Community Picks
+
+# Rebuilds the Community Picks catalogue whenever the curated source changes or
+# a suggestion is approved, and commits the result. The existing github-pages
+# workflow then deploys it, because docs/** changed -- so the path from "Jeff
+# adds the pick:approved label" to "it is in everybody's Radio" is one workflow
+# run plus the client's one-day cache.
+#
+# Design: docs/design/community-picks.md
+
+on:
+  issues:
+    types: [labeled, unlabeled, closed, edited]
+  push:
+    branches: [main]
+    paths:
+      - "docs/picks-source.json"
+      - "scripts/build_community_picks.py"
+      - "quill/core/schemas/community_picks.json"
+      - ".github/workflows/picks-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  # A burst of approvals is one rebuild, not five racing commits.
+  group: picks-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # Skip the issue events that cannot possibly change the catalogue, so
+    # ordinary issue traffic does not spend a runner.
+    if: >-
+      github.event_name != 'issues' ||
+      contains(join(github.event.issue.labels.*.name, ','), 'pick:')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install the validator
+        run: python -m pip install --quiet jsonschema
+
+      - name: Collect approved suggestions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Every approved issue, open or closed. Closed is the normal end
+          # state (approve-and-close), but an approved issue left open must
+          # still publish -- otherwise a pick silently depends on housekeeping.
+          gh issue list \
+            --repo "${{ github.repository }}" \
+            --label "pick:approved" \
+            --state all \
+            --limit 500 \
+            --json number,body,closedAt,updatedAt \
+            > approved-raw.json
+          python - <<'PY'
+          import json, pathlib
+          raw = json.loads(pathlib.Path("approved-raw.json").read_text(encoding="utf-8"))
+          # gh's camelCase -> the snake_case the builder reads, so the script
+          # takes the same shape from the CLI and from the REST API.
+          rows = [
+              {
+                  "number": row.get("number"),
+                  "body": row.get("body") or "",
+                  "closed_at": row.get("closedAt") or "",
+                  "updated_at": row.get("updatedAt") or "",
+              }
+              for row in raw
+          ]
+          pathlib.Path("approved.json").write_text(json.dumps(rows), encoding="utf-8")
+          print(f"{len(rows)} approved suggestion(s)")
+          PY
+
+      - name: Build and validate the catalogue
+        run: python scripts/build_community_picks.py --issues-json approved.json
+
+      - name: Sign the catalogue
+        # Detached Ed25519 beside the served file, verified in-app against the
+        # bundled publisher key. The script is a no-op without the secret, so a
+        # fork's run leaves the existing signature alone rather than replacing
+        # a good one with nothing.
+        env:
+          PICKS_SIGNING_KEY: ${{ secrets.PICKS_SIGNING_KEY }}
+        run: |
+          python -m pip install --quiet pynacl
+          python scripts/sign_community_picks.py
+
+      - name: Commit if anything changed
+        run: |
+          git add -A docs/site/picks/v1 quill/core/data/community_picks.json
+          if git diff --cached --quiet; then
+            echo "catalogue unchanged; nothing to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore(picks): rebuild the Community Picks catalogue"
+          git push

@@ -47,6 +47,25 @@ All notable changes to Quill Radio are documented here. See `docs/release-notes-
   summer and one in winter, and nobody should have to do that arithmetic to
   trust the window.
 
+### A message box hands you back where you were (2026-08-25)
+
+- **Show Notes on the ACB Media Schedule left focus somewhere you did not put
+  it.** Pressing OK on the description put you back on the main window while
+  the schedule was still open in front of you. Windows returns focus to a
+  message box's *parent* when it closes, and Quill Radio was naming the main
+  window as the parent of every box -- including the ones raised from inside a
+  dialog. Nothing crashed and nothing was announced, which is exactly what made
+  it hard to describe: the focus had simply gone somewhere nobody asked it to.
+
+- **The fix is not one message box.** Every dialog in the app is opened through
+  one place, so that place now remembers what is on screen and every message
+  box asks it. That corrects the ones that were already wrong, and it means a
+  dialog added later gets the right answer without anybody having to know the
+  rule exists. Three other windows that open a picker or a prompt of their own
+  -- the output-device chooser, the playlist export file dialog and the YouTube
+  playlist prompt -- were naming the main window the same way; they are correct
+  from wherever they are opened now, rather than only from the main menu.
+
 ### One button that starts and ends, one that pauses (2026-08-25)
 
 - **Play becomes Stop, everywhere it appears.** The player, the tray menu and

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review Community Picks</title>
+  <meta name="robots" content="noindex, nofollow">
+  <!-- The page holds a token, so the policy is tight on purpose. connect-src
+       is api.github.com and nothing else, so even a successful injection would
+       have nowhere to send it. No third-party scripts, fonts or images. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; connect-src https://api.github.com; img-src 'self'; form-action 'none'; base-uri 'none'">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="/">
+        <span class="quill">QUILL</span>
+        <span class="tag">accessible software, built with you</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap">
+      <h1>Review Community Picks</h1>
+
+      <section id="signin-section" aria-labelledby="signin-heading">
+        <h2 id="signin-heading">Sign in</h2>
+        <p>
+          Paste a GitHub fine-grained personal access token scoped to
+          <strong>Community-Access/quill</strong> with <strong>Issues:
+          read and write</strong> and nothing else.
+        </p>
+        <p>
+          The token stays in this browser tab and is sent only to
+          <code>api.github.com</code>. This page has no server and stores
+          nothing anywhere else.
+        </p>
+        <form id="signin-form" novalidate>
+          <p>
+            <label for="token">Access token</label><br>
+            <input type="password" id="token" autocomplete="off" spellcheck="false"
+                   aria-describedby="token-hint">
+            <span id="token-hint" class="hint">
+              Kept for this tab only unless you tick the box below.
+            </span>
+          </p>
+          <p>
+            <input type="checkbox" id="remember">
+            <label for="remember">Keep me signed in on this device</label>
+          </p>
+          <p><button type="submit">Sign in</button></p>
+        </form>
+      </section>
+
+      <section id="signed-in" hidden aria-labelledby="signed-in-heading">
+        <h2 id="signed-in-heading">Suggestions awaiting review</h2>
+        <p>
+          <span id="who"></span>
+          <button type="button" id="signout">Sign out</button>
+          <button type="button" id="refresh">Refresh</button>
+        </p>
+
+        <div id="status" role="status" aria-live="polite"></div>
+
+        <ul id="suggestions" class="picks-list"></ul>
+
+        <h2 id="add-heading">Add a pick yourself</h2>
+        <p>
+          Creates an issue already approved, so it goes through the same build
+          as everything else. Use
+          <code>docs/picks-source.json</code> for bulk work.
+        </p>
+        <form id="add-form" novalidate>
+          <p>
+            <label for="add-kind">What is it?</label><br>
+            <select id="add-kind">
+              <option value="stream">A radio station</option>
+              <option value="podcast">A podcast</option>
+            </select>
+          </p>
+          <p><label for="add-title">Name</label><br>
+            <input type="text" id="add-title" maxlength="120" autocomplete="off"></p>
+          <p><label for="add-url">Address (https)</label><br>
+            <input type="url" id="add-url" autocomplete="off" placeholder="https://"></p>
+          <p><label for="add-description">Description</label><br>
+            <textarea id="add-description" rows="3" maxlength="600"></textarea></p>
+          <p><label for="add-language">Language</label><br>
+            <input type="text" id="add-language" maxlength="16" autocomplete="off"></p>
+          <p><label for="add-collection">Group</label><br>
+            <input type="text" id="add-collection" maxlength="64" autocomplete="off"></p>
+          <div id="add-errors" role="alert" tabindex="-1"></div>
+          <p><button type="submit">Add and approve</button></p>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="/picks/review/review.js"></script>
+</body>
+</html>

@@ -1,3 +1,15 @@
+- name: "pick:suggestion"
+  color: "fbca04"
+  description: A station or podcast suggested for the Community Picks list.
+
+- name: "pick:approved"
+  color: "0e8a16"
+  description: Approved for the Community Picks list; picks-build.yml will publish it.
+
+- name: "pick:declined"
+  color: "d93f0b"
+  description: Not going into the Community Picks list.
+
 - name: accessibility
   color: "0e8a16"
   description: Screen reader, keyboard, focus, or low-vision behavior.

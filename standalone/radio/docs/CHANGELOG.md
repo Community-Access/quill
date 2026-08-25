@@ -6,6 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
 
+## [Unreleased]
+
+### Fixed
+
+- **The ACB Media schedule would not re-read itself, and could not tell you it
+  had.** Three faults with one symptom. The stored copy stayed fresh for an
+  hour and the window honoured that on open -- and the store outlives the
+  process, so somebody who saw ACB move a programme, closed Quill Radio and
+  opened it again got the same old listings back. Opening the window now goes
+  and asks ACB, every time; it is still off the main thread, so nothing waits,
+  and with no connection it still opens from the stored copy and says how old
+  that is. **What Is On Now** still prefers the stored copy, because a key that
+  spends four seconds on a feed before speaking is a key nobody presses twice.
+- **A Refresh that worked looked exactly like one that did nothing.** The line
+  above the list only mentioned age when the listings came from the store, so a
+  *successful* fetch rewrote the sentence to a sentence identical to the one
+  already there -- same words, same length, the same thing spoken back. It now
+  always ends "Pulled from ACB just now, at 9:47 AM", clock time included, so a
+  second press is answerable. When a refresh fails, the line says what the rows
+  below are still a copy of instead of only "could not be read".
+- **A refresh you asked for now says so to whatever is between you and ACB.**
+  Bypassing this computer's store never stopped a CDN or a company proxy
+  answering from an hour-old copy of its own. A listener-asked fetch sends
+  `Cache-Control: no-cache` and `Pragma: no-cache`; an unattended read does not,
+  where a cached hop is a saving rather than a lie.
+
+### Added
+
+- **Two more ways to re-read the schedule**, because the only one was a button
+  eleventh in the tab order, inside a window you had to already be in.
+  **Shift+F10** on the list now offers **Refresh the Schedule** -- and offers it
+  *even with nothing selected*, since an empty list is exactly when you want to
+  re-read it and exactly when there is no row to right-click. And
+  **Community > Refresh the Schedule** (**F5**) works from anywhere in Quill
+  Radio: with the window open it reloads the window, with it shut it fetches
+  quietly and speaks the result, and in Safe Mode it says that it will not
+  reach out rather than doing nothing silently.
+
 ## [3.0.0] - 2026-08-25
 
 Major: Browse Stations becomes a browsable directory rather than a list of

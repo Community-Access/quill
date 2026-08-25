@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://quillforall.org/picks/v1/community_picks.schema.json",
+  "title": "QuillVille Community Picks",
+  "description": "A curated catalogue of stations, podcasts and places that Quill Radio and QUILL Cast offer from their Community menu. Served from https://quillforall.org/picks/v1/picks.json and rebuilt whenever a suggestion is approved. See docs/design/community-picks.md.",
+  "type": "object",
+  "required": ["format", "version", "collections"],
+  "additionalProperties": false,
+  "properties": {
+    "format": {
+      "const": "quillville-picks",
+      "description": "Refuses a file that is valid JSON but not this document."
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Diagnostics only. Breaking changes move the URL to /v2/, so a v1 client keeps reading a file that still means what it meant."
+    },
+    "updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the catalogue was last rebuilt."
+    },
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+    "collections": {
+      "type": "array",
+      "description": "Groups shown as separate sections in the picker.",
+      "items": { "$ref": "#/$defs/collection" }
+    }
+  },
+  "$defs": {
+    "collection": {
+      "type": "object",
+      "required": ["id", "title", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "$ref": "#/$defs/slug" },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "items": { "type": "array", "items": { "$ref": "#/$defs/item" } }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": ["id", "type", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/slug",
+          "description": "Stable and forever. It is how 'already added' is detected, so renaming a station must not make it a different pick."
+        },
+        "type": {
+          "type": "string",
+          "description": "A client MUST ignore an item whose type it does not understand, and skip it silently. That is what lets a new type ship without breaking Radio 3.0. The listed values are today's; the constraint is deliberately open.",
+          "examples": ["stream", "podcast", "place"]
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "description": {
+          "type": "string",
+          "description": "The publisher's or the curator's words. Never generated: this is what somebody chooses from."
+        },
+        "language": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "homepage": { "$ref": "#/$defs/httpsUrl" },
+        "artwork_url": { "$ref": "#/$defs/httpsUrl" },
+        "stream_url": {
+          "$ref": "#/$defs/httpsUrl",
+          "description": "Required when type is stream."
+        },
+        "feed_url": {
+          "$ref": "#/$defs/httpsUrl",
+          "description": "Required when type is podcast."
+        },
+        "node_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A browse node id. Required when type is place."
+        },
+        "apps": {
+          "type": "array",
+          "description": "Which apps may offer this. Absent means all of them, so Cast is never handed a radio stream it cannot play.",
+          "items": { "type": "string", "enum": ["radio", "cast"] }
+        },
+        "added": {
+          "type": "string",
+          "format": "date",
+          "description": "So the picker can say '3 new since you last looked'."
+        },
+        "retired": {
+          "type": "boolean",
+          "default": false,
+          "description": "Stop OFFERING this pick. It disappears from the picker and NOTHING a user already added is touched: their favorite stays, their subscription stays. Taking something out of a shop window is not the same as reaching into somebody's house."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "stream" } }, "required": ["type"] },
+          "then": { "required": ["stream_url"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "podcast" } }, "required": ["type"] },
+          "then": { "required": ["feed_url"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "place" } }, "required": ["type"] },
+          "then": { "required": ["node_id"] }
+        }
+      ]
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Lower-case, hyphenated, stable."
+    },
+    "httpsUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://",
+      "description": "HTTPS only. A catalogue that can point the app at plain HTTP is a catalogue that can be rewritten in transit."
+    }
+  }
+}

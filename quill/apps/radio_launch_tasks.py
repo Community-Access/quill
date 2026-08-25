@@ -90,8 +90,16 @@ def append_calendar_menu(app: Any, menu: Any, wx: Any) -> None:
     so a profile with the ADP assistant turned off gets a Community menu that
     opens on the schedule rather than on a rule.
     """
-    from quill.ui.radio import calendar_wiring
+    from quill.ui.radio import acb_podcasts_wiring, calendar_wiring, community_picks_wiring
 
     if menu.GetMenuItemCount():
         menu.AppendSeparator()
     calendar_wiring.append_menu_items(app, menu, wx)
+    # Beside the schedule, because they are the same question asked of the same
+    # broadcaster: what is on live, and what can I keep. Both are "places this
+    # community already goes, brought inside the app".
+    acb_podcasts_wiring.append_menu_item(app, menu, wx)
+    # The wider curated list, and the way to add to it. Last, because ACB is
+    # what most people came for and the general list is the "what else?".
+    menu.AppendSeparator()
+    community_picks_wiring.append_menu_items(app, menu, wx)
