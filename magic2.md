@@ -475,7 +475,27 @@ elated* are every one of them marked `(related term)`. The rule is
 substitutability, not markedness: unmarked, similar and related can stand in for
 the headword; broader and antonym cannot.
 
-### Part 3: the dialog, as designed
+### Part 3: built, 2026-08-26
+
+Shipped as `quill/ui/thesaurus_dialog.py`. Reaching a word in the third sense
+went from fifteen keystrokes to four. Twelve tests against a real `wx.Dialog`,
+nine more for the grouping, all 25 platform gates green, 14,811 tests passing
+across the UI and core suites.
+
+Three things the build turned up that the design did not anticipate:
+
+* **The hardening contract wants the show path in the construction scope.**
+  `test_dialog_hardening_contract` reads the scope named in the dialog
+  inventory, so a dialog shown by its caller fails it. The fix was the better
+  shape anyway: the dialog takes `_show_modal_dialog` and owns its own
+  `show_modal()`, so the caller no longer reaches into `picker.dialog`.
+* **`wx.ALIGN_RIGHT` is banned in `quill/ui`** (A11Y-4). A stretch spacer plus
+  `wx.EXPAND` gets the same layout and keeps the row tracking a resize.
+* **Three snapshots need regenerating**, not just the one the design named:
+  `surface_reachability.json`, `dialog_inventory.json` *and*
+  `accessible_name_inventory.json`.
+
+The design as reviewed, for the record:
 
 Reviewed rather than guessed. The decisions, and the reasons that survive
 summarising:
