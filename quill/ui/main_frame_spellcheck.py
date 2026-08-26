@@ -605,15 +605,13 @@ class SpellcheckCommandsMixin:
             )
             return
 
-        # Build a flat choice list grouped by part of speech so screen
-        # readers announce the grouping naturally.
-        choices: list[str] = []
-        choice_words: list[str] = []
-        for meaning in entry.meanings:
-            pos = meaning.part_of_speech or "other"
-            for synonym in meaning.synonyms:
-                choices.append(f"[{pos}] {synonym}")
-                choice_words.append(synonym)
+        # Substitutes first, then the relations that are NOT substitutes, each
+        # labelled so the boundary is audible. The ordering and labelling policy
+        # lives in core.thesaurus.choice_rows, where it is testable without wx;
+        # the displayed label carries a prefix and the inserted term never does.
+        rows = thesaurus_engine.choice_rows(entry)
+        choices = [label for label, _ in rows]
+        choice_words = [term for _, term in rows]
 
         if not choices:
             self._set_status(f'No synonyms available for "{word}"')

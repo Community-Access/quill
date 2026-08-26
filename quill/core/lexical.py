@@ -110,7 +110,21 @@ class LexicalProvider(ABC):
 
 
 class OfflineLexicalProvider(LexicalProvider):
-    """The bundled MyThes thesaurus: synonyms grouped by part of speech."""
+    """The bundled MyThes thesaurus.
+
+    Fills ``synonyms`` and ``antonyms`` separately, because MyThes marks the
+    relation of every sense member and the two are not interchangeable.
+    An earlier version of this docstring claimed the result was "grouped by part
+    of speech" while the code flattened everything into ``synonyms`` -- which,
+    before the parser was fixed, meant this provider handed callers antonyms
+    labelled as synonyms.
+
+    Broader (generic) terms are deliberately *not* merged into ``synonyms``
+    either: "city" is a true fact about "The Hague" and a bad substitute for it.
+    They have no field on :class:`LexicalResult` yet and are dropped here rather
+    than misfiled; the sense-grouped surface that will show them is the pending
+    thesaurus dialog work.
+    """
 
     name = "offline"
     online = False
@@ -122,6 +136,7 @@ class OfflineLexicalProvider(LexicalProvider):
         return LexicalResult(
             word=entry.word or word,
             synonyms=_dedupe(list(entry.all_synonyms)),
+            antonyms=_dedupe(list(entry.all_antonyms)),
             sources=("offline",),
         )
 

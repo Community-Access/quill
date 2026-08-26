@@ -171,11 +171,16 @@ def test_offline_provider_uses_thesaurus(monkeypatch: pytest.MonkeyPatch) -> Non
     class _Entry:
         word = "happy"
         all_synonyms = ("glad", "joyful")
+        # The provider reads these separately now. MyThes marks the relation of
+        # every sense member, and merging them was how antonyms reached callers
+        # labelled as synonyms.
+        all_antonyms = ("sad",)
 
     monkeypatch.setattr(thesaurus, "lookup", lambda word: _Entry())
     result = OfflineLexicalProvider().lookup("happy")
     assert result is not None
     assert result.synonyms == ("glad", "joyful")
+    assert result.antonyms == ("sad",)
     assert result.sources == ("offline",)
 
 
