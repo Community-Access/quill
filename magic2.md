@@ -294,3 +294,164 @@ Cheap and certain first.
 
 Nothing here is blocked on anybody else, and none of it touches the support work
 in [magic.md](magic.md).
+
+---
+
+## The spell checker and the thesaurus — asked and answered
+
+Prompted by a direct question: what does EdSharp use, and should QUILL switch?
+The short answers are **no** and **no** — both projects are on the same engines
+already. But checking turned up a real defect in QUILL's thesaurus, so the
+interesting part of this section is not the comparison.
+
+### Spell check: keep, and QUILL is ahead
+
+| | EdSharp 5.0 | QUILL |
+| --- | --- | --- |
+| Engine | Hunspell, via the `WeCantSpell.Hunspell` C# port | Hunspell, via `pyenchant` |
+| Is it really shipped? | `en_US.aff` / `.dic` in `Dictionaries/` | `pyenchant>=3.3.0` in `requirements.txt` and the `spellcheck` extra |
+| If the engine is absent | Falls back to the Windows spell API, or Word | Bundled 370k wordlist with bounded `difflib` suggestions, then a stub — the feature never dies |
+| Languages | `en_US`; `SpellLanguage` names one | On-demand `.dic`/`.aff` download into a managed directory found via `ENCHANT_CONFIG_DIR` |
+| Review flow | One misspelling at a time, in document order | The same, **plus** a ranked mode and Change All |
+
+Switching would be a lateral move to the same engine while losing the fallback
+tier and the language management. The review dialog is the same story: EdSharp
+says and spells the word, shows the sentence, and reports a tally at the end —
+and QUILL's `SpellingReviewDialog` does all three, and adds a Context field with
+the word selected in it, Alt+W to reselect, and Ctrl+R to read the sentence
+aloud. There is also `spell_check_word_at_cursor` on Alt+F7 and a
+Kurzweil-1000-style ranked pass on Alt+Shift+F7, neither of which EdSharp has.
+
+**One idea worth taking anyway.** EdSharp's added words live in `Dictionary.txt`
+— "a plain list you can edit by hand." QUILL's personal, document and project
+dictionaries should be checked against that standard. Somebody who has taught
+the checker two hundred words has made an asset, and they should be able to
+read it, edit it, back it up and carry it to a new machine without going
+through a dialog one word at a time.
+
+### Thesaurus: the data is right, the presentation is wrong
+
+EdSharp 5.0 dropped its Word dependency for **WordNet**, presented **by sense** —
+*"so choosing a synonym for light as in weight never offers you words about
+illumination."*
+
+QUILL already ships the same lexicon. `quill/data/th_en_US_v2.dat` is
+LibreOffice MyThes data derived from WordNet — the licence file beside it says
+so. It has been offline and key-less all along, and `quill/core/thesaurus.py`
+parses it correctly, preserving each sense as a `Meaning` with its part of
+speech and its own members.
+
+**One thing I got wrong and want on the record**, because I nearly wrote it up
+as a privacy finding: I suspected Shift+F7 was routed to the AI thesaurus,
+sending the user's word and surrounding sentence to a provider. It is not.
+`tools.thesaurus` is Shift+F7 and offline; `tools.ai_thesaurus` is a separate
+command on its own chord; and `show_thesaurus_or_lookup` prefers the offline
+engine when it is available. That is the right arrangement and it was already
+in place.
+
+The problem is what happens between the parser and the screen.
+
+#### The bug: antonyms are offered as synonyms
+
+`_clean_synonym` in `quill/core/thesaurus.py:144` does this, by its own account:
+
+> Trim MyThes annotations like `(generic term)` and `(antonym)` … We keep the
+> leading term and drop the trailing annotation so the suggestion list reads
+> cleanly.
+
+It reads cleanly and it is wrong. MyThes marks each member of a sense with its
+*relation* to the headword, and the marker is not decoration — it is the
+difference between a word that can replace the headword and a word that means
+the opposite. Stripping it keeps `heavy` in the list for `light`.
+
+Measured across the whole data file, 800,812 sense-member terms:
+
+| Marker | Count | What QUILL does with it today |
+| --- | --- | --- |
+| `(generic term)` | 358,978 | Offers a broader term as an equal substitute |
+| `(similar term)` | 53,027 | Correct — these are the actual synonyms |
+| `(antonym)` | **13,060** | **Offers the opposite word as a synonym** |
+| `(related term)` | 10,672 | Offers a loosely associated word as an equal |
+
+**13,060 antonyms, across 9,667 headwords.** Not an edge case:
+
+- `light` — the sixth entry offered is **`heavy`**.
+- `increase` — **`decrease`** at position seven, **`decrement`** at twelve.
+- `'s gravenhage` — `The Hague`, then `city`, `metropolis`, `urban center`,
+  offered as equals.
+
+Somebody who picks one has inverted the meaning of their sentence, and nothing
+in the interface warned them. It is exactly the class of failure this project
+exists to prevent: silent, plausible, and paid for by the person least able to
+catch it by glancing.
+
+#### The flattening: 46 senses become one list of 168
+
+`quill/ui/main_frame_spellcheck.py:608` builds "a flat choice list grouped by
+part of speech" — but the grouping is a **text prefix**, not structure:
+
+```python
+for meaning in entry.meanings:
+    pos = meaning.part_of_speech or "other"
+    for synonym in meaning.synonyms:
+        choices.append(f"[{pos}] {synonym}")
+```
+
+For `light` that is 46 senses rendered as 168 rows in a `wx.SingleChoiceDialog`,
+each prefixed `[adj]` or `[noun]`, with no boundary between weight, colour,
+illumination and quantity. The only way to explore it is to arrow through all
+168, hearing `[adj]` a hundred-odd times. `hot` gives 64 rows, `fast` gives 70.
+
+The same discard happens a second time in `quill/core/lexical.py:124`, where
+`OfflineLexicalProvider` flattens via `all_synonyms` under a docstring that
+claims "synonyms grouped by part of speech".
+
+### The fix, in three parts, smallest first
+
+**1. Stop offering antonyms as synonyms.** A correctness fix, independent of any
+dialog work. `_clean_synonym` should return the term *and its relation*, and
+`Meaning` should keep them apart:
+
+- `(antonym)` — never in the synonym list. Offer these in a clearly separate
+  "Opposites" group, or drop them, but never under the same heading as
+  substitutes.
+- `(generic term)` — a hypernym: useful, not a substitute. A separate "Broader
+  terms" group.
+- `(related term)` — a separate "Related" group.
+- Unmarked and `(similar term)` — the actual synonyms, and the default list.
+
+Do this first. It is a small change in one pure, wx-free module, it needs no UI
+decision, and it removes a wrong answer from 9,667 words.
+
+**2. Carry the sense structure through to the dialog.** The parser already keeps
+it; two call sites throw it away. Fix `lexical.py:124` in the same pass, and
+correct its docstring — a docstring claiming a grouping the code does not
+perform is how the next reader gets misled.
+
+**3. Replace the flat `SingleChoiceDialog`.** The part with a genuine design
+question: how a sense-grouped result should be structured so NVDA and JAWS
+announce it well, and how few keystrokes it takes to reach a synonym in the
+third sense. Being reviewed separately rather than guessed at here.
+
+One constraint is already clear from the data, and it bounds how far part 3 can
+go: **MyThes gives a part of speech and the sense members, but no gloss.** A
+sense can therefore only introduce itself as "adjective: airy, buoyant,
+floaty…". Choosing between 46 of those by ear beats one flat list, but it is not
+EdSharp's experience. EdSharp reads *"the word, its part of speech, and a short
+definition of the sense it belongs to"*, and the definition is what makes the
+choice possible at all. Getting there needs WordNet gloss data beside the MyThes
+file — a real addition with a real size, to be decided on its own merits.
+Without it, part 3 delivers less than parts 1 and 2 do, which is a good reason
+to ship those two first and not wait.
+
+### Tests worth having
+
+Every one of these fails today:
+
+- `light` does not offer `heavy`; `increase` does not offer `decrease`.
+- No headword offers, as a synonym, any term the data marks `(antonym)`.
+- A word with several senses comes back as several groups, not one list.
+- `OfflineLexicalProvider` returns the grouping its docstring promises.
+
+Write the first one first. It is a single assertion that encodes the whole
+defect, and it would have caught this years ago.
