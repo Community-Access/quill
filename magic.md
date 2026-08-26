@@ -1,184 +1,260 @@
 # magic.md — nobody should ever require a GitHub account
 
-Done. Written 2026-08-25, finished 2026-08-26.
+Working notes. Started 2026-08-25; the original goal was met 2026-08-26 and the
+work has since grown a second strand (support email, FreeScout). Both are
+below, next steps first.
 
-**The one line that mattered:** *"Nobody should ever require a GitHub account."*
-
-As of today the web form needs no account, no sign-in, and no third party. A
-visitor fills it in, presses **Send suggestion**, and a labelled issue appears
-in the repo. Verified end to end: issue
-[#1448](https://github.com/Community-Access/quill/issues/1448) was filed by the
-server with no account involved, then closed.
+**The one line that started it:** *"Nobody should ever require a GitHub
+account."* That is now true of the suggestion form. It is **not** yet true of
+Report a Bug, which is the next strand.
 
 ---
 
-## Where things stand now
+## Next steps
+
+Ordered. Each says plainly who it needs, because several are blocked on
+something only Jeff has.
+
+### Blocked on Jeff
+
+1. **DNS for the help desk.** Add an A record at Namecheap, which runs
+   `community-access.org` DNS (`dns1` and `dns2.registrar-servers.com`):
+
+   ```
+   helpdesk    A    107.175.91.158
+   ```
+
+   Confirm with `dig +short helpdesk.community-access.org` before step 2. This
+   is the only thing standing between a working FreeScout and a reachable one.
+
+2. **The Caddy block for the help desk.** Only after step 1 resolves — the file
+   `deploy/helpdesk/caddy-snippet.conf` in the feedback-hub repository carries
+   the block and the commands. The ordering is not fussiness: Caddy asks Let's
+   Encrypt for a certificate the moment it loads a site block, and a name that
+   resolves to nothing is a *failed* validation, rate limited far more tightly
+   (five per hostname per hour) than a successful one. Adding it early does not
+   queue it up, it spends the budget you will want when the record is real.
+
+3. **Postmark.** Two halves, and the account is the only accepted service cost
+   in the plan.
+   - *Outbound*: a Server API token, entered in FreeScout's own interface
+     (Manage, then Settings, then Mail) rather than in a file, so rotating it
+     never needs a container restart. Send the test message before telling
+     anybody the address exists.
+   - *Inbound*: the `community-access.org` sending domain verified (DKIM TXT
+     and Return-Path CNAME), and an MX record pointing at
+     `inbound.postmarkapp.com`. Postmark generates the exact values.
+
+4. **The `action_required` repo setting.** Catalogue-rebuild pull requests
+   (currently [#1449](https://github.com/Community-Access/quill/pull/1449) and
+   [#1450](https://github.com/Community-Access/quill/pull/1450)) sit unmerged
+   because GitHub holds workflow runs on `github-actions[bot]` pull requests
+   for manual approval, so auto-merge never fires. The repository's policy is
+   `first_time_contributors`, and the bot counts as one.
+
+   Left alone deliberately: it is a security setting on a public repository and
+   it is yours to make. Loosening it to `first_time_contributors_new_to_github`
+   would still block genuinely new throwaway accounts, which is the actual
+   attack. Approving the two waiting runs clears today's backlog either way.
+
+5. **The domain question.** The FreeScout plan is written for
+   `community-access.org`; QUILL serves the picks catalogue and the suggestion
+   form from `quillforall.org`, and that URL is compiled into shipped builds.
+   Three answers, and they lead to very different work:
+
+   | Answer | What it costs |
+   | --- | --- |
+   | Both — `community-access.org` is the organisation, `quillforall.org` the product | Nothing moves. Support email is simply new. Cheapest, and what everything so far assumes. |
+   | `quillforall.org` is being retired | The catalogue URL, signature URL, CORS allowlist, form and bundled fallback all move — and old installs must keep resolving, so redirects live indefinitely. |
+   | Undecided | Everything stays configurable and nothing user-facing changes. No work is wasted. |
+
+### Ready to build, not blocked
+
+6. **The Postmark-to-Maildir bridge.** The last missing piece of inbound mail,
+   and the one genuinely new program in the plan. Postmark has no IMAP, so it
+   posts the raw RFC-822 message to a small endpoint; the bridge writes it into
+   a local Maildir; a localhost-only Dovecot exposes that Maildir; FreeScout
+   fetches it with its ordinary IMAP mechanism.
+
+   Feeding FreeScout *real email* is the whole point — its threading
+   (`Message-ID`, `In-Reply-To`, `References`), duplicate detection, auto-reply
+   and bounce handling, and conversation reactivation are the reason to run
+   FreeScout at all, and creating tickets through its API instead would mean
+   reimplementing every one of them.
+
+   Requirements are already written: sections 37 and 38 of the plan. Testing it
+   properly needs step 3, so build it now and prove it then.
+
+7. **Move Report a Bug off GitHub and onto support.** The substantive QUILL-side
+   change, and the reason the redesign document exists. Today every app files
+   the reporter's own words into a **public** repository and offers them no way
+   to be answered. In order:
+
+   1. `POST /submit/support` in feedback-hub, relaying to Postmark, tested in
+      the shape `/submit/picks` already has.
+   2. Point `feedback_hub.wx_dialog` at it, keeping the dialog identical —
+      same fields, same one button, no visible change to anybody.
+   3. Delete `quill/_feedback_token.py` and the build step that generates it,
+      once (2) has shipped in a release.
+
+   The reasoning, the costs and what deliberately does *not* change are in
+   [the feedback redesign document](docs/design/2026-08-26-feedback-redesign-for-freescout.md).
+
+8. **Decide what `hub.quillforall.org` is.** It does not resolve, and
+   `quill/ui/quillin_hub_submit.py` no longer offers the dead button — the
+   local validation, which is the useful half, still runs and `HUB_IS_LIVE`
+   re-enables the button in one line. Either the Quillin Hub is coming, or that
+   constant should point at the server this file is about. Depends on step 5.
+
+9. **`PICKS_SIGNING_KEY`.** The catalogue is still published unsigned; the app
+   verifies, fails closed, falls back to the bundled copy and records why in
+   Recent Problems. Nothing is broken, but the fetched list is not being used.
+
+   **Read this before setting it**, because until today setting it alone would
+   not have worked. The signer wrote a two-line sidecar while the app's
+   `read_minisig` requires three lines with a `key id:` between them — so CI
+   would have signed and published successfully and every app would have
+   refused the file as unreadable, which looks exactly like working software.
+   Fixed: it now signs through `sign_artifact()`, the same function that writes
+   every other signature in the project.
+
+   The secret must be the **seed for the existing publisher key in
+   `quill-pub.key`**, not a new keypair — a new one would have to replace a key
+   that Quillin and release signatures already depend on. The script now
+   refuses a stranger rather than trusting whoever runs it to have known that.
+
+### Smaller, and genuinely optional
+
+10. **Radio's menu bar is full.** 149 accelerators, and `Ctrl+Alt+Shift` is
+    exhausted, letters and digits alike. The next menu item needs a submenu or
+    a palette-only home, not another chord hunt.
+
+11. **`suggest_pick_dialog.py` disagrees with the web form.** Line 90 still
+    says an address "must start with https", which the web form deliberately
+    stopped requiring. The in-app `wx.Choice` also does `SetSelection(0)`,
+    reproducing the silent-default problem the web form just removed — and the
+    page claims the in-app route "does exactly the same thing", which is
+    currently true in the bad sense too.
+
+---
+
+## Where things stand
 
 | Route | Account needed? | Status |
 | --- | --- | --- |
-| Quill Radio → **Community > Suggest a Station or Podcast…** | **No** | Working. Files a real issue with the bundled issues-only token. |
-| **quillforall.org/picks/suggest/** | **No** | **Fixed.** POSTs to `https://lp.csedesigns.com/submit/picks`, which files the issue. |
-| **`https://lp.csedesigns.com/submit/picks`** | — | **Live.** `feedback_hub.server` 1.2.0, one container beside the three apps already on the box. |
+| Quill Radio, Community menu, Suggest a Station or Podcast | **No** | Working. Files an issue with the bundled issues-only token. |
+| `quillforall.org/picks/suggest/` | **No** | **Fixed 2026-08-26.** Posts to the submission server, which files the issue. |
+| `lp.csedesigns.com/submit/picks` | — | **Live.** feedback-hub 1.2.0, one container beside the four apps already on the box. |
+| Help desk, `helpdesk.community-access.org` | — | **Installed, not yet reachable.** Waiting on next steps 1 to 3. |
+| Report a Bug, every app | **No**, but files into a public repo | Unchanged. Next step 7. |
 | `workers/picks-submit.js` (Cloudflare) | — | **Deleted.** Two ways to do one thing is one too many. |
 
-The whole pipeline is proven: suggestion → `pick:suggestion` → review →
-`pick:approved` → `picks-build.yml` → validated → signed → PR → merged →
-deployed → serving.
+The picks pipeline is proven end to end: suggestion, `pick:suggestion` label,
+review, `pick:approved`, `picks-build.yml`, validated, signed, pull request,
+merged, deployed, serving. Issues
+[#1448](https://github.com/Community-Access/quill/issues/1448) and
+[#1451](https://github.com/Community-Access/quill/issues/1451) were filed by
+the server with no account involved, then closed.
+
+### How the pieces fit together
+
+Four kinds of client — Report a Bug and Suggest inside Quill Radio, the web
+form on quillforall.org, and eventually GLOW, Cast and Social — all send to one
+small server on `lp.csedesigns.com`. That server is the only thing holding a
+credential. Today it files GitHub issues for picks; once next step 7 lands it
+will also relay support messages to Postmark, which delivers them into
+FreeScout, where a person answers. Escalation from a FreeScout conversation to
+a GitHub issue stays a human decision, made after sanitising.
 
 ---
 
-## What was built
+## What is deployed on lp.csedesigns.com
 
-### The server — `Community-Access/feedback-hub` 1.2.0
+Five applications now share the box, behind one Caddy that terminates TLS.
+`jeffbis` is in the `docker` group but has **no passwordless sudo**, so
+everything added is a container and the only thing needing a person is a Caddy
+edit.
 
-`feedback_hub.server` is a zero-dependency WSGI application. One endpoint, one
-health check, holding the only token.
+| Piece | Where | Notes |
+| --- | --- | --- |
+| Submission server | `~/feedback-hub` | feedback-hub 1.2.0, `feedback-hub-submit:8095`, two gunicorn workers, 192 MB cap. |
+| Help desk | `~/helpdesk` | FreeScout 1.8.219 and MariaDB 11.4, `helpdesk-app:80`, 1 GB and 512 MB caps. |
+| Caddy route, picks | `~/app/web/Caddyfile` | A `@picks_submit` matcher on `lp.csedesigns.com` and `/submit/*`. |
+| Caddy route, help desk | not yet | Waiting on DNS. |
 
-It solves a bigger problem than the one we started with. feedback-hub already
-called itself a "centralized GitHub backend", but every client carried its own
-token — which is why Quill Radio ships one inside its installer, extractable by
-anyone who unzips it, and why the website could not submit at all. With a
-server in the path the apps can eventually stop carrying a credential, and the
-token rotates by editing one `.env` rather than by shipping a release.
-
-```
-Radio "Report a Bug"   ─┐
-Radio "Suggest…"       ─┤
-quillforall.org form   ─┼──→  feedback-hub server on lp  ──→  GitHub issue
-GLOW / Cast / Social   ─┘        (holds the only token)
-```
-
-Scope is deliberately **picks only**. Report a Bug still submits directly from
-each app; migrating it at the same time would have made the first deployment
-also the riskiest one.
-
-**What it refuses**, each with a test rather than a comment: a body with no
-```` ```json pick ```` block (such an issue looks fine in the review queue and
-publishes *nothing* when approved, so the failure would surface days later as
-"why is my station not in the list?"); two blocks; a kind that is not
-`stream`/`podcast`; a missing name or address; an address whose scheme is not
-the web; anything over 32 KB. `http://` is accepted on purpose.
-
-Rate limit: one a minute, twenty a day per address, in memory. A **refused**
-attempt is not counted. The address is the **last** `X-Forwarded-For` entry —
-a client can send a header of its own and the proxy appends to it, so the first
-entry is whatever the client claimed.
-
-51 tests, against the WSGI callable itself rather than a wrapper, so what is
-tested is what gunicorn runs. 112 tests in the repo, all green.
-
-### The deployment — `lp.csedesigns.com`
-
-- `~/feedback-hub`, `deploy/docker-compose.yml`, container `feedback-hub-submit`,
-  two gunicorn workers, 192 MB cap, no published ports, joined to the existing
-  `web_default` network. Follows the `askbits` shared-host pattern exactly.
-- Token in `~/feedback-hub/deploy/.env`, mode 600, never in the image.
-- Caddy: a `@picks_submit` matcher on `lp.csedesigns.com` + `/submit/*`,
-  reverse-proxying to `feedback-hub-submit:8095`. Backup at
-  `~/app/web/Caddyfile.bak.2026-08-26`; validated, then **reloaded**, not
-  restarted.
-- Runbook: `deploy/README.md` in feedback-hub.
-
-### The page — `docs/site/picks/suggest/`
-
-`SUBMIT_URL` set, `connect-src` added, copy rewritten to lead with the
-accountless route, and the accessibility work from a full specialist review
-applied (see below).
+Backup of the Caddyfile before this work: `~/app/web/Caddyfile.bak.2026-08-26`.
+Runbooks live in the feedback-hub repository, at `deploy/README.md` and
+`deploy/helpdesk/README.md`.
 
 ---
 
-## Two things found on the way that were not on the list
+## Traps found on the way, all now written down
 
-### `redir` was shadowing every handler in that Caddy block
+Four things that were silently broken, or would have been. Each is recorded
+here because each looked exactly like working software.
 
-The site block for `lp.csedesigns.com` ended with a bare
-`redir https://letitglow.app{uri} 301`. Caddy sorts directives by a fixed order
-and **`redir` sits above `handle`/`handle_path` in it** — so the redirect did
-not run last, it ran *first*, and every handler above it was dead code.
+**`redir` was shadowing every handler in that Caddy block.** Caddy sorts
+directives by a fixed order and `redir` ranks *above* `handle` and
+`handle_path`, so a bare redirect at the foot of a site block does not run
+last — it runs first, and every handler above it is dead code. That had already
+happened to `/ggg*`, which never served anything; the links only kept working
+because the redirect landed on a working `/ggg` on the canonical host. Fixed by
+wrapping the redirect in `handle { }`.
 
-That had already happened to `/ggg*`: it never served anything. The links only
-kept working because the redirect landed on a working `/ggg` on the canonical
-host, which is exactly the kind of accident that hides a bug for months.
+**The catalogue signer wrote a sidecar its own verifier could not read.** See
+next step 9. Setting the secret alone would have published a signed catalogue
+that every app refused.
 
-Fixed by wrapping the redirect in `handle { }`, making it the last arm of the
-same mutually exclusive group. `/ggg/` on lp now serves directly (200) as
-originally intended, everything else still redirects identically, and
-`letitglow.app` and `csedesigns.com` are untouched.
+**The FreeScout image regenerates its configuration on every recreate, and
+blanks `APP_KEY`.** FreeScout encrypts stored mailbox passwords with that key,
+so a rotation makes the saved Postmark credentials undecryptable and **inbound
+mail stops silently** — mail nobody knows they are not receiving. Fixed by
+bind-mounting the host's copy so it is authoritative. The same image also
+writes a database driver name Laravel 5.5 does not define, whose only symptom
+is an endless redirect to `install.php`. Both are documented in
+`deploy/helpdesk/README.md`.
 
-### The accessibility review found three broken mechanisms, not one
-
-The page's planned flow relied on `role="alert"` plus focus, a rebuilt
-`role="status"` container, and a disabled submit button. All three fail
-specifically on NVDA and JAWS:
-
-- **`role="alert"` + `.focus()` reads everything twice**, first reading usually
-  clipped. Worse, an alert whose content has not changed may not fire at all —
-  so resubmitting with the same errors announces nothing. Now: focus only, onto
-  a heading, which also leaves the list there to re-read.
-- **Clearing and rebuilding a live region in one task announces nothing.** The
-  empty state never reaches the accessibility tree, so a repeated identical
-  message — two rate-limit refusals in a row, which the limiter produces *by
-  design* — is silently swallowed. Now: cleared on one tick, written on the
-  next.
-- **Disabling the focused button blurs it and sets no sequential starting
-  point**, so the next Tab restarts at the top of the document — thirteen stops
-  back through every field just filled in, announced by nothing. Now:
-  `aria-disabled` plus a guard flag, which is what actually prevents a double
-  send.
-
-Also: the site had **no form styling at all**, which was not neutral — browser
-defaults put the Safari input border at 1.45:1 and the dark-mode Chrome field
-interior at 1.69:1; `.hint` was used seven times and defined nowhere. And
-without a `forced-colors` block, "Sent" and "Not sent" looked identical in
-Windows High Contrast — on the exact platform this audience uses. All fixed in
-`assets/style.css`, which benefits every form on the site.
+**Three accessibility mechanisms the suggestion form was about to rely on do
+not work on NVDA or JAWS.** `role="alert"` plus focus reads the whole error
+list twice with the first reading clipped, and an unchanged alert may not fire
+at all — so resubmitting the same errors announces nothing. Clearing and
+rebuilding a live region in one task announces nothing either, which would have
+silenced every repeated rate-limit refusal the server produces *by design*. And
+disabling the focused submit button strands the keyboard thirteen tab stops
+away, announced by nothing. All three replaced.
 
 ---
 
-## Still open, and yours to decide
+## Settled, so please do not re-litigate
 
-- ~~Rotate the token.~~ **Decided 2026-08-26: no.** The server keeps using the
-  existing bundled issues-only token. It is scoped to issues on one repository,
-  so the worst an extraction buys is issue spam, and the server means it can be
-  rotated later by editing one `.env` and restarting — without shipping a
-  release to every installed copy. That option stays open; it is simply not
-  being taken now.
-- **Catalogue-rebuild PRs sit at `action_required`.** GitHub holds workflows on
-  `github-actions[bot]` PRs for manual approval, so auto-merge never fires.
-  Fix is a repo setting: *Settings → Actions → General → require approval for
-  outside collaborators only*. Not changed — it is a security setting and
-  yours to make.
-- **`PICKS_SIGNING_KEY` is not set**, so the catalogue is published unsigned.
-  The app verifies and fails closed, falling back to the bundled copy and
-  recording why in Recent Problems.
-
-  **The signer was also broken, and is now fixed** — worth knowing before the
-  secret is set, because setting it alone would not have worked.
-  `sign_community_picks.py` wrote a two-line sidecar while the app's
-  `read_minisig` requires three with a `key id:` between them, so CI would have
-  signed and published successfully and every app would have refused the result
-  as an unreadable sidecar. It now signs through `sign_artifact()`, the same
-  function that writes every other signature here.
-
-  The secret must be the **seed for the existing publisher key in
-  `quill-pub.key`** — not a new keypair, which would have to replace a key that
-  Quillin and release signatures already depend on. The script now refuses a
-  stranger rather than trusting the reader to have known that.
-- **A stale `hub.quillforall.org`** in `quill/ui/quillin_hub_submit.py` still
-  does not resolve. Now that there is a server, the obvious answer is a second
-  endpoint on it — but that is the "more endpoints" step, deliberately not
-  taken today.
-- **Report a Bug still carries a bundled token in every app.** Moving it to the
-  server is the next migration, once this has been up a while.
-- **Radio's menu bar is full.** 149 accelerators; `Ctrl+Alt+Shift` is entirely
-  exhausted. The next menu item needs a submenu or a palette-only home.
-- **`<select id="kind">` is semantically load-bearing.** It decides which JSON
-  key lands in the catalogue (`stream_url` vs `feed_url`). A sighted visitor
-  sees the mismatch at a glance; somebody using a screen reader heard that
-  string once, five fields ago. Converting it to a radio group was recommended
-  and is a product decision, so it was left as a select — with the inert
-  `required` removed, a hint added, and the choice restated in the
-  confirmation.
+- **The bundled token stays.** Rotation was offered on 2026-08-26 and declined.
+  It is scoped to issues on one repository, so the worst an extraction buys is
+  issue spam. The option stays open precisely because the server exists —
+  rotating later is one `.env` edit and a restart, not a release — but it is
+  not being taken.
+- **A path on `lp.csedesigns.com`, picks only, code in feedback-hub.** The
+  three questions this file opened with, all taken as recommended.
+- **Picks suggestions keep going straight to GitHub**, and are not moving to
+  the help desk. A station suggestion has no customer relationship to preserve
+  and nothing personal in it — the *point* is that it becomes public — and it
+  is already consumed by a workflow. Routing structured data through a mailbox
+  would mean a person retyping it. The plan governs support; this is content
+  contribution, and the two should not be conflated because both produce
+  issues.
+- **The forms stay simple.** Both of them, the wx dialog and the web page. What
+  changes is where a submission goes, never what the person filling it in has
+  to do.
+- **Turnstile, never reCAPTCHA.** The endpoint supports Turnstile and it is
+  switched off, because a challenge nobody needs is a barrier nobody asked for.
+  If spam ever arrives, that is the switch. reCAPTCHA's image grids are
+  precisely the barrier this project exists to remove: a spam control that
+  locks out blind users to keep out bots has failed at the only job that
+  matters here.
+- **The "What is it?" radio group starts unanswered.** It was a `<select>` with
+  a pre-selected first option, which can never express "not answered" — and it
+  is the one answer on the form whose wrong value is invisible to the person
+  who gave it, silently filing a podcast's feed under `stream_url`. Do not
+  restore a default.
 
 ---
 
@@ -192,15 +268,9 @@ the small community stations this project exists for.
 
 The protection belongs where it actually helps: the catalogue *itself* arrives
 over https and signed, so nobody can substitute the list. An individual http
-stream risks only itself. Still refused everywhere: `javascript:`, `file:`,
+stream risks only itself. Still refused everywhere: `javascript:`, `file:` and
 `data:` — and on the review page an attacker-controlled `href` is the other way
 to run script on a page holding a token.
 
 Worth remembering because it was only found by looking up a real station
 instead of reasoning about the rule.
-
-**And, once and permanently: Turnstile, never reCAPTCHA.** The endpoint
-supports Turnstile and it is switched off, because a challenge nobody needs is
-a barrier nobody asked for. If spam ever arrives, that is the switch — not
-reCAPTCHA, whose image grids are precisely the barrier this project exists to
-remove.
