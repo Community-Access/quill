@@ -137,12 +137,12 @@ Windows High Contrast — on the exact platform this audience uses. All fixed in
 
 ## Still open, and yours to decide
 
-- **Rotate the token.** The server currently holds the *same* issues-only token
-  that ships inside every QUILL installer, because that got it live today. Mint
-  a fresh fine-grained PAT (Issues: read and write on `Community-Access/quill`,
-  nothing else), put it in `~/feedback-hub/deploy/.env`, `docker compose ...
-  restart`, and revoke the old one at the next Radio release. Nothing else
-  needs to change — that is the point of the server.
+- ~~Rotate the token.~~ **Decided 2026-08-26: no.** The server keeps using the
+  existing bundled issues-only token. It is scoped to issues on one repository,
+  so the worst an extraction buys is issue spam, and the server means it can be
+  rotated later by editing one `.env` and restarting — without shipping a
+  release to every installed copy. That option stays open; it is simply not
+  being taken now.
 - **Catalogue-rebuild PRs sit at `action_required`.** GitHub holds workflows on
   `github-actions[bot]` PRs for manual approval, so auto-merge never fires.
   Fix is a repo setting: *Settings → Actions → General → require approval for
@@ -150,7 +150,20 @@ Windows High Contrast — on the exact platform this audience uses. All fixed in
   yours to make.
 - **`PICKS_SIGNING_KEY` is not set**, so the catalogue is published unsigned.
   The app verifies and fails closed, falling back to the bundled copy and
-  recording why in Recent Problems. Base64 Ed25519 seed, as a repo secret.
+  recording why in Recent Problems.
+
+  **The signer was also broken, and is now fixed** — worth knowing before the
+  secret is set, because setting it alone would not have worked.
+  `sign_community_picks.py` wrote a two-line sidecar while the app's
+  `read_minisig` requires three with a `key id:` between them, so CI would have
+  signed and published successfully and every app would have refused the result
+  as an unreadable sidecar. It now signs through `sign_artifact()`, the same
+  function that writes every other signature here.
+
+  The secret must be the **seed for the existing publisher key in
+  `quill-pub.key`** — not a new keypair, which would have to replace a key that
+  Quillin and release signatures already depend on. The script now refuses a
+  stranger rather than trusting the reader to have known that.
 - **A stale `hub.quillforall.org`** in `quill/ui/quillin_hub_submit.py` still
   does not resolve. Now that there is a server, the obvious answer is a second
   endpoint on it — but that is the "more endpoints" step, deliberately not
