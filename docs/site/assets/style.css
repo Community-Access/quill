@@ -15,6 +15,22 @@
   --accent-strong: #16448c;
   --accent-contrast: #ffffff;
   --focus: #b8540a;
+  /* Non-decorative borders: --border is 1.42:1 and is fine for a hairline
+     between sections, but it is not a control boundary. Anything a user has to
+     find or interact with uses --border-strong (4.04:1), which clears 1.4.11. */
+  --border-strong: #767f8f;
+  --field-bg: #ffffff;
+  --field-border: #767f8f;
+  --pending: #4a5568;
+  --error: #b3261e;
+  --error-bg: #fdecea;
+  --error-border: #b3261e;
+  --ok: #0f6b3f;
+  --ok-bg: #e7f4ec;
+  --ok-border: #0f6b3f;
+  /* The sticky header's height, so scripted focus does not scroll its target
+     underneath it. See scroll-padding-top below. */
+  --header-h: 7rem;
   --maxw: 72rem;
   --measure: 42rem;
   --radius: 12px;
@@ -32,16 +48,48 @@
     --accent-strong: #9ccaff;
     --accent-contrast: #0e1117;
     --focus: #ffb86b;
+    --border-strong: #68758a;
+    --field-bg: #161b22;
+    --field-border: #68758a;
+    --pending: #aab4c2;
+    --error: #ffb4ab;
+    --error-bg: #2a1618;
+    --error-border: #f2635a;
+    --ok: #79dfa1;
+    --ok-bg: #0f2419;
+    --ok-border: #3fb950;
   }
 }
 
 * { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+/* scroll-padding-top, not a margin on each target: the same "scroll an element
+   into view" algorithm serves focus(), Tab, and fragment links, so one
+   declaration keeps all three clear of the sticky header. Without it a
+   scripted focus scrolls its target flush to the top of the viewport --
+   underneath the header -- which is exactly where an error summary must not
+   go. */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--header-h);
+}
+
+/* At high zoom the sticky header eats most of a short viewport. Let it scroll
+   away, and reclaim the padding with it. */
+@media (max-height: 26rem), (max-width: 26rem) {
+  header.site { position: static; }
+  :root { --header-h: 1rem; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  /* iteration-count as well as duration: an `infinite` animation given a
+     0.001ms duration does not stop, it cycles about a million times a second. */
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 body {
@@ -72,7 +120,17 @@ a:hover { color: var(--accent-strong); }
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
-  border-radius: 4px;
+}
+
+/* Where a script moved focus deliberately, the ring is never optional.
+   :focus-visible is a heuristic: for programmatic focus on a non-input it
+   matches only if the previously focused element did, so pressing Enter on a
+   button shows a ring and clicking the same button shows nothing at all. */
+.focus-target:focus,
+#errors:focus,
+main:focus {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
 }
 
 /* Layout */
@@ -124,7 +182,9 @@ nav.site a:hover, nav.site a:focus-visible { text-decoration: underline; }
 .btn.secondary {
   background: transparent;
   color: var(--accent);
-  border-color: var(--border);
+  /* The border is the only thing that identifies this as a button, so it is a
+     non-decorative boundary and needs the contrast to match. */
+  border-color: var(--border-strong);
 }
 .btn.secondary:hover { border-color: var(--accent); }
 
@@ -363,3 +423,137 @@ footer.site .note { max-width: 22rem; font-size: 0.92rem; }
   z-index: 20;
 }
 .nav-dropdown > ul a { display: block; padding: 0.45rem 1rem; white-space: nowrap; }
+
+/* ── Forms ──────────────────────────────────────────────────────────────────
+   The site had no form styling at all until the suggestion form needed to
+   submit for real. That was not neutral: a browser's own defaults put the
+   Safari input border at 1.45:1, the dark-mode Chrome field interior at
+   1.69:1 against this background, and the submit button at 13.3px Arial in a
+   21px box -- below the 2.5.8 target minimum, with a label smaller than body
+   text. And the moment an invalid state paints a border, the user-agent
+   exemption is gone and the default state is ours too.
+
+   .hint was used seven times on the suggestion page and defined nowhere. It
+   passed contrast only by accident, being indistinguishable from body copy;
+   the obvious next edit -- smaller, greyer -- would have dropped it to 2.5:1.
+   Defined here deliberately so that cannot happen quietly. */
+
+.hint {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9375rem;
+  max-width: var(--measure);
+  margin: 0.15rem 0 0.35rem;
+}
+
+.req { color: var(--muted); font-weight: 400; font-size: 0.9375rem; }
+
+input[type="text"],
+input[type="url"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+  font: inherit;
+  color: var(--text);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
+  border-radius: 6px;
+  padding: 0.5rem 0.6rem;
+  width: 100%;
+  max-width: var(--measure);
+  min-height: 2.75rem;
+}
+textarea { min-height: 6rem; resize: vertical; line-height: 1.5; }
+
+button[type="submit"] {
+  font: inherit;
+  font-weight: 700;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  padding: 0.7rem 1.4rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+}
+button[type="submit"]:hover { background: var(--accent-strong); }
+button[type="submit"][aria-disabled="true"] {
+  background: var(--pending);
+  color: var(--accent-contrast);
+  border-color: var(--pending);
+  cursor: progress;
+}
+
+.send-status { margin-left: 0.75rem; color: var(--muted); }
+
+/* Error summary, per-field errors, and the outcome block.
+
+   Every one of these carries its state in something other than colour: a
+   border-style (dashed for trouble, solid for done) and a real <strong> in the
+   DOM. Windows High Contrast discards author backgrounds and border colours,
+   so without both, "Sent" and "Not sent" would look identical -- on the exact
+   platform this audience uses.
+
+   The cue is a DOM element and never a ::before. Screen readers announce
+   generated content, so a CSS warning triangle would be spoken on top of the
+   error text: double-speak, for everybody this page is for. */
+
+#errors:not(:empty) {
+  border: 2px dashed var(--error-border);
+  border-left-width: 6px;
+  background: var(--error-bg);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  margin: 1.25rem 0;
+  max-width: var(--measure);
+}
+#errors h3, #result h3 { margin-top: 0; }
+#errors strong, #result strong { color: inherit; }
+#errors a, #result a { text-decoration: underline; }
+
+#result.ok, #result.bad {
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  margin: 1.25rem 0;
+  max-width: var(--measure);
+}
+#result.ok { border: 2px solid var(--ok-border); border-left-width: 6px; background: var(--ok-bg); }
+#result.bad { border: 2px dashed var(--error-border); border-left-width: 6px; background: var(--error-bg); }
+
+.field-error {
+  display: block;
+  color: var(--error);
+  font-size: 0.9375rem;
+  margin: 0.3rem 0 0;
+  max-width: var(--measure);
+}
+
+/* A border, never a box-shadow. The amber focus ring against this red is
+   1.34:1, so a shadow sitting flush against the outline would erase the focus
+   indicator on precisely the fields the visitor most needs to find. Same
+   reason outline-offset never goes below 2px. */
+[aria-invalid="true"] {
+  border: 2px solid var(--error-border);
+  border-left-width: 5px;
+  border-left-style: dashed;
+}
+
+@media (forced-colors: active) {
+  /* forced-color-adjust is scoped to these three blocks and never applied
+     globally -- overriding the user's chosen contrast theme wholesale is the
+     thing forced-colors exists to prevent. */
+  #errors:not(:empty), #result.ok, #result.bad {
+    border-width: 3px;
+    border-color: CanvasText;
+    background: Canvas;
+    forced-color-adjust: none;
+  }
+  #errors:not(:empty), #result.bad { border-style: dashed; }
+  #result.ok { border-style: solid; }
+  [aria-invalid="true"] { border: 3px dashed CanvasText; border-left-width: 6px; }
+  input, select, textarea { border: 2px solid FieldText; background: Field; color: FieldText; }
+  button[type="submit"] { border: 2px solid ButtonText; background: ButtonFace; color: ButtonText; }
+  button[type="submit"][aria-disabled="true"] { color: GrayText; border-color: GrayText; }
+  :focus-visible, .focus-target:focus { outline: 3px solid Highlight; outline-offset: 2px; }
+}

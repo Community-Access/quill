@@ -48,6 +48,17 @@ def _code_only(source: str) -> str:
     return re.sub(r"^\s*//.*$", " ", without_blocks, flags=re.M)
 
 
+def _markup_only(source: str) -> str:
+    """The page with its HTML comments stripped.
+
+    Same reason as :func:`_code_only`. These pages explain their accessibility
+    decisions in comments beside the markup -- including the reasons an
+    attribute is *absent* -- so a check that reads the raw file finds the
+    sentence saying "deliberately no role=alert" and fails on it.
+    """
+    return re.sub(r"<!--.*?-->", " ", source, flags=re.S)
+
+
 @pytest.mark.parametrize("path", _SCRIPTS, ids=lambda p: p.name)
 def test_nothing_is_ever_rendered_as_markup(path: Path) -> None:
     """innerHTML on a page holding a token is how the token leaves.
@@ -153,7 +164,10 @@ def test_the_page_has_a_skip_link_a_main_landmark_and_a_language(path: Path) -> 
 
     assert '<html lang="en">' in source
     assert 'class="skip-link"' in source
-    assert '<main id="main">' in source
+    # Prefix, not the whole tag: the suggest page also carries class and
+    # tabindex on <main>, and a test that pins the exact string turns adding a
+    # focusable skip target into a failure.
+    assert '<main id="main"' in source
 
 
 @pytest.mark.parametrize("path", _PAGES, ids=lambda p: p.name)
@@ -174,7 +188,41 @@ def test_outcomes_are_announced(path: Path) -> None:
     source = _read(path)
 
     assert 'role="status"' in source or 'aria-live="polite"' in source
-    assert 'role="alert"' in source
+
+
+def test_the_suggest_page_carries_errors_by_focus_rather_than_by_alert() -> None:
+    """role="alert" on a container that is then focused reads everything twice.
+
+    Both fire: the alert on injection, the focus a moment later. NVDA and JAWS
+    deliver the whole list, then deliver it again, and the first reading is
+    routinely clipped mid-word. Worse, an alert whose content has not changed
+    may not fire at all -- so resubmitting with the same errors announces
+    nothing, and the mechanism being relied on is the unreliable one.
+
+    Focus is deterministic, puts the user *at* the errors rather than merely
+    telling them, and leaves the list there to re-read.
+    """
+    html = _markup_only(_read(_SUGGEST_HTML))
+    js = _read(_SUGGEST_JS)
+
+    assert 'role="alert"' not in html
+    assert '<div id="errors" tabindex="-1">' in html
+    assert "heading.focus()" in js
+
+
+def test_the_suggest_page_never_disables_its_submit_button() -> None:
+    """Disabling the focused element blurs it and sets no sequential starting
+    point, so the next Tab restarts at the top of the document -- thirteen
+    stops back through every field just filled in, announced by nothing.
+
+    aria-disabled says the same thing to assistive technology and keeps the
+    button focusable; a plain guard flag is what actually prevents a second
+    send.
+    """
+    code = _code_only(_read(_SUGGEST_JS))
+
+    assert ".disabled" not in code
+    assert 'setAttribute("aria-disabled"' in code
 
 
 def test_focus_moves_to_the_next_suggestion_after_a_decision() -> None:
@@ -219,3 +267,63 @@ def test_the_public_form_says_the_app_can_do_this_without_a_website() -> None:
 
     assert "Suggest a Station or Podcast" in source
     assert "no account" in source.lower() or "do not need" in source.lower()
+
+
+# -- the submission route ---------------------------------------------------------
+
+
+def test_the_form_posts_to_the_submission_server() -> None:
+    """The whole point: the visitor needs no GitHub account.
+
+    Falling back to GitHub's pre-filled new-issue form was the old behaviour
+    and it required an account for the final press. If this constant is ever
+    emptied, say so on the page as well -- a form that silently stops working
+    is worse than one that admits it.
+    """
+    js = _read(_SUGGEST_JS)
+
+    assert 'var SUBMIT_URL = "https://lp.csedesigns.com/submit/picks";' in js
+    assert "fetch(SUBMIT_URL" in js
+
+
+def test_the_pages_policy_allows_the_endpoint_it_posts_to() -> None:
+    """The failure this prevents is the nastiest kind: everything works and the
+    form still says it could not be sent.
+
+    ``default-src 'none'`` with no ``connect-src`` blocks the fetch inside the
+    browser, before a single packet leaves, and the page reports it exactly the
+    way it reports a dead server. The origin in the policy and the origin in
+    SUBMIT_URL have to be the same string, so they are checked against each
+    other rather than each against a literal.
+    """
+    html = _read(_SUGGEST_HTML)
+    js = _read(_SUGGEST_JS)
+
+    submit_url = re.search(r'var SUBMIT_URL = "([^"]+)"', js)
+    assert submit_url, "SUBMIT_URL is not set"
+    origin = "/".join(submit_url.group(1).split("/")[:3])
+
+    policy = re.search(r'http-equiv="Content-Security-Policy" content="([^"]+)"', html)
+    assert policy, "the suggest page has no Content-Security-Policy"
+    connect = re.search(r"connect-src ([^;\"]+)", policy.group(1))
+    assert connect, "the policy has no connect-src, so the fetch cannot leave the browser"
+    assert origin in connect.group(1).split()
+
+
+def test_the_suggest_page_no_longer_claims_an_account_is_needed() -> None:
+    """Stale instructions are worse here than missing ones.
+
+    A sighted visitor glances, sees no new tab and re-reads. Somebody using a
+    screen reader *acts*: hunts for a GitHub tab that does not exist, searches
+    for a "Submit new issue" button that is not there, concludes it failed, and
+    sends it again -- which is how one suggestion becomes three.
+    """
+    html = _read(_SUGGEST_HTML)
+
+    assert "Submit new issue" not in html
+    assert "is being removed" not in html
+    # The one honest remaining mention: the github.com route under Other ways,
+    # which really does need an account and now says so where it is offered.
+    account_mentions = re.findall(r"[^.]*GitHub account[^.]*\.", html)
+    assert len(account_mentions) == 1, account_mentions
+    assert "Other ways" in html[: html.index(account_mentions[0])]

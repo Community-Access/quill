@@ -3,11 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Suggest a station or podcast - QuillVille Community Picks</title>
+  <title>Suggest a station or podcast - Community Picks - QUILL</title>
   <meta name="description" content="Suggest a radio station or podcast for the Community Picks list that Quill Radio and QUILL Cast offer. No account needed.">
   <!-- No third-party anything: no fonts, no analytics, no CDN. The only
-       script is this page's own, and it never leaves the origin. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self'; form-action 'none'; base-uri 'none'">
+       script is this page's own.
+
+       connect-src names the submission server and nothing else. Without it
+       this page's own policy blocks the fetch before it leaves the browser,
+       and the failure looks exactly like the server being down - so the form
+       would appear broken while every part of it worked. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self'; connect-src https://lp.csedesigns.com; form-action 'none'; base-uri 'none'">
   <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
@@ -28,7 +33,7 @@
     </div>
   </header>
 
-  <main id="main">
+  <main id="main" class="prose" tabindex="-1">
     <div class="wrap">
       <h1>Suggest a station or podcast</h1>
 
@@ -37,120 +42,169 @@
         <strong>Community</strong> menu. Tell us about something worth adding.
       </p>
 
-      <p id="no-account-note">
-        <strong>The easiest way needs no account at all.</strong> If you have
-        Quill Radio, use <strong>Community &gt; Suggest a Station or
-        Podcast&hellip;</strong> &mdash; it sends the suggestion for you, with no
-        sign-in and without leaving the app.
-        <a href="/radio.html">Quill Radio is free to download.</a>
+      <p>
+        <strong>No account, and no sign-in</strong> &mdash; not here and not
+        anywhere else. Fill in the form on this page, press <strong>Send
+        suggestion</strong>, and it reaches us directly.
       </p>
       <p>
-        Otherwise, fill this in below. Sending currently finishes on GitHub,
-        which needs a free GitHub account for that last step. We are not happy
-        about that either, and it is being removed.
+        If you are already in Quill Radio, the <strong>Community</strong> menu,
+        then <strong>Suggest a Station or Podcast</strong>, does exactly the
+        same thing without leaving the app.
+        <a href="/radio.html">Quill Radio is free to download</a>.
       </p>
 
-      <form id="suggest-form" novalidate>
-        <h2>What are you suggesting?</h2>
+      <form id="suggest-form" novalidate aria-labelledby="suggest-form-heading">
+        <h2 id="suggest-form-heading">What are you suggesting?</h2>
+
+        <!-- Deliberately no role="alert". Focus is moved to the heading this
+             is filled with, and alert plus focus makes NVDA and JAWS read the
+             whole list twice, usually clipping the first reading.
+
+             At the top of the form, not the bottom: after focus lands here,
+             moving forward reaches the fields that need fixing rather than the
+             submit button. -->
+        <div id="errors" tabindex="-1"></div>
 
         <p>
           <label for="kind">What is it?</label><br>
-          <select id="kind" name="kind" required>
+          <span id="kind-hint" class="hint">
+            This decides what kind of address we expect below.
+          </span><br>
+          <select id="kind" name="kind" aria-describedby="kind-hint">
             <option value="stream">A radio station (a live stream)</option>
             <option value="podcast">A podcast (an RSS feed)</option>
           </select>
         </p>
 
         <p>
-          <label for="title">Name</label><br>
+          <label for="title">Name <span class="req" aria-hidden="true">(required)</span></label><br>
           <span id="title-hint" class="hint">What it should be called in the list.</span><br>
           <input type="text" id="title" name="title" maxlength="120" required
-                 aria-describedby="title-hint" autocomplete="off">
+                 aria-describedby="title-hint">
         </p>
 
         <p>
-          <label for="url">Address</label><br>
+          <label for="url">Address <span class="req" aria-hidden="true">(required)</span></label><br>
           <span id="url-hint" class="hint">
             The stream address for a station, or the feed address for a podcast.
             Either https:// or http:// is fine &mdash; plenty of community
             stations are http-only, and we would rather list them.
           </span><br>
-          <input type="url" id="url" name="url" required
-                 aria-describedby="url-hint" autocomplete="off"
-                 placeholder="https://">
+          <input type="url" id="url" name="url" required aria-describedby="url-hint">
         </p>
 
         <p>
-          <label for="description">Description</label><br>
+          <label for="description">Description <span class="req" aria-hidden="true">(required)</span></label><br>
           <span id="description-hint" class="hint">
             One or two sentences for somebody who has never heard it. This is
             what people read when they are deciding, so plain and specific beats
-            promotional.
+            promotional. Up to about 600 characters.
           </span><br>
-          <textarea id="description" name="description" rows="4" maxlength="600"
+          <!-- No maxlength on the textareas. A browser truncates a paste
+               silently: no event, no sound, nothing a screen reader can
+               announce. Checking the length instead means nothing is destroyed
+               and the message says by how much it is over. -->
+          <textarea id="description" name="description" rows="4" required
                     aria-describedby="description-hint"></textarea>
         </p>
 
         <p>
           <label for="language">Language</label><br>
-          <span id="language-hint" class="hint">Such as en, or en-US. Optional.</span><br>
+          <span id="language-hint" class="hint">
+            Such as en, or en-US. Optional, up to 16 characters.
+          </span><br>
           <input type="text" id="language" name="language" maxlength="16"
-                 aria-describedby="language-hint" autocomplete="off">
+                 aria-describedby="language-hint">
         </p>
 
         <p>
           <label for="collection">Which group does it belong in?</label><br>
           <span id="collection-hint" class="hint">
-            Such as ACB Media, or Reading Services. Optional &mdash; leave it to
-            us if you are unsure.
+            Such as ACB Media, or Reading Services. Optional, up to 64
+            characters &mdash; leave it to us if you are unsure.
           </span><br>
           <input type="text" id="collection" name="collection" maxlength="64"
-                 aria-describedby="collection-hint" autocomplete="off">
+                 aria-describedby="collection-hint">
         </p>
 
         <p>
           <label for="why">Why does it belong?</label><br>
           <span id="why-hint" class="hint">
-            Anything that would help us decide. Not published.
+            Anything that would help us decide. Optional, and not published.
           </span><br>
-          <textarea id="why" name="why" rows="3" maxlength="600"
-                    aria-describedby="why-hint"></textarea>
+          <textarea id="why" name="why" rows="3" aria-describedby="why-hint"></textarea>
         </p>
 
-        <div id="errors" role="alert" tabindex="-1"></div>
+        <!-- Rendered, then focused. Deliberately NOT a live region: focusing
+             into an aria-live container is the same double-announcement
+             problem as above. A heading goes in first, so the outcome is also
+             reachable afterwards with the H key. -->
+        <div id="result"></div>
 
         <p>
-          <button type="submit">Send suggestion</button>
+          <button type="submit" id="send">Send suggestion</button>
+          <!-- The only live region on this page, and it carries the in-flight
+               state only. Outcomes are delivered by moving focus, which is
+               reliable; a live region is not. -->
+          <span id="send-status" class="send-status"
+                role="status" aria-live="polite" aria-atomic="true"></span>
         </p>
       </form>
 
-      <div id="result" role="status" aria-live="polite"></div>
-
       <h2>What happens next</h2>
       <p>
-        Sending opens your suggestion as an issue on GitHub, already filled in
-        &mdash; press <strong>Submit new issue</strong> there to finish. A
-        person reads every one. Approved suggestions are published within a
-        day and appear in everybody's app the next time it refreshes, with no
-        update required.
-      </p>
-      <p>
-        <strong>That last step needs a GitHub account.</strong> If you do not
-        have one and do not want one, Quill Radio can send the whole thing for
-        you: <strong>Community &gt; Suggest a Station or Podcast&hellip;</strong>
-        needs no account and never leaves the app.
+        Your suggestion reaches us as soon as you press the button. A person
+        reads every one. Approved suggestions are published within a day and
+        appear in everybody's app the next time it refreshes, with no update
+        required.
       </p>
 
-      <h2 id="other-ways">Other ways</h2>
+      <h2 id="other-ways">Other ways to send a suggestion</h2>
       <ul>
         <li>
-          <a href="https://github.com/Community-Access/quill/issues/new?template=community_pick.yml">Fill
-          in the GitHub issue form directly</a>.
+          In Quill Radio: the <strong>Community</strong> menu, then
+          <strong>Suggest a Station or Podcast</strong>. No account, and it
+          never leaves the app.
         </li>
-        <li>Use <strong>Community &gt; Suggest a Station or Podcast&hellip;</strong> inside Quill Radio.</li>
+        <li>
+          <a href="https://github.com/Community-Access/quill/issues/new?template=community_pick.yml">Fill
+          in the GitHub issue form on github.com</a>. This one does need a free
+          GitHub account.
+        </li>
       </ul>
     </div>
   </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <p class="note">
+        <strong class="quill" style="color:var(--accent)">Community Picks</strong> -
+        the shared list of stations and podcasts that Quill Radio and QUILL Cast offer.
+      </p>
+      <nav aria-label="Documentation">
+        <h4>Documentation</h4>
+        <ul>
+          <li><a href="/docs/radio-userguide.html">Quill Radio user guide</a></li>
+          <li><a href="/faq.html">FAQ</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Project">
+        <h4>Project</h4>
+        <ul>
+          <li><a href="/radio.html">Download Quill Radio</a></li>
+          <li><a href="https://github.com/Community-Access/quill-radio/issues/new">Report a bug</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="The QUILL family">
+        <h4>The QUILL family</h4>
+        <ul>
+          <li><a href="/index.html">QUILL writing environment</a></li>
+          <li><a href="/podcast/index.html">The QUILL Cast (learn QUILL by ear)</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
 
   <script src="/picks/suggest/suggest.js"></script>
 </body>

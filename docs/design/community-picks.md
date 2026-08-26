@@ -203,29 +203,59 @@ a station — no download, no GitHub, no login.
 **The hard limit is worth stating plainly: GitHub Pages is static and cannot
 receive a submission.** It serves files. Something, somewhere, has to accept
 the POST and hold a credential that can write to the repo — and that credential
-can never be in the page, because the page is public. So there are exactly
-three honest shapes, and the form markup is identical in all three; only where
-it submits differs.
+can never be in the page, because the page is public: GitHub's own secret
+scanning would revoke a published token within minutes, and rightly. So the
+question was never "server or no server". It was **whose small process**.
 
-| | Submitter needs | We run | Notes |
+Three shapes were considered, and the form markup is identical in all three;
+only where it submits differs.
+
+| | Submitter needs | We run | Verdict |
 | --- | --- | --- | --- |
-| **`mailto:` handoff** | a mail client | nothing at all | Opens their own mail app with the body pre-filled. Perfectly accessible — it is their client, which they already know. Fails for webmail-only visitors with no handler registered, and Jeff retypes it into the review page's Add form. |
-| **A tiny serverless function** | nothing | one Worker | ~40 lines on Cloudflare's free tier, holding the token as a secret. Files the issue directly. Everyone gets a real form. |
-| **A hosted form service** | nothing | an account | Formspree/Tally free tier emails Jeff. No code, but a third party in the path and their accessibility is theirs, not ours. |
+| **`mailto:` handoff** | a mail client | nothing at all | Shipped first, as the stopgap. Perfectly accessible — it is their own client — but it fails webmail-only visitors, and Jeff retypes every one into the review page's Add form. |
+| **A serverless function** | nothing | a Cloudflare account | Written (`workers/picks-submit.js`, ~80 lines) and **not taken**: it required an account with a vendor this project has no other reason to depend on, for a process small enough to run beside the ones we already run. |
+| **A hosted form service** | nothing | an account | Rejected. A third party in the path, and their accessibility is theirs, not ours. |
 
-**Recommendation: build the form once, ship it on `mailto:` immediately, and
-upgrade the submit target to a Worker when it is worth the moving part.** The
-page, the fields, the validation and the accessibility work are all shared; the
-upgrade is one URL and a `fetch`.
+**What was actually built, 2026-08-26: a fourth shape.** The submission server
+lives in `Community-Access/feedback-hub` (1.2.0, `feedback_hub.server`) and
+runs as one small container on `lp.csedesigns.com`, beside the three
+applications already there. `https://lp.csedesigns.com/submit/picks` accepts
+the POST, validates it, and files the labelled issue.
 
-If the Worker happens, two details matter for this audience:
+That is a better answer than the Worker for a reason that has nothing to do
+with hosting. feedback-hub already described itself as a "centralized GitHub
+backend", but every client carried its own token — which is why Quill Radio
+ships one inside its installer, extractable by anyone who unzips it, and why
+the website could not submit at all. Giving feedback-hub a server makes the
+phrase true, and the apps can stop carrying a credential:
 
-* **Cloudflare Turnstile, not reCAPTCHA.** Turnstile is usually invisible and
-  requires no puzzle; reCAPTCHA's image grids are exactly the barrier this
-  whole project exists to remove. A spam control that locks out blind users to
-  keep out bots has failed at the only job that matters here.
-* **Rate-limit per IP and cap issue creation**, so a bad afternoon costs a
-  handful of closed issues rather than a repo full of them.
+```
+Radio "Report a Bug"   ─┐
+Radio "Suggest…"       ─┤
+quillforall.org form   ─┼──→  feedback-hub server on lp  ──→  GitHub issue
+GLOW / Cast / Social   ─┘        (holds the only token)
+```
+
+Scope today is deliberately **picks only**. Report a Bug still submits directly
+from each app; migrating it at the same time would have made the first
+deployment also the riskiest one. `workers/picks-submit.js` has been deleted —
+two ways to do one thing is one too many.
+
+Two details of the endpoint matter for this audience:
+
+* **Turnstile, never reCAPTCHA**, if a spam challenge is ever needed. Turnstile
+  is usually invisible and requires no puzzle; reCAPTCHA's image grids are
+  exactly the barrier this whole project exists to remove. A spam control that
+  locks out blind users to keep out bots has failed at the only job that
+  matters here. The endpoint supports Turnstile and it is switched off, because
+  a challenge nobody needs is a barrier nobody asked for.
+* **Rate-limited per address** — one a minute, twenty a day — so a bad
+  afternoon costs a handful of closed issues rather than a repo full of them.
+  A *refused* attempt is not counted, so being over the minute limit cannot
+  push somebody over the day limit for retrying. The address is the **last**
+  `X-Forwarded-For` entry, not the first: a client can send a header of its own
+  and the proxy appends to it, so the first entry is whatever the client
+  claimed.
 
 The public form and the in-app Suggest dialog produce the **same
 machine-readable issue body**, so the pipeline behind them is one thing.

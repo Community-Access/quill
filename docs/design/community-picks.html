@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>community-picks</title>
+  <title>Community Picks: a curated, living catalogue Radio reads from
+the web</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -518,16 +519,18 @@ suggests a station — no download, no GitHub, no login.</p>
 static and cannot receive a submission.</strong> It serves files.
 Something, somewhere, has to accept the POST and hold a credential that
 can write to the repo — and that credential can never be in the page,
-because the page is public. So there are exactly three honest shapes,
-and the form markup is identical in all three; only where it submits
-differs.</p>
+because the page is public: GitHub’s own secret scanning would revoke a
+published token within minutes, and rightly. So the question was never
+“server or no server”. It was <strong>whose small process</strong>.</p>
+<p>Three shapes were considered, and the form markup is identical in all
+three; only where it submits differs.</p>
 <table>
 <thead>
 <tr>
 <th></th>
 <th>Submitter needs</th>
 <th>We run</th>
-<th>Notes</th>
+<th>Verdict</th>
 </tr>
 </thead>
 <tbody>
@@ -535,42 +538,68 @@ differs.</p>
 <td><strong><code>mailto:</code> handoff</strong></td>
 <td>a mail client</td>
 <td>nothing at all</td>
-<td>Opens their own mail app with the body pre-filled. Perfectly
-accessible — it is their client, which they already know. Fails for
-webmail-only visitors with no handler registered, and Jeff retypes it
-into the review page’s Add form.</td>
+<td>Shipped first, as the stopgap. Perfectly accessible — it is their
+own client — but it fails webmail-only visitors, and Jeff retypes every
+one into the review page’s Add form.</td>
 </tr>
 <tr>
-<td><strong>A tiny serverless function</strong></td>
+<td><strong>A serverless function</strong></td>
 <td>nothing</td>
-<td>one Worker</td>
-<td>~40 lines on Cloudflare’s free tier, holding the token as a secret.
-Files the issue directly. Everyone gets a real form.</td>
+<td>a Cloudflare account</td>
+<td>Written (<code>workers/picks-submit.js</code>, ~80 lines) and
+<strong>not taken</strong>: it required an account with a vendor this
+project has no other reason to depend on, for a process small enough to
+run beside the ones we already run.</td>
 </tr>
 <tr>
 <td><strong>A hosted form service</strong></td>
 <td>nothing</td>
 <td>an account</td>
-<td>Formspree/Tally free tier emails Jeff. No code, but a third party in
-the path and their accessibility is theirs, not ours.</td>
+<td>Rejected. A third party in the path, and their accessibility is
+theirs, not ours.</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Recommendation: build the form once, ship it on
-<code>mailto:</code> immediately, and upgrade the submit target to a
-Worker when it is worth the moving part.</strong> The page, the fields,
-the validation and the accessibility work are all shared; the upgrade is
-one URL and a <code>fetch</code>.</p>
-<p>If the Worker happens, two details matter for this audience:</p>
+<p><strong>What was actually built, 2026-08-26: a fourth shape.</strong>
+The submission server lives in
+<code>Community-Access/feedback-hub</code> (1.2.0,
+<code>feedback_hub.server</code>) and runs as one small container on
+<code>lp.csedesigns.com</code>, beside the three applications already
+there. <code>https://lp.csedesigns.com/submit/picks</code> accepts the
+POST, validates it, and files the labelled issue.</p>
+<p>That is a better answer than the Worker for a reason that has nothing
+to do with hosting. feedback-hub already described itself as a
+“centralized GitHub backend”, but every client carried its own token —
+which is why Quill Radio ships one inside its installer, extractable by
+anyone who unzips it, and why the website could not submit at all.
+Giving feedback-hub a server makes the phrase true, and the apps can
+stop carrying a credential:</p>
+<pre><code>Radio &quot;Report a Bug&quot;   ─┐
+Radio &quot;Suggest…&quot;       ─┤
+quillforall.org form   ─┼──→  feedback-hub server on lp  ──→  GitHub issue
+GLOW / Cast / Social   ─┘        (holds the only token)</code></pre>
+<p>Scope today is deliberately <strong>picks only</strong>. Report a Bug
+still submits directly from each app; migrating it at the same time
+would have made the first deployment also the riskiest one.
+<code>workers/picks-submit.js</code> has been deleted — two ways to do
+one thing is one too many.</p>
+<p>Two details of the endpoint matter for this audience:</p>
 <ul>
-<li><strong>Cloudflare Turnstile, not reCAPTCHA.</strong> Turnstile is
-usually invisible and requires no puzzle; reCAPTCHA’s image grids are
-exactly the barrier this whole project exists to remove. A spam control
-that locks out blind users to keep out bots has failed at the only job
-that matters here.</li>
-<li><strong>Rate-limit per IP and cap issue creation</strong>, so a bad
-afternoon costs a handful of closed issues rather than a repo full of
-them.</li>
+<li><strong>Turnstile, never reCAPTCHA</strong>, if a spam challenge is
+ever needed. Turnstile is usually invisible and requires no puzzle;
+reCAPTCHA’s image grids are exactly the barrier this whole project
+exists to remove. A spam control that locks out blind users to keep out
+bots has failed at the only job that matters here. The endpoint supports
+Turnstile and it is switched off, because a challenge nobody needs is a
+barrier nobody asked for.</li>
+<li><strong>Rate-limited per address</strong> — one a minute, twenty a
+day — so a bad afternoon costs a handful of closed issues rather than a
+repo full of them. A <em>refused</em> attempt is not counted, so being
+over the minute limit cannot push somebody over the day limit for
+retrying. The address is the <strong>last</strong>
+<code>X-Forwarded-For</code> entry, not the first: a client can send a
+header of its own and the proxy appends to it, so the first entry is
+whatever the client claimed.</li>
 </ul>
 <p>The public form and the in-app Suggest dialog produce the
 <strong>same machine-readable issue body</strong>, so the pipeline
