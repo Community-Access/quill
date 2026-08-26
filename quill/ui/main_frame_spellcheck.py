@@ -605,62 +605,51 @@ class SpellcheckCommandsMixin:
             )
             return
 
-        # Substitutes first, then the relations that are NOT substitutes, each
-        # labelled so the boundary is audible. The ordering and labelling policy
-        # lives in core.thesaurus.choice_rows, where it is testable without wx;
-        # the displayed label carries a prefix and the inserted term never does.
-        rows = thesaurus_engine.choice_rows(entry)
-        choices = [label for label, _ in rows]
-        choice_words = [term for _, term in rows]
-
-        if not choices:
+        # Grouped by sense. The grouping, the ordering and the labelling are all
+        # decided in core.thesaurus.sense_rows -- pure, wx-free and unit-tested;
+        # this method only shows what it is given.
+        senses = thesaurus_engine.sense_rows(entry)
+        if not senses:
             self._set_status(f'No synonyms available for "{word}"')
             return
 
+        from quill.ui.thesaurus_dialog import ThesaurusDialog
+
         replace_allowed = word_start is not None and word_end is not None
-        prompt = f'Synonyms for "{word}":\n\nChoose one to copy to the clipboard' + (
-            " or replace the word in the editor." if replace_allowed else "."
-        )
-
-        with wx.SingleChoiceDialog(
+        picker = ThesaurusDialog(
             self.frame,
-            prompt,
-            "Thesaurus",
-            choices=choices,
-        ) as dialog:
-            if self._show_modal_dialog(dialog, "Thesaurus") != wx.ID_OK:
-                self._set_status("Thesaurus closed")
-                return
-            selection = dialog.GetSelection()
-        if selection == wx.NOT_FOUND:
+            word,
+            senses,
+            allow_replace=replace_allowed,
+            show_modal_dialog=self._show_modal_dialog,
+            on_copy=self._copy_text_to_clipboard,
+            announce=self._announce,
+        )
+        try:
+            chosen = picker.show_modal()
+        finally:
+            picker.Destroy()
+
+        if not chosen:
+            # Copy leaves the dialog open and reports for itself, so reaching
+            # here means the user closed it -- with or without having copied.
+            self._set_status("Thesaurus closed")
             return
-        chosen = choice_words[selection]
+        if not replace_allowed:  # pragma: no cover - Replace is disabled without a target
+            return
 
-        if replace_allowed:
-            actions = ["Replace word in editor", "Copy to clipboard"]
-            with wx.SingleChoiceDialog(
-                self.frame,
-                f'Use "{chosen}":',
-                "Thesaurus",
-                choices=actions,
-            ) as action_dialog:
-                if self._show_modal_dialog(action_dialog, "Thesaurus") != wx.ID_OK:
-                    return
-                action = action_dialog.GetSelection()
-        else:
-            action = 1  # copy to clipboard
-
-        if action == 0 and replace_allowed:
-            # Preserve the original word's leading capitalisation.
-            replacement = chosen
-            if word[:1].isupper():
-                replacement = chosen[:1].upper() + chosen[1:]
-            self.editor.Replace(word_start, word_end, replacement)
-            self.document.set_text(self.editor.GetValue())
-            self._set_status(f'Replaced "{word}" with "{replacement}"')
-        else:
-            self._copy_text_to_clipboard(chosen)
-            self._set_status(f'Copied "{chosen}" to clipboard')
+        # Preserve the original word's leading capitalisation.
+        replacement = chosen
+        if word[:1].isupper():
+            replacement = chosen[:1].upper() + chosen[1:]
+        self.editor.Replace(word_start, word_end, replacement)
+        self.document.set_text(self.editor.GetValue())
+        # Collapse the selection after the replacement rather than leaving it
+        # selected: a selected word is destroyed by the next keystroke, and the
+        # screen reader announces the selection on focus return, which is an
+        # utterance nobody asked for.
+        self.editor.SetInsertionPoint(word_start + len(replacement))
+        self._set_status(f'Replaced "{word}" with "{replacement}"')
 
     def _copy_text_to_clipboard(self, text: str) -> bool:
         wx = self._wx

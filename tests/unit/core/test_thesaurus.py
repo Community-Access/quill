@@ -157,19 +157,80 @@ class TestSplitRelation:
     not thesaurus.is_available(),
     reason="Thesaurus data file not installed; skipping content-dependent tests.",
 )
-class TestChoiceRows:
-    def test_substitutes_come_first_and_the_rest_are_labelled(self) -> None:
-        rows = thesaurus.choice_rows(thesaurus.lookup("light"))
-        labels = [label for label, _ in rows]
+class TestSenseRows:
+    """The grouping the two-pane picker shows.
+
+    The flat list this replaced put 46 senses and 168 members of "light" into
+    one control, mixing weight, colour and illumination with no boundary.
+    """
+
+    def test_a_sense_with_nothing_but_antonyms_is_dropped(self) -> None:
+        """ "light" has one such sense, and it is why the old flat list showed
+        "heavy" as a sense of its own. Every row that survives can be acted on."""
+        entry = thesaurus.lookup("light")
+        senses = thesaurus.sense_rows(entry)
+        assert len(senses) == len(entry.meanings) - 1
+        for sense in senses:
+            assert any(not label.startswith("opposite:") for label, _ in sense.rows)
+
+    def test_the_part_of_speech_leads_the_row_and_is_spelled_out(self) -> None:
+        """Leading, because a native list box does first-character type-ahead:
+        "n" jumps to the noun senses. Spelled out, because it is read aloud and
+        "adjective" is a word where "adj" is a noise."""
+        senses = thesaurus.sense_rows(thesaurus.lookup("light"))
+        assert senses[0].label.startswith("adjective: ")
+        assert all(s.part_of_speech in ("adjective", "adverb", "noun", "verb") for s in senses)
+
+    def test_a_long_sense_is_previewed_not_recited(self) -> None:
+        """A row has to stay near three seconds of speech, or arrowing 45 of
+        them is wading."""
+        senses = thesaurus.sense_rows(thesaurus.lookup("light"))
+        long_ones = [s for s in senses if len(s.rows) > 5]
+        assert long_ones, "expected at least one sense with plenty of members"
+        assert any("more" in s.label for s in long_ones)
+        for sense in senses:
+            assert sense.label.count(",") <= 4
+
+    def test_position_is_not_baked_into_the_row(self) -> None:
+        """Screen readers announce list position themselves; putting it in the
+        text says it twice."""
+        for sense in thesaurus.sense_rows(thesaurus.lookup("light")):
+            assert " of " not in sense.label
+
+    def test_a_sense_with_only_broader_terms_says_so(self) -> None:
+        """Those senses are real -- dropping them loses "in a new light" -- but
+        a hypernym is not a synonym and the row must not imply it is."""
+        senses = thesaurus.sense_rows(thesaurus.lookup("light"))
+        broader_only = [s for s in senses if "(broader)" in s.label]
+        assert broader_only
+        for sense in broader_only:
+            assert all(label.startswith("broader:") for label, _ in sense.rows if ":" in label)
+
+    def test_within_a_sense_substitutes_come_first(self) -> None:
+        senses = thesaurus.sense_rows(thesaurus.lookup("light"))
+        weight = senses[0]
+        labels = [label for label, _ in weight.rows]
         first_marked = next(
-            i for i, label in enumerate(labels) if label.startswith(("broader:", "opposite:"))
+            (i for i, x in enumerate(labels) if x.startswith(("broader:", "opposite:"))),
+            len(labels),
         )
-        assert all(label.startswith("[") for label in labels[:first_marked])
-        assert all(label.startswith(("broader:", "opposite:")) for label in labels[first_marked:])
+        assert first_marked > 0
+        assert all(not x.startswith(("broader:", "opposite:")) for x in labels[:first_marked])
+        assert all(x.startswith(("broader:", "opposite:")) for x in labels[first_marked:])
 
     def test_the_inserted_term_never_carries_the_prefix(self) -> None:
         """Replacing "light" with "opposite: heavy" would be a funny bug."""
-        rows = thesaurus.choice_rows(thesaurus.lookup("light"))
-        for label, term in rows:
-            assert not term.startswith(("broader:", "opposite:", "["))
-            assert term in label
+        for sense in thesaurus.sense_rows(thesaurus.lookup("light")):
+            for label, term in sense.rows:
+                assert not term.startswith(("broader:", "opposite:"))
+                assert term in label
+
+    def test_the_weight_sense_offers_heavy_only_as_an_opposite(self) -> None:
+        """The whole defect, at the level the user meets it."""
+        weight = thesaurus.sense_rows(thesaurus.lookup("light"))[0]
+        assert ("heavy", "heavy") not in weight.rows
+        assert ("opposite: heavy", "heavy") in weight.rows
+
+    def test_an_entry_with_no_meanings_yields_nothing(self) -> None:
+        empty = thesaurus.ThesaurusEntry(word="x", meanings=())
+        assert thesaurus.sense_rows(empty) == ()

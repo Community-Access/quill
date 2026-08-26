@@ -113,37 +113,78 @@ class ThesaurusEntry:
         return tuple(ordered)
 
 
-def choice_rows(entry: ThesaurusEntry) -> tuple[tuple[str, str], ...]:
-    """``(label, term)`` pairs for a picker, substitutes first.
+#: MyThes writes four, and only four, parts of speech. Spelled out because
+#: these are read aloud: "adjective" is a word, "adj" is a noise.
+_POS_NAMES = {"adj": "adjective", "adv": "adverb", "noun": "noun", "verb": "verb"}
 
-    The label is what a reader speaks; the term is what gets inserted. They are
-    deliberately different, because the labels carry a prefix and inserting
-    "opposite: heavy" would be a funny bug in a serious place.
+#: How many terms a sense shows in its own row before saying "N more". Long
+#: enough to tell senses apart, short enough that arrowing 45 of them is not
+#: wading: a row has to stay near three seconds at a normal speech rate, and
+#: "big" has a sense with 87 members.
+_PREVIEW_TERMS = 4
 
-    Ordering and labelling are the whole point:
 
-    * Synonyms come first, tagged with their part of speech, and are the only
-      entries offered as substitutes.
-    * Broader (generic) terms follow, prefixed ``broader:``. "city" is a true
-      fact about "The Hague" and a poor replacement for it.
-    * Antonyms come last, prefixed ``opposite:``. A writer may well want the
-      opposite word; what they must never get is the opposite word presented as
-      a synonym, which is what this module did until 2026-08-26.
+@dataclass(frozen=True, slots=True)
+class SenseRow:
+    """One sense, ready for a two-pane picker.
 
-    A prefix rather than a suffix, so that the first-character type-ahead of a
-    native list box jumps straight to them: ``b`` for broader, ``o`` for
-    opposites.
-
-    Pure and wx-free so the policy can be tested without a UI -- and so the
-    dialog that consumes it stays inside its size budget.
+    ``label`` is the row in the sense list. ``rows`` are the ``(label, term)``
+    pairs for the synonym pane when this sense is chosen -- two different
+    strings on purpose, because the labels carry a prefix and replacing "light"
+    with "opposite: heavy" would be a funny bug in a serious place.
     """
-    rows: list[tuple[str, str]] = []
+
+    label: str
+    part_of_speech: str
+    rows: tuple[tuple[str, str], ...]
+
+
+def sense_rows(entry: ThesaurusEntry) -> tuple[SenseRow, ...]:
+    """Group *entry* by sense for a picker. Pure, and wx-free so it can be tested.
+
+    A flat list is what this replaced, and it was the wrong shape: "light" has
+    46 senses and 168 members, and presenting them as one list mixes weight,
+    colour and illumination with no boundary between them.
+
+    Three rules, each earned:
+
+    * **A sense with nothing but antonyms is dropped.** 1,191 senses corpus-wide
+      are antonym-only; one of them is why "light" used to offer "heavy" as its
+      own sense. Every remaining row can be acted on.
+    * **The part of speech leads the row**, spelled out. Not a bracketed suffix:
+      a native list box does first-character type-ahead, so with the part of
+      speech first, ``n`` jumps to the noun senses and ``v`` to the verbs. A
+      free filter, no control and no code.
+    * **The preview falls back to broader terms** when a sense has no
+      substitutes of its own, and says so. Those senses are real -- dropping
+      them loses "in a new light" -- but a hypernym is not a synonym and the row
+      must not imply it is.
+
+    Position ("3 of 45") is deliberately absent: screen readers announce list
+    position themselves, and putting it in the row text says it twice.
+    """
+    senses: list[SenseRow] = []
     for meaning in entry.meanings:
-        pos = meaning.part_of_speech or "other"
-        rows.extend((f"[{pos}] {synonym}", synonym) for synonym in meaning.synonyms)
-    for label, terms in (("broader", entry.all_broader), ("opposite", entry.all_antonyms)):
-        rows.extend((f"{label}: {term}", term) for term in terms)
-    return tuple(rows)
+        if not meaning.synonyms and not meaning.broader:
+            continue  # antonym-only: nothing here can be acted on
+        pos = _POS_NAMES.get(meaning.part_of_speech, meaning.part_of_speech or "other")
+        preview_from = meaning.synonyms or meaning.broader
+        qualifier = "" if meaning.synonyms else " (broader)"
+        shown = list(preview_from[:_PREVIEW_TERMS])
+        remaining = len(preview_from) - len(shown)
+        if remaining > 0:
+            shown.append(f"{remaining} more")
+        rows: list[tuple[str, str]] = [(term, term) for term in meaning.synonyms]
+        rows.extend((f"broader: {term}", term) for term in meaning.broader)
+        rows.extend((f"opposite: {term}", term) for term in meaning.antonyms)
+        senses.append(
+            SenseRow(
+                label=f"{pos}{qualifier}: {', '.join(shown)}",
+                part_of_speech=pos,
+                rows=tuple(rows),
+            )
+        )
+    return tuple(senses)
 
 
 def is_available() -> bool:

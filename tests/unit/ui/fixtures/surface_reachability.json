@@ -303,6 +303,7 @@
   "quill.ui.sync_places_command": "reachable",
   "quill.ui.sync_places_dialog": "reachable",
   "quill.ui.table_studio": "reachable",
+  "quill.ui.thesaurus_dialog": "reachable",
   "quill.ui.train_style_dialog": "reachable",
   "quill.ui.transcript_actions_ui": "reachable",
   "quill.ui.transcript_reader": "reachable",
