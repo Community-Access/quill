@@ -57,17 +57,76 @@
   var MAX_DESCRIPTION = 600;
   var MAX_WHY = 600;
 
+  // Field id -> the name= its radios share. The field id is on the <fieldset>,
+  // so getElementById("kind") is a container and not a control; nothing below
+  // may assume the two are the same thing.
+  //
+  // (Do not reach for form.elements as a shortcut. A <fieldset> is a listed
+  // element, so form.elements holds both the fieldset by id and the radios by
+  // name under the same key, and the named getter's result is not something to
+  // rely on.)
+  var RADIO_GROUPS = { kind: "kind" };
+
+  // Every element carrying this field's ARIA state: one control for an
+  // ordinary field, both inputs for a radio group. Both, because a screen
+  // reader reports the state of whichever radio has focus and there is no
+  // telling in advance which that will be. Scoped to the form, so a same-named
+  // input elsewhere on the page can never answer for this field.
+  function controlsFor(id) {
+    var group = RADIO_GROUPS[id];
+    if (group) {
+      return Array.prototype.slice.call(
+        form.querySelectorAll('input[type="radio"][name="' + group + '"]')
+      );
+    }
+    var el = document.getElementById(id);
+    return el ? [el] : [];
+  }
+
+  // What "the field" means as a focus destination. The checked radio if there
+  // is one, otherwise the first: a native group has a single tab stop and it
+  // is the checked button, so focusing an unchecked sibling would land
+  // somewhere Tab can never return to. Focusing the <fieldset> would do
+  // nothing at all -- it is not focusable, so the summary link would look
+  // broken while raising no error anywhere. focus() never checks a radio.
+  function focusTarget(id) {
+    var group = RADIO_GROUPS[id];
+    if (group) {
+      return (
+        form.querySelector('input[type="radio"][name="' + group + '"]:checked') ||
+        controlsFor(id)[0] ||
+        null
+      );
+    }
+    return document.getElementById(id) || null;
+  }
+
   // Captured once, at load. Restoring from this snapshot is why a field's hint
   // id can never be lost, however many times it goes in and out of error.
   var BASE_DESCRIBEDBY = {};
   Object.keys(FIELD_LABELS).forEach(function (id) {
-    var el = document.getElementById(id);
+    // controlsFor, not getElementById: for a radio group the id is on the
+    // <fieldset>, which never had an aria-describedby. Taking "" from it is
+    // exactly how a hint gets dropped.
+    var el = controlsFor(id)[0];
     if (el) {
       BASE_DESCRIBEDBY[id] = el.getAttribute("aria-describedby") || "";
     }
   });
 
   function value(id) {
+    var group = RADIO_GROUPS[id];
+    if (group) {
+      // A <fieldset> has no .value: reading one gives undefined, which
+      // String(undefined || "") turns into "", so the old helper would report
+      // "not answered" for every submission. Putting the id on a radio instead
+      // is worse, not better -- input.value on a radio is its value attribute
+      // whether or not it is checked, so it would return "stream" always.
+      var checked = form.querySelector(
+        'input[type="radio"][name="' + group + '"]:checked'
+      );
+      return checked ? checked.value : "";
+    }
     var el = document.getElementById(id);
     return el ? String(el.value || "").trim() : "";
   }
@@ -115,8 +174,8 @@
   // ---- per-field error state ----------------------------------------------
 
   function setFieldError(id, message) {
-    var el = document.getElementById(id);
-    if (!el) {
+    var els = controlsFor(id);
+    if (!els.length) {
       return;
     }
     var errId = id + "-error";
@@ -125,7 +184,13 @@
       node = document.createElement("span");
       node.id = errId;
       node.className = "field-error";
-      el.parentNode.insertBefore(node, el);
+      // Before the first control -- but a radio sits inside a flex .radio-row,
+      // and inserting into that row would make the error text a flex item
+      // beside the button. Anchor on the row instead, so the message lands
+      // after the legend and hint and above both options: the same place it
+      // occupies on every other field.
+      var anchor = els[0].closest(".radio-row") || els[0];
+      anchor.parentNode.insertBefore(node, anchor);
     }
     node.textContent = "";
     // "Error:" as a real element, not a CSS ::before. Screen readers announce
@@ -135,24 +200,44 @@
     tag.textContent = "Error:";
     node.appendChild(tag);
     node.appendChild(document.createTextNode(" " + message));
-    el.setAttribute("aria-invalid", "true");
-    // The error id first, so on re-focus the problem is heard before the hint.
+
+    // aria-invalid goes on each radio, not on the <fieldset>, and the reason
+    // is that the spec and the screen readers disagree. aria-invalid is not a
+    // global attribute: ARIA 1.2 allows it on radiogroup and textbox but on
+    // neither `group` (which a bare fieldset maps to) nor `radio`. So the
+    // fieldset is the worse of the two spec-wise, not the better one. In
+    // practice NVDA and JAWS report the invalid state of the *focused* object,
+    // which here is always a radio and never the fieldset. Input placement is
+    // off-spec and audible; group placement is arguable and silent. Take the
+    // announcement -- the aria-describedby error text is the real carrier
+    // either way, and that one is global and unambiguous.
+    //
+    // The error id comes first, so on re-focus the problem is heard before
+    // the hint.
     var base = BASE_DESCRIBEDBY[id];
-    el.setAttribute("aria-describedby", base ? errId + " " + base : errId);
+    var described = base ? errId + " " + base : errId;
+    els.forEach(function (el) {
+      el.setAttribute("aria-invalid", "true");
+      el.setAttribute("aria-describedby", described);
+    });
   }
 
   function clearFieldError(id) {
-    var el = document.getElementById(id);
-    if (!el) {
+    var els = controlsFor(id);
+    if (!els.length) {
       return;
     }
-    el.removeAttribute("aria-invalid");
     var base = BASE_DESCRIBEDBY[id];
-    if (base) {
-      el.setAttribute("aria-describedby", base);
-    } else {
-      el.removeAttribute("aria-describedby");
-    }
+    els.forEach(function (el) {
+      el.removeAttribute("aria-invalid");
+      if (base) {
+        el.setAttribute("aria-describedby", base);
+      } else {
+        el.removeAttribute("aria-describedby");
+      }
+    });
+    // Safe to remove: the .field-error node is a sibling of the focused
+    // control, never an ancestor, so taking it out cannot move focus.
     var node = document.getElementById(id + "-error");
     if (node && node.parentNode) {
       node.parentNode.removeChild(node);
@@ -163,21 +248,37 @@
     Object.keys(FIELD_LABELS).forEach(clearFieldError);
   }
 
+  // Asked of the field, not of the element the event came from: checking one
+  // radio has to clear the error sitting on both.
+  function isInvalid(id) {
+    var els = controlsFor(id);
+    return els.length > 0 && els[0].getAttribute("aria-invalid") === "true";
+  }
+
   // Cleared on input, not on blur. Clearing is silent; re-validating on blur
   // would interrupt every time somebody tabs past a field they are not done
   // with yet.
   Object.keys(FIELD_LABELS).forEach(function (id) {
-    var el = document.getElementById(id);
-    if (!el) {
+    var els = controlsFor(id);
+    if (!els.length) {
       return;
     }
+    // Tested on the field, not on the event target. `change` does bubble from
+    // a radio up to the fieldset, so binding to the container would still
+    // fire -- and would then read aria-invalid off the fieldset, get null, and
+    // never clear.
     var handler = function () {
-      if (el.getAttribute("aria-invalid") === "true") {
+      if (isInvalid(id)) {
         clearFieldError(id);
       }
     };
-    el.addEventListener("input", handler);
-    el.addEventListener("change", handler);
+    els.forEach(function (el) {
+      // `change` is what a radio fires on selection everywhere that matters;
+      // `input` stays for the text fields. Firing twice is harmless -- the
+      // second pass finds nothing left to clear.
+      el.addEventListener("input", handler);
+      el.addEventListener("change", handler);
+    });
   });
 
   // ---- validation ----------------------------------------------------------
@@ -188,11 +289,27 @@
       errors.push({ field: field, message: message });
     }
 
+    // Pushed first, above the name: the summary renders in push order and is a
+    // list people work down, so an order that does not match the fields sends
+    // them back up the form.
+    if (!pick.type) {
+      fail("kind", "Choose one — a radio station, or a podcast.");
+    }
     if (!pick.title) {
       fail("title", "Give it a name — what would you call it in a list?");
     }
     if (!pick.url) {
-      fail("url", pick.type === "podcast" ? "Add the feed address." : "Add the stream address.");
+      // Three cases, not two. With kind unanswered a two-way ternary falls
+      // through and tells somebody suggesting a podcast, in confident plain
+      // words, to supply a stream address.
+      fail(
+        "url",
+        pick.type === "podcast"
+          ? "Add the feed address."
+          : pick.type === "stream"
+            ? "Add the stream address."
+            : "Add the address."
+      );
     } else if (
       pick.url.toLowerCase().indexOf("https://") !== 0 &&
       pick.url.toLowerCase().indexOf("http://") !== 0
@@ -247,14 +364,19 @@
       setFieldError(err.field, err.message);
       var item = document.createElement("li");
       var link = document.createElement("a");
-      link.href = "#" + err.field;
+      // The href points at whatever will actually be focused, so the one path
+      // that does not run the handler -- a copied link, or script failing
+      // after the summary rendered -- still lands on a control rather than on
+      // a container nothing can focus.
+      var destination = focusTarget(err.field);
+      link.href = "#" + (destination && destination.id ? destination.id : err.field);
       link.textContent = FIELD_LABELS[err.field] + ": " + err.message;
       link.addEventListener("click", function (event) {
         // Explicit focus rather than trusting fragment navigation, so that
         // following the same link twice still works and #url stays out of the
         // address bar.
         event.preventDefault();
-        var target = document.getElementById(err.field);
+        var target = focusTarget(err.field);
         if (target) {
           target.focus();
         }
@@ -347,7 +469,11 @@
     }
 
     var pick = {
-      type: value("kind") || "stream",
+      // No `|| "stream"` fallback. An unanswered group has to reach validate()
+      // as "" or its error can never fire -- and the value it would fall back
+      // to is the wrong answer for exactly the suggestions that most need
+      // catching.
+      type: value("kind"),
       title: value("title"),
       url: value("url"),
       description: value("description"),
@@ -361,6 +487,10 @@
       showErrors(errors);
       return;
     }
+    // Past this point pick.type is "stream" or "podcast" and nothing else.
+    // issueTitle, issueBody and the thank-you sentence all branch on it with
+    // no third case; an empty type would title a podcast "Station" and file
+    // its feed address under stream_url, with nothing anywhere reporting it.
     errorBox.textContent = "";
     clearAllFieldErrors();
     result.textContent = "";

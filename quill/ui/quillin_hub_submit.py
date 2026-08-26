@@ -20,8 +20,25 @@ from typing import Any
 from quill.ui.dialog_contract import set_accessible_name
 
 # The community store for every shareable QUILL artifact type.
+#
+# **Not open yet, and this host does not resolve.** The constants are kept
+# rather than deleted because the local validation below is the useful half and
+# it works: it runs the exact checks the Hub will run, so an artifact that
+# passes here is ready for the day the Hub exists.
+#
+# What is NOT kept is a button that opened a browser at nothing. A dead link is
+# worse for somebody using a screen reader than a missing one: the browser
+# opens, focus leaves the app, and what greets them is a DNS error page they
+# then have to navigate back out of -- all of which reads as "I did something
+# wrong". Until this host answers, the dialog says so in words instead.
+#
+# The domain is an open question -- see section 6 of
+# docs/design/2026-08-26-feedback-redesign-for-freescout.md. To re-enable once
+# it resolves, set HUB_IS_LIVE to True: that is the whole change, because the
+# button and its handler are still here.
 QUILLIN_HUB_URL = "https://hub.quillforall.org"
 QUILLIN_HUB_SUBMIT_URL = QUILLIN_HUB_URL + "/forge/submit"
+HUB_IS_LIVE = False
 
 _WILDCARD = (
     "All QUILL artifacts|*.zip;*.qsp;*.kqp;*.sqp;*.qvp.json;*.md;*.json|"
@@ -89,11 +106,18 @@ def open_hub_submission(
             "upload the .minisig sidecar alongside."
         )
 
-    if passed:
+    if passed and HUB_IS_LIVE:
         body_text += (
             "\n\nNext step: choose 'Open the Quillin Hub' to start your submission. "
             "The Hub re-runs these same checks and guides you through a GitHub "
             "pull request."
+        )
+    elif passed:
+        body_text += (
+            "\n\nThe Quillin Hub is not open yet, so there is nowhere to submit this "
+            "today. Nothing is wrong with your artifact -- it has passed every check "
+            "the Hub will run, so it is ready for the day it opens. Keep the file and "
+            "its .minisig sidecar together."
         )
 
     dialog = wx.Dialog(
@@ -112,7 +136,7 @@ def open_hub_submission(
     sizer.Add(text, 1, wx.EXPAND | wx.ALL, 8)
 
     buttons = wx.BoxSizer(wx.HORIZONTAL)
-    if passed and sig.verified:
+    if passed and sig.verified and HUB_IS_LIVE:
         open_button = wx.Button(dialog, label="&Open the Quillin Hub")
 
         def on_open_hub(_event: object) -> None:

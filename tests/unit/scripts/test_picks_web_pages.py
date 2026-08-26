@@ -327,3 +327,29 @@ def test_the_suggest_page_no_longer_claims_an_account_is_needed() -> None:
     account_mentions = re.findall(r"[^.]*GitHub account[^.]*\.", html)
     assert len(account_mentions) == 1, account_mentions
     assert "Other ways" in html[: html.index(account_mentions[0])]
+
+
+def test_the_kind_group_is_a_radio_group_that_starts_unanswered() -> None:
+    """The one answer on this form whose wrong value the suggester never sees.
+
+    A wrong name shows up in the confirmation and a wrong address fails
+    outright, but a wrong *kind* is silent: it files a podcast's RSS feed under
+    ``stream_url`` and surfaces months later in somebody else's app. A radio
+    group is the only control that can express "not answered yet", so a
+    pre-checked default -- or a ``|| "stream"`` fallback in the reader -- throws
+    away the entire reason for the conversion.
+    """
+    html = _markup_only(_read(_SUGGEST_HTML))
+    code = _code_only(_read(_SUGGEST_JS))
+
+    assert "<fieldset" in html and "<legend>" in html
+    radios = re.findall(r'<input[^>]*type="radio"[^>]*>', html)
+    assert len(radios) == 2, radios
+    for radio in radios:
+        # Per tag, not a file-wide count: counting "required" would also catch
+        # the visible "(required)" spans and break on the next field added.
+        assert "required" in radio, radio
+        assert "checked" not in radio, radio
+
+    assert 'value("kind") || "stream"' not in code
+    assert 'fail("kind"' in code

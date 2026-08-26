@@ -14,6 +14,24 @@ The key never leaves CI. ``PICKS_SIGNING_KEY`` is the base64 Ed25519 seed, held
 as a repository secret; without it this script exits 0 and signs nothing, so a
 fork's workflow run cannot publish an unsigned catalogue.
 
+**It has to be the seed for the publisher key already committed as
+``quill-pub.key``**, not a freshly generated pair. That file is what every
+shipped build verifies against, and it verifies Quillins and release artifacts
+too -- so a new keypair would not merely fail to help here, it would have to
+replace a key other signatures already depend on. Generating one is the wrong
+instinct and this paragraph exists to interrupt it; :func:`sign` refuses a
+stranger rather than trusting the reader to have got here.
+
+The sidecar is written by :func:`quill.tools.signing.sign_artifact` -- the same
+function that writes every other signature in this project, and the counterpart
+of the one that reads them. That matters more than it looks. This script used
+to hand-roll a two-line file (comment, then base64), while ``read_minisig``
+requires three lines with a ``key id:`` between them. The signature itself was
+perfectly good and the app rejected the file as an unreadable sidecar, which
+fails closed -- so with the secret set and everything apparently done, the
+catalogue would have been published *signed* and still never used. One writer,
+one reader, one shape.
+
 Usage::
 
     PICKS_SIGNING_KEY=<base64 seed> python scripts/sign_community_picks.py
@@ -31,21 +49,62 @@ from pathlib import Path
 _ROOT = Path(__file__).resolve().parents[1]
 TARGET = _ROOT / "docs" / "site" / "picks" / "v1" / "picks.json"
 SIDECAR = TARGET.with_suffix(".json.minisig")
-COMMENT = "untrusted comment: QuillVille Community Picks"
 ENV_KEY = "PICKS_SIGNING_KEY"
 
 
-def sign(seed_b64: str) -> Path:
+def _signing_key(seed_b64: str):  # noqa: ANN202 - nacl is imported lazily
+    """The signing key from the secret, or exit saying exactly what is wrong."""
     from nacl import signing
 
-    key = signing.SigningKey(base64.b64decode(seed_b64))
-    payload = TARGET.read_bytes()
-    signature = key.sign(payload).signature
-    SIDECAR.write_text(
-        COMMENT + "\n" + base64.b64encode(signature).decode("ascii") + "\n",
-        encoding="utf-8",
-    )
-    return SIDECAR
+    try:
+        seed = base64.b64decode(seed_b64, validate=True)
+    except Exception as error:  # noqa: BLE001 - any decode failure is one message
+        raise SystemExit(f"{ENV_KEY} is not valid base64: {error}") from error
+    if len(seed) == 64:
+        # Some tools export the seed and the public key concatenated. Take the
+        # seed rather than signing with the wrong 32 bytes and producing a
+        # signature that verifies against nothing.
+        seed = seed[:32]
+    if len(seed) != 32:
+        raise SystemExit(
+            f"{ENV_KEY} decodes to {len(seed)} bytes; an Ed25519 seed is 32 "
+            "(or 64 for seed followed by public key)."
+        )
+    return signing.SigningKey(seed)
+
+
+def _refuse_a_stranger(key) -> None:  # noqa: ANN001 - nacl is imported lazily
+    """Stop before signing with a key no shipped build trusts.
+
+    Without this the failure is silent and slow: CI signs, publishes, and every
+    listener's app refuses the catalogue and quietly falls back to the bundled
+    copy -- which looks exactly like working software, because falling back is
+    what it is supposed to do. The mismatch would surface days later as "why
+    are the new picks not appearing?". Far better to fail the workflow run.
+    """
+    sys.path.insert(0, str(_ROOT))
+    from quill.tools.signing import load_publisher_public_key
+
+    try:
+        expected = load_publisher_public_key()
+    except Exception as error:  # noqa: BLE001 - a missing key file is its own message
+        raise SystemExit(f"cannot check the signing key: {error}") from error
+    if key.verify_key.encode() != expected.encode():
+        raise SystemExit(
+            f"{ENV_KEY} is not the seed for the publisher key in quill-pub.key. "
+            "Signing with it would publish a catalogue every shipped build "
+            "refuses. Use the existing publisher seed, not a new keypair."
+        )
+
+
+def sign(seed_b64: str) -> Path:
+    """Write the detached signature, in the shape the app's verifier reads."""
+    sys.path.insert(0, str(_ROOT))
+    from quill.tools.signing import sign_artifact
+
+    key = _signing_key(seed_b64)
+    _refuse_a_stranger(key)
+    return sign_artifact(TARGET, key)
 
 
 def verify() -> bool:

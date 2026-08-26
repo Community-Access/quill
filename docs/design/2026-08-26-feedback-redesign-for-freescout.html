@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Feedback, redesigned for FreeScout — and the simple form
+survives</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1
+id="feedback-redesigned-for-freescout--and-the-simple-form-survives">Feedback,
+redesigned for FreeScout — and the simple form survives</h1>
+<p>Written 2026-08-26, against <em>Community Access Support, FreeScout,
+Postmark, and GitHub Integration Plan — Free-Software Baseline</em>
+(v4).</p>
+<p><strong>The short version.</strong> The plan makes one rule that
+QUILL currently breaks in every app: <em>FreeScout is authoritative for
+customer communication, GitHub is authoritative for engineering
+work.</em> Today <strong>Report a Bug writes the customer’s own words
+straight into a public GitHub repository</strong>, using a token shipped
+inside every installer, and gives the reporter no way to be answered.
+That has to change.</p>
+<p><strong>What does not change is the form.</strong> Same dialog, same
+fields, same one button. A person reporting a problem should not be able
+to tell that anything was rearranged behind it. Everything below is
+about where the submission goes and what the app has to carry — not
+about what the user does.</p>
+<hr />
+<h2 id="1-what-the-plan-requires">1. What the plan requires</h2>
+<p>Five things bear directly on QUILL:</p>
+<ol type="1">
+<li><strong><code>support@community-access.org</code> is the public
+support address</strong>, handled in FreeScout, delivered by Postmark.
+Each agent has their own login; nobody shares a password.</li>
+<li><strong>A GitHub issue raised from support is a <em>sanitized
+engineering summary</em> written by a human agent</strong> — never a
+pasted transcript.</li>
+<li><strong>The privacy rule is mandatory when the repository is
+public.</strong> Do not copy a customer’s email address, phone number,
+transcript, signature, private attachments, credentials or account
+identifiers into GitHub. <code>Community-Access/quill</code> <strong>is
+public.</strong></li>
+<li><strong>One repository, seven products, distinguished by
+labels</strong>: <code>product:quill</code>,
+<code>product:weather</code>, <code>product:radio</code>,
+<code>product:cast</code>, <code>product:social</code>,
+<code>product:beacon</code>, <code>product:audio-studio</code>, plus
+<code>type:bug</code> / <code>type:feature</code> /
+<code>type:accessibility</code> / <code>type:documentation</code> and
+<code>source:support</code>.</li>
+<li><strong>FreeScout and GitHub own their own statuses.</strong>
+Closing an issue does not close a ticket; support closes the ticket
+after verifying the outcome with the customer.</li>
+</ol>
+<hr />
+<h2 id="2-what-quill-does-today-measured-against-that">2. What QUILL
+does today, measured against that</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Where it lands</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Report a Bug</strong>
+(<code>AppShellFrame.report_app_bug</code> →
+<code>feedback_hub.wx_dialog</code>)</td>
+<td>A GitHub issue, filed with the bundled token</td>
+<td><strong>Breaks the privacy rule and rule 2.</strong> Raw user text
+into a public repo, no reply channel.</td>
+</tr>
+<tr>
+<td><strong>Crash reporter</strong> (<code>core/diagnostics.py</code>,
+fingerprint dedup)</td>
+<td>Same</td>
+<td>Same, plus it can carry paths, versions and environment detail.</td>
+</tr>
+<tr>
+<td><strong>Report Bad Station</strong> (Radio)</td>
+<td>Same, prefilled</td>
+<td>Same.</td>
+</tr>
+<tr>
+<td><strong>Suggest a Station or Podcast</strong> (in-app + web
+form)</td>
+<td>A <code>pick:suggestion</code> issue</td>
+<td><strong>Correct as it is.</strong> See §5.</td>
+</tr>
+<tr>
+<td><strong>Quillin Hub submit</strong>
+(<code>ui/quillin_hub_submit.py</code>)</td>
+<td><code>https://hub.quillforall.org</code> — <strong>does not
+resolve</strong></td>
+<td>Broken today, independently of this plan.</td>
+</tr>
+</tbody>
+</table>
+<p>Three separate problems, and they are worth naming apart because they
+have different fixes:</p>
+<p><strong>(a) The privacy problem.</strong> The repository is public.
+Somebody describing a screen-reader failure may name their employer,
+their assistive technology configuration, or a document they were
+working on. That is exactly the material the plan says to keep in
+FreeScout. Today it is published, permanently and searchably, the moment
+they press Submit.</p>
+<p><strong>(b) The no-answer problem.</strong> A GitHub issue is not a
+conversation a person without a GitHub account can join. We built an
+entire submission server this week so that nobody needs an account to
+<em>suggest a station</em> — and meanwhile the person reporting a
+<strong>bug</strong> is filed into a system where they cannot read the
+reply. Fixing the smaller case and leaving the larger one is not a
+defensible place to stop.</p>
+<p><strong>(c) The credential problem.</strong>
+<code>quill/_feedback_token.py</code> bakes an issues-scoped token into
+every build. Anyone who unzips an installer has it. Scope limits the
+damage to issue spam, which is why it was acceptable — but it stops
+being necessary the moment submissions go through a server.</p>
+<hr />
+<h2 id="3-the-redesign">3. The redesign</h2>
+<pre><code>                                                   ┌─ conversation, replies,
+Report a Bug        ─┐                             │  attachments, history
+Crash report        ─┤                             │
+Report Bad Station  ─┼──→ submission server ──→ Postmark ──→ FreeScout ──┤
+Feedback / question ─┘    (holds the only            support@             │
+                           credential)                                    │
+                                                   agent triages, and only
+                                                   then, if engineering is
+                                                   needed and after sanitising:
+                                                            │
+                                                            v
+                                              GitHub issue: product:*, type:*,
+                                                     source:support</code></pre>
+<p>Three moving parts, two of which already exist.</p>
+<h3 id="31-the-app-stops-filing-issues-and-starts-filing-tickets">3.1
+The app stops filing issues and starts filing tickets</h3>
+<p><code>feedback_hub</code>’s wx dialog keeps its shape exactly. What
+changes is the transport underneath it: instead of
+<code>create_issue()</code> against the GitHub API, it POSTs to the
+submission server, which relays to Postmark as a message to
+<code>support@community-access.org</code>.</p>
+<p>The app therefore <strong>carries no credential at all</strong>.
+<code>quill/_feedback_token.py</code> and the build step that generates
+it can go, along with the release check that fails when the token is
+missing.</p>
+<p>Why the server rather than the user’s own mail client: a
+<code>mailto:</code> handoff fails webmail-only visitors and silently
+loses everybody whose machine has no handler registered — and a desktop
+app must not hold SMTP credentials, which is the same objection as the
+GitHub token wearing different clothes.</p>
+<h3 id="32-the-submission-server-grows-one-endpoint">3.2 The submission
+server grows one endpoint</h3>
+<p><code>feedback_hub.server</code> already runs on
+<code>lp.csedesigns.com</code> holding a credential and refusing
+malformed input. <code>POST /submit/support</code> is the same shape as
+<code>/submit/picks</code>: validate, relay, answer in plain
+English.</p>
+<p>This is precisely the <em>“same process, more endpoints”</em> step
+that <code>magic.md</code> deferred on 2026-08-26 — deliberately, so the
+first deployment was not also the riskiest. It has now been up and
+proven, and the FreeScout plan supplies the reason to take the next
+step.</p>
+<p>What it must do differently from the picks endpoint:</p>
+<ul>
+<li><strong>Relay to Postmark</strong>, not to GitHub. Different
+credential, different failure modes, same “tell the visitor the truth
+without showing them the provider’s error” rule.</li>
+<li><strong>Set the reply address to whatever the reporter
+gave</strong>, so FreeScout threads the conversation to a real person.
+This is the field that makes the difference between a report and a
+conversation.</li>
+<li><strong>Make the email address optional and say so.</strong>
+Somebody who does not want to give one should still be able to report a
+bug; they simply will not get an answer, and the form should say that in
+those words rather than making the field required.</li>
+<li><strong>Carry the product</strong> as a header or a first line, so
+the agent’s triage step (§1.4) starts from the app’s own knowledge
+rather than from guesswork. The app already knows it is “Quill Radio
+1.0.0”.</li>
+</ul>
+<h3 id="33-triage-and-escalation-stay-human">3.3 Triage and escalation
+stay human</h3>
+<p>Nothing automatic writes to GitHub. An agent reads the conversation,
+decides whether engineering work is needed, searches for an existing
+issue, and only then writes a sanitized summary with the labels from
+§1.4. The plan is explicit that the AI issue-drafting features stay off
+for the initial deployment, and that matches: the sanitising step is the
+point, and it is the step a human is there to do.</p>
+<hr />
+<h2 id="4-what-this-costs-honestly">4. What this costs, honestly</h2>
+<p><strong>Crash fingerprinting becomes less useful, and that is a real
+loss.</strong> feedback-hub 1.1.0 deduplicates crashes so the second
+person to hit a bug lands on the first person’s issue. Routed through
+FreeScout, two people hitting one crash are two conversations —
+correctly, because they are two customer relationships — and the
+deduplication has to happen at the escalation step instead, by an agent
+searching before creating. The plan says to do exactly that (“Search
+before create”), and it explicitly wants the conversations kept
+separate. So the capability is not wasted; it moves.</p>
+<p>A middle path worth considering rather than deciding here: keep the
+fingerprint in the relayed message as a header. FreeScout cannot act on
+it in Phase 1 without the paid modules, but an agent can search for it,
+and it costs nothing to include.</p>
+<p><strong>Somebody has to read the queue.</strong> Today a bug report
+costs nobody any time until a maintainer looks at the issue list. A
+ticket that nobody answers is worse than an issue nobody reads, because
+the reporter was told to expect a reply. This is the genuine new
+obligation in the plan and it should be accepted deliberately, not
+discovered.</p>
+<p><strong>Report a Bug stops working offline-ish.</strong> It already
+required the network. No change, but worth stating.</p>
+<hr />
+<h2 id="5-what-deliberately-does-not-change">5. What deliberately does
+<em>not</em> change</h2>
+<p><strong>Community Picks suggestions keep going straight to
+GitHub.</strong> A suggested radio station is not a support
+conversation:</p>
+<ul>
+<li>there is no customer relationship to preserve — nobody is waiting
+for an answer beyond “it was added”;</li>
+<li>there is nothing personal in it. A station name, a stream address
+and a sentence of description are the whole payload, and the
+<em>point</em> is that it becomes public;</li>
+<li>it is already reviewed on a purpose-built accessible review page and
+consumed by <code>picks-build.yml</code>. Routing it through a mailbox
+would mean a human retyping structured data that arrived
+structured.</li>
+</ul>
+<p>The plan governs <strong>support</strong>. This is content
+contribution, and the two should not be conflated because they happen to
+both produce issues.</p>
+<p><strong>And the form stays simple.</strong> Both forms — the wx
+dialog and the web page — keep their current fields and their current
+single button. The web suggestion form shipped today with a full
+accessibility review applied and it is not being reopened.</p>
+<hr />
+<h2 id="6-the-open-question-i-am-not-answering-here">6. The open
+question I am not answering here</h2>
+<p><strong>Which domain?</strong></p>
+<p>The plan is written for <code>community-access.org</code>. QUILL
+currently serves the catalogue from <code>quillforall.org</code>, the
+suggestion form from <code>quillforall.org/picks/suggest/</code>, and
+the submission server’s CORS allowlist names
+<code>https://quillforall.org</code>. The dead Quillin Hub constant
+points at <code>hub.quillforall.org</code>.</p>
+<p>Three readings, and they lead to different work:</p>
+<ol type="1">
+<li><code>community-access.org</code> is the <em>organisation’s</em>
+domain and <code>quillforall.org</code> stays the <em>product</em>
+domain. Nothing here moves; only support email is new.</li>
+<li><code>quillforall.org</code> is being retired in favour of
+<code>community-access.org</code>. Then the catalogue URL, the signature
+URL, the CORS allowlist, the form, and the bundled fallback all move —
+and the catalogue URL is baked into shipped builds, so old installs must
+keep resolving.</li>
+<li>Both, with redirects.</li>
+</ol>
+<p>This is a decision, not a detail, and guessing it wrong is expensive
+in exactly the way a URL baked into released binaries is expensive.
+Everything in §3 is written to be configurable by environment variable
+so that whichever answer lands, it is a setting rather than a
+rebuild.</p>
+<hr />
+<h2 id="7-suggested-order">7. Suggested order</h2>
+<p>Small, and each step independently useful:</p>
+<ol type="1">
+<li><strong>Create the labels</strong> — the seven
+<code>product:*</code>, the four <code>type:*</code>, and
+<code>source:support</code>. Costs nothing, blocks nothing, and makes
+the escalation step possible the day FreeScout is up. Can be done
+now.</li>
+<li><strong><code>POST /submit/support</code></strong> in feedback-hub,
+behind Postmark, with tests in the shape <code>/submit/picks</code>
+already has.</li>
+<li><strong>Point <code>feedback_hub.wx_dialog</code> at it</strong>,
+keeping the dialog identical.</li>
+<li><strong>Delete the bundled token</strong> and the build step that
+generates it, once (3) is proven in a release.</li>
+<li><strong>Fix or retire <code>hub.quillforall.org</code></strong> —
+unrelated to the plan, but it is the third broken submission path in the
+same subsystem and should not be left to be discovered again.</li>
+<li><strong>Decide the domain question</strong> (§6) before anything in
+(2) or (3) ships with a hostname in it.</li>
+</ol>
+<p>Steps 2–4 are the migration <code>magic.md</code> already listed as
+“the next one, once this has been up a while”. This document is the
+reason to schedule it.</p>
+</main>
+</body>
+</html>

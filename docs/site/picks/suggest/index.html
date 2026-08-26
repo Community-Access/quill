@@ -66,16 +66,44 @@
              submit button. -->
         <div id="errors" tabindex="-1"></div>
 
-        <p>
-          <label for="kind">What is it?</label><br>
+        <!-- A <fieldset>, not the <p> the other fields use. Two controls
+             sharing one question is a different shape from one control with
+             one label: there is no id a <label for> could correctly point at.
+
+             Nothing is checked, deliberately. This is the only answer on the
+             form whose wrong value is invisible to the person who gave it - a
+             wrong name shows up in the confirmation, a wrong kind shows up
+             months later in somebody else's app, as an RSS feed filed under
+             stream_url. A radio group is the one control that can express
+             "not answered yet"; pre-checking one throws away the only thing
+             this conversion buys.
+
+             aria-describedby is on the inputs, not on the <fieldset>. NVDA and
+             JAWS read the description of whatever has focus, and focus in a
+             radio group is always on a radio - a hint parked on the group is
+             conforming and silent.
+
+             required on both, not just the first. One is enough to make the
+             group required for constraint validation, but the accessibility
+             mapping is per element: mark only the first and somebody who
+             arrows to the second is told nothing. novalidate suppresses the
+             browser's bubble, not the announcement. -->
+        <fieldset id="kind" class="field-group">
+          <legend>What is it? <span class="req" aria-hidden="true">(required)</span></legend>
           <span id="kind-hint" class="hint">
             This decides what kind of address we expect below.
-          </span><br>
-          <select id="kind" name="kind" aria-describedby="kind-hint">
-            <option value="stream">A radio station (a live stream)</option>
-            <option value="podcast">A podcast (an RSS feed)</option>
-          </select>
-        </p>
+          </span>
+          <div class="radio-row">
+            <input type="radio" id="kind-stream" name="kind" value="stream"
+                   required aria-describedby="kind-hint">
+            <label for="kind-stream">A radio station (a live stream)</label>
+          </div>
+          <div class="radio-row">
+            <input type="radio" id="kind-podcast" name="kind" value="podcast"
+                   required aria-describedby="kind-hint">
+            <label for="kind-podcast">A podcast (an RSS feed)</label>
+          </div>
+        </fieldset>
 
         <p>
           <label for="title">Name <span class="req" aria-hidden="true">(required)</span></label><br>

@@ -301,9 +301,37 @@ main.prose { padding: 2.5rem 0 3.5rem; }
   font-size: 1.05rem;
   list-style: none;
 }
+/* The disclosure marker is DRAWN, not a character.
+
+   It used to be content: "\25B8\00a0" -- a right-pointing triangle. NVDA and
+   JAWS announce CSS generated content, so every FAQ question was read as
+   "black right-pointing small triangle" before the question itself, on a site
+   whose audience is overwhelmingly screen-reader users. A <details> element
+   already announces its own expanded/collapsed state, so the character was
+   adding nothing and costing a word on every single item.
+
+   Borders rather than a background image: a data: URI would be refused by the
+   img-src 'self' policy the picks pages set, and this stylesheet is shared
+   with them. currentColor keeps the shape visible under forced-colors, where
+   author colours are discarded. */
 .faq summary::-webkit-details-marker { display: none; }
-.faq summary::before { content: "\25B8\00a0"; color: var(--accent); }
-.faq details[open] summary::before { content: "\25BE\00a0"; }
+.faq summary::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 0.55rem;
+  border-top: 0.36rem solid transparent;
+  border-bottom: 0.36rem solid transparent;
+  border-left: 0.5rem solid currentColor;
+  color: var(--accent);
+}
+.faq details[open] summary::before {
+  border-left: 0.36rem solid transparent;
+  border-right: 0.36rem solid transparent;
+  border-top: 0.5rem solid currentColor;
+  border-bottom: 0;
+}
 .faq summary:hover { color: var(--accent); }
 /* FAQ questions carry real h3s so heading navigation reaches every answer. */
 .faq summary h3 { display: inline; margin: 0; font-size: 1.05rem; font-weight: 600; }
@@ -328,9 +356,25 @@ main.prose { padding: 2.5rem 0 3.5rem; }
   font-size: 1.05rem;
   list-style: none;
 }
+/* Drawn, not a character -- same reason as the FAQ marker above. */
 .band details.deep > summary::-webkit-details-marker { display: none; }
-.band details.deep > summary::before { content: "\25B8\00a0"; color: var(--accent); }
-.band details.deep[open] > summary::before { content: "\25BE\00a0"; }
+.band details.deep > summary::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 0.55rem;
+  border-top: 0.36rem solid transparent;
+  border-bottom: 0.36rem solid transparent;
+  border-left: 0.5rem solid currentColor;
+  color: var(--accent);
+}
+.band details.deep[open] > summary::before {
+  border-left: 0.36rem solid transparent;
+  border-right: 0.36rem solid transparent;
+  border-top: 0.5rem solid currentColor;
+  border-bottom: 0;
+}
 .band details.deep > summary:hover { color: var(--accent); }
 .band details.deep > div { padding: 0 1.1rem 0.9rem; }
 .band details.deep ul { margin: 0.4rem 0 0.6rem; padding-left: 1.3rem; }
@@ -401,12 +445,22 @@ footer.site .note { max-width: 22rem; font-size: 0.92rem; }
   color: var(--accent);
 }
 .nav-dropdown > summary::-webkit-details-marker { display: none; }
-.nav-dropdown > summary::after { content: " \25BE"; font-size: 0.75em; }
+/* Drawn, not " \25BE" -- that character was read out as "black down-pointing
+   small triangle" after the nav item's name, on every visit. */
+.nav-dropdown > summary::after {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 0.4rem;
+  border-left: 0.28rem solid transparent;
+  border-right: 0.28rem solid transparent;
+  border-top: 0.36rem solid currentColor;
+}
 .nav-dropdown > summary:hover { text-decoration: underline; }
 .nav-dropdown > summary:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
-  border-radius: 4px;
 }
 .nav-dropdown > ul {
   position: absolute;
@@ -533,11 +587,104 @@ button[type="submit"][aria-disabled="true"] {
    1.34:1, so a shadow sitting flush against the outline would erase the focus
    indicator on precisely the fields the visitor most needs to find. Same
    reason outline-offset never goes below 2px. */
-[aria-invalid="true"] {
+/* Not radios or checkboxes: the platform draws those, `border` does nothing to
+   them, and the declaration would be inert here and actively wrong under
+   forced-colors. Their invalid state is handled by .field-group below. */
+[aria-invalid="true"]:not([type="radio"]):not([type="checkbox"]) {
   border: 2px solid var(--error-border);
   border-left-width: 5px;
   border-left-style: dashed;
 }
+
+/* ── Radio groups ───────────────────────────────────────────────────────────
+   A native radio glyph is 13x13 CSS px in Blink and Gecko, and user-agent
+   margins are not clickable -- so the glyph is about a quarter of what 2.5.8
+   asks for, in both dimensions, and no amount of spacing rescues it. The
+   target that counts is the glyph plus its <label for>, which activates the
+   same control. So the label carries the height, and the gap between the two
+   is the label's PADDING: a margin there would look identical and split one
+   target into two islands with a dead strip down the middle.
+
+   The glyph itself is left to the browser -- sized and tinted, never redrawn.
+   appearance: none does not make the control disappear, it makes us the
+   painter of the checked state, and under forced-colors every means of
+   painting it is taken away: box-shadow is forced to none (killing the usual
+   inset-dot trick), background-color is forced to the system palette so the
+   dot matches its surroundings, and background-image is forced to none unless
+   it is a url() -- so an SVG data-URI tick survives *unforced* and can render
+   dark-on-dark in one contrast theme while looking right in another. That last
+   one is the worst of the three, because it passes a single spot-check. The
+   net result is checked and unchecked becoming indistinguishable, on the one
+   platform this audience actually uses. */
+
+.field-group {
+  /* A fieldset's own defaults are a 2px groove border, 0.35em/0.75em padding,
+     and min-inline-size: min-content. The first two break the rhythm of the
+     <p> blocks around it; the third quietly blocks reflow at 320px. */
+  border: 0;
+  padding: 0;
+  margin: 0 0 1rem;
+  min-inline-size: 0;
+  max-width: var(--measure);
+}
+/* A <legend> is not a <label> and inherits none of its weight. */
+.field-group > legend { padding: 0; font-weight: 700; }
+
+.radio-row {
+  display: flex;
+  align-items: center;
+  /* The same 44px target height as the text fields and the submit button, so
+     the row clears 24x24 outright and the 2.5.8 spacing exception never has to
+     be argued. */
+  min-height: 2.75rem;
+}
+.radio-row + .radio-row { margin-top: 0.25rem; }
+
+.radio-row input[type="radio"] {
+  /* width/height scale the native widget and leave the browser as its painter.
+     Not transform: scale(), which blurs it and leaves the focus ring behind. */
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  flex: none;
+}
+.radio-row label {
+  /* padding, not margin: padding is inside the label's hit box, so the gap
+     stays clickable and glyph plus text read as one contiguous target. */
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.5rem 0.25rem 0.5rem 0.6rem;
+  cursor: pointer;
+}
+
+/* accent-color tints the native widget rather than replacing it, and browsers
+   ignore it entirely under forced-colors -- which is exactly the point. */
+input[type="radio"], input[type="checkbox"] { accent-color: var(--accent); }
+
+/* The global focus ring already applies and already passes. Only the offset is
+   restated, and it cannot be zero: flush against the checked accent fill the
+   amber ring measures about 1.3:1, so the gap of page background IS the
+   indicator. */
+input[type="radio"]:focus-visible { outline-offset: 3px; }
+
+/* scroll-padding-top clears the sticky header. This clears the legend and hint
+   above the radio, which scroll-padding cannot reach, because the element
+   scrolled into view is the small input and not the fieldset. */
+#suggest-form input[type="radio"] { scroll-margin-top: 5rem; }
+
+/* Without this the group's only error cue is the injected red text: correct
+   for a screen reader, invisible to somebody scanning for the field that
+   changed. The :has() is progressive enhancement; the text is the guarantee.
+
+   Landmine, deliberately not written: input:invalid. A required radio group
+   with nothing checked matches :invalid from page load, so styling that would
+   paint this group red before the visitor has done anything at all. */
+.field-group:has(input[aria-invalid="true"]) {
+  border-left: 5px dashed var(--error-border);
+  padding-left: 0.75rem;
+}
+.field-group .field-error { margin: 0.3rem 0 0.35rem; }
 
 @media (forced-colors: active) {
   /* forced-color-adjust is scoped to these three blocks and never applied
@@ -551,8 +698,22 @@ button[type="submit"][aria-disabled="true"] {
   }
   #errors:not(:empty), #result.bad { border-style: dashed; }
   #result.ok { border-style: solid; }
-  [aria-invalid="true"] { border: 3px dashed CanvasText; border-left-width: 6px; }
-  input, select, textarea { border: 2px solid FieldText; background: Field; color: FieldText; }
+  [aria-invalid="true"]:not([type="radio"]):not([type="checkbox"]) {
+    border: 3px dashed CanvasText;
+    border-left-width: 6px;
+  }
+  /* Radios and checkboxes excluded: the system paints those itself, and a
+     Field background with a FieldText border is at best inert and at worst a
+     square laid over the round glyph that is the only thing carrying the
+     checked state in a contrast theme. */
+  input:not([type="radio"]):not([type="checkbox"]),
+  select, textarea { border: 2px solid FieldText; background: Field; color: FieldText; }
+  /* border: 0 on the fieldset is safe here -- forced colors only recolours
+     borders that already exist, it never adds one, and the grouping an AT user
+     perceives comes from fieldset/legend rather than from paint. The invalid
+     state is the one boundary that has to come back, dashed so it reads as
+     trouble rather than decoration once its colour is forced to CanvasText. */
+  .field-group:has(input[aria-invalid="true"]) { border-left: 6px dashed CanvasText; }
   button[type="submit"] { border: 2px solid ButtonText; background: ButtonFace; color: ButtonText; }
   button[type="submit"][aria-disabled="true"] { color: GrayText; border-color: GrayText; }
   :focus-visible, .focus-target:focus { outline: 3px solid Highlight; outline-offset: 2px; }

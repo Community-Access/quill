@@ -93,3 +93,62 @@
 - name: translation
   color: "0075ca"
   description: Translation and localisation pull requests.
+
+# Support-to-engineering taxonomy, from the FreeScout/Postmark plan (v4,
+# 2026-08-26). One shared repository serves all seven QUILL applications, so
+# product identity is a label rather than a repository. An engineering issue
+# raised from support carries exactly one product:* label unless the defect
+# genuinely spans applications, plus one or more type:* labels and
+# source:support. See docs/design/2026-08-26-feedback-redesign-for-freescout.md.
+#
+# These live here rather than being created by hand because this file is the
+# source of truth: the sync workflow reconciles the repository against it, so a
+# label that exists only on github.com is a label waiting to be removed.
+
+- name: "product:quill"
+  color: "1d76db"
+  description: QUILL writing environment.
+
+- name: "product:weather"
+  color: "1d76db"
+  description: Quill Weather.
+
+- name: "product:radio"
+  color: "1d76db"
+  description: Quill Radio.
+
+- name: "product:cast"
+  color: "1d76db"
+  description: QUILL Cast.
+
+- name: "product:social"
+  color: "1d76db"
+  description: Quill Social.
+
+- name: "product:beacon"
+  color: "1d76db"
+  description: Quill Beacon.
+
+- name: "product:audio-studio"
+  color: "1d76db"
+  description: QUILL Audio Studio.
+
+- name: "type:bug"
+  color: "d73a4a"
+  description: "Engineering taxonomy: a defect."
+
+- name: "type:feature"
+  color: "a2eeef"
+  description: "Engineering taxonomy: new capability."
+
+- name: "type:accessibility"
+  color: "0e8a16"
+  description: "Engineering taxonomy: screen reader, keyboard, focus, low vision."
+
+- name: "type:documentation"
+  color: "0075ca"
+  description: "Engineering taxonomy: docs and guides."
+
+- name: "source:support"
+  color: "7057ff"
+  description: Raised from a Community Access support conversation. The FreeScout ticket is authoritative.
