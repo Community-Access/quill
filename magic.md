@@ -1,297 +1,305 @@
-# magic.md — what the new EdSharp has to teach QUILL
+# magic.md — nobody should ever require a GitHub account
 
-Written 2026-08-26, from EdSharp 5.0 (upstream at
-[github.com/JamalMazrui/EdSharp](https://github.com/JamalMazrui/EdSharp), last
-pushed the same day) and the working copy at `C:\code\edsharp`.
+Working notes. Started 2026-08-25; the original goal was met 2026-08-26 and the
+work has since grown a second strand (support email, FreeScout). Both are
+below, next steps first.
 
-*The support and Community Picks working notes that used to live in this file
-are now in [support.md](support.md), unchanged. Their next steps are still
-next.*
-
-**Why this is worth an afternoon.** EdSharp is a text editor written by a blind
-developer for blind users, maintained since 2007, and it has just been rebuilt.
-Its feature set is thirty years of accumulated answers to "what does somebody
-working entirely by ear actually need?" — and version 5.0 re-answers several of
-them with things that were not practical to build before.
-
-**The honest baseline.** QUILL has read EdSharp before. `EDS-1` through `EDS-22`
-are ported already — the clipboard collector, set operations, regex
-count/extract, go-to-percent, non-blank navigation, Key Describer, indent
-inference, delete-to-bounds, run file, rename/delete on disk, the HTML and
-line-level transforms. `menu_lint.py` even carries a `# §edsharp-ok` escape
-hatch from that port. So this document is deliberately **not** a feature list
-from the user guide. It is about what 5.0 changed, and about how EdSharp is
-*built*, which turns out to be the more transferable half.
+**The one line that started it:** *"Nobody should ever require a GitHub
+account."* That is now true of the suggestion form. It is **not** yet true of
+Report a Bug, which is the next strand.
 
 ---
 
-## The one idea I would take first
+## Next steps
 
-**Speak only what the screen reader does not already say.**
+Ordered. Each says plainly who it needs, because several are blocked on
+something only Jeff has.
 
-From EdSharp's own announcement of 5.0:
+### Blocked on Jeff
 
-> EdSharp now leaves window titles and focus changes to your screen reader,
-> which announces them anyway, and speaks only what it alone knows.
+1. **DNS for the help desk.** Add an A record at Namecheap, which runs
+   `community-access.org` DNS (`dns1` and `dns2.registrar-servers.com`):
 
-This is a regression that was found and fixed, not a design that was obvious.
-An app with a direct speech channel to JAWS and NVDA acquires a standing
-temptation to narrate, and every narration it adds that the reader was going to
-make anyway is a sentence the user must sit through — on every occurrence,
-forever.
+   ```
+   helpdesk    A    107.175.91.158
+   ```
 
-QUILL has a gate for the opposite failure. `check_announce_gap.py` (GATE-12)
-flags a dialog that updates a status label without announcing it — under-
-announcing. **There is no gate, and as far as I can find no written rule, for
-over-announcing.** That asymmetry is worth closing, because the two mistakes
-are not equally visible: a missing announcement is reported as a bug by the
-person who needed it, while a duplicated one is absorbed as "this app is
-chatty" and never filed.
+   Confirm with `dig +short helpdesk.community-access.org` before step 2. This
+   is the only thing standing between a working FreeScout and a reachable one.
 
-What that could look like in QUILL, in rising order of cost:
+2. **The Caddy block for the help desk.** Only after step 1 resolves — the file
+   `deploy/helpdesk/caddy-snippet.conf` in the feedback-hub repository carries
+   the block and the commands. The ordering is not fussiness: Caddy asks Let's
+   Encrypt for a certificate the moment it loads a site block, and a name that
+   resolves to nothing is a *failed* validation, rate limited far more tightly
+   (five per hostname per hour) than a successful one. Adding it early does not
+   queue it up, it spends the budget you will want when the record is real.
 
-1. **Write the rule down** in `CLAUDE.md` beside the menu-accelerator rule,
-   with the list of things the screen reader already announces and the app
-   therefore must not: window and dialog titles, focus moves, control names,
-   roles and states, selection changes in a list, and the text of a control
-   that just received focus.
-2. **A gate**, in the shape of the existing ones: flag an `_announce(` whose
-   argument is a control's own label or accessible name, or that fires in an
-   `EVT_SET_FOCUS` handler, or that repeats a dialog title. Each of those is a
-   mechanical pattern, and each is a real way to say something twice.
-3. **A verbosity setting** is *not* the answer and should be resisted. It moves
-   a decision we are better placed to make onto somebody who has to discover
-   the setting exists.
+3. **Postmark.** Two halves, and the account is the only accepted service cost
+   in the plan.
+   - *Outbound*: a Server API token, entered in FreeScout's own interface
+     (Manage, then Settings, then Mail) rather than in a file, so rotating it
+     never needs a container restart. Send the test message before telling
+     anybody the address exists.
+   - *Inbound*: the `community-access.org` sending domain verified (DKIM TXT
+     and Return-Path CNAME), and an MX record pointing at
+     `inbound.postmarkapp.com`. Postmark generates the exact values.
 
----
+4. **The `action_required` repo setting.** Catalogue-rebuild pull requests
+   (currently [#1449](https://github.com/Community-Access/quill/pull/1449) and
+   [#1450](https://github.com/Community-Access/quill/pull/1450)) sit unmerged
+   because GitHub holds workflow runs on `github-actions[bot]` pull requests
+   for manual approval, so auto-merge never fires. The repository's policy is
+   `first_time_contributors`, and the bot counts as one.
 
-## Take now: five things that are cheap and clearly right
+   Left alone deliberately: it is a security setting on a public repository and
+   it is yours to make. Loosening it to `first_time_contributors_new_to_github`
+   would still block genuinely new throwaway accounts, which is the actual
+   attack. Approving the two waiting runs clears today's backlog either way.
 
-### 1. Announce through UIA, not only through a per-reader bridge
+5. **The domain question.** The FreeScout plan is written for
+   `community-access.org`; QUILL serves the picks catalogue and the suggestion
+   form from `quillforall.org`, and that URL is compiled into shipped builds.
+   Three answers, and they lead to very different work:
 
-`Say.cs` dispatches JAWS COM, then the NVDA controller client, then a **native
-UIA notification** — and stops at the first that answers, so a message is never
-delivered twice. The third leg is the interesting one: it raises
-`UiaRaiseNotificationEvent` against a one-pixel invisible control that owns a
-real window handle and answers `WM_GETOBJECT` with a minimal
-`IRawElementProviderSimple`. Because the screen reader sees a legitimate UIA
-element, the notification reaches **JAWS, NVDA and Narrator alike**, with no
-per-reader library at all.
+   | Answer | What it costs |
+   | --- | --- |
+   | Both — `community-access.org` is the organisation, `quillforall.org` the product | Nothing moves. Support email is simply new. Cheapest, and what everything so far assumes. |
+   | `quillforall.org` is being retired | The catalogue URL, signature URL, CORS allowlist, form and bundled fallback all move — and old installs must keep resolving, so redirects live indefinitely. |
+   | Undecided | Everything stays configurable and nothing user-facing changes. No work is wasted. |
 
-QUILL announces through Prism, falling back to `accessible_output2`
-(`quill/platform/windows/prism_bridge.py`). Both are COM bridges to specific
-readers. Adding a UIA notification leg would buy three things: **Narrator
-support**, which QUILL does not have today by this route; a path that survives
-a reader QUILL has no bridge for; and one fewer bundled dependency in the long
-run.
+### Ready to build, not blocked
 
-The "stops at the first that answers" rule matters as much as the mechanism,
-and QUILL's fallback chain should be audited against it — the memory of the
-Reveal Codes single-speaker fix says QUILL has met this problem once already,
-in one place.
+*(Step 6 is done. It keeps its number so references from earlier notes
+still line up.)*
 
-### 2. Generate the keybinding reference from the keymap
+6. ~~The Postmark-to-Maildir bridge.~~ **Built and proven, 2026-08-26.**
+   `feedback_hub.mailbridge` receives the webhook and writes the raw RFC-822
+   message into a Maildir; a Dovecot container exposes that Maildir on the
+   project's private network only; FreeScout fetches it in its ordinary way.
 
-EdSharp generates `Hotkeys.md` from the description table inside `EdSharp.cs`,
-which is *also* what Key Describer and the alternate menu read. One table, three
-consumers, and the documentation cannot drift because it is not written by hand.
+   Feeding FreeScout *real email* was the whole point — its threading
+   (`Message-ID`, `In-Reply-To`, `References`), duplicate detection, auto-reply
+   and bounce handling, and conversation reactivation are the reason to run
+   FreeScout at all, and creating tickets through its API instead would have
+   meant reimplementing every one of them. So the bridge writes the message out
+   byte for byte and parses nothing.
 
-QUILL's `docs/.../keybinding-standard.md` is hand-maintained;
-`menu_lint.py` references it as prose to justify `Ctrl+Alt+` bindings rather
-than generating from it. `DEFAULT_KEYMAP` and `APP_KEYMAPS` already exist as the
-single source of truth for what is *bound*. Generating the reference from them
-would make one more document unable to lie.
+   Proven on the box: a webhook POST produced exactly one Maildir message with
+   `Message-ID` intact, a repeat POST was answered 200 and wrote nothing, and
+   FreeScout's own IMAP credentials fetched it back unchanged. 40 tests.
 
-### 3. Add the audit checks QUILL is missing
+   It needs Postmark credentials to *carry real mail*, not to be finished.
+   `deploy/helpdesk/make-credentials.sh` prints the webhook URL to paste into
+   Postmark and the IMAP settings to paste into FreeScout.
 
-`auditEdSharp.py` runs fifteen checks before the compiler does, and its
-description of them is the best sentence in the project: *"Each check exists
-because something once broke."* QUILL has forty-four such tools and the same
-culture. Three of EdSharp's fifteen have no QUILL equivalent I can find:
+7. **Get the token out of every installer.** Mostly done, 2026-08-26.
 
-- **`checkAccessKeysUnique`** — every dialog's buttons have distinct access
-  keys, with OK and Cancel deliberately having *none*, since Control+Enter and
-  Escape serve them. QUILL's `dialog_button_contract.py` checks the Close/Cancel
-  binding but not ampersand collisions. Two buttons sharing an access key means
-  one of them cannot be reached that way, and nothing announces the loss.
-- **`checkCommandsDescribed`** — every command has a description, *and each
-  description names the key the code actually binds*. QUILL's
-  `_check_binding_label_consistency.py` does this for menu labels; the
-  description surface that Key Describer reads is a different table.
-- **`checkOptionsDocumented`** — every setting appears in the documentation.
-  QUILL has `check_help_coverage.py` for topics, and a settings schema, but I
-  found nothing tying the two together. An undocumented setting is one nobody
-  can find.
+   The exposure was never a token *in the repository* — there is none, and
+   `quill/_feedback_token.py` is gitignored. It is that the build compiles one
+   into **every installer**, so anybody who unzips one has it. Issues-only
+   scope on a single repository bounds that to issue spam, which is why it was
+   tolerable; it stopped being necessary the moment a server could hold the
+   credential instead.
 
-### 4. Dialogs that can describe themselves
+   1. ~~`POST /submit/feedback` in feedback-hub.~~ **Done and live.** Any app
+      can now file a report through the server, which holds the only token.
+      Reports arrive already carrying `product:*`, `type:*` and `source:app`
+      labels; crash fingerprints are relayed intact, so deduplication survives.
+   2. ~~Point the dialog at it.~~ **Done.** Both call sites pass
+      `submission_kwargs()`; the dialog is otherwise untouched — same fields,
+      same button, same words, because only the transport moved.
+   3. **Delete `quill/_feedback_token.py`, `tools/generate_feedback_token.py`,
+      the release check and the `QUILL_FEEDBACK_GITHUB_TOKEN` secret** — but
+      *only after* a release has shipped with the server path and been seen to
+      work. Until then the token remains the fallback for a build that cannot
+      reach the server, which is exactly the safety net worth keeping through
+      one release cycle.
 
-`Lbc.cs` — "Layout by Code" — builds dialogs by adding labelled fields in
-order rather than through a visual designer, *so that reading order, tab order
-and visual order are the same by construction rather than by review*. Every
-dialog it builds gets three things free: Control+Enter to accept, Escape to
-cancel, and **F1 to describe its fields**.
+   **What this also buys, and the real reason for the shape:** once submission
+   is a POST to a URL, where a report ends up stops being the app's business.
+   Moving Report a Bug from a GitHub issue to a support conversation in
+   FreeScout is now a change on the *server* — no release, no version skew, and
+   no installed copy left behind still filing into the wrong place. That
+   migration waits on Postmark (step 3), not on any app.
 
-QUILL has the first two through `dialog_contract` and `apply_modal_ids`, and it
-has F1 context help through `topics.json`. What it does not appear to have is
-F1 answering *about the field the cursor is in*. That is the difference between
-"here is a page about this dialog" and "this box wants a number of minutes,
-default thirty" — and the second is what somebody stuck in a field actually
-needs.
+   The reasoning, the costs and what deliberately does *not* change are in
+   [the feedback redesign document](docs/design/2026-08-26-feedback-redesign-for-freescout.md).
 
-### 5. Steal the certification habit, not just the gates
+8. **Decide what `hub.quillforall.org` is.** It does not resolve, and
+   `quill/ui/quillin_hub_submit.py` no longer offers the dead button — the
+   local validation, which is the useful half, still runs and `HUB_IS_LIVE`
+   re-enables the button in one line. Either the Quillin Hub is coming, or that
+   constant should point at the server this file is about. Depends on step 5.
 
-From the transition brief, on repository hygiene: *"Certify by PROOF, not
-assertion. 'Untracked and left alone' must mean 'and gitignored', verified with
-`git check-ignore` over every such path."* And: *"An installer pattern proves a
-tracked file is ALLOWED. It never proves an absent file is WANTED."*
+9. **`PICKS_SIGNING_KEY`.** The catalogue is still published unsigned; the app
+   verifies, fails closed, falls back to the bundled copy and records why in
+   Recent Problems. Nothing is broken, but the fetched list is not being used.
 
-QUILL's gates are already proof-shaped. The habit worth importing is applying
-the same standard to claims *about the repository* rather than only about the
-code — which is exactly the class of thing that let a bundled token, a stale
-`.epub`, and an unreachable dialog each ship at some point in this project's
-history.
+   **Read this before setting it**, because until today setting it alone would
+   not have worked. The signer wrote a two-line sidecar while the app's
+   `read_minisig` requires three lines with a `key id:` between them — so CI
+   would have signed and published successfully and every app would have
+   refused the file as unreadable, which looks exactly like working software.
+   Fixed: it now signs through `sign_artifact()`, the same function that writes
+   every other signature in the project.
 
----
+   The secret must be the **seed for the existing publisher key in
+   `quill-pub.key`**, not a new keypair — a new one would have to replace a key
+   that Quillin and release signatures already depend on. The script now
+   refuses a stranger rather than trusting whoever runs it to have known that.
 
-## Worth deciding, not worth doing on my own say-so
+### Smaller, and genuinely optional
 
-### Compiler profiles as data
+10. **Radio's menu bar is full.** 149 accelerators, and `Ctrl+Alt+Shift` is
+    exhausted, letters and digits alike. The next menu item needs a submenu or
+    a palette-only home, not another chord hunt.
 
-In EdSharp a compiler is a config section, and one choice — Control+Shift+F5 —
-brings the run command, the pattern that locates an error, the output to
-abbreviate out of the speech, the comment prefix, the default extension, **the
-indentation the language uses**, and the interactive shell to open. *"Adding a
-compiler needs no code."*
-
-The tutorial explains why this matters and it is not really about compilers:
-
-> Python is the language EdSharp supports most fully, because Python's
-> whitespace is the hardest thing about writing code with a screen reader.
-
-QUILL has `external_engine.py` with a deliberately narrow executable allowlist,
-which is a security boundary rather than a profile system. Whether QUILL wants
-to be a coding editor at all is a product question — but if it does, this is the
-right shape, and the "your own indentation still wins; the setting governs only
-a file with no indentation yet" rule is worth copying exactly.
-
-### Local AI framed as privacy rather than as a feature
-
-EdSharp 5.0 runs translation between eighteen languages, summarising, and code
-assistance on the user's own machine: *"no account, no limit, and nothing sent
-anywhere."* The installer offers each model as a checkbox **stating what it does
-and how large it is**, and fetches it automatically.
-
-QUILL already has Ollama support and a settled rule that local speech engines
-must run torch-free. What is worth taking is the **framing and the packaging**:
-optional, honest about size, installed without a manual download, and sold on
-privacy rather than on capability. Several gigabytes is a real cost and saying
-so plainly is what makes it a fair offer.
-
-### Tutorials organised by who you are
-
-Twelve tutorials, named for people rather than features: Python Developer, NVDA
-Add-on Developer, Language Translator, Journal Article Author, Slide Presenter,
-Web Researcher, Batch Conversion Operator. *"Read the one that matches what you
-are doing; they do not depend on each other."*
-
-QUILL's eleven tutorials are numbered and partly task-shaped already
-("Rescue a scanned PDF", "Document to audiobook"), which is most of the way
-there. The remaining idea is the *independence* — no ordering, no prerequisites,
-each naming the settings worth changing and the keys worth learning up front.
+11. **`suggest_pick_dialog.py` disagrees with the web form.** Line 90 still
+    says an address "must start with https", which the web form deliberately
+    stopped requiring. The in-app `wx.Choice` also does `SetSelection(0)`,
+    reproducing the silent-default problem the web form just removed — and the
+    page claims the in-app route "does exactly the same thing", which is
+    currently true in the bad sense too.
 
 ---
 
-## Deliberately not
+## Where things stand
 
-- **Hungarian notation.** EdSharp's "Camel Type" puts a type prefix on every
-  name, and the justification is genuinely interesting: *"The style optimizes
-  for hearing code rather than seeing it: a prefix tells you the type as the
-  name is spoken."* For a C# codebase with no type hints in the signature line,
-  that is a real gain. QUILL is typed Python where `mypy` is a gate and the type
-  is already in the declaration; adding prefixes would be redundancy a reader
-  hears on every name.
+| Route | Account needed? | Status |
+| --- | --- | --- |
+| Quill Radio, Community menu, Suggest a Station or Podcast | **No** | Working. Files an issue with the bundled issues-only token. |
+| `quillforall.org/picks/suggest/` | **No** | **Fixed 2026-08-26.** Posts to the submission server, which files the issue. |
+| `lp.csedesigns.com/submit/picks` | — | **Live.** feedback-hub 1.2.0, one container beside the four apps already on the box. |
+| Help desk, `helpdesk.community-access.org` | — | **Installed, not yet reachable.** Waiting on next steps 1 to 3. |
+| Inbound mail, Postmark to FreeScout | — | **Built and proven.** Waiting only on Postmark credentials to carry real mail. |
+| Report a Bug, every app | **No** | **Routed through the server**, so a build needs no token. Still files a GitHub issue until Postmark lands. |
+| `workers/picks-submit.js` (Cloudflare) | — | **Deleted.** Two ways to do one thing is one too many. |
 
-  The *principle* underneath does transfer, and QUILL should hold it
-  consciously: **source is read by ear here too.** That argues for the one-line
-  condition over the three-line one, for names that disambiguate early rather
-  than late, and against decorative comment banners that cost a line of speech
-  each.
+The picks pipeline is proven end to end: suggestion, `pick:suggestion` label,
+review, `pick:approved`, `picks-build.yml`, validated, signed, pull request,
+merged, deployed, serving. Issues
+[#1448](https://github.com/Community-Access/quill/issues/1448) and
+[#1451](https://github.com/Community-Access/quill/issues/1451) were filed by
+the server with no account involved, then closed.
 
-- **One enormous source file.** EdSharp's `EdSharp.cs` is 557 KB and its author
-  defends it: *"its author navigates by search and by structure rather than by
-  file, and splitting it would cost more than it saved."* That is an honest
-  statement of a personal working style, and QUILL has the opposite constraint
-  written into a ratchet — GATE-11, which caught me growing `main_frame.py` by
-  two lines only this afternoon. `main_frame.py` is 19,565 lines and the budget
-  exists precisely because it got that way. Keep the ratchet.
+### How the pieces fit together
 
-- **A speech verbosity setting.** See above. The right answer is to say less,
-  not to make the user configure how much less.
-
----
-
-## What QUILL already does better
-
-Worth recording, both for fairness and because these are the things not to
-trade away while borrowing:
-
-- **Gates as a ratchet, not just a checklist.** EdSharp's audit runs fifteen
-  checks; QUILL runs forty-four, and the module-size budget only ever
-  *decreases*. A check that can be satisfied by raising its own threshold is a
-  check that will be.
-- **Error codes.** Every custom exception in `core`, `io` and `stability`
-  carries a unique `QUILL-<DOMAIN>-<SUBSYSTEM>-<REASON>`, enforced by
-  `error_code_audit.py`. EdSharp has nothing equivalent, and its transition
-  brief describes a day lost to a startup failure that "dies in perfect
-  silence".
-- **Surface reachability.** GATE-REACH exists because a first-run dialog shipped
-  unreachable for two releases with passing tests. EdSharp's audit checks that
-  scripts named in config exist, which is the same instinct one step less far.
-- **Atomic writes and a crash reporter with fingerprint deduplication.**
-- **Signed artifacts** — although see `support.md`, where the signer was writing
-  a sidecar its own verifier could not read until today.
+Four kinds of client — Report a Bug and Suggest inside Quill Radio, the web
+form on quillforall.org, and eventually GLOW, Cast and Social — all send to one
+small server on `lp.csedesigns.com`. That server is the only thing holding a
+credential. Today it files GitHub issues for picks; once next step 7 lands it
+will also relay support messages to Postmark, which delivers them into
+FreeScout, where a person answers. Escalation from a FreeScout conversation to
+a GitHub issue stays a human decision, made after sanitising.
 
 ---
 
-## Two process lessons I would put on the wall
+## What is deployed on lp.csedesigns.com
 
-From the transition brief, both earned the hard way:
+Five applications now share the box, behind one Caddy that terminates TLS.
+`jeffbis` is in the `docker` group but has **no passwordless sudo**, so
+everything added is a container and the only thing needing a person is a Caddy
+edit.
 
-> **"It used to work" plus "it compiles" proves nothing about running.** An
-> assembly-name collision and a wrong-version library both compile clean and
-> both kill at startup. Test a LAUNCH after build changes, not just the build.
+| Piece | Where | Notes |
+| --- | --- | --- |
+| Submission server | `~/feedback-hub` | feedback-hub 1.2.0, `feedback-hub-submit:8095`, two gunicorn workers, 192 MB cap. |
+| Help desk | `~/helpdesk` | FreeScout 1.8.219 and MariaDB 11.4, `helpdesk-app:80`, 1 GB and 512 MB caps. |
+| Caddy route, picks | `~/app/web/Caddyfile` | A `@picks_submit` matcher on `lp.csedesigns.com` and `/submit/*`. |
+| Inbound bridge | `~/feedback-hub/deploy/helpdesk` | `helpdesk-mailbridge:8096`, 256 MB cap. Writes the raw message into a Maildir. |
+| Local IMAP | same | Dovecot, `helpdesk-imap:143`. No published ports, and **not** on the shared edge network. |
+| Caddy route, help desk | not yet | Waiting on DNS. Covers FreeScout and the webhook, in that one block. |
 
-QUILL has `/run` and a smoke suite; the point is the discipline of using them
-after *build* changes specifically, which is when the tests are least likely to
-notice.
-
-> **Diagnose with instruments that do not depend on the patient.** *"The error
-> dialog can share the disease: if its own types depend on the broken library,
-> the program that would explain the failure is the failure."*
-
-QUILL's crash reporter lives inside QUILL and submits through code QUILL loads.
-Worth checking that the diagnostic path degrades to something that works when
-the thing it is diagnosing does not.
+Backup of the Caddyfile before this work: `~/app/web/Caddyfile.bak.2026-08-26`.
+Runbooks live in the feedback-hub repository, at `deploy/README.md` and
+`deploy/helpdesk/README.md`.
 
 ---
 
-## Suggested order
+## Traps found on the way, all now written down
 
-Cheap and certain first.
+Four things that were silently broken, or would have been. Each is recorded
+here because each looked exactly like working software.
 
-1. Write the **speak-only-what-it-alone-knows** rule into `CLAUDE.md`, then
-   build the gate for it. Biggest daily benefit, smallest change.
-2. Add **`checkAccessKeysUnique`** as a QUILL gate — a genuine accessibility
-   defect class with no current coverage.
-3. **Generate the keybinding reference** from `DEFAULT_KEYMAP` / `APP_KEYMAPS`.
-4. Add the **UIA notification leg** to the announcement chain, and audit the
-   chain for first-answer-wins. This one needs care and real testing with
-   JAWS, NVDA and Narrator.
-5. **Field-level F1** in dialogs, starting with the dialogs that have numeric or
-   format-sensitive fields where the answer is least guessable.
-6. Decide the two product questions: **compiler profiles** (is QUILL a coding
-   editor?) and **local AI packaging** (does QUILL offer models by checkbox with
-   honest sizes?).
+**`redir` was shadowing every handler in that Caddy block.** Caddy sorts
+directives by a fixed order and `redir` ranks *above* `handle` and
+`handle_path`, so a bare redirect at the foot of a site block does not run
+last — it runs first, and every handler above it is dead code. That had already
+happened to `/ggg*`, which never served anything; the links only kept working
+because the redirect landed on a working `/ggg` on the canonical host. Fixed by
+wrapping the redirect in `handle { }`.
 
-Nothing here is blocked on anybody else, and none of it touches the support work
-in [support.md](support.md).
+**The catalogue signer wrote a sidecar its own verifier could not read.** See
+next step 9. Setting the secret alone would have published a signed catalogue
+that every app refused.
+
+**The FreeScout image regenerates its configuration on every recreate, and
+blanks `APP_KEY`.** FreeScout encrypts stored mailbox passwords with that key,
+so a rotation makes the saved Postmark credentials undecryptable and **inbound
+mail stops silently** — mail nobody knows they are not receiving. Fixed by
+bind-mounting the host's copy so it is authoritative. The same image also
+writes a database driver name Laravel 5.5 does not define, whose only symptom
+is an endless redirect to `install.php`. Both are documented in
+`deploy/helpdesk/README.md`.
+
+**Three accessibility mechanisms the suggestion form was about to rely on do
+not work on NVDA or JAWS.** `role="alert"` plus focus reads the whole error
+list twice with the first reading clipped, and an unchanged alert may not fire
+at all — so resubmitting the same errors announces nothing. Clearing and
+rebuilding a live region in one task announces nothing either, which would have
+silenced every repeated rate-limit refusal the server produces *by design*. And
+disabling the focused submit button strands the keyboard thirteen tab stops
+away, announced by nothing. All three replaced.
+
+---
+
+## Settled, so please do not re-litigate
+
+- **The bundled token stays.** Rotation was offered on 2026-08-26 and declined.
+  It is scoped to issues on one repository, so the worst an extraction buys is
+  issue spam. The option stays open precisely because the server exists —
+  rotating later is one `.env` edit and a restart, not a release — but it is
+  not being taken.
+- **A path on `lp.csedesigns.com`, picks only, code in feedback-hub.** The
+  three questions this file opened with, all taken as recommended.
+- **Picks suggestions keep going straight to GitHub**, and are not moving to
+  the help desk. A station suggestion has no customer relationship to preserve
+  and nothing personal in it — the *point* is that it becomes public — and it
+  is already consumed by a workflow. Routing structured data through a mailbox
+  would mean a person retyping it. The plan governs support; this is content
+  contribution, and the two should not be conflated because both produce
+  issues.
+- **The forms stay simple.** Both of them, the wx dialog and the web page. What
+  changes is where a submission goes, never what the person filling it in has
+  to do.
+- **Turnstile, never reCAPTCHA.** The endpoint supports Turnstile and it is
+  switched off, because a challenge nobody needs is a barrier nobody asked for.
+  If spam ever arrives, that is the switch. reCAPTCHA's image grids are
+  precisely the barrier this project exists to remove: a spam control that
+  locks out blind users to keep out bots has failed at the only job that
+  matters here.
+- **The "What is it?" radio group starts unanswered.** It was a `<select>` with
+  a pre-selected first option, which can never express "not answered" — and it
+  is the one answer on the form whose wrong value is invisible to the person
+  who gave it, silently filing a podcast's feed under `stream_url`. Do not
+  restore a default.
+
+---
+
+## One thing worth remembering
+
+The https-only rule written for catalogue addresses would have **excluded
+Team-FM**, which is http-only — and measuring it showed **41% of the 400
+most-played stations** in the directory Radio already browses are http-only
+too. A rule written to protect listeners would have quietly excluded exactly
+the small community stations this project exists for.
+
+The protection belongs where it actually helps: the catalogue *itself* arrives
+over https and signed, so nobody can substitute the list. An individual http
+stream risks only itself. Still refused everywhere: `javascript:`, `file:` and
+`data:` — and on the review page an attacker-controlled `href` is the other way
+to run script on a page holding a token.
+
+Worth remembering because it was only found by looking up a real station
+instead of reasoning about the rule.
