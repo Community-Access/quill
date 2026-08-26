@@ -70,20 +70,28 @@ something only Jeff has.
 
 ### Ready to build, not blocked
 
-6. **The Postmark-to-Maildir bridge.** The last missing piece of inbound mail,
-   and the one genuinely new program in the plan. Postmark has no IMAP, so it
-   posts the raw RFC-822 message to a small endpoint; the bridge writes it into
-   a local Maildir; a localhost-only Dovecot exposes that Maildir; FreeScout
-   fetches it with its ordinary IMAP mechanism.
+*(Step 6 is done. It keeps its number so references from earlier notes
+still line up.)*
 
-   Feeding FreeScout *real email* is the whole point — its threading
+6. ~~The Postmark-to-Maildir bridge.~~ **Built and proven, 2026-08-26.**
+   `feedback_hub.mailbridge` receives the webhook and writes the raw RFC-822
+   message into a Maildir; a Dovecot container exposes that Maildir on the
+   project's private network only; FreeScout fetches it in its ordinary way.
+
+   Feeding FreeScout *real email* was the whole point — its threading
    (`Message-ID`, `In-Reply-To`, `References`), duplicate detection, auto-reply
    and bounce handling, and conversation reactivation are the reason to run
-   FreeScout at all, and creating tickets through its API instead would mean
-   reimplementing every one of them.
+   FreeScout at all, and creating tickets through its API instead would have
+   meant reimplementing every one of them. So the bridge writes the message out
+   byte for byte and parses nothing.
 
-   Requirements are already written: sections 37 and 38 of the plan. Testing it
-   properly needs step 3, so build it now and prove it then.
+   Proven on the box: a webhook POST produced exactly one Maildir message with
+   `Message-ID` intact, a repeat POST was answered 200 and wrote nothing, and
+   FreeScout's own IMAP credentials fetched it back unchanged. 40 tests.
+
+   It needs Postmark credentials to *carry real mail*, not to be finished.
+   `deploy/helpdesk/make-credentials.sh` prints the webhook URL to paste into
+   Postmark and the IMAP settings to paste into FreeScout.
 
 7. **Move Report a Bug off GitHub and onto support.** The substantive QUILL-side
    change, and the reason the redesign document exists. Today every app files
@@ -146,6 +154,7 @@ something only Jeff has.
 | `quillforall.org/picks/suggest/` | **No** | **Fixed 2026-08-26.** Posts to the submission server, which files the issue. |
 | `lp.csedesigns.com/submit/picks` | — | **Live.** feedback-hub 1.2.0, one container beside the four apps already on the box. |
 | Help desk, `helpdesk.community-access.org` | — | **Installed, not yet reachable.** Waiting on next steps 1 to 3. |
+| Inbound mail, Postmark to FreeScout | — | **Built and proven.** Waiting only on Postmark credentials to carry real mail. |
 | Report a Bug, every app | **No**, but files into a public repo | Unchanged. Next step 7. |
 | `workers/picks-submit.js` (Cloudflare) | — | **Deleted.** Two ways to do one thing is one too many. |
 
@@ -180,7 +189,9 @@ edit.
 | Submission server | `~/feedback-hub` | feedback-hub 1.2.0, `feedback-hub-submit:8095`, two gunicorn workers, 192 MB cap. |
 | Help desk | `~/helpdesk` | FreeScout 1.8.219 and MariaDB 11.4, `helpdesk-app:80`, 1 GB and 512 MB caps. |
 | Caddy route, picks | `~/app/web/Caddyfile` | A `@picks_submit` matcher on `lp.csedesigns.com` and `/submit/*`. |
-| Caddy route, help desk | not yet | Waiting on DNS. |
+| Inbound bridge | `~/feedback-hub/deploy/helpdesk` | `helpdesk-mailbridge:8096`, 256 MB cap. Writes the raw message into a Maildir. |
+| Local IMAP | same | Dovecot, `helpdesk-imap:143`. No published ports, and **not** on the shared edge network. |
+| Caddy route, help desk | not yet | Waiting on DNS. Covers FreeScout and the webhook, in that one block. |
 
 Backup of the Caddyfile before this work: `~/app/web/Caddyfile.bak.2026-08-26`.
 Runbooks live in the feedback-hub repository, at `deploy/README.md` and
