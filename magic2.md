@@ -431,7 +431,7 @@ perform is how the next reader gets misled.
 **3. Replace the flat `SingleChoiceDialog`.** The part with a genuine design
 question: how a sense-grouped result should be structured so NVDA and JAWS
 announce it well, and how few keystrokes it takes to reach a synonym in the
-third sense. Being reviewed separately rather than guessed at here.
+third sense. Designed now — see *Part 3* below.
 
 One constraint is already clear from the data, and it bounds how far part 3 can
 go: **MyThes gives a part of speech and the sense members, but no gloss.** A
@@ -455,3 +455,87 @@ Every one of these fails today:
 
 Write the first one first. It is a single assertion that encodes the whole
 defect, and it would have caught this years ago.
+
+### Status, 2026-08-26
+
+**Parts 1 and 2 are done and pushed.** The parser keeps the four relations
+apart; `choice_rows` in `quill/core/thesaurus.py` owns the ordering and
+labelling policy, pure and wx-free; `lexical.py` fills synonyms and antonyms
+separately with a docstring that now matches the code; and
+`main_frame_spellcheck.py` ends up two lines *smaller* than before, which is
+what let it stay inside a GATE-11 budget it was already sitting exactly on.
+Fourteen tests, all of which failed before the change.
+
+One correction the tests forced, worth recording because it is the trap in this
+data: **related terms are synonyms.** My first attempt filed
+`(related term)` in its own bucket alongside broader and antonym. That deletes
+the useful answer for "happy" — its primary sense's unmarked members are
+*blessed, blissful, bright, golden, halcyon*, while *cheerful, glad, joyful,
+elated* are every one of them marked `(related term)`. The rule is
+substitutability, not markedness: unmarked, similar and related can stand in for
+the headword; broader and antonym cannot.
+
+### Part 3: the dialog, as designed
+
+Reviewed rather than guessed. The decisions, and the reasons that survive
+summarising:
+
+**Two `wx.ListBox` panes, senses on the left.** Not a tree: a `wx.TreeCtrl`
+makes NVDA say "collapsed, level 1" on every one of 45 rows, and the hierarchy
+here is two levels deep and fixed, so the overhead buys nothing. Not a grouped
+single list: `wx.ListBox` has no non-selectable item, so sense headers become
+arrowable dead ends and the reader's "37 of 229" position count turns into
+nonsense. Keystrokes from opening to inserting a synonym from the third sense:
+**four**, against fifteen today.
+
+**Part of speech first in the sense row** — `adjective: airy, buoyant, floaty,
+2 more`. Not a bracketed suffix, because a native list box does
+first-character type-ahead: with the POS leading, `n` jumps to the first noun
+sense and `v` to the first verb. A free filter, no control, no code.
+
+**Never `announce()` on selection change.** This is the mechanism worth knowing
+and it is specific to how QUILL speaks: `prism_bridge` calls
+`speak(message, interrupt=False)`, so an announcement *queues behind* whatever
+the screen reader is already saying rather than replacing it. An announce on
+every arrow-press leaves somebody holding Down five utterances behind their own
+cursor — hearing sense one while sitting on sense six. Repopulate silently; the
+reader has already read the row.
+
+**Context arrives through the label, not through speech.** On wxMSW a list
+box takes its accessible name from the preceding `StaticText`, queried live at
+focus time — `SetName` is inert there, as `quill/ui/accessible_names.py` already
+documents. So set the synonym pane's label to `&Synonyms for adjective sense 3
+(2):` on every sense change: silent while focus is elsewhere, spoken exactly
+once when the user Tabs in. The whole announcement budget for the dialog is one
+`announce()` on Copy.
+
+**Replace (default, Enter, closes, collapses the selection) and Copy (stays
+open).** The second `SingleChoiceDialog` goes: it is a modal asking what two
+buttons answer, and it costs two of today's fifteen keystrokes. Use
+`apply_listbox_activation` from `dialog_contract` on the synonym list — it
+consumes the key so Enter cannot both activate the item and fire the default
+button. On the sense list, bind the same helper to move focus to the synonyms
+pane, so Enter and Tab mean the same thing.
+
+**Do not subclass `wx.Dialog`.** `_show_modal_dialog` gives automatic initial
+focus through `focus_primary_control`, but it is guarded by
+`if type(dialog) is dialog_cls` — an identity check. A subclass silently loses
+initial focus. Compose, as `ai_thesaurus_dialog.py` already does.
+
+**Gloss data is a nice-to-have, not a precondition.** Measured over all 203,947
+senses: 65.4% preview with two or more terms and only 0.6% with none. Two
+synonyms *are* a definition by extension, which is how print thesauri have
+always worked. The weakness is nouns specifically — 76% of the thin
+single-term senses are nouns, because WordNet defines nouns by hypernym chains
+rather than synonym sets. So ship without glosses; if they are wanted later,
+MyThes en_US v2 is WordNet 3.0-derived and a gloss-only sidecar keyed by the
+member tuple is a few megabytes against the 18 already shipped. The two-pane
+structure does not change when it arrives.
+
+**Housekeeping it will trip:** a new `quill/ui/thesaurus_dialog.py` rather than
+growth in the mixin; an entry in `tests/unit/ui/fixtures/surface_reachability.json`
+(regenerate with `--write`); and a decision about
+`quill/ui/ai_thesaurus_dialog.py`, which is a second thesaurus surface with a
+different structure — the two-pane design would host an AI-sourced sense list
+unchanged, so the honest question is whether the AI one becomes a provider
+inside this dialog rather than a separate command.
