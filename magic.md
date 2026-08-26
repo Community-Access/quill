@@ -93,17 +93,35 @@ still line up.)*
    `deploy/helpdesk/make-credentials.sh` prints the webhook URL to paste into
    Postmark and the IMAP settings to paste into FreeScout.
 
-7. **Move Report a Bug off GitHub and onto support.** The substantive QUILL-side
-   change, and the reason the redesign document exists. Today every app files
-   the reporter's own words into a **public** repository and offers them no way
-   to be answered. In order:
+7. **Get the token out of every installer.** Mostly done, 2026-08-26.
 
-   1. `POST /submit/support` in feedback-hub, relaying to Postmark, tested in
-      the shape `/submit/picks` already has.
-   2. Point `feedback_hub.wx_dialog` at it, keeping the dialog identical —
-      same fields, same one button, no visible change to anybody.
-   3. Delete `quill/_feedback_token.py` and the build step that generates it,
-      once (2) has shipped in a release.
+   The exposure was never a token *in the repository* — there is none, and
+   `quill/_feedback_token.py` is gitignored. It is that the build compiles one
+   into **every installer**, so anybody who unzips one has it. Issues-only
+   scope on a single repository bounds that to issue spam, which is why it was
+   tolerable; it stopped being necessary the moment a server could hold the
+   credential instead.
+
+   1. ~~`POST /submit/feedback` in feedback-hub.~~ **Done and live.** Any app
+      can now file a report through the server, which holds the only token.
+      Reports arrive already carrying `product:*`, `type:*` and `source:app`
+      labels; crash fingerprints are relayed intact, so deduplication survives.
+   2. ~~Point the dialog at it.~~ **Done.** Both call sites pass
+      `submission_kwargs()`; the dialog is otherwise untouched — same fields,
+      same button, same words, because only the transport moved.
+   3. **Delete `quill/_feedback_token.py`, `tools/generate_feedback_token.py`,
+      the release check and the `QUILL_FEEDBACK_GITHUB_TOKEN` secret** — but
+      *only after* a release has shipped with the server path and been seen to
+      work. Until then the token remains the fallback for a build that cannot
+      reach the server, which is exactly the safety net worth keeping through
+      one release cycle.
+
+   **What this also buys, and the real reason for the shape:** once submission
+   is a POST to a URL, where a report ends up stops being the app's business.
+   Moving Report a Bug from a GitHub issue to a support conversation in
+   FreeScout is now a change on the *server* — no release, no version skew, and
+   no installed copy left behind still filing into the wrong place. That
+   migration waits on Postmark (step 3), not on any app.
 
    The reasoning, the costs and what deliberately does *not* change are in
    [the feedback redesign document](docs/design/2026-08-26-feedback-redesign-for-freescout.md).
@@ -155,7 +173,7 @@ still line up.)*
 | `lp.csedesigns.com/submit/picks` | — | **Live.** feedback-hub 1.2.0, one container beside the four apps already on the box. |
 | Help desk, `helpdesk.community-access.org` | — | **Installed, not yet reachable.** Waiting on next steps 1 to 3. |
 | Inbound mail, Postmark to FreeScout | — | **Built and proven.** Waiting only on Postmark credentials to carry real mail. |
-| Report a Bug, every app | **No**, but files into a public repo | Unchanged. Next step 7. |
+| Report a Bug, every app | **No** | **Routed through the server**, so a build needs no token. Still files a GitHub issue until Postmark lands. |
 | `workers/picks-submit.js` (Cloudflare) | — | **Deleted.** Two ways to do one thing is one too many. |
 
 The picks pipeline is proven end to end: suggestion, `pick:suggestion` label,

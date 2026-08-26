@@ -90,3 +90,67 @@ def test_bundled_token_helper_returns_empty_when_module_absent(monkeypatch) -> N
 
     monkeypatch.setattr(builtins, "__import__", fake_import)
     assert ft._bundled_token() == ""
+
+
+# -- submitting without a token at all -------------------------------------------
+
+
+def test_reports_can_be_sent_with_no_token_when_a_server_is_configured(monkeypatch):
+    """The point of the server: a build that posts to it ships no credential.
+
+    Every installer currently compiles a fine-grained token in, so anybody who
+    unzips one has it. Issues-only scope on one repository bounds that to issue
+    spam, which is why it was tolerable -- but it stops being necessary once
+    the server holds the credential instead.
+    """
+    from quill.core import feedback_token as module
+
+    monkeypatch.setattr(module, "effective_github_token", lambda **_: "")
+    monkeypatch.delenv("QUILL_FEEDBACK_SERVER_URL", raising=False)
+
+    assert module.feedback_server_url()
+    assert module.can_submit_reports() is True
+
+
+def test_with_no_server_and_no_token_there_is_nothing_to_offer(monkeypatch):
+    """Then Report a Bug must fall back to the web form rather than opening a
+    dialog whose Submit button cannot work."""
+    from quill.core import feedback_token as module
+
+    monkeypatch.setenv("QUILL_FEEDBACK_SERVER_URL", "")
+    monkeypatch.setattr(module, "github_token_present", lambda: False)
+
+    assert module.feedback_server_url() == ""
+    assert module.can_submit_reports() is False
+
+
+def test_a_token_alone_is_still_enough(monkeypatch):
+    """A fork with no server of its own keeps working."""
+    from quill.core import feedback_token as module
+
+    monkeypatch.setenv("QUILL_FEEDBACK_SERVER_URL", "")
+    monkeypatch.setattr(module, "github_token_present", lambda: True)
+
+    assert module.can_submit_reports() is True
+
+
+def test_the_server_url_is_overridable(monkeypatch):
+    """The hostname is not settled -- see section 6 of the feedback redesign --
+    so it must never be something only a rebuild can change."""
+    from quill.core import feedback_token as module
+
+    monkeypatch.setenv("QUILL_FEEDBACK_SERVER_URL", "https://example.test/submit/feedback")
+    assert module.feedback_server_url() == "https://example.test/submit/feedback"
+
+
+def test_submission_kwargs_offers_both_transports(monkeypatch):
+    """One place, so the two dialog call sites cannot drift. feedback-hub
+    prefers server_url when both are present."""
+    from quill.core import feedback_token as module
+
+    monkeypatch.delenv("QUILL_FEEDBACK_SERVER_URL", raising=False)
+    monkeypatch.setattr(module, "effective_github_token", lambda **_: "tok")
+
+    kwargs = module.submission_kwargs()
+    assert set(kwargs) == {"server_url", "github_token"}
+    assert kwargs["server_url"].startswith("https://")

@@ -7,6 +7,12 @@ resolves from the environment so a token configured for one path is reliably
 available to the other. No token is ever bundled or written to the repo; the
 store is per-user and encrypted (Windows Credential Manager / macOS Keychain).
 
+**As of 2026-08-26 the preferred path needs no token at all**: reports are
+POSTed to the feedback-hub submission server, which holds the only credential.
+See :data:`DEFAULT_FEEDBACK_SERVER` below. Everything about the token remains
+as a fallback for builds with no server configured, and can be removed once the
+server path has shipped in a release.
+
 Ordinary users who have never signed in to GitHub still need a working
 "Report a Bug" dialog, so a narrowly-scoped, issues-only token is bundled at
 build time into the generated ``quill._feedback_token`` module (see
@@ -72,3 +78,58 @@ def effective_github_token(*, import_from_env: bool = True) -> str:
 def github_token_present() -> bool:
     """Return True when a token is available without importing it into the store."""
     return bool(effective_github_token(import_from_env=False))
+
+
+#: Where reports are sent when no token is involved at all.
+#:
+#: This is the whole point of the constant. A build that posts here needs no
+#: credential, so nothing has to be compiled into the installer -- and today
+#: every installer carries a fine-grained token that anybody who unzips one can
+#: read. Issues-only scope on a single repository bounds that to issue spam,
+#: which is why it has been tolerable; it stops being necessary once a server
+#: holds the credential instead.
+#:
+#: It also decides where reports go *later*. Once submission is a POST to a
+#: URL, moving Report a Bug from a GitHub issue to a support conversation in
+#: the help desk is a change on the server -- not a release to every installed
+#: copy, and not a long tail of old versions still filing into the wrong place.
+#:
+#: Overridable by environment variable because the hostname is not settled:
+#: see section 6 of docs/design/2026-08-26-feedback-redesign-for-freescout.md.
+#: Setting it empty falls back to the bundled token, which is what a fork with
+#: no server of its own needs.
+DEFAULT_FEEDBACK_SERVER = "https://lp.csedesigns.com/submit/feedback"
+
+
+def feedback_server_url() -> str:
+    """The submission server to post reports to, or "" to use a token."""
+    import os
+
+    override = os.environ.get("QUILL_FEEDBACK_SERVER_URL")
+    if override is not None:
+        return override.strip()
+    return DEFAULT_FEEDBACK_SERVER
+
+
+def submission_kwargs() -> dict[str, str]:
+    """The transport arguments for ``FeedbackDialog`` and ``submit()``.
+
+    One place, so the two call sites cannot drift and neither has to know the
+    order of preference. ``server_url`` wins inside feedback-hub when both are
+    given, which is what makes a build shippable with no token at all: the
+    token here is only the fallback for a build with no server configured.
+    """
+    return {
+        "server_url": feedback_server_url(),
+        "github_token": effective_github_token(),
+    }
+
+
+def can_submit_reports() -> bool:
+    """True when Report a Bug has *any* way to send, server or token.
+
+    Replaces asking about the token alone, which was the right question only
+    while a token was the only transport. Asking it now would send somebody to
+    the web form on a build that can submit perfectly well.
+    """
+    return bool(feedback_server_url()) or github_token_present()

@@ -9592,13 +9592,13 @@ class MainFrame(
         # feedback_hub ships with QUILL (the [feedback] extra / bundled
         # runtime), so the direct-submission dialog is the one and only form
         # (the old built-in browser form was removed once bundling landed).
-        from quill.core.feedback_token import github_token_present
+        from quill.core.feedback_token import can_submit_reports
 
         # No token at all (neither a user token nor a bundled one -- e.g. a build
         # that shipped an empty bundled token): don't open a form that can only
         # dead-end at submit. Offer the online form up front, and say how to fix
         # it for good. This is the "No token in the field" P0 made non-fatal.
-        if not github_token_present():
+        if not can_submit_reports():
             self._report_bug_online_fallback(
                 "Direct bug reporting isn't set up in this build. You can still "
                 "file the report on the online support form, or add your own "
@@ -9647,14 +9647,14 @@ class MainFrame(
         from feedback_hub import load_schema
         from feedback_hub.wx_dialog import FeedbackDialog
 
-        from quill.core.feedback_token import effective_github_token
+        from quill.core.feedback_token import submission_kwargs
 
         schema_path = Path(__file__).parent.parent / "core" / "schemas" / "feedback.json"
         dlg = FeedbackDialog(
             self.frame,
             schema=load_schema(schema_path),
             app_version=__version__ or "0.0.0",
-            github_token=effective_github_token(),
+            **submission_kwargs(),
         )
         result = self._show_modal_dialog(dlg, "Report an Issue")
         dlg.Destroy()

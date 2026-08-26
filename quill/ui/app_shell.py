@@ -673,10 +673,10 @@ class AppShellFrame(
         straight into the online issue form. The in-app feedback-hub dialog
         takes no per-call defaults, so when a body is supplied it is staged on
         the clipboard and the user is told to paste it into the description."""
-        from quill.core.feedback_token import github_token_present
+        from quill.core.feedback_token import can_submit_reports
 
         version = f"{source_app} {app_version}" if app_version else source_app
-        if not github_token_present():
+        if not can_submit_reports():
             self._report_app_bug_online(
                 source_app,
                 app_version,
@@ -698,14 +698,14 @@ class AppShellFrame(
             from feedback_hub import load_schema
             from feedback_hub.wx_dialog import FeedbackDialog
 
-            from quill.core.feedback_token import effective_github_token
+            from quill.core.feedback_token import submission_kwargs
 
             schema_path = Path(__file__).parent.parent / "core" / "schemas" / "feedback.json"
             dialog = FeedbackDialog(
                 self.frame,
                 schema=load_schema(schema_path),
                 app_version=version,
-                github_token=effective_github_token(),
+                **submission_kwargs(),
             )
             try:
                 result = self._show_modal_dialog(dialog, "Report an Issue")
