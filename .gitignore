@@ -95,6 +95,15 @@ fix.md
 # (2026-08-18). Untracked on purpose: it describes the uncommitted diff, so a
 # committed copy would be a description of nothing.
 fixes.md
+# The 2026-08 working notes: the help-desk/Postmark ops log (magic, magic2),
+# the Icecast-station plan (radio), and the StreamTuner review whose plan is
+# now fully shipped and richly duplicated into the radio PRD, CHANGELOG, user
+# guide and release notes (radio2). Same class as fixes.md: they describe the
+# work rather than being it.
+magic.md
+magic2.md
+radio.md
+radio2.md
 # Working notes in the same class as fixes.md: the six AI product-strategy
 # papers (suggest1-6) and the executable plan distilled from them against the
 # actual code and artifacts (suggest7), plus a session scratch file. They
