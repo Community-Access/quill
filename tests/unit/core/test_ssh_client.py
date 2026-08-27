@@ -126,3 +126,54 @@ def test_load_system_host_keys_always_runs(stub_paramiko: _StubParamiko) -> None
 
     client_mod.connect("example.com", username="alice", auth="password", password="x")
     assert stub_paramiko.client.loaded_system_keys is True
+
+
+# --- the install hint that works (#1443) --------------------------------------
+
+
+def test_a_missing_paramiko_names_quills_own_interpreter(monkeypatch):
+    """'pip install paramiko' sent a real user in a circle: it lands in the
+    system Python, and QUILL runs its own. The hint must name this
+    interpreter and say to restart."""
+    import builtins
+    import sys
+
+    from quill.core.ssh import client
+
+    real_import = builtins.__import__
+
+    def _no_paramiko(name, *args, **kwargs):
+        if name == "paramiko":
+            raise ModuleNotFoundError("No module named 'paramiko'")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _no_paramiko)
+    with pytest.raises(client.SshDependencyError) as caught:
+        client._import_paramiko()
+    text = str(caught.value)
+    assert sys.executable in text
+    assert "-m pip install paramiko" in text
+    assert "restart QUILL" in text
+
+
+def test_a_broken_paramiko_reports_the_real_failure(monkeypatch):
+    """Present-but-broken is a different fact from absent; telling somebody to
+    install a package they installed is how #1443 went in a circle."""
+    import builtins
+
+    from quill.core.ssh import client
+
+    real_import = builtins.__import__
+
+    def _broken_paramiko(name, *args, **kwargs):
+        if name == "paramiko":
+            raise ImportError("DLL load failed while importing _cffi_backend")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _broken_paramiko)
+    with pytest.raises(client.SshDependencyError) as caught:
+        client._import_paramiko()
+    text = str(caught.value)
+    assert "installed but could not be loaded" in text
+    assert "_cffi_backend" in text
+    assert "pip install paramiko" not in text

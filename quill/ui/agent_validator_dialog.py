@@ -164,6 +164,8 @@ class AgentValidatorDialog:
         self.dialog.CentreOnParent()
         focus_primary_control(self.dialog)
         try:
-            self._show_modal(self.dialog)
+            # The label is required (the #1442 crash class: _show_modal_dialog
+            # takes (dialog, label)); this twin call site was found in the sweep.
+            self._show_modal(self.dialog, "Validate Agents")
         finally:
             self.dialog.Destroy()

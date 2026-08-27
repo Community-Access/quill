@@ -20,10 +20,33 @@ from quill.core.error_codes import CodedError
 from quill.core.ssh.sites import AUTH_AGENT, AUTH_KEY, DEFAULT_PORT
 from quill.core.ssh.transfer import backup_name
 
-_INSTALL_HINT = (
-    "Editing files over SSH needs the 'paramiko' package, which is not installed. "
-    "Install it with: pip install paramiko"
-)
+
+def _install_hint() -> str:
+    """The install command that actually works, built at error time.
+
+    "pip install paramiko" was the old hint, and it sent a real user in a
+    circle (#1443): QUILL ships its own Python, so a pip install into the
+    system Python succeeds and changes nothing QUILL can see. The command has
+    to name *this* interpreter -- ``sys.executable -m pip`` -- which is also
+    how the AI SDK packs install themselves (core/ai/sdk_install.py).
+    """
+    import importlib.util
+    import sys
+
+    if importlib.util.find_spec("pip") is not None:
+        return (
+            "Editing files over SSH needs the 'paramiko' package, and it is not "
+            "installed in QUILL's own copy of Python -- installing it into "
+            "another Python on this machine will not be seen. Install it with:\n"
+            f'  "{sys.executable}" -m pip install paramiko\n'
+            "then restart QUILL."
+        )
+    return (
+        "Editing files over SSH needs the 'paramiko' package, and this build of "
+        "QUILL cannot install Python packages itself (pip is not bundled). "
+        f"Install paramiko into QUILL's own Python at {sys.executable} and "
+        "restart QUILL."
+    )
 
 
 class SshDependencyError(CodedError):
@@ -128,8 +151,15 @@ class SftpConnection:
 def _import_paramiko() -> Any:
     try:
         import paramiko  # type: ignore[import-untyped]
+    except ModuleNotFoundError as exc:
+        raise SshDependencyError(_install_hint()) from exc
     except Exception as exc:  # noqa: BLE001
-        raise SshDependencyError(_INSTALL_HINT) from exc
+        # Present but broken is a different fact from absent, and telling
+        # somebody to install a package they have installed is how #1443 went
+        # in a circle. Say what actually failed.
+        raise SshDependencyError(
+            f"The 'paramiko' package is installed but could not be loaded: {exc}"
+        ) from exc
     return paramiko
 
 

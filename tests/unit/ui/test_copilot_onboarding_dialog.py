@@ -18,7 +18,8 @@ def _source() -> str:
 def test_follows_modal_contract_and_destroys() -> None:
     body = _source()
     assert "apply_modal_ids(self.dialog, escape_id=wx.ID_CANCEL)" in body
-    assert "self._show_modal(self.dialog)" in body
+    # The label is required -- omitting it was the #1442 crash.
+    assert 'self._show_modal(self.dialog, "Set Up GitHub Copilot")' in body
     assert "self.dialog.Destroy()" in body
     assert "focus_primary_control(self.dialog)" in body
 
