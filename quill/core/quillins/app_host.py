@@ -65,6 +65,22 @@ PIPELINE_RESULT_KEY = "__quill_studio_pipeline_result__"
 RESOLVER_RESULT_KEY = "__quill_beacon_resolver_result__"
 
 
+def _decode_names(raw: str) -> list[str]:
+    """Decode a handler's JSON-array-of-strings result, tolerantly."""
+
+    import json
+
+    if not raw:
+        return []
+    try:
+        data = json.loads(raw)
+    except (ValueError, TypeError):
+        return []
+    if not isinstance(data, list):
+        return []
+    return [str(item) for item in data if isinstance(item, str) and item.strip()]
+
+
 def _decode_rows(raw: str) -> list[dict[str, str]]:
     """Decode a handler's JSON-array result into a list of string-keyed dict rows.
 
@@ -312,6 +328,7 @@ class QuillinAppHost:
 
             for provider_id in self._directory_provider_ids:
                 directory_registry.clear_provider(provider_id)
+                directory_registry.clear_browse_provider(provider_id)
             self._directory_provider_ids = set()
         if self._alert_source_ids:
             from quill.core.weather import alert_source_registry
@@ -529,6 +546,53 @@ class QuillinAppHost:
 
             directory_registry.register_provider(provider.id, provider.display_name, _handler)
             self._directory_provider_ids.add(provider.id)
+
+            if provider.stations_handler:
+                # The browse trio (radio2.md part VIII): with a stations
+                # handler declared, this provider is a full browse source in
+                # Quill Radio's tree. Same invocation mechanism, same result
+                # key, one context shape per question.
+                def _categories(
+                    m: ExtensionManifest = manifest,
+                    d: Path = directory,
+                    hn: str = provider.categories_handler,
+                ) -> list[str]:
+                    if not hn:
+                        return []
+                    raw = self._invoke_result_handler(m, d, hn, {}, DIRECTORY_RESULT_KEY)
+                    return _decode_names(raw)
+
+                def _stations(
+                    category: str,
+                    search_query: str,
+                    m: ExtensionManifest = manifest,
+                    d: Path = directory,
+                    hn: str = provider.stations_handler,
+                ) -> list[dict[str, str]]:
+                    context = {"category": category, "query": search_query}
+                    raw = self._invoke_result_handler(m, d, hn, context, DIRECTORY_RESULT_KEY)
+                    return _decode_rows(raw)
+
+                resolve = None
+                if provider.resolve_handler:
+
+                    def resolve(
+                        key: str,
+                        m: ExtensionManifest = manifest,
+                        d: Path = directory,
+                        hn: str = provider.resolve_handler,
+                    ) -> str:
+                        return self._invoke_result_handler(
+                            m, d, hn, {"key": key}, DIRECTORY_RESULT_KEY
+                        ).strip()
+
+                directory_registry.register_browse_provider(
+                    provider.id,
+                    provider.display_name,
+                    categories=_categories,
+                    stations=_stations,
+                    resolve=resolve,
+                )
 
     # -- weather alert sources (weather.alerts) ------------------------------
     def _register_alert_sources(self, manifest: ExtensionManifest, directory: Path) -> None:

@@ -16,6 +16,7 @@ from collections.abc import Callable
 from quill.core.radio import wxindex
 from quill.core.radio.browse_nodes import BrowseNode
 from quill.core.radio.models import RadioStation
+from quill.core.radio.natural_order import natural_key
 from quill.core.radio.wxindex_models import WxState, to_radio_station
 
 
@@ -59,7 +60,7 @@ def letter_groups[T](rows: list[T], label: Callable[[T], str]) -> list[tuple[str
         return (1, key)
 
     return [
-        (key, sorted(buckets[key], key=lambda row: (label(row) or "").lower()))
+        (key, sorted(buckets[key], key=lambda row: natural_key(label(row))))
         for key in sorted(buckets, key=_order)
     ]
 

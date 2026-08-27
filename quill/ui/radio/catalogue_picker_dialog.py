@@ -321,7 +321,7 @@ class _CataloguePicker:
         if item is not None and not text:
             text = "No description is published for this one."
         if self._description.GetValue() != text:
-            self._description.SetValue(text)
+            self._description.ChangeValue(text)
         addable = item is not None and not item.already_have
         self._add_btn.Enable(addable)
         chosen = len(self._picks)

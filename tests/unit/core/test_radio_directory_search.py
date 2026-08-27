@@ -226,3 +226,105 @@ def test_wxindex_search_swallows_errors(monkeypatch) -> None:
 
     monkeypatch.setattr(ds.wxindex, "search_stations", boom)
     assert ds.wxindex_search_stations("051153") == []
+
+
+# --- the resolution that made search slow now happens all at once ------------
+# Reported 2026-08-26: "search is still way too slow, can this not be explored
+# further to make it lightning fast?"
+
+
+def test_tunein_resolves_its_results_at_the_same_time_not_one_by_one() -> None:
+    """Ten round trips end to end is ten times the slowest thing on the network."""
+    import threading
+
+    from quill.core.radio import directory_search, tunein
+
+    class _Result:
+        is_station = True
+
+        def __init__(self, guide_id: str) -> None:
+            self.guide_id = guide_id
+
+    results = [_Result(f"s{i}") for i in range(6)]
+    in_flight = threading.Semaphore(0)
+    hold = threading.Event()
+
+    def _resolve(guide_id, *, safe_mode=False):  # noqa: ARG001
+        in_flight.release()
+        assert hold.wait(5)
+        return ["https://a.example/stream"]
+
+    originals = (tunein.search, tunein.resolve_station_streams, tunein.to_radio_station)
+    tunein.search = lambda _q, **_kw: results
+    tunein.resolve_station_streams = _resolve
+    tunein.to_radio_station = lambda _r, url: RadioStation(name="X", stream_url=url)
+    try:
+        import concurrent.futures
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as runner:
+            future = runner.submit(directory_search.tunein_search_stations, "jazz")
+            # Every result must be in flight before any is allowed to finish;
+            # a sequential loop cannot satisfy this and the test times out.
+            for _ in results:
+                assert in_flight.acquire(timeout=5)
+            hold.set()
+            rows = future.result(timeout=10)
+    finally:
+        hold.set()
+        tunein.search, tunein.resolve_station_streams, tunein.to_radio_station = originals
+
+    assert len(rows) == len(results)
+
+
+def test_iheart_resolves_its_matches_at_the_same_time_too() -> None:
+    import threading
+
+    from quill.core.radio import directory_search, iheart
+
+    class _Station:
+        def __init__(self, page_url: str) -> None:
+            self.page_url = page_url
+
+    index = [_Station(f"https://a.example/{i}") for i in range(5)]
+    in_flight = threading.Semaphore(0)
+    hold = threading.Event()
+
+    def _resolve(page_url, *, safe_mode=False):  # noqa: ARG001
+        in_flight.release()
+        assert hold.wait(5)
+        return "https://a.example/stream"
+
+    originals = (iheart.station_matches, iheart.resolve_stream, iheart.to_radio_station)
+    iheart.station_matches = lambda _s, _n: True
+    iheart.resolve_stream = _resolve
+    iheart.to_radio_station = lambda _s, url: RadioStation(name="X", stream_url=url)
+    try:
+        import concurrent.futures
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as runner:
+            future = runner.submit(directory_search.iheart_search_stations, index, "kiss")
+            for _ in index:
+                assert in_flight.acquire(timeout=5)
+            hold.set()
+            rows = future.result(timeout=10)
+    finally:
+        hold.set()
+        iheart.station_matches, iheart.resolve_stream, iheart.to_radio_station = originals
+
+    assert len(rows) == len(index)
+
+
+def test_one_result_needs_no_pool_at_all() -> None:
+    from quill.core.radio import directory_search
+
+    assert directory_search._in_parallel(lambda x: x * 2, [21]) == [42]
+    assert directory_search._in_parallel(lambda x: x, []) == []
+
+
+def test_a_resolver_that_raises_never_reaches_the_caller() -> None:
+    from quill.core.radio import directory_search
+
+    def _boom(_item):
+        raise RuntimeError("no")
+
+    assert directory_search._in_parallel(_boom, [1]) == []

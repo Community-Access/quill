@@ -46,6 +46,29 @@ def menu_items(menu_bar: Any) -> list[tuple[str, str]]:
     return out
 
 
+def menu_titles(menu_bar: Any) -> list[tuple[str, str]]:
+    """``(menu name, "Alt+X")`` for every top-level menu on *menu_bar*.
+
+    The access key is read out of the label's own mnemonic -- the ``&S`` in
+    ``&Station`` -- rather than guessed from the first letter, because several
+    of them are not the first letter (``Vi&deo``, ``F&ormat``) and a sheet that
+    guessed would be confidently wrong.
+    """
+    out: list[tuple[str, str]] = []
+    if menu_bar is None:
+        return out
+    for index in range(menu_bar.GetMenuCount()):
+        label = str(menu_bar.GetMenuLabel(index) or "")
+        marker = label.find("&")
+        # "&&" is a literal ampersand in a label, not a mnemonic.
+        while marker != -1 and label[marker : marker + 2] == "&&":
+            marker = label.find("&", marker + 2)
+        if marker == -1 or marker + 1 >= len(label):
+            continue
+        out.append((label.replace("&&", "&").replace("&", ""), f"Alt+{label[marker + 1].upper()}"))
+    return out
+
+
 def _walk(menu: Any, title: str, out: list[tuple[str, str]]) -> None:
     for item in menu.GetMenuItems():
         submenu = item.GetSubMenu()
@@ -69,7 +92,8 @@ def show_cheat_sheet(host: Any) -> None:
     """Open the sheet. Modal, house pattern."""
     wx = host._wx
 
-    rows: list[CheatRow] = build_sheet(menu_items(host.frame.GetMenuBar()))
+    menu_bar = host.frame.GetMenuBar()
+    rows: list[CheatRow] = build_sheet(menu_items(menu_bar), menu_titles(menu_bar))
     total = len(rows)
     shown: list[CheatRow] = list(rows)
 

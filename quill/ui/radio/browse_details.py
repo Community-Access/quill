@@ -28,12 +28,12 @@ def describe_selection(dialog: Any, data: dict | None) -> None:
 
     station = data.get("station") if data else None
     if station is not None:
-        dialog._details.SetValue(station.details_text)
+        dialog._details.ChangeValue(station.details_text)
         dialog._favorite_btn.Enable(True)
         dialog._update_favorite_label(station)
     elif dialog._is_playable(data) and data is not None:
         note = data.get("note") or "resolves when you play it"
-        dialog._details.SetValue(f"{data['label']}\n{note.capitalize()}.")
+        dialog._details.ChangeValue(f"{data['label']}\n{note.capitalize()}.")
         # The stream resolves lazily, but Add to Favorites resolves it on
         # demand (#1210), so the button is live. Label it Add -- we cannot
         # know the saved state before resolving.
@@ -50,15 +50,15 @@ def describe_selection(dialog: Any, data: dict | None) -> None:
         kind, _args = split_id(str(data.get("node_id", "")))
         sentence = catalog_read.provenance_sentence(getattr(dialog, "_catalog", None), kind)
         label_text = str(data.get("label", ""))
-        dialog._details.SetValue(label_text + chr(10) + sentence)
+        dialog._details.ChangeValue(label_text + chr(10) + sentence)
         dialog._favorite_btn.Enable(False)
     elif data is not None and data.get("is_action"):
         # An action row explains itself while merely highlighted, so nobody
         # has to press Enter to learn what Enter would do.
         note = str(data.get("note") or "")
         detail = f"{data['label']}\n{note.capitalize()}. " if note else f"{data['label']}\n"
-        dialog._details.SetValue(f"{detail}Press Enter to use it.")
+        dialog._details.ChangeValue(f"{detail}Press Enter to use it.")
         dialog._favorite_btn.Enable(False)
     else:
-        dialog._details.SetValue("")
+        dialog._details.ChangeValue("")
         dialog._favorite_btn.Enable(False)

@@ -509,7 +509,9 @@ Read before designing anything; all of this is on main.
   command: the manual-refresh precedent.
 - Bundled already: networks catalog, ACB Media, NFB Radio, community M3U.
 - Live-only today: Radio Browser axes, iHeart, TuneIn tree, Xiph, SomaFM,
-  Apple Podcasts, the libraries (Archive/LibriVox/Gutenberg), free music.
+  Apple Podcasts, the libraries (Archive/LibriVox/Gutenberg), free music, and
+  (2026-08-26) SHOUTcast, Live365 and Radio Paradise -- see the section on them
+  below.
 - User-owned stores, each its own file with atomic writes: favorites
   (`radio_favorites.json`, with timestamped backups under
   `backups/radio-favorites/`), My Servers, YouTube channels, schedule.
@@ -710,6 +712,370 @@ atomically replaces a tiny `CURRENT` pointer file that readers consult on
 open; old generations are deleted once unreferenced (next launch at the
 latest). The pointer replace succeeded with the old generation still open.
 Section 5.1 is amended accordingly.
+
+
+### SHOUTcast, Live365 and Radio Paradise (added 2026-08-26)
+
+Three sources shipped out of the StreamTuner review (`radio2.md`), which read
+StreamTuner-ng and StreamTuner2 and then verified every endpoint against the
+live services before a line was written. What follows is the part a future
+maintainer needs: what each one is, why it is reachable without a key, and where
+each will break.
+
+**SHOUTcast** (`core/radio/shoutcast.py`, browse ids `shoutcast`,
+`shoutcast:<genre>`, `shoutcasttop`). The Winamp yellow-pages API was retired
+after the 2014 Radionomy acquisition and no key has been obtainable by an
+open-source desktop app since; what answers instead is the directory website's
+own form-POST endpoints -- `Home/BrowseByGenre`, `Home/Top`,
+`Search/UpdateSearch`, plus a GET of the genre index -- which both open-source
+StreamTuner generations have used across a decade and two changes of ownership.
+Measured facts that shape the code, none of which either client gets right: a
+genre reply is **capped at 500 rows**; `Listeners` is sparse on a genre page
+(39 of 500 in a live Jazz reply) and universal on Top; `StreamUrl` is always
+`null` and `IceUrl` nearly always empty, so the public tune-in `.pls` is the only
+route to audio; names collide while ids do not; and the reply is UTF-8 that a
+locale-default decode refuses outright. **An honest User-Agent works** -- tested
+against a spoofed browser one, byte-identical result -- so this source does not
+breach the descriptive-UA rule every other directory here follows. There is
+deliberately **no "all stations" branch**: the directory has no such endpoint,
+and synthesising one means 313 requests behind one tree node.
+
+**Live365** (`core/radio/live365.py`, ids `live365`, `live365:<letter>`). The
+auth-gated station API is still not used, and that ruling stands. What changed
+is that Live365 publishes a **public sitemap** its own `robots.txt` advertises,
+listing every station page as `/station/<Name-Slug>-a<id>` -- and the `a#####`
+id in that path is exactly what this module's existing pure transform turns into
+a stream URL. One 923 KB GET, 5,493 stations, cached a day as `(slug, id)` pairs
+rather than as XML or as built rows. This is the same posture as the iHeart
+source, which reads iHeart's sitemap for the same reason. No metadata comes with
+it -- genre and bitrate live in each stream's ICY headers, one request per
+station, so they must stay lazy and must never be fetched for a whole letter.
+
+**Radio Paradise** (`core/radio/radio_paradise.py`, id `radioparadise`).
+`api.radioparadise.com/api/list_chan?list_type=json` is keyless and 8 KB. The
+stream addresses are **not** in it (its `stream.stream_url` is always empty), so
+the naming pattern was verified channel by channel against the live server: the
+Main Mix uses codec names (`aac-320`, `mp3-192`, `flacm`), everything else uses
+`<slug>-<quality>` with `-flacm` for lossless, and Serenity breaks the pattern
+twice (bare slug for 64k, `-flac` for lossless). Radio 2050 is a real channel the
+API omits and is added explicitly. Each channel becomes one row per quality,
+which is the point: the bitrate is the listener's choice, and a name-search
+integration can never offer it. This replaces the `networks.py` entry, which was
+a Radio Browser name query.
+
+**Class, for the seeding plan above: all three are B.** SHOUTcast lists live
+audience figures that are stale the moment they are stored; Radio Paradise is
+seven channels, cheaper to fetch than to seed. Live365 is the only arguable A
+candidate -- 5,493 rows of stable id-to-name mapping -- and it is already cached
+for a day locally, so a catalogue seed would buy the first launch and little
+else.
+
+**Where each will break, in order of likelihood.** SHOUTcast's undocumented
+endpoints change shape (tolerant parsers, typed errors, and a source-health
+count that now says so out loud); Live365 reorganises its sitemap paths (one
+regex, and the branch empties rather than misbehaving); Radio Paradise renames a
+stream (one row per channel stops playing, the rest are unaffected). None of the
+three can take the window with it: `browse()` catches, `browse_failure`
+distinguishes empty from broken, and `source_health` counts.
+
+### Per-source health (added 2026-08-26)
+
+`core/radio/source_health.py` records, per browse source and per session, the
+last outcome and the consecutive-failure count. It exists because
+`browse_failure` deliberately answers a question about *one call* -- was this
+folder empty or broken -- and nothing answered the question about a *source over
+time*, so three twelve-second timeouts read as three unrelated hiccups.
+
+Two decisions worth keeping. It is **in-process only**: nothing is written to
+settings, a restart starts clean, and the module cannot corrupt or migrate
+anything. And it **never disables a source** -- StreamTuner-ng trips a plugin off
+after three strikes; here the count changes what is *said* (the extra clause on
+an empty branch, via `browse_sources.repeat_failure_note`) and never what is
+done, because a source that vanishes from the tree is a worse failure than the
+outage it was hiding, and directories recover.
+
+### "Can we not load it all into a database?" -- the answer, 2026-08-26
+
+Asked while the search work was going on, and it deserves a straight answer
+because **the answer is that we already do**, for the half where it is legal and
+possible.
+
+`quill/core/radio/catalog/` is a real local database -- SQLite, generation-
+numbered behind a pointer file, seeded from a snapshot and refreshed on a
+schedule the listener controls (`catalog_enabled`, `catalog_refresh_on_startup`,
+`catalog_refresh_hours`). `federated_browse._stations` asks it **first** and only
+falls through to the live directory when there is no catalog: that is why the
+station half of a cross-source search is already instant and works offline.
+
+What is not in it, and why, is the whole of the answer:
+
+* **Barred by terms.** The inventory above classes iHeart, TuneIn and Apple
+  Podcasts as Class B: their terms do not permit bulk copying of the directory.
+  They are searched live because that is the only way we are allowed to search
+  them, and they are the two sources whose per-result resolution made search
+  slow -- which is why that was fixed by making it concurrent rather than by
+  storing it.
+* **Too big to be worth it.** Internet Archive is millions of items; the numbers
+  in the inventory table close that question rather than opening it.
+* **Stale by definition.** SHOUTcast's whole value is a live audience count and
+  what is playing right now. A stored copy of "who is listening at this moment"
+  is a contradiction, not a cache.
+* **Already in memory.** Live365's 5,493 stations are cached for a day and
+  searched in process; Radio Paradise's seven channels for six hours. Those two
+  searches never touch the network on a warm cache -- they *are* the in-memory
+  database this question is asking for.
+
+So the useful version of the idea is narrower than "load everything": **warm the
+caches in the background before the first search needs them**, which today
+happens lazily on first use. That is a real improvement, it is bounded (two
+requests), and it belongs behind the same consent and Safe Mode rules as every
+other startup fetch -- so it is written down here rather than slipped in.
+
+### Search speed, and the shape that was actually slow (2026-08-26)
+
+The first pass at "search is slow" fixed the pool (six workers over sixteen
+targets = three waves) and added a deadline. It was still slow, and the reason
+was not the fan-out at all: **TuneIn and iHeart each resolve their results one
+network round trip at a time**, ten and five deep respectively, inside the
+target's own thread. A fan-out cannot help with work that is serialised inside
+one branch of it.
+
+Both now resolve through a shared ``directory_search._in_parallel`` helper --
+one helper rather than two copies, because the two call sites had the identical
+fault and a fix written twice diverges. The SHOUTcast search route in the tree
+passes ``resolve=False``: its rows are lazy and resolve on play, so a tree
+search there is one request rather than twelve. With the serial shapes gone the
+deadline came down from 12 s to 8 s.
+
+**The lesson worth keeping**: measure where the seconds are before parallelising
+the thing that looks parallel. The fan-out was already concurrent and was never
+the problem.
+
+### The Station menu on every surface (2026-08-26)
+
+The access-key gate below fixed menus that could not open; this fixes the menu
+that was not *there*. Each peer window's bar carried its own menu plus &Window
+and nothing else, so Alt+S -- the Station menu, in the main window -- opened
+nothing in Browse Stations, which is exactly where somebody lives while using
+this app. Asked twice in one day, which is the signal that it is a model
+problem rather than a missing item.
+
+`quill/ui/radio/surface_app_menu.py` is the whole mechanism: a table of
+`(label, keymap id, fallback key, host method)` and a loop. `install()` appends
+a &Station menu bound to the app shell's own methods -- there is no second
+implementation of any command -- and `host_of()` resolves the shell whatever a
+given surface called it (`_host`, `_transport_host`, `_download_host`,
+`_app_host`; four names, one object, and the resolver keeps a fifth from being
+invented). Each surface passes a `skip` naming the commands it must not offer:
+itself, and anything whose key it claims (Browse's Ctrl+F is its Find box).
+Three dialogs had no reference to the shell at all and gained an `app_host`
+kwarg. A host without the radio commands -- Cast shares two of these surfaces
+-- gets no menu rather than a broken one, and
+`tests/unit/ui/test_surface_app_menu.py` pins the list of surfaces so the next
+peer window cannot ship without it.
+
+### Search, fourth pass: remembered answers and a warm start (2026-08-26)
+
+Passes one to three fixed the fan-out, the per-result resolution, and the
+first-render latency. What remained: the **first** search of a run paid to fill
+the local caches it was supposed to be answered from, and a **repeated** search
+paid the whole fan-out to learn mostly what it already knew.
+
+* `quill/ui/radio/browse_warmup.py` -- opening Browse Stations submits one
+  background task, once per run, that pre-fetches Live365's sitemap, Radio
+  Paradise's channel list and SHOUTcast's genre index through their ordinary
+  cached fetchers. Rules, each load-bearing: only sources enabled in browse
+  visibility ("off means never contacted" covers background fetches or it
+  covers nothing); never in Safe Mode; only sources whose *whole* answer is
+  locally cacheable -- warming SHOUTcast's station lists would fetch live
+  audience figures that are stale on arrival. The three egress-audit entries
+  name the warm-up as a trigger, because "reached only by an explicit browse"
+  stopped being the whole truth the moment this landed.
+* `browse_search_all._RECENT_RESULTS` -- the last eight completed
+  everything-searches, ten minutes each, session-only (results carry live
+  counts and reachability; yesterday's answer is not worth persisting). A
+  repeat renders the remembered answer instantly as a partial and skips the
+  fast pass -- which would otherwise *downgrade* the display, since it covers
+  fewer sources than the remembered full answer -- while the full refresh runs
+  and replaces it. Narrowed searches ("Search for a Podcast...") are never
+  remembered: their answers must not stand in for the everything-search's.
+
+### Source-declared options (2026-08-26)
+
+`radio2.md` part VII, implemented. `quill/core/radio/source_options.py` holds
+the declarations -- `ChoiceOption` and `SecretOption`, deliberately nothing
+else -- and two consumers: Radio Paradise's preferred quality (reorders which
+row Enter lands on; hides nothing) and SHOUTcast's live-only filter (default
+*everything*, because "the directory lists it" is the honest default and a
+filter that hides 460 rows by surprise is worse than a sorted list). Values
+live in one dict on `RadioHistory`, cleaned on load and save; the in-force
+copy sits in the module (`set_current`/`chosen`) because the wx-free source
+clients are called through a browse contract that has no route to the history
+record. Rendering is `quill/ui/radio/source_options_menu.py` -- the platform's
+own dialogs, extracted on arrival rather than grown into the menu module. The
+`SecretOption` shape exists ahead of the first keyed source so the
+credential-never-in-a-row rule (part VI) has somewhere to hang.
+
+### Menu-bar access keys are now a gate (2026-08-26)
+
+Asked for as "all top level menu items on the menu bar need rich ways to invoke
+them". The item-level rule (every enabled menu item shows a key, no two share
+one) has been enforced since 3.0; the **titles** were unchecked, and the check
+found two live faults in one pass: Quill Radio's ``&Quillins`` collided with
+``&QuillVille`` (both Alt+Q) and Audio Studio's ``&Voices`` with ``&View`` (both
+Alt+V). In each pair one menu simply never opened.
+
+`tests/unit/ui/test_menu_bar_access_keys.py` reads the literals out of every
+``menu_bar.Append``/``Insert`` in the tree and asserts both properties. It also
+pins the sheet's mnemonic reader, which takes the letter from the label's own
+``&`` rather than the first character -- ``Vi&deo`` is Alt+D, and a sheet that
+guessed would be confidently wrong.
+
+The discovery half is the Keyboard Shortcuts Sheet: it now leads with a
+**Menus** group built from the bar in front of the listener, so "what opens the
+menus here?" is answerable in the window where it is asked. That matters more in
+this app than in most, because every window is a peer carrying its own single
+menu.
+
+### SHOUTcast rows are resolved on play (2026-08-26)
+
+Reported within the hour: "many of the stations from the SHOUTcast directory are
+not playing", with a worked example carrying 293 live listeners. The cause is in
+the shape of the source rather than in any station: `tunein-station.pls?id=N` is
+a **playlist**, and a player is handed a stream. Every other source here already
+knew that -- `soma_fm` resolves its own `.pls` for the same reason.
+
+The fix follows TuneIn's pattern exactly: browse rows are `lazy_leaf`s carrying
+`shoutcaststation:<id>`, and `browse_sources.resolve()` turns one into a real
+address when it is activated. One request on the station somebody chose beats
+five hundred for a page they are reading. Search is the exception and has to be:
+Find Stations hands a row straight to a player and cannot resolve it later, so
+`shoutcast.resolve_many` resolves the top 25 concurrently and **drops what will
+not resolve** rather than offering a row that fails on Enter.
+
+Two side effects worth recording. `playlist_formats.parse_pls` finally has a
+runtime caller -- that module was a tested toolkit nothing imported. And
+`browse_sources.py` passed the ~1000-line decomposition point its own budget
+entry had named, so the handlers were **extracted** to
+`core/radio/browse_directories.py` rather than the budget being raised a fourth
+time; the budget was ratcheted down to 950 in the same change.
+
+### Television (2026-08-27)
+
+The iptv.org community catalog, joined from its six published JSON files
+(`core/radio/iptv.py`, browse ids `tv`, `tvcountry`, `tvcategory`, `tvarea`).
+Measured before designed: 40,815 channels, 16,941 streams, of which ~9,300
+survive the four recorded cuts (NSFW flag -- family audience; closed; no
+stream; streams demanding a disguised Referer/User-Agent, which the honest
+player would fail). Streams carry qualities; the best per channel wins and the
+row says which. `feeds.json` broadcast areas (`c/US`, `s/US-MO`, `ct/USNYC`)
+plus `subdivisions.json`/`cities.json` give the local axis: a city channel
+rolls up to its state, so **Nationwide / state / city** is real structure, not
+name-parsing. A five-digit ZIP maps to its state through a bundled postal
+prefix table -- approximate at edges, labelled as narrowing, never as
+reception prediction. **AntennaWeb is a browser link-out by ruling**: no
+published API, and scraping an undocumented commercial SPA is what the egress
+policy refuses (the Live365-API precedent). **XMLTV is a local file by
+ruling** (`core/radio/xmltv.py`, safe_xml, 64 MB cap, mtime-cached parse):
+there is no one guide feed to fetch, and a file the listener placed is consent
+in its plainest form -- zero egress. Cache: **seven days** (the heaviest
+catalog in the app, ~28 MB) with an explicit "Update the channel list now"
+action; the warm-up may pre-fetch it once per run. One reviewed egress entry
+covers all six files.
+
+### Quillin browse sources -- radio2.md part VIII, shipped (2026-08-27)
+
+The last part of the StreamTuner review, and the platform already had its hard
+half: Quillin `fetch` is SSRF-hardened and bounded by each manifest's
+`net_allowed_hosts` -- the "declared and bounded egress" the review asked for
+and StreamTuner has no answer to. What shipped is the contribution shape:
+`directory_providers` entries may declare a **browse trio** --
+`categories_handler`, `stations_handler`, `resolve_handler` -- validated with
+the cross-field rule (categories/resolve require stations) said at manifest
+time, where an author reads it. The app host registers the trio through the
+same `_invoke_result_handler` mechanism every host-mediated provider uses;
+`directory_registry` grew the browse half; the tree gained a **Quillin
+Sources** root that `visible_roots` drops when nothing is registered (an
+always-present empty branch is a shelf with a label and no shop). Every
+contributed row passes one validator (`station_from_row`); a row may carry a
+`key` instead of a URL and resolve at play time -- the tokenized-locator rule
+from part VI, now load-bearing -- and a keyed row with no resolver is dropped
+rather than offered and failed. The bundled Radio Community Directory sample
+demonstrates all of it, including the resolve step.
+
+### The keyboard sweep (2026-08-27)
+
+Three classes, each with a gate so it stays fixed:
+
+1. **Mnemonic shadows** -- the Alt+S root cause. A control label's mnemonic
+   outranks the menu bar's on Windows, so `"&Stations ..."` beside the browse
+   tree disarmed the &Station menu in its own window; seventeen labels across
+   seven bar-carrying windows were doing this (Recordings' list label ate its
+   own &Recordings menu). All moved to free letters (the tree is Alt+T);
+   `test_mnemonic_shadows.py` maps each surface to its bar letters and fails
+   on any theft. Modal dialogs are exempt on purpose: with no menu bar,
+   control mnemonics are the correct pattern.
+2. **Keyless menu items, family-wide** -- the radio-only gate turned out to be
+   the only gate. A source-level sweep of every app bar found 116 items with
+   no accelerator (Cast 46, Studio 30, Player 18, Inkwell 10, Weather 10,
+   Converter 6). All keyed, unique per app, collision-checked against each
+   app's literals and Cast's keymap; `test_app_menu_accelerators.py` decides
+   bar membership by AST (a menu is a bar menu if it reaches `menu_bar.Append`
+   or hangs under one), exempts popups/tray menus mechanically, and exempts
+   disabled status readouts the same way the radio gate does.
+3. **Bar-title mnemonics** -- the earlier gate (`test_menu_bar_access_keys`)
+   continues to hold every bar title to a unique Alt letter.
+
+### iHeart search, by iHeart (2026-08-27)
+
+Search now asks `api/v3/search/all` (relevance-ranked ids, keywords only) and
+batch-fetches those stations with streams embedded -- two GETs, replacing two
+sitemap GETs + local substring filter + one page fetch per match. Better
+answers ("kiss" → Kiss 108, KIIS FM), faster, and the more compliant shape:
+the terms reading that bars bulk-copying the directory is exactly why a search
+should ask the service. The sitemap path remains for what it was built for.
+
+### The five reports from running it, same day (2026-08-26)
+
+Jeff ran the new sources out of the source tree the hour they landed. Every one
+of these is a fault the tests could not have found, and four of the five are
+older than the change that revealed them.
+
+**A new source never reaches an existing profile.** ``normalize`` drops any id a
+stored selection does not name, so a source added later is invisible to
+everybody who has ever opened the chooser. Browse sources learned this on
+2026-08-23 (the Podcast Index branch) and grew ``INTRODUCED_BY_EPOCH`` +
+``SOURCES_EPOCH``; the fix here is one entry in that table (epoch 2) **and** the
+same machinery added to ``search_sources``, which had the identical hole and had
+simply never had a source added since. Rule for every future source: an entry in
+the epoch table in the same change, or it ships to nobody.
+
+**Two surfaces, one setting, no signal.** Choose Browse Sources wrote the
+setting; the open tree kept the roots it was constructed with. Fixed with
+``BrowseTreeDialog.apply_visible_sources`` -- a public method the shell calls
+after saving, which also lets it hold a stale reference safely. The general
+lesson, which applies to every remembered choice with a live surface: writing
+the setting is half the change.
+
+**Sorting names.** ``ACB Media 1, 10, 2`` is what text sorting does. The refused
+fix was zero-padding the names; the taken fix is
+``quill/core/radio/natural_order.py``, one key used by every list of names a
+human reads. The display name belongs to the broadcaster, the ordering belongs
+to us.
+
+**One SHOUTcast root, not two.** The live Top 500 shipped as its own root branch
+beside the genre browse. Asked to merge them, and the merge is right: it is the
+most useful thing that directory publishes, so it belongs pinned at the top of
+the branch a listener already opened, not as a second entry in a tree that is
+long enough already. It cost a dedicated handler (the shared ``_GENRE_MODULES``
+path renders genres and nothing else) and gave back three registry entries.
+
+**Search All Sources was slow and silent.** Sixteen targets through six workers
+is three waves; the fix is one wave (``max_workers`` defaults to the number of
+targets) plus a twelve-second deadline after which stragglers are *named* in
+``failed`` rather than dropped. The progress notice is deliberately repeating
+and deliberately shortens after its first sentence -- a long sentence repeated
+every few seconds is noise a screen-reader user has to talk over.
 
 ### 3. Goals and non-goals
 

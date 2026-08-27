@@ -29,7 +29,7 @@ from quill.core.radio.browse_nodes import make_id, split_id
 from quill.core.radio.spotify_search import open_link_label
 from quill.ui.radio import browse_download_actions as downloads
 from quill.ui.radio import browse_places as places
-from quill.ui.radio import browse_transcript
+from quill.ui.radio import browse_transcript, source_options_menu
 from quill.ui.radio import browse_youtube_menu as yt_menu
 
 
@@ -73,7 +73,7 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
         expanded = bool(dialog._tree.IsExpanded(node))
     except Exception:  # noqa: BLE001 - a menu must never fail on a widget probe
         expanded = False
-    from quill.core.radio import browse_sources
+    from quill.core.radio import browse_sources, source_options
     from quill.core.radio.favorites import place_station
 
     node_id = make_id(kind, *args) if args else kind
@@ -89,6 +89,7 @@ def _folder_state(dialog: Any, node: Any, kind: str, args: list[str]) -> row_act
         # A root branch's id IS its source id (no args); only those rows can
         # be hidden in place.
         root_source=not args and any(kind == nid for nid, _ in browse_sources.ROOT_SOURCES),
+        has_options=not args and bool(source_options.options_for(kind)),
         unheard=unheard,
         library_episodes=library_episodes,
         downloaded_files=downloaded_files,
@@ -170,6 +171,8 @@ def _handlers(dialog: Any, node: Any, data: dict, kind: str, args: list[str]) ->
     handlers[row_actions.FAVORITE_PLACE_ADD] = lambda: places.save_place(dialog, node, kind, args)
     handlers[row_actions.FAVORITE_PLACE_REMOVE] = lambda: places.forget_place(dialog, node)
     handlers[row_actions.DOWNLOAD_ALL] = lambda: downloads.download_all(dialog, node, host)
+    handlers[row_actions.SOURCE_OPTIONS] = lambda: source_options_menu.show(dialog, kind)
+    handlers[row_actions.CLOSE_SEARCH_RESULTS] = lambda: _close_search_results(dialog)
     handlers[row_actions.HIDE_SOURCE] = lambda: _hide_source(dialog, kind)
     handlers[row_actions.RESET_SOURCES] = lambda: _reset_sources(dialog)
     handlers[row_actions.SUBSCRIBE_PODCAST] = lambda: _subscribe(dialog, node, kind, args)
@@ -536,6 +539,22 @@ def _copy_feed(dialog: Any, kind: str, args: list[str]) -> None:
         dialog._announce("That show's feed address could not be found.")
         return
     dialog._copy_text(feed)
+
+
+def _close_search_results(dialog: Any) -> None:
+    """Take the Search Results branch out of the tree.
+
+    Nothing is lost and nothing is asked: the branch is the answer to a search,
+    the search itself is remembered in Find, and Escape in the Find box already
+    does exactly this. The same call backs the Delete key (see
+    ``browse_delete``), so the key and the menu item can never disagree.
+    """
+    from quill.ui.radio import browse_search_all
+
+    if browse_search_all.clear_results(dialog):
+        dialog._announce("Search results closed.")
+    else:
+        dialog._announce("There are no search results to close.")
 
 
 def _hide_source(dialog: Any, kind: str) -> None:

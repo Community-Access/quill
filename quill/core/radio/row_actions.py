@@ -70,6 +70,8 @@ REMOVE_REMINDER = row_reminders.REMOVE_REMINDER
 SUBSCRIBE_PODCAST = "podcast.subscribe"
 UNSUBSCRIBE_PODCAST = "podcast.unsubscribe"
 UNFOLLOW_CHANNEL = "channel.unfollow"
+SOURCE_OPTIONS = "source.options"
+CLOSE_SEARCH_RESULTS = "searchresults.close"
 HIDE_SOURCE = "source.hide"
 RESET_SOURCES = "source.reset"
 REMOVE_SAVED = "youtube.remove_saved"
@@ -526,10 +528,25 @@ def folder_actions(kind: str, state: FolderState) -> list[RowAction]:
         # files would be the menu disagreeing with itself about the count.
         actions.append(RowAction(DOWNLOAD_ALL, f"&Download All {state.savable} Files..."))
 
+    if kind == "searchresults":
+        # The Search Results branch is a view of a search that has already
+        # happened, not a source and not anything owned, so the verb is
+        # "close", it asks nothing, and it is on the menu as well as on Delete
+        # (asked for 2026-08-26: "I should be allowed to delete a search
+        # results folder so it goes away"). "&h" because a folder row already
+        # spends "&C" on Close (collapse) and "&R" on Refresh.
+        actions.append(RowAction(CLOSE_SEARCH_RESULTS, "Close Searc&h Results"))
+
     if state.root_source and kind in SEARCHABLE_SOURCES:
         # The provider's own search, pre-narrowed to this source -- the
         # intelligent half of the tree-top Search All Sources row.
         actions.append(RowAction(SEARCH_SOURCE, "&Search This Source..."))
+
+    if state.has_options:
+        # A source that declares its own settings says so on its own row --
+        # not in a global Preferences dialog it would share with everything
+        # else, and not in a bespoke dialog per source (radio2.md part VII).
+        actions.append(RowAction(SOURCE_OPTIONS, "Source O&ptions..."))
 
     if state.root_source:
         # Hiding in place: the same rule as Choose Browse Sources (a hidden

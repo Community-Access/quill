@@ -44,7 +44,8 @@ _REMOVABLE: dict[str, tuple[str, str]] = {
 
 NOTHING_TO_DELETE = (
     "There is nothing to delete on this row. Delete removes a saved YouTube "
-    "video or playlist, a followed channel, a server you added, or a favorite."
+    "video or playlist, a followed channel, a server you added, a favorite, "
+    "or the Search Results branch."
 )
 
 
@@ -185,6 +186,8 @@ def delete_selected(dialog: Any) -> bool:
     kind, args = split_id(str(data.get("node_id") or ""))
     station = data.get("station")
 
+    if kind == "searchresults":
+        return _close_search_results(dialog)
     if kind in _REMOVABLE and args and args[0]:
         return _remove_stored(dialog, node, kind, args)
     if station is not None and dialog._favorites.contains(station):
@@ -193,6 +196,24 @@ def delete_selected(dialog: Any) -> bool:
         return _remove_podcast(dialog, node, kind, args)
     explain_not_deletable(dialog, _label(dialog, node))
     return False
+
+
+def _close_search_results(dialog: Any) -> bool:
+    """Delete on the Search Results branch closes it.
+
+    The one row where Delete does **not** ask first, and deliberately: this
+    branch owns nothing. It is the answer to a search that has already
+    happened, the query itself is still in Find, and running the search again
+    rebuilds it -- so the confirmation this module insists on everywhere else
+    would be a question about nothing. Asked for on 2026-08-26; the context
+    menu's Close Search Results calls the same function.
+    """
+    from quill.ui.radio import browse_search_all
+
+    if not browse_search_all.clear_results(dialog):
+        return False
+    dialog._announce("Search results closed.")
+    return True
 
 
 def _remove_stored(dialog: Any, node: Any, kind: str, args: list[str]) -> bool:

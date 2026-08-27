@@ -1548,7 +1548,7 @@ class RadioAppFrame(
         # bundled Quillins still load and still contribute -- this hides only the
         # top-level menu, so nothing a Quillin provides stops working.
         if self.features.is_enabled("future.quillins_menu"):
-            menu_bar.Append(self._build_quillins_menu(), "&Quillins")
+            menu_bar.Append(self._build_quillins_menu(), "Quilli&ns")  # Alt+Q is QuillVille
         menu_bar.Append(help_menu, "&Help")
 
         # Persistent &Window menu + Ctrl+Tab / Ctrl+Shift+Tab / Ctrl+1..9 on the
@@ -2059,7 +2059,8 @@ class RadioAppFrame(
             "Credits and thanks:\n"
             "- Broadcast polish adapted from OptiLab Core by dgl1984 "
             "(https://github.com/dgl1984/optilab, Apache-2.0).\n"
-            "- Podcast data from the Podcast Index (podcastindex-org.github.io).",
+            "- Podcast data from the Podcast Index (podcastindex-org.github.io)."
+            "\n\nSupport: support@community-access.org",
             f"About {_TITLE}",
             wx.ICON_INFORMATION | wx.OK,
         )

@@ -51,6 +51,60 @@ def directory_search(api, event: dict) -> None:
     api.set_storage(_RESULT_KEY, json.dumps(matches))
 
 
+# --- the browse trio (Quillin Sources) ---------------------------------------
+#
+# With these three registered, this Quillin is a full browse source in Quill
+# Radio's tree, not only a Find Stations contributor. The same static list
+# serves both, split into two categories to show the shape; the "key" row shows
+# the play-time resolve step a real provider would use for addresses it must
+# not cache (a tokenized or expiring stream URL).
+
+_CATEGORIES = {
+    "Community": _STATIONS,
+    "Late Night": [
+        {
+            "name": "Night Owl Community Radio",
+            # No "url": the row carries a key instead, and the host calls
+            # directory_resolve with it when the row is played.
+            "key": "night-owl",
+            "source": "Community Directory",
+        }
+    ],
+}
+
+_RESOLVABLE = {"night-owl": "https://stream.example.org/night-owl.mp3"}
+
+
+def directory_categories(api, event: dict) -> None:
+    """The category names, as a JSON array of strings."""
+
+    api.set_storage(_RESULT_KEY, json.dumps(sorted(_CATEGORIES)))
+
+
+def directory_stations(api, event: dict) -> None:
+    """One category's stations; ``query`` narrows them when the branch is searched."""
+
+    category = str(event.get("category", "")).strip()
+    query = str(event.get("query", "")).strip().lower()
+    rows = (
+        list(_CATEGORIES.get(category, []))
+        if category
+        else [row for rows in _CATEGORIES.values() for row in rows]
+    )
+    if query:
+        rows = [row for row in rows if query in row["name"].lower()]
+    api.set_storage(_RESULT_KEY, json.dumps(rows))
+
+
+def directory_resolve(api, event: dict) -> None:
+    """The playable URL behind a row's key -- called at play time, never before."""
+
+    api.set_storage(_RESULT_KEY, _RESOLVABLE.get(str(event.get("key", "")), ""))
+
+
 def register(api) -> None:
     api.register_command("directory_search", directory_search)
+    api.register_command("directory_categories", directory_categories)
+    api.register_command("directory_stations", directory_stations)
+    api.register_command("directory_resolve", directory_resolve)
     api.log("Radio Community Directory loaded")

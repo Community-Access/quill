@@ -917,7 +917,8 @@ class PodcastsAppFrame(
             f"https://github.com/{_REPO}\n\n"
             "Credits and thanks:\n"
             "- Podcast data from the Podcast Index, an open, independent "
-            "podcast directory (https://podcastindex-org.github.io/docs-api/).",
+            "podcast directory (https://podcastindex-org.github.io/docs-api/)."
+            "\n\nSupport: support@community-access.org",
             f"About {_TITLE}",
             wx.ICON_INFORMATION | wx.OK,
         )

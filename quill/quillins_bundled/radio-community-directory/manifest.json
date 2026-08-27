@@ -2,13 +2,20 @@
   "schema": "quill.extension/1",
   "id": "com.quill.radiocommunitydirectory",
   "name": "Radio Community Directory",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "QUILL Team",
-  "description": "Contributes a small community station directory to Quill Radio's Find Stations, returning demo stations from the Quillin's own static list. Sample of the radio.directory capability.",
+  "description": "Contributes a small community station directory to Quill Radio -- searchable in Find Stations AND browsable under Quillin Sources -- from this Quillin's own static list. The bundled reference for the radio.directory capability, including the browse trio.",
   "license": "MIT",
-  "categories": ["integration"],
-  "targets": ["radio"],
-  "capabilities": ["radio.directory", "storage"],
+  "categories": [
+    "integration"
+  ],
+  "targets": [
+    "radio"
+  ],
+  "capabilities": [
+    "radio.directory",
+    "storage"
+  ],
   "main": "extension.py",
   "contributes": {
     "directory_providers": [
@@ -16,7 +23,10 @@
         "id": "ext.radiocommunitydirectory.provider",
         "display_name": "Community Directory",
         "handler": "directory_search",
-        "description": "Returns a couple of demo community stations that match the search query, from this Quillin's static list (no network)."
+        "description": "Returns demo community stations from this Quillin's static list (no network): searchable in Find Stations, and browsable as a source under Quillin Sources with two categories and a play-time resolve step.",
+        "categories_handler": "directory_categories",
+        "stations_handler": "directory_stations",
+        "resolve_handler": "directory_resolve"
       }
     ]
   }

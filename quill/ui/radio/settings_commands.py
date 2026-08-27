@@ -42,9 +42,18 @@ def browse_sources_visibility(host: Any) -> None:
         show_modal_dialog=host._show_modal_dialog,
         announce=host._announce,
     )
-    host._radio_history.browse_sources_enabled = dialog.show()
+    updated = dialog.show()
+    host._radio_history.browse_sources_enabled = updated
     host._save_radio_history()
-    host._announce(browse_visibility.describe_selection(host._radio_history.browse_sources_enabled))
+    said = browse_visibility.describe_selection(updated)
+    # An open Browse Stations window was built from the previous list and has no
+    # other way to hear that it changed -- see BrowseTreeDialog.apply_visible_
+    # sources for the report. Saying so matters as much as doing it: a tree that
+    # silently regrows a branch under the cursor is its own small surprise.
+    open_tree = getattr(host, "_radio_browse_dialog", None)
+    if open_tree is not None and open_tree.apply_visible_sources(updated):
+        said = f"{said} Browse Stations has been updated."
+    host._announce(said)
 
 
 def download_preferences(host: Any) -> None:

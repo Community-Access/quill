@@ -31,6 +31,15 @@ from typing import Any
 #: How long a branch may load in silence before it says it is still going.
 SLOW_LOAD_SECONDS = 3
 
+#: How long **Search All Sources** may run in silence, and how often it repeats
+#: afterwards. A search across every directory is a different wait from a slow
+#: branch: it is routinely slower (it is as slow as the slowest of a dozen
+#: services), and there is nothing on screen changing while it happens -- so one
+#: notice is not enough. Asked for 2026-08-26: "global search can take a while
+#: so we should alert the user that we are still searching across all content
+#: sources."
+SEARCH_NOTICE_SECONDS = 4
+
 
 def start_slow_load_notice(host: Any, label: str) -> None:
     """Arm the "still loading" notice for the branch named *label*."""
@@ -55,6 +64,46 @@ def _speak(host: Any) -> None:
     host._announce(f"Still loading {label}. This directory is being slow.")
 
 
+def start_search_notice(host: Any, what: str, query: str) -> None:
+    """Arm the repeating "still searching" notice for a cross-source search.
+
+    Repeating, unlike the branch notice, and worded to shorten: the first tick
+    says what is happening and why it is slow, and every one after it is three
+    words, because a sentence repeated every few seconds stops being
+    information and becomes noise a listener has to talk over.
+    """
+    wx = host._wx
+    timer = getattr(host, "_search_notice_timer", None)
+    if timer is None:
+        timer = host._search_notice_timer = wx.Timer(host._win)
+        host._win.Bind(wx.EVT_TIMER, lambda _e: _say_still_searching(host), timer)
+    host._search_notice_what = what
+    host._search_notice_query = query
+    host._search_notice_ticks = 0
+    timer.Start(SEARCH_NOTICE_SECONDS * 1000)
+
+
+def stop_search_notice(host: Any) -> None:
+    """Results arrived, or the search failed: stop saying it is still going."""
+    timer = getattr(host, "_search_notice_timer", None)
+    if timer is not None:
+        timer.Stop()
+
+
+def _say_still_searching(host: Any) -> None:
+    ticks = int(getattr(host, "_search_notice_ticks", 0)) + 1
+    host._search_notice_ticks = ticks
+    query = str(getattr(host, "_search_notice_query", "") or "")
+    what = str(getattr(host, "_search_notice_what", "") or "every source")
+    if ticks == 1:
+        host._announce(
+            f"Still searching {what} for {query}. Every directory is asked at once, "
+            "so this takes as long as the slowest one."
+        )
+    else:
+        host._announce("Still searching...")
+
+
 def on_find_focus(host: Any, event: Any) -> None:
     """Tabbing into Find selects what is there.
 
@@ -71,7 +120,7 @@ def select_find_text(host: Any) -> None:
         control.SelectAll()
 
 
-def empty_row_text(*, unreachable: bool, override: str = "") -> str:
+def empty_row_text(*, unreachable: bool, override: str = "", note: str = "") -> str:
     """What the single row inside an empty folder should say (pure).
 
     A folder whose fetch returned nothing used to be left with NO children at
@@ -85,7 +134,14 @@ def empty_row_text(*, unreachable: bool, override: str = "") -> str:
 
     *override* lets a branch say something better than the generic text;
     Favorites uses it to point at where stations come from.
+
+    *note* is appended when the source has been failing repeatedly (see
+    ``quill.core.radio.source_health``). "Could not be reached" three times in
+    identical words reads as three unrelated hiccups; saying it is the third
+    tells the listener the difference between a blip and an outage, which is the
+    difference between trying again and going elsewhere.
     """
     if override:
         return override
-    return "Could not be reached. Open it again to try." if unreachable else "Nothing in here."
+    says = "Could not be reached. Open it again to try." if unreachable else "Nothing in here."
+    return f"{says} {note}" if (note and unreachable) else says

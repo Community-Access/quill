@@ -81,6 +81,19 @@ class RadioStation:
     #: station to the favorites de-duplicator.
     #: See ``quill.core.radio.station_confidence`` for what is done with it.
     last_check_ok: bool | None = field(default=None, compare=False)
+    #: Live concurrent listeners, as reported by a directory that actually
+    #: measures them -- SHOUTcast's ``Listeners``, Radio Paradise's
+    #: ``current_listeners``. **Not** ``votes``: a station with four thousand
+    #: votes and no listeners is well-liked and off the air, and reading one as
+    #: the other is how a browse list fills up with parked mounts. ``0`` means
+    #: "not reported" rather than "nobody" -- most directories publish nothing
+    #: here, so an absent count must never be spoken as an empty room.
+    #:
+    #: Transient and excluded from equality exactly like ``last_check_ok`` and
+    #: ``notes``: it describes how a station is doing, not which station it is,
+    #: and an audience that changes between two refreshes must not thereby make
+    #: it a different station to the favorites de-duplicator.
+    listeners: int = field(default=0, compare=False)
 
     @property
     def display_name(self) -> str:
@@ -116,6 +129,13 @@ class RadioStation:
             lines.append(f"Format: {codec_bit}")
         if self.votes:
             lines.append(f"Community votes: {self.votes}")
+        if self.listeners:
+            # Live listeners sit next to votes and are deliberately worded
+            # differently: votes are historical popularity, this is how many
+            # people are hearing it right now. Only shown when a directory
+            # actually reported it -- "0 listeners" would be a claim about the
+            # station rather than about what the directory said.
+            lines.append(f"Live listeners: {self.listeners:,}")
         if self.homepage:
             # A recording's "homepage" is the feed or collection it came out
             # of, and calling that a homepage is how this panel ended up

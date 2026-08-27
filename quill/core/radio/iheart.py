@@ -55,6 +55,14 @@ _API_GENRES = "https://us.api.iheart.com/api/v2/content/genre"
 #: is the "by city" axis commercial catalogues charge for.
 _API_MARKETS = "https://us.api.iheart.com/api/v2/content/markets"
 _API_LIVE_STATIONS = "https://us.api.iheart.com/api/v2/content/liveStations"
+#: iHeart's own keyless relevance search (the web player's). Asked with
+#: station=true and everything else false, it answers ranked station ids for a
+#: text query -- "kiss" comes back as Kiss 108 and KIIS FM, not as whatever
+#: happens to contain the letters. One GET here plus one batch liveStations GET
+#: (ids are comma-separable in the path) replaces what Search used to do: two
+#: sitemap GETs to build a 3,700-row index, a local substring filter over it,
+#: and one page fetch per match. Verified live 2026-08-27.
+_API_SEARCH = "https://us.api.iheart.com/api/v3/search/all"
 #: Stations pulled per genre for the browse tree (bounded; one genre is then
 #: grouped A-Z under its folder). Generous enough to cover a genre in full
 #: without an unbounded pull.
@@ -356,6 +364,62 @@ def resolve_stream(page_url: str, *, safe_mode: bool = False) -> str:
     if not page_url.strip():
         return ""
     return extract_stream_url(_fetch(page_url))
+
+
+def parse_search_station_ids(json_text: str) -> list[int]:
+    """Ranked station ids from a v3 search reply (pure). ``[]`` on anything odd."""
+    import json
+
+    try:
+        data = json.loads(json_text)
+    except (ValueError, TypeError):
+        return []
+    results = data.get("results") if isinstance(data, dict) else None
+    stations = results.get("stations") if isinstance(results, dict) else None
+    if not isinstance(stations, list):
+        return []
+    ids: list[int] = []
+    for entry in stations:
+        if isinstance(entry, dict) and isinstance(entry.get("id"), int):
+            ids.append(entry["id"])
+    return ids
+
+
+def search_stations(query: str, *, limit: int = 15, safe_mode: bool = False) -> list[RadioStation]:
+    """Stations for *query*, by iHeart's own relevance search. Two GETs.
+
+    The service's search API is both the fastest route and the most compliant
+    one: the terms reading that barred bulk-copying the directory (PRD, class
+    B) is exactly why a search should ask the service rather than filter a
+    local copy of it. Ranked ids come from ``/api/v3/search/all``; one batch
+    ``liveStations/<id,id,...>`` GET returns those stations with their streams
+    already embedded, parsed by the same :func:`parse_genre_stations` the genre
+    browse uses. Never raises into a search fan-out.
+    """
+    import urllib.parse
+
+    wanted = str(query or "").strip()
+    if not wanted:
+        return []
+    try:
+        refuse_in_safe_mode(safe_mode)
+        params = urllib.parse.urlencode({
+            "keywords": wanted,
+            "maxRows": max(1, int(limit)),
+            "bundle": "false",
+            "station": "true",
+            "artist": "false",
+            "track": "false",
+            "playlist": "false",
+            "podcast": "false",
+        })
+        ids = parse_search_station_ids(_fetch(f"{_API_SEARCH}?{params}"))
+        if not ids:
+            return []
+        joined = ",".join(str(station_id) for station_id in ids[: max(1, int(limit))])
+        return parse_genre_stations(_fetch(f"{_API_LIVE_STATIONS}/{joined}"))
+    except IHeartError:
+        return []
 
 
 def to_radio_station(station: IHeartStation, stream_url: str = "") -> RadioStation:

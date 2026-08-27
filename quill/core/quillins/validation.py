@@ -133,6 +133,9 @@ _DIRECTORY_PROVIDER_KEYS = frozenset({
     "display_name",
     "handler",
     "description",
+    "categories_handler",
+    "stations_handler",
+    "resolve_handler",
 })
 _ALERT_SOURCE_KEYS = frozenset({
     "id",
@@ -807,6 +810,23 @@ def _validate_directory_providers(
             display_name = None
         handler = _validate_handler(item.get("handler"), label, errors)
         description = _validate_optional_desc(item, label, errors)
+
+        def _optional_handler(key: str, entry: dict = item, where: str = label) -> str:
+            value = entry.get(key)
+            if value is None:
+                return ""
+            checked = _validate_handler(value, f"{where}.{key}", errors)
+            return checked or ""
+
+        categories_handler = _optional_handler("categories_handler")
+        stations_handler = _optional_handler("stations_handler")
+        resolve_handler = _optional_handler("resolve_handler")
+        # The browse trio hangs off stations_handler: categories without
+        # stations is a tree of folders that can never open, and resolve
+        # without stations has nothing to resolve. Said at validation time,
+        # where the author reads it, not at browse time, where a listener does.
+        if (categories_handler or resolve_handler) and not stations_handler:
+            errors.append(f"{label}: categories_handler/resolve_handler require stations_handler")
         if provider_id is not None and display_name is not None and handler is not None:
             result.append(
                 DirectoryProviderContribution(
@@ -814,6 +834,9 @@ def _validate_directory_providers(
                     display_name=display_name,
                     handler=handler,
                     description=description,
+                    categories_handler=categories_handler,
+                    stations_handler=stations_handler,
+                    resolve_handler=resolve_handler,
                 )
             )
     return tuple(result)

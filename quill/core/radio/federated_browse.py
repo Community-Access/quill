@@ -34,7 +34,7 @@ wx-free, strict-typed.
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field, replace
 from typing import Any
 
@@ -45,6 +45,7 @@ from quill.core.radio.browse_nodes import BrowseNode, leaf
 #: people are looking for first, and the long tail of niche catalogues last.
 TYPE_ORDER: tuple[str, ...] = (
     "Station",
+    "TV channel",
     "Weather station",
     "Podcast",
     "Audiobook",
@@ -82,7 +83,11 @@ class SearchTarget:
 TARGETS: tuple[SearchTarget, ...] = (
     SearchTarget("tunein", "TuneIn", "Station"),
     SearchTarget("iheart", "iHeart", "Station"),
+    SearchTarget("shoutcast", "SHOUTcast", "Station"),
+    SearchTarget("live365", "Live365", "Station"),
+    SearchTarget("radioparadise", "Radio Paradise", "Station"),
     SearchTarget("soma", "SomaFM", "Station"),
+    SearchTarget("tv", "TV (iptv.org)", "TV channel"),
     SearchTarget("wx", "NOAA Weather Radio", "Weather station"),
     SearchTarget("apple", "Apple Podcasts", "Podcast"),
     # Two podcast directories, asked together: the index finds independent,
@@ -100,6 +105,26 @@ TARGETS: tuple[SearchTarget, ...] = (
 #: The station directory, asked from the local catalog when there is one (and
 #: in Safe Mode, where it is the only thing that can answer at all).
 STATIONS = SearchTarget("rbgenre", "Radio Browser", "Station")
+
+
+#: The sources that answer from something already on this machine: the station
+#: catalog (a seeded SQLite snapshot), NOAA's bundled index, and the two whose
+#: whole directory is held in a local cache for hours at a time. They are what a
+#: **first pass** asks, because they come back in well under a second and a
+#: listener should be reading results while the network is still being polite.
+#:
+#: Being in this list is a claim about *latency*, not about quality: everything
+#: here is also asked in the full pass, so a source that turns out to need the
+#: network simply arrives in the second answer like everything else.
+FAST_SEED_IDS: frozenset[str] = frozenset({"rbgenre", "wx", "live365", "radioparadise", "tv"})
+
+
+def fast_targets(
+    targets: tuple[SearchTarget, ...] | None = None,
+) -> tuple[SearchTarget, ...]:
+    """The subset of *targets* worth asking first (pure)."""
+    wanted = targets if targets is not None else (STATIONS, *TARGETS)
+    return tuple(target for target in wanted if target.seed_id in FAST_SEED_IDS)
 
 
 def targets_of_type(type_label: str) -> tuple[SearchTarget, ...]:
@@ -183,21 +208,45 @@ def _ask(
     return [_annotate(node, target) for node in nodes[:PER_SOURCE_LIMIT]], why
 
 
+#: How long the whole cross-source search may take before the stragglers are
+#: left behind. Reported 2026-08-26 as "very very slow": the search is only as
+#: fast as the slowest directory in it, and one service having a bad afternoon
+#: made every search feel broken. Everything that arrived inside this window is
+#: shown; everything that did not is **named** in ``failed`` rather than
+#: silently dropped, so a short list never passes itself off as a complete one.
+#:
+#: Eight seconds rather than the twelve it started at, because the two sources
+#: that used to need the extra four -- TuneIn and iHeart, each resolving its
+#: results one network round trip after another -- now resolve them at the same
+#: time. The ceiling exists for a service having a bad afternoon, not for a
+#: shape of work we chose.
+SEARCH_DEADLINE_SECONDS = 8.0
+
+
 def search_everything(
     query: str,
     *,
     safe_mode: bool = False,
     catalog: Any = None,
     targets: tuple[SearchTarget, ...] | None = None,
-    max_workers: int = 6,
+    max_workers: int = 0,
+    deadline_seconds: float = SEARCH_DEADLINE_SECONDS,
 ) -> FederatedBrowse:
     """Ask every source for *query* at once and merge what comes back.
 
-    Concurrent because sequential is unusable: twelve directories at a second
-    each is a twelve-second wait for a list that could arrive in two. The pool
-    is small and bounded, every route is already exception-guarded, and the
-    caller still runs this whole call on its own worker -- nothing here touches
-    a UI.
+    Concurrent because sequential is unusable: sixteen directories at a second
+    each is a sixteen-second wait for a list that could arrive in two. Two
+    things make it as fast as the network allows rather than as fast as the
+    pool allows:
+
+    * **One wave.** ``max_workers`` defaults to *the number of sources*, so
+      every directory is asked at the same moment. It used to be six, which
+      with sixteen targets meant three waves and a wall-clock of three slow
+      services back to back rather than one.
+    * **A deadline.** The whole search is bounded by *deadline_seconds*; a
+      source still thinking when it expires is reported as such and its answer
+      is discarded. The alternative -- what shipped before -- is that the
+      slowest service on earth decides how long every search takes.
 
     Rows come back ordered by type and then by the order their source returned
     them, which is the only ranking this module trusts (see
@@ -215,12 +264,38 @@ def search_everything(
         nodes, why = _ask(target, text, safe_mode=safe_mode, catalog=catalog)
         return target, nodes, why
 
-    with ThreadPoolExecutor(max_workers=max(1, max_workers)) as pool:
-        for target, nodes, why in pool.map(_one, wanted):
+    workers = max_workers if max_workers > 0 else min(24, max(1, len(wanted)))
+    pool = ThreadPoolExecutor(max_workers=workers)
+    pending = {pool.submit(_one, target): target for target in wanted}
+    try:
+        for future in as_completed(pending, timeout=max(0.5, deadline_seconds)):
+            try:
+                target, nodes, why = future.result()
+            except Exception as error:  # noqa: BLE001 - a route must never raise here
+                straggler = pending[future]
+                result.asked.append(straggler.label)
+                result.failed.append((straggler.label, str(error) or "could not be searched"))
+                continue
             by_target[target.seed_id] = nodes
             result.asked.append(target.label)
             if why:
                 result.failed.append((target.label, why))
+    except TimeoutError:
+        pass
+    finally:
+        for future, target in pending.items():
+            if not future.done():
+                # Named, never silently dropped: a source that ran out of time
+                # is a source worth asking again, and a listener reading a
+                # short list deserves to know which one is missing from it.
+                result.asked.append(target.label)
+                result.failed.append((
+                    target.label,
+                    f"did not answer within {int(deadline_seconds)} seconds",
+                ))
+        # wait=False: the search is over, and a request still in flight must not
+        # hold the worker that ran it. Nothing it produces is read.
+        pool.shutdown(wait=False, cancel_futures=True)
 
     seen: set[str] = set()
     ordered: list[BrowseNode] = []

@@ -1,8 +1,10 @@
 # magic.md — nobody should ever require a GitHub account
 
 Working notes. Started 2026-08-25; the original goal was met 2026-08-26 and the
-work has since grown a second strand (support email, FreeScout). Both are
-below, next steps first.
+work has since grown a second strand (support email, FreeScout) and, later the
+same day, a third (the domain and the brand: `quillforall.org` becomes
+`quillville.org`, with the apps at the centre of it). All three are below, next
+steps first.
 
 **The one line that started it:** *"Nobody should ever require a GitHub
 account."* That is now true of the suggestion form. It is **not** yet true of
@@ -54,19 +56,44 @@ earlier notes still line up.)*
    a GET.
 
 3. **Postmark.** Two halves, and the account is the only accepted service cost
-   in the plan.
-   - *Outbound*: a Server API token, entered in FreeScout's own interface
-     (Manage, then Settings, then Mail) rather than in a file, so rotating it
-     never needs a container restart. Send the test message before telling
-     anybody the address exists.
-   - *Inbound*: the `community-access.org` sending domain verified (DKIM TXT
-     and Return-Path CNAME), and an MX record pointing at
-     `inbound.postmarkapp.com`. Postmark generates the exact values.
+   in the plan. **The step-by-step is now its own section: *Postmark, step by
+   step*, below.** Three things from it belong here, because they change what
+   this step is:
+   - *Sending* needs **`community-access.org` verified — the apex, not the
+     `helpdesk` subdomain**, because the address is `support@community-access.org`
+     and Postmark verification does not cascade to subdomains. Two DNS records
+     at Namecheap, DKIM TXT and a Return-Path CNAME, whose values Postmark
+     generates. Then a Server API token, entered in FreeScout's own interface
+     rather than in a file, so rotating it never needs a container restart.
+     Send the test message before telling anybody the address exists.
+   - *Receiving* is **not** the same question, and the domain already has mail:
+     five Namecheap `eforward` MX records are live on it today. Replacing them
+     with `inbound.postmarkapp.com` would send every address at the domain into
+     a bridge that serves one, and 403 stops Postmark retrying — so the
+     recommendation is a single Namecheap forwarder into Postmark and **no MX
+     change at all**. Reasoning in step 4 of that section.
+   - *Cost*: **inbound processing starts at Postmark's Pro plan, $16.50 a
+     month.** The free plan sends 100 a month and cannot receive at all.
 
    **Everything except mail can be configured now**, and should be — the site
    is up, so users, teams, folders, tags, canned replies, business hours and
    branding are all reachable at `https://helpdesk.community-access.org/login`
    with the admin account `jeff@jeffbishop.com` created during install.
+
+   **The install-time password for `jeff@jeffbishop.com` is not recoverable.**
+   There is no `ADMIN_PASS` in the compose file — it was typed once during
+   `freescout:create-user`, and only the bcrypt hash is in the database. It can
+   be replaced, never read back.
+
+   So a **temporary second admin** was created on 2026-08-26,
+   `jeff+hd@jeffbishop.com` (id 2), and its login verified end to end. The
+   credential is at **`C:\Users\jeffbis\helpdesk-temp-login.txt`**, deliberately
+   *outside this repository*: `magic.md` is tracked in `Community-Access/quill`,
+   which is **public**, so a live admin password here would be one
+   `git commit -am` away from permanent public history — on a help desk that is
+   now reachable from the internet. That file carries the reset steps too:
+   sign in, set a new password on the original account from Manage → Users,
+   delete the temporary admin, delete the file.
 
    One warning that matters more than it looks: **do not rely on "Forgot
    password".** That link sends mail, and mail is exactly what is not
@@ -104,6 +131,12 @@ earlier notes still line up.)*
    for old installs. Support email is simply new.
 
    It also unblocks step 8, which was waiting only on this.
+
+   **Superseded 2026-08-26 by step 14.** Half of this still stands —
+   `community-access.org` is the organisation — but the product half does not:
+   `quillforall.org` is being renamed to `quillville.org`. The redirect debt
+   this answer was written to avoid is now accepted deliberately. Read step 14
+   rather than this paragraph.
 
 ### Ready to build, not blocked
 
@@ -169,10 +202,16 @@ still line up.)*
    re-enables the button in one line. Either the Quillin Hub is coming, or that
    constant should point at the server this file is about.
 
-   **No longer blocked**: step 5 answered "both", so `quillforall.org` is
-   staying and `hub.` under it remains a name worth using. The question is now
-   only whether the Hub is a thing that exists, not whether its domain
-   survives.
+   **No longer blocked**: step 5 answered "both", so the question is now only
+   whether the Hub is a thing that exists, not whether its domain survives.
+
+   **Amended by step 14.** `hub.quillforall.org` is not the name to revive —
+   the product domain is becoming `quillville.org`. Recommend a **path, not a
+   subdomain**: `quillville.org/hub`. One certificate, one site, one place to
+   reason about, and the Hub reads as a part of the town rather than a
+   separate one. A subdomain is worth its own certificate only when it is a
+   separate application, which is the test `helpdesk.` passes and this does
+   not.
 
 9. **`PICKS_SIGNING_KEY`.** The catalogue is still published unsigned; the app
    verifies, fails closed, falls back to the bundled copy and records why in
@@ -249,6 +288,641 @@ still line up.)*
     Whoever writes that block: **do not edit the Caddyfile with `sed -i`.** See
     the fifth trap below — it is new, it was found today, and it is silent.
 
+### Newly asked for, 2026-08-26 (second batch)
+
+13. **A public support form, served by the submission server itself.** Asked
+    for as *"an HTML form that looks like the one in the app, submitting
+    tickets the same way"* — and the answer is that it is the cheapest piece
+    left in this whole file, for a reason worth writing down.
+
+    **The in-app form is not hand-built.** `feedback_hub.wx_dialog` renders
+    `schemas/quill.json` — categories, and for each field a name, label, type,
+    `required`, `max_length` and placeholder (`_schema.py`, `FieldSchema` and
+    `AppSchema`). The server already imports that module. So the web page is
+    not a *copy* of the dialog that will drift from it by the second release;
+    it is a **second renderer of the same schema**, and one test asserting both
+    produce the same field set keeps it that way.
+
+    Three facts remove the friction that usually makes this a project:
+
+    - **No Caddyfile edit.** The existing matcher is `host lp.csedesigns.com` +
+      `path /submit/*`, written as `handle` and not `handle_path`. A page at
+      `GET /submit/report` is already routed, with its path intact. Given the
+      fifth trap below and the four neighbours on that Caddy, *not touching it*
+      is worth real money.
+    - **No CORS.** The page is served by the same origin it posts to, so
+      `PICKS_ALLOWED_ORIGINS` stops applying to it and an entire class of
+      failure disappears. Keep it under `/submit/` — everything else on that
+      site block ends at the `redir` to `letitglow.app`.
+    - **No new dependency.** feedback-hub is `dependencies = []` on purpose.
+      Render with `html.escape` and f-strings, the same way `_reply` writes
+      JSON.
+
+    **Make it a plain form post, not a `fetch`.** This is where the web form
+    should be *better* than `picks/suggest/`, not a copy of it. A
+    server-rendered `<form method="post">` whose result is a new page means the
+    three mechanisms recorded in the traps below — `role="alert"` plus focus
+    reading the list twice with the first reading clipped, an unchanged alert
+    not firing at all on a resubmit, and a cleared-and-rebuilt live region
+    announcing nothing — are simply **not in play**. Errors come back as a page
+    with a summary at the top and focus on it. It works with JavaScript off,
+    and it is less code than the version that needs the workarounds.
+
+    That needs one change to `_handle_feedback`: accept
+    `application/x-www-form-urlencoded` alongside JSON, and content-negotiate
+    the reply (JSON for the app, HTML for a browser). Everything else —
+    `validate_entry`, the app allowlist, the size cap, the rate limiter — is
+    reused untouched.
+
+    **The route to FreeScout is the same one, which is the point.** Both paths
+    converge on one relay: today the POST becomes a GitHub issue, and once
+    Postmark lands (step 3) it becomes mail into the bridge and a conversation
+    in the help desk, with the reporter's optional email as the reply address.
+    One server change flips the desktop dialog and the web form together, and
+    no installed build notices.
+
+    Four things the web form must handle that the app does not:
+
+    1. **Product.** The app knows it is "Quill Radio 1.0.0"; a visitor does
+       not. Render a select from the existing `feedback_apps` allowlist, which
+       keeps the "any app name is junk" protection rather than adding a
+       free-text field beside it.
+    2. **Missing metadata.** No version, no platform string — the dialog fills
+       those in from the running process. The agent asks. Not a blocker.
+    3. **Bots.** `/submit/feedback` has no Turnstile because desktop apps reach
+       it, and a public page is reachable by anything. **Turnstile stays off** —
+       that is settled below and this does not reopen it. The switch is
+       `TURNSTILE_SECRET`, it is already wired for picks, and it gets thrown if
+       spam actually arrives. Explicitly **not** a honeypot field: that is the
+       exact mechanism that broke the BITS PMPro checkout for anyone using
+       autofill, which is most screen-reader users.
+    4. **The rate limit is per address.** Four a minute and forty a day. A
+       training centre or a school behind one NAT will trip that, and the
+       person who trips it is told the button does not work. The web budget
+       should be raised or keyed separately from the desktop one.
+
+    **What it does not give**, and should not be sold as giving: ticket
+    *history*. Viewing your own past conversations is FreeScout's paid
+    **End-User Portal** module, and the free-software baseline rules it out.
+    This is the submit half only; replies arrive by email, which for a
+    screen-reader user is arguably the better end of that trade.
+
+    **Worth knowing before that trade is made permanent.** The End-User Portal
+    is **$12.99**, once, with lifetime updates, and its login is a **magic
+    link, not a password**: the visitor types an email address, gets a link
+    valid for an hour, and a customer record is created if none existed.
+
+    The licence covers **one FreeScout instance**, which is all there is — and
+    the number of *websites* is not what it counts, so the contact-form widget
+    can sit on `quillville.org`, `community-access.org` and anywhere else from
+    the one purchase. It is transferable between domains through a
+    `Deactivate License` button, so nothing here is made harder by step 14.
+    Two caveats: there are no refunds, and one key cannot cover a staging
+    instance as well as production. The modules are themselves AGPL-3.0; the
+    one-instance rule is asked for rather than enforced, and one is genuinely
+    all this needs.
+
+    One design consequence if it is bought: the portal's *Submit a Ticket*
+    writes into the database directly, without sending mail — so it does
+    **not** travel the Postmark-to-Maildir path that step 6 built, and it is a
+    second intake route rather than a replacement for step 13. The desktop apps
+    still need the relay, because a wx dialog cannot post to a web widget. That
+    is a *better* accessibility story than any password form — nothing to
+    remember, nothing to type twice, no CAPTCHA — and it would close the
+    history gap without adding an account to remember. It is the one paid
+    module in this whole system that buys something the free path genuinely
+    cannot, so it deserves a deliberate yes or no rather than being ruled out
+    by the baseline in passing. Step 13 does not depend on the answer either
+    way: the form is the submit half, and the portal, if bought, sits beside
+    it.
+
+14. **`quillforall.org` becomes `quillville.org`, and the site is rebranded
+    around the family.** Asked for on 2026-08-26, and it **reverses step 5**.
+
+    Say that plainly rather than leaving two answers in one file. Step 5 chose
+    "both, and nothing moves", and its whole argument was that no redirect
+    would have to be maintained indefinitely for old installs. That answer is
+    **withdrawn**. The cost it avoided is now being **accepted deliberately**:
+    `quillforall.org` has to keep answering for as long as any shipped build is
+    running, which is forever in practice, and everything below is written to
+    make that obligation as small and as boring as it can be.
+
+    #### What actually depends on the old name
+
+    | Reference | Where | Moves? |
+    | --- | --- | --- |
+    | `PICKS_URL` | `quill/core/community_picks.py:39` | **Compiled into every shipped build.** This is the whole problem. |
+    | `PICKS_SIGNATURE_URL` | same file, line 48 | Derived from `PICKS_URL`; same problem. |
+    | Egress audit text | `quill/tools/network_egress_entries.py:139` | Gate entry; must match whatever the code says. |
+    | Schema `$id` | `quill/core/schemas/community_picks.json:3` | An identifier, never fetched. Cosmetic — and changing it is a format decision, so leave it. |
+    | `website` default | `tools/generate_build_info.py:98` | New builds only. |
+    | `website = "https://quillforall.org"` | `build/version.toml:15` | **The value that actually ships**, and the file is gitignored and local. It will not appear in any diff, any review or any CI check — the person cutting the release edits it on their own machine or the installer keeps saying the old name. |
+    | `hub.quillforall.org` | `quill/ui/quillin_hub_submit.py:39`, README, PRD, site pages | Dead today; see step 8. |
+    | The site itself | `docs/site/**`, published by `github-pages.yml` | All of it. |
+    | `"_Submitted from quillforall.org._"` | `docs/site/picks/suggest/suggest.js:452` | And the test that pins it. |
+    | CORS allowlist | `PICKS_ALLOWED_ORIGINS` on the server | Both origins during the move. |
+
+    Two things make this smaller than the list looks. `urllib` follows
+    redirects by default, so a 301 on the catalogue URL *does* work for builds
+    already in the field — and the catalogue is verified against a bundled
+    signing key, so which host served it is not a security question. And
+    `FORMAT` in `community_picks.py` is already the string
+    **`quillville-picks`**: the brand is in the data format that ships today,
+    so this is consolidating a name, not inventing one.
+
+    #### The one constraint that decides the shape
+
+    **GitHub Pages allows one custom domain per repository.** The site cannot
+    answer on both names from Pages, which is why the interesting question is
+    not "how do we rename" but "which name leaves Pages".
+
+    **Plan A — recommended. QuillVille moves to the box; the old name stays on
+    Pages.**
+
+    - `quillville.org` and `www` are served by Caddy from `/srv/www/quillville`
+      exactly as step 12 describes. Nothing there changes.
+    - `quillforall.org` **stays exactly where it is on GitHub Pages**, keeps its
+      custom domain, keeps its DNS, and keeps serving `/picks/v1/picks.json`
+      and its `.minisig` as the same static files it serves today. Its human
+      pages become short redirect stubs.
+    - **Shipped builds therefore see no change at all.** No DNS move, no new
+      certificate, no propagation window, no redirect hop, and `picks-build.yml`
+      is untouched. The one URL compiled into released binaries is the one
+      thing that does not move — which is the rule this project has already
+      paid to learn twice.
+    - It also makes `quillville.org/support` a *real path*: Caddy can
+      `handle /support*` and `reverse_proxy` it to `feedback-hub-submit:8095`,
+      so step 13's form is same-origin under the brand name, with no CORS and
+      no second hostname to explain over the phone.
+    - Cost, stated honestly: the new site needs a way to reach the box. That is
+      an `rsync` step and an SSH deploy key held as a repository secret — the
+      first credential this arrangement has needed on the GitHub side, and it
+      should be a key that can write one directory and nothing else.
+
+    **Plan B — cheaper, and I do not recommend it. The custom domain moves to
+    `quillville.org`; `quillforall.org` moves to the box as a permanent 301.**
+
+    - No new deploy path: the existing workflow publishes under a new name.
+    - But the catalogue URL compiled into every shipped build now depends on a
+      redirect from a Caddyfile that a person edits by hand, forever. It works —
+      `urllib` follows it — and it makes a shipped feature depend on the one
+      file in this whole system with a documented history of silent breakage.
+    - `quillville.org/support` cannot be reverse-proxied from Pages. The form
+      would have to be a static page whose `<form action>` points at
+      `lp.csedesigns.com`. That does work with no JavaScript and needs no CORS
+      (a form navigation is not a `fetch`), but the confirmation page appears on
+      a different hostname than the one the person typed.
+    - And there is a real, if small, window: between flipping the Pages custom
+      domain and the old name resolving to the box, `quillforall.org` returns
+      Pages' 404. Bounded by lowering the TTL a day ahead, and low-stakes
+      because the catalogue is cached for 24 hours and a failed fetch already
+      falls back to the bundled copy — but it exists, and Plan A does not have
+      it.
+
+    #### The fix that stops this being a question a third time
+
+    Independent of A or B, and worth doing in the same release: give the
+    catalogue the same treatment the submission server already has. A
+    `QUILL_PICKS_URL` environment override mirroring
+    `QUILL_FEEDBACK_SERVER_URL`, and — the useful half — point *new* builds at a
+    stable alias such as `picks.quillville.org` that is a DNS record rather than
+    a site. Then the next rename is a CNAME, and no future note has to open with
+    "this is compiled into every installer".
+
+    #### Where support lives
+
+    - **`quillville.org/support`** is the address to publish. Under Plan A it is
+      a real path proxied to feedback-hub, so the form, the confirmation and the
+      errors all stay on the brand domain.
+    - **`helpdesk.quillville.org` redirects to `helpdesk.community-access.org`.**
+      One A record and one three-line Caddy block:
+      `redir https://helpdesk.community-access.org{uri} permanent`.
+    - **Redirect, never `reverse_proxy`.** FreeScout builds absolute URLs — that
+      is exactly what the step 2 check on `/` proved when it answered `302` to
+      an `https://` login URL. Proxying a second hostname into it produces links
+      and cookies for the *other* host, and the symptom is an intermittently
+      broken login rather than an error anybody can read.
+    - Put one sentence on `/support` saying the help desk is run by **Community
+      Access**. A hostname changing mid-flow is alarming when it is a surprise
+      and unremarkable when it was announced a line earlier.
+
+    #### The rebrand, in one rule
+
+    Three names, and they stop being re-litigated once they are written down:
+
+    - **QuillVille** is the *place* — the site, the launcher, the download hub,
+      the front door. It is not an app and it never ships as one.
+    - **The apps keep their own names** — QUILL, Quill Radio, QUILL Cast, Quill
+      Weather, Quill Social, Quill Beacon, QUILL Audio Studio, Quill Inkwell.
+      QuillVille is where they live, not what they are called.
+    - **Community Access** is the *organisation* — support, governance, legal,
+      the help desk. This is the half of step 5's answer that survives intact.
+
+    "All apps at the centre" is an information-architecture change, not a visual
+    one. Today `docs/site/index.html` is QUILL's landing page with the others
+    mentioned; it should become the family's, with each app a peer entry
+    carrying the four things a visitor actually wants — what it is, download,
+    documentation, what changed — and QUILL as one of them rather than the
+    subject. `quillville_menu.py` already appends `&QuillVille` to every app, so
+    the site would finally be the place that menu implies.
+
+    Two constraints on whoever does it. The site is **HTML only** by design —
+    `github-pages.yml` renders every doc through pandoc and publishes no
+    Markdown — so a rebrand is a change to the hand-built shell in `docs/site/`,
+    not a new generator. And the picks pages carry a full accessibility review
+    that was expensive to get right; reuse that shell, that stylesheet and those
+    patterns rather than starting a marketing redesign that quietly regresses
+    heading structure and skip links.
+
+    #### Suggested order
+
+    Each step is independently useful and independently reversible:
+
+    1. **Two A records** for `quillville.org` and `www`, both `107.175.91.158`.
+       Both must resolve *before* any Caddy block is added — five failed
+       validations per hostname per hour is the budget, and step 2 only cost
+       nothing because that rule was obeyed.
+    2. **The Caddy block**, apex canonical and `www` redirecting to it, serving
+       `/srv/www/quillville`, with a placeholder page. Nothing points at it yet,
+       so this is free to get wrong.
+    3. **`helpdesk.quillville.org`** — one record, one `redir` block. Smallest
+       possible piece, and it makes the help desk reachable under the brand the
+       day the brand exists.
+    4. **Publish the site to the box** alongside Pages, unchanged in content.
+       Both names now serve the same site. Nothing has been renamed yet.
+    5. **Rebrand** the site under QuillVille with the family at the centre, and
+       ship it to the box only. Compare the two side by side for as long as you
+       like.
+    6. **`/support`**: the Caddy handle, and step 13's form behind it.
+    7. **Turn `quillforall.org` into stubs** — human pages become a zero-second
+       meta refresh plus a visible link and a `rel=canonical`. Zero seconds
+       matters: WCAG fails a *timed* refresh and treats a zero-delay one as a
+       redirect. **`/picks/v1/` is not touched**, and that is the whole trick.
+    8. **`QUILL_PICKS_URL` and the stable alias**, in the next release.
+    9. **Update the references** in the table above, including the egress-audit
+       entry and the test that pins the suggestion form's footer line.
+
+    And the standing Caddyfile rules apply to every block above: **no `sed -i`**
+    (fifth trap), and the split inodes from that trap mean the next person to
+    edit that file **does the recreate first**, or their edit is invisible to
+    the running Caddy.
+
+---
+
+## Postmark, step by step
+
+Asked on 2026-08-26: *"do I have to set up Postmark for the subdomain, or just
+for `community-access.org`?"* The answer is short, so it goes first, and the
+rest of this section is the order to do things in.
+
+### The short answer
+
+| Name | Does Postmark need it? | Why |
+| --- | --- | --- |
+| `community-access.org` | **Yes — this is the one.** | It is the domain in the `From` address, `support@community-access.org`. Sending authentication is per **domain**, and the address is at the apex. |
+| `helpdesk.community-access.org` | **No. Nothing at all.** | It is a *web* hostname. Postmark never sends as it and never receives for it; its only role in mail is hosting the webhook URL the bridge listens on. |
+| `quillville.org`, `quillforall.org` | **No**, unless a `From` address ever lives there | Step 14 publishes support at `quillville.org/support`, but the *address* stays `support@community-access.org`, so nothing is added here. |
+
+The subdomain question has a real trap behind it, which is why it is worth
+being explicit rather than assuming the obvious. **Verifying a domain in
+Postmark does not cover its subdomains.** Postmark's own words: *"To send a
+fully authenticated email, each subdomain you want to send from will have to be
+added to Postmark individually"* — because DKIM and the Return-Path are
+domain-specific, and are kept separate on purpose so that a subdomain's sending
+reputation is its own. So if anyone ever decides to send as
+`support@helpdesk.community-access.org`, that is a **second** domain in
+Postmark with its own DKIM record and its own Return-Path, not a free
+inheritance from the apex. Sending from the apex, as planned, needs one entry
+and one pair of records.
+
+Receiving is a different question with a different answer, and it is the only
+genuinely hard decision in this section: it depends on **where the MX for
+`community-access.org` points**, which today is not Postmark. That is step 4.
+
+### Before anything: what it costs, which is not what the plan assumed
+
+Step 3 of *Next steps* calls the Postmark account "the only accepted service
+cost". Still true, but the number is not zero, and the reason is exactly the
+half this system depends on:
+
+| Plan | Price | Emails | Inbound processing |
+| --- | --- | --- | --- |
+| Developer | **$0** | 100 / month | **No** |
+| Basic | $15 / month | 10,000 | **No** |
+| **Pro** | **$16.50 / month** | 10,000 | **Yes** |
+| Platform | $18 / month | 10,000 | Yes |
+
+**Inbound starts at Pro.** The free plan can send, can verify domains, and is
+enough to prove outbound end to end — but it cannot receive, and receiving is
+what `feedback_hub.mailbridge` exists for. Check the figures at
+<https://postmarkapp.com/pricing> at signup rather than trusting this table;
+Postmark has been repriced before.
+
+The honest alternative, so this is a decision rather than a default: a real
+IMAP mailbox somewhere cheap (Namecheap Private Email is about a dollar a
+month) plus the **free** Postmark plan for outbound would cost roughly a dollar
+a month instead of $16.50, and FreeScout would fetch that mailbox directly — no
+bridge, no Dovecot, one fewer moving part. What it gives up is one vendor for
+both directions, Postmark's inbound parsing and spam scoring, and the bridge
+that is already built, tested and proven on the box. The recommendation is
+**Pro**: the expensive part of inbound is already paid for in work, and 100
+outbound messages a month will not survive contact with auto-replies.
+
+### Step 1 — The account, the server, and approval
+
+1. Sign up at <https://postmarkapp.com>. Use an address that will still be read
+   in two years; it is where deliverability warnings go.
+2. Create **one Server**, named something like `Community Access help desk`. A
+   Server carries both directions: a *Default Transactional* stream for
+   outbound and a *Default Inbound* stream for inbound. Postmark allows **one
+   inbound stream per server, and one domain on that stream**, which is why
+   this is one server rather than two.
+3. Copy the **Server API token** — *Servers → your server → API Tokens*. It is
+   not the Account API token; the account token cannot send, and the error it
+   produces says nothing useful.
+4. **Expect a manual approval, and plan around it.** Postmark reviews every new
+   account, usually inside 24 hours on a weekday. Until it is approved you can
+   only send to domains you have added and verified; everything else is
+   refused. You *can* verify domains, configure inbound, set webhooks and send
+   to the sink address `test@blackhole.postmarkapp.com` while waiting, which is
+   why DNS is step 2 and not step 5.
+
+### Step 2 — Verify `community-access.org` for sending
+
+The DNS half, at Namecheap, on the same *Advanced DNS* screen where the
+`helpdesk` A record went in.
+
+1. In Postmark: *Sender Signatures → Add Domain* → `community-access.org`, then
+   open its **DNS Settings** page. Postmark generates both values; nothing
+   below is guessable, so copy them from that page rather than from here.
+2. In Namecheap: *Domain List → Manage → **Advanced DNS** → Add New Record*.
+
+| Purpose | Type | Host (Namecheap) | Value |
+| --- | --- | --- | --- |
+| DKIM | TXT | the selector Postmark shows, e.g. `20260826123456pm._domainkey` | the long `k=rsa; p=MIGf…` string, exactly as shown |
+| Return-Path | CNAME | `pm-bounces` (Postmark's default; use whatever its page says) | `pm.mtasv.net` |
+| DMARC, optional but recommended | TXT | `_dmarc` | `v=DMARC1; p=none; rua=mailto:jeff@jeffbishop.com` |
+
+Three things that bite people on that screen:
+
+- **Namecheap's Host field takes the label only, never the whole name.** Type
+  `pm-bounces`, not `pm-bounces.community-access.org`; Namecheap appends the
+  domain itself, and a full name entered here becomes
+  `pm-bounces.community-access.org.community-access.org`, which verifies never
+  and looks exactly like a Postmark fault.
+- **No SPF record is required**, and adding one fixes nothing here. The
+  Return-Path CNAME points at `pm.mtasv.net`, which already carries Postmark's
+  SPF, so bounces are SPF-aligned to the domain — that is the whole purpose of
+  the CNAME. If an SPF record is ever added for other reasons, the mechanism is
+  `include:spf.mtasv.net`.
+- **DKIM keys are 1024-bit**, so the TXT value fits in a single string and
+  Namecheap will not have to split it.
+
+Then verify — Postmark's page has a **Verify** button; it says up to 48 hours
+and is usually minutes. Confirm from outside as well, the way the `helpdesk`
+record was confirmed rather than assumed:
+
+```bash
+dig +short TXT <selector>._domainkey.community-access.org
+dig +short CNAME pm-bounces.community-access.org      # -> pm.mtasv.net.
+```
+
+Nothing here touches the existing MX records, so no mail behaviour changes at
+this step. Sending is now authenticated; nothing is sending yet.
+
+### Step 3 — Point FreeScout's outbound at Postmark
+
+**FreeScout sends from two places, and both need this.** System notifications
+(password resets, invitations, alerts to agents) go through the global mail
+settings; replies to customers go through the mailbox's own. Configuring only
+one of them is the usual cause of "some of our email works".
+
+*Manage → Settings → Mail* — and then again at *Manage → Mailboxes →
+`support@community-access.org` → Connection Settings → Sending Emails*:
+
+```
+Driver / Mail method:  SMTP
+Host:                  smtp.postmarkapp.com
+Port:                  587
+Encryption:            TLS   (STARTTLS)
+Username:              <Server API token>
+Password:              <the same Server API token>
+From:                  support@community-access.org
+```
+
+The token is username *and* password — that is Postmark's documented SMTP
+scheme, not a placeholder that got pasted twice by mistake. Ports 25 and 2525
+also work if 587 is ever blocked. Check that **SMTP is enabled** on the
+transactional stream's settings page; it can be switched off, and the failure
+then is an authentication error that reads like a bad token.
+
+It goes in FreeScout's interface rather than in `.env` deliberately, so that
+rotating the token never needs a container restart. One consequence worth
+knowing, and it is the third trap in this file: FreeScout encrypts stored
+mailbox passwords with `APP_KEY`, so if that key is ever regenerated these
+credentials become undecryptable and mail stops **silently**. The host's copy of
+`.env` is bind-mounted precisely so that cannot happen; do not undo it.
+
+Test in this order:
+
+1. Send FreeScout's test message to `test@blackhole.postmarkapp.com`. It is
+   dropped at the far end but appears in Postmark's Activity, which proves
+   authentication, TLS and the stream without needing account approval.
+2. Once approved, send to a real outside address and read the headers: expect
+   `dkim=pass` for `community-access.org` and a Return-Path at
+   `pm-bounces.community-access.org`.
+
+Only after that is anybody told the address exists.
+
+### Step 4 — The MX decision, which is the real question
+
+Today `community-access.org` already receives mail, and not through Postmark:
+
+```
+community-access.org  MX 10  eforward1.registrar-servers.com
+                      MX 10  eforward2.registrar-servers.com
+                      MX 10  eforward3.registrar-servers.com
+                      MX 15  eforward4.registrar-servers.com
+                      MX 20  eforward5.registrar-servers.com
+```
+
+That is **Namecheap's free email forwarding**, already switched on for the
+domain. Whatever aliases are configured behind it work today and are the thing
+at risk. Look at them before choosing: *Domain List → Manage → **Domain** tab →
+Redirect Email*.
+
+| | Route A — forward `support@` into Postmark | Route B — give the domain's MX to Postmark |
+| --- | --- | --- |
+| DNS change | **None** | Replace all five MX records with `inbound.postmarkapp.com`, priority 10 |
+| Namecheap *Mail Settings* | stays `Email Forwarding` | becomes `Custom MX` |
+| Other addresses at the domain | **Keep working** | **Stop working** — see below |
+| What Postmark receives | only what is forwarded | everything addressed to the domain |
+| Reversible in | seconds; delete one forwarder | a DNS change and a propagation wait |
+
+**Route B has a consequence that has to be said out loud.** With the domain's
+MX at Postmark, *every* address at `community-access.org` reaches the bridge —
+and the bridge answers `403` to any recipient outside its allowlist, which is
+`support@community-access.org` alone. Postmark documents that 403 **stops
+retries**. So mail to `jeff@community-access.org`, or to any alias forwarded
+today, would be accepted by Postmark and then dropped: no bounce to the sender,
+and nothing in a mailbox anybody reads. That is correct behaviour for a bridge
+and a disaster for a domain with other addresses on it.
+
+**Recommended: Route A.** In *Redirect Email*, add one forwarder:
+
+```
+support   ->   <your-inbound-hash>@inbound.postmarkapp.com
+```
+
+The hash address is on the inbound stream's settings page. Allow about an hour
+for a new Namecheap forwarder to become real.
+
+One change makes Route A robust, and it is a single line in
+`~/feedback-hub/deploy/helpdesk/.env`:
+
+```
+MAILBRIDGE_RECIPIENTS=support@community-access.org,<your-inbound-hash>@inbound.postmarkapp.com
+```
+
+Why: the bridge matches on `OriginalRecipient` — the envelope address Postmark
+actually delivered to — **together with** the `To`, `Cc` and `Bcc` header
+addresses. A forwarded message still carries `To: support@community-access.org`,
+so it matches on the header and works without this change. But a message that
+reaches support by **Bcc** has the address in no header at all, and its envelope
+recipient is the hash address, so it would be refused `403` and lost. Adding the
+hash address to the allowlist makes the envelope truthful again on the forwarded
+path, and costs nothing else.
+
+Take Route B only if `community-access.org` is to be a Postmark-only mail
+domain. If it is, the inbound domain goes on the stream as
+`community-access.org`; Postmark requires inbound domains to be unique across
+all of Postmark, and typically recommends a dedicated subdomain for exactly the
+reason above.
+
+### Step 5 — Configure the inbound stream
+
+*Servers → your server → Default Inbound Stream → Settings.*
+
+1. **Webhook URL.** Run the generator on the box and paste what it prints:
+
+   ```bash
+   cd ~/feedback-hub/deploy/helpdesk && ./make-credentials.sh
+   ```
+
+   It produces
+   `https://<user>:<password>@helpdesk.community-access.org/postmark/inbound`.
+   Credentials in the URL is what Postmark supports and documents
+   (`https://username:password@example.com/inboundhook`); it travels only over
+   TLS, and step 2 of *Next steps* already proved that path answers `401` from
+   the bridge's own Basic auth rather than 404 from FreeScout. The script is
+   idempotent and refuses to regenerate a live credential, because rotating it
+   breaks inbound until Postmark is updated to match — and mail that stops
+   arriving is the hardest failure to notice.
+
+2. **Tick "Include raw email content in JSON payload".** Not optional, and the
+   single most likely thing to be forgotten. The bridge writes the raw RFC-822
+   message out byte for byte — that is how FreeScout keeps threading, duplicate
+   detection and bounce handling — and without `RawEmail` in the payload there
+   is nothing to write. The bridge answers `5xx` and says so in as many words,
+   so Postmark keeps retrying and the mail lands the moment the box is ticked:
+   nothing is lost, but nothing arrives until it is.
+
+3. **Route B only:** set the inbound domain to `community-access.org` on the
+   same page, and only after the MX record resolves.
+
+What to expect from Postmark afterwards, all of which the bridge was written
+against: **200** is the only success; anything else is retried **10 times over
+about 10.5 hours**; a **403** stops retries immediately; Postmark waits up to
+**2 minutes** for a response, and the payload limit is 50 MB. Spam is scored by
+SpamAssassin and passed through as `X-Spam-Status`, `X-Spam-Score` and
+`X-Spam-Tests` — the bridge records the verdict and delivers anyway, on purpose.
+
+### Step 6 — Point FreeScout at the local IMAP
+
+The same `make-credentials.sh` output carries this half. *Manage → Mailboxes →
+`support@community-access.org` → Connection Settings → Fetching Emails*:
+
+```
+Protocol: IMAP      Server: helpdesk-imap      Port: 143
+Encryption: none    (the connection never leaves a private Docker network)
+Username: freescout-support
+Password: <printed by the script>
+```
+
+### Step 7 — Prove it end to end, in this order
+
+Each step fails in a different place, which is the point of doing them
+separately:
+
+1. `dig +short TXT <selector>._domainkey.community-access.org` and the
+   Return-Path CNAME both answer, and Postmark shows the domain verified.
+2. FreeScout's test message reaches `test@blackhole.postmarkapp.com` and appears
+   in Postmark Activity.
+3. From an outside address, email `support@community-access.org`. Then, in
+   order: Postmark's **Activity → Inbound** shows it; the bridge logs one write
+   (`docker compose logs mailbridge --tail 20`); the Maildir gains exactly one
+   file; FreeScout shows a new conversation within one scheduler cycle.
+4. Reply from FreeScout. It leaves through Postmark (Activity → Outbound),
+   arrives, and the reply **threads** in the original client — that is
+   `In-Reply-To` surviving the round trip, and it is the entire reason for
+   feeding FreeScout real mail rather than posting to its API.
+5. Reply back to that reply, and confirm it lands on the **same** conversation
+   rather than opening a second one.
+6. Use Postmark's manual retry on the inbound message and confirm the bridge
+   answers 200 and writes **nothing** — the duplicate guard, proven again with
+   real mail rather than a synthetic POST.
+
+### When it works, say so in three places
+
+- Delete the temporary admin `jeff+hd@jeffbishop.com` and the credential file at
+  `C:\Users\jeffbis\helpdesk-temp-login.txt`. "Forgot password" becomes a real
+  route back in the moment outbound mail works, which is the only reason that
+  temporary account existed.
+- Mark step 3 of *Next steps* done, and *Where things stand* with it.
+- Step 7 of *Next steps* — moving Report a Bug from a GitHub issue to a support
+  conversation — is unblocked from that moment, and it is a change on the server
+  only.
+
+### How this was checked, which is not the same as read
+
+Every value above was checked against **this deployment** rather than only
+against Postmark's documentation, because the two disagree in the places that
+matter and the documentation cannot know what is already on the box:
+
+- `src/feedback_hub/mailbridge.py` in `S:\code\feedback-hub` — the recipient
+  allowlist really does default to `support@community-access.org` alone;
+  `recipients_of` really does union `OriginalRecipient` with the `To`, `Cc` and
+  `Bcc` header addresses, which is what makes the forwarding route work and
+  what leaves the Bcc hole; and the `403`-stops-retries, `5xx`-is-retryable
+  split is the code's, not an inference from Postmark's docs.
+- `deploy/helpdesk/make-credentials.sh` — the webhook URL shape, the IMAP
+  username `freescout-support`, and the refusal to regenerate a live credential.
+- `deploy/helpdesk/README.md` — the SMTP values already recorded there, and the
+  `APP_KEY` trap that makes them fragile.
+- **Live DNS**, queried rather than assumed: the five `eforward` MX records on
+  `community-access.org` are real and answering today, which is the whole basis
+  of step 4. `quillville.org` and `quillforall.org` carry the same forwarding
+  MX and no TXT records at all.
+
+The pricing table is the weakest line here — it is a reading of Postmark's
+pricing page on 2026-08-26, and the plan names have changed before. Confirm it
+at signup.
+
+### The documentation this was written from
+
+- [How do I verify a domain?](https://postmarkapp.com/support/article/1046-how-do-i-verify-a-domain) — DKIM TXT, and the `pm-bounces` → `pm.mtasv.net` Return-Path CNAME
+- [How to send from subdomains?](https://postmarkapp.com/support/article/1198-how-to-send-from-subdomains) — verification does **not** cascade to subdomains
+- [How do I set up DKIM for Postmark?](https://postmarkapp.com/support/article/1091-how-do-i-set-up-dkim-for-postmark) — 1024-bit keys, up to 48 hours to verify
+- [Why is it not required to include Postmark in our own SPF record?](https://postmarkapp.com/support/article/1102-why-is-it-not-required-to-include-postmark-in-our-own-custom-spf-record) — and `include:spf.mtasv.net` if one is ever wanted anyway
+- [Send email with SMTP](https://postmarkapp.com/developer/user-guide/send-email-with-smtp) — `smtp.postmarkapp.com`, ports 25/2525/587, token as username *and* password
+- [Configure an inbound server](https://postmarkapp.com/developer/user-guide/inbound/configure-an-inbound-server) — the InboundHash address, and Basic auth in the webhook URL
+- [Inbound domain forwarding](https://postmarkapp.com/developer/user-guide/inbound/inbound-domain-forwarding) — MX to `inbound.postmarkapp.com` at priority 10, subdomain recommended
+- [Inbound webhook](https://postmarkapp.com/developer/webhooks/inbound-webhook) — 200 expected, 403 stops retries, 10 retries over ~10.5 hours, SpamAssassin headers
+- [How does the account approval process work?](https://postmarkapp.com/support/article/1084-how-does-the-account-approval-process-work) — under 24 hours, and `test@blackhole.postmarkapp.com`
+- [Pricing](https://postmarkapp.com/pricing) — inbound processing starts at Pro
+- [Namecheap: free email forwarding](https://www.namecheap.com/support/knowledgebase/article.aspx/308/2214/how-to-set-up-free-email-forwarding/) — *Domain* tab, Redirect Email, up to 100 aliases, about an hour to take effect
+- [Namecheap: custom MX records](https://www.namecheap.com/support/knowledgebase/article.aspx/322/2237/how-can-i-set-up-mx-records-required-for-mail-service/) — *Advanced DNS*, Mail Settings → Custom MX
+
 ---
 
 ## Where things stand
@@ -259,9 +933,14 @@ still line up.)*
 | `quillforall.org/picks/suggest/` | **No** | **Fixed 2026-08-26.** Posts to the submission server, which files the issue. |
 | `lp.csedesigns.com/submit/picks` | — | **Live.** feedback-hub 1.2.0, one container beside the four apps already on the box. |
 | Help desk, `helpdesk.community-access.org` | — | **Reachable and serving, 2026-08-26.** DNS live, Caddy block in, Let's Encrypt certificate issued to 2026-11-24. Configurable now; waiting only on Postmark to carry mail. |
-| Inbound mail, Postmark to FreeScout | — | **Built and proven.** Waiting only on Postmark credentials to carry real mail. |
+| Inbound mail, Postmark to FreeScout | — | **Built and proven.** Waiting only on Postmark credentials to carry real mail — and on a **Pro** plan, because inbound processing is not on the free or Basic tiers. Setup is *Postmark, step by step*, above. |
+| `support@community-access.org` | — | **Not receiving yet.** The domain's MX is Namecheap forwarding today; the recommendation is to leave it there and forward `support@` into Postmark, rather than move the MX. Step 4 of that section. |
 | Report a Bug, every app | **No** | **Routed through the server**, so a build needs no token. Still files a GitHub issue until Postmark lands. |
 | `workers/picks-submit.js` (Cloudflare) | — | **Deleted.** Two ways to do one thing is one too many. |
+| Public support form on the web | **No** | **Planned, step 13.** A second renderer of the schema the wx dialog already uses; served by feedback-hub itself, so same-origin and no CORS. |
+| `quillville.org` | — | **Parked, step 12.** Owned, pointing at Namecheap's holding page, nothing depends on it. |
+| `quillville.org/support` | **No** | **Planned, step 14.** The address to publish once the form and the brand site exist. |
+| `helpdesk.quillville.org` | — | **Planned, step 14.** One record and one `redir` to `helpdesk.community-access.org`. Redirect, never proxy. |
 
 The picks pipeline is proven end to end: suggestion, `pick:suggestion` label,
 review, `pick:approved`, `picks-build.yml`, validated, signed, pull request,

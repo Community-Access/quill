@@ -52,7 +52,8 @@ _HLS_TAG_RE = re.compile(r"^\s*#EXT-X-", re.MULTILINE)
 _PLS_FILE_RE = re.compile(r"^\s*File(\d+)\s*=\s*(.+?)\s*$", re.IGNORECASE | re.MULTILINE)
 _PLS_TITLE_RE = re.compile(r"^\s*Title(\d+)\s*=\s*(.+?)\s*$", re.IGNORECASE | re.MULTILINE)
 
-PlaylistKind = str  # "m3u" | "m3u8-hls" | "pls" | "xspf" | "asx" | "stream" | "unknown"
+PlaylistKind = str  # "m3u" | "m3u8-hls" | "pls" | "xspf" | "asx" | "asf" | "b4s"
+#                   | "wpl" | "shortcut" | "stream" | "unknown"
 
 
 class PlaylistFormatError(CodedError):
@@ -261,12 +262,71 @@ def _parse_xml(text: str, *, strict: bool = True) -> Element | None:
         return None
 
 
+# --- the long tail -----------------------------------------------------------
+#
+# Formats nobody would choose today and listeners still have in hand, catalogued
+# by StreamTuner2 over a decade of pasted links (see radio2.md part IX). Each is
+# a handful of lines, and each one turns "that link does nothing" into a
+# station. They are deliberately grouped here rather than mixed in with the
+# three formats that matter: this is the salvage yard, not the main road.
+
+#: A one-URL INI file, in its three spellings: an ASF redirector's
+#: ``[Reference] Ref1=``, a Windows ``[InternetShortcut] URL=``, and a
+#: freedesktop ``[Desktop Entry] Link=``. All three are "here is an address",
+#: written by three different decades.
+_SHORTCUT_RE = re.compile(r"^\s*(?:Ref\d+|URL|Link)\s*=\s*(\S+)\s*$", re.IGNORECASE | re.MULTILINE)
+#: Winamp's B4S: ``<entry Playstring="http://...">`` with an optional ``<Name>``.
+_B4S_ENTRY_RE = re.compile(r'<entry\b[^>]*\bPlaystring\s*=\s*"([^"]+)"', re.IGNORECASE)
+_B4S_NAME_RE = re.compile(r"<Name>(.*?)</Name>", re.IGNORECASE | re.DOTALL)
+#: Windows Media Player's WPL: ``<media src="http://..."/>``.
+_WPL_MEDIA_RE = re.compile(r'<media\b[^>]*\bsrc\s*=\s*"([^"]+)"', re.IGNORECASE)
+
+
+def parse_shortcut(text: str) -> list[RadioStation]:
+    """Stations from an ASF redirector or a URL shortcut file (pure).
+
+    ``Ref1=http://...`` in an ASF ``[Reference]`` file is the shape old Windows
+    Media "listen live" links still arrive in, and the two shortcut formats are
+    what a listener gets when a browser or a desktop saves a stream link as a
+    file. An ``mmsh://`` reference -- ASF's own scheme wearing an http coat --
+    is rewritten to ``http://``, which is what the address always was.
+    """
+    stations: list[tuple[str, str]] = []
+    for raw in _SHORTCUT_RE.findall(text or ""):
+        url = raw.strip()
+        for scheme in ("mmsh://", "mms://"):
+            if url.lower().startswith(scheme):
+                url = "http://" + url[len(scheme) :]
+                break
+        stations.append(("", url))
+    return _stations(stations)
+
+
+def parse_b4s(text: str) -> list[RadioStation]:
+    """Stations from a Winamp B4S playlist (pure)."""
+    urls = _B4S_ENTRY_RE.findall(text or "")
+    names = _B4S_NAME_RE.findall(text or "")
+    pairs = [
+        (names[index].strip() if index < len(names) else "", url) for index, url in enumerate(urls)
+    ]
+    return _stations(pairs)
+
+
+def parse_wpl(text: str) -> list[RadioStation]:
+    """Stations from a Windows Media Player WPL playlist (pure)."""
+    return _stations([("", url) for url in _WPL_MEDIA_RE.findall(text or "")])
+
+
 # --- sniffing ----------------------------------------------------------------
 
 _PARSERS = {
     "pls": parse_pls,
     "xspf": parse_xspf,
     "asx": parse_asx,
+    "asf": parse_shortcut,
+    "shortcut": parse_shortcut,
+    "b4s": parse_b4s,
+    "wpl": parse_wpl,
 }
 
 
@@ -288,8 +348,20 @@ def sniff(text: str, *, url: str = "", content_type: str = "") -> str:
         return "m3u8-hls" if classify_m3u(body) == "hls" else "m3u"
     if body[:20].lower().startswith("[playlist]"):
         return "pls"
-    if body.startswith("<"):
+    ini_head = body[:24].lower()
+    if ini_head.startswith("[reference]"):
+        return "asf"
+    if ini_head.startswith("[internetshortcut]") or ini_head.startswith("[desktop entry]"):
+        return "shortcut"
+    if body.startswith("<") or body.startswith("<?"):
         head = body[:512].lower()
+        # B4S and WPL are checked before the generic XML shapes: a WPL is a
+        # <smil> document and a B4S contains <playlist>, so the broad tests
+        # below would claim both of them.
+        if "<winampxml" in head:
+            return "b4s"
+        if "<?wpl" in head or ("<smil" in head and "<media" in body[:2048].lower()):
+            return "wpl"
         if "<playlist" in head or "xspf" in head:
             return "xspf"
         if "<asx" in head or "<ref" in head:
@@ -307,6 +379,50 @@ def sniff(text: str, *, url: str = "", content_type: str = "") -> str:
     if extension in ("m3u", "m3u8"):
         return "m3u8-hls" if classify_m3u(body) == "hls" else "m3u"
     return "stream" if not body or _playable(body.split("\n", 1)[0]) else "unknown"
+
+
+def disagreements(text: str, *, url: str = "", content_type: str = "") -> list[str]:
+    """Where the three signals about this document conflict (pure).
+
+    A document announces what it is three times over -- its ``Content-Type``,
+    its file extension, and its own first bytes -- and :func:`sniff` resolves
+    the argument by ranking them. Ranking is the right behaviour and *silence*
+    about the disagreement is not: "this link says it is a playlist and serves
+    audio" is precisely the diagnosis a listener cannot make for themselves, and
+    it is the difference between a station that will not play and a station that
+    is already playing under a misleading name.
+
+    StreamTuner2 logged this and did nothing else with it; here the notes are
+    returned so Add Custom Station and the bad-station report can say them out
+    loud. Empty means the three agreed, or said nothing.
+    """
+    body_kind = sniff(text, url="", content_type="")
+    type_kind = sniff("", url="", content_type=content_type)
+    ext_kind = sniff("", url=url, content_type="")
+    notes: list[str] = []
+    if type_kind not in ("stream", "unknown") and body_kind not in ("stream", "unknown"):
+        if type_kind != body_kind:
+            notes.append(
+                f"The server calls this {type_kind}, but the file itself looks like {body_kind}."
+            )
+    if ext_kind not in ("stream", "unknown") and body_kind not in ("stream", "unknown"):
+        if ext_kind != body_kind:
+            notes.append(
+                f"The address ends in .{ext_kind}, but the file itself looks like {body_kind}."
+            )
+    lowered_type = (content_type or "").split(";")[0].strip().lower()
+    # ...but audio/x-scpls IS a playlist type, however much it starts with
+    # "audio/", so this only fires when the MIME named no playlist kind at all.
+    if (
+        lowered_type.startswith("audio/")
+        and type_kind in ("stream", "unknown")
+        and body_kind not in ("stream", "unknown")
+    ):
+        notes.append(
+            f"The server sends {lowered_type}, which is audio, but the file is a {body_kind} "
+            "playlist."
+        )
+    return notes
 
 
 def parse_playlist(text: str, *, url: str = "", content_type: str = "") -> list[RadioStation]:

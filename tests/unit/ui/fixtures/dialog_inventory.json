@@ -657,6 +657,8 @@
   "quill/ui/radio/search_sources_dialog.py::SearchSourcesDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/song_history_dialog.py::SongHistoryDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/song_history_dialog.py::SongHistoryDialog._on_clear::wx.MessageDialog": "native",
+  "quill/ui/radio/source_options_menu.py::show::wx.SingleChoiceDialog": "native",
+  "quill/ui/radio/source_options_menu.py::show::wx.TextEntryDialog": "native",
   "quill/ui/radio/station_browser_dialog.py::StationBrowserDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/stats_dialog.py::RadioStatsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/stats_dialog.py::RadioStatsDialog._export::wx.FileDialog": "native",

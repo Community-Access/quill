@@ -45,6 +45,11 @@ def show_about_quill_native(
         "",
         about_info.tagline,
         "",
+        # The way to reach a person, before the story: support is run by
+        # Community Access, and the address goes here because About is where
+        # everybody looks for it first (added 2026-08-27).
+        "Support: support@community-access.org",
+        "",
         about_info.glow_summary,
         "",
         *about_info.overview_paragraphs,

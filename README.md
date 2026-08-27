@@ -1,5 +1,7 @@
 # QUILL for All
 
+Support and questions: **support@community-access.org** (run by Community Access).
+
 [![Contributors](https://contrib.rocks/image?repo=Community-Access/quill)](https://github.com/Community-Access/quill/graphs/contributors)
 
 **QUILL for All** is an open-source, accessibility-focused editor from

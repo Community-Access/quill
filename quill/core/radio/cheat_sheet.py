@@ -57,6 +57,22 @@ OFF_MENU_KEYS: tuple[tuple[str, str, str], ...] = (
     ("Recordings", "T", "Elapsed time, or time remaining"),
     ("Recordings", "J", "Jump to a recording by name"),
     ("Recordings", "Ctrl+J", "Jump to a time"),
+    # Every window that is not the main one carries a single menu of its own,
+    # and its letter is the one thing about it nobody can discover by looking:
+    # Alt+S is the Station menu in the main window and the Search menu in Find
+    # Stations, and in Browse Stations it is nothing at all (asked 2026-08-26,
+    # "what is the command to bring up the Station Menu, alt+s is not
+    # working"). Named here per surface, which is where that question is asked.
+    ("Main window", "Alt+S", "The Station menu -- in the main window only"),
+    ("Browse Stations", "Alt+B", "This window's Browse menu"),
+    ("Find Stations", "Alt+S", "This window's Search menu"),
+    ("Player", "Alt+P", "This window's Player menu"),
+    ("Favorites Manager", "Alt+F", "This window's Favorites menu"),
+    ("Recordings", "Alt+R", "This window's Recordings menu"),
+    ("Downloads", "Alt+D", "This window's Downloads menu"),
+    ("Schedule Recording", "Alt+S", "This window's Schedule menu"),
+    ("Song History", "Alt+S", "This window's Songs menu"),
+    ("Now Playing", "Alt+V", "This window's View menu"),
     ("Browse Stations", "Ctrl+F", "Jump to the Find box from anywhere in the window"),
     ("Browse Stations", "Shift+F10", "All actions for the row you are on"),
     ("Any list", "Applications key", "The same actions as Shift+F10"),
@@ -122,8 +138,35 @@ def off_menu_rows() -> list[CheatRow]:
     return [CheatRow(group=group, action=action, key=key) for group, key, action in OFF_MENU_KEYS]
 
 
-def build_sheet(menu_items: list[tuple[str, str]]) -> list[CheatRow]:
-    """The whole sheet: menu keys first, then the ones with no menu item.
+def menu_open_rows(titles: list[tuple[str, str]]) -> list[CheatRow]:
+    """The **menus themselves**, as rows: "Station -- Alt+S" (pure).
+
+    Asked for 2026-08-26: *"all top level menu items on the menu bar need rich
+    ways to invoke them"*. Every item inside a menu already names its key; the
+    menus were the one rung of the ladder that did not, and the letter is the
+    one thing about a menu bar nobody can discover by listening -- especially
+    here, where every window carries its own bar, so ``Alt+S`` is Station in
+    the main window, Search in Find Stations and nothing at all in Browse
+    Stations.
+
+    Built from the bar in front of the listener, like the rest of this sheet,
+    so it cannot drift from what is actually bound.
+    """
+    return [
+        CheatRow(group="Menus", action=f"Open the {title} menu", key=key)
+        for title, key in titles
+        if title and key
+    ]
+
+
+def build_sheet(
+    menu_items: list[tuple[str, str]], menu_titles: list[tuple[str, str]] | None = None
+) -> list[CheatRow]:
+    """The whole sheet: the menus, then their keys, then the keys with no item.
+
+    The menus lead because they are the way in to everything under them: a
+    listener who does not yet know a key at all needs Alt+S before they need
+    Ctrl+B.
 
     Menu order is kept rather than sorted alphabetically. The menus are already
     grouped by what things *are* -- everything about playing is on Playback --
@@ -131,7 +174,11 @@ def build_sheet(menu_items: list[tuple[str, str]]) -> list[CheatRow]:
     object to arrow through when you do not yet know the name of the thing you
     want.
     """
-    return [*rows_from_menu_items(menu_items), *off_menu_rows()]
+    return [
+        *menu_open_rows(list(menu_titles or [])),
+        *rows_from_menu_items(menu_items),
+        *off_menu_rows(),
+    ]
 
 
 def filter_rows(rows: list[CheatRow], query: str) -> list[CheatRow]:

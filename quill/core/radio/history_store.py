@@ -22,6 +22,7 @@ from pathlib import Path
 from quill.core.audio_enhance import EQ_PRESETS
 from quill.core.podcasts import transcript_export
 from quill.core.radio import browse_visibility
+from quill.core.radio import search_sources as search_sources_model
 from quill.core.radio.history import (
     _FILE_NAME,
     _MAX_ENTRIES,
@@ -34,7 +35,6 @@ from quill.core.radio.models import RadioStation
 from quill.core.radio.play_queue import normalize_repeat_mode
 from quill.core.radio.search_history import from_json as search_history_from_json
 from quill.core.radio.search_history import to_json as search_history_to_json
-from quill.core.radio.search_sources import normalize as normalize_search_sources
 
 
 def _store_path(data_dir: Path) -> Path:
@@ -66,7 +66,21 @@ def load_history(data_dir: Path) -> RadioHistory:
         history.youtube_speed = _coerce_float(raw.get("youtube_speed"), 1.0) or 1.0
         history.recordings_shuffle = bool(raw.get("recordings_shuffle", False))
         history.recordings_repeat = normalize_repeat_mode(raw.get("recordings_repeat"))
-        history.search_sources_enabled = normalize_search_sources(raw.get("search_sources_enabled"))
+        # A source introduced since this choice was made was never rejected --
+        # it did not exist. Shown once, then stamped, so switching it off
+        # afterwards sticks (the browse-source rule, applied to search too).
+        stored_search_epoch = raw.get("search_sources_epoch")
+        history.search_sources_enabled = search_sources_model.with_new_sources(
+            raw.get("search_sources_enabled"),
+            int(stored_search_epoch) if isinstance(stored_search_epoch, (int, float)) else 0,
+        )
+        history.search_sources_epoch = search_sources_model.SEARCH_SOURCES_EPOCH
+        from quill.core.radio import source_options as source_options_model
+
+        # Cleaned on the way in (an option removed in a later release cannot
+        # linger) and put into force for the source clients, which have no
+        # route to this record -- see source_options.set_current.
+        history.source_options = source_options_model.set_current(raw.get("source_options"))
         history.search_source_facet = str(raw.get("search_source_facet", "") or "")
         history.recent_searches = search_history_from_json(raw.get("recent_searches"))
         # Present-vs-absent is load-bearing: absent stays None ("never set").
@@ -240,6 +254,8 @@ def save_history(data_dir: Path, history: RadioHistory) -> None:
             "recordings_shuffle": history.recordings_shuffle,
             "recordings_repeat": history.recordings_repeat,
             "search_sources_enabled": list(history.search_sources_enabled),
+            "search_sources_epoch": history.search_sources_epoch,
+            "source_options": dict(history.source_options),
             "search_source_facet": history.search_source_facet,
             "recent_searches": search_history_to_json(history.recent_searches),
             **(
