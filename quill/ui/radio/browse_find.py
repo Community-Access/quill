@@ -99,10 +99,39 @@ def find_anchor_node(host: Any) -> Any:
     return None
 
 
+#: Rows where the Find box means "search everywhere", not "filter this folder":
+#: the Search All Sources action itself, and the results branch it leaves behind
+#: -- typing a new query while standing in the last answer is a new search.
+_SEARCH_EVERYTHING_ROWS = frozenset({"searchall", "searchresults"})
+
+
+def _selected_node_id(host: Any) -> str:
+    """The highlighted row's own node id, or ``""``. Never raises."""
+    try:
+        node = host._tree.GetSelection()
+        data = host._node_data(node) if node is not None else None
+    except (RuntimeError, AttributeError):
+        return ""
+    return str((data or {}).get("node_id", ""))
+
+
 def on_find(host: Any) -> None:
     query = host._find_ctrl.GetValue().strip()
     if not query:
         host._announce("Type something to find in this folder.")
+        return
+    # The SELECTED row first, before anchoring. Search All Sources is an
+    # *action* row, not a folder, so find_anchor_node walks straight past it to
+    # the invisible root and answers None -- which is how typing in the Find box
+    # while standing on it produced "highlight a source or folder to search in
+    # first" about the one row that needs neither (reported 2026-08-26, second
+    # pass). Reading the selection first is also what makes standing anywhere
+    # inside the results start a new search rather than filter them.
+    selected = _selected_node_id(host)
+    if selected in _SEARCH_EVERYTHING_ROWS:
+        from quill.ui.radio import browse_search_all
+
+        browse_search_all.run(host, query=query)
         return
     anchor = find_anchor_node(host)
     if anchor is None:
@@ -112,6 +141,16 @@ def on_find(host: Any) -> None:
     if data is None:
         return
     node_id = str(data["node_id"])
+    if node_id in _SEARCH_EVERYTHING_ROWS:
+        # Standing on Search All Sources (or on the results it produced) and
+        # typing in the Find box means the same thing as pressing Enter on the
+        # row: search everything for this. The alternative -- "type something to
+        # find in this folder", about a row that is not a folder -- is the app
+        # refusing to understand a perfectly clear instruction.
+        from quill.ui.radio import browse_search_all
+
+        browse_search_all.run(host, query=query)
+        return
     label = host._tree.GetItemText(anchor)
     host._announce(f"Searching {label} for {query}...")
 

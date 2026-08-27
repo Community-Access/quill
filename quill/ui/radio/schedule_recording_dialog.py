@@ -114,6 +114,7 @@ class ScheduleRecordingDialog:
         default_stream_url: str = "",
         on_add: Callable[[RecordingScheduleEntry], None],
         on_remove: Callable[[str], bool],
+        app_host: object | None = None,
         on_update: Callable[[RecordingScheduleEntry], bool] | None = None,
         favorites: object | None = None,
         announce_cb: Callable[[str], None] | None = None,
@@ -122,6 +123,7 @@ class ScheduleRecordingDialog:
         import wx
 
         self._wx = wx
+        self._app_host = app_host
         self._menu_id_refs: list[object] = []
         self._entries = list(entries)
         self._on_add = on_add
@@ -158,7 +160,7 @@ class ScheduleRecordingDialog:
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(
-            wx.StaticText(self._surface, label="&Scheduled recordings"), 0, wx.LEFT | wx.TOP, 10
+            wx.StaticText(self._surface, label="Sc&heduled recordings"), 0, wx.LEFT | wx.TOP, 10
         )
         # The requirement nobody discovers until a recording starts three
         # minutes late: a schedule is a thread inside a running app, so a
@@ -232,7 +234,7 @@ class ScheduleRecordingDialog:
             self._favorite_choice.Bind(wx.EVT_CHOICE, _on_pick)
             grid.Add(self._favorite_choice, 1, wx.EXPAND)
 
-        grid.Add(wx.StaticText(self._surface, label="Station &name:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self._surface, label="Station na&me:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._name_ctrl = wx.TextCtrl(self._surface, value=default_station_name)
         self._name_ctrl.SetName("Station name for this schedule")
         grid.Add(self._name_ctrl, 1, wx.EXPAND)
@@ -310,7 +312,7 @@ class ScheduleRecordingDialog:
             "Saves the form as a scheduled recording -- or saves your changes, "
             "when you are editing an existing one; the label says which."
         )
-        self._new_btn = wx.Button(self._surface, label="Ne&w")
+        self._new_btn = wx.Button(self._surface, label="N&ew")
         self._new_btn.SetName("Clear the form and stop editing")
         self._new_btn.Enable(False)
         btn_row.Add(self._add_btn, 0, wx.RIGHT, 6)
@@ -417,6 +419,19 @@ class ScheduleRecordingDialog:
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
         menu_bar.Append(surface_menu, "&Schedule")
+        # The app's own Station commands, so Alt+S opens the same menu here it
+        # opens in the main window -- see surface_app_menu for the report.
+        from quill.ui.radio import surface_app_menu
+
+        self._menu_id_refs.extend(
+            surface_app_menu.install(
+                win=self._win,
+                host=surface_app_menu.host_of(self),
+                menu_bar=menu_bar,
+                wx=wx,
+                skip=(),
+            )
+        )
         self._windows.install(self._win, menu_bar)
         self._win.SetMenuBar(menu_bar)
         self._menu_id_refs.append(close_id)

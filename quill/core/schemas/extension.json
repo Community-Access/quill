@@ -604,7 +604,19 @@
                 "type": "string",
                 "description": "Name of the Python function in main that returns the station rows for a query."
               },
-              "description": { "type": "string", "maxLength": 400 }
+              "description": { "type": "string", "maxLength": 400 },
+              "categories_handler": {
+                "type": "string",
+                "description": "Optional browse trio: returns a JSON array of category names ([] = a flat source). Requires stations_handler."
+              },
+              "stations_handler": {
+                "type": "string",
+                "description": "Optional browse trio: receives {category, query} and returns station rows; with this declared the provider is a full browse source in Quill Radio's tree."
+              },
+              "resolve_handler": {
+                "type": "string",
+                "description": "Optional browse trio: receives {key} from a station row that carried one and returns the playable URL at play time. Requires stations_handler."
+              }
             }
           }
         },

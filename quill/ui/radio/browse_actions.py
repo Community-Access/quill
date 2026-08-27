@@ -457,6 +457,56 @@ def _search_podcast_index(host: Any) -> None:
     )
 
 
+def _tv_refresh(host: Any) -> None:
+    """Fetch today's TV catalog now, off-thread, and reload the branch.
+
+    The weekly cache is the right default for a ~28 MB refresh; this is the
+    on-demand override, and it says what it is doing because a half-minute
+    fetch with nothing on screen changing reads as a hang.
+    """
+    host._announce(
+        "Updating the TV channel list. This is the biggest catalog and can take a minute."
+    )
+
+    def _work(**_kwargs: Any) -> int:
+        from quill.core.radio import iptv
+
+        return len(iptv.fetch_rows(safe_mode=host._safe_mode, refresh=True))
+
+    def _ok(_op: str, count: object) -> None:
+        if not host._tree:
+            return
+        host._announce(f"TV channel list updated: {count} playable channels.")
+        from quill.ui.radio import browse_refresh
+
+        browse_refresh.reload_source_branch(host, "tv")
+
+    def _failed(_op: str, error: BaseException) -> None:
+        if host._tree:
+            host._announce(f"The TV channel list could not be updated. {error}.")
+
+    host._task_manager.submit("radio-tv-refresh", _work, on_success=_ok, on_failure=_failed)
+
+
+def _antennaweb(host: Any) -> None:
+    """Open AntennaWeb for the over-the-air coverage question.
+
+    A link-out on purpose: the tool has no published API, and scraping an
+    undocumented commercial SPA is what the egress policy refuses. Opening the
+    listener's browser sends nothing from here -- the site asks its own
+    questions once they arrive.
+    """
+    import webbrowser
+
+    if webbrowser.open("https://www.antennaweb.org/"):
+        host._announce(
+            "Opened antennaweb.org in your browser. Enter your address or ZIP code "
+            "there to see which antenna channels you can receive."
+        )
+    else:
+        host._announce("Your browser could not be opened.")
+
+
 #: Action node id -> what it does. A new "Add..." row is one entry here.
 _ACTIONS: dict[str, Callable[[Any], None]] = {
     "addserver": _add_server,
@@ -468,4 +518,6 @@ _ACTIONS: dict[str, Callable[[Any], None]] = {
     "importpodcastsopml": _import_podcasts_opml,
     "searchpodcasts": _search_podcasts,
     "searchpodcastindex": _search_podcast_index,
+    "antennaweb": _antennaweb,
+    "tvrefresh": _tv_refresh,
 }

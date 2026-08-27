@@ -757,6 +757,7 @@ class RadioMixin(RadioStatusWindowsMixin):
             station = controller.state.station if controller is not None else None
         ScheduleRecordingDialog(
             self.frame,
+            app_host=self,
             entries=self._radio_scheduler.entries,
             default_station_name=station.name if station is not None else "",
             default_stream_url=station.stream_url if station is not None else "",
@@ -2047,6 +2048,7 @@ class RadioMixin(RadioStatusWindowsMixin):
             return None  # already open means come to the front, not a second copy
         dlg = RecordingsManagerDialog(
             self.frame,
+            app_host=self,
             recorder=self._radio_recorder,
             settings=self._radio_recording_settings,
             scheduler=self._radio_scheduler,
@@ -2084,6 +2086,7 @@ class RadioMixin(RadioStatusWindowsMixin):
             return None  # already open means come to the front, not a second copy
         dlg = StationBrowserDialog(
             self.frame,
+            app_host=self,
             controller=self._radio_controller,
             favorites_store=self._radio_favorites,
             task_manager=self._task_manager,

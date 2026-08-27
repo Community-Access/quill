@@ -155,7 +155,7 @@ class BrowseTreeDialog:
         root.Add(find_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         root.Add(
-            wx.StaticText(self._surface, label="&Stations (expand a source to browse it):"),
+            wx.StaticText(self._surface, label="S&tations (expand a source to browse it):"),
             0,
             wx.LEFT | wx.TOP,
             10,
@@ -183,7 +183,7 @@ class BrowseTreeDialog:
 
         volume_row = wx.BoxSizer(wx.HORIZONTAL)
         volume_row.Add(
-            wx.StaticText(self._surface, label="Radio &volume:"),
+            wx.StaticText(self._surface, label="Radio vol&ume:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
@@ -284,6 +284,12 @@ class BrowseTreeDialog:
         )
 
         self._populate_sources()
+        # One-shot background warm-up of the cached directories, so the first
+        # search answers from a warm cache -- see browse_warmup for the rules
+        # (once per run, enabled sources only, never in Safe Mode).
+        from quill.ui.radio import browse_warmup
+
+        browse_warmup.warm(self)
 
     # -- lifecycle --------------------------------------------------------------
 
@@ -298,6 +304,21 @@ class BrowseTreeDialog:
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
         menu_bar.Append(surface_menu, "&Browse")
+        # The app's own Station commands, so Alt+S means here what it means in
+        # the main window (reported 2026-08-26). Browse Stations itself is
+        # skipped -- it is this window -- and so is Search Stations, whose
+        # Ctrl+F belongs to the Find box a Shift+Tab away.
+        from quill.ui.radio import surface_app_menu
+
+        self._menu_id_refs.extend(
+            surface_app_menu.install(
+                win=self._win,
+                host=getattr(self, "_download_host", None),
+                menu_bar=menu_bar,
+                wx=wx,
+                skip=("open_browse_stations", "open_internet_radio"),
+            )
+        )
         self._windows.install(self._win, menu_bar)
         self._win.SetMenuBar(menu_bar)
         self._menu_id_refs.append(close_id)
@@ -367,6 +388,30 @@ class BrowseTreeDialog:
             )
             tree.SetItemData(empty, dict(_PLACEHOLDER))
         browse_position.restore_selection(tree, root)  # browse position memory
+
+    def apply_visible_sources(self, updated: object) -> bool:
+        """Adopt a source selection made *outside* this window, and rebuild.
+
+        Reported 2026-08-26: sources switched on in **Choose Browse Sources**
+        did not appear until the app was restarted. The roots are built once,
+        from what was handed in at construction, and the only path that rebuilt
+        them was this window's own Hide This Source -- so a change made from the
+        menu wrote the setting, saved it, and left the open tree showing the
+        list it had been born with. Two surfaces, one setting, and no way for
+        the second to hear about the first.
+
+        Returns ``False`` when this window has already gone, so the app shell
+        can hold a stale reference and simply ask.
+        """
+        tree = self._tree
+        try:
+            if tree is None or not tree:
+                return False
+        except RuntimeError:  # the wx object is being torn down
+            return False
+        self._visible_sources = updated
+        self._rebuild_sources()
+        return True
 
     def _rebuild_sources(self) -> None:
         """Rebuild the root list after a visibility change made from the
@@ -456,7 +501,13 @@ class BrowseTreeDialog:
                 browse_refresh.forget_load(self, node)
             # ...and it keeps ONE row saying which of the two it was, which is
             # also what keeps the folder expandable (see browse_feedback).
-            says = browse_feedback.empty_row_text(unreachable=unreachable, override=empty_text)
+            says = browse_feedback.empty_row_text(
+                unreachable=unreachable,
+                override=empty_text,
+                note=browse_sources.repeat_failure_note(
+                    str((self._node_data(node) or {}).get("node_id", ""))
+                ),
+            )
             tree.SetItemData(tree.AppendItem(node, says), dict(_PLACEHOLDER))
         for child in children:
             item = tree.AppendItem(node, self._row_label(child))
@@ -599,7 +650,7 @@ class BrowseTreeDialog:
             self._add_children(node, ready)  # prefetched while you arrowed here
             return
         if self._safe_mode and browse_sources.needs_network(node_id):
-            self._details.SetValue("Browsing this source is disabled in Safe Mode.")
+            self._details.ChangeValue("Browsing this source is disabled in Safe Mode.")
         label = self._tree.GetItemText(node).split("  (")[0]
         self._announce(f"Loading {label}...")
         browse_feedback.start_slow_load_notice(self, label)
@@ -707,7 +758,7 @@ class BrowseTreeDialog:
         """
         label = str(data.get("label", ""))
         node_id = str(data.get("node_id", ""))
-        self._details.SetValue(f"Resolving {label}...")
+        self._details.ChangeValue(f"Resolving {label}...")
 
         def _work(**_kwargs: Any) -> RadioStation | None:
             return browse_sources.resolve(node_id, safe_mode=self._safe_mode)

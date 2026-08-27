@@ -106,6 +106,33 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         default_on=False,
     ),
     BrowseSourceInfo(
+        "shoutcast",
+        "SHOUTcast Directory",
+        "SHOUTcast by genre, most listeners first, with its live Top 500 pinned on top. "
+        "Its own 500-a-genre cap applies.",
+    ),
+    BrowseSourceInfo(
+        "live365",
+        "Live365",
+        "Live365's independent stations, A to Z.",
+    ),
+    BrowseSourceInfo(
+        "tv",
+        "Television (iptv.org)",
+        "About 10,000 playable TV channels, by country and category, with an optional XMLTV guide.",
+    ),
+    BrowseSourceInfo(
+        "quillins",
+        "Quillin Sources",
+        "Station directories contributed by installed Quillins. Only shown "
+        "while one is installed and enabled.",
+    ),
+    BrowseSourceInfo(
+        "radioparadise",
+        "Radio Paradise",
+        "Hand-curated, listener-supported radio -- every channel from 32 kbps to FLAC.",
+    ),
+    BrowseSourceInfo(
         "myservers",
         "My Servers",
         "Icecast and SHOUTcast servers you add yourself.",
@@ -197,11 +224,19 @@ def label(source_id: str) -> str:
 #: :data:`SOURCES_EPOCH` in the same change.
 INTRODUCED_BY_EPOCH: dict[int, tuple[str, ...]] = {
     1: ("podcastindex",),
+    # 2026-08-26, out of the StreamTuner review (radio2.md). Reported the same
+    # day: they were switched on in the settings list and still absent from the
+    # tree, because a listener who had ever opened Choose Browse Sources has a
+    # stored list that cannot name a branch added later. Exactly the fault this
+    # table was built for -- it just needs the entry.
+    2: ("shoutcast", "live365", "radioparadise"),
+    # 2026-08-27: television.
+    3: ("tv", "quillins"),
 }
 
 #: The highest epoch this build knows. A profile stamped with a lower one is
 #: shown the branches introduced since, once, and then stamped with this.
-SOURCES_EPOCH = 1
+SOURCES_EPOCH = 3
 
 
 def introduced_since(epoch: int) -> tuple[str, ...]:

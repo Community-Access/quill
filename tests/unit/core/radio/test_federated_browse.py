@@ -139,3 +139,82 @@ def test_safe_mode_says_so_once_rather_than_per_source(_routes: dict) -> None:
     said = federated_browse.describe("x", found, safe_mode=True)
     assert said.count("Safe Mode") == 1
     assert "offline station catalog" in said
+
+
+# --- speed: one wave, a deadline, and the three new directories --------------
+# Reported 2026-08-26: "global search ... is very very slow right now."
+
+
+def test_every_source_is_asked_at_the_same_moment() -> None:
+    """Six workers over sixteen targets was three waves of the slowest service."""
+    import threading
+
+    from quill.core.radio import federated_browse as fb
+
+    started = threading.Semaphore(0)
+    hold = threading.Event()
+    targets = tuple(fb.SearchTarget(f"s{i}", f"S{i}", "Station") for i in range(12))
+
+    def _ask(target, _text, *, safe_mode, catalog):  # noqa: ARG001
+        started.release()
+        hold.wait(5)
+        return [], ""
+
+    original = fb._ask
+    fb._ask = _ask
+    try:
+        import concurrent.futures
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as runner:
+            future = runner.submit(fb.search_everything, "jazz", targets=targets)
+            # All twelve must be in flight before any of them is allowed to
+            # finish; with a six-worker pool this deadlocks the test instead.
+            for _ in targets:
+                assert started.acquire(timeout=5)
+            hold.set()
+            future.result(timeout=10)
+    finally:
+        hold.set()
+        fb._ask = original
+
+
+def test_a_source_that_never_answers_does_not_hold_the_whole_search() -> None:
+    from quill.core.radio import federated_browse as fb
+
+    slow = fb.SearchTarget("slow", "Slow Directory", "Station")
+    quick = fb.SearchTarget("quick", "Quick Directory", "Station")
+
+    def _ask(target, _text, *, safe_mode, catalog):  # noqa: ARG001
+        if target.seed_id == "slow":
+            import time
+
+            time.sleep(5)
+        return [], ""
+
+    original = fb._ask
+    fb._ask = _ask
+    try:
+        found = fb.search_everything("jazz", targets=(quick, slow), deadline_seconds=0.5)
+    finally:
+        fb._ask = original
+
+    # The quick one is in the answer; the slow one is *named*, not dropped in
+    # silence -- a short list must never pass itself off as a complete one.
+    assert "Quick Directory" in found.asked
+    assert any(label == "Slow Directory" for label, _why in found.failed)
+    assert any("did not answer" in why for _label, why in found.failed)
+
+
+def test_the_three_new_directories_are_searched_from_the_tree_too() -> None:
+    """Browsing a directory you cannot search from Search All Sources is half a source."""
+    from quill.core.radio import federated_browse as fb
+
+    seeds = {target.seed_id for target in fb.TARGETS}
+    assert {"shoutcast", "live365", "radioparadise"} <= seeds
+
+
+def test_each_of_them_has_a_fast_route_rather_than_a_crawl() -> None:
+    from quill.core.radio import branch_find
+
+    for kind in ("shoutcast", "live365", "radioparadise"):
+        assert any(prefix == kind for prefix, _fn in branch_find._PREFIX_ROUTES)

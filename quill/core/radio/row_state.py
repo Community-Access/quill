@@ -37,6 +37,10 @@ class FolderState:
     #: A top-level source branch (Popular Stations, Podcasts, ...) -- the
     #: rows that can be hidden in place instead of via Choose Browse Sources.
     root_source: bool = False
+    #: This source declares options of its own (the Radio Paradise quality, the
+    #: SHOUTcast filter -- see quill.core.radio.source_options). Computed by the
+    #: caller so this module stays a description of what the window knows.
+    has_options: bool = False
     #: Unplayed episodes in this subscribed show, from the shared library
     #: (a local read). Drives Mark All as Played's enabled state: the verb
     #: is always on a subscribed show's menu, dimmed when nothing is unheard.

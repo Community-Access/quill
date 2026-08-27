@@ -33,6 +33,35 @@ from quill.core.radio.models import RadioStation
 from quill.core.radio.wxindex_models import to_radio_station as _wx_to_radio_station
 
 #: Per-search resolve caps for the blended directories (one GET each).
+#: How many results are resolved at once. Small enough to be polite to a
+#: directory and large enough that the cap below is one round trip rather than
+#: several.
+RESOLVE_WORKERS = 10
+
+
+def _in_parallel(work: object, items: list) -> list:
+    """Run *work* over *items* concurrently, in order, never raising.
+
+    A tiny helper rather than a pool per call site, because the two callers
+    below had the same fault -- a sequential loop of network round trips -- and
+    the fix should not be written twice and then diverge.
+    """
+    from concurrent.futures import ThreadPoolExecutor
+
+    if not items:
+        return []
+    if len(items) == 1:
+        try:
+            return [work(items[0])]  # type: ignore[operator]
+        except Exception:  # noqa: BLE001 - a search must never raise into its caller
+            return []
+    with ThreadPoolExecutor(max_workers=min(RESOLVE_WORKERS, len(items))) as pool:
+        try:
+            return list(pool.map(work, items))  # type: ignore[arg-type]
+        except Exception:  # noqa: BLE001 - same rule
+            return []
+
+
 TUNEIN_RESOLVE_CAP = 10
 IHEART_RESOLVE_CAP = 5
 
@@ -126,19 +155,24 @@ def tunein_search_stations(
         results = tunein.search(query, safe_mode=safe_mode)
     except tunein.TuneInError:
         return []
-    stations: list[RadioStation] = []
-    for result in results:
-        if len(stations) >= cap:
-            break
-        if not result.is_station:
-            continue
+    wanted = [result for result in results if result.is_station][:cap]
+
+    def _resolve(result: tunein.TuneInResult) -> RadioStation | None:
         try:
             streams = tunein.resolve_station_streams(result.guide_id, safe_mode=safe_mode)
         except tunein.TuneInError:
-            continue
-        if streams:
-            stations.append(tunein.to_radio_station(result, tunein.best_stream(streams)))
-    return stations
+            return None
+        if not streams:
+            return None
+        return tunein.to_radio_station(result, tunein.best_stream(streams))
+
+    # Concurrently, and this is the whole difference between a search that
+    # takes a second and one that takes ten: TuneIn needs a round trip PER
+    # station to turn a guide id into an address, and ten of those end to end
+    # is ten times the slowest thing on the network. Reported 2026-08-26 as
+    # "search is still way too slow"; the loop that was here resolved them one
+    # after another, so the wait was the sum rather than the maximum.
+    return [row for row in _in_parallel(_resolve, wanted) if row is not None]
 
 
 def iheart_search_stations(
@@ -154,19 +188,18 @@ def iheart_search_stations(
     """
     if not name.strip():
         return []
-    stations: list[RadioStation] = []
-    for station in index:
-        if len(stations) >= cap:
-            break
-        if not iheart.station_matches(station, name):
-            continue
+    matched = [station for station in index if iheart.station_matches(station, name)][:cap]
+
+    def _resolve(station: IHeartStation) -> RadioStation | None:
         try:
             stream = iheart.resolve_stream(station.page_url, safe_mode=safe_mode)
         except iheart.IHeartError:
-            continue
-        if stream:
-            stations.append(iheart.to_radio_station(station, stream))
-    return stations
+            return None
+        return iheart.to_radio_station(station, stream) if stream else None
+
+    # One station-page GET each, run at the same time rather than in a queue --
+    # see the note in tunein_search_stations.
+    return [row for row in _in_parallel(_resolve, matched) if row is not None]
 
 
 def wxindex_search_stations(query: str, *, safe_mode: bool = False) -> list[RadioStation]:

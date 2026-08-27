@@ -262,6 +262,50 @@ announced refusal — never assume access is granted.
 
 ---
 
+## 4d. Contributing a whole station source to Quill Radio
+
+A `radio.directory` provider has always been able to answer *searches*. Since
+2026-08-27 it can be a whole **browse source** in Quill Radio's tree, under
+the Quillin Sources branch, by declaring up to three more handlers beside
+`handler`:
+
+```json
+"directory_providers": [{
+  "id": "ext.mydirectory.provider",
+  "display_name": "My Directory",
+  "handler": "directory_search",
+  "categories_handler": "directory_categories",
+  "stations_handler": "directory_stations",
+  "resolve_handler": "directory_resolve"
+}]
+```
+
+- **`stations_handler`** is the anchor -- declaring `categories_handler` or
+  `resolve_handler` without it is a manifest error, caught by the linter where
+  you will read it. It receives `{"category": ..., "query": ...}` (query is
+  set when the listener searches your branch) and returns station rows the
+  same way the search handler does: a JSON array written to the shared result
+  key. Row fields: `name` (required), `url` *or* `key`, and optionally
+  `genre`, `tags`, `country`, `homepage`, `codec`, `bitrate_kbps`, `source`.
+  Everything else is dropped by the host's validator.
+- **`categories_handler`** returns a JSON array of category *names*. Return
+  `[]` (or omit the handler) for a flat source.
+- **`resolve_handler`** receives `{"key": ...}` for a row that carried a `key`
+  instead of a `url`, and returns the playable address -- called only at the
+  moment of playback. Use a key whenever the real address expires, carries a
+  token, or must not be cached: a keyed row never lands in favourites files or
+  playlist exports as its resolved form, and a keyed row is silently dropped
+  if you forgot to declare a resolver, because a row that cannot play must not
+  be offered.
+- **Network** works exactly as in every Layer 2 handler: the host's `fetch`,
+  gated by the `net` capability and bounded by your manifest's
+  `net_allowed_hosts`. Declare the hosts you use; an empty allowlist plus
+  `net` means "anywhere, with consent", and a tight allowlist is what a
+  reviewer wants to see.
+
+The bundled **radio-community-directory** Quillin is the working reference for
+the whole shape, including a keyed row and its resolver.
+
 ## 5. Test your Quillin
 
 Mirror the bundled Quillin's test

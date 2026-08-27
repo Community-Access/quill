@@ -97,7 +97,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         file_menu = wx.Menu()
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         file_menu.Append(tray_id, "Minimize to &Tray\tCtrl+W")
-        file_menu.Append(exit_id, "E&xit")
+        file_menu.Append(exit_id, "E&xit\tCtrl+Q")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.toggle_window_to_tray(), id=tray_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._exit_application(), id=exit_id)
         menu_bar.Append(file_menu, "&File")
@@ -111,7 +111,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_quick_insert(), id=quick_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.new_from_clipboard(), id=clip_id)
         expand_now_id = wx.NewIdRef()
-        abbr_menu.Append(expand_now_id, "&Expand the Word I Just Typed")
+        abbr_menu.Append(expand_now_id, "&Expand the Word I Just Typed\tCtrl+Alt+E")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.expand_now(), id=expand_now_id)
         abbr_menu.AppendSeparator()
         self._pause_item_id = wx.NewIdRef()
@@ -126,7 +126,9 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
 
         options_menu = wx.Menu()
         self._startup_item_id = wx.NewIdRef()
-        options_menu.AppendCheckItem(self._startup_item_id, "Start Quill Inkwell with &Windows")
+        options_menu.AppendCheckItem(
+            self._startup_item_id, "Start Quill Inkwell with &Windows\tCtrl+Alt+W"
+        )
         options_menu.Check(self._startup_item_id, self._launch_at_startup_enabled())
         self.frame.Bind(
             wx.EVT_MENU,
@@ -134,7 +136,9 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
             id=self._startup_item_id,
         )
         self._start_tray_item_id = wx.NewIdRef()
-        options_menu.AppendCheckItem(self._start_tray_item_id, "Start &minimized to the tray")
+        options_menu.AppendCheckItem(
+            self._start_tray_item_id, "Start &minimized to the tray\tCtrl+Alt+M"
+        )
         options_menu.Check(self._start_tray_item_id, self._settings.start_in_tray)
         self.frame.Bind(
             wx.EVT_MENU,
@@ -142,7 +146,9 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
             id=self._start_tray_item_id,
         )
         self._close_tray_item_id = wx.NewIdRef()
-        options_menu.AppendCheckItem(self._close_tray_item_id, "&Close button keeps expanding")
+        options_menu.AppendCheckItem(
+            self._close_tray_item_id, "&Close button keeps expanding\tCtrl+Alt+C"
+        )
         options_menu.Check(self._close_tray_item_id, self._settings.close_to_tray)
         self.frame.Bind(
             wx.EVT_MENU,
@@ -152,7 +158,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         options_menu.AppendSeparator()
         self._paste_item_id = wx.NewIdRef()
         options_menu.AppendCheckItem(
-            self._paste_item_id, "Insert by &pasting (for apps that drop typed text)"
+            self._paste_item_id, "Insert by &pasting (for apps that drop typed text)\tCtrl+Alt+P"
         )
         options_menu.Check(self._paste_item_id, self._settings.injection_mode == "paste")
         self.frame.Bind(
@@ -161,7 +167,9 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
             id=self._paste_item_id,
         )
         self._announce_item_id = wx.NewIdRef()
-        options_menu.AppendCheckItem(self._announce_item_id, "&Announce every expansion")
+        options_menu.AppendCheckItem(
+            self._announce_item_id, "&Announce every expansion\tCtrl+Alt+A"
+        )
         options_menu.Check(self._announce_item_id, self._settings.announce_expansions)
         self.frame.Bind(
             wx.EVT_MENU,
@@ -169,7 +177,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
             id=self._announce_item_id,
         )
         excluded_id = wx.NewIdRef()
-        options_menu.Append(excluded_id, "E&xcluded Applications...")
+        options_menu.Append(excluded_id, "E&xcluded Applications...\tCtrl+Alt+X")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.edit_exclusions(), id=excluded_id)
         menu_bar.Append(options_menu, "&Options")
 
@@ -188,7 +196,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
 
         help_menu = wx.Menu()
         updates_id, about_id = wx.NewIdRef(), wx.NewIdRef()
-        help_menu.Append(updates_id, "Check for &Updates...")
+        help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
@@ -196,7 +204,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
             ),
             id=updates_id,
         )
-        help_menu.Append(about_id, "&About Quill Inkwell")
+        help_menu.Append(about_id, "&About Quill Inkwell\tCtrl+Alt+I")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
         menu_bar.Append(help_menu, "&Help")
 
@@ -495,7 +503,8 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         self._show_message_box(
             f"{_TITLE} {_VERSION}\n\n"
             "Abbreviation expansion in every application, sharing one library "
-            "with QUILL.\n\nFree, and part of the QuillVille family.",
+            "with QUILL.\n\nFree, and part of the QuillVille family."
+            "\n\nSupport: support@community-access.org",
             f"About {_TITLE}",
             wx.ICON_INFORMATION | wx.OK,
         )

@@ -148,13 +148,45 @@ def _find_tunein(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]
 
 
 def _find_iheart(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
-    from quill.core.radio.directory_search import iheart_search_stations
-    from quill.core.radio.iheart import fetch_station_index
+    from quill.core.radio import iheart
 
-    rows = iheart_search_stations(
-        fetch_station_index(safe_mode=safe_mode), query, safe_mode=safe_mode
-    )
+    # iHeart's own relevance search: two GETs, ranked results, streams
+    # embedded -- not a substring filter over a sitemap index that itself cost
+    # two GETs and then a page fetch per match.
+    rows = iheart.search_stations(query, safe_mode=safe_mode)
     return [leaf(station) for station in rows], "searched iHeart"
+
+
+def _find_shoutcast(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
+    from quill.core.radio import shoutcast
+    from quill.core.radio.browse_directories import shoutcast_rows
+
+    # resolve=False: these become lazy rows that fetch their address when they
+    # are played, so a SHOUTcast search inside the tree is ONE request rather
+    # than one per result.
+    rows = shoutcast.search_stations(query, safe_mode=safe_mode, resolve=False)
+    return shoutcast_rows(rows), "searched the SHOUTcast directory"
+
+
+def _find_live365(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
+    from quill.core.radio import live365
+
+    rows = live365.search_stations(query, safe_mode=safe_mode)
+    return [leaf(station) for station in rows], "searched Live365"
+
+
+def _find_radio_paradise(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
+    from quill.core.radio import radio_paradise
+
+    rows = radio_paradise.search_stations(query, safe_mode=safe_mode)
+    return [leaf(station) for station in rows], "searched Radio Paradise"
+
+
+def _find_tv(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
+    from quill.core.radio import iptv
+
+    rows = iptv.search_stations(query, safe_mode=safe_mode)
+    return [leaf(station) for station in rows], "searched the TV catalog"
 
 
 def _find_wx(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
@@ -194,6 +226,10 @@ _PREFIX_ROUTES: tuple[tuple[str, Any], ...] = (
     ("soma", _find_soma),
     ("tunein", _find_tunein),
     ("iheart", _find_iheart),
+    ("shoutcast", _find_shoutcast),
+    ("live365", _find_live365),
+    ("radioparadise", _find_radio_paradise),
+    ("tv", _find_tv),
     ("wx", _find_wx),
     ("audius", _find_free_music),
     ("mixcloud", _find_free_music),

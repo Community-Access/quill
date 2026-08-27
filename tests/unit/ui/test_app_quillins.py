@@ -39,7 +39,11 @@ def test_apps_init_the_host_and_add_the_menu() -> None:
     cast = _read("quill/apps/podcasts.py") + _read("quill/apps/podcasts_menu.py")
     assert 'self._init_app_quillins("radio")' in radio
     assert 'self._init_app_quillins("cast")' in cast
-    assert '_build_quillins_menu(), "&Quillins"' in radio
+    # Radio spells it "Quilli&ns": QuillVille sits beside it on that bar and
+    # owns Alt+Q, so the obvious mnemonic was a menu that never opened
+    # (2026-08-26, tests/unit/ui/test_menu_bar_access_keys.py). Cast has no
+    # QuillVille menu, so Alt+Q is free there and it keeps it.
+    assert '_build_quillins_menu(), "Quilli&ns"' in radio
     assert '_build_quillins_menu(), "&Quillins"' in cast
 
 

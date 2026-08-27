@@ -133,7 +133,7 @@ class FavoritesManagerDialog:
 
         search_row = wx.BoxSizer(wx.HORIZONTAL)
         search_row.Add(
-            wx.StaticText(self._surface, label="&Search favorites:"),
+            wx.StaticText(self._surface, label="Search favorites (&K):"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
@@ -146,7 +146,10 @@ class FavoritesManagerDialog:
         root.Add(search_row, 0, wx.EXPAND | wx.ALL, 10)
 
         root.Add(
-            wx.StaticText(self._surface, label="&Favorites and folders"), 0, wx.LEFT | wx.TOP, 10
+            wx.StaticText(self._surface, label="Favorites and folders (&L)"),
+            0,
+            wx.LEFT | wx.TOP,
+            10,
         )
         self._tree = wx.TreeCtrl(
             self._surface, style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HIDE_ROOT
@@ -274,6 +277,19 @@ class FavoritesManagerDialog:
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
         menu_bar.Append(surface_menu, "&Favorites")
+        # The app's own Station commands, so Alt+S opens the same menu here it
+        # opens in the main window -- see surface_app_menu for the report.
+        from quill.ui.radio import surface_app_menu
+
+        self._menu_id_refs.extend(
+            surface_app_menu.install(
+                win=self._win,
+                host=surface_app_menu.host_of(self),
+                menu_bar=menu_bar,
+                wx=wx,
+                skip=("open_manage_radio_favorites",),
+            )
+        )
         self._windows.install(self._win, menu_bar)
         self._win.SetMenuBar(menu_bar)
         self._menu_id_refs.append(close_id)

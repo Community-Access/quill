@@ -61,6 +61,18 @@ SEARCH_SOURCES: tuple[SearchSource, ...] = (
     SearchSource("iheart", "iHeart", "iHeartRadio's stations."),
     SearchSource("somafm", "SomaFM", "SomaFM's listener-supported channels."),
     SearchSource(
+        "shoutcast",
+        "SHOUTcast",
+        "The SHOUTcast directory, with live listener counts.",
+    ),
+    SearchSource("live365", "Live365", "Live365's independent stations."),
+    SearchSource("tv", "TV", "Television channels from the iptv.org catalog."),
+    SearchSource(
+        "radioparadise",
+        "Radio Paradise",
+        "Radio Paradise's channels, at every quality they offer.",
+    ),
+    SearchSource(
         "wxindex",
         "NOAA Weather Radio",
         "US weather radio, by SAME code, callsign, county or state.",
@@ -84,12 +96,69 @@ SEARCH_SOURCES: tuple[SearchSource, ...] = (
     ),
 )
 
+#: Sources added *after* the shipped default set stopped being the whole story,
+#: newest epoch last. A stored "these are my search sources" list can only ever
+#: name sources that existed when it was saved, and :func:`normalize` drops
+#: anything it does not name -- so without this table every source added from
+#: now on would be silently unsearched for everybody who had ever opened Choose
+#: Search Sources. Browse sources learned this on 2026-08-23 (see
+#: ``browse_visibility.INTRODUCED_BY_EPOCH``); the search list had the identical
+#: hole and it went unnoticed because nothing had been added since.
+#:
+#: A source appears here **once**, in the epoch that introduced it. Bump
+#: :data:`SEARCH_SOURCES_EPOCH` in the same change.
+INTRODUCED_BY_EPOCH: dict[int, tuple[str, ...]] = {
+    1: ("shoutcast", "live365", "radioparadise"),
+    # 2026-08-27: television.
+    2: ("tv",),
+}
+
+#: The highest epoch this build knows. A profile stamped lower is shown the
+#: sources introduced since, once, and then stamped with this.
+SEARCH_SOURCES_EPOCH = 2
+
 SOURCE_IDS: tuple[str, ...] = tuple(s.id for s in SEARCH_SOURCES)
 
 #: Everything on: the out-of-the-box behaviour, and what a reset returns to.
 DEFAULT_ENABLED: tuple[str, ...] = tuple(s.id for s in SEARCH_SOURCES if s.default_on)
 
 _BY_ID = {s.id: s for s in SEARCH_SOURCES}
+
+
+def introduced_since(epoch: int) -> tuple[str, ...]:
+    """Default-on sources introduced after *epoch* (pure).
+
+    Only default-on ones: a source that ships switched off was never going to
+    appear on its own, and adding it to somebody's list would be turning
+    something on under them.
+    """
+    added: list[str] = []
+    for stamp, ids in sorted(INTRODUCED_BY_EPOCH.items()):
+        if stamp <= epoch:
+            continue
+        added.extend(
+            source_id
+            for source_id in ids
+            if (info := _BY_ID.get(source_id)) is not None and info.default_on
+        )
+    return tuple(added)
+
+
+def with_new_sources(enabled: object, epoch: int) -> tuple[str, ...]:
+    """A stored choice, plus any source introduced since it was made (pure).
+
+    A source they switched off stays off -- it is absent from their list *and*
+    named in an epoch they have already been stamped with. An **explicitly
+    empty** selection stays empty for the same reason: turning everything off
+    is a real choice, and quietly re-populating it would be the bug this
+    function exists to avoid, in the other direction.
+    """
+    if enabled is None:
+        return DEFAULT_ENABLED
+    current = normalize(enabled)
+    if not current:
+        return current
+    return normalize([*current, *introduced_since(epoch)])
 
 
 def source(source_id: str) -> SearchSource | None:

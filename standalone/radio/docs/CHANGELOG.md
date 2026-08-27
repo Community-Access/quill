@@ -10,6 +10,24 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ### Fixed
 
+- **Alt+S finally opens the Station menu -- the real cause, found and fenced.**
+  It was never the menu: a control label beside the tree ("&Stations ...")
+  claimed the same letter, and on Windows a control mnemonic silently beats a
+  menu mnemonic, so Alt+S moved focus to the tree instead. Seventeen labels
+  across the browse tree, Find Stations, Recordings, Schedule, Song History,
+  Downloads and the Favorites Manager were quietly disarming the very menus
+  their windows carry (Recordings' own list label ate its &Recordings menu).
+  Every one has moved to a free letter -- the browse tree is now **Alt+T**, a
+  fair trade: Alt+T jumps to the tree, Alt+S opens Station -- and a new gate
+  keeps any label from ever claiming a letter its window's menu bar owns.
+- **Every menu item in every QuillVille app now shows its keyboard route.**
+  The rule Quill Radio has enforced since 3.0 turned out to be radio-only in
+  practice: a family-wide sweep found **116 menu-bar items with no accelerator
+  at all** -- 46 in QUILL Cast, 30 in Audio Studio, 18 in Media Player, ten
+  each in Inkwell and Weather, six in Converter. All 116 now carry a unique
+  key, and a family-wide gate (source-level, popup and tray menus exempt where
+  accelerators do nothing) holds the line for every future app.
+
 - **The ACB Media schedule would not re-read itself, and could not tell you it
   had.** Three faults with one symptom. The stored copy stayed fresh for an
   hour and the window honoured that on open -- and the store outlives the
@@ -32,7 +50,223 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
   `Cache-Control: no-cache` and `Pragma: no-cache`; an unattended read does not,
   where a cached hop is a saving rather than a lie.
 
+### Fixed
+
+- **Two menus on the same bar claimed the same Alt key, so one never opened.**
+  In Quill Radio, **Quillins** and **QuillVille** both asked for Alt+Q; in QUILL
+  Audio Studio, **Voices** and **View** both asked for Alt+V. Quillins is now
+  **Alt+N** and Voices is **Alt+I**. A new gate checks every menu bar in the
+  family for both faults -- a title with no Alt key at all, and two titles
+  claiming one -- so this cannot come back. It is the same rule the menu *items*
+  have been held to since 3.0, finally applied to the menus themselves.
+- **Search All Sources was still slow after the first pass, and this is why.**
+  TuneIn and iHeart each need a network round trip *per result* to turn a
+  directory entry into a playable address, and both did them one after another
+  -- ten trips end to end for a TuneIn search. They now go out at the same time,
+  so the wait is the slowest one rather than the sum of ten. The SHOUTcast
+  search inside the tree resolves nothing at all now (its rows resolve when you
+  play them), which makes it a single request. With the slow shapes gone the
+  overall ceiling came down from twelve seconds to eight.
+- **Most SHOUTcast stations would not play.** A SHOUTcast station's published
+  address is a *playlist* -- a one-line `.pls` holding the real stream address --
+  and a player is given a stream, not a playlist of one. Reported on a station
+  with 293 listeners that was plainly on the air. Stations from that directory
+  are now resolved the moment you press Enter, which is one request on the
+  station you actually chose rather than five hundred for a genre page you are
+  only reading; search results, which are handed straight to the player and
+  cannot be resolved later, are resolved as they are found. A station that will
+  not resolve is left out rather than offered and then failing.
+- **A source you switched on did not appear until you restarted.** Choose
+  Browse Sources wrote your choice, saved it, and left the open Browse Stations
+  window showing the list it had been built with -- two surfaces, one setting,
+  and no way for the second to hear about the first. The tree now rebuilds the
+  moment the chooser closes, and says so: "Browse Stations has been updated."
+- **A source added in a new version never reached anybody who had ever opened
+  the chooser.** A stored "these are my sources" list can only name sources
+  that existed when it was saved, and anything it does not name is dropped -- so
+  the three new directories were switched on in the settings list and still
+  absent from the tree. The browse list already had the machinery to hand
+  newcomers to an existing profile once and remember that it had; it now names
+  the new branches, and **the search list, which had the identical hole, has the
+  same machinery for the first time**. Either way: a source you switched *off*
+  stays off, and turning everything off stays a choice that is respected.
+- **Lists sorted 1, 10, 2 instead of 1, 2, 10.** "ACB Media 1, ACB Media 10,
+  then 2 through 9" -- what sorting text does, and wrong for every list of names
+  a person wrote. Numbers inside a name are now compared as numbers, in the
+  browse tree, the A-Z groups, the Live365 directory and the favorites list.
+  **No name was changed to make this work**: renaming the stations "ACB Media
+  01" would have been wrong in the details panel, wrong read aloud, wrong in an
+  export and wrong when you searched for the name you actually know.
+- **Search All Sources was very slow, and silent while it ran.** Two causes,
+  both fixed. It asked sixteen directories through six workers, so a search took
+  three waves of the slowest service back to back; every source is now asked at
+  the same moment. And it had no deadline, so one service having a bad afternoon
+  set the pace for the whole search; there is now a twelve-second ceiling, after
+  which the stragglers are **named** ("Internet Archive did not answer within 12
+  seconds") rather than quietly left out. While it runs it now says so, after
+  four seconds and then periodically -- a cross-source search is as slow as the
+  slowest service in it, and nothing on screen changes while it happens.
+
 ### Added
+
+- **A person you can write to.** Every app's Help > About window and the
+  documentation now carry the support address:
+  **support@community-access.org**, run by Community Access.
+- **Television.** Quill Radio already played HLS video with captions and audio
+  tracks; what it lacked was a way to *find* any. The new **Television
+  (iptv.org)** branch -- just above YouTube -- carries about 9,300 playable
+  channels from the iptv.org community catalog, the open, keyless index that is
+  to TV what Radio Browser is to radio. Browse **By Country** or **By
+  Category**; a country with local broadcasting (the US: ~1,700 channels)
+  opens into **Nationwide** plus its **states**, each state carrying its own
+  and its **cities'** channels, with the city named on the row. Search knows TV
+  too, everywhere search exists -- and a **five-digit ZIP code** is understood
+  as a place: type 66044 and you get Kansas television, not channels with
+  66044 in the name. What was cut, deliberately and on the record: channels
+  flagged adult (this is a family of applications), closed channels, channels
+  with no stream, and streams that only answer a disguised browser identity --
+  a row that fails when you press Enter is worse than no row. The catalog is
+  the heaviest in the app (~28 MB), so it refreshes itself **weekly** and the
+  branch carries **"Update the channel list now"** for whoever wants today's
+  copy today. Two honest edges: **"Which channels can my antenna receive?"**
+  opens antennaweb.org in your browser, because that tool has no public
+  interface and scraping it is what this project refuses to do; and a
+  **TV guide** appears on every channel a guide covers ("Now: ... Next: ...")
+  the moment you drop an XMLTV file named ``tv_guide.xml`` into your data
+  folder -- guides are a choose-your-own ecosystem, so the file is yours to
+  choose, it works offline, and nothing is fetched for it.
+- **Quillins can now contribute whole station sources, not just search
+  results.** A Quillin that declares the new browse trio -- categories,
+  stations, and an optional play-time resolve step -- appears as a full source
+  under a **Quillin Sources** branch (only present while one is installed).
+  Its rows browse, play, favourite and search like every built-in source; a
+  row may carry an opaque key instead of an address and be resolved only when
+  played, so a stream a provider must not cache never lands in a favourites
+  file or an export; and any network a provider uses goes through the Quillin
+  host's hardened fetch, bounded by the host allowlist its own manifest
+  declares. The bundled **Radio Community Directory** sample now demonstrates
+  the whole shape.
+- **iHeart search got the service's own search engine.** Searching iHeart used
+  to download a 3,700-station index and filter it by substring, then fetch a
+  page per match. It now asks iHeart's own relevance search -- "kiss" answers
+  Kiss 108 and KIIS FM, ranked -- in exactly two requests, streams included.
+  Faster, better answers, and more respectful of the terms that bar copying
+  the directory.
+
+- **Sources can declare their own options, and two now do.** Right-click (or
+  Shift+F10) on a source's row in Browse Stations and choose **Source
+  Options...**: **Radio Paradise** asks which quality Enter should land on
+  (320k AAC by default, down to 32k for a phone tether or up to lossless FLAC
+  -- every other quality stays one arrow key away), and **SHOUTcast** asks
+  whether to list everything the directory holds or only stations with
+  listeners right now. The machinery is the point: a source declares its
+  options as data and the app renders them with the platform's own dialogs, so
+  the next source that wants a setting writes a tuple, not a dialog. Choices
+  are remembered, cleaned on the way in (a hand-edited profile cannot poison
+  them), and dropped if a later release removes the option.
+
+- **Three new station directories, and one of them is the biggest one Quill
+  Radio never had.** All keyless, all in the Browse Stations tree, all
+  switchable off in **Browse Sources...** like every other branch.
+  - **SHOUTcast Directory** and **SHOUTcast Top 500 (live)**. Quill Radio has
+    always understood a SHOUTcast *server* -- it reads their status pages for
+    What's Playing -- and has never had SHOUTcast's *directory*, which is the
+    largest index of small independent broadcasters anywhere. It is now two
+    branches: **by genre** (313 of them), and **Top 500**, which is the 500
+    stations with the most listeners on SHOUTcast at this moment. Both arrive
+    **sorted by live listeners, most first**, and that sort is the feature: a
+    genre page carries 500 stations of which typically fewer than one in ten
+    has anybody listening, so without it the first screen is parked mounts. Each
+    station also brings what it was playing when the list was fetched, which is
+    the fact you actually want when choosing. SHOUTcast caps a genre at 500
+    stations; the branch says so rather than implying it is the whole genre.
+  - **Live365** -- about 5,500 independent stations, browsable A to Z. Quill
+    Radio could already play a Live365 link somebody handed it; it could not
+    *find* one, because Live365's station API needs an account we will not ask
+    you for. Its public sitemap needs nothing at all, so that is what this
+    reads: one request a day, every station in it, and the stream address was
+    already something Quill Radio knew how to work out for itself.
+  - **Radio Paradise**, properly this time. It used to be a name search against
+    another directory, which returned whatever a stranger happened to have
+    registered. It is now the station's own channel list -- The Main Mix, Mellow
+    Mix, RockIt!, The Globe, Beyond, Serenity, KFAT and Radio 2050 -- **each at
+    every quality it offers**, from 32 kbps AAC+ for a phone tether up to
+    **lossless FLAC**, which nothing else in the tree offers. Every one of those
+    addresses was played before it was written down. Enter on the first row of a
+    channel gets you 320 kbps AAC; the cheap ones and the lossless one are one
+    arrow key away.
+- **Live listener counts, where a directory actually measures them.** A new
+  fact on a station, kept deliberately separate from community votes: votes are
+  historical popularity, this is how many people are hearing it *right now*. It
+  reads in the details panel as "Live listeners: 8,281", and it is what the new
+  SHOUTcast branches sort by. A station that reports nothing says nothing --
+  "0 listeners" would be a claim about the station rather than about what the
+  directory said.
+- **An empty branch now knows whether this has been happening all afternoon.**
+  "Could not be reached" three times in identical words reads as three
+  unrelated hiccups. A source that has failed more than once in a row now says
+  so -- "It has failed 3 times in a row -- the directory itself may be down. You
+  can hide it in Browse Sources." -- so you can tell a blip from an outage.
+  Nothing is ever switched off for you: a source that vanished from the tree
+  would be a worse failure than the one it was hiding, and a directory that
+  recovers must not stay dead until you find the checkbox. The record is kept
+  for this session only, so restarting gives every source a clean slate.
+- **Four more playlist shapes are understood** when one is handed to Quill
+  Radio: ASF redirectors (`[Reference]` / `Ref1=`, still how some older US
+  public-radio "listen live" links arrive, `mmsh://` and all), saved URL
+  shortcuts from Windows and from Linux desktops, Winamp `.b4s` playlists, and
+  Windows Media `.wpl`. Also new: when a link's three claims about itself
+  disagree -- what the server says it is, what the address ends in, and what the
+  file actually contains -- that disagreement can now be reported instead of
+  quietly resolved, which is the one diagnosis a listener cannot make for
+  themselves.
+- **Alt+S now opens the Station menu in every window, not only the main one.**
+  Quill Radio's windows are peers and each carried a menu bar of exactly two
+  menus -- its own and &Window -- so the letter that works everywhere in the
+  main window opened nothing anywhere else. Every radio surface (Browse
+  Stations, Find Stations, the Player, Favorites Manager, Recordings,
+  Downloads, Schedule, Song History, Now Playing) now carries a **&Station**
+  menu with the commands that make sense from anywhere -- Browse Stations,
+  Search Stations, Manage Favorites, Recordings, Preferences -- each showing
+  the key you actually have bound, and each calling the exact same code the
+  main window's item calls. A window never lists itself (Browse Stations does
+  not offer Browse Stations) and never shadows its own keys (its Ctrl+F stays
+  with its Find box). A source-level test keeps any future window from
+  shipping without it.
+- **Search got its fourth speed pass: remembered answers, and a warm start.**
+  Searching the same thing twice now renders the finished answer *instantly*
+  from this session's memory while a refresh runs behind it -- checking whether
+  a station came back up no longer costs the full fan-out. And the three
+  directories whose whole catalog is cached locally (Live365, Radio Paradise,
+  SHOUTcast's genre index) are now **pre-fetched in the background, once, when
+  Browse Stations opens** -- so the first search of the day answers from a warm
+  cache instead of paying for a 900 KB sitemap mid-search. A source switched
+  off is never warmed, Safe Mode never even spawns the task, and the network
+  audit entries name the warm-up explicitly.
+- **The Find box now means what you mean.** Standing on **Search All
+  Sources...** (or inside the results it produced) and typing into the Find box
+  -- reached with **Ctrl+F** or one Shift+Tab -- then pressing Enter runs the
+  cross-source search for what you typed, instead of answering "type something
+  to find in this folder" about a row that is not a folder. (The first fix
+  missed the row itself: Search All Sources is an *action*, not a folder, so
+  the folder-finding walk stepped straight past it and complained about the one
+  row that needs no folder at all. The selected row is now read first.) Everywhere else the
+  Find box is unchanged: it still filters the branch you are standing in.
+- **Every menu on the bar is now on the Keyboard Shortcuts Sheet**
+  (**Ctrl+Alt+Shift+K**), at the top, with the Alt key that opens it -- read off
+  the bar in front of you, so it is right in every window and cannot drift.
+  Quill Radio's windows are peers and each carries its own single menu, which is
+  why this matters: Alt+S is **Station** in the main window, **Search** in Find
+  Stations, and nothing at all in Browse Stations, which is Alt+B.
+- **Search Results can be closed.** The branch a cross-source search leaves at
+  the top of the tree now goes away on **Delete**, or from **Close Search
+  Results** on its context menu. It is the one row where Delete does not ask
+  first, deliberately: the branch owns nothing, the query is still in the Find
+  box, and running the search again rebuilds it.
+- **The three new directories are searchable everywhere, not just browsable.**
+  They are sources in **Find Stations** (each with its own on/off switch, so a
+  source you turn off is never contacted) *and* in the tree's **Search All
+  Sources**, with their own fast route rather than a crawl.
 
 - **Two more ways to re-read the schedule**, because the only one was a button
   eleventh in the tab order, inside a window you had to already be in.

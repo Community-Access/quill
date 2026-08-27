@@ -96,6 +96,18 @@ class RadioHistory:
     #: contacted, so this is a speed/privacy control as well as a tidiness one.
     #: See quill.core.radio.search_sources for the registry.
     search_sources_enabled: tuple[str, ...] = DEFAULT_SEARCH_SOURCES
+    #: Which generation of the search-source list that choice was made against.
+    #: A source added later cannot be named in a list saved earlier, so the
+    #: loader shows the newcomers once and stamps this forward. 0 = a profile
+    #: that predates the stamp entirely. The browse tree's twin of this is
+    #: ``browse_sources_epoch``; the two lists are deliberately separate.
+    search_sources_epoch: int = 0
+    #: Per-source options a listener has set -- the Radio Paradise quality, the
+    #: SHOUTcast filter -- keyed by the option key each source declares. One
+    #: dict rather than a field per option, because the whole point of
+    #: ``quill.core.radio.source_options`` is that adding one is a tuple in a
+    #: source, not a change to this record and its store.
+    source_options: dict[str, str] = field(default_factory=dict)
     #: The last Source-facet choice in Find Stations, re-applied on open -- a
     #: filter you must re-pick every search is not a filter.
     search_source_facet: str = ""

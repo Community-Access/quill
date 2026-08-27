@@ -102,19 +102,19 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         daisy_id, library_id = wx.NewIdRef(), wx.NewIdRef()
         file_menu.Append(open_id, "&Open File...\tCtrl+O")
-        file_menu.Append(folder_id, "Open F&older as Book...")
-        file_menu.Append(daisy_id, "Open &DAISY Book...")
-        file_menu.Append(library_id, "Book &Library...")
+        file_menu.Append(folder_id, "Open F&older as Book...\tCtrl+Shift+O")
+        file_menu.Append(daisy_id, "Open &DAISY Book...\tCtrl+Alt+D")
+        file_menu.Append(library_id, "Book &Library...\tCtrl+L")
         file_menu.Append(goto_id, "&Go to Position...\tCtrl+G")
         bookmarks_menu = wx.Menu()
         export_bm_id, export_sync_id, import_sync_id = (wx.NewIdRef() for _ in range(3))
-        bookmarks_menu.Append(export_bm_id, "Export &Bookmarks...")
-        bookmarks_menu.Append(export_sync_id, "Export &Sync Bundle...")
-        bookmarks_menu.Append(import_sync_id, "&Import Sync Bundle...")
+        bookmarks_menu.Append(export_bm_id, "Export &Bookmarks...\tCtrl+Alt+E")
+        bookmarks_menu.Append(export_sync_id, "Export &Sync Bundle...\tCtrl+Alt+S")
+        bookmarks_menu.Append(import_sync_id, "&Import Sync Bundle...\tCtrl+Alt+I")
         file_menu.AppendSubMenu(bookmarks_menu, "Book&marks && Sync")
         file_menu.AppendSeparator()
         file_menu.Append(tray_id, "Minimize to &Tray\tCtrl+W")
-        file_menu.Append(exit_id, "E&xit")
+        file_menu.Append(exit_id, "E&xit\tCtrl+Q")
         menu_bar.Append(file_menu, "&File")
         self.frame.Bind(wx.EVT_MENU, self._on_open_daisy, id=daisy_id)
         self.frame.Bind(wx.EVT_MENU, self._on_open_library, id=library_id)
@@ -136,10 +136,10 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
         ) = (wx.NewIdRef() for _ in range(8))
         nav_menu.Append(add_bm_id, "Add &Bookmark\tCtrl+B")
         nav_menu.Append(note_bm_id, "Add Bookmark with &Note...\tCtrl+Shift+B")
-        nav_menu.Append(edit_bm_id, "&Edit Bookmark Note...")
+        nav_menu.Append(edit_bm_id, "&Edit Bookmark Note...\tCtrl+Alt+N")
         nav_menu.Append(copy_bm_id, "&Copy Bookmark to Clipboard\tCtrl+Shift+C")
-        nav_menu.Append(focus_bm_id, "Go to Book&marks List")
-        nav_menu.Append(focus_player_id, "Go to &Player Controls")
+        nav_menu.Append(focus_bm_id, "Go to Book&marks List\tCtrl+Alt+M")
+        nav_menu.Append(focus_player_id, "Go to &Player Controls\tCtrl+Alt+P")
         nav_menu.Append(review_field_id, "Review Status &Field\tF6")
         nav_menu.Append(read_status_id, "Read Status &Bar\tShift+F6")
         menu_bar.Append(nav_menu, "&Navigation")
@@ -165,8 +165,8 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
         playback_menu.AppendSubMenu(sleep_menu, "&Sleep Timer")
         self._keep_menu_ids(self._add_note_cue_menu_item(playback_menu, wx))
         summarize_id, recap_id, voice_id, listen_id = (wx.NewIdRef() for _ in range(4))
-        playback_menu.Append(summarize_id, "Summarize This &Chapter (AI)")
-        playback_menu.Append(recap_id, "AI &Recap of Where I Am")
+        playback_menu.Append(summarize_id, "Summarize This &Chapter (AI)\tCtrl+Alt+C")
+        playback_menu.Append(recap_id, "AI &Recap of Where I Am\tCtrl+Alt+R")
         playback_menu.AppendSeparator()
         self._listen_menu_item = playback_menu.AppendCheckItem(
             listen_id, "&Listen for a Command\tCtrl+Shift+L"
@@ -181,10 +181,10 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
 
         view_menu = wx.Menu()
         compact_id, magical_id, ontop_id, mini_id = (wx.NewIdRef() for _ in range(4))
-        view_menu.Append(mini_id, "Mini &Player")
-        view_menu.AppendCheckItem(compact_id, "&Compact Mode")
-        view_menu.AppendCheckItem(magical_id, "&Magical Mode")
-        view_menu.AppendCheckItem(ontop_id, "Always on &Top")
+        view_menu.Append(mini_id, "Mini &Player\tCtrl+Shift+M")
+        view_menu.AppendCheckItem(compact_id, "&Compact Mode\tCtrl+Alt+K")
+        view_menu.AppendCheckItem(magical_id, "&Magical Mode\tCtrl+Shift+G")
+        view_menu.AppendCheckItem(ontop_id, "Always on &Top\tCtrl+Shift+T")
         self.frame.Bind(wx.EVT_MENU, self._on_open_mini_player, id=mini_id)
         self.frame.Bind(wx.EVT_MENU, self._on_toggle_compact, id=compact_id)
         self.frame.Bind(wx.EVT_MENU, self._on_toggle_magical, id=magical_id)
@@ -231,8 +231,8 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
 
         help_menu = wx.Menu()
         updates_id, about_id = wx.NewIdRef(), wx.NewIdRef()
-        help_menu.Append(updates_id, "Check for &Updates...")
-        help_menu.Append(about_id, "&About Quill Media Player")
+        help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
+        help_menu.Append(about_id, "&About Quill Media Player\tCtrl+Alt+A")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
@@ -996,7 +996,7 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
             f"{_TITLE} {_VERSION}\n\n"
             "The accessible QUILL media player: audiobooks and audio with chapter "
             "navigation, resume, bookmarks, and precise Go to Position -- offline, "
-            "keyboard- and screen-reader-first.",
+            "keyboard- and screen-reader-first.\n\nSupport: support@community-access.org",
             f"About {_TITLE}",
         )
 

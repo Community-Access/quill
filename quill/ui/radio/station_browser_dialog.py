@@ -18,16 +18,20 @@ from typing import Any
 
 from quill.core.radio import (
     acb_media,
+    iheart,
+    iptv,
+    live365,
     m3u_catalog,
     radio_browser,
+    radio_paradise,
     search_sources,
+    shoutcast,
     soma_fm,
     station_confidence,
     tunein,
     xiph,
 )
 from quill.core.radio.directory_search import (
-    iheart_search_stations,
     merge_and_rank,
     reading_services_search_stations,
     tunein_search_stations,
@@ -191,6 +195,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         controller: object,
         favorites_store: RadioFavoritesStore,
         task_manager: object,
+        app_host: object | None = None,
         safe_mode: bool,
         announce_cb: Callable[[str], None] | None = None,
         on_favorites_changed: Callable[[], None] | None = None,
@@ -211,6 +216,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         import wx
 
         self._wx = wx
+        self._app_host = app_host
         self._menu_id_refs: list[object] = []
         self._controller = controller
         self._favorites = favorites_store
@@ -304,7 +310,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         # no new Tab stop -- a listener who never wants the history simply types,
         # exactly as before.
         search_grid.Add(
-            wx.StaticText(self._surface, label="Station &name:"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self._surface, label="Station na&me:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._name_ctrl = wx.ComboBox(self._surface, style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER)
         self._name_ctrl.SetName(
@@ -328,7 +334,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         search_grid.Add(self._tag_ctrl, 1, wx.EXPAND)
 
         search_grid.Add(
-            wx.StaticText(self._surface, label="&Country (optional):"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self._surface, label="C&ountry (optional):"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._country_ctrl = wx.Choice(self._surface, choices=[_ANY_COUNTRY])
         self._country_ctrl.SetName(
@@ -338,7 +344,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         search_grid.Add(self._country_ctrl, 1, wx.EXPAND)
         search_box.Add(search_grid, 1, wx.EXPAND | wx.ALL, 6)
         search_col = wx.BoxSizer(wx.VERTICAL)
-        self._search_btn = wx.Button(self._surface, label="&Search")
+        self._search_btn = wx.Button(self._surface, label="&Go")
         self._search_btn.SetName("Search for stations matching these fields")
         # No alignment flag: vertical alignment flags assert-fail inside a
         # vertical sizer (wx 4.2+), which killed the dialog before it opened.
@@ -348,7 +354,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
 
         body = wx.BoxSizer(wx.HORIZONTAL)
         cat_col = wx.BoxSizer(wx.VERTICAL)
-        cat_col.Add(wx.StaticText(self._surface, label="&Category"), 0, wx.BOTTOM, 4)
+        cat_col.Add(wx.StaticText(self._surface, label="Cate&gory"), 0, wx.BOTTOM, 4)
         self._category_list = wx.ListBox(self._surface, choices=list(_CATEGORIES))
         self._category_list.SetName(
             "Station category; Favorites, Popular Stations, ACB Media, SomaFM, "
@@ -360,7 +366,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         body.Add(cat_col, 1, wx.EXPAND | wx.RIGHT, 10)
 
         results_col = wx.BoxSizer(wx.VERTICAL)
-        results_col.Add(wx.StaticText(self._surface, label="&Stations"), 0, wx.BOTTOM, 4)
+        results_col.Add(wx.StaticText(self._surface, label="S&tations"), 0, wx.BOTTOM, 4)
         facet_row = wx.BoxSizer(wx.HORIZONTAL)
         facet_row.Add(
             wx.StaticText(self._surface, label="So&urce:"),
@@ -430,7 +436,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
 
         volume_row = wx.BoxSizer(wx.HORIZONTAL)
         volume_row.Add(
-            wx.StaticText(self._surface, label="Radio &volume:"),
+            wx.StaticText(self._surface, label="Radio vol&ume:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
@@ -446,7 +452,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         root.Add(volume_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._play_btn = wx.Button(self._surface, label="&Play")
+        self._play_btn = wx.Button(self._surface, label="P&lay")
         self._play_btn.SetName("Play the selected station")
         self._play_btn.Enable(False)
         self._favorite_btn = wx.Button(self._surface, label="Add to &Favorites")
@@ -455,11 +461,11 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         self._more_btn = wx.Button(self._surface, label="&More Stations")
         self._more_btn.SetName("Load the next page of search results")
         self._more_btn.Enable(False)
-        add_custom_btn = wx.Button(self._surface, label="Add &Custom Station...")
+        add_custom_btn = wx.Button(self._surface, label="Add Custom Stat&ion...")
         add_custom_btn.SetName("Add a station by typing its own stream link")
-        link_finder_btn = wx.Button(self._surface, label="Find Streams from a &Website...")
+        link_finder_btn = wx.Button(self._surface, label="Find Streams from a Websi&te...")
         link_finder_btn.SetName("Scan a website you type in for stream links")
-        self._refresh_btn = wx.Button(self._surface, label="&Refresh")
+        self._refresh_btn = wx.Button(self._surface, label="Re&fresh")
         self._refresh_btn.SetName(
             "Re-fetch the current source from the internet -- the Music Genres "
             "list/stations, or the iHeart directory used by search"
@@ -593,7 +599,20 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         close_id = wx.NewIdRef()
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
-        menu_bar.Append(surface_menu, "&Search")
+        menu_bar.Append(surface_menu, "&Go")
+        # The app's own Station commands, so Alt+S opens the same menu here it
+        # opens in the main window -- see surface_app_menu for the report.
+        from quill.ui.radio import surface_app_menu
+
+        self._menu_id_refs.extend(
+            surface_app_menu.install(
+                win=self._win,
+                host=surface_app_menu.host_of(self),
+                menu_bar=menu_bar,
+                wx=wx,
+                skip=("open_internet_radio",),
+            )
+        )
         self._windows.install(self._win, menu_bar)
         self._win.SetMenuBar(menu_bar)
         self._menu_id_refs.append(close_id)
@@ -1150,6 +1169,17 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
                         pass
                 if self._source_on("tunein"):
                     extras += tunein_search_stations(query, safe_mode=self._safe_mode)
+                # SHOUTcast, Live365 and Radio Paradise each swallow their own
+                # errors and return [], so they ride along without a try block
+                # -- the same contract tunein_search_stations honours above.
+                if self._source_on("shoutcast"):
+                    extras += shoutcast.search_stations(query, safe_mode=self._safe_mode)
+                if self._source_on("live365"):
+                    extras += live365.search_stations(query, safe_mode=self._safe_mode)
+                if self._source_on("radioparadise"):
+                    extras += radio_paradise.search_stations(query, safe_mode=self._safe_mode)
+                if self._source_on("tv"):
+                    extras += iptv.search_stations(query, safe_mode=self._safe_mode)
                 # NOAA Weather Radio: a SAME code, callsign, or "County, ST"/state
                 # query resolves to authoritative stations; anything else just
                 # comes back empty, so this rides along unconditionally.
@@ -1177,9 +1207,10 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
                 if self._source_on("youtube"):
                     extras += youtube_search_stations(query, safe_mode=self._safe_mode)
             if name and self._source_on("iheart"):
-                extras += iheart_search_stations(
-                    self._iheart_index(), name, safe_mode=self._safe_mode
-                )
+                # iHeart's own relevance search (two GETs, ranked, streams
+                # embedded); the sitemap-index route this replaced is retired
+                # in directory_search's history.
+                extras += iheart.search_stations(name, safe_mode=self._safe_mode)
             return radio, extras
 
         self._task_manager.submit(
@@ -1347,7 +1378,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         playing = self._is_station_playing(station)
         saved = self._favorites.contains(station)
         entries = [
-            ("&Stop" if playing else "&Play", lambda: self._on_play(None)),
+            ("&Stop" if playing else "P&lay", lambda: self._on_play(None)),
             (
                 "Remove from &Favorites" if saved else "Add to &Favorites",
                 lambda: self._on_toggle_favorite(None),
@@ -1388,7 +1419,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
     def _refresh_play_button(self) -> None:
         station = self._selected_station()
         stopping = station is not None and self._is_station_playing(station)
-        self._play_btn.SetLabel("&Stop" if stopping else "&Play")
+        self._play_btn.SetLabel("&Stop" if stopping else "P&lay")
         self._play_btn.SetName("Stop this station" if stopping else "Play the selected station")
 
     def _on_play(self, _event: object) -> None:

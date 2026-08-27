@@ -97,7 +97,7 @@ class DownloadQueueDialog:
         self._heading = wx.StaticText(self._surface, label="")
         root.Add(self._heading, 0, wx.ALL, 10)
 
-        root.Add(wx.StaticText(self._surface, label="&Downloads:"), 0, wx.LEFT | wx.RIGHT, 10)
+        root.Add(wx.StaticText(self._surface, label="Downl&oads:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._list = wx.ListBox(self._surface, style=wx.LB_SINGLE)
         self._list.SetName("Everything queued for download, and where each one has got to")
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 10)
@@ -203,6 +203,19 @@ class DownloadQueueDialog:
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._dialog.Bind(wx.EVT_MENU, lambda _e: self._dialog.Close(), id=close_id)
         menu_bar.Append(surface_menu, "&Downloads")
+        # The app's own Station commands, so Alt+S opens the same menu here it
+        # opens in the main window -- see surface_app_menu for the report.
+        from quill.ui.radio import surface_app_menu
+
+        self._menu_id_refs.extend(
+            surface_app_menu.install(
+                win=self._dialog,
+                host=surface_app_menu.host_of(self),
+                menu_bar=menu_bar,
+                wx=wx,
+                skip=(),
+            )
+        )
         self._windows.install(self._dialog, menu_bar)
         self._dialog.SetMenuBar(menu_bar)
         self._menu_id_refs.append(close_id)

@@ -922,17 +922,21 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         narrate_translated_id = wx.NewIdRef()
         studio.Append(open_id, "&Open Audio Studio...\tCtrl+N", "Open the Studio wizard")
         studio.AppendSeparator()
-        studio.Append(narrate_id, "Narrate &Documents...", "Documents to speech audio or a book")
+        studio.Append(
+            narrate_id, "Narrate &Documents...\tCtrl+Shift+N", "Documents to speech audio or a book"
+        )
         studio.Append(
             narrate_translated_id,
-            "Narrate a Document in Another &Language...",
+            "Narrate a Document in Another &Language...\tCtrl+Alt+Shift+L",
             "Translate one document and speak it in the languages you choose",
         )
-        studio.Append(build_id, "&Build From Recordings...", "Recordings to a chaptered book")
-        studio.Append(edit_id, "&Edit a Book...", "Open a book in the Chapter Workbench")
+        studio.Append(
+            build_id, "&Build From Recordings...\tCtrl+Shift+B", "Recordings to a chaptered book"
+        )
+        studio.Append(edit_id, "&Edit a Book...\tCtrl+E", "Open a book in the Chapter Workbench")
         studio.AppendSeparator()
         studio.Append(open_book_id, "Open Boo&k File...\tCtrl+O")
-        studio.Append(job_id, "Open &Job File...", "Re-run a saved .quilljob")
+        studio.Append(job_id, "Open &Job File...\tCtrl+J", "Re-run a saved .quilljob")
         studio.AppendSeparator()
         self._recent_submenu = wx.Menu()
         self._rebuild_recent_submenu(self._recent_submenu)
@@ -940,14 +944,14 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         self._resume_menu_item_id = wx.NewIdRef()
         studio.AppendCheckItem(
             self._resume_menu_item_id,
-            "Resume Last Book on La&unch",
+            "Resume Last Book on La&unch\tCtrl+Alt+Shift+R",
             "Reopen the most recently played book when the Studio starts",
         )
         studio.Check(self._resume_menu_item_id, self._history.resume_on_launch)
         studio.AppendSeparator()
         studio.Append(prefs_id, "&Preferences...\tCtrl+,")
         studio.AppendSeparator()
-        studio.Append(exit_id, "E&xit")
+        studio.Append(exit_id, "E&xit\tCtrl+Q")
         menu_bar.Append(studio, "&Studio")
         # Rebuild the Recently Played list each time the Studio menu opens so
         # it reflects books opened this session, not just at launch.
@@ -956,14 +960,18 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         book = wx.Menu()
         publish_id, feed_id, acx_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
         sleep_id, mute_id, queue_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        book.Append(publish_id, "&Publish a Finished Book...", "Local feed, SFTP, or Auphonic")
-        book.Append(feed_id, "&Make a Podcast Feed From a Folder...")
+        book.Append(
+            publish_id, "&Publish a Finished Book...\tCtrl+Shift+U", "Local feed, SFTP, or Auphonic"
+        )
+        book.Append(feed_id, "&Make a Podcast Feed From a Folder...\tCtrl+Shift+F")
         book.AppendSeparator()
-        book.Append(acx_id, "&ACX Compliance Check...", "Measure a file against ACX limits")
+        book.Append(
+            acx_id, "&ACX Compliance Check...\tCtrl+Shift+A", "Measure a file against ACX limits"
+        )
         book.AppendSeparator()
-        book.Append(sleep_id, "Sleep &Timer...", "Stop playback after a delay")
+        book.Append(sleep_id, "Sleep &Timer...\tCtrl+Shift+T", "Stop playback after a delay")
         book.Append(mute_id, "M&ute Playback\tCtrl+M", "Mute or unmute the active book")
-        book.Append(queue_id, "Play &Queue...", "Queue books to play in order")
+        book.Append(queue_id, "Play &Queue...\tCtrl+Shift+Q", "Queue books to play in order")
         menu_bar.Append(book, "&Book Tools")
 
         voices = wx.Menu()
@@ -972,44 +980,47 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             wx.NewIdRef() for _ in range(4)
         )
         sections_id = wx.NewIdRef()
-        voices.Append(hub_id, "Speech &Hub (Voices and Engines)...")
-        voices.Append(models_id, "&Manage Speech Models...")
+        voices.Append(hub_id, "Speech &Hub (Voices and Engines)...\tCtrl+Shift+H")
+        voices.Append(models_id, "&Manage Speech Models...\tCtrl+Shift+M")
         voices.Append(
             pronunciation_id,
-            "&Pronunciation Dictionaries...",
+            "&Pronunciation Dictionaries...\tCtrl+Shift+D",
             "Teach the voices names and jargon; applied to every narration run",
         )
         voices.Append(
             captions_id,
-            "Generate &Captions (Offline)...",
+            "Generate &Captions (Offline)...\tCtrl+Shift+C",
             "Transcribe an audio or video file to .srt or .vtt captions on this machine",
         )
         voices.Append(
             convert_id,
-            "Con&vert Audio...",
+            "Con&vert Audio...\tCtrl+Shift+V",
             "Convert audio files between formats — offline, on this machine",
         )
         voices.Append(
             convert_url_id,
-            "Convert from &URL...",
+            "Convert from &URL...\tCtrl+Shift+L",
             "Download the audio from a link (YouTube and more) and convert it",
         )
         voices.Append(
             sections_id,
-            "Copy &Sections...",
+            "Copy &Sections...\tCtrl+Shift+S",
             "Mark pieces of the file you are listening to and collect them into one new "
             "file; the original is never changed",
         )
         voices.AppendSeparator()
-        voices.Append(components_id, "&Download Optional Components...")
-        voices.Append(ffmpeg_id, "&Get FFmpeg...")
-        menu_bar.Append(voices, "&Voices")
+        voices.Append(components_id, "&Download Optional Components...\tCtrl+Alt+Shift+D")
+        voices.Append(ffmpeg_id, "&Get FFmpeg...\tCtrl+Alt+Shift+F")
+        # "Vo&ices", not "&Voices": View is on the same bar and owns Alt+V,
+        # so one of the two never opened. Alt+I is free here (found
+        # 2026-08-26 by tests/unit/ui/test_menu_bar_access_keys.py).
+        menu_bar.Append(voices, "Vo&ices")
 
         ai = wx.Menu()
         ai_setup_id = wx.NewIdRef()
         ai.Append(
             ai_setup_id,
-            "Set &Up AI...",
+            "Set &Up AI...\tCtrl+Alt+Shift+A",
             "Connect an AI provider for cloud voices, chapter titles, and translation",
         )
         menu_bar.Append(ai, "&AI")
@@ -1026,7 +1037,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         self._status_bar_item_id = wx.NewIdRef()
         view_menu.AppendCheckItem(
             self._status_bar_item_id,
-            "Show Status &Bar",
+            "Show Status &Bar\tCtrl+Alt+B",
             "Show or hide the arrow-navigable status bar; press F6 to move focus to it",
         )
         view_menu.Check(
@@ -1042,16 +1053,16 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         guide_id, prd_id, notes_id, palette_id = (wx.NewIdRef() for _ in range(4))
         updates_id, bug_id, about_id = (wx.NewIdRef() for _ in range(3))
         log_id, diag_id = (wx.NewIdRef() for _ in range(2))
-        help_menu.Append(guide_id, "User &Guide")
-        help_menu.Append(prd_id, "&Product Requirements (PRD)")
-        help_menu.Append(notes_id, "&Release Notes")
+        help_menu.Append(guide_id, "User &Guide\tCtrl+Alt+G")
+        help_menu.Append(prd_id, "&Product Requirements (PRD)\tCtrl+Alt+P")
+        help_menu.Append(notes_id, "&Release Notes\tCtrl+Alt+R")
         help_menu.AppendSeparator()
         help_menu.Append(palette_id, "&Command Palette...\tCtrl+Shift+P")
         help_menu.AppendSeparator()
-        help_menu.Append(updates_id, "Check for &Updates...")
-        help_menu.Append(bug_id, "Report a &Bug...")
-        help_menu.Append(log_id, "View &Log...")
-        help_menu.Append(diag_id, "Save &Diagnostics...")
+        help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
+        help_menu.Append(bug_id, "Report a &Bug...\tCtrl+Alt+Shift+B")
+        help_menu.Append(log_id, "View &Log...\tCtrl+Alt+L")
+        help_menu.Append(diag_id, "Save &Diagnostics...\tCtrl+Alt+D")
         help_menu.AppendSeparator()
         help_menu.Append(about_id, f"&About {_TITLE}")
         menu_bar.Append(help_menu, "&Help")
@@ -2600,7 +2611,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             "Audiobook and audio production from QUILL, as a standalone app.\n\n"
             "Runs the same Audio Studio code as QUILL itself and shares its "
             "settings, voices, and downloaded speech engines.\n"
-            f"https://github.com/{_REPO}",
+            f"https://github.com/{_REPO}\n\nSupport: support@community-access.org",
             f"About {_TITLE}",
             wx.ICON_INFORMATION | wx.OK,
         )

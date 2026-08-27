@@ -85,12 +85,12 @@ class QuillConverterFrame(AppShellFrame):
         add_files_id, add_folder_id, url_id, advanced_id = (wx.NewIdRef() for _ in range(4))
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         file_menu.Append(add_files_id, "&Add Files...\tCtrl+O")
-        file_menu.Append(add_folder_id, "Add F&older...")
-        file_menu.Append(url_id, "Convert from &URL...")
-        file_menu.Append(advanced_id, "Ad&vanced Options...")
+        file_menu.Append(add_folder_id, "Add F&older...\tCtrl+Shift+O")
+        file_menu.Append(url_id, "Convert from &URL...\tCtrl+U")
+        file_menu.Append(advanced_id, "Ad&vanced Options...\tCtrl+Alt+V")
         file_menu.AppendSeparator()
         file_menu.Append(tray_id, "Minimize to &Tray\tCtrl+W")
-        file_menu.Append(exit_id, "E&xit")
+        file_menu.Append(exit_id, "E&xit\tCtrl+Q")
         menu_bar.Append(file_menu, "&File")
         for item_id, handler in (
             (add_files_id, self._on_add_files),
@@ -117,8 +117,8 @@ class QuillConverterFrame(AppShellFrame):
 
         help_menu = wx.Menu()
         updates_id, about_id = wx.NewIdRef(), wx.NewIdRef()
-        help_menu.Append(updates_id, "Check for &Updates...")
-        help_menu.Append(about_id, "&About Quill Converter")
+        help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
+        help_menu.Append(about_id, "&About Quill Converter\tCtrl+Alt+A")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
@@ -292,7 +292,7 @@ class QuillConverterFrame(AppShellFrame):
             f"{_TITLE} {_VERSION}\n\n"
             "The Universal Audio Converter: convert audio and video-audio between "
             "formats, with presets, an Advanced DSP catalog, and URL import -- "
-            "offline, on your machine.",
+            "offline, on your machine.\n\nSupport: support@community-access.org",
             f"About {_TITLE}",
         )
 

@@ -391,6 +391,7 @@ Each window opens only when you ask for it, and closing a window puts focus back
 ### Station (Alt+S)
 
 - **Browse Stations...** -- a search-free window for wandering: one tree whose top-level branches are the sources. **Favorites** sits first (your own folders and streams), then **Popular Stations**, **Radio Browser (by Genre)** (walk the Radio Browser directory by genre, not only search it), **Weather / NOAA**, **ACB Media**, **NFB Radio**, **Radio Reading Services**, **SomaFM**, **TuneIn** (its real folder tree, which drills from continent down to city), **Networks** (well-known broadcasters -- the BBC, NPR, CBC, ABC Australia, Radio France, Deutschlandfunk, public radio worldwide, plus national news and sports -- grouped by type, each a one-click list drawn from the Radio Browser directory; a few, like Westwood One, are syndication services with no single stream, so those open a search across their local affiliate stations, and the label says so), **Community M3U (Music Genres)**, and the **Xiph / Icecast Directory**. Version 3.0 added nine more: four new axes over the station directory Quill Radio was already downloading -- **By Country** (then by state or region), **By Language**, **Trending Now**, and **Recently Added or Changed** -- and five whole libraries: **Podcasts (Apple)**, **Internet Archive**, **LibriVox Audiobooks**, **Project Gutenberg Audiobooks**, and free music from **Audius**, **Mixcloud** and **ccMixter**. None of them needs a key, an account, or a registration of any kind. Expand a branch and its stations load on the spot; **Enter** plays the highlighted station, and **Shift+F10** (or right-click) opens Play/Stop, Add/Remove Favorite, Copy stream link, Open website, **Report Bad Station...**, and Refresh. (TuneIn stations work out their stream only when played, so **Add to Favorites** on a TuneIn station resolves it on demand before saving -- it works there now just like every other source.) Browse Stations also **remembers the source you were last in**, so playing a station and reopening the tree puts you back on that branch instead of collapsed at the top with everything closed. Two branches deserve their own words:
+
   - **Weather / NOAA** is the real NOAA Weather Radio directory, state by state. Open the branch and you get the states (each with its transmitter count); open a state and you get its actual transmitters, named with call sign, frequency, and place -- "KHB36 162.550 MHz Manassas" -- and Enter plays the best available internet re-stream. The complete directory (1,035 transmitters) is bundled inside the app, so this branch works even offline. See "Your local NOAA Weather Radio" in the Weather chapter for the one-keypress local version.
   - **Radio Reading Services** lists the audio information services that read newspapers, magazines, and local print aloud for people who are blind or print-disabled -- WRBH 88.3 Reading Radio, Sun Sounds of Arizona, CRIS Radio, the Connecticut Radio Information System, the KPBS and WKAR reading services, ACB Media 1-5, the NFB Radio Network, Voice Corps, and more. Twenty vetted services are bundled, so the branch is never empty; play, favorite, record, and schedule them like any other station.
   - **iHeart** opens into **genres** (Country, Pop, News/Talk, Sports, and the rest), and each genre into an **A-Z** sub-directory of its stations -- so you expand a genre, expand a letter, and press Enter to play. Each level loads only when you open it. (Browsing uses iHeart's own genre directory; a station's stream is ready to play with no extra step.)
@@ -423,6 +424,126 @@ Each window opens only when you ask for it, and closing a window puts focus back
     **Delete** removes the row you are on -- a saved video or playlist, a followed channel, a server you added, a favorite -- after asking a question that names it. The question has a **Don't ask me again** box (unticked, and No is the default button), and the branch reloads so the row is really gone. Delete on one of Quill Radio's own branches explains that there is nothing there to delete and points you at Hide This Source; that explanation has a **Don't show this again** box too.
 
     The first time anything YouTube is added or played, Quill Radio asks once whether it may contact YouTube at all, and remembers the answer. If a video refuses to play, Quill Radio offers to fetch the current YouTube helper for you -- say yes and it installs it, tells you the version, and plays the video you were trying to play. **Station > Update YouTube Support...** does the same thing at any time: YouTube changes how it serves audio far more often than Quill Radio ships releases, and that item fetches the current helper.
+
+**Added on 2026-08-26, and worth knowing about individually.** Four more
+branches, none of which needs a key, an account, or a registration:
+
+- **SHOUTcast Top 500 (live)** -- the 500 stations with the most listeners on
+  SHOUTcast *at this moment*, most-listened first. This is the closest thing
+  Quill Radio has to "what is the internet actually listening to right now",
+  and it is a good place to start if you do not know what you are looking for.
+- **SHOUTcast Directory** -- the same directory by genre, 313 of them, from
+  Adult Contemporary to Zouk. Two things to know. Each genre arrives sorted by
+  live listeners, most first, because a SHOUTcast genre page is mostly stations
+  nobody is listening to and putting them first would waste your time. And
+  SHOUTcast itself only ever returns 500 stations for a genre, however many it
+  holds -- so a big genre is a good sample, not the whole thing. Each station
+  also carries what it was playing when the list was fetched, which is often the
+  quickest way to tell two similarly-named stations apart.
+- **Live365** -- about 5,500 independent stations, arranged A to Z (names that
+  start with a number or a symbol are under **#**). Opening a letter costs no
+  waiting at all: the whole list is fetched once a day and every letter is read
+  from that.
+- **Radio Paradise** -- the hand-curated, listener-supported station, and the
+  only branch in the tree that offers **lossless audio**. Each of its channels
+  appears once per quality: **320k AAC** first (the right choice on an ordinary
+  connection, and what Enter lands on), then 192k MP3, 128k AAC, 64k and 32k
+  AAC+ for a slow or metered connection, and **FLAC** last because it is
+  lossless and by far the heaviest. Serenity offers only two of those, so only
+  two are shown -- a row that would not play is worse than a row that is not
+  there.
+
+**Some sources have options of their own.** Shift+F10 on a source's row and
+choose **Source Options...** where it appears. Radio Paradise asks which
+quality should be first for each channel -- the row Enter lands on -- from 32
+kbps for a slow connection up to lossless FLAC; every other quality is still
+listed. SHOUTcast asks whether to show everything the directory lists (the
+default) or only stations somebody is listening to right now, which typically
+turns a 500-row genre into the forty that are actually on the air. Your answer
+is remembered, spoken back, and the branch reloads immediately to match.
+
+**If a branch keeps failing, it will now say so.** A source that could not be
+reached says the same thing it always did the first time. From the second
+failure in a row it adds a count -- "It has failed 3 times in a row -- the
+directory itself may be down. You can hide it in Browse Sources." -- so you can
+tell a passing hiccup from a directory that is having a bad day. Quill Radio
+will not switch a source off for you: a branch that quietly disappeared would be
+worse than the problem, and directories come back. The tally is forgotten when
+you close the app.
+
+**A SHOUTcast station takes a moment to start, on purpose.** What that
+directory publishes is a playlist holding the real address, so Quill Radio
+fetches the address when you press Enter rather than fetching five hundred of
+them to show you a list. If a station cannot be resolved it says so instead of
+sitting there silent -- SHOUTcast lists a great many stations that are not
+currently on the air, which is also why every list from it is sorted with the
+ones people are actually listening to at the top.
+
+**Two SHOUTcast branches became one.** The live Top 500 is a folder *inside*
+SHOUTcast Directory, pinned above the genres, so there is one SHOUTcast entry in
+the tree and the leaderboard is one Enter away from it.
+
+**Turning a source on or off takes effect straight away.** Choose Browse
+Sources and the tree rebuilds as the dialog closes -- you will hear "Browse
+Stations has been updated". No restart, and no wondering whether it took.
+
+**Alt+S works now, and the reason it did not is worth one paragraph.** The
+Station menu was never broken -- a *label* was. The browse tree's caption
+("&Stations ...") claimed the same letter, and on Windows a control label's
+Alt+letter silently outranks the menu bar's, so Alt+S moved focus to the tree.
+Seventeen labels across seven windows were doing this to the very menus their
+windows carry. All have moved to free letters -- the browse tree itself is now
+**Alt+T**, which is a fair trade: Alt+T jumps to the tree, Alt+S opens
+Station -- and a test now forbids any label from taking a letter its window's
+menus own.
+
+**Numbers in names now sort like numbers.** A folder that used to read "ACB
+Media 1, ACB Media 10, ACB Media 2" reads 1, 2, 3 ... 9, 10. Nothing was
+renamed to achieve it -- the stations are still called what their broadcasters
+call them.
+
+### Search All Sources, and the Search Results branch
+
+The **Search All Sources...** row at the top of the tree asks every directory at
+once and leaves the answer as a **Search Results** branch at the top of the same
+tree. Three things worth knowing:
+
+- **It tells you it is still going.** A cross-source search is as slow as the
+  slowest service in it, and nothing on screen changes while it runs, so after
+  about four seconds it says so and keeps saying so until the answer arrives.
+- **Searching the same thing twice is instant.** This session's finished
+  answers are remembered for ten minutes, so repeating a query -- checking
+  whether a station came back up, re-finding the row you closed -- shows the
+  full answer immediately while a fresh search runs behind it and replaces it.
+- **The first search starts warm.** Opening Browse Stations quietly pre-fetches
+  the three directories whose whole catalog lives in a local cache (Live365,
+  Radio Paradise, SHOUTcast's genre list), once per run, in the background --
+  so by the time you type a query, the fast half of the answer is already on
+  this machine. A source you have switched off is never contacted, and Safe
+  Mode skips the warm-up entirely.
+- **It is much faster than it was.** Two directories -- TuneIn and iHeart --
+  need a separate request for every result they find, to turn a listing into an
+  address you can actually play, and they used to make those requests one after
+  another. They now make them all at once, which is the difference between a
+  search that takes ten seconds and one that takes one. Searching SHOUTcast from
+  the tree costs a single request, because its rows work out their address when
+  you press Enter on one.
+- **It no longer waits forever.** Every source is asked at the same moment and
+  the whole search is capped at eight seconds. Anything that did not answer in
+  time is *named* in the results -- "Internet Archive did not answer within 8
+  seconds" -- so a short list never pretends to be a complete one. Search again
+  and it is usually there.
+- **You can start one from the Find box.** If you are standing on **Search All
+  Sources...**, or anywhere inside the results it left, then **Ctrl+F** (or one
+  Shift+Tab) into the Find box, type, and press Enter -- that runs the
+  cross-source search for what you typed. There is no second prompt to answer.
+  Anywhere else in the tree the Find box does what it always did: it filters the
+  branch you are standing in.
+- **You can close the results.** Press **Delete** on the Search Results branch,
+  or use **Close Search Results** on its context menu. It asks nothing, because
+  nothing is lost: your query is still in the Find box.
+
+
 - **Find in this folder** -- above the tree (one Shift+Tab away from the stations) is a search box that searches **from the folder you are highlighted on, downward** -- one iHeart genre, one state, one source -- so you get a short, relevant list instead of searching every directory at once. Highlight the folder, type, press **Enter** (or the **Find** button); matches appear under that folder, and **Clear** puts you back where you searched from. **Ctrl+F** jumps to the box from anywhere in the window. Find takes the fastest route for where you are standing, and says which it took: on the **Podcasts** branch it asks the real podcast search engine, and shows come back as folders you expand straight into episodes -- type "double tap", press Enter, expand, play. On a catalog-served branch (**By Country**, **By Language**, **By Genre**, **By Quality**) it answers instantly from the catalog on this computer, scoped to where you are -- Find "jazz" while on France and you get France's jazz stations, online or off, announced as "From your catalog." On **LibriVox** it searches the whole book catalog (books arrive as folders of chapters); the **Internet Archive** answers with items you can drill into; **TuneIn** with stations already resolved; **iHeart** from its full station index; **NOAA** by call sign, SAME code, or "County, ST"; **Project Gutenberg**, **SomaFM**, **Audius**, **Mixcloud** and **ccMixter** through their own catalogs. Only a branch with no search engine of its own walks the subtree, bounded, and tells you if it showed only the first results -- and a directory that cannot be reached says so instead of posing as "no matches." For a search across *every* directory at once, use **Search Stations...** instead.
 - **A branch that is slow says so, and a branch that is broken says *that*.** Opening a source names what it is loading ("Loading Old Time Radio..."), and if it takes more than three seconds it tells you it is still working -- silence and a hang feel identical otherwise. And an empty branch distinguishes the two kinds of empty: "there are no stations in this genre" is an answer, while "that directory could not be reached" means try again later. If a directory is having a bad day (it happens -- LibriVox and the Internet Archive both were on 16 August), Quill Radio says so plainly rather than quietly showing you nothing.
 - **The tree reads ahead.** Land on a closed folder and Quill Radio quietly starts fetching what is inside it; open a folder and the first few folders inside it fetch behind you. The expand you were about to make opens instantly. This follows your cursor only -- a source you hid in Choose Browse Sources is still never contacted, and Safe Mode still fetches nothing.
@@ -1484,6 +1605,65 @@ Weather is its own app -- **Quill Weather** -- and this Weather section lives in
 
 Quill Radio no longer has a Weather menu at all: forecasts, alerts, and background alert monitoring belong to Quill Weather, which you can open from the **QuillVille** menu. What stays in Quill Radio is the radio part of weather -- the **Weather / NOAA** branch of Browse Stations, with every NOAA Weather Radio transmitter that has an internet feed, still searchable by call sign, SAME code, or "County, ST".
 
+## Television
+
+Quill Radio plays television the way it plays everything else: pick a channel,
+press Enter, and the video opens with the same captions, audio-track selection
+and transport every stream gets. Finding a channel is the new part.
+
+**Television (iptv.org)** sits in Browse Stations just above YouTube. It is
+built on the iptv.org community catalog -- the open, keyless index of publicly
+available TV streams, roughly 9,300 playable channels after Quill Radio's own
+filtering. What is filtered out, so you know what you are not seeing: channels
+flagged adult, channels that have closed, channels with no stream, and streams
+that only answer a disguised browser identity and would therefore fail the
+moment you pressed Enter.
+
+- **By Country** lists every country with channels. A country whose feeds
+  declare local coverage -- the United States, with about 1,700 -- opens into
+  **Nationwide** plus its **states**; a state's list carries the state's own
+  channels and its cities', each city named right on the row. A country
+  without local data stays a single list rather than making you open folders
+  with nothing to organise.
+- **By Category** is the catalog's own taxonomy: news, kids, sports, music,
+  movies, and two dozen more.
+- **Search understands places.** Anywhere you can search -- Find Stations, the
+  tree's Search All Sources, the Find box -- TV answers by channel name,
+  network, country, **city**, **state**, or a **five-digit ZIP code**: typing
+  66044 answers with Kansas television, because a ZIP is a place, not a name.
+  (The ZIP mapping is by postal prefix -- exact enough to narrow a list, and
+  it claims nothing about what your antenna can pull in.)
+- **"Which channels can my antenna receive?"** opens antennaweb.org in your
+  browser with the question it exists to answer. That site has no public
+  interface for apps, and Quill Radio does not scrape web pages -- so this is
+  a door, honestly labelled, rather than a fake integration.
+- **The channel list updates itself weekly** -- it is the largest catalog in
+  the app, about 28 MB -- and **"Update the channel list now"** at the top of
+  the branch fetches today's copy on demand, saying what it is doing while it
+  works.
+
+### Your own TV guide
+
+Drop an XMLTV programme guide named **`tv_guide.xml`** into your Quill Radio
+data folder and every channel the guide covers gains a line in its details:
+*"Now: ... Next: ..."*. There is no one TV-guide feed for the world -- guides
+are published per country, per provider, and by projects like `iptv-org/epg`
+that can generate one for the channels you care about -- so the file is yours
+to choose. It is read locally, works offline, is re-read automatically when
+you replace it, and is never fetched from anywhere. Delete the file and the
+guide lines simply disappear.
+
+## Quillin station sources
+
+A Quillin (extension) can now contribute a whole station source, not only
+search results. When one is installed and enabled, a **Quillin Sources**
+branch appears in Browse Stations -- it is simply absent otherwise -- with one
+folder per contributed source: its categories, its stations, playable and
+favouritable like anything else, and searched by Search All Sources with
+everything else. The bundled *Radio Community Directory* sample shows Quillin
+authors the whole shape, including a station whose address is only worked out
+at the moment you play it.
+
 ## Keyboard reference
 
 **Every menu item shows its own shortcut.** You never have to walk a menu to
@@ -1497,6 +1677,51 @@ For the whole list at once, without opening six menus: **Help > Keyboard
 Shortcuts Sheet... (Ctrl+Alt+Shift+K)**. It is built from the menu bar in front
 of you, so it always shows the keys *you* have -- including anything you
 rebound, which is more than this table can promise.
+
+### The Station menu travels with you
+
+Since 2026-08-26 every radio window also carries a **&Station** menu -- so
+**Alt+S** opens the same commands in Browse Stations, Find Stations, the
+Player, Favorites Manager, Recordings, Downloads, Schedule, Song History and
+Now Playing that it opens in the main window: Browse Stations, Search
+Stations, Manage Favorites, Recordings, and Preferences, each showing the key
+you actually have bound. Two small courtesies: a window never lists itself
+(Browse Stations does not offer to open Browse Stations), and a window never
+steals its own keys (inside Browse Stations, Ctrl+F still goes to the Find
+box, so Search Stations rides on the menu without a conflicting shortcut).
+
+### Which Alt key opens the menu in this window
+
+Quill Radio's windows are peers, not dialogs, and **each one carries its own
+single menu** -- so the letter that opens a menu depends on where you are
+standing. `Alt+S` is the **Station** menu in the main window, the **Search**
+menu in Find Stations, and nothing at all in Browse Stations, which is the one
+thing about a window nobody can discover by looking.
+
+| Window | Menu key | The menu |
+| --- | --- | --- |
+| Main window | Alt+S | Station (and Alt+P Playback, Alt+A Audio, Alt+D Video, Alt+R Record, Alt+C Community, Alt+V View, Alt+H Help) |
+| Browse Stations | Alt+B, Alt+S | Browse; Station |
+| Find Stations | Alt+S | Search |
+| Player | Alt+P | Player |
+| Favorites Manager | Alt+F | Favorites |
+| Recordings | Alt+R | Recordings |
+| Downloads | Alt+D | Downloads |
+| Schedule Recording | Alt+S | Schedule |
+| Song History | Alt+S | Songs |
+| Now Playing | Alt+V | View |
+
+Two of these were wrong until 2026-08-26 and are worth knowing about if you
+ever tried them: **Quillins** asked for Alt+Q, which QuillVille already had, so
+it never opened -- it is **Alt+N** now. (In QUILL Audio Studio, Voices and View
+were the same story; Voices is now Alt+I.) There is now a check that stops any
+menu in the family shipping without an Alt key, or sharing one with its
+neighbour.
+
+Every one of these is also in the **Keyboard Shortcuts Sheet**
+(**Ctrl+Alt+Shift+K**), listed under the window it works in, so the answer is
+one keystroke away from wherever you are.
+
 
 | Action | Key |
 | --- | --- |
@@ -1572,6 +1797,14 @@ now fails if anything lands back on that block. If you have notes from an
 earlier version, those four keys are the ones that changed.
 
 These keys belong to Quill Radio's own menus and are kept separate from QUILL's keymap, so nothing here collides with editor shortcuts.
+
+## Getting help
+
+Support is run by **Community Access**. Write to
+**support@community-access.org** with questions, problems, or ideas -- a
+person reads it, and replies come back by email. Report a Bug (on the Help
+menu) still files directly from the app; the address is for everything that
+is not a bug report, and for anyone who simply prefers email.
 
 ## Troubleshooting
 

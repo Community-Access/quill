@@ -31,6 +31,17 @@ Node id grammar, all opaque to the caller (see :mod:`browse_nodes`)::
     networks | networkgroup:<group> | network:<network-id>
     m3u | m3u:<slug>                Community M3U catalog
     xiph | xiph:<genre>             Xiph / Icecast directory
+    shoutcast | shoutcast:<genre>   SHOUTcast directory (500 per genre, its cap)
+    shoutcasttop                    ...its live Top 500, pinned first inside it
+    shoutcaststation:<id>           (leaf, resolved on activation)
+    live365 | live365:<letter>      Live365, by first letter ("#" for the rest)
+    quillins | extdir:<provider>[	<category>]
+    extdirstation:<provider>	<key>  (leaf, resolved on activation)
+    tv | tvcountry[:<code>] | tvcategory[:<id>]
+    tvarea:<code>\t<national|subdivision>  Nationwide / one state's channels
+                                    Television (iptv.org); "antennaweb" is a
+                                    browser link-out for over-the-air coverage
+    radioparadise                   Radio Paradise, every channel at every quality
     apple | apple:<storefront>      Apple Podcasts, keyless
     podcastindex | pitrending | pitrending:<category> | picategories
     pishow:<feed-url>               a Podcast Index show's episodes, unsubscribed
@@ -64,10 +75,44 @@ from quill.core.radio import (
     networks,
     nfb_media,
     radio_browser,
+    radio_paradise,
     reading_services,
+    shoutcast,
     soma_fm,
+    source_health,
     tunein,
     xiph,
+)
+from quill.core.radio.browse_directories import (
+    browse_extdir as _browse_extdir,
+)
+
+# The three directories of 2026-08-26 -- SHOUTcast (with its live Top 500) and
+# Live365 -- live in their own module (GATE-11 extraction), registered in
+# _HANDLERS like every other source.
+from quill.core.radio.browse_directories import (
+    browse_live365 as _browse_live365,
+)
+from quill.core.radio.browse_directories import (
+    browse_quillins as _browse_quillins,
+)
+from quill.core.radio.browse_directories import (
+    browse_shoutcast as _browse_shoutcast,
+)
+from quill.core.radio.browse_directories import (
+    browse_shoutcast_top as _browse_shoutcast_top,
+)
+from quill.core.radio.browse_directories import (
+    browse_tv as _browse_tv,
+)
+from quill.core.radio.browse_directories import (
+    browse_tv_area as _browse_tv_area,
+)
+from quill.core.radio.browse_directories import (
+    browse_tv_categories as _browse_tv_categories,
+)
+from quill.core.radio.browse_directories import (
+    browse_tv_countries as _browse_tv_countries,
 )
 from quill.core.radio.browse_failure import (
     LAST_FAILURE,
@@ -152,6 +197,28 @@ from quill.core.radio.browse_podcast_index import (
     browse_show,
     browse_trending,
 )
+
+# The listener's own additions (My Servers, YouTube) and the Wikidata explorer
+# live in browse_yours (GATE-11 extraction, 2026-08-27), registered in
+# _HANDLERS like every other source.
+from quill.core.radio.browse_yours import (
+    browse_my_servers as _browse_my_servers,
+)
+from quill.core.radio.browse_yours import (
+    browse_wikidata as _browse_wikidata,
+)
+from quill.core.radio.browse_yours import (
+    browse_wikidata_dial as _browse_wikidata_dial,
+)
+from quill.core.radio.browse_yours import (
+    browse_youtube as _browse_youtube,
+)
+from quill.core.radio.browse_yours import (
+    browse_youtube_channel as _browse_youtube_channel,
+)
+from quill.core.radio.browse_yours import (
+    browse_youtube_videos as _browse_youtube_videos,
+)
 from quill.core.radio.models import RadioStation
 
 #: The top-level branches, in tree order.
@@ -174,6 +241,10 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("networks", "Networks"),
     ("m3u", "Community M3U (Music Genres)"),
     ("xiph", "Xiph / Icecast Directory"),
+    ("shoutcast", "SHOUTcast Directory"),
+    ("live365", "Live365"),
+    ("quillins", "Quillin Sources"),
+    ("radioparadise", "Radio Paradise"),
     ("apple", "Podcasts (Apple)"),
     ("podcastindex", "Podcast Index"),
     ("archive", "Internet Archive"),
@@ -184,6 +255,7 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("mixcloud", "Mixcloud (Shows & DJ Sets)"),
     ("ccmixter", "ccMixter (Creative Commons)"),
     ("myservers", "My Servers"),
+    ("tv", "Television (iptv.org)"),
     ("youtube", "YouTube"),
     ("wikidata", "Explore (Wikidata)"),
 )
@@ -211,11 +283,16 @@ _FLAT: dict[str, Callable[[bool], list[RadioStation]]] = {
     "nfb": lambda _safe: nfb_media.nfb_media_stations(),
     "reading": lambda safe: reading_services.list_reading_services(safe_mode=safe),
     "soma": lambda safe: soma_fm.search_stations("", safe_mode=safe),
+    "radioparadise": lambda safe: radio_paradise.fetch_stations(safe_mode=safe),
 }
 
 #: Sources that expose the shared genre protocol (fetch_genres / genre_display /
 #: fetch_genre_stations). One code path for three catalogs.
-_GENRE_MODULES = {"rbgenre": radio_browser, "m3u": m3u_catalog, "xiph": xiph}
+_GENRE_MODULES = {
+    "rbgenre": radio_browser,
+    "m3u": m3u_catalog,
+    "xiph": xiph,
+}
 
 
 def _stations(rows: Sequence[RadioStation]) -> list[BrowseNode]:
@@ -491,199 +568,6 @@ def _browse_archive_item(args: list[str], *, safe_mode: bool) -> list[BrowseNode
 # --- My Servers ----------------------------------------------------------------
 
 
-def _browse_my_servers(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    """The servers the listener added, and what each is serving right now.
-
-    The branch no directory can give you: the community station, the church, the
-    school, the reading service that runs its own Icecast box and was never
-    indexed anywhere. Now-playing text rides along on each mount, so you can hear
-    what is on before you tune to it.
-    """
-    from quill.core.radio import my_servers
-
-    if args and args[0]:
-        stations = my_servers.mounts(args[0], safe_mode=safe_mode)
-        return [leaf(station, note=station.tags[0] if station.tags else "") for station in stations]
-    nodes: list[BrowseNode] = []
-    for server in my_servers.ServerStore().all():
-        nodes.append(folder(make_id("myservers", server.root), server.display_name))
-    nodes.append(action("addserver", "Add a Server...", note="Icecast or SHOUTcast"))
-    return nodes
-
-
-# --- YouTube channels ------------------------------------------------------------
-
-
-def _browse_youtube(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    """Everything YouTube the listener added, with no Google account anywhere.
-
-    Channels first (they expand into the most), then saved playlists, then
-    saved single videos as playable rows -- and one Add... action per kind, so
-    a pasted link of any shape has an obvious way in (QA: "I do not see how I
-    can add a YouTube link easily here without searching").
-    """
-    from quill.core.radio import youtube_channels as yt
-    from quill.core.radio import youtube_saved
-
-    if not (args and args[0]):
-        nodes = [
-            folder(make_id("youtubechannel", channel.url), channel.display_name)
-            for channel in yt.ChannelStore().all()
-        ]
-        saved = youtube_saved.SavedStore()
-        nodes += [
-            folder(make_id("ytplaylist", item.url, "1"), item.display_name, note=item.note)
-            for item in saved.all(youtube_saved.PLAYLIST)
-        ]
-        for item in saved.all(youtube_saved.VIDEO):
-            live = item.is_live or not item.url.startswith("https://www.youtube.com/watch")
-            nodes.append(
-                leaf(
-                    RadioStation(
-                        name=item.display_name,
-                        stream_url=item.url,
-                        homepage=item.url,
-                        source="YouTube",
-                        # A watch link is a finished video (seeks, resumes); a
-                        # channel-live page is a broadcast that is simply on.
-                        is_recording=not live,
-                        # What the video is *about*, straight into the details
-                        # panel -- the one thing an address could never say.
-                        notes=item.description,
-                    ),
-                    node_id=make_id("ytvideo", item.url),
-                    # "TED, 20 minutes 3 seconds", spoken after the title.
-                    note=item.note,
-                )
-            )
-        if not nodes:
-            # Only while there is nothing here. Three permanent "Add a ..."
-            # rows at the bottom of a growing list are three rows to arrow
-            # past on every visit, for a thing you do rarely -- and they are
-            # on this branch's context menu (and every row's) now, which is
-            # where a verb belongs once the list has content in it. Same shape
-            # as the empty Subscriptions branch's three ways in.
-            nodes.append(action("addchannel", "Add a Channel...", note="paste a channel address"))
-            nodes.append(action("addplaylist", "Add a Playlist...", note="paste a playlist link"))
-            nodes.append(action("addvideo", "Add a Video...", note="paste a video link"))
-        return nodes
-    return []
-
-
-def _browse_youtube_channel(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    from quill.core.radio import youtube_channels as yt
-
-    if not args or not args[0]:
-        return []
-    url = args[0]
-    nodes: list[BrowseNode] = [folder(make_id("youtubevideos", url, "1"), "Uploads")]
-    for title, playlist_url in yt.playlists(url, safe_mode=safe_mode):
-        nodes.append(folder(make_id("youtubevideos", playlist_url, "1"), title))
-    return nodes
-
-
-def _browse_youtube_videos(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    from quill.core.radio import youtube_channels as yt
-
-    if not args or not args[0]:
-        return []
-    url = args[0]
-    page = int(args[1]) if len(args) > 1 and args[1].isdigit() else 1
-    rows, more = yt.videos(url, page=page, safe_mode=safe_mode)
-    nodes = [leaf(station) for station in rows]
-    if more:
-        # A channel with four thousand uploads must not try to be one level.
-        nodes.append(folder(make_id("youtubevideos", url, str(page + 1)), "More..."))
-    return nodes
-
-
-# --- Explore (Wikidata) ----------------------------------------------------------
-
-
-def _browse_wikidata(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    """Axes derived from Wikidata, matched conservatively to real stations.
-
-    Derived, and labelled as such: Wikidata supplies the *organisation* and
-    Radio Browser supplies every stream, so nothing here changes how a station
-    plays, records, or is favourited.
-    """
-    from quill.core.radio import wikidata
-
-    if not (args and args[0]):
-        nodes = [
-            folder(make_id("wikidata", key), label, note="from Wikidata")
-            for key, label, _prop in wikidata.AXES
-        ]
-        nodes.append(folder("wikidatadial", "On the Dial", note="by frequency"))
-        return nodes
-    axis = args[0]
-    stations = wikidata.stations_for_axis(axis, safe_mode=safe_mode)
-    if len(args) > 1 and args[1]:
-        wanted = args[1]
-        chosen = [s for s in stations if s.grouping == wanted]
-        rows = wikidata.playable(chosen, country="", safe_mode=safe_mode)
-        # Radio Browser leads, because it answers from the set that can actually
-        # play; the call-sign matches then top up anything it did not carry.
-        # Every axis offered here is one Radio Browser can answer -- By Owner is
-        # gone precisely because ownership is not a field it carries, leaving the
-        # call-sign route alone to fill the folder, which it managed about a
-        # quarter of the time (removed 2026-08-17).
-        lead: list = []
-        if axis == "city":
-            lead = wikidata.stations_in_place(wanted, safe_mode=safe_mode)
-        elif axis == "format":
-            lead = wikidata.stations_with_format(wanted, safe_mode=safe_mode)
-        if lead:
-            seen = set()
-            merged = []
-            for station in [*lead, *rows]:
-                if station.stream_url in seen:
-                    continue
-                seen.add(station.stream_url)
-                merged.append(station)
-            rows = merged
-        return _stations(rows)
-    # No number here, in either direction. Wikidata's count is not what the
-    # folder holds -- Arizona announced "13" and opened to one row (reported
-    # 2026-08-16) -- and now that a place or a format is asked of Radio Browser
-    # directly, the folder usually holds *more* than Wikidata listed. child_count
-    # reads as a promise about the contents, so neither figure earns it; the note
-    # says what the folder is instead.
-    note = "stations for this place" if axis == "city" else "stations with this format"
-    return [
-        folder(make_id("wikidata", axis, grouping), grouping, note=note)
-        for grouping, _count in wikidata.groupings(stations)
-    ]
-
-
-def _browse_wikidata_dial(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    """Browsing by frequency: how radio worked for a century, and absent from
-    every internet radio client."""
-    from quill.core.radio import wikidata
-
-    stations = wikidata.stations_for_axis("city", safe_mode=safe_mode)
-    if args and args[0]:
-        wanted = args[0]
-        chosen = [s for s in stations if wikidata.band_of(s.frequency_mhz) == wanted]
-        return _stations(wikidata.playable(chosen, safe_mode=safe_mode))
-    counts: dict[str, int] = {}
-    for station in stations:
-        band = wikidata.band_of(station.frequency_mhz)
-        if band:
-            counts[band] = counts.get(band, 0) + 1
-    return [
-        # Same honesty as the axes above: the number is what Wikidata knows,
-        # and only stations with a matching stream can actually play.
-        folder(
-            make_id("wikidatadial", label),
-            label,
-            note=f"{counts.get(label, 0)} known; those with a stream can play",
-        )
-        for label, _low, _high in wikidata.DIAL_BANDS
-        if counts.get(label)
-    ]
-
-
 # --- dispatch -----------------------------------------------------------------
 
 _HANDLERS: dict[str, Callable[..., list[BrowseNode]]] = {
@@ -723,6 +607,15 @@ _HANDLERS: dict[str, Callable[..., list[BrowseNode]]] = {
     "ytplaylist": _browse_youtube_videos,
     "wikidata": _browse_wikidata,
     "wikidatadial": _browse_wikidata_dial,
+    "shoutcast": _browse_shoutcast,
+    "shoutcasttop": _browse_shoutcast_top,
+    "live365": _browse_live365,
+    "tv": _browse_tv,
+    "quillins": _browse_quillins,
+    "extdir": _browse_extdir,
+    "tvcountry": _browse_tv_countries,
+    "tvarea": _browse_tv_area,
+    "tvcategory": _browse_tv_categories,
     "networks": _browse_networks,
     "networkgroup": _browse_network_group,
     "network": _browse_network,
@@ -802,6 +695,7 @@ def browse(
             result = handler(args, safe_mode=safe_mode)
     except Exception as error:  # noqa: BLE001 - every source has its own error type
         _remember_failure(error)
+        source_health.record_error(kind, error)
         return _rankings_rescue(kind, catalog) or []
     if result:
         # Only a listing that actually arrived clears the record. A handler
@@ -810,7 +704,23 @@ def browse(
         # unconditionally threw away the one signal that told "empty folder"
         # from "source is down".
         LAST_FAILURE.pop(_thread_key(), None)
+        source_health.record_ok(kind)
+    else:
+        # Reached and answered with nothing: an empty genre is a true answer,
+        # and counting it as a fault would report a working directory as down.
+        source_health.record_ok(kind, empty=True)
     return result
+
+
+def repeat_failure_note(node_id: str) -> str:
+    """What an empty branch should add about this source's recent history.
+
+    ``""`` unless the source has failed more than once in a row this session --
+    see :mod:`quill.core.radio.source_health` for why the second failure is the
+    one worth mentioning and why nothing is ever switched off automatically.
+    """
+    kind, _args = split_id(node_id)
+    return source_health.failure_note(kind)
 
 
 def _rankings_rescue(kind: str, catalog: object) -> list[BrowseNode] | None:
@@ -828,11 +738,31 @@ def _rankings_rescue(kind: str, catalog: object) -> list[BrowseNode] | None:
 def resolve(node_id: str, *, safe_mode: bool = False) -> RadioStation | None:
     """Turn a lazily-resolved leaf into a playable station, or ``None``.
 
-    Only TuneIn needs this today: its rows carry a guide id until play time.
+    TuneIn and SHOUTcast both need it: TuneIn's rows carry a guide id and
+    SHOUTcast's carry a station id, and both become a real address only when
+    somebody presses Enter.
     ``None`` rather than an exception for "could not resolve", so the caller
     says "could not play that station" instead of crashing a tree.
     """
     kind, args = split_id(node_id)
+    if kind == "extdirstation" and len(args) >= 2:
+        from quill.core.radio import directory_registry
+
+        entry = directory_registry.browse_provider(args[0])
+        if entry is None or entry.resolve is None:
+            return None
+        try:
+            stream = entry.resolve(args[1])
+        except Exception:  # noqa: BLE001 - a faulty provider resolves to nothing
+            return None
+        if not stream:
+            return None
+        return RadioStation(name="", stream_url=stream, source=entry.display_name)
+    if kind == shoutcast.STATION_KIND and args:
+        stream = shoutcast.resolve_stream(args[0], safe_mode=safe_mode)
+        if not stream:
+            return None
+        return RadioStation(name="", stream_url=stream, source=shoutcast.CATEGORY_LABEL)
     if kind != "tuneinstation" or not args:
         return None
     try:
@@ -856,6 +786,12 @@ def visible_roots(enabled: object = None) -> tuple[tuple[str, str], ...]:
     from quill.core.radio import browse_visibility
 
     chosen = set(browse_visibility.normalize(enabled))
+    # Quillin Sources only exists while a Quillin actually contributes one: an
+    # always-present empty branch would be a shelf with a label and no shop.
+    from quill.core.radio import directory_registry
+
+    if not directory_registry.browse_providers():
+        chosen.discard("quillins")
     return tuple((node_id, label) for node_id, label in ROOT_SOURCES if node_id in chosen)
 
 

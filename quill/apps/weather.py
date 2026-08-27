@@ -96,7 +96,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         file_menu = wx.Menu()
         tray_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         file_menu.Append(tray_id, "Minimize to &Tray\tCtrl+W")
-        file_menu.Append(exit_id, "E&xit")
+        file_menu.Append(exit_id, "E&xit\tCtrl+Q")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._send_to_tray(), id=tray_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._exit_application(), id=exit_id)
         menu_bar.Append(file_menu, "&File")
@@ -107,7 +107,9 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
 
         options_menu = wx.Menu()
         self._startup_item_id = wx.NewIdRef()
-        options_menu.AppendCheckItem(self._startup_item_id, "Start Quill Weather with &Windows")
+        options_menu.AppendCheckItem(
+            self._startup_item_id, "Start Quill Weather with &Windows\tCtrl+Alt+W"
+        )
         options_menu.Check(self._startup_item_id, weather_startup.is_launch_at_startup_enabled())
         self.frame.Bind(
             wx.EVT_MENU,
@@ -115,7 +117,9 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
             id=self._startup_item_id,
         )
         self._start_tray_item_id = wx.NewIdRef()
-        options_menu.AppendCheckItem(self._start_tray_item_id, "Start &minimized to the tray")
+        options_menu.AppendCheckItem(
+            self._start_tray_item_id, "Start &minimized to the tray\tCtrl+Alt+M"
+        )
         options_menu.Check(self._start_tray_item_id, settings.app_start_in_tray)
         self.frame.Bind(
             wx.EVT_MENU,
@@ -124,7 +128,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         )
         self._close_tray_item_id = wx.NewIdRef()
         options_menu.AppendCheckItem(
-            self._close_tray_item_id, "&Close button keeps monitoring in the tray"
+            self._close_tray_item_id, "&Close button keeps monitoring in the tray\tCtrl+Alt+C"
         )
         options_menu.Check(self._close_tray_item_id, settings.app_close_to_tray)
         self.frame.Bind(
@@ -136,7 +140,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         self._background_item_id = wx.NewIdRef()
         options_menu.AppendCheckItem(
             self._background_item_id,
-            "Check for alerts in the &background (even when Quill Weather is closed)",
+            "Check for alerts in the &background (even when Quill Weather is closed)\tCtrl+Alt+B",
         )
         from quill.platform.windows import scheduled_task
 
@@ -148,7 +152,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         )
         options_menu.AppendSeparator()
         self._features_item_id = wx.NewIdRef()
-        options_menu.Append(self._features_item_id, "&Customize Features...")
+        options_menu.Append(self._features_item_id, "&Customize Features...\tCtrl+Alt+F")
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._open_app_features(), id=self._features_item_id
         )
@@ -181,15 +185,15 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         # About, so its user guide and release notes were installed and
         # unreachable.
         guide_id, notes_id = wx.NewIdRef(), wx.NewIdRef()
-        help_menu.Append(guide_id, "&User Guide...")
-        help_menu.Append(notes_id, "&Release Notes...")
+        help_menu.Append(guide_id, "&User Guide...\tCtrl+Alt+G")
+        help_menu.Append(notes_id, "&Release Notes...\tCtrl+Alt+R")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_weather_doc("userguide"), id=guide_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._open_weather_doc("release-notes-2.2"), id=notes_id
         )
         help_menu.AppendSeparator()
         updates_id = wx.NewIdRef()
-        help_menu.Append(updates_id, "Check for &Updates...")
+        help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.check_for_app_updates(
@@ -198,7 +202,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
             id=updates_id,
         )
         about_id = wx.NewIdRef()
-        help_menu.Append(about_id, "&About Quill Weather")
+        help_menu.Append(about_id, "&About Quill Weather\tCtrl+Alt+A")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
         menu_bar.Append(help_menu, "&Help")
 
@@ -436,7 +440,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
             "The accessible weather watcher from Quill.\n\n"
             "Keeps an eye on official National Weather Service alerts for your "
             "location and speaks new warnings as they are issued -- even while "
-            "minimized to the system tray.",
+            "minimized to the system tray.\n\nSupport: support@community-access.org",
             f"About {_TITLE}",
             wx.OK | wx.ICON_INFORMATION,
         )

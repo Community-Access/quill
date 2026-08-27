@@ -325,3 +325,94 @@ def test_export_as_falls_back_to_m3u_for_an_unknown_kind() -> None:
     from quill.core.radio.playlist_export import export_as
 
     assert export_as("nonsense", _favorites()).startswith("#EXTM3U")
+
+
+# --- the long tail, and the disagreement report (radio2.md part IX) -----------
+
+
+def test_an_asf_redirector_yields_its_stream_and_loses_the_dead_scheme() -> None:
+    """[Reference]/Ref1= is how older Windows Media 'listen live' links arrive."""
+    from quill.core.radio.playlist_formats import parse_playlist, sniff
+
+    text = "[Reference]\nRef1=mmsh://stream.example.org/live\nRef2=http://b.example/live2\n"
+    assert sniff(text) == "asf"
+    urls = [station.stream_url for station in parse_playlist(text)]
+    # mmsh:// is ASF's own name for what was always an http address.
+    assert urls == ["http://stream.example.org/live", "http://b.example/live2"]
+
+
+def test_a_saved_url_shortcut_is_a_station() -> None:
+    from quill.core.radio.playlist_formats import parse_playlist, sniff
+
+    windows = "[InternetShortcut]\nURL=http://a.example/stream\n"
+    desktop = "[Desktop Entry]\nType=Link\nLink=http://a.example/stream\n"
+    for text in (windows, desktop):
+        assert sniff(text) == "shortcut"
+        assert [s.stream_url for s in parse_playlist(text)] == ["http://a.example/stream"]
+
+
+def test_a_winamp_b4s_playlist_keeps_its_names() -> None:
+    from quill.core.radio.playlist_formats import parse_playlist, sniff
+
+    text = (
+        '<?xml version="1.0"?><WinampXML><playlist>'
+        '<entry Playstring="http://a.example/one"><Name>One FM</Name></entry>'
+        '<entry Playstring="http://a.example/two"><Name>Two FM</Name></entry>'
+        "</playlist></WinampXML>"
+    )
+    # B4S contains <playlist>, so it must be recognised before the XSPF test.
+    assert sniff(text) == "b4s"
+    assert [(s.name, s.stream_url) for s in parse_playlist(text)] == [
+        ("One FM", "http://a.example/one"),
+        ("Two FM", "http://a.example/two"),
+    ]
+
+
+def test_a_windows_media_wpl_playlist_is_not_mistaken_for_asx() -> None:
+    from quill.core.radio.playlist_formats import parse_playlist, sniff
+
+    text = (
+        '<?wpl version="1.0"?><smil><body><seq>'
+        '<media src="http://a.example/w"/></seq></body></smil>'
+    )
+    assert sniff(text) == "wpl"
+    assert [s.stream_url for s in parse_playlist(text)] == ["http://a.example/w"]
+
+
+def test_the_long_tail_still_refuses_unplayable_addresses() -> None:
+    from quill.core.radio.playlist_formats import parse_playlist
+
+    text = "[InternetShortcut]\nURL=file:///C:/secret.txt\n"
+    assert parse_playlist(text) == []
+
+
+def test_agreeing_signals_report_nothing() -> None:
+    from quill.core.radio.playlist_formats import disagreements
+
+    text = "[playlist]\nNumberOfEntries=1\nFile1=http://a.example/s\n"
+    assert (
+        disagreements(text, url="https://x.example/listen.pls", content_type="audio/x-scpls") == []
+    )
+
+
+def test_a_wrong_extension_is_reported_rather_than_silently_overruled() -> None:
+    from quill.core.radio.playlist_formats import disagreements
+
+    text = "[playlist]\nNumberOfEntries=1\nFile1=http://a.example/s\n"
+    notes = disagreements(text, url="https://x.example/listen.m3u")
+    assert any("ends in .m3u" in note and "pls" in note for note in notes)
+
+
+def test_audio_served_where_a_playlist_was_promised_is_reported() -> None:
+    """The diagnosis a listener cannot make for themselves."""
+    from quill.core.radio.playlist_formats import disagreements
+
+    text = "[playlist]\nNumberOfEntries=1\nFile1=http://a.example/s\n"
+    notes = disagreements(text, content_type="audio/mpeg")
+    assert any("which is audio" in note for note in notes)
+
+
+def test_a_bare_stream_disagrees_with_nothing() -> None:
+    from quill.core.radio.playlist_formats import disagreements
+
+    assert disagreements("", url="https://a.example/stream", content_type="audio/mpeg") == []

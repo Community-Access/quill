@@ -19,6 +19,7 @@ from pathlib import Path
 
 from quill.core.audio_enhance import clamp_eq_gain
 from quill.core.radio.models import RadioStation
+from quill.core.radio.natural_order import natural_key
 
 _FILE_NAME = "radio_favorites.json"
 
@@ -373,9 +374,9 @@ class RadioFavoritesStore:
 
         def _ordered(items: list[FavoriteStation], order: str) -> list[FavoriteStation]:
             if order == "az":
-                return sorted(items, key=lambda f: f.display_label.casefold())
+                return sorted(items, key=lambda f: natural_key(f.display_label))
             if order == "za":
-                return sorted(items, key=lambda f: f.display_label.casefold(), reverse=True)
+                return sorted(items, key=lambda f: natural_key(f.display_label), reverse=True)
             return list(items)
 
         groups: dict[str, list[FavoriteStation]] = {}

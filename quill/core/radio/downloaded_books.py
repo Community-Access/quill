@@ -25,9 +25,10 @@ wx-free, strict-typed, pure apart from reading directory entries.
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
+
+from quill.core.radio.natural_order import natural_key as _natural_key
 
 #: What counts as a chapter. Everything Quill Radio can actually play.
 AUDIO_SUFFIXES: frozenset[str] = frozenset({
@@ -43,14 +44,11 @@ AUDIO_SUFFIXES: frozenset[str] = frozenset({
     ".wma",
 })
 
-_NUMBERS = re.compile(r"(\d+)")
-
-
-def natural_key(name: str) -> tuple:
-    """Sort key where 2 comes before 10, as anybody would expect."""
-    return tuple(
-        int(part) if part.isdigit() else part.lower() for part in _NUMBERS.split(str(name))
-    )
+#: Re-exported so this module's callers keep importing it from here, while
+#: there is one implementation of it in the package (2026-08-26). See
+#: :mod:`quill.core.radio.natural_order` for why names are never zero-padded to
+#: make them sort.
+natural_key = _natural_key
 
 
 @dataclass(frozen=True, slots=True)

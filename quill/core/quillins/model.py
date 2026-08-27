@@ -442,12 +442,29 @@ class DirectoryProviderContribution:
     ``id`` is namespaced under ``ext.`` and must be unique across enabled
     Quillins. ``display_name`` is the Source badge shown for the provider's
     stations.
+
+    **The browse trio** (2026-08-27, radio2.md part VIII): a provider that also
+    declares ``stations_handler`` (plus optional ``categories_handler`` and
+    ``resolve_handler``) becomes a full **browse source** in Quill Radio's
+    tree, under the Quillin Sources branch. ``categories_handler`` returns a
+    JSON array of category names ([] or undeclared = a flat source);
+    ``stations_handler`` receives ``{"category", "query"}`` and returns station
+    rows; ``resolve_handler`` receives ``{"key"}`` from a row that carried one
+    and returns the playable URL at play time -- the tokenized-locator rule, so
+    an address the provider must not cache (or cannot know until playback)
+    stays opaque in every list, favourite and export. Any network a handler
+    does goes through the host's fetch API, SSRF-hardened and bounded by the
+    manifest's ``net_allowed_hosts`` -- the declared-and-bounded egress the
+    StreamTuner review asked for and StreamTuner itself has no answer to.
     """
 
     id: str
     display_name: str
     handler: str
     description: str = ""
+    categories_handler: str = ""
+    stations_handler: str = ""
+    resolve_handler: str = ""
 
 
 @dataclass(frozen=True, slots=True)

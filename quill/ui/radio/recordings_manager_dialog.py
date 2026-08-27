@@ -54,6 +54,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         settings: object,
         scheduler: object,
         controller: object,
+        app_host: object | None = None,
         announce_cb: Callable[[str], None] | None = None,
         history: object | None = None,
         on_history_changed: Callable[[], None] | None = None,
@@ -63,6 +64,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         import wx
 
         self._wx = wx
+        self._app_host = app_host
         self._recorder = recorder
         self._settings = settings
         self._scheduler = scheduler
@@ -104,7 +106,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(
-            wx.StaticText(self._surface, label="&Recordings (made, in progress, and scheduled)"),
+            wx.StaticText(self._surface, label="Recordin&gs (made, in progress, and scheduled)"),
             0,
             wx.LEFT | wx.TOP,
             10,
@@ -208,6 +210,19 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
         menu_bar.Append(surface_menu, "&Recordings")
+        # The app's own Station commands, so Alt+S opens the same menu here it
+        # opens in the main window -- see surface_app_menu for the report.
+        from quill.ui.radio import surface_app_menu
+
+        self._menu_id_refs.extend(
+            surface_app_menu.install(
+                win=self._win,
+                host=surface_app_menu.host_of(self),
+                menu_bar=menu_bar,
+                wx=wx,
+                skip=("open_radio_recordings",),
+            )
+        )
         self._windows.install(self._win, menu_bar)
         self._win.SetMenuBar(menu_bar)
         self._menu_id_refs.append(close_id)
