@@ -21,6 +21,10 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from quill.core.radio.models import RadioStation
 
 #: A provider callable. Given the search ``query``, it returns a list of station
 #: rows -- each a mapping with at least ``name`` and ``url`` (and an optional
@@ -159,7 +163,7 @@ def browse_provider(provider_id: str) -> BrowseProviderEntry | None:
     return None
 
 
-def station_from_row(row: object, display_name: str) -> object | None:
+def station_from_row(row: object, display_name: str) -> tuple[RadioStation, str] | None:
     """One provider row as a RadioStation-or-locator (validated, tolerant).
 
     The single coercion every contributed row passes through, per the review:

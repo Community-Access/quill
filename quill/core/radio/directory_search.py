@@ -157,9 +157,9 @@ def tunein_search_stations(
         return []
     wanted = [result for result in results if result.is_station][:cap]
 
-    def _resolve(result: object) -> RadioStation | None:
+    def _resolve(result: tunein.TuneInResult) -> RadioStation | None:
         try:
-            streams = tunein.resolve_station_streams(result.guide_id, safe_mode=safe_mode)  # type: ignore[attr-defined]
+            streams = tunein.resolve_station_streams(result.guide_id, safe_mode=safe_mode)
         except tunein.TuneInError:
             return None
         if not streams:
