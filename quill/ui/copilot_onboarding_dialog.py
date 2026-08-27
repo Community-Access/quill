@@ -273,6 +273,8 @@ class CopilotOnboardingDialog:
         self.dialog.CentreOnParent()
         focus_primary_control(self.dialog)
         try:
-            self._show_modal(self.dialog)
+            # _show_modal is MainFrame._show_modal_dialog(dialog, label) -- the
+            # label is required, and omitting it was crash report #1442.
+            self._show_modal(self.dialog, "Set Up GitHub Copilot")
         finally:
             self.dialog.Destroy()
