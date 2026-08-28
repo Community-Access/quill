@@ -123,7 +123,12 @@ def test_radio_startup_registers_the_handler() -> None:
     repo = Path(__file__).resolve().parents[3]
     source = (repo / "quill" / "apps" / "radio.py").read_text(encoding="utf-8")
     assert "context_help.activate()" in source
-    assert 'help_menu.Append(what_is_this_id, "&What Is This?\\tF1")' in source
+    # The Help menu's F1 row moved into apps/radio_help_docs.py with the rest of
+    # that menu's documents when Tutorials arrived (GATE-11: extract, never
+    # rebaseline). Both halves are pinned, so neither can drop out on its own.
+    assert "radio_help_docs.install_help_items(self, help_menu, wx)" in source
+    menu_source = (repo / "quill" / "apps" / "radio_help_docs.py").read_text(encoding="utf-8")
+    assert 'help_menu.Append(ids["what_is_this"], "&What Is This?\\tF1")' in menu_source
     # Radio's shim hands the shared engine Radio's authored purpose catalogue.
     shim = (repo / "quill" / "ui" / "radio" / "context_help.py").read_text(encoding="utf-8")
     assert "app_context_help.activate(surface_help.purpose_for_title)" in shim

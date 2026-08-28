@@ -1,8 +1,8 @@
 # Changelog
 
-All notable changes to Quill Radio are documented here. See `docs/release-notes-3.1.md` for the fuller narrative version of the work in development, `docs/release-notes-3.0.md` for the last release, and `docs/release-notes-3.0-in-depth.md` for the reasoning behind it.
+All notable changes to Quill Radio are documented here. See `docs/release-notes-3.0.md` for the fuller narrative version of the latest release, and `docs/release-notes-3.0-in-depth.md` for the reasoning behind it.
 
-## [Unreleased]
+## [3.0.0] - 2026-08-25
 
 ### Tutorials that watch you use the app (2026-08-28)
 
@@ -42,8 +42,6 @@ All notable changes to Quill Radio are documented here. See `docs/release-notes-
   reaches for a door, and a new listener reaches for a tutorial far more often
   than anybody reaches for the PRD. Ctrl+Alt+Shift+F1 was not available -- it
   is a QuillVille launcher key.
-
-## [3.0.0] - 2026-08-25
 
 ### The main window learns to pause (2026-08-25)
 

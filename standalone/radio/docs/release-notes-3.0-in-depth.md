@@ -1455,6 +1455,180 @@ One of its assertions is deliberately naive -- ACB Presents the Daily Schedule
 is a 9 am Central programme, and the test says so. If that ever reads 2 pm
 again, the timezone has been dropped again.
 
+## 24. Tutorials: teaching from the same table the app is driven by
+
+The story version of this is in `release-notes-3.0`. This is the part that is
+about the shape of the thing rather than about using it.
+
+### The problem with writing a tutorial
+
+Every tutorial anybody has ever written about a keyboard-driven app rots in the
+same two places. It goes stale about **keys**, because the app's keys change
+and the prose does not. And it goes stale about **what exists**, because a
+feature gets renamed or removed and the step describing it stays.
+
+Both are the same failure: the tutorial holds a *copy* of something the app
+already knows. So the fix is the same fix the Keyboard Shortcuts Sheet got when
+it stopped being a maintained list and started being a walk of the live menu
+bar. Do not keep a copy. Ask.
+
+### A step names a command
+
+The unit of a lesson here is:
+
+```
+Step(
+    title="Open Browse Stations",
+    body="...one paragraph, what to do and why...",
+    command="radio.browse",
+    hear="Entered Browse Stations, then the first branch of the tree.",
+    check="window:Browse Stations",
+)
+```
+
+There is no key in it. `command` is a command id from the same registry the
+menus, the palette and the keyboard all dispatch through, and the key is
+resolved *when the step is drawn* against the listener's own keymap. Rebind
+Browse Stations and every lesson that mentions it says the new key, with
+nothing regenerated and nothing rebuilt.
+
+Three things fall out of that one decision, and all three were the point:
+
+1. **The lesson shows the key you actually have.**
+2. **The lesson can run the step.** A command is a thing that can be run, so
+   *Try it* is one call into the registry -- the same call the key makes.
+3. **A build check can prove the lesson is not lying.** Every `command` a step
+   names is checked against the union of the app keymap, the palette table and
+   the shared transport table. A tutorial that tells somebody to press a key
+   for a command nobody registered is worse than no tutorial at all, and that
+   is now impossible to ship.
+
+The steps that have no command -- arrow the tree, press Escape, read this fact
+-- carry literal keys instead, and *Try it* is dimmed on them. Nothing
+pretends to be runnable.
+
+### Why the watcher watches state
+
+`check` is the interesting field. It names a question about the app right now,
+and while a lesson is open the window asks that question once a second.
+
+The naive implementation watches for a keystroke. It is wrong, and it is wrong
+in a way that would have taught people something false: there are four ways to
+start a station in Quill Radio -- the key, the Playback menu, the status bar's
+Play cell, the Command Palette -- and all four did the thing. A watcher that
+recognised only one would quietly be teaching a preference.
+
+So the checks read state:
+
+| check | what it asks |
+| --- | --- |
+| `playing`, `paused`, `muted` | the playback controller's own snapshot |
+| `volume-changed` | the level, against a baseline |
+| `favorite-added` | the favorites count, against a baseline |
+| `recording-started` / `recording-finished` | the recorder's active count, against a baseline |
+| `window:Browse Stations` | the window manager's list of open peer windows |
+
+Two rules keep them honest.
+
+**Deltas, not absolutes.** "Add a favorite" is satisfied by the count *growing*,
+never by it being non-zero. Somebody with forty favorites has not already
+passed the step, and an absolute test would either pass instantly or never --
+both of which read as a lesson that is not paying attention. The baseline is
+taken when the step is *shown*, which is also what makes going back a step and
+doing it again work.
+
+**"Cannot tell" is an answer.** Every probe reads a named attribute
+defensively and answers `None` when it cannot -- a controller that is not up
+yet, an attribute a later refactor renames. The window treats that exactly like
+a step with no check on it: you press Next. The failure mode of a broken probe
+is a lesson that is merely quiet, never a lesson that is stuck.
+
+### The window checks needed a door that did not exist
+
+`window:` checks ask the shared `WindowManager` which peer windows are open,
+and it had no read-only way to say. It had `activate_title`, which raises a
+window by name, and a private registry. So it gained `open_titles()` -- ten
+lines, no behaviour, and the seam that lets a lesson notice you opened Browse
+Stations however you opened it.
+
+They are deliberately restricted to **peer windows**. A modal dialog blocks the
+tutorial window anyway, so watching for one would be watching for something
+nobody could see happen, and a test refuses a `window:` check for a title
+nothing registers.
+
+### A peer window, because a wizard cannot teach
+
+The obvious shape for this is a wizard: modal, Next, Back, Finish. It is the
+wrong shape, and the reason is the whole feature. A modal dialog owns the
+keyboard for the duration, so a lesson about pressing Ctrl+B in the main window
+could not let you press Ctrl+B in the main window.
+
+The Tutorials window is therefore a peer -- taskbar, Window menu, Ctrl+Tab, the
+whole model the radio surfaces moved to in August. The intended use is: leave
+it open, Ctrl+Tab into the app, do the step there, and hear the lesson move on
+behind you. That sentence is only possible because of the window model, and it
+is why *Follow me* is worth building at all: without it, coming back to the
+lesson to press Next would cost more than the step did.
+
+### Two decisions GATE-13 made for us
+
+The over-announcement gate says: never say what the screen reader already says.
+It decided two behaviours here that were not obvious.
+
+**Opening a lesson announces nothing.** Focus lands in the step field and the
+reader reads it. An announcement as well would be the same paragraph twice.
+
+**Moving between steps does announce.** There the text changes under a focus
+that did not move -- or under somebody standing in another window doing the
+step -- which is exactly the case the reader cannot cover.
+
+The same rule is why *Follow me* speaks "Done: something is playing now."
+before the next step rather than after: it is one thought, and the reader would
+otherwise render it as two unrelated utterances.
+
+### Where the book comes from
+
+`docs/tutorials` is generated from the same lesson objects the window teaches
+from (`quill.tools.build_tutorials_reference`), and a gate in the platform
+scorecard (**GATE-TUTDOC**) fails the build if the committed document and the
+lessons disagree. It joins `docs/keyboard-reference` and `docs/f1-help-reference`
+as the third document in this project that is *compiled* rather than written.
+
+The one difference the document has to admit: it renders the keys the app
+*ships* with, because a document cannot know what you rebound. It says so in
+its own opening rather than leaving it to be discovered.
+
+### What it does not do
+
+- **No telemetry.** Progress is a small JSON file on your own computer,
+  classified `cache` in the persistence audit: losing it costs a bookmark in a
+  lesson and nothing else.
+- **No grading.** No score, no percentage, no streak, no badge. The contents
+  rows say "finished" or "you stopped at step 4", which is the whole of it.
+- **No interruption.** The watcher never takes focus and never moves it. It
+  speaks; that is all it can do.
+- **No cost when it is shut.** One timer, running only while a lesson is open,
+  reading half a dozen values.
+
+### The key that moved, and why it was not a free choice
+
+Quill Radio's menu bar claims 146 accelerators. Compared canonically -- wx
+ignores modifier order -- the gaps left anywhere were a handful under Ctrl,
+Ctrl+Shift+{O,6,7,8} and Ctrl+Alt+{I,0,8,9}, and by the time the tutorials
+needed a key even most of those had gone.
+
+So the choice was inside the F1 family, which is the right family anyway: F1
+answers about the control you are on, Ctrl+F1 opens the guide, Shift+F1 and
+Ctrl+Shift+F1 the release notes and their companion, Alt+F1 About. The family
+is ordered by how often somebody reaches for a door. The Product Requirements
+document is, by the comment that put it on Ctrl+Alt+F1 in the first place, the
+least reached-for thing on that menu; a guided tutorial is the most reached-for
+thing a new listener has. So they swapped, and the PRD moved to Alt+Shift+F1.
+
+Ctrl+Alt+Shift+F1 would have been the tidier answer and was not available: it
+is a QuillVille app launcher, and that conflict is precisely the class of fault
+the accelerator gate was built to catch.
+
 ---
 
 *The story version of this release is in `release-notes-3.0`, which ships in this

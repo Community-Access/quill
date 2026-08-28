@@ -206,51 +206,6 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
 <h2 id="unreleased">[Unreleased]</h2>
-<h3 id="added">Added</h3>
-<ul>
-<li><strong>Help &gt; Tutorials… (Ctrl+Alt+F1): 36 guided tutorials, 251
-steps.</strong> The narrative version is
-<code>docs/release-notes-3.1.md</code>. Six tracks, from “you have never
-opened this app” to “you have relied on it for a month”, covering every
-feature Quill Radio has. They are not a second copy of the user guide:
-<ul>
-<li><strong>A step names a command, not a key</strong>, so the key you
-read is the key you actually have – rebind something and the tutorial
-says your binding. Same reason the Keyboard Shortcuts Sheet is built by
-walking the live menu bar.</li>
-<li><strong>Try it runs the step</strong>, exactly as its key would, so
-a lesson can open Browse Stations for you and then talk you through what
-you are standing in.</li>
-<li><strong>Follow me notices when you have done it.</strong> The lesson
-watches the app once a second, and watches <em>state</em> rather than
-keystrokes – the key, the menu, the status bar and the palette all
-count. When it sees the change it says what it saw (“Done: something is
-playing now.”) and reads the next step. Nothing is graded, nothing is
-blocked, and every step still has Next.</li>
-<li><strong>It is a peer window</strong>, so you can leave it open,
-Ctrl+Tab into the app, do the step there, and hear the lesson move on
-behind you.</li>
-<li><strong>Your place is kept</strong> per lesson, and finishing one is
-remembered separately from where you are in it. Forget my progress
-clears the lot and changes nothing else.</li>
-<li><strong>Typing “here” in the filter</strong> narrows the contents to
-the tutorials about the window you came from; the window says how many
-those are as it opens.</li>
-<li><strong>Read it all</strong> shows a whole tutorial as one page for
-reading rather than doing, and the whole set ships as
-<code>docs/tutorials.md</code>, generated from the same lessons the
-window teaches from so the two cannot drift.</li>
-</ul></li>
-</ul>
-<h3 id="changed">Changed</h3>
-<ul>
-<li><strong>Product Requirements… moved from Ctrl+Alt+F1 to
-Alt+Shift+F1</strong>, to make room for Tutorials. The F1 family is
-ordered by how often somebody reaches for a door, and a new listener
-reaches for a tutorial far more often than anybody reaches for the PRD.
-(Ctrl+Alt+Shift+F1 was not available: it is a QuillVille launcher
-key.)</li>
-</ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
 <li><p><strong>Alt+S finally opens the Station menu – the real cause,
@@ -368,7 +323,7 @@ says so, after four seconds and then periodically – a cross-source
 search is as slow as the slowest service in it, and nothing on screen
 changes while it happens.</li>
 </ul>
-<h3 id="added-1">Added</h3>
+<h3 id="added">Added</h3>
 <ul>
 <li><p><strong>A person you can write to.</strong> Every app’s Help &gt;
 About window and the documentation now carry the support address:
@@ -569,6 +524,53 @@ speaks the result, and in Safe Mode it says that it will not reach out
 rather than doing nothing silently.</p></li>
 </ul>
 <h2 id="300---2026-08-25">[3.0.0] - 2026-08-25</h2>
+<h3 id="added-1">Added</h3>
+<ul>
+<li><strong>Help &gt; Tutorials… (Ctrl+Alt+F1): 36 guided tutorials, 251
+steps.</strong> Six tracks, from “you have never opened this app” to
+“you have relied on it for a month”, covering every feature Quill Radio
+has. They are not a second copy of the user guide:
+<ul>
+<li><strong>A step names a command, not a key</strong>, so the key you
+read is the key you actually have – rebind something and the tutorial
+says your binding. Same reason the Keyboard Shortcuts Sheet is built by
+walking the live menu bar.</li>
+<li><strong>Try it runs the step</strong>, exactly as its key would, so
+a lesson can open Browse Stations for you and then talk you through what
+you are standing in.</li>
+<li><strong>Follow me notices when you have done it.</strong> The lesson
+watches the app once a second, and watches <em>state</em> rather than
+keystrokes – the key, the menu, the status bar and the palette all
+count. When it sees the change it says what it saw (“Done: something is
+playing now.”) and reads the next step. Nothing is graded, nothing is
+blocked, and every step still has Next.</li>
+<li><strong>It is a peer window</strong>, so you can leave it open,
+Ctrl+Tab into the app, do the step there, and hear the lesson move on
+behind you.</li>
+<li><strong>Your place is kept</strong> per lesson, and finishing one is
+remembered separately from where you are in it. Forget my progress
+clears the lot and changes nothing else.</li>
+<li><strong>Typing “here” in the filter</strong> narrows the contents to
+the tutorials about the window you came from; the window says how many
+those are as it opens.</li>
+<li><strong>Read it all</strong> shows a whole tutorial as one page for
+reading rather than doing, and the whole set ships as
+<code>docs/tutorials.md</code>, generated from the same lessons the
+window teaches from so the two cannot drift.</li>
+<li>The narrative version of all of this is
+<code>docs/release-notes-3.0.md</code>, Part Five, with the reasoning in
+<code>docs/release-notes-3.0-in-depth.md</code>, section 24.</li>
+</ul></li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li><strong>Product Requirements… moved from Ctrl+Alt+F1 to
+Alt+Shift+F1</strong>, to make room for Tutorials. The F1 family is
+ordered by how often somebody reaches for a door, and a new listener
+reaches for a tutorial far more often than anybody reaches for the PRD.
+(Ctrl+Alt+Shift+F1 was not available: it is a QuillVille launcher
+key.)</li>
+</ul>
 <p>Major: Browse Stations becomes a browsable directory rather than a
 list of sources, the whole station directory now ships inside the app
 and answers locally (the Station Catalog), podcasts arrive keylessly,

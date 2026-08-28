@@ -14,8 +14,7 @@ from typing import Any
 #: Which document each Help-menu item opens, by its file stem.
 DOC_TITLES: dict[str, str] = {
     "userguide": "Quill Radio User Guide",
-    "release-notes-3.0": "Quill Radio Release Notes (3.0)",
-    "release-notes-3.1": "Quill Radio Release Notes",
+    "release-notes-3.0": "Quill Radio Release Notes",
     "release-notes-3.0-in-depth": "Quill Radio Release Notes: The Long Version",
     "prd": "Quill Radio Product Requirements",
     "tutorials": "Quill Radio Tutorials",
@@ -73,14 +72,9 @@ def install_help_items(host: Any, help_menu: Any, wx: Any) -> list[Any]:
     frame = host.frame
     frame.Bind(wx.EVT_MENU, lambda _e: host._radio_show_context_help(), id=ids["what_is_this"])
     frame.Bind(wx.EVT_MENU, lambda _e: host.open_radio_tutorials(), id=ids["tutorials"])
-    # "Release Notes" opens the notes for the build you are running, which is
-    # this one -- 3.1's, written as the work lands. The Long Version stays 3.0's
-    # companion piece: it carries the reasoning behind the release before this
-    # one, and is a document in its own right rather than a longer edition of
-    # whatever shipped most recently.
     for name, stem in (
         ("guide", "userguide"),
-        ("notes", "release-notes-3.1"),
+        ("notes", "release-notes-3.0"),
         ("notes_depth", "release-notes-3.0-in-depth"),
         ("prd", "prd"),
     ):
