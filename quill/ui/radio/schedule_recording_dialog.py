@@ -22,6 +22,21 @@ _LOCAL_TIME_LABEL = "(local time)"
 _TIMEZONE_CHOICES = (_LOCAL_TIME_LABEL, *sorted(available_timezones()))
 
 
+def row_after_delete(deleted_index: int, remaining: int) -> int | None:
+    """The row to select after deleting *deleted_index*, or None when empty.
+
+    The row that took the deleted one's place -- so deleting the third of five
+    leaves you on the new third, and deleting the last leaves you on the new
+    last. Rebuilding the list without this selects row 0, which threw a
+    listener back to the top of the list on every delete (#1461): focus is
+    still in the list, nothing announces that the position moved, and the next
+    Down arrow re-reads a schedule already dealt with.
+    """
+    if remaining <= 0:
+        return None
+    return min(max(deleted_index, 0), remaining - 1)
+
+
 def _entry_summary(entry: RecordingScheduleEntry) -> str:
     try:
         moment = datetime.fromisoformat(entry.run_at)
@@ -501,8 +516,15 @@ class ScheduleRecordingDialog:
             self._entries = [e for e in self._entries if e.id != entry_id]
             if self._editing_id == entry_id:
                 self._reset_form()
-            self._refresh_list()
+            row = row_after_delete(index, len(self._entries))
+            neighbour_id = None if row is None else self._entries[row].id
+            self._refresh_list(keep_id=neighbour_id)
             self._announce("Removed scheduled recording.")
+            if not self._entries:
+                # The list is empty, so the Remove button that may hold focus
+                # has just been disabled. Move to the form rather than leave
+                # focus on a dead control.
+                self._name_ctrl.SetFocus()
 
     def _enter_add_mode(self) -> None:
         """Leave edit mode: the primary button adds a new schedule again."""

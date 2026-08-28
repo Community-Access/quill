@@ -138,8 +138,8 @@ class SpeechSetupDialog:
         engine_ok: bool,
         vosk_ok: bool,
         vosk_can_install: bool,
-        kokoro_ok: bool,
-        kokoro_can_install: bool,
+        kokoro_ok: bool | None = None,
+        kokoro_can_install: bool | None = None,
         all_providers: list,
         total_ram: float = 0.0,
         has_gpu: bool = False,
@@ -165,6 +165,24 @@ class SpeechSetupDialog:
         self._engine_ok = engine_ok
         self._vosk_ok = vosk_ok
         self._vosk_can_install = vosk_can_install
+        # Four crash reports named this pair (#1395, #1417, #1422, #1460), each
+        # from somebody pressing Manage Voices to install a Kokoro voice: the
+        # dialog grew two REQUIRED keyword-only arguments and a builder that did
+        # not supply them turned the button into a TypeError. Two separate
+        # builders feed this dialog (MainFrame and Audio Studio), so "remember
+        # to pass it" has now failed four times in front of users. Defaulting to
+        # the live probes -- a find_spec each, exactly what every builder was
+        # computing anyway -- makes the omission harmless instead of fatal.
+        if kokoro_ok is None or kokoro_can_install is None:
+            from quill.core.speech.engine_install import (
+                is_kokoro_onnx_available,
+                kokoro_onnx_install_supported,
+            )
+
+            if kokoro_ok is None:
+                kokoro_ok = is_kokoro_onnx_available()
+            if kokoro_can_install is None:
+                kokoro_can_install = kokoro_onnx_install_supported()
         self._kokoro_ok = kokoro_ok
         self._kokoro_can_install = kokoro_can_install
         self._all_providers = all_providers

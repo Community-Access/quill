@@ -106,8 +106,14 @@ def test_common_dict_kwargs_supplies_every_speech_setup_dialog_required_arg() ->
     setup_dialog_src = (
         Path(__file__).resolve().parents[3] / "quill" / "ui" / "speech_setup_dialog.py"
     ).read_text(encoding="utf-8")
-    assert "kokoro_ok: bool," in setup_dialog_src
-    assert "kokoro_can_install: bool," in setup_dialog_src
+    # The pair are no longer *required* -- a fourth report of the same
+    # TypeError (#1460) said plainly enough that "remember to pass it" does
+    # not hold across two builders -- but they keep their place in the
+    # signature, and a caller with real answers still supplies them. What is
+    # pinned here is that the dialog can answer for itself when one does not.
+    assert "kokoro_ok: bool | None = None," in setup_dialog_src
+    assert "kokoro_can_install: bool | None = None," in setup_dialog_src
+    assert "is_kokoro_onnx_available()" in setup_dialog_src
 
     main_frame_src = _read_main_frame_source()
     assert '"kokoro_ok": is_kokoro_onnx_available(),' in main_frame_src
@@ -165,8 +171,11 @@ def test_speech_hub_passes_every_required_speech_setup_kwarg() -> None:
     dictation kwargs (``"name":``) or explicitly at the call site (``name=``) --
     so a newly-required kwarg can never silently drop again."""
     required = _speech_setup_required_kwargs()
-    # The two that broke are indeed required (signature sanity).
-    assert {"kokoro_ok", "kokoro_can_install"} <= required
+    # Signature sanity: the parse found real required arguments to check.
+    # kokoro_ok / kokoro_can_install are deliberately NOT among them any
+    # more (they default to the live probes, see the test above); the
+    # builders still pass them, which the assertion below proves.
+    assert {"provider", "rows", "machine_summary"} <= required
     provided = _read_main_frame_source() + _read_source()
     missing = [n for n in required if f'"{n}"' not in provided and f"{n}=" not in provided]
     assert not missing, f"Speech Hub never passes required SpeechSetupDialog kwargs: {missing}"
