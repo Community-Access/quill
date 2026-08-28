@@ -91,7 +91,7 @@ class _AbbreviationEditDialog:
         self._desc_ctrl.SetName("Optional description")
         grid.Add(self._desc_ctrl, 1, wx.EXPAND)
 
-        grid.Add(wx.StaticText(self.dialog, label="C&ategory:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self.dialog, label="Ca&tegory:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._category_ctrl = wx.ComboBox(self.dialog, choices=sorted(c for c in categories if c))
         self._category_ctrl.SetName("Category — leave empty for Uncategorised")
         grid.Add(self._category_ctrl, 1, wx.EXPAND)
@@ -108,7 +108,7 @@ class _AbbreviationEditDialog:
         self._speak_ctrl.SetSelection(0)
         grid.Add(self._speak_ctrl, 1, wx.EXPAND)
 
-        grid.Add(wx.StaticText(self.dialog, label="Soun&d:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self.dialog, label="&Sound:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._sound_ctrl = wx.Choice(self.dialog, choices=list(_SOUND_LABELS.values()))
         self._sound_ctrl.SetName("Play a sound when this abbreviation expands")
         self._sound_ctrl.SetSelection(0)

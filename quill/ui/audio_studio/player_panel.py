@@ -64,18 +64,73 @@ class PlayerPanel(wx.Panel):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         row = wx.BoxSizer(wx.HORIZONTAL)
-        self._play_btn = self._button(row, _("&Play"), self._on_play_pause, "player.play")
-        self._stop_btn = self._button(row, _("S&top"), self._on_stop, "player.stop")
-        self._prev_btn = self._button(row, _("Pre&vious chapter"), self._on_prev, "player.prev")
-        self._next_btn = self._button(row, _("Ne&xt chapter"), self._on_next, "player.next")
-        self._rew_btn = self._button(row, _("Re&wind"), self._on_rewind, "player.rewind")
-        self._fwd_btn = self._button(row, _("&Forward"), self._on_forward, "player.forward")
+        self._play_btn = self._button(
+            row,
+            _("&Play"),
+            self._on_play_pause,
+            "player.play",
+            help_text=(
+                "Starts playback, or pauses it in place; the label follows the "
+                "state. The system Play/Pause media key does the same while a "
+                "book is open."
+            ),
+        )
+        self._stop_btn = self._button(
+            row,
+            _("S&top"),
+            self._on_stop,
+            "player.stop",
+            help_text="Stops playback where it is; Play picks up from the same position.",
+        )
+        self._prev_btn = self._button(
+            row,
+            _("Pre&vious chapter"),
+            self._on_prev,
+            "player.prev",
+            help_text=(
+                "Jumps to the start of the previous chapter -- or of this one, "
+                "when more than a few seconds of it have already played."
+            ),
+        )
+        self._next_btn = self._button(
+            row,
+            _("Ne&xt chapter"),
+            self._on_next,
+            "player.next",
+            help_text="Jumps to the start of the next chapter and says which one it is.",
+        )
+        self._rew_btn = self._button(
+            row,
+            _("Re&wind"),
+            self._on_rewind,
+            "player.rewind",
+            help_text="Skips back ten seconds and announces the new position.",
+        )
+        self._fwd_btn = self._button(
+            row,
+            _("&Forward"),
+            self._on_forward,
+            "player.forward",
+            help_text="Skips ahead ten seconds and announces the new position.",
+        )
         self._where_btn = self._button(
-            row, _("Where am &I?"), self._on_where_am_i, "player.where_am_i"
+            row,
+            _("Where am &I?"),
+            self._on_where_am_i,
+            "player.where_am_i",
+            help_text=(
+                "Speaks the audible glance: which chapter of how many, how far "
+                "into it and how much of it is left, and the position and time "
+                "remaining in the whole book. Playback keeps going."
+            ),
         )
         row.Add(wx.StaticText(self, label=_("Spee&d:")), 0, wx.ALIGN_CENTER_VERTICAL)
         self._rate = wx.Choice(self, choices=["0.75x", "1x", "1.25x", "1.5x", "2x"])
         self._rate.SetName(_("Playback speed"))
+        self._rate.SetHelpText(
+            "How fast the book plays, 0.75x to 2x without changing pitch; 1x "
+            "is as recorded. Listening only -- the file is not changed."
+        )
         self._rate.SetSelection(1)
         self._rate.Bind(wx.EVT_CHOICE, lambda _e: self._on_rate())
         row.Add(self._rate, 0, wx.LEFT, 6)
@@ -84,13 +139,28 @@ class PlayerPanel(wx.Panel):
         slider_row = wx.BoxSizer(wx.HORIZONTAL)
         self._position = wx.Slider(self, minValue=0, maxValue=1000)
         set_accessible_name(self._position, _("Position"))
+        self._position.SetHelpText(
+            "The playhead's position in the whole book, in milliseconds; "
+            "moving it seeks there. The arrow keys nudge it, and the status "
+            "line below speaks the position in human time."
+        )
         self._position.Bind(wx.EVT_SLIDER, self._on_slider)
         slider_row.Add(self._position, 3, wx.EXPAND | wx.RIGHT, 8)
         self._volume = wx.Slider(self, value=100, minValue=0, maxValue=100)
         set_accessible_name(self._volume, _("Volume"))
+        self._volume.SetHelpText(
+            "This book's playback volume, 0 to 100 percent, remembered per "
+            "book. Moving it also lifts mute, and it is this player's volume "
+            "only -- the system volume is untouched."
+        )
         self._volume.Bind(wx.EVT_SLIDER, self._on_volume)
         slider_row.Add(self._volume, 1, wx.EXPAND)
         self._mute_btn = wx.Button(self, label=_("M&ute"), name="player.mute")
+        self._mute_btn.SetHelpText(
+            "Silences playback without stopping it; pressing again restores "
+            "the volume that was set before the mute. The mute state is "
+            "remembered per book."
+        )
         self._mute_btn.Bind(wx.EVT_BUTTON, lambda _e: self.toggle_mute())
         slider_row.Add(self._mute_btn, 0, wx.LEFT, 6)
         sizer.Add(slider_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
@@ -286,9 +356,17 @@ class PlayerPanel(wx.Panel):
     # -- helpers ----------------------------------------------------------------
 
     def _button(
-        self, row: wx.BoxSizer, label: str, handler: Callable[[], None], name: str
+        self,
+        row: wx.BoxSizer,
+        label: str,
+        handler: Callable[[], None],
+        name: str,
+        *,
+        help_text: str = "",
     ) -> wx.Button:
         btn = wx.Button(self, label=label, name=name)
+        if help_text:
+            btn.SetHelpText(help_text)
         btn.Bind(wx.EVT_BUTTON, lambda _e: handler())
         row.Add(btn, 0, wx.RIGHT, 6)
         return btn

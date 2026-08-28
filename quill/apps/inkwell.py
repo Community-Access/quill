@@ -67,6 +67,15 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         self._library: AbbreviationLibrary = load_abbreviation_library(self._data_dir)
         self._hook: Any = None
         self._windows = WindowManager(wx)
+        # F1 context help with Inkwell's authored purpose catalogue. The app
+        # shell just activated the shared engine with the generic resolver
+        # (provider + dialog-contract hook + frame F1); re-activating swaps in
+        # Inkwell's window-purpose resolver so the authored paragraphs lead
+        # every answer instead of the generic sentence (GATE-INKWELL-HELP).
+        from quill.core import inkwell_surface_help
+        from quill.ui import app_context_help
+
+        app_context_help.activate(inkwell_surface_help.purpose_for_title)
         self._build_menu_bar()
         self._build_main_panel()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
@@ -264,6 +273,13 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
 
         self._list = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SUNKEN)
         self._list.SetName("Abbreviations")
+        self._list.SetHelpText(
+            "Your abbreviation library, read-only here: each row is a trigger "
+            "word, the start of what it expands to, and its category, with "
+            "disabled entries marked. To add, change, or remove entries press "
+            "the Manage Abbreviations button (Ctrl+M); this list follows the "
+            "same library QUILL's editor expands from."
+        )
         self._list.InsertColumn(0, "Abbreviation", width=120)
         self._list.InsertColumn(1, "Expands to", width=290)
         self._list.InsertColumn(2, "Category", width=100)
@@ -271,7 +287,18 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         manage_btn = wx.Button(panel, label="&Manage Abbreviations...")
+        manage_btn.SetHelpText(
+            "Open the Manage Abbreviations dialog: create, edit, delete, "
+            "enable or disable entries, and import or export the whole "
+            "library. Changes save immediately and work in QUILL too."
+        )
         quick_btn = wx.Button(panel, label="&Quick Insert...")
+        quick_btn.SetHelpText(
+            "Pick an abbreviation and have its expansion typed into the "
+            "window you were just working in -- the way to use entries set "
+            "to expand only manually. Also on Ctrl+K here, or its "
+            "system-wide hotkey from any application."
+        )
         manage_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_manager())
         quick_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_quick_insert())
         buttons.Add(manage_btn, 0, wx.RIGHT, 6)

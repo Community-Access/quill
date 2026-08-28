@@ -110,7 +110,7 @@ class ActionBuilderDialog:
         # Start from
         start_row = wx.BoxSizer(wx.HORIZONTAL)
         start_row.Add(
-            wx.StaticText(self.dialog, label="&Start from:"),
+            wx.StaticText(self.dialog, label="S&tart from:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             4,
@@ -152,7 +152,7 @@ class ActionBuilderDialog:
         btns = wx.BoxSizer(wx.HORIZONTAL)
         self._preview_btn = wx.Button(self.dialog, label="&Preview")
         save_btn = wx.Button(self.dialog, wx.ID_OK, label="&Save Action")
-        cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="Ca&ncel")
+        cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="Cancel")
         if self._on_preview is not None:
             btns.Add(self._preview_btn, 0, wx.RIGHT, 6)
         else:

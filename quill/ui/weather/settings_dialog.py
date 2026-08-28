@@ -57,12 +57,22 @@ class WeatherSettingsDialog:
         label("&Temperature unit:")
         self._temp = wx.Choice(self.dialog, choices=["Fahrenheit", "Celsius"])
         set_accessible_name(self._temp, "Temperature unit")
+        self._temp.SetHelpText(
+            "The scale every temperature is shown and spoken in: Fahrenheit "
+            "(the default) or Celsius. It applies everywhere -- current "
+            "conditions, forecasts, and the Quick Weather line."
+        )
         self._temp.SetSelection(TEMPERATURE_UNITS.index(settings.temperature_unit))
         grid.Add(self._temp, 0, wx.EXPAND)
 
         label("&Wind unit:")
         self._wind = wx.Choice(self.dialog, choices=list(WIND_UNITS))
         set_accessible_name(self._wind, "Wind speed unit")
+        self._wind.SetHelpText(
+            "The unit wind speeds are shown and spoken in, wherever wind "
+            "appears: current conditions, forecasts, and the Quick Weather "
+            "line. Miles per hour is the default."
+        )
         self._wind.SetSelection(WIND_UNITS.index(settings.wind_unit))
         grid.Add(self._wind, 0, wx.EXPAND)
 
@@ -72,6 +82,12 @@ class WeatherSettingsDialog:
             self.dialog, min=1, max=14, initial=settings.forecast_period_count
         )
         set_accessible_name(self._periods, "Number of forecast periods to show")
+        self._periods.SetHelpText(
+            "How many forecast periods the Weather Center's Forecast list "
+            "holds, 1 to 14. The National Weather Service issues two periods "
+            "per day (Today, Tonight, and so on), so 14 covers the full "
+            "week."
+        )
         grid.Add(self._periods, 0)
 
         label("&Extended daily outlook (days, 0 = off):")
@@ -81,11 +97,22 @@ class WeatherSettingsDialog:
         set_accessible_name(
             self._daily_days, "Extended daily outlook length in days, 0 turns it off"
         )
+        self._daily_days.SetHelpText(
+            "How many days the Weather Center's extended Daily outlook "
+            "covers, up to 16 -- one summary line per day, reaching past the "
+            "week the period forecast covers. 0 removes the outlook section "
+            "entirely."
+        )
         grid.Add(self._daily_days, 0)
 
         label("Ho&urly forecast (hours, 0 = off):")
         self._hourly_hours = wx.SpinCtrl(self.dialog, min=0, max=48, initial=settings.hourly_hours)
         set_accessible_name(self._hourly_hours, "Hourly forecast length in hours, 0 turns it off")
+        self._hourly_hours.SetHelpText(
+            "How many hours the Weather Center's Hourly forecast covers, up "
+            "to 48 -- one line per hour with temperature, sky, and wind. "
+            "0 removes the hourly section entirely."
+        )
         grid.Add(self._hourly_hours, 0)
 
         label("Alert &severity to show:")
@@ -93,12 +120,25 @@ class WeatherSettingsDialog:
             self.dialog, choices=[_SEVERITY_LABELS[s] for s in SEVERITY_FLOOR]
         )
         set_accessible_name(self._severity, "Minimum alert severity to show")
+        self._severity.SetHelpText(
+            "The least severe alert worth showing you. Show all alerts (the "
+            "default) includes everything the National Weather Service "
+            "issues; each step up hides the tiers below it, so Extreme only "
+            "keeps just the worst. Hidden alerts are filtered from the "
+            "Weather Center and from spoken announcements alike."
+        )
         self._severity.SetSelection(SEVERITY_FLOOR.index(settings.alert_severity_floor))
         grid.Add(self._severity, 0, wx.EXPAND)
 
         label("&Refresh every (minutes):")
         self._refresh = wx.SpinCtrl(self.dialog, min=1, max=180, initial=settings.refresh_minutes)
         set_accessible_name(self._refresh, "Auto-refresh interval in minutes")
+        self._refresh.SetHelpText(
+            "How many minutes pass between automatic re-fetches of the "
+            "weather data, 1 to 180. A shorter interval is fresher; the "
+            "default of 15 is plenty for observations that update about "
+            "hourly."
+        )
         grid.Add(self._refresh, 0)
 
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 12)
@@ -172,12 +212,30 @@ class WeatherSettingsDialog:
         )
         self._alert_sound_path = wx.TextCtrl(self.dialog, style=wx.TE_READONLY)
         set_accessible_name(self._alert_sound_path, "Chosen alert sound file")
+        self._alert_sound_path.SetHelpText(
+            "The sound file that plays when a new alert is announced -- "
+            "read-only; use Choose to pick a different .wav file. It reads "
+            "(default chime) when no file of your own is set."
+        )
         self._alert_sound_path.SetValue(settings.alert_sound_path or "(default chime)")
         self._alert_sound_value = settings.alert_sound_path
         sound_row.Add(self._alert_sound_path, 1, wx.EXPAND | wx.RIGHT, 6)
         choose_btn = wx.Button(self.dialog, label="C&hoose...")
+        choose_btn.SetHelpText(
+            "Pick your own alert sound: a .wav file from anywhere on this "
+            "computer. It is not copied -- moving or deleting the file "
+            "later falls back to the default chime."
+        )
         play_btn = wx.Button(self.dialog, label="&Play")
+        play_btn.SetHelpText(
+            "Hear the alert sound as it is currently set -- your chosen "
+            "file or the default chime, repeated the number of times set "
+            "below -- before you save."
+        )
         default_btn = wx.Button(self.dialog, label="Use De&fault")
+        default_btn.SetHelpText(
+            "Forget the chosen sound file and go back to the built-in default chime."
+        )
         for b in (choose_btn, play_btn, default_btn):
             sound_row.Add(b, 0, wx.RIGHT, 4)
         root.Add(sound_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 12)
@@ -196,13 +254,18 @@ class WeatherSettingsDialog:
             self.dialog, min=1, max=10, initial=settings.alert_sound_repeat
         )
         set_accessible_name(self._alert_sound_repeat, "Number of times to play the alert sound")
+        self._alert_sound_repeat.SetHelpText(
+            "How many times the alert sound plays in a row when a new alert "
+            "arrives, 1 to 10. The default is once; more repeats make an "
+            "alert harder to miss from another room."
+        )
         repeat_row.Add(self._alert_sound_repeat, 0)
         root.Add(repeat_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
 
         root.Add(
             wx.StaticText(
                 self.dialog,
-                label="&Hide these alert events (one per line, exact event name):",
+                label="Hide &these alert events (one per line, exact event name):",
             ),
             0,
             wx.LEFT | wx.TOP,
@@ -210,6 +273,13 @@ class WeatherSettingsDialog:
         )
         self._muted = wx.TextCtrl(self.dialog, style=wx.TE_MULTILINE)
         set_accessible_name(self._muted, "Alert events to hide, one per line")
+        self._muted.SetHelpText(
+            "Alert events you never want to see or hear, one exact event "
+            "name per line -- for example Rip Current Statement. The name "
+            "must match what the National Weather Service issues, as shown "
+            "in the Weather Center's alerts list. Empty (the default) hides "
+            "nothing."
+        )
         self._muted.SetValue("\n".join(settings.muted_events))
         self._muted.SetMinSize((-1, 70))
         root.Add(self._muted, 1, wx.EXPAND | wx.ALL, 12)
@@ -217,8 +287,15 @@ class WeatherSettingsDialog:
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         btn_row.AddStretchSpacer()
         ok = wx.Button(self.dialog, wx.ID_OK, "&Save")
+        ok.SetHelpText(
+            "Save every setting in this window and close it. Changes apply "
+            "immediately -- an open Weather Center re-renders with the new "
+            "preferences."
+        )
         btn_row.Add(ok, 0, wx.RIGHT, 6)
-        btn_row.Add(wx.Button(self.dialog, wx.ID_CANCEL, "Cancel"))
+        cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
+        cancel_btn.SetHelpText("Close without changing any setting. Escape does the same.")
+        btn_row.Add(cancel_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 12)
 
         self.dialog.SetSizer(root)

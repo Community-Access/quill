@@ -311,7 +311,7 @@ class SoundEnhanceDialog:
 
             exact_row = wx.BoxSizer(wx.HORIZONTAL)
             exact_row.Add(
-                wx.StaticText(self.dialog, label="&Exact OptiLab processing:"),
+                wx.StaticText(self.dialog, label="E&xact OptiLab processing:"),
                 0,
                 wx.ALIGN_CENTER_VERTICAL,
             )

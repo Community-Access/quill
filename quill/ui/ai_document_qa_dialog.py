@@ -131,10 +131,10 @@ class AIDocumentQADialog:
 
         # Action buttons
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._copy_btn = wx.Button(self.dialog, label="&Copy Answer")
+        self._copy_btn = wx.Button(self.dialog, label="C&opy Answer")
         self._insert_btn = wx.Button(self.dialog, label="&Insert at Cursor")
         self._clear_btn = wx.Button(self.dialog, label="C&lear History")
-        self._close_btn = wx.Button(self.dialog, label="C&lose")
+        self._close_btn = wx.Button(self.dialog, label="Close")
         apply_modal_ids(
             self.dialog,
             affirmative_id=self._close_btn.GetId(),

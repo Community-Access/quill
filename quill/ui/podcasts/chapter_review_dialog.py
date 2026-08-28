@@ -115,7 +115,7 @@ class ChapterReviewDialog:
         add_row.Add(add_btn, 0, wx.RIGHT, 6)
         add_row.Add(delete_btn, 0, wx.RIGHT, 6)
         add_row.AddStretchSpacer()
-        save_btn = wx.Button(self.dialog, wx.ID_OK, "&Save Chapters")
+        save_btn = wx.Button(self.dialog, wx.ID_OK, "Sa&ve Chapters")
         close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         add_row.Add(save_btn, 0, wx.RIGHT, 6)
         add_row.Add(close_btn)

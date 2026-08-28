@@ -2,6 +2,53 @@
 
 ## 1.0.0
 
+### F1 answers everywhere, and three keyboard rules become gates (2026-08-27)
+
+The EdSharp 5.0 review (a text editor written by a blind developer and
+maintained since 2007) turned into six pieces of work, each of which closes a
+class of accessibility defect this project had no way to catch:
+
+- **Field-level F1, in every app.** Press F1 on any control, in any window, in
+  any of the eight apps, and the help window now leads with what that *window*
+  is for and then what the *focused control* wants -- its units, its default,
+  what it affects. Quill Radio and QUILL Cast already had authored catalogues;
+  the Media Player, Audio Studio, Inkwell, Weather, Converter and Beacon now do
+  too, with a gate each (`GATE-PLAYER-HELP` and its five siblings) that fails
+  the build when a new control ships with nothing to say. 620 control sites are
+  now accounted for across the family, and the whole authored corpus renders to
+  `docs/f1-help-reference.md`, generated so it cannot drift.
+
+- **Duplicate access keys are gone (GATE-14).** Within one window, two controls
+  claiming the same Alt letter means Windows cycles focus between them instead
+  of pressing either -- so one control silently cannot be reached, and nothing
+  says so. There were **137 such collisions across 76 windows** ('&Cancel'
+  beside '&Clear Finished'; '&Save' beside '&Secret:'). All are resolved and a
+  gate keeps them resolved. Following EdSharp, **OK, Cancel and Close no longer
+  carry an access key at all**: Enter and Escape already serve them, and the
+  letters they gave up resolved collisions elsewhere.
+
+- **The app now speaks only what the screen reader does not (GATE-13).** The
+  opposite failure to the one GATE-12 catches, and the one nobody reports: an
+  announcement that repeats a window title, a focus move or a control name is
+  absorbed as "this app is chatty" and paid for on every occurrence. The rule
+  is written down beside the menu-accelerator rule and enforced mechanically.
+
+- **The keyboard reference is generated from the keymap.** `docs/keyboard-reference.md`
+  is built from `DEFAULT_KEYMAP` and `APP_KEYMAPS` with command titles harvested
+  from the registration and menu tables, so a binding cannot change without the
+  document changing. Every default QUILL-key chord also gained an authored Key
+  Describer title -- forty of them were falling back to machine-derived names.
+
+- **Every setting is documented, or deliberately not (GATE-SETDOC).** An
+  undocumented setting is one nobody can find. All 320 settings fields now carry
+  a status; new ones fail the build until documented or classified internal.
+
+- **A taught dictionary survives being edited by hand.** Personal, document and
+  project dictionaries are the user's asset -- somebody who has taught the
+  checker two hundred words should be able to open the file, edit it and keep
+  it. A file that no longer parses as JSON is now read as a plain word list
+  instead of silently becoming an empty dictionary.
+
 The most recent work first: a reliability pass driven entirely by what people
 reported (a full disk that could lose a document, an editor doing too much work
 between keystrokes), then the release as originally scoped below.

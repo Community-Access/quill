@@ -395,12 +395,30 @@ class ConvertAudioDialog(wx.Dialog):
         sizer.Add(wx.StaticText(self, label="&Files to convert:"), 0, wx.ALL, 8)
         self._list = wx.ListBox(self, name="Files to convert")
         set_accessible_name(self._list, "Files to convert")
+        self._list.SetHelpText(
+            "The conversion queue: each row is a file, or a folder that will be "
+            "expanded when the run starts (a folder row says whether its "
+            "sub-folders are included). Delete removes the highlighted row; "
+            "duplicates are skipped automatically."
+        )
         sizer.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         add_row = wx.BoxSizer(wx.HORIZONTAL)
         self._add_files_btn = wx.Button(self, label="&Add files...")
+        self._add_files_btn.SetHelpText(
+            "Picks one or more audio or video files to add to the queue; a "
+            "video contributes its audio track."
+        )
         self._add_folder_btn = wx.Button(self, label="Add f&older...")
+        self._add_folder_btn.SetHelpText(
+            "Adds a whole folder to the queue. Its audio files are found when "
+            "the run starts, honoring the Include sub-folders checkbox, and "
+            "the folder structure is mirrored under the output folder."
+        )
         self._remove_btn = wx.Button(self, label="&Remove")
+        self._remove_btn.SetHelpText(
+            "Removes the highlighted row from the queue. The file on disk is untouched."
+        )
         self._recurse = wx.CheckBox(self, label="&Include sub-folders")
         self._recurse.SetValue(True)
         set_accessible_name(self._recurse, "Include sub-folders")
@@ -409,25 +427,40 @@ class ConvertAudioDialog(wx.Dialog):
         sizer.Add(add_row, 0, wx.ALL, 8)
 
         # Convert to / Preset row.
-        sizer.Add(wx.StaticText(self, label="Con&vert to:"), 0, wx.LEFT | wx.TOP, 8)
+        sizer.Add(wx.StaticText(self, label="Co&nvert to:"), 0, wx.LEFT | wx.TOP, 8)
         self._format = wx.Choice(self, choices=[f.upper() for f in self._formats])
         self._format.SetSelection(0)
         set_accessible_name(self._format, "Convert to format")
+        self._format.SetHelpText(
+            "The output format every file in the queue is converted to. Only "
+            "formats this machine's FFmpeg can actually encode are listed."
+        )
         sizer.Add(self._format, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-        sizer.Add(wx.StaticText(self, label="&Preset:"), 0, wx.LEFT | wx.TOP, 8)
+        sizer.Add(wx.StaticText(self, label="Pr&eset:"), 0, wx.LEFT | wx.TOP, 8)
         self._preset_ids = [pid for pid, _label in preset_choices()]
         self._preset = wx.Choice(self, choices=[label for _pid, label in preset_choices()])
         self._preset.SetSelection(max(0, self._preset_ids.index(DEFAULT_PRESET_ID)))
         set_accessible_name(self._preset, "Preset")
+        self._preset.SetHelpText(
+            "A ready-made quality recipe -- bit rate, sample rate, channels -- "
+            "applied to every file. The Advanced options below can override "
+            "any part of it; anything you leave alone keeps the preset's value."
+        )
         sizer.Add(self._preset, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         # Destination folder + conflict policy.
-        sizer.Add(wx.StaticText(self, label="Output f&older:"), 0, wx.LEFT | wx.TOP, 8)
+        sizer.Add(wx.StaticText(self, label="Output fo&lder:"), 0, wx.LEFT | wx.TOP, 8)
         dest_row = wx.BoxSizer(wx.HORIZONTAL)
         self._dest = wx.TextCtrl(self)
         set_accessible_name(self._dest, "Output folder")
+        self._dest.SetHelpText(
+            "Where the converted files land. Leave it blank to use a Converted "
+            "folder next to the first queued item; a queued folder mirrors its "
+            "own structure underneath this one."
+        )
         self._browse_btn = wx.Button(self, label="&Browse...")
+        self._browse_btn.SetHelpText("Picks the output folder with the system folder chooser.")
         dest_row.Add(self._dest, 1, wx.RIGHT | wx.ALIGN_CENTER_VERTICAL, 6)
         dest_row.Add(self._browse_btn, 0)
         sizer.Add(dest_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
@@ -436,6 +469,11 @@ class ConvertAudioDialog(wx.Dialog):
         self._conflict = wx.Choice(self, choices=[label for _policy, label in _CONFLICT_CHOICES])
         self._conflict.SetSelection(0)
         set_accessible_name(self._conflict, "On conflict")
+        self._conflict.SetHelpText(
+            "What happens when a converted file already exists at the "
+            "destination: skip it (the default, which also makes re-runs "
+            "resume), rename to keep both, or overwrite it."
+        )
         sizer.Add(self._conflict, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         self._advanced = wx.CheckBox(self, label="Advanced o&ptions")
@@ -480,39 +518,121 @@ class ConvertAudioDialog(wx.Dialog):
             box.Add(ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
             return ctrl
 
-        def choice(pairs: tuple[tuple[Any, str], ...], name: str) -> wx.Choice:
+        def choice(pairs: tuple[tuple[Any, str], ...], name: str, help_text: str) -> wx.Choice:
             ctrl = wx.Choice(self, choices=[label for _value, label in pairs])
             ctrl.SetSelection(0)
             set_accessible_name(ctrl, name)
+            ctrl.SetHelpText(help_text)
             return ctrl
 
-        self._adv_bitrate = labeled("Bit &rate:", lambda: choice(_BITRATE_CHOICES, "Bit rate"))
-        self._adv_rate = labeled("Sa&mple rate:", lambda: choice(_RATE_CHOICES, "Sample rate"))
-        self._adv_channels = labeled("C&hannels:", lambda: choice(_CHANNEL_CHOICES, "Channels"))
-        self._adv_depth = labeled("Bit &depth:", lambda: choice(_DEPTH_CHOICES, "Bit depth"))
+        self._adv_bitrate = labeled(
+            "Bit &rate:",
+            lambda: choice(
+                _BITRATE_CHOICES,
+                "Bit rate",
+                "The output bit rate, 96 to 320 kbps. Auto (the default) keeps "
+                "whatever the chosen preset says; pick a value only to override "
+                "it for this run.",
+            ),
+        )
+        self._adv_rate = labeled(
+            "Sa&mple rate:",
+            lambda: choice(
+                _RATE_CHOICES,
+                "Sample rate",
+                "The output sample rate, 16 to 48 kHz. The default keeps each "
+                "source file's own rate; pick one to resample everything to it.",
+            ),
+        )
+        self._adv_channels = labeled(
+            "C&hannels:",
+            lambda: choice(
+                _CHANNEL_CHOICES,
+                "Channels",
+                "Mono or stereo output. The default keeps each source's own "
+                "channel count; mono halves the size of speech recordings.",
+            ),
+        )
+        self._adv_depth = labeled(
+            "Bit &depth:",
+            lambda: choice(
+                _DEPTH_CHOICES,
+                "Bit depth",
+                "The sample depth for lossless outputs: 16-bit, 24-bit, or "
+                "32-bit float. The default keeps each source's own depth; "
+                "lossy formats ignore this.",
+            ),
+        )
         self._adv_loudness = labeled(
-            "&Loudness:", lambda: choice(tuple(loudness_choices()), "Loudness normalization")
+            "&Loudness:",
+            lambda: choice(
+                tuple(loudness_choices()),
+                "Loudness normalization",
+                "Normalize every file to a broadcast loudness target, or leave "
+                "levels exactly as recorded (the default).",
+            ),
         )
 
-        def new_spin(lo: float, hi: float, inc: float, digits: int, name: str) -> wx.SpinCtrlDouble:
+        def new_spin(
+            lo: float, hi: float, inc: float, digits: int, name: str, help_text: str
+        ) -> wx.SpinCtrlDouble:
             spin = wx.SpinCtrlDouble(self, min=lo, max=hi, inc=inc)
             spin.SetDigits(digits)
             set_accessible_name(spin, name)
+            spin.SetHelpText(help_text)
             return spin
 
         self._adv_gain = labeled(
-            "&Gain (dB):", lambda: new_spin(-30.0, 30.0, 0.5, 1, "Gain in decibels")
+            "&Gain (dB):",
+            lambda: new_spin(
+                -30.0,
+                30.0,
+                0.5,
+                1,
+                "Gain in decibels",
+                "A flat volume change applied to every file, -30 to +30 dB in "
+                "half-dB steps. 0 (the default) changes nothing; positive "
+                "louder, negative quieter.",
+            ),
         )
         self._adv_gain.SetValue(0.0)  # 0 dB = no change
         self._adv_tempo = labeled(
-            "&Speed (tempo):", lambda: new_spin(0.5, 2.0, 0.05, 2, "Speed, tempo multiplier")
+            "&Speed (tempo):",
+            lambda: new_spin(
+                0.5,
+                2.0,
+                0.05,
+                2,
+                "Speed, tempo multiplier",
+                "Plays the result faster or slower without changing pitch, 0.5x "
+                "to 2x in steps of 0.05. 1.0 (the default) leaves the speed as "
+                "recorded.",
+            ),
         )
         self._adv_tempo.SetValue(1.0)  # 1.0x = unchanged; no pitch shift
         self._adv_fade_in = labeled(
-            "Fade &in (seconds):", lambda: new_spin(0.0, 10.0, 0.5, 1, "Fade-in seconds")
+            "Fade &in (seconds):",
+            lambda: new_spin(
+                0.0,
+                10.0,
+                0.5,
+                1,
+                "Fade-in seconds",
+                "Fades each file in from silence over this many seconds, up to "
+                "10. 0 (the default) starts at full volume.",
+            ),
         )
         self._adv_fade_out = labeled(
-            "Fade &out (seconds):", lambda: new_spin(0.0, 10.0, 0.5, 1, "Fade-out seconds")
+            "Fade &out (seconds):",
+            lambda: new_spin(
+                0.0,
+                10.0,
+                0.5,
+                1,
+                "Fade-out seconds",
+                "Fades each file out to silence over its last seconds, up to "
+                "10. 0 (the default) ends at full volume.",
+            ),
         )
 
         # Exact OptiLab processing, when this build includes the component. A
@@ -521,7 +641,15 @@ class ConvertAudioDialog(wx.Dialog):
         exact_available = exact_optilab_component.available()
         self._adv_exact_optilab = labeled(
             "Broadcast &polish:",
-            lambda: choice(_EXACT_OPTILAB_CHOICES, "Exact OptiLab broadcast polish"),
+            lambda: choice(
+                _EXACT_OPTILAB_CHOICES,
+                "Exact OptiLab broadcast polish",
+                "Runs the converted file through the Exact OptiLab processing "
+                "engine: Podcast Leveler for speech, Stream Polish for music, "
+                "or Smooth Limiter for peak control. Off (the default) uses "
+                "the built-in processing only; disabled when this build does "
+                "not include the component.",
+            ),
         )
         if not exact_available:
             # Disabled with the reason beside it -- never silently missing.
@@ -535,7 +663,7 @@ class ConvertAudioDialog(wx.Dialog):
 
         self._adv_highpass = wx.CheckBox(self, label="Remove low-frequency r&umble (high-pass)")
         self._adv_trim = wx.CheckBox(self, label="&Trim leading and trailing silence")
-        self._adv_compressor = wx.CheckBox(self, label="&Compress dynamics (even out loud/quiet)")
+        self._adv_compressor = wx.CheckBox(self, label="Compress &dynamics (even out loud/quiet)")
         self._adv_leveler = wx.CheckBox(self, label="Le&vel volume across the file")
         for cb, name in (
             (self._adv_highpass, "Remove low-frequency rumble"),

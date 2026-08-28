@@ -387,7 +387,7 @@ class _SiteEditorDialog(wx.Dialog):
         self._host_ctrl.SetName("Host name")
         grid.Add(self._host_ctrl, 1, wx.EXPAND)
 
-        grid.Add(wx.StaticText(panel, label="&Port:"))
+        grid.Add(wx.StaticText(panel, label="P&ort:"))
         self._port_ctrl = wx.TextCtrl(
             panel,
             value=str(self._site.port if self._site and self._site.port else ""),
@@ -400,7 +400,7 @@ class _SiteEditorDialog(wx.Dialog):
         self._username_ctrl.SetName("User name")
         grid.Add(self._username_ctrl, 1, wx.EXPAND)
 
-        grid.Add(wx.StaticText(panel, label="&Password:"))
+        grid.Add(wx.StaticText(panel, label="P&assword:"))
         self._password_ctrl = wx.TextCtrl(panel, style=wx.TE_PASSWORD)
         self._password_ctrl.SetName("Password")
         if self._site is not None:

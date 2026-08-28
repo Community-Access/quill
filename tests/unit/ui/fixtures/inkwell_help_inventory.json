@@ -1,0 +1,5 @@
+{
+  "quill/apps/inkwell.py::QuillInkwellFrame._build_main_panel::wx.Button": "helped",
+  "quill/apps/inkwell.py::QuillInkwellFrame._build_main_panel::wx.Button#2": "helped",
+  "quill/apps/inkwell.py::QuillInkwellFrame._build_main_panel::wx.ListCtrl": "helped"
+}

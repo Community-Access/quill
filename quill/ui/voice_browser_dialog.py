@@ -171,7 +171,7 @@ class VoiceBrowserDialog:
         root.Add(filter_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         # Voice list.
-        voices_lbl = wx.StaticText(parent, label="&Voices (use the Preview button to hear one):")
+        voices_lbl = wx.StaticText(parent, label="Voices (&use the Preview button to hear one):")
         root.Add(voices_lbl, 0, wx.LEFT | wx.TOP, 10)
         self._voice_lb = wx.ListBox(parent, style=wx.LB_SINGLE)
         self._voice_lb.SetName("Voices")
@@ -261,7 +261,7 @@ class VoiceBrowserDialog:
         self._download_btn.SetName("Download voice model")
         self._export_btn = wx.Button(parent, label="E&xport to Audio File...")
         self._export_btn.SetName("Export document to audio file")
-        self._set_default_btn = wx.Button(parent, label="Set as &Default")
+        self._set_default_btn = wx.Button(parent, label="&Set as Default")
         self._set_default_btn.SetName("Set selected voice as default")
         btn_row.Add(self._preview_btn, 0, wx.RIGHT, 6)
         btn_row.Add(self._download_btn, 0, wx.RIGHT, 6)

@@ -57,6 +57,17 @@ class QuillConverterFrame(AppShellFrame):
 
     def __init__(self, *, safe_mode: bool = False, initial_paths: list[Path] | None = None) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(560, 460))
+        # The shell already activated the shared F1 engine (help provider +
+        # dialog-contract hook + main-frame binding); this re-activation swaps
+        # in the Converter's own window-purpose resolver so the authored
+        # paragraphs lead every answer instead of the generic sentence
+        # (GATE-CONVERTER-HELP). A single-file app needs no ui shim -- there is
+        # no quill/ui/converter package to hold one.
+        from quill.core import converter_surface_help
+        from quill.ui import app_context_help
+
+        app_context_help.activate(converter_surface_help.purpose_for_title)
+
         from quill.ui.window_menu import WindowManager
 
         self._windows = WindowManager(wx)
@@ -150,20 +161,46 @@ class QuillConverterFrame(AppShellFrame):
         root.Add(wx.StaticText(panel, label="&Files to convert:"), 0, wx.ALL, 8)
         self._list = wx.ListBox(panel, name="Files to convert")
         set_accessible_name(self._list, "Files to convert")
+        self._list.SetHelpText(
+            "The queue. Every file here is converted when you press Convert, "
+            "and a folder in the queue brings the audio files inside it, "
+            "including subfolders. Delete removes the highlighted row from the "
+            "queue; it never deletes anything from disk."
+        )
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         add_row = wx.BoxSizer(wx.HORIZONTAL)
         self._add_files_btn = wx.Button(panel, label="&Add Files...")
+        self._add_files_btn.SetHelpText(
+            "Choose audio or video files to add to the queue. You may select "
+            "several at once, and adding the same file twice queues it once."
+        )
         self._add_folder_btn = wx.Button(panel, label="Add F&older...")
+        self._add_folder_btn.SetHelpText(
+            "Add a whole folder to the queue. Every audio file inside it is "
+            "converted, subfolders included, and the folder layout is "
+            "reproduced in the output folder."
+        )
         self._remove_btn = wx.Button(panel, label="&Remove")
+        self._remove_btn.SetHelpText(
+            "Take the highlighted row out of the queue. Delete does the same "
+            "thing from the list itself. Nothing is removed from disk."
+        )
         for btn in (self._add_files_btn, self._add_folder_btn, self._remove_btn):
             add_row.Add(btn, 0, wx.RIGHT, 6)
         root.Add(add_row, 0, wx.ALL, 8)
 
-        root.Add(wx.StaticText(panel, label="Con&vert to:"), 0, wx.LEFT | wx.TOP, 8)
+        root.Add(wx.StaticText(panel, label="Convert &to:"), 0, wx.LEFT | wx.TOP, 8)
         self._format = wx.Choice(panel, choices=[f.upper() for f in self._formats])
         self._format.SetSelection(0)
         set_accessible_name(self._format, "Convert to format")
+        self._format.SetHelpText(
+            "The format every queued file is converted to. The list holds only "
+            "the formats this machine can actually write: without ffmpeg "
+            "bundled or installed it is a short list, and with it the full one. "
+            "A preset below may carry its own format, and where they disagree "
+            "the preset wins."
+        )
         root.Add(self._format, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         root.Add(wx.StaticText(panel, label="&Preset:"), 0, wx.LEFT | wx.TOP, 8)
@@ -171,21 +208,49 @@ class QuillConverterFrame(AppShellFrame):
         self._preset = wx.Choice(panel, choices=[label for _pid, label in preset_choices()])
         self._preset.SetSelection(max(0, self._preset_ids.index(DEFAULT_PRESET_ID)))
         set_accessible_name(self._preset, "Preset")
+        self._preset.SetHelpText(
+            "A named set of quality settings -- bit rate, sample rate and "
+            "channels -- so you do not have to know any of them. The default is "
+            "chosen to suit spoken-word audio. Advanced opens the full dialog "
+            "if you want the individual settings."
+        )
         root.Add(self._preset, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-        root.Add(wx.StaticText(panel, label="Output f&older:"), 0, wx.LEFT | wx.TOP, 8)
+        root.Add(wx.StaticText(panel, label="Output fo&lder:"), 0, wx.LEFT | wx.TOP, 8)
         dest_row = wx.BoxSizer(wx.HORIZONTAL)
         self._dest = wx.TextCtrl(panel)
         set_accessible_name(self._dest, "Output folder")
+        self._dest.SetHelpText(
+            "Where the converted files are written. Leave it empty and they go "
+            "into a folder named Converted beside the first file in the queue. "
+            "An existing file is never overwritten: a converted file that would "
+            "collide is auto-numbered instead."
+        )
         self._browse_btn = wx.Button(panel, label="&Browse...")
+        self._browse_btn.SetHelpText("Pick the output folder with a folder chooser.")
         dest_row.Add(self._dest, 1, wx.RIGHT, 6)
         dest_row.Add(self._browse_btn, 0)
         root.Add(dest_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         action_row = wx.BoxSizer(wx.HORIZONTAL)
         self._convert_btn = wx.Button(panel, label="&Convert")
+        self._convert_btn.SetHelpText(
+            "Convert everything in the queue, using the format, preset and "
+            "output folder above. Progress is announced as it runs, and the "
+            "window can go to the tray while it works."
+        )
         self._url_btn = wx.Button(panel, label="Convert from &URL...")
+        self._url_btn.SetHelpText(
+            "Paste a web address and convert its audio. The downloader this "
+            "needs is fetched on demand, with your consent, the first time you "
+            "use it; in Safe Mode this is declined rather than attempted."
+        )
         self._advanced_btn = wx.Button(panel, label="Ad&vanced...")
+        self._advanced_btn.SetHelpText(
+            "Open the full conversion dialog with the current queue already in "
+            "it: individual quality settings, the Advanced DSP catalogue, and "
+            "the per-run options this window keeps out of your way."
+        )
         for btn in (self._convert_btn, self._url_btn, self._advanced_btn):
             action_row.Add(btn, 0, wx.RIGHT, 6)
         root.Add(action_row, 0, wx.ALL, 8)

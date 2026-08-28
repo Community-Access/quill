@@ -19,6 +19,18 @@ def _name(ctrl: wx.Control, name: str) -> None:
     ctrl.SetName(name)
 
 
+def _context_help(dlg: wx.Dialog) -> None:
+    """Bind F1 on *dlg* to the family context-help engine (GATE-BEACON-HELP).
+
+    Beacon shows its dialogs with a bare ``ShowModal()`` rather than the
+    dialog contract's show paths (which bind F1 themselves), so each dialog
+    binds the hook here, right after ``apply_modal_ids``.
+    """
+    from quill.ui.app_context_help import install
+
+    install(dlg)
+
+
 class QuickCaptureDialog(wx.Dialog):
     """The quick capture form (PRD 14.3). Returns a dict, or None on cancel."""
 
@@ -42,15 +54,58 @@ class QuickCaptureDialog(wx.Dialog):
         form = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         form.AddGrowableCol(1, proportion=1)
 
-        self.title = self._row(form, "&Title:", prefill_title)
-        self.resource = self._row(form, "&Resource (URL or path):", prefill_url)
-        self.note = self._row(
-            form, "&Note:", "", style=wx.TE_MULTILINE | wx.TE_PROCESS_ENTER, size=(320, 60)
+        self.title = self._row(
+            form,
+            "&Title:",
+            prefill_title,
+            help_text=(
+                "The name the bookmark is saved under. Left blank, the "
+                "capture falls back to the page or file's own name, and F2 "
+                "in the bookmarks list renames it later."
+            ),
         )
-        self.collection = self._row(form, "&Collection:", "")
+        self.resource = self._row(
+            form,
+            "&Resource (URL or path):",
+            prefill_url,
+            help_text=(
+                "The web address or file path to bookmark. This is the one "
+                "required field: Save refuses an empty value."
+            ),
+        )
+        self.note = self._row(
+            form,
+            "&Note:",
+            "",
+            style=wx.TE_MULTILINE | wx.TE_PROCESS_ENTER,
+            size=(320, 60),
+            help_text=(
+                "Your own free-text note, stored with the bookmark and "
+                "found by search (has:note matches every bookmark that has "
+                "one). Optional."
+            ),
+        )
+        self.collection = self._row(
+            form,
+            "&Collection:",
+            "",
+            help_text=(
+                "The collection to file the bookmark into, or blank for "
+                "none. One collection here; more can be added later with "
+                "Add to Collection (Ctrl+L)."
+            ),
+        )
         if self._collections:
             self.collection.AppendText("/".join(self._collections[:5]))
-        self.tags = self._row(form, "&Tags (comma separated):", "")
+        self.tags = self._row(
+            form,
+            "&Tags (comma separated):",
+            "",
+            help_text=(
+                "Tags for the bookmark, separated by commas -- for example "
+                "research, audio. Blank entries are dropped. Optional."
+            ),
+        )
 
         sizer.Add(form, 1, wx.EXPAND | wx.ALL, 10)
 
@@ -64,6 +119,15 @@ class QuickCaptureDialog(wx.Dialog):
         cancel = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         for b in (self.save, self.save_open, cancel):
             _name(b, b.GetLabel().replace("&", ""))
+        self.save.SetHelpText(
+            "Save the bookmark to your library and close. New bookmarks "
+            "land in the Inbox unless a routing rule files them into a "
+            "folder."
+        )
+        self.save_open.SetHelpText(
+            "Save the bookmark, then open it at once with your browser or the file's own program."
+        )
+        cancel.SetHelpText("Close without saving anything.")
         self.save.SetDefault()
         buttons.Add(self.save, 0, wx.RIGHT, 8)
         buttons.Add(self.save_open, 0, wx.RIGHT, 8)
@@ -77,11 +141,14 @@ class QuickCaptureDialog(wx.Dialog):
         self.save.Bind(wx.EVT_BUTTON, lambda _e: self._done(open_it=False))
         self.save_open.Bind(wx.EVT_BUTTON, lambda _e: self._done(open_it=True))
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
-    def _row(self, sizer, label, value, *, style=0, size=None) -> wx.TextCtrl:
+    def _row(self, sizer, label, value, *, style=0, size=None, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
         ctrl = wx.TextCtrl(self, value=value, style=style, size=size or (320, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
+        if help_text:
+            ctrl.SetHelpText(help_text)
         sizer.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(ctrl, 1, wx.EXPAND)
         return ctrl
@@ -122,16 +189,73 @@ class BuildSearchDialog(wx.Dialog):
         form = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         form.AddGrowableCol(1, proportion=1)
 
-        self.all_words = self._row(form, "Contains &all words:", "")
-        self.phrase = self._row(form, "Contains exact &phrase:", "")
-        self.exclude = self._row(form, "&Excludes words:", "")
-        self.type_combo = self._combo(form, "Resource &type:", ["(any)", *ALL_TYPES])
-        self.collection = self._row(form, "&Collection:", "")
-        self.tag = self._row(form, "&Tag:", "")
-        self.health_combo = self._combo(
-            form, "&Health:", ["(any)", "available", "broken", "moved", "changed"]
+        self.all_words = self._row(
+            form,
+            "Contains &all words:",
+            "",
+            help_text=(
+                "Words the bookmark must contain, in any order. They match "
+                "titles, notes, and other captured text."
+            ),
         )
-        self.domain = self._row(form, "&Domain:", "")
+        self.phrase = self._row(
+            form,
+            "Contains exact &phrase:",
+            "",
+            help_text=(
+                "An exact phrase to match. It is quoted in the built query "
+                "so the words stay together."
+            ),
+        )
+        self.exclude = self._row(
+            form,
+            "&Excludes words:",
+            "",
+            help_text=(
+                "Words that must not appear; each one becomes a not: term in the built query."
+            ),
+        )
+        self.type_combo = self._combo(
+            form,
+            "Resource &type:",
+            ["(any)", *ALL_TYPES],
+            help_text=(
+                "Limit results to one resource type, such as podcastEpisode "
+                "or radioStream. (any), the default, leaves type out of the "
+                "query."
+            ),
+        )
+        self.collection = self._row(
+            form,
+            "&Collection:",
+            "",
+            help_text="Only bookmarks filed in this collection, by name. Optional.",
+        )
+        self.tag = self._row(
+            form,
+            "&Tag:",
+            "",
+            help_text="Only bookmarks carrying this tag. Optional.",
+        )
+        self.health_combo = self._combo(
+            form,
+            "&Health:",
+            ["(any)", "available", "broken", "moved", "changed"],
+            help_text=(
+                "Only bookmarks in this link-health state -- broken, for "
+                "example, reviews dead links. (any), the default, skips the "
+                "check."
+            ),
+        )
+        self.domain = self._row(
+            form,
+            "&Domain:",
+            "",
+            help_text=(
+                "Only web bookmarks whose address contains this domain, "
+                "such as example.com. Optional."
+            ),
+        )
         self.has_note = wx.CheckBox(self, label="Has &note")
         _name(self.has_note, "Has note")
         form.Add(self.has_note, 0, wx.ALIGN_CENTER_VERTICAL)
@@ -141,10 +265,20 @@ class BuildSearchDialog(wx.Dialog):
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         save_smart = wx.Button(self, label="Save as &Smart Collection")
-        ok = wx.Button(self, label="&Search", id=wx.ID_OK)
+        ok = wx.Button(self, label="S&earch", id=wx.ID_OK)
         cancel = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         for b in (save_smart, ok, cancel):
             _name(b, b.GetLabel().replace("&", ""))
+        save_smart.SetHelpText(
+            "Build the query and hand it to the main window's search box, "
+            "ready to keep: Save Search as Smart Collection (Ctrl+Shift+G) "
+            "then names and saves it as a live saved search."
+        )
+        ok.SetHelpText(
+            "Build the query from the filled fields and run it in the main "
+            "window's search box. Empty fields are simply left out."
+        )
+        cancel.SetHelpText("Close without searching.")
         ok.SetDefault()
         buttons.Add(save_smart, 0, wx.RIGHT, 8)
         buttons.AddStretchSpacer(1)
@@ -159,20 +293,25 @@ class BuildSearchDialog(wx.Dialog):
         ok.Bind(wx.EVT_BUTTON, lambda _e: self._build(save_smart=False))
         save_smart.Bind(wx.EVT_BUTTON, lambda _e: self._build(save_smart=True))
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
-    def _row(self, sizer, label, value) -> wx.TextCtrl:
+    def _row(self, sizer, label, value, *, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
         ctrl = wx.TextCtrl(self, value=value, size=(320, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
+        if help_text:
+            ctrl.SetHelpText(help_text)
         sizer.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(ctrl, 1, wx.EXPAND)
         return ctrl
 
-    def _combo(self, sizer, label, choices) -> wx.ComboBox:
+    def _combo(self, sizer, label, choices, *, help_text="") -> wx.ComboBox:
         lbl = wx.StaticText(self, label=label)
         combo = wx.ComboBox(self, choices=choices, style=wx.CB_READONLY)
         combo.SetSelection(0)
         _name(combo, label.replace("&", "").replace(":", "").strip())
+        if help_text:
+            combo.SetHelpText(help_text)
         sizer.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(combo, 1, wx.EXPAND)
         return combo
@@ -230,22 +369,49 @@ class CollectionEditorDialog(wx.Dialog):
         form = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         form.AddGrowableCol(1, proportion=1)
 
-        self.name = self._row(form, "&Name:", collection.name if editing else "")
+        self.name = self._row(
+            form,
+            "&Name:",
+            collection.name if editing else "",
+            help_text=(
+                "The collection's name, shown in the sidebar. Required, and "
+                "it must not repeat an existing collection's name."
+            ),
+        )
         self.description = self._row(
             form,
             "&Description:",
             collection.description if editing else "",
             style=wx.TE_MULTILINE,
             size=(320, 60),
+            help_text="Free text about what belongs in this collection. Optional.",
         )
         self.parent = self._row(
-            form, "&Parent collection (optional):", (collection.parent_id or "") if editing else ""
+            form,
+            "&Parent collection (optional):",
+            (collection.parent_id or "") if editing else "",
+            help_text=(
+                "The collection to nest this one under, or blank to keep it at the top level."
+            ),
         )
         self.sharing = self._combo(
-            form, "&Sharing:", ["private", "shared"], (collection.sharing if editing else "private")
+            form,
+            "&Sharing:",
+            ["private", "shared"],
+            (collection.sharing if editing else "private"),
+            help_text=(
+                "A private or shared mark stored with the collection. New "
+                "collections default to private."
+            ),
         )
         self.color = self._row(
-            form, "&Color (name or hex, optional):", collection.color if editing else ""
+            form,
+            "&Color (name or hex, optional):",
+            collection.color if editing else "",
+            help_text=(
+                "A color name or hex value stored with the collection, for "
+                "visual grouping. Purely cosmetic and optional."
+            ),
         )
 
         sizer.Add(form, 1, wx.EXPAND | wx.ALL, 10)
@@ -258,6 +424,7 @@ class CollectionEditorDialog(wx.Dialog):
         self.name.SetFocus()
         self.FindWindowByName("Save").Bind(wx.EVT_BUTTON, self._done)
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
     def _done(self, _e) -> None:
         name = self.name.GetValue().strip()
@@ -286,20 +453,24 @@ class CollectionEditorDialog(wx.Dialog):
         return self._result
 
     # shared row/combo/button helpers (same shape as BuildSearchDialog)
-    def _row(self, sizer, label, value, *, style=0, size=None) -> wx.TextCtrl:
+    def _row(self, sizer, label, value, *, style=0, size=None, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
         ctrl = wx.TextCtrl(self, value=value, style=style, size=size or (320, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
+        if help_text:
+            ctrl.SetHelpText(help_text)
         sizer.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(ctrl, 1, wx.EXPAND)
         return ctrl
 
-    def _combo(self, sizer, label, choices, value) -> wx.ComboBox:
+    def _combo(self, sizer, label, choices, value, *, help_text="") -> wx.ComboBox:
         lbl = wx.StaticText(self, label=label)
         combo = wx.ComboBox(self, choices=choices, style=wx.CB_READONLY)
         if value in choices:
             combo.SetValue(value)
         _name(combo, label.replace("&", "").replace(":", "").strip())
+        if help_text:
+            combo.SetHelpText(help_text)
         sizer.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(combo, 1, wx.EXPAND)
         return combo
@@ -309,11 +480,16 @@ class CollectionEditorDialog(wx.Dialog):
         save = wx.Button(self, label=save_label)
         save.SetName("Save")
         _name(save, save_label.replace("&", ""))
+        save.SetHelpText(
+            "Check the name and save the collection. Editing keeps the "
+            "bookmarks already filed in it."
+        )
         save.SetDefault()
         buttons.Add(save, 0, wx.RIGHT, 8)
         if cancel:
             c = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
             _name(c, "Cancel")
+            c.SetHelpText("Close without saving changes.")
             buttons.Add(c, 0)
         return buttons
 
@@ -351,10 +527,16 @@ class PublishDialog(wx.Dialog):
 
         # Preview URL field with an associated label.
         url_box = wx.BoxSizer(wx.HORIZONTAL)
-        url_lbl = wx.StaticText(self, label="Preview &URL:")
+        url_lbl = wx.StaticText(self, label="P&review URL:")
         _name(url_lbl, "Preview URL")
         self.url = wx.TextCtrl(self, value="", style=wx.TE_READONLY, size=(420, -1))
         self.url.SetName("Preview URL")
+        self.url.SetHelpText(
+            "The local preview address of the published page, served by the "
+            "capture bridge on this machine. Read-only: Copy URL puts it on "
+            "the clipboard, and it stays empty until the collection is "
+            "published and the bridge is running."
+        )
         url_box.Add(url_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         url_box.Add(self.url, 1, wx.EXPAND)
         sizer.Add(url_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -363,12 +545,25 @@ class PublishDialog(wx.Dialog):
         btns = wx.BoxSizer(wx.HORIZONTAL)
         self.publish_btn = wx.Button(self, label="&Publish")
         _name(self.publish_btn, "Publish")
+        self.publish_btn.SetHelpText(
+            "Write the collection out as a read-only web page and show its "
+            "preview address. Publishing again refreshes the page with the "
+            "collection's current contents."
+        )
         self.unpublish_btn = wx.Button(self, label="&Unpublish")
         _name(self.unpublish_btn, "Unpublish")
-        self.copy_btn = wx.Button(self, label="Copy &URL")
+        self.unpublish_btn.SetHelpText(
+            "Take the published page down. The collection itself is untouched."
+        )
+        self.copy_btn = wx.Button(self, label="C&opy URL")
         _name(self.copy_btn, "Copy URL")
+        self.copy_btn.SetHelpText(
+            "Copy the preview address to the clipboard. Enabled only while "
+            "the page is published and the capture bridge is running."
+        )
         close_btn = wx.Button(self, label="&Close", id=wx.ID_CANCEL)
         _name(close_btn, "Close")
+        close_btn.SetHelpText("Close this window; the published state stays as shown.")
         btns.Add(self.publish_btn, 0, wx.RIGHT, 8)
         btns.Add(self.unpublish_btn, 0, wx.RIGHT, 8)
         btns.Add(self.copy_btn, 0, wx.RIGHT, 8)
@@ -383,6 +578,7 @@ class PublishDialog(wx.Dialog):
         self.copy_btn.Bind(wx.EVT_BUTTON, self._on_copy)
         self._refresh_state()
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
     def _current_manifest(self) -> dict | None:
         for item in self._publisher.list_published():
@@ -466,19 +662,30 @@ class TrailEditorDialog(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
         form = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         form.AddGrowableCol(1, proportion=1)
-        self.title = self._row(form, "&Title:", trail.title if editing else "")
+        self.title = self._row(
+            form,
+            "&Title:",
+            trail.title if editing else "",
+            help_text=("The trail's name, shown in the sidebar with its progress count. Required."),
+        )
         self.description = self._row(
             form,
             "&Description:",
             trail.description if editing else "",
             style=wx.TE_MULTILINE,
             size=(360, 60),
+            help_text=("Text shown at the top of the trail when you step through it. Optional."),
         )
         sizer.Add(form, 1, wx.EXPAND | wx.ALL, 10)
 
         steps_box = wx.StaticBoxSizer(wx.VERTICAL, self, "&Steps")
         self.step_list = wx.ListBox(steps_box.GetStaticBox(), style=wx.LB_SINGLE)
         _name(self.step_list, "Trail steps. Select to edit note or remove.")
+        self.step_list.SetHelpText(
+            "The trail's steps in order: each row shows its number, a "
+            "[done] mark when completed, and the bookmark it points to. "
+            "Select a row, then use Up, Down, or Remove."
+        )
         steps_box.Add(self.step_list, 1, wx.EXPAND | wx.ALL, 6)
         self._refresh_step_list()
         sizer.Add(steps_box, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
@@ -486,16 +693,31 @@ class TrailEditorDialog(wx.Dialog):
         step_row = wx.BoxSizer(wx.HORIZONTAL)
         self.step_note = wx.TextCtrl(self, size=(240, -1))
         _name(self.step_note, "Note for the selected step")
+        self.step_note.SetHelpText(
+            "The note for the next step you add: fill it in before pressing "
+            "Add Selected Beacon. It is shown when stepping through the "
+            "trail. Optional."
+        )
         step_row.Add(self.step_note, 1, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         add_btn = wx.Button(self, label="&Add Selected Beacon")
         _name(add_btn, "Add selected beacon as a step")
+        add_btn.SetHelpText(
+            "Add the bookmark currently selected in the main window's list "
+            "as the trail's next step, carrying the note from the note "
+            "field."
+        )
         step_row.Add(add_btn, 0, wx.RIGHT, 6)
         up_btn = wx.Button(self, label="&Up")
         _name(up_btn, "Move step up")
+        up_btn.SetHelpText("Move the selected step one position earlier in the trail.")
         down_btn = wx.Button(self, label="&Down")
         _name(down_btn, "Move step down")
+        down_btn.SetHelpText("Move the selected step one position later in the trail.")
         rm_btn = wx.Button(self, label="&Remove")
         _name(rm_btn, "Remove selected step")
+        rm_btn.SetHelpText(
+            "Remove the selected step from the trail. The bookmark itself is not touched."
+        )
         for b in (up_btn, down_btn, rm_btn):
             step_row.Add(b, 0, wx.RIGHT, 6)
         sizer.Add(step_row, 0, wx.EXPAND | wx.ALL, 10)
@@ -503,9 +725,11 @@ class TrailEditorDialog(wx.Dialog):
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         save = wx.Button(self, label="&Save")
         _name(save, "Save")
+        save.SetHelpText("Save the trail with its steps in their shown order, and close.")
         save.SetDefault()
         cancel = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         _name(cancel, "Cancel")
+        cancel.SetHelpText("Close without saving.")
         buttons.Add(save, 0, wx.RIGHT, 8)
         buttons.Add(cancel, 0)
         sizer.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, 10)
@@ -520,11 +744,14 @@ class TrailEditorDialog(wx.Dialog):
         rm_btn.Bind(wx.EVT_BUTTON, self._on_remove_step)
         save.Bind(wx.EVT_BUTTON, self._done)
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
-    def _row(self, sizer, label, value, *, style=0, size=None) -> wx.TextCtrl:
+    def _row(self, sizer, label, value, *, style=0, size=None, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
         ctrl = wx.TextCtrl(self, value=value, style=style, size=size or (320, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
+        if help_text:
+            ctrl.SetHelpText(help_text)
         sizer.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(ctrl, 1, wx.EXPAND)
         return ctrl
@@ -618,6 +845,12 @@ class RepairReviewDialog(wx.Dialog):
             self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(420, 160)
         )
         _name(info, "Repair details. Previous location and proposed repair.")
+        info.SetHelpText(
+            "What the repair engine found, as read-only text: the "
+            "resolution layer and its confidence, the previously saved "
+            "location, and the proposed new position. Read it, then choose "
+            "one of the buttons below."
+        )
         info.SetValue(self._format(suggestion))
         sizer.Add(info, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
@@ -628,6 +861,16 @@ class RepairReviewDialog(wx.Dialog):
         cancel = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         for b in (accept, keep, broken, cancel):
             _name(b, b.GetLabel().replace("&", ""))
+        accept.SetHelpText(
+            "Apply the proposed position to the saved location. Choose this "
+            "when the summary matches where the content actually is now."
+        )
+        keep.SetHelpText("Leave the saved location exactly as it was.")
+        broken.SetHelpText(
+            "Keep the old location but mark the bookmark broken, so it "
+            "shows under Needs Attention until you deal with it."
+        )
+        cancel.SetHelpText("Close without changing anything.")
         accept.SetDefault()
         for b in (accept, keep, broken):
             buttons.Add(b, 0, wx.RIGHT, 8)
@@ -640,6 +883,7 @@ class RepairReviewDialog(wx.Dialog):
         keep.Bind(wx.EVT_BUTTON, lambda _e: self._choose(self.KEEP_OLD))
         broken.Bind(wx.EVT_BUTTON, lambda _e: self._choose(self.MARK_BROKEN))
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
     def _format(self, s: dict) -> str:
         lines = [
@@ -679,20 +923,61 @@ class RadioProgramDialog(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
         form = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         form.AddGrowableCol(1, proportion=1)
-        self.station = self._row(form, "&Station:", "")
-        self.program = self._row(form, "&Program:", "")
-        self.host = self._row(form, "&Host (optional):", "")
-        self.start = self._row(form, "&Start time (HH:MM, optional):", "")
-        self.end = self._row(form, "&End time (HH:MM, optional):", "")
-        self.url = self._row(form, "Stream &URL (optional):", "")
+        self.station = self._row(
+            form,
+            "&Station:",
+            "",
+            help_text=(
+                "The station's name. A station or a program name is "
+                "required; the other may stay blank."
+            ),
+        )
+        self.program = self._row(
+            form,
+            "&Program:",
+            "",
+            help_text="The program's name, used in the saved bookmark's title.",
+        )
+        self.host = self._row(
+            form,
+            "&Host (optional):",
+            "",
+            help_text="The host's name, stored with the program.",
+        )
+        self.start = self._row(
+            form,
+            "&Start time (HH:MM, optional):",
+            "",
+            help_text=(
+                "When the program starts, as 24-hour HH:MM -- 21:30, for "
+                "example. Blank or unparseable times are stored as none."
+            ),
+        )
+        self.end = self._row(
+            form,
+            "&End time (HH:MM, optional):",
+            "",
+            help_text="When the program ends, as 24-hour HH:MM.",
+        )
+        self.url = self._row(
+            form,
+            "Stream &URL (optional):",
+            "",
+            help_text=(
+                "The station's stream address, if you have it, so the "
+                "program can be played directly."
+            ),
+        )
         sizer.Add(form, 1, wx.EXPAND | wx.ALL, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         save = wx.Button(self, label="&Save")
         _name(save, "Save")
+        save.SetHelpText("Save the program to your library and close.")
         save.SetDefault()
         cancel = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         _name(cancel, "Cancel")
+        cancel.SetHelpText("Close without saving.")
         buttons.Add(save, 0, wx.RIGHT, 8)
         buttons.Add(cancel, 0)
         sizer.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, 10)
@@ -702,11 +987,14 @@ class RadioProgramDialog(wx.Dialog):
         self.station.SetFocus()
         save.Bind(wx.EVT_BUTTON, self._done)
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
-    def _row(self, sizer, label, value) -> wx.TextCtrl:
+    def _row(self, sizer, label, value, *, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
         ctrl = wx.TextCtrl(self, value=value, size=(320, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
+        if help_text:
+            ctrl.SetHelpText(help_text)
         sizer.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(ctrl, 1, wx.EXPAND)
         return ctrl
@@ -768,12 +1056,19 @@ class StatusCenterDialog(wx.Dialog):
             self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(420, 240)
         )
         _name(self.text, "Status center. Capture bridge, sync, and library health.")
+        self.text.SetHelpText(
+            "The current report, one line per fact: capture bridge, sync "
+            "transport and vault state, library and trash counts, and how "
+            "many bookmarks need attention. Read-only; Refresh re-reads it."
+        )
         sizer.Add(self.text, 1, wx.EXPAND | wx.ALL, 10)
 
         refresh = wx.Button(self, label="&Refresh")
         _name(refresh, "Refresh status")
+        refresh.SetHelpText("Re-read every status line right now; the result is announced.")
         close = wx.Button(self, label="&Close", id=wx.ID_CLOSE)
         _name(close, "Close")
+        close.SetHelpText("Close the Status Center. Nothing here changes anything.")
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.Add(refresh, 0, wx.RIGHT, 8)
         buttons.AddStretchSpacer(1)
@@ -785,6 +1080,7 @@ class StatusCenterDialog(wx.Dialog):
         refresh.Bind(wx.EVT_BUTTON, lambda _e: self._refresh())
         self._refresh()
         apply_modal_ids(self, escape_id=wx.ID_CLOSE)
+        _context_help(self)
 
     def _refresh(self) -> None:
         try:
@@ -829,6 +1125,11 @@ class PreferencesDialog(wx.Dialog):
         # Left: section list.
         self.sections = wx.ListBox(self, choices=self.SECTIONS, size=(160, -1))
         _name(self.sections, "Preferences sections")
+        self.sections.SetHelpText(
+            "The preference sections. Selecting one shows its panel to the "
+            "right: Accessibility, Sync, Capture Bridge, Published Pages, "
+            "or Routing Rules."
+        )
         self.sections.SetSelection(0)
         body.Add(self.sections, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -852,9 +1153,19 @@ class PreferencesDialog(wx.Dialog):
         btns = wx.BoxSizer(wx.HORIZONTAL)
         apply_btn = wx.Button(self, label="&Apply")
         _name(apply_btn, "Apply")
+        apply_btn.SetHelpText(
+            "Apply the inline settings -- the accessibility fields and the "
+            "auto-sync interval -- and close. Buttons inside the panels "
+            "(sync, copy token, unpublish, routing edits) have already "
+            "acted when pressed."
+        )
         apply_btn.SetDefault()
         cancel_btn = wx.Button(self, label="&Cancel", id=wx.ID_CANCEL)
         _name(cancel_btn, "Cancel")
+        cancel_btn.SetHelpText(
+            "Close without applying the inline settings. Panel actions "
+            "already taken are not rolled back."
+        )
         btns.Add(apply_btn, 0, wx.RIGHT, 8)
         btns.Add(cancel_btn, 0)
         outer.Add(btns, 0, wx.ALIGN_RIGHT | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -865,6 +1176,7 @@ class PreferencesDialog(wx.Dialog):
         self.sections.Bind(wx.EVT_LISTBOX, self._on_section)
         apply_btn.Bind(wx.EVT_BUTTON, self._on_apply)
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
     # -- panels ---------------------------------------------------------------
 
@@ -888,6 +1200,11 @@ class PreferencesDialog(wx.Dialog):
         )
         self.verbosity.SetValue(s.verbosity)
         _name(self.verbosity, "Announcement verbosity")
+        self.verbosity.SetHelpText(
+            "How much QuillBeacon announces on its own: minimal keeps to "
+            "the essentials, normal (the default) adds confirmations, "
+            "verbose adds position and detail lines. Takes effect on Apply."
+        )
         form.Add(self.verbosity, 1, wx.EXPAND)
 
         form.Add(self._label(p, "&High contrast:"))
@@ -902,6 +1219,9 @@ class PreferencesDialog(wx.Dialog):
         )
         self.scale.SetSelection(s.scale_index)
         _name(self.scale, "Text scale")
+        self.scale.SetHelpText(
+            "The text size for the whole window, as a percentage of normal. Takes effect on Apply."
+        )
         form.Add(self.scale, 1, wx.EXPAND)
 
         form.Add(self._label(p, "&Reduced motion:"))
@@ -936,6 +1256,12 @@ class PreferencesDialog(wx.Dialog):
             p, choices=[label for label, _ in self._frame.AUTO_SYNC_CHOICES], style=wx.CB_READONLY
         )
         _name(self.auto_sync, "Auto-sync interval")
+        self.auto_sync.SetHelpText(
+            "How often to sync automatically. Off, the default, never "
+            "touches the network by itself; a timed interval runs only "
+            "once sync is configured and the vault is unlocked. Takes "
+            "effect on Apply."
+        )
         for i, (_label, secs) in enumerate(self._frame.AUTO_SYNC_CHOICES):
             if secs == cfg.auto_sync_seconds:
                 self.auto_sync.SetSelection(i)
@@ -948,8 +1274,12 @@ class PreferencesDialog(wx.Dialog):
         row = wx.BoxSizer(wx.HORIZONTAL)
         sync_settings_btn = wx.Button(p, label="Sync &Settings...")
         _name(sync_settings_btn, "Sync Settings")
+        sync_settings_btn.SetHelpText(
+            "Open the full Sync Settings dialog now: transport, sign-in, and the encryption vault."
+        )
         sync_now_btn = wx.Button(p, label="Sync &Now")
         _name(sync_now_btn, "Sync Now")
+        sync_now_btn.SetHelpText("Push and pull changes right now, using the saved sync settings.")
         sync_settings_btn.Bind(wx.EVT_BUTTON, self._on_sync_settings)
         sync_now_btn.Bind(wx.EVT_BUTTON, self._on_sync_now)
         row.Add(sync_settings_btn, 0, wx.RIGHT, 8)
@@ -979,15 +1309,27 @@ class PreferencesDialog(wx.Dialog):
         form.Add(self._label(p, "&Base URL:"))
         self.bridge_url = wx.TextCtrl(p, value=url, style=wx.TE_READONLY)
         _name(self.bridge_url, "Capture bridge base URL")
+        self.bridge_url.SetHelpText(
+            "The local address the capture bridge is listening on, for a "
+            "browser extension's options page. Read-only; it shows (not "
+            "running) when the bridge is off."
+        )
         form.Add(self.bridge_url, 1, wx.EXPAND)
         form.Add(self._label(p, "&Token:"))
         self.bridge_token = wx.TextCtrl(p, value=token, style=wx.TE_READONLY)
         _name(self.bridge_token, "Capture bridge token")
+        self.bridge_token.SetHelpText(
+            "The secret a browser extension must present to the bridge. "
+            "Read-only; Copy Token takes it to the clipboard."
+        )
         form.Add(self.bridge_token, 1, wx.EXPAND)
         v.Add(form, 0, wx.EXPAND | wx.BOTTOM, 10)
 
         copy_btn = wx.Button(p, label="Copy &Token")
         _name(copy_btn, "Copy bridge token")
+        copy_btn.SetHelpText(
+            "Copy the bridge token to the clipboard, ready to paste into the extension's options."
+        )
         copy_btn.Bind(wx.EVT_BUTTON, self._on_copy_token)
         v.Add(copy_btn, 0)
         p.SetSizer(v)
@@ -1005,10 +1347,17 @@ class PreferencesDialog(wx.Dialog):
         v.Add(info, 0, wx.BOTTOM, 8)
         self._pub_list = wx.ListBox(p, size=(-1, 120))
         _name(self._pub_list, "Published pages list")
+        self._pub_list.SetHelpText(
+            "Every collection currently published as a read-only page, "
+            "with its item count. Select one to unpublish it."
+        )
         v.Add(self._pub_list, 1, wx.EXPAND | wx.BOTTOM, 8)
         self._refresh_publish_list()
         unpublish_btn = wx.Button(p, label="&Unpublish Selected")
         _name(unpublish_btn, "Unpublish selected page")
+        unpublish_btn.SetHelpText(
+            "Take the selected page down immediately. The collection itself is untouched."
+        )
         unpublish_btn.Bind(wx.EVT_BUTTON, self._on_unpublish)
         v.Add(unpublish_btn, 0)
         p.SetSizer(v)
@@ -1030,17 +1379,51 @@ class PreferencesDialog(wx.Dialog):
         v.Add(info, 0, wx.BOTTOM, 8)
         self._routing_list = wx.ListBox(p, size=(-1, 140))
         _name(self._routing_list, "Routing rules, ordered by priority")
+        self._routing_list.SetHelpText(
+            "The filing rules, in the order they are tried -- the first "
+            "matching keyword wins. Each row reads keyword files into "
+            "folder. Select a rule to edit, remove, or reorder it."
+        )
         v.Add(self._routing_list, 1, wx.EXPAND | wx.BOTTOM, 8)
         row = wx.BoxSizer(wx.HORIZONTAL)
-        for label, name, handler in (
-            ("A&dd Rule...", "Add routing rule", self._on_routing_add),
-            ("Ed&it Rule...", "Edit routing rule", self._on_routing_edit),
-            ("Re&move Rule", "Remove routing rule", self._on_routing_remove),
-            ("Move U&p", "Move routing rule up", self._on_routing_up),
-            ("Move Do&wn", "Move routing rule down", self._on_routing_down),
+        for label, name, help_text, handler in (
+            (
+                "A&dd Rule...",
+                "Add routing rule",
+                "Create a new rule: a URL keyword and the folder matching "
+                "bookmarks are filed into. Saved immediately.",
+                self._on_routing_add,
+            ),
+            (
+                "Ed&it Rule...",
+                "Edit routing rule",
+                "Change the selected rule's keyword or folder. Saved immediately.",
+                self._on_routing_edit,
+            ),
+            (
+                "Re&move Rule",
+                "Remove routing rule",
+                "Delete the selected rule immediately. Bookmarks already "
+                "filed stay where they are.",
+                self._on_routing_remove,
+            ),
+            (
+                "Move U&p",
+                "Move routing rule up",
+                "Move the selected rule one position earlier. Earlier rules "
+                "win when several keywords match.",
+                self._on_routing_up,
+            ),
+            (
+                "Move Do&wn",
+                "Move routing rule down",
+                "Move the selected rule one position later.",
+                self._on_routing_down,
+            ),
         ):
             btn = wx.Button(p, label=label)
             _name(btn, name)
+            btn.SetHelpText(help_text)
             btn.Bind(wx.EVT_BUTTON, handler)
             row.Add(btn, 0, wx.RIGHT, 8)
         v.Add(row, 0)
@@ -1222,6 +1605,12 @@ class RoutingRuleDialog(wx.Dialog):
         form.Add(lbl)
         self.keyword = wx.TextCtrl(self, value=keyword, size=(280, -1))
         _name(self.keyword, "URL keyword, a domain or any text the URL contains")
+        self.keyword.SetHelpText(
+            "The text to look for in a new web bookmark's address -- a "
+            "domain like example.com, or any fragment. Matching is a "
+            "simple contains, and each keyword may be used by only one "
+            "rule. Required."
+        )
         form.Add(self.keyword, 1, wx.EXPAND)
 
         lbl = wx.StaticText(self, label="&Folder:")
@@ -1229,6 +1618,10 @@ class RoutingRuleDialog(wx.Dialog):
         form.Add(lbl)
         self.collection = wx.ComboBox(self, value=collection, choices=list(collections or []))
         _name(self.collection, "Folder to file matching bookmarks into")
+        self.collection.SetHelpText(
+            "The folder matching bookmarks are filed into. Pick an "
+            "existing collection or type a new name. Required."
+        )
         form.Add(self.collection, 1, wx.EXPAND)
 
         sizer.Add(form, 1, wx.EXPAND | wx.ALL, 10)
@@ -1236,9 +1629,11 @@ class RoutingRuleDialog(wx.Dialog):
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         ok = wx.Button(self, label="&Save")
         _name(ok, "Save rule")
+        ok.SetHelpText("Save the rule. Both the keyword and the folder are required.")
         ok.SetDefault()
         cancel = wx.Button(self, label="&Cancel", id=wx.ID_CANCEL)
         _name(cancel, "Cancel")
+        cancel.SetHelpText("Close without saving.")
         buttons.Add(ok, 0, wx.RIGHT, 8)
         buttons.Add(cancel, 0)
         sizer.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, 10)
@@ -1248,6 +1643,7 @@ class RoutingRuleDialog(wx.Dialog):
         self.keyword.SetFocus()
         ok.Bind(wx.EVT_BUTTON, self._on_ok)
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
     def _on_ok(self, _e) -> None:
         keyword = self.keyword.GetValue().strip()
@@ -1288,6 +1684,11 @@ class A11ySettingsDialog(wx.Dialog):
         )
         self.verbosity.SetValue(settings.verbosity)
         _name(self.verbosity, "Announcement verbosity")
+        self.verbosity.SetHelpText(
+            "How much QuillBeacon announces on its own: minimal keeps to "
+            "the essentials, normal (the default) adds confirmations, "
+            "verbose adds position and detail lines. Takes effect on Apply."
+        )
         form.Add(self.verbosity, 1, wx.EXPAND)
 
         # High contrast.
@@ -1304,6 +1705,9 @@ class A11ySettingsDialog(wx.Dialog):
         )
         self.scale.SetSelection(settings.scale_index)
         _name(self.scale, "Text scale")
+        self.scale.SetHelpText(
+            "The text size for the whole window, as a percentage of normal. Takes effect on Apply."
+        )
         form.Add(self.scale, 1, wx.EXPAND)
 
         # Reduced motion.
@@ -1318,9 +1722,13 @@ class A11ySettingsDialog(wx.Dialog):
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         save = wx.Button(self, label="&Apply")
         _name(save, "Apply")
+        save.SetHelpText(
+            "Apply the settings to the whole app and save them; the result is announced."
+        )
         save.SetDefault()
         cancel = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         _name(cancel, "Cancel")
+        cancel.SetHelpText("Close without changing anything.")
         buttons.Add(save, 0, wx.RIGHT, 8)
         buttons.Add(cancel, 0)
         sizer.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, 10)
@@ -1330,6 +1738,7 @@ class A11ySettingsDialog(wx.Dialog):
         self.verbosity.SetFocus()
         save.Bind(wx.EVT_BUTTON, self._on_apply)
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
     def _on_apply(self, _e) -> None:
         self._result = {
@@ -1361,6 +1770,11 @@ class SmartCollectionsDialog(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.list = wx.ListBox(self, size=(440, 200))
         _name(self.list, "Smart collections. Enter to edit, Delete to remove.")
+        self.list.SetHelpText(
+            "Your saved searches, one per row with the query each one "
+            "runs. Double-click or Edit opens the editor for the selected "
+            "row."
+        )
         sizer.Add(self.list, 1, wx.EXPAND | wx.ALL, 10)
 
         row = wx.BoxSizer(wx.HORIZONTAL)
@@ -1369,6 +1783,15 @@ class SmartCollectionsDialog(wx.Dialog):
         close = wx.Button(self, label="&Close", id=wx.ID_CLOSE)
         for b in (self.edit_btn, self.delete_btn, close):
             _name(b, b.GetLabel().replace("&", ""))
+        self.edit_btn.SetHelpText(
+            "Open the selected smart collection in the editor to change "
+            "its name, query, sort, or scope."
+        )
+        self.delete_btn.SetHelpText(
+            "Delete the selected smart collection after a confirmation. "
+            "The bookmarks it matched are not affected."
+        )
+        close.SetHelpText("Close this manager; the sidebar refreshes on return.")
         row.Add(self.edit_btn, 0, wx.RIGHT, 6)
         row.Add(self.delete_btn, 0, wx.RIGHT, 6)
         row.AddStretchSpacer(1)
@@ -1382,6 +1805,7 @@ class SmartCollectionsDialog(wx.Dialog):
         self.list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._on_edit(None))
         self._refresh()
         apply_modal_ids(self, escape_id=wx.ID_CLOSE)
+        _context_help(self)
 
     def _refresh(self) -> None:
         self.list.Clear()
@@ -1454,23 +1878,38 @@ class SmartCollectionEditorDialog(wx.Dialog):
         form.Add(wx.StaticText(self, label="&Name:"))
         self.name = wx.TextCtrl(self, value=ss.name if ss else "", size=(320, -1))
         _name(self.name, "Smart collection name")
+        self.name.SetHelpText(
+            "The smart collection's name, shown in the sidebar with a [smart] mark. Required."
+        )
         form.Add(self.name, 1, wx.EXPAND)
 
         form.Add(wx.StaticText(self, label="&Query:"))
         self.query = wx.TextCtrl(self, value=ss.query if ss else "", size=(320, -1))
         _name(self.query, "Search query (Section 15 grammar)")
+        self.query.SetHelpText(
+            "The live search this collection evaluates each time it is "
+            "opened, in the search box's grammar -- for example "
+            "tag:research not:archived. Required."
+        )
         form.Add(self.query, 1, wx.EXPAND)
 
-        form.Add(wx.StaticText(self, label="&Sort:"))
+        form.Add(wx.StaticText(self, label="S&ort:"))
         self.sort = wx.ComboBox(
             self, choices=self.SORTS, value=(ss.sort if ss else "added"), style=wx.CB_READONLY
         )
         _name(self.sort, "Sort order")
+        self.sort.SetHelpText(
+            "The order results are listed in when this collection is "
+            "opened. added, the default, puts the newest first."
+        )
         form.Add(self.sort, 1, wx.EXPAND)
 
-        form.Add(wx.StaticText(self, label="&Scope collection (optional):"))
+        form.Add(wx.StaticText(self, label="Scope &collection (optional):"))
         self.scope = wx.TextCtrl(self, value=ss.scope_collection if ss else "", size=(320, -1))
         _name(self.scope, "Scope collection")
+        self.scope.SetHelpText(
+            "Limit the search to one collection, by name. Blank searches the whole library."
+        )
         form.Add(self.scope, 1, wx.EXPAND)
 
         sizer.Add(form, 1, wx.EXPAND | wx.ALL, 10)
@@ -1478,9 +1917,11 @@ class SmartCollectionEditorDialog(wx.Dialog):
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         ok = wx.Button(self, label="&Save", id=wx.ID_OK)
         _name(ok, "Save")
+        ok.SetHelpText("Save the changes to this saved search. Name and query are both required.")
         ok.SetDefault()
         cancel = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         _name(cancel, "Cancel")
+        cancel.SetHelpText("Close without saving.")
         buttons.AddStretchSpacer(1)
         buttons.Add(ok, 0, wx.RIGHT, 8)
         buttons.Add(cancel, 0)
@@ -1491,6 +1932,7 @@ class SmartCollectionEditorDialog(wx.Dialog):
         self.name.SetFocus()
         ok.Bind(wx.EVT_BUTTON, self._on_save)
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
     def _on_save(self, _e) -> None:
         name = self.name.GetValue().strip()
@@ -1546,6 +1988,11 @@ class TrailStepDialog(wx.Dialog):
 
         self.list = wx.ListBox(self, size=(440, 200))
         _name(self.list, "Trail steps. Enter to open the current step.")
+        self.list.SetHelpText(
+            "The trail's steps in order. The * marks your current step and "
+            "[x] a completed one; selecting a row makes it current, and "
+            "double-clicking opens its bookmark."
+        )
         sizer.Add(self.list, 1, wx.EXPAND | wx.ALL, 10)
 
         note_box = wx.StaticBoxSizer(wx.VERTICAL, self, "Current step &note")
@@ -1555,6 +2002,10 @@ class TrailStepDialog(wx.Dialog):
             size=(440, 90),
         )
         _name(self.note, "Note for the current step")
+        self.note.SetHelpText(
+            "The note saved with the current step, read-only here. Notes "
+            "are written in the Trail Editor."
+        )
         note_box.Add(self.note, 1, wx.EXPAND | wx.ALL, 4)
         sizer.Add(note_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -1566,6 +2017,21 @@ class TrailStepDialog(wx.Dialog):
         close = wx.Button(self, label="&Close", id=wx.ID_CLOSE)
         for b in (self.prev_btn, self.next_btn, self.complete_btn, self.open_btn, close):
             _name(b, b.GetLabel().replace("&", ""))
+        self.prev_btn.SetHelpText(
+            "Move to the previous step. Your place in the trail is saved as you move."
+        )
+        self.next_btn.SetHelpText(
+            "Move to the next step. Your place in the trail is saved as you move."
+        )
+        self.complete_btn.SetHelpText(
+            "Toggle whether the current step is completed. Progress is "
+            "saved immediately and shown in the sidebar's count."
+        )
+        self.open_btn.SetHelpText(
+            "Open the current step's bookmark with its normal program or "
+            "browser, keeping this trail window open."
+        )
+        close.SetHelpText("Close the trail. Your place and completion marks are already saved.")
         row.Add(self.prev_btn, 0, wx.RIGHT, 6)
         row.Add(self.next_btn, 0, wx.RIGHT, 6)
         row.Add(self.complete_btn, 0, wx.RIGHT, 6)
@@ -1584,6 +2050,7 @@ class TrailStepDialog(wx.Dialog):
         self.list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._on_open_current(None))
         self._refresh()
         apply_modal_ids(self, escape_id=wx.ID_CLOSE)
+        _context_help(self)
 
     # -- helpers -------------------------------------------------------------
 
@@ -1701,6 +2168,11 @@ class AttachmentsDialog(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.list = wx.ListBox(self, size=(420, 180))
         _name(self.list, "Attachments list")
+        self.list.SetHelpText(
+            "The files, URLs, and notes attached to this bookmark, one per "
+            "row with its kind in brackets. Double-click or View opens the "
+            "selected one."
+        )
         sizer.Add(self.list, 1, wx.EXPAND | wx.ALL, 10)
 
         row = wx.BoxSizer(wx.HORIZONTAL)
@@ -1710,6 +2182,18 @@ class AttachmentsDialog(wx.Dialog):
         close = wx.Button(self, label="&Close", id=wx.ID_CLOSE)
         for b in (self.add_btn, self.view_btn, self.remove_btn, close):
             _name(b, b.GetLabel().replace("&", ""))
+        self.add_btn.SetHelpText(
+            "Attach something new to this bookmark: a file on disk, a URL, or an inline note."
+        )
+        self.view_btn.SetHelpText(
+            "Open the selected attachment: a note is shown in place, a "
+            "file or URL opens with its normal program."
+        )
+        self.remove_btn.SetHelpText(
+            "Remove the selected attachment after a confirmation. A file "
+            "attachment's file on disk is not deleted."
+        )
+        close.SetHelpText("Close the attachments window.")
         row.Add(self.add_btn, 0, wx.RIGHT, 6)
         row.Add(self.view_btn, 0, wx.RIGHT, 6)
         row.Add(self.remove_btn, 0, wx.RIGHT, 6)
@@ -1725,6 +2209,7 @@ class AttachmentsDialog(wx.Dialog):
         self.list.Bind(wx.EVT_LISTBOX_DCLICK, lambda _e: self._on_view(None))
         self._refresh()
         apply_modal_ids(self, escape_id=wx.ID_CLOSE)
+        _context_help(self)
 
     def _refresh(self) -> None:
         self.list.Clear()
@@ -1848,41 +2333,59 @@ class AttachmentAddDialog(wx.Dialog):
 
         form = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         form.AddGrowableCol(1, proportion=1)
-        form.Add(wx.StaticText(self, label="&Name:"))
+        form.Add(wx.StaticText(self, label="N&ame:"))
         self.name = wx.TextCtrl(self, size=(300, -1))
         _name(self.name, "Attachment name")
+        self.name.SetHelpText(
+            "A display name for the attachment. Left blank, the list shows "
+            "the file name, the URL, or the note's first words. Optional."
+        )
         form.Add(self.name, 1, wx.EXPAND)
         sizer.Add(form, 0, wx.EXPAND | wx.ALL, 8)
 
         self.path_label = wx.StaticText(self, label="&Path:")
         self.path = wx.TextCtrl(self, size=(360, -1))
         _name(self.path, "File path")
+        self.path.SetHelpText(
+            "The full path of the file to attach. The file stays where it "
+            "is -- only its path is stored, and attachments never sync."
+        )
         self.browse = wx.Button(self, label="&Browse...")
         _name(self.browse, "Browse for file")
+        self.browse.SetHelpText(
+            "Pick the file with the standard file chooser instead of typing its path."
+        )
         prow = wx.BoxSizer(wx.HORIZONTAL)
         prow.Add(self.path, 1, wx.EXPAND | wx.RIGHT, 6)
         prow.Add(self.browse, 0)
         sizer.Add(self.path_label, 0, wx.LEFT | wx.TOP, 8)
         sizer.Add(prow, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-        self.url_label = wx.StaticText(self, label="&URL:")
+        self.url_label = wx.StaticText(self, label="U&RL:")
         self.url = wx.TextCtrl(self, size=(360, -1))
         _name(self.url, "Attachment URL")
+        self.url.SetHelpText("The web address to attach to the bookmark.")
         sizer.Add(self.url_label, 0, wx.LEFT | wx.TOP, 8)
         sizer.Add(self.url, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-        self.note_label = wx.StaticText(self, label="&Note text:")
+        self.note_label = wx.StaticText(self, label="Note &text:")
         self.note = wx.TextCtrl(self, size=(360, 120), style=wx.TE_MULTILINE)
         _name(self.note, "Attachment note text")
+        self.note.SetHelpText("The note's text, stored inside the library with the bookmark.")
         sizer.Add(self.note_label, 0, wx.LEFT | wx.TOP, 8)
         sizer.Add(self.note, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         ok = wx.Button(self, label="&OK", id=wx.ID_OK)
         _name(ok, "OK")
+        ok.SetHelpText(
+            "Attach it. The field that must be filled is the one for the "
+            "kind chosen above: path, URL, or note text."
+        )
         ok.SetDefault()
         cancel = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         _name(cancel, "Cancel")
+        cancel.SetHelpText("Close without attaching anything.")
         buttons.AddStretchSpacer(1)
         buttons.Add(ok, 0, wx.RIGHT, 8)
         buttons.Add(cancel, 0)
@@ -1896,6 +2399,7 @@ class AttachmentAddDialog(wx.Dialog):
         self.browse.Bind(wx.EVT_BUTTON, self._on_browse)
         ok.Bind(wx.EVT_BUTTON, self._on_ok)
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
     def _update_visibility(self) -> None:
         show_file = self.kind_file.GetValue()
@@ -1981,9 +2485,17 @@ class SyncSettingsDialog(wx.Dialog):
         fbox = wx.StaticBoxSizer(wx.HORIZONTAL, self, "Folder &path")
         self.folder = wx.TextCtrl(fbox.GetStaticBox(), value=cfg.folder, size=(300, -1))
         _name(self.folder, "Folder path for folder transport")
+        self.folder.SetHelpText(
+            "The folder your devices sync through -- typically one inside "
+            "iCloud Drive, OneDrive, or Dropbox. Used only when the "
+            "transport is Folder."
+        )
         fbox.Add(self.folder, 1, wx.EXPAND | wx.ALL, 4)
         self.browse = wx.Button(fbox.GetStaticBox(), label="&Browse...")
         _name(self.browse, "Browse for folder")
+        self.browse.SetHelpText(
+            "Pick the sync folder with the standard chooser instead of typing its path."
+        )
         fbox.Add(self.browse, 0, wx.ALL, 4)
         sizer.Add(fbox, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
@@ -1991,8 +2503,26 @@ class SyncSettingsDialog(wx.Dialog):
         sbox = wx.StaticBoxSizer(wx.VERTICAL, self, "&Server")
         sform = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         sform.AddGrowableCol(1, proportion=1)
-        self.server_url = self._row(sbox.GetStaticBox(), sform, "Server &URL:", cfg.server_url)
-        self.device = self._row(sbox.GetStaticBox(), sform, "&Device name:", cfg.device or "beacon")
+        self.server_url = self._row(
+            sbox.GetStaticBox(),
+            sform,
+            "Server &URL:",
+            cfg.server_url,
+            help_text=(
+                "The hosted sync server's address, https included. Used "
+                "only when the transport is Hosted server."
+            ),
+        )
+        self.device = self._row(
+            sbox.GetStaticBox(),
+            sform,
+            "&Device name:",
+            cfg.device or "beacon",
+            help_text=(
+                "This device's name as the server sees it -- beacon by "
+                "default. Give each of your devices a distinct name."
+            ),
+        )
         sbox.Add(sform, 1, wx.EXPAND | wx.ALL, 4)
         sizer.Add(sbox, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
@@ -2000,17 +2530,34 @@ class SyncSettingsDialog(wx.Dialog):
         mbox = wx.StaticBoxSizer(wx.VERTICAL, self, "&Sign in (magic link)")
         mform = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         mform.AddGrowableCol(1, proportion=1)
-        self.email = self._row(mbox.GetStaticBox(), mform, "&Email:", cfg.account)
+        self.email = self._row(
+            mbox.GetStaticBox(),
+            mform,
+            "&Email:",
+            cfg.account,
+            help_text="The email address the sign-in link is sent to.",
+        )
         mbox.Add(mform, 1, wx.EXPAND | wx.ALL, 4)
         link_row = wx.BoxSizer(wx.HORIZONTAL)
         self.send_link = wx.Button(mbox.GetStaticBox(), label="&Send sign-in link")
         _name(self.send_link, "Send sign-in link")
+        self.send_link.SetHelpText(
+            "Save the settings above and ask the server to email a "
+            "sign-in link to that address. No password exists to remember."
+        )
         link_row.Add(self.send_link, 0, wx.RIGHT, 6)
         self.token = wx.TextCtrl(mbox.GetStaticBox(), size=(220, -1))
         _name(self.token, "Paste the link or token you received")
+        self.token.SetHelpText(
+            "Paste the sign-in link you received, or just its token -- "
+            "both forms are accepted. Verify redeems it."
+        )
         link_row.Add(self.token, 1, wx.RIGHT, 6)
         self.verify = wx.Button(mbox.GetStaticBox(), label="&Verify")
         _name(self.verify, "Verify the pasted link or token")
+        self.verify.SetHelpText(
+            "Redeem the pasted link or token and register this device with the server."
+        )
         link_row.Add(self.verify, 0)
         mbox.Add(link_row, 0, wx.EXPAND | wx.ALL, 4)
         sizer.Add(mbox, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -2020,16 +2567,37 @@ class SyncSettingsDialog(wx.Dialog):
         vform = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         vform.AddGrowableCol(1, proportion=1)
         self.passphrase = self._row(
-            vbox.GetStaticBox(), vform, "&Passphrase:", "", style=wx.TE_PASSWORD
+            vbox.GetStaticBox(),
+            vform,
+            "&Passphrase:",
+            "",
+            style=wx.TE_PASSWORD,
+            help_text=(
+                "The vault passphrase, which encrypts your data end to "
+                "end. It is held in memory for this session only and "
+                "cannot be recovered if lost."
+            ),
         )
         vbox.Add(vform, 1, wx.EXPAND | wx.ALL, 4)
         vrow = wx.BoxSizer(wx.HORIZONTAL)
         self.unlock_btn = wx.Button(vbox.GetStaticBox(), label="&Unlock")
-        self.setup_btn = wx.Button(vbox.GetStaticBox(), label="&Set Up / Re-key")
+        self.setup_btn = wx.Button(vbox.GetStaticBox(), label="Set Up / &Re-key")
         self.pair_btn = wx.Button(vbox.GetStaticBox(), label="&Pair Device...")
         for b in (self.unlock_btn, self.setup_btn, self.pair_btn):
             _name(b, b.GetLabel().replace("&", ""))
             vrow.Add(b, 0, wx.RIGHT, 6)
+        self.unlock_btn.SetHelpText(
+            "Unlock the vault with the passphrase for this session, enabling encrypted sync."
+        )
+        self.setup_btn.SetHelpText(
+            "Create the vault with this passphrase, or re-key an existing "
+            "one. First-time setup asks you to confirm the passphrase."
+        )
+        self.pair_btn.SetHelpText(
+            "Export this device's pairing code for another device, or "
+            "import one from it. Only the salt travels -- the passphrase "
+            "is typed on each device and never transferred."
+        )
         vbox.Add(vrow, 0, wx.ALL, 4)
         sizer.Add(vbox, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
@@ -2040,8 +2608,17 @@ class SyncSettingsDialog(wx.Dialog):
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self.sync_now = wx.Button(self, label="Sync &Now")
         _name(self.sync_now, "Sync now")
+        self.sync_now.SetHelpText(
+            "Save the settings in this dialog, then push and pull changes "
+            "right now. Conflicts, if any, land in Sync History."
+        )
         close = wx.Button(self, label="&Close", id=wx.ID_CLOSE)
         _name(close, "Close")
+        close.SetHelpText(
+            "Close this dialog. Field changes are saved when an action "
+            "button uses them (Send, Verify, Unlock, Sync Now), not by "
+            "Close itself."
+        )
         buttons.Add(self.sync_now, 0, wx.RIGHT, 8)
         buttons.AddStretchSpacer(1)
         buttons.Add(close, 0)
@@ -2059,11 +2636,14 @@ class SyncSettingsDialog(wx.Dialog):
         self.pair_btn.Bind(wx.EVT_BUTTON, self._on_pair)
         self.sync_now.Bind(wx.EVT_BUTTON, self._on_sync_now)
         apply_modal_ids(self, escape_id=wx.ID_CLOSE)
+        _context_help(self)
 
-    def _row(self, parent, sizer, label, value, *, style=0) -> wx.TextCtrl:
+    def _row(self, parent, sizer, label, value, *, style=0, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(parent, label=label)
         ctrl = wx.TextCtrl(parent, value=value, style=style, size=(300, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
+        if help_text:
+            ctrl.SetHelpText(help_text)
         sizer.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(ctrl, 1, wx.EXPAND)
         return ctrl
@@ -2290,13 +2870,17 @@ class SyncHistoryDialog(wx.Dialog):
         sizer.Add(wx.StaticText(self, label="&Commits (what synced):"), 0, wx.ALL, 8)
         self.commit_list = wx.ListBox(self, style=wx.LB_SINGLE)
         _name(self.commit_list, "Sync commits. Select to inspect.")
+        self.commit_list.SetHelpText(
+            "Everything sync has recorded: each row is one commit with its "
+            "message, how many entries it carried, and which device made it."
+        )
         for c in controller.history():
             self.commit_list.Append(f"{c['message']} -- {c['entries']} entries -- {c['device']}")
         sizer.Add(self.commit_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         conflicts = self._collect_conflicts()
         sizer.Add(
-            wx.StaticText(self, label="&Conflicts needing review:"),
+            wx.StaticText(self, label="Conflicts &needing review:"),
             0,
             wx.LEFT | wx.RIGHT | wx.TOP,
             8,
@@ -2305,6 +2889,10 @@ class SyncHistoryDialog(wx.Dialog):
         _name(
             self.conflict_list,
             "Conflicts needing review. Select, then choose Local, Remote, or Merged.",
+        )
+        self.conflict_list.SetHelpText(
+            "Changes both sides edited, waiting for your decision. Select "
+            "a row, then choose Use Local, Use Remote, or Use Merged below."
         )
         self._conflicts = conflicts
         for cf in conflicts:
@@ -2318,6 +2906,13 @@ class SyncHistoryDialog(wx.Dialog):
         for b in (self.r_local, self.r_remote, self.r_merged):
             _name(b, b.GetLabel().replace("&", ""))
             resolve_row.Add(b, 0, wx.RIGHT, 6)
+        self.r_local.SetHelpText("Resolve the selected conflict by keeping this device's version.")
+        self.r_remote.SetHelpText(
+            "Resolve the selected conflict by taking the other device's version."
+        )
+        self.r_merged.SetHelpText(
+            "Resolve the selected conflict with the merged combination of both versions."
+        )
         sizer.Add(resolve_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         sizer.Add(
@@ -2328,15 +2923,26 @@ class SyncHistoryDialog(wx.Dialog):
         )
         self.backup_list = wx.ListBox(self, style=wx.LB_SINGLE)
         _name(self.backup_list, "Pre-sync snapshots. Select and Roll Back to restore.")
+        self.backup_list.SetHelpText(
+            "The database snapshots taken before each sync, kept so a bad "
+            "sync can be undone. Select one and press Roll Back to restore "
+            "it."
+        )
         for b in controller.list_backups():
             self.backup_list.Append(b["name"])
         sizer.Add(self.backup_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        self.rollback = wx.Button(self, label="&Roll Back to Selected Snapshot")
+        self.rollback = wx.Button(self, label="Roll &Back to Selected Snapshot")
         _name(self.rollback, "Roll back to selected snapshot")
-        close = wx.Button(self, label="&Close", id=wx.ID_CLOSE)
+        self.rollback.SetHelpText(
+            "Restore the library to the selected pre-sync snapshot, after "
+            "a confirmation. The current database is overwritten; the "
+            "commit log is kept."
+        )
+        close = wx.Button(self, label="Close", id=wx.ID_CLOSE)
         _name(close, "Close")
+        close.SetHelpText("Close sync history without changing anything.")
         buttons.Add(self.rollback, 0, wx.RIGHT, 8)
         buttons.AddStretchSpacer(1)
         buttons.Add(close, 0)
@@ -2349,6 +2955,7 @@ class SyncHistoryDialog(wx.Dialog):
         self.r_remote.Bind(wx.EVT_BUTTON, lambda _e: self._resolve("remote"))
         self.r_merged.Bind(wx.EVT_BUTTON, lambda _e: self._resolve("merged"))
         apply_modal_ids(self, escape_id=wx.ID_CLOSE)
+        _context_help(self)
 
     def _collect_conflicts(self) -> list[dict]:
         return self.ctrl.list_conflicts(resolved=False)
@@ -2433,9 +3040,34 @@ class PlayerSettingsDialog(wx.Dialog):
         form.AddGrowableCol(1, proportion=1)
 
         choices = list(external_player.PLAYERS)
-        self.default_combo = self._combo(form, "&Default player:", choices, settings.default_player)
-        self.vlc_path = self._row(form, "&VLC path:", settings.custom_path.get("vlc", ""))
-        self.mpv_path = self._row(form, "&mpv path:", settings.custom_path.get("mpv", ""))
+        self.default_combo = self._combo(
+            form,
+            "&Default player:",
+            choices,
+            settings.default_player,
+            help_text=(
+                "The player used when no per-type override applies: the "
+                "system default, VLC, or mpv."
+            ),
+        )
+        self.vlc_path = self._row(
+            form,
+            "&VLC path:",
+            settings.custom_path.get("vlc", ""),
+            help_text=(
+                "The full path to VLC's executable, for installs not on "
+                "PATH. Blank uses the vlc found on PATH."
+            ),
+        )
+        self.mpv_path = self._row(
+            form,
+            "&mpv path:",
+            settings.custom_path.get("mpv", ""),
+            help_text=(
+                "The full path to mpv's executable, for installs not on "
+                "PATH. Blank uses the mpv found on PATH."
+            ),
+        )
 
         sizer.Add(form, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -2454,7 +3086,14 @@ class PlayerSettingsDialog(wx.Dialog):
         tform.AddGrowableCol(1, proportion=1)
         for t in self.MEDIA_TYPES:
             self._type_combos[t] = self._combo(
-                tform, f"{t}:", choices, settings.per_type.get(t, "")
+                tform,
+                f"{t}:",
+                choices,
+                settings.per_type.get(t, ""),
+                help_text=(
+                    f"The player used for {t} items, overriding the "
+                    "default player. Left unset, the default applies."
+                ),
             )
         ts.Add(tform, 1, wx.EXPAND | wx.ALL, 8)
         sizer.Add(ts, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -2462,9 +3101,13 @@ class PlayerSettingsDialog(wx.Dialog):
         btns = wx.BoxSizer(wx.HORIZONTAL)
         self._save_btn = wx.Button(self, label="&Save")
         _name(self._save_btn, "Save")
+        self._save_btn.SetHelpText(
+            "Save these player settings and close; the next Play in External Player uses them."
+        )
         self._save_btn.SetDefault()
         cancel_btn = wx.Button(self, label="Cancel", id=wx.ID_CANCEL)
         _name(cancel_btn, "Cancel")
+        cancel_btn.SetHelpText("Close without saving.")
         btns.Add(self._save_btn, 0, wx.RIGHT, 8)
         btns.Add(cancel_btn, 0)
         sizer.Add(btns, 0, wx.ALIGN_RIGHT | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -2473,21 +3116,26 @@ class PlayerSettingsDialog(wx.Dialog):
 
         self._save_btn.Bind(wx.EVT_BUTTON, self._on_save)
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
+        _context_help(self)
 
-    def _row(self, sizer, label, value) -> wx.TextCtrl:
+    def _row(self, sizer, label, value, *, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
         ctrl = wx.TextCtrl(self, value=value, size=(320, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
+        if help_text:
+            ctrl.SetHelpText(help_text)
         sizer.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(ctrl, 1, wx.EXPAND)
         return ctrl
 
-    def _combo(self, sizer, label, choices, value) -> wx.ComboBox:
+    def _combo(self, sizer, label, choices, value, *, help_text="") -> wx.ComboBox:
         lbl = wx.StaticText(self, label=label)
         combo = wx.ComboBox(self, choices=choices, style=wx.CB_READONLY)
         if value in choices:
             combo.SetValue(value)
         _name(combo, label.replace("&", "").replace(":", "").strip())
+        if help_text:
+            combo.SetHelpText(help_text)
         sizer.Add(lbl, 0, wx.ALIGN_CENTER_VERTICAL)
         sizer.Add(combo, 1, wx.EXPAND)
         return combo

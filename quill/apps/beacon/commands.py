@@ -39,10 +39,20 @@ class CommandPalette(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.filter = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
         _name(self.filter, "Type to filter commands")
+        self.filter.SetHelpText(
+            "Type part of a command's name to filter the list below. Enter "
+            "runs the highlighted command, Down arrow moves into the list, "
+            "Escape closes without running anything."
+        )
         sizer.Add(self.filter, 0, wx.EXPAND | wx.ALL, 8)
 
         self.list = wx.ListBox(self, style=wx.LB_SINGLE)
         _name(self.list, "Commands")
+        self.list.SetHelpText(
+            "Every command in the app, with its keyboard shortcut in "
+            "parentheses when it has one. Enter or double-click runs the "
+            "selected command."
+        )
         sizer.Add(self.list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
         self._populate("")
 
@@ -60,6 +70,13 @@ class CommandPalette(wx.Dialog):
         # hook. Wire the shared contract with no backing-button ids so the
         # button-contract audit has nothing unbacked to flag.
         apply_modal_ids(self)
+        # F1 context help (GATE-BEACON-HELP): the palette is shown with a
+        # bare ShowModal(), so it binds the family hook itself. Bound after
+        # the palette's own char hook, so F1 answers here and every other
+        # key falls through to the filter behavior above.
+        from quill.ui.app_context_help import install as _install_f1
+
+        _install_f1(self)
 
     def _populate(self, text: str) -> None:
         text = text.lower().strip()

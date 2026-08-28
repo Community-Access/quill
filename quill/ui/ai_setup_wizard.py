@@ -94,7 +94,7 @@ class AISetupWizard:
         nav = wx.BoxSizer(wx.HORIZONTAL)
         self._back_btn = wx.Button(self.dialog, label="&Back")
         self._next_btn = wx.Button(self.dialog, label="&Next")
-        self._cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="Not &now")
+        self._cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="N&ot now")
         nav.Add(self._back_btn, 0, wx.RIGHT, 6)
         nav.AddStretchSpacer()
         nav.Add(self._cancel_btn, 0, wx.RIGHT, 6)

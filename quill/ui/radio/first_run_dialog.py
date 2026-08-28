@@ -96,7 +96,7 @@ class RadioFirstRunDialog:
             "Skips the rest of the tour and opens Browse Stations, the tree "
             "of everything there is to listen to."
         )
-        self._skip_btn = wx.Button(self._dialog, wx.ID_CANCEL, "&Skip")
+        self._skip_btn = wx.Button(self._dialog, wx.ID_CANCEL, "S&kip")
         self._skip_btn.SetHelpText(
             "Leaves the tour. Nothing is lost: every door it shows has a key and a menu item."
         )

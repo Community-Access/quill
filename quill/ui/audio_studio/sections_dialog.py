@@ -89,9 +89,28 @@ class CopySectionsDialog:
 
         marks_row = wx.BoxSizer(wx.HORIZONTAL)
         self._mark_start_btn = wx.Button(self._dialog, label="Mark &Start")
+        self._mark_start_btn.SetHelpText(
+            "Marks where the section begins, at the player's current "
+            "position. Play to the right moment first; marking again simply "
+            "moves the mark."
+        )
         self._mark_end_btn = wx.Button(self._dialog, label="Mark &End")
+        self._mark_end_btn.SetHelpText(
+            "Marks where the section ends, at the player's current position. "
+            "With both marks set, Preview Marked plays the piece and Add to "
+            "List keeps it."
+        )
         self._preview_btn = wx.Button(self._dialog, label="&Preview Marked")
+        self._preview_btn.SetHelpText(
+            "Plays from the start mark so you can hear the marked piece "
+            "before keeping it; stop whenever you have heard enough. Enabled "
+            "once both marks are set."
+        )
         self._add_btn = wx.Button(self._dialog, label="&Add to List")
+        self._add_btn.SetHelpText(
+            "Adds the marked piece to the sections below and clears the marks "
+            "so you can find the next one. Enabled once both marks are set."
+        )
         for button in (self._mark_start_btn, self._mark_end_btn, self._preview_btn, self._add_btn):
             marks_row.Add(button, 0, wx.RIGHT, 6)
         root.Add(marks_row, 0, wx.LEFT | wx.RIGHT, 10)
@@ -103,13 +122,35 @@ class CopySectionsDialog:
         root.Add(wx.StaticText(self._dialog, label="Sections to sa&ve:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._list = wx.ListBox(self._dialog, choices=[])
         self._list.SetName("Collected sections, in the order they will be saved")
+        self._list.SetHelpText(
+            "Every piece you have kept, each row a whole sentence saying "
+            "where it starts and how long it runs. The order here is the "
+            "order the saved file plays in; the buttons below play, remove, "
+            "and reorder the highlighted row."
+        )
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 10)
 
         list_row = wx.BoxSizer(wx.HORIZONTAL)
         self._play_btn = wx.Button(self._dialog, label="P&lay This One")
+        self._play_btn.SetHelpText(
+            "Plays the highlighted section from its start, so any piece can "
+            "be checked again before saving."
+        )
         self._remove_btn = wx.Button(self._dialog, label="&Remove")
+        self._remove_btn.SetHelpText(
+            "Takes the highlighted section out of the list. Only the marks "
+            "are discarded -- the recording itself is untouched."
+        )
         self._up_btn = wx.Button(self._dialog, label="Move &Up")
+        self._up_btn.SetHelpText(
+            "Moves the highlighted section one place earlier -- earlier in "
+            "the list is earlier in the saved file."
+        )
         self._down_btn = wx.Button(self._dialog, label="Move &Down")
+        self._down_btn.SetHelpText(
+            "Moves the highlighted section one place later -- later in the "
+            "list is later in the saved file."
+        )
         for button in (self._play_btn, self._remove_btn, self._up_btn, self._down_btn):
             list_row.Add(button, 0, wx.RIGHT, 6)
         root.Add(list_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -120,10 +161,24 @@ class CopySectionsDialog:
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._save_btn = wx.Button(self._dialog, label="Save as &New File...")
+        self._save_btn.SetHelpText(
+            "Writes the collected sections, in list order, to a new audio "
+            "file you name. The original recording is never changed."
+        )
         self._append_btn = wx.Button(self._dialog, label="Add to an E&xisting File...")
+        self._append_btn.SetHelpText(
+            "Appends the collected sections, in list order, onto the end of "
+            "an audio file you pick -- how a running compilation grows. The "
+            "original recording is never changed."
+        )
+        close_btn = wx.Button(self._dialog, wx.ID_CANCEL, "&Close")
+        close_btn.SetHelpText(
+            "Closes the window. Sections not yet saved are discarded -- save "
+            "them as a new file or onto an existing one first to keep them."
+        )
         buttons.Add(self._save_btn, 0, wx.RIGHT, 6)
         buttons.Add(self._append_btn, 0, wx.RIGHT, 6)
-        buttons.Add(wx.Button(self._dialog, wx.ID_CANCEL, "&Close"), 0)
+        buttons.Add(close_btn, 0)
         root.Add(buttons, 0, wx.ALL, 10)
 
         self._dialog.SetSizer(root)

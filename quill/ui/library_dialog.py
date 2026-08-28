@@ -100,7 +100,7 @@ class LibraryDialog(wx.Dialog):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        sizer.Add(wx.StaticText(self, label="&Source:"), 0, wx.LEFT | wx.TOP, 6)
+        sizer.Add(wx.StaticText(self, label="So&urce:"), 0, wx.LEFT | wx.TOP, 6)
         self.source = wx.Choice(self, choices=[label for label, _ in _SOURCES])
         self.source.SetName("Source")
         self.source.SetSelection(0)
@@ -149,7 +149,7 @@ class LibraryDialog(wx.Dialog):
         # default. Empty until a result is selected.
         fmt_row = wx.BoxSizer(wx.HORIZONTAL)
         fmt_row.Add(
-            wx.StaticText(self, label="Fo&rmat:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
+            wx.StaticText(self, label="For&mat:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4
         )
         self.format_choice = wx.Choice(self, choices=[])
         self.format_choice.SetName("Download format")
@@ -160,7 +160,7 @@ class LibraryDialog(wx.Dialog):
         # shells so a long result list is keyboard-navigable without the mouse.
         find_row = wx.BoxSizer(wx.HORIZONTAL)
         find_row.Add(
-            wx.StaticText(self, label="Find in re&sults:"),
+            wx.StaticText(self, label="Find &in results:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             4,

@@ -54,7 +54,7 @@ class PronunciationEntryDialog:
         self.dialog = wx.Dialog(parent, title="Pronunciation Entry")
         root = wx.BoxSizer(wx.VERTICAL)
 
-        root.Add(wx.StaticText(self.dialog, label="&Word or phrase:"), 0, wx.ALL, 6)
+        root.Add(wx.StaticText(self.dialog, label="Word or &phrase:"), 0, wx.ALL, 6)
         self._term = wx.TextCtrl(self.dialog, value=entry.term)
         set_accessible_name(self._term, "Word or phrase")
         root.Add(self._term, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
@@ -67,7 +67,7 @@ class PronunciationEntryDialog:
         spoken_value = entry.plain_fallback if self._mode == "ssml" else entry.replacement
 
         root.Add(
-            wx.StaticText(self.dialog, label="&Spoken as (spell it how it sounds):"), 0, wx.ALL, 6
+            wx.StaticText(self.dialog, label="Spoken as (spell &it how it sounds):"), 0, wx.ALL, 6
         )
         self._spoken = wx.TextCtrl(self.dialog, value=spoken_value)
         set_accessible_name(self._spoken, "Spoken as, spell it how it sounds")
@@ -108,7 +108,7 @@ class PronunciationEntryDialog:
             root.Add(hear, 0, wx.LEFT | wx.BOTTOM, 6)
 
         btns = wx.BoxSizer(wx.HORIZONTAL)
-        ok = wx.Button(self.dialog, id=wx.ID_OK, label="&Save")
+        ok = wx.Button(self.dialog, id=wx.ID_OK, label="S&ave")
         cancel = wx.Button(self.dialog, id=wx.ID_CANCEL)
         ok.Bind(wx.EVT_BUTTON, self._on_ok)
         btns.AddStretchSpacer()

@@ -38,7 +38,7 @@ class VerbosityPreviewLabDialog:
         self.dialog.SetMinSize(wx.Size(600, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
-        root.Add(wx.StaticText(self.dialog, label="&Scenario:"), 0, wx.LEFT | wx.TOP, 8)
+        root.Add(wx.StaticText(self.dialog, label="S&cenario:"), 0, wx.LEFT | wx.TOP, 8)
         self._list = wx.ListBox(
             self.dialog, style=wx.LB_SINGLE, choices=[s.name for s in BUILTIN_SCENARIOS]
         )

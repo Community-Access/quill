@@ -55,7 +55,7 @@ class VerbosityHistoryDialog:
         self._list.SetMinSize(wx.Size(-1, 170))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
-        root.Add(wx.StaticText(self.dialog, label="&Explanation:"), 0, wx.LEFT | wx.TOP, 8)
+        root.Add(wx.StaticText(self.dialog, label="E&xplanation:"), 0, wx.LEFT | wx.TOP, 8)
         self._detail = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )

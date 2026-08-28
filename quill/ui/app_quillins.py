@@ -156,7 +156,7 @@ class QuillinsAppMixin:
             chooser.SetSelection(0)
         body.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)
 
-        body.Add(wx.StaticText(dialog, label="&Details"), 0, wx.LEFT | wx.RIGHT, 8)
+        body.Add(wx.StaticText(dialog, label="De&tails"), 0, wx.LEFT | wx.RIGHT, 8)
         details = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         set_accessible_name(details, "Quillin details")
         body.Add(details, 1, wx.ALL | wx.EXPAND, 8)

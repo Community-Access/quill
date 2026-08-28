@@ -97,18 +97,38 @@ class QuickActionsDialog:
 
         button_col = wx.BoxSizer(wx.VERTICAL)
         self._up_btn = wx.Button(self.dialog, label="Move &Up")
+        self._up_btn.SetHelpText(
+            "Move the selected action one place earlier in the list. "
+            "Alt+Up in the list does the same."
+        )
         self._down_btn = wx.Button(self.dialog, label="Move &Down")
+        self._down_btn.SetHelpText(
+            "Move the selected action one place later in the list. "
+            "Alt+Down in the list does the same."
+        )
         self._top_btn = wx.Button(self.dialog, label="Make Defaul&t")
         self._top_btn.SetName("Move the selected action to the top, making it what Enter does")
         reset_btn = wx.Button(self.dialog, label="&Reset This List")
+        reset_btn.SetHelpText(
+            "Put this one list back in the order it shipped with. The other lists are left alone."
+        )
         for widget in (self._up_btn, self._down_btn, self._top_btn, reset_btn):
             button_col.Add(widget, 0, wx.EXPAND | wx.BOTTOM, 6)
         body.Add(button_col, 0)
         root.Add(body, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
-        ok_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
+        ok_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
+        ok_btn.SetHelpText(
+            "Keep the new order for every list edited here. It is saved and "
+            "shapes Enter, the Ctrl number keys, and the right-click menu "
+            "from now on."
+        )
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
+        cancel_btn.SetHelpText(
+            "Close without keeping anything. Every list stays in the order "
+            "it had before this dialog opened."
+        )
         btn_row.AddStretchSpacer()
         btn_row.Add(ok_btn, 0, wx.RIGHT, 6)
         btn_row.Add(cancel_btn)

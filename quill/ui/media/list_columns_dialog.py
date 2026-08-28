@@ -133,7 +133,7 @@ class ListColumnsDialog:
         self._description.SetName("What the selected column holds")
         root.Add(self._description, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
-        preview_label = wx.StaticText(self.dialog, label="A row will &read:")
+        preview_label = wx.StaticText(self.dialog, label="&A row will read:")
         root.Add(preview_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
         self._preview = wx.TextCtrl(
             self.dialog, value="", style=wx.TE_READONLY | wx.TE_MULTILINE, size=(-1, 48)
@@ -143,7 +143,15 @@ class ListColumnsDialog:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         ok_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
+        ok_btn.SetHelpText(
+            "Keep the column changes for every list edited here. They are "
+            "saved and apply to those lists from now on."
+        )
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
+        cancel_btn.SetHelpText(
+            "Close without keeping anything. Every list's columns stay as "
+            "they were before this dialog opened."
+        )
         btn_row.AddStretchSpacer()
         btn_row.Add(ok_btn, 0, wx.RIGHT, 6)
         btn_row.Add(cancel_btn)

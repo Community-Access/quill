@@ -98,7 +98,7 @@ class AISpellCheckDialog:
         self._accept_btn = wx.Button(self.dialog, label="&Accept (Alt+A)")
         self._accept_all_like = wx.Button(self.dialog, label="Accept A&ll Like This")
         self._skip_btn = wx.Button(self.dialog, label="&Skip (Alt+S)")
-        self._skip_all_like = wx.Button(self.dialog, label="Skip Al&l Like This")
+        self._skip_all_like = wx.Button(self.dialog, label="Skip All Like &This")
         for b in (self._accept_btn, self._accept_all_like, self._skip_btn, self._skip_all_like):
             btn1.Add(b, 0, wx.RIGHT, 6)
         root.Add(btn1, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -107,7 +107,7 @@ class AISpellCheckDialog:
         btn2 = wx.BoxSizer(wx.HORIZONTAL)
         self._accept_all_btn = wx.Button(self.dialog, label="Accept All &Remaining")
         self._reject_all_btn = wx.Button(self.dialog, label="Re&ject All")
-        self._apply_close_btn = wx.Button(self.dialog, label="App&ly and Close")
+        self._apply_close_btn = wx.Button(self.dialog, label="Apply and &Close")
         apply_modal_ids(
             self.dialog,
             affirmative_id=self._apply_close_btn.GetId(),

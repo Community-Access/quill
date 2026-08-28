@@ -50,7 +50,7 @@ class ClipLibraryDialog:
 
         body = wx.BoxSizer(wx.HORIZONTAL)
         left = wx.BoxSizer(wx.VERTICAL)
-        left.Add(wx.StaticText(self.dialog, label="&Clips"), 0, wx.BOTTOM, 2)
+        left.Add(wx.StaticText(self.dialog, label="C&lips"), 0, wx.BOTTOM, 2)
         # Extended selection, not single: marking several clips and joining
         # them is the one assembly job this dialog does. Ordinary arrow-key use
         # is unchanged -- a plain move still selects exactly one.
@@ -62,7 +62,7 @@ class ClipLibraryDialog:
         body.Add(left, 1, wx.EXPAND | wx.RIGHT, 8)
 
         right = wx.BoxSizer(wx.VERTICAL)
-        right.Add(wx.StaticText(self.dialog, label="&Content:"), 0, wx.BOTTOM, 2)
+        right.Add(wx.StaticText(self.dialog, label="C&ontent:"), 0, wx.BOTTOM, 2)
         self._content = wx.TextCtrl(
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
         )
@@ -83,7 +83,7 @@ class ClipLibraryDialog:
         self._btn_rename = wx.Button(self.dialog, label="Re&name...")
         self._btn_combine = wx.Button(self.dialog, label="Com&bine Marked...")
         self._btn_abbreviation = wx.Button(self.dialog, label="Save as &Abbreviation...")
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="&Close")
+        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="Close")
         for btn in (
             self._btn_copy,
             self._btn_favorite,

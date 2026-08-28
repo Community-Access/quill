@@ -344,7 +344,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         search_grid.Add(self._country_ctrl, 1, wx.EXPAND)
         search_box.Add(search_grid, 1, wx.EXPAND | wx.ALL, 6)
         search_col = wx.BoxSizer(wx.VERTICAL)
-        self._search_btn = wx.Button(self._surface, label="&Go")
+        self._search_btn = wx.Button(self._surface, label="Go")
         self._search_btn.SetName("Search for stations matching these fields")
         # No alignment flag: vertical alignment flags assert-fail inside a
         # vertical sizer (wx 4.2+), which killed the dialog before it opened.
@@ -354,7 +354,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
 
         body = wx.BoxSizer(wx.HORIZONTAL)
         cat_col = wx.BoxSizer(wx.VERTICAL)
-        cat_col.Add(wx.StaticText(self._surface, label="Cate&gory"), 0, wx.BOTTOM, 4)
+        cat_col.Add(wx.StaticText(self._surface, label="Categor&y"), 0, wx.BOTTOM, 4)
         self._category_list = wx.ListBox(self._surface, choices=list(_CATEGORIES))
         self._category_list.SetName(
             "Station category; Favorites, Popular Stations, ACB Media, SomaFM, "
@@ -366,7 +366,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         body.Add(cat_col, 1, wx.EXPAND | wx.RIGHT, 10)
 
         results_col = wx.BoxSizer(wx.VERTICAL)
-        results_col.Add(wx.StaticText(self._surface, label="S&tations"), 0, wx.BOTTOM, 4)
+        results_col.Add(wx.StaticText(self._surface, label="Stations"), 0, wx.BOTTOM, 4)
         facet_row = wx.BoxSizer(wx.HORIZONTAL)
         facet_row.Add(
             wx.StaticText(self._surface, label="So&urce:"),
@@ -436,7 +436,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
 
         volume_row = wx.BoxSizer(wx.HORIZONTAL)
         volume_row.Add(
-            wx.StaticText(self._surface, label="Radio vol&ume:"),
+            wx.StaticText(self._surface, label="Radio volume:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
@@ -446,7 +446,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
             "Internet Radio's own volume, separate from your system volume and screen reader"
         )
         volume_row.Add(self._volume_slider, 1, wx.EXPAND | wx.RIGHT, 6)
-        self._mute_btn = wx.ToggleButton(self._surface, label="&Mute")
+        self._mute_btn = wx.ToggleButton(self._surface, label="Mute")
         self._mute_btn.SetName("Mute or unmute Internet Radio")
         volume_row.Add(self._mute_btn, 0)
         root.Add(volume_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
@@ -458,14 +458,14 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         self._favorite_btn = wx.Button(self._surface, label="Add to &Favorites")
         self._favorite_btn.SetName("Add or remove the selected station from Favorites")
         self._favorite_btn.Enable(False)
-        self._more_btn = wx.Button(self._surface, label="&More Stations")
+        self._more_btn = wx.Button(self._surface, label="More Stations")
         self._more_btn.SetName("Load the next page of search results")
         self._more_btn.Enable(False)
         add_custom_btn = wx.Button(self._surface, label="Add Custom Stat&ion...")
         add_custom_btn.SetName("Add a station by typing its own stream link")
-        link_finder_btn = wx.Button(self._surface, label="Find Streams from a Websi&te...")
+        link_finder_btn = wx.Button(self._surface, label="Find Streams from a We&bsite...")
         link_finder_btn.SetName("Scan a website you type in for stream links")
-        self._refresh_btn = wx.Button(self._surface, label="Re&fresh")
+        self._refresh_btn = wx.Button(self._surface, label="Refresh")
         self._refresh_btn.SetName(
             "Re-fetch the current source from the internet -- the Music Genres "
             "list/stations, or the iHeart directory used by search"

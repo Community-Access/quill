@@ -616,11 +616,35 @@ def load_scope_dictionary(
     path = _dictionary_path(scope, document_path, project_root)
     if path is None:
         return set()
-    raw = read_json(path, default=[])
-    if not isinstance(raw, list):
-        logger.warning("Scope dictionary %s is malformed; falling back to empty set", path)
+    raw = read_json(path, default=None)
+    if isinstance(raw, list):
+        return {item.strip().lower() for item in raw if isinstance(item, str) and item.strip()}
+    # EdSharp standard (magic2, 2026-08-27): a taught dictionary is an asset
+    # the user may open and edit by hand. A hand edit that breaks the JSON
+    # must not silently wipe two hundred taught words -- so a file that does
+    # not parse as JSON is read as a plain word list, one per line (which is
+    # also what a hand-authored file naturally looks like). Commas, brackets
+    # and quotes left over from JSON editing are stripped per line.
+    try:
+        text = path.read_text(encoding="utf-8")
+    except OSError:
         return set()
-    return {item.strip().lower() for item in raw if isinstance(item, str) and item.strip()}
+    words: set[str] = set()
+    for line in text.splitlines():
+        token = line.strip().strip("[],").strip().strip('"').strip("'").strip().lower()
+        if token and all(ch.isalpha() or ch in "-'" for ch in token):
+            words.add(token)
+    if words:
+        logger.warning(
+            "Scope dictionary %s is not valid JSON; recovered %d words from it "
+            "as a plain word list",
+            path,
+            len(words),
+        )
+        return words
+    if text.strip():
+        logger.warning("Scope dictionary %s is malformed; falling back to empty set", path)
+    return set()
 
 
 def _dictionary_path(

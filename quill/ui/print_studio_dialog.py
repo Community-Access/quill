@@ -45,7 +45,7 @@ class PrintStudioDialog:
         self._preview_ctrl.SetName("Print preview summary")
         root.Add(self._preview_ctrl, 0, wx.EXPAND | wx.ALL, 8)
 
-        root.Add(wx.StaticText(self.dialog, label="&Pages to print:"), 0, wx.LEFT | wx.RIGHT, 8)
+        root.Add(wx.StaticText(self.dialog, label="Pages &to print:"), 0, wx.LEFT | wx.RIGHT, 8)
         self._page_set_choice = wx.Choice(
             self.dialog, choices=["All pages", "Odd pages only", "Even pages only"]
         )

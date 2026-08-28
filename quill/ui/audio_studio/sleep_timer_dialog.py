@@ -53,6 +53,11 @@ class SleepTimerDialog(wx.Dialog):
             max=_MAX_MINUTES,
             name="Sleep timer delay in minutes",
         )
+        self._minutes.SetHelpText(
+            "How long playback keeps going before the timer stops it, 1 to "
+            "480 minutes. Ignored while Stop at end of chapter is checked, "
+            "and only read while the timer is enabled."
+        )
         delay_row.Add(self._minutes, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 8)
         sizer.Add(delay_row, 0, wx.EXPAND | wx.BOTTOM, 8)
 

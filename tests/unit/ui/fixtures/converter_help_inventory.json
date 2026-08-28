@@ -1,0 +1,13 @@
+{
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Button": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Button#2": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Button#3": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Button#4": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Button#5": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Button#6": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Button#7": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Choice": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.Choice#2": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.ListBox": "helped",
+  "quill/apps/converter.py::QuillConverterFrame._build_main_panel::wx.TextCtrl": "helped"
+}

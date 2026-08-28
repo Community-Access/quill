@@ -44,8 +44,15 @@ class PlayerInfoDialog:
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         copy_btn = wx.Button(self.dialog, label="&Copy")
+        copy_btn.SetHelpText(
+            "Put the whole report on the clipboard as plain text, ready to "
+            "paste into a document or a support message."
+        )
         copy_btn.Bind(wx.EVT_BUTTON, self._on_copy)
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="&Close")
+        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="Close")
+        close_btn.SetHelpText(
+            "Close the report. It changes nothing; reopen it any time for the current state."
+        )
         buttons.AddStretchSpacer(1)
         buttons.Add(copy_btn, 0, wx.RIGHT, 6)
         buttons.Add(close_btn, 0)

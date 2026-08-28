@@ -260,7 +260,7 @@ class MastodonAccountsDialog:
         )
         self.dialog.SetSize((520, 360))
         root = wx.BoxSizer(wx.VERTICAL)
-        root.Add(wx.StaticText(self.dialog, label="&Accounts:"), 0, wx.LEFT | wx.TOP, 12)
+        root.Add(wx.StaticText(self.dialog, label="Acc&ounts:"), 0, wx.LEFT | wx.TOP, 12)
         self._list = wx.ListBox(self.dialog)
         self._list.SetName("Mastodon accounts")
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 12)

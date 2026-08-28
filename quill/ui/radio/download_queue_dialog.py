@@ -97,7 +97,7 @@ class DownloadQueueDialog:
         self._heading = wx.StaticText(self._surface, label="")
         root.Add(self._heading, 0, wx.ALL, 10)
 
-        root.Add(wx.StaticText(self._surface, label="Downl&oads:"), 0, wx.LEFT | wx.RIGHT, 10)
+        root.Add(wx.StaticText(self._surface, label="Dow&nloads:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._list = wx.ListBox(self._surface, style=wx.LB_SINGLE)
         self._list.SetName("Everything queued for download, and where each one has got to")
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 10)
@@ -143,7 +143,7 @@ class DownloadQueueDialog:
             # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape (2026-08-23).
             from quill.ui.dialog_contract import bind_close_button
 
-            close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Cl&ose")
+            close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
             close_btn.SetHelpText(
                 "Closes the queue window. Whether downloads keep going is the "
                 "background-downloads preference."

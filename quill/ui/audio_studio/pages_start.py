@@ -59,6 +59,11 @@ class StartPage(StudioPage):
         )
 
         self._load_job_btn = wx.Button(self, label=_("&Load a job file..."))
+        self._load_job_btn.SetHelpText(
+            "Loads a saved .quilljob file and reopens the wizard with every "
+            "page pre-filled from it, so a saved run is three keystrokes from "
+            "starting again."
+        )
         self.sizer.Add(self._load_job_btn, 0, wx.LEFT | wx.BOTTOM, 12)
 
     def journey(self) -> str:

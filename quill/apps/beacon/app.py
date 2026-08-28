@@ -110,6 +110,20 @@ class BeaconFrame(wx.Frame):
         self.current_sort = "added"
         self.last_query = ""
 
+        # F1 context help with Beacon's authored purpose catalogue
+        # (GATE-BEACON-HELP). activate() installs the wx.HelpProvider (making
+        # every SetHelpText live) and registers the family engine with
+        # Beacon's window-purpose resolver; install() binds F1 on this main
+        # frame, which no dialog-contract show path wraps. Beacon's dialogs
+        # bind F1 themselves in their __init__ (see dialogs._context_help),
+        # because they are shown with a bare ShowModal(), not through
+        # show_modal_dialog.
+        from quill.apps.beacon import surface_help
+        from quill.ui import app_context_help
+
+        app_context_help.activate(surface_help.purpose_for_title)
+        app_context_help.install(self)
+
         self._build_menu()
         self._build_ui()
         a11y_mod.apply_to_frame(self, self.a11y)
@@ -508,7 +522,9 @@ class BeaconFrame(wx.Frame):
             "Accessibility, sync, capture bridge, and published pages",
         )
         m_view.AppendSeparator()
-        self._add(m_view, "&Where Am I?\tF1", self._on_where_am_i, "Announce current context")
+        # F1 is the family-wide context-help key (window purpose + focused
+        # control); Where Am I keeps its announcement on Ctrl+F1.
+        self._add(m_view, "&Where Am I?\tCtrl+F1", self._on_where_am_i, "Announce current context")
         self._add(m_view, "&Next Pane\tF6", self._on_next_pane, "Move to next pane")
         mb.Append(m_view, "&View")
 
@@ -682,9 +698,21 @@ class BeaconFrame(wx.Frame):
             self.dest_list,
             "Destinations and collections. Enter to open, F2 to rename a collection.",
         )
+        self.dest_list.SetHelpText(
+            "Where you are looking: the built-in destinations (Inbox, All "
+            "Bookmarks, Favorites, Trash...), then your collections, [smart] "
+            "saved searches, and > trails with their progress counts. "
+            "Selecting a row scopes the bookmark list to it; selecting a "
+            "trail opens its step-through window instead."
+        )
         sb_sizer.Add(self.dest_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
         self.new_col_btn = wx.Button(sidebar, label="New &Collection")
         _name(self.new_col_btn, "New collection")
+        self.new_col_btn.SetHelpText(
+            "Create a new, empty collection: you are asked for its name and "
+            "it appears in the sidebar at once. Bookmarks are filed into it "
+            "with Add to Collection (Ctrl+L) or a routing rule."
+        )
         sb_sizer.Add(self.new_col_btn, 0, wx.EXPAND | wx.ALL, 6)
         sidebar.SetSizer(sb_sizer)
 
@@ -697,6 +725,12 @@ class BeaconFrame(wx.Frame):
         self.search_box = wx.SearchCtrl(right)
         self.search_box.SetDescriptiveText("Search bookmarks  (type:episode tag:research ...)")
         _name(self.search_box, "Search bookmarks. Press Enter to search, Escape to clear.")
+        self.search_box.SetHelpText(
+            "Search the library with plain words or the query grammar: "
+            'type:episode, tag:research, collection:"News", health:broken, '
+            "domain:example.com, not:word, has:note. Results update as you "
+            "type; Down arrow moves into them and Escape clears the search."
+        )
         search_row.Add(self.search_box, 1, wx.EXPAND | wx.ALL, 6)
         self.sort_combo = wx.ComboBox(
             right,
@@ -705,13 +739,26 @@ class BeaconFrame(wx.Frame):
         )
         self.sort_combo.SetSelection(0)
         _name(self.sort_combo, "Sort order")
+        self.sort_combo.SetHelpText(
+            "The order of the bookmark list: added (newest first, the "
+            "default), title, opened (most recently opened), mostOpened, "
+            "type, health, or relevance. The list re-sorts the moment you "
+            "choose."
+        )
         search_row.Add(self.sort_combo, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         right_sizer.Add(search_row, 0, wx.EXPAND)
 
         self.results = wx.ListCtrl(right, style=wx.LC_REPORT | wx.LC_VIRTUAL)
         self.results.SetName(
-            "Bookmarks list. Enter opens, Delete trashes, F2 edits, F1 announces. "
-            "Ctrl+Space or Shift+arrows select multiple for bulk actions."
+            "Bookmarks list. Enter opens, Delete trashes, F2 edits, Ctrl+F1 announces "
+            "where you are. Ctrl+Space or Shift+arrows select multiple for bulk actions."
+        )
+        self.results.SetHelpText(
+            "One row per bookmark with its type, location, collection, tags, "
+            "date, and link health. Enter opens the row with its normal "
+            "program or browser, Delete moves it to Trash, F2 renames it, "
+            "and Ctrl+Space or Shift+arrows select several rows for the Bulk "
+            "commands on the Edit menu."
         )
         self.results.AppendColumn("Title", width=260)
         self.results.AppendColumn("Type", width=110)
@@ -722,10 +769,16 @@ class BeaconFrame(wx.Frame):
         self.results.AppendColumn("Health", width=90)
         right_sizer.Add(self.results, 1, wx.EXPAND | wx.ALL, 6)
 
-        details_label = wx.StaticText(right, label="&Details")
+        details_label = wx.StaticText(right, label="D&etails")
         right_sizer.Add(details_label, 0, wx.LEFT | wx.RIGHT, 8)
         self.details = wx.TextCtrl(right, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2)
         _name(self.details, "Details for the selected bookmark")
+        self.details.SetHelpText(
+            "Everything stored about the selected bookmark, as read-only "
+            "text you can review and copy: address, health, favorite mark, "
+            "tags, collections, dates, note, saved locations, and related "
+            "bookmarks. It follows the selection in the list."
+        )
         right_sizer.Add(self.details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
         right_sizer.SetItemMinSize(self.details, (-1, 140))
 
@@ -1460,7 +1513,7 @@ class BeaconFrame(wx.Frame):
             Command("Suggest Tags", "Ctrl+Shift+T", self._on_suggest_tags),
             Command("Suggest Relationships", "Ctrl+Shift+K", self._on_suggest_relationships),
             Command("Summarize Note", "Ctrl+Shift+M", self._on_summarize),
-            Command("Where Am I?", "F1", self._on_where_am_i),
+            Command("Where Am I?", "Ctrl+F1", self._on_where_am_i),
             Command("Accessibility Settings", "", self._on_a11y_settings),
             Command("Preferences", "Ctrl+,", self._on_preferences),
         ]

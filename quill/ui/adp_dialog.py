@@ -69,7 +69,7 @@ class AdpAskDialog:
         ask_row.Add(new_btn, 0)
         root.Add(ask_row, 0, wx.EXPAND | wx.ALL, 8)
 
-        answer_label = wx.StaticText(self.dialog, label="A&nswer:")
+        answer_label = wx.StaticText(self.dialog, label="Ans&wer:")
         root.Add(answer_label, 0, wx.LEFT | wx.RIGHT, 8)
         self._answer = wx.TextCtrl(self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         set_accessible_name(self._answer, "The assistant's answer, read-only")

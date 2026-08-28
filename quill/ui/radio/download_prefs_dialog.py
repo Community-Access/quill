@@ -76,7 +76,7 @@ class DownloadPrefsDialog:
             panel, label="&Keep downloads going when the window closes to the tray"
         )
         self._always_ask = wx.CheckBox(
-            panel, label="As&k where to save each download instead of filing it automatically"
+            panel, label="Ask &where to save each download instead of filing it automatically"
         )
         # Five checkboxes that carried no help at all: their labels said what
         # each did, and nothing said what it did *not* do -- which for a filing

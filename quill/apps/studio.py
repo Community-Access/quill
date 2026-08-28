@@ -256,6 +256,14 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         # Mode was a feature silently refusing when the user tried to use it.
         title = f"{_TITLE} (Safe Mode)" if safe_mode else _TITLE
         self._init_app_shell(title, safe_mode=safe_mode, size=(720, 540))
+        # F1 context help with the Studio's authored purpose catalogue. The app
+        # shell already activated the shared engine (provider + dialog-contract
+        # hook + main-frame F1); this re-activation swaps in the Studio's
+        # window-purpose resolver so the authored paragraphs lead every answer
+        # instead of the generic sentence (GATE-STUDIO-HELP, 2026-08-27).
+        from quill.ui.audio_studio import context_help
+
+        context_help.activate()
         self._app_prefs = _load_app_prefs()
         self._protected_background_jobs: dict[int, str] = {}
         self._background_task_count = 0

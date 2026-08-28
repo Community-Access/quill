@@ -85,7 +85,7 @@ class PromptLibraryDialog:
         self._preview.SetName("Prompt text preview")
         right.Add(self._preview, 1, wx.EXPAND)
         right.Add(
-            wx.StaticText(self.dialog, label="&Input text (replaces {selection}):"),
+            wx.StaticText(self.dialog, label="Inp&ut text (replaces {selection}):"),
             0,
             wx.TOP | wx.BOTTOM,
             4,
@@ -473,7 +473,7 @@ class _PromptEditDialog:
 
         btn_sizer = wx.StdDialogButtonSizer()
         ok_btn = wx.Button(self.dialog, wx.ID_OK, label="&Save")
-        cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="Ca&ncel")
+        cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="Cancel")
         btn_sizer.AddButton(ok_btn)
         btn_sizer.AddButton(cancel_btn)
         btn_sizer.Realize()

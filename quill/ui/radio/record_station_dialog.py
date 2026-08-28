@@ -56,7 +56,7 @@ class RecordStationDialog:
 
         grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
         grid.AddGrowableCol(1, 1)
-        grid.Add(wx.StaticText(self.dialog, label="&Station:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self.dialog, label="S&tation:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._station_choice = wx.Choice(self.dialog, choices=labels or ["(no favorites yet)"])
         self._station_choice.SetName("The station to record")
         if labels:

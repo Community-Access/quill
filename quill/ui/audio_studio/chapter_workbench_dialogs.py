@@ -54,6 +54,12 @@ class SilenceParamsDialog(wx.Dialog):
         )
         self._noise = wx.SpinCtrlDouble(self, min=-60.0, max=-10.0, inc=1.0, initial=-30.0)
         set_accessible_name(self._noise, str(_("Noise threshold (dB)")))
+        self._noise.SetHelpText(
+            "How quiet the audio must be to count as silence, in decibels; -60 "
+            "to -10 in steps of 1, default -30. Lower the number to make the "
+            "scan more sensitive (it will find more, quieter pauses); raise it "
+            "for noisy recordings so room hiss stops counting as silence."
+        )
         grid.Add(self._noise, 0)
         grid.Add(
             wx.StaticText(self, label=str(_("Minimum silence (seconds):"))),
@@ -62,6 +68,12 @@ class SilenceParamsDialog(wx.Dialog):
         )
         self._min_silence = wx.SpinCtrlDouble(self, min=0.1, max=5.0, inc=0.1, initial=0.8)
         set_accessible_name(self._min_silence, str(_("Minimum silence (seconds)")))
+        self._min_silence.SetHelpText(
+            "How long a pause must last before it can become a chapter "
+            "boundary, in seconds; 0.1 to 5 in steps of 0.1, default 0.8. "
+            "Raise it so only real between-chapter pauses count, not breaths "
+            "between sentences."
+        )
         grid.Add(self._min_silence, 0)
         root.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         buttons = self.CreateButtonSizer(wx.OK | wx.CANCEL)

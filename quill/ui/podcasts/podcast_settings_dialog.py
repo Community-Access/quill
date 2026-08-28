@@ -73,7 +73,7 @@ class PodcastSettingsDialog:
         grid.Add(self._playback_choice, 1, wx.EXPAND)
 
         grid.Add(
-            wx.StaticText(self.dialog, label="Default &retention:"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self.dialog, label="Defa&ult retention:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._retention_choice = wx.Choice(self.dialog, choices=list(_RETENTION_LABELS))
         self._retention_choice.SetName(settings_help.HELP["retention"])
@@ -125,7 +125,7 @@ class PodcastSettingsDialog:
         grid.Add(self._auto_download_choice, 1, wx.EXPAND)
 
         grid.Add(
-            wx.StaticText(self.dialog, label="&Inbox: keep at most (0 = no limit):"),
+            wx.StaticText(self.dialog, label="Inbox: keep at most (&0 = no limit):"),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )
@@ -180,7 +180,7 @@ class PodcastSettingsDialog:
         grid.Add(self._boost_choice, 1, wx.EXPAND)
 
         self._streaks_check = wx.CheckBox(
-            self.dialog, label="Show listening &streaks in Statistics"
+            self.dialog, label="Show listenin&g streaks in Statistics"
         )
         self._streaks_check.SetName(settings_help.HELP["streaks"])
         self._streaks_check.SetHelpText(settings_help.HELP["streaks"])
@@ -224,7 +224,7 @@ class PodcastSettingsDialog:
         # is for: a streamed episode you can seek, bookmark, find chapters in,
         # and keep listening to when the connection drops.
         grid.Add(
-            wx.StaticText(self.dialog, label="&Streamed episodes:"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self.dialog, label="Streamed episodes:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._playback_cache_ctrl = wx.CheckBox(
             self.dialog, label="Keep streamed episodes ready while they play"
@@ -265,7 +265,7 @@ class PodcastSettingsDialog:
         self._download_root_ctrl = wx.TextCtrl(self.dialog, value=settings.download_root)
         self._download_root_ctrl.SetName(settings_help.HELP["download_folder"])
         self._download_root_ctrl.SetHelpText(settings_help.HELP["download_folder"])
-        browse_btn = wx.Button(self.dialog, label="&Browse...")
+        browse_btn = wx.Button(self.dialog, label="Browse...")
         browse_btn.SetName(settings_help.HELP["download_folder_button"])
         browse_btn.SetHelpText(settings_help.HELP["download_folder_button"])
         dest_row.Add(self._download_root_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
@@ -297,7 +297,7 @@ class PodcastSettingsDialog:
         root.Add(self._auto_download_queued_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._auto_download_inbox_check = wx.CheckBox(
-            self.dialog, label="Also download everything routed to the In&box"
+            self.dialog, label="Also download &everything routed to the Inbox"
         )
         self._auto_download_inbox_check.SetName(settings_help.HELP["download_inbox"])
         self._auto_download_inbox_check.SetHelpText(settings_help.HELP["download_inbox"])
@@ -337,7 +337,7 @@ class PodcastSettingsDialog:
 
         session_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "When an episode finishes")
         self._continue_queue_check = wx.CheckBox(
-            self.dialog, label="Play the next episode in the Play &Queue"
+            self.dialog, label="P&lay the next episode in the Play Queue"
         )
         self._continue_queue_check.SetName(settings_help.HELP["continue_queue"])
         self._continue_queue_check.SetHelpText(settings_help.HELP["continue_queue"])
@@ -361,7 +361,7 @@ class PodcastSettingsDialog:
         root.Add(session_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._name_first_check = wx.CheckBox(
-            self.dialog, label="Read the podcast &name before the episode title in mixed lists"
+            self.dialog, label="Read the pod&cast name before the episode title in mixed lists"
         )
         self._name_first_check.SetName(settings_help.HELP["name_first"])
         self._name_first_check.SetHelpText(settings_help.HELP["name_first"])
@@ -387,7 +387,7 @@ class PodcastSettingsDialog:
         root.Add(self._auto_trim_check, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._normalize_check = wx.CheckBox(
-            self.dialog, label="&Normalize loudness of downloaded episodes"
+            self.dialog, label="Normali&ze loudness of downloaded episodes"
         )
         self._normalize_check.SetName(settings_help.HELP["normalize"])
         self._normalize_check.SetHelpText(settings_help.HELP["normalize"])
@@ -406,7 +406,7 @@ class PodcastSettingsDialog:
         reconnect_box.Add(self._reconnect_check, 0, wx.ALL, 6)
         reconnect_grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
         reconnect_grid.Add(
-            wx.StaticText(self.dialog, label="Reconnect &attempts:"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self.dialog, label="Reconnect attempts:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._reconnect_attempts_ctrl = wx.SpinCtrl(self.dialog, min=1, max=99)
         self._reconnect_attempts_ctrl.SetValue(max(1, settings.reconnect_max_attempts))
@@ -414,7 +414,7 @@ class PodcastSettingsDialog:
         self._reconnect_attempts_ctrl.SetHelpText(settings_help.HELP["reconnect_attempts"])
         reconnect_grid.Add(self._reconnect_attempts_ctrl, 0)
         reconnect_grid.Add(
-            wx.StaticText(self.dialog, label="Seconds &between attempts:"),
+            wx.StaticText(self.dialog, label="Seconds between attempts:"),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )

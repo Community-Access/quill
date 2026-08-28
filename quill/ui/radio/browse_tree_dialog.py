@@ -141,7 +141,7 @@ class BrowseTreeDialog:
         # browse_feedback for why the Find and Clear buttons went away.
         find_row = wx.BoxSizer(wx.HORIZONTAL)
         find_row.Add(
-            wx.StaticText(self._surface, label="&Find in this folder:"),
+            wx.StaticText(self._surface, label="Find &in this folder:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
@@ -212,7 +212,7 @@ class BrowseTreeDialog:
         self._player_btn.SetName(
             f"Go to the player window ({go_to_player.key})" if go_to_player else "Go to the player"
         )
-        self._favorite_btn = wx.Button(self._surface, label="Add to &Favorites")
+        self._favorite_btn = wx.Button(self._surface, label="Add t&o Favorites")
         self._favorite_btn.SetHelpText(
             "Saves the highlighted station to your favorites -- or removes it "
             "when it is already there; the label says which."

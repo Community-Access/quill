@@ -29,15 +29,24 @@ class LibraryDialog(wx.Dialog):
 
         outer = wx.BoxSizer(wx.VERTICAL)
 
-        outer.Add(wx.StaticText(self, label="&Search LibriVox (free audiobooks):"), 0, wx.ALL, 8)
+        outer.Add(wx.StaticText(self, label="Search &LibriVox (free audiobooks):"), 0, wx.ALL, 8)
         row = wx.BoxSizer(wx.HORIZONTAL)
         self._query = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
         set_accessible_name(self._query, "Search LibriVox")
+        self._query.SetHelpText(
+            "A book title, or part of one, to look for in the free LibriVox "
+            "catalog. Enter or the Search button runs the search; clearing "
+            "this field clears the results."
+        )
         self._query.Bind(wx.EVT_TEXT_ENTER, self._on_search)
         from quill.ui.search_reset import bind_empty_query_reset
 
         bind_empty_query_reset(self._query, self._reset_results)
         search_btn = wx.Button(self, label="&Search")
+        search_btn.SetHelpText(
+            "Look the typed title up in the LibriVox catalog. Focus moves to "
+            "the results when any are found."
+        )
         search_btn.Bind(wx.EVT_BUTTON, self._on_search)
         row.Add(self._query, 1, wx.RIGHT, 6)
         row.Add(search_btn, 0)
@@ -46,6 +55,11 @@ class LibraryDialog(wx.Dialog):
         outer.Add(wx.StaticText(self, label="&Results:"), 0, wx.LEFT | wx.TOP, 8)
         self._results = wx.ListBox(self, name="Results")
         set_accessible_name(self._results, "Search results")
+        self._results.SetHelpText(
+            "The books the search found, each as title and author. Enter or "
+            "the Play button opens the highlighted book in the player, "
+            "streamed section by section."
+        )
         apply_listbox_activation(self._results, lambda _c: self.EndModal(wx.ID_OK))
         outer.Add(self._results, 1, wx.EXPAND | wx.ALL, 8)
 

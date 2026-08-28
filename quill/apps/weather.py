@@ -66,6 +66,14 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
 
     def __init__(self, *, safe_mode: bool = False) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 300))
+        # F1 context help with Weather's authored purpose catalogue. The app
+        # shell already activated the shared engine (provider + dialog-contract
+        # hook + main-frame F1); this re-activation swaps in Weather's
+        # window-purpose resolver so the authored paragraphs lead every answer
+        # instead of the generic sentence (GATE-WEATHER-HELP, 2026-08-27).
+        from quill.ui.weather import context_help
+
+        context_help.activate()
         from quill.core.paths import app_data_dir
         from quill.ui.window_menu import WindowManager
 
@@ -231,8 +239,24 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         root.Add(self._status_text, 0, wx.ALL, 12)
 
         self._open_center_btn = wx.Button(panel, label="Open Weather &Center...")
+        self._open_center_btn.SetHelpText(
+            "Open the Weather Center: the full text report for a saved "
+            "location -- active alerts, current conditions, and the "
+            "forecasts. Monitoring keeps running whether or not it is open."
+        )
         self._toggle_monitor_btn = wx.Button(panel, label="Start/Stop &Monitoring")
+        self._toggle_monitor_btn.SetHelpText(
+            "Turn the background alert watch on or off. On, Quill Weather "
+            "polls the National Weather Service for your saved locations and "
+            "speaks each new alert as it is issued; the label always shows "
+            "which way the button will turn it."
+        )
         self._add_location_btn = wx.Button(panel, label="&Add Location...")
+        self._add_location_btn.SetHelpText(
+            "Add a place to watch, by ZIP code, city, county, or address. "
+            "The first location you add becomes the primary one the alert "
+            "watch follows."
+        )
         for btn in (self._open_center_btn, self._toggle_monitor_btn, self._add_location_btn):
             root.Add(btn, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
         self._open_center_btn.Bind(wx.EVT_BUTTON, lambda _e: self.open_weather_center())

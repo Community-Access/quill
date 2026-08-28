@@ -35,13 +35,32 @@ class MiniPlayerFrame(wx.Frame):
 
         panel = wx.Panel(self)
         row = wx.BoxSizer(wx.HORIZONTAL)
-        for label, handler, name in (
-            ("&Play/Pause", self._toggle, "mini.play"),
-            ("Pre&vious chapter", self._prev, "mini.prev"),
-            ("Ne&xt chapter", self._next, "mini.next"),
+        for label, handler, name, help_text in (
+            (
+                "&Play/Pause",
+                self._toggle,
+                "mini.play",
+                "Pause the book, or resume it -- the same playback session "
+                "the main window controls.",
+            ),
+            (
+                "Pre&vious chapter",
+                self._prev,
+                "mini.prev",
+                "Jump back to the start of the previous chapter, in the "
+                "same playback session the main window controls.",
+            ),
+            (
+                "Ne&xt chapter",
+                self._next,
+                "mini.next",
+                "Jump ahead to the start of the next chapter, in the same "
+                "playback session the main window controls.",
+            ),
         ):
             button = wx.Button(panel, label=label, name=name)
             set_accessible_name(button, label.replace("&", ""))
+            button.SetHelpText(help_text)
             button.Bind(wx.EVT_BUTTON, handler)
             row.Add(button, 0, wx.ALL, 4)
         panel.SetSizerAndFit(row)
