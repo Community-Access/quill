@@ -1,25 +1,33 @@
 # Compile QuillVille-Runtime-Setup.exe -- the standalone shared-runtime
-# installer every "-Lite" app installer downloads from the latest GitHub
-# release (see installer\quillville-runtime.iss for why it exists and what it
-# deliberately leaves out).
+# installer every "-Lite" app installer downloads from the dedicated
+# `runtime-latest` GitHub release tag (see installer\quillville-runtime.iss
+# for why it exists and what it deliberately leaves out).
 #
 # Separate from build_runtime.ps1 on purpose: every app's build_release.ps1
 # invokes the runtime build, and compiling a ~150 MB installer on each of
 # those runs would tax builds that only need the dist. Run this when the
 # runtime itself is being released:
 #
-#   .\standalone\runtime\build_runtime_installer.ps1 [-Iscc <path>] [-Sign]
+#   .\standalone\runtime\build_runtime_installer.ps1 [-Iscc <path>] [-Sign] [-Publish]
 #
 # Output: standalone\runtime\dist\QuillVille-Runtime-Setup.exe
-# Publish: gh release upload <latest-release-tag> dist\QuillVille-Runtime-Setup.exe
-#          (the Lite installers fetch releases/latest/download/QuillVille-Runtime-Setup.exe)
+# Publish: -Publish uploads the built asset to the moving `runtime-latest`
+#          release tag (creating the release if absent, never marked "latest"),
+#          which is the URL every Lite installer and the native launcher fetch:
+#          releases/download/runtime-latest/QuillVille-Runtime-Setup.exe.
+#          Deliberately NOT the repository's `latest` release: that follows the
+#          editor's release train, which carries no runtime asset.
 
 param(
     [string]$Iscc = "",
     [string]$Python = "",
     [string]$QuillRepo = "",
-    [switch]$Sign
+    [switch]$Sign,
+    [switch]$Publish
 )
+
+$RuntimeTag = "runtime-latest"
+$GitHubRepo = "Community-Access/quill"
 
 $ErrorActionPreference = "Stop"
 $runtimeRoot = $PSScriptRoot
@@ -66,4 +74,22 @@ if ($LASTEXITCODE -ne 0) { throw "ISCC failed with exit code $LASTEXITCODE" }
 $setup = Join-Path $runtimeRoot "dist\QuillVille-Runtime-Setup.exe"
 Write-Host ""
 Write-Host ("Built {0}  ({1:N1} MB, runtime {2})" -f $setup, ((Get-Item $setup).Length / 1MB), $version)
-Write-Host "Publish with: gh release upload <latest-release-tag> `"$setup`""
+
+if ($Publish) {
+    # The one outward-facing step: replace the asset under the moving tag the
+    # Lite installers and the native launcher download from. --clobber makes a
+    # republish idempotent; --latest=false keeps the runtime release from ever
+    # hijacking the repository's "latest" (the editor's release train owns it).
+    gh release view $RuntimeTag --repo $GitHubRepo *> $null
+    if ($LASTEXITCODE -ne 0) {
+        gh release create $RuntimeTag --repo $GitHubRepo --latest=false `
+            --title "QuillVille Runtime (moving tag)" `
+            --notes "The shared QuillVille Runtime installer. Lite app installers and the native launcher download QuillVille-Runtime-Setup.exe from this tag; it is republished whenever the runtime is released. Install any QuillVille app instead of downloading this directly."
+        if ($LASTEXITCODE -ne 0) { throw "gh release create $RuntimeTag failed." }
+    }
+    gh release upload $RuntimeTag $setup --clobber --repo $GitHubRepo
+    if ($LASTEXITCODE -ne 0) { throw "gh release upload to $RuntimeTag failed." }
+    Write-Host "Published $setup to releases/download/$RuntimeTag/ (runtime $version)."
+} else {
+    Write-Host "Publish with: .\standalone\runtime\build_runtime_installer.ps1 -Publish"
+}

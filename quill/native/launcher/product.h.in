@@ -30,7 +30,8 @@
 
 /* HTTPS URL of the QuillVille Runtime installer (a GitHub release asset). The
  * self-healing launcher downloads + runs this when no runtime is found. The
- * /releases/latest/download/ path always redirects to the newest asset. */
+ * asset lives under the moving `runtime-latest` tag, republished whenever the
+ * runtime itself is released (build_runtime_installer.ps1 -Publish). */
 #define PRODUCT_RUNTIME_URL  "@PRODUCT_RUNTIME_URL@"
 
 #endif /* QL_PRODUCT_H */

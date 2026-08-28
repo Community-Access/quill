@@ -15,7 +15,7 @@
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"
-#define RuntimeUrl "https://github.com/Community-Access/quill/releases/latest/download/QuillVille-Runtime-Setup.exe"
+#define RuntimeUrl "https://github.com/Community-Access/quill/releases/download/runtime-latest/QuillVille-Runtime-Setup.exe"
 ; The launcher both shared-runtime editions install into {app}. It is
 ; ALSO the quill-cast:// URI handler below, which is what needs it named:
 ; a protocol handler is one exe plus "%1", so it cannot be expressed as the
