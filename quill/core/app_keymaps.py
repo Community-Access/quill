@@ -120,6 +120,13 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # unused in Quill Radio, and it is one key rather than four: the whole
         # complaint was that re-reading the schedule took too much finding.
         "radio.refresh_calendar": "F5",
+        # The guided tutorials, in the F1 family: F1 answers about the control
+        # you are on, Ctrl+F1 opens the book, and this opens the lessons. It
+        # took Ctrl+Alt+F1 from Product Requirements (now Alt+Shift+F1) on the
+        # family's own rule -- the doors are ordered by how often somebody
+        # reaches for them, and a new listener reaches for a tutorial far more
+        # often than anybody reaches for the PRD.
+        "radio.tutorials": "Ctrl+Alt+F1",
     },
     # QUILL Cast had no app keymap at all until undo needed one: every other
     # Cast accelerator is either a shared default or baked into a menu label.

@@ -57,7 +57,11 @@ The PyInstaller spec is onedir on purpose: instant startup (no per-launch temp e
 ## Documentation
 
 - [User Guide](docs/userguide.md)
-- [Release Notes (2.0)](docs/release-notes-2.0.md) -- also [1.0 and 1.1](docs/release-notes-1.0.md)
+- [Tutorials](docs/tutorials.md) -- 36 guided lessons, generated from the ones
+  the app itself teaches (Help > Tutorials..., Ctrl+Alt+F1)
+- [Release Notes (3.1, in development)](docs/release-notes-3.1.md) -- also
+  [3.0](docs/release-notes-3.0.md) and its [companion](docs/release-notes-3.0-in-depth.md),
+  [2.0](docs/release-notes-2.0.md), [1.0 and 1.1](docs/release-notes-1.0.md)
 - [Changelog](CHANGELOG.md)
 - [Product Requirements](docs/prd.md)
 

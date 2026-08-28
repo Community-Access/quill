@@ -270,6 +270,7 @@
   "quill.ui.radio.stats_dialog": "reachable",
   "quill.ui.radio.suggest_pick_dialog": "reachable",
   "quill.ui.radio.transcript_command": "reachable",
+  "quill.ui.radio.tutorials_dialog": "reachable",
   "quill.ui.radio.upcoming_dialog": "reachable",
   "quill.ui.radio.video_commands": "reachable",
   "quill.ui.radio.video_window": "reachable",

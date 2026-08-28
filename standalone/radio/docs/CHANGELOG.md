@@ -8,6 +8,41 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## [Unreleased]
 
+### Added
+
+- **Help > Tutorials... (Ctrl+Alt+F1): 36 guided tutorials, 251 steps.** The narrative version is `docs/release-notes-3.1.md`. Six
+  tracks, from "you have never opened this app" to "you have relied on it for a
+  month", covering every feature Quill Radio has. They are not a second copy of
+  the user guide:
+  - **A step names a command, not a key**, so the key you read is the key you
+    actually have -- rebind something and the tutorial says your binding. Same
+    reason the Keyboard Shortcuts Sheet is built by walking the live menu bar.
+  - **Try it runs the step**, exactly as its key would, so a lesson can open
+    Browse Stations for you and then talk you through what you are standing in.
+  - **Follow me notices when you have done it.** The lesson watches the app once
+    a second, and watches *state* rather than keystrokes -- the key, the menu,
+    the status bar and the palette all count. When it sees the change it says
+    what it saw ("Done: something is playing now.") and reads the next step.
+    Nothing is graded, nothing is blocked, and every step still has Next.
+  - **It is a peer window**, so you can leave it open, Ctrl+Tab into the app, do
+    the step there, and hear the lesson move on behind you.
+  - **Your place is kept** per lesson, and finishing one is remembered
+    separately from where you are in it. Forget my progress clears the lot and
+    changes nothing else.
+  - **Typing "here" in the filter** narrows the contents to the tutorials about
+    the window you came from; the window says how many those are as it opens.
+  - **Read it all** shows a whole tutorial as one page for reading rather than
+    doing, and the whole set ships as `docs/tutorials.md`, generated from the
+    same lessons the window teaches from so the two cannot drift.
+
+### Changed
+
+- **Product Requirements... moved from Ctrl+Alt+F1 to Alt+Shift+F1**, to make
+  room for Tutorials. The F1 family is ordered by how often somebody reaches for
+  a door, and a new listener reaches for a tutorial far more often than anybody
+  reaches for the PRD. (Ctrl+Alt+Shift+F1 was not available: it is a QuillVille
+  launcher key.)
+
 ### Fixed
 
 - **Alt+S finally opens the Station menu -- the real cause, found and fenced.**

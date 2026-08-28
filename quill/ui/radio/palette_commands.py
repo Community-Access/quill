@@ -214,6 +214,11 @@ def register_radio_commands(host: Any) -> None:
             "Internet Radio: Wake-Up Timer...",
             host.open_wake_timer_dialog,
         ),
+        (
+            "radio.tutorials",
+            "Internet Radio: Tutorials...",
+            host.open_radio_tutorials,
+        ),
     ):
         host.commands.try_register(
             command_id, title, handler, host._binding_for(command_id), feature_id="core.radio"

@@ -2,6 +2,61 @@
 
 ## 1.0.0
 
+### Quill Radio learns to teach (2026-08-28)
+
+A user guide answers "what does this do". It cannot answer "what do I do now",
+because a document cannot see what you have already done. Quill Radio now has
+36 guided tutorials -- 251 steps, six tracks, about three and a half hours of
+material -- that can, on **Help > Tutorials... (Ctrl+Alt+F1)**.
+
+- **A step names a command, not a key.** The key is rendered when the step is
+  drawn, from the listener's own keymap, so a rebinding changes every lesson
+  that mentions it. This is the Keyboard Shortcuts Sheet's rule applied to
+  prose: a second list of keys maintained beside the first is a list that is
+  wrong by the next release. It also means a build check can prove that every
+  command a lesson names actually exists -- a tutorial that tells somebody to
+  press a key for a command nobody registered is worse than no tutorial.
+
+- **Try it runs the step**, exactly as its key would, so a lesson can open
+  Browse Stations and then talk you through what you are standing in.
+
+- **Follow me notices when you have done one.** While a lesson is open the
+  window asks the app, once a second, the question the step declared -- is
+  something playing, did your favorites grow, is Browse Stations open -- and
+  when the answer changes it says what it noticed ("Done: something is playing
+  now.") and reads the next step. It watches **state, not keystrokes**, so the
+  key, the menu, the status bar and the command palette all count; it compares
+  against a baseline taken when the step was shown, so somebody with forty
+  favorites has not already passed "add one"; and anything it cannot read
+  answers "cannot tell" rather than guessing. Nothing is graded, nothing is
+  blocked, and every step still has Next.
+
+- **It is a peer window, not a wizard.** Leave it open, Ctrl+Tab into the app,
+  do the step there, and hear the lesson move on behind you. A modal wizard
+  would own the keyboard for the whole lesson, which is the wrong shape for
+  teaching somebody to use the thing underneath it.
+
+- **Announcement discipline (GATE-13) decided two behaviours.** Opening a
+  lesson announces nothing -- focus lands in the step field and the screen
+  reader reads it. Moving *between* steps does announce, because there the text
+  changes under a focus that did not move, or under somebody standing in
+  another window doing the step.
+
+- **The tutorial book is generated from the lessons** the window teaches from
+  (`standalone/radio/docs/tutorials.md`, **GATE-TUTDOC**, rostered in the
+  platform scorecard), so the document and the app cannot drift. The document
+  states the shipped keys; only the window can know the listener's own.
+
+- **Product Requirements... moved from Ctrl+Alt+F1 to Alt+Shift+F1.** The F1
+  family is ordered by how often somebody reaches for a door, and a new
+  listener reaches for a tutorial far more often than anybody reaches for the
+  PRD. (Ctrl+Alt+Shift+F1 was not available: it is a QuillVille app launcher.)
+
+- Progress lives in `radio_tutorials.json`, classified `cache` in the
+  persistence audit: losing it costs a bookmark in a lesson and nothing else.
+  No telemetry, no score, no percentage. `WindowManager` gained a read-only
+  `open_titles()` so the watcher can see which peer windows are open.
+
 ### F1 answers everywhere, and three keyboard rules become gates (2026-08-27)
 
 The EdSharp 5.0 review (a text editor written by a blind developer and

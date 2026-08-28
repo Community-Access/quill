@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 214 audited sites (98 helped, 116 named-help).
+Control coverage: 227 audited sites (111 helped, 116 named-help).
 
 ### Every window, and what it is for
 
@@ -89,6 +89,8 @@ Control coverage: 214 audited sites (98 helped, 116 named-help).
 **Quill Radio Captions.** The captions for what is playing, as text you can read at your own pace. Each line joins the ones already spoken and the line being spoken now is marked with a greater-than sign, so arrowing up re-reads what you missed. It never announces itself. Turn off Follow Playback to hold the view still while you read back; Escape closes the window and turns captions off.
 
 **Quill Radio Preferences.** Every setting in one place: launch behaviour, closing behaviour, the playback engine and output device, favorites ordering, logging, the station catalog, and the shared data folder. Each setting applies the moment you save.
+
+**Quill Radio Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
 
 **Quill Radio Video.** The picture, when what is playing has one. The audio and every transport key keep working whether or not this window is open; F11 fills the screen and Escape leaves full screen.
 
@@ -260,6 +262,23 @@ Control coverage: 214 audited sites (98 helped, 116 named-help).
 
 - `self._send`: Checks what you typed, then files it. Nothing is sent until now.
 - `cancel`: Closes without sending anything.
+#### (module level) (`quill/ui/radio/tutorials_contents.py`)
+
+- `window._filter`: Narrows the list below: every word you type has to appear somewhere in a tutorial -- its title, a step, a key, or the window it is about. Type 'here' for the tutorials about the window you came from. Enter moves into the list.
+- `window._tree`: Tracks, each holding its tutorials. Right arrow opens a track, Enter starts the tutorial you are on -- or picks it up where you left it. Each row says how many steps it has, roughly how long it takes, and whether you have finished it.
+- `window._start_btn`: Opens the selected tutorial at the step you left it on, or at step one.
+- `window._read_btn`: Shows the whole tutorial as one page of text to arrow through, instead of one step at a time.
+- `window._forget_btn`: Clears where you had got to in every tutorial. It changes nothing else and asks first.
+#### TutorialsWindow (`quill/ui/radio/tutorials_dialog.py`)
+
+- `self._step_field`: The step you are on: what to do, why, the keys for it, and what you should hear. Read-only, so arrow through it freely and copy from it with Ctrl+C.
+- `self._follow`: While this is ticked, the lesson watches the app and moves you to the next step by itself once it can see you have done this one. It watches what changed, not which key you pressed, so any route counts.
+- `self._try_btn`: Runs this step's command for you, exactly as its key would -- so a step that opens a window opens it.
+- `self._next_btn`: Moves to the next step, and reads it.
+- `self._back_btn`: Moves to the previous step, and reads it.
+- `self._again_btn`: Reads the current step out again, in full.
+- `self._contents_btn`: Goes back to the list of tutorials, keeping your place.
+- `button`: Closes the tutorials, keeping your place in the lesson.
 #### (module level) (`quill/ui/radio/upcoming_dialog.py`)
 
 - `snooze_btn`: Pushes a reminder out by a few minutes, counted from now. Only reminders can be snoozed -- a recording has a start time to keep.

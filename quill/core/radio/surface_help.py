@@ -49,6 +49,14 @@ PURPOSES: dict[str, str] = {
         "key away: Ctrl+B browses, Ctrl+G opens the Go To list of places, and "
         "F6 reaches the status bar's transport buttons."
     ),
+    "Quill Radio Tutorials": (
+        "Guided lessons, one step at a time, that can run the step for you and "
+        "notice when you have done it. The contents list is grouped by track "
+        "and remembers where you stopped; typing 'here' in the filter box "
+        "narrows it to the tutorials about the window you came from. Follow me "
+        "watches what the app is doing -- never which key you pressed -- and "
+        "moves you on by itself."
+    ),
     "Browse Stations": (
         "A search-free tree for wandering: every source Quill Radio knows -- "
         "your favorites, world directories, podcasts, audiobooks, NOAA "

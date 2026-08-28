@@ -663,6 +663,7 @@
   "quill/ui/radio/stats_dialog.py::RadioStatsDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/stats_dialog.py::RadioStatsDialog._export::wx.FileDialog": "native",
   "quill/ui/radio/suggest_pick_dialog.py::_SuggestDialog.show::wx.Dialog": "hardened_custom",
+  "quill/ui/radio/tutorials_dialog.py::TutorialsWindow.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/radio/upcoming_dialog.py::show_upcoming._on_snooze::wx.SingleChoiceDialog": "native",
   "quill/ui/radio/upcoming_dialog.py::show_upcoming::wx.Dialog": "hardened_custom",
   "quill/ui/radio/volume_commands.py::forget_station_volumes::wx.MessageBox": "native",

@@ -699,6 +699,7 @@ Quill Radio picks the file type for you from the stream's own format: an MP3 str
 ### Help (Alt+H)
 
 - **What Is This?** (F1) -- context help for wherever you are standing. Press F1 on any control, in any window, and a help window opens with two parts read as one pass: **what the window you are in is for**, then **what the control under focus does and how to drive it**. The text sits in a read-only, multi-line field you can arrow through and copy; Escape returns you exactly where you were. Every window and every control answers -- a build check refuses a new surface or control that ships without its help.
+- **Tutorials...** (Ctrl+Alt+F1) -- 36 guided tutorials that can run a step for you and notice when you have done it. See "Tutorials" below.
 - **Command Palette...** (Ctrl+Shift+P) -- every Quill Radio command in one searchable list.
 - **Keyboard Shortcuts...** -- open the Keyboard Manager to view, search, and change Quill Radio's keyboard shortcuts (see "Global hotkeys and keyboard shortcuts" below).
 - **Keyboard Shortcuts Sheet...** (Ctrl+Alt+Shift+K) -- every key Quill Radio answers to, in one filterable list. Type what you want to do ("record") or a key you found and cannot place ("Ctrl+B"), and the list narrows to it. The sheet is built by reading the menu bar in front of you, so it shows **the keys you actually have**: rebind something in the Keyboard Manager and the sheet says your key, not the default. Keys that have no menu item -- F6 into the status bar, the Winamp letters in the Recordings list, Shift+F10 for a row's actions -- are listed too, each with the window it works in. **Copy All** copies the list as filtered; **Change Shortcuts...** hands you to the editor.
@@ -706,10 +707,54 @@ Quill Radio picks the file type for you from the stream's own format: an MP3 str
 - **Redeem Unlock Code...** -- enter a signed code for a pre-release capability. Verified entirely on your machine; nothing is transmitted; one code counts for QUILL, Quill Radio, and QUILL Cast together.
 - **Check for Updates...** (Ctrl+Alt+U) -- compares your version with the newest release, downloads **the edition you are actually running** with spoken progress, then offers Install now or Open folder. A release publishes four downloads -- the full installer, the thin "Lite" installer, the portable zip, and the Companion zip -- and each installer records which one it laid down, so an update gives you the same kind back. (Before 3.0 the choice was made by file extension, and the "are you portable?" test looked for an uninstaller beside the running program -- which, on the shared runtime, lives in your AppData folder where no uninstaller sits. Nearly every installed listener was therefore offered the portable zip. If that happened to you, this is the fix; you do not need to reinstall by hand, though installing once over the top records your edition so future updates are exact.) Already up to date shows a dialog too, not just a spoken announcement. Quill Radio also runs this check quietly once a day when it launches -- silent unless it actually finds something, and Station > Preferences (Ctrl+,) turns it off if you'd rather check manually only.
 - **Get FFmpeg...** -- a safety net: FFmpeg ships inside Quill Radio, but if it ever goes missing this downloads the official build so recording works again.
-- **User Guide** (Ctrl+F1) / **Release Notes** (Shift+F1) / **Product Requirements...** (Ctrl+Alt+F1) -- this guide, the version history, and the product requirements document, each opened right in your browser. (F1 itself is context help now, matching QUILL's editor: F1 answers for the control you are on, Ctrl+F1 opens the guide.)
+- **User Guide** (Ctrl+F1) / **Release Notes** (Shift+F1) / **Product Requirements...** (Alt+Shift+F1) -- this guide, the version history, and the product requirements document, each opened right in your browser. (F1 itself is context help now, matching QUILL's editor: F1 answers for the control you are on, Ctrl+F1 opens the guide.)
 - **Report a Bug...** -- files an issue directly from the app (no GitHub account needed), stamped "Quill Radio" with this app's own version so we know exactly what you were running; falls back to the online support form if anything goes wrong.
 - **Repeat Last Announcement** and **Announcement Self-Test...** (Command Palette) -- speech disappears the moment it finishes, so Repeat Last Announcement says the last thing Quill Radio told you all over again. The Self-Test announces a test phrase and then reports which channels actually delivered it -- speech, braille, sound -- and which screen-reader connection served each. It is the quickest way to tell "braille is not working" apart from "no braille display is connected", which otherwise look identical.
 - **About Quill Radio** -- version, sync statement, project address.
+
+## Tutorials
+
+**Help > Tutorials...** (Ctrl+Alt+F1) opens 36 guided tutorials -- 251 steps,
+about three and a half hours of material if you worked through every one --
+covering everything in this guide, in the order somebody would actually learn
+it. They are not a second copy of the guide. Three things make them different:
+
+- **They show the keys you have.** A step names the *command* it is about, and
+  the key is rendered when the step is drawn. Rebind Browse Stations and the
+  tutorial says your key.
+- **Try it runs the step.** Any step that names a command can be performed from
+  the lesson, so a tutorial can open Browse Stations for you and then talk you
+  through what you are standing in.
+- **Follow me notices that you did it.** Tick **Follow me** and the lesson
+  watches the app -- once a second, and it watches *what changed*, never which
+  key you pressed -- so however you do the step, it says what it saw ("Done:
+  something is playing now.") and reads you the next one. It never takes the
+  keyboard, and nothing is graded: every step still has **Next**, and a check
+  that never comes true costs you one keypress.
+
+The Tutorials window is a **peer window** like Browse Stations, so you can
+leave it open, Ctrl+Tab into the app, do the step there, and hear the lesson
+move on behind you. That is the whole design.
+
+**The contents.** Six tracks, in teaching order: *Your first hour*, *Finding
+something to listen to*, *Making it yours*, *Recording*, *More than radio*, and
+*Living with it*. Each row says how many steps it has, roughly how long it
+takes, and whether you have finished it. The filter box narrows the list --
+every word you type has to appear somewhere in a tutorial, so "record tuesday"
+finds the scheduling lesson -- and typing **here** narrows it to the tutorials
+about the window you came from.
+
+**Your place is kept.** Close a lesson half way through and it opens there
+again. Finishing one is remembered separately from where you are in it, so
+re-reading something you have done does not throw away the fact that you did
+it. **Forget my progress** clears the lot and changes nothing else.
+
+**Reading rather than doing.** **Read it all** shows a whole tutorial as one
+page of text to arrow through, for when you would rather read than be walked.
+And the whole set is a document as well -- `docs/tutorials.md` beside this
+guide -- generated from the same lessons the window teaches from, so the two
+can never disagree. The document states the shipped keys; only the window can
+know yours.
 
 ## The Station Catalog
 
@@ -1727,6 +1772,7 @@ one keystroke away from wherever you are.
 | --- | --- |
 | Browse Stations | Ctrl+B |
 | What Is This? (context help for the focused control) | F1 |
+| Tutorials (guided, step by step) | Ctrl+Alt+F1 |
 | User Guide | Ctrl+F1 |
 | Keyboard Shortcuts Sheet (every key, filterable) | Ctrl+Alt+Shift+K |
 | Audio Health (can this installation play and record?) | Ctrl+Alt+Shift+M |

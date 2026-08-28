@@ -1,6 +1,47 @@
 # Changelog
 
-All notable changes to Quill Radio are documented here. See `docs/release-notes-3.0.md` for the fuller narrative version of the latest release, and `docs/release-notes-3.0-in-depth.md` for the reasoning behind it.
+All notable changes to Quill Radio are documented here. See `docs/release-notes-3.1.md` for the fuller narrative version of the work in development, `docs/release-notes-3.0.md` for the last release, and `docs/release-notes-3.0-in-depth.md` for the reasoning behind it.
+
+## [Unreleased]
+
+### Tutorials that watch you use the app (2026-08-28)
+
+- **Help > Tutorials... (Ctrl+Alt+F1)** -- 36 guided tutorials, 251 steps, in
+  six tracks from "you have never opened this app" to "you have relied on it
+  for a month". Every feature Quill Radio has is covered by one of them.
+
+- **A step names a command, not a key.** The key is rendered when the step is
+  drawn, from your own keymap -- so rebind something and the tutorial says your
+  key. The same reason the Keyboard Shortcuts Sheet is built by walking the
+  live menu bar: a second list of keys is a list that is wrong by the next
+  release.
+
+- **Try it runs the step for you**, exactly as its key would, so a lesson can
+  open Browse Stations and then talk you through what you are standing in.
+
+- **Follow me notices when you have done it.** The lesson watches the app once
+  a second and watches *state*, never keystrokes -- so pressing the key, using
+  the menu, the status bar or the palette all count. When it sees the change it
+  says what it saw ("Done: something is playing now.") and reads the next step.
+  Nothing is graded, nothing is blocked, and every step still has Next.
+
+- **It is a peer window**, so you can leave it open, Ctrl+Tab into the app, do
+  the step there, and hear the lesson move on behind you. Your place in each
+  lesson is kept; finishing one is remembered separately from where you are in
+  it, and Forget my progress clears the lot and touches nothing else.
+
+- **Typing "here" in the filter** narrows the contents to the tutorials about
+  the window you came from, and the window says how many those are as it opens.
+
+- **The tutorial book is generated from the same lessons** the window teaches
+  from (`docs/tutorials.md`, GATE-TUTDOC), so the document and the app cannot
+  drift. The document states the shipped keys; only the window can know yours.
+
+- **Product Requirements... moved from Ctrl+Alt+F1 to Alt+Shift+F1** to make
+  room, on this menu's own rule: the F1 family is ordered by how often somebody
+  reaches for a door, and a new listener reaches for a tutorial far more often
+  than anybody reaches for the PRD. Ctrl+Alt+Shift+F1 was not available -- it
+  is a QuillVille launcher key.
 
 ## [3.0.0] - 2026-08-25
 
