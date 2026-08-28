@@ -1,4 +1,4 @@
-"""The shape of a Quill Radio tutorial, and the pure text that renders one.
+"""The shape of a tutorial in any Quill app, and the pure text that renders one.
 
 A tutorial here is not a page of prose with the keys written into it. It is a
 list of **steps**, and a step names the *command* it is about rather than the
@@ -18,11 +18,16 @@ key that runs it. Everything downstream follows from that one decision:
   true costs you one keypress to move on.
 
 The model is deliberately wx-free and has no idea how any of that is
-rendered. It knows what a step *says*; :mod:`quill.ui.radio.tutorials_dialog`
-knows how to show it, and :mod:`quill.ui.radio.tutorial_checks` knows how to
-answer a check. The same text renders to Markdown for the printed tutorial
-book (``quill/tools/build_tutorials_reference.py``), so the document and the
-window can never drift: they are one source.
+rendered. It knows what a step *says*; :mod:`quill.ui.tutorials_window` knows
+how to show it, and each app's ``tutorial_checks`` knows how to answer a
+check. The same text renders to Markdown for each app's printed tutorial book
+(``quill/tools/build_tutorials_reference.py``), so the document and the window
+can never drift: they are one source.
+
+Written for Quill Radio first (2026-08-27) and shared out the next day, when
+QUILL Cast, Quill Weather and QUILL itself got lessons of their own. Nothing
+here knows which app it is serving: a :class:`TutorialSet` carries its own
+tracks and its own lessons, and the window is handed one.
 
 Wording rules for the content modules, so the set stays worth reading:
 
@@ -39,7 +44,7 @@ Wording rules for the content modules, so the set stays worth reading:
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 #: How a caller resolves a command id to the key that is bound to it *now*.
 #: Returns "" when the command has no key, or is not registered in this build.
@@ -106,53 +111,6 @@ class Track:
     blurb: str
 
 
-#: The tracks, in teaching order. A track is not a category -- it is a claim
-#: about what you can do by the end of it.
-TRACKS: tuple[Track, ...] = (
-    Track(
-        "first-hour",
-        "Your first hour",
-        "Start here. By the end of this track you can find a station, keep it, "
-        "work the player from any window, and get yourself unstuck without "
-        "asking anybody.",
-    ),
-    Track(
-        "finding",
-        "Finding something to listen to",
-        "Several ways in: the tree, the search across every directory at once, "
-        "addresses of your own, and the catalog on your own disk that answers "
-        "when the internet does not.",
-    ),
-    Track(
-        "yours",
-        "Making it yours",
-        "Folders, order, columns, keys, and the handful of settings that "
-        "change how the app feels rather than what it can do.",
-    ),
-    Track(
-        "recording",
-        "Recording",
-        "From one keypress to a show that records itself every Tuesday while "
-        "you are out -- and what happens when the connection does not hold.",
-    ),
-    Track(
-        "beyond",
-        "More than radio",
-        "Podcasts, audiobooks, YouTube, television and the ACB Media schedule "
-        "all arrive through the same tree and play with the same keys.",
-    ),
-    Track(
-        "living",
-        "Living with it",
-        "The parts you meet after the first week: what was that song, keeping "
-        "a moment, sleeping, statistics, and where to look when something "
-        "goes wrong.",
-    ),
-)
-
-_TRACK_IDS: frozenset[str] = frozenset(track.id for track in TRACKS)
-
-
 @dataclass(frozen=True, slots=True)
 class Progress:
     """Where somebody is in one lesson.
@@ -168,8 +126,8 @@ class Progress:
     done: bool = False
 
 
-def track_titles() -> dict[str, str]:
-    return {track.id: track.title for track in TRACKS}
+def track_titles(tracks: Sequence[Track]) -> dict[str, str]:
+    return {track.id: track.title for track in tracks}
 
 
 def tutorials_in(track_id: str, tutorials: Sequence[Tutorial]) -> list[Tutorial]:
@@ -309,12 +267,13 @@ def contents_label(tutorial: Tutorial, progress: Progress | None) -> str:
     return ", ".join(parts) + "."
 
 
-def validate(tutorials: Sequence[Tutorial]) -> list[str]:
+def validate(tutorials: Sequence[Tutorial], track_ids: Iterable[str]) -> list[str]:
     """Complaints about the catalogue, as sentences. Empty means it is sound.
 
     Pure, so the test that guards the content can call it without a window,
     and so the doc builder can refuse to render a broken set.
     """
+    known = frozenset(track_ids)
     problems: list[str] = []
     seen: set[str] = set()
     for tutorial in tutorials:
@@ -322,7 +281,7 @@ def validate(tutorials: Sequence[Tutorial]) -> list[str]:
         if tutorial.slug in seen:
             problems.append(f"{where}: two lessons share this slug.")
         seen.add(tutorial.slug)
-        if tutorial.track not in _TRACK_IDS:
+        if tutorial.track not in known:
             problems.append(f"{where}: track '{tutorial.track}' is not one of the tracks.")
         if not tutorial.steps:
             problems.append(f"{where}: a lesson with no steps.")
@@ -345,13 +304,65 @@ def validate(tutorials: Sequence[Tutorial]) -> list[str]:
 
 
 @dataclass(frozen=True, slots=True)
-class Catalogue:
-    """The whole set, assembled once and passed around read-only."""
+class TutorialSet:
+    """One app's lessons: its tracks, its tutorials, and the questions asked of them.
 
-    tutorials: tuple[Tutorial, ...] = field(default_factory=tuple)
+    Assembled once per app in that app's content package and passed around
+    read-only. Every window, document builder and test takes one of these
+    rather than importing an app's modules directly, which is what lets the
+    same window teach four different apps.
+    """
+
+    app_id: str
+    tracks: tuple[Track, ...]
+    tutorials: tuple[Tutorial, ...]
 
     def __len__(self) -> int:
         return len(self.tutorials)
 
     def slugs(self) -> tuple[str, ...]:
         return tuple(tutorial.slug for tutorial in self.tutorials)
+
+    def find(self, slug: str) -> Tutorial | None:
+        return by_slug(slug, self.tutorials)
+
+    def in_track(self, track_id: str) -> list[Tutorial]:
+        return tutorials_in(track_id, self.tutorials)
+
+    def search(self, query: str) -> list[Tutorial]:
+        return search(query, self.tutorials)
+
+    def for_surface(self, title: str) -> list[Tutorial]:
+        return for_surface(title, self.tutorials)
+
+    def total_minutes(self) -> int:
+        return sum(tutorial.minutes for tutorial in self.tutorials)
+
+    def total_steps(self) -> int:
+        return sum(tutorial.step_count for tutorial in self.tutorials)
+
+    def problems(self) -> list[str]:
+        return validate(self.tutorials, (track.id for track in self.tracks))
+
+    def ordered(self) -> tuple[Tutorial, ...]:
+        """The lessons in teaching order: by track, then as each track lists them.
+
+        Grouping here rather than by hand means a lesson can live in whichever
+        module it reads best in -- several belong to a track its module is not
+        named for -- without anybody maintaining a second order.
+        """
+        return tuple(
+            tutorial
+            for track in self.tracks
+            for tutorial in self.tutorials
+            if tutorial.track == track.id
+        )
+
+
+def build(app_id: str, tracks: Sequence[Track], *groups: Sequence[Tutorial]) -> TutorialSet:
+    """A :class:`TutorialSet` from an app's tracks and its content modules."""
+    authored: list[Tutorial] = []
+    for group in groups:
+        authored.extend(group)
+    unordered = TutorialSet(app_id=app_id, tracks=tuple(tracks), tutorials=tuple(authored))
+    return TutorialSet(app_id=app_id, tracks=tuple(tracks), tutorials=unordered.ordered())

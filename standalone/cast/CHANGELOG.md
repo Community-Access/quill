@@ -4,6 +4,29 @@ All notable changes to QUILL Cast are documented here. See `docs/release-notes-2
 
 ## 2.0.0
 
+### Tutorials that watch you use the app (2026-08-28)
+
+- **Help > Tutorials... (Ctrl+Alt+F1)** -- 18 guided tutorials, 107 steps, in
+  four tracks: your first hour, keeping up, listening well, and making it
+  yours. The middle track is five lessons on its own, because the Inbox, the
+  Play Queue, automatic downloads and their caps are one system and only make
+  sense together.
+
+- **A step names a command, not a key**, so the key you read is the key you
+  actually have. **Try it** runs the step exactly as its key would. And
+  **Follow me** watches the app once a second -- *state*, never keystrokes, so
+  the menu, the key and the palette all count -- and when it sees the change it
+  says what it saw ("Done: you have a new subscription.") and reads the next
+  step. Nothing is graded and every step still has Next.
+
+- **It is a real window, not a wizard**, so you can leave it open, work in the
+  app, and hear the lesson move on behind you. Your place is kept per lesson,
+  and typing "here" in the filter narrows the contents to the tutorials about
+  the window you came from.
+
+- **The book is generated from the lessons** (`docs/tutorials.md`, GATE-TUTDOC),
+  so the document and the app cannot drift.
+
 ### Volume Boost per podcast, and the right transcript (2026-08-24)
 
 **Volume Boost is per podcast now, and it is remembered.** One badly-mastered

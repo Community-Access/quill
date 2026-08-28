@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Tutorials</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-tutorials">QUILL Tutorials</h1>
+<p>23 guided tutorials, 136 steps, about 120 minutes of material in
+all.</p>
+<p>This document is generated from the tutorials inside QUILL, so it
+says exactly what the app teaches. To work through one with the app
+watching – running a step for you, and moving you on once it can see you
+have done it – open <strong>Help &gt; Tutorials…</strong> instead.</p>
+<p>The keys below are the ones QUILL ships with. If you have rebound
+something in the Keyboard Manager, the tutorials <em>inside the app</em>
+say your key; this document cannot know it.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><strong>Your first hour</strong> – Write and save something, learn
+the four ways of getting anywhere, meet the QUILL key, and learn what to
+press when you are lost.
+<ul>
+<li>Write and save your first document (5 minutes)</li>
+<li>Get around a long document (6 minutes)</li>
+<li>Do anything by name (4 minutes)</li>
+<li>The QUILL key (5 minutes)</li>
+<li>Getting unstuck (4 minutes)</li>
+</ul></li>
+<li><strong>Writing and editing</strong> – Selecting and moving text
+without a mouse, finding and replacing at every level of ambition,
+structure and formatting, words, and the one structure plain caret
+movement handles badly.
+<ul>
+<li>Select, mark, and move text (6 minutes)</li>
+<li>Find, replace, and search across files (6 minutes)</li>
+<li>Structure and formatting (6 minutes)</li>
+<li>Spelling, words, and the thesaurus (5 minutes)</li>
+<li>Tables, by ear (4 minutes)</li>
+</ul></li>
+<li><strong>Reading and reviewing</strong> – Having the document read to
+you, seeing the formatting that is normally hidden, single-letter
+movement, and inspecting a document somebody else wrote.
+<ul>
+<li>Have it read to you (6 minutes)</li>
+<li>See the formatting that is normally hidden (6 minutes)</li>
+<li>Quick Nav: single-letter movement (4 minutes)</li>
+<li>Inspect a document you did not write (5 minutes)</li>
+</ul></li>
+<li><strong>How much QUILL says</strong> – Verbosity profiles, the
+channels that carry an announcement, and the echo of everything QUILL
+has just said.
+<ul>
+<li>Decide how much QUILL says (6 minutes)</li>
+</ul></li>
+<li><strong>The assistant, if you want one</strong> – Optional,
+explicit, and honest about what it did: setting up a provider or running
+on-device, asking a question, and the commands that work on one
+selection at a time.
+<ul>
+<li>Set up the assistant, or do not (6 minutes)</li>
+<li>Ask, and run a prompt (6 minutes)</li>
+<li>The assistant on one piece of text (4 minutes)</li>
+</ul></li>
+<li><strong>Living with it</strong> – Shaping the app to the work you
+actually do, the safety net underneath it, formats other people send
+you, braille files, and the family of apps QUILL sits in.
+<ul>
+<li>Make QUILL the size you need (6 minutes)</li>
+<li>The safety net (5 minutes)</li>
+<li>Open anything, save as anything (5 minutes)</li>
+<li>Braille files, page by page (6 minutes)</li>
+<li>QUILL and the apps around it (4 minutes)</li>
+</ul></li>
+</ul>
+<h2 id="your-first-hour">Your first hour</h2>
+<p>Write and save something, learn the four ways of getting anywhere,
+meet the QUILL key, and learn what to press when you are lost.</p>
+<h3 id="write-and-save-your-first-document">Write and save your first
+document</h3>
+<p>New, type, save, and know where it went – plus the two things QUILL
+does at startup that you should not be surprised by.</p>
+<p><em>6 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Start where the app puts you.</strong> There is no splash
+screen. The window appears with a menu bar, an editor and a status bar,
+and focus is in the editor. If QUILL detects a screen reader it adjusts
+its hints and its announcement style to match.</p>
+<ul>
+<li>You should hear: Your screen reader announcing the editor.</li>
+</ul></li>
+<li><p><strong>Make a document.</strong> New opens an empty document in
+its own tab. QUILL is multi-document: every file you open lives in a
+notebook tab, and Ctrl+Tab moves between them.</p>
+<ul>
+<li>Keys: Ctrl+N</li>
+<li>You should hear: A new, empty document.</li>
+</ul></li>
+<li><p><strong>Type a few lines.</strong> Just write. QUILL’s editor is
+plain text that is aware of Markdown and HTML when your document is one
+of those – it does not impose a format on a file that has none.</p>
+<ul>
+<li>You should hear: Your screen reader’s own typing echo, and nothing
+from QUILL on top of it.</li>
+</ul></li>
+<li><p><strong>Save it.</strong> Save writes the file; Save As chooses
+the name and the format. If you prefer a smaller, screen-reader-friendly
+file picker, turn on Use simple file open dialog in Settings &gt;
+General.</p>
+<ul>
+<li>Keys: Ctrl+S</li>
+<li>You should hear: The file saved, and its name.</li>
+</ul></li>
+<li><p><strong>Ask where you are.</strong> Press F6 to move into the
+status bar. It is a working surface rather than a strip of text: line
+and column, word count, insert or overwrite, selection size, encoding,
+line endings, spell state, background tasks, autosave timing, and the
+file path all live there, and each cell can be activated.</p>
+<ul>
+<li>Keys: F6, Left arrow, Right arrow</li>
+<li>You should hear: The cell you landed on, then each cell as you arrow
+across.</li>
+<li>Worth knowing: Shift+F6 cycles back. The regions are Editor, the
+document tabs when they are shown, the preview when it is open, and the
+status bar.</li>
+</ul></li>
+<li><p><strong>Know what QUILL does about a crash.</strong> If QUILL
+notices an earlier crash or an autosave state, it offers recovery rather
+than silently hoping you forgot. And if your screen reader disappears
+mid-session, QUILL snapshots every open document to autosave first and
+then explains what happened through whatever can still speak.</p>
+<ul>
+<li>You should hear: At the next launch: an offer to recover, naming
+what it found.</li>
+</ul></li>
+</ol>
+<p>That is the whole loop: new, type, save. The rest of QUILL is about
+not having to hunt for anything.</p>
+<p>Next: Get around a long document; Do anything by name.</p>
+<h3 id="get-around-a-long-document">Get around a long document</h3>
+<p>Line, heading, structure, bookmark and history – the movement that
+makes a two-hundred-page document feel small.</p>
+<p><em>7 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Jump to a line.</strong> Go to Line is the plainest jump
+and the one you will use when somebody quotes a line number at you.
+QUILL says where it landed rather than leaving you to check.</p>
+<ul>
+<li>Keys: Ctrl+G</li>
+<li>You should hear: The line number, and the line itself.</li>
+</ul></li>
+<li><p><strong>Move by structure.</strong> Next Structure and Previous
+Structure move by the document’s own shape – headings, blocks, regions –
+rather than by characters. In a long document this is the difference
+between reading and searching.</p>
+<ul>
+<li>Keys: Alt+Down</li>
+<li>You should hear: The structure you landed on, named.</li>
+</ul></li>
+<li><p><strong>Open the outline.</strong> The Outline Navigator and the
+Heading Organizer give you the document’s headings as a list you can
+move through and jump from – and the organizer can reorder sections, not
+just visit them.</p>
+<ul>
+<li>Keys: Ctrl+Shift+O</li>
+<li>You should hear: The headings, with their levels.</li>
+</ul></li>
+<li><p><strong>Drop a bookmark and come back.</strong> Set a temporary
+bookmark before you go and look at something else, and go back to it
+when you are done. For places you return to often, named marks are worth
+learning.</p>
+<ul>
+<li>Keys: Ctrl+J</li>
+<li>You should hear: Bookmark set – then, later, the line you left.</li>
+</ul></li>
+<li><p><strong>Retrace your steps.</strong> Back Location and Forward
+Location walk your movement history, the way a browser’s back button
+does. It is the answer to where was I before I followed that link.</p>
+<ul>
+<li>Keys: Alt+Left</li>
+<li>You should hear: The place you came from.</li>
+</ul></li>
+<li><p><strong>Ask where you are, at any time.</strong> Speak Status
+Summary says where the cursor is and what state the document is in;
+Speak Full Path says which file you are actually in, which matters when
+two drafts have the same name.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, Q</li>
+<li>You should hear: Line, column, and the document’s state, in one
+sentence.</li>
+</ul></li>
+<li><p><strong>Move between documents.</strong> Ctrl+Tab and
+Ctrl+Shift+Tab move between open documents, and Ctrl+W closes the one
+you are in. QUILL opens generated things – the keyboard reference, a
+compare summary – as ordinary tabs too, so artifacts stay close to the
+work that made them.</p>
+<ul>
+<li>Keys: Ctrl+Tab</li>
+<li>You should hear: The document you moved to, by name.</li>
+</ul></li>
+</ol>
+<p>Structure, outline, bookmarks and history. Between them, you should
+never have to arrow through a document to find something again.</p>
+<p>Next: Do anything by name.</p>
+<h3 id="do-anything-by-name">Do anything by name</h3>
+<p>The command palette, Go to Anything, and the keyboard reference that
+is generated from your own keymap rather than written down
+somewhere.</p>
+<p><em>5 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open the command palette.</strong> Type what you want
+rather than remembering where it lives. The palette is the fastest route
+to anything QUILL can do, and it teaches you the key while you use it:
+every entry shows its own shortcut.</p>
+<ul>
+<li>Keys: Ctrl+Shift+P</li>
+<li>You should hear: A search box, then the commands as you narrow
+them.</li>
+</ul></li>
+<li><p><strong>Learn what an unavailable command means.</strong> When a
+command cannot run, the palette says why rather than showing a bare
+unavailable. A menu item disabled by a safety advisory carries the same
+reason in its help text.</p>
+<ul>
+<li>You should hear: The reason, in a sentence.</li>
+</ul></li>
+<li><p><strong>Go to anything.</strong> Go to Anything is the other
+door: one box that reaches files, headings, symbols and places rather
+than commands. Use the palette when you want to <em>do</em> something
+and this when you want to <em>reach</em> something.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, G</li>
+<li>You should hear: A search box, then matches grouped by what they
+are.</li>
+</ul></li>
+<li><p><strong>Read the keys you actually have.</strong> The keyboard
+reference is generated from your current feature profile and your own
+keybindings, so it always describes the QUILL in front of you – not the
+one in a manual written a year ago.</p>
+<ul>
+<li>Keys: Ctrl+F1</li>
+<li>You should hear: The reference, opening as an ordinary document
+tab.</li>
+</ul></li>
+<li><p><strong>Find one key fast.</strong> The key cheat sheet is the
+filtered version: type what you want to do and it narrows. It is the
+quickest way to answer what is the key for this without leaving what you
+are doing.</p>
+<ul>
+<li>Keys: Alt+Shift+/</li>
+<li>You should hear: A filter box, then the matching keys.</li>
+</ul></li>
+</ol>
+<p>Palette to do, Go to Anything to reach, cheat sheet to remember. None
+of the three asks you to have memorised anything.</p>
+<p>Next: The QUILL key.</p>
+<h3 id="the-quill-key">The QUILL key</h3>
+<p>One chord that opens most of QUILL’s power features, and the browse
+mode that turns single letters into document navigation.</p>
+<p><em>5 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Press it once, and listen.</strong> The QUILL key is
+Ctrl+Shift+Grave – the back-tick key above Tab. Pressed once it arms a
+short-lived prefix: the next key you press runs a chord command, and
+then the prefix expires. A short two-tone earcon confirms it armed, so
+you know before any speech arrives.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave</li>
+<li>You should hear: A quick double-ping, unlike any other sound in the
+app.</li>
+</ul></li>
+<li><p><strong>Run one chord.</strong> With the prefix armed, press G
+for Go to Anything or R for Read Aloud. Menus and the cheat sheet write
+these as QUILL Key + G, which is the same thing said in words.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, G</li>
+<li>You should hear: Whatever that command announces.</li>
+</ul></li>
+<li><p><strong>Ask the chord list.</strong> QUILL Key + ? opens the full
+cheat sheet of chords. Every chord is data from the keymap, which means
+every chord is remappable in the Keymap Editor – and the sheet shows
+what you have, not what shipped.</p>
+<ul>
+<li>Keys: C, t, r, l, +, S, h, i, f, G, a, v, e, ,, , ?</li>
+<li>You should hear: The chord list, filterable.</li>
+</ul></li>
+<li><p><strong>Lock browse mode on.</strong> Press the QUILL key twice
+and Quick Nav (browse) mode locks on: single letters move the cursor
+through the document’s structure – H for headings, P for paragraphs, S
+for sentences. Escape leaves.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, Escape</li>
+<li>You should hear: Browse mode on, then each structure as you
+move.</li>
+</ul></li>
+<li><p><strong>Know why it is a chord and not a modifier.</strong> A
+prefix chord costs one extra keystroke and buys a whole alphabet of
+commands that never collide with your screen reader’s keys or the
+editor’s. That trade is the reason it exists.</p>
+<ul>
+<li>You should hear: Nothing: this is the design, not an action.</li>
+<li>Worth knowing: On some keyboards Windows reports the grave key
+oddly, so QUILL detects it three independent ways – by character, by
+virtual key, and by physical scan code.</li>
+</ul></li>
+</ol>
+<p>Armed once for one command, pressed twice for a mode. Everything it
+reaches is also in the palette, so the chord is a shortcut rather than a
+requirement.</p>
+<p>Next: Getting unstuck.</p>
+<h3 id="getting-unstuck">Getting unstuck</h3>
+<p>F1, the echo of what QUILL just said, why a thing is unavailable, and
+the undo that covers more than typing.</p>
+<p><em>6 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Ask what the thing under your cursor is.</strong> F1 on
+any focusable control – a field, a button, a menu item, the editor
+itself – opens help that says what the control does and which keys apply
+to it, all in one read-only field so your reader announces it in one
+pass.</p>
+<ul>
+<li>Keys: F1</li>
+<li>You should hear: The window’s purpose, then the control’s own
+help.</li>
+</ul></li>
+<li><p><strong>Ask what you can do here.</strong> Shift+F1 answers What
+Can I Do Here for the document you are in, which is a different question
+from what is this control: it is about the work rather than the
+widget.</p>
+<ul>
+<li>Keys: Shift+F1</li>
+<li>You should hear: What this kind of document supports, in
+context.</li>
+</ul></li>
+<li><p><strong>Re-read what QUILL just said.</strong> Speech is
+fleeting: an indent depth, a save result, a no matches. The Spoken Echo
+remembers the last twenty things QUILL announced, newest first, in a
+dialog you can arrow through, review by character, select and copy.</p>
+<ul>
+<li>Keys: Alt+Shift+E</li>
+<li>You should hear: The last things QUILL said, as text.</li>
+<li>Worth knowing: Double-pressing an informational command – Describe
+Formatting, Document Summary, Context Help – opens the Echo instead of
+repeating itself, the screen-reader convention. Alt+Shift+E always
+works.</li>
+</ul></li>
+<li><p><strong>Find out why something is unavailable.</strong> Why
+Unavailable answers for the command you were reaching for. QUILL’s rule
+is that a refusal carries its reason – in the palette, in a dimmed menu
+item’s help text, and in error messages, which increasingly end with the
+concrete next step.</p>
+<ul>
+<li>Keys: Alt+F1</li>
+<li>You should hear: The reason, and what would change it.</li>
+</ul></li>
+<li><p><strong>Take back the last thing.</strong> Undo covers editing;
+Undo Last Action covers the destructive verbs elsewhere in the app. And
+every confirmation that would destroy something defaults to No, so
+pressing Enter reflexively can never cost you data.</p>
+<ul>
+<li>Keys: Ctrl+Z</li>
+<li>You should hear: What came back.</li>
+</ul></li>
+<li><p><strong>Know the promise underneath.</strong> Anything that
+closes or degrades QUILL without your asking persists your work first.
+That rule is why the screen-reader watchdog snapshots your documents
+before it explains itself, and it applies everywhere in the app.</p>
+<ul>
+<li>You should hear: Nothing: this is the sentence to remember on a bad
+day.</li>
+</ul></li>
+</ol>
+<p>F1 for here, Shift+F1 for this work, Alt+Shift+E for what was just
+said. Between them there is no state you can be in without a way
+out.</p>
+<h2 id="writing-and-editing">Writing and editing</h2>
+<p>Selecting and moving text without a mouse, finding and replacing at
+every level of ambition, structure and formatting, words, and the one
+structure plain caret movement handles badly.</p>
+<h3 id="select-mark-and-move-text">Select, mark, and move text</h3>
+<p>Selection that grows by structure rather than by character, marks you
+can return to, and a clipboard with twelve slots instead of one.</p>
+<p><em>6 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Grow a selection by meaning.</strong> Expand Selection
+takes the next larger structure – word, then sentence, then paragraph,
+then block. It is far more predictable by ear than holding Shift and
+counting, and Shrink Selection goes back.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, J</li>
+<li>You should hear: What is now selected, and how much of it.</li>
+</ul></li>
+<li><p><strong>Select exactly one paragraph or block.</strong> Select
+Paragraph and Select Block take the unit you mean in one keystroke. Say
+Selected reads back what you have, which is the check worth making
+before a destructive edit.</p>
+<ul>
+<li>You should hear: The paragraph, then its size.</li>
+</ul></li>
+<li><p><strong>Drop a mark and come back to it.</strong> Set Mark
+remembers where you are; Exchange Point and Mark jumps between the mark
+and the cursor, which is how you select across a long distance without
+holding anything down. Named marks survive for as long as you want
+them.</p>
+<ul>
+<li>Keys: Ctrl+Shift+M</li>
+<li>You should hear: Mark set – and, on the exchange, where you
+landed.</li>
+</ul></li>
+<li><p><strong>Use more than one clipboard.</strong> The copy tray has
+twelve slots. Copy to a numbered slot, paste from a numbered slot, or
+open the tray and search it. It is the answer to gathering five quotes
+from one document into another without a round trip each time.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, X</li>
+<li>You should hear: The tray, with what each slot holds.</li>
+<li>Worth knowing: Clear All Tray Slots asks first and defaults to No,
+like every destructive question in QUILL.</li>
+</ul></li>
+<li><p><strong>Paste something that came from the web.</strong> Magic
+Paste and Paste HTML as Markdown clean up what the clipboard actually
+contains, rather than dropping styled soup into your document. Copy With
+Source does the reverse courtesy when you are the one quoting.</p>
+<ul>
+<li>You should hear: What it pasted, and what it cleaned up.</li>
+</ul></li>
+<li><p><strong>Tidy lines in place.</strong> Quote Lines, Unquote Lines,
+Reverse Lines, Keep Unique Lines, Number Lines and Trim Blank Lines each
+do one obvious thing to the selection. They are the small tools that
+save an hour when a document arrives badly.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Q</li>
+<li>You should hear: How many lines it changed.</li>
+</ul></li>
+</ol>
+<p>Selection by structure, marks for distance, twelve clipboards. None
+of it needs a mouse and none of it needs you to count characters.</p>
+<p>Next: Find, replace, and search across files.</p>
+<h3 id="find-replace-and-search-across-files">Find, replace, and search
+across files</h3>
+<p>The four levels: find here, find every match, replace with care, and
+search or replace across a folder of files.</p>
+<p><em>6 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Find, and find again.</strong> Find opens the search;
+Find Next and Find Previous walk the matches. QUILL keeps your search
+history, so a search you run often gets shorter every time.</p>
+<ul>
+<li>Keys: Ctrl+F</li>
+<li>You should hear: The match, with its line – or a plain statement
+that there are none.</li>
+</ul></li>
+<li><p><strong>See every match at once.</strong> Find All Matches opens
+a summary rather than making you walk the document. It is the right tool
+when the question is how many and where rather than take me to the next
+one.</p>
+<ul>
+<li>Keys: Ctrl+Shift+F3</li>
+<li>You should hear: How many matches, and the list of them.</li>
+</ul></li>
+<li><p><strong>Choose the kind of search.</strong> Plain text, whole
+word, wildcard, or regular expression. The Regex Helper explains the
+syntax when you need it, which is the difference between a powerful
+search and one you are afraid of.</p>
+<ul>
+<li>You should hear: The mode you chose, read back.</li>
+</ul></li>
+<li><p><strong>Replace deliberately.</strong> Replace steps through and
+asks; Replace All does not. Both say how many they changed, and Undo
+takes the whole operation back as one action rather than one edit at a
+time.</p>
+<ul>
+<li>Keys: Ctrl+H</li>
+<li>You should hear: Each replacement, or the count at the end.</li>
+</ul></li>
+<li><p><strong>Search a whole folder.</strong> Search in Files answers
+where did I write that when you cannot remember which document it was
+in. Replace in Files is its counterpart, and it is worth doing on a copy
+the first time you use it.</p>
+<ul>
+<li>Keys: Ctrl+Shift+F</li>
+<li>You should hear: The matches, grouped by file.</li>
+</ul></li>
+<li><p><strong>Learn the one that is not a search.</strong> Go to
+Anything reaches files, headings and places rather than text. When you
+know the <em>name</em> of the thing you want, it is faster than any
+search.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, G</li>
+<li>You should hear: Matches grouped by what they are.</li>
+</ul></li>
+</ol>
+<p>Find for here, Find All for how many, Search in Files for which
+document. The regex helper is there when the pattern gets hard.</p>
+<p>Next: Structure and formatting.</p>
+<h3 id="structure-and-formatting">Structure and formatting</h3>
+<p>Headings, lists, emphasis and sections – and Describe Formatting,
+which tells you what is actually on the text under your cursor.</p>
+<p><em>7 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Make a heading.</strong> Heading 1 through Heading 6 set
+the level directly, and Increase and Decrease Heading Level move an
+existing one. Headings are what the outline, Quick Nav and the structure
+keys all navigate by, so they earn their keystroke twice.</p>
+<ul>
+<li>Keys: Ctrl+Alt+2</li>
+<li>You should hear: The heading level, and the line it applied to.</li>
+</ul></li>
+<li><p><strong>Emphasise something.</strong> Bold and Italic do what
+they say, in the document’s own language: Markdown gets Markdown, HTML
+gets tags, rich text gets real formatting. Bold means bold – QUILL
+speaks your document’s format rather than imposing one.</p>
+<ul>
+<li>Keys: Ctrl+B</li>
+<li>You should hear: Bold on, and what it applied to.</li>
+</ul></li>
+<li><p><strong>Ask what formatting is here.</strong> Describe Formatting
+says what is actually on the text under the cursor. It is the one-shot
+answer to why does this line sound different, and double-pressing it
+opens the Spoken Echo so you can read the answer rather than catch
+it.</p>
+<ul>
+<li>Keys: Ctrl+Shift+D</li>
+<li>You should hear: Every attribute on the text, in one pass.</li>
+</ul></li>
+<li><p><strong>Make a list, and nest it.</strong> Toggle Bullet List and
+Toggle Numbered List convert the selection. On a Markdown list item, Tab
+and Shift+Tab nest and promote the item, and each move is spoken – so
+you hear the indent even though the caret does not move.</p>
+<ul>
+<li>Keys: Ctrl+Alt+B</li>
+<li>You should hear: The list applied, then the new depth as you
+nest.</li>
+</ul></li>
+<li><p><strong>Move a whole section.</strong> Move Section Up and Move
+Section Down move a heading and everything under it. Reordering a
+document by its structure rather than by cut and paste is the difference
+between an edit and an afternoon.</p>
+<ul>
+<li>Keys: Alt+Shift+Up</li>
+<li>You should hear: Where the section moved to.</li>
+</ul></li>
+<li><p><strong>Insert the awkward things.</strong> Insert Link, Insert
+Table, Insert Snippet, Insert Emoji, Insert Special Character and Insert
+Equation each open a small, keyboard-first window rather than expecting
+you to type syntax from memory.</p>
+<ul>
+<li>Keys: Ctrl+Alt+K</li>
+<li>You should hear: The window, with focus in its first field.</li>
+</ul></li>
+<li><p><strong>Decide what Tab does.</strong> By default Tab indents the
+line and Shift+Tab outdents. If you would rather Tab typed a literal tab
+character, the Tab Mode chord switches it, the status bar shows which
+mode you are in, and Shift+Tab still outdents either way.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, U</li>
+<li>You should hear: The new mode, and afterwards the depth on every
+indent.</li>
+</ul></li>
+</ol>
+<p>Structure first, emphasis second. Describe Formatting is the key to
+keep: it turns a guess into a fact.</p>
+<p>Next: Spelling, words, and the thesaurus.</p>
+<h3 id="spelling-words-and-the-thesaurus">Spelling, words, and the
+thesaurus</h3>
+<p>Spell check as a list rather than a march, the ranked view for a long
+document, word count, and the thesaurus.</p>
+<p><em>6 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Check one word.</strong> Spell Check Word at Cursor
+answers the question you actually have – is this one right – without
+starting a pass through the whole document.</p>
+<ul>
+<li>Keys: Alt+F7</li>
+<li>You should hear: The verdict, and suggestions if it is wrong.</li>
+</ul></li>
+<li><p><strong>Get the misspellings as a list.</strong> The misspelling
+list is a list you can arrow through and jump from, rather than a modal
+march through the document. For a long piece the ranked view puts the
+ones that occur most first, which is usually the same word thirty
+times.</p>
+<ul>
+<li>Keys: Alt+Shift+L</li>
+<li>You should hear: How many, then each one with its context.</li>
+</ul></li>
+<li><p><strong>Walk them one at a time when you want to.</strong> Next
+Misspelling and Previous Misspelling are the classic movement, and they
+exist alongside the list rather than instead of it. Use whichever suits
+the document.</p>
+<ul>
+<li>Keys: Ctrl+F7</li>
+<li>You should hear: The word, and the line it is on.</li>
+</ul></li>
+<li><p><strong>Count what you have written.</strong> Word Count reports
+the document or the selection. Document Summary is the bigger answer –
+what this document is, how long, and how it is shaped.</p>
+<ul>
+<li>Keys: Ctrl+Shift+W</li>
+<li>You should hear: Words, characters, and the rest.</li>
+</ul></li>
+<li><p><strong>Find a better word.</strong> The thesaurus works on the
+word under the cursor and offers replacements you can apply straight
+into the document, rather than a list you have to copy out of.</p>
+<ul>
+<li>Keys: Shift+F7</li>
+<li>You should hear: The word, then its alternatives.</li>
+</ul></li>
+<li><p><strong>Know what an AI check adds.</strong> AI Spell Check and
+Check Grammar with AI are separate commands, and they never apply
+anything automatically: the grammar check lists corrections as original
+phrase, arrow, corrected phrase, and a reason, and you apply what you
+agree with.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+G</li>
+<li>You should hear: Each correction with its reason, and nothing
+changed yet.</li>
+</ul></li>
+</ol>
+<p>The list before the march, the ranked list for a long document, and
+an AI pass only when you ask for one.</p>
+<p>Next: Tables, by ear.</p>
+<h3 id="tables-by-ear">Tables, by ear</h3>
+<p>The one structure plain caret movement handles badly, and the six
+keys that fix it.</p>
+<p><em>6 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Understand the problem.</strong> Arrowing along a line in
+a table tells you the characters and never the shape. You can read every
+word of a row and still not know which column you are in, which is why
+tables get their own movement.</p>
+<ul>
+<li>You should hear: Nothing: this is why the next six steps exist.</li>
+</ul></li>
+<li><p><strong>Move along a row.</strong> Next Cell and Previous Cell
+move one cell along the row, and each landing says where you are before
+it says what is there: Row 2 of 6, column 3 of 5: Portland.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Right</li>
+<li>You should hear: The position, then the contents.</li>
+</ul></li>
+<li><p><strong>Move down a column.</strong> Cell Below and Cell Above
+move down and up the column. Reading a column is how you compare values,
+and it is exactly what character movement cannot do.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Down</li>
+<li>You should hear: The new row and column, then the cell.</li>
+</ul></li>
+<li><p><strong>Jump to the edges.</strong> Row Start and Row End go to
+the ends of the row; First Cell and Last Cell go to the ends of the
+whole table. Four keys for the four questions you actually ask.</p>
+<ul>
+<li>Keys: Alt+Home</li>
+<li>You should hear: The cell you landed on, with its position.</li>
+</ul></li>
+<li><p><strong>Hear the difference between an edge and a wall.</strong>
+No more cells at the end of a row, No more rows at the bottom of a
+column, and No more cells, end of table on the very last cell. That is
+the difference between this row stops here and the table stops here.</p>
+<ul>
+<li>You should hear: One of those three sentences, rather than
+silence.</li>
+<li>Worth knowing: An empty cell is announced as blank rather than by
+silence, and the keys are harmless outside a table: QUILL simply says
+Not in a table.</li>
+</ul></li>
+<li><p><strong>Know that a Word table behaves the same.</strong> A .docx
+table is brought in as a real table laid out as Markdown rows, so the
+same keys, positions and edges apply to a table you opened from Word as
+to one you typed. A cell containing a pipe character stays one cell.</p>
+<ul>
+<li>You should hear: The same position announcements, in an imported
+document.</li>
+</ul></li>
+</ol>
+<p>Six keys, and every landing says where you are. Tables stop being the
+thing you dread in somebody else’s document.</p>
+<h2 id="reading-and-reviewing">Reading and reviewing</h2>
+<p>Having the document read to you, seeing the formatting that is
+normally hidden, single-letter movement, and inspecting a document
+somebody else wrote.</p>
+<h3 id="have-it-read-to-you">Have it read to you</h3>
+<p>Start, pause and stop Read Aloud, choose a voice worth listening to,
+and know which voices are on your machine and which are a download.</p>
+<p><em>6 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Start reading.</strong> Read Aloud starts from the cursor
+and pauses on the same key. It is a different thing from your screen
+reader: it reads the document as a document, at a pace you set, while
+your reader keeps doing its own job.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, R</li>
+<li>You should hear: The document, from where you were.</li>
+</ul></li>
+<li><p><strong>Stop it.</strong> Stop ends the pass rather than pausing
+it. Pause keeps your place, which is what you want when somebody speaks
+to you; Stop is what you want when you are done.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, Shift+R</li>
+<li>You should hear: Silence, and the status bar’s read-aloud cell going
+quiet.</li>
+</ul></li>
+<li><p><strong>Know which voices you already have.</strong> The Windows
+system voice runs on SAPI 5 and is always there, offline, with no
+download – it is the floor that keeps Read Aloud working immediately.
+DECtalk, eSpeak NG, Piper and Kokoro are explicit downloads, so a base
+install stays small.</p>
+<ul>
+<li>You should hear: The voice list, with each engine named.</li>
+</ul></li>
+<li><p><strong>Audition one before you commit.</strong> Preview in
+Manage Voices synthesises the phrase with the real voice when it is
+installed, and plays a short pre-recorded sample when it is not – so you
+can hear a neural voice before deciding to download 120 MB of it.</p>
+<ul>
+<li>You should hear: The sample, and a note when it is a recording
+rather than the real thing.</li>
+<li>Worth knowing: Rate, volume and pitch apply to real synthesis, so
+they stay dimmed until the voice is downloaded. Nothing pretends to
+work.</li>
+</ul></li>
+<li><p><strong>Read a document that is not in English.</strong> The
+Windows engine lists every voice installed on your PC in any language,
+and the Kokoro pack includes Spanish, French, Hindi, Italian and
+Brazilian Portuguese. Pick the voice whose language matches the
+document.</p>
+<ul>
+<li>You should hear: The document, pronounced correctly rather than
+phonetically.</li>
+</ul></li>
+<li><p><strong>Turn a document into audio.</strong> The Audiobook and
+Batch Speech wizard converts a folder of documents to speech audio, or
+builds a chaptered audiobook. It asks one thing at a time – what to
+read, who reads it, how chapters work, and where the output goes.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, Y</li>
+<li>You should hear: The wizard, one question per page.</li>
+</ul></li>
+</ol>
+<p>The system voice is always there; everything else is an explicit
+choice you can audition first.</p>
+<p>Next: See the formatting that is normally hidden.</p>
+<h3 id="see-the-formatting-that-is-normally-hidden">See the formatting
+that is normally hidden</h3>
+<p>Reveal Codes – the WordPerfect feature rebuilt for a screen reader –
+and the character inspector that tells a smart quote from a straight
+one.</p>
+<p><em>6 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open Reveal Codes.</strong> A pane below the editor shows
+your document as an ordered stream of bracketed codes and text: Bold On,
+Font, Heading 2, Tab, Hard Return, No-Break Space. The editor itself
+does not change – this is a window onto the scaffolding.</p>
+<ul>
+<li>Keys: Alt+F3</li>
+<li>You should hear: The pane, and the code or text at your
+position.</li>
+</ul></li>
+<li><p><strong>Move between the two panes.</strong> F6 cycles Editor,
+Reveal Codes, Status Bar, and the two carets stay in sync however you
+move – arrows, word jumps, Home and End, or a jump from Find. Sit in
+whichever one you like; your place tracks along.</p>
+<ul>
+<li>Keys: F6, Shift+F6</li>
+<li>You should hear: The region you entered, then your position in
+it.</li>
+</ul></li>
+<li><p><strong>Walk the codes.</strong> Left and Right step over a whole
+code as a single unit – one press crosses Bold On and your reader says
+bold on, never spelled out. An opening code also tells you how far its
+formatting reaches: bold on, 12 characters.</p>
+<ul>
+<li>Keys: Left arrow, Right arrow, Ctrl+Left, Ctrl+Right</li>
+<li>You should hear: Each code named as a unit, with its reach.</li>
+</ul></li>
+<li><p><strong>Edit a formatted run in place.</strong> Land on text
+between a pair of codes and press F2: the pane restricts you to that
+region, Enter applies your change and Escape cancels. The surrounding
+codes are left exactly as they were, and a nested code comes along with
+the run.</p>
+<ul>
+<li>Keys: F2, Enter, Escape</li>
+<li>You should hear: The region you are editing, then the change
+applied.</li>
+</ul></li>
+<li><p><strong>Choose how it reads.</strong> Flowed renders the codes
+inline within the running text and is the closest match to the classic
+view; Structured lists one item per code for scanning. Verbosity chooses
+quiet, balanced or detailed – the last adds Unicode notes for
+invisibles.</p>
+<ul>
+<li>You should hear: The view and verbosity you chose, remembered
+between sessions.</li>
+</ul></li>
+<li><p><strong>Inspect a single character.</strong> Describe Character
+at Cursor names what is actually under the cursor: a curly quote against
+a straight one, a no-break space, an invisible zero-width space that
+quietly breaks a search. It gives the name, the code point, the category
+and a note for the invisibles.</p>
+<ul>
+<li>You should hear: The character’s name, code point and category, in
+one pass.</li>
+<li>Worth knowing: It ships without a shortcut; assign one in the Keymap
+Editor if you inspect text often. Search for Describe Character.</li>
+</ul></li>
+</ol>
+<p>Reveal Codes costs nothing until you open it, and it is the answer to
+why does this line behave differently.</p>
+<p>Next: Quick Nav: single-letter movement.</p>
+<h3 id="quick-nav-single-letter-movement">Quick Nav: single-letter
+movement</h3>
+<p>Browse mode, where single letters move by structure – the habit every
+screen-reader user already has from the web, brought into a text
+editor.</p>
+<p><em>5 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Turn it on.</strong> Press the QUILL key twice and Quick
+Nav locks on. This is the most common path: the first press arms the
+prefix, the second locks browse mode. It stays until Escape.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave</li>
+<li>You should hear: Browse mode on.</li>
+</ul></li>
+<li><p><strong>Move by heading.</strong> H moves to the next heading,
+exactly as it does on a web page. That is the point of the whole mode:
+the movement you already know, in a document you are writing.</p>
+<ul>
+<li>Keys: H</li>
+<li>You should hear: The heading, with its level.</li>
+</ul></li>
+<li><p><strong>Move by paragraph and sentence.</strong> P moves by
+paragraph, S by sentence. Reading a draft this way – sentence by
+sentence rather than line by line – is how you hear a sentence that runs
+on.</p>
+<ul>
+<li>Keys: P, S</li>
+<li>You should hear: Each paragraph or sentence as you land on it.</li>
+</ul></li>
+<li><p><strong>Leave.</strong> Escape leaves browse mode and you are
+typing again. If you would rather the mode expired on its own, the
+sticky setting controls that – and QUILL Key + N arms it for one action
+only.</p>
+<ul>
+<li>Keys: Escape</li>
+<li>You should hear: Browse mode off.</li>
+</ul></li>
+<li><p><strong>Rebind what the letters do.</strong> Quick Nav actions
+appear in the Keymap Editor as their own entries, so the letters are
+yours to change. Nothing in QUILL asks you to accept a key you would not
+have chosen.</p>
+<ul>
+<li>You should hear: The editor, with the Quick Nav entries listed.</li>
+</ul></li>
+</ol>
+<p>One mode, the letters you already know, and Escape to leave. It is
+the fastest way to read a long draft you wrote yourself.</p>
+<p>Next: Inspect a document you did not write.</p>
+<h3 id="inspect-a-document-you-did-not-write">Inspect a document you did
+not write</h3>
+<p>Summaries, folds, compare, and the report tabs that make somebody
+else’s file readable rather than mysterious.</p>
+<p><em>5 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Ask what this document is.</strong> Document Summary is
+the one-shot answer: what it is, how long, and how it is shaped. It is
+the right first key on a file somebody has just sent you.</p>
+<ul>
+<li>Keys: Alt+I</li>
+<li>You should hear: The summary, in one pass.</li>
+</ul></li>
+<li><p><strong>Collapse what you are not reading.</strong> Toggle Fold
+collapses a section; List Folds shows what is folded; Next Fold and
+Previous Fold move between them. In a long structured document, folding
+is how you make the shape audible.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+F</li>
+<li>You should hear: Folded, and how many lines went away.</li>
+</ul></li>
+<li><p><strong>Compare two versions.</strong> The compare tools open
+their summary as an ordinary document tab – artifacts stay close to the
+work that made them – and Next Difference, Previous Difference and
+Announce Difference walk it by ear.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+.</li>
+<li>You should hear: Each difference, described rather than shown.</li>
+</ul></li>
+<li><p><strong>Read the extraction report.</strong> When QUILL brings
+text in from a PDF or a scanned document, the intake report says how it
+went – what it was confident about and what it was not. Reading it is
+how you know whether to trust the text.</p>
+<ul>
+<li>Keys: Ctrl+Shift+I</li>
+<li>You should hear: The report, as an ordinary tab you can arrow
+through.</li>
+</ul></li>
+<li><p><strong>Find the characters that do not belong.</strong> The
+non-ASCII report lists what is unusual in the document, and jumping
+between the report and the source takes you straight to each one. It is
+how a stray byte-order mark or a curly quote stops being a mystery.</p>
+<ul>
+<li>You should hear: The report, then each occurrence as you jump to
+it.</li>
+</ul></li>
+</ol>
+<p>Summary first, folds for shape, compare for change, and the reports
+for what the file will not tell you itself.</p>
+<h2 id="how-much-quill-says">How much QUILL says</h2>
+<p>Verbosity profiles, the channels that carry an announcement, and the
+echo of everything QUILL has just said.</p>
+<h3 id="decide-how-much-quill-says">Decide how much QUILL says</h3>
+<p>Verbosity profiles, the channels that carry an announcement, and the
+two settings that stop a burst of speech from burying you.</p>
+<p><em>7 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open verbosity preferences.</strong> Find it in the
+command palette by typing verbosity. This is the window that decides how
+talkative QUILL is – which is a different question from how talkative
+your screen reader is, and QUILL never duplicates what the reader
+already says.</p>
+<ul>
+<li>Keys: Ctrl+Shift+P</li>
+<li>You should hear: The verbosity window, with your current
+profile.</li>
+</ul></li>
+<li><p><strong>Pick a talkativeness.</strong> Beginner gives full
+context for every action; Normal is informative and is the default;
+Expert suppresses routine confirmations but never errors; Quiet turns
+speech and earcons off, leaving braille and the status bar.</p>
+<ul>
+<li>You should hear: The profile you chose, announced as you
+switch.</li>
+</ul></li>
+<li><p><strong>Choose what carries an announcement.</strong> Speech,
+braille and sound can each be turned off. Visual – the status bar – is
+always on and cannot be turned off, so you never lose the on-screen
+record of what happened.</p>
+<ul>
+<li>You should hear: Each channel as you set it.</li>
+</ul></li>
+<li><p><strong>Go quiet for a meeting.</strong> Quiet Mode silences
+speech and earcons; Meeting Mode quiets sound further. A Q or M
+indicator shows while one is on, the status bar keeps updating, and Undo
+Verbosity Change steps back the last change you made.</p>
+<ul>
+<li>You should hear: Quiet mode on – and then nothing, which is the
+point.</li>
+</ul></li>
+<li><p><strong>Stop a burst from burying you.</strong> Collapse repeated
+announcements (on by default) stops QUILL repeating itself when you hold
+a key at the end of a list. An optional announcement budget caps how
+many are spoken in five seconds. Both affect speech only: the status bar
+shows everything.</p>
+<ul>
+<li>You should hear: One announcement instead of fifteen.</li>
+</ul></li>
+<li><p><strong>Trim two specific cues.</strong> Announce entering and
+leaving dialogs is off by default, because your screen reader already
+announces dialogs and reads their titles. Announce indentation depth on
+Tab is on, because 4 spaces is more useful than Indented lines.</p>
+<ul>
+<li>You should hear: The setting read back.</li>
+</ul></li>
+<li><p><strong>Read what it just said.</strong> The Spoken Echo
+remembers the last twenty announcements as text you can arrow through
+and copy. It records only what QUILL speaks – never your typing – and it
+is the answer to an announcement that went past while you were
+thinking.</p>
+<ul>
+<li>Keys: Alt+Shift+E</li>
+<li>You should hear: The recent announcements, newest first.</li>
+</ul></li>
+</ol>
+<p>QUILL speaks alongside your screen reader rather than instead of it.
+Every setting here is about how much of its own voice you want.</p>
+<p>Next: Make QUILL the size you need.</p>
+<h2 id="the-assistant-if-you-want-one">The assistant, if you want
+one</h2>
+<p>Optional, explicit, and honest about what it did: setting up a
+provider or running on-device, asking a question, and the commands that
+work on one selection at a time.</p>
+<h3 id="set-up-the-assistant-or-do-not">Set up the assistant, or do
+not</h3>
+<p>On-device or a provider, where the keys live, and the honesty rules
+the assistant follows about what it did with your text.</p>
+<p><em>6 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Know that it is optional.</strong> QUILL includes an
+assistant; it does not require one. It runs on-device with a local
+model, or connects to a provider you choose explicitly – Ollama, OpenAI,
+Claude, OpenRouter, Gemini, or a custom endpoint. Nothing is configured
+for you.</p>
+<ul>
+<li>You should hear: Nothing: this is the fact that makes the rest
+optional.</li>
+</ul></li>
+<li><p><strong>Open the AI Hub.</strong> One window for every provider’s
+key, model and test chat, plus per-provider key removal. It replaced two
+separate menu items, because a key and the model it unlocks are one
+subject.</p>
+<ul>
+<li>You should hear: The Hub, with each provider and whether it is
+configured.</li>
+</ul></li>
+<li><p><strong>Start with the one that needs no key.</strong> Ollama
+needs no key at all: install it, run it, and QUILL detects it on
+localhost. It is the shortest path to a working assistant that sends
+nothing anywhere.</p>
+<ul>
+<li>You should hear: Ollama detected, and the models it holds.</li>
+</ul></li>
+<li><p><strong>Know where a key is kept.</strong> In the Windows
+Credential Manager, tied to your Windows account – or, in portable mode,
+in a DPAPI-encrypted file beside your data. Never in a settings file,
+never in a log, never in a diagnostic bundle, and never in QUILL’s own
+program files.</p>
+<ul>
+<li>You should hear: Nothing: this is the promise behind the field.</li>
+</ul></li>
+<li><p><strong>Test it before you rely on it.</strong> Test Chat in the
+Hub proves the key and the model work together. Doing that once,
+deliberately, is better than finding out in the middle of a
+document.</p>
+<ul>
+<li>You should hear: The model’s reply, in the Hub.</li>
+</ul></li>
+<li><p><strong>Know the honesty rules.</strong> If your document had to
+be trimmed to fit the model, QUILL says how much of it the answer used.
+If your provider was unreachable and the chat started on the on-device
+model instead, it says so the moment the chat opens. And it never
+switches to a cloud engine without telling you that is what a switch
+would mean.</p>
+<ul>
+<li>You should hear: The sentence naming which engine answered, and on
+how much of the document.</li>
+</ul></li>
+</ol>
+<p>Optional, explicit, and honest about what it did. If you never open
+the Hub, QUILL is a text editor and nothing else.</p>
+<p>Next: Ask, and run a prompt.</p>
+<h3 id="ask-and-run-a-prompt">Ask, and run a prompt</h3>
+<p>The writing assistant, the one-shot question, and the prompt library
+– including how to change what a built-in prompt actually says.</p>
+<p><em>6 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Ask a question.</strong> The writing assistant is a
+message-style window where you can ask, draft, propose edits and run
+QUILL commands – with your approval before any change is applied. The
+provider and model in use are shown, and can be switched in the
+window.</p>
+<ul>
+<li>Keys: Alt+Q</li>
+<li>You should hear: The assistant, with focus in the prompt field when
+a model is configured.</li>
+</ul></li>
+<li><p><strong>Send, and read the answer.</strong> Ctrl+Enter sends.
+QUILL announces Sending and disables the button while the request is in
+flight, so a slow model is never mistaken for a dead one. The response
+opens read-only, with Copy to Clipboard.</p>
+<ul>
+<li>Keys: Ctrl+Enter</li>
+<li>You should hear: Sending, then the reply as reviewable text.</li>
+</ul></li>
+<li><p><strong>Open the prompt library.</strong> A searchable list of
+prompts on the left, the selected prompt’s instruction on the right, and
+an optional input field. With the field blank it uses your selection, or
+the whole document.</p>
+<ul>
+<li>You should hear: The prompts, filtered as you type.</li>
+</ul></li>
+<li><p><strong>Run one on a selection.</strong> Select a paragraph,
+choose Summarize or Improve Clarity or Make Concise, and run it. Nothing
+is applied automatically – the result opens as a response you read and
+decide about.</p>
+<ul>
+<li>You should hear: The result, in the response window.</li>
+</ul></li>
+<li><p><strong>Change what a built-in prompt says.</strong> Every
+built-in can have its wording overridden or be disabled, though
+built-ins cannot be deleted. Edit Check Grammar’s text and the Check
+Grammar command picks up your version automatically.</p>
+<ul>
+<li>You should hear: The prompt saved under your wording.</li>
+</ul></li>
+<li><p><strong>Check grammar without being rewritten.</strong> Check
+Grammar with AI lists corrections as original phrase, arrow, corrected
+phrase, and a reason. It does not rewrite the passage and it applies
+nothing: you make the changes you agree with.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+G</li>
+<li>You should hear: Each correction with its reason, and your document
+untouched.</li>
+</ul></li>
+</ol>
+<p>Ask for a question, the library for a job you do often, and neither
+one changes your document without you.</p>
+<p>Next: The assistant on one piece of text.</p>
+<h3 id="the-assistant-on-one-piece-of-text">The assistant on one piece
+of text</h3>
+<p>Translate, thesaurus, describe an image, and the spell check that
+asks a model – each on the thing you have selected.</p>
+<p><em>5 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Translate a selection.</strong> Translate Selection works
+on what you have highlighted, so you can bring one paragraph across
+without sending a whole document anywhere.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+T</li>
+<li>You should hear: The translation, as a response you can copy.</li>
+</ul></li>
+<li><p><strong>Ask for a better word.</strong> The AI thesaurus is the
+other half of the offline one: it answers with alternatives in the
+sentence’s own context rather than a dictionary list.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+H</li>
+<li>You should hear: The alternatives, with the sense each fits.</li>
+</ul></li>
+<li><p><strong>Describe an image.</strong> Describe Image is the command
+that matters most in somebody else’s document. It answers what a picture
+is, which is the one thing a screen reader cannot do for you.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, I</li>
+<li>You should hear: The description, as text you can review and
+copy.</li>
+</ul></li>
+<li><p><strong>Run an AI spell check.</strong> AI Spell Check and its
+interactive form are separate from the ordinary dictionary check,
+because they answer a different question: not is this word in a list,
+but is this the word you meant.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+I</li>
+<li>You should hear: Each finding, one at a time.</li>
+</ul></li>
+<li><p><strong>Switch engines deliberately.</strong> Switch AI Engine
+changes which model answers. QUILL will offer a switch when a call fails
+and the other kind of engine could take it – and it never makes that
+switch for you, always saying when one would send your text to the
+cloud.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+E</li>
+<li>You should hear: Which engine is now answering.</li>
+</ul></li>
+</ol>
+<p>Every one of these works on a selection, which is the honest unit:
+you decide how much text leaves the paragraph you are in.</p>
+<h2 id="living-with-it">Living with it</h2>
+<p>Shaping the app to the work you actually do, the safety net
+underneath it, formats other people send you, braille files, and the
+family of apps QUILL sits in.</p>
+<h3 id="make-quill-the-size-you-need">Make QUILL the size you need</h3>
+<p>Feature profiles, per-feature control, keyboard packs, and the keymap
+editor that tells you what a key is already doing.</p>
+<p><em>7 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Understand what a profile is.</strong> A profile decides
+which feature clusters are on, quiet or off. It keeps QUILL calm for
+somebody new without stripping power from somebody advanced – and it is
+a starting point rather than a cage.</p>
+<ul>
+<li>You should hear: The profile you are on, and what it covers.</li>
+</ul></li>
+<li><p><strong>Pick the one that matches your work.</strong> Essential
+is the calmest possible editor. Writer, Author or Student, Reader and
+Student, Office and Admin, Developer and Power Text, Low Vision, Braille
+and Screen Reader Power User, Accessibility Professional, and Full Quill
+each surface a different set.</p>
+<ul>
+<li>You should hear: Each profile with a plain-English preview of what
+you get.</li>
+</ul></li>
+<li><p><strong>Switch profiles from anywhere.</strong> Quick-switch is
+one chord away, and Undo the last profile change is there when a switch
+was not what you wanted. You can compare two profiles before
+choosing.</p>
+<ul>
+<li>Keys: Alt+Shift+P</li>
+<li>You should hear: The profile you switched to.</li>
+</ul></li>
+<li><p><strong>Turn one feature on without changing profile.</strong>
+Manage Individual Features is per-feature control on top of your
+profile. Its Disabled features only view is the useful one: scan what is
+off and switch on the two things you actually miss.</p>
+<ul>
+<li>You should hear: Each feature with a description of what it does and
+what it depends on.</li>
+<li>Worth knowing: Enabling a feature enables its dependencies;
+disabling one turns off what depends on it, and QUILL says what
+changed.</li>
+</ul></li>
+<li><p><strong>Start from a keyboard you already know.</strong> Keyboard
+packs make QUILL feel familiar from day one: Quill Default, Writer,
+Navigation and Review, plus Windows Notepad, Notepad++, VS Code and
+Microsoft Word. Hand-edit anything afterwards and the label becomes
+Custom.</p>
+<ul>
+<li>You should hear: The pack you chose, applied.</li>
+</ul></li>
+<li><p><strong>Ask what a key is already doing.</strong> In the Keymap
+Editor, type a <em>shortcut</em> rather than a command name and it flips
+to reverse lookup: it tells you which command owns that key, or that it
+is unassigned and available. You never have to guess whether a key is
+free.</p>
+<ul>
+<li>You should hear: The command that owns the key, by its friendly
+title.</li>
+</ul></li>
+<li><p><strong>Let it check itself.</strong> Run Diagnostics audits the
+whole keymap – duplicates, bindings for commands that no longer exist,
+unreadable bindings, keys that are assigned but inert – and offers to
+heal the repairable ones in one step.</p>
+<ul>
+<li>You should hear: What it found, and what it can fix.</li>
+</ul></li>
+</ol>
+<p>A profile for the shape, individual features for the exceptions, a
+pack for the keyboard, and diagnostics when it all gets away from
+you.</p>
+<p>Next: The safety net.</p>
+<h3 id="the-safety-net">The safety net</h3>
+<p>What QUILL does about crashes, autosave, a screen reader that
+vanishes, and every question that could destroy something.</p>
+<p><em>6 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Know the rule.</strong> Anything that closes or degrades
+QUILL without your asking persists your work first. Everything in this
+lesson is that one rule, applied in different places.</p>
+<ul>
+<li>You should hear: Nothing: this is the sentence the rest follows
+from.</li>
+</ul></li>
+<li><p><strong>Recover after a crash.</strong> If QUILL notices an
+earlier crash or an autosave state, the next launch offers recovery
+rather than hoping you forgot. The autosave cell in the status bar tells
+you when the last one happened.</p>
+<ul>
+<li>Keys: F6</li>
+<li>You should hear: The autosave cell, with its timing.</li>
+</ul></li>
+<li><p><strong>Know what happens if your screen reader stops.</strong>
+QUILL watches the reader it detected at startup. One missed check is
+ignored – restarting JAWS or NVDA must never set off alarms – but a
+confirmed disappearance makes QUILL snapshot every open document to
+autosave and then explain through whatever can still speak.</p>
+<ul>
+<li>You should hear: The explanation, through another reader or QUILL’s
+own voice.</li>
+<li>Worth knowing: QUILL does not shut down when this happens. Restart
+your reader when you are ready; QUILL announces when it sees it again,
+and the event is in Notifications either way.</li>
+</ul></li>
+<li><p><strong>Trust the default answer.</strong> Every confirmation
+that would destroy something has No as its default button, and a build
+check keeps it that way for every future dialog. Pressing Enter
+reflexively can never cost you data.</p>
+<ul>
+<li>You should hear: The question, with No as the default.</li>
+</ul></li>
+<li><p><strong>Go back to an earlier version.</strong> Restore Previous
+Version brings back an earlier save of the document you are in. It is
+the one to remember when a well-meant edit went wrong two hours ago.</p>
+<ul>
+<li>You should hear: The versions available, with their times.</li>
+</ul></li>
+<li><p><strong>Read an error properly.</strong> Messages carrying a
+support code end with the concrete next step – install this, check that
+setting, switch to a local model. The code identifies the exact failure
+branch, so include it when you report a problem.</p>
+<ul>
+<li>You should hear: The failure, the reason, and what to do about
+it.</li>
+</ul></li>
+</ol>
+<p>Autosave, recovery, a watchdog on your screen reader, and No as the
+default answer. None of it asks you to be careful.</p>
+<p>Next: Open anything, save as anything.</p>
+<h3 id="open-anything-save-as-anything">Open anything, save as
+anything</h3>
+<p>One editor for every format, what QUILL does about a document it had
+to extract, and converting a file without hunting for a converter.</p>
+<p><em>5 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open what somebody sent you.</strong> Every document
+opens in the one QUILL editor – the same control, whatever the format.
+The rule to hold onto is that bold means bold: QUILL speaks your
+document’s own language rather than flattening it.</p>
+<ul>
+<li>Keys: Ctrl+O</li>
+<li>You should hear: The document, and what kind it is.</li>
+</ul></li>
+<li><p><strong>Save it as something else.</strong> Save As chooses the
+format as well as the name: Markdown, HTML, Word, plain text and the
+rest. A document is not locked into the format it arrived in.</p>
+<ul>
+<li>Keys: Ctrl+Shift+S</li>
+<li>You should hear: The format list, then the file written.</li>
+</ul></li>
+<li><p><strong>Convert without opening.</strong> Convert File takes a
+source and an output format directly, which is the right shape when you
+have twenty files or when you do not want to read the thing at all.
+Batch Conversion does a folder.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, B</li>
+<li>You should hear: What it converted, and where it put the
+result.</li>
+</ul></li>
+<li><p><strong>Check what the extraction actually got.</strong> When
+text has been extracted – from a PDF, from a scan – the intake report
+says how it went. Reading it is how you decide whether to trust what you
+are reading, which is a question a sighted reader answers by glancing at
+the page.</p>
+<ul>
+<li>Keys: Ctrl+Shift+I</li>
+<li>You should hear: The report, as an ordinary tab.</li>
+</ul></li>
+<li><p><strong>Switch the document’s own format.</strong> Switch
+Document Format changes how QUILL treats what is already open – so a
+plain-text file you have decided is Markdown starts behaving like
+Markdown, headings and all.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Grave, K</li>
+<li>You should hear: The new format, and the structure it now sees.</li>
+</ul></li>
+</ol>
+<p>One editor, every format, and a report whenever the text had to be
+extracted rather than read.</p>
+<p>Next: Braille files, page by page.</p>
+<h3 id="braille-files-page-by-page">Braille files, page by page</h3>
+<p>Opening a BRF as braille rather than as text, moving by braille page
+and cell, proofing without touching the file, and translating when the
+pack is installed.</p>
+<p><em>7 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open a braille file.</strong> QUILL opens .brf, .brl,
+.pef and .ueb as plain braille ASCII – nothing is transformed on the way
+in. The point is to let a proofreader move through a transcription the
+way it is actually laid out, in pages and cells.</p>
+<ul>
+<li>Keys: Ctrl+O</li>
+<li>You should hear: BRF file opened, 87 braille pages detected – and
+your last position.</li>
+</ul></li>
+<li><p><strong>Read the braille status cell.</strong> While a braille
+file is active the status bar carries a braille cell: BRF Pg 12/87, Ln
+14/25, Cell 31/40, Print 7. That is the braille page, the line within
+it, the cell within the line, and the print page.</p>
+<ul>
+<li>Keys: F6</li>
+<li>You should hear: The whole cell, read as one line.</li>
+</ul></li>
+<li><p><strong>Move by braille page.</strong> The Braille menu holds Go
+to Braille Page, Next and Previous Braille Page, and the same three for
+print pages. Stepping past the first or last says so rather than doing
+nothing.</p>
+<ul>
+<li>You should hear: The page you landed on, with its number.</li>
+<li>Worth knowing: Braille bindings ship deliberately unset so nothing
+collides with your screen reader; assign your own, or run them from the
+command palette.</li>
+</ul></li>
+<li><p><strong>Proof without changing the file.</strong> Mark the
+current page Proofed or Needs Review, add a note, list either set, and
+export a proofing report. Progress is kept in a small companion file
+beside the braille file, which is never modified.</p>
+<ul>
+<li>You should hear: The page marked, and how far through you are.</li>
+</ul></li>
+<li><p><strong>Validate the layout.</strong> Validate BRF Layout scans
+for ten kinds of problem – lines or pages too long, missing page breaks,
+mixed line endings, characters that are not braille ASCII, malformed
+page indicators – and opens a warnings list you can step through.</p>
+<ul>
+<li>You should hear: Warning 3 of 11, and what it says.</li>
+</ul></li>
+<li><p><strong>Repair the two that stop it embossing.</strong> Read
+Layout Metrics speaks the diagnostic numbers in one pass; Go to Longest
+Line and Go to Longest Page take you to the worst offender; and Remove
+Trailing Spaces clears the cause of most page-width problems while
+keeping every line ending and form feed intact.</p>
+<ul>
+<li>You should hear: The metrics, then the line or page that broke the
+limit.</li>
+</ul></li>
+<li><p><strong>Translate, when the pack is installed.</strong>
+Back-Translate with Auto-Detect Code is the magical path: QUILL scores
+the document through every candidate code and says what it found –
+Detected UEB Grade 2 (contracted) – so you learn what your file is
+instead of being asked.</p>
+<ul>
+<li>You should hear: The code it detected, then the draft it
+opened.</li>
+<li>Worth knowing: Back-translation always opens as a clearly labelled
+draft, because no automatic back-translation is authoritative. The
+Translation submenu is hidden entirely when the pack is not installed,
+so you never meet a disabled item.</li>
+</ul></li>
+</ol>
+<p>Byte-for-byte on save, a companion file for your progress, and a
+detector that tells you what code your file is in.</p>
+<p>Next: QUILL and the apps around it.</p>
+<h3 id="quill-and-the-apps-around-it">QUILL and the apps around it</h3>
+<p>The radio, the podcasts, the weather and the rest – what lives inside
+QUILL, what is its own app, and what they share.</p>
+<p><em>5 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Play the radio without leaving.</strong> QUILL carries
+the same radio code Quill Radio does: browse stations, favorites,
+recording and scheduling, all from inside the editor. Your favorites are
+the same favorites in both.</p>
+<ul>
+<li>You should hear: The browse tree, in QUILL.</li>
+</ul></li>
+<li><p><strong>Know what has its own app, and why.</strong> Quill Radio,
+QUILL Cast, Quill Weather and the rest exist so somebody who wants a
+radio does not have to install an editor. They share one data store, so
+nothing you set up in one is stranded from the others.</p>
+<ul>
+<li>You should hear: Nothing: this is the shape of the family.</li>
+</ul></li>
+<li><p><strong>Reach the weather.</strong> Weather Now and Quick Weather
+are here as well, backed by the same code the standalone app runs. The
+alert watch, though, belongs to Quill Weather – an app whose whole job
+is to keep running.</p>
+<ul>
+<li>You should hear: The one-line summary for your primary place.</li>
+</ul></li>
+<li><p><strong>Carry your place between them.</strong> Your position in
+an episode, your bookmarks and your favorites are shared on this
+computer. Pause an episode in QUILL and open it in Cast and it picks up
+where you left off – the later decision wins, not the furthest
+through.</p>
+<ul>
+<li>You should hear: Picking up where you left off, and the time.</li>
+</ul></li>
+<li><p><strong>Take your setup with you.</strong> Export My Setup writes
+one file with your settings, keys and arrangement; Import My Setup puts
+them on another machine. Passwords stay behind, and the confirmation
+says so before it writes anything.</p>
+<ul>
+<li>You should hear: What the file holds, named, before anything is
+written.</li>
+</ul></li>
+</ol>
+<p>One editor that can do everything, and four small apps for the days
+you want one thing. They share their data and never fight over it.</p>
+</main>
+</body>
+</html>

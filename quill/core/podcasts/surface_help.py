@@ -52,6 +52,14 @@ PURPOSES: dict[str, str] = {
         "in its Inbox, and everything else is one menu away. Nothing here "
         "needs an account, and nothing you listen to leaves this computer."
     ),
+    "QUILL Cast Tutorials": (
+        "Guided lessons, one step at a time, that can run the step for you and "
+        "notice when you have done it. The contents list is grouped by track and "
+        "remembers where you stopped; typing 'here' in the filter box narrows it "
+        "to the tutorials about the window you came from. Follow me watches what "
+        "the app is doing -- never which key you pressed -- and moves you on by "
+        "itself."
+    ),
     "Podcasts": (
         "The Podcast Manager: every show you follow, the episodes in each, "
         "and every verb that acts on them -- play, download, mark played, "

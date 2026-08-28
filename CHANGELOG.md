@@ -2,12 +2,25 @@
 
 ## 1.0.0
 
-### Quill Radio learns to teach (2026-08-28)
+### Every app learns to teach (2026-08-28)
 
 A user guide answers "what does this do". It cannot answer "what do I do now",
-because a document cannot see what you have already done. Quill Radio now has
-36 guided tutorials -- 251 steps, six tracks, about three and a half hours of
-material -- that can, on **Help > Tutorials... (Ctrl+Alt+F1)**.
+because a document cannot see what you have already done. All four apps now
+have guided tutorials that can, on the same key everywhere -- **Help >
+Tutorials... (Ctrl+Alt+F1)**:
+
+| App | Lessons | Steps | Tracks |
+| --- | --- | --- | --- |
+| Quill Radio | 36 | 251 | 6 |
+| QUILL | 23 | 136 | 6 |
+| QUILL Cast | 18 | 107 | 4 |
+| Quill Weather | 11 | 60 | 3 |
+
+**88 lessons and 554 steps in all**, and one window teaching them: the engine
+(`quill/core/tutorials/`, `quill/ui/tutorials_window.py`) knows nothing about
+which app it is serving, and each app hands it a descriptor -- its lessons, its
+title, the file that remembers your place, and the probe that answers "did you
+do the step?".
 
 - **A step names a command, not a key.** The key is rendered when the step is
   drawn, from the listener's own keymap, so a rebinding changes every lesson
@@ -42,20 +55,29 @@ material -- that can, on **Help > Tutorials... (Ctrl+Alt+F1)**.
   changes under a focus that did not move, or under somebody standing in
   another window doing the step.
 
-- **The tutorial book is generated from the lessons** the window teaches from
-  (`standalone/radio/docs/tutorials.md`, **GATE-TUTDOC**, rostered in the
-  platform scorecard), so the document and the app cannot drift. The document
-  states the shipped keys; only the window can know the listener's own.
+- **Each app's tutorial book is generated from its lessons** -- four documents,
+  one per app (**GATE-TUTDOC**, rostered in the platform scorecard) -- so a
+  document and its app cannot drift. Each states the keys its app ships with;
+  only the window can know the ones you rebound.
 
 - **Product Requirements... moved from Ctrl+Alt+F1 to Alt+Shift+F1.** The F1
   family is ordered by how often somebody reaches for a door, and a new
   listener reaches for a tutorial far more often than anybody reaches for the
   PRD. (Ctrl+Alt+Shift+F1 was not available: it is a QuillVille app launcher.)
 
-- Progress lives in `radio_tutorials.json`, classified `cache` in the
-  persistence audit: losing it costs a bookmark in a lesson and nothing else.
-  No telemetry, no score, no percentage. `WindowManager` gained a read-only
-  `open_titles()` so the watcher can see which peer windows are open.
+- **Quill Weather has command ids at all now.** Every weather verb was a bound
+  menu item and nothing else, so the Command Palette could not reach one and a
+  tutorial step could not name one. They are registered with the keys their
+  menu labels already advertise, so the menus are unchanged -- they simply have
+  names (`quill/apps/weather_commands.py`).
+
+- Progress lives in one file per app -- `radio_tutorials.json` and its three
+  siblings -- classified `cache` in the persistence audit: losing one costs a
+  bookmark in a lesson and nothing else. Per app because a lesson slug is only
+  unique within its own set, and forgetting your place in Radio must never
+  forget it in QUILL. No telemetry, no score, no percentage. `WindowManager`
+  gained a read-only `open_titles()` so the watcher can see which peer windows
+  are open.
 
 ### F1 answers everywhere, and three keyboard rules become gates (2026-08-27)
 

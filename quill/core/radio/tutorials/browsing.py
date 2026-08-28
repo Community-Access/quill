@@ -9,7 +9,7 @@ across every directory at once, run from inside the tree.
 
 from __future__ import annotations
 
-from quill.core.radio.tutorials.model import Step, Tutorial
+from quill.core.tutorials.model import Step, Tutorial
 
 TUTORIALS: tuple[Tutorial, ...] = (
     Tutorial(

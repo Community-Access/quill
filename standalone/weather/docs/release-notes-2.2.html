@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Weather 2.2 -- Release Notes</title>
   <style>
@@ -443,6 +443,71 @@ already present, then installs the app.</li>
 app’s own first launch, shows a fully accessible progress bar that works
 with NVDA, JAWS, and Narrator, and announces progress as a
 percentage.</p>
+<h2 id="the-app-teaches-itself">The app teaches itself</h2>
+<p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong> opens 11 guided
+tutorials – 60 steps, about three quarters of an hour of material –
+covering every feature Quill Weather has.</p>
+<p>They are not a second copy of the user guide. A guide answers “what
+does this do”. It cannot answer “what do I do now”, because a document
+cannot see what you have already done. This window can.</p>
+<h3 id="three-tracks-and-the-middle-one-is-the-app">Three tracks, and
+the middle one is the app</h3>
+<p><strong>Your first ten minutes</strong> (3 lessons) – add a place,
+read everything the app knows about it, and learn the one key that
+answers without opening anything.</p>
+<p><strong>Being warned</strong> (5 lessons) – this is what Quill
+Weather is <em>for</em>, so it gets five: start the watch and understand
+exactly what it promises; rehearse an alert at a moment of your choosing
+rather than at three in the morning; decide what gets through (severity,
+hidden events, the sound and how insistent it is); keep the watch
+running through the tray, the sign-in entry and the background check;
+and NOAA Weather Radio, out loud, with an honest note about what an
+internet re-stream is not a substitute for.</p>
+<p><strong>Making it yours</strong> (3) – several places rather than
+one, the settings that decide how long a reading takes to speak, and
+living beside the rest of the family.</p>
+<h3 id="what-makes-it-more-than-a-document">What makes it more than a
+document</h3>
+<p><strong>A step names a command, not a key</strong>, so the key you
+read is the key you have. <strong>Try it</strong> runs the step exactly
+as its key would. And <strong>Follow me</strong> watches the app once a
+second and moves you on when it can see you have done the step – your
+saved places growing, the watch starting, alert checks pausing.</p>
+<p>It watches <strong>state rather than keystrokes</strong>, so starting
+the watch from the menu, the tray, the key or the palette all count
+equally. It compares against a baseline taken when the step was shown,
+so somebody with three places already saved has not passed “add a
+place”. And anything it cannot read answers “cannot tell”, which the
+window treats exactly like a step with no check at all.</p>
+<p>Nothing is graded and every step still has <strong>Next</strong>.</p>
+<h3 id="quill-weather-has-command-names-now">Quill Weather has command
+names now</h3>
+<p>Every weather verb was a bound menu item and nothing else. That cost
+this app two things nobody had noticed: the <strong>Command
+Palette</strong> – which Quill Weather carries, like every app in the
+family – could not reach a single weather verb, so the one surface built
+for “do a thing by name” was the one surface that could not do the thing
+this app is for. And a tutorial step could not name a verb, because
+there were no names.</p>
+<p>So Weather Now, Quick Weather, Active Alerts, Add Location, Settings,
+Test Alert, the monitoring toggle and pause, and both NOAA commands now
+have command ids, registered with the keys their menu labels already
+advertise. Nothing about the menus changed. They simply have names,
+which means the palette reaches them and a lesson can point at them
+without hard-coding a key that somebody might rebind.</p>
+<h3 id="the-rest-of-the-shape">The rest of the shape</h3>
+<p>It is a <strong>real window, not a wizard</strong>: leave it open,
+work in the app, and hear the lesson move on behind you. Typing
+<strong>here</strong> in the filter narrows the contents to the
+tutorials about the window you came from. Your place is kept per lesson,
+and <strong>Forget my progress</strong> clears the lot and changes
+nothing else – nothing about your progress leaves this computer.</p>
+<p><strong>Read it all</strong> shows a whole tutorial as one page, and
+<strong>The whole book as a document</strong> opens all 11 as one page,
+generated from the same lessons the window teaches from (it ships as
+<code>tutorials</code> beside this document).</p>
+<p>The same window and the same key serve Quill Radio, QUILL Cast and
+QUILL, each with its own lessons and its own progress file.</p>
 <h2 id="known-notes">Known notes</h2>
 <ul>
 <li>Releases are not yet code-signed: Windows SmartScreen may warn on

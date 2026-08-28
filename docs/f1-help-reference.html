@@ -220,7 +220,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 227 audited sites (111 helped, 116 named-help).</p>
+<p>Control coverage: 226 audited sites (110 helped, 116 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -725,47 +725,6 @@ either way.</li>
 Nothing is sent until now.</li>
 <li><code>cancel</code>: Closes without sending anything.</li>
 </ul>
-<h4 id="module-level-quilluiradiotutorials_contentspy">(module level)
-(<code>quill/ui/radio/tutorials_contents.py</code>)</h4>
-<ul>
-<li><code>window._filter</code>: Narrows the list below: every word you
-type has to appear somewhere in a tutorial – its title, a step, a key,
-or the window it is about. Type ‘here’ for the tutorials about the
-window you came from. Enter moves into the list.</li>
-<li><code>window._tree</code>: Tracks, each holding its tutorials. Right
-arrow opens a track, Enter starts the tutorial you are on – or picks it
-up where you left it. Each row says how many steps it has, roughly how
-long it takes, and whether you have finished it.</li>
-<li><code>window._start_btn</code>: Opens the selected tutorial at the
-step you left it on, or at step one.</li>
-<li><code>window._read_btn</code>: Shows the whole tutorial as one page
-of text to arrow through, instead of one step at a time.</li>
-<li><code>window._forget_btn</code>: Clears where you had got to in
-every tutorial. It changes nothing else and asks first.</li>
-</ul>
-<h4 id="tutorialswindow-quilluiradiotutorials_dialogpy">TutorialsWindow
-(<code>quill/ui/radio/tutorials_dialog.py</code>)</h4>
-<ul>
-<li><code>self._step_field</code>: The step you are on: what to do, why,
-the keys for it, and what you should hear. Read-only, so arrow through
-it freely and copy from it with Ctrl+C.</li>
-<li><code>self._follow</code>: While this is ticked, the lesson watches
-the app and moves you to the next step by itself once it can see you
-have done this one. It watches what changed, not which key you pressed,
-so any route counts.</li>
-<li><code>self._try_btn</code>: Runs this step’s command for you,
-exactly as its key would – so a step that opens a window opens it.</li>
-<li><code>self._next_btn</code>: Moves to the next step, and reads
-it.</li>
-<li><code>self._back_btn</code>: Moves to the previous step, and reads
-it.</li>
-<li><code>self._again_btn</code>: Reads the current step out again, in
-full.</li>
-<li><code>self._contents_btn</code>: Goes back to the list of tutorials,
-keeping your place.</li>
-<li><code>button</code>: Closes the tutorials, keeping your place in the
-lesson.</li>
-</ul>
 <h4 id="module-level-quilluiradioupcoming_dialogpy">(module level)
 (<code>quill/ui/radio/upcoming_dialog.py</code>)</h4>
 <ul>
@@ -902,6 +861,12 @@ the transport for it. Your shows live in the Podcast Manager, the
 episodes waiting for you are in its Inbox, and everything else is one
 menu away. Nothing here needs an account, and nothing you listen to
 leaves this computer.</p>
+<p><strong>QUILL Cast Tutorials.</strong> Guided lessons, one step at a
+time, that can run the step for you and notice when you have done it.
+The contents list is grouped by track and remembers where you stopped;
+typing ‘here’ in the filter box narrows it to the tutorials about the
+window you came from. Follow me watches what the app is doing – never
+which key you pressed – and moves you on by itself.</p>
 <p><strong>Quiet Hours.</strong> The window in which this app stops
 speaking on its own: check ticks, new-episode notices, download notices.
 Feeds are still checked and downloads still run – only the announcements
@@ -1818,6 +1783,12 @@ warnings as they are issued, even from the system tray. The three
 buttons open the full Weather Center, start or stop the watch, and add a
 place to watch; closing the window keeps monitoring in the tray by
 default.</p>
+<p><strong>Quill Weather Tutorials.</strong> Guided lessons, one step at
+a time, that can run the step for you and notice when you have done it.
+The contents list is grouped by track and remembers where you stopped;
+typing ‘here’ in the filter box narrows it to the tutorials about the
+window you came from. Follow me watches what the app is doing – never
+which key you pressed – and moves you on by itself.</p>
 <p><strong>Weather Center.</strong> The full text weather report for one
 location at a time, in reading order: active alerts first, then current
 conditions, the period forecast, the hourly forecast, and the extended

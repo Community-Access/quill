@@ -1,14 +1,18 @@
-"""Quill Radio's guided tutorials: the catalogue, assembled.
+"""Quill Radio's guided tutorials: its tracks, and its lessons assembled.
 
 The content lives in one module per half-track, so no single file grows past
 the size a person can hold in their head, and so a lesson can be found by the
 name of the thing it teaches rather than by scrolling. This module is the only
-thing anything else imports: it puts them in teaching order and hands out the
-pure helpers from :mod:`quill.core.radio.tutorials.model`.
+thing anything else imports: it declares Radio's tracks and hands back one
+:class:`~quill.core.tutorials.model.TutorialSet`.
 
-Order matters here. ``CATALOGUE`` is the order the contents tree reads, and
-the contents tree is the first thing a new listener meets, so it runs from
-"you have never opened this app" to "you have relied on it for a month".
+The engine -- what a step is, how one renders, where progress is kept -- is
+shared with QUILL Cast, Quill Weather and QUILL in
+:mod:`quill.core.tutorials`.
+
+Track order is teaching order, and the contents tree reads it top to bottom,
+so it runs from "you have never opened this app" to "you have relied on it for
+a month".
 """
 
 from __future__ import annotations
@@ -27,106 +31,66 @@ from quill.core.radio.tutorials import (
     recording_basics,
     recording_more,
 )
-from quill.core.radio.tutorials.model import (
-    TRACKS as TRACKS,
-)
-from quill.core.radio.tutorials.model import (
-    KeyLookup as KeyLookup,
-)
-from quill.core.radio.tutorials.model import (
-    Progress as Progress,
-)
-from quill.core.radio.tutorials.model import (
-    Step as Step,
-)
-from quill.core.radio.tutorials.model import (
-    Track as Track,
-)
-from quill.core.radio.tutorials.model import (
-    Tutorial as Tutorial,
-)
-from quill.core.radio.tutorials.model import (
-    by_slug as _by_slug,
-)
-from quill.core.radio.tutorials.model import (
-    contents_label as contents_label,
-)
-from quill.core.radio.tutorials.model import (
-    for_surface as _for_surface,
-)
-from quill.core.radio.tutorials.model import (
-    key_phrase as key_phrase,
-)
-from quill.core.radio.tutorials.model import (
-    render_step as render_step,
-)
-from quill.core.radio.tutorials.model import (
-    render_tutorial as render_tutorial,
-)
-from quill.core.radio.tutorials.model import (
-    search as _search,
-)
-from quill.core.radio.tutorials.model import (
-    step_heading as step_heading,
-)
-from quill.core.radio.tutorials.model import (
-    track_titles as track_titles,
-)
-from quill.core.radio.tutorials.model import (
-    tutorials_in as _tutorials_in,
-)
-from quill.core.radio.tutorials.model import (
-    validate as validate,
+from quill.core.tutorials.model import Track, TutorialSet, build
+
+#: Radio's tracks, in teaching order. A track is not a category -- it is a
+#: claim about what you can do by the end of it.
+TRACKS: tuple[Track, ...] = (
+    Track(
+        "first-hour",
+        "Your first hour",
+        "Start here. By the end of this track you can find a station, keep it, "
+        "work the player from any window, and get yourself unstuck without "
+        "asking anybody.",
+    ),
+    Track(
+        "finding",
+        "Finding something to listen to",
+        "Several ways in: the tree, the search across every directory at once, "
+        "addresses of your own, and the catalog on your own disk that answers "
+        "when the internet does not.",
+    ),
+    Track(
+        "yours",
+        "Making it yours",
+        "Folders, order, columns, keys, and the handful of settings that "
+        "change how the app feels rather than what it can do.",
+    ),
+    Track(
+        "recording",
+        "Recording",
+        "From one keypress to a show that records itself every Tuesday while "
+        "you are out -- and what happens when the connection does not hold.",
+    ),
+    Track(
+        "beyond",
+        "More than radio",
+        "Podcasts, audiobooks, YouTube, television and the ACB Media schedule "
+        "all arrive through the same tree and play with the same keys.",
+    ),
+    Track(
+        "living",
+        "Living with it",
+        "The parts you meet after the first week: what was that song, keeping "
+        "a moment, sleeping, statistics, and where to look when something "
+        "goes wrong.",
+    ),
 )
 
-#: Every lesson, in the order its own module lists it.
-_AUTHORED: tuple[Tutorial, ...] = (
-    *first_hour.TUTORIALS,
-    *browsing.TUTORIALS,
-    *own_sources.TUTORIALS,
-    *favorites_and_rows.TUTORIALS,
-    *keys_and_settings.TUTORIALS,
-    *recording_basics.TUTORIALS,
-    *recording_more.TUTORIALS,
-    *beyond_podcasts.TUTORIALS,
-    *beyond_tv.TUTORIALS,
-    *living_daily.TUTORIALS,
-    *living_care.TUTORIALS,
-    *extras.TUTORIALS,
+#: Every Quill Radio lesson, in teaching order.
+CATALOGUE: TutorialSet = build(
+    "radio",
+    TRACKS,
+    first_hour.TUTORIALS,
+    browsing.TUTORIALS,
+    own_sources.TUTORIALS,
+    favorites_and_rows.TUTORIALS,
+    keys_and_settings.TUTORIALS,
+    recording_basics.TUTORIALS,
+    recording_more.TUTORIALS,
+    beyond_podcasts.TUTORIALS,
+    beyond_tv.TUTORIALS,
+    living_daily.TUTORIALS,
+    living_care.TUTORIALS,
+    extras.TUTORIALS,
 )
-
-#: Every lesson, in teaching order: by track, and within a track by the order
-#: its module lists it. Grouping here rather than by hand means a lesson can
-#: live in whichever module it reads best in -- the three in ``extras`` belong
-#: to three different tracks -- without anybody maintaining a second order.
-CATALOGUE: tuple[Tutorial, ...] = tuple(
-    tutorial for track in TRACKS for tutorial in _AUTHORED if tutorial.track == track.id
-)
-
-
-def all_tutorials() -> tuple[Tutorial, ...]:
-    return CATALOGUE
-
-
-def find(slug: str) -> Tutorial | None:
-    return _by_slug(slug, CATALOGUE)
-
-
-def in_track(track_id: str) -> list[Tutorial]:
-    return _tutorials_in(track_id, CATALOGUE)
-
-
-def search(query: str) -> list[Tutorial]:
-    return _search(query, CATALOGUE)
-
-
-def for_surface(title: str) -> list[Tutorial]:
-    return _for_surface(title, CATALOGUE)
-
-
-def total_minutes() -> int:
-    return sum(tutorial.minutes for tutorial in CATALOGUE)
-
-
-def total_steps() -> int:
-    return sum(tutorial.step_count for tutorial in CATALOGUE)

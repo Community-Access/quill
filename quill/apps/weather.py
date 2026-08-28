@@ -82,6 +82,9 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         self._build_menu_bar()
         self._build_main_panel()
         self._register_adp_commands()  # palette/keybinding parity for Ask ADP
+        from quill.apps.weather_commands import register_weather_commands
+
+        register_weather_commands(self)
         self._ensure_tray_icon(self._build_weather_tray_menu, tooltip=_TITLE)
         self._register_tray_hotkey("Ctrl+Alt+Shift+W")  # show/hide Weather to the tray
         self._refresh_statusbar()
@@ -193,6 +196,11 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
         # About, so its user guide and release notes were installed and
         # unreachable.
         guide_id, notes_id = wx.NewIdRef(), wx.NewIdRef()
+        # Tutorials first: it is the door somebody new reaches for, and the two
+        # documents below it are what you open once you know what to look up.
+        tutorials_id = wx.NewIdRef()
+        help_menu.Append(tutorials_id, "&Tutorials...\tCtrl+Alt+F1")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_tutorials(), id=tutorials_id)
         help_menu.Append(guide_id, "&User Guide...\tCtrl+Alt+G")
         help_menu.Append(notes_id, "&Release Notes...\tCtrl+Alt+R")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_weather_doc("userguide"), id=guide_id)
@@ -225,6 +233,9 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
             self._close_tray_item_id,
             self._background_item_id,
             self._features_item_id,
+            tutorials_id,
+            guide_id,
+            notes_id,
             updates_id,
             about_id,
         )
@@ -351,74 +362,28 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
     # -- options ----------------------------------------------------------------
 
     def _set_launch_at_startup(self, enabled: bool) -> None:
-        from quill.platform.windows import weather_startup
+        """See ``apps/weather_options``."""
+        from quill.apps import weather_options
 
-        weather_startup.set_launch_at_startup(enabled)
-        # Reflect what actually took (a locked-down registry may refuse silently).
-        actual = weather_startup.is_launch_at_startup_enabled()
-        menu_bar = self.frame.GetMenuBar()
-        if menu_bar is not None:
-            item = menu_bar.FindItemById(self._startup_item_id)
-            if item is not None:
-                item.Check(actual)
-        self._announce(
-            "Quill Weather will start with Windows."
-            if actual
-            else "Quill Weather will not start with Windows."
-        )
+        weather_options.set_launch_at_startup(self, enabled)
 
     def _set_app_pref(self, field: str, value: bool) -> None:
-        from quill.core.weather import settings as settings_mod
+        """See ``apps/weather_options``."""
+        from quill.apps import weather_options
 
-        data_dir = self._weather_data_dir()
-        settings = settings_mod.load_settings(data_dir)
-        setattr(settings, field, value)
-        settings_mod.save_settings(data_dir, settings)
-        labels = {
-            "app_start_in_tray": (
-                "Quill Weather will start minimized to the tray.",
-                "Quill Weather will start with its window open.",
-            ),
-            "app_close_to_tray": (
-                "Closing the window will keep monitoring in the tray.",
-                "Closing the window will exit Quill Weather.",
-            ),
-        }
-        on, off = labels.get(field, ("Setting saved.", "Setting saved."))
-        self._announce(on if value else off)
+        weather_options.set_app_pref(self, field, value)
 
     def _set_background_check(self, enabled: bool) -> None:
-        """Register or remove the OS Scheduled Task that checks alerts even when
-        Quill Weather is not running. The cadence follows the monitor interval."""
-        from quill.core.weather import monitor
-        from quill.platform.windows import scheduled_task
+        """See ``apps/weather_options``."""
+        from quill.apps import weather_options
 
-        if not scheduled_task.is_windows():
-            self._announce("Background alert checks need Windows.")
-            self._reflect_background_check_item()
-            return
-        if enabled:
-            interval = monitor.load_config(self._weather_data_dir()).interval_minutes
-            scheduled_task.register(interval)
-        else:
-            scheduled_task.unregister()
-        actual = scheduled_task.is_registered()
-        self._reflect_background_check_item(actual)
-        self._announce(
-            "Quill Weather will check for alerts in the background, even when closed."
-            if actual
-            else "Background alert checks are off."
-        )
+        weather_options.set_background_check(self, enabled)
 
     def _reflect_background_check_item(self, checked: bool | None = None) -> None:
-        from quill.platform.windows import scheduled_task
+        """See ``apps/weather_options``."""
+        from quill.apps import weather_options
 
-        state = scheduled_task.is_registered() if checked is None else checked
-        menu_bar = self.frame.GetMenuBar()
-        if menu_bar is not None:
-            item = menu_bar.FindItemById(self._background_item_id)
-            if item is not None:
-                item.Check(state)
+        weather_options.reflect_background_check(self, checked)
 
     def _app_area_enabled(self, area_id: str) -> bool:
         features = getattr(self, "_app_features", None)
@@ -447,27 +412,21 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
             )
 
     def _open_weather_doc(self, stem: str) -> None:
-        """Open a bundled doc (docs\\ beside the exe, or a dev checkout)."""
-        titles = {
-            "userguide": "Quill Weather User Guide",
-            "release-notes-2.2": "Quill Weather Release Notes",
-        }
-        self.open_app_document(
-            self._doc_candidates("quill-weather", stem),
-            title=titles.get(stem, stem),
-            cache_name="app-docs",
-        )
+        """A bundled document, in the browser. See ``apps/weather_help``."""
+        from quill.apps import weather_help
+
+        weather_help.open_doc(self, stem)
+
+    def open_weather_tutorials(self, slug: str = "") -> None:
+        """Help > Tutorials...: the guided lessons. See ``apps/weather_help``."""
+        from quill.apps import weather_help
+
+        weather_help.open_tutorials(self, slug)
 
     def _show_about(self) -> None:
-        self._show_message_box(
-            f"{_TITLE} {_VERSION}\n"
-            "The accessible weather watcher from Quill.\n\n"
-            "Keeps an eye on official National Weather Service alerts for your "
-            "location and speaks new warnings as they are issued -- even while "
-            "minimized to the system tray.\n\nSupport: support@community-access.org",
-            f"About {_TITLE}",
-            wx.OK | wx.ICON_INFORMATION,
-        )
+        from quill.apps import weather_help
+
+        weather_help.show_about(self, wx, _TITLE, _VERSION)
 
     # -- monitoring lifecycle ---------------------------------------------------
 

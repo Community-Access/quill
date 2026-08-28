@@ -1,21 +1,24 @@
 """The Tutorials window's contents page: the filter, the tree, and the buttons.
 
-Extracted from :mod:`quill.ui.radio.tutorials_dialog` under GATE-11 (extract,
-never rebaseline). It is a clean seam: the contents page is a list you search
-and choose from, the lesson page is one step at a time, and the two share only
-the window they sit in. Functions take the window rather than being methods on
-it, so the split is a real one rather than a file with two halves of a class.
+Extracted from :mod:`quill.ui.tutorials_window` under GATE-11 (extract, never
+rebaseline). It is a clean seam: the contents page is a list you search and
+choose from, the lesson page is one step at a time, and the two share only the
+window they sit in. Functions take the window rather than being methods on it,
+so the split is a real one rather than a file with two halves of a class.
+
+Like the window itself, this is shared by every app that has lessons: it reads
+the tracks and tutorials off the window's own :class:`TutorialSet` and never
+names an app.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from quill.core.radio import tutorials as catalogue
-from quill.core.radio.tutorial_progress import summary
-from quill.core.radio.tutorials.model import Tutorial, contents_label
+from quill.core.tutorials.model import Tutorial, contents_label
+from quill.core.tutorials.progress import summary
+from quill.ui import tutorial_checks
 from quill.ui.dialog_contract import show_message_box
-from quill.ui.radio import tutorial_checks
 
 
 def build(window: Any, parent: Any) -> None:
@@ -38,7 +41,7 @@ def build(window: Any, parent: Any) -> None:
     )
     sizer.Add(window._filter, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
-    window._status = wx.StaticText(parent, label=status_text(window, len(catalogue.CATALOGUE)))
+    window._status = wx.StaticText(parent, label=status_text(window, len(window._catalogue)))
     sizer.Add(window._status, 0, wx.ALL, 8)
 
     window._tree = wx.TreeCtrl(
@@ -66,8 +69,8 @@ def build(window: Any, parent: Any) -> None:
     )
     window._book_btn = wx.Button(parent, label="The whole book as a &document")
     window._book_btn.SetHelpText(
-        f"Opens all {len(catalogue.CATALOGUE)} tutorials as one page in your browser, "
-        "for reading straight through or printing. It states the keys Quill Radio "
+        f"Opens all {len(window._catalogue)} tutorials as one page in your browser, "
+        "for reading straight through or printing. It states the keys this app "
         "ships with; only this window can know the ones you rebound."
     )
     window._forget_btn = wx.Button(parent, label="Forget my &progress")
@@ -80,7 +83,7 @@ def build(window: Any, parent: Any) -> None:
     parent.SetSizer(sizer)
 
     window._filter.Bind(wx.EVT_TEXT, lambda _e: rebuild_tree(window))
-    window._filter.Bind(wx.EVT_TEXT_ENTER, lambda _e: window._tree.SetFocus())
+    window._filter.Bind(wx.EVT_TEXT_ENTER, lambda _e: enter_the_list(window))
     window._tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, lambda _e: window._start_selected())
     window._start_btn.Bind(wx.EVT_BUTTON, lambda _e: window._start_selected())
     window._read_btn.Bind(wx.EVT_BUTTON, lambda _e: window._start_selected(whole=True))
@@ -89,16 +92,37 @@ def build(window: Any, parent: Any) -> None:
     rebuild_tree(window)
 
 
+def enter_the_list(window: Any) -> None:
+    """Enter in the filter box: say what is left, then move into the tree.
+
+    Said on Enter rather than on every keystroke (GATE-12 wants a label change
+    spoken; GATE-13 wants nothing said that the reader already says). Typing
+    changes a label nobody is looking at, so the count is worth one sentence at
+    the moment somebody commits to the filtered list -- and the tree itself
+    announces each row from there.
+    """
+    if callable(getattr(window, "_announce", None)):
+        window._announce(status_text(window, len(matching(window))))
+    window._tree.SetFocus()
+
+
 def status_text(window: Any, shown: int) -> str:
-    return f"{summary(window._progress, len(catalogue.CATALOGUE))} Showing {shown}."
+    return f"{summary(window._progress, len(window._catalogue))} Showing {shown}."
 
 
 def front_window_title(window: Any) -> str:
-    """The window this one was opened over, for 'tutorials about here'."""
-    from quill.ui.radio.tutorials_dialog import TITLE
+    """The window this one was opened over, for "tutorials about here".
 
-    titles = [title for title in tutorial_checks.open_titles(window._host) if title != TITLE]
-    return titles[-1] if titles else "Quill Radio"
+    The newest registered window that is not this one. Captured before this
+    window registers itself, which is why it is worth a function rather than a
+    lookup at the moment somebody types.
+    """
+    own = window._title
+    titles = [title for title in tutorial_checks.open_titles(window._host) if title != own]
+    if titles:
+        return titles[-1]
+    home = tutorial_checks.peer_windows(window._app.app_id)
+    return next(iter(sorted(home)), "")
 
 
 def here_hint(window: Any) -> str:
@@ -108,7 +132,7 @@ def here_hint(window: Any) -> str:
     will not say: that some of these lessons are about the window you just
     left. Said once, on open, and never repeated.
     """
-    here = catalogue.for_surface(window._came_from)
+    here = window._catalogue.for_surface(window._came_from)
     if not here:
         return ""
     count = len(here)
@@ -119,10 +143,10 @@ def here_hint(window: Any) -> str:
 def matching(window: Any) -> list[Tutorial]:
     query = window._filter.GetValue().strip()
     if query.lower() == "here":
-        here = catalogue.for_surface(window._came_from)
+        here = window._catalogue.for_surface(window._came_from)
         if here:
             return here
-    return catalogue.search(query)
+    return window._catalogue.search(query)
 
 
 def rebuild_tree(window: Any) -> None:
@@ -130,7 +154,7 @@ def rebuild_tree(window: Any) -> None:
     window._tree.DeleteAllItems()
     window._rows = {}
     root = window._tree.AddRoot("tutorials")
-    for track in catalogue.TRACKS:
+    for track in window._catalogue.tracks:
         lessons = [tutorial for tutorial in shown if tutorial.track == track.id]
         if not lessons:
             continue

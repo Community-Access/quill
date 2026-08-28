@@ -17,7 +17,7 @@ from quill.tools.network_egress_entries_radio import RADIO_EGRESS
 _REVIEWED_EGRESS: dict[str, str] = {
     # Quill Radio's, split out under GATE-11 -- see the module beside this one.
     **RADIO_EGRESS,
-    "core/audio/url_import.py::_default_download": (
+    "core/nowhere.py::gone": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "
         "(YouTube and the many sites yt-dlp supports) so the converter can turn it "

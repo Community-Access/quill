@@ -8546,6 +8546,55 @@ Translation works the same from an installed build, the portable build, or a sou
 
 **Braille files in File > Convert File.** The general-purpose converter accepts `.brf` and `.brl` sources too — they appear in its file picker alongside every other supported document. Pick a braille file, pick any output format (Markdown, Word, HTML, EPUB, plain text, and the rest), and QUILL detects the braille code, back-translates, and writes the result — announcing which code it found. There is no separate braille converter to hunt for: the one Convert File dialog handles braille the same way it handles everything else.
 
+## Tutorials
+
+**Help > Tutorials... (Ctrl+Alt+F1)** opens 23 guided tutorials -- 136 steps,
+about 120 minutes of material -- covering the parts of QUILL worth learning first, in the order somebody
+would actually learn it. They are not a second copy of this guide. A guide
+answers "what does this do"; it cannot answer "what do I do now", because a
+document cannot see what you have already done. This window can.
+
+- **They show the keys you have.** A step names the *command* it is about, and
+  the key is rendered when the step is drawn. Rebind something and the tutorial
+  says your key.
+- **Try it runs the step.** Any step that names a command can be performed from
+  the lesson, so a tutorial can open a window for you and then talk you through
+  what you are standing in.
+- **Follow me notices that you did it.** Tick **Follow me** and the lesson
+  watches the app -- once a second, and it watches *what changed*, never which
+  key you pressed -- so however you do the step, it says what it saw ("Done:
+  the document changed") and reads you the next one. It never takes the keyboard, and
+  nothing is graded: every step still has **Next**, and a check that never comes
+  true costs you one keypress.
+
+The Tutorials window is a **real window, not a wizard**: leave it open, move to
+the app, do the step there, and hear the lesson move on behind you. A modal
+dialog would own the keyboard for the whole lesson, which is the wrong shape
+for teaching somebody to use the thing underneath it.
+
+**The contents.** Six tracks, in teaching order. Each row says how many
+steps it has, roughly how long it takes, and whether you have finished it. The
+filter box narrows the list -- every word you type has to appear somewhere in a
+tutorial -- and typing **here** narrows it to the tutorials about the window you
+came from.
+
+**Your place is kept.** Close a lesson half way through and it opens there
+again. Finishing one is remembered separately from where you are in it. **Forget
+my progress** clears the lot and changes nothing else. Nothing about your
+progress leaves this computer.
+
+**Reading rather than doing.** **Read it all** shows a whole tutorial as one
+page of text, and **The whole book as a document** opens all 23 of them as
+one page -- generated from the same lessons the window teaches from, so the two
+cannot disagree. It ships as `tutorials.md` beside this guide. The document states the
+keys the app ships with; only the window can know the ones you rebound.
+
+The lessons are shared machinery: Quill Radio, QUILL Cast and Quill
+Weather each have their own set, opened with the same **Ctrl+Alt+F1** in
+every app, and QUILL's set covers the first hour, the writing, the
+reading, how much the app says, the assistant, and the parts you meet in
+the second week. The menus and the command palette cover the rest.
+
 ## Help, Learning, and Daily Confidence
 
 Quill includes several layers of help because confidence does not come from memorizing everything.

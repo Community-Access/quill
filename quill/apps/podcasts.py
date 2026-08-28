@@ -872,6 +872,12 @@ class PodcastsAppFrame(
 
     # -- menu bar -------------------------------------------------------------
 
+    def open_cast_tutorials(self, slug: str = "") -> None:
+        """Help > Tutorials...: the guided lessons, in their own peer window."""
+        from quill.ui.podcasts.tutorials import open_tutorials
+
+        open_tutorials(self, slug=slug)
+
     def _open_podcasts_doc(self, stem: str) -> None:
         titles = {
             "userguide": "QUILL Cast User Guide",
@@ -881,6 +887,7 @@ class PodcastsAppFrame(
             "release-notes-2.0": "QUILL Cast Release Notes",
             "release-notes-1.1": "QUILL Cast Release Notes (1.1)",
             "prd": "QUILL Cast Product Requirements",
+            "tutorials": "QUILL Cast Tutorials",
         }
         self.open_app_document(
             self._doc_candidates("quill-cast", stem),

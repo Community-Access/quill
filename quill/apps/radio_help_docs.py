@@ -32,7 +32,7 @@ def open_doc(host: Any, stem: str) -> None:
 
 def open_tutorials(host: Any, slug: str = "") -> None:
     """Open the Tutorials window, optionally straight into one lesson."""
-    from quill.ui.radio.tutorials_dialog import open_tutorials as show
+    from quill.ui.radio.tutorials import open_tutorials as show
 
     show(host, slug=slug)
 

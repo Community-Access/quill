@@ -25,10 +25,13 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill.core.radio.tutorials.model import Progress
+from quill.core.tutorials.model import Progress
 
-_FILE_NAME = "radio_tutorials.json"
-_FORMAT = "quill-radio-tutorial-progress"
+#: One file per app, because a lesson slug is only unique within its own set
+#: and because forgetting your place in Quill Radio should not forget it in
+#: QUILL. Named by the caller: ``radio_tutorials.json``, ``cast_tutorials.json``,
+#: ``weather_tutorials.json``, ``quill_tutorials.json``.
+_FORMAT = "quillville-tutorial-progress"
 
 
 @dataclass(slots=True)
@@ -87,14 +90,14 @@ class TutorialProgressStore:
         return sum(1 for entry in self.entries.values() if not entry.done and entry.step > 0)
 
 
-def store_path(data_dir: Path) -> Path:
-    return data_dir / _FILE_NAME
+def store_path(data_dir: Path, file_name: str) -> Path:
+    return data_dir / file_name
 
 
-def load_progress(data_dir: Path) -> TutorialProgressStore:
+def load_progress(data_dir: Path, file_name: str) -> TutorialProgressStore:
     """Read the store. An absent or broken file reads as an empty one."""
     try:
-        raw = json.loads(store_path(data_dir).read_text(encoding="utf-8"))
+        raw = json.loads(store_path(data_dir, file_name).read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return TutorialProgressStore()
     if not isinstance(raw, dict):
@@ -123,7 +126,7 @@ def load_progress(data_dir: Path) -> TutorialProgressStore:
     return store
 
 
-def save_progress(data_dir: Path, store: TutorialProgressStore) -> None:
+def save_progress(data_dir: Path, file_name: str, store: TutorialProgressStore) -> None:
     """Persist the store atomically."""
     from quill.core.storage import write_json_atomic
 
@@ -136,7 +139,7 @@ def save_progress(data_dir: Path, store: TutorialProgressStore) -> None:
             for entry in store.entries.values()
         ],
     }
-    write_json_atomic(store_path(data_dir), payload)
+    write_json_atomic(store_path(data_dir, file_name), payload)
 
 
 def summary(store: TutorialProgressStore, total: int) -> str:

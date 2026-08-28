@@ -12,9 +12,19 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
-from quill.ui.radio import tutorial_checks
+from quill.ui import tutorial_checks
+from quill.ui.radio.tutorial_checks import PROBE
 
 _ROOT = Path(__file__).resolve().parents[4]
+
+
+def evaluate(check, host, baseline):
+    """Radio's checks, asked the way the window asks them."""
+    return tutorial_checks.evaluate(check, host, baseline, PROBE)
+
+
+def snapshot(host):
+    return tutorial_checks.snapshot(host, PROBE)
 
 
 def _src(rel: str) -> str:
@@ -53,47 +63,47 @@ def _host(
 
 def test_playing_is_answered_from_the_controller() -> None:
     host = _host(state="PLAYING")
-    satisfied, sentence = tutorial_checks.evaluate("playing", host, {})
+    satisfied, sentence = evaluate("playing", host, {})
     assert satisfied
     assert sentence == "something is playing now"
-    assert not tutorial_checks.evaluate("playing", _host(state="CONNECTING"), {})[0]
+    assert not evaluate("playing", _host(state="CONNECTING"), {})[0]
 
 
 def test_volume_is_a_delta_not_a_level() -> None:
     """Somebody already at 70 has not done the step by standing still."""
-    baseline = tutorial_checks.snapshot(_host(volume=70))
-    assert not tutorial_checks.evaluate("volume-changed", _host(volume=70), baseline)[0]
-    assert tutorial_checks.evaluate("volume-changed", _host(volume=60), baseline)[0]
+    baseline = snapshot(_host(volume=70))
+    assert not evaluate("volume-changed", _host(volume=70), baseline)[0]
+    assert evaluate("volume-changed", _host(volume=60), baseline)[0]
 
 
 def test_favorites_grow_rather_than_exist() -> None:
     """A listener with forty favorites has not already passed 'add one'."""
-    baseline = tutorial_checks.snapshot(_host(favorites=40))
-    assert not tutorial_checks.evaluate("favorite-added", _host(favorites=40), baseline)[0]
-    assert tutorial_checks.evaluate("favorite-added", _host(favorites=41), baseline)[0]
+    baseline = snapshot(_host(favorites=40))
+    assert not evaluate("favorite-added", _host(favorites=40), baseline)[0]
+    assert evaluate("favorite-added", _host(favorites=41), baseline)[0]
 
 
 def test_recording_started_and_finished_are_opposite_directions() -> None:
-    idle = tutorial_checks.snapshot(_host(recordings=0))
-    assert tutorial_checks.evaluate("recording-started", _host(recordings=1), idle)[0]
-    running = tutorial_checks.snapshot(_host(recordings=1))
-    assert tutorial_checks.evaluate("recording-finished", _host(recordings=0), running)[0]
+    idle = snapshot(_host(recordings=0))
+    assert evaluate("recording-started", _host(recordings=1), idle)[0]
+    running = snapshot(_host(recordings=1))
+    assert evaluate("recording-finished", _host(recordings=0), running)[0]
     # Finishing something that never started is not a finish.
-    assert not tutorial_checks.evaluate("recording-finished", _host(recordings=0), idle)[0]
+    assert not evaluate("recording-finished", _host(recordings=0), idle)[0]
 
 
 def test_a_window_check_reads_the_open_peer_windows() -> None:
     host = _host(titles=["Quill Radio", "Browse Stations"])
-    assert tutorial_checks.evaluate("window:Browse Stations", host, {})[0]
-    assert not tutorial_checks.evaluate("window:Player", host, {})[0]
+    assert evaluate("window:Browse Stations", host, {})[0]
+    assert not evaluate("window:Player", host, {})[0]
 
 
 def test_an_app_it_cannot_read_answers_no_rather_than_raising() -> None:
     bare = SimpleNamespace()
-    assert tutorial_checks.snapshot(bare)["volume"] is None
-    for check in sorted(tutorial_checks.known_checks()):
-        assert tutorial_checks.evaluate(check, bare, {})[0] is False
-    assert tutorial_checks.evaluate("no-such-check", _host(), {}) == (False, "")
+    assert snapshot(bare)["volume"] is None
+    for check in sorted(tutorial_checks.known_checks(PROBE)):
+        assert evaluate(check, bare, {})[0] is False
+    assert evaluate("no-such-check", _host(), {}) == (False, "")
 
 
 def test_the_window_manager_can_list_what_is_open() -> None:
@@ -120,15 +130,15 @@ def test_tutorials_has_a_key_and_the_prd_moved_out_of_its_way() -> None:
 
 def test_the_window_states_its_purpose_for_f1() -> None:
     from quill.core.radio.surface_help import PURPOSES
-    from quill.ui.radio.tutorials_dialog import TITLE
+    from quill.ui.radio.tutorials import TITLE
 
     assert TITLE in PURPOSES
 
 
 def test_the_window_watches_rather_than_grades() -> None:
     """Follow me is a courtesy: every step still has Next, and nothing blocks."""
-    source = _src("quill/ui/radio/tutorials_dialog.py")
-    assert "Follow &me" in source
+    source = _src("quill/ui/tutorials_window.py")
+    assert "Follow &me" in _src("quill/ui/tutorials_contents.py") or "Follow &me" in source
     assert "self._next_btn" in source
     # The watcher only ever moves forward, and only when the check says so.
     assert "self._step_by(1)" in source

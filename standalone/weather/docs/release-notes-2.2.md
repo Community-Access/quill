@@ -230,6 +230,79 @@ Every runtime download, whether triggered by an installer or by the app's own
 first launch, shows a fully accessible progress bar that works with NVDA, JAWS,
 and Narrator, and announces progress as a percentage.
 
+## The app teaches itself
+
+**Help > Tutorials... (Ctrl+Alt+F1)** opens 11 guided tutorials -- 60 steps,
+about three quarters of an hour of material -- covering every feature Quill
+Weather has.
+
+They are not a second copy of the user guide. A guide answers "what does this
+do". It cannot answer "what do I do now", because a document cannot see what you
+have already done. This window can.
+
+### Three tracks, and the middle one is the app
+
+**Your first ten minutes** (3 lessons) -- add a place, read everything the app
+knows about it, and learn the one key that answers without opening anything.
+
+**Being warned** (5 lessons) -- this is what Quill Weather is *for*, so it gets
+five: start the watch and understand exactly what it promises; rehearse an alert
+at a moment of your choosing rather than at three in the morning; decide what
+gets through (severity, hidden events, the sound and how insistent it is); keep
+the watch running through the tray, the sign-in entry and the background check;
+and NOAA Weather Radio, out loud, with an honest note about what an internet
+re-stream is not a substitute for.
+
+**Making it yours** (3) -- several places rather than one, the settings that
+decide how long a reading takes to speak, and living beside the rest of the
+family.
+
+### What makes it more than a document
+
+**A step names a command, not a key**, so the key you read is the key you have.
+**Try it** runs the step exactly as its key would. And **Follow me** watches the
+app once a second and moves you on when it can see you have done the step -- your
+saved places growing, the watch starting, alert checks pausing.
+
+It watches **state rather than keystrokes**, so starting the watch from the
+menu, the tray, the key or the palette all count equally. It compares against a
+baseline taken when the step was shown, so somebody with three places already
+saved has not passed "add a place". And anything it cannot read answers "cannot
+tell", which the window treats exactly like a step with no check at all.
+
+Nothing is graded and every step still has **Next**.
+
+### Quill Weather has command names now
+
+Every weather verb was a bound menu item and nothing else. That cost this app
+two things nobody had noticed: the **Command Palette** -- which Quill Weather
+carries, like every app in the family -- could not reach a single weather verb,
+so the one surface built for "do a thing by name" was the one surface that could
+not do the thing this app is for. And a tutorial step could not name a verb,
+because there were no names.
+
+So Weather Now, Quick Weather, Active Alerts, Add Location, Settings, Test
+Alert, the monitoring toggle and pause, and both NOAA commands now have command
+ids, registered with the keys their menu labels already advertise. Nothing about
+the menus changed. They simply have names, which means the palette reaches them
+and a lesson can point at them without hard-coding a key that somebody might
+rebind.
+
+### The rest of the shape
+
+It is a **real window, not a wizard**: leave it open, work in the app, and hear
+the lesson move on behind you. Typing **here** in the filter narrows the
+contents to the tutorials about the window you came from. Your place is kept per
+lesson, and **Forget my progress** clears the lot and changes nothing else --
+nothing about your progress leaves this computer.
+
+**Read it all** shows a whole tutorial as one page, and **The whole book as a
+document** opens all 11 as one page, generated from the same lessons the window
+teaches from (it ships as `tutorials` beside this document).
+
+The same window and the same key serve Quill Radio, QUILL Cast and QUILL, each
+with its own lessons and its own progress file.
+
 ## Known notes
 
 - Releases are not yet code-signed: Windows SmartScreen may warn on first run.

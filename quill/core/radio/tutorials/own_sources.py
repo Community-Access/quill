@@ -11,7 +11,7 @@ does about it before you have to.
 
 from __future__ import annotations
 
-from quill.core.radio.tutorials.model import Step, Tutorial
+from quill.core.tutorials.model import Step, Tutorial
 
 TUTORIALS: tuple[Tutorial, ...] = (
     Tutorial(

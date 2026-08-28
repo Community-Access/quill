@@ -1,15 +1,21 @@
 """The Tutorials window: a book that can watch you use the app.
 
-Two pages in one peer window. **Contents** is a tree of tracks and lessons
-with a filter box over it. **Lesson** is one step at a time in a read-only
-field you can arrow through, with the keys rendered from the command registry
-so they are the keys you actually have.
+One window, shared by every Quill app that has lessons -- Quill Radio, QUILL
+Cast, Quill Weather and QUILL itself. What differs between them is a
+:class:`TutorialsApp`: which lessons, which title, which file remembers your
+place, and which probe answers "did you do the step". Nothing below knows
+which app it is teaching.
+
+Two pages. **Contents** is a tree of tracks and lessons with a filter box over
+it. **Lesson** is one step at a time in a read-only field you can arrow
+through, with the keys rendered from the command registry so they are the keys
+you actually have.
 
 What makes it worth building rather than shipping another document:
 
 * **Try it runs the step.** A step that names a command can be performed from
-  here, which means a lesson can open Browse Stations for you and then talk
-  you through what you are standing in.
+  here, which means a lesson can open a window for you and then talk you
+  through what you are standing in.
 * **Follow me notices that you did it.** Steps that carry a check are watched
   -- once a second, against the app's live state, never against keystrokes --
   and when the state changes the lesson says what it noticed and moves on. You
@@ -25,51 +31,81 @@ is what the reader already says. Nothing here is announced twice.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+from dataclasses import dataclass
 from typing import Any
 
-from quill.core.radio import tutorials as catalogue
-from quill.core.radio.tutorial_progress import (
+from quill.core.tutorials.model import Tutorial, TutorialSet, render_step, render_tutorial
+from quill.core.tutorials.progress import (
     TutorialProgressStore,
     load_progress,
     save_progress,
 )
-from quill.core.radio.tutorials.model import Tutorial, render_step, render_tutorial
-from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
-from quill.ui.radio import tutorial_checks, tutorials_contents
-
-TITLE = "Quill Radio Tutorials"
-
-#: The one open window, if any. Asking for it again raises it rather than
-#: opening a second copy -- the rule every Radio surface follows.
-_OPEN: TutorialsWindow | None = None
+from quill.ui import tutorial_checks, tutorials_contents
+from quill.ui.dialog_contract import announce_surface_exit
 
 #: How often Follow me asks the app whether the step happened. A second is
 #: slow enough to cost nothing and fast enough that the answer feels immediate.
 _WATCH_MS = 1000
 
 
-def open_tutorials(host: Any, *, slug: str = "") -> None:
-    """Open (or raise) the window; *slug* starts that lesson straight away."""
-    global _OPEN
-    if _OPEN is not None:
-        _OPEN.raise_window(slug=slug)
+@dataclass(frozen=True, slots=True)
+class TutorialsApp:
+    """Everything the shared window needs in order to teach one app.
+
+    Assembled in that app's own thin module (``quill/ui/radio/tutorials.py``
+    and its siblings), which is also where the app's Help menu reaches for it.
+    """
+
+    #: "radio", "cast", "weather", "quill" -- the key the peer-window table and
+    #: the document builder are indexed by.
+    app_id: str
+    #: The window title. Distinct per app, because they can all be open at once.
+    title: str
+    #: The lessons.
+    catalogue: TutorialSet
+    #: Which file in the shared data folder remembers your place.
+    progress_file: str
+    #: Opens this app's rendered tutorial book in the browser, given the host.
+    open_book: Callable[[Any], None] | None = None
+    #: Answers this app's own checks. None means only ``window:`` checks work.
+    probe: tutorial_checks.CheckProbe | None = None
+
+
+#: The open window per app, if any. Asking again raises rather than opening a
+#: second copy -- the rule every Quill surface follows -- and it is keyed per
+#: app because somebody may reasonably have two apps' lessons open at once.
+_OPEN: dict[str, TutorialsWindow] = {}
+
+
+def open_tutorials(host: Any, app: TutorialsApp, *, slug: str = "") -> None:
+    """Open (or raise) *app*'s tutorials; *slug* starts that lesson straight away."""
+    existing = _OPEN.get(app.app_id)
+    if existing is not None:
+        existing.raise_window(slug=slug)
         return
-    window = TutorialsWindow(host)
-    _OPEN = window
+    window = TutorialsWindow(host, app)
+    _OPEN[app.app_id] = window
     window.show(slug=slug)
 
 
 class TutorialsWindow:
     """Contents and lesson, in one window."""
 
-    def __init__(self, host: Any) -> None:
+    def __init__(self, host: Any, app: TutorialsApp) -> None:
         import wx
 
         self._wx = wx
         self._host = host
+        self._app = app
+        self._title = app.title
+        self._catalogue = app.catalogue
         self._announce = getattr(host, "_announce", None)
+        #: The app's WindowManager, when it has one. Radio and Weather do; Cast
+        #: and QUILL do not, and this window works either way -- it is always a
+        #: real window, and the manager only decides whether it also joins the
+        #: Window menu and the Ctrl+Tab rotation.
         self._windows = getattr(host, "_windows", None)
-        self._modeless = self._windows is not None
         self._progress: TutorialProgressStore = self._load_progress()
         self._tutorial: Tutorial | None = None
         self._index = 0
@@ -82,19 +118,11 @@ class TutorialsWindow:
         # after registration the newest window would be this one.
         self._came_from = tutorials_contents.front_window_title(self)
 
-        if self._modeless:
-            self._win = wx.Frame(None, title=TITLE, style=wx.DEFAULT_FRAME_STYLE)
-            self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
-            self._build_surface_menu_bar()
-            self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
-            self._win.Bind(wx.EVT_CLOSE, self._on_close)
-        else:
-            self._win = wx.Dialog(
-                getattr(host, "frame", None),
-                title=TITLE,
-                style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-            )
-            self._surface = self._win
+        self._win = wx.Frame(None, title=self._title, style=wx.DEFAULT_FRAME_STYLE)
+        self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
+        self._build_surface_menu_bar()
+        self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
+        self._win.Bind(wx.EVT_CLOSE, self._on_close)
         self._win.SetSize(wx.Size(820, 620))
         self._timer = wx.Timer(self._win)
         self._win.Bind(wx.EVT_TIMER, self._on_tick, self._timer)
@@ -109,13 +137,13 @@ class TutorialsWindow:
 
     def _load_progress(self) -> TutorialProgressStore:
         try:
-            return load_progress(self._data_dir())
+            return load_progress(self._data_dir(), self._app.progress_file)
         except Exception:  # noqa: BLE001 - a missing store is an empty one, never a failure
             return TutorialProgressStore()
 
     def _save_progress(self) -> None:
         try:
-            save_progress(self._data_dir(), self._progress)
+            save_progress(self._data_dir(), self._app.progress_file, self._progress)
         except Exception:  # noqa: BLE001 - losing a bookmark in a tutorial is not worth a dialog
             pass
 
@@ -129,18 +157,23 @@ class TutorialsWindow:
         surface_menu.Append(close_id, "&Close\tCtrl+W")
         self._win.Bind(wx.EVT_MENU, lambda _e: self._win.Close(), id=close_id)
         menu_bar.Append(surface_menu, "&View")
-        from quill.ui.radio import surface_app_menu
+        # Radio's peer windows all carry the app's own Station menu, so Alt+S
+        # means the same thing here as everywhere else in that app. The other
+        # apps have no such shared menu to carry.
+        if self._app.app_id == "radio":
+            from quill.ui.radio import surface_app_menu
 
-        self._menu_id_refs.extend(
-            surface_app_menu.install(
-                win=self._win,
-                host=surface_app_menu.host_of(self),
-                menu_bar=menu_bar,
-                wx=wx,
-                skip=(),
+            self._menu_id_refs.extend(
+                surface_app_menu.install(
+                    win=self._win,
+                    host=surface_app_menu.host_of(self),
+                    menu_bar=menu_bar,
+                    wx=wx,
+                    skip=(),
+                )
             )
-        )
-        self._windows.install(self._win, menu_bar)
+        if self._windows is not None:
+            self._windows.install(self._win, menu_bar)
         self._win.SetMenuBar(menu_bar)
         self._menu_id_refs.append(close_id)
 
@@ -153,18 +186,19 @@ class TutorialsWindow:
         event.Skip()
 
     def _on_close(self, event: Any) -> None:
-        global _OPEN
         self._timer.Stop()
         self._remember_place()
-        if _OPEN is self:
-            _OPEN = None
-        previous = self._windows.previous_key(self._win)
-        self._windows.unregister(self._win)
+        if _OPEN.get(self._app.app_id) is self:
+            _OPEN.pop(self._app.app_id, None)
+        previous = None
+        if self._windows is not None:
+            previous = self._windows.previous_key(self._win)
+            self._windows.unregister(self._win)
         if self._announce:
-            announce_surface_exit(TITLE, self._announce)
+            announce_surface_exit(self._title, self._announce)
         event.Skip()
         self._win.Destroy()
-        if previous:
+        if previous and self._windows is not None:
             self._windows.activate(previous)
 
     # -- building ----------------------------------------------------------------
@@ -180,13 +214,14 @@ class TutorialsWindow:
         self._book.AddPage(self._contents, "Contents")
         self._book.AddPage(self._lesson, "Lesson")
         root.Add(self._book, 1, wx.EXPAND)
-        if not self._modeless:
-            self._build_close_button(self._surface, root)
         self._surface.SetSizer(root)
-        if self._modeless:
-            outer = wx.BoxSizer(wx.VERTICAL)
-            outer.Add(self._surface, 1, wx.EXPAND)
-            self._win.SetSizer(outer)
+        outer = wx.BoxSizer(wx.VERTICAL)
+        outer.Add(self._surface, 1, wx.EXPAND)
+        self._win.SetSizer(outer)
+        if self._windows is not None:
+            # The transport keys (and the Window menu's Ctrl+Tab row) so the
+            # player answers here exactly as it does in every other window of
+            # the apps that have one.
             from quill.ui.radio import transport_keys
 
             transport_keys.install(
@@ -203,10 +238,12 @@ class TutorialsWindow:
         the window does not -- and a document nobody can open from inside the
         app is a document that does not really ship.
         """
-        from quill.apps import radio_help_docs
-
+        opener = self._app.open_book
+        if opener is None:
+            self._say("This app's tutorial document is not installed.")
+            return
         try:
-            radio_help_docs.open_doc(self._host, "tutorials")
+            opener(self._host)
         except Exception:  # noqa: BLE001 - a document that will not open is not a crash
             self._say("The tutorial document could not be opened.")
 
@@ -266,23 +303,6 @@ class TutorialsWindow:
         self._contents_btn.Bind(wx.EVT_BUTTON, lambda _e: self._show_contents())
         self._follow.Bind(wx.EVT_CHECKBOX, lambda _e: self._follow_changed())
 
-    def _build_close_button(self, parent: Any, sizer: Any) -> Any:
-        """The modal shape's way out, wired for real.
-
-        A peer window closes with Escape, Ctrl+W, Ctrl+F4 or Alt+F4 and carries
-        no Close button at all -- the house rule since the radio windows became
-        peers. Embedded in QUILL this is a modal dialog, which needs one, and it
-        goes through ``bind_close_button`` because a wx.Dialog answers ID_CANCEL
-        for free and a wx.Frame does not.
-        """
-        wx = self._wx
-        button = wx.Button(parent, wx.ID_CLOSE, label="C&lose")
-        button.SetHelpText("Closes the tutorials, keeping your place in the lesson.")
-        sizer.Add(button, 0, wx.ALL, 8)
-        bind_close_button(self._win, button, modeless=False)
-        apply_modal_ids(self._win, affirmative_id=button.GetId(), escape_id=button.GetId())
-        return button
-
     # -- lesson behaviour --------------------------------------------------------
 
     def _start_selected(self, *, whole: bool = False) -> None:
@@ -293,7 +313,7 @@ class TutorialsWindow:
         self.start(slug, whole=whole)
 
     def start(self, slug: str, *, whole: bool = False) -> None:
-        tutorial = catalogue.find(slug)
+        tutorial = self._catalogue.find(slug)
         if tutorial is None:
             return
         self._tutorial = tutorial
@@ -348,7 +368,7 @@ class TutorialsWindow:
         self._try_btn.Enable(runnable)
         self._next_btn.Enable(not self._reading_whole)
         self._back_btn.Enable(not self._reading_whole and self._index > 0)
-        self._baseline = tutorial_checks.snapshot(self._host)
+        self._baseline = tutorial_checks.snapshot(self._host, self._app.probe)
 
     def _command_exists(self, command_id: str) -> bool:
         registry = getattr(self._host, "commands", None)
@@ -434,7 +454,9 @@ class TutorialsWindow:
         step = self._tutorial.steps[self._index]
         if not step.check:
             return
-        satisfied, sentence = tutorial_checks.evaluate(step.check, self._host, self._baseline)
+        satisfied, sentence = tutorial_checks.evaluate(
+            step.check, self._host, self._baseline, self._app.probe
+        )
         if not satisfied:
             return
         # Say what was noticed before the next step, so the two are one thought:
@@ -445,28 +467,23 @@ class TutorialsWindow:
     # -- showing -----------------------------------------------------------------
 
     def raise_window(self, *, slug: str = "") -> None:
-        if self._modeless:
-            self._windows.activate_title(TITLE)
+        if self._windows is not None:
+            self._windows.activate_title(self._title)
+        else:
+            self._win.Raise()
+            self._win.SetFocus()
         if slug:
             self.start(slug)
 
     def show(self, *, slug: str = "") -> int:
-        if self._modeless:
-            from quill.ui.dialog_contract import show_modeless_surface
+        """Put the window up. Always modeless: that is the whole feature."""
+        from quill.ui.dialog_contract import show_modeless_surface
 
-            self._windows.register(self._win, TITLE, focus=self._filter.SetFocus)
-            show_modeless_surface(self._win, TITLE, announce=self._announce)
-            if slug:
-                self.start(slug)
-            else:
-                self._say(tutorials_contents.here_hint(self))
-            return 0
+        if self._windows is not None:
+            self._windows.register(self._win, self._title, focus=self._filter.SetFocus)
+        show_modeless_surface(self._win, self._title, announce=self._announce)
         if slug:
             self.start(slug)
-        result = self._host._show_modal_dialog(self._win, TITLE)
-        self._timer.Stop()
-        self._win.Destroy()
-        global _OPEN
-        if _OPEN is self:
-            _OPEN = None
-        return int(result)
+        else:
+            self._say(tutorials_contents.here_hint(self))
+        return 0

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 331.
+Editor commands with default bindings: 332.
 
 ## The QUILL editor
 
@@ -278,6 +278,7 @@ Editor commands with default bindings: 331.
 | Alt+F1 | Why Is This Unavailable? | `help.why_unavailable` |
 | Alt+Shift+/ | Key Cheatsheet | `help.key_cheatsheet` |
 | Alt+Shift+P | Switch Feature Profile... | `help.switch_feature_profile` |
+| Ctrl+Alt+F1 | Tutorials... | `help.tutorials` |
 | QUILL Key + Shift+H | Context Help: Current Mode Keys | `help.context_help` |
 
 ### Everything else
@@ -447,6 +448,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Key | Command | Command id |
 | --- | --- | --- |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
+| Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
 | Ctrl+Alt+J | Podcasts: Go to Position... | `podcasts.go_to_position` |
 | Ctrl+Alt+Shift+B | Backup | `app.backup` |
 | Ctrl+Alt+Shift+J | Bookmarks... | `app.bookmarks` |
@@ -459,3 +461,21 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+Z | Quiet Hours... | `app.quiet_hours` |
 | Ctrl+G | Go to | `app.go_to` |
 | Ctrl+Z | Undo Last Action | `app.undo_last` |
+
+## Weather (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Ctrl+Alt+F1 | Tutorials | `weather.tutorials` |
+| Ctrl+Alt+N | Noaa listen | `weather.noaa_listen` |
+| Ctrl+Alt+Shift+F | Settings | `weather.settings` |
+| Ctrl+Alt+Shift+L | Add location | `weather.add_location` |
+| Ctrl+Alt+Shift+M | Monitor toggle | `weather.monitor_toggle` |
+| Ctrl+Alt+Shift+N | Noaa update | `weather.noaa_update` |
+| Ctrl+Alt+Shift+P | Monitor pause | `weather.monitor_pause` |
+| Ctrl+Alt+Shift+T | Test alert | `weather.test_alert` |
+| Ctrl+Shift+Alt+A | Alerts | `weather.alerts` |
+| Ctrl+Shift+Q | Quick | `weather.quick` |
+| Ctrl+Shift+W | Now | `weather.now` |

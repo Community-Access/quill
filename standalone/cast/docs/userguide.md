@@ -917,6 +917,49 @@ Choose **Help > Browse Spotify Podcasts...** to open an accessible search box wi
 - **A best-effort public-RSS match (idea, not yet a button).** Some shows publish the *same* episode both on Spotify and as an ordinary MP3 in their own public podcast feed. QUILL Cast has a core helper that can try to find that public enclosure -- downloading the **publisher's own public file**, never Spotify's audio -- for a Spotify episode that also exists on a normal feed. This is deliberately best-effort and, for now, is available in the underlying code but is not yet wired to a menu item or button.
 - **Premium only, and off in Safe Mode.** Without Spotify Premium, playback will not start even after you sign in; and like every network feature, Spotify is disabled when QUILL Cast runs in Safe Mode. The first sign-in asks for a one-time network-access confirmation, because connecting reaches Spotify's servers.
 
+## Tutorials
+
+**Help > Tutorials... (Ctrl+Alt+F1)** opens 18 guided tutorials -- 107 steps,
+about 100 minutes of material -- covering every feature QUILL Cast has, in the order somebody
+would actually learn it. They are not a second copy of this guide. A guide
+answers "what does this do"; it cannot answer "what do I do now", because a
+document cannot see what you have already done. This window can.
+
+- **They show the keys you have.** A step names the *command* it is about, and
+  the key is rendered when the step is drawn. Rebind something and the tutorial
+  says your key.
+- **Try it runs the step.** Any step that names a command can be performed from
+  the lesson, so a tutorial can open a window for you and then talk you through
+  what you are standing in.
+- **Follow me notices that you did it.** Tick **Follow me** and the lesson
+  watches the app -- once a second, and it watches *what changed*, never which
+  key you pressed -- so however you do the step, it says what it saw ("Done:
+  you have a new subscription") and reads you the next one. It never takes the keyboard, and
+  nothing is graded: every step still has **Next**, and a check that never comes
+  true costs you one keypress.
+
+The Tutorials window is a **real window, not a wizard**: leave it open, move to
+the app, do the step there, and hear the lesson move on behind you. A modal
+dialog would own the keyboard for the whole lesson, which is the wrong shape
+for teaching somebody to use the thing underneath it.
+
+**The contents.** Four tracks, in teaching order. Each row says how many
+steps it has, roughly how long it takes, and whether you have finished it. The
+filter box narrows the list -- every word you type has to appear somewhere in a
+tutorial -- and typing **here** narrows it to the tutorials about the window you
+came from.
+
+**Your place is kept.** Close a lesson half way through and it opens there
+again. Finishing one is remembered separately from where you are in it. **Forget
+my progress** clears the lot and changes nothing else. Nothing about your
+progress leaves this computer.
+
+**Reading rather than doing.** **Read it all** shows a whole tutorial as one
+page of text, and **The whole book as a document** opens all 18 of them as
+one page -- generated from the same lessons the window teaches from, so the two
+cannot disagree. It ships as `docs/tutorials.md` beside this guide. The document states the
+keys the app ships with; only the window can know the ones you rebound.
+
 ## Spoken and braille announcements
 
 Every action in QUILL Cast announces its outcome, and that announcement goes out on two channels at once.

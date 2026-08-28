@@ -48,6 +48,14 @@ PURPOSES: dict[str, str] = {
         "full Weather Center, start or stop the watch, and add a place to "
         "watch; closing the window keeps monitoring in the tray by default."
     ),
+    "Quill Weather Tutorials": (
+        "Guided lessons, one step at a time, that can run the step for you and "
+        "notice when you have done it. The contents list is grouped by track and "
+        "remembers where you stopped; typing 'here' in the filter box narrows it "
+        "to the tutorials about the window you came from. Follow me watches what "
+        "the app is doing -- never which key you pressed -- and moves you on by "
+        "itself."
+    ),
     "Weather Center": (
         "The full text weather report for one location at a time, in "
         "reading order: active alerts first, then current conditions, the "

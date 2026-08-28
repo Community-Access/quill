@@ -22,9 +22,10 @@ import pytest
 
 from quill.core.app_keymaps import APP_KEYMAPS
 from quill.core.keymap import DEFAULT_KEYMAP
-from quill.core.radio import tutorials as catalogue
-from quill.core.radio.tutorials.model import Tutorial, validate
-from quill.ui.radio.tutorial_checks import PEER_WINDOW_TITLES, WINDOW_PREFIX, known_checks
+from quill.core.radio.tutorials import CATALOGUE
+from quill.core.tutorials.model import Tutorial
+from quill.ui.radio.tutorial_checks import PROBE
+from quill.ui.tutorial_checks import WINDOW_PREFIX, known_checks, peer_windows
 
 _ROOT = Path(__file__).resolve().parents[4]
 
@@ -53,18 +54,18 @@ def _known_command_ids() -> set[str]:
 def _steps() -> list[tuple[Tutorial, int, object]]:
     return [
         (tutorial, number, step)
-        for tutorial in catalogue.CATALOGUE
+        for tutorial in CATALOGUE.tutorials
         for number, step in enumerate(tutorial.steps, start=1)
     ]
 
 
 def test_catalogue_is_sound() -> None:
-    assert validate(catalogue.CATALOGUE) == []
+    assert CATALOGUE.problems() == []
 
 
 def test_every_track_has_lessons() -> None:
-    for track in catalogue.TRACKS:
-        assert catalogue.in_track(track.id), f"{track.id} has no tutorials"
+    for track in CATALOGUE.tracks:
+        assert CATALOGUE.in_track(track.id), f"{track.id} has no tutorials"
 
 
 def test_every_command_a_step_names_exists() -> None:
@@ -78,14 +79,14 @@ def test_every_command_a_step_names_exists() -> None:
 
 
 def test_every_check_can_be_answered() -> None:
-    answerable = known_checks()
+    answerable = known_checks(PROBE)
     problems: list[str] = []
     for tutorial, number, step in _steps():
         if not step.check:
             continue
         if step.check.startswith(WINDOW_PREFIX):
             title = step.check[len(WINDOW_PREFIX) :]
-            if title not in PEER_WINDOW_TITLES:
+            if title not in peer_windows("radio"):
                 problems.append(f"{tutorial.slug} step {number}: '{title}' is not a peer window")
             continue
         if step.check not in answerable:
@@ -108,7 +109,7 @@ def test_peer_window_titles_are_the_titles_the_ui_registers() -> None:
             match = re.search(r'^TITLE = "([^"]+)"', source, re.M)
             if match:
                 registered.add(match.group(1))
-    unknown = sorted(PEER_WINDOW_TITLES - registered)
+    unknown = sorted(peer_windows("radio") - registered)
     assert not unknown, f"watched windows nothing registers: {unknown}"
 
 
@@ -160,29 +161,30 @@ def test_most_steps_say_what_you_should_hear() -> None:
 
 def test_the_first_hour_is_first() -> None:
     """Ordering is a promise the contents tree makes; pin it."""
-    assert catalogue.CATALOGUE[0].track == "first-hour"
-    assert catalogue.CATALOGUE[0].slug == "first-station"
+    assert CATALOGUE.tutorials[0].track == "first-hour"
+    assert CATALOGUE.tutorials[0].slug == "first-station"
 
 
 def test_search_finds_by_word_from_anywhere_in_a_lesson() -> None:
-    assert any(t.slug == "book-a-show" for t in catalogue.search("schedule"))
+    assert any(t.slug == "book-a-show" for t in CATALOGUE.search("schedule"))
     # A key somebody found and cannot place, matched out of a step's own keys.
-    assert catalogue.search("Shift+F10")
+    assert CATALOGUE.search("Shift+F10")
     # Every word has to appear, so two words no single lesson holds match none.
-    assert catalogue.search("spotify librivox xmltv") == []
+    assert CATALOGUE.search("spotify librivox xmltv") == []
 
 
 def test_surface_filter_answers_for_a_window() -> None:
-    here = catalogue.for_surface("Browse Stations")
+    here = CATALOGUE.for_surface("Browse Stations")
     assert here, "no tutorials claim Browse Stations"
     assert all("Browse Stations" in tutorial.surfaces for tutorial in here)
 
 
 def test_generated_document_matches_the_catalogue() -> None:
     """GATE-TUTDOC: the book and the window teach the same lessons."""
-    from quill.tools.build_tutorials_reference import DOC_PATH, render
+    from quill.tools.build_tutorials_reference import BOOKS, render
 
-    assert DOC_PATH.read_text(encoding="utf-8") == render(), (
+    book = next(entry for entry in BOOKS if entry.app_id == "radio")
+    assert book.path.read_text(encoding="utf-8") == render(book), (
         "standalone/radio/docs/tutorials.md is out of date. Run: "
         "python -m quill.tools.build_tutorials_reference --write"
     )

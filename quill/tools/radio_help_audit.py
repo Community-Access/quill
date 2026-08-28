@@ -59,8 +59,18 @@ from quill.tools.help_audit import (
 SNAPSHOT_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "radio_help_inventory.json"
 
 #: The radio UI surface: everything the F1 experience must cover.
+#:
+#: The Tutorials window is shared with QUILL Cast, Quill Weather and QUILL, so
+#: it lives in ``quill/ui`` rather than here -- and it is gated *here*, once,
+#: rather than in all four audits: the controls are identical whichever app is
+#: being taught, so four snapshots of the same sites would be four copies of
+#: one review.
 _SCAN_DIRS: tuple[str, ...] = ("quill/ui/radio",)
-_SCAN_GLOBS: tuple[str, ...] = ("quill/apps/radio*.py",)
+_SCAN_GLOBS: tuple[str, ...] = (
+    "quill/apps/radio*.py",
+    "quill/ui/tutorials_window.py",
+    "quill/ui/tutorials_contents.py",
+)
 
 #: Surface constructions whose titles the scan cannot resolve, with the
 #: reason they are fine. Keyed ``<module>::<qualname>``.
@@ -68,6 +78,13 @@ TITLE_EXEMPT: dict[str, str] = {
     "quill/ui/radio/first_run_dialog.py::RadioFirstRunDialog.__init__": (
         "titles come from onboarding.SCREEN_TITLES; all three screens are in "
         "surface_help.PURPOSES, pinned by test_surface_help"
+    ),
+    "quill/ui/tutorials_window.py::TutorialsWindow.__init__": (
+        "one window, four apps: the title comes from the TutorialsApp descriptor "
+        "the app hands in (quill/ui/radio/tutorials.py and its siblings). Every "
+        "one of those titles is a literal in its own app module and is "
+        "registered in that app's surface_help catalogue; test_tutorial_windows "
+        "pins that every descriptor's title resolves"
     ),
     "quill/ui/radio/catalogue_picker_dialog.py::_CataloguePicker.show": (
         "one dialog, many catalogues: the title is the caller's, because the "
