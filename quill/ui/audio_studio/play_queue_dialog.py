@@ -63,13 +63,32 @@ class PlayQueueDialog(wx.Dialog):
             8,
         )
         self._list = wx.ListBox(self, name="Play queue entries")
+        self._list.SetHelpText(
+            "The books waiting to play, in order; when one finishes, the next "
+            "playable entry opens by itself. The current book is marked in "
+            "words, a row whose file has moved says missing, and Delete "
+            "removes the highlighted row."
+        )
         sizer.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         button_row = wx.BoxSizer(wx.HORIZONTAL)
         self._add_btn = wx.Button(self, label=str(_("&Add...")))
+        self._add_btn.SetHelpText(
+            "Picks an audiobook file (M4B, MP3 or M4A) and appends it to the "
+            "queue; a book already queued keeps its place rather than being "
+            "added twice."
+        )
         self._next_btn = wx.Button(self, label=str(_("&Next")))
+        self._next_btn.SetHelpText(
+            "Advances the queue's pointer to the next entry and marks it as "
+            "current -- the book that plays when the current one finishes."
+        )
         self._remove_btn = wx.Button(self, label=str(_("&Remove")))
+        self._remove_btn.SetHelpText(
+            "Takes the highlighted book out of the queue. The audio file on disk is untouched."
+        )
         self._clear_btn = wx.Button(self, label=str(_("Clea&r")))
+        self._clear_btn.SetHelpText("Empties the whole queue. No audio files are touched.")
         for btn in (self._add_btn, self._next_btn, self._remove_btn, self._clear_btn):
             button_row.Add(btn, 0, wx.RIGHT, 4)
         sizer.Add(button_row, 0, wx.ALL, 8)

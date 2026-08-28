@@ -295,7 +295,7 @@ class NewWorktreeDialog:
         grid.Add(path_row, 1, wx.EXPAND)
 
         grid.Add(
-            wx.StaticText(self.dialog, label="Bran&ch to check out:"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self.dialog, label="Branch &to check out:"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._branch_choice = wx.Choice(self.dialog, choices=list(branches))
         self._branch_choice.SetName("Branch to check out in the new worktree")

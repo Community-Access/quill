@@ -75,7 +75,7 @@ class HeaderFooterDialog:
         self._page_style_choice.SetSelection(0)
         options_row.Add(self._page_style_choice, 0, wx.LEFT, 4)
         options_row.Add(
-            wx.StaticText(self.dialog, label="&Start numbering at:"),
+            wx.StaticText(self.dialog, label="S&tart numbering at:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.LEFT,
             12,

@@ -38,6 +38,12 @@ class AudioDspPanel(wx.Panel):
         self._preset = wx.Choice(self, choices=[key.capitalize() for key in _EQ_KEYS])
         self._preset.SetSelection(0)
         set_accessible_name(self._preset, "Equalizer preset")
+        self._preset.SetHelpText(
+            "A ready-made shape for the ten band sliders below -- Flat, "
+            "Voice, Bass, Treble, Night, or Podcast. Choosing one overwrites "
+            "the sliders; adjust any slider afterwards to fine-tune. Flat is "
+            "the default and changes nothing."
+        )
         self._preset.Bind(wx.EVT_CHOICE, self._on_preset)
         root.Add(self._preset, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
@@ -50,6 +56,12 @@ class AudioDspPanel(wx.Panel):
             bands.Add(wx.StaticText(self, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
             slider = wx.Slider(self, value=0, minValue=-12, maxValue=12, style=wx.SL_HORIZONTAL)
             set_accessible_name(slider, f"{label} gain in decibels")
+            slider.SetHelpText(
+                f"How much to raise or cut the {label} band, in decibels, "
+                "from -12 to +12. Zero leaves the band unchanged. Takes "
+                "effect as you move it; audio effects need the libmpv "
+                "engine."
+            )
             slider.Bind(wx.EVT_SLIDER, self._fire)
             bands.Add(slider, 1, wx.EXPAND)
             self._band_sliders.append(slider)
@@ -59,6 +71,11 @@ class AudioDspPanel(wx.Panel):
         self._boost = wx.Choice(self, choices=["Off", "+3 dB", "+6 dB"])
         self._boost.SetSelection(0)
         set_accessible_name(self._boost, "Volume boost")
+        self._boost.SetHelpText(
+            "Extra gain on top of the volume control, for a quiet recording: "
+            "Off, +3 dB, or +6 dB. Off is the default. Like the equalizer, "
+            "it needs the libmpv engine."
+        )
         self._boost.Bind(wx.EVT_CHOICE, self._fire)
         root.Add(self._boost, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 

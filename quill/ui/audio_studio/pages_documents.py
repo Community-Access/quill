@@ -69,7 +69,15 @@ class DocSourcePage(StudioPage):
             style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER,
         )
         self.source.SetName(_("Source folder"))
+        self.source.SetHelpText(
+            "The folder of documents to narrate. Type a path or open the "
+            "drop-down for recently used folders; the file-type checkboxes "
+            "below decide which documents inside it count."
+        )
         browse = wx.Button(self, label=_("B&rowse..."))
+        browse.SetHelpText(
+            "Picks the source folder with the system folder chooser, then counts what it holds."
+        )
         browse.Bind(wx.EVT_BUTTON, self._on_browse)
         row.Add(self.source, 1, wx.EXPAND | wx.RIGHT, 6)
         row.Add(browse, 0)
@@ -92,10 +100,23 @@ class DocSourcePage(StudioPage):
         self.add_label(_("Only incl&ude files matching (globs, ; or , separated; blank = all):"))
         self.include = wx.TextCtrl(self, value=defaults.include_glob)
         self.include.SetName(_("Include files matching"))
+        self.include.SetHelpText(
+            "Wildcard patterns a file must match to be narrated, separated by "
+            "semicolons or commas -- for example chapter*.docx or drafts/*. "
+            "Patterns match the file name and its path inside the source "
+            "folder. Blank (the default) includes every file of the chosen "
+            "types."
+        )
         self.sizer.Add(self.include, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         self.add_label(_("E&xclude files matching (globs, ; or , separated):"))
         self.exclude = wx.TextCtrl(self, value=defaults.exclude_glob)
         self.exclude.SetName(_("Exclude files matching"))
+        self.exclude.SetHelpText(
+            "Wildcard patterns that drop a file from the run even when it "
+            "matched everything else -- for example *draft* or notes/*. "
+            "Separate several with semicolons or commas; blank excludes "
+            "nothing."
+        )
         self.sizer.Add(self.exclude, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
         size_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -108,11 +129,21 @@ class DocSourcePage(StudioPage):
             self, min=0, max=4096, initial=max(0, defaults.max_file_bytes // (1024 * 1024))
         )
         set_accessible_name(self.max_mb, _("Skip files larger than (MB)"))
+        self.max_mb.SetHelpText(
+            "Documents larger than this many megabytes are left out of the "
+            "run -- a guard against a stray archive or scan. 0 (the default) "
+            "sets no size limit; the maximum is 4096."
+        )
         size_row.Add(self.max_mb, 0, wx.LEFT, 6)
         self.sizer.Add(size_row, 0, wx.LEFT | wx.TOP, 12)
 
         count_row = wx.BoxSizer(wx.HORIZONTAL)
         count_btn = wx.Button(self, label=_("Coun&t documents"))
+        count_btn.SetHelpText(
+            "Counts the documents and words the current folder, types, and "
+            "filters would narrate, and announces the result -- a preview of "
+            "the run's size before you commit to it."
+        )
         count_btn.Bind(wx.EVT_BUTTON, lambda _e: self.start_count())
         self._count_label = wx.StaticText(
             self,
@@ -268,6 +299,12 @@ class VoicesPage(StudioPage):
             self, choices=[self._engine_label(lbl, eid) for lbl, eid in engine_options]
         )
         self.engine.SetName(_("Engine"))
+        self.engine.SetHelpText(
+            "The speech engine that reads the documents; an engine marked not "
+            "installed can be fetched from Download Optional Components. "
+            "Switching engines reloads the voice list and clears the rotation "
+            "and casting rules, since voices belong to one engine."
+        )
         self.engine.Bind(wx.EVT_CHOICE, lambda _e: self._on_engine_change())
         self.sizer.Add(self.engine, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         self.select_engine(defaults.engine)
@@ -276,7 +313,16 @@ class VoicesPage(StudioPage):
         voice_row = wx.BoxSizer(wx.HORIZONTAL)
         self.voice = wx.Choice(self, choices=[])
         self.voice.SetName(_("Voice"))
+        self.voice.SetHelpText(
+            "The voice that narrates, from the selected engine's catalog. This "
+            "is the whole book's reader unless round-robin voices or casting "
+            "rules below assign others."
+        )
         preview_btn = wx.Button(self, label=_("&Preview voice"))
+        preview_btn.SetHelpText(
+            "Speaks a short sample sentence with the selected engine and "
+            "voice, so you can judge it before a long run."
+        )
         preview_btn.Bind(wx.EVT_BUTTON, self._on_preview_click)
         voice_row.Add(self.voice, 1, wx.EXPAND | wx.RIGHT, 6)
         voice_row.Add(preview_btn, 0)
@@ -286,10 +332,21 @@ class VoicesPage(StudioPage):
         pace_row.Add(wx.StaticText(self, label=_("R&ate (WPM):")), 0, wx.ALIGN_CENTER_VERTICAL)
         self.rate = wx.SpinCtrl(self, min=80, max=450, initial=defaults.rate)
         set_accessible_name(self.rate, _("Rate (WPM)"))
+        self.rate.SetHelpText(
+            "How fast the narration reads, in words per minute, 80 to 450. "
+            "Used by the SAPI, Piper, eSpeak and DECtalk engines; Kokoro has "
+            "its own speed control beside this. Audiobooks are usually read "
+            "in the 150 to 180 range."
+        )
         pace_row.Add(self.rate, 0, wx.LEFT | wx.RIGHT, 6)
         pace_row.Add(wx.StaticText(self, label=_("&Kokoro speed:")), 0, wx.ALIGN_CENTER_VERTICAL)
         self.speed = wx.SpinCtrlDouble(self, min=0.5, max=2.0, inc=0.05, initial=defaults.speed)
         set_accessible_name(self.speed, _("Kokoro speed"))
+        self.speed.SetHelpText(
+            "The Kokoro engine's pace as a multiplier, 0.5 to 2.0 in steps of "
+            "0.05; 1.0 is the voice's natural pace. Only Kokoro reads this -- "
+            "the other engines use the words-per-minute rate."
+        )
         pace_row.Add(self.speed, 0, wx.LEFT, 6)
         self.sizer.Add(pace_row, 0, wx.LEFT | wx.TOP, 12)
 
@@ -298,7 +355,17 @@ class VoicesPage(StudioPage):
         rr_add_row = wx.BoxSizer(wx.HORIZONTAL)
         self.rr_pick = wx.Choice(self, choices=[])
         self.rr_pick.SetName(_("Round-robin voice to add"))
+        self.rr_pick.SetHelpText(
+            "The voice Add voice will append to the rotation. With two or more "
+            "voices in the rotation, each article or heading is read by the "
+            "next voice in turn; leave the rotation empty to keep the single "
+            "voice above."
+        )
         rr_add = wx.Button(self, label=_("A&dd voice"))
+        rr_add.SetHelpText(
+            "Appends the picked voice to the end of the rotation; a voice "
+            "already in the rotation is not added twice."
+        )
         rr_add.Bind(wx.EVT_BUTTON, lambda _e: self.rr_add())
         rr_add_row.Add(self.rr_pick, 1, wx.EXPAND | wx.RIGHT, 6)
         rr_add_row.Add(rr_add, 0)
@@ -308,12 +375,20 @@ class VoicesPage(StudioPage):
         self.add_label(_("Voice o&rder (the rotation; use the buttons below to reorder):"))
         self.rr_list = wx.ListBox(self, style=wx.LB_SINGLE)
         self.rr_list.SetName(_("Round-robin voice order"))
+        self.rr_list.SetHelpText(
+            "The rotation, in the order the voices take turns: the first voice "
+            "reads article one, the second article two, and so on around "
+            "again. Reorder with the Move Up and Move Down buttons below."
+        )
         apply_listbox_activation(self.rr_list, lambda _e: self.rr_pick.SetFocus())
         self.sizer.Add(self.rr_list, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         rr_btn_row = wx.BoxSizer(wx.HORIZONTAL)
         rr_up = wx.Button(self, label=_("Move U&p"))
+        rr_up.SetHelpText("Moves the highlighted voice one place earlier in the rotation.")
         rr_down = wx.Button(self, label=_("Move Dow&n"))
+        rr_down.SetHelpText("Moves the highlighted voice one place later in the rotation.")
         rr_remove = wx.Button(self, label=_("Re&move"))
+        rr_remove.SetHelpText("Takes the highlighted voice out of the rotation.")
         rr_up.Bind(wx.EVT_BUTTON, lambda _e: self.rr_move(-1))
         rr_down.Bind(wx.EVT_BUTTON, lambda _e: self.rr_move(1))
         rr_remove.Bind(wx.EVT_BUTTON, lambda _e: self.rr_remove())
@@ -333,9 +408,24 @@ class VoicesPage(StudioPage):
         self.cast_pattern = wx.TextCtrl(self)
         self.cast_pattern.SetName(_("Casting pattern (title glob or #number)"))
         self.cast_pattern.SetHint(_("Chapter * or #1"))
+        self.cast_pattern.SetHelpText(
+            "Which sections the rule catches: a wildcard matched against the "
+            "heading title, case-insensitively (Chapter *, *interview*), or a "
+            "number sign plus a section number (#1 is the first section). One "
+            "rule per pattern."
+        )
         self.cast_pick = wx.Choice(self, choices=[])
         self.cast_pick.SetName(_("Casting voice"))
+        self.cast_pick.SetHelpText(
+            "The voice the rule assigns to every section its pattern catches, "
+            "overriding the rotation and the single voice."
+        )
         cast_add = wx.Button(self, label=_("Add r&ule"))
+        cast_add.SetHelpText(
+            "Adds the pattern-and-voice pair to the casting rules and clears "
+            "the pattern field for the next one. Needs a pattern; a pattern "
+            "already ruled is refused -- remove its rule to reassign it."
+        )
         cast_add.Bind(wx.EVT_BUTTON, lambda _e: self.cast_add())
         cast_add_row.Add(self.cast_pattern, 1, wx.EXPAND | wx.RIGHT, 6)
         cast_add_row.Add(self.cast_pick, 1, wx.EXPAND | wx.RIGHT, 6)
@@ -344,10 +434,16 @@ class VoicesPage(StudioPage):
         self.add_label(_("Casting rules (first match &wins):"))
         self.cast_list = wx.ListBox(self, style=wx.LB_SINGLE)
         self.cast_list.SetName(_("Casting rules"))
+        self.cast_list.SetHelpText(
+            "The casting rules in the order they are tried; a section is read "
+            "by the first rule that matches it, and sections no rule matches "
+            "fall back to the rotation or the single voice."
+        )
         apply_listbox_activation(self.cast_list, lambda _e: self.cast_pattern.SetFocus())
         self.sizer.Add(self.cast_list, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         cast_btn_row = wx.BoxSizer(wx.HORIZONTAL)
         cast_remove = wx.Button(self, label=_("Remove rule"))
+        cast_remove.SetHelpText("Deletes the highlighted casting rule.")
         cast_remove.Bind(wx.EVT_BUTTON, lambda _e: self.cast_remove())
         cast_btn_row.Add(cast_remove, 0)
         self.sizer.Add(cast_btn_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
@@ -363,10 +459,24 @@ class VoicesPage(StudioPage):
         tr_add_row = wx.BoxSizer(wx.HORIZONTAL)
         self.tr_lang = wx.Choice(self, choices=[name for name, _c in self._tr_lang_pairs])
         self.tr_lang.SetName(_("Translation language"))
+        self.tr_lang.SetHelpText(
+            "A language to also export each document in: the text is "
+            "translated, then spoken by the voice picked beside this. "
+            "Choosing a language reloads that voice list."
+        )
         self.tr_lang.Bind(wx.EVT_CHOICE, lambda _e: self.reload_tr_voices())
         self.tr_voice = wx.Choice(self, choices=[])
         self.tr_voice.SetName(_("Translation voice"))
+        self.tr_voice.SetHelpText(
+            "The voice that reads the translated edition, from the voices that "
+            "speak the chosen language -- local engines first, then premium "
+            "cloud voices that need their provider's API key at run time."
+        )
         tr_add = wx.Button(self, label=_("Add lan&guage"))
+        tr_add.SetHelpText(
+            "Adds the chosen language and voice to the translated exports; the "
+            "same language-and-voice pair is not added twice."
+        )
         tr_add.Bind(wx.EVT_BUTTON, lambda _e: self.tr_add())
         tr_add_row.Add(self.tr_lang, 1, wx.EXPAND | wx.RIGHT, 6)
         tr_add_row.Add(self.tr_voice, 2, wx.EXPAND | wx.RIGHT, 6)
@@ -375,10 +485,16 @@ class VoicesPage(StudioPage):
         self.add_label(_("Languages &chosen (translated exports):"))
         self.tr_list = wx.ListBox(self, style=wx.LB_SINGLE)
         self.tr_list.SetName(_("Translation targets"))
+        self.tr_list.SetHelpText(
+            "The languages each document will additionally be exported in, "
+            "with the voice that reads each. Empty means no translated "
+            "editions -- the run narrates in the original language only."
+        )
         apply_listbox_activation(self.tr_list, lambda _e: self.tr_lang.SetFocus())
         self.sizer.Add(self.tr_list, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
         tr_btn_row = wx.BoxSizer(wx.HORIZONTAL)
         tr_remove = wx.Button(self, label=_("Remove la&nguage"))
+        tr_remove.SetHelpText("Drops the highlighted language from the translated exports.")
         tr_remove.Bind(wx.EVT_BUTTON, lambda _e: self.tr_remove())
         tr_btn_row.Add(tr_remove, 0, wx.RIGHT, 6)
         tr_btn_row.Add(
@@ -388,6 +504,11 @@ class VoicesPage(StudioPage):
             self, choices=[_("AI provider (cloud)"), _("LibreTranslate (local)")]
         )
         self.tr_provider.SetName(_("Translate with"))
+        self.tr_provider.SetHelpText(
+            "Who does the translating: your configured AI provider (text goes "
+            "to its cloud service), or a LibreTranslate server you run "
+            "locally, which keeps the text on your own machine."
+        )
         self.tr_provider.SetSelection(1 if defaults.translation_provider == "libretranslate" else 0)
         tr_btn_row.Add(self.tr_provider, 0, wx.LEFT, 6)
         self.sizer.Add(tr_btn_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
@@ -632,6 +753,11 @@ class ChaptersPage(StudioPage):
             choices=[_("Single chaptered file"), _("Separate file per article")],
         )
         self.mode.SetName(_("Chapter mode"))
+        self.mode.SetHelpText(
+            "The shape of the output: one audio file per document with a "
+            "chapter marker per article (the default), or a separate audio "
+            "file per article, filed into a folder per document."
+        )
         self.mode.SetSelection(MODE_INDEX.get(defaults.chapter_mode, 0))
         self.sizer.Add(self.mode, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
@@ -645,6 +771,12 @@ class ChaptersPage(StudioPage):
             self, choices=[_(label) for label, _lvl in _HEADING_LEVEL_CHOICES]
         )
         self.heading_level.SetName(_("Chapters start at heading level"))
+        self.heading_level.SetHelpText(
+            "Which headings begin a new chapter. Every heading (the default) "
+            "keeps the historical behavior; picking level 1, levels 1 and 2, "
+            "or levels 1 to 3 folds deeper headings into the chapter above "
+            "them. Preview chapter titles shows what the choice would carve."
+        )
         level_index = next(
             (
                 i
@@ -655,6 +787,11 @@ class ChaptersPage(StudioPage):
         )
         self.heading_level.SetSelection(level_index)
         preview_btn = wx.Button(self, label=_("Preview chapter titles"))
+        preview_btn.SetHelpText(
+            "Reads the source documents and lists the first twenty chapter "
+            "titles the current heading-level choice would produce -- a dry "
+            "look at the table of contents before anything is synthesized."
+        )
         preview_btn.Bind(wx.EVT_BUTTON, lambda _e: self.start_title_preview())
         level_row.Add(self.heading_level, 0, wx.LEFT | wx.RIGHT, 6)
         level_row.Add(preview_btn, 0)
@@ -662,6 +799,11 @@ class ChaptersPage(StudioPage):
         self.add_label(_("First chapter titles this choice would produce:"))
         self.title_preview = wx.ListBox(self, style=wx.LB_SINGLE)
         self.title_preview.SetName(_("Chapter title preview"))
+        self.title_preview.SetHelpText(
+            "The first chapter titles the heading-level choice would produce, "
+            "numbered, filled in by the Preview chapter titles button. "
+            "Read-only -- change the level and preview again to compare."
+        )
         self.title_preview.SetMinSize(wx.Size(-1, 120))
         self.sizer.Add(self.title_preview, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
@@ -677,18 +819,44 @@ class ChaptersPage(StudioPage):
 
         gap_grid = wx.FlexGridSizer(cols=2, vgap=4, hgap=8)
         self.sound_volume = self.add_ms_spin(
-            gap_grid, _("Sounder &volume (0-100):"), defaults.sound_volume, hi=100
+            gap_grid,
+            _("Sounder &volume (0-100):"),
+            defaults.sound_volume,
+            hi=100,
+            help_text=(
+                "How loud the transition sounder plays between headings, 0 to "
+                "100 percent. Only matters while the sounder checkbox above "
+                "is on."
+            ),
         )
         self.article_gap = self.add_ms_spin(
-            gap_grid, _("Pause between &articles (ms):"), defaults.article_gap_ms
+            gap_grid,
+            _("Pause between &articles (ms):"),
+            defaults.article_gap_ms,
+            help_text=(
+                "The silence inserted between one article and the next, in "
+                "milliseconds, up to 10000 -- the breath between chapters."
+            ),
         )
         self.sentence_gap = self.add_ms_spin(
-            gap_grid, _("Pause between se&ntences (ms):"), defaults.sentence_gap_ms
+            gap_grid,
+            _("Pause between se&ntences (ms):"),
+            defaults.sentence_gap_ms,
+            help_text=(
+                "Extra silence added after each sentence, in milliseconds, up "
+                "to 10000. 0 keeps the engine's natural pacing; a little here "
+                "slows a rushed voice without changing its rate."
+            ),
         )
         self.tail_padding = self.add_ms_spin(
             gap_grid,
             _("Trailing pad per section, anti-cli&pping (ms):"),
             defaults.tail_padding_ms,
+            help_text=(
+                "Silence added to the end of each section, in milliseconds, up "
+                "to 10000, so an engine that stops abruptly does not clip the "
+                "last word."
+            ),
         )
         self.sizer.Add(gap_grid, 0, wx.LEFT | wx.TOP, 12)
 
@@ -779,6 +947,12 @@ class OutputPage(StudioPage):
             ],
         )
         self.format.SetName(_("Output format"))
+        self.format.SetHelpText(
+            "The audio format each narrated document is written in: MP3 with "
+            "chapter markers (the default), M4B with native chapters, or "
+            "plain WAV. A book assembled on the Book page has its own format "
+            "choice there."
+        )
         self.format.SetSelection(FORMAT_INDEX.get(defaults.output_format, 0))
         self.sizer.Add(self.format, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
@@ -787,6 +961,12 @@ class OutputPage(StudioPage):
             self, choices=[_("Skip (resume)"), _("Overwrite"), _("Rename (keep both)")]
         )
         self.on_existing.SetName(_("If an audio file already exists"))
+        self.on_existing.SetHelpText(
+            "What happens when a document's audio already exists: Skip leaves "
+            "it and moves on, which makes a re-run resume where it stopped; "
+            "Overwrite replaces it (unchanged documents can still be reused "
+            "via the checkbox below); Rename keeps both."
+        )
         policy = "skip" if defaults.skip_existing else defaults.on_existing
         policy_idx = EXISTING_POLICIES.index(policy) if policy in EXISTING_POLICIES else 1
         self.on_existing.SetSelection(policy_idx)
@@ -822,7 +1002,14 @@ class OutputPage(StudioPage):
         tmp_row = wx.BoxSizer(wx.HORIZONTAL)
         self.temp_folder = wx.TextCtrl(self, value=defaults.temp_folder)
         self.temp_folder.SetName(_("Temporary files folder"))
+        self.temp_folder.SetHelpText(
+            "Where the run keeps its scratch files; each run makes its own "
+            "quill-batch subfolder here and long runs can need real space. "
+            "Blank (the default) uses the system temp folder -- point it at a "
+            "roomier drive if that one is tight."
+        )
         tmp_browse = wx.Button(self, label=_("Browse temp&..."))
+        tmp_browse.SetHelpText("Picks the temporary-files folder with the system folder chooser.")
         tmp_browse.Bind(wx.EVT_BUTTON, self._on_browse_temp)
         tmp_row.Add(self.temp_folder, 1, wx.EXPAND | wx.RIGHT, 6)
         tmp_row.Add(tmp_browse, 0)

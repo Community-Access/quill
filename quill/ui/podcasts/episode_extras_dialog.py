@@ -105,7 +105,7 @@ class EpisodeExtrasDialog:
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         self._action_btn = wx.Button(self._dialog, wx.ID_OK, "&Open in Browser")
         buttons.Add(self._action_btn, 0, wx.RIGHT, 6)
-        buttons.Add(wx.Button(self._dialog, wx.ID_CANCEL, "Cl&ose"), 0)
+        buttons.Add(wx.Button(self._dialog, wx.ID_CANCEL, "Close"), 0)
         root.Add(buttons, 0, wx.ALL, 12)
 
         self._dialog.SetSizer(root)

@@ -44,6 +44,11 @@ class PlayerFrame(wx.Frame):
         self._timer = wx.Timer(self)
 
         self._build()
+        # F1 context help (GATE-BEACON-HELP): a frame is wrapped by no
+        # dialog-contract show path, so it binds the family hook itself.
+        from quill.ui.app_context_help import install as _install_f1
+
+        _install_f1(self)
         self._load_chapters()
         self._refresh_chapter_list()
         self.Bind(wx.EVT_TIMER, self._on_timer)
@@ -81,12 +86,24 @@ class PlayerFrame(wx.Frame):
         transport = wx.BoxSizer(wx.HORIZONTAL)
         self.play_btn = wx.Button(self, label="&Play")
         _name(self.play_btn, "Play or pause")
+        self.play_btn.SetHelpText(
+            "Play the episode, or pause it if it is playing. The change is announced."
+        )
         self.back_btn = wx.Button(self, label="<< &15s")
         _name(self.back_btn, "Skip back 15 seconds")
+        self.back_btn.SetHelpText("Jump back 15 seconds and announce the new position.")
         self.fwd_btn = wx.Button(self, label="&30s >>")
         _name(self.fwd_btn, "Skip forward 30 seconds")
+        self.fwd_btn.SetHelpText(
+            "Jump forward by the skip interval (15 seconds) and announce the new position."
+        )
         self.add_point_btn = wx.Button(self, label="&Add Time Point")
         _name(self.add_point_btn, "Add a time-point bookmark at the current position")
+        self.add_point_btn.SetHelpText(
+            "Save a time-point bookmark at the current position, tagged "
+            "timepoint and filed under the current chapter when there is "
+            "one. It appears in the main bookmarks list."
+        )
         for b, h in (
             (self.play_btn, self._on_play),
             (self.back_btn, self._on_back),
@@ -107,6 +124,11 @@ class PlayerFrame(wx.Frame):
         root.Add(ch_lbl, 0, wx.LEFT | wx.RIGHT, 8)
         self.chapter_list = wx.ListBox(self, style=wx.LB_SINGLE)
         _name(self.chapter_list, "Chapters. Enter jumps to the chapter, N next, P previous.")
+        self.chapter_list.SetHelpText(
+            "The episode's chapters with their start times, when the feed "
+            "supplies them. Selecting a chapter jumps playback to its "
+            "start."
+        )
         self.chapter_list.Bind(wx.EVT_LISTBOX, self._on_chapter_select)
         root.Add(self.chapter_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
@@ -115,6 +137,9 @@ class PlayerFrame(wx.Frame):
         root.Add(tr_lbl, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
         self.transcript = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY)
         _name(self.transcript, "Episode transcript")
+        self.transcript.SetHelpText(
+            "The episode's transcript as read-only text, when one is available. Empty otherwise."
+        )
         root.Add(self.transcript, 1, wx.EXPAND | wx.ALL, 8)
 
         self.SetSizer(root)

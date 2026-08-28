@@ -53,15 +53,56 @@ class FolderFeedDialog(wx.Dialog):
 
         grid = wx.FlexGridSizer(cols=2, vgap=4, hgap=8)
         grid.AddGrowableCol(1, 1)
-        self._title = self._field(grid, _("Show ti&tle:"), self._config.title or folder.name)
-        self._author = self._field(grid, _("&Author:"), self._config.author)
-        self._description = self._field(grid, _("Show &description:"), self._config.description)
-        self._media_base = self._field(
-            grid, _("&Media URL base (where the audio will live):"), self._config.media_base
+        self._title = self._field(
+            grid,
+            _("Show ti&tle:"),
+            self._config.title or folder.name,
+            help_text=(
+                "The podcast's name, shown in every podcast app. Starts as the "
+                "folder's name; saved to this folder's feed settings as you go."
+            ),
         )
-        self._feed_url = self._field(grid, _("&Feed URL (optional):"), self._config.feed_url)
+        self._author = self._field(
+            grid,
+            _("&Author:"),
+            self._config.author,
+            help_text="Who makes the show, as podcast apps credit it.",
+        )
+        self._description = self._field(
+            grid,
+            _("Show &description:"),
+            self._config.description,
+            help_text="A sentence or two about the show, shown on its page in podcast apps.",
+        )
+        self._media_base = self._field(
+            grid,
+            _("&Media URL base (where the audio will live):"),
+            self._config.media_base,
+            help_text=(
+                "The public web address the audio files will be uploaded under, "
+                "such as https://example.com/podcast/ -- each episode's link is "
+                "this base plus its file name. Required before the feed can be "
+                "written."
+            ),
+        )
+        self._feed_url = self._field(
+            grid,
+            _("&Feed URL (optional):"),
+            self._config.feed_url,
+            help_text=(
+                "The public address feed.rss itself will live at, once "
+                "uploaded. Optional; when given it is embedded in the feed as "
+                "its own address."
+            ),
+        )
         self._cover_url = self._field(
-            grid, _("Cover image &URL (optional):"), self._config.cover_url
+            grid,
+            _("Cover image &URL (optional):"),
+            self._config.cover_url,
+            help_text=(
+                "The public address of the show's cover image. Optional; when "
+                "given, podcast apps show it as the artwork."
+            ),
         )
         root.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
@@ -73,24 +114,62 @@ class FolderFeedDialog(wx.Dialog):
         )
         self._episode_list = wx.ListBox(self, style=wx.LB_SINGLE)
         self._episode_list.SetName(_("Episodes"))
+        self._episode_list.SetHelpText(
+            "Every finished master found in the folder, numbered oldest first "
+            "so the first row is episode 1. Selecting a row loads its title "
+            "and description overrides into the fields below; a row marked "
+            "(described) already has one."
+        )
         self._episode_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_pick_episode())
         root.Add(self._episode_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         ep_grid = wx.FlexGridSizer(cols=2, vgap=4, hgap=8)
         ep_grid.AddGrowableCol(1, 1)
-        self._ep_title = self._field(ep_grid, _("Episode t&itle (blank = from the file's tags):"))
-        self._ep_description = self._field(ep_grid, _("Episode descri&ption:"))
+        self._ep_title = self._field(
+            ep_grid,
+            _("Episode t&itle (blank = from the file's tags):"),
+            help_text=(
+                "A title for the selected episode, overriding the audio file's "
+                "own tags. Leave it blank to let the file's tags speak; press "
+                "Apply to selected episode to keep what you typed."
+            ),
+        )
+        self._ep_description = self._field(
+            ep_grid,
+            _("Episode descri&ption:"),
+            help_text=(
+                "The selected episode's show notes, shown under it in podcast "
+                "apps. Press Apply to selected episode to keep what you typed."
+            ),
+        )
         root.Add(ep_grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
         apply_btn = wx.Button(self, label=_("App&ly to selected episode"))
+        apply_btn.SetHelpText(
+            "Saves the episode title and description typed above onto the "
+            "highlighted episode, and marks it (described) in the list."
+        )
         apply_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_apply_episode())
         root.Add(apply_btn, 0, wx.LEFT | wx.TOP, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         feed_btn = wx.Button(self, label=_("&Write feed.rss now"))
+        feed_btn.SetHelpText(
+            "Writes feed.rss into the folder with every episode listed, using "
+            "the show settings above. Needs the media URL base. Upload the "
+            "feed and the audio to your server; subscribers see all episodes."
+        )
         feed_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_write_feed())
         notes_btn = wx.Button(self, label=_("Write show &notes page"))
+        notes_btn.SetHelpText(
+            "Writes a simple web page of the show and its episodes next to the "
+            "feed, ready to upload alongside it."
+        )
         notes_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_write_notes())
         close_btn = wx.Button(self, wx.ID_CANCEL, label=_("Close"))
+        close_btn.SetHelpText(
+            "Closes this window. The show settings and episode overrides are "
+            "already saved to the folder as you apply them."
+        )
         btn_row.Add(feed_btn, 0, wx.RIGHT, 6)
         btn_row.Add(notes_btn, 0, wx.RIGHT, 6)
         btn_row.AddStretchSpacer()
@@ -110,10 +189,14 @@ class FolderFeedDialog(wx.Dialog):
 
     # -- helpers -----------------------------------------------------------------
 
-    def _field(self, grid: wx.FlexGridSizer, label: str, value: str = "") -> wx.TextCtrl:
+    def _field(
+        self, grid: wx.FlexGridSizer, label: str, value: str = "", *, help_text: str = ""
+    ) -> wx.TextCtrl:
         grid.Add(wx.StaticText(self, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
         ctrl = wx.TextCtrl(self, value=value)
         ctrl.SetName(label.replace("&", "").rstrip(":"))
+        if help_text:
+            ctrl.SetHelpText(help_text)
         grid.Add(ctrl, 0, wx.EXPAND)
         return ctrl
 

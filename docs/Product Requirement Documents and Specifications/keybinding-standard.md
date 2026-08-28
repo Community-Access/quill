@@ -30,6 +30,14 @@ The default-second-key is single-character.  Shift variants use the
 > continues to use the stored grammar so it can serve as the canonical
 > reference for the keymap; the user-facing surfaces use the display form.
 
+> **The generated reference.** The full list of default bindings lives in
+> [`docs/keyboard-reference.md`](../keyboard-reference.md), generated from
+> `DEFAULT_KEYMAP` / `APP_KEYMAPS` by `python -m
+> quill.tools.build_keymap_reference --write` and drift-gated by
+> `tests/unit/tools/test_keymap_reference.py`. This document states the
+> rules; that one enumerates the bindings, and cannot lie because nobody
+> writes it.
+
 ## §10.2 The Ctrl+Alt+ policy (revised 0.7.0)
 
 `Ctrl+Alt+` is screen-reader-hostile because NVDA, JAWS, and Windows

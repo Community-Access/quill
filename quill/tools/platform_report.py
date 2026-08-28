@@ -117,6 +117,61 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.cast_help_audit"),
     ),
     Gate(
+        "player-help",
+        "GATE-PLAYER-HELP: every Media Player surface and control answers F1",
+        (sys.executable, "-m", "quill.tools.player_help_audit"),
+    ),
+    Gate(
+        "studio-help",
+        "GATE-STUDIO-HELP: every Audio Studio surface and control answers F1",
+        (sys.executable, "-m", "quill.tools.studio_help_audit"),
+    ),
+    Gate(
+        "inkwell-help",
+        "GATE-INKWELL-HELP: every Inkwell surface and control answers F1",
+        (sys.executable, "-m", "quill.tools.inkwell_help_audit"),
+    ),
+    Gate(
+        "weather-help",
+        "GATE-WEATHER-HELP: every Weather surface and control answers F1",
+        (sys.executable, "-m", "quill.tools.weather_help_audit"),
+    ),
+    Gate(
+        "converter-help",
+        "GATE-CONVERTER-HELP: every Converter surface and control answers F1",
+        (sys.executable, "-m", "quill.tools.converter_help_audit"),
+    ),
+    Gate(
+        "beacon-help",
+        "GATE-BEACON-HELP: every Beacon surface and control answers F1",
+        (sys.executable, "-m", "quill.tools.beacon_help_audit"),
+    ),
+    Gate(
+        "over-announce",
+        "GATE-13: nothing announces what the screen reader already says",
+        (sys.executable, "-m", "quill.tools.check_over_announce"),
+    ),
+    Gate(
+        "access-keys",
+        "GATE-14: one Alt letter, one control, per window",
+        (sys.executable, "-m", "quill.tools.check_access_keys"),
+    ),
+    Gate(
+        "settings-documented",
+        "GATE-SETDOC: every setting is documented or classified",
+        (sys.executable, "-m", "quill.tools.settings_doc_audit"),
+    ),
+    Gate(
+        "keymap-reference",
+        "GATE-KEYREF: docs/keyboard-reference.md matches the keymap",
+        (sys.executable, "-m", "quill.tools.build_keymap_reference", "--check"),
+    ),
+    Gate(
+        "f1-help-reference",
+        "GATE-HELPREF: docs/f1-help-reference.md matches the authored help",
+        (sys.executable, "-m", "quill.tools.build_help_reference", "--check"),
+    ),
+    Gate(
         "surface-reachability",
         "GATE-REACH: a surface a listener cannot reach is not shipped",
         (sys.executable, "-m", "quill.tools.surface_reachability_audit"),

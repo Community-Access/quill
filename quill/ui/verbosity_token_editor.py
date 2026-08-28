@@ -71,7 +71,7 @@ class VerbosityTokenEditorDialog:
         self._template.SetMinSize(wx.Size(-1, 70))
         root.Add(self._template, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
-        root.Add(wx.StaticText(self.dialog, label="Available &tokens:"), 0, wx.LEFT | wx.TOP, 8)
+        root.Add(wx.StaticText(self.dialog, label="Avai&lable tokens:"), 0, wx.LEFT | wx.TOP, 8)
         self._tokens = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._tokens.SetName("Available tokens")
         for spec in verb.supported_tokens:
@@ -92,7 +92,7 @@ class VerbosityTokenEditorDialog:
         self._preview_btn = wx.Button(self.dialog, label="&Preview (F5)")
         self._speak_btn = wx.Button(self.dialog, label="&Speak Current Template")
         self._insert_btn = wx.Button(self.dialog, label="&Insert Token")
-        self._save_btn = wx.Button(self.dialog, id=wx.ID_SAVE, label="Sa&ve")
+        self._save_btn = wx.Button(self.dialog, id=wx.ID_SAVE, label="S&ave")
         cancel_btn = wx.Button(self.dialog, id=wx.ID_CANCEL, label="Cancel")
         for b in (self._validate_btn, self._preview_btn, self._speak_btn, self._insert_btn):
             btns.Add(b, 0, wx.RIGHT, 6)

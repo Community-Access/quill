@@ -306,7 +306,7 @@ class SpeechSetupDialog:
         self._btn_download = wx.Button(parent, label="&Download Selected")
         self._btn_remove = wx.Button(parent, label="&Remove Selected")
         self._btn_test = wx.Button(parent, label="&Test dictation")
-        self._btn_set_default = wx.Button(parent, label="Set as &Default")
+        self._btn_set_default = wx.Button(parent, label="&Set as Default")
         btn_hf = wx.Button(parent, label="&Hugging Face Token...")
         btn_row.Add(self._btn_download, 0, wx.RIGHT, 6)
         btn_row.Add(self._btn_remove, 0, wx.RIGHT, 6)

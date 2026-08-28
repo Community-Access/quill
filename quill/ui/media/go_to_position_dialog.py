@@ -69,6 +69,14 @@ class GoToPositionDialog(wx.Dialog):
         outer.Add(tc_label, 0, wx.LEFT | wx.RIGHT, 12)
         self._timecode = wx.TextCtrl(self)
         set_accessible_name(self._timecode, _("Timecode"))
+        self._timecode.SetHelpText(
+            _(
+                "One timecode instead of the three fields above: 1:23:45, "
+                "83:45, plain seconds like 5025, or 1h23m45s. Leave it empty "
+                "to use the Hours, Minutes and Seconds fields; when filled, "
+                "it wins."
+            )
+        )
         outer.Add(self._timecode, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
 
         # A focusable, reviewable error line (empty until a bad timecode is entered).
@@ -90,7 +98,15 @@ class GoToPositionDialog(wx.Dialog):
         static = wx.StaticText(self, label=label)
         spin = wx.SpinCtrl(self, min=0, max=maximum, initial=0)
         # Propagate the accessible name onto the spin's inner text control too.
-        set_accessible_name(spin, label.replace("&", "").rstrip(":"))
+        name = label.replace("&", "").rstrip(":")
+        set_accessible_name(spin, name)
+        spin.SetHelpText(
+            _(
+                "The {unit} part of the position to jump to, typed or arrowed "
+                "from 0 to {maximum}. The three fields start at the current "
+                "position; a typed timecode below overrides all three."
+            ).format(unit=name.lower(), maximum=maximum)
+        )
         grid.Add(static, 0, wx.ALIGN_CENTER_VERTICAL)
         grid.Add(spin, 0, wx.EXPAND)
         return spin

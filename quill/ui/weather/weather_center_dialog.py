@@ -141,20 +141,52 @@ class WeatherCenterDialog:
         )
         self._location_choice = wx.Choice(self._surface)
         set_accessible_name(self._location_choice, "Weather location")
+        self._location_choice.SetHelpText(
+            "Which saved place this whole window reports on. Choosing one "
+            "makes it the primary location -- the one the alert watch and "
+            "Quick Weather follow -- and fetches its weather right away. "
+            "Delete removes the chosen place."
+        )
         loc_row.Add(self._location_choice, 1, wx.EXPAND | wx.RIGHT, 6)
         self._refresh_btn = wx.Button(self._surface, label="&Refresh")
+        self._refresh_btn.SetHelpText(
+            "Fetch this location's weather again right now -- alerts, "
+            "conditions, and every forecast. The status line at the bottom "
+            "says where the data came from and how fresh it is."
+        )
         self._add_btn = wx.Button(self._surface, label="&Add Location...")
+        self._add_btn.SetHelpText(
+            "Open Add Weather Location: search by ZIP code, city, county, "
+            "or address and save a new place. It joins the Location chooser "
+            "as soon as it is added."
+        )
         self._remove_btn = wx.Button(self._surface, label="Re&move Location")
+        self._remove_btn.SetHelpText(
+            "Delete the place chosen in the Location list, immediately and "
+            "without a confirmation. Pressing Delete in the Location list "
+            "does the same."
+        )
         self._settings_btn = wx.Button(self._surface, label="&Settings...")
+        self._settings_btn.SetHelpText(
+            "Open Weather Settings: units, how much forecast to show, alert "
+            "filtering, refresh cadence, and the alert sound. Saved changes "
+            "re-render this window immediately."
+        )
         for b in (self._refresh_btn, self._add_btn, self._remove_btn, self._settings_btn):
             loc_row.Add(b, 0, wx.RIGHT, 4)
         root.Add(loc_row, 0, wx.EXPAND | wx.ALL, 10)
 
         # -- active alerts --
-        self._alerts_label = wx.StaticText(self._surface, label="Active &Alerts:")
+        self._alerts_label = wx.StaticText(self._surface, label="Act&ive Alerts:")
         root.Add(self._alerts_label, 0, wx.LEFT | wx.RIGHT, 10)
         self._alerts_list = wx.ListBox(self._surface)
         set_accessible_name(self._alerts_list, "Active weather alerts")
+        self._alerts_list.SetHelpText(
+            "Every alert in effect for this location right now, one line "
+            "each: the event, the area, and its tier. Arrowing to a row "
+            "fills the read-only box below with the full official text -- "
+            "headline, instructions, and timing."
+        )
         root.Add(self._alerts_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         # A StaticText immediately before the field is what actually names a
         # read-only TextCtrl for a screen reader (the ADP dialog's pattern);
@@ -167,6 +199,12 @@ class WeatherCenterDialog:
             self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._alert_detail, "Selected alert, full official text")
+        self._alert_detail.SetHelpText(
+            "The full official text of the alert highlighted in the list "
+            "above: headline, severity, area, timing, instructions, and "
+            "description, exactly as issued. Read-only and copyable; it "
+            "follows the list selection."
+        )
         root.Add(self._alert_detail, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- current conditions --
@@ -177,6 +215,13 @@ class WeatherCenterDialog:
             self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._current, "Current conditions")
+        self._current.SetHelpText(
+            "The weather right now at this location, as one readable block: "
+            "temperature and sky always, plus whichever details you have "
+            "turned on in Settings -- feels-like, wind, humidity, sunrise, "
+            "and more. Read-only and copyable, with the observation time at "
+            "the end."
+        )
         self._current.SetMinSize((-1, 150))
         root.Add(self._current, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -184,6 +229,12 @@ class WeatherCenterDialog:
         root.Add(wx.StaticText(self._surface, label="&Forecast:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._forecast_list = wx.ListBox(self._surface)
         set_accessible_name(self._forecast_list, "Forecast periods")
+        self._forecast_list.SetHelpText(
+            "The official forecast, one line per period -- Today, Tonight, "
+            "and so on -- with its temperature and a short summary. Arrowing "
+            "to a period fills the read-only box below with its full "
+            "detailed forecast. Settings chooses how many periods appear."
+        )
         root.Add(self._forecast_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         self._period_detail_label = wx.StaticText(
             self._surface, label="Selected &period (read-only):"
@@ -193,6 +244,11 @@ class WeatherCenterDialog:
             self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._period_detail, "Selected forecast period, details")
+        self._period_detail.SetHelpText(
+            "The full detailed forecast for the period highlighted in the "
+            "list above, with abbreviations spelled out for speech. "
+            "Read-only and copyable; it follows the list selection."
+        )
         self._period_detail.SetMinSize((-1, 72))
         root.Add(self._period_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -200,6 +256,11 @@ class WeatherCenterDialog:
         root.Add(wx.StaticText(self._surface, label="Ho&urly forecast:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._hourly_list = wx.ListBox(self._surface)
         set_accessible_name(self._hourly_list, "Hourly forecast, one line per hour")
+        self._hourly_list.SetHelpText(
+            "Hour-by-hour forecast, one line per hour with time, "
+            "temperature, sky, and wind. Settings chooses how many hours it "
+            "covers, up to 48, or turns the section off."
+        )
         root.Add(self._hourly_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         self._hourly_detail_label = wx.StaticText(
             self._surface, label="Selected &hour (read-only):"
@@ -209,18 +270,28 @@ class WeatherCenterDialog:
             self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._hourly_detail, "Selected hour, full details")
+        self._hourly_detail.SetHelpText(
+            "The highlighted hour's line as read-only, copyable text that "
+            "wraps instead of scrolling off the edge. It follows the hourly "
+            "list's selection."
+        )
         self._hourly_detail.SetMinSize((-1, 48))
         root.Add(self._hourly_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- extended daily outlook (Open-Meteo, past the NWS 7 days) --
         root.Add(
-            wx.StaticText(self._surface, label="&Daily outlook (extended):"),
+            wx.StaticText(self._surface, label="Daily &outlook (extended):"),
             0,
             wx.LEFT | wx.RIGHT,
             10,
         )
         self._daily_list = wx.ListBox(self._surface)
         set_accessible_name(self._daily_list, "Extended daily outlook, one line per day")
+        self._daily_list.SetHelpText(
+            "A longer-range outlook, one summary line per day, reaching "
+            "past the week the period forecast covers. Settings chooses how "
+            "many days it holds, up to 16, or turns the section off."
+        )
         root.Add(self._daily_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         self._daily_detail_label = wx.StaticText(self._surface, label="Selected &day (read-only):")
         root.Add(self._daily_detail_label, 0, wx.LEFT | wx.RIGHT, 10)
@@ -228,16 +299,32 @@ class WeatherCenterDialog:
             self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._daily_detail, "Selected day, full details")
+        self._daily_detail.SetHelpText(
+            "The highlighted day's line as read-only, copyable text that "
+            "wraps instead of scrolling off the edge. It follows the daily "
+            "outlook's selection."
+        )
         self._daily_detail.SetMinSize((-1, 60))
         root.Add(self._daily_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- status + close --
         self._status = wx.TextCtrl(self._surface, style=wx.TE_READONLY)
         set_accessible_name(self._status, "Weather source and freshness status")
+        self._status.SetHelpText(
+            "Where this report came from and how it is doing: the National "
+            "Weather Service office and zone, the observing station, and "
+            "any note about data that could not be fetched. Read-only; it "
+            "updates with every refresh."
+        )
         root.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         btn_row.AddStretchSpacer()
-        btn_row.Add(wx.Button(self._surface, wx.ID_CANCEL, "Close"))
+        close_btn = wx.Button(self._surface, wx.ID_CANCEL, "Close")
+        close_btn.SetHelpText(
+            "Close the Weather Center. Escape does the same, and alert "
+            "monitoring keeps running without it."
+        )
+        btn_row.Add(close_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
         self._surface.SetSizer(root)

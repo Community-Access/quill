@@ -167,7 +167,7 @@ class AdpMixin:
         grid = wx.FlexGridSizer(cols=2, vgap=8, hgap=8)
         grid.AddGrowableCol(1, 1)
 
-        grid.Add(wx.StaticText(dialog, label="&Server address:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(dialog, label="Server &address:"), 0, wx.ALIGN_CENTER_VERTICAL)
         url_ctrl = wx.TextCtrl(
             dialog,
             value=str(getattr(self.settings, "adp_base_url", "") or adp_client.DEFAULT_BASE_URL),

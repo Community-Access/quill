@@ -108,7 +108,7 @@ class AIGrammarCheckDialog:
 
         # Buttons - global
         btn2 = wx.BoxSizer(wx.HORIZONTAL)
-        self._accept_all_btn = wx.Button(self.dialog, label="Accept &All Remaining")
+        self._accept_all_btn = wx.Button(self.dialog, label="Accept All &Remaining")
         self._reject_all_btn = wx.Button(self.dialog, label="Re&ject All")
         self._apply_close_btn = wx.Button(self.dialog, label="App&ly and Close")
         apply_modal_ids(

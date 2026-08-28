@@ -131,7 +131,7 @@ class PlaylistRulesDialog:
         self._max_minutes_ctrl.SetName("Only episodes at most this many minutes long")
         grid.Add(self._max_minutes_ctrl, 0)
 
-        grid.Add(wx.StaticText(self.dialog, label="&Sort:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self.dialog, label="So&rt:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._sort_choice = wx.Choice(self.dialog, choices=list(_SORT_LABELS))
         self._sort_choice.SetName("How this playlist's episodes are ordered")
         sort_index = (

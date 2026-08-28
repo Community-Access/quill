@@ -231,7 +231,7 @@ class PodcastManagerDialog(
         episode_col.Add(wx.StaticText(self.dialog, label="&Episodes"), 0, wx.BOTTOM, 4)
         episode_sort_row = wx.BoxSizer(wx.HORIZONTAL)
         episode_sort_row.Add(
-            wx.StaticText(self.dialog, label="Sort &episodes:"),
+            wx.StaticText(self.dialog, label="Sor&t episodes:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             4,
@@ -276,7 +276,7 @@ class PodcastManagerDialog(
         root_sizer.Add(self._status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         player_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._play_pause_btn = wx.Button(self.dialog, label="&Play/Pause")
+        self._play_pause_btn = wx.Button(self.dialog, label="P&lay/Pause")
         self._play_pause_btn.SetName("Play or pause the current episode")
         self._stop_btn = wx.Button(self.dialog, label="&Stop")
         speed_label = wx.StaticText(self.dialog, label="S&peed:")
@@ -298,13 +298,13 @@ class PodcastManagerDialog(
         new_folder_btn = wx.Button(self.dialog, label="&New Folder...")
         new_folder_btn.SetName("Create a new folder, nested under the selected folder if any")
         import_opml_btn = wx.Button(self.dialog, label="&Import OPML...")
-        export_opml_btn = wx.Button(self.dialog, label="&Export OPML...")
-        settings_btn = wx.Button(self.dialog, label="Podcast &Settings...")
+        export_opml_btn = wx.Button(self.dialog, label="E&xport OPML...")
+        settings_btn = wx.Button(self.dialog, label="P&odcast Settings...")
         settings_btn.SetName("Global defaults for playback mode, retention, speed, and downloads")
         self._download_btn = wx.Button(self.dialog, label="&Download")
         self._download_btn.SetName("Download the selected episode")
         self._download_btn.Enable(False)
-        self._pause_btn = wx.Button(self.dialog, label="&Pause Download")
+        self._pause_btn = wx.Button(self.dialog, label="Pause Download")
         self._pause_btn.SetName("Pause or resume this episode's download")
         self._pause_btn.Enable(False)
         self._remove_download_btn = wx.Button(self.dialog, label="&Remove Download")

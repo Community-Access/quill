@@ -112,7 +112,7 @@ class AIAgentResultDialog:
         self._insert_btn = wx.Button(self.dialog, label="&Insert at Cursor")
         self._replace_btn = wx.Button(self.dialog, label="&Replace Selection")
         self._copy_btn = wx.Button(self.dialog, label="&Copy")
-        self._rerun_btn = wx.Button(self.dialog, label="Re-&Run")
+        self._rerun_btn = wx.Button(self.dialog, label="R&e-Run")
         close_btn = wx.Button(self.dialog, wx.ID_CLOSE, label="C&lose")
 
         apply_modal_ids(

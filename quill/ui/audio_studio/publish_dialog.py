@@ -93,9 +93,24 @@ class PublishDialog(wx.Dialog):
         self._media_url = wx.TextCtrl(self)
         self._media_url.SetName(_("Public media URL"))
         self._media_url.SetHint("https://example.com/podcast/" + book.path.name)
+        self._media_url.SetHelpText(
+            "The public web address this book's audio will live at once "
+            "uploaded -- the link the feed points listeners to. Blank falls "
+            "back to the SFTP destination's public URL base plus the file "
+            "name."
+        )
         feed_btn = wx.Button(self, label=_("Write &feed file"))
+        feed_btn.SetHelpText(
+            "Writes a self-contained podcast .rss file next to the book, "
+            "built from its tags and the public media URL. Local files only "
+            "-- nothing is uploaded by this button."
+        )
         feed_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_write_feed())
         folder_feed_btn = wx.Button(self, label=_("Folder feed (all episodes)&..."))
+        folder_feed_btn.SetHelpText(
+            "Opens the Folder Podcast Feed window for this book's folder, "
+            "where every finished master becomes an episode of one show."
+        )
         folder_feed_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_folder_feed())
         feed_row.Add(self._media_url, 1, wx.EXPAND | wx.RIGHT, 6)
         feed_row.Add(feed_btn, 0, wx.RIGHT, 6)
@@ -118,17 +133,57 @@ class PublishDialog(wx.Dialog):
         )
         grid = wx.FlexGridSizer(cols=2, vgap=4, hgap=8)
         grid.AddGrowableCol(1, 1)
-        self._dest_name = self._field(grid, _("Destination na&me:"))
-        self._dest_host = self._field(grid, _("&Host:"))
+        self._dest_name = self._field(
+            grid,
+            _("Destination na&me:"),
+            help_text=(
+                "Your own name for this server, the label it is saved and "
+                "picked by. Saving with an existing name updates that "
+                "destination."
+            ),
+        )
+        self._dest_host = self._field(
+            grid,
+            _("&Host:"),
+            help_text="The SFTP server's host name or address, such as sftp.example.com.",
+        )
         self._dest_port = wx.SpinCtrl(self, min=1, max=65535, initial=22)
         set_accessible_name(self._dest_port, _("Port"))
+        self._dest_port.SetHelpText(
+            "The server's SSH port, 1 to 65535. 22 is the standard and the "
+            "default; change it only if your host says to."
+        )
         grid.Add(wx.StaticText(self, label=_("P&ort:")), 0, wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self._dest_port, 0)
-        self._dest_user = self._field(grid, _("&Username:"))
-        self._dest_dir = self._field(grid, _("Remote fol&der:"))
-        self._dest_url = self._field(grid, _("Public URL &base (optional):"))
+        self._dest_user = self._field(
+            grid,
+            _("&Username:"),
+            help_text="The account name the upload signs in to the server with.",
+        )
+        self._dest_dir = self._field(
+            grid,
+            _("Remote fol&der:"),
+            help_text=(
+                "The folder on the server the files land in, such as "
+                "/public_html/podcast. Blank means the server's root folder."
+            ),
+        )
+        self._dest_url = self._field(
+            grid,
+            _("Public URL &base (optional):"),
+            help_text=(
+                "The public web address that serves the remote folder, such as "
+                "https://example.com/podcast/. Optional; when set, the feed's "
+                "media URL can be derived from it automatically."
+            ),
+        )
         self._dest_password = wx.TextCtrl(self, style=wx.TE_PASSWORD)
         self._dest_password.SetName(_("Password"))
+        self._dest_password.SetHelpText(
+            "The account's password. Saving the destination stores it in the "
+            "system's credential store -- never in QUILL's settings -- and "
+            "recalls it when the destination is picked."
+        )
         grid.Add(wx.StaticText(self, label=_("&Password:")), 0, wx.ALIGN_CENTER_VERTICAL)
         grid.Add(self._dest_password, 0, wx.EXPAND)
         root.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
@@ -136,10 +191,24 @@ class PublishDialog(wx.Dialog):
         dest_row = wx.BoxSizer(wx.HORIZONTAL)
         self._dest_pick = wx.Choice(self, choices=[d.name for d in self._store.destinations])
         self._dest_pick.SetName(_("Saved destinations"))
+        self._dest_pick.SetHelpText(
+            "Your saved SFTP destinations. Picking one fills the fields above "
+            "with its details, including its stored password."
+        )
         self._dest_pick.Bind(wx.EVT_CHOICE, lambda _e: self._on_pick_destination())
         save_dest_btn = wx.Button(self, label=_("Save des&tination"))
+        save_dest_btn.SetHelpText(
+            "Saves the destination as typed, under its name, for next time; "
+            "the password goes to the system's credential store. Needs at "
+            "least a name and a host."
+        )
         save_dest_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_save_destination())
         upload_btn = wx.Button(self, label=_("&Upload book now"))
+        upload_btn.SetHelpText(
+            "Uploads the book and its companion files (feed, chapters, cover) "
+            "to the destination as typed, over SFTP, with spoken progress and "
+            "a live Cancel. Needs at least the host, username and password."
+        )
         upload_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_upload())
         dest_row.Add(self._dest_pick, 1, wx.EXPAND | wx.RIGHT, 6)
         dest_row.Add(save_dest_btn, 0, wx.RIGHT, 6)
@@ -163,8 +232,18 @@ class PublishDialog(wx.Dialog):
         auphonic_row = wx.BoxSizer(wx.HORIZONTAL)
         self._token = wx.TextCtrl(self, style=wx.TE_PASSWORD)
         self._token.SetName(_("Auphonic API token"))
+        self._token.SetHelpText(
+            "Your Auphonic account's API token, from auphonic.com's account "
+            "settings. Sending a book stores it in the system's credential "
+            "store so it is filled in next time."
+        )
         self._load_token()
         check_btn = wx.Button(self, label=_("Check &account and load presets"))
+        check_btn.SetHelpText(
+            "Contacts Auphonic with the token to confirm the account, report "
+            "its remaining credits, and load your presets into the preset "
+            "list. Nothing is uploaded."
+        )
         check_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_check_auphonic())
         auphonic_row.Add(self._token, 1, wx.EXPAND | wx.RIGHT, 6)
         auphonic_row.Add(check_btn, 0)
@@ -176,10 +255,21 @@ class PublishDialog(wx.Dialog):
         )
         self._preset_pick = wx.Choice(self, choices=[str(_("(account default preset)"))])
         self._preset_pick.SetName(_("Auphonic preset"))
+        self._preset_pick.SetHelpText(
+            "Which of your Auphonic presets the production uses. Press Check "
+            "account and load presets to fill this list; the first entry "
+            "leaves the choice to your account's default."
+        )
         self._preset_pick.SetSelection(0)
         self._presets: list[object] = []
         self._credits: float | None = None
         auphonic_btn = wx.Button(self, label=_("Send to Auphonic&..."))
+        auphonic_btn.SetHelpText(
+            "After a confirmation, uploads the book to your own Auphonic "
+            "account, waits for the production to finish, and downloads the "
+            "results into a folder next to the book. Cancelable; uses your "
+            "Auphonic credits."
+        )
         auphonic_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_auphonic())
         preset_row.Add(self._preset_pick, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
         preset_row.Add(auphonic_btn, 0)
@@ -187,6 +277,11 @@ class PublishDialog(wx.Dialog):
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         close_btn = wx.Button(self, wx.ID_CANCEL, label=_("Close"))
+        close_btn.SetHelpText(
+            "Closes the Publish window. An upload or Auphonic production "
+            "already started keeps running in the background and announces "
+            "its outcome."
+        )
         btn_row.AddStretchSpacer()
         btn_row.Add(close_btn, 0)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
@@ -199,10 +294,12 @@ class PublishDialog(wx.Dialog):
 
     # -- helpers -----------------------------------------------------------------
 
-    def _field(self, grid: wx.FlexGridSizer, label: str) -> wx.TextCtrl:
+    def _field(self, grid: wx.FlexGridSizer, label: str, *, help_text: str = "") -> wx.TextCtrl:
         grid.Add(wx.StaticText(self, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
         ctrl = wx.TextCtrl(self)
         ctrl.SetName(label.replace("&", "").rstrip(":"))
+        if help_text:
+            ctrl.SetHelpText(help_text)
         grid.Add(ctrl, 0, wx.EXPAND)
         return ctrl
 

@@ -67,7 +67,7 @@ class DirectoryCredentialsDialog:
         self._key = wx.TextCtrl(self.dialog, value=key)
         self._key.SetName("Your Podcast Index API key")
         grid.Add(self._key, 1, wx.EXPAND)
-        grid.Add(wx.StaticText(self.dialog, label="&Secret:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self.dialog, label="S&ecret:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._secret = wx.TextCtrl(self.dialog, value=secret, style=wx.TE_PASSWORD)
         self._secret.SetName("Your Podcast Index API secret. Press Read It Back to hear it.")
         grid.Add(self._secret, 1, wx.EXPAND)

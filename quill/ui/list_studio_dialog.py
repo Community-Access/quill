@@ -188,7 +188,7 @@ class ListStudioDialog:
         nest_row = wx.BoxSizer(wx.HORIZONTAL)
         self._btn_indent = wx.Button(dlg, label="&Indent")
         self._btn_outdent = wx.Button(dlg, label="&Outdent")
-        self._btn_add_child = wx.Button(dlg, label="Add chil&d")
+        self._btn_add_child = wx.Button(dlg, label="Add &child")
         self._btn_indent.Bind(wx.EVT_BUTTON, lambda _e: self._on_indent())
         self._btn_outdent.Bind(wx.EVT_BUTTON, lambda _e: self._on_outdent())
         self._btn_add_child.Bind(wx.EVT_BUTTON, lambda _e: self._on_add_child())

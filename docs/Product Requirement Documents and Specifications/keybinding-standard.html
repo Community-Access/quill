@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Keybinding Standard</title>
   <style>
@@ -230,6 +230,16 @@ the brand itself is <code>QUILL_KEY_LABEL</code> in
 <code>quill/branding.py</code>. This document continues to use the
 stored grammar so it can serve as the canonical reference for the
 keymap; the user-facing surfaces use the display form.</p>
+</blockquote>
+<blockquote>
+<p><strong>The generated reference.</strong> The full list of default
+bindings lives in <a
+href="../keyboard-reference.md"><code>docs/keyboard-reference.md</code></a>,
+generated from <code>DEFAULT_KEYMAP</code> / <code>APP_KEYMAPS</code> by
+<code>python -m quill.tools.build_keymap_reference --write</code> and
+drift-gated by <code>tests/unit/tools/test_keymap_reference.py</code>.
+This document states the rules; that one enumerates the bindings, and
+cannot lie because nobody writes it.</p>
 </blockquote>
 <h2 id="102-the-ctrlalt-policy-revised-070">§10.2 The Ctrl+Alt+ policy
 (revised 0.7.0)</h2>

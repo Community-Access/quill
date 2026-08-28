@@ -164,7 +164,7 @@ class SyncPlacesDialog:
         root.Add(self._status, 0, wx.EXPAND | wx.ALL, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
-        self._sync_btn = wx.Button(self._dialog, label="&Sync Now")
+        self._sync_btn = wx.Button(self._dialog, label="S&ync Now")
         buttons.Add(self._sync_btn, 0, wx.RIGHT, 6)
         buttons.Add(wx.Button(self._dialog, wx.ID_OK, "Sa&ve"), 0, wx.RIGHT, 6)
         buttons.Add(wx.Button(self._dialog, wx.ID_CANCEL, "Cl&ose"), 0)

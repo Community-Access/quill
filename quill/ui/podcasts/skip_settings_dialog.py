@@ -98,7 +98,7 @@ class SkipSettingsDialog:
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.AddStretchSpacer()
-        ok_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
+        ok_btn = wx.Button(self.dialog, wx.ID_OK, "OK")
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
         buttons.Add(ok_btn, 0, wx.RIGHT, 6)
         buttons.Add(cancel_btn)

@@ -196,7 +196,7 @@ class SongHistoryDialog:
         self._songs.SetName("Songs")
         root.Add(self._songs, 2, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
-        background_label = wx.StaticText(panel, label="&Background:")
+        background_label = wx.StaticText(panel, label="Bac&kground:")
         root.Add(background_label, 0, wx.LEFT, 8)
         self._background = wx.TextCtrl(
             panel,
@@ -243,7 +243,7 @@ class SongHistoryDialog:
         if not self._modeless:
             # Only the modal dialog carries a Close button: a real window
             # closes with Alt+F4/Ctrl+F4, Ctrl+W, or Escape (2026-08-23).
-            close_btn = wx.Button(panel, wx.ID_CLOSE, label="C&lose")
+            close_btn = wx.Button(panel, wx.ID_CLOSE, label="Close")
             close_btn.SetHelpText("Closes Song History; logging continues while stations play.")
             btn_row.Add(close_btn, 0, wx.RIGHT, 6)
             apply_modal_ids(

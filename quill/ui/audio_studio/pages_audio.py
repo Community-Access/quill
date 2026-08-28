@@ -39,7 +39,15 @@ class AudioSourcePage(StudioPage):
             style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER,
         )
         self.source.SetName(_("Folder of audio files"))
+        self.source.SetHelpText(
+            "The folder whose recordings become the book, one chapter per "
+            "file in natural filename order. Type a path or open the drop-down "
+            "for recently used folders; MP3, M4A/M4B, WAV, FLAC, Opus and OGG "
+            "files are accepted, and files that look like previous builds are "
+            "set aside."
+        )
         browse = wx.Button(self, label=_("B&rowse..."))
+        browse.SetHelpText("Picks the folder of recordings with the system folder chooser.")
         browse.Bind(wx.EVT_BUTTON, self._on_browse)
         row.Add(self.source, 1, wx.EXPAND | wx.RIGHT, 6)
         row.Add(browse, 0)
@@ -158,7 +166,13 @@ class EditSourcePage(StudioPage):
             style=wx.CB_DROPDOWN | wx.TE_PROCESS_ENTER,
         )
         self.file.SetName(_("Audiobook file"))
+        self.file.SetHelpText(
+            "The finished MP3 or M4B to open in the Chapter Workbench. Type a "
+            "path or open the drop-down for recently opened books; a file with "
+            "no chapter markers opens as one chapter, ready to split up."
+        )
         browse = wx.Button(self, label=_("B&rowse..."))
+        browse.SetHelpText("Picks the audiobook file with the system file chooser.")
         browse.Bind(wx.EVT_BUTTON, self._on_browse)
         row.Add(self.file, 1, wx.EXPAND | wx.RIGHT, 6)
         row.Add(browse, 0)

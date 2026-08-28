@@ -783,14 +783,14 @@ class QuillinsMenuMixin:
             chooser.SetSelection(0)
         body.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)
 
-        body.Add(wx.StaticText(dialog, label="&Details"), 0, wx.LEFT | wx.RIGHT, 8)
+        body.Add(wx.StaticText(dialog, label="De&tails"), 0, wx.LEFT | wx.RIGHT, 8)
         details = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         details.SetName("Quillin details")
         body.Add(details, 1, wx.ALL | wx.EXPAND, 8)
 
         enable_button = wx.Button(dialog, label="&Enable")
         disable_button = wx.Button(dialog, label="&Disable")
-        events_button = wx.Button(dialog, label="Configure &Events...")
+        events_button = wx.Button(dialog, label="C&onfigure Events...")
         reload_button = wx.Button(dialog, label="&Reload")
         remove_button = wx.Button(dialog, label="Re&move...")
         install_button = wx.Button(dialog, label="&Install from Folder...")

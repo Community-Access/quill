@@ -54,12 +54,12 @@ class WorkPersonaDialog:
         self._btn_new = self.dialog.FindWindow(wx.ID_ADD)
 
         right = wx.BoxSizer(wx.VERTICAL)
-        right.Add(wx.StaticText(self.dialog, label="&Name:"), 0)
+        right.Add(wx.StaticText(self.dialog, label="Na&me:"), 0)
         self._name_ctrl = wx.TextCtrl(self.dialog)
         self._name_ctrl.SetName("Persona name")
         right.Add(self._name_ctrl, 0, wx.EXPAND | wx.BOTTOM, 6)
 
-        right.Add(wx.StaticText(self.dialog, label="&Feature profile:"), 0)
+        right.Add(wx.StaticText(self.dialog, label="F&eature profile:"), 0)
         self._profile_choice = wx.Choice(
             self.dialog, choices=[str(PROFILE_DEFINITIONS[p].name) for p in self._profile_ids]
         )
@@ -81,7 +81,7 @@ class WorkPersonaDialog:
         self._keymap_choice.SetSelection(0)
         right.Add(self._keymap_choice, 0, wx.EXPAND | wx.BOTTOM, 6)
 
-        right.Add(wx.StaticText(self.dialog, label="F&avorite files:"), 0)
+        right.Add(wx.StaticText(self.dialog, label="Fa&vorite files:"), 0)
         self._favorites_list = wx.ListBox(self.dialog)
         self._favorites_list.SetName("Favorite files")
         right.Add(self._favorites_list, 1, wx.EXPAND | wx.BOTTOM, 2)

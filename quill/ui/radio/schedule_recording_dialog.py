@@ -160,7 +160,7 @@ class ScheduleRecordingDialog:
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(
-            wx.StaticText(self._surface, label="Sc&heduled recordings"), 0, wx.LEFT | wx.TOP, 10
+            wx.StaticText(self._surface, label="Scheduled recordin&gs"), 0, wx.LEFT | wx.TOP, 10
         )
         # The requirement nobody discovers until a recording starts three
         # minutes late: a schedule is a thread inside a running app, so a
@@ -188,13 +188,13 @@ class ScheduleRecordingDialog:
         self._edit_btn = wx.Button(self._surface, label="&Edit")
         self._edit_btn.SetName("Edit the selected schedule")
         self._edit_btn.Enable(False)
-        self._duplicate_btn = wx.Button(self._surface, label="D&uplicate")
+        self._duplicate_btn = wx.Button(self._surface, label="Du&plicate")
         self._duplicate_btn.SetName("Duplicate the selected schedule for a quick variation")
         self._duplicate_btn.Enable(False)
         self._toggle_btn = wx.Button(self._surface, label="Disab&le")
         self._toggle_btn.SetName("Enable or disable the selected schedule")
         self._toggle_btn.Enable(False)
-        self._remove_btn = wx.Button(self._surface, label="&Remove")
+        self._remove_btn = wx.Button(self._surface, label="Rem&ove")
         self._remove_btn.SetName("Remove the selected schedule")
         self._remove_btn.Enable(False)
         for btn in (self._edit_btn, self._duplicate_btn, self._toggle_btn, self._remove_btn):
@@ -262,7 +262,7 @@ class ScheduleRecordingDialog:
 
         default_date = datetime.now() + timedelta(minutes=5)
         grid.Add(
-            wx.StaticText(self._surface, label="&Date (once only):"), 0, wx.ALIGN_CENTER_VERTICAL
+            wx.StaticText(self._surface, label="Date (on&ce only):"), 0, wx.ALIGN_CENTER_VERTICAL
         )
         self._date_ctrl = wx.TextCtrl(self._surface, value=default_date.strftime("%Y-%m-%d"))
         self._date_ctrl.SetName("Date for a one-time schedule, as YYYY-MM-DD")
@@ -294,7 +294,7 @@ class ScheduleRecordingDialog:
         self._hours_ctrl.SetName("Recording length, hours (0 to 24)")
         grid.Add(self._hours_ctrl, 0)
 
-        grid.Add(wx.StaticText(self._surface, label="and &minutes:"), 0, wx.ALIGN_CENTER_VERTICAL)
+        grid.Add(wx.StaticText(self._surface, label="and m&inutes:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._minutes_ctrl = wx.SpinCtrl(self._surface, min=0, max=59)
         self._minutes_ctrl.SetValue(0)
         self._minutes_ctrl.SetName("Recording length, minutes (0 to 59), added to the hours")
@@ -312,7 +312,7 @@ class ScheduleRecordingDialog:
             "Saves the form as a scheduled recording -- or saves your changes, "
             "when you are editing an existing one; the label says which."
         )
-        self._new_btn = wx.Button(self._surface, label="N&ew")
+        self._new_btn = wx.Button(self._surface, label="&New")
         self._new_btn.SetName("Clear the form and stop editing")
         self._new_btn.Enable(False)
         btn_row.Add(self._add_btn, 0, wx.RIGHT, 6)

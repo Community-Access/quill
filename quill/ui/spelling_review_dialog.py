@@ -119,7 +119,7 @@ class SpellingReviewDialog:
 
         # Change-to field
         change_row = wx.BoxSizer(wx.HORIZONTAL)
-        change_label = wx.StaticText(self.dialog, label="Chan&ge to:")
+        change_label = wx.StaticText(self.dialog, label="Change &to:")
         self._change_to = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
         self._change_to.SetName("Change to")
         change_row.Add(change_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)

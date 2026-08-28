@@ -160,7 +160,7 @@ class AITranslationDialog:
         self._copy_btn = wx.Button(self.dialog, label="&Copy to Clipboard")
         self._replace_btn = wx.Button(self.dialog, label="&Replace Original")
         self._new_doc_btn = wx.Button(self.dialog, label="Open as &New Document")
-        self._close_btn = wx.Button(self.dialog, label="C&lose")
+        self._close_btn = wx.Button(self.dialog, label="Close")
         apply_modal_ids(
             self.dialog,
             affirmative_id=self._close_btn.GetId(),

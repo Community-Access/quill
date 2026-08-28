@@ -91,6 +91,11 @@ class TranslatedSpeechExportDialog:
             choices=["MP3 (with chapter markers)", "M4B audiobook (native chapters)", "WAV"],
         )
         set_accessible_name(self._format, "Output format")
+        self._format.SetHelpText(
+            "The audio format each translated edition is written in: MP3 with "
+            "chapter markers (the default), M4B with native chapters, or "
+            "plain WAV."
+        )
         self._format.SetSelection(0)
         root.Add(self._format, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
@@ -102,10 +107,23 @@ class TranslatedSpeechExportDialog:
         add_row = wx.BoxSizer(wx.HORIZONTAL)
         self._lang = wx.Choice(self.dialog, choices=[name for name, _c in self._lang_pairs])
         self._lang.SetName("Translation language")
+        self._lang.SetHelpText(
+            "A language to speak the document in. Choosing one reloads the "
+            "voice list beside it with the voices that speak that language."
+        )
         self._lang.Bind(wx.EVT_CHOICE, lambda _e: self._reload_voices())
         self._voice = wx.Choice(self.dialog, choices=[])
         self._voice.SetName("Translation voice")
+        self._voice.SetHelpText(
+            "The voice that reads the chosen language's edition -- local "
+            "engines first, then premium cloud voices that need their "
+            "provider's API key at run time."
+        )
         add = wx.Button(self.dialog, label="A&dd")
+        add.SetHelpText(
+            "Adds the chosen language and voice to the export list; the same "
+            "pair is not added twice."
+        )
         add.Bind(wx.EVT_BUTTON, lambda _e: self._on_add())
         add_row.Add(self._lang, 1, wx.EXPAND | wx.RIGHT, 6)
         add_row.Add(self._voice, 2, wx.EXPAND | wx.RIGHT, 6)
@@ -114,10 +132,15 @@ class TranslatedSpeechExportDialog:
 
         self._list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._list.SetName("Languages to export")
+        self._list.SetHelpText(
+            "The languages the document will be exported in, with the voice "
+            "that reads each. Export needs at least one row here."
+        )
         apply_listbox_activation(self._list, lambda _e: self._lang.SetFocus())
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         rm_row = wx.BoxSizer(wx.HORIZONTAL)
         remove = wx.Button(self.dialog, label="Re&move")
+        remove.SetHelpText("Drops the highlighted language from the export list.")
         remove.Bind(wx.EVT_BUTTON, lambda _e: self._on_remove())
         rm_row.Add(remove, 0, wx.RIGHT, 6)
         rm_row.Add(
@@ -127,6 +150,11 @@ class TranslatedSpeechExportDialog:
             self.dialog, choices=["AI provider (cloud)", "LibreTranslate (local)"]
         )
         set_accessible_name(self._provider, "Translate with")
+        self._provider.SetHelpText(
+            "Who does the translating: your configured AI provider (text goes "
+            "to its cloud service), or a LibreTranslate server you run "
+            "locally, which keeps the text on your own machine."
+        )
         self._provider.SetSelection(0)
         rm_row.Add(self._provider, 0, wx.LEFT, 6)
         root.Add(rm_row, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -134,8 +162,20 @@ class TranslatedSpeechExportDialog:
         # --- Buttons ---
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         ok = wx.Button(self.dialog, id=wx.ID_OK, label="&Export")
+        ok.SetHelpText(
+            "Starts the export: the document is translated into each listed "
+            "language and spoken by its voice, and every edition lands beside "
+            "the source, named for its language. A cost estimate is confirmed "
+            "first when a metered cloud service is involved."
+        )
         cancel = wx.Button(self.dialog, id=wx.ID_CANCEL)
+        cancel.SetHelpText("Closes the window without exporting anything.")
         open_studio = wx.Button(self.dialog, label="Open in the &Wizard")
+        open_studio.SetHelpText(
+            "Closes this window and opens the full Audio Studio wizard "
+            "instead, where a whole folder can be narrated and a chaptered "
+            "audiobook built and published."
+        )
         open_studio.SetToolTip(
             "Close this dialog and open the Audio Studio wizard, where you can "
             "build a chaptered audiobook and publish it."

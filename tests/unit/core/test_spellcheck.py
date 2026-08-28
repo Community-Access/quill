@@ -60,6 +60,27 @@ def test_add_word_to_scope_updates_combined_dictionary(
     assert {"qwertyword", "docword", "projword"}.issubset(combined)
 
 
+def test_hand_edited_dictionary_is_recovered_not_wiped(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A taught dictionary is an asset the user may edit by hand (magic2).
+
+    Someone who opens personal.json and saves it as a plain word list --
+    or breaks the JSON while editing -- must not silently lose every
+    taught word. The loader recovers it as one-word-per-line."""
+    monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
+    path = tmp_path / "dictionaries" / "personal.json"
+    path.parent.mkdir(parents=True)
+    # A hand-authored plain list, not JSON at all.
+    path.write_text("qwertyword\nzzgreat\n", encoding="utf-8")
+    words = spellcheck.load_scope_dictionary("personal", None, None)
+    assert words == {"qwertyword", "zzgreat"}
+    # JSON broken mid-edit: a trailing comma. Words still recovered.
+    path.write_text('[\n  "qwertyword",\n  "zzgreat",\n]\n', encoding="utf-8")
+    words = spellcheck.load_scope_dictionary("personal", None, None)
+    assert words == {"qwertyword", "zzgreat"}
+
+
 def test_suggest_words_returns_close_matches() -> None:
     suggestions = suggest_words("navigtion", {"navigation", "navigator"})
     assert "navigation" in suggestions

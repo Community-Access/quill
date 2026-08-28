@@ -53,6 +53,15 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
 
     def __init__(self, *, safe_mode: bool = False, initial_paths: list[Path] | None = None) -> None:
         self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(620, 520))
+        # F1 context help with the Media Player's authored purpose catalogue.
+        # The app shell already activated the shared engine (provider +
+        # dialog-contract hook + main-frame F1); this re-activation swaps in
+        # the player's window-purpose resolver so the authored paragraphs
+        # lead every answer instead of the generic sentence
+        # (GATE-PLAYER-HELP, 2026-08-27).
+        from quill.ui.media import context_help
+
+        context_help.activate()
         from quill.ui.window_menu import WindowManager
 
         self._windows = WindowManager(wx)
@@ -276,6 +285,11 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
             panel, style=wx.TE_READONLY | wx.TE_MULTILINE, size=(-1, 44)
         )
         set_accessible_name(self._now_playing, "Now playing")
+        self._now_playing.SetHelpText(
+            "The title of the open book or file, as read-only text you can "
+            "arrow through and copy. It fills in when you open something; "
+            "nothing is typed here."
+        )
         self._now_playing.SetValue("Open a file or a folder to begin.")
         root.Add(self._now_playing, 0, wx.EXPAND | wx.ALL, 8)
 
@@ -295,6 +309,12 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
             style=wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_SINGLE,
         )
         set_accessible_name(self._chapter_tree, "Chapters")
+        self._chapter_tree.SetHelpText(
+            "The book's table of contents. Enter on a heading jumps playback "
+            "there -- a seek within the current file, or the right section "
+            "file of a multi-file book. DAISY books keep their heading "
+            "levels; flat MP3 or M4B chapters are a single level."
+        )
         self._chapter_root = self._chapter_tree.AddRoot("Chapters")
         self._chapter_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_chapter_activate)
         ch_sizer.Add(self._chapter_tree, 1, wx.EXPAND | wx.ALL, 6)
@@ -307,11 +327,24 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
         bm_sizer = wx.BoxSizer(wx.VERTICAL)
         self._bookmarks_list = wx.ListBox(bm_page, name="Bookmarks")
         set_accessible_name(self._bookmarks_list, "Bookmarks")
+        self._bookmarks_list.SetHelpText(
+            "Your bookmarks in this book, each with its note and position. "
+            "Enter jumps playback to the highlighted bookmark; a bookmark "
+            "with a note is read aloud when playback reaches it again."
+        )
         apply_listbox_activation(self._bookmarks_list, self._on_bookmark_activate)
         bm_sizer.Add(self._bookmarks_list, 1, wx.EXPAND | wx.ALL, 6)
         bm_row = wx.BoxSizer(wx.HORIZONTAL)
         self._add_bm_btn = wx.Button(bm_page, label="&Add Bookmark")
+        self._add_bm_btn.SetHelpText(
+            "Drop a bookmark at the current playback position. Add Bookmark "
+            "with Note in the Navigation menu attaches words to it."
+        )
         self._remove_bm_btn = wx.Button(bm_page, label="&Remove Bookmark")
+        self._remove_bm_btn.SetHelpText(
+            "Delete the highlighted bookmark from this book. Only the "
+            "bookmark goes -- the audio and your position are untouched."
+        )
         self._add_bm_btn.Bind(wx.EVT_BUTTON, self._on_add_bookmark)
         self._remove_bm_btn.Bind(wx.EVT_BUTTON, self._on_remove_bookmark)
         bm_row.Add(self._add_bm_btn, 0, wx.RIGHT, 6)

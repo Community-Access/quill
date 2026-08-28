@@ -156,14 +156,33 @@ class AudioStudioWizard(wx.Dialog):
         nav.AddStretchSpacer()
 
         self._back_btn = wx.Button(self, label=_("< &Back"), name="audio_studio.back")
+        self._back_btn.SetHelpText(
+            "Returns to the previous step. Nothing you have answered is lost."
+        )
         self._next_btn = wx.Button(self, label=_("&Next >"), name="audio_studio.next")
+        self._next_btn.SetHelpText(
+            "Moves to the next step, after checking this one is complete; an "
+            "incomplete step says what it still needs."
+        )
         self._skip_btn = wx.Button(
             self, label=_("Skip to su&mmary"), name="audio_studio.skip_to_summary"
         )
+        self._skip_btn.SetHelpText(
+            "Jumps straight to the summary, accepting the remaining steps' "
+            "current answers -- the fast path when saved defaults already "
+            "fit. It stops at the first step that still needs something."
+        )
         self._start_btn = wx.Button(self, wx.ID_OK, label=_("&Start"), name="audio_studio.start")
+        self._start_btn.SetHelpText(
+            "Begins the run with everything the pages collected; progress is "
+            "announced and the window can be minimized while it works. In "
+            "the edit journey this reads Open in Workbench and opens the "
+            "chosen book instead."
+        )
         self._cancel_btn = wx.Button(
             self, wx.ID_CANCEL, label=_("Cancel"), name="audio_studio.cancel"
         )
+        self._cancel_btn.SetHelpText("Closes the wizard without starting anything.")
         nav.Add(self._back_btn, flag=wx.LEFT, border=4)
         nav.Add(self._next_btn, flag=wx.LEFT, border=4)
         nav.Add(self._skip_btn, flag=wx.LEFT, border=4)

@@ -53,7 +53,7 @@ class CopyTrayDialog:
 
         # -- Left: slot list --
         left = wx.BoxSizer(wx.VERTICAL)
-        left.Add(wx.StaticText(self.dialog, label="&Slots"), 0, wx.BOTTOM, 2)
+        left.Add(wx.StaticText(self.dialog, label="Sl&ots"), 0, wx.BOTTOM, 2)
         self._listbox = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._listbox.SetName("Copy tray slots")
         self._rebuild_list(keep=False)
@@ -68,7 +68,7 @@ class CopyTrayDialog:
 
         lbl_row = wx.BoxSizer(wx.HORIZONTAL)
         lbl_row.Add(
-            wx.StaticText(self.dialog, label="&Label:"),
+            wx.StaticText(self.dialog, label="L&abel:"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             4,
@@ -97,7 +97,7 @@ class CopyTrayDialog:
         self._btn_save = wx.Button(self.dialog, wx.ID_ANY, label="&Save Changes")
         self._btn_clear = wx.Button(self.dialog, wx.ID_ANY, label="Clea&r Slot")
         self._btn_pin = wx.Button(self.dialog, wx.ID_ANY, label="P&in")
-        btn_close = wx.Button(self.dialog, wx.ID_CANCEL, label="C&lose")
+        btn_close = wx.Button(self.dialog, wx.ID_CANCEL, label="Close")
 
         for btn in (
             self._btn_paste,

@@ -49,11 +49,13 @@ class StudioPage(wx.Panel):
         self.sizer.Add(wx.StaticText(self, label=text), 0, wx.LEFT | wx.TOP, 12)
 
     def add_ms_spin(
-        self, grid: wx.FlexGridSizer, text: str, value: int, *, hi: int = 10000
+        self, grid: wx.FlexGridSizer, text: str, value: int, *, hi: int = 10000, help_text: str = ""
     ) -> wx.SpinCtrl:
         grid.Add(wx.StaticText(self, label=text), 0, wx.ALIGN_CENTER_VERTICAL)
         spin = wx.SpinCtrl(self, min=0, max=hi, initial=int(value))
         set_accessible_name(spin, text.replace("&", ""))
+        if help_text:
+            spin.SetHelpText(help_text)
         grid.Add(spin, 0)
         return spin
 

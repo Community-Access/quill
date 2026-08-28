@@ -72,7 +72,7 @@ class LinkListDialog:
         self._open_btn = wx.Button(self.dialog, label="&Open in Browser")
         self._copy_btn = wx.Button(self.dialog, label="&Copy Address")
         self._copy_all_btn = wx.Button(self.dialog, label="Copy &All")
-        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cl&ose")
+        close_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Close")
         bind_close_button(self.dialog, close_btn)
         for button in (self._open_btn, self._copy_btn, self._copy_all_btn):
             button.Enable(bool(self._links))

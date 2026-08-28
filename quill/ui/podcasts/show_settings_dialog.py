@@ -228,7 +228,7 @@ class ShowSettingsDialog:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         ok_btn = wx.Button(self.dialog, wx.ID_OK, "&OK")
-        clear_btn = wx.Button(self.dialog, label="&Follow the Shared Defaults")
+        clear_btn = wx.Button(self.dialog, label="Follow &the Shared Defaults")
         clear_btn.SetName(settings_help.SHOW_HELP["reset"])
         clear_btn.SetHelpText(settings_help.SHOW_HELP["reset"])
         cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")

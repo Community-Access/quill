@@ -103,7 +103,7 @@ class AIThesaurusDialog:
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._replace_btn = wx.Button(self.dialog, label="&Replace Word")
         self._copy_btn = wx.Button(self.dialog, label="&Copy Synonym")
-        close_btn = wx.Button(self.dialog, wx.ID_CLOSE, label="C&lose")
+        close_btn = wx.Button(self.dialog, wx.ID_CLOSE, label="Close")
         apply_modal_ids(
             self.dialog,
             affirmative_id=close_btn.GetId(),

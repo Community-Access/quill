@@ -14273,13 +14273,13 @@ class MainFrame(
         chooser.SetSelection(0)
         body.Add(chooser, 1, wx.ALL | wx.EXPAND, 8)
 
-        body.Add(wx.StaticText(dialog, label="&Preview"), 0, wx.LEFT | wx.RIGHT, 8)
+        body.Add(wx.StaticText(dialog, label="Pre&view"), 0, wx.LEFT | wx.RIGHT, 8)
         preview = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         preview.SetName("Snippet preview")
         body.Add(preview, 1, wx.ALL | wx.EXPAND, 8)
 
         insert_button = wx.Button(dialog, id=wx.ID_OK, label="&Insert")
-        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="&Cancel")
+        cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
         button_sizer = wx.StdDialogButtonSizer()
         button_sizer.AddButton(insert_button)
         button_sizer.AddButton(cancel_button)

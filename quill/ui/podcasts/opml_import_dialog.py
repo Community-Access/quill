@@ -108,7 +108,7 @@ class OpmlImportDialog:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._start_btn = wx.Button(self.dialog, wx.ID_OK, "&Import")
-        self._cancel_check_btn = wx.Button(self.dialog, label="Stop &Checking")
+        self._cancel_check_btn = wx.Button(self.dialog, label="S&top Checking")
         self._cancel_check_btn.SetName(
             "Stop checking feeds and report what has been checked so far"
         )

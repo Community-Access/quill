@@ -125,7 +125,7 @@ class RecordingSettingsDialog:
 
         reconnect_box = wx.StaticBoxSizer(wx.VERTICAL, self.dialog, "If the connection drops")
         self._reconnect_check = wx.CheckBox(
-            self.dialog, label="&Reconnect and keep recording automatically"
+            self.dialog, label="Reconnect and &keep recording automatically"
         )
         self._reconnect_check.SetName(settings_help.HELP["reconnect"])
         self._reconnect_check.SetValue(settings.reconnect_enabled)
@@ -139,7 +139,7 @@ class RecordingSettingsDialog:
         self._reconnect_attempts_ctrl.SetName(settings_help.HELP["reconnect_attempts"])
         reconnect_grid.Add(self._reconnect_attempts_ctrl, 0)
         reconnect_grid.Add(
-            wx.StaticText(self.dialog, label="Seconds &between attempts:"),
+            wx.StaticText(self.dialog, label="Se&conds between attempts:"),
             0,
             wx.ALIGN_CENTER_VERTICAL,
         )
@@ -151,7 +151,7 @@ class RecordingSettingsDialog:
         root.Add(reconnect_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._apply_enhancements_check = wx.CheckBox(
-            self.dialog, label="Apply Sound Enhancements to &recordings"
+            self.dialog, label="Apply Sound &Enhancements to recordings"
         )
         self._apply_enhancements_check.SetName(settings_help.HELP["filters"])
         self._apply_enhancements_check.SetValue(settings.apply_sound_enhancements)

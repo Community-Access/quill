@@ -119,6 +119,12 @@ class ChapterWorkbenchDialog(wx.Dialog):
         )
         self._chapter_list = wx.ListBox(self, style=wx.LB_SINGLE)
         self._chapter_list.SetName(_("Chapters"))
+        self._chapter_list.SetHelpText(
+            "Every chapter of the book, numbered, with its start time and length. "
+            "Selecting a row loads its title into the Chapter title field; Enter "
+            "plays the chapter. Edits made with the buttons below apply to the "
+            "highlighted row and are written to disk only on Save."
+        )
         self._chapter_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_selected())
         apply_listbox_activation(self._chapter_list, lambda _e: self._play_selected())
         root.Add(self._chapter_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
@@ -127,21 +133,53 @@ class ChapterWorkbenchDialog(wx.Dialog):
         title_row.Add(wx.StaticText(self, label=_("Chapter t&itle:")), 0, wx.ALIGN_CENTER_VERTICAL)
         self._title_edit = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
         self._title_edit.SetName(_("Chapter title"))
+        self._title_edit.SetHelpText(
+            "The highlighted chapter's title, ready to edit. Type the new title "
+            "and press Enter (or the Rename button) to apply it to the selected "
+            "row. It cannot be empty, and nothing reaches the file until Save."
+        )
         self._title_edit.Bind(wx.EVT_TEXT_ENTER, lambda _e: self._on_rename())
         rename_btn = wx.Button(self, label=_("Re&name"))
+        rename_btn.SetHelpText(
+            "Applies the text in the Chapter title field to the highlighted "
+            "chapter. The same as pressing Enter in that field."
+        )
         rename_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_rename())
         title_row.Add(self._title_edit, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
         title_row.Add(rename_btn, 0)
         root.Add(title_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         surgery_row = wx.BoxSizer(wx.HORIZONTAL)
-        for label, handler in (
-            (_("&Split at playhead"), self._on_split),
-            (_("Set st&art to playhead"), self._on_retime),
-            (_("&Merge into previous"), self._on_merge),
-            (_("Rest&ore original"), self._on_restore),
+        for label, handler, help_text in (
+            (
+                _("&Split at playhead"),
+                self._on_split,
+                "Cuts the chapter the playhead is in into two at the playhead's "
+                "exact position; the new second half is titled New chapter. Play "
+                "to the boundary you want by ear, then press this.",
+            ),
+            (
+                _("Set st&art to playhead"),
+                self._on_retime,
+                "Moves the highlighted chapter's start to the playhead's exact "
+                "position -- the fix for a boundary that lands mid-sentence. The "
+                "previous chapter stretches or shrinks to meet it.",
+            ),
+            (
+                _("&Merge into previous"),
+                self._on_merge,
+                "Absorbs the highlighted chapter into the one before it: the "
+                "audio is untouched, one chapter marker fewer.",
+            ),
+            (
+                _("Rest&ore original"),
+                self._on_restore,
+                "Throws away every chapter edit made in this window and puts "
+                "back the list the book opened with. Tag edits are kept.",
+            ),
         ):
             btn = wx.Button(self, label=label)
+            btn.SetHelpText(help_text)
             btn.Bind(wx.EVT_BUTTON, lambda _e, h=handler: h())
             surgery_row.Add(btn, 0, wx.RIGHT, 6)
         root.Add(surgery_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
@@ -155,6 +193,12 @@ class ChapterWorkbenchDialog(wx.Dialog):
                 "for review; nothing is applied blind."
             )
         )
+        propose_btn.SetHelpText(
+            "Scans the recording for silences with ffmpeg and proposes chapter "
+            "boundaries at the silence midpoints. You choose the noise threshold "
+            "and minimum pause first; the proposal replaces the list for review, "
+            "and Restore original undoes it."
+        )
         propose_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_propose_from_silences())
         acx_btn = wx.Button(self, label=_("Check against &ACX"))
         acx_btn.SetToolTip(
@@ -162,6 +206,12 @@ class ChapterWorkbenchDialog(wx.Dialog):
                 "Measure the book against Audible's ACX submission window and hear "
                 "the verdict with plain recommendations for any failing criterion."
             )
+        )
+        acx_btn.SetHelpText(
+            "Measures this book against Audible's ACX submission window -- "
+            "loudness, true peak, and noise floor -- and shows the verdict with "
+            "plain recommendations for anything failing. Measurement only; the "
+            "file is not changed."
         )
         acx_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_check_acx())
         titles_btn = wx.Button(self, label=_("Propose AI tit&les..."))
@@ -172,6 +222,14 @@ class ChapterWorkbenchDialog(wx.Dialog):
                 "Proposals land in the list for review; nothing is applied blind."
             )
         )
+        titles_btn.SetHelpText(
+            "Transcribes the opening minute of each chapter with the local "
+            "speech model (the audio never leaves this computer), then sends "
+            "only that text to your configured AI for a short title per chapter. "
+            "You consent first, the proposals land in the list for review, and "
+            "Restore original undoes them. Needs an AI provider; unavailable in "
+            "Safe Mode."
+        )
         titles_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_propose_ai_titles())
         analysis_row.Add(propose_btn, 0, wx.RIGHT, 6)
         analysis_row.Add(titles_btn, 0, wx.RIGHT, 6)
@@ -180,8 +238,24 @@ class ChapterWorkbenchDialog(wx.Dialog):
 
         io_row = wx.BoxSizer(wx.HORIZONTAL)
         import_btn = wx.Button(self, label=_("Import chap&ters..."))
+        import_btn.SetHelpText(
+            "Replaces the chapter list with one read from a file: Audacity "
+            "labels, a timestamps list, a CUE sheet, Podcasting 2.0 JSON, or "
+            "CSV. The whole list is swapped for review; Restore original "
+            "undoes it, and nothing is saved until Save."
+        )
         export_btn = wx.Button(self, label=_("E&xport chapters..."))
+        export_btn.SetHelpText(
+            "Writes the chapter list to a file of your choosing -- Audacity "
+            "labels, timestamps, CUE sheet, Podcasting 2.0 JSON, or CSV -- for "
+            "other tools or a podcast host. The audio is untouched."
+        )
         episodes_btn = wx.Button(self, label=_("Split into &files..."))
+        episodes_btn.SetHelpText(
+            "Writes each chapter out as its own audio file, numbered, into a "
+            "folder you choose -- the reverse trip, for podcast episodes or "
+            "track-based players. The book itself is untouched."
+        )
         import_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_import())
         export_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_export())
         episodes_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_split_into_files())
@@ -202,21 +276,70 @@ class ChapterWorkbenchDialog(wx.Dialog):
         root.Add(wx.StaticText(self, label=_("Book details:")), 0, wx.LEFT | wx.TOP, 10)
         grid = wx.FlexGridSizer(cols=2, vgap=4, hgap=8)
         grid.AddGrowableCol(1, 1)
-        self._tag_album = self._tag_field(grid, _("Book ti&tle (album):"), book.tags.album)
-        self._tag_artist = self._tag_field(grid, _("A&uthor:"), book.tags.artist)
-        self._tag_narrator = self._tag_field(grid, _("Narrato&r:"), book.tags.album_artist)
-        self._tag_genre = self._tag_field(grid, _("&Genre:"), book.tags.genre)
-        self._tag_year = self._tag_field(grid, _("&Year:"), book.tags.year)
+        self._tag_album = self._tag_field(
+            grid,
+            _("Book ti&tle (album):"),
+            book.tags.album,
+            help_text=(
+                "The book's title, written to the album tag (and the title tag) "
+                "on Save -- it is the name every player shows for the book."
+            ),
+        )
+        self._tag_artist = self._tag_field(
+            grid,
+            _("A&uthor:"),
+            book.tags.artist,
+            help_text="The author, written to the artist tag on Save.",
+        )
+        self._tag_narrator = self._tag_field(
+            grid,
+            _("Narrato&r:"),
+            book.tags.album_artist,
+            help_text="The narrator, written to the album-artist tag on Save.",
+        )
+        self._tag_genre = self._tag_field(
+            grid,
+            _("&Genre:"),
+            book.tags.genre,
+            help_text='The genre tag, written on Save; audiobooks usually say "Audiobook".',
+        )
+        self._tag_year = self._tag_field(
+            grid,
+            _("&Year:"),
+            book.tags.year,
+            help_text="The release year tag, written on Save. Leave blank to omit it.",
+        )
         root.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._save_btn = wx.Button(self, label=_("&Save"))
+        self._save_btn.SetHelpText(
+            "Writes the chapter and tag edits into the MP3 in place -- only the "
+            "tags are rewritten, the audio is untouched. An M4B cannot be "
+            "rewritten in place, so this button is disabled for one; use Save "
+            "As instead."
+        )
         self._save_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_save())
         save_as_btn = wx.Button(self, label=_("Save &As..."))
+        save_as_btn.SetHelpText(
+            "Saves the edited book as a new file, losslessly, leaving the "
+            "original alone. For an M4B this is the only save; the audio is "
+            "copied without re-encoding."
+        )
         save_as_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_save_as())
         self._publish_btn = wx.Button(self, label=_("&Publish..."))
+        self._publish_btn.SetHelpText(
+            "Opens the Publish window for this book: a local podcast feed "
+            "file, an SFTP upload, or Auphonic post-production. Unsaved "
+            "chapter edits must be saved first."
+        )
         self._publish_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_publish())
         close_btn = wx.Button(self, wx.ID_CANCEL, label=_("Close"))
+        close_btn.SetHelpText(
+            "Closes the Workbench, remembering your listening position. "
+            "Unsaved chapter or tag edits are discarded -- press Save or Save "
+            "As first to keep them."
+        )
         btn_row.AddStretchSpacer()
         btn_row.Add(self._save_btn, 0, wx.RIGHT, 6)
         btn_row.Add(save_as_btn, 0, wx.RIGHT, 6)
@@ -248,10 +371,14 @@ class ChapterWorkbenchDialog(wx.Dialog):
 
     # -- helpers ---------------------------------------------------------------
 
-    def _tag_field(self, grid: wx.FlexGridSizer, label: str, value: str) -> wx.TextCtrl:
+    def _tag_field(
+        self, grid: wx.FlexGridSizer, label: str, value: str, *, help_text: str = ""
+    ) -> wx.TextCtrl:
         grid.Add(wx.StaticText(self, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
         ctrl = wx.TextCtrl(self, value=value)
         ctrl.SetName(label.replace("&", "").rstrip(":"))
+        if help_text:
+            ctrl.SetHelpText(help_text)
         grid.Add(ctrl, 0, wx.EXPAND)
         return ctrl
 

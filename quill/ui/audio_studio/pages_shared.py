@@ -52,14 +52,53 @@ class BookPage(StudioPage):
 
         grid = wx.FlexGridSizer(cols=2, vgap=4, hgap=8)
         grid.AddGrowableCol(1, 1)
-        self.title = self._field(grid, _("Book ti&tle:"), defaults.book_title)
-        self.author = self._field(grid, _("A&uthor:"), defaults.book_author)
-        self.narrator = self._field(grid, _("Narra&tor:"), defaults.book_narrator)
-        self.genre = self._field(grid, _("Gen&re:"), defaults.book_genre)
-        self.year = self._field(grid, _("Yea&r:"), defaults.book_year)
+        self.title = self._field(
+            grid,
+            _("Book ti&tle:"),
+            defaults.book_title,
+            help_text=(
+                "The book's title, written into its tags -- the name every "
+                "player shows. Look up book details below can fill it in from "
+                "the public catalogs, and the spoken credits read it aloud "
+                "when they are on."
+            ),
+        )
+        self.author = self._field(
+            grid,
+            _("A&uthor:"),
+            defaults.book_author,
+            help_text="The author, written into the book's tags and spoken by the credits.",
+        )
+        self.narrator = self._field(
+            grid,
+            _("Narra&tor:"),
+            defaults.book_narrator,
+            help_text=(
+                "The narrator credit, written into the book's tags. For a "
+                "narrated run this is usually the voice's name or your own."
+            ),
+        )
+        self.genre = self._field(
+            grid,
+            _("Gen&re:"),
+            defaults.book_genre,
+            help_text='The genre tag; the default "Audiobook" is what most players expect.',
+        )
+        self.year = self._field(
+            grid,
+            _("Yea&r:"),
+            defaults.book_year,
+            help_text="The release year tag. Leave blank to omit it.",
+        )
         self.sizer.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 12)
 
         lookup_btn = wx.Button(self, label=_("Look up book detai&ls..."))
+        lookup_btn.SetHelpText(
+            "Searches Open Library and MusicBrainz -- free, public book "
+            "catalogs -- for the typed title and fills in author, genre, year, "
+            "and optionally the cover. It asks before going online, and only "
+            "the title and author you typed are sent."
+        )
         lookup_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_lookup())
         self.sizer.Add(lookup_btn, 0, wx.LEFT | wx.TOP, 12)
         self._lookup_consented = False
@@ -68,7 +107,14 @@ class BookPage(StudioPage):
         cover_row = wx.BoxSizer(wx.HORIZONTAL)
         self.cover = wx.TextCtrl(self, value=defaults.book_cover_path)
         self.cover.SetName(_("Cover image"))
+        self.cover.SetHelpText(
+            "The path of a JPEG or PNG embedded as the book's cover art. "
+            "Optional: blank lets a cover image already sitting in the source "
+            "folder be picked up automatically, and Look up book details can "
+            "download one."
+        )
         cover_browse = wx.Button(self, label=_("Browse co&ver..."))
+        cover_browse.SetHelpText("Picks the cover image file with the system file chooser.")
         cover_browse.Bind(wx.EVT_BUTTON, self._on_browse_cover)
         cover_row.Add(self.cover, 1, wx.EXPAND | wx.RIGHT, 6)
         cover_row.Add(cover_browse, 0)
@@ -81,6 +127,12 @@ class BookPage(StudioPage):
             choices=[_("M4B audiobook (native chapters)"), _("MP3 (with chapter markers)")],
         )
         self.format.SetName(_("Book format"))
+        self.format.SetHelpText(
+            "The assembled book's format: M4B, the audiobook standard with "
+            "native chapters (the default), or MP3 with chapter markers for "
+            "players that cannot open an M4B. Changing it also fixes the "
+            "save-as path's extension."
+        )
         self.format.SetSelection(BOOK_FORMAT_INDEX.get(defaults.book_format, 0))
         self.format.Bind(wx.EVT_CHOICE, lambda _e: self._sync_output_suffix())
         fmt_row.Add(self.format, 0, wx.LEFT, 6)
@@ -92,10 +144,24 @@ class BookPage(StudioPage):
 
         polish_grid = wx.FlexGridSizer(cols=2, vgap=4, hgap=8)
         self.fade_in = self._ms_spin(
-            polish_grid, _("Fade &in at each chapter start (ms):"), defaults.book_fade_in_ms
+            polish_grid,
+            _("Fade &in at each chapter start (ms):"),
+            defaults.book_fade_in_ms,
+            help_text=(
+                "Fades each chapter in from silence over this many "
+                "milliseconds, up to 10000. 0 (the default) starts each "
+                "chapter at full volume."
+            ),
         )
         self.fade_out = self._ms_spin(
-            polish_grid, _("Fade out at each chapter &end (ms):"), defaults.book_fade_out_ms
+            polish_grid,
+            _("Fade out at each chapter &end (ms):"),
+            defaults.book_fade_out_ms,
+            help_text=(
+                "Fades each chapter out to silence over its last milliseconds, "
+                "up to 10000. 0 (the default) ends each chapter at full "
+                "volume."
+            ),
         )
         polish_grid.Add(
             wx.StaticText(self, label=_("Book temp&o (1.0 = as recorded):")),
@@ -108,6 +174,12 @@ class BookPage(StudioPage):
         from quill.ui.audio_studio.pages_base import set_accessible_name
 
         set_accessible_name(self.tempo, _("Book tempo"))
+        self.tempo.SetHelpText(
+            "Speeds up or slows down the whole book without changing pitch, "
+            "0.5 to 2.0 in steps of 0.05. 1.0 (the default) keeps the pace as "
+            "recorded -- baking a pace in here cannot be undone by the "
+            "player's own speed control."
+        )
         polish_grid.Add(self.tempo, 0)
         self.sizer.Add(polish_grid, 0, wx.LEFT | wx.TOP, 12)
         self.credits = wx.CheckBox(
@@ -143,7 +215,13 @@ class BookPage(StudioPage):
         out_row = wx.BoxSizer(wx.HORIZONTAL)
         self.output = wx.TextCtrl(self, value=defaults.book_output_path)
         self.output.SetName(_("Save the book as"))
+        self.output.SetHelpText(
+            "The full path the finished book is written to. Blank (the "
+            "default) saves it into the source folder, named after the book "
+            "title; the extension follows the format choice above."
+        )
         out_browse = wx.Button(self, label=_("Browse boo&k..."))
+        out_browse.SetHelpText("Picks where to save the book with the system file chooser.")
         out_browse.Bind(wx.EVT_BUTTON, self._on_browse_output)
         out_row.Add(self.output, 1, wx.EXPAND | wx.RIGHT, 6)
         out_row.Add(out_browse, 0)
@@ -165,19 +243,27 @@ class BookPage(StudioPage):
         ]
         self.sync_enabled()
 
-    def _field(self, grid: wx.FlexGridSizer, text: str, value: str) -> wx.TextCtrl:
+    def _field(
+        self, grid: wx.FlexGridSizer, text: str, value: str, *, help_text: str = ""
+    ) -> wx.TextCtrl:
         grid.Add(wx.StaticText(self, label=text), 0, wx.ALIGN_CENTER_VERTICAL)
         ctrl = wx.TextCtrl(self, value=value)
         ctrl.SetName(text.replace("&", "").rstrip(":"))
+        if help_text:
+            ctrl.SetHelpText(help_text)
         grid.Add(ctrl, 0, wx.EXPAND)
         return ctrl
 
-    def _ms_spin(self, grid: wx.FlexGridSizer, text: str, value: int) -> wx.SpinCtrl:
+    def _ms_spin(
+        self, grid: wx.FlexGridSizer, text: str, value: int, *, help_text: str = ""
+    ) -> wx.SpinCtrl:
         from quill.ui.audio_studio.pages_base import set_accessible_name
 
         grid.Add(wx.StaticText(self, label=text), 0, wx.ALIGN_CENTER_VERTICAL)
         spin = wx.SpinCtrl(self, min=0, max=10000, initial=max(0, int(value)))
         set_accessible_name(spin, text.replace("&", "").rstrip(":"))
+        if help_text:
+            spin.SetHelpText(help_text)
         grid.Add(spin, 0)
         return spin
 
@@ -364,10 +450,20 @@ class SummaryPage(StudioPage):
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
             name="audio_studio.summary_text",
         )
+        self._text.SetHelpText(
+            "Every choice from the earlier pages as plain sentences, one per "
+            "line, read-only. Arrow through it to review; press Back to "
+            "change anything, or Start to begin the run."
+        )
         self._text.SetMinSize(wx.Size(-1, 240))
         self.sizer.Add(self._text, proportion=1, flag=wx.EXPAND | wx.ALL, border=12)
         self._latest: BatchSpeechRequest | None = None
         save_job_btn = wx.Button(self, label=_("Save a &job file..."))
+        save_job_btn.SetHelpText(
+            "Saves this exact run as a portable .quilljob file -- editable in "
+            "any text editor -- so it can be repeated later from the wizard's "
+            "first page or Open Job File."
+        )
         save_job_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_save_job())
         self.sizer.Add(save_job_btn, 0, wx.LEFT | wx.BOTTOM, 12)
 

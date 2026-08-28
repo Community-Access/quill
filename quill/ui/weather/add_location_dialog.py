@@ -50,7 +50,7 @@ class AddLocationDialog:
         root.Add(
             wx.StaticText(
                 self.dialog,
-                label="&Search a ZIP code, city, county, or address, then pick a match:",
+                label="Search a &ZIP code, city, county, or address, then pick a match:",
             ),
             0,
             wx.ALL,
@@ -59,8 +59,20 @@ class AddLocationDialog:
         search_row = wx.BoxSizer(wx.HORIZONTAL)
         self._query = wx.TextCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
         set_accessible_name(self._query, "Search: ZIP, city, county, or address")
+        self._query.SetHelpText(
+            "The place to look up. Any of these forms works: a ZIP code "
+            "(56301), a city (Saint Cloud MN), a county, or a street "
+            "address. A bare latitude,longitude pair (45.56,-94.16) is used "
+            "exactly as typed, with no search. Enter searches; clearing the "
+            "field clears the results."
+        )
         search_row.Add(self._query, 1, wx.EXPAND | wx.RIGHT, 6)
         self._search_btn = wx.Button(self.dialog, label="&Search")
+        self._search_btn.SetHelpText(
+            "Look the typed place up in the free OpenStreetMap US search "
+            "and fill the results list with the matching places. The search "
+            "runs in the background; the status line below reports progress."
+        )
         search_row.Add(self._search_btn, 0)
         root.Add(search_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
@@ -68,6 +80,11 @@ class AddLocationDialog:
         root.Add(results_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
         self._results_list = wx.ListBox(self.dialog)
         set_accessible_name(self._results_list, "Search results, choose a place to add")
+        self._results_list.SetHelpText(
+            "The places that matched your search, each with enough of its "
+            "state and county to tell same-named towns apart. Arrow to the "
+            "one you mean; Enter or Add Selected saves it."
+        )
         root.Add(self._results_list, 1, wx.EXPAND | wx.ALL, 10)
 
         name_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -79,6 +96,11 @@ class AddLocationDialog:
         )
         self._name = wx.TextCtrl(self.dialog)
         set_accessible_name(self._name, "Friendly name for this location, for example Home")
+        self._name.SetHelpText(
+            "What Quill Weather should call this place -- Home, Work, "
+            "Mom's -- in lists, reports, and spoken alerts. Optional: left "
+            "empty, the place's own name from the search result is used."
+        )
         name_row.Add(self._name, 1, wx.EXPAND)
         root.Add(name_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
@@ -88,10 +110,17 @@ class AddLocationDialog:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._add_btn = wx.Button(self.dialog, wx.ID_OK, "&Add Selected")
+        self._add_btn.SetHelpText(
+            "Save the highlighted place to your locations and close this "
+            "window. Enabled once the results list has something chosen; "
+            "the first location you save becomes the primary one."
+        )
         self._add_btn.Enable(False)
         btn_row.AddStretchSpacer()
         btn_row.Add(self._add_btn, 0, wx.RIGHT, 6)
-        btn_row.Add(wx.Button(self.dialog, wx.ID_CANCEL, "Cancel"))
+        cancel_btn = wx.Button(self.dialog, wx.ID_CANCEL, "Cancel")
+        cancel_btn.SetHelpText("Close without saving anything. Escape does the same.")
+        btn_row.Add(cancel_btn)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
         self.dialog.SetSizer(root)
 

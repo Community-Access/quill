@@ -153,7 +153,7 @@ class InsertImageDialog:
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
         self._btn_insert = wx.Button(self.dialog, wx.ID_OK, label="&Insert")
-        btn_cancel = wx.Button(self.dialog, wx.ID_CANCEL, label="C&ancel")
+        btn_cancel = wx.Button(self.dialog, wx.ID_CANCEL, label="Cancel")
         btn_row.AddStretchSpacer(1)
         btn_row.Add(self._btn_insert, 0, wx.RIGHT, 4)
         btn_row.Add(btn_cancel, 0)

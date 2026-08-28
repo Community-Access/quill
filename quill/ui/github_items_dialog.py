@@ -226,7 +226,7 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
 
         # Filter row: View / Show / State / Sort / List mode
         filt = wx.BoxSizer(wx.HORIZONTAL)
-        filt.Add(wx.StaticText(panel, label="&View:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        filt.Add(wx.StaticText(panel, label="V&iew:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._view_choice = wx.Choice(panel, choices=[label for _, label in VIEWS])
         self._view_choice.SetName("View")
         self._view_choice.SetSelection(0)
@@ -238,13 +238,13 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
         self._show_choice.SetSelection(0)
         filt.Add(self._show_choice, 0, wx.RIGHT, 10)
 
-        filt.Add(wx.StaticText(panel, label="&State:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        filt.Add(wx.StaticText(panel, label="S&tate:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._state_choice = wx.Choice(panel, choices=["Open", "Closed", "All"])
         self._state_choice.SetName("State filter")
         self._state_choice.SetSelection(0)
         filt.Add(self._state_choice, 0, wx.RIGHT, 10)
 
-        filt.Add(wx.StaticText(panel, label="&Sort:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+        filt.Add(wx.StaticText(panel, label="S&ort:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         self._sort_choice = wx.Choice(panel, choices=[label for _, label in SORT_ORDERS])
         self._sort_choice.SetName("Sort order")
         self._sort_choice.SetSelection(0)
@@ -305,7 +305,7 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
         )
         self._summarize_btn = wx.Button(panel, label="Summari&ze")
         self._summarize_btn.SetName("Summarize the selected discussion with AI")
-        self._compare_btn = wx.Button(panel, label="Com&pare...")
+        self._compare_btn = wx.Button(panel, label="&Compare...")
         self._compare_btn.SetName(
             "Compare two branches: ahead/behind counts, commits, and changed files"
         )

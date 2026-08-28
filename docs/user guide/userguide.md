@@ -123,6 +123,27 @@ Press `F1` on any focusable control — a dialog field, a button, a menu item, t
 
 See [Context-Sensitive Help (F1)](#context-sensitive-help-f1) for full details.
 
+**F1 works the same way in every Quill app** -- Radio, Cast, the Media Player,
+Audio Studio, Inkwell, Weather, the Converter and Beacon -- and it answers two
+questions at once. First it says what the *window* you are standing in is for,
+in a sentence or two written for that window. Then it describes the *control*
+under your cursor: what it wants, what format it expects, what its default is,
+and what changing it affects. A field asking for a number of seconds says so,
+and says which number it starts at.
+
+Controls whose own name already teaches -- "Reload the highlighted source from
+the internet" -- answer with that name plus a line on how to drive a control of
+that kind ("A list: Up and Down move between rows, Enter acts on the row, and
+Shift+F10 lists everything else you can do to it"). Nothing answers F1 with
+silence.
+
+If you would rather read it all at once than press F1 in each place, every
+authored sentence in the family is collected in one document:
+[the F1 help reference](../f1-help-reference.md). The default keyboard shortcuts
+have a companion document of the same kind:
+[the keyboard reference](../keyboard-reference.md). Both are generated from the
+app itself, so they cannot fall out of step with what QUILL actually does.
+
 ### The QUILL key
 
 The **QUILL key** is `Ctrl+Shift+Grave` (the back-tick/grave key above Tab). It is a layered prefix chord that opens most of QUILL's power features without ever leaving the keyboard.

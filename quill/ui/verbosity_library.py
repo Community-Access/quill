@@ -54,7 +54,7 @@ class VerbosityLibraryDialog:
 
         name_row = wx.BoxSizer(wx.HORIZONTAL)
         name_row.Add(
-            wx.StaticText(self.dialog, label="&Name:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+            wx.StaticText(self.dialog, label="N&ame:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
         )
         self._name = wx.TextCtrl(self.dialog)
         self._name.SetName("Template name")

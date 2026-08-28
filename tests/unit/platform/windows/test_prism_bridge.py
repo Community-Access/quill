@@ -303,3 +303,64 @@ def test_macos_announce_error_logged(monkeypatch, caplog) -> None:
 
     assert result is None
     assert any("VoiceOver" in r.message for r in caplog.records)
+
+
+def test_exactly_one_leg_ever_delivers_a_message(monkeypatch) -> None:
+    """First answer wins, and nothing downstream also speaks (magic2 audit).
+
+    EdSharp's ``Say.cs`` rule, imported 2026-08-27: the chain (Prism ->
+    accessible_output2 -> UIA notification -> SAPI self-voice -> status bar)
+    stops at the first leg that answers, so a message is never delivered
+    twice. This pins single delivery with counters on every leg at once --
+    the individual fallback tests each prove their own leg works; this one
+    proves the *others stay silent* when an earlier leg answers.
+    """
+    deliveries: list[str] = []
+
+    backend = _FakeBackend(runtime=True)
+    original_speak = backend.speak
+
+    def counting_speak(message: str, interrupt: bool = False) -> None:
+        deliveries.append("prism")
+        original_speak(message, interrupt)
+
+    backend.speak = counting_speak  # type: ignore[method-assign]
+    prism_module = types.SimpleNamespace(Context=lambda: _FakeContext(backend))
+    monkeypatch.setattr(
+        "quill.platform.windows.prism_bridge.import_module",
+        lambda name: prism_module if name == "prism" else None,
+    )
+
+    class _CountingAO2:
+        def speak(self, message: str, interrupt: bool = False) -> None:
+            deliveries.append("ao2")
+
+    monkeypatch.setattr(
+        "quill.platform.windows.prism_bridge._ao2_live_screen_reader",
+        lambda: (_CountingAO2(), "JAWS", _CountingAO2()),
+    )
+    monkeypatch.setattr(
+        "quill.platform.windows.narrator_announce.announce",
+        lambda message, important=False: deliveries.append("uia") or True,
+    )
+    monkeypatch.setattr(
+        "quill.platform.windows.prism_bridge._enqueue_tts",
+        lambda message: deliveries.append("sapi"),
+    )
+
+    # With Prism live, every other leg -- ao2, UIA, SAPI -- must stay silent.
+    engine = AnnouncementEngine("auto")
+    assert engine.state().active_backend == "prism"
+    assert engine.announce("hello") is None
+    assert deliveries == ["prism"]
+
+    # With only ao2 live, UIA and SAPI must stay silent.
+    deliveries.clear()
+    monkeypatch.setattr(
+        "quill.platform.windows.prism_bridge.import_module",
+        lambda _name: (_ for _ in ()).throw(ImportError),
+    )
+    engine = AnnouncementEngine("auto")
+    assert engine.state().active_backend == "accessible_output2"
+    assert engine.announce("hello") is None
+    assert deliveries == ["ao2"]
