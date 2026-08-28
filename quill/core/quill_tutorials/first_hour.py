@@ -301,7 +301,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "remappable in the Keymap Editor -- and the sheet shows what "
                     "you have, not what shipped."
                 ),
-                keys=("Ctrl+Shift+Grave, ?"),
+                keys=("Ctrl+Shift+Grave, ?",),
                 hear="The chord list, filterable.",
             ),
             Step(

@@ -156,7 +156,7 @@ One chord that opens most of QUILL's power features, and the browse mode that tu
    - You should hear: Whatever that command announces.
 
 3. **Ask the chord list.** QUILL Key + ? opens the full cheat sheet of chords. Every chord is data from the keymap, which means every chord is remappable in the Keymap Editor -- and the sheet shows what you have, not what shipped.
-   - Keys: C, t, r, l, +, S, h, i, f, G, a, v, e, ,,  , ?
+   - Keys: Ctrl+Shift+Grave, ?
    - You should hear: The chord list, filterable.
 
 4. **Lock browse mode on.** Press the QUILL key twice and Quick Nav (browse) mode locks on: single letters move the cursor through the document's structure -- H for headings, P for paragraphs, S for sentences. Escape leaves.
