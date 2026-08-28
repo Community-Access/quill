@@ -22,6 +22,10 @@ from quill.core.startup_maintenance import run_pending_startup_maintenance
 from quill.stability.diagnostics import dump_all_thread_stacks, setup_fault_handler
 from quill.stability.logging_config import configure_logging
 
+#: ffmpeg powers speech audio export when present; the editor runs without it.
+#: Optional-component contract: app-profiles.json.
+OPTIONAL_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
+
 
 # Indirection so the excepthook helpers can be monkeypatched in tests
 # without re-importing the settings module on every call. Defaults
@@ -449,6 +453,10 @@ def main() -> int:
     # reports) so upgraders start fresh. Runs before configure_logging opens the
     # active log file, and only touches regenerable diagnostics -- never user work.
     run_pending_startup_maintenance()
+    # Hold refs on usable shared components so a family uninstall cannot GC them.
+    from quill.core import components
+
+    components.register_running_app("quill", OPTIONAL_COMPONENTS)
     # Add any on-demand-installed speech engine packs (e.g. Faster Whisper) to
     # sys.path so the speech registry can find them this session (#669 follow-up).
     try:

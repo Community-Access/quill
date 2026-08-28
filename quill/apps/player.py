@@ -40,6 +40,10 @@ _VERSION = "1.0.0"
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "player"
 
+#: libmpv delivers audio effects (DSP) and wider format reach when present;
+#: playback falls back to wx.media without it. Contract: app-profiles.json.
+OPTIONAL_COMPONENTS: tuple[str, ...] = ("mpv",)
+
 _OPEN_WILDCARD = (
     "Audio and audiobook files|*.mp3;*.m4b;*.m4a;*.aac;*.ogg;*.oga;*.opus;*.flac;"
     "*.wav;*.wma;*.aiff;*.aif|All files (*.*)|*.*"
@@ -1050,6 +1054,10 @@ def main() -> int:
     if not try_claim_primary_instance(slot=_IPC_SLOT):
         enqueue_open_request(None, slot=_IPC_SLOT)
         return 0
+
+    from quill.core import components
+
+    components.register_running_app("player", OPTIONAL_COMPONENTS)
 
     from quill.core.paths import app_data_dir
     from quill.stability.logging_config import configure_logging

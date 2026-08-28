@@ -45,6 +45,12 @@ _VERSION = "1.0.0"
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "converter"
 
+#: Shared-store components this app's job depends on: without ffmpeg,
+#: available_output_formats() is exactly ["wav"] -- an audio converter that
+#: cannot convert. Declared so the family's refcount registry knows an
+#: installed Converter still needs the shared copy (app-profiles.json).
+REQUIRED_COMPONENTS: tuple[str, ...] = ("ffmpeg",)
+
 _ADD_WILDCARD = (
     "Audio and video files|*.mp3;*.wav;*.flac;*.ogg;*.oga;*.opus;*.m4a;*.m4b;*.aac;"
     "*.wma;*.aiff;*.aif;*.alac;*.ape;*.wv;*.mka;*.amr;*.3gp;*.caf;"
@@ -447,6 +453,10 @@ def main() -> int:
     if not try_claim_primary_instance(slot=_IPC_SLOT):
         enqueue_open_request(None, slot=_IPC_SLOT)
         return 0
+
+    from quill.core import components
+
+    components.register_running_app("converter", REQUIRED_COMPONENTS)
 
     from quill.core.paths import app_data_dir
     from quill.stability.logging_config import configure_logging

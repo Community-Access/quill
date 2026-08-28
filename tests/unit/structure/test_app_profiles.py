@@ -53,8 +53,8 @@ def _has_main(path: Path) -> bool:
     return any(isinstance(node, ast.FunctionDef) and node.name == "main" for node in tree.body)
 
 
-def _required_components(path: Path) -> tuple[str, ...] | None:
-    """The module's ``REQUIRED_COMPONENTS`` literal, or None when it declares none."""
+def _declared_tuple(path: Path, name: str) -> tuple[str, ...] | None:
+    """The module's *name* tuple literal (e.g. ``REQUIRED_COMPONENTS``), or None."""
     tree = ast.parse(path.read_text(encoding="utf-8"))
     for node in tree.body:
         targets: list[ast.expr] = []
@@ -65,7 +65,7 @@ def _required_components(path: Path) -> tuple[str, ...] | None:
         else:
             continue
         for target in targets:
-            if isinstance(target, ast.Name) and target.id == "REQUIRED_COMPONENTS":
+            if isinstance(target, ast.Name) and target.id == name:
                 value = node.value
                 if value is None:
                     return None
@@ -101,6 +101,7 @@ def test_every_app_row_has_the_fields_a_build_would_read() -> None:
         assert isinstance(row.get("name"), str) and row["name"], app_id
         assert "entry" in row, app_id
         assert isinstance(row.get("components"), list), app_id
+        assert isinstance(row.get("optional_components"), list), app_id
         assert isinstance(row.get("layers"), list), app_id
 
 
@@ -151,10 +152,38 @@ def test_declared_components_match_the_modules_own_declaration() -> None:
         if entry is None:
             continue
         declared = tuple(row["components"])
-        actual = _required_components(_REPO_ROOT / entry) or ()
+        actual = _declared_tuple(_REPO_ROOT / entry, "REQUIRED_COMPONENTS") or ()
         assert declared == actual, (
             f"{app_id}: app-profiles.json says {list(declared)} but {entry} declares {list(actual)}"
         )
+
+
+def test_declared_optional_components_match_the_modules_own_declaration() -> None:
+    """Same drift control for the optional half.
+
+    ``optional_components`` are components an app uses when present but runs
+    without (Player and Beacon fall back to wx.media without libmpv; the editor
+    exports speech audio only when ffmpeg is around). The app holds a refcount
+    so the shared copy is not garbage-collected from under it; no installer
+    stages them. These were the three UNDECLARED MEDIA USE findings from the
+    2026-08-20 layering day, closed 2026-08-28.
+    """
+    for app_id, row in _profiles()["apps"].items():
+        entry = row["entry"]
+        if entry is None:
+            continue
+        declared = tuple(row["optional_components"])
+        actual = _declared_tuple(_REPO_ROOT / entry, "OPTIONAL_COMPONENTS") or ()
+        assert declared == actual, (
+            f"{app_id}: app-profiles.json says optional {list(declared)} "
+            f"but {entry} declares {list(actual)}"
+        )
+
+
+def test_no_component_is_both_required_and_optional() -> None:
+    for app_id, row in _profiles()["apps"].items():
+        overlap = sorted(set(row["components"]) & set(row["optional_components"]))
+        assert not overlap, f"{app_id}: {overlap} listed as both required and optional"
 
 
 # -- layers --------------------------------------------------------------------
