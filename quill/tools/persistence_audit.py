@@ -287,12 +287,12 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # only sense that matters -- losing it costs the record of past failures,
     # never a setting or anything the user made.
     "core/problem_log.py::save_problems": "cache",
-    # Where somebody had got to in each Quill Radio tutorial. Losing it costs
-    # a bookmark in a lesson and nothing else -- no setting, nothing the user
-    # made -- and an unknown slug is kept rather than dropped on read, so a
-    # renamed lesson in a later build cannot erase a place this build never
-    # heard of.
-    "core/radio/tutorial_progress.py::save_progress": "cache",
+    # Where somebody had got to in each tutorial, one file per app (radio,
+    # cast, weather, quill). Losing one costs a bookmark in a lesson and nothing
+    # else -- no setting, nothing the user made -- and an unknown slug is kept
+    # rather than dropped on read, so a renamed lesson in a later build cannot
+    # erase a place this build never heard of.
+    "core/tutorials/progress.py::save_progress": "cache",
     # --- marker / small state flags ---
     # Radio's active-recording resume marker (R1-R4): transient state written
     # when a recording starts and cleared on clean stop; absent by default, and
