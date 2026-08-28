@@ -104,21 +104,16 @@ magic.md
 magic2.md
 radio.md
 radio2.md
-# Working notes in the same class as fixes.md: the six AI product-strategy
-# papers (suggest1-6) and the executable plan distilled from them against the
-# actual code and artifacts (suggest7), plus a session scratch file. They
-# describe work rather than being it, so they stay out of the committed root --
-# which is also what keeps tests/unit/structure/test_repo_layout.py green.
-# Listed one per line rather than as suggest*.md because that gate's matcher
-# reads exact patterns only (_gitignored_root_files skips anything with a
-# glob character), and a pattern it silently skipped would leave the gate red
-# for a reason nobody could see from the ignore file.
-suggest1.md
-suggest2.md
-suggest3.md
-suggest4.md
-suggest5.md
-suggest6.md
+# Working notes in the same class as fixes.md: the executable plan distilled
+# from the six AI product-strategy papers against the actual code and
+# artifacts (the papers themselves, suggest1-6, were retired 2026-08-28 once
+# their residue shipped). It describes work rather than being it, so it stays
+# out of the committed root -- which is also what keeps
+# tests/unit/structure/test_repo_layout.py green. Listed literally rather than
+# as suggest*.md because that gate's matcher reads exact patterns only
+# (_gitignored_root_files skips anything with a glob character), and a pattern
+# it silently skipped would leave the gate red for a reason nobody could see
+# from the ignore file.
 suggest7.md
 # Two more in the same class (2026-08-23): Jeff's video/transcript validation
 # checklist, and the Earshot-parity comparison. Both describe work rather than
