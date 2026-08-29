@@ -212,5 +212,17 @@
   "quill/ui/radio/youtube_playlist_dialog.py::YouTubePlaylistDialog._build_ui::wx.Button": "helped",
   "quill/ui/radio/youtube_playlist_dialog.py::YouTubePlaylistDialog._build_ui::wx.Button#2": "helped",
   "quill/ui/radio/youtube_playlist_dialog.py::YouTubePlaylistDialog._build_ui::wx.Button#3": "helped",
-  "quill/ui/radio/youtube_playlist_dialog.py::YouTubePlaylistDialog._build_ui::wx.ListBox": "named-help"
+  "quill/ui/radio/youtube_playlist_dialog.py::YouTubePlaylistDialog._build_ui::wx.ListBox": "named-help",
+  "quill/ui/tutorials_contents.py::build::wx.Button": "helped",
+  "quill/ui/tutorials_contents.py::build::wx.Button#2": "helped",
+  "quill/ui/tutorials_contents.py::build::wx.Button#3": "helped",
+  "quill/ui/tutorials_contents.py::build::wx.Button#4": "helped",
+  "quill/ui/tutorials_contents.py::build::wx.TextCtrl": "helped",
+  "quill/ui/tutorials_contents.py::build::wx.TreeCtrl": "helped",
+  "quill/ui/tutorials_window.py::TutorialsWindow._build_lesson::wx.Button": "helped",
+  "quill/ui/tutorials_window.py::TutorialsWindow._build_lesson::wx.Button#2": "helped",
+  "quill/ui/tutorials_window.py::TutorialsWindow._build_lesson::wx.Button#3": "helped",
+  "quill/ui/tutorials_window.py::TutorialsWindow._build_lesson::wx.Button#4": "helped",
+  "quill/ui/tutorials_window.py::TutorialsWindow._build_lesson::wx.Button#5": "helped",
+  "quill/ui/tutorials_window.py::TutorialsWindow._build_lesson::wx.TextCtrl": "helped"
 }

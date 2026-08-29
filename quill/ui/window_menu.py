@@ -217,6 +217,16 @@ class WindowManager:
                 return self.activate(entry.key)
         return None
 
+    def open_titles(self) -> list[str]:
+        """The titles of every open window, in the order they were opened.
+
+        Read-only, and the same identity ``activate_title`` matches on. Added
+        for the guided tutorials, which watch for "Browse Stations is open now"
+        rather than for a keystroke -- so the lesson notices whichever way you
+        opened it.
+        """
+        return [entry.title for entry in self._registry.items()]
+
     def hide_all(self) -> None:
         """Hide every registered window (Send to Tray tucks the whole app away).
 

@@ -103,8 +103,10 @@ SHA-256-verified downloads that are yours forever once fetched.
 
 **A Lite installer** installs the same tiny app, then checks for the
 shared runtime. Already there? Done in seconds. Missing? It downloads
-`QuillVille-Runtime-Setup.exe` from this repository's latest GitHub
-release -- through Inno Setup's built-in download page, a standard progress
+`QuillVille-Runtime-Setup.exe` from this repository's `runtime-latest`
+release tag (a moving tag republished whenever the runtime itself is
+released, independent of the editor's release train)
+-- through Inno Setup's built-in download page, a standard progress
 bar and status text that NVDA, JAWS and Narrator read -- and runs it.
 Decline, or lose the connection, and nothing breaks: the app itself offers
 the runtime download again on first launch. Lite and full installers share

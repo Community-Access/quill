@@ -592,6 +592,106 @@ and asks whether each app can actually perform it.
 
 ---
 
+## The app teaches itself
+
+**Help > Tutorials... (Ctrl+Alt+F1)** opens 18 guided tutorials -- 107 steps,
+about an hour and three quarters of material -- covering every feature QUILL
+Cast has, in the order somebody would actually learn it.
+
+They are not a second copy of the user guide. A guide answers "what does this
+do". It cannot answer "what do I do now", because a document cannot see what
+you have already done. This window can.
+
+### What the set is shaped like
+
+Four tracks, and the shape of them is the shape of the problem.
+
+**Your first hour** (3 lessons) -- subscribe by search, by feed address, by
+OPML or by taking ACB Media's whole directory in one step; work the player;
+meet the Podcast Manager, which is where episode-level life happens and where
+most people never go until somebody shows them.
+
+**Keeping up** (5 lessons, and the longest track on purpose) -- the hard part
+of podcasting is not playing an episode, it is deciding which of the four
+hundred waiting ones you will play. Finding what is new, triaging with the
+Inbox, lining up the Play Queue, automatic downloads and the caps that keep the
+disk honest, and playlists both hand-built and rule-based. These are one system
+and they only make sense together, which is why they are one track rather than
+five scattered pages.
+
+**Listening well** (5) -- chapters and skipping the parts you did not come for,
+shaping the sound, keeping a moment, reading what the publisher actually sent,
+and how much of your life this has taken.
+
+**Making it yours** (5) -- a library that has grown, what a row says and what
+Enter does, the settings that differ per show, private feeds and audio of your
+own, and the backup you will be glad of exactly once.
+
+### The three things that make it more than a document
+
+**A step names a command, not a key.** The key is rendered when the step is
+drawn, from your own keymap, so a rebinding changes every lesson that mentions
+it. It is the same rule that makes the Keyboard Shortcuts Sheet trustworthy: a
+second list of keys, maintained beside the first, is a list that is wrong by the
+next release.
+
+**Try it runs the step**, exactly as its key would -- so a lesson can open the
+Podcast Manager for you and then talk you through what you are standing in.
+
+**Follow me notices when you have done one.** While a lesson is open the window
+asks the app, once a second, the question the step declared -- did your
+subscriptions grow, is something playing, did the queue change -- and when the
+answer changes it says what it noticed and reads the next step:
+
+> Done: you have a new subscription.
+>
+> Subscribe to your first podcast -- step 4 of 8: Or bring a whole library
+> across...
+
+It watches **state, not keystrokes**, so subscribing from the menu, the palette
+or the Add Podcast window all count equally. It compares against a baseline
+taken when the step was shown, so somebody with forty subscriptions has not
+already passed "subscribe to one". And anything it cannot read answers "cannot
+tell", which the window treats exactly like a step with no check on it.
+
+Nothing is graded, nothing is blocked, there is no score and no streak, and
+every step still has **Next**. A check that never comes true costs you one
+keypress.
+
+### It is a window, not a wizard
+
+The Tutorials window is a real window. Leave it open, move to the app, do the
+step there, and hear the lesson move on behind you. A modal wizard could not do
+that: it would own the keyboard for the whole lesson, which is precisely the
+wrong shape for teaching somebody to use the thing underneath it.
+
+Typing **here** in the filter box narrows the contents to the tutorials about
+the window you came from, and the window says how many those are as it opens.
+
+### Your place is kept
+
+Close a lesson half way through and it opens there again. Finishing one is
+remembered separately from where you are in it, so re-reading something you have
+done does not throw away the fact that you did it. **Forget my progress** clears
+the lot, asks first, and changes nothing else. Nothing about your progress
+leaves this computer -- there is no telemetry here and no completion badge.
+
+### Reading rather than doing
+
+**Read it all** shows a whole tutorial as one page of text. **The whole book as
+a document** opens all 18 as one page, generated from the same lessons the
+window teaches from, so the two cannot disagree -- it ships as `tutorials`
+beside this document. (The book states the keys QUILL Cast ships with. Only the
+window can know the ones you rebound.)
+
+### The same window in every app
+
+Quill Radio, Quill Weather and QUILL have their own lessons, in the same window,
+on the same key: **Ctrl+Alt+F1** opens the tutorials wherever you are in the
+family. Each app keeps its own progress file, because a lesson slug is only
+unique within its own set and forgetting your place in one app must never forget
+it in another.
+
 ## For anybody keeping score on the format
 
 `listening-places/1` is deliberately not a QUILL thing. It is documented,

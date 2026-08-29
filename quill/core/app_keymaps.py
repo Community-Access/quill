@@ -120,6 +120,13 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # unused in Quill Radio, and it is one key rather than four: the whole
         # complaint was that re-reading the schedule took too much finding.
         "radio.refresh_calendar": "F5",
+        # The guided tutorials, in the F1 family: F1 answers about the control
+        # you are on, Ctrl+F1 opens the book, and this opens the lessons. It
+        # took Ctrl+Alt+F1 from Product Requirements (now Alt+Shift+F1) on the
+        # family's own rule -- the doors are ordered by how often somebody
+        # reaches for them, and a new listener reaches for a tutorial far more
+        # often than anybody reaches for the PRD.
+        "radio.tutorials": "Ctrl+Alt+F1",
     },
     # QUILL Cast had no app keymap at all until undo needed one: every other
     # Cast accelerator is either a shared default or baked into a menu label.
@@ -156,6 +163,31 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # restores a six-month-old backup by accident.
         "app.backup": "Ctrl+Alt+Shift+B",
         "app.restore": "Ctrl+Alt+Shift+R",
+        # The guided lessons, on the family key: Ctrl+Alt+F1 opens the tutorials
+        # in Quill Radio, Quill Weather and QUILL too. This bar had no F-key
+        # accelerator of any kind, so the whole family could be given one chord.
+        "podcasts.tutorials": "Ctrl+Alt+F1",
+    },
+    "weather": {
+        # Quill Weather drove its whole Weather menu from bound menu items and
+        # had no command ids at all, so the Command Palette could not reach a
+        # single weather verb and a tutorial step could not name one. These are
+        # the ids, and their bindings are the keys those menu labels already
+        # advertise -- the menu is unchanged; it simply has names now.
+        "weather.now": "Ctrl+Shift+W",
+        "weather.quick": "Ctrl+Shift+Q",
+        "weather.alerts": "Ctrl+Shift+Alt+A",
+        "weather.add_location": "Ctrl+Alt+Shift+L",
+        "weather.settings": "Ctrl+Alt+Shift+F",
+        "weather.test_alert": "Ctrl+Alt+Shift+T",
+        "weather.monitor_toggle": "Ctrl+Alt+Shift+M",
+        "weather.monitor_pause": "Ctrl+Alt+Shift+P",
+        "weather.noaa_listen": "Ctrl+Alt+N",
+        "weather.noaa_update": "Ctrl+Alt+Shift+N",
+        # The guided lessons. Ctrl+Alt+F1 is the family key for them -- the same
+        # chord opens the lessons in Quill Radio, QUILL Cast and QUILL -- and it
+        # sits in the F1 family, which is where help lives everywhere.
+        "weather.tutorials": "Ctrl+Alt+F1",
     },
 }
 

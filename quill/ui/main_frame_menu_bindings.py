@@ -1875,6 +1875,11 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
+            lambda _e: self.open_quill_tutorials(),
+            id=self._id_open_tutorials,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
             lambda _e: self.open_user_guide(),
             id=self._id_open_user_guide,
         )

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -203,6 +203,29 @@ href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
 this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <h2 id="unreleased">[Unreleased]</h2>
+<h3 id="added">Added</h3>
+<ul>
+<li><p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong> – 11 guided
+tutorials, 60 steps, in three tracks: your first ten minutes, being
+warned, and making it yours. The middle track is the app’s whole reason
+for existing, so it is five lessons: start the watch, rehearse an alert,
+decide what gets through, keep the watch running, and NOAA Weather
+Radio.</p></li>
+<li><p><strong>A step names a command, not a key</strong>; <strong>Try
+it</strong> runs it; and <strong>Follow me</strong> watches the app once
+a second and moves you on when it can see you have done the step – your
+saved places growing, the watch starting, alert checks pausing. It
+watches state rather than keystrokes, so the menu, the key, the tray and
+the palette all count.</p></li>
+<li><p><strong>Quill Weather has command ids at all now.</strong> Every
+weather verb was a bound menu item and nothing else, so the Command
+Palette – which this app carries – could not reach a single one of them,
+and a tutorial step could not name one. The ids are registered with the
+keys the menu labels already advertise, so the menus are unchanged; they
+simply have names now.</p></li>
+<li><p><strong>The book is generated from the lessons</strong>
+(<code>docs/tutorials.md</code>, GATE-TUTDOC).</p></li>
+</ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
 <li><strong>Quill Weather has its own icon.</strong> It used to ship a
@@ -220,7 +243,7 @@ the alert watch now covers <strong>every</strong> place you have saved
 rather than only your primary one, the app is delivered on the shared
 QuillVille Runtime with two much lighter downloads, and everything Quill
 Weather says now reaches a braille display as well as speech.</p>
-<h3 id="added">Added</h3>
+<h3 id="added-1">Added</h3>
 <ul>
 <li><strong>Weather Guardian now watches every place you have saved, not
 just one.</strong> Before this, the alert watch covered your primary

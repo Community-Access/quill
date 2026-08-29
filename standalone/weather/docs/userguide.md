@@ -192,6 +192,49 @@ work with no internet connection. They open in your browser, which means you can
 read them with the screen-reader navigation you already know -- headings, links,
 and find-in-page.
 
+## Tutorials
+
+**Help > Tutorials... (Ctrl+Alt+F1)** opens 11 guided tutorials -- 60 steps,
+about 47 minutes of material -- covering every feature Quill Weather has, in the order somebody
+would actually learn it. They are not a second copy of this guide. A guide
+answers "what does this do"; it cannot answer "what do I do now", because a
+document cannot see what you have already done. This window can.
+
+- **They show the keys you have.** A step names the *command* it is about, and
+  the key is rendered when the step is drawn. Rebind something and the tutorial
+  says your key.
+- **Try it runs the step.** Any step that names a command can be performed from
+  the lesson, so a tutorial can open a window for you and then talk you through
+  what you are standing in.
+- **Follow me notices that you did it.** Tick **Follow me** and the lesson
+  watches the app -- once a second, and it watches *what changed*, never which
+  key you pressed -- so however you do the step, it says what it saw ("Done:
+  the watch is running") and reads you the next one. It never takes the keyboard, and
+  nothing is graded: every step still has **Next**, and a check that never comes
+  true costs you one keypress.
+
+The Tutorials window is a **real window, not a wizard**: leave it open, move to
+the app, do the step there, and hear the lesson move on behind you. A modal
+dialog would own the keyboard for the whole lesson, which is the wrong shape
+for teaching somebody to use the thing underneath it.
+
+**The contents.** Three tracks, in teaching order. Each row says how many
+steps it has, roughly how long it takes, and whether you have finished it. The
+filter box narrows the list -- every word you type has to appear somewhere in a
+tutorial -- and typing **here** narrows it to the tutorials about the window you
+came from.
+
+**Your place is kept.** Close a lesson half way through and it opens there
+again. Finishing one is remembered separately from where you are in it. **Forget
+my progress** clears the lot and changes nothing else. Nothing about your
+progress leaves this computer.
+
+**Reading rather than doing.** **Read it all** shows a whole tutorial as one
+page of text, and **The whole book as a document** opens all 11 of them as
+one page -- generated from the same lessons the window teaches from, so the two
+cannot disagree. It ships as `docs/tutorials.md` beside this guide. The document states the
+keys the app ships with; only the window can know the ones you rebound.
+
 ## Updating
 
 **Help > Check for Updates** knows whether you run the installer or the portable

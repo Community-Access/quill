@@ -2,6 +2,83 @@
 
 ## 1.0.0
 
+### Every app learns to teach (2026-08-28)
+
+A user guide answers "what does this do". It cannot answer "what do I do now",
+because a document cannot see what you have already done. All four apps now
+have guided tutorials that can, on the same key everywhere -- **Help >
+Tutorials... (Ctrl+Alt+F1)**:
+
+| App | Lessons | Steps | Tracks |
+| --- | --- | --- | --- |
+| Quill Radio | 36 | 251 | 6 |
+| QUILL | 23 | 136 | 6 |
+| QUILL Cast | 18 | 107 | 4 |
+| Quill Weather | 11 | 60 | 3 |
+
+**88 lessons and 554 steps in all**, and one window teaching them: the engine
+(`quill/core/tutorials/`, `quill/ui/tutorials_window.py`) knows nothing about
+which app it is serving, and each app hands it a descriptor -- its lessons, its
+title, the file that remembers your place, and the probe that answers "did you
+do the step?".
+
+- **A step names a command, not a key.** The key is rendered when the step is
+  drawn, from the listener's own keymap, so a rebinding changes every lesson
+  that mentions it. This is the Keyboard Shortcuts Sheet's rule applied to
+  prose: a second list of keys maintained beside the first is a list that is
+  wrong by the next release. It also means a build check can prove that every
+  command a lesson names actually exists -- a tutorial that tells somebody to
+  press a key for a command nobody registered is worse than no tutorial.
+
+- **Try it runs the step**, exactly as its key would, so a lesson can open
+  Browse Stations and then talk you through what you are standing in.
+
+- **Follow me notices when you have done one.** While a lesson is open the
+  window asks the app, once a second, the question the step declared -- is
+  something playing, did your favorites grow, is Browse Stations open -- and
+  when the answer changes it says what it noticed ("Done: something is playing
+  now.") and reads the next step. It watches **state, not keystrokes**, so the
+  key, the menu, the status bar and the command palette all count; it compares
+  against a baseline taken when the step was shown, so somebody with forty
+  favorites has not already passed "add one"; and anything it cannot read
+  answers "cannot tell" rather than guessing. Nothing is graded, nothing is
+  blocked, and every step still has Next.
+
+- **It is a peer window, not a wizard.** Leave it open, Ctrl+Tab into the app,
+  do the step there, and hear the lesson move on behind you. A modal wizard
+  would own the keyboard for the whole lesson, which is the wrong shape for
+  teaching somebody to use the thing underneath it.
+
+- **Announcement discipline (GATE-13) decided two behaviours.** Opening a
+  lesson announces nothing -- focus lands in the step field and the screen
+  reader reads it. Moving *between* steps does announce, because there the text
+  changes under a focus that did not move, or under somebody standing in
+  another window doing the step.
+
+- **Each app's tutorial book is generated from its lessons** -- four documents,
+  one per app (**GATE-TUTDOC**, rostered in the platform scorecard) -- so a
+  document and its app cannot drift. Each states the keys its app ships with;
+  only the window can know the ones you rebound.
+
+- **Product Requirements... moved from Ctrl+Alt+F1 to Alt+Shift+F1.** The F1
+  family is ordered by how often somebody reaches for a door, and a new
+  listener reaches for a tutorial far more often than anybody reaches for the
+  PRD. (Ctrl+Alt+Shift+F1 was not available: it is a QuillVille app launcher.)
+
+- **Quill Weather has command ids at all now.** Every weather verb was a bound
+  menu item and nothing else, so the Command Palette could not reach one and a
+  tutorial step could not name one. They are registered with the keys their
+  menu labels already advertise, so the menus are unchanged -- they simply have
+  names (`quill/apps/weather_commands.py`).
+
+- Progress lives in one file per app -- `radio_tutorials.json` and its three
+  siblings -- classified `cache` in the persistence audit: losing one costs a
+  bookmark in a lesson and nothing else. Per app because a lesson slug is only
+  unique within its own set, and forgetting your place in Radio must never
+  forget it in QUILL. No telemetry, no score, no percentage. `WindowManager`
+  gained a read-only `open_titles()` so the watcher can see which peer windows
+  are open.
+
 ### F1 answers everywhere, and three keyboard rules become gates (2026-08-27)
 
 The EdSharp 5.0 review (a text editor written by a blind developer and

@@ -56,6 +56,15 @@ _MENU_PATH = _REPO_ROOT / "quill" / "ui" / "main_frame_menu.py"
 # predate the escape-hatch mechanism but have equivalent justification.
 _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     "view.send_to_tray",  # legacy Ctrl+Alt+T allowance; now a QUILL-key chord
+    # The guided tutorials (2026-08-28). Ctrl+Alt+F1 is the family key: the same
+    # chord opens the lessons in Quill Radio, QUILL Cast and Quill Weather, and
+    # keeping it identical across the four apps is worth more than avoiding the
+    # Ctrl+Alt class here. It is also outside what the policy is actually about:
+    # the hostility of Ctrl+Alt is AltGr on European layouts (a *character* key
+    # problem) and the screen readers' Ctrl+Alt+letter/arrow commands. F1 is
+    # neither -- no default JAWS or NVDA command uses Ctrl+Alt+F1, and AltGr
+    # cannot produce a function key.
+    "help.tutorials",  # Ctrl+Alt+F1
     "view.toggle_tab_control",  # legacy Ctrl+Alt+Shift+T allowance; now a QUILL-key chord
     # EdSharp port: heading shortcuts override NVDA switch-to-synth-N (Ctrl+Alt+1..6).
     "format.heading_1",

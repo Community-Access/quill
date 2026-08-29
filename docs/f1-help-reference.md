@@ -24,7 +24,7 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 214 audited sites (98 helped, 116 named-help).
+Control coverage: 226 audited sites (110 helped, 116 named-help).
 
 ### Every window, and what it is for
 
@@ -89,6 +89,8 @@ Control coverage: 214 audited sites (98 helped, 116 named-help).
 **Quill Radio Captions.** The captions for what is playing, as text you can read at your own pace. Each line joins the ones already spoken and the line being spoken now is marked with a greater-than sign, so arrowing up re-reads what you missed. It never announces itself. Turn off Follow Playback to hold the view still while you read back; Escape closes the window and turns captions off.
 
 **Quill Radio Preferences.** Every setting in one place: launch behaviour, closing behaviour, the playback engine and output device, favorites ordering, logging, the station catalog, and the shared data folder. Each setting applies the moment you save.
+
+**Quill Radio Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
 
 **Quill Radio Video.** The picture, when what is playing has one. The audio and every transport key keep working whether or not this window is open; F11 fills the screen and Escape leaves full screen.
 
@@ -330,6 +332,8 @@ Control coverage: 199 audited sites (6 help-elsewhere, 29 helped, 164 named-help
 **Podcasts.** The Podcast Manager: every show you follow, the episodes in each, and every verb that acts on them -- play, download, mark played, file into a folder, unsubscribe. One list chooses the show, the other holds its episodes, and Shift+F10 on any row offers everything that can be done to it.
 
 **QUILL Cast.** The main window: what is playing, and the transport for it. Your shows live in the Podcast Manager, the episodes waiting for you are in its Inbox, and everything else is one menu away. Nothing here needs an account, and nothing you listen to leaves this computer.
+
+**QUILL Cast Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
 
 **Quiet Hours.** The window in which this app stops speaking on its own: check ticks, new-episode notices, download notices. Feeds are still checked and downloads still run -- only the announcements wait -- and anything you press a key for still answers. The window is shared with the other Quill listening apps.
 
@@ -704,6 +708,8 @@ Control coverage: 40 audited sites (40 helped).
 **Customize Quill Weather Features.** Turn whole areas of Quill Weather on or off -- alert monitoring, NOAA Weather Radio. Turning one off removes its menu items at the next launch; nothing you have saved is deleted.
 
 **Quill Weather.** The main window of the weather watcher. Its real work happens in the background: it monitors official National Weather Service alerts for your saved locations and speaks new warnings as they are issued, even from the system tray. The three buttons open the full Weather Center, start or stop the watch, and add a place to watch; closing the window keeps monitoring in the tray by default.
+
+**Quill Weather Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
 
 **Weather Center.** The full text weather report for one location at a time, in reading order: active alerts first, then current conditions, the period forecast, the hourly forecast, and the extended daily outlook. Each list pairs with a read-only detail box below it that follows your selection, so arrowing a list reads the full official text. The Location chooser switches places, Refresh re-pulls, and Add Location and Settings open their own windows.
 

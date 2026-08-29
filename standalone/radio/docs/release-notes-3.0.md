@@ -1608,6 +1608,196 @@ duplicated.
 
 None of this is blocked; it is listed because you should not have to guess.
 
+## Part Five: The app teaches itself
+
+There is one more thing in 3.0, and it is the one that changes what the app is
+for somebody on their first day.
+
+**Help > Tutorials... (Ctrl+Alt+F1)** opens 36 guided tutorials -- 251 steps,
+six tracks, about three and a half hours of material if you worked through
+every one -- covering every feature Quill Radio has, in the order somebody
+would actually learn it.
+
+They are not a second copy of the user guide. A guide answers "what does this
+do". It cannot answer "what do I do now", because a document cannot see what
+you have already done. This window can.
+
+### You open it from wherever you are stuck
+
+The Tutorials window opens on a contents tree: six tracks, each holding its
+lessons, each row saying how many steps it has, roughly how long it takes, and
+whether you have finished it. A filter box sits above it. Type a word and the
+list narrows -- every word you type has to appear somewhere in a tutorial, so
+"record tuesday" finds the scheduling lesson without your knowing which field
+holds which word.
+
+And type **here** and the list narrows to the tutorials about *the window you
+came from*. Open Tutorials while standing in Browse Stations and the window
+says so as it opens -- "4 tutorials here are about Browse Stations. Type 'here'
+to see just those." -- because that is a thing only this window knows and the
+screen reader will never say it for us.
+
+### A lesson is one step at a time
+
+Press Enter on a tutorial and you get one step in a read-only field you can
+arrow through, review a word at a time, and copy from. The step says four
+things:
+
+- **what to do**, in a short paragraph that also says *why* -- a tutorial that
+  lists keystrokes is a keyboard reference with extra words, and this app
+  already has one of those;
+- **the keys**, on their own line;
+- **what you should hear** when it worked, which is how a screen-reader user
+  checks a step rather than looking for a green tick;
+- and, where there is one, **the thing worth knowing** -- the setting that
+  changes it, the mistake everybody makes once, the reason it is like that.
+
+### The keys are your keys
+
+A step does not carry a key in its text. It names the **command** it is about,
+and the key is rendered at the moment the step is drawn, from your own keymap.
+Rebind Browse Stations in the Keyboard Manager and every tutorial that mentions
+it says *your* key from then on.
+
+This is the same rule that governs the Keyboard Shortcuts Sheet, and for the
+same reason: a second list of keys, maintained beside the first, is a list that
+is wrong by the next release. The tutorials cannot go stale about keys because
+they never knew any.
+
+### Try it does the step
+
+Any step that names a command carries a **Try it** button, and it runs exactly
+what the key would have run. So a lesson can open Browse Stations for you and
+then talk you through what you are now standing in -- which is a different
+experience from a document telling you to go and open something.
+
+Where a step is about arrowing a tree or pressing Escape, there is no command
+to run and the button is dimmed. Nothing pretends.
+
+### Follow me is the part worth the whole feature
+
+Tick **Follow me** (it is on to begin with) and the lesson watches the app
+while you work. Once a second it asks a question the step declared -- *is
+something playing? did your favorites grow? is Browse Stations open?* -- and
+when the answer changes it says what it noticed and reads you the next step:
+
+> Done: something is playing now.
+>
+> Play your first station -- step 6 of 8: Set the volume without leaving the
+> tree...
+
+Four things about that, each of them deliberate:
+
+- **It watches state, not keystrokes.** Pressing the key, using the menu,
+  pressing the status bar's Play cell, or asking the Command Palette all count
+  equally, because all four did the thing. A watcher that waited for one route
+  would be teaching the route rather than the thing.
+- **It compares against where you started.** "Add a favorite" is satisfied by
+  your favorites growing by one, not by your having forty already -- otherwise
+  the step would either pass instantly for an established listener or never
+  pass at all.
+- **It never guesses.** Anything it cannot read answers "cannot tell", which
+  the window treats exactly like a step with no check on it.
+- **It is a courtesy, not a gate.** Nothing is graded, nothing is blocked,
+  there is no score and no streak, and every step still has **Next**. A check
+  that never comes true costs you one keypress.
+
+### It is a window, not a wizard
+
+The Tutorials window is a **peer window**, like Browse Stations and the Player.
+It stands in the taskbar, in the Window menu, and in the Ctrl+Tab rotation. So
+the way a lesson is meant to be used is: leave it open, Ctrl+Tab into the app,
+do the step there, and hear the lesson move on behind you.
+
+A modal wizard could not do that. It would own the keyboard for the whole
+lesson, which is precisely the wrong shape for teaching somebody to use the
+thing underneath it.
+
+### Your place is kept
+
+Close a lesson half way through and it opens there again. Finishing one is
+remembered *separately* from where you are in it, so re-reading something you
+have done does not throw away the fact that you did it. The contents rows say
+which is which -- "finished", or "you stopped at step 4".
+
+**Forget my progress** clears the lot, asks first, and changes nothing else.
+There is no percentage anywhere and no completion badge: nobody opened a radio
+app to be scored. Nothing about your progress leaves this computer.
+
+### Reading, rather than doing
+
+**Read it all** shows a whole tutorial as one page of text, for when you would
+rather read than be walked. And **The whole book as a document** opens all 36
+tutorials as one page in your browser, for reading straight through or
+printing -- generated from the same lessons the window teaches from, so the
+two cannot disagree. It ships as `tutorials` in this same `docs` folder. (The
+document states the keys Quill Radio ships with. Only the window can know the
+ones you rebound.)
+
+### What is in the 36
+
+The tracks are not categories. Each is a claim about what you can do by the end
+of it.
+
+**Your first hour** (5 tutorials, ~23 minutes) -- play your first station; keep
+it and find it tomorrow; the player follows you; do anything by name; getting
+unstuck. Somebody who works straight down this track finishes with a station
+playing, a favorite under a name they chose, the transport keys in their
+fingers, and four separate ways out of anywhere they get stuck.
+
+**Finding something to listen to** (6, ~38 minutes) -- wandering the browse
+tree; searching every directory at once; the field-based search and its
+recents; stations no directory lists (a pasted stream, a scanned website, a
+whole Icecast server, an imported playlist); the catalog on your own disk and
+why browsing works on a train; and what to do when a station will not play.
+
+**Making it yours** (6, ~36 minutes) -- folders and an order of your own; the
+ten quick-play slots and what the main window shows; deciding what a row says
+and what Enter does (Choose Columns and Quick Actions, both of which are speech
+settings wearing a list setting's clothes); making the keys yours, including
+system-wide hotkeys; the six settings actually worth changing; and Quillins.
+
+**Recording** (5, ~33 minutes) -- record what is on now; book a show that has
+not started yet, including the time-zone trap and the "Add Schedule is the last
+button, not the first" rule; several stations at once and lossless raw capture;
+living in the Recordings list with its dozen Winamp keys; and what happens when
+a recording breaks -- part files, stitching, stalls, crash-resume, and which
+failures are worth retrying.
+
+**More than radio** (8, ~54 minutes) -- following a podcast and where the line
+with QUILL Cast falls; audiobooks, archives and free music, including exactly
+what each source will and will not let you keep; YouTube with no account
+anywhere, and its honest limits; television and your own XMLTV guide; the ACB
+Media schedule, reminders and Upcoming; NOAA Weather Radio; Community Picks and
+suggesting one; and Spotify, with the free-versus-Premium question answered
+before you spend ten minutes on setup.
+
+**Living with it** (6, ~36 minutes) -- what was that song; keeping a moment and
+moving by chapter; sleeping, waking, quiet hours and reminders; how much you
+actually listened; shaping the sound (per-station volume, boost, EQ, pausing
+live radio, a speed that sticks); and backing it up, moving it, updating it,
+and what to do on the day something is genuinely wrong.
+
+### One key moved to make room
+
+**Product Requirements... moved from Ctrl+Alt+F1 to Alt+Shift+F1.** The F1
+family -- F1 for the control you are on, Ctrl+F1 for the guide, Shift+F1 and
+Ctrl+Shift+F1 for these notes and their companion, Alt+F1 for About -- is
+ordered by how often somebody reaches for a door. A new listener reaches for a
+tutorial far more often than anybody reaches for the product requirements, so
+the tutorials take the shorter chord and the PRD moves out one notch. (The
+obvious next chord along, Ctrl+Alt+Shift+F1, was not available: it belongs to a
+QuillVille app launcher.)
+
+If you had the old key in your fingers, that is the one thing here that will
+surprise you.
+
+### What it costs
+
+Nothing at runtime. The lessons are ordinary data compiled into the app, the
+watcher is one timer that reads a handful of values while a lesson is open, and
+the whole feature is inert when the window is shut.
+
 ### Compatibility
 
 Nothing in this release changes where your favorites, history, recordings or

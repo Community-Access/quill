@@ -1848,6 +1848,184 @@ run the command again to collect what was added since, and anything
 already in your favorites is skipped rather than duplicated.</p>
 <p>None of this is blocked; it is listed because you should not have to
 guess.</p>
+<h2 id="part-five-the-app-teaches-itself">Part Five: The app teaches
+itself</h2>
+<p>There is one more thing in 3.0, and it is the one that changes what
+the app is for somebody on their first day.</p>
+<p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong> opens 36 guided
+tutorials – 251 steps, six tracks, about three and a half hours of
+material if you worked through every one – covering every feature Quill
+Radio has, in the order somebody would actually learn it.</p>
+<p>They are not a second copy of the user guide. A guide answers “what
+does this do”. It cannot answer “what do I do now”, because a document
+cannot see what you have already done. This window can.</p>
+<h3 id="you-open-it-from-wherever-you-are-stuck">You open it from
+wherever you are stuck</h3>
+<p>The Tutorials window opens on a contents tree: six tracks, each
+holding its lessons, each row saying how many steps it has, roughly how
+long it takes, and whether you have finished it. A filter box sits above
+it. Type a word and the list narrows – every word you type has to appear
+somewhere in a tutorial, so “record tuesday” finds the scheduling lesson
+without your knowing which field holds which word.</p>
+<p>And type <strong>here</strong> and the list narrows to the tutorials
+about <em>the window you came from</em>. Open Tutorials while standing
+in Browse Stations and the window says so as it opens – “4 tutorials
+here are about Browse Stations. Type ‘here’ to see just those.” –
+because that is a thing only this window knows and the screen reader
+will never say it for us.</p>
+<h3 id="a-lesson-is-one-step-at-a-time">A lesson is one step at a
+time</h3>
+<p>Press Enter on a tutorial and you get one step in a read-only field
+you can arrow through, review a word at a time, and copy from. The step
+says four things:</p>
+<ul>
+<li><strong>what to do</strong>, in a short paragraph that also says
+<em>why</em> – a tutorial that lists keystrokes is a keyboard reference
+with extra words, and this app already has one of those;</li>
+<li><strong>the keys</strong>, on their own line;</li>
+<li><strong>what you should hear</strong> when it worked, which is how a
+screen-reader user checks a step rather than looking for a green
+tick;</li>
+<li>and, where there is one, <strong>the thing worth knowing</strong> –
+the setting that changes it, the mistake everybody makes once, the
+reason it is like that.</li>
+</ul>
+<h3 id="the-keys-are-your-keys">The keys are your keys</h3>
+<p>A step does not carry a key in its text. It names the
+<strong>command</strong> it is about, and the key is rendered at the
+moment the step is drawn, from your own keymap. Rebind Browse Stations
+in the Keyboard Manager and every tutorial that mentions it says
+<em>your</em> key from then on.</p>
+<p>This is the same rule that governs the Keyboard Shortcuts Sheet, and
+for the same reason: a second list of keys, maintained beside the first,
+is a list that is wrong by the next release. The tutorials cannot go
+stale about keys because they never knew any.</p>
+<h3 id="try-it-does-the-step">Try it does the step</h3>
+<p>Any step that names a command carries a <strong>Try it</strong>
+button, and it runs exactly what the key would have run. So a lesson can
+open Browse Stations for you and then talk you through what you are now
+standing in – which is a different experience from a document telling
+you to go and open something.</p>
+<p>Where a step is about arrowing a tree or pressing Escape, there is no
+command to run and the button is dimmed. Nothing pretends.</p>
+<h3 id="follow-me-is-the-part-worth-the-whole-feature">Follow me is the
+part worth the whole feature</h3>
+<p>Tick <strong>Follow me</strong> (it is on to begin with) and the
+lesson watches the app while you work. Once a second it asks a question
+the step declared – <em>is something playing? did your favorites grow?
+is Browse Stations open?</em> – and when the answer changes it says what
+it noticed and reads you the next step:</p>
+<blockquote>
+<p>Done: something is playing now.</p>
+<p>Play your first station – step 6 of 8: Set the volume without leaving
+the tree…</p>
+</blockquote>
+<p>Four things about that, each of them deliberate:</p>
+<ul>
+<li><strong>It watches state, not keystrokes.</strong> Pressing the key,
+using the menu, pressing the status bar’s Play cell, or asking the
+Command Palette all count equally, because all four did the thing. A
+watcher that waited for one route would be teaching the route rather
+than the thing.</li>
+<li><strong>It compares against where you started.</strong> “Add a
+favorite” is satisfied by your favorites growing by one, not by your
+having forty already – otherwise the step would either pass instantly
+for an established listener or never pass at all.</li>
+<li><strong>It never guesses.</strong> Anything it cannot read answers
+“cannot tell”, which the window treats exactly like a step with no check
+on it.</li>
+<li><strong>It is a courtesy, not a gate.</strong> Nothing is graded,
+nothing is blocked, there is no score and no streak, and every step
+still has <strong>Next</strong>. A check that never comes true costs you
+one keypress.</li>
+</ul>
+<h3 id="it-is-a-window-not-a-wizard">It is a window, not a wizard</h3>
+<p>The Tutorials window is a <strong>peer window</strong>, like Browse
+Stations and the Player. It stands in the taskbar, in the Window menu,
+and in the Ctrl+Tab rotation. So the way a lesson is meant to be used
+is: leave it open, Ctrl+Tab into the app, do the step there, and hear
+the lesson move on behind you.</p>
+<p>A modal wizard could not do that. It would own the keyboard for the
+whole lesson, which is precisely the wrong shape for teaching somebody
+to use the thing underneath it.</p>
+<h3 id="your-place-is-kept">Your place is kept</h3>
+<p>Close a lesson half way through and it opens there again. Finishing
+one is remembered <em>separately</em> from where you are in it, so
+re-reading something you have done does not throw away the fact that you
+did it. The contents rows say which is which – “finished”, or “you
+stopped at step 4”.</p>
+<p><strong>Forget my progress</strong> clears the lot, asks first, and
+changes nothing else. There is no percentage anywhere and no completion
+badge: nobody opened a radio app to be scored. Nothing about your
+progress leaves this computer.</p>
+<h3 id="reading-rather-than-doing">Reading, rather than doing</h3>
+<p><strong>Read it all</strong> shows a whole tutorial as one page of
+text, for when you would rather read than be walked. And <strong>The
+whole book as a document</strong> opens all 36 tutorials as one page in
+your browser, for reading straight through or printing – generated from
+the same lessons the window teaches from, so the two cannot disagree. It
+ships as <code>tutorials</code> in this same <code>docs</code> folder.
+(The document states the keys Quill Radio ships with. Only the window
+can know the ones you rebound.)</p>
+<h3 id="what-is-in-the-36">What is in the 36</h3>
+<p>The tracks are not categories. Each is a claim about what you can do
+by the end of it.</p>
+<p><strong>Your first hour</strong> (5 tutorials, ~23 minutes) – play
+your first station; keep it and find it tomorrow; the player follows
+you; do anything by name; getting unstuck. Somebody who works straight
+down this track finishes with a station playing, a favorite under a name
+they chose, the transport keys in their fingers, and four separate ways
+out of anywhere they get stuck.</p>
+<p><strong>Finding something to listen to</strong> (6, ~38 minutes) –
+wandering the browse tree; searching every directory at once; the
+field-based search and its recents; stations no directory lists (a
+pasted stream, a scanned website, a whole Icecast server, an imported
+playlist); the catalog on your own disk and why browsing works on a
+train; and what to do when a station will not play.</p>
+<p><strong>Making it yours</strong> (6, ~36 minutes) – folders and an
+order of your own; the ten quick-play slots and what the main window
+shows; deciding what a row says and what Enter does (Choose Columns and
+Quick Actions, both of which are speech settings wearing a list
+setting’s clothes); making the keys yours, including system-wide
+hotkeys; the six settings actually worth changing; and Quillins.</p>
+<p><strong>Recording</strong> (5, ~33 minutes) – record what is on now;
+book a show that has not started yet, including the time-zone trap and
+the “Add Schedule is the last button, not the first” rule; several
+stations at once and lossless raw capture; living in the Recordings list
+with its dozen Winamp keys; and what happens when a recording breaks –
+part files, stitching, stalls, crash-resume, and which failures are
+worth retrying.</p>
+<p><strong>More than radio</strong> (8, ~54 minutes) – following a
+podcast and where the line with QUILL Cast falls; audiobooks, archives
+and free music, including exactly what each source will and will not let
+you keep; YouTube with no account anywhere, and its honest limits;
+television and your own XMLTV guide; the ACB Media schedule, reminders
+and Upcoming; NOAA Weather Radio; Community Picks and suggesting one;
+and Spotify, with the free-versus-Premium question answered before you
+spend ten minutes on setup.</p>
+<p><strong>Living with it</strong> (6, ~36 minutes) – what was that
+song; keeping a moment and moving by chapter; sleeping, waking, quiet
+hours and reminders; how much you actually listened; shaping the sound
+(per-station volume, boost, EQ, pausing live radio, a speed that
+sticks); and backing it up, moving it, updating it, and what to do on
+the day something is genuinely wrong.</p>
+<h3 id="one-key-moved-to-make-room">One key moved to make room</h3>
+<p><strong>Product Requirements… moved from Ctrl+Alt+F1 to
+Alt+Shift+F1.</strong> The F1 family – F1 for the control you are on,
+Ctrl+F1 for the guide, Shift+F1 and Ctrl+Shift+F1 for these notes and
+their companion, Alt+F1 for About – is ordered by how often somebody
+reaches for a door. A new listener reaches for a tutorial far more often
+than anybody reaches for the product requirements, so the tutorials take
+the shorter chord and the PRD moves out one notch. (The obvious next
+chord along, Ctrl+Alt+Shift+F1, was not available: it belongs to a
+QuillVille app launcher.)</p>
+<p>If you had the old key in your fingers, that is the one thing here
+that will surprise you.</p>
+<h3 id="what-it-costs">What it costs</h3>
+<p>Nothing at runtime. The lessons are ordinary data compiled into the
+app, the watcher is one timer that reads a handful of values while a
+lesson is open, and the whole feature is inert when the window is
+shut.</p>
 <h3 id="compatibility">Compatibility</h3>
 <p>Nothing in this release changes where your favorites, history,
 recordings or settings are stored, and nothing needs migrating. Every

@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- **Help > Tutorials... (Ctrl+Alt+F1)** -- 11 guided tutorials, 60 steps, in
+  three tracks: your first ten minutes, being warned, and making it yours. The
+  middle track is the app's whole reason for existing, so it is five lessons:
+  start the watch, rehearse an alert, decide what gets through, keep the watch
+  running, and NOAA Weather Radio.
+
+- **A step names a command, not a key**; **Try it** runs it; and **Follow me**
+  watches the app once a second and moves you on when it can see you have done
+  the step -- your saved places growing, the watch starting, alert checks
+  pausing. It watches state rather than keystrokes, so the menu, the key, the
+  tray and the palette all count.
+
+- **Quill Weather has command ids at all now.** Every weather verb was a bound
+  menu item and nothing else, so the Command Palette -- which this app carries
+  -- could not reach a single one of them, and a tutorial step could not name
+  one. The ids are registered with the keys the menu labels already advertise,
+  so the menus are unchanged; they simply have names now.
+
+- **The book is generated from the lessons** (`docs/tutorials.md`, GATE-TUTDOC).
+
 ### Fixed
 
 - **Quill Weather has its own icon.** It used to ship a byte-identical copy of Quill Radio's broadcast-wave icon, carried over when the app was scaffolded, so two different products wore one face in the taskbar, in Alt+Tab and in the tray. Quill Weather's icon is now a sun behind a cloud on a sky-blue tile -- the same rounded shape and amber accent as the rest of the QuillVille family, with its own silhouette and its own colour.

@@ -18,9 +18,12 @@
     "",
     "WHAT IS ENFORCED TODAY. tests/unit/structure/test_app_profiles.py checks that",
     "every shipped entry point has a row here, that every row names a module that",
-    "exists, and that each row's `components` matches that module's own",
-    "REQUIRED_COMPONENTS exactly -- so the build-side declaration and the runtime",
-    "one cannot drift. `layers` is declaration only: no loader reads it yet.",
+    "exists, and that each row's `components` and `optional_components` match that",
+    "module's own REQUIRED_COMPONENTS / OPTIONAL_COMPONENTS exactly -- so the",
+    "build-side declaration and the runtime one cannot drift. `optional_components`",
+    "are components the app uses when present but runs without (the app holds a",
+    "refcount so the shared copy is not garbage-collected from under it; no",
+    "installer stages them). `layers` is declaration only: no loader reads it yet.",
     "",
     "WHAT IS NOT ENFORCED YET. Nothing checks a built artifact against the layer",
     "membership below. scripts/runtime_layer_report.py measures and reports it;",
@@ -86,6 +89,9 @@
       "entry": "quill/__main__.py",
       "standalone": null,
       "components": [],
+      "optional_components": [
+        "ffmpeg"
+      ],
       "layers": [
         "documents",
         "spellcheck"
@@ -93,8 +99,9 @@
       "notes": [
         "The editor. The app the union was sized for, so layering saves it",
         "nothing -- which is the point: everyone else is paying for this row.",
-        "Declares no REQUIRED_COMPONENTS today even though speech export uses",
-        "ffmpeg; that is a real gap, listed with the others below."
+        "ffmpeg is optional: speech (Read Aloud) audio export uses it when",
+        "present, and everything else runs without it. Declared 2026-08-28,",
+        "closing the gap this file used to record here."
       ]
     },
     "radio": {
@@ -105,6 +112,7 @@
         "ffmpeg",
         "mpv"
       ],
+      "optional_components": [],
       "layers": [],
       "notes": [
         "ffmpeg records; libmpv is the playback engine that delivers DVR, output",
@@ -120,6 +128,7 @@
       "components": [
         "ffmpeg"
       ],
+      "optional_components": [],
       "layers": [],
       "notes": [
         "Stages ffmpeg only -- 110 MB of libmpv it has no use for."
@@ -133,6 +142,7 @@
         "ffmpeg",
         "mpv"
       ],
+      "optional_components": [],
       "layers": [],
       "notes": [
         "The declaration was corrected to match the build after the 2026-08-17",
@@ -144,6 +154,7 @@
       "entry": "quill/apps/weather.py",
       "standalone": "standalone/weather",
       "components": [],
+      "optional_components": [],
       "layers": [],
       "notes": [
         "The leanest app, and the one layering would help most."
@@ -154,6 +165,7 @@
       "entry": "quill/apps/inkwell.py",
       "standalone": "standalone/inkwell",
       "components": [],
+      "optional_components": [],
       "layers": [],
       "notes": [
         "Text expansion. No media, no documents."
@@ -163,16 +175,18 @@
       "name": "Quill Converter",
       "entry": "quill/apps/converter.py",
       "standalone": "standalone/converter",
-      "components": [],
+      "components": [
+        "ffmpeg"
+      ],
+      "optional_components": [],
       "layers": [],
       "notes": [
-        "UNDECLARED MEDIA USE. converter.py calls find_ffmpeg() and passes the",
-        "result to available_output_formats(), which returns exactly [\"wav\"]",
-        "when ffmpeg is absent -- an audio converter that can only write WAV.",
-        "It declares no components and its build_release.ps1 does not call",
-        "Stage-QuillMediaTools, so nothing installs or refcounts ffmpeg for it.",
-        "Left as a finding rather than a change: adding ffmpeg here is a",
-        "packaging decision, not a refactor."
+        "ffmpeg is the app's whole job: without it available_output_formats()",
+        "is exactly [\"wav\"] -- an audio converter that cannot convert.",
+        "Declared and refcounted at launch since 2026-08-28 (was the",
+        "UNDECLARED MEDIA USE finding recorded here). Converter ships no",
+        "Windows installer yet; when one appears, its build must call",
+        "Stage-QuillMediaTools -FfmpegDir like Cast's does."
       ]
     },
     "player": {
@@ -180,11 +194,16 @@
       "entry": "quill/apps/player.py",
       "standalone": "standalone/player",
       "components": [],
+      "optional_components": [
+        "mpv"
+      ],
       "layers": [],
       "notes": [
-        "UNDECLARED MEDIA USE. Announces \"Audio effects need the libmpv engine\"",
-        "and reports which backend it is on, so it knows about libmpv and",
-        "declares nothing. Same finding shape as Converter."
+        "libmpv is optional: it delivers audio effects (DSP) and wider format",
+        "reach, and playback falls back to wx.media without it -- the app says",
+        "so (\"Audio effects need the libmpv engine\") and shows the backend in",
+        "its status bar. Declared and refcounted at launch since 2026-08-28",
+        "(was the UNDECLARED MEDIA USE finding recorded here)."
       ]
     },
     "beacon": {
@@ -192,11 +211,15 @@
       "entry": "quill/apps/beacon/__init__.py",
       "standalone": "standalone/beacon",
       "components": [],
+      "optional_components": [
+        "mpv"
+      ],
       "layers": [],
       "notes": [
-        "UNDECLARED MEDIA USE, mildest of the three: beacon/player.py documents",
-        "an opt-in libmpv backend and falls back to wx.media, so the absence",
-        "degrades rather than breaks."
+        "libmpv is optional: beacon/player.py offers it as an opt-in backend",
+        "and falls back to wx.media, so the absence degrades rather than",
+        "breaks. Declared and refcounted at launch since 2026-08-28 (was the",
+        "mildest of the three UNDECLARED MEDIA USE findings recorded here)."
       ]
     },
     "social": {
@@ -204,6 +227,7 @@
       "entry": null,
       "standalone": "standalone/social",
       "components": [],
+      "optional_components": [],
       "layers": [],
       "external_package": "quill_social",
       "notes": [

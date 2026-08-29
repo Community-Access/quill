@@ -3287,6 +3287,10 @@ class MenuBuilderMixin:
                 self._menu_label(_("Redeem &Unlock Code..."), "help.redeem_unlock_code"),
             )
         help_menu.AppendSeparator()
+        self._id_open_tutorials = wx.NewIdRef()  # leads the documents below it
+        help_menu.Append(
+            self._id_open_tutorials, self._menu_label(_("&Tutorials..."), "help.tutorials")
+        )
         self._id_open_user_guide = wx.NewIdRef()
         self._id_open_third_party_notices = wx.NewIdRef()
         help_menu.Append(self._id_open_user_guide, _("Open User &Guide\tCtrl+F1"))

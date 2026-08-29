@@ -466,6 +466,7 @@ from quill.ui.main_frame_ssh import SshEditingMixin
 from quill.ui.main_frame_statusbar import StatusBarMixin, _StatusBarCell
 from quill.ui.main_frame_story_studio import StoryStudioMixin
 from quill.ui.main_frame_table_nav import TableNavMixin
+from quill.ui.main_frame_tutorials import TutorialsMixin
 from quill.ui.main_frame_typing import TypingPathMixin
 from quill.ui.main_frame_undo import PersistentUndoMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
@@ -826,6 +827,7 @@ class MainFrame(
     ReadingOrderMixin,
     EmojiPickerMixin,
     RadioMixin,
+    TutorialsMixin,
     PodcastsMixin,
     LibraryMixin,
     MediaSleepTimerMixin,

@@ -172,6 +172,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.build_help_reference", "--check"),
     ),
     Gate(
+        "tutorial-reference",
+        "GATE-TUTDOC: the tutorial book matches the lessons the app teaches",
+        (sys.executable, "-m", "quill.tools.build_tutorials_reference"),
+    ),
+    Gate(
         "surface-reachability",
         "GATE-REACH: a surface a listener cannot reach is not shipped",
         (sys.executable, "-m", "quill.tools.surface_reachability_audit"),

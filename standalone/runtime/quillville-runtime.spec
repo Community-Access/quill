@@ -192,6 +192,19 @@ a = Analysis(
         # extra, which nothing installs. Dead the moment weasyprint went.
         "fontTools",
         "zopfli",
+        # openai + jiter (2026-08-28). Nothing first-party imports the OpenAI
+        # SDK -- it arrives as an on-demand AI SDK pack (sdk_install), exactly
+        # like huggingface_hub above. It reached the sweep through
+        # llama_cpp.llama's guarded `import openai`, the moment an openai
+        # install appeared on this build machine: the pure-Python SDK froze
+        # invisibly into the PYZ and only jiter (its compiled JSON parser, the
+        # one piece that lands in _internal) tripped the inventory gate. A
+        # frozen SDK would shadow the pack's pinned copy the way vosk shadowed
+        # its pack, so both are excluded as a pair: dropping jiter alone would
+        # leave a frozen openai that raises on import, the failure mode
+        # check_runtime_imports.py exists for.
+        "openai",
+        "jiter",
         # tomli is deliberately NOT excluded, though the 2026-08-18 probe found
         # it broken too (a mypyc-compiled dist whose hashed runtime module never
         # shipped). PyInstaller's setuptools hook aliases the vendored

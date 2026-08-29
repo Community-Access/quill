@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Weather Tutorials</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-weather-tutorials">Quill Weather Tutorials</h1>
+<p>11 guided tutorials, 60 steps, about 47 minutes of material in
+all.</p>
+<p>This document is generated from the tutorials inside Quill Weather,
+so it says exactly what the app teaches. To work through one with the
+app watching – running a step for you, and moving you on once it can see
+you have done it – open <strong>Help &gt; Tutorials…</strong>
+instead.</p>
+<p>The keys below are the ones Quill Weather ships with. If you have
+rebound something in the Keyboard Manager, the tutorials <em>inside the
+app</em> say your key; this document cannot know it.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><strong>Your first ten minutes</strong> – Add a place, read
+everything the app knows about it, and learn the one key that answers
+without opening anything.
+<ul>
+<li>Add your first place (4 minutes)</li>
+<li>Read everything it knows (6 minutes)</li>
+<li>The one-line answer (3 minutes)</li>
+</ul></li>
+<li><strong>Being warned</strong> – The reason this app exists: a watch
+that speaks a warning the moment it is issued, tuned so that you leave
+it on, and running whether or not anything else is.
+<ul>
+<li>Start the watch (5 minutes)</li>
+<li>Rehearse an alert (3 minutes)</li>
+<li>Decide what gets through (5 minutes)</li>
+<li>Keep the watch running (5 minutes)</li>
+<li>NOAA Weather Radio, out loud (3 minutes)</li>
+</ul></li>
+<li><strong>Making it yours</strong> – Several places rather than one,
+the settings that decide how long a reading takes to speak, and living
+beside the rest of the family.
+<ul>
+<li>More than one place (4 minutes)</li>
+<li>Decide how the weather reads (5 minutes)</li>
+<li>Weather beside the other apps (4 minutes)</li>
+</ul></li>
+</ul>
+<h2 id="your-first-ten-minutes">Your first ten minutes</h2>
+<p>Add a place, read everything the app knows about it, and learn the
+one key that answers without opening anything.</p>
+<h3 id="add-your-first-place">Add your first place</h3>
+<p>Search for somewhere by ZIP code, town, county or address, pick the
+right one out of the results, and give it a name you would actually
+say.</p>
+<p><em>6 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open Add Location.</strong> On a fresh installation there
+is no saved place yet, so this is the first thing to do. The main window
+is deliberately small – a status line and three buttons – and everything
+else lives on the menu bar.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+L</li>
+<li>You should hear: Entered the Add Location window, with focus in the
+search box.</li>
+</ul></li>
+<li><p><strong>Search the way you think of the place.</strong> A ZIP
+code, a town and state (Tucson, AZ), a county name, an address, or exact
+coordinates like 32.2, -110.9 all work. Use whichever you have; there is
+no right form to learn.</p>
+<ul>
+<li>Keys: Enter</li>
+<li>You should hear: A results list, and how many places matched.</li>
+</ul></li>
+<li><p><strong>Pick the right one out of the results.</strong> A search
+can match more than one place – there are Springfields in Illinois,
+Missouri and several other states – so the app never guesses. Arrow to
+the one you meant, and choose Add Selected.</p>
+<ul>
+<li>Keys: Down arrow, Alt+A</li>
+<li>You should hear: Each result read as a whole place, then the one you
+added.</li>
+</ul></li>
+<li><p><strong>Give it a name you would say out loud.</strong> Type a
+friendly name – Home, Mom’s, Work – into the name field before you add
+it. The official name of a place is often a county and a state you would
+never use in conversation, and this is the name every announcement will
+use.</p>
+<ul>
+<li>You should hear: The place added under your own name for it.</li>
+</ul></li>
+<li><p><strong>Know what the first place means.</strong> The first place
+you add becomes your primary location: the one Quick Weather answers
+about, and the one the local NOAA Weather Radio lookup uses. Add as many
+more as you like afterwards.</p>
+<ul>
+<li>You should hear: Nothing: this is the fact that explains Quick
+Weather’s answer.</li>
+</ul></li>
+<li><p><strong>Read the safety note once.</strong> Quill Weather is an
+additional accessible weather tool. Delivery can be delayed by network,
+device or provider problems, so keep a NOAA Weather Radio, Wireless
+Emergency Alerts and local emergency instructions as your primary
+channels. That is stated here rather than buried.</p>
+<ul>
+<li>You should hear: Nothing: this is the paragraph worth reading
+twice.</li>
+</ul></li>
+</ol>
+<p>One place is enough to start. Everything comes from free, no-account
+sources – the National Weather Service for conditions, the forecast and
+alerts, Open-Meteo for the extended outlook and air quality,
+OpenStreetMap for the search.</p>
+<p>Next: Read everything it knows; The one-line answer.</p>
+<h3 id="read-everything-it-knows">Read everything it knows</h3>
+<p>The Weather Center, top to bottom, in the order it is written to be
+read: what is dangerous, what it is like now, what is coming, and where
+the numbers came from.</p>
+<p><em>8 steps, about 6 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open the Weather Center.</strong> It reads top to bottom
+in priority order, which is the whole design: the most urgent thing is
+the first thing, not the prettiest thing.</p>
+<ul>
+<li>Keys: Ctrl+Shift+W</li>
+<li>You should hear: Entered Weather Now, with the alerts list first if
+there are any.</li>
+</ul></li>
+<li><p><strong>Start with the alerts, if there are any.</strong>
+Watches, warnings and advisories, most severe first. Arrow through them
+and the full official text – including the instructions, which is the
+part that tells you what to do – appears in the read-only box just
+below, where you can review and copy it.</p>
+<ul>
+<li>Keys: Down arrow, Tab</li>
+<li>You should hear: Each alert’s headline, then its full text in the
+box below.</li>
+<li>Worth knowing: When there are no alerts that box is hidden rather
+than empty, so you never stop on a field with nothing in it.</li>
+</ul></li>
+<li><p><strong>Read the current conditions as a paragraph.</strong>
+Temperature, feels-like, sky, humidity, dew point, wind and gusts,
+cloud, pressure, visibility, chance of precipitation, sunrise and
+sunset, ultraviolet index and air quality – written out as sentences for
+speech rather than as a table of abbreviations.</p>
+<ul>
+<li>Keys: Tab</li>
+<li>You should hear: A warm paragraph, with the observation time in the
+place’s own zone.</li>
+</ul></li>
+<li><p><strong>Notice the two clocks.</strong> The report leads with the
+local day and time where you searched, the time where you are, and when
+the reading was taken – checked just now, or the exact minute in your
+own clock for an older one. When both are in the same zone it says so
+once instead of repeating itself.</p>
+<ul>
+<li>You should hear: Right now it is Thursday, 9:51 AM in Tucson, and
+6:51 AM where you are.</li>
+</ul></li>
+<li><p><strong>Walk the forecast.</strong> The National Weather Service
+period forecast – This Afternoon, Tonight, and on. Arrow the list and
+each period’s full text appears below, led by its day and temperature so
+it stands alone when read out of order.</p>
+<ul>
+<li>Keys: Down arrow</li>
+<li>You should hear: Each period’s name, then its detail in the box
+below.</li>
+</ul></li>
+<li><p><strong>Look further out, and hour by hour.</strong> The daily
+outlook reaches about ten days (up to sixteen), each day one friendly
+line. The hourly list gives temperature, sky and chance of precipitation
+for the coming hours. Both are lengths you set in Settings, and either
+can be switched off.</p>
+<ul>
+<li>Keys: Tab, Down arrow</li>
+<li>You should hear: Monday, July 20: Clear. High 98, low 75 degrees.
+Sunrise 5:42 AM, sunset 7:38 PM.</li>
+</ul></li>
+<li><p><strong>Check where the numbers came from.</strong> The status
+line names the National Weather Service office and the observation
+station. Two stations a few miles apart can disagree about the wind, and
+knowing which one you are reading is the difference between a puzzle and
+a fact.</p>
+<ul>
+<li>Keys: Tab</li>
+<li>You should hear: The office and the station, by name.</li>
+</ul></li>
+<li><p><strong>Refresh, and leave.</strong> Refresh pulls the latest at
+any time. Close leaves anything you are playing untouched – the radio
+keeps going, which is the point of a weather window that lives beside a
+radio.</p>
+<ul>
+<li>Keys: Alt+R, Escape</li>
+<li>You should hear: The reading refreshed, then the window
+closing.</li>
+</ul></li>
+</ol>
+<p>That is everything the app knows about a place. The next lesson is
+the same answer in one line, without opening anything.</p>
+<p>Next: The one-line answer.</p>
+<h3 id="the-one-line-answer">The one-line answer</h3>
+<p>Quick Weather speaks a summary of your primary place without opening
+a window – and you decide what goes in it.</p>
+<p><em>4 steps, about 3 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Ask, and listen.</strong> One key, one sentence, no
+window. This is the key to keep in your fingers: it is the answer to the
+question people actually ask twenty times a day.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Q</li>
+<li>You should hear: Here is the weather for Tucson, Arizona. It is 96
+degrees and mostly clear. It feels like 101. The wind is from the
+west-northwest at 5 miles per hour. There is one active alert.</li>
+</ul></li>
+<li><p><strong>Hear the alert count in it.</strong> When something is
+active, the line ends with how many alerts there are and names the most
+urgent. That is deliberate: the quick answer should never be the one
+that leaves out the warning.</p>
+<ul>
+<li>You should hear: There is one active alert. The most urgent is an
+Excessive Heat Warning.</li>
+</ul></li>
+<li><p><strong>Decide what the line says.</strong> Settings has a Quick
+Weather section: feels-like, wind, humidity, the active-alert count and
+the age of the data can each be turned on or off. A one-line answer that
+takes eight seconds to speak is not a quick answer.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+F</li>
+<li>You should hear: Each toggle read back as you set it.</li>
+</ul></li>
+<li><p><strong>Jump straight to the alerts instead.</strong> Active
+Alerts opens the Weather Center with focus already on the alerts list,
+which is the fewest keystrokes between you and the official text of a
+warning.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Alt+A</li>
+<li>You should hear: Entered Weather Now, on the alerts list.</li>
+</ul></li>
+</ol>
+<p>Quick Weather for the everyday question, Active Alerts for the
+serious one, the Weather Center when you want everything.</p>
+<p>Next: Start the watch.</p>
+<h2 id="being-warned">Being warned</h2>
+<p>The reason this app exists: a watch that speaks a warning the moment
+it is issued, tuned so that you leave it on, and running whether or not
+anything else is.</p>
+<h3 id="start-the-watch">Start the watch</h3>
+<p>Turn on Weather Monitoring, hear what it says as it starts, and know
+precisely what it is watching and how often.</p>
+<p><em>6 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Turn it on.</strong> Weather Monitoring – the Weather
+Guardian – watches your saved places’ official watches, warnings and
+advisories and speaks each new one the moment it is issued. The same key
+turns it off, and the menu item says which it will do.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+M</li>
+<li>You should hear: A single combined summary: 3 places: Tucson,
+Boston, and Reno. All clear right now.</li>
+</ul></li>
+<li><p><strong>Know that it watches all of them.</strong> Every saved
+place is watched at once, with no setup: home, work and family are all
+covered. Each alert names its place when it is spoken and in its tray
+notification, so you never have to work out which town a warning is
+for.</p>
+<ul>
+<li>You should hear: Each alert prefixed with the place it is for.</li>
+</ul></li>
+<li><p><strong>Hear what an urgent one sounds like.</strong> The most
+serious events – a tornado warning, a flash flood warning – interrupt
+whatever your screen reader is saying. Everything else waits its turn.
+That distinction is the whole reason interrupting speech exists, and it
+is used sparingly on purpose.</p>
+<ul>
+<li>You should hear: An interrupting announcement, then the alert, then
+the tray notice.</li>
+</ul></li>
+<li><p><strong>Understand the rhythm.</strong> While a warning is active
+it checks much more often – as fast as once a minute – so you hear about
+changes quickly, then eases back when the weather clears. You do not set
+that; it follows the weather.</p>
+<ul>
+<li>You should hear: Nothing: this is what you will not notice
+happening.</li>
+</ul></li>
+<li><p><strong>Snooze it without switching it off.</strong> Pause Alert
+Checks stops the checking temporarily; the same item then reads Resume
+Alert Checks. Use it for the hour you are in a meeting rather than
+turning the watch off and forgetting to turn it back on.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+P</li>
+<li>You should hear: Alert checks paused – and the menu item now
+offering to resume.</li>
+</ul></li>
+<li><p><strong>Know that it comes back by itself.</strong> Monitoring
+keeps running while the window is in the tray, and starts again
+automatically the next time you launch. Choosing Stop Weather Monitoring
+is what turns it off for good.</p>
+<ul>
+<li>You should hear: At the next launch: the same combined summary as
+when you started it.</li>
+</ul></li>
+</ol>
+<p>The watch is the app. Everything else here is about making sure it
+reaches you.</p>
+<p>Next: Rehearse an alert; Decide what gets through.</p>
+<h3 id="rehearse-an-alert">Rehearse an alert</h3>
+<p>See and hear exactly what a real warning will be like, at a moment of
+your choosing rather than at three in the morning.</p>
+<p><em>4 steps, about 3 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Send yourself a test.</strong> Test Alert shows you the
+whole thing: the spoken words, the sound using your own sound settings,
+a system-tray notification, and the alert window. All of it clearly
+marked as a test.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+T</li>
+<li>You should hear: The alert sound, then the spoken test alert.</li>
+</ul></li>
+<li><p><strong>Dismiss it the way you will dismiss a real one.</strong>
+The window closes with OK or Escape. Practising that once, calmly, is
+worth more than reading about it – the real one arrives while you are
+doing something else.</p>
+<ul>
+<li>Keys: Enter, Escape</li>
+<li>You should hear: The window closing.</li>
+</ul></li>
+<li><p><strong>Know what it did not do.</strong> It sends nothing over
+the internet and does not touch your real monitoring. Nothing you do
+here can cost you a genuine warning, which is what makes it safe to try
+whenever you like.</p>
+<ul>
+<li>You should hear: Nothing: this is the promise behind the
+button.</li>
+</ul></li>
+<li><p><strong>Try it again after changing the sound.</strong> This is
+also the right way to audition an alert sound: change it in Settings,
+come back and test, and hear it in the exact form a real alert will use,
+repeats included.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+F</li>
+<li>You should hear: Your chosen sound, the number of times you asked
+for.</li>
+</ul></li>
+</ol>
+<p>Rehearse once when you set the app up, and again any time you change
+the sound or the severity filter.</p>
+<p>Next: Decide what gets through.</p>
+<h3 id="decide-what-gets-through">Decide what gets through</h3>
+<p>Severity, event names, the sound and how often it repeats – the four
+settings that decide whether the watch is useful or noisy.</p>
+<p><em>6 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open Settings.</strong> Four things here decide what an
+alert costs you. Everything else in this window is about how the weather
+reads; this is about how it interrupts.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+F</li>
+<li>You should hear: Entered Weather Settings.</li>
+</ul></li>
+<li><p><strong>Set the severity floor.</strong> Show everything, or only
+Moderate and above, Severe and above, and so on. Somewhere on the coast
+a Small Craft Advisory is news; two hundred miles inland it is noise,
+and the app cannot know which you are.</p>
+<ul>
+<li>You should hear: The severity choice read back.</li>
+</ul></li>
+<li><p><strong>Hide the events you never want.</strong> Below it is a
+list of specific event names to hide, one per line. This is the finer
+tool: keep every severity but never hear about Air Quality Alerts again,
+without dropping the floor and losing something else.</p>
+<ul>
+<li>You should hear: Nothing spoken: the effect shows up the next time
+one of those is issued.</li>
+</ul></li>
+<li><p><strong>Choose the sound, and hear it.</strong> The alert sound
+can be switched off, or replaced with a .wav of your own – there is a
+Play button so you can hear a candidate before committing, and Use
+Default to go back.</p>
+<ul>
+<li>You should hear: The sound you chose, played once.</li>
+</ul></li>
+<li><p><strong>Decide how insistent it is.</strong> The sound can play
+from one to ten times per alert. Once is polite; five is what you want
+if you are in another room and the tornado siren is the point of owning
+this app.</p>
+<ul>
+<li>You should hear: The repeat count read back.</li>
+</ul></li>
+<li><p><strong>Set how often it refreshes.</strong> The refresh interval
+governs the Weather Center’s own updating. It is never allowed faster
+than the National Weather Service’s recommended minimum, which is a
+courtesy to a free public service everybody depends on.</p>
+<ul>
+<li>You should hear: The interval read back.</li>
+</ul></li>
+</ol>
+<p>A watch you have tuned is a watch you leave on. That is the only
+measure that matters here.</p>
+<p>Next: Keep the watch running.</p>
+<h3 id="keep-the-watch-running">Keep the watch running</h3>
+<p>The tray, the global key, starting with Windows, and the background
+check that works with no Quill Weather running at all.</p>
+<p><em>6 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Send the window to the tray.</strong> Minimize to Tray
+tucks the window away and monitoring keeps going. Quill Weather is built
+to keep running: the window is a way of asking it things, not the app
+itself.</p>
+<ul>
+<li>Keys: Ctrl+W</li>
+<li>You should hear: Hidden to the tray.</li>
+</ul></li>
+<li><p><strong>Get it back from anywhere.</strong> Ctrl+Alt+Shift+W
+shows and hides Quill Weather from any program, even without focus, and
+says which it did. The chord is unique to this app – QUILL is
+Ctrl+Alt+Shift+Q and Quill Radio is Ctrl+Alt+Shift+R – so the three
+never collide.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+W</li>
+<li>You should hear: Shown – and Hidden to the tray when you press it
+again.</li>
+<li>Worth knowing: If another program already owns that chord, Quill
+Weather leaves it alone rather than fighting for it, and the tray icon
+still works.</li>
+</ul></li>
+<li><p><strong>Make closing safe.</strong> By default the close button
+also goes to the tray rather than quitting, so a stray Alt+F4 does not
+end your watch. Only Exit truly quits. Options has the switch if you
+would rather close mean close.</p>
+<ul>
+<li>Keys: Ctrl+Alt+C</li>
+<li>You should hear: The setting read back.</li>
+</ul></li>
+<li><p><strong>Start watching at sign-in.</strong> Start Quill Weather
+with Windows launches it when you sign in. Pair it with Start minimized
+to the tray and the watch is on from the moment you sit down, with no
+window in your way.</p>
+<ul>
+<li>Keys: Ctrl+Alt+W, Ctrl+Alt+M</li>
+<li>You should hear: Each setting read back.</li>
+</ul></li>
+<li><p><strong>Be covered with nothing running at all.</strong> Check
+for alerts in the background registers a Windows scheduled task that
+checks on your interval and shows a toast if it finds something – so you
+are covered even with no Quill Weather process running.</p>
+<ul>
+<li>Keys: Ctrl+Alt+B</li>
+<li>You should hear: The setting read back, and Windows confirming the
+task.</li>
+</ul></li>
+<li><p><strong>Know what the tray menu holds.</strong> Right-click the
+tray icon, or use the Applications key, for the current monitoring
+status, Open Weather Center, Quick Weather, Start or Stop Monitoring,
+Open Quill Radio, Open QUILL, Show and Exit.</p>
+<ul>
+<li>Keys: Shift+F10</li>
+<li>You should hear: The menu, led by the monitoring status.</li>
+</ul></li>
+</ol>
+<p>Between the tray, the startup entry and the background task, there is
+no state of your computer in which the watch quietly is not running
+without your having chosen that.</p>
+<p>Next: NOAA Weather Radio, out loud.</p>
+<h3 id="noaa-weather-radio-out-loud">NOAA Weather Radio, out loud</h3>
+<p>Play the National Weather Service’s own broadcast voice for your
+area, and know what it is and is not a substitute for.</p>
+<p><em>5 steps, about 3 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Listen to your local transmitter.</strong> One command
+plays the transmitter covering your saved place: your county’s first, or
+the nearest one whose coverage includes you. If you have not set a place
+yet it tells you that instead of failing silently.</p>
+<ul>
+<li>Keys: Ctrl+Alt+N</li>
+<li>You should hear: The transmitter named – call sign, frequency and
+place – then the broadcast.</li>
+</ul></li>
+<li><p><strong>Treat it as an ordinary station.</strong> Once it is
+playing it behaves like any other station in the family: favourite it,
+record it, schedule it. It is the same player underneath.</p>
+<ul>
+<li>You should hear: Whatever the transport key you press
+announces.</li>
+</ul></li>
+<li><p><strong>Know it works offline.</strong> The complete directory –
+1,035 transmitters across every state and territory – ships inside the
+app, so the local lookup and the browsable state-by-state tree work with
+no internet at all.</p>
+<ul>
+<li>You should hear: Nothing: this is what you will not notice going
+wrong.</li>
+</ul></li>
+<li><p><strong>Refresh the directory when you want to.</strong> Update
+NOAA Weather Radio Directory pulls the newest list on demand, off the UI
+thread, and announces the result. A failure leaves your existing data
+untouched, and the bundled copy is always the floor.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+N</li>
+<li>You should hear: How many transmitters it found.</li>
+</ul></li>
+<li><p><strong>Know what it is not.</strong> The audio stream is a
+companion to the text weather, not a replacement for a dedicated NOAA
+Weather Radio receiver with alert tones. An internet re-stream depends
+on the internet, which is exactly what a storm takes away.</p>
+<ul>
+<li>You should hear: Nothing: this is the sentence that matters on the
+worst day.</li>
+</ul></li>
+</ol>
+<p>The broadcast voice for company, the alert watch for warnings, and a
+real receiver for the day the power goes.</p>
+<h2 id="making-it-yours">Making it yours</h2>
+<p>Several places rather than one, the settings that decide how long a
+reading takes to speak, and living beside the rest of the family.</p>
+<h3 id="more-than-one-place">More than one place</h3>
+<p>Add the places you care about, switch between them, and know which of
+them the watch covers and which one Quick Weather answers about.</p>
+<p><em>5 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Add a second place.</strong> Home is rarely the only
+place that matters – work, a parent’s town, the city a flight lands in
+tomorrow. Add each one the same way, and name each one the way you would
+say it.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+L</li>
+<li>You should hear: The place added, under your name for it.</li>
+</ul></li>
+<li><p><strong>Switch between them.</strong> The Location chooser at the
+top of the Weather Center moves between your saved places, and
+everything below it – alerts, conditions, forecast, outlook –
+follows.</p>
+<ul>
+<li>Keys: Ctrl+Shift+W</li>
+<li>You should hear: The place you chose, then its own weather.</li>
+</ul></li>
+<li><p><strong>Know which one Quick Weather answers about.</strong>
+Quick Weather always answers for your primary place, which is the first
+one you added. That is what makes it a one-key answer: it never has to
+ask which place you meant.</p>
+<ul>
+<li>Keys: Ctrl+Shift+Q</li>
+<li>You should hear: The primary place, named at the start of the
+line.</li>
+</ul></li>
+<li><p><strong>Know which ones the watch covers.</strong> All of them,
+with no setup. Starting the watch says so as one sentence across the
+places – 3 places: Tucson, Boston, and Reno. All clear right now – and
+every alert names its own place when it speaks.</p>
+<ul>
+<li>You should hear: The combined summary, naming each place.</li>
+</ul></li>
+<li><p><strong>Remove one you no longer need.</strong> Select it in the
+Location chooser and press Remove Location (Alt+M), or the Delete key in
+the list. It goes immediately and without a confirmation, which is worth
+knowing before you press it; the watch simply stops covering that
+place.</p>
+<ul>
+<li>Keys: Delete</li>
+<li>You should hear: The place removed, by name.</li>
+</ul></li>
+</ol>
+<p>Places are cheap: the watch covers all of them at once, and only
+Quick Weather needs to know which one is first.</p>
+<p>Next: Decide how the weather reads.</p>
+<h3 id="decide-how-the-weather-reads">Decide how the weather reads</h3>
+<p>Units, how much forecast, and which details are in the paragraph –
+the settings that decide how long the app takes to tell you
+something.</p>
+<p><em>5 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open Settings and start with units.</strong> Temperature
+in Fahrenheit or Celsius; wind in miles per hour, kilometres per hour,
+knots or metres per second. Set these first, because every other number
+in the app is read in them.</p>
+<ul>
+<li>Keys: Ctrl+Alt+Shift+F</li>
+<li>You should hear: Each unit read back.</li>
+</ul></li>
+<li><p><strong>Decide how much forecast you want.</strong> Forecast
+periods to show, extended daily outlook in days, and hourly forecast in
+hours. Each can be set to zero, which turns that list off entirely
+rather than leaving an empty control to arrow past.</p>
+<ul>
+<li>You should hear: Each length read back.</li>
+</ul></li>
+<li><p><strong>Choose what is in the conditions paragraph.</strong> A
+checkbox each for feels-like, humidity, dew point, wind and gusts, cloud
+cover, pressure, visibility, chance of precipitation, sunrise and
+sunset, the moon, the ultraviolet index, air quality and the current
+local time there. Temperature and sky always show.</p>
+<ul>
+<li>You should hear: Each detail as you tick or untick it.</li>
+<li>Worth knowing: This is a speech setting wearing a display setting’s
+clothes: every box you leave ticked is a clause you hear on every
+reading, for the rest of your life with the app.</li>
+</ul></li>
+<li><p><strong>Keep the moon, or drop it.</strong> Phase, how full it
+is, moonrise and moonset are computed on your own machine with no extra
+lookup, so keeping them costs no time and no network – only the seconds
+it takes to speak them.</p>
+<ul>
+<li>You should hear: The moon’s phase and times, if you kept them.</li>
+</ul></li>
+<li><p><strong>Turn off the second clock if you never travel.</strong>
+The local-time line is there because a forecast for somewhere two zones
+away is easy to misread. If all your places share your clock, switching
+it off makes every reading shorter.</p>
+<ul>
+<li>You should hear: One fewer sentence at the top of every
+reading.</li>
+</ul></li>
+</ol>
+<p>Nothing here changes what the app can tell you. It changes how long
+it takes to tell you, which is the setting that matters most when you
+ask twenty times a day.</p>
+<p>Next: Weather beside the other apps.</p>
+<h3 id="weather-beside-the-other-apps">Weather beside the other
+apps</h3>
+<p>Reaching QUILL and Quill Radio, turning off whole areas you never
+use, keeping the app current, and where its help lives.</p>
+<p><em>5 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open the family.</strong> The QuillVille menu opens the
+other apps – QUILL, Quill Radio, and the rest – and each has its own
+show/hide chord so they never fight. Quill Weather never launches
+something you did not ask for.</p>
+<ul>
+<li>Keys: Alt+Q</li>
+<li>You should hear: The other apps, listed by name.</li>
+</ul></li>
+<li><p><strong>Turn off an area you never use.</strong> Customize
+Features leaves out a whole area and every command under it – the NOAA
+radio rows, for instance, if you never listen. Nothing is deleted; tick
+it again and it comes back.</p>
+<ul>
+<li>Keys: Ctrl+Alt+F</li>
+<li>You should hear: Each area with a short description of what it
+covers.</li>
+</ul></li>
+<li><p><strong>Find the help that is already here.</strong> The User
+Guide and the Release Notes ship beside the app and open from the Help
+menu – worth knowing because for several releases they were installed
+and unreachable, which is the same as not shipping them.</p>
+<ul>
+<li>Keys: Ctrl+Alt+G, Ctrl+Alt+R</li>
+<li>You should hear: The document opening in your browser.</li>
+</ul></li>
+<li><p><strong>Press F1 wherever you are standing.</strong> F1 answers
+for the control under focus: what this window is for, then what this
+control does and how to drive it, in a field you can arrow through and
+copy. Escape puts you back exactly where you were.</p>
+<ul>
+<li>Keys: F1</li>
+<li>You should hear: The window’s purpose, then the control’s own
+help.</li>
+</ul></li>
+<li><p><strong>Stay current.</strong> Check for Updates compares your
+version with the newest release and downloads the edition you are
+running, with spoken progress. Being current matters more here than in
+most apps: this one is watching for warnings.</p>
+<ul>
+<li>Keys: Ctrl+Alt+U</li>
+<li>You should hear: Either what is available, or that you are up to
+date.</li>
+</ul></li>
+</ol>
+<p>Quill Weather is deliberately small. Everything it does not do,
+another app in the family does – and it will open that app for you.</p>
+</main>
+</body>
+</html>

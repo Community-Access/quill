@@ -66,10 +66,13 @@ endif()
 
 # The self-healing launcher downloads the QuillVille Runtime installer from this
 # URL when no runtime is found. Overridable per product; the default points at
-# the latest GitHub release asset (that path redirects to the newest upload).
+# the dedicated moving `runtime-latest` release tag. NOT releases/latest: that
+# path follows the repository's newest non-prerelease release, which is owned
+# by the editor's release train and carries no runtime asset -- the runtime
+# ships on its own cadence under its own tag.
 if(NOT DEFINED PRODUCT_RUNTIME_URL)
     set(PRODUCT_RUNTIME_URL
-        "https://github.com/Community-Access/quill/releases/latest/download/QuillVille-Runtime-Setup.exe")
+        "https://github.com/Community-Access/quill/releases/download/runtime-latest/QuillVille-Runtime-Setup.exe")
 endif()
 
 # Generate product.h from product.h.in, with the values supplied at configure

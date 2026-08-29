@@ -55,6 +55,11 @@ def register_podcast_commands(host: Any) -> None:
             "Podcasts: Run Housekeeping Now",
             host.podcast_run_maintenance,
         ),
+        (
+            "podcasts.tutorials",
+            "Podcasts: Tutorials...",
+            host.open_cast_tutorials,
+        ),
     ):
         host.commands.try_register(
             command_id,

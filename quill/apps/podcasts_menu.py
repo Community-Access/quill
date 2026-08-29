@@ -367,6 +367,13 @@ class CastMenuBarMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_ffmpeg_component(), id=ffmpeg_id)
         help_menu.AppendSeparator()
         guide_id, notes_id, prd_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
+        # Tutorials leads the documents: it is the door somebody new reaches
+        # for, and the three below it are what you open once you know what to
+        # look up. Ctrl+Alt+F1 is the family key -- the same chord opens the
+        # lessons in Quill Radio, Quill Weather and QUILL.
+        tutorials_id = wx.NewIdRef()
+        help_menu.Append(tutorials_id, self._menu_label("&Tutorials...", "podcasts.tutorials"))
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_cast_tutorials(), id=tutorials_id)
         help_menu.Append(guide_id, "&User Guide\tCtrl+Alt+D")
         help_menu.Append(notes_id, "&Release Notes\tCtrl+Alt+R")
         help_menu.Append(prd_id, "&Product Requirements...\tCtrl+Alt+Y")
@@ -448,6 +455,7 @@ class CastMenuBarMixin:
             palette_id,
             bug_id,
             ffmpeg_id,
+            tutorials_id,
             guide_id,
             notes_id,
             prd_id,

@@ -1399,34 +1399,13 @@ class RadioAppFrame(
         mpv_id = wx.NewIdRef()
         help_menu.Append(mpv_id, "Get mpv Playback &Engine...\tCtrl+Alt+M")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.download_mpv_component(), id=mpv_id)
+        from quill.apps import radio_help_docs
+
         help_menu.AppendSeparator()
-        guide_id, notes_id, prd_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        # The release notes ship in two halves: the narrative, and the companion
-        # that carries the reasoning. The narrative points at the companion by
-        # name, so it needs a door of its own -- a document nobody can open from
-        # the Help menu is a document that does not really ship.
-        notes_depth_id = wx.NewIdRef()
-        # F1 is context help now (What Is This?), matching QUILL's editor: F1
-        # answers for the control you are on, Ctrl+F1 opens the User Guide.
-        # The guide moved from F1 to Ctrl+F1 for that convention; the PRD --
-        # the least reached-for document here -- moved to Ctrl+Alt+F1.
-        what_is_this_id = wx.NewIdRef()
-        help_menu.Append(what_is_this_id, "&What Is This?\tF1")
-        help_menu.Append(guide_id, "&User Guide\tCtrl+F1")
-        help_menu.Append(notes_id, "&Release Notes\tShift+F1")
-        help_menu.Append(notes_depth_id, "Release Notes: The &Long Version\tCtrl+Shift+F1")
-        help_menu.Append(prd_id, "&Product Requirements...\tCtrl+Alt+F1")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_show_context_help(), id=what_is_this_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("userguide"), id=guide_id)
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self._open_radio_doc("release-notes-3.0"), id=notes_id
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self._open_radio_doc("release-notes-3.0-in-depth"),
-            id=notes_depth_id,
-        )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_radio_doc("prd"), id=prd_id)
+        # What Is This?, the tutorials and the four documents: one block, built
+        # in apps/radio_help_docs so the keys and the reasoning behind them live
+        # next to the code that opens what they open.
+        doc_ids = radio_help_docs.install_help_items(self, help_menu, wx)
         help_menu.AppendSeparator()
         help_menu.Append(updates_id, "Check for Up&dates...\tCtrl+Alt+U")
         help_menu.AppendSeparator()
@@ -1606,11 +1585,7 @@ class RadioAppFrame(
             palette_id,
             bug_id,
             ffmpeg_id,
-            what_is_this_id,
-            guide_id,
-            notes_id,
-            notes_depth_id,
-            prd_id,
+            *doc_ids,
             updates_id,
             about_id,
             show_details_id,
@@ -1624,18 +1599,17 @@ class RadioAppFrame(
             sheet_id,
         )
 
+    def open_radio_tutorials(self, slug: str = "") -> None:
+        """Help > Tutorials...: the guided lessons. See ``apps/radio_help_docs``."""
+        from quill.apps import radio_help_docs
+
+        radio_help_docs.open_tutorials(self, slug)
+
     def _open_radio_doc(self, stem: str) -> None:
-        titles = {
-            "userguide": "Quill Radio User Guide",
-            "release-notes-3.0": "Quill Radio Release Notes",
-            "release-notes-3.0-in-depth": "Quill Radio Release Notes: The Long Version",
-            "prd": "Quill Radio Product Requirements",
-        }
-        self.open_app_document(
-            self._doc_candidates("quill-radio", stem),
-            title=titles.get(stem, stem),
-            cache_name="app-docs",
-        )
+        """Help's documents, in the browser. See ``apps/radio_help_docs``."""
+        from quill.apps import radio_help_docs
+
+        radio_help_docs.open_doc(self, stem)
 
     def _radio_no_ffmpeg_message(self) -> str:
         return (
