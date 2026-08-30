@@ -176,7 +176,7 @@ nemotron = ["sherpa-onnx>=1.13.0", "numpy>=2.5.2"]
 # behavioural contract and always present; this extra only makes the same
 # answers faster, which matters when batch transcription runs the corrector
 # over hour-long files. Small MIT wheel, no transitive deps, no torch.
-rapidfuzz = ["rapidfuzz>=3.14.0"]
+rapidfuzz = ["rapidfuzz>=3.14.5"]
 # MP3 chapter markers for batch document-to-speech (§4.8): mutagen writes the
 # ID3v2.3 CHAP/CTOC frames. Imported lazily in quill/core/speech/chapters.py.
 mp3 = ["mutagen>=1.48.1"]
