@@ -361,7 +361,7 @@ youtube = [
   # blocks the default client. It ships in the current runtime and imports
   # cleanly there (probed 2026-08-18); undeclared, it only shipped because the
   # build machine happened to have it.
-  "curl-cffi>=0.16.0",
+  "curl-cffi>=0.16.2",
 ]
 runtime = [
   "quill[ui]",
