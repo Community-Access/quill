@@ -56,6 +56,11 @@ EPISODE_ACTIONS: tuple[QuickAction, ...] = (
         "Copy File Path",
         "Copy where the downloaded file is, to paste somewhere else.",
     ),
+    QuickAction(
+        "toggle_filter_exempt",
+        "Always Keep This Episode (Ignore the Filter)",
+        "Exempt this one episode from the podcast's Episode Filter, or put it back.",
+    ),
     QuickAction("file_to_inbox", "File to Inbox Folder...", "Move it inside your Inbox tree."),
     QuickAction(
         "remove_download", "Remove Downloaded Copy", "Delete the local file, keep the episode."
@@ -83,6 +88,15 @@ SHOW_ACTIONS: tuple[QuickAction, ...] = (
         "show_settings",
         "Podcast Settings for This Show...",
         "Per-show playback and download settings.",
+    ),
+    # Episode Filters is its own verb rather than a page inside the settings
+    # window above: it is a rule *set*, with a list, a dry run and a gated
+    # save, and it is the one per-show setting somebody opens meaning to think
+    # rather than to change a number.
+    QuickAction(
+        "episode_filters",
+        "Episode Filters...",
+        "Rules that decide where this show's new episodes go.",
     ),
     # The three settings people change per show and often, each opening on
     # its own control rather than on the two-dozen-control window above

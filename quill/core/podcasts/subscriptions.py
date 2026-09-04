@@ -11,7 +11,6 @@ state. wx-free, strict-typed.
 
 from __future__ import annotations
 
-import dataclasses
 import json
 import uuid
 from dataclasses import dataclass, field
@@ -27,6 +26,7 @@ from quill.core.podcasts.models import (
     QueueItem,
     now_iso,
 )
+from quill.core.podcasts.models_filters import EpisodeFilterConfiguration
 from quill.core.podcasts.onboarding import OnboardingState
 
 _FILE_NAME = "podcasts_library.json"
@@ -69,6 +69,53 @@ class PodcastLibrary:
     #: view -- which is why it lives here and not in virtual_views.py.
     #: Operations live in podcasts.expiration.
     recently_expired: list[ExpiredEntry] = field(default_factory=list)
+    #: Episode Filters: show id -> that podcast's ingest rule set. Held here
+    #: rather than on ``PodcastShow`` for the same reason the Inbox's own
+    #: assignments are: it is *local curation*, it has no OPML equivalent in
+    #: either direction, and a show that is unsubscribed and re-added is a new
+    #: subscription that should not inherit somebody's forgotten rules.
+    #: Absent = no filter, which is exactly how every podcast behaved before
+    #: the feature existed. Operations live in podcasts.episode_filters and
+    #: podcasts.episode_filter_maintenance.
+    episode_filters: dict[str, EpisodeFilterConfiguration] = field(default_factory=dict)
+    #: The Episode Filters runtime safety warning: show id -> when a refresh
+    #: found that Keep matching had rejected *everything* new. Separate from
+    #: the configuration on purpose -- the rules are a decision the listener
+    #: made, and this is a thing that happened to them, which Podcast Settings
+    #: surfaces as Needs review until they look. Reviewing and saving clears it.
+    episode_filter_reviews: dict[str, str] = field(default_factory=dict)
+    #: Episode Filter exemptions: show id -> the guids of episodes the filter
+    #: is told to skip. A rule is a guess about a pattern; an exemption is the
+    #: listener being specific about one episode, and specific wins. Kept
+    #: beside the rules rather than on the episode so an exemption survives a
+    #: feed re-fetch and costs nothing for the vast majority of episodes that
+    #: have none.
+    episode_filter_exceptions: dict[str, list[str]] = field(default_factory=dict)
+    #: Settings that arrived after ``PodcastSettings`` stopped being able to
+    #: grow: setting id -> the shared default's value. Only ids the catalogue
+    #: knows are ever read (``settings_resolver``), so a value written by a
+    #: newer build is carried through a downgrade rather than acted on.
+    extra_settings: dict[str, object] = field(default_factory=dict)
+    #: The inheritance chain's storage: ``"folder:<id>"`` / ``"show:<id>"`` ->
+    #: the settings **that level has an opinion about**, and only those.
+    #:
+    #: Sparse on purpose, and it is the whole of the fix. A whole-record copy
+    #: cannot tell "I have no opinion" from "I want exactly this", so the first
+    #: time anything wrote one, that podcast stopped following the shared
+    #: default forever. An absent key here means the level above answers.
+    #: Operations live in podcasts.settings_resolver.
+    scope_overrides: dict[str, dict[str, object]] = field(default_factory=dict)
+    #: Free-text labels per podcast: show id -> the listener's own words for
+    #: it. A folder is one home; labels are as many as somebody likes, which is
+    #: why they -- not folders-as-a-set -- are the answer to "this show is both
+    #: news and short". Usable as a smart-playlist rule and as a tree filter.
+    show_labels: dict[str, list[str]] = field(default_factory=dict)
+    #: Per-podcast check bookkeeping: show id -> ``{"checked", "failures",
+    #: "published"}``. Needed the moment a podcast can have a cadence of its
+    #: own (7.1): one shared stamp can say when *a* check ran, and cannot say
+    #: whether this podcast's own interval has elapsed. Also carries the two
+    #: counters the gone-quiet and failed-check notices read (7.19).
+    show_check_state: dict[str, dict[str, object]] = field(default_factory=dict)
     #: What the listener has already been shown: the first-run flow, and which
     #: one-shot tips have fired. Stored as a set of ids rather than a version
     #: stamp, so a tip added next year still fires for somebody who has been
@@ -195,26 +242,54 @@ class PodcastLibrary:
         return parent_id
 
     def effective_settings(self, show: PodcastShow) -> PodcastSettings:
-        """The show's own settings where it overrides, the library defaults
-        elsewhere. Phase 1 only stores whole-record overrides (no per-field
-        merge yet), so this is currently just "show's or global's"."""
-        return show.settings if show.settings is not None else self.settings
+        """The whole settings record in force for *show*.
+
+        Resolved through the four-level chain -- shared default, folder
+        (outermost first), podcast -- by
+        :func:`quill.core.podcasts.settings_resolver.effective_settings`. Kept
+        as a method because every caller in the app already asks the library
+        this question; what changed underneath is that a folder is now a real
+        level and an override stores only the fields it has an opinion about.
+        """
+        from quill.core.podcasts.settings_resolver import effective_settings
+
+        return effective_settings(self, show)
 
     def apply_show_override(self, show: PodcastShow, **updates: object) -> PodcastSettings:
-        """Set field(s) on *show*'s own settings override, cloning from
-        whatever is currently effective for it (its own override if it
-        already has one, else the library default) so any other override
-        this show already carries survives -- never resets sibling fields
-        to the class defaults. The one correct way to write a per-show
-        override; every settings field works this way (speed, sort order,
-        etc.), not just the field being changed right now."""
-        base = self.effective_settings(show)
-        # dataclasses.replace's overload can't verify heterogeneous **kwargs
-        # against each field's own type; the caller passing a genuine
-        # PodcastSettings field name/value is on them, same as **kwargs
-        # anywhere else in the codebase that fans out into a typed callee.
-        show.settings = dataclasses.replace(base, **updates)  # type: ignore[arg-type]
-        return show.settings
+        """Set field(s) as *this podcast's* opinion, and only those fields.
+
+        The one correct way to write a per-show override, and its behaviour
+        changed in an important way: it used to clone the whole effective
+        record, which froze every *other* setting at whatever the shared
+        default happened to be that day. It now writes exactly the fields
+        named, so everything else keeps following the folder and the shared
+        default -- which is the difference between "I have no opinion" and "I
+        want exactly this", and the reason changing a shared default is worth
+        doing at all.
+        """
+        from quill.core.podcasts import settings_catalog
+        from quill.core.podcasts.settings_resolver import (
+            LEVEL_SHOW,
+            migrate_show,
+            set_value,
+        )
+
+        migrate_show(self, show)
+        for name, value in updates.items():
+            definition = settings_catalog.by_field(name)
+            if definition is None:
+                # A field with no catalogue entry is still a real field; store
+                # it by name so nothing is silently dropped, and let the
+                # catalogue catch up.
+                bucket = self.scope_overrides.setdefault(f"show:{show.id}", {})
+                bucket[name] = value
+                continue
+            set_value(self, definition, value, level=LEVEL_SHOW, scope_id=show.id)
+        return self.effective_settings(show)
+
+    def labels_for(self, show_id: str) -> list[str]:
+        """This podcast's labels, in the order they were added."""
+        return list(self.show_labels.get(show_id, ()))
 
     def find_playlist(self, playlist_id: str) -> Playlist | None:
         for playlist in self.playlists:
@@ -283,6 +358,13 @@ def merge_episodes(
         current.audio_url = fetched_episode.audio_url
         current.published = fetched_episode.published
         current.duration_seconds = fetched_episode.duration_seconds
+        # Feed-supplied like everything around it, and only ever *upward*: a
+        # publisher who adds numbering later gets it on the next refresh, and
+        # a partial feed that stopped sending it does not un-number episodes
+        # that a sort is currently relying on.
+        current.season = fetched_episode.season or current.season
+        current.episode_number = fetched_episode.episode_number or current.episode_number
+        current.episode_type = fetched_episode.episode_type or current.episode_type
         current.description = fetched_episode.description
         current.chapters_url = fetched_episode.chapters_url
         current.transcript_url = fetched_episode.transcript_url
@@ -358,7 +440,54 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         expired_entry = ExpiredEntry.from_dict(entry)
         if expired_entry is not None:
             recently_expired.append(expired_entry)
-    return PodcastLibrary(
+    # Episode Filters. A configuration this build cannot read (a newer
+    # version, a malformed record) is dropped rather than half-understood:
+    # ``from_dict`` answers None and the podcast simply has no filter, which
+    # is the behaviour it had before the feature existed.
+    episode_filters: dict[str, EpisodeFilterConfiguration] = {}
+    filters_raw = raw.get("episode_filters")
+    if isinstance(filters_raw, dict):
+        for show_id, entry in filters_raw.items():
+            config = EpisodeFilterConfiguration.from_dict(entry)
+            if config is not None:
+                episode_filters[str(show_id)] = config
+    reviews_raw = raw.get("episode_filter_reviews")
+    episode_filter_reviews = (
+        {str(k): str(v) for k, v in reviews_raw.items()} if isinstance(reviews_raw, dict) else {}
+    )
+    extra_raw = raw.get("extra_settings")
+    extra_settings = (
+        {str(k): v for k, v in extra_raw.items()} if isinstance(extra_raw, dict) else {}
+    )
+    overrides_raw = raw.get("scope_overrides")
+    scope_overrides: dict[str, dict[str, object]] = {}
+    if isinstance(overrides_raw, dict):
+        for scope, values in overrides_raw.items():
+            if isinstance(values, dict) and values:
+                scope_overrides[str(scope)] = {str(k): v for k, v in values.items()}
+    check_raw = raw.get("show_check_state")
+    show_check_state: dict[str, dict[str, object]] = {}
+    if isinstance(check_raw, dict):
+        for show_id, state in check_raw.items():
+            if isinstance(state, dict):
+                show_check_state[str(show_id)] = {str(k): v for k, v in state.items()}
+    labels_raw = raw.get("show_labels")
+    show_labels: dict[str, list[str]] = {}
+    if isinstance(labels_raw, dict):
+        for show_id, names in labels_raw.items():
+            if isinstance(names, list):
+                cleaned = [str(name).strip() for name in names if str(name).strip()]
+                if cleaned:
+                    show_labels[str(show_id)] = cleaned
+    exceptions_raw = raw.get("episode_filter_exceptions")
+    episode_filter_exceptions: dict[str, list[str]] = {}
+    if isinstance(exceptions_raw, dict):
+        for show_id, guids in exceptions_raw.items():
+            if isinstance(guids, list):
+                cleaned = [str(guid) for guid in guids if str(guid)]
+                if cleaned:
+                    episode_filter_exceptions[str(show_id)] = cleaned
+    library = PodcastLibrary(
         shows=shows,
         folders=folders,
         settings=settings,
@@ -367,9 +496,39 @@ def load_library(data_dir: Path) -> PodcastLibrary:
         inbox_assignments=inbox_assignments,
         playlists=playlists,
         recently_expired=recently_expired,
+        episode_filters=episode_filters,
+        episode_filter_reviews=episode_filter_reviews,
+        episode_filter_exceptions=episode_filter_exceptions,
+        extra_settings=extra_settings,
+        scope_overrides=scope_overrides,
+        show_labels=show_labels,
+        show_check_state=show_check_state,
         onboarding=OnboardingState.from_dict(raw.get("onboarding")),
         last_auto_check=str(raw.get("last_auto_check", "") or ""),
     )
+    # A library written before the four-level chain carries whole-record
+    # overrides. Converted here, once, on the way in -- so nothing downstream
+    # has to know two storage shapes, and so a podcast whose frozen copy
+    # matched the shared default starts following it again.
+    from quill.core.podcasts.settings_resolver import migrate_legacy_overrides
+
+    migrate_legacy_overrides(library)
+    _migrate_row_order(library)
+    return library
+
+
+def _migrate_row_order(library: PodcastLibrary) -> None:
+    """``announce_show_name_first`` becomes one value of ``row_order``.
+
+    A boolean over a question with three answers. The old field stays in the
+    record (it is schema, and removing it would drop the value on a downgrade)
+    but nothing reads it after this: whoever had it switched on gets
+    *podcast first*, which is exactly what it meant.
+    """
+    if "row_order" in library.extra_settings:
+        return
+    if getattr(library.settings, "announce_show_name_first", False):
+        library.extra_settings["row_order"] = "podcast_first"
 
 
 def save_library(data_dir: Path, library: PodcastLibrary) -> None:
@@ -387,6 +546,26 @@ def save_library(data_dir: Path, library: PodcastLibrary) -> None:
             "inbox_assignments": dict(library.inbox_assignments),
             "playlists": [p.to_dict() for p in library.playlists],
             "recently_expired": [e.to_dict() for e in library.recently_expired],
+            "episode_filters": {
+                show_id: config.to_dict() for show_id, config in library.episode_filters.items()
+            },
+            "episode_filter_reviews": dict(library.episode_filter_reviews),
+            "episode_filter_exceptions": {
+                show_id: list(guids) for show_id, guids in library.episode_filter_exceptions.items()
+            },
+            "extra_settings": dict(library.extra_settings),
+            # Empty buckets are dropped rather than written: an override map
+            # with nothing in it is the absence of an opinion, and storing one
+            # would make "has this level said anything?" answerable two ways.
+            "scope_overrides": {
+                scope: dict(values) for scope, values in library.scope_overrides.items() if values
+            },
+            "show_labels": {
+                show_id: list(names) for show_id, names in library.show_labels.items() if names
+            },
+            "show_check_state": {
+                show_id: dict(state) for show_id, state in library.show_check_state.items() if state
+            },
             "onboarding": library.onboarding.to_dict(),
             "last_auto_check": library.last_auto_check,
         },

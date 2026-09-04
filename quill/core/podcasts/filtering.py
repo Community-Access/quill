@@ -16,6 +16,17 @@ EPISODE_FILTER_MODES = (
     "played",
     "downloaded",
     "not_downloaded",
+    # "Filtered out" is the one mode this module cannot answer: it asks what a
+    # *podcast's own Episode Filter* is holding back, which needs the library
+    # and not just a list of episodes. It is listed here because it is a real
+    # mode of the same dropdown, and answered by the Podcast Manager (see
+    # ui/podcasts/episode_search.py); :func:`filter_episodes` treats it as
+    # "all", which is the safe direction -- more episodes, never fewer.
+    #
+    # It exists so that no hiding scope can make an episode unreachable. A
+    # filter that removes episodes from a list is only defensible while there
+    # is a list that shows them.
+    "filtered_out",
 )
 SHOW_FILTER_MODES = ("all", "favorites_only", "has_unplayed")
 
@@ -143,13 +154,29 @@ def search_everywhere(
     needle = query.strip().casefold()
     if not needle:
         return []
+    # Episode Filters, when the podcast's rules were given the "search" scope.
+    # Off by default and deliberately so: search is how somebody looks for a
+    # thing they know exists, and a search that silently declines to find it is
+    # a worse failure than a list that declines to show it. Somebody who ticks
+    # it has said they never want to see the segment again, including here.
+    from quill.core.podcasts.episode_filter_maintenance import hide_predicate
+    from quill.core.podcasts.models_filters import SCOPE_SEARCH
+
+    hidden_for: dict[str, object] = {
+        show.id: hide_predicate(library, show, SCOPE_SEARCH) for show in library.shows
+    }
+
+    def _hidden(show: PodcastShow, episode: PodcastEpisode) -> bool:
+        predicate = hidden_for.get(show.id)
+        return predicate is not None and bool(predicate(episode))  # type: ignore[operator]
+
     results: list[SearchResult] = []
     for show in library.shows:
         if needle in show.title.casefold():
             results.append(SearchResult("show", show))
     for show in library.shows:
         for episode in show.episodes:
-            if needle in episode.title.casefold():
+            if needle in episode.title.casefold() and not _hidden(show, episode):
                 results.append(SearchResult("episode", show, episode))
     if episode_notes:
         shows_by_id = {show.id: show for show in library.shows}
@@ -160,7 +187,7 @@ def search_everywhere(
             if note_show is None:
                 continue
             note_episode = note_show.find_episode(note.episode_guid)
-            if note_episode is None:
+            if note_episode is None or _hidden(note_show, note_episode):
                 continue
             preview = note.text.splitlines()[0]
             results.append(SearchResult("note", note_show, note_episode, preview))
@@ -175,7 +202,7 @@ def search_everywhere(
             if t_show is None:
                 continue
             t_episode = t_show.find_episode(episode_guid)
-            if t_episode is None:
+            if t_episode is None or _hidden(t_show, t_episode):
                 continue
             # A short window around the first hit, so the result reads as
             # "why this matched" rather than the transcript's first line.

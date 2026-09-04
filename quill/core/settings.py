@@ -658,6 +658,10 @@ class Settings:
     batch_speech_temp_folder: str = ""  # parent for scratch dirs; blank = system temp
     batch_speech_save_spoken_text: bool = False  # also save the text sent to the engine
     audio_studio_last_journey: str = "documents"  # remembered journey
+    # How far one press of the Chapter Workbench's Nudge back/forward moves a
+    # chapter marker. Remembered because the step somebody picked by ear is
+    # the step they will want next session too.
+    audio_studio_chapter_nudge_ms: int = 500  # 10-60000
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Settings:
@@ -1354,6 +1358,9 @@ class Settings:
         )
         if audio_studio_last_journey not in {"documents", "audio", "edit"}:
             audio_studio_last_journey = "documents"
+        audio_studio_chapter_nudge_ms = _clamp_int(
+            data.get("audio_studio_chapter_nudge_ms", 500), 500, 10, 60000
+        )
         if recent_files_limit < 1:
             recent_files_limit = 1
         if recent_files_limit > 50:
@@ -1677,6 +1684,7 @@ class Settings:
             batch_speech_save_spoken_text=batch_speech_save_spoken_text,
             batch_speech_intro_section_title=batch_speech_intro_section_title,
             audio_studio_last_journey=audio_studio_last_journey,
+            audio_studio_chapter_nudge_ms=audio_studio_chapter_nudge_ms,
         )
 
 

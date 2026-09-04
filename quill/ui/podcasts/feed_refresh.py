@@ -24,6 +24,37 @@ from quill.core.podcasts import feed_auth
 from quill.core.podcasts.subscriptions import merge_episodes
 
 
+def _follow_redirect(host: Any, show: Any, redirected_to: list[str]) -> None:
+    """Update a podcast's stored address when it asked to, and it may.
+
+    Off by default and per podcast, because it is a security-shaped decision
+    dressed as a convenience: a feed that has genuinely moved is saved by it,
+    and a feed that has been taken over is not something to follow silently.
+    **A saved username and password are never carried to a new host** -- a
+    private feed that moves is re-authenticated deliberately, not by a
+    redirect.
+    """
+    from quill.core.podcasts.show_policy import follows_redirects
+
+    landed = redirected_to[-1] if redirected_to else ""
+    if not landed or landed == show.feed_url:
+        return
+    if not follows_redirects(host._podcast_library, show):
+        return
+    from urllib.parse import urlparse
+
+    moved_host = urlparse(landed).netloc != urlparse(show.feed_url).netloc
+    if moved_host and show.feed_username:
+        host._announce(
+            f"{show.title} has moved to another host. Its address was left alone "
+            "because it has a saved sign-in, which is never carried to a new "
+            "host -- open Feed Credentials to move it deliberately."
+        )
+        return
+    show.feed_url = landed
+    host._announce(f"{show.title} has permanently moved; its feed address was updated.")
+
+
 def refresh_feed(host: Any, show_id: str) -> None:
     from quill.core.podcasts import feed_reader
 
@@ -37,9 +68,18 @@ def refresh_feed(host: Any, show_id: str) -> None:
         return
     username, password = feed_auth.auth_for_url(show, show.feed_url)
 
+    #: Where the feed actually landed, when the server moved it. Reported by
+    #: the fetch rather than acted on there: rewriting a subscription's stored
+    #: address is a per-podcast decision (7.20).
+    redirected_to: list[str] = []
+
     def _do_refresh(**_kwargs: object) -> feed_reader.FeedInfo:
         return feed_reader.fetch_and_parse_feed(
-            show.feed_url, username=username, password=password, safe_mode=host._safe_mode
+            show.feed_url,
+            username=username,
+            password=password,
+            safe_mode=host._safe_mode,
+            redirected_to=redirected_to,
         )
 
     def _on_success(_op: str, info: feed_reader.FeedInfo) -> None:
@@ -47,14 +87,42 @@ def refresh_feed(host: Any, show_id: str) -> None:
         republished: list[str] = []
         if not info.tags.is_empty:
             show.tags = info.tags
-        new_count = merge_episodes(show, info.episodes, republished=republished)
-        fresh = [episode for episode in show.episodes if episode.guid not in known]
-        queued = host._podcast_route_new_episodes(show, fresh)
+        merge_episodes(show, info.episodes, republished=republished)
+        arrived = [episode for episode in show.episodes if episode.guid not in known]
+        # Episode Filters are consulted here, before anything routes -- and
+        # each route asks for *its own* scope, because a listener who wants a
+        # segment kept out of the queue but still announced has said something
+        # coherent and this is where it is honoured. A podcast with no filter
+        # gets the arrived list back for every scope, so nothing below this
+        # line can tell the difference.
+        outcome = host._podcast_filter_new_episodes(show, arrived)
+        fresh = host._podcast_filter_scope(show, outcome, "notify")
+        new_count = len(fresh)
+        queued = host._podcast_route_new_episodes(
+            show, host._podcast_filter_scope(show, outcome, "queue")
+        )
+        # Routing without committing to an order: a podcast can name a manual
+        # playlist its new episodes join as they arrive (7.16).
+        host._podcast_file_to_default_playlist(show, fresh)
         host._podcast_resurface_republished(show, republished)
+        # Per-podcast bookkeeping (7.1, 7.19): when this feed was last read,
+        # when it last carried something, and the failure run this success
+        # ends. It decides when the *next* check is due and when the two
+        # notices fire; it never decides whether to check at all.
+        from quill.core.podcasts import check_state
+
+        check_state.record_success(host._podcast_library, show, new_episodes=len(arrived))
+        _follow_redirect(host, show, redirected_to)
+        # A podcast that has stopped publishing does not announce it, and an
+        # absence is precisely the thing nobody notices. Latched, so an hourly
+        # check does not say it hourly (7.19).
+        quiet = check_state.quiet_notice(host._podcast_library, show)
+        if quiet:
+            host._announce(quiet)
         host._save_podcast_library()
         if host._podcast_manager_dialog is not None:
             host._podcast_manager_dialog.refresh_tree()
-        if new_count:
+        if new_count or outcome.any_filtered:
             # "Let results interrupt speech" is the third leg of the shared
             # monitor policy: force=True raises the announcement to WARNING,
             # which is the severity that cuts across current speech.
@@ -62,16 +130,28 @@ def refresh_feed(host: Any, show_id: str) -> None:
             # ...unless quiet hours are in force (11.9). The episodes still
             # arrive, and are still queued and downloaded; what is held
             # back is the sentence about them, which is the part that wakes
-            # somebody up.
+            # somebody up. The filter's own sentences ride the same gate for
+            # the same reason -- and the Needs review warning is *stored*
+            # either way, so a background check that raised it at 3 a.m. is
+            # still waiting in Podcast Settings in the morning.
+            #
+            # One podcast may be let through by name -- for a live or news feed
+            # somebody asked to be told about. It widens quiet hours for this
+            # announcement only; every other kind of background news is still
+            # held back, and no podcast is let through unless it was named.
+            from quill.core.podcasts.show_policy import may_speak_in_quiet_hours
             from quill.core.quiet_hours import Kind
             from quill.ui.quiet_hours_ui import held_back
 
-            if not held_back(Kind.NEW_EPISODE):
-                host._announce(
-                    host._podcast_new_episode_message(show, new_count, queued),
-                    force=host._podcast_check_monitor.interrupt_speech,
-                )
-                host._podcast_notify_new_episodes(show, fresh)
+            allowed = may_speak_in_quiet_hours(host._podcast_library, show)
+            if allowed or not held_back(Kind.NEW_EPISODE):
+                if new_count:
+                    host._announce(
+                        host._podcast_new_episode_message(show, new_count, queued),
+                        force=host._podcast_check_monitor.interrupt_speech,
+                    )
+                    host._podcast_notify_new_episodes(show, fresh)
+                host._podcast_announce_episode_filter(show, outcome)
         # Always Sync is now one value of the auto-download policy
         # (effective_auto_download_count == -1), so the single
         # acquisition pass below covers both -- calling the old backfill
@@ -85,6 +165,15 @@ def refresh_feed(host: Any, show_id: str) -> None:
 
     def _on_failure(_op: str, exc: BaseException) -> None:
         announce_if_feed_auth_failure(exc, show, announce=host._announce)
+        # A run of failures earns one sentence, not one per check (7.19). Cast
+        # keeps trying either way -- the notice says so, because "this feed has
+        # failed" otherwise reads as "and I have given up".
+        from quill.core.podcasts import check_state
+
+        check_state.record_failure(host._podcast_library, show)
+        notice = check_state.failure_notice(host._podcast_library, show)
+        if notice:
+            host._announce(notice, force=True)
         # Written down as well as spoken (11.5): a feed that failed while
         # you were in another window said its piece to nobody, and until
         # Recent Problems existed there was nowhere to go and look.

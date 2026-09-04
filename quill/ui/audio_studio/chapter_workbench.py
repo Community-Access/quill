@@ -43,6 +43,11 @@ from quill.ui.audio_studio.chapter_workbench_dialogs import (
     AcxResultDialog,
     SilenceParamsDialog,
 )
+from quill.ui.audio_studio.chapter_workbench_edits import (
+    ChapterEditsMixin,
+    build_chapter_edit_rows,
+)
+from quill.ui.audio_studio.pages_base import set_accessible_name
 from quill.ui.audio_studio.player_panel import PlayerPanel
 from quill.ui.dialog_contract import (
     apply_listbox_activation,
@@ -62,7 +67,7 @@ _EXPORT_LABELS: tuple[tuple[str, str], ...] = (
 )
 
 
-class ChapterWorkbenchDialog(wx.Dialog):
+class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
     """Edit an opened book's chapters and tags, with the player as the anchor."""
 
     def __init__(
@@ -97,7 +102,20 @@ class ChapterWorkbenchDialog(wx.Dialog):
         self._ask_ai = ask_ai
         book_path = str(book.path)
         self._on_closed_cb = on_closed
-        self._dirty = False
+        # Two flags, not one: an M4B can save tags in place but needs a
+        # re-mux for chapters, so which kind of edit is pending decides
+        # whether Save is offered at all.
+        self._chapters_dirty = False
+        self._tags_dirty = False
+        #: The full 26-field tag set, once the Tag Editor has been opened.
+        self._full_tags: object | None = None
+        self.settings_nudge_ms = 500
+        try:
+            from quill.core.settings import load_settings
+
+            self.settings_nudge_ms = int(load_settings().audio_studio_chapter_nudge_ms)
+        except Exception:  # noqa: BLE001 - a settings failure must not block editing
+            pass
 
         root = wx.BoxSizer(wx.VERTICAL)
         heading = wx.StaticText(
@@ -126,6 +144,14 @@ class ChapterWorkbenchDialog(wx.Dialog):
             "highlighted row and are written to disk only on Save."
         )
         self._chapter_list.Bind(wx.EVT_LISTBOX, lambda _e: self._on_selected())
+        self._chapter_list.Bind(wx.EVT_KEY_DOWN, self._nudge_key_handler)
+        self._chapter_list.SetHelpText(
+            "Every chapter, with where it starts and how long it runs. Alt "
+            "with Left or Right arrow nudges the highlighted chapter's start "
+            "earlier or later by one step; hold Shift as well to move ten "
+            "steps at once. The step size is the Step box below."
+        )
+        set_accessible_name(self._chapter_list, str(_("Chapters")))
         apply_listbox_activation(self._chapter_list, lambda _e: self._play_selected())
         root.Add(self._chapter_list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
@@ -183,6 +209,8 @@ class ChapterWorkbenchDialog(wx.Dialog):
             btn.Bind(wx.EVT_BUTTON, lambda _e, h=handler: h())
             surgery_row.Add(btn, 0, wx.RIGHT, 6)
         root.Add(surgery_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
+
+        build_chapter_edit_rows(self, root)
 
         analysis_row = wx.BoxSizer(wx.HORIZONTAL)
         propose_btn = wx.Button(self, label=_("Propose chapters from s&ilences..."))
@@ -261,7 +289,15 @@ class ChapterWorkbenchDialog(wx.Dialog):
         episodes_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_split_into_files())
         io_row.Add(import_btn, 0, wx.RIGHT, 6)
         io_row.Add(export_btn, 0, wx.RIGHT, 6)
-        io_row.Add(episodes_btn, 0)
+        tags_btn = wx.Button(self, label=_("All ta&gs..."))
+        tags_btn.SetHelpText(
+            "Opens the Tag Editor: every tag this file can carry, over five "
+            "pages, cover art included. The five fields below are the ones an "
+            "audiobook needs; this is the rest."
+        )
+        tags_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_all_tags())
+        io_row.Add(episodes_btn, 0, wx.RIGHT, 6)
+        io_row.Add(tags_btn, 0)
         root.Add(io_row, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         self.player = PlayerPanel(
@@ -270,6 +306,9 @@ class ChapterWorkbenchDialog(wx.Dialog):
             on_volume=lambda pct: on_volume(book_path, pct) if on_volume else None,
             on_mute=lambda muted: on_mute(book_path, muted) if on_mute else None,
             on_finished=lambda: on_finished(book_path) if on_finished else None,
+            # Stopping a preview at the chapter's end rides the player's own
+            # tick, so previewing costs no second timer.
+            on_tick=self._check_preview_stop,
         )
         root.Add(self.player, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
@@ -346,10 +385,7 @@ class ChapterWorkbenchDialog(wx.Dialog):
         btn_row.Add(self._publish_btn, 0, wx.RIGHT, 6)
         btn_row.Add(close_btn, 0)
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
-        if book.kind != "mp3":
-            # M4B chapter atoms cannot be rewritten in place; Save As re-muxes.
-            self._save_btn.Enable(False)
-            self._save_btn.SetToolTip(_("An M4B is saved as a new file; use Save As."))
+        self._sync_save_button()
 
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
         self.Bind(wx.EVT_CLOSE, self._on_close)
@@ -420,7 +456,8 @@ class ChapterWorkbenchDialog(wx.Dialog):
 
     def _apply(self, chapters: list[Chapter], *, select: int, spoken: str) -> None:
         self._book.chapters = chapters
-        self._dirty = True
+        self._chapters_dirty = True
+        self._sync_save_button()
         self._refresh_list(select=select)
         self._announce(spoken)
 
@@ -435,7 +472,8 @@ class ChapterWorkbenchDialog(wx.Dialog):
             self._error(str(_("A chapter title cannot be empty.")))
             return
         self._book.chapters[idx].title = title
-        self._dirty = True
+        self._chapters_dirty = True
+        self._sync_save_button()
         self._refresh_list(select=idx)
         self._announce(_("Renamed chapter to {title}").format(title=title))
 
@@ -495,7 +533,8 @@ class ChapterWorkbenchDialog(wx.Dialog):
             select=0,
             spoken=_("Restored the original {count} chapters").format(count=len(restored)),
         )
-        self._dirty = False
+        self._chapters_dirty = False
+        self._sync_save_button()
 
     # -- import / export -----------------------------------------------------------
 
@@ -578,7 +617,9 @@ class ChapterWorkbenchDialog(wx.Dialog):
         if self._run_background is not None:
 
             def on_success(_result: object) -> None:
-                self._dirty = False
+                self._chapters_dirty = False
+                self._tags_dirty = False
+                self._sync_save_button()
                 self._announce(done_message)
 
             self._run_background(title, work, on_success)
@@ -588,20 +629,35 @@ class ChapterWorkbenchDialog(wx.Dialog):
         except Exception as exc:  # noqa: BLE001 - surfaced, not raised through wx
             self._error(str(exc))
             return
-        self._dirty = False
+        self._chapters_dirty = False
+        self._tags_dirty = False
+        self._sync_save_button()
         self._announce(done_message)
 
     def _on_save(self) -> None:
         self._collect_tags()
-        if self._book.kind != "mp3":
-            self._on_save_as()
+        book = self._book
+        tags = self._full_tags
+        if book.kind != "mp3":
+            if self._chapters_dirty:
+                # M4B chapter atoms cannot be rewritten in place; Save As
+                # re-muxes losslessly into a new file.
+                self._on_save_as()
+                return
+            # Tags only: mutagen rewrites the atoms in place. No re-mux, no
+            # second copy of the book, instant even on a long one.
+            self.player.shutdown()
+            self._run_save(
+                str(_("Saving audiobook tags")),
+                lambda: self._write_all_tags(book.path, tags, book),
+                str(_("Saved {name}").format(name=book.path.name)),
+            )
             return
         # The player holds the file open; release it for the in-place rewrite.
         self.player.shutdown()
-        book = self._book
         self._run_save(
             str(_("Saving audiobook tags")),
-            lambda: save_mp3_book(book),
+            lambda: self._save_mp3_with_tags(book, tags),
             str(_("Saved {name}").format(name=book.path.name)),
         )
 
@@ -619,6 +675,7 @@ class ChapterWorkbenchDialog(wx.Dialog):
                 return
             out = Path(dlg.GetPath())
         book = self._book
+        tags = self._full_tags
         if kind == "mp3":
             import shutil
 
@@ -628,12 +685,15 @@ class ChapterWorkbenchDialog(wx.Dialog):
                     path=out, tags=book.tags, chapters=book.chapters, total_ms=book.total_ms
                 )
                 save_mp3_book(copy)
+                self._write_all_tags(out, tags, book)
                 return out
 
         else:
 
             def work(_progress: object = None) -> object:
-                return save_m4b_book_as(book, out)
+                result = save_m4b_book_as(book, out)
+                self._write_all_tags(out, tags, book)
+                return result
 
         self._run_save(
             str(_("Saving audiobook")),
@@ -669,8 +729,8 @@ class ChapterWorkbenchDialog(wx.Dialog):
         if self._on_publish_cb is None:
             self._error(str(_("Publishing is not available here.")))
             return
-        if self._dirty:
-            self._error(str(_("Save your chapter edits first, then publish.")))
+        if self._chapters_dirty or self._tags_dirty:
+            self._error(str(_("Save your chapter and tag edits first, then publish.")))
             return
         self._collect_tags()
         self._on_publish_cb(self._book)

@@ -59,6 +59,14 @@ class RestSpec:
     diarize_field: str = ""  # field/query set to "true" when diarization is requested
     text_path: tuple[Any, ...] = ("text",)
     max_file_mb: float = 25.0
+    #: Multipart parts sent with ``Content-Type: application/json``. Azure's
+    #: Fast Transcription wants its ``definition`` typed that way and rejects
+    #: an untyped text part, which every other provider here accepts.
+    json_fields: tuple[tuple[str, str], ...] = ()
+    #: True when ``endpoint`` is a placeholder and the caller must supply the
+    #: real one -- Azure's is your own resource's address, so there is no
+    #: constant to put here. Enforced in :func:`transcribe_rest`.
+    endpoint_from_caller: bool = False
 
 
 #: Host-implemented transcription provider "kinds". The host knows how to talk to
@@ -70,6 +78,16 @@ class RestSpec:
 #: Quillins, still has the canonical list; ``quill.core.quillins.model`` re-exports
 #: it for back-compat with QUILL's Quillin validation.
 TRANSCRIPTION_PROVIDER_KINDS: tuple[str, ...] = ("openai_whisper", "groq", "elevenlabs")
+
+#: Kinds the *host* can call but a Quillin may not declare.
+#:
+#: Azure MAI-Transcribe is here rather than in the list above for one reason:
+#: its endpoint is your own Speech resource's address, supplied in QUILL's own
+#: settings. Every other kind has a fixed endpoint baked into its spec, which
+#: is what makes "a manifest may only name a known kind" a real guarantee. A
+#: kind whose address comes from configuration would let a manifest aim the
+#: host at an arbitrary server if it were declarable, so it is not.
+HOST_ONLY_PROVIDER_KINDS: tuple[str, ...] = ("azure_mai",)
 
 #: Vetted synchronous-REST cloud kinds. Hosts here are reflected in the egress audit.
 CLOUD_REST_SPECS: dict[str, RestSpec] = {
@@ -84,6 +102,22 @@ CLOUD_REST_SPECS: dict[str, RestSpec] = {
         text_path=("text",),
         max_file_mb=25.0,
     ),
+    "azure_mai": RestSpec(
+        # The host is your own resource, so there is no constant to allow-list
+        # here; `endpoint_from_caller` makes the caller supply it and
+        # `transcribe_rest` refuses to run without one. Host-only (see
+        # HOST_ONLY_PROVIDER_KINDS) precisely because that address is
+        # configuration rather than a fixed, vetted endpoint.
+        host="*.cognitiveservices.azure.com",
+        endpoint="",
+        endpoint_from_caller=True,
+        key_header="Ocp-Apim-Subscription-Key",
+        key_scheme="",
+        body_mode="multipart",
+        file_field="audio",
+        text_path=("combinedPhrases", 0, "text"),
+        max_file_mb=300.0,
+    ),
     "elevenlabs": RestSpec(
         host="api.elevenlabs.io",
         endpoint="https://api.elevenlabs.io/v1/speech-to-text",
@@ -97,6 +131,46 @@ CLOUD_REST_SPECS: dict[str, RestSpec] = {
         max_file_mb=100.0,
     ),
 }
+
+
+def azure_mai_definition(
+    *,
+    language: str = "auto",
+    style: str = "clean",
+    diarize: bool = True,
+    word_timestamps: bool = True,
+    phrases: Sequence[str] = (),
+) -> str:
+    """The ``definition`` part for an Azure MAI-Transcribe request, as JSON.
+
+    Built here rather than inline so it can be read and tested on its own.
+    Two rules from Microsoft's documentation are easy to get wrong and are
+    therefore explicit: a locale is omitted entirely for automatic detection
+    (a strong hint towards the wrong language is worse than no hint), and a
+    phrase list biases recognition rather than substituting into the result.
+    """
+    options: dict[str, Any] = {
+        "timestamps": "word" if word_timestamps else "segment",
+        "transcribeStyle": style if style in {"clean", "verbatim"} else "clean",
+    }
+    definition: dict[str, Any] = {
+        "enhancedMode": {"enabled": True, "model": "MAI-Transcribe-2", "modelOptions": options},
+    }
+    if language in {"en", "es"}:
+        definition["locales"] = [language]
+    if diarize:
+        definition["diarization"] = {"enabled": True}
+    wanted = [str(p).strip() for p in phrases if str(p).strip()]
+    if wanted:
+        definition["phraseList"] = {"phrases": wanted}
+    return json.dumps(definition)
+
+
+def azure_mai_url(endpoint: str, api_version: str = "2025-10-15") -> str:
+    """The Fast Transcription address for one Speech resource."""
+    return (
+        f"{endpoint.rstrip('/')}/speechtotext/transcriptions:transcribe?api-version={api_version}"
+    )
 
 
 def _dig(data: Any, path: Sequence[Any]) -> str:
@@ -118,10 +192,19 @@ def _multipart_body(
     audio_path: Path,
     file_field: str,
     fields: Sequence[tuple[str, str]],
+    json_fields: Sequence[tuple[str, str]] = (),
 ) -> tuple[bytes, str]:
     boundary = uuid.uuid4().hex
     mime_type = mimetypes.guess_type(str(audio_path))[0] or "audio/mpeg"
     parts: list[bytes] = []
+    for name, value in json_fields:
+        # Typed, unlike the plain fields below. Azure rejects an untyped part
+        # where it expects JSON; every other provider here accepts one.
+        disposition = f'Content-Disposition: form-data; name="{name}"'
+        parts.append(
+            f"--{boundary}\r\n{disposition}\r\n"
+            f"Content-Type: application/json\r\n\r\n{value}\r\n".encode()
+        )
     for name, value in fields:
         disposition = f'Content-Disposition: form-data; name="{name}"'
         parts.append(f"--{boundary}\r\n{disposition}\r\n\r\n{value}\r\n".encode())
@@ -142,13 +225,26 @@ def transcribe_rest(
     *,
     language: str | None = None,
     diarize: bool = False,
+    endpoint: str = "",
+    json_fields: Sequence[tuple[str, str]] = (),
 ) -> str:
     """Transcribe ``audio_path`` via ``spec`` and return the transcript text.
 
     Raises :class:`CloudTranscribeError` on any failure with a clean message. The
     endpoint must be HTTPS (enforced); the request uses a verified TLS context.
+
+    ``endpoint`` overrides the spec's, for the one kind whose address is not a
+    constant: Azure MAI-Transcribe talks to *your* Speech resource. It is
+    checked for HTTPS like any other, and a spec that requires one refuses to
+    run without it rather than falling back to a placeholder.
     """
-    if not spec.endpoint.lower().startswith("https://"):
+    target = (endpoint or spec.endpoint).strip()
+    if spec.endpoint_from_caller and not endpoint.strip():
+        raise CloudTranscribeError(
+            "This provider needs the address of your own resource, and none "
+            "was given. Set it in Settings."
+        )
+    if not target.lower().startswith("https://"):
         raise CloudTranscribeError("Cloud transcription must use a secure (HTTPS) endpoint.")
 
     query: list[tuple[str, str]] = list(spec.query)
@@ -158,7 +254,7 @@ def transcribe_rest(
     if diarize and spec.diarize_field:
         (query if spec.body_mode == "raw" else extra_fields).append((spec.diarize_field, "true"))
 
-    url = spec.endpoint + (f"?{urlencode(query)}" if query else "")
+    url = target + (f"?{urlencode(query)}" if query else "")
     headers = {spec.key_header: f"{spec.key_scheme}{api_key}"}
     if spec.body_mode == "raw":
         body = audio_path.read_bytes()
@@ -166,7 +262,12 @@ def transcribe_rest(
             mimetypes.guess_type(str(audio_path))[0] or "application/octet-stream"
         )
     else:
-        body, content_type = _multipart_body(audio_path, spec.file_field, extra_fields)
+        body, content_type = _multipart_body(
+            audio_path,
+            spec.file_field,
+            extra_fields,
+            json_fields=tuple(spec.json_fields) + tuple(json_fields),
+        )
         headers["Content-Type"] = content_type
 
     request = Request(url, data=body, headers=headers, method="POST")
@@ -200,7 +301,10 @@ def transcribe_rest(
 
 __all__ = [
     "CLOUD_REST_SPECS",
+    "HOST_ONLY_PROVIDER_KINDS",
     "CloudTranscribeError",
     "RestSpec",
+    "azure_mai_definition",
+    "azure_mai_url",
     "transcribe_rest",
 ]

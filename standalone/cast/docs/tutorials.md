@@ -1,6 +1,6 @@
 # QUILL Cast Tutorials
 
-18 guided tutorials, 107 steps, about 100 minutes of material in all.
+24 guided tutorials, 149 steps, about 138 minutes of material in all.
 
 This document is generated from the tutorials inside QUILL Cast, so it says exactly what the app teaches. To work through one with the app watching -- running a step for you, and moving you on once it can see you have done it -- open **Help > Tutorials...** instead.
 
@@ -18,16 +18,23 @@ The keys below are the ones QUILL Cast ships with. If you have rebound something
   - Line up what plays next (6 minutes)
   - Downloads, and the disk they live on (6 minutes)
   - Playlists, smart playlists, and the order you listen in (5 minutes)
+  - Stop the parts of a podcast you did not want (8 minutes)
 - **Listening well** -- The hour itself: skipping what you did not come for, shaping the sound, keeping a moment, reading what the publisher sent, and how much of your life this has taken.
   - Chapters, and skipping the parts you did not come for (6 minutes)
   - Shape the sound (6 minutes)
   - Keep a moment, and take notes (5 minutes)
   - Read what the feed published (4 minutes)
   - How much did I actually listen? (4 minutes)
-- **Making it yours** -- A library that has grown, what a row says and what Enter does, the settings that differ per show, feeds and folders of your own, and the backup you will be glad of exactly once.
+- **One podcast at a time** -- Keep the newest three ready is right for a daily news show and wrong for a weekly interview. How a setting is decided, what arrives and when, what every row says, how a badly-reading podcast is fixed, and who is allowed to interrupt you.
+  - Shared defaults, folders, and one podcast (7 minutes)
+  - Decide what arrives, and when (6 minutes)
+  - Decide what every row tells you (6 minutes)
+  - Fix a podcast that reads badly (6 minutes)
+  - Be told about a podcast on your terms (6 minutes)
+- **Making it yours** -- A library that has grown, what a row says and what Enter does, the shared defaults everything starts from, feeds and folders of your own, and the backup you will be glad of exactly once.
   - Arrange a library that has grown (6 minutes)
   - Decide what a row says, and what Enter does (5 minutes)
-  - Shared defaults, and one show's own mind (6 minutes)
+  - The shared defaults, and where the app opens (5 minutes)
   - Private feeds, and audio of your own (5 minutes)
   - Back it up, move it, and fix it (6 minutes)
 
@@ -308,6 +315,47 @@ Saved episode lists you build by hand, and rule-based ones that rebuild themselv
 
 Hand-built for a list somebody chose; smart for a question that keeps answering itself.
 
+### Stop the parts of a podcast you did not want
+
+Rules, per podcast, that decide which of its episodes reach you at all -- and eight separate places you can choose to mean them.
+
+*9 steps, about 8 minutes.*
+
+1. **Find the podcast that publishes two things.** Most libraries have one: a show you follow that also runs a daily two-minute segment, or trailers for its sister show, or a members-only strand mixed into the public feed. Every one of those arrives and has to be dismissed by hand.
+   - Keys: Down arrow
+   - You should hear: The podcast, and its unheard count.
+
+2. **Open its Episode Filters.** Episode Filters is on the podcast's context menu, and on a button in Settings for This Podcast. The window opens saying the one thing worth knowing before you start: a filtered episode is never deleted.
+   - Keys: Shift+F10
+   - You should hear: The podcast named, then that nothing is deleted.
+
+3. **Write a rule.** Add Rule takes your own name for it, a title pattern and an optional minimum length. Wildcards are the everyday choice: a star is any run of text, a question mark is one character, and every other punctuation mark means itself -- so Q+A* finds the segment actually called Q+A.
+   - You should hear: The rule read back: its name, then enabled, then what it matches.
+   - Worth knowing: A pattern has to describe the whole title, so put a star at each end to mean contains. An episode whose feed does not say how long it is never matches a length rule, because a missing length is not a short episode.
+
+4. **Preview before anything happens.** Preview tries the rules against the 50 newest episodes you already have and reports what each would be -- the decision first, then the title and the length. It changes nothing, and it works even while the filter itself is switched off.
+   - You should hear: How many of the 50 would be filtered, and how many kept.
+
+5. **Choose where it applies.** Where this applies is eight independent tick boxes: the Inbox, Auto-Queue, automatic downloads, the announcement, this podcast's episode list, New Episodes and Continue Listening, smart playlists, and Search Everywhere.
+   - You should hear: Each row with its ticked state as you arrow past it.
+   - Worth knowing: A new filter starts with the first four ticked and the last four clear. The first four decline to route an episode, which is invisible and reversible; the last four hide it, which changes what you can find.
+
+6. **Save it, and answer the two questions.** Saving refuses a filter that could not mean anything -- on with no rule on, a pattern that cannot be read, nowhere to apply. It asks about a hiding place, and about the Play Queue, which is the one list you built by hand.
+   - You should hear: The filter saved, what it does, and where it applies.
+
+7. **See what it caught.** Choose Filtered out in the episode list's own filter. It shows exactly what this podcast's rules are holding back, and every episode action still works from there -- play it, queue it, download it.
+   - You should hear: Only the episodes the rules caught.
+
+8. **Rescue the one it was wrong about.** Always Keep This Episode, on any episode's menu, exempts that one episode everywhere the filter applies. It is not undone by editing the rules afterwards, because it records that you looked at this one and wanted it.
+   - You should hear: The episode named, and that it is exempt.
+
+9. **Know what happens if you get it wrong.** If a keep-only filter rejects every single new episode of one refresh, Cast says so and remembers it, so a background check that ran while you were away still has a notice waiting. Reviewing the rules and saving clears it.
+   - You should hear: A warning naming the podcast, and that nothing was lost.
+
+One rule set, and up to eight places to mean it. Nothing it does is permanent: untick a place and those episodes are back on the next redraw, because the filter is asked every time a list is drawn rather than stamped onto an episode when it arrived.
+
+Next: Shared defaults, folders, and one podcast.
+
 ## Listening well
 
 The hour itself: skipping what you did not come for, shaping the sound, keeping a moment, reading what the publisher sent, and how much of your life this has taken.
@@ -450,9 +498,176 @@ Time listened, what faster playback bought you, a year in review, and the number
 
 One number is deliberately absent: time saved by Smart Speed. The silence-trimming path cannot honestly report how much it dropped, and an invented figure would be worse than none.
 
+## One podcast at a time
+
+Keep the newest three ready is right for a daily news show and wrong for a weekly interview. How a setting is decided, what arrives and when, what every row says, how a badly-reading podcast is fixed, and who is allowed to interrupt you.
+
+### Shared defaults, folders, and one podcast
+
+How a setting is decided: your shared default, then the folder, then the podcast -- and why leaving a control alone is a real answer rather than an absence of one.
+
+*8 steps, about 7 minutes.*
+
+1. **Start where everything starts.** Podcast Settings holds the shared defaults every podcast follows until something nearer disagrees. Speed, retention, automatic downloads, the Inbox rules, where downloads land. Set the answer that is right for most of your library here and you will rarely need the other two levels.
+   - Keys: Alt+S
+   - You should hear: Entered Podcast Settings.
+
+2. **Learn the chain.** A setting is decided by the nearest level that has an opinion: your shared default, then any folder the podcast is in, outermost first, then the podcast itself. Each level stores only the settings it actually has an opinion about, so the levels above it reach through everything else.
+   - You should hear: Nothing yet -- this one is a fact to carry into the next step.
+   - Worth knowing: Earlier versions could not do this. Giving one podcast its own answer to one setting quietly copied every other setting it had, frozen at that day's defaults -- so changing a shared default later reached every podcast except the ones you had bothered to adjust. Your library is converted on first launch, keeping only the values that genuinely differed.
+
+3. **Set a whole folder at once.** Folder Settings, on a folder's context menu in the Podcast Manager, sets values for everything filed under it. It is a real level now, not a bulk edit: a podcast you move into the folder next year inherits it, and one you move out stops.
+   - Keys: Shift+F10
+   - You should hear: The folder named, and how many podcasts it covers.
+
+4. **Open one podcast's own settings.** Settings for This Podcast, on any show's context menu, holds about seventy settings for that one show. It shows them one category at a time -- Arrival, Playback, Storage, Announcements, Curation -- because seventy controls in a single list is not a list anybody can work through by ear.
+   - Keys: Shift+F10
+   - You should hear: The podcast named, then the category chooser.
+
+5. **Ask any control where its value came from.** Every control shows the value actually in force, inherited or not. Press F1 on one and the help ends with where it came from: every 60 minutes, from the folder News. That sentence is the difference between reading a number and understanding it.
+   - Keys: F1
+   - You should hear: What the setting does, then the level that decided it.
+
+6. **Change one thing, and only one thing.** Change a single control and press OK. Only what you changed becomes this podcast's own answer; everything you left alone keeps following its folder and your shared defaults. Cast says how many settings it saved.
+   - You should hear: Saved 1 setting, and the value read back in words.
+
+7. **Find out what you have changed.** What Have I Changed? lists only the settings this podcast answers for itself, out of all of them. It is the fastest way to find out why one podcast behaves differently from the rest, and it changes nothing by being opened.
+   - You should hear: A count, then one line per setting with the level that set it.
+
+8. **Put one back, or all of them.** Where a podcast has an answer of its own, a Follow button sits beside that control; pressing it drops that one answer so the podcast inherits again. Follow the Shared Defaults drops every one of them at once, and says how many it dropped.
+   - You should hear: The setting following the folder or the shared default again.
+
+Most people set three things globally, one or two on a folder, and one on a single podcast, forever. The point of the chain is that you can change your mind about the first without hunting down the rest.
+
+Next: Decide what arrives, and when.
+
+### Decide what arrives, and when
+
+A daily briefing and a weekly three-hour interview want opposite answers about checking, downloading and queueing. Give them opposite answers.
+
+*6 steps, about 6 minutes.*
+
+1. **Give one podcast its own cadence.** Check subscribed feeds every, under Arrival, is per podcast. A daily news show can check hourly while a weekly show checks daily and a dormant archive is never checked at all. One cadence for three hundred podcasts is either wasteful or late.
+   - You should hear: The cadence read back in words, and where it came from.
+   - Worth knowing: Quill Radio shares the work rather than the setting: whichever app checks a feed says so, and the other stays quiet inside the same interval. Two apps, one job, never two requests.
+
+2. **Collect a back catalogue once.** When I subscribe, also fetch answers a different question from the automatic download count, which only ever looks forward. Nothing, the newest few, the last few months, or everything -- and it happens once, at the moment you subscribe.
+   - You should hear: The choice read back, and how many episodes it queued.
+
+3. **Move the bytes when it suits you.** Only download automatically after and before set an off-peak window, on a 24-hour clock, and it wraps midnight so 22 to 6 means what you would expect. It never delays a download you asked for by name, and leaving both hours the same means there is no window at all.
+   - You should hear: The window read back, or that there is none.
+
+4. **Start a series at the beginning.** Auto-Queue takes the sets which end of the catalogue Auto-Queue works from. Newest episode is the news-show assumption; oldest unplayed episode is how you work through a finished series in the order it was meant to be heard.
+   - You should hear: The episode queued, by name.
+
+5. **Keep transcripts for the shows worth searching.** Fetch transcripts, under Arrival, decides when a podcast's transcripts are collected. A cached transcript is what lets Search Everywhere find a sentence rather than a title -- worth it for a talk show, pointless for a music show.
+   - You should hear: The policy read back.
+   - Worth knowing: The last choice will also transcribe an episode itself when the feed carries none. That is minutes of work per episode, which is exactly why it is per podcast and off by default.
+
+6. **Run the maintenance and hear the result.** Run Maintenance Now applies the ageing rules, the caps and the expiry immediately rather than waiting for the next refresh, and says exactly what it did. It is the fastest way to see whether the rules you just set say what you meant.
+   - You should hear: What was trimmed, expired or deleted, counted.
+
+Arrival is four questions -- how often, how much, when, and in which order -- and every one of them has a different right answer for a daily briefing than for a weekly interview.
+
+Next: Decide what every row tells you.
+
+### Decide what every row tells you
+
+A screen reader reads every row of every list out loud, in full. Which parts of a row are worth hearing is yours to decide -- and it is not the same for every podcast.
+
+*7 steps, about 6 minutes.*
+
+1. **Hear what a row says now.** Arrow down an episode list and listen to a whole row. By default it reads the title, the date, the length and whether it is downloaded. Notice which of those you already knew before it was said.
+   - Keys: Down arrow
+   - You should hear: Title, date, length, and downloaded or streaming.
+
+2. **Choose what comes first.** Read each row starting with offers the episode title, the podcast's name, or the date. Whichever comes first is what you can skim by first letter, and which one that should be depends entirely on how you look for things.
+   - You should hear: The order read back.
+   - Worth knowing: The podcast's name is never added inside that podcast's own episode list, whatever the switch says. The name is the window you are already standing in.
+
+3. **Turn off what you already know.** Say when it was published is worth switching off for a show that puts the date in every title -- otherwise you hear it twice on every row. It changes what a row says, never the order the list is in.
+   - You should hear: Rows without the date, and shorter for it.
+
+4. **Ask for time remaining instead of length.** Say how long it is offers the whole length or how much is left. When you are choosing what to play in the twenty minutes you have, how much is left is the more useful of the two by a wide margin.
+   - You should hear: 12 minutes left, on an episode you have started.
+
+5. **Add the things Cast knew and never said.** Say when it has chapters or a transcript is off by default and worth turning on for a podcast you skip around in. Say the season and episode number is worth it for a serial. Neither fetches anything to find out.
+   - You should hear: Rows ending with chapters and transcript, where there are any.
+
+6. **Read the description, carefully.** Read the episode's description offers off, a sentence of it, or all of it. Off is the default for a reason: a description in every row is the one setting that can make a forty-row list unreadable. A sentence is often exactly right.
+   - You should hear: Each row ending with a sentence of its show notes.
+
+7. **Set it differently for one podcast.** All of it is per podcast as well as global, under Announcements in Settings for This Podcast. The interview show whose titles are just guest names wants the description; the daily briefing wants nothing but the date.
+   - You should hear: Saved, and the setting read back in words.
+
+There is no right answer here, which is exactly why it is a setting. The wrong answer is the one where every row says the same three things you already knew.
+
+Next: Fix a podcast that reads badly.
+
+### Fix a podcast that reads badly
+
+Two settings for the two ways a podcast can be exhausting to listen to a list of: a repeated prefix on every title, and a name your speech engine cannot say.
+
+*6 steps, about 6 minutes.*
+
+1. **Notice the prefix.** Arrow down a podcast that numbers its episodes in the title -- Ep. 412 -, MyShow Presents:, [Bonus]. Every row starts with the same words, so jumping by first letter finds nothing: the part that differs is never where the reader starts.
+   - Keys: Down arrow
+   - You should hear: The same opening words on every row.
+
+2. **Open the title tidier.** Tidy episode titles, under Announcements in Settings for This Podcast, opens a list of patterns to remove. Add one with the same wildcards Episode Filters uses: a star is any run of text and a question mark is one character.
+   - Keys: Shift+F10
+   - You should hear: The list, and what it does not do -- no episode is renamed.
+
+3. **Write a pattern and preview it.** For Ep. 412 - the pattern is Ep. * - at the start. Preview tries it against the 50 newest titles and lists only the ones that would change, before and after. Nothing is altered by pressing it.
+   - You should hear: How many of the 50 newest titles would change.
+   - Worth knowing: A rule can never empty a title. If a pattern would remove everything, the title is left exactly as the feed published it -- a row that reads as nothing at all is worse than one that reads as noise.
+
+4. **Save it and listen again.** Save, and arrow the list again. The rows now begin with the part that differs, so first-letter navigation works. The feed's own titles are untouched, and Rename is still a separate verb that really does rename.
+   - You should hear: Rows starting with the subject rather than the number.
+
+5. **Fix a name your speech engine mangles.** Say this podcast's name as takes one spelling used only when the name is spoken -- for an initialism, a word from another language, or a run of punctuation. Write it the way it should sound, not the way it is spelled.
+   - You should hear: The podcast named the way you wrote it.
+
+6. **Check where it changed and where it did not.** The spoken name is used wherever Cast says the podcast out loud. Everywhere it is written -- the tree, the window title, an export -- the podcast keeps its own name, because that is what the publisher called it.
+   - You should hear: The spoken form when an episode arrives; the real name in the tree.
+
+Both of these are small, and both of them are worth minutes a day to somebody who hears every row. Neither changes a single thing about what is downloaded, played or kept.
+
+Next: Stop the parts of a podcast you did not want.
+
+### Be told about a podcast on your terms
+
+Which podcasts may interrupt you, which are merely counted, which say nothing at all -- and what happens when one goes quiet or its feed starts failing.
+
+*6 steps, about 6 minutes.*
+
+1. **Choose how loudly one podcast speaks.** New episodes of this podcast are offers urgent, normal or quiet. Urgent names the episodes and interrupts; normal is counted in the shared summary; quiet says nothing at all. A quiet podcast still downloads, queues and files exactly as it would.
+   - You should hear: The choice read back.
+   - Worth knowing: Being told about every feed is being told about nothing. Two or three urgent podcasts is a useful setting; twenty is a library that talks over you.
+
+2. **Cap how much Cast may say.** At most this many spoken announcements an hour, in Podcast Settings, is the ceiling. Anything above it is folded into the shared summary rather than dropped -- nothing is lost, it is said once instead of twenty times.
+   - You should hear: The ceiling read back, or that there is none.
+
+3. **Let one podcast through quiet hours.** Quiet Hours stops the app speaking on its own between the times you set. May speak during quiet hours, on one podcast, is the exception for a live or news feed you asked to be told about. It affects that announcement and nothing else.
+   - You should hear: The quiet window read back.
+
+4. **Give a podcast its own sound.** Play this sound when it publishes takes an event from your active sound pack. It is played instead of the shared new-episode sound, not as well, so one podcast becomes distinguishable rather than merely louder.
+   - You should hear: That podcast's own sound when an episode arrives.
+
+5. **Be told when a podcast stops.** Tell me if this podcast goes quiet for says something when a podcast you follow publishes nothing for that many weeks. A podcast that ends does so silently, and the absence is exactly the thing nobody notices.
+   - You should hear: The podcast named, and how long it has been silent.
+   - Worth knowing: It never unsubscribes you and never stops checking. It is said once, and again only if the podcast comes back and then stops again.
+
+6. **Be told when a feed is failing.** Tell me after this many failed checks speaks up after a run of failures. Cast keeps trying either way, and the sentence says so, because a feed that has failed reads as one Cast has given up on.
+   - You should hear: The failures listed, with their reasons.
+
+Attention is the scarce thing. Three urgent podcasts, a ceiling on the rest, and a notice when something goes quiet is a library that tells you what you need and then stops talking.
+
+Next: Stop the parts of a podcast you did not want.
+
 ## Making it yours
 
-A library that has grown, what a row says and what Enter does, the settings that differ per show, feeds and folders of your own, and the backup you will be glad of exactly once.
+A library that has grown, what a row says and what Enter does, the shared defaults everything starts from, feeds and folders of your own, and the backup you will be glad of exactly once.
 
 ### Arrange a library that has grown
 
@@ -518,38 +733,38 @@ Two windows that change how the app sounds rather than what it can do -- plus th
 
 Rows show the place's own key where it has one, so the popup teaches itself out of a job: use Go To 1 for a month and you will have learned Ctrl+M.
 
-Next: Shared defaults, and one show's own mind.
+Next: The shared defaults, and where the app opens.
 
-### Shared defaults, and one show's own mind
+### The shared defaults, and where the app opens
 
-How Cast's settings actually work: a shared default everything follows until one show disagrees -- and how to make a show stop disagreeing.
+The settings that are genuinely about the whole library rather than about one podcast -- and the two that decide what you see first and what happens when you close the window.
 
-*6 steps, about 6 minutes.*
+*6 steps, about 5 minutes.*
 
-1. **Open the shared defaults.** Podcast Settings holds what every show follows unless it sets its own: playback mode, retention, download location, the reconnect rules, default speed, automatic downloads, the Inbox rules and what happens when an episode finishes.
+1. **Open the shared defaults.** Podcast Settings holds what every podcast follows until something nearer disagrees: playback mode, retention, the download location, the reconnect rules, default speed, automatic downloads, the Inbox rules and what happens when an episode finishes.
    - Keys: Alt+S
    - You should hear: Entered Podcast Settings.
 
-2. **Set one show's own mind.** Settings for This Podcast, on any show's context menu, holds the same choices for one show -- plus the ones that only make sense per podcast: Auto-Queue, Announce New Episodes, queue expiry, the Inbox age limit, Route to Inbox and Favorite.
-   - Keys: Shift+F10
-   - You should hear: The show named, then its own settings.
+2. **Know which ones can only live here.** A few settings are about this computer or about you rather than about a podcast, and are offered only here: where downloads land, which directories a search asks, how long a listening history is kept, and the reconnect attempts.
+   - You should hear: Each setting, and what it does not do.
+   - Worth knowing: Everything else in this window can also be set on a folder or on one podcast. That chain is a track of its own -- see One podcast at a time.
 
-3. **Understand what Use the shared default means.** Anything left on Use the shared default stores no override at all, so changing the global later still reaches that show. That is the difference between inheriting a value and having silently copied it.
-   - You should hear: The setting read back as following the default.
+3. **Cap what the app may say.** At most this many spoken announcements an hour is the ceiling on new-episode news. Anything over it is folded into the shared summary rather than dropped, so a library of three hundred podcasts stops talking over you.
+   - You should hear: The ceiling read back, or that there is none.
 
-4. **Undo every override at once.** Follow the Shared Defaults drops every override for a show in one go. It is the way out of an hour of fiddling, and worth knowing about before you start fiddling.
-   - You should hear: The show back on the shared defaults.
-
-5. **Choose where the app opens.** Start on this view decides what QUILL Cast opens on: New Episodes, Continue Listening, the Inbox, Favorites, Recently Expired, or the top of the tree. Pick the question you actually ask first.
+4. **Choose where the app opens.** Start on this view decides what QUILL Cast opens on: New Episodes, Continue Listening, the Inbox, Favorites, Recently Expired, or the top of the tree. Pick the question you actually ask first.
    - You should hear: The view read back.
 
-6. **Decide what closing means.** When closing the window offers Ask every time, Exit, or Minimize to Tray, and governs the titlebar X, Alt+F4 and Exit together. Ask every time only actually asks when there is something to lose, and names what is at stake.
+5. **Decide what closing means.** When closing the window offers Ask every time, Exit, or Minimize to Tray, and governs the titlebar X, Alt+F4 and Exit together. Ask every time only actually asks when there is something to lose, and names what is at stake.
    - Keys: Ctrl+,
    - You should hear: An episode is playing and 2 downloads are in progress -- when there is something to lose.
 
-One shared default, overridden per show only where a show genuinely differs. Most people set three things globally and two things on one podcast, forever.
+6. **Find any setting without hunting for it.** There are ninety-odd settings across this window, the folder editor and the per-podcast one. What Have I Changed?, on a podcast's own settings, is the fastest route to the handful that are not simply following a default.
+   - You should hear: A count, then one line per setting with the level that set it.
 
-Next: Private feeds, and audio of your own.
+Set the answer that suits most of your library here, and let the folder and the podcast disagree where they genuinely do. Most people set three things globally and two on one podcast, forever.
+
+Next: Private feeds, and audio of your own; Shared defaults, folders, and one podcast.
 
 ### Private feeds, and audio of your own
 

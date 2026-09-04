@@ -23,25 +23,17 @@ usually speakers; SRT carries timings; HTML carries the words. Anything
 unrecognised sorts last but is still kept -- a feed that grows a format nobody
 anticipated should degrade to "the words", never to nothing.
 
+The ranking itself now lives in :mod:`quill.core.speech.reuse_core`, which
+is vendored byte-identical into podHarvest so both apps prefer the same
+representation. What stays here is Cast's shape: ``best`` takes the
+``(url, type)`` pairs the feed reader already has, in that order.
+
 wx-free, strict-typed, pure.
 """
 
 from __future__ import annotations
 
-#: Best first. The rank is the format's *capability*, so a reader that needs
-#: timings gets them whenever the feed has them at all.
-_RANK: tuple[tuple[str, tuple[str, ...]], ...] = (
-    ("json", ("application/json", "json")),
-    ("vtt", ("text/vtt", "vtt", "webvtt")),
-    ("srt", ("application/x-subrip", "srt", "subrip")),
-    ("html", ("text/html", "html", "xhtml")),
-    ("text", ("text/plain", "plain", "txt")),
-)
-
-#: What an unrecognised type scores. Below everything named, above nothing:
-#: an unknown format is still a transcript, and refusing it would lose the
-#: words to protect the timings.
-_UNKNOWN = len(_RANK)
+from quill.core.speech.reuse_core import transcript_rank
 
 
 def rank(transcript_type: object, url: object = "") -> int:
@@ -51,16 +43,7 @@ def rank(transcript_type: object, url: object = "") -> int:
     and common -- the URL's extension is the fallback, because a publisher who
     omitted the attribute still named the file.
     """
-    declared = str(transcript_type or "").strip().lower()
-    for index, (_name, tokens) in enumerate(_RANK):
-        if any(token in declared for token in tokens):
-            return index
-    tail = str(url or "").strip().lower().split("?", 1)[0].rsplit(".", 1)
-    suffix = tail[-1] if len(tail) == 2 else ""
-    for index, (name, _tokens) in enumerate(_RANK):
-        if suffix == name or (name == "vtt" and suffix == "webvtt"):
-            return index
-    return _UNKNOWN
+    return transcript_rank(transcript_type, url)
 
 
 def best(candidates: list[tuple[str, str]]) -> tuple[str, str]:
@@ -69,6 +52,9 @@ def best(candidates: list[tuple[str, str]]) -> tuple[str, str]:
     Ties keep feed order, which is the publisher's own preference among
     equals -- the sort is stable and that is deliberate. A candidate with no
     URL is dropped: a type with nothing to fetch is not a representation.
+
+    Note the pair order: this takes ``(url, type)`` because that is what the
+    feed reader holds, while the shared module works in ``(type, url)``.
     """
     real = [(url, kind) for url, kind in candidates if str(url or "").strip()]
     if not real:
@@ -80,9 +66,9 @@ def carries_timings(transcript_type: object, url: object = "") -> bool:
     """Whether this representation has cue times in it (pure).
 
     The question every caller that follows along with playback is really
-    asking. HTML sometimes does carry them -- a ``<time>`` element, a cue-shaped
-    timestamp -- but not dependably, and a "maybe" is not something the reader
-    can be built on.
+    asking. HTML sometimes does carry them -- a ``<time>`` element, a
+    cue-shaped timestamp -- but not dependably, and a "maybe" is not something
+    the reader can be built on.
     """
     return rank(transcript_type, url) <= 2
 

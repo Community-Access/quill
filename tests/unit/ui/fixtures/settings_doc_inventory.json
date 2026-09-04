@@ -42,6 +42,7 @@
   "apply_recommended_keymap_updates": "documented",
   "assistant_enabled": "grandfathered",
   "assistant_prompt_style": "documented",
+  "audio_studio_chapter_nudge_ms": "documented",
   "audio_studio_last_journey": "internal",
   "auto_ask_crash_submit": "documented",
   "auto_check_updates": "grandfathered",

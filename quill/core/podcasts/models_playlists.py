@@ -85,6 +85,10 @@ class PlaylistRules:
     #: Applied **after** sorting, so "the ten newest" is the ten newest and not
     #: ten arbitrary episodes that were then sorted. 0 = no limit.
     item_limit: int = 0
+    #: Podcasts carrying **any** of these labels (7.17). Empty narrows nothing.
+    #: Scope, like ``show_ids`` and ``folder_ids``: it decides which podcasts
+    #: the playlist is about, not which of their episodes match.
+    labels: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -101,6 +105,7 @@ class PlaylistRules:
             "text_contains": self.text_contains,
             "progress": self.progress,
             "item_limit": self.item_limit,
+            "labels": list(self.labels),
         }
 
     @classmethod
@@ -122,6 +127,11 @@ class PlaylistRules:
             text_contains=str(data.get("text_contains", "")),
             progress=_one_of(data.get("progress"), PLAYLIST_PROGRESS_MODES, "any"),
             item_limit=max(0, coerce_int(data.get("item_limit"), 0)),
+            labels=[
+                str(name).strip()
+                for name in (data.get("labels") or [])
+                if isinstance(data.get("labels"), list) and str(name).strip()
+            ],
         )
 
 

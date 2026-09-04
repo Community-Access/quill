@@ -205,6 +205,227 @@ episodes whose publishers never wrote a chapter list.</p>
 <p>Two of those are new kinds of thing for Cast entirely. It has never
 before been able to hand anything to another program, and it has never
 before known where you got to on a machine that is not this one.</p>
+<p>And two more arrived late in the release, both about the same thing:
+<strong>one podcast is not like the others</strong>. Settings a podcast
+can answer for itself – seventy of them, inherited properly through
+folders at last – and <strong>Episode Filters</strong>, rules for the
+episodes you did not want in the first place. Those two come first
+below, because between them they change what using a large library feels
+like.</p>
+<hr />
+<h2 id="a-podcast-can-answer-for-itself">A podcast can answer for
+itself</h2>
+<p>Almost every complaint a podcast listener has is about <strong>one
+podcast behaving differently from the rest</strong>. Keep the newest
+three ready is right for a daily news show and wrong for a weekly
+three-hour interview. Check hourly is right for the news show and
+wasteful for an archive that stopped publishing in 2019. Say the
+podcast’s name in every row is right for a mixed list and noise inside
+that podcast’s own.</p>
+<p>Cast has always had per-show settings. It had about a dozen. It now
+has around seventy, and – more importantly – it can finally tell the
+difference between <em>“I have no opinion about this”</em> and <em>“I
+want exactly this”</em>.</p>
+<h3 id="the-bug-underneath-worth-naming">The bug underneath, worth
+naming</h3>
+<p>Until now, giving one podcast its own answer to one setting made a
+<strong>complete copy</strong> of every setting it had. So the moment
+you set a playback speed for one show, that show also acquired its own
+private copy of your retention rule, your download count, your Inbox
+caps and everything else – frozen at whatever your shared defaults
+happened to be that afternoon. Change a shared default a month later and
+it would reach every podcast except the ones you had ever bothered to
+adjust.</p>
+<p>Folders had the same shape of problem. <strong>Folder
+Settings</strong> wrote its values into each member podcast and then
+forgot them, so a podcast you filed into that folder afterwards
+inherited nothing at all.</p>
+<p>Both are gone. Settings now resolve through four levels – your
+<strong>shared defaults</strong>, then any <strong>folder</strong> the
+podcast is in, outermost first, then the <strong>podcast</strong> – and
+each level stores only the settings it actually has an opinion about.
+Set “check hourly” on your News folder and everything in it and beneath
+it checks hourly, including podcasts you file there next year. Move one
+out and it stops. Nothing was copied, so nothing drifts.</p>
+<p>Your existing settings are converted the first time this version
+opens your library: each frozen copy is compared against your shared
+defaults, and only the values that genuinely differ are kept as that
+podcast’s own. Anything that matched is read as “no opinion”, which is
+almost always what was meant.</p>
+<h3 id="the-window">The window</h3>
+<p><strong>Settings for This Podcast…</strong> now shows one
+<strong>category</strong> at a time – Arrival, Playback, Storage,
+Announcements, Curation – because seventy controls in a single scroll is
+not a window anybody can work through by ear.</p>
+<p>Three things are true of every control in it. It shows the value
+<strong>actually in force</strong>, whether that came from this podcast,
+from its folder or from your shared defaults – and F1 says which:
+<em>“Every 60 minutes, from the folder News.”</em> Saving writes
+<strong>only what you changed</strong>, so everything you left alone
+keeps following the levels above it. And where a podcast has an answer
+of its own, a <strong>Follow</strong> button appears beside that
+control; pressing it drops that one answer rather than writing today’s
+default over it.</p>
+<p><strong>What Have I Changed?</strong> lists only the settings this
+podcast answers for itself, out of all of them. It is the question a
+window full of controls cannot answer, and it is how you find out why
+one podcast is behaving oddly without reading seventy rows.</p>
+<h3 id="the-ones-that-matter-most-by-ear">The ones that matter most by
+ear</h3>
+<p><strong>Tidy episode titles.</strong> A great many podcasts prefix
+every episode with the same thing: <code>Ep. 412 -</code>,
+<code>MyShow Presents:</code>, <code>[Bonus]</code>. Read by eye that is
+noise you skip past. Read by ear it is the first thing said on every
+row, two hundred times, and it destroys first-letter navigation
+completely – arrowing to “S” in a list where every row begins “Ep.”
+finds nothing at all, because the part of the title that differs is
+never where the reader starts. Patterns you set here are removed
+<strong>when a title is shown and spoken</strong>. The feed’s own title
+is untouched, nothing is renamed, and Rename… is still a different verb.
+Preview shows exactly which of the 50 newest titles would change, and a
+rule can never empty a title.</p>
+<p><strong>Say this podcast’s name as.</strong> One spelling used only
+when the name is <em>spoken</em>, for a title your speech engine mangles
+– an initialism, a word from another language, a run of punctuation. The
+podcast keeps its own name everywhere it is written.</p>
+<p><strong>What each row says is yours now.</strong> A screen reader
+reads every row of every list out loud, in full. Cast’s answer to that
+had been a single switch – put the podcast name before the episode title
+– over a question with at least seven answers. Now there is a named
+<strong>order</strong> (title, podcast or date first: whichever comes
+first is what you can skim by first letter) and independent switches for
+the podcast’s name, the date, the length or how much is
+<strong>left</strong>, the download state, the season and episode
+number, whether the episode has chapters or a transcript, and the
+description at off, brief or full. Per podcast as well as globally,
+because a daily show with the date in every title should not have the
+date read to you again. And the podcast’s name is never repeated inside
+its own episode list, whatever the switch says.</p>
+<p><strong>Urgent, normal or quiet.</strong> New-episode announcements
+had a switch, over a question with three answers: <em>tell me by
+name</em>, <em>count it in the summary</em>, <em>say nothing at
+all</em>. All three are now available per podcast. A quiet podcast still
+downloads, queues and files exactly as it would; it simply says nothing.
+One podcast can also be allowed through <strong>quiet hours</strong> by
+name, for a live or news feed you asked to be told about, and can have a
+<strong>sound of its own</strong> when it publishes.</p>
+<h3 id="arrival-storage-and-the-rest">Arrival, storage, and the
+rest</h3>
+<p><strong>Per-podcast check cadence</strong>, so a daily briefing
+checks hourly while a weekly show checks daily and a dormant archive is
+never checked at all. <strong>Backfill on subscribe</strong> – nothing,
+the newest few, the last few months, or everything – which is a separate
+question from the automatic download count, because that one only ever
+looks forward. <strong>Off-peak download windows</strong> that wrap
+midnight, beside the metered-connection guard. <strong>Auto-Queue from
+the oldest unplayed episode</strong>, which is how you start a series at
+the beginning rather than at today.</p>
+<p><strong>Sort by season and episode number.</strong> Serial fiction is
+meant to be heard in order, and its published dates are the least
+reliable thing about it – bulk-imported, or re-stamped every time the
+feed is rebuilt. Where a publisher numbered their episodes, Cast now
+reads that numbering out of the feed, sorts on it, and can say it. An
+episode the feed did not number is not episode zero: it sorts to the end
+and says nothing.</p>
+<p><strong>Never delete this podcast’s downloads</strong> exempts one
+podcast from the storage cap, the age rule and delete-after-playing. It
+exists because the alternative was worse: without it, the only way to
+protect the one podcast you genuinely archive was to switch the
+automatic sweeps off for everything, which is what most people did.</p>
+<p><strong>Show at most N episodes</strong> is a <strong>view</strong>
+over a four-thousand-episode archive feed, not a trim. Nothing is
+deleted, search still finds everything, and raising the number brings it
+all back.</p>
+<p><strong>Labels</strong> are your own words for a podcast, as many as
+you like, and a Smart Playlist can ask for one. A folder is one home; a
+label is not a home at all, so labelling never moves anything.</p>
+<p><strong>Tell me if this podcast goes quiet</strong> says something
+when a podcast you follow stops publishing for as long as you choose – a
+podcast that ends does so silently, and the absence is exactly the thing
+nobody notices. Its companion speaks up after a run of failed checks.
+Both say plainly that Cast has not unsubscribed you and has not given
+up.</p>
+<p>And, more briefly: transcript policy including opt-in local
+transcription, chapter-title skip rules for the advert breaks a
+publisher marked, a preferred audio variant when a feed offers more than
+one, a per-podcast disk budget, silence-trim strength, a default
+playlist new episodes join, a sleep-timer default, redirect and
+re-publish policy, and an artwork override.</p>
+<p>Nothing added here deletes anything. Everything fails open: a value
+Cast cannot read means “carry on as before”, never “do less”.</p>
+<hr />
+<h2 id="rules-for-the-episodes-you-did-not-want">Rules for the episodes
+you did not want</h2>
+<p>Some podcasts publish more than one thing. A show you follow also
+runs a daily two-minute segment; or trailers for its sister show; or a
+members-only strand mixed into the public feed. Until now every one of
+those arrived, was dismissed by hand, and counted against an Inbox limit
+you had set for a completely different reason.</p>
+<p><strong>Episode Filters</strong> is the missing decision, per
+podcast: rules that say which of a show’s episodes you actually want,
+and <strong>where that answer counts</strong>.</p>
+<p>Each rule has your own name for it and its own on and off. It can
+match on the title – wildcards, where <code>*</code> is any run of text
+and <code>?</code> is one character, and every other punctuation mark
+means itself, so <code>Q+A*</code> finds the segment actually called
+“Q+A” – or on a full regular expression if you want one. It can also
+match on a minimum length. Both tests in one rule have to match; several
+rules need match only one. An episode whose feed does not say how long
+it is never matches a length rule, because a missing length is not a
+short episode.</p>
+<p>Two modes: <em>keep everything except episodes a rule matches</em>,
+which is the everyday one, and <em>keep only episodes a rule
+matches</em>, which is how you follow a single strand of a feed that
+carries several.</p>
+<h3 id="eight-places-to-mean-it">Eight places to mean it</h3>
+<p>This is the half that makes one feature do the work of eight. A rule
+set says what an episode <em>is</em>; the tick boxes say where that
+means anything – the Inbox, Auto-Queue, automatic downloads, the
+new-episode announcement, the podcast’s own episode list, New Episodes
+and Continue Listening, smart playlists, and Search Everywhere.</p>
+<p>They are independent, so “keep it out of my Inbox but still tell me
+about it” and “just do not spend my bandwidth on it” are both things you
+can actually have. A new filter starts with the four
+<strong>routing</strong> places ticked and the four
+<strong>hiding</strong> ones clear: declining to route an episode is
+invisible and reversible, and hiding one changes what you can find.</p>
+<h3 id="it-never-deletes-anything">It never deletes anything</h3>
+<p>A filtered episode keeps its place in the podcast’s episode list, its
+played mark, its position, its downloaded file, its notes and its
+bookmarks. Filtering is a routing decision, and every message the
+feature speaks says so.</p>
+<p>Everything except the Play Queue takes effect the moment you save,
+including on episodes you already had – the lists ask the filter as they
+are drawn, so unticking a place later brings those episodes straight
+back. The Play Queue is the exception, because it is the one list you
+built by hand: saving offers, separately, to clear this podcast’s
+matching episodes out of it, and the episode playing right now keeps its
+place.</p>
+<h3 id="look-before-you-leap-and-two-ways-back">Look before you leap,
+and two ways back</h3>
+<p><strong>Preview</strong> tries the rules against the 50 newest
+episodes you already have and reports what each would be –
+<em>Filtered</em> or <em>Kept</em> first, then the title and the length.
+It changes nothing, and it works <strong>while the filter itself is
+switched off</strong>, which is the only safe way to write a keep-only
+rule.</p>
+<p>Saving is gated rather than merely checked. Cast refuses a filter
+that is switched on with no rule switched on, one whose regular
+expression cannot be read (it quotes the reason), one with nowhere to
+apply, and a minimum-length rule against a feed where not one of the 50
+newest episodes publishes a length. Where only some do, it says exactly
+how many and asks.</p>
+<p>And there are always two ways back. <strong>Filtered out</strong> is
+a new entry in the episode list’s own filter, present for every podcast
+rather than appearing only for filtered ones, and it lists exactly what
+the rules are catching – every episode action still works from there.
+Any single episode’s menu also offers <strong>Always Keep This
+Episode</strong>, which exempts that one episode everywhere the filter
+applies and is not undone by editing the rules afterwards.</p>
+<p>Finally: if a keep-only filter rejects <strong>every single</strong>
+new episode of one refresh, Cast says so and remembers it, so a
+background check that ran while you were away still has something
+waiting for you in Episode Filters when you get back.</p>
 <hr />
 <h2 id="your-place-follows-you-and-not-only-between-quill-machines">Your
 place follows you, and not only between QUILL machines</h2>
@@ -766,10 +987,13 @@ walks the shared table verb by verb and asks whether each app can
 actually perform it.</p>
 <hr />
 <h2 id="the-app-teaches-itself">The app teaches itself</h2>
-<p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong> opens 18 guided
-tutorials – 107 steps, about an hour and three quarters of material –
-covering every feature QUILL Cast has, in the order somebody would
-actually learn it.</p>
+<p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong> opens 24 guided
+tutorials – 149 steps, a little over two hours of material – covering
+every feature QUILL Cast has, in the order somebody would actually learn
+it. A fifth track, <strong>One podcast at a time</strong>, arrived with
+the per-podcast settings: how a setting is decided, what arrives and
+when, what every row says, how to fix a podcast that reads badly, and
+who is allowed to interrupt you.</p>
 <p>They are not a second copy of the user guide. A guide answers “what
 does this do”. It cannot answer “what do I do now”, because a document
 cannot see what you have already done. This window can.</p>

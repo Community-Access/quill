@@ -293,7 +293,7 @@ Control coverage: 226 audited sites (110 helped, 116 named-help).
 
 ## QUILL Cast
 
-Control coverage: 199 audited sites (6 help-elsewhere, 29 helped, 164 named-help).
+Control coverage: 225 audited sites (63 helped, 162 named-help).
 
 ### Every window, and what it is for
 
@@ -306,6 +306,8 @@ Control coverage: 199 audited sites (6 help-elsewhere, 29 helped, 164 named-help
 **Closing QUILL Cast.** What closing the window should do: exit, or keep playing with QUILL Cast tucked into the system tray. Cancel leaves everything as it was. Don't ask me again remembers your answer, and Preferences can set it back to asking.
 
 **Downloads.** The download queue, and everything you can do to it. Finished rows stay until you clear them so "did that actually download?" always has an answer, and Enter on a saved row opens the folder it landed in.
+
+**Episode Filter Rule.** One rule inside a podcast's Episode Filters: a title pattern, a minimum length, or both -- and both have to match for the rule to. A rule is a label plus a test; it decides nothing until the filter itself is saved, and it never deletes an episode.
 
 **Feed Credentials.** The user name and password for a private feed -- a paid subscription, a members-only show. They are kept for this feed alone and sent to its own host, never to a directory.
 
@@ -355,6 +357,8 @@ Control coverage: 199 audited sites (6 help-elsewhere, 29 helped, 164 named-help
 
 **Windows titled "Chapters...".** The chapter list of this episode. Enter jumps straight to the highlighted chapter; the player keeps playing from there.
 
+**Windows titled "Episode Filters...".** The rules that decide where this podcast's new episodes go: keep everything except what a rule matches, or keep only what one matches. Preview tries the rules against the 50 newest episodes you already have and changes nothing. A filtered episode is never deleted -- it stays in this podcast's episode list, played mark, position and download intact; it simply does not reach your Inbox or the Play Queue by itself.
+
 **Windows titled "Episodes to Keep...".** How many downloaded episodes of this one podcast to keep before the oldest are deleted. Zero keeps all of them, and it is the downloaded audio only -- nothing leaves the episode list.
 
 **Windows titled "File...".** Choose the Inbox folder to file into, or make a new one. Filing moves the row out of the Inbox list; it deletes nothing.
@@ -362,6 +366,8 @@ Control coverage: 199 audited sites (6 help-elsewhere, 29 helped, 164 named-help
 **Windows titled "Folder Settings...".** Settings that apply to every show in this folder. A show with its own answer keeps it; the folder answers for the rest.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
+
+**Windows titled "Labels...".** Your own words for this podcast, as many as you like. A folder is one home and a label is not a home at all: labelling never moves a podcast, and a smart playlist can ask for a label the way it asks for a folder.
 
 **Windows titled "Move...".** Choose the folder to file into, or make a new one. Folders are yours to invent, and filing changes nothing about what is downloaded or played.
 
@@ -379,6 +385,10 @@ Control coverage: 199 audited sites (6 help-elsewhere, 29 helped, 164 named-help
 
 **Windows titled "Show Notes...".** The notes the show published with this episode, as reviewable, copyable text -- links, guests, timestamps. A timestamp here is live: Enter on one moves playback to it.
 
+**Windows titled "Skip Chapters...".** Chapter titles this podcast should jump over as it plays -- an advert break or sponsor read the publisher marked. Exact, where skipping a number of seconds is a guess. Nothing is removed from the episode.
+
+**Windows titled "Tidy Episode Titles...".** Patterns removed from this podcast's episode titles when they are shown and spoken -- a repeated 'Ep. 412 -' that starts every row and ruins skimming by first letter. Preview shows exactly which of the 50 newest titles would change. The feed's own titles are never altered and no episode is renamed.
+
 ### Every authored control help sentence
 
 #### CastCloseConfirmDialog (`quill/ui/podcasts/close_confirm_dialog.py`)
@@ -387,9 +397,33 @@ Control coverage: 199 audited sites (6 help-elsewhere, 29 helped, 164 named-help
 - `exit_btn`: Quits QUILL Cast. Your position in the episode is saved, so it resumes where you left it.
 - `minimize_btn`: Keeps playing and downloading with the window tucked into the system tray; the tray icon brings it back.
 - `cancel_btn`: Returns to QUILL Cast with everything as it was.
+#### EpisodeFilterRuleDialog (`quill/ui/podcasts/episode_filter_rule_dialog.py`)
+
+- `ok_btn`: Keeps this rule in the filter. Nothing is applied until you save it.
+- `cancel_btn`: Leaves the rule as it was.
+#### EpisodeFiltersDialog (`quill/ui/podcasts/episode_filters_dialog.py`)
+
+- `ok_btn`: Saves these rules for this podcast. Every list you ticked takes effect at once, on episodes you already have as well as new ones; nothing is deleted. The Play Queue is the only thing not touched without asking, and saving asks about it separately.
+- `cancel_btn`: Leaves this podcast's rules exactly as they were.
 #### ManagerPhase4Mixin (`quill/ui/podcasts/manager_phase4.py`)
 
 - `self._episode_search_ctrl`: Narrows the episode list of the podcast you are on, matching episode titles and the show notes. It searches this podcast only -- Search Everywhere is the one that crosses your whole library -- and it narrows whatever the filter and sort above already chose rather than replacing them. Enter says how many matched.
+#### ListSettingDialog (`quill/ui/podcasts/show_list_editor.py`)
+
+- `ok_btn`: Saves this list for this podcast only.
+- `cancel_btn`: Leaves the list exactly as it was.
+- `self._preview_btn`: Shows which of the 50 newest titles these patterns would change, and how. It is a dry run: no title is altered by pressing it.
+- `self._preview_list`: Each title these patterns would change, before and after. It reports; it has changed nothing.
+#### ShowSettingsDialog (`quill/ui/podcasts/show_settings_dialog.py`)
+
+- `self._category`: Which group of settings is shown below. Seventy controls in one list is not a list anybody can work through by ear, so this shows one group at a time. It hides nothing -- every group is one keystroke away.
+- `self._favorite`: Puts this podcast in the Favorites view. It is a mark, not a folder: the podcast stays exactly where it is filed.
+- `changed_btn`: Lists only the settings this podcast answers for itself, out of all of them. It changes nothing -- it is the question a settings window full of controls cannot answer.
+- `ok_btn`: Saves what you changed, and only what you changed. Anything you left alone keeps following its folder and the shared defaults.
+- `cancel_btn`: Leaves this podcast's settings as they were. An Episode Filter you already saved in its own window is not undone by this.
+#### (module level) (`quill/ui/podcasts/show_settings_panel.py`)
+
+- `button`: Drops this podcast's own answer for this setting, so it follows its folder or the shared default again. It changes this setting only, and no episode, download or queue entry is touched.
 #### SingleSettingDialog (`quill/ui/podcasts/single_setting_dialog.py`)
 
 - `ok_btn`: Applies this setting to this podcast only.
@@ -461,7 +495,7 @@ Control coverage: 36 audited sites (23 helped, 13 named-help).
 
 ## QUILL Audio Studio
 
-Control coverage: 142 audited sites (140 helped, 2 named-help).
+Control coverage: 159 audited sites (157 helped, 2 named-help).
 
 ### Every window, and what it is for
 
@@ -470,6 +504,8 @@ Control coverage: 142 audited sites (140 helped, 2 named-help).
 **Chapter Workbench.** One finished audiobook, open for surgery: listen with the chapter-aware player, rename chapters, split at the playhead, move a start, merge, or restore the original list. Book tags are editable below the player, and chapter lists import and export in Audacity, CUE, timestamp, JSON, and CSV forms. An MP3 saves its edits in place without touching the audio; an M4B saves as a new file, losslessly.
 
 **Convert Audio.** Convert audio files or whole folders between formats, on this machine. Build the queue, pick the output format, preset, and destination folder, and Convert runs in the background with spoken progress. The Advanced options only override what you deliberately change; untouched controls leave the preset alone.
+
+**Edit chapter.** This chapter's title and its exact start and end, typed rather than set by ear, plus the optional link and image a Podcasting 2.0 player can show. Moving the start moves the end of the chapter before it, so the book stays gapless; the sentence at the top tells you the range this chapter is allowed to occupy.
 
 **Export a Document to Translated Speech.** One document, spoken in other languages: pick the output format, add each target language with the voice that will read it, and choose whether your AI provider or a local LibreTranslate does the translating. Each export lands beside the source, named for its language.
 
@@ -491,6 +527,8 @@ Control coverage: 142 audited sites (140 helped, 2 named-help).
 
 **Speech Settings.** The Speech Hub: every speech engine and voice in one place -- preview them, download the offline ones, and set the defaults. What you choose here is shared with QUILL and the other Quill apps, so a voice configured once reads everywhere.
 
+**Tag Editor.** Every tag this audio file can carry, over five pages: the main fields, the details, publishing credits, sort-order fields, and the cover art. Control+Tab moves between pages. Nothing is written until you press OK and then save -- this window hands the edit back, it never touches the file itself. It is the same editor QUILL Audio Studio and podHarvest both show, from the same table, so a file edited in either reads back unchanged in the other.
+
 **Windows titled "Copy Sections...".** Mark pieces of the file you are listening to and collect them into one new file. Mark a start and an end at the playhead, preview exactly what you marked, add it to the list, and keep going -- then save the collection as a new file or onto an existing one. The original recording is never changed.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
@@ -500,6 +538,7 @@ Control coverage: 142 audited sites (140 helped, 2 named-help).
 #### ChapterWorkbenchDialog (`quill/ui/audio_studio/chapter_workbench.py`)
 
 - `self._chapter_list`: Every chapter of the book, numbered, with its start time and length. Selecting a row loads its title into the Chapter title field; Enter plays the chapter. Edits made with the buttons below apply to the highlighted row and are written to disk only on Save.
+- `self._chapter_list`: Every chapter, with where it starts and how long it runs. Alt with Left or Right arrow nudges the highlighted chapter's start earlier or later by one step; hold Shift as well to move ten steps at once. The step size is the Step box below.
 - `self._title_edit`: The highlighted chapter's title, ready to edit. Type the new title and press Enter (or the Rename button) to apply it to the selected row. It cannot be empty, and nothing reaches the file until Save.
 - `rename_btn`: Applies the text in the Chapter title field to the highlighted chapter. The same as pressing Enter in that field.
 - `propose_btn`: Scans the recording for silences with ffmpeg and proposes chapter boundaries at the silence midpoints. You choose the noise threshold and minimum pause first; the proposal replaces the list for review, and Restore original undoes it.
@@ -508,6 +547,7 @@ Control coverage: 142 audited sites (140 helped, 2 named-help).
 - `import_btn`: Replaces the chapter list with one read from a file: Audacity labels, a timestamps list, a CUE sheet, Podcasting 2.0 JSON, or CSV. The whole list is swapped for review; Restore original undoes it, and nothing is saved until Save.
 - `export_btn`: Writes the chapter list to a file of your choosing -- Audacity labels, timestamps, CUE sheet, Podcasting 2.0 JSON, or CSV -- for other tools or a podcast host. The audio is untouched.
 - `episodes_btn`: Writes each chapter out as its own audio file, numbered, into a folder you choose -- the reverse trip, for podcast episodes or track-based players. The book itself is untouched.
+- `tags_btn`: Opens the Tag Editor: every tag this file can carry, over five pages, cover art included. The five fields below are the ones an audiobook needs; this is the rest.
 - `self._save_btn`: Writes the chapter and tag edits into the MP3 in place -- only the tags are rewritten, the audio is untouched. An M4B cannot be rewritten in place, so this button is disabled for one; use Save As instead.
 - `save_as_btn`: Saves the edited book as a new file, losslessly, leaving the original alone. For an M4B this is the only save; the audio is copied without re-encoding.
 - `self._publish_btn`: Opens the Publish window for this book: a local podcast feed file, an SFTP upload, or Auphonic post-production. Unsaved chapter edits must be saved first.
@@ -516,6 +556,17 @@ Control coverage: 142 audited sites (140 helped, 2 named-help).
 
 - `self._noise`: How quiet the audio must be to count as silence, in decibels; -60 to -10 in steps of 1, default -30. Lower the number to make the scan more sensitive (it will find more, quieter pauses); raise it for noisy recordings so room hiss stops counting as silence.
 - `self._min_silence`: How long a pause must last before it can become a chapter boundary, in seconds; 0.1 to 5 in steps of 0.1, default 0.8. Raise it so only real between-chapter pauses count, not breaths between sentences.
+#### ChapterDetailsDialog (`quill/ui/audio_studio/chapter_workbench_dialogs.py`)
+
+- `ok_btn`: Applies these chapter details to the list.
+- `cancel_btn`: Leaves the chapter exactly as it was.
+#### (module level) (`quill/ui/audio_studio/chapter_workbench_edits.py`)
+
+- `back_btn`: Moves the highlighted chapter's start earlier by one step. Alt with Left arrow does the same from the chapter list, and adding Shift moves ten steps at once.
+- `fwd_btn`: Moves the highlighted chapter's start later by one step. Alt with Right arrow does the same from the chapter list, and adding Shift moves ten steps at once.
+- `dialog._step_choice`: How far one nudge moves a marker. Half a second to start with; the step you pick is remembered for next time.
+- `hear_btn`: Plays three seconds before the highlighted chapter's start and two seconds after it, then stops -- the quickest way to judge a marker by ear.
+- `dialog._hear_after`: Plays the boundary automatically after every nudge. Off by default, because audio on every keypress is something to ask for rather than discover.
 #### ConvertAudioDialog (`quill/ui/audio_studio/convert_audio_dialog.py`)
 
 - `self._list`: The conversion queue: each row is a file, or a folder that will be expanded when the run starts (a folder row says whether its sub-folders are included). Delete removes the highlighted row; duplicates are skipped automatically.
@@ -542,6 +593,7 @@ Control coverage: 142 audited sites (140 helped, 2 named-help).
 
 - `self.file`: The finished MP3 or M4B to open in the Chapter Workbench. Type a path or open the drop-down for recently opened books; a file with no chapter markers opens as one chapter, ready to split up.
 - `browse`: Picks the audiobook file with the system file chooser.
+- `self.tags_only`: Opens the file straight in the Tag Editor: every tag it can carry, over five pages, cover art included. Leave this off to open the Chapter Workbench, which holds the same tag editor as well as the chapter tools and the player.
 #### DocSourcePage (`quill/ui/audio_studio/pages_documents.py`)
 
 - `self.source`: The folder of documents to narrate. Type a path or open the drop-down for recently used folders; the file-type checkboxes below decide which documents inside it count.
@@ -647,6 +699,16 @@ Control coverage: 142 audited sites (140 helped, 2 named-help).
 #### SleepTimerDialog (`quill/ui/audio_studio/sleep_timer_dialog.py`)
 
 - `self._minutes`: How long playback keeps going before the timer stops it, 1 to 480 minutes. Ignored while Stop at end of chapter is checked, and only read while the timer is enabled.
+#### CoverPagePanel (`quill/ui/audio_studio/tag_editor.py`)
+
+- `load_btn`: Chooses a JPEG or PNG image to embed as this file's cover art, replacing whatever is there now. The file is checked by its real contents rather than its name, and images over 8 MB are refused.
+- `save_btn`: Writes the embedded cover art out to a picture file of its own, leaving the audio file untouched.
+- `remove_btn`: Takes the cover art off this file. Like every other edit here, it happens when you save, not before.
+#### TagEditorDialog (`quill/ui/audio_studio/tag_editor.py`)
+
+- `notebook`: The tags are grouped over five pages. Control+Tab moves to the next page and Control+Shift+Tab to the previous one; Tab moves between the fields of the page you are on. Nothing is written to the file until you press OK and then save.
+- `ok_btn`: Keeps these tag edits and closes this window. They are written to the file when you save in the window behind.
+- `cancel_btn`: Discards every tag edit made in this window.
 #### TranslatedSpeechExportDialog (`quill/ui/audio_studio/translated_speech_export.py`)
 
 - `self._format`: The audio format each translated edition is written in: MP3 with chapter markers (the default), M4B with native chapters, or plain WAV.

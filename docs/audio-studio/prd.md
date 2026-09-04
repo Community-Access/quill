@@ -283,6 +283,33 @@ requirement, not a layer.
   1-second parts), set chapter start to playhead, merge into previous, and
   Restore original (from the snapshot taken at open). Audio bytes are never
   altered by chapter surgery.
+- AS-38a. Chapter editing must also include **add** (a marker at the playhead
+  or a typed time, named on the way in; past the last chapter's end it appends
+  rather than refusing), **delete** (the marker only -- the audio joins its
+  neighbour, and unlike merge it is defined for the first and last chapters),
+  **edit** (a window taking the title and the exact start and end, plus the
+  Podcasting 2.0 link and image), and **preview** (play this chapter and stop
+  at its end).
+- AS-38b. A chapter marker must be movable **by ear**: Nudge back and Nudge
+  forward move the highlighted chapter's start by one step, Alt with Left or
+  Right does the same from the chapter list and Shift with them moves ten
+  steps, and "Hear boundary" plays three seconds before the marker and two
+  after it. The step is chosen from 100 ms to 10 s and remembered between
+  sessions in `audio_studio_chapter_nudge_ms` (default 500 ms, clamped 10 to
+  60000). A nudge that runs a marker into its neighbour must stop there and
+  say so once per run, not refuse. Each nudge must speak the bare new time
+  only, with the full "title starts X, runs Y" sentence following once the run
+  goes quiet -- a sentence repeated at key-repeat speed is unusable.
+- AS-38c. "All tags..." must open the Tag Editor: every tag the file can carry
+  over five pages -- main, details, publishing, sort order, cover art -- built
+  from the field table shared byte-identically with podHarvest, so a file
+  edited in either app reads back unchanged in the other. The Workbench's five
+  quick fields and the editor's twenty-six must stay in step in both
+  directions. The editor must also be openable on its own, without the
+  Workbench, from the Studio wizard's Open a book page.
+- AS-38d. Saving must follow what actually changed: an MP3 saves in place; an
+  M4B with only tag edits saves in place too (mutagen rewrites the atoms, no
+  re-mux); an M4B with chapter edits still saves as a new file, losslessly.
 - AS-39. "Propose chapters from silences" must run ffmpeg silence detection
   with adjustable noise floor (-60..-10 dB, default -30) and minimum silence
   (0.1..5.0 s, default 0.8), place boundaries at silence midpoints, enforce a

@@ -12,6 +12,8 @@ from __future__ import annotations
 import wx
 
 from quill.core.i18n import _
+from quill.core.speech.audio_tags import format_time_precise, parse_time
+from quill.core.speech.chapters import Chapter
 from quill.ui.dialog_contract import apply_modal_ids
 
 
@@ -147,3 +149,119 @@ class AcxResultDialog(wx.Dialog):
         self.Fit()
         self.CentreOnParent()
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+
+
+class ChapterDetailsDialog(wx.Dialog):
+    """Type a chapter's title, exact start and end, and its Podcasting 2.0 extras.
+
+    Its own class so its mnemonics are scoped to it, and so the Workbench does
+    not grow a sixth inline form it would then have to keep aligned.
+    """
+
+    def __init__(
+        self,
+        parent: wx.Window,
+        chapter: Chapter,
+        *,
+        lower_ms: int,
+        upper_ms: int,
+    ) -> None:
+        super().__init__(
+            parent,
+            title=str(_("Edit chapter")),
+            style=wx.DEFAULT_DIALOG_STYLE,
+            name="audio_studio.chapter_details",
+        )
+        from quill.ui.audio_studio.pages_base import set_accessible_name
+
+        root = wx.BoxSizer(wx.VERTICAL)
+        root.Add(
+            wx.StaticText(
+                self,
+                label=_(
+                    "Times are hours:minutes:seconds.milliseconds. This chapter "
+                    "may run between {lower} and {upper}."
+                ).format(
+                    lower=format_time_precise(lower_ms),
+                    upper=format_time_precise(upper_ms),
+                ),
+                name="audio_studio.chapter_details_range",
+            ),
+            0,
+            wx.ALL,
+            10,
+        )
+        grid = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
+        grid.AddGrowableCol(1, 1)
+
+        def row(label: str, value: str, help_text: str) -> wx.TextCtrl:
+            # Label first, then the control. The control is built here rather
+            # than handed in, which is what keeps check_dialog_zorder.py happy
+            # and, more to the point, what makes the screen reader pair them.
+            grid.Add(wx.StaticText(self, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
+            ctrl = wx.TextCtrl(self, value=value)
+            ctrl.SetHelpText(help_text)
+            set_accessible_name(ctrl, label.replace("&", "").rstrip(": "))
+            grid.Add(ctrl, 0, wx.EXPAND)
+            return ctrl
+
+        self._title = row(
+            _("&Title:"),
+            chapter.title,
+            "The chapter's name, as every player will announce it.",
+        )
+        self._start = row(
+            _("&Start:"),
+            format_time_precise(chapter.start_ms),
+            "Where this chapter begins. Moving it moves the end of the chapter "
+            "before it, so the book stays gapless.",
+        )
+        self._end = row(
+            _("&End:"),
+            format_time_precise(chapter.end_ms),
+            "Where this chapter ends. Moving it moves the start of the chapter after it.",
+        )
+        self._url = row(
+            _("&Link:"),
+            chapter.url,
+            "An optional web link for this chapter, carried in the Podcasting "
+            "2.0 chapters file. Players that support it show a button.",
+        )
+        self._image = row(
+            _("&Image:"),
+            chapter.image,
+            "An optional image address for this chapter, carried in the "
+            "Podcasting 2.0 chapters file.",
+        )
+        root.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
+
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        ok_btn = wx.Button(self, wx.ID_OK, label=_("OK"))
+        ok_btn.SetHelpText("Applies these chapter details to the list.")
+        cancel_btn = wx.Button(self, wx.ID_CANCEL, label=_("Cancel"))
+        cancel_btn.SetHelpText("Leaves the chapter exactly as it was.")
+        buttons.AddStretchSpacer()
+        buttons.Add(ok_btn, 0, wx.RIGHT, 6)
+        buttons.Add(cancel_btn, 0)
+        root.Add(buttons, 0, wx.EXPAND | wx.ALL, 10)
+
+        apply_modal_ids(
+            self,
+            affirmative_id=wx.ID_OK,
+            affirmative_label=str(_("OK")),
+            cancel_id=wx.ID_CANCEL,
+            cancel_label=str(_("Cancel")),
+        )
+        self.SetSizer(root)
+        self.Fit()
+        self.CentreOnParent()
+
+    def values(self) -> tuple[str, int | None, int | None, str, str]:
+        """Title, start ms, end ms, link, image. An unparseable time reads None."""
+        return (
+            self._title.GetValue().strip(),
+            parse_time(self._start.GetValue()),
+            parse_time(self._end.GetValue()),
+            self._url.GetValue().strip(),
+            self._image.GetValue().strip(),
+        )

@@ -192,6 +192,13 @@ class PodcastCheckMonitor:
                 continue
             if not force and refresh_policy.is_paused(show):
                 continue
+            # Each podcast's own cadence (7.1). A shared interval over a
+            # three-hundred-podcast library is either wasteful or late: this
+            # timer is the *heartbeat*, and every show decides for itself
+            # whether its own hour has elapsed. A show with no cadence of its
+            # own inherits the shared one and behaves exactly as before.
+            if not force and not self._show_is_due(library, show):
+                continue
             try:
                 self._refresh_show(str(show.id))
             except Exception:  # noqa: BLE001 - one bad feed never stops the rest
@@ -199,6 +206,28 @@ class PodcastCheckMonitor:
                 continue
             started += 1
         return started
+
+    def _show_is_due(self, library: Any, show: Any) -> bool:
+        """Whether this one podcast's own interval has elapsed.
+
+        Guarded: a library shape this monitor cannot read must not stop the
+        check, so anything unexpected answers "yes, check it" -- the same
+        direction every other doubt in this feature resolves.
+        """
+        try:
+            from quill.core.podcasts.check_state import is_due
+            from quill.core.podcasts.show_policy import cadence_minutes
+
+            if cadence_minutes(library, show) <= 0:
+                # No cadence of its own and none shared: the timer only got
+                # here because *something* is due, so this show rides along.
+                return self.interval_minutes() > 0
+            return is_due(library, show)
+        except Exception:  # noqa: BLE001 - never let bookkeeping stop a check
+            logger.exception(
+                "could not read the check cadence for show %s", getattr(show, "id", "")
+            )
+            return True
 
     def _claim_this_round(self, library: Any) -> bool:
         """Whether this app should do this round of checking, and claim it.

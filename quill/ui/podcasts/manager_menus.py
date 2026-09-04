@@ -62,6 +62,33 @@ def _inbox_menu_label(dialog: object, show: object) -> str:
     return "Stop Routing to &Inbox" if show.route_to_inbox else "Route New Episodes to &Inbox"
 
 
+def _show_has_filter(dialog: object, show: object) -> bool:
+    """Whether this podcast has an Episode Filter that decides anything."""
+    from quill.core.podcasts.episode_filter_maintenance import is_active
+
+    library = getattr(dialog, "_library", None)
+    return library is not None and is_active(library, show)
+
+
+def _filter_exempt_label(dialog: object, show: object, episode: object) -> str:
+    """What the per-episode Episode Filter item says, either way round.
+
+    Both directions named rather than one label that toggles silently: "Always
+    Keep This Episode" and "Apply the Filter to This Episode" are different
+    instructions, and a menu that said the wrong one would be worse than no
+    item at all.
+    """
+    from quill.core.podcasts.episode_filter_maintenance import is_exempt
+
+    library = getattr(dialog, "_library", None)
+    exempt = library is not None and is_exempt(library, show, episode)
+    return (
+        "Apply the Episode Filter to This &Episode"
+        if exempt
+        else "Always K&eep This Episode (Ignore the Filter)"
+    )
+
+
 def episode_actions(
     dialog: object, show: PodcastShow, episode: PodcastEpisode
 ) -> dict[str, ResolvedAction]:
@@ -186,6 +213,20 @@ def episode_actions(
             reason=dimmed_reason.not_downloaded("copy the path of"),
         ),
         action(
+            "toggle_filter_exempt",
+            _filter_exempt_label(dialog, show, episode),
+            lambda: dialog._on_toggle_filter_exempt(show, episode),
+            # Dimmed rather than hidden when the podcast has no filter: the
+            # verb is genuinely this row's, and an item that came and went
+            # would read as the feature itself coming and going.
+            enabled=_show_has_filter(dialog, show),
+            reason=(
+                "This podcast has no Episode Filter, so there is nothing for "
+                "an episode to be exempt from. Episode Filters, on the "
+                "podcast's own menu, is where one is written."
+            ),
+        ),
+        action(
             "file_to_inbox",
             "F&ile to Inbox Folder...",
             lambda: dialog._on_file_to_inbox_folder(show, episode),
@@ -274,6 +315,11 @@ def show_actions(dialog: object, show: PodcastShow) -> dict[str, ResolvedAction]
             "show_settings",
             "&Settings for This Podcast...",
             lambda: dialog._on_show_settings(show),
+        ),
+        action(
+            "episode_filters",
+            "Episode &Filters...",
+            lambda: dialog._on_episode_filters(show),
         ),
         action(
             "keep_episodes",

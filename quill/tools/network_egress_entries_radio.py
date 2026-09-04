@@ -14,6 +14,34 @@ call site is still doing what somebody once agreed it could.
 from __future__ import annotations
 
 RADIO_EGRESS: dict[str, str] = {
+    "core/radio/youtube_oauth.py::_token_request": (
+        "Connect YouTube Account (future.youtube_oauth, locked off in public "
+        "builds): the OAuth authorization-code and refresh-token exchanges "
+        "against Google's token endpoint. Reached only from an explicit Connect "
+        "YouTube Account / background token refresh after that explicit sign-in; "
+        "sends QUILL's bundled OAuth client id/secret plus the listener's own "
+        "PKCE verifier or refresh token, never a listener credential typed "
+        "anywhere. HTTPS-only over a verified TLS context with a bounded "
+        "timeout. Refused in Safe Mode via refuse_in_safe_mode."
+    ),
+    "core/radio/youtube_oauth.py::_revoke": (
+        "Best-effort session revoke at Google when the listener disconnects "
+        "their YouTube account, so Google's own 'connected apps' list reflects "
+        "it immediately. Reached only from the explicit Disconnect action; a "
+        "failure never blocks clearing the local session. HTTPS-only over a "
+        "verified TLS context with a bounded timeout."
+    ),
+    "core/radio/youtube_oauth_api.py::_authed_get": (
+        "The single egress site for the YouTube Data API v3 read-only calls "
+        "(subscriptions.list, playlists.list) behind Connect YouTube Account. "
+        "Sends only the listener's own bearer access token; returns the "
+        "channels/playlists the signed-in account already follows, which are "
+        "then added to the same ChannelStore the Takeout CSV import writes to. "
+        "Never resolves a video stream and never touches playback -- that stays "
+        "on the existing yt-dlp path below. Reached only after an explicit "
+        "Connect YouTube Account sign-in. HTTPS-only over a verified TLS "
+        "context with a bounded timeout. Refused in Safe Mode."
+    ),
     "core/radio/youtube.py::_default_resolver": (
         "Quill Radio's YouTube stations (#1268): asks yt-dlp for the audio stream "
         "URL behind a YouTube page the listener saved as a station, so the player "

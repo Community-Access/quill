@@ -264,6 +264,121 @@ SHOW_HELP: dict[str, str] = {
 }
 
 
+#: Episode Filters, on the per-podcast filter editor and its rule editor.
+#: A third table rather than more ``SHOW_HELP`` keys because these controls
+#: answer a different question: not "what value should this setting have"
+#: but "what will this rule *do to my episodes*" -- and the misreading each
+#: one prevents is always the same one, that filtering deletes something.
+FILTER_HELP: dict[str, str] = {
+    "enabled": (
+        "Whether this podcast's rules decide what happens to its new episodes. "
+        "With it off nothing is filtered, but Preview still runs -- so you can "
+        "see what a rule would do before it does anything."
+    ),
+    "mode": (
+        "Whether the rules say what to leave out or what to let in. Keep only "
+        "matching episodes is the sharp one: anything no rule matches stops "
+        "arriving in the Inbox, though it is never deleted and stays in this "
+        "podcast's episode list."
+    ),
+    "rules": (
+        "Your rules for this podcast, each with its own on and off. Rules are "
+        "combined with or -- an episode need match only one of them -- and a "
+        "rule that is switched off or has nothing to match never counts."
+    ),
+    "scopes": (
+        "Which parts of QUILL Cast honour this filter. Tick as few or as many "
+        "as you like: keeping an episode out of the Inbox does not hide it "
+        "from the podcast's episode list unless you say so. Nothing here "
+        "deletes anything, and anything hidden is still listed under Filtered "
+        "out in the episode list's own filter."
+    ),
+    "exempt": (
+        "Exempt this one episode from its podcast's filter, everywhere the "
+        "filter applies -- or put it back under the rules. It changes this "
+        "episode only, never the rules themselves, and an exemption is not "
+        "undone by editing them afterwards."
+    ),
+    "filtered_out_view": (
+        "Choose Filtered out in the episode list's filter to see exactly what "
+        "this podcast's rules are holding back. They were never deleted and "
+        "nothing about them changed -- every episode action still works on "
+        "them from there."
+    ),
+    "add_rule": (
+        "Write a new rule for this podcast. It changes nothing until you save, "
+        "and even then it only decides where future episodes go, not what "
+        "happens to the ones you already have."
+    ),
+    "edit_rule": (
+        "Change the highlighted rule. Nothing is applied until you save the "
+        "filter, and no episode is deleted at any point."
+    ),
+    "delete_rule": (
+        "Remove the highlighted rule from this podcast. It deletes the rule, "
+        "never an episode -- and episodes it filtered out before stay out "
+        "until you queue them yourself."
+    ),
+    "toggle_rule": (
+        "Switch the highlighted rule on or off without deleting it. A rule "
+        "that is off is not applied and does not count toward the filter "
+        "doing anything at all."
+    ),
+    "preview": (
+        "Try these rules against the 50 newest episodes already stored, and "
+        "report what each one would be. It is a dry run: nothing is filtered, "
+        "queued, removed or downloaded, and it works even while the filter "
+        "itself is switched off."
+    ),
+    "preview_results": (
+        "What each of the 50 newest stored episodes would be under the rules "
+        "as they stand -- filtered or kept, said first. It reports; it has not "
+        "changed anything."
+    ),
+    "needs_review": (
+        "A refresh found these rules rejecting every single new episode. "
+        "Nothing was lost -- the episodes are in this podcast's list -- but "
+        "the rules may not mean what you intended. Reviewing and saving "
+        "clears this notice."
+    ),
+    "rule_name": (
+        "Your own name for this rule, so a list of them can be told apart. It "
+        "is a label only -- it is never matched against an episode title."
+    ),
+    "rule_enabled": (
+        "Whether this rule is applied. Switching it off leaves the rule "
+        "written down but out of force; it does not delete it and does not "
+        "bring back episodes it filtered before."
+    ),
+    "rule_kind": (
+        "How the title is matched: wildcards, where star means any text and "
+        "question mark means one character, or a full regular expression. "
+        "Choose no title rule to match on duration alone rather than on words."
+    ),
+    "rule_pattern": (
+        "The title pattern this rule looks for. It has to describe the whole "
+        "title, not just part of it -- put a star at each end to mean "
+        "'contains'. Show notes and descriptions are never searched."
+    ),
+    "rule_case": (
+        "Whether capital letters have to match too. Off by default, because "
+        "publishers change their own capitalisation and a rule that stops "
+        "working for that reason gives no sign it has stopped."
+    ),
+    "rule_duration": (
+        "Only match episodes at least this long, in minutes; 0 asks nothing "
+        "about length. An episode whose feed does not say how long it is never "
+        "matches a duration rule -- a missing length is not a short episode."
+    ),
+    "apply_existing": (
+        "Also apply this filter once to episodes already in your Inbox or Play "
+        "Queue for this podcast. It removes them from those two places only: "
+        "nothing is deleted, played state and downloads are untouched, and the "
+        "episode playing right now keeps its place in the queue."
+    ),
+}
+
+
 def describe(key: str, *, per_show: bool = False) -> str:
     """The help text for *key*, or an empty string if there is none.
 
@@ -274,4 +389,4 @@ def describe(key: str, *, per_show: bool = False) -> str:
     return table.get(key, "")
 
 
-__all__ = ["HELP", "SHOW_HELP", "describe"]
+__all__ = ["FILTER_HELP", "HELP", "SHOW_HELP", "describe"]

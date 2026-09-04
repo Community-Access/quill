@@ -43,7 +43,30 @@ from quill.ui.podcasts.player_controller import PodcastPlayerController
 from quill.ui.podcasts.winamp_mixin import CastWinampKeysMixin
 
 _FOLDER_ROOT_LABEL = "All Podcasts"
-_SPEED_CHOICES = ("0.75x", "1.0x", "1.25x", "1.5x", "1.75x", "2.0x")
+#: The speeds the manager offers. The model has always permitted 0.5x-5.0x
+#: (`models_settings.SPEED_MIN`/`SPEED_MAX`) and both engines hold pitch across
+#: it; the dropdown was the only thing stopping at 2x. Matches the range QUILL
+#: Audio Studio and podHarvest offer.
+#:
+#: Held as numbers with the labels derived, not the other way round. Deriving a
+#: label from a saved speed and looking that string up is how a show saved at
+#: 2.0 came to display as 1.0x: ``f"{2.0:g}x"`` is ``"2x"``, which was not in a
+#: list spelled ``"2.0x"``, so the lookup missed and fell back to normal speed
+#: while the episode carried on playing at 2x.
+_SPEED_VALUES: tuple[float, ...] = (0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0)
+_SPEED_CHOICES = tuple(f"{value:g}x" for value in _SPEED_VALUES)
+
+
+def _nearest_speed_index(speed: float) -> int:
+    """The offered speed closest to *speed*, by value rather than by name.
+
+    A show can carry any speed the model allows, including one typed in before
+    this list existed. Snapping to the nearest offered speed keeps the control
+    honest about roughly what is playing; an exact match is exact.
+    """
+    return min(range(len(_SPEED_VALUES)), key=lambda i: abs(_SPEED_VALUES[i] - float(speed)))
+
+
 _EPISODE_SORT_LABELS = (
     "Newest first",
     "Oldest first",
@@ -282,7 +305,7 @@ class PodcastManagerDialog(
         speed_label = wx.StaticText(self.dialog, label="S&peed:")
         self._speed_choice = wx.Choice(self.dialog, choices=list(_SPEED_CHOICES))
         self._speed_choice.SetName("Playback speed for this podcast")
-        self._speed_choice.SetSelection(_SPEED_CHOICES.index("1.0x"))
+        self._speed_choice.SetSelection(_SPEED_VALUES.index(1.0))
         self._now_playing = wx.StaticText(self.dialog, label="Nothing playing.")
         self._now_playing.SetName("Now playing")
         player_row.Add(self._play_pause_btn, 0, wx.RIGHT, 6)
@@ -562,19 +585,16 @@ class PodcastManagerDialog(
 
     def _sync_speed_choice(self) -> None:
         if self._current_show is None:
-            self._speed_choice.SetSelection(_SPEED_CHOICES.index("1.0x"))
+            self._speed_choice.SetSelection(_SPEED_VALUES.index(1.0))
             return
         speed = self._library.effective_settings(self._current_show).speed
-        label = f"{speed:g}x"
-        if label not in _SPEED_CHOICES:
-            label = "1.0x"
-        self._speed_choice.SetSelection(_SPEED_CHOICES.index(label))
+        self._speed_choice.SetSelection(_nearest_speed_index(speed))
 
     def _on_speed_choice(self, _event: object) -> None:
         show = self._current_show
         if show is None:
             return
-        speed = float(self._speed_choice.GetStringSelection().rstrip("x"))
+        speed = _SPEED_VALUES[self._speed_choice.GetSelection()]
         self._library.apply_show_override(show, speed=speed)
         self._on_library_changed()
         if self._controller.state.show_id == show.id:

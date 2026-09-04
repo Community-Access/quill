@@ -7,3 +7,12 @@
 # the whole point of a byte-identical fixture. -text disables any EOL
 # conversion so every checkout gets the exact bytes that were committed.
 tests/corpus/** -text
+
+# The vendored shared tag/chapter model is byte-identical with podHarvest's
+# copy (podharvest/audio_tags_core.py), and a SHA-256 drift test in each repo
+# checks that. Line-ending conversion would break it: podHarvest pins its
+# tree to LF while this repo leaves .py to each checkout's core.autocrlf, so
+# the same committed file would hash differently on the two sides. -text
+# disables every EOL conversion, exactly as it does for tests/corpus/ above.
+quill/core/speech/audio_tags_core.py -text
+quill/core/speech/audio_tags_core.sha256 -text

@@ -29665,6 +29665,34 @@ stays contiguous.</p></li>
 <li><p><strong>Merge into previous</strong>, <strong>Rename</strong>
 (type and press Enter), and <strong>Restore original</strong> (one press
 undoes every edit) round out the surgery.</p></li>
+<li><p><strong>Add chapter…</strong>, <strong>Delete chapter</strong>,
+<strong>Edit chapter…</strong> and <strong>Preview chapter</strong> are
+the plain verbs. Add puts a marker at the playhead or at a time you type
+and asks what to call it; past the end of the last chapter it appends
+one instead of refusing. Delete removes a marker only — the audio joins
+its neighbour, and unlike Merge it works on the first and last chapters
+too. Edit opens a small window for the title and the exact start and end
+(and a chapter link and image, if you publish with Podcasting 2.0).
+Preview plays just that chapter and stops at its end instead of running
+on.</p></li>
+<li><p><strong>Nudge a boundary until it sounds right.</strong>
+<strong>Nudge back</strong> and <strong>Nudge forward</strong> move the
+selected chapter’s start by one step; from the chapter list,
+<strong>Alt+Left</strong> and <strong>Alt+Right</strong> do the same,
+and adding <strong>Shift</strong> moves ten steps at once. The
+<strong>Step</strong> box offers 100 milliseconds up to 10 seconds and
+remembers what you picked for next time
+(<code>audio_studio_chapter_nudge_ms</code>, half a second to start
+with). <strong>Hear boundary</strong> plays three seconds before the
+marker and two after it, then stops — the fastest way to tell whether a
+boundary lands mid-sentence. Tick <strong>Hear after each nudge</strong>
+and that audition happens automatically after every press; it is off by
+default, because audio on every keypress is something to ask for rather
+than discover. Each nudge speaks only the new time (“0:00:09.500”),
+because a full sentence repeated at key-repeat speed is unusable; the
+whole sentence follows about half a second after you stop. Run a marker
+into its neighbour and it stops there and says “Cannot move further”
+once, rather than refusing on every press.</p></li>
 <li><p><strong>Propose chapters from silences…</strong> scans the
 recording with ffmpeg’s <code>silencedetect</code>, with a small dialog
 asking for the <strong>noise threshold</strong> (dB, default -30) and
@@ -29714,12 +29742,29 @@ into the data folder’s <code>engine-packs\mpv</code> directory or point
 <code>QUILL_LIBMPV</code> at one. If the DLL is missing or broken, QUILL
 quietly stays on the built-in engine.</p></li>
 <li><p><strong>Book details</strong> (title, author, narrator, genre,
-year) are edited right in the dialog.</p></li>
+year) are edited right in the dialog. <strong>All tags…</strong> opens
+the full <strong>Tag Editor</strong> for everything else: twenty-six
+fields over five pages — main, details, publishing, sort order and cover
+art — including track and disc numbers, composer, publisher, copyright,
+BPM, ISRC, language, grouping, the compilation flag, the four sort-order
+fields, and embedded cover art you can load, save out or remove.
+Control+Tab moves between pages. The five quick fields and the editor
+stay in step in both directions, so neither is ever showing something
+the other has forgotten. You can also open the Tag Editor on its own,
+without the Workbench: tick <strong>Edit the tags only</strong> on the
+Studio wizard’s <em>Open a book</em> page.</p></li>
+<li><p><strong>The same editor is in podHarvest.</strong> QUILL and
+podHarvest share the tag and chapter code byte for byte, so a file
+edited in one reads back exactly as it was left in the other — same
+fields, same operations, same keys. If you use both, you only learn this
+once.</p></li>
 <li><p><strong>Save</strong> writes an MP3’s edits <strong>in
 place</strong> — only the tags are rewritten; the audio is untouched. An
-M4B is saved with <strong>Save As</strong> instead: a lossless re-mux
-(no re-encode, no quality loss) into a new file. Long saves run in the
-background so QUILL stays responsive.</p></li>
+M4B follows what you actually changed: tag edits alone also save in
+place and finish instantly, while a chapter change still needs
+<strong>Save As</strong>, which is a lossless re-mux (no re-encode, no
+quality loss) into a new file. Long saves run in the background so QUILL
+stays responsive.</p></li>
 <li><p><strong>Publish…</strong> opens three ways to get the finished
 book out into the world, each an explicit action:</p>
 <ul>

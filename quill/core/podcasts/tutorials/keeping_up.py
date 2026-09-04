@@ -411,4 +411,130 @@ TUTORIALS: tuple[Tutorial, ...] = (
             "keeps answering itself."
         ),
     ),
+    Tutorial(
+        slug="episode-filters",
+        title="Stop the parts of a podcast you did not want",
+        track="keeping-up",
+        minutes=8,
+        surfaces=("Podcasts",),
+        summary=(
+            "Rules, per podcast, that decide which of its episodes reach you at "
+            "all -- and eight separate places you can choose to mean them."
+        ),
+        steps=(
+            Step(
+                title="Find the podcast that publishes two things",
+                body=(
+                    "Most libraries have one: a show you follow that also runs a "
+                    "daily two-minute segment, or trailers for its sister show, or "
+                    "a members-only strand mixed into the public feed. Every one "
+                    "of those arrives and has to be dismissed by hand."
+                ),
+                keys=("Down arrow",),
+                hear="The podcast, and its unheard count.",
+            ),
+            Step(
+                title="Open its Episode Filters",
+                body=(
+                    "Episode Filters is on the podcast's context menu, and on a "
+                    "button in Settings for This Podcast. The window opens saying "
+                    "the one thing worth knowing before you start: a filtered "
+                    "episode is never deleted."
+                ),
+                keys=("Shift+F10",),
+                hear="The podcast named, then that nothing is deleted.",
+            ),
+            Step(
+                title="Write a rule",
+                body=(
+                    "Add Rule takes your own name for it, a title pattern and an "
+                    "optional minimum length. Wildcards are the everyday choice: a "
+                    "star is any run of text, a question mark is one character, "
+                    "and every other punctuation mark means itself -- so Q+A* "
+                    "finds the segment actually called Q+A."
+                ),
+                hear="The rule read back: its name, then enabled, then what it matches.",
+                note=(
+                    "A pattern has to describe the whole title, so put a star at "
+                    "each end to mean contains. An episode whose feed does not say "
+                    "how long it is never matches a length rule, because a missing "
+                    "length is not a short episode."
+                ),
+            ),
+            Step(
+                title="Preview before anything happens",
+                body=(
+                    "Preview tries the rules against the 50 newest episodes you "
+                    "already have and reports what each would be -- the decision "
+                    "first, then the title and the length. It changes nothing, and "
+                    "it works even while the filter itself is switched off."
+                ),
+                hear="How many of the 50 would be filtered, and how many kept.",
+            ),
+            Step(
+                title="Choose where it applies",
+                body=(
+                    "Where this applies is eight independent tick boxes: the "
+                    "Inbox, Auto-Queue, automatic downloads, the announcement, "
+                    "this podcast's episode list, New Episodes and Continue "
+                    "Listening, smart playlists, and Search Everywhere."
+                ),
+                hear="Each row with its ticked state as you arrow past it.",
+                note=(
+                    "A new filter starts with the first four ticked and the last "
+                    "four clear. The first four decline to route an episode, which "
+                    "is invisible and reversible; the last four hide it, which "
+                    "changes what you can find."
+                ),
+            ),
+            Step(
+                title="Save it, and answer the two questions",
+                body=(
+                    "Saving refuses a filter that could not mean anything -- on "
+                    "with no rule on, a pattern that cannot be read, nowhere to "
+                    "apply. It asks about a hiding place, and about the Play "
+                    "Queue, which is the one list you built by hand."
+                ),
+                check="filter-saved",
+                hear="The filter saved, what it does, and where it applies.",
+            ),
+            Step(
+                title="See what it caught",
+                body=(
+                    "Choose Filtered out in the episode list's own filter. It "
+                    "shows exactly what this podcast's rules are holding back, "
+                    "and every episode action still works from there -- play it, "
+                    "queue it, download it."
+                ),
+                hear="Only the episodes the rules caught.",
+            ),
+            Step(
+                title="Rescue the one it was wrong about",
+                body=(
+                    "Always Keep This Episode, on any episode's menu, exempts that "
+                    "one episode everywhere the filter applies. It is not undone "
+                    "by editing the rules afterwards, because it records that you "
+                    "looked at this one and wanted it."
+                ),
+                hear="The episode named, and that it is exempt.",
+            ),
+            Step(
+                title="Know what happens if you get it wrong",
+                body=(
+                    "If a keep-only filter rejects every single new episode of one "
+                    "refresh, Cast says so and remembers it, so a background check "
+                    "that ran while you were away still has a notice waiting. "
+                    "Reviewing the rules and saving clears it."
+                ),
+                hear="A warning naming the podcast, and that nothing was lost.",
+            ),
+        ),
+        closing=(
+            "One rule set, and up to eight places to mean it. Nothing it does is "
+            "permanent: untick a place and those episodes are back on the next "
+            "redraw, because the filter is asked every time a list is drawn "
+            "rather than stamped onto an episode when it arrived."
+        ),
+        then=("how-settings-resolve",),
+    ),
 )

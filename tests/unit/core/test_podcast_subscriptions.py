@@ -87,14 +87,36 @@ def test_effective_settings_prefers_show_override() -> None:
     assert library.effective_settings(show_without_override).speed == 1.0
 
 
-def test_apply_show_override_creates_an_override_from_the_global_default() -> None:
+def test_apply_show_override_sets_the_field_and_leaves_the_rest_inherited() -> None:
+    """The field named is this show's own; nothing else becomes its opinion.
+
+    Asserted through ``effective_settings`` rather than through
+    ``show.settings``, because the storage changed and the behaviour is the
+    point: an override is now a **sparse** map of the settings this show
+    actually has an opinion about (``settings_resolver``), not a copy of the
+    whole record.
+    """
     library = PodcastLibrary(settings=PodcastSettings(speed=1.0, episode_sort_mode="date_newest"))
     show = PodcastShow(id="s1", title="S")
     library.apply_show_override(show, episode_sort_mode="date_oldest")
-    assert show.settings is not None
-    assert show.settings.episode_sort_mode == "date_oldest"
-    # Every other field carried over from the global default, not reset.
-    assert show.settings.speed == 1.0
+    assert library.effective_settings(show).episode_sort_mode == "date_oldest"
+    assert library.effective_settings(show).speed == 1.0
+
+
+def test_apply_show_override_leaves_unnamed_fields_following_the_default() -> None:
+    """The half the old whole-record copy got wrong, now checkable.
+
+    Cloning the effective record froze *every* setting at whatever the shared
+    default happened to be that day, so changing a default afterwards stopped
+    reaching this show. Only the field named is its own opinion now, which is
+    the difference between "I have no opinion" and "I want exactly this".
+    """
+    library = PodcastLibrary(settings=PodcastSettings(speed=1.0))
+    show = PodcastShow(id="s1", title="S")
+    library.apply_show_override(show, episode_sort_mode="date_oldest")
+    library.settings.speed = 1.75
+    assert library.effective_settings(show).speed == 1.75
+    assert library.effective_settings(show).episode_sort_mode == "date_oldest"
 
 
 def test_apply_show_override_preserves_an_existing_override_field() -> None:
@@ -104,9 +126,9 @@ def test_apply_show_override_preserves_an_existing_override_field() -> None:
     library = PodcastLibrary(settings=PodcastSettings())
     show = PodcastShow(id="s1", title="S", settings=PodcastSettings(speed=2.0))
     library.apply_show_override(show, episode_sort_mode="date_oldest")
-    assert show.settings is not None
-    assert show.settings.speed == 2.0
-    assert show.settings.episode_sort_mode == "date_oldest"
+    resolved = library.effective_settings(show)
+    assert resolved.speed == 2.0
+    assert resolved.episode_sort_mode == "date_oldest"
 
 
 def test_merge_episodes_adds_new_and_updates_existing_metadata() -> None:

@@ -18,6 +18,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastFolder, PodcastShow
+from quill.core.podcasts.models_filters import SCOPE_INBOX
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
 
 
@@ -179,15 +180,28 @@ def forget_remembered_folder(show: PodcastShow) -> None:
 def inbox_pairs(library: PodcastLibrary) -> list[tuple[PodcastShow, PodcastEpisode]]:
     """Every episode currently in the Inbox: unplayed episodes of shows
     marked Route to Inbox, minus anything an Inbox cap has trimmed out
-    (which stays unplayed in its show's own list -- see :func:`trim_inbox`)."""
+    (which stays unplayed in its show's own list -- see :func:`trim_inbox`),
+    minus anything that show's own Episode Filter rejects while its Inbox
+    scope is on (which likewise stays exactly where it was)."""
+    # Episode Filters (see core/podcasts/episode_filter_maintenance.py) are
+    # asked here rather than stamped onto an episode when it arrived, which is
+    # what lets somebody untick the Inbox scope and have the episodes back on
+    # the next redraw. Imported inside the function because that module reads
+    # this one; and asked once per show, so a library of shows without filters
+    # -- almost all of them -- pays a single dict lookup each.
+    from quill.core.podcasts.episode_filter_maintenance import hide_predicate
+
     pairs: list[tuple[PodcastShow, PodcastEpisode]] = []
     for show in library.shows:
         if not in_inbox(library, show):
             continue
+        hidden = hide_predicate(library, show, SCOPE_INBOX)
         for episode in show.episodes:
             if episode.played:
                 continue
             if library.inbox_assignments.get(inbox_key(show.id, episode.guid)) == TRIMMED_MARKER:
+                continue
+            if hidden is not None and hidden(episode):
                 continue
             pairs.append((show, episode))
     return pairs

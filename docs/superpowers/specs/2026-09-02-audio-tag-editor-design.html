@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>2026-09-02-audio-tag-editor-design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1 id="full-audio-tag-editor-and-complete-chapter-editing--design">Full
+audio tag editor and complete chapter editing — design</h1>
+<p>Date: 2026-09-02 Status: approved (design), not yet implemented Area:
+QUILL Audio Studio — Chapter Workbench</p>
+<h2 id="problem">Problem</h2>
+<p>The Chapter Workbench
+(<code>quill/ui/audio_studio/chapter_workbench.py</code>) opens a
+finished MP3 or M4B, plays it chapter-aware, and can rename, split,
+retime, merge and restore chapters, plus import and export chapter lists
+in five formats. What it cannot do:</p>
+<ul>
+<li><strong>Tags.</strong> It edits seven fields only — the
+<code>AudioMetadata</code> dataclass in
+<code>quill/core/speech/ffmpeg.py</code> (title, artist, album, album
+artist, genre, year, comment) — and the dialog exposes five of them.
+There is no track, disc, composer, publisher, copyright, BPM, ISRC,
+lyrics, language, grouping, compilation flag, sort-order field, or cover
+art.</li>
+<li><strong>Chapters.</strong> There is no explicit <em>add</em>, no
+<em>delete</em>, no way to type an exact start <strong>and</strong> end,
+and no preview that stops at the chapter's end.
+<code>split_chapter</code>, <code>merge_chapter</code> and
+<code>set_chapter_start</code> approximate three of those with different
+semantics and different wording.</li>
+</ul>
+<p>The goal is a full MP3 tag editor and complete chapter editing — add,
+remove, preview, alter — reachable both from the Workbench and
+standalone.</p>
+<h2 id="scope-decisions">Scope decisions</h2>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Choice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tag depth</td>
+<td>Curated named fields plus cover art. No raw-frame grid, no arbitrary
+TXXX editor.</td>
+</tr>
+<tr>
+<td>Placement</td>
+<td>A new dialog opened from the Workbench and standalone from the
+Studio wizard.</td>
+</tr>
+<tr>
+<td>Chapter operations</td>
+<td>Add, delete, edit start/end/title/extras, preview-to-end.</td>
+</tr>
+<tr>
+<td>Formats</td>
+<td>MP3 in full; M4A/M4B best-effort via MP4 atoms. Not
+FLAC/OGG/WAV.</td>
+</tr>
+<tr>
+<td>M4B tag writes</td>
+<td>In place with mutagen. The ffmpeg re-mux stays reserved for chapter
+changes.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture">Architecture</h2>
+<p>Three new modules and three extended ones. Everything with logic is
+wx-free and strict-typed; the UI modules gain surfaces and wiring
+only.</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>State</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quill/core/speech/audio_tags.py</code></td>
+<td>new</td>
+<td>field table, <code>AudioTags</code>, read/write, cover art</td>
+</tr>
+<tr>
+<td><code>quill/core/speech/chapters.py</code></td>
+<td>grow</td>
+<td><code>add_chapter</code>, <code>delete_chapter</code>,
+<code>set_chapter_bounds</code></td>
+</tr>
+<tr>
+<td><code>quill/ui/audio_studio/tag_editor.py</code></td>
+<td>new</td>
+<td><code>TagEditorDialog</code> — notebook, one panel class per
+page</td>
+</tr>
+<tr>
+<td><code>quill/ui/audio_studio/chapter_workbench_edits.py</code></td>
+<td>new</td>
+<td>the new chapter handlers, as a mixin</td>
+</tr>
+<tr>
+<td><code>quill/ui/audio_studio/chapter_workbench.py</code></td>
+<td>grow</td>
+<td>one table-driven button row</td>
+</tr>
+<tr>
+<td><code>quill/ui/audio_studio/pages_audio.py</code></td>
+<td>grow</td>
+<td>the standalone "Edit tags only..." route</td>
+</tr>
+<tr>
+<td><code>quill/core/settings.py</code></td>
+<td>grow</td>
+<td><code>audio_studio_chapter_nudge_ms</code>, the remembered nudge
+step</td>
+</tr>
+</tbody>
+</table>
+<h3
+id="quillcorespeechaudio_tagspy"><code>quill/core/speech/audio_tags.py</code></h3>
+<p><code>TagField</code> is the single source of truth for one tag, so
+the dialog, the readers, the writers and the tests all agree:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>, slots<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TagField:</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    key: <span class="bu">str</span>      <span class="co"># &quot;album_artist&quot;</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    label: <span class="bu">str</span>    <span class="co"># &quot;Album &amp;artist:&quot; — mnemonic included</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    group: <span class="bu">str</span>    <span class="co"># &quot;main&quot; | &quot;details&quot; | &quot;publishing&quot; | &quot;sort&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    kind: <span class="bu">str</span>     <span class="co"># &quot;text&quot; | &quot;number&quot; | &quot;pair&quot; | &quot;multiline&quot; | &quot;bool&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    id3: <span class="bu">str</span>      <span class="co"># &quot;TPE2&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    mp4: <span class="bu">str</span>      <span class="co"># &quot;aART&quot;, or &quot;----:com.apple.iTunes:PUBLISHER&quot;, or &quot;&quot; for none</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">help</span>: <span class="bu">str</span>     <span class="co"># the sentence F1 reads out</span></span></code></pre></div>
+<p><code>TAG_FIELDS</code> holds 26 entries in four groups:</p>
+<ul>
+<li><strong>main</strong> — title (<code>TIT2</code>/<code>©nam</code>),
+subtitle (<code>TIT3</code>/freeform SUBTITLE), artist
+(<code>TPE1</code>/<code>©ART</code>), album
+(<code>TALB</code>/<code>©alb</code>), album artist
+(<code>TPE2</code>/<code>aART</code>), track number and track total
+(<code>TRCK</code> as <code>n/m</code>, <code>trkn</code>), disc number
+and disc total (<code>TPOS</code> as <code>n/m</code>,
+<code>disk</code>), genre (<code>TCON</code>/<code>©gen</code>), year
+(<code>TDRC</code>/<code>©day</code>).</li>
+<li><strong>details</strong> — original release date
+(<code>TDOR</code>/freeform ORIGINALDATE), comment
+(<code>COMM</code>/<code>©cmt</code>), lyrics
+(<code>USLT</code>/<code>©lyr</code>, multiline), grouping
+(<code>TIT1</code>/<code>©grp</code>), language
+(<code>TLAN</code>/freeform LANGUAGE), BPM
+(<code>TBPM</code>/<code>tmpo</code>), part of a compilation
+(<code>TCMP</code>/<code>cpil</code>, boolean).</li>
+<li><strong>publishing</strong> — composer
+(<code>TCOM</code>/<code>©wrt</code>), conductor
+(<code>TPE3</code>/freeform CONDUCTOR), publisher
+(<code>TPUB</code>/freeform PUBLISHER), copyright
+(<code>TCOP</code>/<code>cprt</code>), encoded by
+(<code>TENC</code>/freeform ENCODEDBY), ISRC (<code>TSRC</code>/freeform
+ISRC).</li>
+<li><strong>sort</strong> — sort title
+(<code>TSOT</code>/<code>sonm</code>), sort artist
+(<code>TSOP</code>/<code>soar</code>), sort album
+(<code>TSOA</code>/<code>soal</code>), sort album artist
+(<code>TSO2</code>/<code>soaa</code>).</li>
+</ul>
+<p><code>AudioTags</code> holds <code>values: dict[str, str]</code>
+keyed by <code>TagField.key</code>, plus
+<code>cover: CoverArt | None</code>. Empty string means "not present";
+writing an empty value deletes the frame. Helpers: <code>get</code>,
+<code>set</code>, <code>copy</code>.</p>
+<p><code>CoverArt</code> holds <code>data: bytes</code>,
+<code>mime: str</code>, <code>description: str</code>, and
+<code>picture_type: int</code> (3 = front cover). Only
+<code>image/jpeg</code> and <code>image/png</code> are accepted;
+<code>load_cover(path)</code> sniffs the real bytes rather than trusting
+the extension and rejects anything over 8 MB with a speakable
+message.</p>
+<p><code>read_tags(path)</code> and <code>write_tags(path, tags)</code>
+dispatch on suffix: <code>.mp3</code> through
+<code>mutagen.id3.ID3</code>,
+<code>.m4a</code>/<code>.m4b</code>/<code>.mp4</code> through
+<code>mutagen.mp4.MP4</code>. Both load the existing tag block and
+change only the frames the table names, so CHAP/CTOC chapter frames —
+and any frame this editor does not model — survive untouched. Fields
+whose <code>mp4</code> is empty are skipped on MP4 files rather than
+guessed at.</p>
+<p><strong>ID3 version.</strong> <code>save_mp3_book</code> currently
+saves <code>v2_version=3</code>. ID3v2.3 has no home for
+<code>TDRC</code>, <code>TDOR</code>, <code>TSOT</code>,
+<code>TSOP</code>, <code>TSOA</code> or <code>TSO2</code>; mutagen's
+<code>update_to_v23()</code> converts two of those and drops the rest,
+and a tag editor that silently discards every sort field is not a full
+tag editor. So <code>preferred_id3_version(tags) -&gt; int</code>
+returns 3 when no v2.4-only field is set and 4 once one is. Files stay
+maximally compatible until the user asks for something only v2.4 can
+hold. <code>write_mp3_chapters</code> takes the version as a keyword
+argument so one save cannot write the tag block at v2.3 and the chapter
+block at v2.4.</p>
+<p><strong>Bridge.</strong> <code>to_audio_metadata(tags)</code> and
+<code>merge_audio_metadata(tags, meta)</code> convert to and from the
+existing <code>AudioMetadata</code>, so <code>BookFile</code>, the M4B
+re-mux and the batch document-to-speech pipeline are unchanged.</p>
+<p><strong>Errors.</strong> <code>TagReadError</code>
+(<code>QUILL-SPEECH-TAG-READ</code>) and <code>TagWriteError</code>
+(<code>QUILL-SPEECH-TAG-WRITE</code>), both <code>CodedError</code>
+subclasses per GATE-EC, both carrying speakable messages.</p>
+<h3 id="chapter-operations-in-chapterspy">Chapter operations in
+<code>chapters.py</code></h3>
+<p>Three pure functions beside the existing ones, each returning a
+renumbered list and raising <code>ChapterEditError</code> with a
+speakable message:</p>
+<ul>
+<li><code>add_chapter(chapters, at_ms, *, title, min_part_ms=1000)</code>
+inserts a boundary at <code>at_ms</code>. Inside a chapter it behaves as
+<code>split_chapter</code> does; at or past the last chapter's end it
+appends, which <code>split_chapter</code> refuses.</li>
+<li><code>delete_chapter(chapters, index)</code> removes that chapter's
+marker; the audio is never touched. Deleting chapter 0 pulls chapter 1's
+start back to 0; any other deletion extends the previous chapter over
+it. Unlike <code>merge_chapter</code> it is defined for the last
+chapter, and it says "deleted", not "merged".</li>
+<li><code>set_chapter_bounds(chapters, index, start_ms, end_ms, *, min_part_ms=500)</code>
+retimes both edges at once, adjusting the neighbours so the list stays
+contiguous and ordered.</li>
+</ul>
+<p><code>merge_chapter</code>, <code>split_chapter</code> and
+<code>set_chapter_start</code> keep their current behaviour and their
+Workbench buttons.</p>
+<h3 id="nudging-a-chapter-marker">Nudging a chapter marker</h3>
+<p>Setting a boundary by ear is the Workbench's whole reason to exist,
+and "play, stop, press Set start to playhead, listen again" is a clumsy
+way to move a marker half a second. So a fourth function:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nudge_chapter_start(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    chapters: <span class="bu">list</span>[Chapter], index: <span class="bu">int</span>, delta_ms: <span class="bu">int</span>, <span class="op">*</span>, min_part_ms: <span class="bu">int</span> <span class="op">=</span> <span class="dv">500</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">list</span>[Chapter], <span class="bu">int</span>]:</span></code></pre></div>
+<p>It returns the new list and the delta <strong>actually</strong>
+applied. This is the one place that clamps instead of raising: a nudge
+is a held key, and stopping at the wall is the behaviour a person
+expects when they run a marker up against its neighbour. A press that
+can move nothing at all returns a zero delta, and the UI says so once
+rather than every press.</p>
+<p>Because chapters are contiguous, a chapter's start <em>is</em> the
+previous chapter's end, so nudging the start is the only degree of
+freedom a boundary has — moving the start moves both sides of one
+boundary. Chapter 0's start is pinned at 0 and the last chapter's end is
+pinned at the file length; both are correctly immovable, and every other
+boundary is reachable by selecting the chapter that follows it.</p>
+<p><strong>Step size, configurable.</strong> A new
+<code>wx.Choice</code> beside the nudge buttons offers 100 ms, 250 ms,
+500 ms, 1 s, 2 s, 5 s and 10 s. The choice persists in a new setting,
+<code>audio_studio_chapter_nudge_ms</code> (default 500, clamped 10 to
+60000 through the existing <code>_clamp_int</code> path in
+<code>core/settings.py</code>), so the step a person picked is the step
+they get next time. <code>settings.py</code> grows by one field with its
+parse and constructor wiring — the accepted additive pattern — and the
+field needs a documentation entry or it fails GATE-SETDOC.</p>
+<p><strong>Keyboard.</strong> Buttons alone make a repeated nudge a
+chore, so the chapter list also answers Alt+Left and Alt+Right for one
+step, and Alt+Shift+Left and Alt+Shift+Right for ten steps at once.
+Neither chord is claimed by <code>wx.ListBox</code>. There is no menu
+bar on this dialog to advertise them, so the keys are named in the
+buttons' help text and in the list's own help, and the Workbench's
+<code>surface_help</code> entry mentions them.</p>
+<p><strong>Hearing the result.</strong> A
+<code>Hear &amp;boundary</code> button plays from three seconds before
+the marker to two seconds after it and then stops, so the edit can be
+judged without losing the playhead. A checkbox,
+<code>Hear the boundary after each nudge</code>, automates that; it
+defaults off, because auto-playing audio on every keypress is exactly
+the kind of thing that should be opted into rather than discovered.</p>
+<p><strong>Announcing without flooding.</strong> Each press announces
+the new start time alone, short form (<code>12:04.500</code>) — not a
+sentence, because a sentence repeated at key-repeat speed is unusable.
+The full sentence ("Chapter 3 starts 12:04.500, runs 4:12") is announced
+once when a run of nudges goes quiet for 600 ms. Hitting the wall
+announces "Cannot move further" once per run, not per press. This stays
+inside GATE-13: the marker time is a change on an unfocused control that
+the screen reader does not otherwise say.</p>
+<h3
+id="quilluiaudio_studiotag_editorpy"><code>quill/ui/audio_studio/tag_editor.py</code></h3>
+<p><code>TagEditorDialog(wx.Dialog)</code> is a <code>wx.Notebook</code>
+with five pages — Main, Details, Publishing, Sort order, Cover art. Each
+page is its own <code>wx.Panel</code> subclass built by iterating the
+<code>TAG_FIELDS</code> entries for its group, so adding a tag is a
+table edit rather than a UI edit.</p>
+<p>The dialog is pure: it takes an <code>AudioTags</code> and returns an
+edited copy through <code>result()</code>. It never writes a file. The
+caller does the write on the background runner, so the threading
+invariant holds.</p>
+<p>The cover art page shows a text description of the current art first
+— format, pixel dimensions, byte size, description — because that is
+what a screen reader can use, with a thumbnail beside it for sighted
+users, then Load..., Save as... and Remove buttons.</p>
+<h3 id="accessibility-and-z-order">Accessibility and z-order</h3>
+<p>This is a dense form, which is exactly where this codebase's
+accessibility gates earn their keep. The design commits to all of them
+up front rather than fixing them after the audit fails.</p>
+<p><strong>Z-order (A11Y-Z-ORDER,
+<code>check_dialog_zorder.py</code>).</strong> NVDA and JAWS associate a
+static label with the control that follows it in Windows child-window
+z-order, which in wxPython is creation order. The field builder
+therefore creates the <code>wx.StaticText</code> and only then
+constructs the control, in that order, inside the same loop iteration —
+it never accepts a pre-built control as a parameter, which is the
+anti-pattern the gate detects. Written as
+<code>_field_row(panel, grid, field)</code>, the label is created inside
+and the control is created inside; nothing is passed in.</p>
+<p><strong>Accessible names (GATE-A11Y-NAME,
+<code>accessible_name_audit.py</code>).</strong> macOS VoiceOver never
+picks up the neighbouring <code>StaticText</code>, so every control
+names itself inline at its construction site with
+<code>set_accessible_name</code>, using the field label with the
+mnemonic ampersand and trailing colon stripped. Every new site should
+land in the snapshot as <code>named</code>, not <code>modal-hook</code>,
+so the names are true on both platforms.</p>
+<p><strong>Access keys (GATE-14,
+<code>check_access_keys.py</code>).</strong> Twenty-six fields plus
+buttons cannot hold unique mnemonics in one namespace. The gate scopes a
+<code>wx.Dialog</code>/<code>wx.Frame</code> subclass as one window but
+any other class per method, so one panel class per page gives each page
+its own namespace — and that matches real Windows behaviour, since only
+the visible notebook page's controls are reachable. Mnemonics are
+declared in <code>TAG_FIELDS</code>, and a unit test asserts uniqueness
+within each page. OK, Cancel and Close carry no mnemonic, per the house
+rule.</p>
+<p><strong>F1 help (GATE-STUDIO-HELP).</strong> Every control calls
+<code>SetHelpText(field.help)</code> inline at its construction site,
+which is what <code>studio_help_audit.py</code> can verify. The
+sentences carry units and defaults in the Studio's style: the year field
+says what format it accepts, BPM says it is a whole number, the sort
+fields say they change filing order and not what is displayed. The
+dialog's own title gets an entry in
+<code>quill/core/audio_studio/surface_help.py</code> so F1 opens with
+what the window is for.</p>
+<p><strong>Dialog contract.</strong> The dialog is shown through
+<code>_show_modal_dialog</code>, never <code>ShowModal()</code>
+directly; <code>apply_modal_ids</code> sets the keyboard contract, and
+the Close button is bound through
+<code>dialog_contract.bind_close_button</code>. It joins the dialog
+inventory and the button-contract snapshots.</p>
+<p><strong>Announcements (GATE-13).</strong> The dialog announces only
+what the screen reader does not already say: the outcome of loading or
+removing cover art, the result of a chapter edit, and the outcome of a
+save. It never announces its own title, never announces on focus, and
+never re-reads a control the reader just read.</p>
+<p><strong>Keyboard.</strong> Notebook pages are reachable with Ctrl+Tab
+and Ctrl+Page Up/Down as wx provides. Tab order follows the visual and
+z-order sequence because they are constructed in that sequence. The
+chapter list keeps its existing <code>apply_listbox_activation</code>
+behaviour, so Enter on a chapter opens the edit dialog.</p>
+<h3 id="workbench-wiring">Workbench wiring</h3>
+<p><code>chapter_workbench.py</code> is at its GATE-11 ceiling of 945
+lines, so the new handlers live in
+<code>chapter_workbench_edits.py</code> as
+<code>ChapterEditsMixin</code>, which
+<code>ChapterWorkbenchDialog</code> inherits. The Workbench itself gains
+one table-driven button row — roughly 25 lines — and a
+<code>_rebaseline_2026_09_02_</code> entry in
+<code>module_size_budgets.json</code> recording why.</p>
+<p>New buttons: <code>&amp;Add chapter...</code> (at the playhead or a
+typed time, prompting for a title), <code>&amp;Delete chapter</code>,
+<code>&amp;Edit chapter...</code> (title, exact start, exact end, and
+the Podcasting 2.0 url and image the <code>Chapter</code> dataclass
+already carries), <code>Pre&amp;view chapter</code> (plays from the
+chapter start and stops at its end, using the player panel's existing
+tick timer rather than a second timer), and
+<code>All &amp;tags...</code>.</p>
+<p>A second row carries the nudge controls: Nudge back, Nudge forward,
+the step <code>wx.Choice</code>, Hear boundary, and the "Hear the
+boundary after each nudge" checkbox. All five are disabled when the
+selection is chapter 0, whose start is pinned at the beginning, with a
+tooltip saying why.</p>
+<p>The mnemonics above are deliberately not pinned in this spec. The
+Workbench is one window under GATE-14 and already claims roughly fifteen
+letters across its existing buttons and tag fields; these nine new
+controls must be assigned against the letters actually free at
+implementation time, and any control that cannot get a free letter ships
+with no mnemonic rather than a duplicate, per the house rule.
+<code>check_access_keys.py</code> is the arbiter.</p>
+<p>The five quick tag fields stay as the fast path. Opening the full
+editor seeds it from <code>read_tags(book.path)</code> overlaid with
+whatever is currently typed in those five; on OK the five are written
+back from the editor's result, so the two views never disagree.</p>
+<p>Saving an MP3: <code>save_mp3_book</code> writes the chapters and the
+core seven, then <code>write_tags</code> writes the full set — both are
+load-modify-save, so neither clobbers the other, and
+<code>preferred_id3_version</code> decides the version once for both.
+Saving an M4B splits on what actually changed: a tags-only edit calls
+<code>write_tags</code> in place and finishes instantly, while a chapter
+change still goes through <code>save_m4b_book_as</code> and then applies
+<code>write_tags</code> to the new file. The Save button, disabled today
+for an M4B because chapter atoms cannot be rewritten in place, becomes
+enabled when only tags are dirty.</p>
+<p><code>write_mp3_chapters</code> gains a keyword-only
+<code>v2_version: int = 3</code>, so today's callers and today's on-disk
+result are unchanged; only a save that carries a v2.4-only field passes
+4.</p>
+<h3 id="standalone-route">Standalone route</h3>
+<p>The Studio wizard's open-a-book page
+(<code>pages_audio.OpenBookPage</code>) gains an "Edit &amp;tags
+only..." button that opens <code>TagEditorDialog</code> on the chosen
+file without the Workbench. This satisfies GATE-REACH: the surface is
+reached from an app entry point, not only from inside another
+dialog.</p>
+<h3 id="shared-with-podharvest">Shared with podHarvest</h3>
+<p>Amended 2026-09-02. This feature is now built once and used by two
+repositories: QUILL and podHarvest (<code>S:\code\pod</code>). The
+contract is <code>ALIGNMENT-audio-tags-and-chapters.md</code>, beside
+this file and identical in both repos; it governs the vendored module,
+the chapter frame format, the shared keyboard and the accessibility
+synthesis, and it overrides anything here that disagrees with it.</p>
+<p>The consequences for this design: the tag table, the readers and
+writers and every chapter operation move into
+<code>audio_tags_core.py</code>, vendored byte- identical into both
+repos behind a drift gate; <code>audio_tags.py</code> shrinks to the
+adapter that cannot be shared (coded errors, the
+<code>AudioMetadata</code> bridge); chapter element ids change from
+<code>chp0000</code> to <code>ch0</code> to match what ffmpeg — and
+therefore podHarvest's installed libraries — already write; and
+<code>set_accessible_name</code> adopts podHarvest's stronger
+implementation, which attaches a real <code>wx.Accessible</code> rather
+than relying on <code>SetName</code> alone.</p>
+<h3 id="which-products-this-reaches">Which products this reaches</h3>
+<p><code>quill/apps/studio.py</code> — the standalone QUILL Audio Studio
+— vendors and drives the <strong>same</strong>
+<code>quill/ui/audio_studio</code> package QUILL itself uses. Every
+change above therefore lands in both products from one implementation.
+The standalone app needs two things the in-app build does not: menu
+routes, since its front door is a menu bar rather than a wizard (a
+Studio menu item and a library-tree context-menu entry, both with
+accelerators that clear the menu-accelerator gate), and a packaging
+fix.</p>
+<p>The packaging fix is not cosmetic.
+<code>standalone/studio/pyproject.toml</code> declares
+<code>quill[ui]</code>, and mutagen lives in the <code>mp3</code> extra
+— so the standalone Studio does not declare the library its whole MP3
+tag and chapter path already runs on. Worse, every mutagen import in
+this codebase is lazy and inside a function, which is exactly the shape
+PyInstaller's import tracer cannot follow;
+<code>quill-audio-studio.spec</code> already hand-collects PyNaCl and
+yt-dlp for that reason and does not collect mutagen. Both are fixed
+here, and the fix is verified against a <strong>built
+executable</strong>, because no unit test can prove it.</p>
+<p>QUILL Cast is deliberately out of scope. Its chapters
+(<code>quill/core/podcasts/chapter_edits.py</code>) are inferred marks
+carrying a confidence and a source, where an edit means "this is no
+longer a guess" — a different domain with different invariants. The
+Media Player and Quill Radio consume chapters but do not edit them.</p>
+<h2 id="error-handling">Error handling</h2>
+<ul>
+<li>A file whose tags cannot be read opens the editor with empty fields
+and announces why, rather than refusing — the user may be tagging a file
+that has no tag block yet.</li>
+<li>A write failure surfaces through the Workbench's existing
+<code>_error</code> path and leaves the file untouched; mutagen writes
+through a temporary file, so a failed save cannot truncate the
+original.</li>
+<li>A cover image that is not JPEG or PNG, or is over 8 MB, is rejected
+at load time with a message naming the limit.</li>
+<li>Chapter edits that would leave a sliver shorter than the minimum, or
+that fall outside the file, raise <code>ChapterEditError</code> and
+leave the list unchanged.</li>
+<li>mutagen is the <code>quill[mp3]</code> extra and is imported lazily,
+so these modules load without it and the failure is one clear
+sentence.</li>
+</ul>
+<h2 id="testing">Testing</h2>
+<ul>
+<li><code>tests/unit/core/speech/test_audio_tags.py</code> — every field
+round-trips through write-then-read on a generated silent MP3 (the
+existing <code>silent_mp3</code> fixture pattern) and on a generated
+MP4; an empty value deletes the frame; unmapped fields are skipped on
+MP4 without error; cover art add, replace, remove and save-out; a
+non-image file is rejected; <code>preferred_id3_version</code> returns 3
+for a plain tag set and 4 once a sort field is set; writing tags leaves
+existing CHAP/CTOC frames intact.</li>
+<li><code>tests/unit/core/speech/test_chapters.py</code> — add at the
+playhead, add past the end (append), add too close to a boundary; delete
+first, middle and last; delete the only chapter; set bounds valid,
+inverted, and overlapping a neighbour; nudge forward and back by a step,
+nudge clamped at each neighbour, nudge that can move nothing returning a
+zero delta, and nudge refused on chapter 0.</li>
+<li><code>tests/unit/core/test_settings.py</code> —
+<code>audio_studio_chapter_nudge_ms</code> round-trips, clamps
+out-of-range values, and falls back to 500 on garbage.</li>
+<li><code>tests/unit/ui/test_tag_editor_dialog.py</code> — the dialog
+builds; every <code>TAG_FIELDS</code> entry has a control; mnemonics are
+unique within each page; every control has help text and an inline
+accessible name; the label for each field is created before its control
+(z-order); values round-trip in and out.</li>
+<li>Regenerated gate snapshots: <code>module_size_budgets.json</code>,
+<code>surface_reachability.json</code>,
+<code>studio_help_inventory.json</code>,
+<code>accessible_name_inventory.json</code>, the dialog inventory, and
+<code>docs/f1-help-reference.md</code>.</li>
+<li>Whole-gate check:
+<code>python -m quill.tools.platform_report</code>.</li>
+</ul>
+<h2 id="out-of-scope">Out of scope</h2>
+<p>Raw arbitrary-frame editing, FLAC/OGG/WAV, batch tagging across a
+folder, online tag lookup (MusicBrainz and friends), chapter-level
+embedded images in CHAP sub-frames, and any change to the batch
+document-to-speech pipeline.</p>
+<p>Snapping a nudged marker to the nearest detected silence is the
+obvious next step — <code>quill/core/speech/silence.py</code> already
+finds them for the propose-from- silences button — but it is a separate
+feature with its own tuning, and it is not in this one.</p>
+</body>
+</html>

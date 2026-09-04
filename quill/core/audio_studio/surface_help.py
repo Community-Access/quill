@@ -42,6 +42,22 @@ from quill.core.control_help import (
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    "Tag Editor": (
+        "Every tag this audio file can carry, over five pages: the main "
+        "fields, the details, publishing credits, sort-order fields, and the "
+        "cover art. Control+Tab moves between pages. Nothing is written until "
+        "you press OK and then save -- this window hands the edit back, it "
+        "never touches the file itself. It is the same editor QUILL Audio "
+        "Studio and podHarvest both show, from the same table, so a file "
+        "edited in either reads back unchanged in the other."
+    ),
+    "Edit chapter": (
+        "This chapter's title and its exact start and end, typed rather than "
+        "set by ear, plus the optional link and image a Podcasting 2.0 player "
+        "can show. Moving the start moves the end of the chapter before it, "
+        "so the book stays gapless; the sentence at the top tells you the "
+        "range this chapter is allowed to occupy."
+    ),
     # -- the windows -------------------------------------------------------------
     "QUILL Audio Studio": (
         "The home window and the Studio wizard share this name. The home "

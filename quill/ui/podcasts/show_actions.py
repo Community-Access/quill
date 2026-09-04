@@ -187,20 +187,39 @@ def enqueue_episode_download(
     episode: PodcastEpisode,
     *,
     item_id: str | None = None,
+    library: object | None = None,
 ) -> None:
     """One authenticated episode download -- destination, same-host auth
     header, enqueue. The shared path behind every Download action, so the
-    private-feed Authorization header can never be forgotten at a call site."""
+    private-feed Authorization header can never be forgotten at a call site.
+
+    *library*, when given, lets the podcast's preferred audio variant decide
+    which file is fetched (7.12). Optional rather than required so the six
+    existing call sites did not all have to change at once, and omitting it
+    means the publisher's own enclosure -- which is what every release before
+    this fetched.
+    """
     from quill.core.podcasts import feed_auth
     from quill.ui.podcasts.manager_dialog import episode_destination
 
     destination = episode_destination(download_root, show, episode)
     destination.parent.mkdir(parents=True, exist_ok=True)
+    # The podcast's preferred audio variant (7.12). Podcasting 2.0's
+    # alternateEnclosure tags were already being parsed and never used; a
+    # podcast can now say "the smallest file" or "the best quality" and this is
+    # where that is honoured. It **falls back to the publisher's own enclosure**
+    # whenever the preference cannot be met, so a preference can never leave an
+    # episode unplayable.
+    url = episode.audio_url
+    if library is not None:
+        from quill.core.podcasts.show_policy import audio_url
+
+        url = audio_url(library, show, episode)
     download_queue.enqueue(
         item_id or episode.guid,
         show_id=show.id,
         episode_guid=episode.guid,
-        url=episode.audio_url,
+        url=url,
         destination=destination,
         auth_header=feed_auth.auth_header_for_url(show, episode.audio_url),
     )

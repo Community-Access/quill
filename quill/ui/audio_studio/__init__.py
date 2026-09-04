@@ -72,11 +72,20 @@ def show_audio_studio(frame: object) -> BatchSpeechRequest | None:
                 defaults = dlg.loaded_job
                 continue
             edit_path = dlg.edit_path() if code == wx.ID_OK else None
+            tags_only = dlg.tags_only() if code == wx.ID_OK else False
             request = dlg.result() if code == wx.ID_OK else None
         finally:
             dlg.Destroy()
         break
     if edit_path is not None:
+        if tags_only:
+            # The tags-only route: the Tag Editor with no Workbench around it,
+            # for when the chapters are already right. Reached from an app
+            # entry point, which is what GATE-REACH is asking for.
+            from quill.ui.audio_studio.tag_editor import open_tags_in_editor
+
+            open_tags_in_editor(frame, edit_path)
+            return None
         from quill.ui.audio_studio.chapter_workbench import open_book_in_workbench
 
         open_book_in_workbench(frame, edit_path)

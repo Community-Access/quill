@@ -788,8 +788,7 @@ level.</li>
 is playing has chapters, and runs the same command as its key.</li>
 </ul>
 <h2 id="quill-cast">QUILL Cast</h2>
-<p>Control coverage: 199 audited sites (6 help-elsewhere, 29 helped, 164
-named-help).</p>
+<p>Control coverage: 225 audited sites (63 helped, 162 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
 <p><strong>About This Episode.</strong> Everything the feed says about
@@ -812,6 +811,11 @@ answer, and Preferences can set it back to asking.</p>
 can do to it. Finished rows stay until you clear them so “did that
 actually download?” always has an answer, and Enter on a saved row opens
 the folder it landed in.</p>
+<p><strong>Episode Filter Rule.</strong> One rule inside a podcast’s
+Episode Filters: a title pattern, a minimum length, or both – and both
+have to match for the rule to. A rule is a label plus a test; it decides
+nothing until the filter itself is saved, and it never deletes an
+episode.</p>
 <p><strong>Feed Credentials.</strong> The user name and password for a
 private feed – a paid subscription, a members-only show. They are kept
 for this feed alone and sent to its own host, never to a directory.</p>
@@ -904,6 +908,13 @@ funding – as reviewable, copyable text.</p>
 <p><strong>Windows titled “Chapters…”.</strong> The chapter list of this
 episode. Enter jumps straight to the highlighted chapter; the player
 keeps playing from there.</p>
+<p><strong>Windows titled “Episode Filters…”.</strong> The rules that
+decide where this podcast’s new episodes go: keep everything except what
+a rule matches, or keep only what one matches. Preview tries the rules
+against the 50 newest episodes you already have and changes nothing. A
+filtered episode is never deleted – it stays in this podcast’s episode
+list, played mark, position and download intact; it simply does not
+reach your Inbox or the Play Queue by itself.</p>
 <p><strong>Windows titled “Episodes to Keep…”.</strong> How many
 downloaded episodes of this one podcast to keep before the oldest are
 deleted. Zero keeps all of them, and it is the downloaded audio only –
@@ -917,6 +928,10 @@ the folder answers for the rest.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
+<p><strong>Windows titled “Labels…”.</strong> Your own words for this
+podcast, as many as you like. A folder is one home and a label is not a
+home at all: labelling never moves a podcast, and a smart playlist can
+ask for a label the way it asks for a folder.</p>
 <p><strong>Windows titled “Move…”.</strong> Choose the folder to file
 into, or make a new one. Folders are yours to invent, and filing changes
 nothing about what is downloaded or played.</p>
@@ -948,6 +963,16 @@ Settings.</p>
 published with this episode, as reviewable, copyable text – links,
 guests, timestamps. A timestamp here is live: Enter on one moves
 playback to it.</p>
+<p><strong>Windows titled “Skip Chapters…”.</strong> Chapter titles this
+podcast should jump over as it plays – an advert break or sponsor read
+the publisher marked. Exact, where skipping a number of seconds is a
+guess. Nothing is removed from the episode.</p>
+<p><strong>Windows titled “Tidy Episode Titles…”.</strong> Patterns
+removed from this podcast’s episode titles when they are shown and
+spoken – a repeated ‘Ep. 412 -’ that starts every row and ruins skimming
+by first letter. Preview shows exactly which of the 50 newest titles
+would change. The feed’s own titles are never altered and no episode is
+renamed.</p>
 <h3 id="every-authored-control-help-sentence-1">Every authored control
 help sentence</h3>
 <h4
@@ -965,6 +990,25 @@ window tucked into the system tray; the tray icon brings it back.</li>
 was.</li>
 </ul>
 <h4
+id="episodefilterruledialog-quilluipodcastsepisode_filter_rule_dialogpy">EpisodeFilterRuleDialog
+(<code>quill/ui/podcasts/episode_filter_rule_dialog.py</code>)</h4>
+<ul>
+<li><code>ok_btn</code>: Keeps this rule in the filter. Nothing is
+applied until you save it.</li>
+<li><code>cancel_btn</code>: Leaves the rule as it was.</li>
+</ul>
+<h4
+id="episodefiltersdialog-quilluipodcastsepisode_filters_dialogpy">EpisodeFiltersDialog
+(<code>quill/ui/podcasts/episode_filters_dialog.py</code>)</h4>
+<ul>
+<li><code>ok_btn</code>: Saves these rules for this podcast. Every list
+you ticked takes effect at once, on episodes you already have as well as
+new ones; nothing is deleted. The Play Queue is the only thing not
+touched without asking, and saving asks about it separately.</li>
+<li><code>cancel_btn</code>: Leaves this podcast’s rules exactly as they
+were.</li>
+</ul>
+<h4
 id="managerphase4mixin-quilluipodcastsmanager_phase4py">ManagerPhase4Mixin
 (<code>quill/ui/podcasts/manager_phase4.py</code>)</h4>
 <ul>
@@ -974,6 +1018,47 @@ searches this podcast only – Search Everywhere is the one that crosses
 your whole library – and it narrows whatever the filter and sort above
 already chose rather than replacing them. Enter says how many
 matched.</li>
+</ul>
+<h4
+id="listsettingdialog-quilluipodcastsshow_list_editorpy">ListSettingDialog
+(<code>quill/ui/podcasts/show_list_editor.py</code>)</h4>
+<ul>
+<li><code>ok_btn</code>: Saves this list for this podcast only.</li>
+<li><code>cancel_btn</code>: Leaves the list exactly as it was.</li>
+<li><code>self._preview_btn</code>: Shows which of the 50 newest titles
+these patterns would change, and how. It is a dry run: no title is
+altered by pressing it.</li>
+<li><code>self._preview_list</code>: Each title these patterns would
+change, before and after. It reports; it has changed nothing.</li>
+</ul>
+<h4
+id="showsettingsdialog-quilluipodcastsshow_settings_dialogpy">ShowSettingsDialog
+(<code>quill/ui/podcasts/show_settings_dialog.py</code>)</h4>
+<ul>
+<li><code>self._category</code>: Which group of settings is shown below.
+Seventy controls in one list is not a list anybody can work through by
+ear, so this shows one group at a time. It hides nothing – every group
+is one keystroke away.</li>
+<li><code>self._favorite</code>: Puts this podcast in the Favorites
+view. It is a mark, not a folder: the podcast stays exactly where it is
+filed.</li>
+<li><code>changed_btn</code>: Lists only the settings this podcast
+answers for itself, out of all of them. It changes nothing – it is the
+question a settings window full of controls cannot answer.</li>
+<li><code>ok_btn</code>: Saves what you changed, and only what you
+changed. Anything you left alone keeps following its folder and the
+shared defaults.</li>
+<li><code>cancel_btn</code>: Leaves this podcast’s settings as they
+were. An Episode Filter you already saved in its own window is not
+undone by this.</li>
+</ul>
+<h4 id="module-level-quilluipodcastsshow_settings_panelpy">(module
+level) (<code>quill/ui/podcasts/show_settings_panel.py</code>)</h4>
+<ul>
+<li><code>button</code>: Drops this podcast’s own answer for this
+setting, so it follows its folder or the shared default again. It
+changes this setting only, and no episode, download or queue entry is
+touched.</li>
 </ul>
 <h4
 id="singlesettingdialog-quilluipodcastssingle_setting_dialogpy">SingleSettingDialog

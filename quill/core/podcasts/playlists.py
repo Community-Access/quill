@@ -155,14 +155,38 @@ def _resolve_smart(
     "The ten newest" has to be the ten newest, not ten arbitrary matches that
     were afterwards sorted.
     """
+    # Episode Filters, when the podcast's own rules were given the
+    # "playlists" scope. Asked per show and before the per-episode checks, so
+    # a smart playlist never quietly reintroduces the segment somebody filtered
+    # out -- "Quick Listens" over a feed whose two-minute segment is exactly
+    # what the filter is for would otherwise be nothing but the segment.
+    from quill.core.podcasts.episode_filter_maintenance import hide_predicate
+    from quill.core.podcasts.models_filters import SCOPE_PLAYLISTS
+
     rules = playlist.rules
+    # Labels (7.17): the answer to "this podcast is both news and short"
+    # without making a folder tree into a graph. A rule naming labels narrows
+    # to podcasts carrying **any** of them, which is what "or" means everywhere
+    # else in this dialog; naming none narrows nothing.
+    wanted_labels = {
+        str(name).strip().casefold()
+        for name in getattr(rules, "labels", ()) or ()
+        if str(name).strip()
+    }
     checks = _predicates(rules)
     combine = any if rules.match_mode == "any" else all
     pairs: list[tuple[PodcastShow, PodcastEpisode]] = []
     for show in library.shows:
         if not _in_scope(library, rules, show):
             continue
+        if wanted_labels and not wanted_labels & {
+            name.casefold() for name in library.labels_for(show.id)
+        }:
+            continue
+        hidden = hide_predicate(library, show, SCOPE_PLAYLISTS)
         for episode in show.episodes:
+            if hidden is not None and hidden(episode):
+                continue
             # No rules set at all matches everything, under either mode: an
             # empty ``any()`` is False, which would make a brand-new playlist
             # look broken rather than unfiltered.
