@@ -28,8 +28,36 @@ without ever calling ``ShowModal``.
 
 from __future__ import annotations
 
+from pathlib import Path
+
+import pytest
+
 import quill.ui.main_frame as main_frame_module
 from quill.ui.main_frame import MainFrame
+
+
+@pytest.fixture(autouse=True)
+def _established_data_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Give every test here a data dir the user is already established in.
+
+    These tests are about the first-run *wizard*. They are not about the other
+    first-run prompt: when the current data dir has no ``keymap.json``, QUILL
+    offers to import a previous installation's data, and that offer reaches
+    ``wx.MessageDialog`` -- which the ``_Wx`` stub below has never had, because
+    on a developer machine the offer never gets that far. An established
+    ``%APPDATA%\Quill`` makes :func:`detect_importable_legacy_dir` return
+    ``None`` at its first check, so the prompt is skipped and nobody notices.
+
+    On a machine with no prior install -- every CI runner -- it is not skipped,
+    and five tests fail with ``'_Wx' object has no attribute 'MessageDialog'``
+    on a dialog they were never about. Writing a ``keymap.json`` here removes
+    the machine from the test rather than teaching the stub about a dialog the
+    test does not care whether it sees.
+    """
+    data = tmp_path / "quill-data"
+    data.mkdir()
+    (data / "keymap.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setenv("QUILL_DATA_DIR", str(data))
 
 
 class _Frame:
