@@ -276,6 +276,24 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "Remove &Duplicate Lines", "Ctrl+Alt+D", "cmd_remove_duplicate_lines", ""),
     ("&Tools", "T&rim Trailing Spaces", "Ctrl+Alt+T", "cmd_trim_trailing_space", ""),
     ("&Tools", "", "", "", "sep"),
+    # Line surgery, on the caret's line rather than on a selection. Reordering
+    # two lines without these costs a select, a cut, a move and a paste -- four
+    # chances to lose your place in a document you cannot glance at. Same chords
+    # as QUILL, which gained them in the same change (it had registered every
+    # one of these commands and bound none of them).
+    ("&Tools", "Move Line U&p", "Ctrl+Shift+Up", "cmd_move_line_up", ""),
+    ("&Tools", "Move Line Dow&n", "Ctrl+Shift+Down", "cmd_move_line_down", ""),
+    ("&Tools", "Dupl&icate Line", "Ctrl+D", "cmd_duplicate_line", ""),
+    ("&Tools", "&Join Lines", "Ctrl+Alt+Shift+J", "cmd_join_lines", ""),
+    ("&Tools", "", "", "", "sep"),
+    ("&Tools", "Delete Lin&e", "Ctrl+Shift+Delete", "cmd_delete_line", ""),
+    ("&Tools", "Delete to St&art of Line", "Ctrl+Shift+Backspace", "cmd_delete_to_line_start", ""),
+    ("&Tools", "Delete t&o End of Line", "Ctrl+Alt+Shift+Delete", "cmd_delete_to_line_end", ""),
+    ("&Tools", "Delete Paragrap&h", "Ctrl+Alt+Shift+Backspace", "cmd_delete_paragraph", ""),
+    # Undo puts text back where it was; this puts it back where the caret is,
+    # which turns a delete into a move and is the only thing here undo cannot do.
+    ("&Tools", "Restore Deleted Te&xt", "Ctrl+Alt+Shift+Z", "cmd_restore_deletion", ""),
+    ("&Tools", "", "", "", "sep"),
     ("&Tools", "&UPPERCASE", "Ctrl+Shift+U", "cmd_upper_case", ""),
     ("&Tools", "&lowercase", "Ctrl+Shift+K", "cmd_lower_case", ""),
     ("&Tools", "&Title Case", "Ctrl+Shift+G", "cmd_title_case", ""),

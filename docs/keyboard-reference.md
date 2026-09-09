@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 341.
+Editor commands with default bindings: 351.
 
 ## The QUILL editor
 
@@ -63,6 +63,7 @@ Editor commands with default bindings: 341.
 | Ctrl+Alt+Shift+F | Toggle Fold | `edit.toggle_fold` |
 | Ctrl+Alt+Shift+P | Select Paragraph | `edit.select_paragraph` |
 | Ctrl+Alt+Shift+Q | Duplicate Selection | `edit.duplicate_selection` |
+| Ctrl+Alt+Shift+Z | Restore deletion | `edit.restore_deletion` |
 | Ctrl+Alt+V | Paste Text Only | `edit.paste_plain_text` |
 | Ctrl+Alt+W | Select Word | `edit.select_word` |
 | Ctrl+Enter | Follow Link | `edit.follow_link` |
@@ -148,12 +149,17 @@ Editor commands with default bindings: 341.
 | Ctrl+Alt+J | Justify | `format.justify` |
 | Ctrl+Alt+N | Toggle Numbered List | `format.toggle_numbered_list` |
 | Ctrl+Alt+Q | Insert Block Quote | `format.blockquote` |
+| Ctrl+Alt+Shift+J | Join Lines | `format.join_lines` |
 | Ctrl+Alt+T | Insert Table | `format.insert_table` |
 | Ctrl+B | Bold | `format.bold` |
+| Ctrl+D | Duplicate Line | `format.duplicate_line` |
 | Ctrl+I | Italic | `format.italic` |
 | Ctrl+Shift+, | Shrink Font | `format.shrink_font` |
 | Ctrl+Shift+. | Grow Font | `format.grow_font` |
 | Ctrl+Shift+D | Describe Formatting at Cursor | `format.describe_formatting` |
+| Ctrl+Shift+Delete | Delete Line | `format.delete_line` |
+| Ctrl+Shift+Down | Move Line Down | `format.move_line_down` |
+| Ctrl+Shift+Up | Move Line Up | `format.move_line_up` |
 | Ctrl+[ | Outdent | `format.outdent` |
 | Ctrl+] | Indent | `format.indent` |
 | F2 | Structured List Studio | `format.list_studio` |
@@ -201,6 +207,7 @@ Editor commands with default bindings: 341.
 | Alt+Shift+D | Toggle Dark Mode | `view.toggle_dark_mode` |
 | Alt+Shift+E | Show Spoken Echo | `view.spoken_echo` |
 | Alt+Z | Toggle Soft Wrap | `view.toggle_soft_wrap` |
+| Ctrl+Alt+Shift+W | Toggle Overwrite Mode | `view.toggle_overwrite_mode` |
 | Ctrl+F6 | Focus Preview | `view.focus_preview` |
 | Ctrl+Shift+Backslash | Preview Side by Side | `view.split_preview` |
 | Ctrl+Shift+V | Preview | `view.preview` |
@@ -373,8 +380,11 @@ Editor commands with default bindings: 341.
 | Ctrl+Alt+Shift+7 | Play favorite 7 | `radio.play_favorite_7` |
 | Ctrl+Alt+Shift+8 | Play favorite 8 | `radio.play_favorite_8` |
 | Ctrl+Alt+Shift+9 | Play favorite 9 | `radio.play_favorite_9` |
+| Ctrl+Alt+Shift+Backspace | Delete paragraph | `power.delete_paragraph` |
+| Ctrl+Alt+Shift+Delete | Delete to line end | `power.delete_to_line_end` |
 | Ctrl+Alt+Up | Table: Cell Above | `table.cell_above` |
 | Ctrl+E | Sound Enhancements... | `media.sound_enhancements` |
+| Ctrl+Shift+Backspace | Delete to line start | `power.delete_to_line_start` |
 | Ctrl+Shift+Enter | Trim blank lines | `power.trim_blank_lines` |
 | H | QUILL Quick Nav: Heading | `quill.quick_nav.heading` |
 | I | QUILL Quick Nav: List Item | `quill.quick_nav.list_item` |

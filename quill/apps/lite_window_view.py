@@ -196,6 +196,7 @@ class DocumentViewCommandsMixin:
             self.app.command_registry(self),
             headings=headings,
             announce_fn=self._announce,
+            binding_for=self.app.binding_for,
         )
         dialog.show_modal_and_run(self)
         self.control.SetFocus()

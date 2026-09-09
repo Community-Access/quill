@@ -291,6 +291,7 @@ class GoToAnythingDialog:
         feature_manager: object | None = None,
         headings: list[tuple[str, int]] | None = None,
         announce_fn: Callable[[str], None] | None = None,
+        binding_for: Callable[[str], str | None] | None = None,
     ) -> None:
         import wx
 
@@ -298,6 +299,13 @@ class GoToAnythingDialog:
         self._registry = command_registry
         self._features = feature_manager
         self._announce_fn = announce_fn
+        # Same keymap lookup CommandPaletteDialog uses, and for the same reason
+        # -- see the long note on its ``_binding_for``. This dialog went without
+        # one until 2026-09-08 and so showed a key only for the commands whose
+        # registration happened to carry one, while the menu beside it showed
+        # every key correctly. Two front doors to the same commands must not
+        # disagree about what to press.
+        self._binding_for = binding_for
         self._headings: list[tuple[str, int]] = headings or []
 
         from quill.core.commands import CommandRegistry
@@ -437,6 +445,17 @@ class GoToAnythingDialog:
             label = str(item.get("label", ""))
             self._set_status(f"[{kind}] {label}")
 
+    def _binding(self, command: object) -> str:
+        """This command's keystroke, live from the keymap where there is one."""
+        if self._binding_for is not None:
+            try:
+                resolved = self._binding_for(getattr(command, "id", ""))
+            except Exception:  # noqa: BLE001 - a keymap lookup must not break the list
+                resolved = None
+            if resolved:
+                return str(resolved)
+        return getattr(command, "keybinding", "") or ""
+
     def _refresh_results(self, query: str) -> None:
         q = query.strip()
         heading_only = q.startswith("#")
@@ -453,7 +472,7 @@ class GoToAnythingDialog:
         if not heading_only:
             ranked = rank_commands(self._commands, clean_q, self._usage)
             for cmd in ranked:
-                binding = getattr(cmd, "keybinding", "") or ""
+                binding = self._binding(cmd)
                 label = f"{cmd.title} [{binding}]" if binding else cmd.title
                 results.append({
                     "kind": "command",

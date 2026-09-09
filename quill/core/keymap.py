@@ -362,6 +362,37 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.toggle_block_comment": "Shift+Alt+A",
     "format.indent": "Ctrl+]",
     "format.outdent": "Ctrl+[",
+    # Line surgery. QUILL has registered all five of these for a long time and
+    # bound none of them, so they were reachable from the palette and the menu
+    # and from no keystroke at all -- the same shape of gap the QuillLite work
+    # found in the paragraph commands (2026-09-08). Alt+Up/Down, the chords most
+    # editors use for the move pair, are structure navigation here and stay that
+    # way; Ctrl+Shift+Up/Down is the next-most-familiar pair and was free.
+    "format.move_line_up": "Ctrl+Shift+Up",
+    "format.move_line_down": "Ctrl+Shift+Down",
+    "format.duplicate_line": "Ctrl+D",
+    "format.delete_line": "Ctrl+Shift+Delete",
+    "format.join_lines": "Ctrl+Alt+Shift+J",
+    # Re-insert recently deleted text *at the cursor*, which is what makes it a
+    # move rather than an undo. Not Ctrl+Shift+Z: redo is Ctrl+Y here, but
+    # Ctrl+Shift+Z is what a great many hands press for redo anyway, and a key
+    # that does something else entirely is worse than a key that does nothing.
+    "edit.restore_deletion": "Ctrl+Alt+Shift+Z",
+    # Insert/overwrite. Deliberately NOT the Insert key, which is the obvious
+    # answer everywhere except here: Insert is NVDA's and JAWS's own modifier,
+    # so binding it would fight the screen reader this editor is written for.
+    # W for "write over", the letter being free where O was not.
+    "view.toggle_overwrite_mode": "Ctrl+Alt+Shift+W",
+    # Structured deletion -- the kill-to-end-of-line family, likewise registered
+    # and unbound. Backspace deletes backwards and Delete deletes forwards, so
+    # the pair keeps that direction and only adds modifiers. Two constraints
+    # shaped the exact chords: Ctrl+Alt+Delete is never bindable by anyone
+    # (Windows reserves it as the secure attention sequence), and bare Ctrl+Alt+
+    # is barred by §10.8 as screen-reader-hostile, so every chord here carries
+    # Shift as well.
+    "power.delete_to_line_start": "Ctrl+Shift+Backspace",
+    "power.delete_to_line_end": "Ctrl+Alt+Shift+Delete",
+    "power.delete_paragraph": "Ctrl+Alt+Shift+Backspace",
     # Toggle the Tab key between smart indent and literal tab insertion.
     # Bound to a QUILL-key chord: plain Ctrl+M / Ctrl+Shift+M are the mark ring,
     # and Ctrl+Alt+ chords are screen-reader-hostile (§10.8), so neither is usable.

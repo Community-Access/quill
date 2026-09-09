@@ -806,6 +806,42 @@ UPPERCASE (<strong>Ctrl+Shift+U</strong>), lowercase
 (<strong>Ctrl+Shift+G</strong>).</p>
 <p>Each one counts as a single undo, so <strong>Ctrl+Z</strong> takes
 back the whole sort rather than putting back one line at a time.</p>
+<h3 id="working-on-one-line-at-a-time">Working on one line at a
+time</h3>
+<p>The tools above rewrite a whole selection. These work on the line the
+cursor is already on, which is usually the one you want.</p>
+<p><strong>Move Line Up</strong> (<strong>Ctrl+Shift+Up</strong>) and
+<strong>Move Line Down</strong> (<strong>Ctrl+Shift+Down</strong>) move
+the current line past its neighbour. Reordering two lines any other way
+means selecting one, cutting it, finding the new place and pasting –
+four steps, each of which leaves the cursor somewhere the last one did
+not. <strong>Duplicate Line</strong> is <strong>Ctrl+D</strong>, and
+<strong>Join Lines</strong> (<strong>Ctrl+Alt+Shift+J</strong>) pulls
+the line below onto the end of this one.</p>
+<p><strong>Delete Line</strong> is <strong>Ctrl+Shift+Delete</strong>.
+<strong>Delete to Start of Line</strong>
+(<strong>Ctrl+Shift+Backspace</strong>) and <strong>Delete to End of
+Line</strong> (<strong>Ctrl+Alt+Shift+Delete</strong>) remove everything
+to one side of the cursor, and <strong>Delete Paragraph</strong>
+(<strong>Ctrl+Alt+Shift+Backspace</strong>) takes the whole
+paragraph.</p>
+<p>Each of these tells you what it did, and tells you when it did
+nothing – “Already the first line” is a different fact from silence, and
+you should not have to press an arrow key to find out which one you
+got.</p>
+<h3 id="getting-deleted-text-back-somewhere-else">Getting deleted text
+back somewhere else</h3>
+<p><strong>Restore Deleted Text</strong>
+(<strong>Ctrl+Alt+Shift+Z</strong>) puts your most recent deletion back
+<strong>at the cursor</strong>, wherever the cursor now is.</p>
+<p>That is what makes it different from undo, and it is the reason it
+exists. Ctrl+Z puts text back where it came from; this puts it where you
+are now, so deleting a paragraph and restoring it further down is a way
+to <em>move</em> it that never touches the clipboard – which means
+whatever you were already carrying on the clipboard is still there
+afterwards.</p>
+<p>It remembers your last three deletions, and only the deliberate ones:
+the delete commands above, not every character you backspaced over.</p>
 <h3 id="abbreviations">Abbreviations</h3>
 <p>Type a short form, press space, and get the long one. Useful for an
 address, a sign off, or anything you type often and would rather not
@@ -1494,6 +1530,42 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+T</strong></td>
 <td>Trim Trailing Spaces</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Up</strong></td>
+<td>Move Line Up</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Down</strong></td>
+<td>Move Line Down</td>
+</tr>
+<tr>
+<td><strong>Ctrl+D</strong></td>
+<td>Duplicate Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+J</strong></td>
+<td>Join Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Delete</strong></td>
+<td>Delete Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Backspace</strong></td>
+<td>Delete to Start of Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Delete</strong></td>
+<td>Delete to End of Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Backspace</strong></td>
+<td>Delete Paragraph</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Z</strong></td>
+<td>Restore Deleted Text</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Shift+U</strong></td>

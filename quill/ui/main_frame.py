@@ -4693,6 +4693,7 @@ class MainFrame(
             feature_manager=getattr(self, "features", None),
             headings=headings,
             announce_fn=self._announce,
+            binding_for=self._binding_for,
         )
         dialog.show_modal_and_run(self)
 

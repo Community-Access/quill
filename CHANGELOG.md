@@ -2,6 +2,33 @@
 
 ## 1.0.0
 
+### Line surgery gets keys, and both palettes now teach them (2026-09-08)
+
+**Eleven commands QUILL had registered and never bound to anything.** Move Line
+Up and Down, Duplicate Line, Delete Line, Join Lines, the delete-to-line-start
+and delete-to-line-end pair, Delete Paragraph, Restore Deleted Text, and
+Insert/Overwrite mode were all reachable from a menu and from no keystroke at
+all. They now have defaults, listed in `docs/keyboard-reference.md`.
+
+Two of the chords are worth explaining. **Insert/Overwrite is not on the Insert
+key**, which is the obvious answer everywhere except here: Insert is NVDA's and
+JAWS's own modifier, and binding it would fight the screen reader this editor is
+written for. And nothing in this set uses a bare `Ctrl+Alt+` chord, because
+those are barred as screen-reader-hostile -- the gate caught three of them in
+this very change.
+
+**Restore Deleted Text** is the one that is not a convenience. Undo puts text
+back where it came from; this puts your last deletion back *at the cursor*,
+which turns a delete into a move, never touches the clipboard, and is the one
+thing here undo cannot do.
+
+**Fixed: Go to Anything showed commands without their keys.** The Command
+Palette learned to read the live keymap in August; its sibling never did, so it
+listed a keystroke only for the commands whose registration happened to carry
+one -- while the menus beside it showed every key correctly. Two front doors to
+the same commands must not teach different answers about what to press.
+(`core/keymap.py`, `ui/palette.py`)
+
 ### Safe Mode now answers for itself when a saved key cannot be unlocked (2026-09-08)
 
 **Fixed: in Safe Mode, Verify Connection reported the wrong problem.** On a

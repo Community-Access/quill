@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Keyboard Reference (default bindings)</title>
   <style>
@@ -209,7 +209,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 341.</p>
+<p>Editor commands with default bindings: 351.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -427,6 +427,11 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Shift+Q</td>
 <td>Duplicate Selection</td>
 <td><code>edit.duplicate_selection</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+Z</td>
+<td>Restore deletion</td>
+<td><code>edit.restore_deletion</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+V</td>
@@ -841,6 +846,11 @@ your own customised keymap.</p>
 <td><code>format.blockquote</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+J</td>
+<td>Join Lines</td>
+<td><code>format.join_lines</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+T</td>
 <td>Insert Table</td>
 <td><code>format.insert_table</code></td>
@@ -849,6 +859,11 @@ your own customised keymap.</p>
 <td>Ctrl+B</td>
 <td>Bold</td>
 <td><code>format.bold</code></td>
+</tr>
+<tr>
+<td>Ctrl+D</td>
+<td>Duplicate Line</td>
+<td><code>format.duplicate_line</code></td>
 </tr>
 <tr>
 <td>Ctrl+I</td>
@@ -869,6 +884,21 @@ your own customised keymap.</p>
 <td>Ctrl+Shift+D</td>
 <td>Describe Formatting at Cursor</td>
 <td><code>format.describe_formatting</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Delete</td>
+<td>Delete Line</td>
+<td><code>format.delete_line</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Down</td>
+<td>Move Line Down</td>
+<td><code>format.move_line_down</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Up</td>
+<td>Move Line Up</td>
+<td><code>format.move_line_up</code></td>
 </tr>
 <tr>
 <td>Ctrl+[</td>
@@ -1078,6 +1108,11 @@ your own customised keymap.</p>
 <td>Alt+Z</td>
 <td>Toggle Soft Wrap</td>
 <td><code>view.toggle_soft_wrap</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+W</td>
+<td>Toggle Overwrite Mode</td>
+<td><code>view.toggle_overwrite_mode</code></td>
 </tr>
 <tr>
 <td>Ctrl+F6</td>
@@ -1875,6 +1910,16 @@ your own customised keymap.</p>
 <td><code>radio.play_favorite_9</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+Backspace</td>
+<td>Delete paragraph</td>
+<td><code>power.delete_paragraph</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+Delete</td>
+<td>Delete to line end</td>
+<td><code>power.delete_to_line_end</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Up</td>
 <td>Table: Cell Above</td>
 <td><code>table.cell_above</code></td>
@@ -1883,6 +1928,11 @@ your own customised keymap.</p>
 <td>Ctrl+E</td>
 <td>Sound Enhancements…</td>
 <td><code>media.sound_enhancements</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Backspace</td>
+<td>Delete to line start</td>
+<td><code>power.delete_to_line_start</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+Enter</td>

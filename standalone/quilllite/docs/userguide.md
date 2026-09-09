@@ -407,6 +407,41 @@ UPPERCASE (**Ctrl+Shift+U**), lowercase (**Ctrl+Shift+K**) or Title Case
 Each one counts as a single undo, so **Ctrl+Z** takes back the whole sort rather
 than putting back one line at a time.
 
+### Working on one line at a time
+
+The tools above rewrite a whole selection. These work on the line the cursor is
+already on, which is usually the one you want.
+
+**Move Line Up** (**Ctrl+Shift+Up**) and **Move Line Down**
+(**Ctrl+Shift+Down**) move the current line past its neighbour. Reordering two
+lines any other way means selecting one, cutting it, finding the new place and
+pasting -- four steps, each of which leaves the cursor somewhere the last one
+did not. **Duplicate Line** is **Ctrl+D**, and **Join Lines**
+(**Ctrl+Alt+Shift+J**) pulls the line below onto the end of this one.
+
+**Delete Line** is **Ctrl+Shift+Delete**. **Delete to Start of Line**
+(**Ctrl+Shift+Backspace**) and **Delete to End of Line**
+(**Ctrl+Alt+Shift+Delete**) remove everything to one side of the cursor, and
+**Delete Paragraph** (**Ctrl+Alt+Shift+Backspace**) takes the whole paragraph.
+
+Each of these tells you what it did, and tells you when it did nothing --
+"Already the first line" is a different fact from silence, and you should not
+have to press an arrow key to find out which one you got.
+
+### Getting deleted text back somewhere else
+
+**Restore Deleted Text** (**Ctrl+Alt+Shift+Z**) puts your most recent deletion back
+**at the cursor**, wherever the cursor now is.
+
+That is what makes it different from undo, and it is the reason it exists.
+Ctrl+Z puts text back where it came from; this puts it where you are now, so
+deleting a paragraph and restoring it further down is a way to *move* it that
+never touches the clipboard -- which means whatever you were already carrying on
+the clipboard is still there afterwards.
+
+It remembers your last three deletions, and only the deliberate ones: the delete
+commands above, not every character you backspaced over.
+
 ### Abbreviations
 
 Type a short form, press space, and get the long one. Useful for an address, a
@@ -697,6 +732,15 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+K** | Remove Blank Lines |
 | **Ctrl+Alt+D** | Remove Duplicate Lines |
 | **Ctrl+Alt+T** | Trim Trailing Spaces |
+| **Ctrl+Shift+Up** | Move Line Up |
+| **Ctrl+Shift+Down** | Move Line Down |
+| **Ctrl+D** | Duplicate Line |
+| **Ctrl+Alt+Shift+J** | Join Lines |
+| **Ctrl+Shift+Delete** | Delete Line |
+| **Ctrl+Shift+Backspace** | Delete to Start of Line |
+| **Ctrl+Alt+Shift+Delete** | Delete to End of Line |
+| **Ctrl+Alt+Shift+Backspace** | Delete Paragraph |
+| **Ctrl+Alt+Shift+Z** | Restore Deleted Text |
 | **Ctrl+Shift+U** | UPPERCASE |
 | **Ctrl+Shift+K** | lowercase |
 | **Ctrl+Shift+G** | Title Case |

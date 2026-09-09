@@ -42,6 +42,7 @@ from quill.apps.lite_printing import DocumentPrintMixin
 from quill.apps.lite_window_clipboard import DocumentClipboardMixin
 from quill.apps.lite_window_commands import DocumentCommandsMixin
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
+from quill.apps.lite_window_lines import DocumentLineMixin
 from quill.apps.lite_window_marks import DocumentMarksMixin
 from quill.apps.lite_window_menus import DocumentMenuMixin
 from quill.apps.lite_window_selection import DocumentSelectionMixin
@@ -78,6 +79,7 @@ class DocumentFrame(
     DocumentViewCommandsMixin,
     DocumentPrintMixin,
     DocumentToolsMixin,
+    DocumentLineMixin,
     DocumentMarksMixin,
     DocumentSelectionMixin,
     DocumentClipboardMixin,
