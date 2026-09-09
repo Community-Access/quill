@@ -7,7 +7,7 @@ from pathlib import Path
 import wx
 
 from quill.core.i18n import _
-from quill.ui.audio_studio.pages_base import StudioPage
+from quill.ui.audio_studio.pages_base import StudioPage, set_accessible_name
 from quill.ui.audio_studio.request import BatchSpeechRequest
 
 
@@ -178,6 +178,18 @@ class EditSourcePage(StudioPage):
         row.Add(browse, 0)
         self.sizer.Add(row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
+        self.tags_only = wx.CheckBox(
+            self, label=_("Edit the ta&gs only, without the Chapter Workbench")
+        )
+        self.tags_only.SetHelpText(
+            "Opens the file straight in the Tag Editor: every tag it can carry, "
+            "over five pages, cover art included. Leave this off to open the "
+            "Chapter Workbench, which holds the same tag editor as well as the "
+            "chapter tools and the player."
+        )
+        set_accessible_name(self.tags_only, _("Edit the tags only"))
+        self.sizer.Add(self.tags_only, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
+
         self.sizer.Add(
             wx.StaticText(
                 self,
@@ -223,6 +235,10 @@ class EditSourcePage(StudioPage):
     def chosen_path(self) -> Path | None:
         text = self.file.GetValue().strip()
         return Path(text) if text else None
+
+    def wants_tags_only(self) -> bool:
+        """Whether to open the Tag Editor alone instead of the Workbench."""
+        return bool(self.tags_only.GetValue())
 
     def is_valid(self) -> tuple[bool, str]:
         path = self.chosen_path()

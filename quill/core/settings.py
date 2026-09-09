@@ -122,6 +122,8 @@ class Settings:
     launch_at_windows_startup: bool = False
     persistent_undo: bool = False
     spellcheck_as_you_type: bool = False
+    # Live check stays quiet in code; see quill/core/spellcheck_filetypes.py.
+    spellcheck_skip_code_files: bool = True
     # When True, saving a document first opens the F7 spelling review so the user
     # can correct misspellings before the file is written. Off by default.
     spell_check_before_save: bool = False
@@ -658,6 +660,10 @@ class Settings:
     batch_speech_temp_folder: str = ""  # parent for scratch dirs; blank = system temp
     batch_speech_save_spoken_text: bool = False  # also save the text sent to the engine
     audio_studio_last_journey: str = "documents"  # remembered journey
+    # How far one press of the Chapter Workbench's Nudge back/forward moves a
+    # chapter marker. Remembered because the step somebody picked by ear is
+    # the step they will want next session too.
+    audio_studio_chapter_nudge_ms: int = 500  # 10-60000
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Settings:
@@ -737,6 +743,7 @@ class Settings:
         tray_enabled = bool(data.get("tray_enabled", False))
         persistent_undo = bool(data.get("persistent_undo", False))
         spellcheck_as_you_type = bool(data.get("spellcheck_as_you_type", False))
+        spellcheck_skip_code_files = bool(data.get("spellcheck_skip_code_files", True))
         spell_check_before_save = bool(data.get("spell_check_before_save", False))
         spellcheck_language = str(data.get("spellcheck_language", "en_US")).strip() or "en_US"
         reveal_codes_visible = bool(data.get("reveal_codes_visible", False))
@@ -1354,6 +1361,9 @@ class Settings:
         )
         if audio_studio_last_journey not in {"documents", "audio", "edit"}:
             audio_studio_last_journey = "documents"
+        audio_studio_chapter_nudge_ms = _clamp_int(
+            data.get("audio_studio_chapter_nudge_ms", 500), 500, 10, 60000
+        )
         if recent_files_limit < 1:
             recent_files_limit = 1
         if recent_files_limit > 50:
@@ -1402,6 +1412,7 @@ class Settings:
             tray_enabled=tray_enabled,
             persistent_undo=persistent_undo,
             spellcheck_as_you_type=spellcheck_as_you_type,
+            spellcheck_skip_code_files=spellcheck_skip_code_files,
             spell_check_before_save=spell_check_before_save,
             spellcheck_language=spellcheck_language,
             reveal_codes_visible=reveal_codes_visible,
@@ -1677,6 +1688,7 @@ class Settings:
             batch_speech_save_spoken_text=batch_speech_save_spoken_text,
             batch_speech_intro_section_title=batch_speech_intro_section_title,
             audio_studio_last_journey=audio_studio_last_journey,
+            audio_studio_chapter_nudge_ms=audio_studio_chapter_nudge_ms,
         )
 
 

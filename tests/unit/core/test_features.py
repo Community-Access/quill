@@ -435,17 +435,22 @@ def test_unreleased_features_are_the_ones_deliberately_held_back() -> None:
     # embedded Internet Radio (moved to the standalone Quill Radio app), and the
     # Book Library (moving to QUILL Social). The fourth is the companion apps'
     # top-level Quillins menu, hidden until the extension story is public --
-    # the host still runs, so this hides a menu, not a capability.
+    # the host still runs, so this hides a menu, not a capability. The fifth,
+    # Connect YouTube Account (OAuth), waits on a different external gate: this
+    # build's Google OAuth consent screen must pass Google's own verification
+    # (or the signer be listed as a test user) before sign-in works for anyone.
     assert UNRELEASED_FEATURE_IDS == frozenset({
         "core.podcasts",
         "core.radio",
         "core.library",
         "future.quillins_menu",
+        "future.youtube_oauth",
     })
     assert FEATURE_DEFINITIONS["core.podcasts"].released is False
     assert FEATURE_DEFINITIONS["core.radio"].released is False
     assert FEATURE_DEFINITIONS["core.library"].released is False
     assert FEATURE_DEFINITIONS["future.quillins_menu"].released is False
+    assert FEATURE_DEFINITIONS["future.youtube_oauth"].released is False
 
 
 def test_podcasts_is_locked_off_in_a_public_build(monkeypatch: pytest.MonkeyPatch) -> None:

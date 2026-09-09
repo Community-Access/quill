@@ -70,7 +70,7 @@ def test_split_at_playhead(wx_app, tmp_path):
         assert titles == ["One", "New chapter", "Two"]
         assert dlg._book.chapters[1].start_ms == 30_000
         assert any("Split at 0:30" in a for a in announces)
-        assert dlg._dirty
+        assert dlg._chapters_dirty
     finally:
         dlg.Destroy()
         frame.Destroy()
@@ -111,7 +111,7 @@ def test_merge_and_restore(wx_app, tmp_path):
         assert dlg._book.chapters[0].end_ms == 120_000
         dlg._on_restore()
         assert [c.title for c in dlg._book.chapters] == ["One", "Two"]
-        assert not dlg._dirty
+        assert not dlg._chapters_dirty
     finally:
         dlg.Destroy()
         frame.Destroy()
@@ -129,14 +129,30 @@ def test_rename_updates_plan(wx_app, tmp_path):
         frame.Destroy()
 
 
-def test_m4b_disables_in_place_save(wx_app, tmp_path):
+def test_m4b_save_follows_which_edits_are_pending(wx_app, tmp_path):
+    """An M4B's chapter atoms need a re-mux; its tag atoms do not.
+
+    Save used to be disabled outright for an M4B, which made fixing a
+    misspelt author cost a second copy of the book. It is now offered while
+    only tags are dirty and withdrawn the moment a chapter changes -- the
+    distinction the two dirty flags exist to make.
+    """
     frame = wx.Frame(None)
     book = _book(tmp_path)
     book.path = book.path.with_suffix(".m4b")
     book.path.write_bytes(b"stub")
     dlg = ChapterWorkbenchDialog(frame, book, announce=None)
     try:
+        assert dlg._save_btn.IsThisEnabled() is True
+        assert "in place" in (dlg._save_btn.GetToolTipText() or "")
+
+        dlg._chapter_list.SetSelection(1)
+        dlg.player.playhead_ms = lambda: 45_000
+        dlg._on_retime()
+
+        assert dlg._chapters_dirty is True
         assert dlg._save_btn.IsThisEnabled() is False
+        assert "saved as a new file" in (dlg._save_btn.GetToolTipText() or "")
     finally:
         dlg.Destroy()
         frame.Destroy()

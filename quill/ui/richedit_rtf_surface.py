@@ -61,7 +61,20 @@ _SES_EMULATESYSEDIT = 0x00000001
 
 # TOM formatting (Phase 2): ITextFont bool values + ITextPara alignment (tom.h).
 _TOM_TOGGLE = -9999998
-_TOM_TRUE = -9999999
+# tom.h: ``tomTrue`` is -1. Until 2026-09-08 this constant was -9999999, which
+# tom.h defines as ``tomUndefined`` -- "leave this property alone". Assigning it
+# to ``ITextFont.Bold`` therefore asked the control to change nothing, and
+# succeeded: ``set_heading`` applied the point size, silently never applied the
+# bold, and raised nothing. Because :func:`heading_level_for_font` requires bold
+# before it will call a paragraph a heading, QUILL could not then find the
+# headings QUILL had just made -- heading navigation and Describe Formatting
+# both went blind. Measured on RICHEDIT50W / Riched20 10.0.26100:
+# ``Bold = -9999999`` -> ``Bold=0 Weight=400``; ``Bold = -1`` -> ``Bold=-1
+# Weight=700``. Reported with a standalone reproduction in PR #1490.
+_TOM_TRUE = -1
+#: tom.h ``tomUndefined``. Named so the value that used to sit in _TOM_TRUE is
+#: still spelled out, and so nobody re-derives it as "true" from a bare -9999999.
+_TOM_UNDEFINED = -9999999
 _TOM_FALSE = 0
 _TOM_ALIGNMENT = {"left": 0, "center": 1, "right": 2, "justify": 3}
 _TOM_ALIGNMENT_NAMES = {value: name for name, value in _TOM_ALIGNMENT.items()}
@@ -344,6 +357,26 @@ class QuillRichEdit:
         """The control's live ``ITextSelection`` (raises :class:`RichEditRtfError`)."""
         return _get_text_document(self.hwnd()).Selection
 
+    def _format_range(self) -> Any:
+        """The range whose formatting the caret is *in* -- what a reader describes.
+
+        A collapsed TOM range reports the formatting of the character
+        **before** it, so standing at the start of a heading described the
+        paragraph above it (reported against QuillLite, PR #1490). Screen
+        readers describe the character *after* the caret; so does this. With a
+        real selection the selection itself is the answer, and at the very end
+        of the story there is no next character, so the collapsed range stands.
+        """
+        document = _get_text_document(self.hwnd())
+        selection = document.Selection
+        start, end = int(selection.Start), int(selection.End)
+        if end > start:
+            return selection
+        probe = document.Range(start, start + 1)
+        if int(probe.End) == start:  # nothing after the caret: end of the story
+            return selection
+        return probe
+
     def _apply_font(self, attr: str, value: Any) -> None:
         try:
             setattr(self._selection().Font, attr, value)
@@ -430,11 +463,13 @@ class QuillRichEdit:
 
         Read live from the TOM (``ITextFont``/``ITextPara``), so Describe
         Formatting in rich mode answers from the real control instead of
-        parsing markup: "Arial, 14 point, bold, centered". Raises
+        parsing markup: "Arial, 14 point, bold, centered". Read through
+        :meth:`_format_range`, so a caret sitting at the head of a heading
+        describes *that* heading rather than the paragraph above it. Raises
         :class:`RichEditRtfError` when the TOM is unreachable.
         """
         try:
-            selection = self._selection()
+            selection = self._format_range()
             font = selection.Font
             parts: list[str] = []
             name = str(getattr(font, "Name", "") or "").strip()
@@ -595,7 +630,16 @@ def create_richedit_rtf(
         return wx_module.TextCtrl(parent, style=style)
     try:
         surface.surface_kind = SURFACE_KIND  # type: ignore[attr-defined]
-        wrapper = QuillRichEdit(surface)
+        # RichEditDocument, not QuillRichEdit: it *is* a QuillRichEdit (every
+        # method below is unchanged) plus the paragraph and view capabilities
+        # QuillLite needed -- bullets, line spacing, the point-size ladder,
+        # heading enumeration, text mode, zoom. Built here so QUILL's own tabs
+        # have them too: a feature the small product has and the editor cannot
+        # reach would be exactly backwards. Imported inside the function because
+        # the subclass imports this module.
+        from quill.ui.richedit_editing import RichEditDocument
+
+        wrapper = RichEditDocument(surface)
         surface.quill_richedit = wrapper  # type: ignore[attr-defined]
         if emulate_system_edit:
             wrapper.set_emulate_system_edit(True)

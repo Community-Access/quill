@@ -189,10 +189,51 @@ PURPOSES: dict[str, str] = {
         "The last first-run screen: where your shows live from here, and the "
         "handful of keys worth knowing on day one."
     ),
+    "Episode Filter Rule": (
+        "One rule inside a podcast's Episode Filters: a title pattern, a "
+        "minimum length, or both -- and both have to match for the rule to. A "
+        "rule is a label plus a test; it decides nothing until the filter "
+        "itself is saved, and it never deletes an episode."
+    ),
 }
 
 #: Purposes for windows whose titles carry live data, matched by prefix.
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
+    (
+        "Tidy Episode Titles",
+        "Patterns removed from this podcast's episode titles when they are "
+        "shown and spoken -- a repeated 'Ep. 412 -' that starts every row and "
+        "ruins skimming by first letter. Preview shows exactly which of the 50 "
+        "newest titles would change. The feed's own titles are never altered "
+        "and no episode is renamed.",
+    ),
+    (
+        "Skip Chapters",
+        "Chapter titles this podcast should jump over as it plays -- an advert "
+        "break or sponsor read the publisher marked. Exact, where skipping a "
+        "number of seconds is a guess. Nothing is removed from the episode.",
+    ),
+    (
+        "Labels",
+        "Your own words for this podcast, as many as you like. A folder is one "
+        "home and a label is not a home at all: labelling never moves a "
+        "podcast, and a smart playlist can ask for a label the way it asks for "
+        "a folder.",
+    ),
+    (
+        # Titled "Episode Filters -- <Show>". Ahead of the settings editors
+        # only for readability; the prefixes do not overlap, and the rule
+        # editor's own title ("Episode Filter Rule", no plural) is answered
+        # exactly in PURPOSES above rather than by this prefix.
+        "Episode Filters",
+        "The rules that decide where this podcast's new episodes go: keep "
+        "everything except what a rule matches, or keep only what one "
+        "matches. Preview tries the rules against the 50 newest episodes you "
+        "already have and changes nothing. A filtered episode is never "
+        "deleted -- it stays in this podcast's episode list, played mark, "
+        "position and download intact; it simply does not reach your Inbox "
+        "or the Play Queue by itself.",
+    ),
     (
         # The three single-setting editors are titled "<Setting> -- <Show>",
         # so they are matched by prefix; each carries its own sentence on the

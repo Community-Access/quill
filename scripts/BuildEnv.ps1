@@ -325,3 +325,87 @@ function Resolve-QuillTokenFile {
     }
     return ""
 }
+
+
+function Assert-QuillRuntimeHasModule {
+    <#
+    .SYNOPSIS
+    Fail the build if the shared runtime does not contain the app's own module.
+
+    .DESCRIPTION
+    The QuillVille Runtime is a PyInstaller onedir with its OWN frozen copy of
+    the quill package, and every app installer ships it. So a runtime built
+    before an app existed does not contain that app -- and nothing else in the
+    build notices. QuillLite shipped exactly that on 2026-09-08: the installer
+    compiled cleanly, installed cleanly, and the first launch said
+    "No module named quill.apps.lite", because -SkipSharedRuntime had reused a
+    runtime from three weeks earlier.
+
+    Compiling and installing are not evidence that the thing runs.
+
+    Three checks, cheapest first:
+
+    * the module's source file is in the frozen tree. Universal, instant, and
+      exactly what was missing.
+    * the whole frozen quill package matches this checkout
+      (scripts\check_runtime_freshness.py). Present is not current: on
+      2026-09-08 a runtime about to be PUBLISHED passed the check above while
+      its frozen tree was 28 files behind, with two QuillLite modules missing
+      outright. The build would have shipped code three weeks older than its own
+      installer, green all the way.
+    * optionally, with -ProbeArgs, the runtime is asked to *run* the module with
+      those arguments and exit. Pass an app's no-window diagnostic switch here
+      ("--check") when it has one; the runtime launcher only accepts
+      "-m <module> [args]", never "-c". Deliberately last: a stale runtime runs
+      its stale module perfectly well, so the probe cannot answer this question.
+    #>
+    param(
+        [Parameter(Mandatory = $true)][string]$RuntimeDir,
+        [Parameter(Mandatory = $true)][string]$Module,
+        [string[]]$ProbeArgs = @(),
+        # The checkout the frozen tree must match, and the interpreter that runs
+        # the comparison. Both default to what this file already knows, so an
+        # existing call site needs no change to gain the check.
+        [string]$SourceRoot = "",
+        [string]$Python = ""
+    )
+    $exe = Join-Path $RuntimeDir "QuillVilleRuntime.exe"
+    if (-not (Test-Path $exe)) {
+        throw "Shared runtime not found at $exe -- build it before packaging."
+    }
+    # quill.apps.lite -> quillpps\lite.py, the path inside the frozen tree.
+    $relative = ($Module.Split('.') -join [System.IO.Path]::DirectorySeparatorChar) + '.py'
+    $sourceFile = Join-Path (Join-Path $RuntimeDir "_internal") $relative
+    if (-not (Test-Path $sourceFile)) {
+        throw @"
+The shared QuillVille Runtime at
+  $RuntimeDir
+does not contain '$Module' (looked for _internal\$relative).
+
+The runtime carries its own frozen copy of the quill package, so one built
+before this app existed does not contain it -- and the installer would compile,
+install, and then fail on first launch with "No module named $Module".
+
+Rebuild it (standalone
+untimeuild_runtime.ps1), or drop -SkipSharedRuntime.
+"@
+    }
+    if (-not $SourceRoot) { $SourceRoot = $script:QuillBuildEnvRoot }
+    if (-not $Python) { $Python = Resolve-QuillPython -QuillRepo $SourceRoot }
+    & $Python (Join-Path $SourceRoot "scripts\check_runtime_freshness.py") `
+        $RuntimeDir --source-root $SourceRoot
+    if ($LASTEXITCODE -ne 0) {
+        throw "The shared runtime is not built from this checkout (see above)."
+    }
+
+    if ($ProbeArgs.Count -gt 0) {
+        & $exe "-m" $Module @ProbeArgs | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            throw "The shared runtime could not run '$Module $($ProbeArgs -join ' ')' (exit $LASTEXITCODE)."
+        }
+        Write-Host "Shared runtime ran $Module $($ProbeArgs -join ' ')."
+    } else {
+        Write-Host "Shared runtime contains $Module."
+    }
+}
+

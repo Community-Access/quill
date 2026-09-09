@@ -119,8 +119,46 @@ def test_factory_falls_back_and_tags_surface_kind() -> None:
     source = inspect.getsource(mod)
     assert "TE_RICH2" in source and "TE_NOHIDESEL" in source
     assert "surface_kind = SURFACE_KIND" in source
-    assert "QuillRichEdit(surface)" in source
+    # The factory builds RichEditDocument, which *is* a QuillRichEdit plus the
+    # paragraph and view capabilities (bullets, line spacing, the point-size
+    # ladder, text mode, zoom). Building the subclass here is what stops QUILL
+    # being behind its own small sibling QuillLite, which needed them first.
+    assert "RichEditDocument(surface)" in source
     assert "return wx_module.TextCtrl(parent, style=style)" in source  # fallback
+
+
+def test_every_tab_gets_the_paragraph_capabilities_not_just_quilllite() -> None:
+    """The wrapper QUILL builds must answer the whole extended contract.
+
+    The rule this pins: a capability the small product has and the editor
+    cannot reach is a capability in the wrong place. RichEditDocument is a
+    QuillRichEdit, so nothing below the line changes -- but everything above it
+    is now available to a QUILL tab as well.
+    """
+    from quill.ui.richedit_editing import RichEditDocument
+    from quill.ui.richedit_rtf_surface import QuillRichEdit
+
+    assert issubclass(RichEditDocument, QuillRichEdit)
+    wrapper = RichEditDocument(_FakeSurface())
+    for capability in (
+        "set_bullets",
+        "bullets_at_caret",
+        "set_line_spacing",
+        "step_font_size",
+        "set_alignment_justify",
+        "all_headings",
+        "heading_level_at_caret",
+        "paragraph_text_at",
+        "set_text_mode",
+        "set_word_wrap",
+        "set_zoom",
+        "set_document_color",
+    ):
+        assert callable(getattr(wrapper, capability)), capability
+    # And the base contract is untouched: no handle still means a clean error,
+    # never a silent no-op.
+    for probe in (wrapper.all_headings, wrapper.heading_level_at_caret):
+        probe()  # best-effort readbacks: they answer, they do not raise
 
 
 def test_rtf_uses_the_text_object_model_not_the_crashing_callback() -> None:
@@ -295,3 +333,146 @@ def test_next_heading_is_safe_without_a_handle() -> None:
     surface.rtf_available = lambda: False  # type: ignore[method-assign]
     assert surface.next_heading(0, reverse=False) is None
     assert surface.next_heading(50, reverse=True) is None
+
+
+# -- the two fixes PR #1490 isolated ------------------------------------------
+
+
+class _FakeFont:
+    """An ITextFont that behaves the way RICHEDIT50W actually behaves.
+
+    The whole point: assigning ``tomUndefined`` to ``Bold`` is *accepted* and
+    changes nothing, which is why the bug was silent for as long as it was.
+    """
+
+    #: tom.h. tomTrue is -1; -9999999 is tomUndefined, "leave this alone".
+    TRUE, UNDEFINED, TOGGLE = -1, -9999999, -9999998
+
+    def __init__(self, name: str = "Arial", size: float = 11.0, bold: int = 0) -> None:
+        self.Name = name
+        self.Size = size
+        self._bold = bold
+
+    @property
+    def Bold(self) -> int:  # noqa: N802 - COM API shape
+        return self._bold
+
+    @Bold.setter
+    def Bold(self, value: int) -> None:  # noqa: N802
+        if value == self.UNDEFINED:
+            return  # the control accepts it and does nothing -- the bug
+        if value == self.TOGGLE:
+            self._bold = 0 if self._bold else self.TRUE
+            return
+        self._bold = self.TRUE if value == self.TRUE else 0
+
+    @property
+    def Weight(self) -> int:  # noqa: N802
+        return 700 if self._bold else 400
+
+    Italic = 0
+    Underline = 0
+
+
+class _FakePara:
+    Alignment = 0
+
+
+class _FakeRange:
+    def __init__(self, start: int, end: int, font: _FakeFont) -> None:
+        self.Start, self.End = start, end
+        self.Font = font
+        self.Para = _FakePara()
+
+    @property
+    def Duplicate(self) -> _FakeRange:  # noqa: N802
+        return self
+
+    def Expand(self, _unit: int) -> int:  # noqa: N802
+        return 0
+
+
+class _FakeDocument:
+    """Two paragraphs: body text, then a bold 16-point Heading 2."""
+
+    BODY_END = 20
+
+    def __init__(self, caret: int) -> None:
+        self._body = _FakeFont(size=11.0, bold=0)
+        self._heading = _FakeFont(size=16.0, bold=_FakeFont.TRUE)
+        self._caret = caret
+
+    def _font_at(self, offset: int) -> _FakeFont:
+        return self._body if offset < self.BODY_END else self._heading
+
+    @property
+    def Selection(self) -> _FakeRange:  # noqa: N802
+        # A collapsed TOM range reports the formatting of the character BEFORE
+        # it -- which is the whole second bug.
+        return _FakeRange(self._caret, self._caret, self._font_at(max(0, self._caret - 1)))
+
+    def Range(self, start: int, end: int) -> _FakeRange:  # noqa: N802
+        return _FakeRange(start, end, self._font_at(start))
+
+
+def test_tom_true_is_minus_one_not_tom_undefined() -> None:
+    """The constant, and the reason it is not the other one.
+
+    ``_TOM_TRUE`` was -9999999 until 2026-09-08. tom.h calls that
+    ``tomUndefined``: "leave this property alone". Assigning it to
+    ``ITextFont.Bold`` therefore asked the control to change nothing -- and
+    succeeded, silently.
+    """
+    import quill.ui.richedit_rtf_surface as mod
+
+    assert mod._TOM_TRUE == -1
+    assert mod._TOM_UNDEFINED == -9999999
+    assert mod._TOM_TRUE != mod._TOM_UNDEFINED
+
+
+def test_set_heading_actually_applies_the_bold(monkeypatch) -> None:
+    """Regression: the heading ladder is size AND bold, and both must land.
+
+    Before the fix this passed the size and dropped the bold, so
+    ``heading_level_for_font`` -- which requires bold before it will call a
+    paragraph a heading -- could not see the heading QUILL had just made.
+    Heading navigation and Describe Formatting both went blind in rich mode.
+    """
+    import quill.ui.richedit_rtf_surface as mod
+
+    document = _FakeDocument(caret=0)
+    monkeypatch.setattr(mod, "_get_text_document", lambda _hwnd: document)
+
+    class _Handled(_FakeSurface):
+        def GetHandle(self) -> int:  # noqa: N802
+            return 4242
+
+    wrapper = mod.QuillRichEdit(_Handled())
+    wrapper.set_heading(1)
+    font = document.Selection.Font
+    assert font.Size == mod.HEADING_POINT_SIZES[1]
+    assert font.Bold != 0, "set_heading applied the size but not the bold"
+    assert font.Weight == 700
+    assert mod.heading_level_for_font(float(font.Size), bool(font.Bold)) == 1
+
+
+def test_caret_at_the_head_of_a_heading_describes_that_heading(monkeypatch) -> None:
+    """Regression: a collapsed range reports the character BEFORE the caret.
+
+    Standing at the start of a heading therefore described the paragraph above
+    it. Screen readers describe the character *after* the caret; so does
+    ``caret_format_description`` now.
+    """
+    import quill.ui.richedit_rtf_surface as mod
+
+    document = _FakeDocument(caret=_FakeDocument.BODY_END)
+    monkeypatch.setattr(mod, "_get_text_document", lambda _hwnd: document)
+
+    class _Handled(_FakeSurface):
+        def GetHandle(self) -> int:  # noqa: N802
+            return 4242
+
+    described = mod.QuillRichEdit(_Handled()).caret_format_description()
+    assert "16 point" in described, described
+    assert "heading 2" in described, described
+    assert "11 point" not in described, "described the paragraph above the caret"

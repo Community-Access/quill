@@ -983,11 +983,10 @@ class MenuBindingsMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.unselect_all(), id=self._id_unselect_all)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.say_selected(), id=self._id_say_selected)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.read_all(), id=self._id_read_all)
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.select_word(), id=self._id_select_word)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.select_line(), id=self._id_select_line)
         self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.select_paragraph(),
-            id=self._id_select_paragraph,
+            wx.EVT_MENU, lambda _e: self.select_paragraph(), id=self._id_select_paragraph
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.select_block(), id=self._id_select_block)
         self.frame.Bind(
@@ -1009,9 +1008,7 @@ class MenuBindingsMixin:
             id=self._id_select_to_start_of_line,
         )
         self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.select_to_end_of_line(),
-            id=self._id_select_to_end_of_line,
+            wx.EVT_MENU, lambda _e: self.select_to_end_of_line(), id=self._id_select_to_end_of_line
         )
         self.frame.Bind(
             wx.EVT_MENU,
@@ -1271,6 +1268,28 @@ class MenuBindingsMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_italic(), id=self._id_format_italic)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.format_underline(), id=self._id_format_underline
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_justify(), id=self._id_format_justify)
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.format_grow_font(), id=self._id_format_grow_font
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self.format_shrink_font(), id=self._id_format_shrink_font
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.format_line_spacing("single"),
+            id=self._id_format_spacing_single,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.format_line_spacing("one_and_a_half"),
+            id=self._id_format_spacing_one_and_a_half,
+        )
+        self.frame.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.format_line_spacing("double"),
+            id=self._id_format_spacing_double,
         )
         self.bind_format_codes(wx)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.format_heading(1), id=self._id_heading_1)

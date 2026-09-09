@@ -314,3 +314,59 @@ def test_palette_falls_back_when_the_keymap_lookup_fails() -> None:
     dialog = CommandPaletteDialog(parent=object(), command_registry=registry, binding_for=_boom)
 
     assert dialog.results._items == ["Find [Ctrl+F]"]
+
+
+def test_go_to_anything_shows_the_keystroke_from_the_keymap() -> None:
+    """The second front door has to agree with the first about what to press.
+
+    ``GoToAnythingDialog`` had no keymap lookup at all until 2026-09-08: it read
+    only the key a registration happened to carry, so in QUILL -- where most
+    registrations carry none -- it listed commands bare while the Command
+    Palette and the menus beside it showed every key correctly. Two surfaces
+    offering the same command must not teach different answers.
+    """
+    _install_fake_wx()
+    from quill.ui.palette import GoToAnythingDialog
+
+    registry = CommandRegistry()
+    registry.register("edit.sort_lines", "Sort Lines", lambda: None)
+    dialog = GoToAnythingDialog(
+        parent=object(),
+        command_registry=registry,
+        binding_for=lambda cid: "Ctrl+Alt+S" if cid == "edit.sort_lines" else None,
+    )
+
+    # "  > " is the prefix that marks a command row apart from a heading row.
+    assert dialog.results._items == ["  > Sort Lines [Ctrl+Alt+S]"]
+
+
+def test_go_to_anything_prefers_the_live_keymap_over_the_registered_key() -> None:
+    """A rebind reaches this list too, not only the Command Palette's."""
+    _install_fake_wx()
+    from quill.ui.palette import GoToAnythingDialog
+
+    registry = CommandRegistry()
+    registry.register("edit.find", "Find", lambda: None, "Ctrl+F")
+    dialog = GoToAnythingDialog(
+        parent=object(),
+        command_registry=registry,
+        binding_for=lambda _cid: "F3",
+    )
+
+    assert dialog.results._items == ["  > Find [F3]"]
+
+
+def test_go_to_anything_falls_back_when_the_keymap_lookup_fails() -> None:
+    """A broken resolver must cost a keystroke, never the list."""
+    _install_fake_wx()
+    from quill.ui.palette import GoToAnythingDialog
+
+    registry = CommandRegistry()
+    registry.register("edit.find", "Find", lambda: None, "Ctrl+F")
+
+    def _boom(_cid: str) -> str:
+        raise RuntimeError("no keymap")
+
+    dialog = GoToAnythingDialog(parent=object(), command_registry=registry, binding_for=_boom)
+
+    assert dialog.results._items == ["  > Find [Ctrl+F]"]

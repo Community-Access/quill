@@ -130,6 +130,7 @@ from quill.core.guides import (
     build_keyboard_shortcut_html,
     build_welcome_guide,
 )
+from quill.core.heading_levels import LevelResult, adjust_heading_level
 from quill.core.heading_styles import HeadingStyle, apply_heading_style
 from quill.core.intake import (
     build_bad_extraction_package,
@@ -452,6 +453,7 @@ from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_restore_points import RestorePointsMixin
 from quill.ui.main_frame_reveal_codes import RevealCodesMixin
 from quill.ui.main_frame_rich_mode import RichModeMixin
+from quill.ui.main_frame_rich_paragraph import RichParagraphMixin
 from quill.ui.main_frame_search import SearchCommandsMixin
 from quill.ui.main_frame_section_move import SectionMoveMixin
 from quill.ui.main_frame_selection import SelectionMarksMixin
@@ -468,6 +470,7 @@ from quill.ui.main_frame_story_studio import StoryStudioMixin
 from quill.ui.main_frame_table_nav import TableNavMixin
 from quill.ui.main_frame_tutorials import TutorialsMixin
 from quill.ui.main_frame_typing import TypingPathMixin
+from quill.ui.main_frame_typing_modes import TypingModesMixin
 from quill.ui.main_frame_undo import PersistentUndoMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_updates import UpdatesMixin
@@ -816,6 +819,8 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    RichParagraphMixin,
+    TypingModesMixin,
     PersistentUndoMixin,
     AnnounceCommandsMixin,
     SrWatchdogMixin,
@@ -1297,6 +1302,10 @@ class MainFrame(
         # Session state, mirroring _overwrite_mode; toggled with QUILL Key + U.
         self._tab_inserts_literal = False
         self._insert_key_down = False
+        # True only while toggle_overwrite_mode is handing the control a
+        # synthesised Insert keystroke; the key handler must not read that as
+        # the user pressing Insert and flip the flag a second time.
+        self._synthetic_insert_key = False
         self._print_data = wx.PrintData()
         self._page_setup_data = wx.PageSetupDialogData(self._print_data)
         self._snippet_library = (
@@ -2580,6 +2589,16 @@ class MainFrame(
             self._on_editor_context_menu(_KeyboardContextEvent())
             return
         if event.GetKeyCode() == wx.WXK_INSERT:
+            # The native RICHEDIT50W owns overtype and honours VK_INSERT
+            # itself, so Skip() is what actually changes typing here and
+            # _overwrite_mode is a mirror of the control, not a source of
+            # truth. Verified on the real control: typing after Insert
+            # overwrites, and a second Insert restores insert mode.
+            if getattr(self, "_synthetic_insert_key", False):
+                # Sent by toggle_overwrite_mode, which has already decided the
+                # new state. Let it reach the control and change nothing here.
+                event.Skip()
+                return
             if not self._insert_key_down:
                 self._overwrite_mode = not self._overwrite_mode
                 self._insert_key_down = True
@@ -4691,6 +4710,7 @@ class MainFrame(
             feature_manager=getattr(self, "features", None),
             headings=headings,
             announce_fn=self._announce,
+            binding_for=self._binding_for,
         )
         dialog.show_modal_and_run(self)
 
@@ -7516,39 +7536,6 @@ class MainFrame(
             self._read_aloud.stop()
         self.editor.SetInsertionPoint(0)
         self.toggle_read_aloud()
-
-    def toggle_overwrite_mode(self, enabled: bool | None = None) -> None:
-        next_state = (not self._overwrite_mode) if enabled is None else enabled
-        self._overwrite_mode = next_state
-        self._refresh_statusbar()
-        self._set_status("Overwrite mode on" if next_state else "Insert mode on")
-
-    def toggle_tab_insert_mode(self, enabled: bool | None = None) -> None:
-        """Toggle whether the Tab key inserts a literal tab or indents lines.
-
-        Default (off) keeps the smart line-indent behaviour. On, Tab types a
-        tab character at the caret like a plain text editor. The new mode is
-        spoken and reflected in the Tab Mode status-bar cell and the Format
-        menu check item."""
-        next_state = (not self._tab_inserts_literal) if enabled is None else enabled
-        self._tab_inserts_literal = next_state
-        self._sync_tab_mode_menu_check()
-        self._refresh_statusbar()
-        self._set_status(
-            "Tab key inserts a tab character" if next_state else "Tab key indents the line"
-        )
-
-    def _sync_tab_mode_menu_check(self) -> None:
-        menu_bar = getattr(self.frame, "GetMenuBar", None)
-        menu_id = getattr(self, "_id_toggle_tab_mode", None)
-        if menu_id is None or not callable(menu_bar):
-            return
-        bar = menu_bar()
-        if bar is None:
-            return
-        item = bar.FindItemById(menu_id)
-        if item is not None and item.IsCheckable():
-            item.Check(self._tab_inserts_literal)
 
     def choose_document_encoding(self) -> None:
         wx = self._wx
@@ -16425,43 +16412,27 @@ class MainFrame(
             return
         text = self.editor.GetValue()
         cursor = self.editor.GetInsertionPoint()
-        start, end = line_span(text, cursor)
-        line_text = text[start:end]
-        replacement: str | None = None
-        old_level: int | None = None
-        if surface == "markdown":
-            match = re.match(r"^(#{1,6})\s+(.*)$", line_text)
-            if match is not None:
-                old_level = len(match.group(1))
-                new_level = min(6, max(1, old_level + delta))
-                if new_level == old_level:
-                    direction = "minimum" if delta < 0 else "maximum"
-                    self._set_status(f"Heading already at {direction} level")
-                    return
-                replacement = f"{'#' * new_level} {match.group(2)}"
-        else:
-            match = re.match(
-                r"^\s*<h([1-6])([^>]*)>(.*)</h\1>\s*$",
-                line_text,
-                flags=re.IGNORECASE,
-            )
-            if match is not None:
-                old_level = int(match.group(1))
-                new_level = min(6, max(1, old_level + delta))
-                if new_level == old_level:
-                    direction = "minimum" if delta < 0 else "maximum"
-                    self._set_status(f"Heading already at {direction} level")
-                    return
-                attributes = match.group(2)
-                content = match.group(3)
-                replacement = f"<h{new_level}{attributes}>{content}</h{new_level}>"
-        if replacement is None:
+        # The rule itself is quill.core.heading_levels, shared with QuillLite,
+        # which binds the same Alt+Shift+Left / Right pair. It used to be two
+        # regexes and four branches inline here, which is the shape that gets
+        # copied rather than called the second time somebody needs it.
+        change = adjust_heading_level(text, cursor, delta, markup_kind=surface)
+        if change.result is LevelResult.NOT_A_HEADING:
             self._set_status("Place cursor on a heading line to adjust its level")
             return
-        self.editor.SetSelection(start, end)
-        self.editor.Replace(start, end, replacement)
+        if change.result in {LevelResult.AT_TOP, LevelResult.AT_BOTTOM}:
+            direction = "minimum" if change.result is LevelResult.AT_TOP else "maximum"
+            self._set_status(f"Heading already at {direction} level")
+            return
+        if not change.changed:
+            self._set_status("Headings are only available in Markdown or HTML documents")
+            return
+        self.editor.SetSelection(change.start, change.end)
+        self.editor.Replace(change.start, change.end, change.replacement)
         self.document.set_text(self.editor.GetValue())
-        self._set_status("Adjusted heading level")
+        # The new level, not "adjusted": which way it went is the whole outcome,
+        # and a listener cannot see the hashes change.
+        self._set_status(f"Heading {change.new_level}")
 
     def format_insert_bullet_list(self) -> None:
         self._insert_structure("Bullet List", "Inserted bullet list")

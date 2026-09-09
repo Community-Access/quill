@@ -163,6 +163,20 @@ PRODUCTS: dict[str, Product] = {
         stage_ffmpeg=True,
         stage_mpv=False,
     ),
+    "quilllite": Product(
+        key="quilllite",
+        module="quill.apps.lite",
+        exe="QuillLite",
+        display="QuillLite",
+        zip_name="QuillLite-Portable-{ver}.zip",
+        # An editor and nothing else: one native control, six small windows and
+        # a settings file. No media stack, no documents stack, no spell checker,
+        # no engines, nothing to download.
+        dep_groups=("ui", "feedback"),
+        stage_engines=False,
+        stage_ffmpeg=False,
+        stage_mpv=False,
+    ),
     "quill": Product(
         key="quill",
         module="quill",

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill User Guide</title>
   <style>
@@ -25204,6 +25204,29 @@ one and you are back to typing.</li>
 through a whole document or selection systematically; use
 <strong>Alt+F7</strong> when you just want to check the one word you are
 looking at right now.</p>
+<h4 id="spell-check-as-you-type-stays-quiet-in-code-files">Spell check
+as you type stays quiet in code files</h4>
+<p>When <strong>spell check as you type</strong> is on, QUILL watches
+for a misspelling as you finish each word. It deliberately says nothing
+in source and configuration files — <code>.py</code>,
+<code>.json</code>, <code>.js</code>, <code>.css</code>,
+<code>.ps1</code>, <code>.log</code>, <code>.yml</code> and the rest of
+the coding extensions — because every identifier, key and flag in one of
+those is a word no dictionary has. A live checker there is a wall of
+alerts that are all wrong, and each one costs an earcon and a status
+line to read past.</p>
+<p>Markdown is prose, so <code>.md</code> <strong>is</strong> checked;
+the fenced code blocks, inline code spans, URLs and email addresses
+inside it are skipped instead, which is the right granularity for a file
+that is mostly writing.</p>
+<p>The setting is
+<strong><code>spellcheck_skip_code_files</code></strong>, on by default.
+Turn it off if you want the live check to run everywhere regardless of
+file type.</p>
+<p><strong>F7 is never affected by this.</strong> The guided review
+checks whatever document you run it on, including a source file:
+skipping is a decision about what to do when you have not said anything,
+and pressing F7 is saying something.</p>
 <h4
 id="ranked-spelling-ctrlshiftl--misspellings-sorted-by-frequency">Ranked
 spelling (Ctrl+Shift+L) — misspellings sorted by frequency</h4>
@@ -29665,6 +29688,34 @@ stays contiguous.</p></li>
 <li><p><strong>Merge into previous</strong>, <strong>Rename</strong>
 (type and press Enter), and <strong>Restore original</strong> (one press
 undoes every edit) round out the surgery.</p></li>
+<li><p><strong>Add chapter…</strong>, <strong>Delete chapter</strong>,
+<strong>Edit chapter…</strong> and <strong>Preview chapter</strong> are
+the plain verbs. Add puts a marker at the playhead or at a time you type
+and asks what to call it; past the end of the last chapter it appends
+one instead of refusing. Delete removes a marker only — the audio joins
+its neighbour, and unlike Merge it works on the first and last chapters
+too. Edit opens a small window for the title and the exact start and end
+(and a chapter link and image, if you publish with Podcasting 2.0).
+Preview plays just that chapter and stops at its end instead of running
+on.</p></li>
+<li><p><strong>Nudge a boundary until it sounds right.</strong>
+<strong>Nudge back</strong> and <strong>Nudge forward</strong> move the
+selected chapter’s start by one step; from the chapter list,
+<strong>Alt+Left</strong> and <strong>Alt+Right</strong> do the same,
+and adding <strong>Shift</strong> moves ten steps at once. The
+<strong>Step</strong> box offers 100 milliseconds up to 10 seconds and
+remembers what you picked for next time
+(<code>audio_studio_chapter_nudge_ms</code>, half a second to start
+with). <strong>Hear boundary</strong> plays three seconds before the
+marker and two after it, then stops — the fastest way to tell whether a
+boundary lands mid-sentence. Tick <strong>Hear after each nudge</strong>
+and that audition happens automatically after every press; it is off by
+default, because audio on every keypress is something to ask for rather
+than discover. Each nudge speaks only the new time (“0:00:09.500”),
+because a full sentence repeated at key-repeat speed is unusable; the
+whole sentence follows about half a second after you stop. Run a marker
+into its neighbour and it stops there and says “Cannot move further”
+once, rather than refusing on every press.</p></li>
 <li><p><strong>Propose chapters from silences…</strong> scans the
 recording with ffmpeg’s <code>silencedetect</code>, with a small dialog
 asking for the <strong>noise threshold</strong> (dB, default -30) and
@@ -29714,12 +29765,29 @@ into the data folder’s <code>engine-packs\mpv</code> directory or point
 <code>QUILL_LIBMPV</code> at one. If the DLL is missing or broken, QUILL
 quietly stays on the built-in engine.</p></li>
 <li><p><strong>Book details</strong> (title, author, narrator, genre,
-year) are edited right in the dialog.</p></li>
+year) are edited right in the dialog. <strong>All tags…</strong> opens
+the full <strong>Tag Editor</strong> for everything else: twenty-six
+fields over five pages — main, details, publishing, sort order and cover
+art — including track and disc numbers, composer, publisher, copyright,
+BPM, ISRC, language, grouping, the compilation flag, the four sort-order
+fields, and embedded cover art you can load, save out or remove.
+Control+Tab moves between pages. The five quick fields and the editor
+stay in step in both directions, so neither is ever showing something
+the other has forgotten. You can also open the Tag Editor on its own,
+without the Workbench: tick <strong>Edit the tags only</strong> on the
+Studio wizard’s <em>Open a book</em> page.</p></li>
+<li><p><strong>The same editor is in podHarvest.</strong> QUILL and
+podHarvest share the tag and chapter code byte for byte, so a file
+edited in one reads back exactly as it was left in the other — same
+fields, same operations, same keys. If you use both, you only learn this
+once.</p></li>
 <li><p><strong>Save</strong> writes an MP3’s edits <strong>in
 place</strong> — only the tags are rewritten; the audio is untouched. An
-M4B is saved with <strong>Save As</strong> instead: a lossless re-mux
-(no re-encode, no quality loss) into a new file. Long saves run in the
-background so QUILL stays responsive.</p></li>
+M4B follows what you actually changed: tag edits alone also save in
+place and finish instantly, while a chapter change still needs
+<strong>Save As</strong>, which is a lossless re-mux (no re-encode, no
+quality loss) into a new file. Long saves run in the background so QUILL
+stays responsive.</p></li>
 <li><p><strong>Publish…</strong> opens three ways to get the finished
 book out into the world, each an explicit action:</p>
 <ul>
@@ -33504,6 +33572,27 @@ mode the next time it starts from that folder.</p>
 <p>The previous activation mechanism (<code>QUILL_PORTABLE=1</code>) is
 no longer required and is ignored: portable mode is a property of the
 bundle, not of the running environment.</p>
+<p><strong>Nothing is written to the host computer.</strong> A portable
+bundle is portable from the very first launch — you do not have to
+answer anything first. Extract the zip, run <code>quill.exe</code>, and
+your settings, keymap and everything else go straight into the
+<code>data\</code> folder beside it. No folder appears in
+<code>%APPDATA%</code> on the machine you happened to plug into, which
+is the entire point of carrying the app on a stick.</p>
+<p>Until version 1.0 this was not true: a freshly extracted portable
+copy used <code>%APPDATA%\Quill</code> on the host machine until you
+went to the Setup Wizard or Preferences and chose portable, and nothing
+said so. If you have been running a portable QUILL and your settings
+look like they have reset, they have not — they are in
+<code>%APPDATA%\Quill</code> on that computer, and you can copy that
+folder’s contents into the bundle’s <code>data\</code> folder to bring
+them across.</p>
+<p>You can still choose otherwise. Picking <strong>Windows
+profile</strong> in Preferences or the Setup Wizard is remembered and
+overrides the bundle, because an explicit choice always beats a default.
+The same applies to every Quill app that ships a portable build — Quill
+Radio, Cast, Weather, Audio Studio, Converter, Inkwell, Beacon, Media
+Player and QuillLite.</p>
 <p>When portable mode is on, keys are stored in a file called
 <code>keys.enc</code> inside the QUILL data directory. The file is
 encrypted with Windows DPAPI, so it is protected by your Windows

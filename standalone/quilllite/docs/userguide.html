@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QuillLite — User Guide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quilllite--user-guide">QuillLite — User Guide</h1>
+<p>QuillLite is a text editor. It opens a file, lets you change it, and
+saves it back exactly as it found it.</p>
+<p>If you have used Notepad or WordPad, almost every key you already
+know works here. Where QuillLite does something different, this guide
+says so, and says why.</p>
+<p>You do not need to read this guide to use QuillLite. Start it, type,
+press <strong>Ctrl+S</strong>. Come back here when you want more.</p>
+<hr />
+<h2 id="the-first-minute">The first minute</h2>
+<p>Start QuillLite and you get one window with one empty document in it,
+called <strong>1: Untitled</strong>. Type. Press <strong>Ctrl+S</strong>
+when you want to keep it.</p>
+<p>That is the whole thing. The rest of this guide is optional.</p>
+<p>Three keys are worth knowing straight away:</p>
+<ul>
+<li><strong>F1</strong> tells you where you are. Press it anywhere — in
+your document, on a button, in any window — and QuillLite says what that
+window is for and what the thing you are on does.</li>
+<li><strong>F6</strong> takes you to the status bar, which is where the
+useful facts live. Arrow along it, press <strong>Escape</strong> to come
+back.</li>
+<li><strong>Ctrl+F1</strong> lists every key QuillLite has.</li>
+</ul>
+<hr />
+<h2 id="your-documents-are-numbered">Your documents are numbered</h2>
+<p>QuillLite opens your documents <strong>inside one window</strong>,
+and numbers them. Your first is 1, the next is 2, and a number never
+changes for as long as that document is open — even if you close the one
+before it.</p>
+<p>That number is how you get back to it:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+1</strong> to <strong>Alt+9</strong></td>
+<td>Go straight to that document</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Tab</strong> / <strong>Ctrl+Shift+Tab</strong></td>
+<td>Next / previous document</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F6</strong></td>
+<td>Next document (the usual Windows key; same thing)</td>
+</tr>
+<tr>
+<td><strong>Window menu</strong></td>
+<td>Every open document, by number, with a mark on the one you are
+in</td>
+</tr>
+</tbody>
+</table>
+<p><strong>One thing to know.</strong> Because your documents sit inside
+one window, they do <strong>not</strong> appear in Alt+Tab. Alt+Tab
+shows you <em>QuillLite</em>, once. The four ways above are how you move
+between documents. We would rather tell you that here than have you
+hunting for a document you thought you had lost.</p>
+<p><strong>Ctrl+N</strong> makes a new document. <strong>Ctrl+W</strong>
+closes the one you are in. <strong>Ctrl+Q</strong> closes everything,
+asking about anything you have not saved.</p>
+<h3 id="opening-a-second-quilllite">Opening a second QuillLite</h3>
+<p>If you open a file from your file manager while QuillLite is already
+running, it opens in the QuillLite you already have. That is what keeps
+the numbering meaningful.</p>
+<p>If you really do want two separate QuillLite windows — one per
+monitor, say — start it with the extra option
+<code>--new-instance</code>.</p>
+<hr />
+<h2 id="two-kinds-of-document">Two kinds of document</h2>
+<p>Every document is one of two kinds, and the title bar tells you
+which.</p>
+<p><strong>Plain text</strong> is like Notepad. One font, no formatting.
+Text you paste in arrives as plain text. This is what you want for
+notes, lists, and any file that another program is going to read.</p>
+<p><strong>Rich text</strong> is like WordPad. Bold, italic, headings,
+alignment, bullet points, line spacing. It saves as a Rich Text file,
+which Word and WordPad both open.</p>
+<p>QuillLite chooses the kind from the file’s name. Rich Text files open
+as rich text; everything else opens as plain.
+<strong>Ctrl+Shift+M</strong> switches the document you are in. Going
+from rich to plain throws the formatting away, so it asks first.</p>
+<hr />
+<h2 id="saving">Saving</h2>
+<p><strong>Ctrl+S</strong> saves. <strong>Ctrl+Shift+S</strong> saves
+under a new name.</p>
+<p>QuillLite makes you one promise here: <strong>open a file, change
+nothing, save it, and it is exactly the file you started with.</strong>
+Nothing is quietly tidied up behind your back.</p>
+<p>To keep that promise it remembers three things about every file it
+opens, and puts them back the same way:</p>
+<ul>
+<li><strong>How the text is stored</strong> — different files store
+letters and accents differently, and QuillLite keeps whichever way yours
+already used.</li>
+<li><strong>How the lines end</strong> — files made on Windows and files
+made on other systems mark the end of a line differently, and QuillLite
+does not change yours.</li>
+<li><strong>Whether the file ended with a blank line</strong> — if it
+did not, it will not suddenly start.</li>
+</ul>
+<p>You can see both of the first two in the status bar
+(<strong>F6</strong>), and you can deliberately change them from
+<strong>Tools ▸ File Encoding and Line Endings</strong>
+(<strong>Ctrl+Alt+E</strong>) when you actually want to — for instance
+when somebody needs a copy of an old file in a newer format. The change
+takes effect the next time you save.</p>
+<h3 id="if-something-goes-wrong">If something goes wrong</h3>
+<p>While a document has changes you have not saved, QuillLite keeps a
+copy of it aside, about once a minute. That copy sits
+<strong>beside</strong> your file and never on top of it.</p>
+<p>If QuillLite or your computer stops unexpectedly, that work is
+offered back to you the next time you start, in its own document.</p>
+<p>Save it, or close normally, and the copy is deleted. So there is
+never anything in there except work you actually need.</p>
+<h3 id="going-back-to-an-earlier-version">Going back to an earlier
+version</h3>
+<p>There is a separate <strong>timestamped backups</strong> option
+(<strong>View ▸ Customize Features</strong>), which keeps a dated copy
+every time you save. That is for the paragraph you deleted an hour ago
+rather than for a crash. It starts switched off, because it does fill up
+a folder.</p>
+<p>Turn it on and <strong>File ▸ Earlier Versions…</strong>
+(<strong>Ctrl+Alt+Shift+E</strong>) lists them, newest first, as “Today
+at 4:12 PM — 2,341 words”. Up to twenty are kept per document; after
+that the oldest go.</p>
+<p>The word count is there to be compared rather than read. Two saves a
+minute apart are otherwise almost impossible to tell apart by ear, and
+the version that is suddenly two thousand words shorter is usually the
+one you are hunting for.</p>
+<p>There are two ways to take one:</p>
+<ul>
+<li><strong>Restore</strong> puts that version into the window you are
+in. It does <strong>not</strong> save, so the file on disk is untouched
+until you decide, and <strong>Ctrl+Z</strong> undoes it. A restore
+chosen by mistake costs you one keystroke.</li>
+<li><strong>Open a Copy</strong> puts the old version in a new untitled
+window and leaves the document you are working on completely alone. Use
+this one when the question is “what did this say yesterday” rather than
+“put yesterday back”.</li>
+</ul>
+<p>Until version 1.0 QuillLite wrote these files and gave you no way to
+read one: they were there, correctly dated, and reachable only if you
+knew where the app kept them. If you have had backups switched on,
+everything from before this version is in the list too.</p>
+<hr />
+<h2 id="finding-things">Finding things</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+F</strong></td>
+<td>Find</td>
+</tr>
+<tr>
+<td><strong>F3</strong> / <strong>Shift+F3</strong></td>
+<td>Find next / previous</td>
+</tr>
+<tr>
+<td><strong>Ctrl+H</strong></td>
+<td>Replace</td>
+</tr>
+<tr>
+<td><strong>Ctrl+G</strong></td>
+<td>Go to a line by number</td>
+</tr>
+</tbody>
+</table>
+<p>When a search runs off the end of the document it starts again at the
+top, and it tells you it has done so. That matters more than it sounds:
+without it, a document with one match sounds exactly like a document
+with none, every time you press F3.</p>
+<h3 id="how-many-are-there">How many are there?</h3>
+<p>The Find window keeps a running count of what you have typed so far,
+before you press anything. Type three letters and it says how many
+matches there are; add a fourth and the number changes. Your screen
+reader reads it as it changes, because it is a label rather than an
+announcement – a count spoken on every keystroke would talk over the
+typing it is describing.</p>
+<p><strong>Ctrl+Down</strong> and <strong>Ctrl+Up</strong> step through
+the matches <em>without leaving the search box</em>, so you can hear the
+next one and still adjust what you typed. Enter is what commits and puts
+you in the document.</p>
+<p>Outside the window, <strong>Ctrl+Alt+Shift+F3</strong> counts the
+current search anywhere, and <strong>Ctrl+Shift+F3</strong> opens
+<strong>All Matches</strong>: every match in the document, in order,
+each with its line and column and the words around it. That is the list
+you want before a Replace All, because it is the only way to see what
+you are about to change rather than finding out afterwards.</p>
+<h3 id="searching-for-things-you-cannot-type">Searching for things you
+cannot type</h3>
+<p>The Find and Replace windows have a <strong>Search mode</strong> with
+three settings.</p>
+<p><strong>Normal</strong> is the ordinary one: what you type is what is
+looked for, punctuation and all.</p>
+<p><strong>Escapes</strong> lets you write the characters there is no
+key for. <code>\t</code> is a tab, <code>\n</code> a line break,
+<code>\u2014</code> an em dash, and <code>\N{NO-BREAK SPACE}</code> is
+exactly what it says. This is the companion to <strong>Describe
+Character</strong>: that tells you which invisible character you are
+standing on, and this is how you then find every other one like it, or
+replace them all with an ordinary space.</p>
+<p><strong>Regular expression</strong> treats what you typed as a search
+pattern – <code>.</code> matches any character, <code>*</code> repeats
+the thing before it, <code>[abc]</code> matches any one of those,
+<code>^</code> and <code>$</code> are the start and end of a line. If
+the pattern is not valid, QuillLite says which character is wrong rather
+than quietly finding nothing: a search that failed and a search that
+found nothing are different problems, and only one of them is fixed by
+retyping.</p>
+<p>Whole word works with all three. In regular expression mode it wraps
+the whole pattern, so <code>cat|dog</code> means “the word cat or the
+word dog”, not “the word cat, or dog anywhere”.</p>
+<hr />
+<h2 id="bookmarks">Bookmarks</h2>
+<p>A bookmark is a place you meant to come back to.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+B</strong></td>
+<td>Drop a bookmark in the next free slot</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+1</strong> to <strong>Ctrl+Shift+9</strong></td>
+<td>Set that numbered bookmark</td>
+</tr>
+<tr>
+<td><strong>F2</strong> / <strong>Shift+F2</strong></td>
+<td>Next / previous bookmark</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+G</strong></td>
+<td>The bookmark list — go to one, or remove one</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+B</strong></td>
+<td>Clear them all</td>
+</tr>
+</tbody>
+</table>
+<p>Bookmarks follow the text as you edit around them, so they stay on
+the right words rather than drifting.</p>
+<h3 id="they-are-still-there-tomorrow">They are still there
+tomorrow</h3>
+<p>Close the document and open it again and your bookmarks are where you
+left them, along with the place the cursor was. You do not have to do
+anything to keep them.</p>
+<p>This matters more than it sounds. The reason to have bookmarks at all
+is that there is no scrollbar thumb to glance at and no way to see at a
+glance where you are in a long file – and that does not stop being true
+when you close the window. Marking nine places and losing them on the
+way out is the same loss as never marking them, just later.</p>
+<p>Two details worth knowing:</p>
+<ul>
+<li><strong>A document you have never saved is not remembered.</strong>
+There is no filename to remember it by. Save it once and its bookmarks
+are kept from then on.</li>
+<li><strong>Nothing is written next to your file.</strong> No stray
+sidecar file appears in your folder; the list lives in QuillLite’s own
+settings folder, keyed by the file’s location. If the file has been
+shortened by something else since you last had it open, bookmarks past
+the new end are pulled back to the end rather than sending you
+nowhere.</li>
+</ul>
+<p>You can turn all of this off with the rest of bookmarks in
+<strong>View ▸ Customize Features</strong>, and then nothing is written
+at all.</p>
+<h3 id="going-back-where-you-came-from">Going back where you came
+from</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Left</strong></td>
+<td>Go back to where you were before the last jump</td>
+</tr>
+<tr>
+<td><strong>Alt+Right</strong></td>
+<td>Go forward again</td>
+</tr>
+</tbody>
+</table>
+<p>They are in the <strong>Edit</strong> menu rather than under
+Navigate, and deliberately: the Navigate menu is headings and bookmarks,
+both of which you can switch off, and these two belong to neither. They
+are always there.</p>
+<p>Every jump QuillLite makes is remembered: going to a line, following
+a heading, picking something out of the heading list or the bookmark
+list, and landing on a search hit. <strong>Alt+Left</strong> takes you
+back to where you were standing before it.</p>
+<p>It is the undo for moving about, and the keys are the ones every web
+browser and file window has used for thirty years. Without it, pressing
+F3 to check a word somewhere else in the document is a one-way trip: you
+can find your way back only if you happened to know the line number you
+were on, which is exactly the thing you were never told.</p>
+<p>Unlike bookmarks, this is only remembered while the window is open.
+It is about where you have been in this sitting, not about the
+document.</p>
+<hr />
+<h2 id="selecting">Selecting</h2>
+<p>Holding Shift and tapping an arrow key selects one character at a
+time. That is right for two letters and miserable for four paragraphs —
+you press, and press, and have no idea where you have got to.</p>
+<p>So <strong>Edit ▸ Selection</strong> gives you three better ways.
+Everything in it tells you how much it took, which is the part that
+matters: “Selected paragraph, 412 characters” is something you can act
+on, where a silent selection is one you have to test by pressing
+something you might regret.</p>
+<h3 id="start-a-selection-and-walk-to-the-end-of-it">Start a selection
+and walk to the end of it</h3>
+<p>This is the one to learn first. Press <strong>F8</strong>, then move
+however you like — arrows, Home, End, Page Down, Ctrl and an arrow — and
+the selection follows you from where you started. Press
+<strong>Shift+F8</strong> when you get there.</p>
+<p>No modifier held down the whole way, and no counting. It is the
+answer whenever the thing you want does not line up neatly with a word
+or a paragraph.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F8</strong></td>
+<td>Start selecting from here</td>
+</tr>
+<tr>
+<td><strong>Shift+F8</strong></td>
+<td>Finish, and say how much was taken</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F8</strong></td>
+<td>Turn selecting-as-you-move on or off without moving</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F8</strong></td>
+<td>Put back the selection you just had</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F8</strong></td>
+<td>Go to the beginning of what is selected</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ctrl+Shift+F8</strong> is worth remembering for the moment an
+arrow key has just thrown away a selection that took six keystrokes to
+build.</p>
+<h3 id="take-a-whole-word-line-or-paragraph-at-once">Take a whole word,
+line or paragraph at once</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+W</strong></td>
+<td>Select the word</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+E</strong></td>
+<td>Select the line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+H</strong></td>
+<td>Select the paragraph</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Space</strong></td>
+<td>Select the sentence</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+B</strong></td>
+<td>Select the block — the run between blank lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+X</strong></td>
+<td>Grow the selection outwards a step</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+X</strong></td>
+<td>Shrink it back in a step</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+A</strong></td>
+<td>Clear the selection, staying where you are</td>
+</tr>
+<tr>
+<td><strong>Ctrl+A</strong></td>
+<td>Select everything</td>
+</tr>
+</tbody>
+</table>
+<p>You do not need to know where any of these begin. Growing goes word,
+line, sentence, paragraph, block, whole document, and says which one it
+took each time. Shrinking walks back the other way — so you can
+over-press <strong>Ctrl+Shift+X</strong> without it costing you
+anything.</p>
+<h3 id="marks--where-you-were-a-moment-ago">Marks — where you were a
+moment ago</h3>
+<p>A mark is not a bookmark. A bookmark is a place you mean to keep. A
+mark is where you were standing before you went off to check
+something.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+K</strong></td>
+<td>Set a mark here</td>
+</tr>
+<tr>
+<td><strong>Ctrl+M</strong></td>
+<td>Go back to the last mark</td>
+</tr>
+<tr>
+<td><strong>Alt+M</strong></td>
+<td>List your marks and pick one</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+X</strong></td>
+<td>Swap between the cursor and the mark, selecting what is between</td>
+</tr>
+</tbody>
+</table>
+<h3 id="two-more">Two more</h3>
+<p><strong>Ctrl+Shift+Y</strong> reads back what is currently selected.
+There is no glance that confirms you took what you meant to, and the
+next key you press might replace it. Long selections are summarised
+rather than read out in full.</p>
+<p><strong>Ctrl+Alt+Q</strong> puts a second copy of the selection right
+after the first — or duplicates the line you are on if nothing is
+selected.</p>
+<h3 id="the-ones-windows-gives-you-anyway">The ones Windows gives you
+anyway</h3>
+<p>These work in QuillLite as they do everywhere, and have no menu row
+because they need none:</p>
+<p>| <strong>Shift+Home</strong> / <strong>Shift+End</strong> | Select
+to the start / end of the line | | <strong>Ctrl+Shift+Home</strong> /
+<strong>Ctrl+Shift+End</strong> | Select to the start / end of the
+document |</p>
+<hr />
+<h2 id="formatting">Formatting</h2>
+<p>These are WordPad’s keys, deliberately unchanged. They work in rich
+text documents.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+B</strong>, <strong>Ctrl+I</strong>,
+<strong>Ctrl+U</strong></td>
+<td>Bold, italic, underline</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+&gt;</strong> /
+<strong>Ctrl+Shift+&lt;</strong></td>
+<td>Bigger / smaller text</td>
+</tr>
+<tr>
+<td><strong>Ctrl+L</strong>, <strong>Ctrl+E</strong>,
+<strong>Ctrl+R</strong>, <strong>Ctrl+J</strong></td>
+<td>Left, centre, right, justify</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+L</strong></td>
+<td>Bullet points</td>
+</tr>
+<tr>
+<td><strong>Ctrl+1</strong>, <strong>Ctrl+5</strong>,
+<strong>Ctrl+2</strong></td>
+<td>Single, one-and-a-half, double spacing</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+1</strong> to <strong>Ctrl+Alt+4</strong></td>
+<td>Heading 1 to 4</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+0</strong></td>
+<td>Back to ordinary text</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+D</strong></td>
+<td>Describe the formatting where the cursor is</td>
+</tr>
+</tbody>
+</table>
+<p>A heading is bold text at a larger size — 20, 16, 14 and 12 point for
+levels 1 to 4, with ordinary text at 11 point. These are the same sizes
+QUILL for All uses, chosen so that a document you save here still reads
+as having headings when somebody opens it in Word.</p>
+<p><strong>Ctrl+Shift+D</strong> is the one worth remembering. It tells
+you what you are standing in — “Arial, 16 point, heading 2, bold” —
+which is the question a formatted document raises and that nothing else
+can answer for you.</p>
+<h3 id="moving-between-headings">Moving between headings</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+H</strong> / <strong>Ctrl+Alt+Shift+H</strong></td>
+<td>Next / previous heading</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+L</strong></td>
+<td>The list of every heading</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rearranging-them--format--structure">Rearranging them — Format ▸
+Structure</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+Left</strong></td>
+<td>Promote heading — one level shallower</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Right</strong></td>
+<td>Demote heading — one level deeper</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Up</strong></td>
+<td>Move this whole section up, past the one before it</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Down</strong></td>
+<td>Move this whole section down, past the one after it</td>
+</tr>
+</tbody>
+</table>
+<p>Until now QuillLite could make headings and walk between them but
+never move them about, which left cut-and-paste as the only way to
+reorganise a document — and that is the operation it is worst at. Moving
+a section by hand means selecting from one heading to exactly the start
+of the next: a boundary you cannot see, that you have to find by ear,
+and that takes your place in the document with it when you get it wrong.
+<strong>Alt+Shift+Up</strong> does the same thing in one keystroke and
+tells you it happened.</p>
+<p>“Section” means the heading you are in plus everything under it, down
+to the next heading at the same level or higher. Moving a Heading 2
+takes its Heading 3s with it.</p>
+<p>Two things to know:</p>
+<ul>
+<li><strong>Promoting a Heading 1 leaves it a Heading 1.</strong> It
+does not turn into ordinary text — losing a heading altogether is not
+what Alt+Shift+Left is for, and it would quietly drop the paragraph out
+of your headings list.</li>
+<li><strong>Moving sections works in plain text documents</strong>,
+where headings are Markdown <code>#</code> lines. In a rich text
+document a heading is a font size rather than something written in the
+text, and there is nothing there to move; QuillLite says so rather than
+doing nothing. Promoting and demoting work in both.</li>
+</ul>
+<p>These are QUILL for All’s own four keys, so they behave the same in
+both.</p>
+<hr />
+<h2 id="spell-check">Spell check</h2>
+<p>WordPad never had a spell checker. Notepad only got one recently.
+QuillLite has one, and it is the same one QUILL for All uses.</p>
+<p><strong>F7 checks the whole document.</strong> It walks you through
+it one word at a time with suggestions you can arrow through. For each
+word you can change it, change every one like it, skip it, or add it to
+your dictionary so it is never questioned again.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F7</strong></td>
+<td>Check the whole document</td>
+</tr>
+<tr>
+<td><strong>Shift+F7</strong></td>
+<td>Suggestions for the word you are on</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F7</strong> / <strong>Ctrl+Shift+F7</strong></td>
+<td>Go to the next / previous mistake</td>
+</tr>
+<tr>
+<td><strong>Alt+F7</strong></td>
+<td>Add this word to your dictionary</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F7</strong></td>
+<td>Turn checking-as-you-type on or off here</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ctrl+F7</strong> selects the word it lands on, so your screen
+reader reads it to you when you get there.</p>
+<h3 id="when-it-stays-quiet">When it stays quiet</h3>
+<p>Some files are not writing at all. They hold settings and
+instructions that programs read, and they are full of made-up words,
+abbreviations and names that no dictionary contains. Checking one of
+those as you type would give you a constant stream of warnings that are
+every one of them wrong.</p>
+<p>So <strong>QuillLite does not check those files as you type.</strong>
+It recognises them by the kind of file they are, and it tells you once
+when you open one, so you are never left wondering whether something is
+broken.</p>
+<p>If you want checking in one anyway, press
+<strong>Ctrl+Alt+F7</strong>. It changes only the document you are in —
+a letter and a settings file open at the same time can quite happily
+disagree about this. The <strong>Spelling</strong> menu shows a tick
+beside <strong>Check While Typing</strong> so you can always see which
+way it is set.</p>
+<p><strong>F7 always works, in every file.</strong> Staying quiet is
+only about what happens when you have not asked. If you ask for a check,
+you get one.</p>
+<h3 id="your-dictionary">Your dictionary</h3>
+<p>Words you teach QuillLite are yours, kept in QuillLite’s own folder.
+If you also use QUILL for All, one setting in Preferences makes both
+share the same list, so a word taught in either is known to both.</p>
+<p>A single document can also have its own short list of words, kept in
+a small file beside it. That is useful for names that belong to one
+piece of work and nowhere else.</p>
+<hr />
+<h2 id="what-is-this-character">What is this character?</h2>
+<p><strong>Ctrl+Shift+C</strong> tells you exactly which character the
+cursor is on — its name, and what it does to a search.</p>
+<p>This sounds like a small thing and is not. Your screen reader says
+“space” for several different characters that look identical and behave
+differently, and one of them is very often the reason a search is not
+finding something you can plainly see is there.</p>
+<p><strong>Ctrl+Alt+C</strong> opens the full description in a window
+you can read line by line.</p>
+<hr />
+<h2 id="the-status-bar">The status bar</h2>
+<p><strong>F6</strong> takes you into it. The arrow keys and
+<strong>Home</strong>/<strong>End</strong> move along it,
+<strong>Enter</strong> acts on the part you are on, and
+<strong>Escape</strong> puts you back in your document. Each part says
+its own name and value.</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>What it tells you</th>
+<th>Enter does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Status Message</strong></td>
+<td>The last thing QuillLite told you, so speech you missed can be heard
+again</td>
+<td>repeats it</td>
+</tr>
+<tr>
+<td><strong>Position</strong></td>
+<td>Which line and column you are on, out of how many lines</td>
+<td>Go to a line</td>
+</tr>
+<tr>
+<td><strong>Word Count</strong></td>
+<td>How many words the document has</td>
+<td>repeats it</td>
+</tr>
+<tr>
+<td><strong>Character Count</strong></td>
+<td>How many characters, spaces included</td>
+<td>repeats it</td>
+</tr>
+<tr>
+<td><strong>Selection</strong></td>
+<td>How much is selected, or “No selection”</td>
+<td>repeats it</td>
+</tr>
+<tr>
+<td><strong>Typing Mode</strong></td>
+<td>Whether typing inserts or overwrites</td>
+<td>switches between them</td>
+</tr>
+<tr>
+<td><strong>Tab Mode</strong></td>
+<td>Whether the Tab key types a tab or indents the line</td>
+<td>switches between them</td>
+</tr>
+<tr>
+<td><strong>Format</strong></td>
+<td>Plain text or rich text</td>
+<td>switches between them</td>
+</tr>
+<tr>
+<td><strong>Heading</strong></td>
+<td>Which heading you are inside</td>
+<td>lists every heading</td>
+</tr>
+<tr>
+<td><strong>Encoding</strong></td>
+<td>How this file stores its letters and accents</td>
+<td>change it</td>
+</tr>
+<tr>
+<td><strong>Line Endings</strong></td>
+<td>How this file marks the end of a line</td>
+<td>change it</td>
+</tr>
+<tr>
+<td><strong>Saved State</strong></td>
+<td>Whether you have unsaved changes</td>
+<td>saves</td>
+</tr>
+</tbody>
+</table>
+<p>Five of these are worth pointing out.</p>
+<p><strong>Typing Mode</strong> is the one you cannot find out any other
+way. Every Windows editor has an overwrite mode, where what you type
+replaces the letters already there instead of pushing them along, and
+none of them will tell you which mode you are in — you find out by
+typing over a sentence you meant to keep. Press
+<strong>Ctrl+Alt+Shift+W</strong> to switch, or <strong>Enter</strong>
+on this part of the status bar.</p>
+<p>The <strong>Insert</strong> key switches it too, because the editing
+control answers that key whether QuillLite asks it to or not. QuillLite
+does not claim the key — it is NVDA’s and JAWS’s own modifier and taking
+it would fight your screen reader — but it does watch for it, so this
+part of the status bar stays right either way.</p>
+<p><strong>Tab Mode</strong> is the same idea. QuillLite starts where
+Notepad does: the <strong>Tab</strong> key types a tab character. Switch
+it with <strong>Ctrl+Alt+Shift+I</strong> and Tab indents the whole line
+instead, which is what QUILL does by default and what you probably want
+when the file is code. <strong>Shift+Tab</strong> outdents either way,
+so a tab you did not mean to type can always be taken back without
+switching modes first.</p>
+<p><strong>Encoding</strong> and <strong>Line Endings</strong> are the
+two things that decide whether your file opens properly on somebody
+else’s computer, and almost no other editor shows them at all. You will
+rarely need to change them — but when a file arrives looking like
+nonsense, this is where the answer is.</p>
+<p><strong>Status Message</strong> exists because speech is gone the
+moment it is spoken. If you missed something QuillLite said, this is
+where you go to read it again.</p>
+<hr />
+<h2 id="copying-and-pasting-more-than-one-thing">Copying and pasting
+more than one thing</h2>
+<p>The Windows clipboard holds one thing at a time. QuillLite gives you
+three ways around that, in the <strong>Clipboard</strong> menu.</p>
+<p><strong>The copy tray</strong> is twelve numbered slots that survive
+closing the app. Copy into a slot with <strong>Ctrl+Alt+Y</strong>, and
+paste from any of them an hour later with <strong>Ctrl+Alt+V</strong>.
+<strong>Ctrl+Alt+Shift+Y</strong> empties it.</p>
+<p><strong>The collector</strong> gathers things up. Each
+<strong>Ctrl+Alt+G</strong> adds what you have selected to one growing
+pile, and <strong>Ctrl+Alt+Shift+G</strong> pastes the whole pile. This
+is what you want when you are pulling five quotes out of a long
+document. <strong>Ctrl+Alt+Shift+C</strong> empties the pile.</p>
+<p><strong>The clip library</strong> happens by itself — a rolling
+history of what you have copied, whether or not you decided at the time
+that it mattered. <strong>Ctrl+Alt+M</strong> keeps the current clip
+deliberately, and <strong>Ctrl+Alt+Shift+M</strong> opens the list.</p>
+<p>And <strong>Ctrl+Shift+V</strong> pastes text with none of its
+formatting, which is what you want when something copied from a web page
+arrives wearing its own fonts and colours.</p>
+<hr />
+<h2 id="tools">Tools</h2>
+<p>The <strong>Tools</strong> menu is for things you need to <em>do</em>
+to text. Each one works on what you have selected, or on the whole
+document if you have not selected anything.</p>
+<p>Sort lines (<strong>Ctrl+Alt+S</strong>, or
+<strong>Ctrl+Alt+Shift+S</strong> for Z to A), remove blank lines,
+remove duplicate lines, trim trailing spaces, and change text to
+UPPERCASE (<strong>Ctrl+Shift+U</strong>), lowercase
+(<strong>Ctrl+Shift+K</strong>) or Title Case
+(<strong>Ctrl+Shift+G</strong>).</p>
+<p>Two more case changes sit beside those. <strong>Sentence
+case</strong> (<strong>Ctrl+Alt+Shift+U</strong>) puts a capital at the
+start and lowers the rest, which is what a heading typed in shouting
+needs. <strong>Invert Case</strong> (<strong>Ctrl+Alt+Shift+N</strong>)
+swaps every letter, which is the cure for a sentence typed with Caps
+Lock on.</p>
+<p>Under <strong>Tools ▸ More Line Work</strong> there are three more:
+<strong>Reverse Lines</strong> (<strong>Alt+Shift+Z</strong>),
+<strong>Tidy Whitespace</strong> (<strong>Ctrl+Alt+Shift+T</strong>),
+which collapses the runs of spaces and tabs that arrive with pasted-in
+text, and <strong>Number Lines</strong>
+(<strong>Alt+Shift+N</strong>).</p>
+<p>Each one counts as a single undo, so <strong>Ctrl+Z</strong> takes
+back the whole sort rather than putting back one line at a time.</p>
+<h3 id="working-on-one-line-at-a-time">Working on one line at a
+time</h3>
+<p>The tools above rewrite a whole selection. These work on the line the
+cursor is already on, which is usually the one you want.</p>
+<p><strong>Move Line Up</strong> (<strong>Ctrl+Shift+Up</strong>) and
+<strong>Move Line Down</strong> (<strong>Ctrl+Shift+Down</strong>) move
+the current line past its neighbour. Reordering two lines any other way
+means selecting one, cutting it, finding the new place and pasting –
+four steps, each of which leaves the cursor somewhere the last one did
+not. <strong>Duplicate Line</strong> is <strong>Ctrl+D</strong>, and
+<strong>Join Lines</strong> (<strong>Ctrl+Alt+Shift+J</strong>) pulls
+the line below onto the end of this one.</p>
+<p><strong>Delete Line</strong> is <strong>Ctrl+Shift+Delete</strong>.
+<strong>Delete to Start of Line</strong>
+(<strong>Ctrl+Shift+Backspace</strong>) and <strong>Delete to End of
+Line</strong> (<strong>Ctrl+Alt+Shift+Delete</strong>) remove everything
+to one side of the cursor, and <strong>Delete Paragraph</strong>
+(<strong>Ctrl+Alt+Shift+Backspace</strong>) takes the whole
+paragraph.</p>
+<p>Each of these tells you what it did, and tells you when it did
+nothing – “Already the first line” is a different fact from silence, and
+you should not have to press an arrow key to find out which one you
+got.</p>
+<h3 id="getting-deleted-text-back-somewhere-else">Getting deleted text
+back somewhere else</h3>
+<p><strong>Restore Deleted Text</strong>
+(<strong>Ctrl+Alt+Shift+Z</strong>) puts your most recent deletion back
+<strong>at the cursor</strong>, wherever the cursor now is.</p>
+<p>That is what makes it different from undo, and it is the reason it
+exists. Ctrl+Z puts text back where it came from; this puts it where you
+are now, so deleting a paragraph and restoring it further down is a way
+to <em>move</em> it that never touches the clipboard – which means
+whatever you were already carrying on the clipboard is still there
+afterwards.</p>
+<p>It remembers your last three deletions, and only the deliberate ones:
+the delete commands above, not every character you backspaced over.</p>
+<h3 id="indenting">Indenting</h3>
+<p><strong>Tools ▸ Indenting</strong> has <strong>Indent</strong>
+(<strong>Ctrl+]</strong>) and <strong>Outdent</strong>
+(<strong>Ctrl+[</strong>). They work on every line the selection
+touches, or on the line the cursor is on if nothing is selected, and
+they say how many lines moved.</p>
+<p>These matter more here than they look. QuillLite already goes quiet
+about spelling in a <code>.json</code> or a <code>.py</code> file, which
+is an admission that people edit configuration and code in it – and for
+that person, moving a block in or out a level is the single most common
+thing to want and the most tedious to do by arrow key.</p>
+<h4 id="asking-how-deep-a-line-is">Asking how deep a line is</h4>
+<p><strong>Describe Indent Depth</strong>
+(<strong>Ctrl+Alt+Shift+V</strong>) says how far the line you are on is
+indented: “4 spaces”, “1 tab”, “1 tab, 3 spaces”, or “No
+indentation”.</p>
+<p>This is the one question about a line that nothing else will answer.
+A screen reader reads a line’s <em>words</em>; it does not read the
+spaces and tabs in front of them. So in a YAML file, a Python file or a
+deeply nested list, the shape of the document – which is most of its
+meaning – is simply not there when you listen to it, and there has never
+been a way to ask.</p>
+<p>It also tells you something the words cannot: whether this line is
+indented with the same <em>kind</em> of whitespace as its neighbours. A
+file where one line uses a tab and the rest use spaces looks identical
+however carefully you read it, and in a Python file it will not run.</p>
+<h4 id="making-tab-indent-instead">Making Tab indent instead</h4>
+<p>By default the <strong>Tab</strong> key types a tab character, the
+way Notepad’s does. <strong>View ▸ Tab Key Inserts a Tab
+Character</strong> is ticked to say so. Clear that tick –
+<strong>Ctrl+Alt+Shift+I</strong> – and Tab indents the whole line
+instead, announcing the new depth as it goes. Working on code, that is
+usually the one you want.</p>
+<p><strong>Shift+Tab</strong> outdents in <em>either</em> mode. That is
+deliberate: it means a tab you typed by accident can always be undone
+with one keystroke, without first working out which mode you were
+in.</p>
+<p>The status bar’s <strong>Tab Mode</strong> part always says which one
+is on.</p>
+<h3 id="abbreviations">Abbreviations</h3>
+<p>Type a short form, press space, and get the long one. Useful for an
+address, a sign off, or anything you type often and would rather not
+spell out every time.</p>
+<p><strong>Ctrl+Alt+A</strong> manages your list. It is QuillLite’s own
+list to begin with; if you also use QUILL for All or Quill Inkwell,
+Preferences has a switch that makes all three share one list.</p>
+<hr />
+<h2 id="finding-a-command">Finding a command</h2>
+<p><strong>Ctrl+Shift+P</strong> opens a search box for commands. Type
+part of what you want — “sort”, “bookmark”, “print” — and pick it from
+the list. You do not have to remember which menu it lives in.</p>
+<p>Each command shows its keyboard shortcut beside it, which is a
+comfortable way to learn the keys over time.</p>
+<hr />
+<h2 id="making-quilllite-smaller-or-larger">Making QuillLite smaller (or
+larger)</h2>
+<p><strong>View ▸ Customize Features</strong>
+(<strong>Ctrl+Alt+Shift+F</strong>) lets you switch whole parts of
+QuillLite off. Turning something off removes it from the menus
+<strong>and</strong> unhooks its keys, so it is properly gone rather
+than just hidden.</p>
+<p>That is how QuillLite stays small without being poor: you take out
+what you do not want, rather than learning to ignore it. Uncheck the
+first box and QuillLite is essentially Notepad.</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>What goes</th>
+<th>Starts</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rich text and the Format menu</strong></td>
+<td>Bold, headings, alignment, bullets, spacing</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Heading navigation</strong></td>
+<td>Next and previous heading, the headings list</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Bookmarks</strong></td>
+<td>All nine, and the list</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>The Tools menu</strong></td>
+<td>Sort, remove duplicates, trim, change case, file settings</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Copy Tray and the clip library</strong></td>
+<td>The Clipboard menu (Paste Text Only stays)</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Printing</strong></td>
+<td>Print and Page Setup</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Abbreviations</strong></td>
+<td>Short forms, and the list that manages them</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Spell check</strong></td>
+<td>The Spelling menu, and checking as you type</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>The Selection submenu</strong></td>
+<td>F8 selecting, whole-structure selecting, marks</td>
+<td>on</td>
+</tr>
+<tr>
+<td><strong>Autocorrect while typing</strong></td>
+<td>Curly quotes, long dashes, sentence capitals</td>
+<td><strong>off</strong></td>
+</tr>
+<tr>
+<td><strong>Timestamped backups</strong></td>
+<td>A dated copy kept every time you save</td>
+<td><strong>off</strong></td>
+</tr>
+<tr>
+<td><strong>Go To Anything</strong></td>
+<td>One box that searches everything at once</td>
+<td><strong>off</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The last three start switched off, and they sit in this same list
+rather than being hidden away, because something you cannot find might
+as well not exist.</p>
+<p>Autocorrect is off because curly quotes are lovely in a letter and
+unhelpful in a settings file. Backups are off because they quietly fill
+a folder. Go To Anything is off because the command search, the headings
+list and the bookmark list already each do their own part of the
+job.</p>
+<hr />
+<h2 id="settings">Settings</h2>
+<p><strong>View ▸ Preferences</strong> (<strong>Ctrl+,</strong>) has
+everything in one place.</p>
+<p>Six settings live only there: what <strong>Ctrl+N</strong> creates,
+how often unsaved work is copied aside, whether last session’s documents
+reopen, whether spelling is checked as you type, and whether your
+abbreviations and your taught words are shared with QUILL for All.</p>
+<p>The rest — dark mode, word wrap, the editor font — are on the
+<strong>View</strong> menu too, where you will reach them faster.</p>
+<p><strong>Dark mode is on by default.</strong> It changes what you see
+and nothing else. The colours are never written into your files, so a
+dark theme can never leave grey text in a document you send
+somebody.</p>
+<hr />
+<h2 id="printing">Printing</h2>
+<p><strong>Ctrl+P</strong> prints. <strong>Ctrl+Alt+U</strong> is Page
+Setup.</p>
+<p>Long lines are wrapped to fit the page whatever your Word Wrap
+setting says, because a printed line that runs off the edge of the paper
+is simply gone.</p>
+<p><strong>In this version, rich formatting does not print.</strong>
+Your text prints in the editor’s font, with headings marked rather than
+styled. We would rather tell you that here than have you find it on
+paper.</p>
+<hr />
+<h2 id="speech">Speech</h2>
+<p>QuillLite talks through <strong>NVDA or JAWS</strong>, and nothing
+else. There is no built-in voice, and that is on purpose: a second voice
+talking over your screen reader is worse than silence.</p>
+<p>It also says as little as it can. Your screen reader already
+announces window titles, where your focus has moved, the names of
+buttons and what you have selected. QuillLite only tells you things it
+alone knows — that a save happened, that a search wrapped around, that
+bold went on, that four things were replaced.</p>
+<p>Everything it says also goes into the first part of the status bar,
+so <strong>F6</strong> will bring back a message you missed.</p>
+<p>If you have no screen reader running, QuillLite says nothing out loud
+— but every message is still there in the status bar.</p>
+<hr />
+<h2 id="where-your-files-are-kept">Where your files are kept</h2>
+<p>Your settings, recent files, copy tray and any recovered work are
+kept in a QuillLite folder inside your own Windows user folder.
+<strong>Help ▸ About QuillLite</strong> shows you the exact
+location.</p>
+<p>It is deliberately <strong>not</strong> inside QUILL for All’s
+folder. QuillLite is offered as an alternative to QUILL, not as part of
+it, and installing or removing one should never affect the other.</p>
+<p>Uninstalling QuillLite does not delete that folder. Recovered work is
+the one thing you might not have finished with, and an uninstaller is
+the worst possible moment to discover that.</p>
+<h3 id="the-portable-copy-keeps-everything-on-the-stick">The portable
+copy keeps everything on the stick</h3>
+<p>If you are running the <strong>portable</strong> QuillLite – the
+<code>.zip</code> you unpack rather than the installer – then none of
+the above applies. Everything goes into the <code>data\QuillLite</code>
+folder inside the bundle, right next to <code>QuillLite.exe</code>, and
+nothing at all is written to the computer you are plugged into. That is
+what portable means, and QuillLite does it from the very first launch:
+there is no setting to find first.</p>
+<p>Until version 1.0 it did not. A portable QuillLite quietly used
+<code>%LOCALAPPDATA%\QuillLite</code> on the host machine instead, and
+said nothing about it – so settings did not travel with the stick, and,
+worse, recovered copies of documents you had not saved were left behind
+on someone else’s computer. If you have been carrying a portable
+QuillLite, that folder is where anything you seem to have lost will be,
+and it is worth deleting once you have what you want out of it.</p>
+<p>Delete the <code>data</code> folder from the bundle and QuillLite
+goes back to using this computer’s own profile – that folder is what
+marks the copy as portable.</p>
+<hr />
+<h2 id="what-quilllite-is-not">What QuillLite is not</h2>
+<p>QuillLite is a companion to <strong>QUILL for All</strong>, not a
+replacement for it.</p>
+<p>If you want artificial intelligence, dictation, document conversion,
+comparing two documents, publishing or braille tools, those are QUILL,
+and QuillLite is built so that it will not slowly grow into them.</p>
+<p>Both are free, both are built for screen reader users, and they
+install perfectly happily side by side.</p>
+<hr />
+<h2 id="every-key-in-one-table">Every key, in one table</h2>
+<!-- keys:start -->
+
+<p>Generated from the same table that builds the menus, so it cannot
+drift from what is actually bound. <strong>Ctrl+F1</strong> shows this
+list inside the app.</p>
+<h3 id="file">File</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+N</strong></td>
+<td>New</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+N</strong></td>
+<td>New Rich Text Document</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+N</strong></td>
+<td>New Plain Text Document</td>
+</tr>
+<tr>
+<td><strong>Ctrl+O</strong></td>
+<td>Open…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+S</strong></td>
+<td>Save</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+S</strong></td>
+<td>Save As…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+E</strong></td>
+<td>Earlier Versions…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+U</strong></td>
+<td>Page Setup…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+P</strong></td>
+<td>Print…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+W</strong></td>
+<td>Close Window</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Q</strong></td>
+<td>Exit QuillLite</td>
+</tr>
+</tbody>
+</table>
+<h3 id="edit">Edit</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Z</strong></td>
+<td>Undo</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Y</strong></td>
+<td>Redo</td>
+</tr>
+<tr>
+<td><strong>Ctrl+X</strong></td>
+<td>Cut</td>
+</tr>
+<tr>
+<td><strong>Ctrl+C</strong></td>
+<td>Copy</td>
+</tr>
+<tr>
+<td><strong>Ctrl+V</strong></td>
+<td>Paste</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+V</strong></td>
+<td>Paste Text Only</td>
+</tr>
+<tr>
+<td><strong>Del</strong></td>
+<td>Delete</td>
+</tr>
+<tr>
+<td><strong>Ctrl+A</strong></td>
+<td>Select All</td>
+</tr>
+<tr>
+<td><strong>F5</strong></td>
+<td>Insert Date and Time</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+C</strong></td>
+<td>Describe Character</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+C</strong></td>
+<td>Character Details…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F</strong></td>
+<td>Find…</td>
+</tr>
+<tr>
+<td><strong>F3</strong></td>
+<td>Find Next</td>
+</tr>
+<tr>
+<td><strong>Shift+F3</strong></td>
+<td>Find Previous</td>
+</tr>
+<tr>
+<td><strong>Ctrl+H</strong></td>
+<td>Replace…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+G</strong></td>
+<td>Go to Line…</td>
+</tr>
+<tr>
+<td><strong>Alt+Left</strong></td>
+<td>Go Back</td>
+</tr>
+<tr>
+<td><strong>Alt+Right</strong></td>
+<td>Go Forward</td>
+</tr>
+</tbody>
+</table>
+<h3 id="edit--matches">Edit ▸ Matches</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+F3</strong></td>
+<td>All Matches…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F3</strong></td>
+<td>Count Occurrences</td>
+</tr>
+</tbody>
+</table>
+<h3 id="edit--selection">Edit ▸ Selection</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F8</strong></td>
+<td>Start Selection</td>
+</tr>
+<tr>
+<td><strong>Shift+F8</strong></td>
+<td>Complete Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F8</strong></td>
+<td>Reselect Last Selection</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+F8</strong></td>
+<td>Go to Start of Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F8</strong></td>
+<td>Extend Selection Mode</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+W</strong></td>
+<td>Select Word</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+E</strong></td>
+<td>Select Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+H</strong></td>
+<td>Select Paragraph</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Space</strong></td>
+<td>Select Sentence</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+B</strong></td>
+<td>Select Block</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+X</strong></td>
+<td>Expand Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+X</strong></td>
+<td>Shrink Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+A</strong></td>
+<td>Unselect All</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+K</strong></td>
+<td>Set Mark</td>
+</tr>
+<tr>
+<td><strong>Ctrl+M</strong></td>
+<td>Pop Mark</td>
+</tr>
+<tr>
+<td><strong>Alt+M</strong></td>
+<td>List Marks</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+X</strong></td>
+<td>Exchange Cursor and Mark</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Y</strong></td>
+<td>Say Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Q</strong></td>
+<td>Duplicate Selection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="view">View</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+D</strong></td>
+<td>Dark Mode</td>
+</tr>
+<tr>
+<td><strong>Alt+Z</strong></td>
+<td>Word Wrap</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+W</strong></td>
+<td>Overwrite Mode</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+I</strong></td>
+<td>Tab Key Inserts a Tab Character</td>
+</tr>
+<tr>
+<td><strong>Ctrl+=</strong></td>
+<td>Increase Text Size</td>
+</tr>
+<tr>
+<td><strong>Ctrl+-</strong></td>
+<td>Decrease Text Size</td>
+</tr>
+<tr>
+<td><strong>Ctrl+0</strong></td>
+<td>Reset Text Size</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F</strong></td>
+<td>Editor Font…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+W</strong></td>
+<td>Document Statistics</td>
+</tr>
+<tr>
+<td><strong>F6</strong></td>
+<td>Status Bar</td>
+</tr>
+<tr>
+<td><strong>Ctrl+,</strong></td>
+<td>Preferences…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F</strong></td>
+<td>Customize Features…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+P</strong></td>
+<td>Command Palette…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+A</strong></td>
+<td>Go To Anything…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="format">Format</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+B</strong></td>
+<td>Bold</td>
+</tr>
+<tr>
+<td><strong>Ctrl+I</strong></td>
+<td>Italic</td>
+</tr>
+<tr>
+<td><strong>Ctrl+U</strong></td>
+<td>Underline</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+.</strong></td>
+<td>Grow Font</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+,</strong></td>
+<td>Shrink Font</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+1</strong></td>
+<td>Heading 1</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+2</strong></td>
+<td>Heading 2</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+3</strong></td>
+<td>Heading 3</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+4</strong></td>
+<td>Heading 4</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+0</strong></td>
+<td>Body Text</td>
+</tr>
+</tbody>
+</table>
+<h3 id="format--structure">Format ▸ Structure</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+Left</strong></td>
+<td>Promote Heading</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Right</strong></td>
+<td>Demote Heading</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Up</strong></td>
+<td>Move Section Up</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Down</strong></td>
+<td>Move Section Down</td>
+</tr>
+</tbody>
+</table>
+<h3 id="format-1">Format</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+L</strong></td>
+<td>Align Left</td>
+</tr>
+<tr>
+<td><strong>Ctrl+E</strong></td>
+<td>Centre</td>
+</tr>
+<tr>
+<td><strong>Ctrl+R</strong></td>
+<td>Align Right</td>
+</tr>
+<tr>
+<td><strong>Ctrl+J</strong></td>
+<td>Justify</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+L</strong></td>
+<td>Bullets</td>
+</tr>
+<tr>
+<td><strong>Ctrl+1</strong></td>
+<td>Single Spacing</td>
+</tr>
+<tr>
+<td><strong>Ctrl+5</strong></td>
+<td>One and a Half Spacing</td>
+</tr>
+<tr>
+<td><strong>Ctrl+2</strong></td>
+<td>Double Spacing</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F</strong></td>
+<td>Font for Selection…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+D</strong></td>
+<td>Describe Formatting at Cursor</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+M</strong></td>
+<td>Switch Document Mode</td>
+</tr>
+</tbody>
+</table>
+<h3 id="clipboard">Clipboard</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Y</strong></td>
+<td>Copy to Tray</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+V</strong></td>
+<td>Paste from Tray…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Y</strong></td>
+<td>Clear Copy Tray</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+G</strong></td>
+<td>Collect Selection</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+G</strong></td>
+<td>Paste Everything Collected</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+C</strong></td>
+<td>Clear the Collector</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+M</strong></td>
+<td>Keep Clip</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+M</strong></td>
+<td>Recent Clips…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="navigate">Navigate</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+H</strong></td>
+<td>Next Heading</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+H</strong></td>
+<td>Previous Heading</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+L</strong></td>
+<td>List Headings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+B</strong></td>
+<td>Set Bookmark</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+G</strong></td>
+<td>Go to Bookmark…</td>
+</tr>
+<tr>
+<td><strong>F2</strong></td>
+<td>Next Bookmark</td>
+</tr>
+<tr>
+<td><strong>Shift+F2</strong></td>
+<td>Previous Bookmark</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+B</strong></td>
+<td>Clear All Bookmarks</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+1</strong></td>
+<td>Set Bookmark 1</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+2</strong></td>
+<td>Set Bookmark 2</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+3</strong></td>
+<td>Set Bookmark 3</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+4</strong></td>
+<td>Set Bookmark 4</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+5</strong></td>
+<td>Set Bookmark 5</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+6</strong></td>
+<td>Set Bookmark 6</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+7</strong></td>
+<td>Set Bookmark 7</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+8</strong></td>
+<td>Set Bookmark 8</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+9</strong></td>
+<td>Set Bookmark 9</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tools-1">Tools</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+S</strong></td>
+<td>Sort Lines A to Z</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+S</strong></td>
+<td>Sort Lines Z to A</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+K</strong></td>
+<td>Remove Blank Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+D</strong></td>
+<td>Remove Duplicate Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+T</strong></td>
+<td>Trim Trailing Spaces</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Up</strong></td>
+<td>Move Line Up</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Down</strong></td>
+<td>Move Line Down</td>
+</tr>
+<tr>
+<td><strong>Ctrl+D</strong></td>
+<td>Duplicate Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+J</strong></td>
+<td>Join Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Delete</strong></td>
+<td>Delete Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Backspace</strong></td>
+<td>Delete to Start of Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Delete</strong></td>
+<td>Delete to End of Line</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Backspace</strong></td>
+<td>Delete Paragraph</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Z</strong></td>
+<td>Restore Deleted Text</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+U</strong></td>
+<td>UPPERCASE</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+K</strong></td>
+<td>lowercase</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+G</strong></td>
+<td>Title Case</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+U</strong></td>
+<td>Sentence case</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+N</strong></td>
+<td>Invert Case</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+E</strong></td>
+<td>File Encoding and Line Endings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+A</strong></td>
+<td>Manage Abbreviations…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tools--indenting">Tools ▸ Indenting</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+]</strong></td>
+<td>Indent</td>
+</tr>
+<tr>
+<td><strong>Ctrl+[</strong></td>
+<td>Outdent</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+V</strong></td>
+<td>Describe Indent Depth</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tools--more-line-work">Tools ▸ More Line Work</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+Z</strong></td>
+<td>Reverse Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+T</strong></td>
+<td>Tidy Whitespace</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+N</strong></td>
+<td>Number Lines</td>
+</tr>
+</tbody>
+</table>
+<h3 id="spelling">Spelling</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F7</strong></td>
+<td>Check Spelling…</td>
+</tr>
+<tr>
+<td><strong>Shift+F7</strong></td>
+<td>Spelling for This Word</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F7</strong></td>
+<td>Next Misspelling</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F7</strong></td>
+<td>Previous Misspelling</td>
+</tr>
+<tr>
+<td><strong>Alt+F7</strong></td>
+<td>Add Word to Dictionary</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+F7</strong></td>
+<td>Check While Typing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="window">Window</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Tab</strong></td>
+<td>Next Window</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F6</strong></td>
+<td>Next Window (MDI)</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+Tab</strong></td>
+<td>Previous Window</td>
+</tr>
+</tbody>
+</table>
+<h3 id="help">Help</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F1</strong></td>
+<td>Help for This Window</td>
+</tr>
+<tr>
+<td><strong>Ctrl+F1</strong></td>
+<td>Keyboard Shortcuts</td>
+</tr>
+<tr>
+<td><strong>Shift+F1</strong></td>
+<td>About QuillLite</td>
+</tr>
+</tbody>
+</table>
+<h3 id="built-per-window">Built per window</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+1</strong> to <strong>Alt+9</strong></td>
+<td>Go to that numbered document</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+1</strong> to <strong>Alt+Shift+9</strong></td>
+<td>Reopen that recent file</td>
+</tr>
+</tbody>
+</table>
+<p>Two of these read differently on a keyboard than in a table:
+<strong>Ctrl+Shift+&gt;</strong> and <strong>Ctrl+Shift+&lt;</strong>
+are the keys your fingers know, and they are listed above as
+<code>Ctrl+Shift+.</code> and <code>Ctrl+Shift+,</code> because that is
+the same physical key and the spelling wx understands.</p>
+<!-- keys:end -->
+</main>
+</body>
+</html>

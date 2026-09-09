@@ -1,0 +1,387 @@
+"""The Tools menu: the things people have to *do* to text, and how it is stored.
+
+Two groups, and both are here for the same reason. Sorting a list of forty
+names, lower-casing a heading somebody pasted in shouting, or stripping the
+trailing spaces a diff is about to complain about are all jobs that take one
+keystroke here and several minutes of arrow keys otherwise -- and "several
+minutes of arrow keys" costs a screen-reader user far more than it costs anybody
+else.
+
+* **Line and case tools** -- QUILL's own :mod:`quill.core.format_ops` and
+  :mod:`quill.core.transforms`, not a second implementation. QuillLite must
+  never be *ahead* of QUILL: if a text operation is worth having here it is
+  worth having there, and two implementations of "sort these lines" is two
+  places for them to start disagreeing about what a trailing newline means.
+* **File format** -- the encoding and the line endings this document will be
+  written back with. QuillLite already round-trips both faithfully; this is how
+  you *change* them on purpose, which is what somebody moving a file between
+  Windows and a build server actually needs.
+
+Every tool works on the selection when there is one and on the whole document
+when there is not, which is the rule every editor uses and the one nobody has to
+be told. Each is a single undoable step: the change goes in through the
+control's own ``Replace``, so Ctrl+Z takes back the whole sort rather than
+forty separate line moves.
+
+Rich text warning, once and honestly: replacing a run of text in rich mode gives
+the new text the formatting of where it lands. The tools that rewrite the whole
+document say so before they run.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Callable
+
+import wx
+
+from quill.apps.lite_dialogs import choose_from_rows, edit_file_format
+from quill.core import format_ops, line_ops, transforms
+from quill.core.lite import APP_NAME
+from quill.ui.dialog_contract import show_message_box
+from quill.ui.richedit_editing import RICH
+
+__all__ = ["DocumentToolsMixin"]
+
+#: A tool is a function from text to text. QUILL's operations return the new
+#: text and nothing else, so the count an announcement needs is worked out here
+#: by comparing -- which keeps this the only place that has to know that "how
+#: many changed" is a question about the *result*, not about the operation.
+_Tool = Callable[[str], str]
+
+#: ``(text, start, end) -> (text, start, end)`` -- the indent helpers' shape.
+_IndentOp = Callable[[str, int, int], tuple[str, int, int]]
+
+
+class DocumentToolsMixin:
+    """Line tools, case tools, and the file-format dialog."""
+
+    # ------------------------------------------------------------------ #
+    # Running a tool
+    # ------------------------------------------------------------------ #
+
+    def _apply_tool(self, tool: _Tool, *, unit: str, verb: str) -> None:
+        """Run *tool* over the selection, or the whole document if there is none.
+
+        One ``Replace`` rather than a rewrite of the value: it keeps the change
+        inside the control's own undo history, so Ctrl+Z takes back the sort as
+        one step. Rewriting ``SetValue`` would clear the undo stack and quietly
+        cost somebody everything they had typed before it.
+        """
+        start, end = self.control.GetSelection()
+        whole = end <= start
+        if whole:
+            start, end = 0, self.control.GetLastPosition()
+        text = self.control.GetValue()[start:end]
+        if not text:
+            self._announce("Nothing to change")
+            return
+        if whole and self.editor.mode == RICH and not self._confirm_rich_rewrite():
+            return
+        changed_text = tool(text)
+        if changed_text == text:
+            self._announce(f"No {unit} to change")
+            return
+        count = _difference(text, changed_text, unit=unit)
+        self.control.Replace(start, end, changed_text)
+        self.control.SetSelection(start, start + len(changed_text))
+        self._set_modified(True)
+        self._touch_status()
+        plural = "" if count == 1 else "s"
+        self._announce(f"{verb} {count} {unit}{plural}")
+
+    def _confirm_rich_rewrite(self) -> bool:
+        """Rich mode only: warn that replaced text takes the run's formatting."""
+        answer = show_message_box(
+            "This rewrites the whole document, and in rich text the replaced "
+            "text takes the formatting of where it lands. Continue?",
+            APP_NAME,
+            # NO_DEFAULT: Enter must not be the key that rewrites the document.
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
+            self,
+        )
+        return answer == wx.YES
+
+    # ------------------------------------------------------------------ #
+    # Lines
+    # ------------------------------------------------------------------ #
+
+    def cmd_sort_lines(self) -> None:
+        self._apply_tool(format_ops.sort_lines, unit="line", verb="Sorted")
+
+    def cmd_sort_lines_descending(self) -> None:
+        self._apply_tool(
+            lambda text: format_ops.sort_lines(text, descending=True),
+            unit="line",
+            verb="Sorted",
+        )
+
+    def cmd_remove_blank_lines(self) -> None:
+        self._apply_tool(format_ops.trim_blank_lines, unit="line", verb="Removed")
+
+    def cmd_remove_duplicate_lines(self) -> None:
+        self._apply_tool(format_ops.remove_duplicate_lines, unit="line", verb="Removed")
+
+    def cmd_trim_trailing_space(self) -> None:
+        self._apply_tool(format_ops.trim_trailing_whitespace, unit="line", verb="Trimmed")
+
+    # ------------------------------------------------------------------ #
+    # Case
+    # ------------------------------------------------------------------ #
+
+    def cmd_upper_case(self) -> None:
+        self._apply_tool(transforms.to_upper, unit="character", verb="Changed")
+
+    def cmd_lower_case(self) -> None:
+        self._apply_tool(transforms.to_lower, unit="character", verb="Changed")
+
+    def cmd_title_case(self) -> None:
+        self._apply_tool(transforms.to_title, unit="character", verb="Changed")
+
+    def cmd_sentence_case(self) -> None:
+        """Capital at the start, the rest lowered -- for a heading typed shouting."""
+        self._apply_tool(transforms.to_sentence_case, unit="character", verb="Changed")
+
+    def cmd_toggle_case(self) -> None:
+        """Swap each letter's case, which is the cure for a stuck Caps Lock."""
+        self._apply_tool(transforms.to_toggle_case, unit="character", verb="Changed")
+
+    # ------------------------------------------------------------------ #
+    # More ways to reshape a list of lines
+    # ------------------------------------------------------------------ #
+
+    def cmd_reverse_lines(self) -> None:
+        self._apply_tool(format_ops.reverse_lines, unit="line", verb="Reversed")
+
+    def cmd_normalize_whitespace(self) -> None:
+        """Collapse runs of spaces and tabs -- the cure for pasted-in text."""
+        self._apply_tool(format_ops.normalize_whitespace, unit="line", verb="Tidied")
+
+    def cmd_number_lines(self) -> None:
+        self._apply_tool(line_ops.number_lines, unit="line", verb="Numbered")
+
+    # ------------------------------------------------------------------ #
+    # Indenting
+    # ------------------------------------------------------------------ #
+
+    def _shift_indent(self, shift: _IndentOp, *, verb: str, announce: bool = True) -> None:
+        """Indent or outdent the selected lines, or the caret's line.
+
+        Not ``_apply_tool``: indenting is defined by *where the lines are* in
+        the document rather than by the text of a selection, and
+        :mod:`quill.core.format_ops` already takes and returns offsets for
+        exactly that reason. Passing it a slice would indent the selection's
+        first line from wherever the selection happened to begin.
+
+        ``announce=False`` is for the Tab key, which says the resulting *depth*
+        instead. Two announcements for one keystroke is over-announcing -- the
+        second arrives over the first and is the only one heard anyway -- and of
+        the two, "4 spaces" carries the information a screen reader does not
+        otherwise give. Refusals are still spoken either way: "nothing to
+        outdent" is the one outcome where silence and success sound alike.
+        """
+        text = self.control.GetValue()
+        start, end = self.control.GetSelection()
+        changed, new_start, new_end = shift(text, start, end)
+        if changed == text:
+            self._announce("Nothing to outdent")
+            return
+        self.control.Replace(0, self.control.GetLastPosition(), changed)
+        self.control.SetSelection(new_start, new_end)
+        self._set_modified(True)
+        self._touch_status()
+        if not announce:
+            return
+        lines = max(1, changed[new_start:new_end].count("\n") or 1)
+        self._announce(f"{verb} {lines} line{'s' if lines != 1 else ''}")
+
+    def cmd_indent(self, *, announce: bool = True) -> None:
+        self._shift_indent(format_ops.indent_lines, verb="Indented", announce=announce)
+
+    def cmd_outdent(self, *, announce: bool = True) -> None:
+        self._shift_indent(format_ops.outdent_lines, verb="Outdented", announce=announce)
+
+    def describe_indent_at_cursor(self) -> str:
+        """How deeply the caret's line is indented, in words.
+
+        QUILL's own :func:`~quill.core.format_ops.describe_indent_depth`, so
+        "4 spaces" means the same thing in both products however it was reached.
+        """
+        return format_ops.describe_indent_depth(
+            self.control.GetValue(), self.control.GetInsertionPoint()
+        )
+
+    def cmd_describe_indent(self) -> None:
+        """Say the caret line's indentation, on demand.
+
+        The one question about a line that cannot otherwise be asked. A screen
+        reader reads a line's *text*; it does not read the spaces or tabs in
+        front of it, so in a YAML file, a Python module or a nested list the
+        structure of the document is invisible by ear. QuillLite already goes
+        quiet about spelling in those files, which is an admission that people
+        edit them here -- and for those people this is the fact the editor was
+        withholding.
+
+        QUILL had the phrasing and no way to ask for it, only an
+        announce-as-you-move toggle that speaks while you are moving and stays
+        silent when you stop to wonder. The command was added there first, on
+        this same key, because QuillLite may never be ahead of the editor.
+        """
+        self._announce(self.describe_indent_at_cursor())
+
+    # ------------------------------------------------------------------ #
+    # Earlier versions of this file
+    # ------------------------------------------------------------------ #
+
+    def cmd_browse_backups(self) -> None:
+        """List the dated copies kept on every save, and put one back.
+
+        QuillLite has written these since backups shipped and offered no way to
+        read one: the files were correct, correctly named, and reachable only by
+        knowing that ``%LOCALAPPDATA%\\QuillLite\\backups`` exists and which of
+        the hashed folders was yours. A safety net nobody can reach is not a
+        safety net, and this is the half that was missing.
+
+        Two verbs, because restoring in place and looking first are different
+        needs and only one of them is safe when you are not sure:
+
+        * **Restore** replaces this document's text. It is undoable with Ctrl+Z,
+          and it does not save -- so the file on disk is untouched until you
+          decide, which means a restore chosen by mistake costs one keystroke.
+        * **Open a Copy** puts the old version in a new untitled window and
+          leaves this one alone. That is the one to use when the question is
+          "what did this say yesterday" rather than "put yesterday back".
+
+        The rows are the shared phrasing
+        (:func:`quill.core.version_history.version_label`), so a version reads
+        the same here as in QUILL's own Restore Previous Version.
+        """
+        if not self.app.feature_enabled("backups"):
+            self._announce(
+                "Backups are switched off. Turn them on in View, Customize Features, "
+                "and QuillLite will keep a dated copy of this file on every save."
+            )
+            return
+        if self.path is None:
+            self._announce("Save this document once and its earlier versions are kept from then on")
+            return
+        from quill.core.lite.backups import backup_saved_at, list_backups, read_backup
+        from quill.core.metrics import compute_document_stats
+        from quill.core.version_history import version_label
+
+        rows: list[tuple[object, str]] = []
+        for backup in list_backups(self.path):
+            saved = backup_saved_at(backup)
+            text = read_backup(backup)
+            if saved is None or text is None:
+                continue  # not one of ours, or gone since the list was built
+            words = compute_document_stats(text).words
+            rows.append((backup, version_label(saved, words=words)))
+        if not rows:
+            self._announce(f"No earlier versions of {self.path.name} yet")
+            return
+        chosen = choose_from_rows(
+            self,
+            title="Earlier Versions",
+            label=f"&Earlier versions of {self.path.name}, newest first:",
+            help_text=(
+                "Dated copies of this file, one for each time you saved it. Restore "
+                "replaces the text in this window, which you can undo and which does "
+                "not write to the file until you save. Open a Copy puts the old "
+                "version in a new window and leaves this one alone."
+            ),
+            rows=rows,
+            extra_button="Open a &Copy",
+        )
+        if chosen is None:
+            self.control.SetFocus()
+            return
+        backup, action = chosen
+        text = read_backup(backup)
+        if text is None:
+            self._announce("That version could not be read; it may have been removed")
+            self.control.SetFocus()
+            return
+        if action == "copy":
+            self._open_backup_copy(text)
+            return
+        self._restore_backup(text)
+
+    def _open_backup_copy(self, text: str) -> None:
+        """Put an old version in a new untitled window; this document is untouched."""
+        window = self.app.new_window(self.editor.mode)
+        window.control.SetValue(text)
+        window._set_modified(True)
+        window._touch_status()
+        window._announce("Opened that version as a new untitled document")
+
+    def _restore_backup(self, text: str) -> None:
+        """Replace this document's text with an old version, undoably.
+
+        ``Replace`` over the whole range rather than ``SetValue`` on purpose:
+        it goes on the control's undo stack, so Ctrl+Z takes the restore back.
+        Nothing is written to disk, and the announcement says so -- somebody who
+        has just replaced their document needs to hear that they can still
+        change their mind.
+        """
+        self.control.Replace(0, self.control.GetLastPosition(), text)
+        self.control.SetInsertionPoint(0)
+        self._set_modified(True)
+        self._touch_status()
+        self._announce(
+            "Restored that version. Nothing is written until you save, and Control Z undoes it."
+        )
+
+    # ------------------------------------------------------------------ #
+    # How the file is written
+    # ------------------------------------------------------------------ #
+
+    def cmd_file_format(self) -> None:
+        """Choose the encoding and the line endings this document saves with.
+
+        Both are shown in the status bar and both were previously read-only:
+        QuillLite wrote back whatever it read, which is the right default and a
+        dead end for somebody who needs a UTF-8 copy of a Windows-1252 file, or
+        Unix line endings for a build server. Nothing is written here -- the
+        choice takes effect at the next save, which is the moment it means
+        anything.
+        """
+        chosen = edit_file_format(self, encoding=self.encoding, newline=self.newline)
+        if chosen is None:
+            self.control.SetFocus()
+            return
+        encoding, newline = chosen
+        if (encoding, newline) == (self.encoding, self.newline):
+            self.control.SetFocus()
+            return
+        self.encoding, self.newline = encoding, newline
+        self._set_modified(True)
+        self._touch_status()
+        self.control.SetFocus()
+        self._announce(f"Saving as {_encoding_name(encoding)}, {_newline_name(newline)}")
+
+
+def _difference(before: str, after: str, *, unit: str) -> int:
+    """How much changed, counted in *unit*, for an announcement that says something.
+
+    Lines when the tool works on lines, characters when it works on characters.
+    A count of "1" for a sort of forty lines would be technically true of the
+    string and useless to the person who ran it.
+    """
+    if unit == "line":
+        old, new = before.split("\n"), after.split("\n")
+        return abs(len(old) - len(new)) or sum(1 for a, b in zip(old, new, strict=False) if a != b)
+    if len(before) != len(after):
+        return max(len(before), len(after))
+    return sum(1 for a, b in zip(before, after, strict=True) if a != b)
+
+
+def _encoding_name(encoding: str) -> str:
+    from quill.apps.lite_window_status import encoding_name
+
+    return encoding_name(encoding)
+
+
+def _newline_name(newline: str) -> str:
+    from quill.apps.lite_window_status import newline_name
+
+    return newline_name(newline)

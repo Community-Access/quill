@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL Keyboard Reference (default bindings)</title>
   <style>
@@ -209,7 +209,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 332.</p>
+<p>Editor commands with default bindings: 355.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -340,11 +340,6 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
-<td>Duplicate Selection</td>
-<td><code>edit.duplicate_selection</code></td>
-</tr>
-<tr>
-<td>(unbound by default)</td>
 <td>Jump to Named Mark</td>
 <td><code>edit.jump_to_named_mark</code></td>
 </tr>
@@ -370,18 +365,8 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
-<td>Select Paragraph</td>
-<td><code>edit.select_paragraph</code></td>
-</tr>
-<tr>
-<td>(unbound by default)</td>
 <td>Set Named Mark</td>
 <td><code>edit.set_named_mark</code></td>
-</tr>
-<tr>
-<td>(unbound by default)</td>
-<td>Toggle Extend Selection Mode</td>
-<td><code>edit.toggle_extend_selection_mode</code></td>
 </tr>
 <tr>
 <td>Alt+.</td>
@@ -414,6 +399,16 @@ your own customised keymap.</p>
 <td><code>edit.word_prediction</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+E</td>
+<td>Select Line</td>
+<td><code>edit.select_line</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+F8</td>
+<td>Toggle Extend Selection Mode</td>
+<td><code>edit.toggle_extend_selection_mode</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+K</td>
 <td>Insert Link…</td>
 <td><code>edit.insert_link</code></td>
@@ -422,6 +417,31 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Shift+F</td>
 <td>Toggle Fold</td>
 <td><code>edit.toggle_fold</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+P</td>
+<td>Select Paragraph</td>
+<td><code>edit.select_paragraph</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+Q</td>
+<td>Duplicate Selection</td>
+<td><code>edit.duplicate_selection</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+Z</td>
+<td>Restore deletion</td>
+<td><code>edit.restore_deletion</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+V</td>
+<td>Paste Text Only</td>
+<td><code>edit.paste_plain_text</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+W</td>
+<td>Select Word</td>
+<td><code>edit.select_word</code></td>
 </tr>
 <tr>
 <td>Ctrl+Enter</td>
@@ -756,6 +776,21 @@ your own customised keymap.</p>
 <td><code>format.toggle_line_comment</code></td>
 </tr>
 <tr>
+<td>Ctrl+1</td>
+<td>Single Line Spacing</td>
+<td><code>format.line_spacing_single</code></td>
+</tr>
+<tr>
+<td>Ctrl+2</td>
+<td>Double Line Spacing</td>
+<td><code>format.line_spacing_double</code></td>
+</tr>
+<tr>
+<td>Ctrl+5</td>
+<td>One and a Half Line Spacing</td>
+<td><code>format.line_spacing_one_and_a_half</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+1</td>
 <td>Insert Heading 1</td>
 <td><code>format.heading_1</code></td>
@@ -796,6 +831,11 @@ your own customised keymap.</p>
 <td><code>format.horizontal_rule</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+J</td>
+<td>Justify</td>
+<td><code>format.justify</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+N</td>
 <td>Toggle Numbered List</td>
 <td><code>format.toggle_numbered_list</code></td>
@@ -804,6 +844,26 @@ your own customised keymap.</p>
 <td>Ctrl+Alt+Q</td>
 <td>Insert Block Quote</td>
 <td><code>format.blockquote</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+J</td>
+<td>Join Lines</td>
+<td><code>format.join_lines</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+N</td>
+<td>Toggle Case</td>
+<td><code>format.toggle_case</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+U</td>
+<td>Sentence Case</td>
+<td><code>format.sentence_case</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+V</td>
+<td>Describe Indent Depth</td>
+<td><code>format.describe_indent_depth</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+T</td>
@@ -816,14 +876,44 @@ your own customised keymap.</p>
 <td><code>format.bold</code></td>
 </tr>
 <tr>
+<td>Ctrl+D</td>
+<td>Duplicate Line</td>
+<td><code>format.duplicate_line</code></td>
+</tr>
+<tr>
 <td>Ctrl+I</td>
 <td>Italic</td>
 <td><code>format.italic</code></td>
 </tr>
 <tr>
+<td>Ctrl+Shift+,</td>
+<td>Shrink Font</td>
+<td><code>format.shrink_font</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+.</td>
+<td>Grow Font</td>
+<td><code>format.grow_font</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+D</td>
 <td>Describe Formatting at Cursor</td>
 <td><code>format.describe_formatting</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Delete</td>
+<td>Delete Line</td>
+<td><code>format.delete_line</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Down</td>
+<td>Move Line Down</td>
+<td><code>format.move_line_down</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Up</td>
+<td>Move Line Up</td>
+<td><code>format.move_line_up</code></td>
 </tr>
 <tr>
 <td>Ctrl+[</td>
@@ -1033,6 +1123,11 @@ your own customised keymap.</p>
 <td>Alt+Z</td>
 <td>Toggle Soft Wrap</td>
 <td><code>view.toggle_soft_wrap</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+W</td>
+<td>Toggle Overwrite Mode</td>
+<td><code>view.toggle_overwrite_mode</code></td>
 </tr>
 <tr>
 <td>Ctrl+F6</td>
@@ -1830,6 +1925,21 @@ your own customised keymap.</p>
 <td><code>radio.play_favorite_9</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+Backspace</td>
+<td>Delete paragraph</td>
+<td><code>power.delete_paragraph</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+Delete</td>
+<td>Delete to line end</td>
+<td><code>power.delete_to_line_end</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F3</td>
+<td>Count occurrences</td>
+<td><code>power.count_occurrences</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Up</td>
 <td>Table: Cell Above</td>
 <td><code>table.cell_above</code></td>
@@ -1838,6 +1948,11 @@ your own customised keymap.</p>
 <td>Ctrl+E</td>
 <td>Sound Enhancements…</td>
 <td><code>media.sound_enhancements</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+Backspace</td>
+<td>Delete to line start</td>
+<td><code>power.delete_to_line_start</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+Enter</td>

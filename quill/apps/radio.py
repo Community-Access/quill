@@ -1049,6 +1049,11 @@ class RadioAppFrame(
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.radio_import_youtube_subscriptions(), id=yt_subs_id
         )
+        # Real-time OAuth sign-in (future.youtube_oauth, locked off in public
+        # builds): extracted so this menu build does not grow past GATE-11.
+        from quill.apps.radio_youtube_oauth_menu import add_youtube_oauth_menu_items
+
+        add_youtube_oauth_menu_items(self, station_menu, wx)
         # YouTube support is built in, so this is only ever needed when YouTube
         # changes how it serves audio and the bundled helper goes stale. It sits
         # next to the YouTube commands because that is where someone whose

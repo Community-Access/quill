@@ -31,6 +31,7 @@ from quill.core.restore_points import (
     read_restore_point,
     record_restore_point,
 )
+from quill.core.version_history import speakable_when, version_label
 from quill.ui.dialog_contract import apply_modal_ids
 
 _log = logging.getLogger(__name__)
@@ -38,22 +39,19 @@ _log = logging.getLogger(__name__)
 
 def _speakable_when(point: RestorePoint, now: datetime | None = None) -> str:
     """A short, front-loaded, screen-reader-friendly time label."""
-    saved = point.saved_at_local
-    today = (now or datetime.now().astimezone()).date()
-    day_delta = (today - saved.date()).days
-    clock = saved.strftime("%I:%M %p").lstrip("0")
-    if day_delta == 0:
-        return f"Today at {clock}"
-    if day_delta == 1:
-        return f"Yesterday at {clock}"
-    return f"{saved.strftime('%B %d, %Y')} at {clock}"
+    return speakable_when(point.saved_at_local, now)
 
 
 def restore_point_label(point: RestorePoint) -> str:
-    """One list row: when, size in words, and how the version came to exist."""
-    words = f"{point.word_count:,} word" + ("" if point.word_count == 1 else "s")
+    """One list row: when, size in words, and how the version came to exist.
+
+    The phrasing is :mod:`quill.core.version_history`'s, shared with QuillLite's
+    backup browser: the two products keep separate stores on purpose, but a
+    listener choosing between versions of their own file is doing the same thing
+    in both and should not hear it described two different ways.
+    """
     origin = " (before a restore)" if point.source == "restore" else ""
-    return f"{_speakable_when(point)} - {words}{origin}"
+    return version_label(point.saved_at_local, words=point.word_count, note=origin)
 
 
 class RestorePointsMixin:

@@ -34,6 +34,42 @@ from pathlib import Path
 _PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 _SCAN_DIRS = ("core", "io", "stability")
 
+#: Files whose exception classes deliberately carry no code, keyed by
+#: repo-relative path with the reason. Keep this list as short as it can be:
+#: an exemption is a hole in the gate, and the only defensible one is a file
+#: that *cannot* import ``CodedError`` at all. Both entries here are vendored
+#: byte-identical into podHarvest, which is exactly why they cannot -- an
+#: import of anything from ``quill`` would end the byte-identity a drift test
+#: in each repo depends on.
+VENDORED_EXEMPT: dict[str, str] = {
+    "quill/core/speech/audio_tags_core.py": (
+        "Vendored byte-identical into podHarvest (see "
+        "docs/superpowers/specs/ALIGNMENT-audio-tags-and-chapters.md). It "
+        "imports nothing from quill -- that is what makes byte-identity "
+        "possible -- so it cannot reach CodedError. Its plain AudioTagError, "
+        "TagReadError, TagWriteError and ChapterEditError are retranslated "
+        "into coded twins at QUILL's adapter boundary in "
+        "quill/core/speech/audio_tags.py and quill/core/speech/chapters.py, "
+        "so every error a caller in this repo actually sees still carries a "
+        "code. Enforced by TestAdapter in "
+        "tests/unit/core/speech/test_audio_tags.py."
+    ),
+    "quill/core/podcasts/reuse_core.py": (
+        "The second vendored module, shared byte-identical with podHarvest "
+        "(podharvest/reuse_core.py, with a SHA-256 drift test in each repo). "
+        "Like audio_tags_core it imports nothing from quill, so its "
+        "TranscriptParseError cannot inherit CodedError. Callers in this repo "
+        "reach it through quill/core/podcasts/transcript_choice.py and "
+        "transcripts.py, which is where the coded error a caller actually "
+        "sees is raised."
+    ),
+    "quill/core/speech/reuse_core.py": (
+        "Same module, whichever path it is vendored at. Listed twice rather "
+        "than matched by name so an exemption can never widen to a file that "
+        "merely shares a filename."
+    ),
+}
+
 _CODE_RE = re.compile(r"^QUILL-[A-Z0-9]+(-[A-Z0-9]+){1,4}$")
 
 #: Builtin exception base names that, when subclassed directly, make a class a
@@ -181,6 +217,8 @@ def discover_exception_classes() -> dict[str, ast.ClassDef]:
             continue
         for path in sorted(root.rglob("*.py")):
             rel = path.relative_to(_PACKAGE_ROOT.parent).as_posix()
+            if rel in VENDORED_EXEMPT:
+                continue
             source = path.read_text(encoding="utf-8")
             found.update(_classes_with_exception_base(source, rel))
     return found

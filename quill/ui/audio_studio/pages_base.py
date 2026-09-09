@@ -60,14 +60,48 @@ class StudioPage(wx.Panel):
         return spin
 
 
-def set_accessible_name(ctrl: wx.Window, name: str) -> None:
-    """Name a control for screen readers, reaching composite spinners' inner edit.
+class _Named(wx.Accessible):
+    """Gives a control a real accessible name, not just a window name.
 
-    ``wx.SpinCtrl``/``wx.SpinCtrlDouble`` wrap a child ``TextCtrl`` (the focusable
-    edit); the composite's own name does not propagate to it, so a screen reader
-    reads the field unnamed unless the child is named too.
+    Adopted from podHarvest as part of the shared tag-and-chapter work (see
+    ``docs/superpowers/specs/ALIGNMENT-audio-tags-and-chapters.md``):
+    ``SetName`` sets the internal ``FindWindowByName`` key, and Windows will
+    often derive a name from a preceding ``wx.StaticText``, but neither
+    reliably reaches MSAA/UIA, AT-SPI or NSAccessibility for a control with no
+    adjacent label. Implementing ``wx.Accessible`` states the name outright
+    rather than hoping a heuristic finds it.
+    """
+
+    def __init__(self, name: str) -> None:
+        super().__init__()
+        self._name = name
+
+    def GetName(self, childId: int) -> tuple[int, str]:  # noqa: N802,N803 - wx API casing
+        return (wx.ACC_OK, self._name)
+
+
+def set_accessible_name(ctrl: wx.Window, name: str) -> None:
+    """Name a control for screen readers, three ways, because one is not enough.
+
+    ``wx.SpinCtrl``/``wx.SpinCtrlDouble`` wrap a child ``TextCtrl`` (the
+    focusable edit); the composite's own name does not propagate to it, so a
+    screen reader reads the field unnamed unless the child is named too.
+
+    On top of that the control gets a ``wx.Accessible`` helper stating the
+    name directly. ``SetAccessible`` does not take ownership, so the helper is
+    stashed on the control -- without that reference it is garbage collected
+    and the name silently disappears, which is the worst shape of
+    accessibility bug: one that tests as present and speaks as absent.
     """
     ctrl.SetName(name)
     for child in getattr(ctrl, "GetChildren", list)():
         if isinstance(child, wx.TextCtrl):
             child.SetName(name)
+    try:
+        helper = _Named(name)
+        ctrl.SetAccessible(helper)
+        ctrl._a11y_helper = helper  # noqa: SLF001 - keep a strong reference alive
+    except (AttributeError, NotImplementedError):
+        # wx.Accessible is Windows-only; elsewhere the label heuristic and the
+        # platform's own defaults apply, exactly as they did before this.
+        pass

@@ -81,7 +81,19 @@ def app_data_dir() -> Path:
         # Saved custom path is unavailable (e.g. cleared externally); fall
         # through to the appdata default below rather than raising.
     portable_root = portable_root_dir()
-    if portable_root is not None and mode == "portable":
+    # ``mode is None`` means the user has never chosen, and in a *verified*
+    # portable bundle the answer to a question nobody asked is portable.
+    # Until 2026-09-09 it was %APPDATA%: extract the zip, run it, and QUILL
+    # created a folder on the host machine's hard drive -- which is precisely
+    # the thing somebody running from a USB stick chose the portable build to
+    # avoid, and they had no way to know it had happened. The user guide has
+    # said "portable mode is a property of the bundle, not of the running
+    # environment" the whole time; this makes that true.
+    #
+    # An explicit "appdata" or "custom" still wins, because that is a choice
+    # rather than a default, and ``portable_root`` is None for every
+    # non-portable install, so nothing else moves.
+    if portable_root is not None and mode in {"portable", None}:
         return portable_root
     if mode == "appdata":
         appdata = os.environ.get("APPDATA")

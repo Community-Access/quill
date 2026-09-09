@@ -2,6 +2,411 @@
 
 ## 1.0.0
 
+### A portable copy stops leaving itself on the host machine (2026-09-09)
+
+**A portable QUILL created a folder in `%APPDATA%` on whatever computer it was
+plugged into.** Extract the zip, run it, and the settings, keymap and everything
+else went to the machine's hard drive rather than to the stick -- which is the
+one thing somebody who chose the portable build was relying on it not to do, and
+nothing said it had happened. It stayed that way until the user found the Setup
+Wizard's data-location page or Preferences and chose portable; the user guide had
+meanwhile said "portable mode is a property of the bundle, not of the running
+environment" throughout.
+
+Two separate faults, both fixed:
+
+- **An unanswered question meant appdata.** In a *verified* portable bundle it
+  now means portable. An explicit "Windows profile" or a custom path still wins,
+  because a choice is not a default, and nothing changes for an installed copy
+  -- there is no portable root for it to default to.
+
+- **Five apps were not recognised as portable at all.** A bundle is only
+  portable when its launcher's name is on an allowlist, and **QuillLite,
+  Inkwell, Beacon, Social and Cast** were missing from it. So those five wrote
+  to the host machine's profile whatever the user chose -- their bundles even
+  ship a `data\storage-mode.json` saying `portable`, and it was never read,
+  because finding that file needs the bundle to be recognised first. For
+  QuillLite that included **recovery copies of documents that had never been
+  saved**, left behind on somebody else's computer.
+
+  The allowlist was hand-maintained in two places and the tests named four
+  products by hand, so a sixth app was always going to repeat it. It is now
+  `storage_mode.PORTABLE_LAUNCHER_EXES`, cross-checked against
+  `scripts/build_native_launcher.py::PRODUCTS` -- the authority for what each
+  build actually writes -- so a new app fails the build rather than the user.
+
+If you have been running a portable copy, anything that looks lost is in
+`%APPDATA%\Quill` (or `%LOCALAPPDATA%\QuillLite`) on that computer; copy it into
+the bundle's `data\` folder to bring it across, and delete what is left.
+
+### Overwrite mode stops lying about itself (2026-09-09)
+
+**QUILL's status bar could say "Overwrite" while typing still inserted.**
+`_overwrite_mode` was written in three places and read in exactly one -- the
+status cell -- and nothing in the codebase ever used it to change what typing
+did. Pressing **Insert** was honest by accident: it flips the flag and passes
+the key to the native control, which does the overtype itself. **Ctrl+Alt+Shift+W**
+flipped the flag and told the control nothing, so the two disagreed from then on,
+and the Insert key would afterwards toggle them further apart rather than back
+together.
+
+A status cell that misreports what typing is about to do, to somebody who cannot
+check by looking, is the same defect as the Cast playback-speed bug: a control
+that misreports what you are hearing. The command now moves the control through
+`RichEditDocument.toggle_overtype`, and **refuses rather than announces** when
+there is no native control to tell.
+
+Both typing modes -- overtype, and what the Tab key does -- moved out of
+`main_frame.py` into `quill/ui/main_frame_typing_modes.py` along with their two
+Format-menu items.
+
+### Describe Indent Depth (2026-09-09)
+
+**Ctrl+Alt+Shift+V** says how far the current line is indented: "4 spaces",
+"1 tab", "1 tab, 3 spaces", or "No indentation".
+
+Leading whitespace is the one part of a line a screen reader routinely does not
+read back, so in a YAML file, a Python module or a nested list the shape of the
+document -- which is most of its meaning -- is simply absent when you listen to
+it. QUILL has had the phrasing since `format_ops.describe_indent_depth` was
+written and never bound a command to it: only an announce-as-you-move toggle,
+which speaks while you are moving and goes quiet at the moment you stop and
+wonder. It also answers a question nothing else can -- whether *this* line is
+indented with the same kind of whitespace as its neighbours, which is invisible
+however carefully the text is read and which stops a Python file running.
+
+QuillLite has it on the same key, in the same change.
+
+### Heading levels share one implementation (2026-09-09)
+
+Promote and demote were two regexes and four branches inline in
+`main_frame.py` -- the shape that gets copied rather than called the second time
+somebody needs it, and QuillLite was the second time. The rule is now
+`quill/core/heading_levels.py`, which both products' Alt+Shift+Left and Right
+run, and which returns a *reason* rather than a bool: nothing about the
+operation makes a sound or moves the caret, so "not on a heading", "already at
+level one" and "that key does nothing" are the same event to a listener unless
+each is named. QUILL now says the new level ("Heading 2") instead of "Adjusted
+heading level", which did not say which way it went.
+
+### Two more case changes, three more line tools, and indenting (2026-09-08)
+
+**Sentence case and Invert Case were registered in QUILL and bound to nothing**,
+so Change Case offered five conversions in the menu and three from the keyboard.
+Both now have keys, in both products. Sentence case is what a heading typed in
+shouting needs; Invert Case is the cure for a sentence typed with Caps Lock on.
+
+QuillLite also gains **Reverse Lines**, **Tidy Whitespace** (which collapses the
+runs of spaces and tabs that arrive with pasted-in text) and **Number Lines**,
+under Tools ▸ More Line Work; and **Indent** and **Outdent** on QUILL's own
+Ctrl+] and Ctrl+[, under Tools ▸ Indenting. All of them are QUILL's
+`format_ops`, `transforms` and `line_ops` rather than second implementations.
+
+Indenting is there for a specific person: QuillLite already goes quiet about
+spelling in a `.json` or a `.py` file, which is an admission that people edit
+configuration and code in it, and for them moving a block in or out a level is
+the most common thing to want and the most tedious to do by arrow key.
+
+### Find learns three modes, a count, and a list of every match (2026-09-08)
+
+QuillLite's Find escaped what you typed and offered Match case and Whole word.
+It now runs on QUILL's own `find_model`, which brings the rest with it.
+
+**Search mode**, in both Find and Replace, with three settings. *Normal* is what
+it always was. *Escapes* lets you write the characters there is no key for --
+`	`, `
+`, `—`, ` ` -- which is the companion to
+Describe Formatting's sibling, Describe Character: that names the invisible
+character you are standing on, and this is how you then find every other one
+like it. *Regular expression* treats the text as a pattern, and an invalid one
+is refused with the reason and the character it went wrong at, rather than
+quietly finding nothing.
+
+**How many are there.** The Find window keeps a live count of what you have
+typed so far, as a label your reader speaks when it changes rather than an
+announcement over your typing. **Ctrl+Down** and **Ctrl+Up** step through the
+matches without leaving the search box, so the next one can be heard while the
+query can still be adjusted. **Ctrl+Alt+Shift+F3** counts anywhere, and
+**Ctrl+Shift+F3** opens **All Matches** -- every match with its line, its column
+and the words around it, which is the list you want *before* a Replace All
+rather than the surprise you get after one.
+
+**In QUILL too:** regular expressions now live in the shared `find_model`
+alongside normal and extended, so the two products search by one implementation;
+and Count Occurrences, which had no key, has one.
+
+### Line surgery gets keys, and both palettes now teach them (2026-09-08)
+
+**Eleven commands QUILL had registered and never bound to anything.** Move Line
+Up and Down, Duplicate Line, Delete Line, Join Lines, the delete-to-line-start
+and delete-to-line-end pair, Delete Paragraph, Restore Deleted Text, and
+Insert/Overwrite mode were all reachable from a menu and from no keystroke at
+all. They now have defaults, listed in `docs/keyboard-reference.md`.
+
+Two of the chords are worth explaining. **Insert/Overwrite is not on the Insert
+key**, which is the obvious answer everywhere except here: Insert is NVDA's and
+JAWS's own modifier, and binding it would fight the screen reader this editor is
+written for. And nothing in this set uses a bare `Ctrl+Alt+` chord, because
+those are barred as screen-reader-hostile -- the gate caught three of them in
+this very change.
+
+**Restore Deleted Text** is the one that is not a convenience. Undo puts text
+back where it came from; this puts your last deletion back *at the cursor*,
+which turns a delete into a move, never touches the clipboard, and is the one
+thing here undo cannot do.
+
+**Fixed: Go to Anything showed commands without their keys.** The Command
+Palette learned to read the live keymap in August; its sibling never did, so it
+listed a keystroke only for the commands whose registration happened to carry
+one -- while the menus beside it showed every key correctly. Two front doors to
+the same commands must not teach different answers about what to press.
+(`core/keymap.py`, `ui/palette.py`)
+
+### Safe Mode now answers for itself when a saved key cannot be unlocked (2026-09-08)
+
+**Fixed: in Safe Mode, Verify Connection reported the wrong problem.** On a
+machine carrying an API key it could not decrypt -- a restored profile, or a
+portable install moved between Windows accounts -- **Verify Connection** in Safe
+Mode answered "The saved API key is encrypted for a different Windows user"
+instead of saying Safe Mode was on. Both statements were true; only one was
+useful, because re-entering the key changes nothing while Safe Mode is on. The
+Safe Mode check now runs first, matching what listing models and generating a
+response already did, so all three AI surfaces give the same answer to the same
+question. (`core/assistant_ai.py`)
+
+### QuillLite, and what building it gave the editor (2026-09-08)
+
+**QuillLite** joins the family: QUILL with everything removed except the
+editor, derived from PR #1490 by Steven Scott (`doubletaponair`). Numbered
+documents in one window, plain text or rich text, Notepad's and WordPad's
+keys, a ten-cell readable status bar, and files that come back byte-for-byte.
+It lives in the shared package (`quill.apps.lite`, `quill/core/lite/`), with
+`standalone/quilllite/` as the packaging shell; its own PRD, user guide,
+release notes and changelog live there. The name is always spelled
+**QuillLite** -- one mixed-case word, including in the download artifact names
+(`QuillLite-Setup-Shared-*`, never `Quill-Lite-*`) -- so a screen reader
+speaks it as a name instead of reading out hyphens.
+
+Because QuillLite may never be ahead of QUILL, the editor gained in the same
+change:
+
+- **Two Rich Edit fixes for every QUILL user.** `_TOM_TRUE` was `tomUndefined`
+  (`-9999999`), which silently broke every Rich Edit heading QUILL applies;
+  it is now `-1` (`tomTrue`). And describing formatting at the start of a
+  heading no longer reports the paragraph above it -- a collapsed caret now
+  probes the character after it. Both isolated by PR #1490 and pinned by
+  regression tests. (`quill/ui/richedit_rtf_surface.py`)
+- **Six commands QUILL had the capability for and no key bound to:**
+  Justify (Ctrl+Alt+J), single / one-and-a-half / double line spacing
+  (Ctrl+1 / Ctrl+5 / Ctrl+2), Grow Font and Shrink Font
+  (Ctrl+Shift+Period / Ctrl+Shift+Comma), and Paste Text Only (Ctrl+Alt+V). Where QUILL's keys differ from
+  QuillLite's WordPad defaults, an existing QUILL binding somebody's hands
+  already know kept its key, and the reason is a comment in `keymap.py`.
+- **Numbered bookmarks** moved to shared `quill/core/numbered_bookmarks.py`
+  so QUILL can adopt them (the QUILL-side UI is a named follow-up).
+
+### Playback speed goes past 2x, and the control tells the truth (2026-09-03)
+
+Both players -- QUILL Cast's manager and Audio Studio's transport -- now offer
+0.5x, 0.75x, 1x, 1.25x, 1.5x, 1.75x, 2x, 2.5x and 3x. Cast's model has always
+permitted 0.5x-5.0x (`models_settings.SPEED_MIN`/`SPEED_MAX`) and both engines
+hold pitch across that range; the dropdown was the only thing stopping at 2x.
+3x is a normal way through a backlog, and 0.5x is how a fast reader becomes
+followable. The same range podHarvest offers, so the three behave alike.
+
+**Fixed: a show saved at 2x displayed as 1.0x while playing at 2x.** The
+dropdown held its speeds as strings and looked one up by formatting the saved
+number -- `f"{2.0:g}x"` is `"2x"`, which was not in a list spelled `"2.0x"`, so
+the lookup missed and the control fell back to normal speed. The episode
+carried on at 2x regardless. A control that misreports what you are hearing is
+the worst kind of bug for somebody who cannot check by looking, so the speeds
+are now held as numbers with the labels derived from them, an unlisted speed
+snaps to the nearest offered one rather than to 1x, and the selection is read
+back by index instead of by parsing its own label.
+
+### QUILL Cast: a podcast can now answer for itself (2026-08-29)
+
+Almost every complaint a podcast listener actually has is about **one podcast
+behaving differently from the rest**. "Keep the newest three ready" is right for
+a daily news show and wrong for a weekly three-hour interview. "Check hourly" is
+right for the news show and wasteful for a dormant archive. A single shared
+value for either is a value nobody wants.
+
+Twenty-five per-podcast settings, and the two pieces of plumbing without which
+most of them could not have been reached.
+
+**Settings now inherit through folders.** Shared defaults, then any folder the
+podcast is in (outermost first), then the podcast itself. Nearest wins, and each
+level stores **only the settings it has an opinion about**.
+
+That last part is the fix. Folder Settings used to copy its values into each
+member podcast and forget them, so a podcast filed there later inherited
+nothing -- and the copy it wrote was the *whole* settings record, which meant
+Cast could not tell "I have no opinion" from "I want exactly this". Once those
+are the same thing, changing a shared default silently stops reaching the
+podcasts most likely to need it. Now: set "check hourly" on your News folder and
+everything in it and beneath it checks hourly, including podcasts you file there
+next year; move one out and it stops. Existing per-podcast settings are
+converted on first load by comparing each frozen copy against your shared
+defaults and keeping only what genuinely differs.
+
+**Every setting is described, so it can be found.** Ninety-three of them now
+carry a label, help that says what they do *not* do, the levels they may be set
+at, and words their value reads back as. Two things fall out: F1 on any control
+says **where its value came from** ("Every 60 minutes, from the folder News"),
+and **What Have I Changed?** lists only the settings a podcast answers for
+itself -- the question a window full of controls cannot answer.
+
+**Settings for This Podcast covers around seventy settings**, a category at a
+time -- Arrival, Playback, Storage, Announcements, Curation -- because seventy
+controls in one scroll is not a window anybody can work through by ear. Every
+control shows the value in force, inherited or not; saving writes **only what
+you changed**; and where a podcast has an answer of its own, a Follow button
+beside the control drops it so the podcast goes back to inheriting.
+
+Among the twenty-five:
+
+- **Tidy episode titles.** Patterns removed when a title is shown and spoken --
+  the `Ep. 412 -` that starts every row. Read by eye it is noise you skip; read
+  by ear it is the first thing said two hundred times, and it destroys
+  first-letter navigation. The feed's own titles are never changed, a preview
+  shows exactly which of the 50 newest would differ, and a rule can never empty
+  a title.
+- **Say this podcast's name as.** One spelling used only when the name is
+  spoken, for a title your speech engine mangles.
+- **Urgent, normal or quiet** new-episode announcements, replacing a boolean
+  over a three-answer question -- plus a per-podcast quiet-hours exemption for a
+  live feed, and a sound of its own when it publishes.
+- **Per-podcast check cadence**, so a daily briefing checks hourly while a
+  weekly show checks daily and an archive never.
+- **Backfill on subscribe**, separate from the forward-looking download count.
+- **Off-peak download windows** that wrap midnight, beside the metered guard.
+- **Start me at the beginning**: Auto-Queue takes the oldest unplayed episode.
+- **Sort by season and episode number**, read from the feed at last -- serial
+  fiction is meant to be heard in order and its published dates are the least
+  reliable thing about it.
+- **Never delete this podcast's downloads**, so protecting the one podcast you
+  archive no longer means switching the sweeps off for everything.
+- **Show at most N episodes** -- a view over a four-thousand-episode archive
+  feed, never a trim: nothing is deleted and raising it brings it all back.
+- **Labels**, as many per podcast as you like, usable as a Smart Playlist rule.
+- **Tell me if this podcast goes quiet**, and after a run of failed checks --
+  both saying plainly that Cast has not unsubscribed you and has not given up.
+- Chapter-title skip rules, transcript policy, preferred audio variant, a
+  per-podcast disk budget, silence-trim strength, a default playlist, a sleep
+  timer default, redirect and re-publish policy, and an artwork override.
+
+**And what every row says.** A screen reader reads every row of every list out
+loud, in full; Cast's answer had been one boolean over a question with seven
+answers. Rows now have a named **order** -- title, podcast or date first -- and
+independent switches for the podcast's name, the date, the length or the time
+remaining, the download state, the numbering, whether the episode has chapters
+or a transcript, and the description at off, brief or full. Per podcast as well
+as globally, because a daily show with the date in every title should not have
+the date read again. Two rules hold: nothing is said twice (the podcast's name
+is dropped inside its own episode list), and every part is droppable with the
+row still parsing.
+
+Nothing added here deletes anything, everything fails open -- an unreadable
+value means "carry on as before", never "do less" -- and both settings that
+*hide* something name their way back in their own help.
+
+**And it is taught.** QUILL Cast's guided tutorials gained a fifth track,
+**One podcast at a time** (five lessons: how a setting is decided, what arrives
+and when, what every row says, fixing a podcast that reads badly, and being
+told about one on your terms), plus a ninth lesson in Keeping up for **Episode
+Filters**. The lesson that taught the old settings model was rewritten rather
+than left to rot. 24 lessons and 149 steps now, from 18 and 107.
+
+### QUILL Cast: Episode Filters, and eight places to mean them (2026-08-28)
+
+Some podcasts publish more than one thing. A show you follow also runs a daily
+two-minute segment, or trailers, or a members-only strand mixed into the public
+feed -- and until now every one of those arrived, was dismissed by hand, and
+counted against an Inbox limit set for a different reason. **Episode Filters**
+is the missing decision, per podcast: rules that say which of a show's episodes
+you actually want, and **where that answer counts**.
+
+Reached from a podcast's right-click menu (**Episode Filters...**), from the
+**Episode Filters...** button in Settings for This Podcast, and from Quick
+Actions, so it can be reordered onto Ctrl+1.
+
+- **Rules are named, switchable, and combine with *or*.** Each has your own
+  label, a title pattern (wildcards, where `*` is any text and `?` is one
+  character -- every other punctuation mark means itself, so `Q+A*` finds the
+  segment actually called "Q+A" -- or a full regular expression), and an
+  optional minimum length. Both tests in one rule have to match; several rules
+  need match only one. An episode whose feed does not publish a length never
+  matches a length rule: a missing length is not a short episode.
+
+- **Two modes.** *Keep everything except episodes a rule matches* is the
+  everyday one. *Keep only episodes a rule matches* is how you follow one
+  strand of a feed that carries several, and it is the reason every safety rule
+  below exists.
+
+- **Eight scopes, and this is the half that matters.** A rule set says what an
+  episode *is*; the scopes say where that means anything -- the Inbox,
+  Auto-Queue, auto-download, the new-episode announcement, the podcast's own
+  episode list, New Episodes and Continue Listening, smart playlists, and
+  Search Everywhere. Ticked independently, so "keep it out of my Inbox but
+  still tell me about it" and "just do not spend my bandwidth on it" are both
+  things you can actually have. A new filter starts with the four **routing**
+  scopes on and the four **hiding** scopes off: declining to route an episode
+  is invisible and reversible, and hiding one changes what you can find.
+
+- **Nothing is deleted, and every message says so.** A filtered episode keeps
+  its place in the podcast's episode list, its played mark, its position, its
+  downloaded file, its notes and its bookmarks. Filtering is a routing
+  decision.
+
+- **The verdict is asked, not stamped.** Every list consults the filter as it
+  is drawn, so unticking a scope puts those episodes back on the next redraw --
+  no sweep, no migration, nothing to undo. The **Play Queue** is the one
+  exception, because it is the one list you built by hand: saving offers,
+  separately, to clear this podcast's matching episodes out of it, and the
+  episode playing right now keeps its place.
+
+- **Preview** tries the rules against the 50 newest episodes you already have
+  and says what each would be -- decision first, then title and length. It
+  changes nothing, and it runs **while the filter is switched off and while no
+  scope is ticked**, because "what do these rules catch?" is a question about
+  the rules. A preview that agreed with you whenever the switch was off would
+  agree right up until it mattered.
+
+- **Saving is gated, not merely checked.** Refused: switched on with no rule
+  switched on; a regular expression that cannot be read (the reason is quoted);
+  every switched-on rule empty; switched on with nowhere to apply; a
+  minimum-length rule against a feed where not one of the 50 newest episodes
+  publishes a length. Asked, with the exact count: partial length coverage. And
+  asked once, naming the two ways back, for any scope that hides.
+
+- **Two ways back, always.** **Filtered out** is a new entry in the episode
+  list's own filter, present for every podcast rather than appearing only for
+  filtered ones, and it lists exactly what the rules are catching -- every
+  episode action still works from there. And any episode's menu offers **Always
+  Keep This Episode (Ignore the Filter)**, which exempts that one episode
+  everywhere at once and is not undone by editing the rules afterwards.
+
+- **Needs review.** A *keep only* filter that rejects every single new episode
+  of one refresh says so, interrupting, and **remembers** -- a background check
+  that ran while you were away still has something waiting in Episode Filters
+  when you get back. Reviewing the rules and saving clears it.
+
+- **A refresh says what it took.** "2 new, 3 episodes filtered out for A Show;
+  nothing was deleted. They are in the podcast's episode list as usual."
+  Because "2 new episodes" when the feed published five is quiet arithmetic
+  that reads as a bug, and because *filtered* on its own sounds like *deleted*.
+  When a scope that **hides** is in force it names that scope instead, and
+  names the way back -- the four routing scopes are not recited into a passing
+  announcement, because an episode that was not queued is exactly as findable
+  as it was.
+
+Fail-open throughout: an unusable rule matches nothing, a rule set with no
+usable rule or no scope is not active, and an unreadable stored configuration
+reads as *no filter* rather than as *filter everything*. A podcast with no
+filter takes exactly the code path it always did. No schema version and no
+migration -- a library written before this reads as "no podcast has a filter".
+
 ### Every app learns to teach (2026-08-28)
 
 A user guide answers "what does this do". It cannot answer "what do I do now",
@@ -13,7 +418,7 @@ Tutorials... (Ctrl+Alt+F1)**:
 | --- | --- | --- | --- |
 | Quill Radio | 36 | 251 | 6 |
 | QUILL | 23 | 136 | 6 |
-| QUILL Cast | 18 | 107 | 4 |
+| QUILL Cast | 24 | 149 | 5 |
 | Quill Weather | 11 | 60 | 3 |
 
 **88 lessons and 554 steps in all**, and one window teaching them: the engine

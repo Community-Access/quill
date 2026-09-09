@@ -100,6 +100,34 @@ def should_auto_skip(
     return active_index != last_skipped_from
 
 
+def patterned_skips(library: object, show: object, chapters: list[PodcastChapter]) -> set[int]:
+    """Chapter indexes this podcast's own skip patterns mark, by title.
+
+    Auto-skip intro and outro are measured in seconds, which is a guess about
+    where an advert break is. Where a publisher marked their chapters, "skip
+    anything called ``*Sponsor*``" is not a guess at all -- so a podcast can
+    name the chapters it never wants to hear, in the same wildcard vocabulary
+    Episode Filters uses.
+
+    Returns marks, exactly as if somebody had marked them by hand: the skip
+    machinery, the loop guard and the "your choices clear when you restart"
+    promise are all unchanged, and nothing is removed from the episode.
+    """
+    from quill.core.podcasts.models import PodcastShow
+    from quill.core.podcasts.show_policy import skips_chapter
+    from quill.core.podcasts.subscriptions import PodcastLibrary
+
+    # `object` in the signature because a caller may hold neither; narrowed
+    # here so the None guard and the type guard are the same check.
+    if not isinstance(library, PodcastLibrary) or not isinstance(show, PodcastShow):
+        return set()
+    return {
+        index
+        for index, chapter in enumerate(chapters)
+        if skips_chapter(library, show, getattr(chapter, "title", "") or "")
+    }
+
+
 @dataclass(slots=True)
 class ChapterSkipState:
     """Per-episode marking plus the loop guard, held for one playback session.

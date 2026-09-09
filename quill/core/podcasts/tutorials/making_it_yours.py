@@ -1,8 +1,12 @@
 """QUILL Cast, track 4: making it yours, and keeping it safe.
 
 Five lessons: arranging a library that has grown, deciding what a row says and
-what Enter does, the settings that differ per show, the feeds and folders that
-are yours alone, and the backup you will be glad of exactly once.
+what Enter does, the shared defaults everything else starts from, the feeds and
+folders that are yours alone, and the backup you will be glad of exactly once.
+
+The settings *chain* -- shared default, folder, podcast -- is a track of its
+own (``per_podcast``), because it turned out to be a system rather than a
+window. What stays here is the half that is genuinely about the whole library.
 """
 
 from __future__ import annotations
@@ -183,56 +187,52 @@ TUTORIALS: tuple[Tutorial, ...] = (
     ),
     Tutorial(
         slug="shared-and-per-show",
-        title="Shared defaults, and one show's own mind",
+        title="The shared defaults, and where the app opens",
         track="yours",
-        minutes=6,
-        surfaces=("Podcast Settings", "Podcast Manager"),
+        minutes=5,
+        surfaces=("Podcast Settings", "Podcasts"),
         summary=(
-            "How Cast's settings actually work: a shared default everything "
-            "follows until one show disagrees -- and how to make a show stop "
-            "disagreeing."
+            "The settings that are genuinely about the whole library rather "
+            "than about one podcast -- and the two that decide what you see "
+            "first and what happens when you close the window."
         ),
         steps=(
             Step(
                 title="Open the shared defaults",
                 body=(
-                    "Podcast Settings holds what every show follows unless it sets "
-                    "its own: playback mode, retention, download location, the "
-                    "reconnect rules, default speed, automatic downloads, the Inbox "
-                    "rules and what happens when an episode finishes."
+                    "Podcast Settings holds what every podcast follows until "
+                    "something nearer disagrees: playback mode, retention, the "
+                    "download location, the reconnect rules, default speed, "
+                    "automatic downloads, the Inbox rules and what happens when "
+                    "an episode finishes."
                 ),
                 keys=("Alt+S",),
                 hear="Entered Podcast Settings.",
             ),
             Step(
-                title="Set one show's own mind",
+                title="Know which ones can only live here",
                 body=(
-                    "Settings for This Podcast, on any show's context menu, holds "
-                    "the same choices for one show -- plus the ones that only make "
-                    "sense per podcast: Auto-Queue, Announce New Episodes, queue "
-                    "expiry, the Inbox age limit, Route to Inbox and Favorite."
+                    "A few settings are about this computer or about you rather "
+                    "than about a podcast, and are offered only here: where "
+                    "downloads land, which directories a search asks, how long a "
+                    "listening history is kept, and the reconnect attempts."
                 ),
-                keys=("Shift+F10",),
-                hear="The show named, then its own settings.",
+                hear="Each setting, and what it does not do.",
+                note=(
+                    "Everything else in this window can also be set on a folder "
+                    "or on one podcast. That chain is a track of its own -- see "
+                    "One podcast at a time."
+                ),
             ),
             Step(
-                title="Understand what Use the shared default means",
+                title="Cap what the app may say",
                 body=(
-                    "Anything left on Use the shared default stores no override at "
-                    "all, so changing the global later still reaches that show. "
-                    "That is the difference between inheriting a value and having "
-                    "silently copied it."
+                    "At most this many spoken announcements an hour is the "
+                    "ceiling on new-episode news. Anything over it is folded into "
+                    "the shared summary rather than dropped, so a library of "
+                    "three hundred podcasts stops talking over you."
                 ),
-                hear="The setting read back as following the default.",
-            ),
-            Step(
-                title="Undo every override at once",
-                body=(
-                    "Follow the Shared Defaults drops every override for a show in "
-                    "one go. It is the way out of an hour of fiddling, and worth "
-                    "knowing about before you start fiddling."
-                ),
-                hear="The show back on the shared defaults.",
+                hear="The ceiling read back, or that there is none.",
             ),
             Step(
                 title="Choose where the app opens",
@@ -258,13 +258,23 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "when there is something to lose."
                 ),
             ),
+            Step(
+                title="Find any setting without hunting for it",
+                body=(
+                    "There are ninety-odd settings across this window, the folder "
+                    "editor and the per-podcast one. What Have I Changed?, on a "
+                    "podcast's own settings, is the fastest route to the handful "
+                    "that are not simply following a default."
+                ),
+                hear="A count, then one line per setting with the level that set it.",
+            ),
         ),
         closing=(
-            "One shared default, overridden per show only where a show genuinely "
-            "differs. Most people set three things globally and two things on one "
-            "podcast, forever."
+            "Set the answer that suits most of your library here, and let the "
+            "folder and the podcast disagree where they genuinely do. Most people "
+            "set three things globally and two on one podcast, forever."
         ),
-        then=("private-and-local",),
+        then=("private-and-local", "how-settings-resolve"),
     ),
     Tutorial(
         slug="private-and-local",

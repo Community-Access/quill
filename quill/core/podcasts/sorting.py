@@ -19,9 +19,17 @@ EPISODE_SORT_MODES = (
     "date_newest",
     "date_oldest",
     "title_az",
+    "title_za",
     "duration_longest",
     "duration_shortest",
     "unplayed_first",
+    # The publisher's own numbering. Serial fiction is meant to be heard in
+    # order and its published dates are the least reliable thing about it --
+    # bulk-imported, re-stamped on a feed rebuild, or simply absent -- so where
+    # a publisher numbered their episodes that numbering is the only dependable
+    # order there is. Unnumbered episodes fall to the end rather than to the
+    # front, because an episode the feed did not number is not episode zero.
+    "season_episode",
 )
 
 SHOW_SORT_MODES = ("title_az", "title_za", "unheard_first", "recently_updated", "custom")
@@ -46,6 +54,18 @@ def _episode_sort_key(mode: str) -> tuple[Callable[[PodcastEpisode], Any], bool]
         return (lambda e: _parse_published(e.published), False)
     if mode == "title_az":
         return (lambda e: e.title.casefold(), False)
+    if mode == "title_za":
+        return (lambda e: e.title.casefold(), True)
+    if mode == "season_episode":
+        return (
+            lambda e: (
+                not e.is_numbered,  # False sorts first, so numbered episodes lead
+                e.season or 0,
+                e.episode_number or 0,
+                _parse_published(e.published),
+            ),
+            False,
+        )
     if mode == "duration_longest":
         return (lambda e: e.duration_seconds, True)
     if mode == "duration_shortest":

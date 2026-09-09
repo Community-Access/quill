@@ -71,9 +71,13 @@ def episodes_to_auto_download(
     # than at the download call site, where a download somebody pressed would
     # be caught by it too. Unknown counts as unmetered -- refusing to download
     # on a guess is worse than downloading (core/net_metered).
-    from quill.core.net_metered import may_download
+    #
+    # The off-peak window rides the same guard, and for the same reason: both
+    # answer "may automatic work start right now?", and a caller that had to
+    # ask them separately would eventually ask only one.
+    from quill.core.podcasts.show_policy import download_allowed_now
 
-    if not may_download(settings, automatic=True):
+    if not download_allowed_now(library, show):
         return []
     if settings.playback_mode != "download" and not show.is_local:
         # A stream-by-default show still honours a per-episode download
@@ -81,9 +85,30 @@ def episodes_to_auto_download(
         # streaming, and filling their disk anyway would be a surprise.
         return []
     count = settings.effective_auto_download_count
+    # Episode Filters are an *acquisition* decision too, not only a triage
+    # one: an episode this podcast's rules rejected must not then be fetched
+    # automatically, or the filter would have saved the triage and none of the
+    # disk. Excluded before the newest-N slice rather than after it, so a
+    # filtered segment can never consume a wanted episode's slot -- which is
+    # the same guarantee Earshot bought with a separate insertion budget, got
+    # here for free because Cast stores the whole feed either way.
+    #
+    # Only when the podcast's filter is given the download scope: somebody who
+    # wants the segment kept out of their Inbox but still on disk has said
+    # something perfectly sensible, and this is where it is honoured.
+    from quill.core.podcasts.episode_filter_maintenance import visible
+    from quill.core.podcasts.models_filters import SCOPE_DOWNLOAD
+
+    eligible = visible(library, show, show.episodes, SCOPE_DOWNLOAD)
     wanted: list[PodcastEpisode] = []
     if count != 0:
-        wanted.extend(_newest(show.episodes, count))
+        wanted.extend(_newest(eligible, count))
+    # An episode marked "download" by hand is one somebody asked for by name,
+    # whatever the automatic count says -- and it is how a backfill on subscribe
+    # (7.2) turns into actual bytes: the subscribe path marks the episodes it
+    # was told to collect, and the next acquisition pass fetches them. A
+    # stream-only override is honoured in the other direction below.
+    wanted.extend(e for e in eligible if e.mode_override == "download")
     if settings.auto_download_queued and queued_guids:
         wanted.extend(e for e in show.episodes if e.guid in queued_guids)
     # Inbox membership is a mode, not a flag: under opt-out, an unmarked show
@@ -119,9 +144,27 @@ def route_new_episodes(
     """
     if not show.auto_queue:
         return 0
+    from quill.core.podcasts.episode_filter_maintenance import hide_predicate
+    from quill.core.podcasts.models_filters import SCOPE_QUEUE
+    from quill.core.podcasts.show_policy import queue_candidates
+
+    # Which end of the catalogue to work from. Newest-first is the news-show
+    # assumption Cast shipped with; oldest-unplayed is how somebody starts a
+    # series at the beginning, and it has to look at the whole catalogue rather
+    # than at what just arrived -- for a finished series nothing ever arrives.
+    new_episodes = queue_candidates(library, show, new_episodes)
+
+    # Belt and braces: the refresh already hands this function only the
+    # episodes the filter allows under the queue scope. Asked again because
+    # Auto-Queue is the one route that puts an episode straight in front of
+    # the listener, and a filter that leaks there is worse than one that does
+    # not exist.
+    hidden = hide_predicate(library, show, SCOPE_QUEUE)
     queued = 0
     for episode in new_episodes:
         if episode.played:
+            continue
+        if hidden is not None and hidden(episode):
             continue
         if library.queue_episode(show.id, episode.guid):
             queued += 1

@@ -64,6 +64,22 @@ TITLE_EXEMPT: dict[str, str] = {
         "TITLE ('About This Episode'), which surface_help answers exactly and "
         "by prefix; pinned by test_cast_surface_help"
     ),
+    "quill/ui/podcasts/show_settings_dialog.py::ShowSettingsDialog.__init__": (
+        "the title is 'Settings for <show>' built into self._title, so the scan "
+        "sees an f-string rather than a literal; surface_help answers 'Settings "
+        "for' by prefix, pinned by test_cast_show_settings"
+    ),
+    "quill/ui/podcasts/show_list_editor.py::ListSettingDialog.__init__": (
+        "the title is '<subject> -- <show>' chosen from _SUBJECTS at runtime; "
+        "all three subjects are prefixes in surface_help.PREFIX_PURPOSES and "
+        "are pinned by test_cast_show_settings"
+    ),
+    "quill/ui/podcasts/episode_filters_dialog.py::EpisodeFiltersDialog.__init__": (
+        "the title is '<module TITLE> -- <show>', so the f-string opens with a "
+        "formatted value rather than a literal and the prefix scan cannot see "
+        "it; surface_help answers 'Episode Filters' by prefix, pinned by "
+        "test_cast_episode_filters"
+    ),
     "quill/ui/podcasts/folder_settings_dialog.py::FolderSettingsDialog.__init__": (
         "an f-string that opens with the module's TITLE ('Folder Settings') "
         "rather than a literal, so the prefix scan cannot see it; surface_help "

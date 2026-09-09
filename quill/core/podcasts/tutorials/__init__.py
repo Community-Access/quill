@@ -1,14 +1,20 @@
 """QUILL Cast's guided tutorials: its tracks, and its lessons assembled.
 
-Nineteen lessons in four tracks. The engine -- what a step is, how one
+Twenty-four lessons in five tracks. The engine -- what a step is, how one
 renders, where progress is kept -- is shared with Quill Radio, Quill Weather
 and QUILL in :mod:`quill.core.tutorials`; this is Cast's content and nothing
 else.
 
 The shape of the set follows the shape of the problem. Playing a podcast is
 easy and takes one track; *keeping up* with forty of them is the hard part and
-takes five lessons of its own, because the Inbox, the Play Queue, automatic
-downloads and their caps are one system and only make sense together.
+takes six lessons of its own, because the Inbox, the Play Queue, automatic
+downloads, their caps and the rules that stop unwanted episodes arriving at all
+are one system and only make sense together.
+
+The fifth track exists for the same reason. Almost every complaint a podcast
+listener has is about **one podcast behaving differently from the rest**, and
+the settings that answer that are a system too -- a chain of levels, what
+arrives, what a row says, and who is allowed to interrupt you.
 """
 
 from __future__ import annotations
@@ -18,6 +24,7 @@ from quill.core.podcasts.tutorials import (
     keeping_up,
     listening_well,
     making_it_yours,
+    per_podcast,
 )
 from quill.core.tutorials.model import Track, TutorialSet, build
 
@@ -44,11 +51,19 @@ TRACKS: tuple[Track, ...] = (
         "of your life this has taken.",
     ),
     Track(
+        "per-podcast",
+        "One podcast at a time",
+        "Keep the newest three ready is right for a daily news show and wrong "
+        "for a weekly interview. How a setting is decided, what arrives and "
+        "when, what every row says, how a badly-reading podcast is fixed, and "
+        "who is allowed to interrupt you.",
+    ),
+    Track(
         "yours",
         "Making it yours",
         "A library that has grown, what a row says and what Enter does, the "
-        "settings that differ per show, feeds and folders of your own, and the "
-        "backup you will be glad of exactly once.",
+        "shared defaults everything starts from, feeds and folders of your own, "
+        "and the backup you will be glad of exactly once.",
     ),
 )
 
@@ -59,5 +74,6 @@ CATALOGUE: TutorialSet = build(
     first_hour.TUTORIALS,
     keeping_up.TUTORIALS,
     listening_well.TUTORIALS,
+    per_podcast.TUTORIALS,
     making_it_yours.TUTORIALS,
 )

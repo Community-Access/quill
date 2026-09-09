@@ -213,6 +213,28 @@ def _social(background):
     return image
 
 
+def _quilllite(background):
+    """A page with a folded corner and two lines of text. QuillLite is one
+    document per window, and a page is the one silhouette nothing else in the
+    family has -- every other glyph is round, pointed, or built from bars, so
+    this is the only one that blurs to a rectangle with a bite out of it.
+    Two lines, not four: at 16x16 four merged into a grey block."""
+    image, drawer = _tile(background)
+    # The page, with the top-right corner cut away.
+    drawer.polygon(
+        [(280, 168), (626, 168), (768, 310), (768, 856), (280, 856)],
+        fill=WHITE,
+    )
+    # The fold itself, in the tile colour, so the corner reads as turned rather
+    # than as a chipped rectangle.
+    drawer.polygon([(626, 168), (768, 310), (626, 310)], fill=background)
+    # Two lines of writing. Amber, the family accent, and the only colour on the
+    # page -- which is what makes it read as *text* and not as a blank sheet.
+    for top in (470, 620):
+        drawer.rounded_rectangle([364, top, 684, top + 76], radius=38, fill=AMBER)
+    return image
+
+
 def _runtime(background):
     """A hub with three spokes to smaller nodes: one shared engine, many apps
     drawing from it. The QuillVille Runtime is the only "app" here that is
@@ -238,6 +260,7 @@ _GLYPHS = {
     "weather": _weather,
     "beacon": _beacon,
     "social": _social,
+    "quilllite": _quilllite,
     "runtime": _runtime,
 }
 
@@ -292,6 +315,12 @@ APPS: tuple[App, ...] = (
         "standalone/social/assets/quill-social.ico",
         (124, 40, 110, 255),
         "two overlapping speech bubbles",
+    ),
+    App(
+        "quilllite",
+        "standalone/quilllite/assets/quill-lite.ico",
+        (34, 96, 52, 255),
+        "a page with a folded corner and two lines of text",
     ),
     App(
         "runtime",

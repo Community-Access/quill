@@ -36,6 +36,11 @@ _EPISODE_FILTER_LABELS = (
     "Played",
     "Downloaded",
     "Not downloaded",
+    # The way back from an Episode Filter. Last in the list because it is the
+    # rarest choice, and present in every show's dropdown -- not only filtered
+    # ones -- so it is somewhere a person can *learn* to look rather than a
+    # control that appears and disappears.
+    "Filtered out",
 )
 _EPISODE_FILTER_MODES = (
     "all",
@@ -44,6 +49,7 @@ _EPISODE_FILTER_MODES = (
     "played",
     "downloaded",
     "not_downloaded",
+    "filtered_out",
 )
 _SHOW_FILTER_LABELS = ("All shows", "Favorites only", "Has unplayed")
 _SHOW_FILTER_MODES = ("all", "favorites_only", "has_unplayed")

@@ -277,13 +277,41 @@ def test_backup_round_trip_restores_every_store(tmp_path) -> None:
     assert load_style().guide == "Be terse."
 
 
+def _unclaimed_chord(*already: str) -> str:
+    """A chord no default binding uses, and that this test has not used yet.
+
+    Derived rather than written down. Both chords here used to be literals, and
+    on 2026-09-08 a new default binding took one of them
+    (``format.join_lines`` -> Ctrl+Alt+Shift+J), at which point ``load_keymap``
+    correctly dropped the test's "user override" as a conflict and the test
+    failed for a reason that had nothing to do with merging. A fixture that
+    names a specific free chord goes stale the moment somebody binds it; one
+    that asks which are free cannot.
+    """
+    from quill.core.keymap import DEFAULT_KEYMAP
+
+    taken = {value.strip().upper() for value in DEFAULT_KEYMAP.values()}
+    taken.update(chord.strip().upper() for chord in already)
+    for letter in "QWERTYUIOPASDFGHJKLZXCVBNM":
+        chord = f"Ctrl+Alt+Shift+{letter}"
+        if chord.upper() not in taken:
+            return chord
+    raise AssertionError("no free Ctrl+Alt+Shift+<letter> chord left for the fixture")
+
+
 def test_profile_merge_is_additive_for_keymap() -> None:
     from quill.core.keymap import load_keymap, save_keymap
     from quill.core.share_package import SECTION_KEYMAP
 
+    # Chords a default does not already claim: load_keymap drops a saved
+    # override whose chord collides with a default, so a fixture that picked a
+    # taken one would be testing the conflict guard rather than the merge.
+    exported_chord = _unclaimed_chord()
+    recipient_chord = _unclaimed_chord(exported_chord)
+
     # Use real command ids — the carry-over load path drops unknown ones
     # (#292), so the round-trip only works for valid saved bindings.
-    save_keymap({"format.bold": "Ctrl+Alt+Shift+B"})
+    save_keymap({"format.bold": exported_chord})
     offers = gather_export_offers(Settings(), _features())
     document = build_export_document(
         kind=KIND_PROFILE,
@@ -294,12 +322,12 @@ def test_profile_merge_is_additive_for_keymap() -> None:
     )
 
     # Recipient already has a different custom binding.
-    save_keymap({"format.italic": "Ctrl+Alt+Shift+J"})
+    save_keymap({"format.italic": recipient_chord})
     package = read_package(document)
     apply_import(package, [SECTION_KEYMAP], Settings(), _features())
     merged = load_keymap()
-    assert merged.get("format.bold") == "Ctrl+Alt+Shift+B"  # imported
-    assert merged.get("format.italic") == "Ctrl+Alt+Shift+J"  # preserved
+    assert merged.get("format.bold") == exported_chord  # imported
+    assert merged.get("format.italic") == recipient_chord  # preserved
 
 
 def test_feature_import_announces_dependency_enable() -> None:

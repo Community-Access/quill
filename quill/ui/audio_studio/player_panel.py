@@ -28,6 +28,17 @@ _log = logging.getLogger(__name__)
 
 _TICK_MS = 500  # position slider refresh cadence
 
+#: The speeds on offer. Past 2x on purpose -- getting through a long book at 3x
+#: is a normal way to listen -- and down to 0.5x, which is how a fast reader
+#: becomes followable. The same range podHarvest offers, so the two apps behave
+#: alike; podHarvest additionally lets the list be set per user.
+PLAYBACK_RATES: tuple[float, ...] = (0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.5, 3.0)
+
+
+def _rate_label(rate: float) -> str:
+    """``1.5`` -> ``1.5x``, ``2.0`` -> ``2x``. Read aloud, so no stray zero."""
+    return f"{float(rate):g}x"
+
 
 class PlayerPanel(wx.Panel):
     """Chapter-aware transport controls over one loaded audio file."""
@@ -41,6 +52,7 @@ class PlayerPanel(wx.Panel):
         on_volume: Callable[[int], None] | None = None,
         on_mute: Callable[[bool], None] | None = None,
         on_finished: Callable[[], None] | None = None,
+        on_tick: Callable[[], None] | None = None,
     ) -> None:
         super().__init__(parent)
         self.SetName(_("Player"))
@@ -48,6 +60,10 @@ class PlayerPanel(wx.Panel):
         self._on_volume_cb = on_volume
         self._on_mute_cb = on_mute
         self._on_finished_cb = on_finished
+        # Called on every playback tick. The Chapter Workbench uses it to stop
+        # a chapter preview at the chapter's end, which is why previewing
+        # costs no second wx.Timer.
+        self._on_tick_cb = on_tick
         self._skip_step_ms = max(1_000, int(skip_step_ms))
         self._chapters: list[Chapter] = []
         self._length_ms = 0
@@ -125,13 +141,16 @@ class PlayerPanel(wx.Panel):
             ),
         )
         row.Add(wx.StaticText(self, label=_("Spee&d:")), 0, wx.ALIGN_CENTER_VERTICAL)
-        self._rate = wx.Choice(self, choices=["0.75x", "1x", "1.25x", "1.5x", "2x"])
+        self._rate = wx.Choice(self, choices=[_rate_label(r) for r in PLAYBACK_RATES])
         self._rate.SetName(_("Playback speed"))
         self._rate.SetHelpText(
-            "How fast the book plays, 0.75x to 2x without changing pitch; 1x "
-            "is as recorded. Listening only -- the file is not changed."
+            "How fast the book plays, 0.5x to 3x without changing pitch; 1x "
+            "is as recorded. Faster gets you through a long book; slower makes "
+            "a fast reader followable, and 0.75x is the one to use when you are "
+            "listening for exactly where a sentence starts. Listening only -- "
+            "the file is not changed."
         )
-        self._rate.SetSelection(1)
+        self._rate.SetSelection(PLAYBACK_RATES.index(1.0))
         self._rate.Bind(wx.EVT_CHOICE, lambda _e: self._on_rate())
         row.Add(self._rate, 0, wx.LEFT, 6)
         sizer.Add(row, 0, wx.LEFT | wx.TOP, 8)
@@ -549,10 +568,9 @@ class PlayerPanel(wx.Panel):
         self._announce(". ".join(parts))
 
     def _on_rate(self) -> None:
-        rates = (0.75, 1.0, 1.25, 1.5, 2.0)
         idx = self._rate.GetSelection()
-        if self._engine is not None and 0 <= idx < len(rates):
-            self._engine.set_rate(rates[idx])
+        if self._engine is not None and 0 <= idx < len(PLAYBACK_RATES):
+            self._engine.set_rate(PLAYBACK_RATES[idx])
             self._announce(_("Speed {rate}").format(rate=self._rate.GetString(idx)))
 
     def _on_rewind(self) -> None:
@@ -608,3 +626,5 @@ class PlayerPanel(wx.Panel):
             self._announce_chapter(self._chapter_at(pos))
         self._update_status()
         self._sync_play_label()
+        if self._on_tick_cb is not None:
+            self._on_tick_cb()

@@ -33,6 +33,18 @@ class FindModelError(CodedError):
     code = "QUILL-CORE-FIND-BAD-ESCAPE"
 
 
+class FindPatternError(FindModelError):
+    """The regular expression could not be compiled.
+
+    Its own code because the cure is different: a bad escape is a typo in a
+    literal, while this is a malformed pattern and the message says which
+    character of it is wrong. Inherits so a caller that only wants to know
+    "the search text was unusable" still catches one exception.
+    """
+
+    code = "QUILL-CORE-FIND-BAD-PATTERN"
+
+
 # -- special characters -------------------------------------------------------
 
 #: Plain-English name -> character for the special-character picker, ordered
@@ -165,7 +177,7 @@ def translate_extended(text: str) -> str:
 
 # -- query and compilation ----------------------------------------------------
 
-Mode = Literal["normal", "extended"]
+Mode = Literal["normal", "extended", "regex"]
 
 
 @dataclass(frozen=True)
@@ -199,10 +211,13 @@ def compile_query(query: FindQuery) -> CompiledQuery:
     """Compile ``query`` into the form the matching functions take.
 
     Normal mode treats the text as a literal; extended mode first interprets
-    escapes with :func:`translate_extended`. Whole-word adds a word-boundary
-    guard at each end only when that end is a word character, so a whole-word
-    search for ``C++`` still works.
+    escapes with :func:`translate_extended`; regex mode passes the text to
+    :mod:`re` unchanged. Whole-word adds a word-boundary guard at each end only
+    when that end is a word character, so a whole-word search for ``C++`` still
+    works.
     """
+    if query.mode == "regex":
+        return _compile_regex(query)
     literal = translate_extended(query.text) if query.mode == "extended" else query.text
     if not literal:
         return CompiledQuery(query=query, pattern=None)
@@ -214,6 +229,54 @@ def compile_query(query: FindQuery) -> CompiledQuery:
             pattern_text = pattern_text + r"\b"
     flags = 0 if query.case_sensitive else re.IGNORECASE
     return CompiledQuery(query=query, pattern=re.compile(pattern_text, flags))
+
+
+def _compile_regex(query: FindQuery) -> CompiledQuery:
+    """Compile a regex-mode query, or raise with a speakable explanation.
+
+    The pattern is the user's, unescaped -- that is the whole point of the
+    mode. Whole-word still applies, wrapped around the *whole* pattern as a
+    non-capturing group so ``cat|dog`` means "the word cat or the word dog"
+    rather than "the word cat, or dog anywhere".
+
+    A malformed pattern raises rather than silently matching nothing: a search
+    that quietly finds no matches and a search that could not run are different
+    facts, and only one of them is fixed by retyping the pattern.
+    """
+    if not query.text:
+        return CompiledQuery(query=query, pattern=None)
+    pattern_text = query.text
+    if query.whole_word:
+        pattern_text = rf"\b(?:{pattern_text})\b"
+    flags = 0 if query.case_sensitive else re.IGNORECASE
+    try:
+        return CompiledQuery(query=query, pattern=re.compile(pattern_text, flags))
+    except re.error as error:
+        raise FindPatternError(describe_pattern_error(error)) from error
+
+
+def describe_pattern_error(error: re.error) -> str:
+    """A plain-language rendering of *error*, for speech.
+
+    ``re`` says "unterminated subpattern at position 4", which names the fault
+    accurately and helps nobody who is not already a regular-expression author.
+    Positions are reported 1-based because that is how the rest of this module
+    counts, and how a person counts.
+    """
+    message = str(error)
+    position = getattr(error, "pos", None)
+    where = f" at character {position + 1}" if isinstance(position, int) else ""
+    if "unterminated subpattern" in message or "missing )" in message:
+        return f"The opening parenthesis{where} has no closing parenthesis."
+    if "unterminated character set" in message or "missing ]" in message:
+        return f"The character class{where} has no closing bracket."
+    if "nothing to repeat" in message:
+        return f"The repeat marker{where} has nothing to repeat."
+    if "bad escape" in message:
+        return f"The backslash escape{where} is not one this search understands."
+    if "unbalanced parenthesis" in message:
+        return f"The parenthesis{where} is unbalanced."
+    return f"That is not a valid regular expression: {message}."
 
 
 # -- matching -----------------------------------------------------------------

@@ -15,6 +15,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
+# The episode record moved to models_episode under GATE-11 (extract, never
+# rebaseline) when it grew the feed's own season/episode numbering; re-exported
+# so every existing ``from ...models import PodcastEpisode`` keeps working.
+from quill.core.podcasts.models_episode import PodcastEpisode as PodcastEpisode
+
 # Re-exported so every existing `from ...models import Playlist / QueueItem`
 # keeps working: these moved out under GATE-11 (extract, never rebaseline).
 from quill.core.podcasts.models_playlists import (
@@ -46,6 +51,7 @@ __all__ = [
     "PLAYLIST_STATUS_MODES",
     "Playlist",
     "PlaylistRules",
+    "PodcastEpisode",
     "QueueItem",
 ]
 
@@ -137,86 +143,6 @@ class ExpiredEntry:
             show_id=show_id,
             episode_guid=episode_guid,
             expired_at=str(data.get("expired_at", "")).strip(),
-        )
-
-
-#: PlaylistRules.episode_status.
-
-
-@dataclass(slots=True)
-class PodcastEpisode:
-    """One episode of a subscribed (or local) show."""
-
-    guid: str
-    title: str
-    audio_url: str
-    published: str = ""
-    duration_seconds: int = 0
-    description: str = ""
-    chapters_url: str = ""
-    transcript_url: str = ""
-    transcript_type: str = ""
-    downloaded_path: str = ""
-    mode_override: str = ""  # "" | "stream" | "download"
-    played: bool = False
-    position_ms: int = 0  # resume position; syncs via QUILL Sync (guid-keyed)
-    #: When the place above was last decided. RFC 3339 UTC ending ``Z``, so
-    #: plain string comparison sorts it and the merge needs no date parsing.
-    #: Merging positions is last-write-wins, never furthest-wins -- see
-    #: ``core/podcasts/position_sync.py`` -- so without this field there is
-    #: nothing to merge on and a place cannot travel between devices at all.
-    position_updated_at: str = ""
-    #: Podcasting 2.0 tags read from this item: who is on it, the moments the
-    #: publisher marked, alternate audio, where it is about. Serialised only
-    #: when non-empty, so feeds that publish none of it cost nothing.
-    tags: NamespaceTags = field(default_factory=NamespaceTags)
-
-    def to_dict(self) -> dict[str, object]:
-        return {
-            "guid": self.guid,
-            "title": self.title,
-            "audio_url": self.audio_url,
-            "published": self.published,
-            "duration_seconds": self.duration_seconds,
-            "description": self.description,
-            "chapters_url": self.chapters_url,
-            "transcript_url": self.transcript_url,
-            "transcript_type": self.transcript_type,
-            "downloaded_path": self.downloaded_path,
-            "mode_override": self.mode_override,
-            "played": self.played,
-            "position_ms": self.position_ms,
-            **(
-                {"position_updated_at": self.position_updated_at}
-                if self.position_updated_at
-                else {}
-            ),
-            **({"tags": self.tags.to_dict()} if not self.tags.is_empty else {}),
-        }
-
-    @classmethod
-    def from_dict(cls, data: dict[str, object]) -> PodcastEpisode | None:
-        guid = str(data.get("guid", "")).strip()
-        title = str(data.get("title", "")).strip()
-        audio_url = str(data.get("audio_url", "")).strip()
-        if not guid or not title or not audio_url:
-            return None
-        return cls(
-            guid=guid,
-            title=title,
-            audio_url=audio_url,
-            published=str(data.get("published", "")),
-            duration_seconds=_coerce_int(data.get("duration_seconds"), 0),
-            description=str(data.get("description", "")),
-            chapters_url=str(data.get("chapters_url", "")),
-            transcript_url=str(data.get("transcript_url", "")),
-            transcript_type=str(data.get("transcript_type", "")),
-            downloaded_path=str(data.get("downloaded_path", "")),
-            mode_override=str(data.get("mode_override", "")),
-            played=bool(data.get("played", False)),
-            position_ms=_coerce_int(data.get("position_ms"), 0),
-            position_updated_at=str(data.get("position_updated_at", "")),
-            tags=NamespaceTags.from_dict(data.get("tags")),
         )
 
 

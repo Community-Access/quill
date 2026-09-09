@@ -586,14 +586,15 @@ def add_word_to_scope(
     scope: str,
     document_path: Path | None,
     project_root: Path | None,
+    personal_dir: Path | None = None,
 ) -> None:
     token = word.strip().lower()
     if not token:
         return
-    path = _dictionary_path(scope, document_path, project_root)
+    path = _dictionary_path(scope, document_path, project_root, personal_dir)
     if path is None:
         return
-    existing = load_scope_dictionary(scope, document_path, project_root)
+    existing = load_scope_dictionary(scope, document_path, project_root, personal_dir)
     existing.add(token)
     write_json_atomic(path, sorted(existing))
 
@@ -601,10 +602,11 @@ def add_word_to_scope(
 def load_combined_dictionary(
     document_path: Path | None,
     project_root: Path | None,
+    personal_dir: Path | None = None,
 ) -> set[str]:
-    personal = load_scope_dictionary("personal", document_path, project_root)
-    document = load_scope_dictionary("document", document_path, project_root)
-    project = load_scope_dictionary("project", document_path, project_root)
+    personal = load_scope_dictionary("personal", document_path, project_root, personal_dir)
+    document = load_scope_dictionary("document", document_path, project_root, personal_dir)
+    project = load_scope_dictionary("project", document_path, project_root, personal_dir)
     return personal | document | project
 
 
@@ -612,8 +614,9 @@ def load_scope_dictionary(
     scope: str,
     document_path: Path | None,
     project_root: Path | None,
+    personal_dir: Path | None = None,
 ) -> set[str]:
-    path = _dictionary_path(scope, document_path, project_root)
+    path = _dictionary_path(scope, document_path, project_root, personal_dir)
     if path is None:
         return set()
     raw = read_json(path, default=None)
@@ -651,9 +654,19 @@ def _dictionary_path(
     scope: str,
     document_path: Path | None,
     project_root: Path | None,
+    personal_dir: Path | None = None,
 ) -> Path | None:
+    """Where a scope's taught words live.
+
+    ``personal_dir`` overrides the data folder the personal dictionary is kept
+    in, and exists for the sibling apps: QuillLite keeps its own dictionary in
+    its own folder, because a machine that has never had QUILL installed must
+    not grow a Quill data folder because somebody taught a text editor a word.
+    QUILL passes nothing and gets ``app_data_dir()``, exactly as before.
+    """
     if scope == "personal":
-        return app_data_dir() / "dictionaries" / "personal.json"
+        root = personal_dir if personal_dir is not None else app_data_dir()
+        return root / "dictionaries" / "personal.json"
     if scope == "document":
         if document_path is None:
             return None

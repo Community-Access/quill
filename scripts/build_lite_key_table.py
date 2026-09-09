@@ -1,0 +1,120 @@
+"""Regenerate the key table in QuillLite's user guide from the command table.
+
+The guide's key list has to be the keys that are actually bound. A guide that
+names a key the app does not bind sends somebody to press nothing -- and for a
+screen-reader user that is not a moment of confusion, it is a minute of
+hunting a menu to find out whether the key or the reader is at fault.
+
+``tests/unit/core/lite/test_lite_docs.py`` already asserts that every bound key
+and every command name appears in the guide. This script is the other half:
+rather than being told what is missing and hand-patching a Markdown table,
+regenerate the block between ``<!-- keys:start -->`` and ``<!-- keys:end -->``
+from :data:`quill.core.lite.commands.COMMANDS`, which is the same list the menu
+bar is built from. There is then no third place for the two to disagree.
+
+Run after changing the command table::
+
+    python scripts/build_lite_key_table.py          # rewrite the guide
+    python scripts/build_lite_key_table.py --check  # fail if it has drifted
+
+The prose outside the markers is authored and is never touched.
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+
+from quill.core.lite.commands import COMMANDS, plain_label, split_menu  # noqa: E402
+
+GUIDE = REPO_ROOT / "standalone" / "quilllite" / "docs" / "userguide.md"
+
+_START = "<!-- keys:start -->"
+_END = "<!-- keys:end -->"
+
+#: Keys the table cannot carry, because they are built per window from however
+#: many documents or recent files there happen to be.
+_PER_WINDOW = [
+    ("**Alt+1** to **Alt+9**", "Go to that numbered document"),
+    ("**Alt+Shift+1** to **Alt+Shift+9**", "Reopen that recent file"),
+]
+
+_PREAMBLE = """
+Generated from the same table that builds the menus, so it cannot drift from
+what is actually bound. **Ctrl+F1** shows this list inside the app.
+"""
+
+_POSTAMBLE = """
+Two of these read differently on a keyboard than in a table: **Ctrl+Shift+>**
+and **Ctrl+Shift+<** are the keys your fingers know, and they are listed above
+as `Ctrl+Shift+.` and `Ctrl+Shift+,` because that is the same physical key and
+the spelling wx understands.
+"""
+
+
+def render() -> str:
+    """The whole block between the markers, ready to drop in."""
+    lines: list[str] = [_PREAMBLE.strip(), ""]
+    current = ""
+    for menu, label, key, _handler, kind in COMMANDS:
+        if kind == "sep":
+            continue
+        if menu != current:
+            current = menu
+            if lines and lines[-1] != "":
+                lines.append("")  # a heading needs air above it, in Markdown and by ear
+            parent, child = split_menu(menu)
+            # "Edit|Selection" is the table's way of saying "submenu"; a reader
+            # wants the path, not the separator.
+            heading = (
+                f"{plain_label(parent)} ▸ {plain_label(child)}" if child else plain_label(parent)
+            )
+            lines += [f"### {heading}", "", "| Key | Command |", "|---|---|"]
+        lines.append(f"| **{key}** | {plain_label(label)} |")
+    lines += ["", "### Built per window", "", "| Key | Command |", "|---|---|"]
+    lines += [f"| {key} | {what} |" for key, what in _PER_WINDOW]
+    lines += ["", _POSTAMBLE.strip(), ""]
+    return "\n".join(lines)
+
+
+def rebuilt(text: str) -> str:
+    """*text* with the block between the markers replaced."""
+    if _START not in text or _END not in text:
+        raise SystemExit(f"{GUIDE} has no {_START} / {_END} markers to write between.")
+    head, rest = text.split(_START, 1)
+    _stale, tail = rest.split(_END, 1)
+    return f"{head}{_START}\n\n{render()}\n{_END}{tail}"
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="exit non-zero if the guide's table is not what the command table renders",
+    )
+    args = parser.parse_args()
+
+    text = GUIDE.read_text(encoding="utf-8")
+    updated = rebuilt(text)
+    if args.check:
+        if updated != text:
+            print(f"{GUIDE} is out of date. Run: python scripts/build_lite_key_table.py")
+            return 1
+        print(f"{GUIDE} key table is current.")
+        return 0
+    if updated == text:
+        print(f"{GUIDE} key table already current.")
+        return 0
+    GUIDE.write_text(updated, encoding="utf-8", newline="")
+    print(f"Rewrote the key table in {GUIDE}.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

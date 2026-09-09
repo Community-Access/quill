@@ -537,6 +537,34 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
         privacy="network after confirmation",
         category="future",
     ),
+    "future.youtube_oauth": FeatureDefinition(
+        "future.youtube_oauth",
+        "Connect YouTube Account",
+        aliases=(
+            "youtube oauth",
+            "youtube sign in",
+            "connect youtube account",
+            "youtube subscriptions live",
+        ),
+        description=(
+            "Sign in with a Google account (OAuth) to import the account's real "
+            "YouTube subscriptions once, live, instead of exporting a Takeout "
+            "CSV. Read-only: it can only list what the account follows, never "
+            "watch history, and never touches playback -- videos still play "
+            "through QUILL's existing YouTube station support. Requires this "
+            "build's Google OAuth client (tools/generate_youtube_oauth_client.py) "
+            "and Google's own consent-screen verification (or the signed-in "
+            "account being listed as a test user) before sign-in will work. "
+            "Refused in Safe Mode."
+        ),
+        maturity="experimental",
+        privacy="network after confirmation",
+        category="future",
+        # Held back from public builds until the Cloud Console verification
+        # above is complete; reachable in a developer build for test-user
+        # sign-in (see the module docstring in core/radio/youtube_oauth.py).
+        released=False,
+    ),
     "future.spotify": FeatureDefinition(
         "future.spotify",
         "Spotify",

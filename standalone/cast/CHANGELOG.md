@@ -4,11 +4,148 @@ All notable changes to QUILL Cast are documented here. See `docs/release-notes-2
 
 ## 2.0.0
 
+### A podcast can answer for itself (2026-08-29)
+
+Almost every complaint a podcast listener has is about **one podcast behaving
+differently from the rest**. "Keep the newest three ready" is right for a daily
+news show and wrong for a weekly three-hour interview. "Check hourly" is right
+for the news show and wasteful for a dormant archive. A single shared value for
+either is a value nobody wants.
+
+- **Settings now inherit through folders.** Shared defaults, then any folder the
+  podcast is in (outermost first), then the podcast. Nearest wins, and each
+  level stores only the settings it has an opinion about. Set "check hourly" on
+  your News folder and everything in it and beneath it checks hourly, including
+  podcasts you file there next year; move one out and it stops.
+
+  This fixes something that had been quietly wrong. A per-podcast override used
+  to be a **complete copy** of the settings record, so Cast could not tell "I
+  have no opinion" from "I want exactly this" -- and once those are the same
+  thing, changing a shared default stops reaching the podcasts most likely to
+  need it. Your existing settings are converted on first launch by comparing
+  each copy against your shared defaults and keeping only what genuinely
+  differs.
+
+- **Settings for This Podcast now covers about seventy settings**, one category
+  at a time -- Arrival, Playback, Storage, Announcements, Curation -- because
+  seventy controls in one scroll is not a window anybody can work through by
+  ear. Every control shows the value actually in force, inherited or not, and
+  **F1 says where it came from**: *"Every 60 minutes, from the folder News."*
+  Saving writes only what you changed, and where a podcast has an answer of its
+  own a **Follow** button beside the control drops it.
+
+- **What Have I Changed?** lists only the settings a podcast answers for itself,
+  out of all of them -- the question a window full of controls cannot answer.
+
+- **Tidy episode titles.** Patterns removed when a title is shown and spoken:
+  the `Ep. 412 -` that starts every row. Read by eye that is noise you skip;
+  read by ear it is the first thing said two hundred times, and it destroys
+  first-letter navigation. The feed's own titles are never changed, a preview
+  shows which of the 50 newest would differ, and a rule can never empty a title.
+
+- **Say this podcast's name as** -- one spelling used only when the name is
+  *spoken*, for a title your speech engine mangles.
+
+- **Urgent, normal or quiet** new-episode announcements, replacing a switch over
+  a three-answer question -- plus a per-podcast quiet-hours exemption for a live
+  feed, and a sound of its own when it publishes.
+
+- **What each row says is yours now.** A named order -- title, podcast or date
+  first -- and independent switches for the podcast's name, the date, the length
+  or the time remaining, the download state, the numbering, whether the episode
+  has chapters or a transcript, and the description at off, brief or full. Per
+  podcast as well as globally, because a daily show with the date in every title
+  should not have the date read again. The podcast's name is never repeated
+  inside its own episode list.
+
+- **Per-podcast check cadence**, so a daily briefing checks hourly while a
+  weekly show checks daily and an archive never.
+
+- **Sort by season and episode number.** Serial fiction is meant to be heard in
+  order and its published dates are the least reliable thing about it. Where a
+  publisher numbered their episodes, that numbering is now read from the feed,
+  sorted on, and spoken. An episode the feed did not number is not episode zero:
+  it sorts to the end and says nothing.
+
+- **Never delete this podcast's downloads**, so protecting the one podcast you
+  archive no longer means switching the automatic sweeps off for everything.
+
+- **Show at most N episodes** -- a view over a four-thousand-episode archive
+  feed, never a trim: nothing is deleted and raising it brings it all back.
+
+- **Labels**, as many per podcast as you like, usable as a Smart Playlist rule.
+  A folder is one home; a label is not a home at all, so labelling never moves
+  anything.
+
+- **Tell me if this podcast goes quiet**, and after a run of failed checks --
+  both saying plainly that Cast has not unsubscribed you and has not given up.
+
+- Also: backfill on subscribe (separate from the forward-looking download
+  count), off-peak download windows, Auto-Queue from the oldest unplayed
+  episode so a series can be started at the beginning, transcript policy,
+  chapter-title skip rules, preferred audio variant, a per-podcast disk budget,
+  silence-trim strength, a default playlist, a sleep-timer default, redirect and
+  re-publish policy, and an artwork override.
+
+Nothing added here deletes anything, and everything fails open: a value Cast
+cannot read means "carry on as before", never "do less".
+
+### Episode Filters (2026-08-28)
+
+Some podcasts publish more than one thing. A show you follow also runs a daily
+two-minute segment, or trailers, or a members-only strand mixed into the public
+feed -- and every one of those arrived, was dismissed by hand, and counted
+against an Inbox limit you set for a different reason.
+
+- **Per-podcast rules** (a podcast's right-click menu, or the button in Settings
+  for This Podcast) that decide which of its episodes you actually want. Each
+  rule has your own name for it, its own on and off, a title pattern
+  (wildcards, where `*` is any text and `?` is one character -- every other
+  punctuation mark means itself, so `Q+A*` finds the segment actually called
+  "Q+A" -- or a full regular expression), and an optional minimum length. Both
+  tests in one rule must match; several rules need match only one. An episode
+  whose feed does not publish a length never matches a length rule.
+
+- **Two modes.** *Keep everything except episodes a rule matches* is the
+  everyday one; *keep only episodes a rule matches* is how you follow one strand
+  of a feed that carries several.
+
+- **Eight places to mean it.** The Inbox, Auto-Queue, auto-download, the
+  new-episode announcement, the podcast's own episode list, New Episodes and
+  Continue Listening, smart playlists, and Search Everywhere -- ticked
+  independently, so "keep it out of my Inbox but still tell me about it" and
+  "just do not spend my bandwidth on it" are both things you can have. A new
+  filter starts with the four routing places on and the four hiding ones off.
+
+- **Nothing is deleted.** A filtered episode keeps its place in the podcast's
+  episode list, its played mark, its position, its downloaded file, its notes
+  and its bookmarks.
+
+- **Preview** tries the rules against the 50 newest episodes you already have
+  and says what each would be -- decision first, then title and length. It
+  changes nothing, and it runs even while the filter is switched off, which is
+  how you check a keep-only rule before it is in force.
+
+- **Saving is gated.** Cast refuses a filter that is on with no rule on, one
+  whose regular expression cannot be read (it quotes the reason), one with
+  nowhere to apply, or a minimum-length rule against a feed that publishes no
+  lengths. Partial length coverage asks, with the exact count.
+
+- **Two ways back, always.** **Filtered out** is a new entry in the episode
+  list's own filter and shows exactly what the rules are catching; and any
+  episode's menu offers **Always Keep This Episode**, which exempts that one
+  episode everywhere at once.
+
+- **Needs review.** A keep-only filter that rejects every single new episode of
+  one refresh says so and remembers it, so a background check that ran while you
+  were away still has something waiting when you get back.
+
 ### Tutorials that watch you use the app (2026-08-28)
 
-- **Help > Tutorials... (Ctrl+Alt+F1)** -- 18 guided tutorials, 107 steps, in
-  four tracks: your first hour, keeping up, listening well, and making it
-  yours. The middle track is five lessons on its own, because the Inbox, the
+- **Help > Tutorials... (Ctrl+Alt+F1)** -- 24 guided tutorials, 149 steps, in
+  five tracks: your first hour, keeping up, listening well, one podcast at a
+  time, and making it yours. (The fifth track and the Episode Filters lesson
+  arrived later in 2.0 with the features they teach.) The middle track is five lessons on its own, because the Inbox, the
   Play Queue, automatic downloads and their caps are one system and only make
   sense together.
 

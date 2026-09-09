@@ -1720,6 +1720,12 @@ class CommandRegistryMixin:
             self._binding_for("edit.word_prediction"),
         )
         self.commands.register(
+            "edit.select_word",
+            "Select Word",
+            self.select_word,
+            self._binding_for("edit.select_word"),
+        )
+        self.commands.register(
             "edit.select_line",
             "Select Line",
             self.select_line,
@@ -1729,7 +1735,7 @@ class CommandRegistryMixin:
             "edit.select_paragraph",
             "Select Paragraph",
             self.select_paragraph,
-            None,
+            self._binding_for("edit.select_paragraph"),
         )
         self.commands.register(
             "edit.set_mark",
@@ -1870,6 +1876,12 @@ class CommandRegistryMixin:
             self._binding_for("format.toggle_tab_insert_mode"),
         )
         self.commands.register(
+            "format.describe_indent_depth",
+            "Describe Indent Depth",
+            self.describe_indent_depth,
+            self._binding_for("format.describe_indent_depth"),
+        )
+        self.commands.register(
             "format.insert_markdown_tag",
             "Insert Markdown Tag...",
             self.insert_markdown_tag,
@@ -1928,6 +1940,51 @@ class CommandRegistryMixin:
             "Underline",
             self.format_underline,
             self._binding_for("format.underline"),
+        )
+        # Paragraph and run formatting that arrived through QuillLite. The
+        # capability was always in the Rich Edit surface; nothing was bound to
+        # it, so the editor could not do what its own small sibling could.
+        self.commands.register(
+            "format.justify",
+            "Justify",
+            self.format_justify,
+            self._binding_for("format.justify"),
+        )
+        self.commands.register(
+            "format.line_spacing_single",
+            "Single Line Spacing",
+            lambda: self.format_line_spacing("single"),
+            self._binding_for("format.line_spacing_single"),
+        )
+        self.commands.register(
+            "format.line_spacing_one_and_a_half",
+            "One and a Half Line Spacing",
+            lambda: self.format_line_spacing("one_and_a_half"),
+            self._binding_for("format.line_spacing_one_and_a_half"),
+        )
+        self.commands.register(
+            "format.line_spacing_double",
+            "Double Line Spacing",
+            lambda: self.format_line_spacing("double"),
+            self._binding_for("format.line_spacing_double"),
+        )
+        self.commands.register(
+            "format.grow_font",
+            "Grow Font",
+            self.format_grow_font,
+            self._binding_for("format.grow_font"),
+        )
+        self.commands.register(
+            "format.shrink_font",
+            "Shrink Font",
+            self.format_shrink_font,
+            self._binding_for("format.shrink_font"),
+        )
+        self.commands.register(
+            "edit.paste_plain_text",
+            "Paste Text Only",
+            self.edit_paste_plain_text,
+            self._binding_for("edit.paste_plain_text"),
         )
         self.register_format_codes_commands()
         self.register_reveal_codes_commands()
@@ -2530,6 +2587,7 @@ class CommandRegistryMixin:
             "whisperer.download_queue": self._id_bw_download_queue,
             "tools.yaml_structure_editor": self._id_yaml_structure_editor,
             "edit.copy_with_source": self._id_copy_with_source,
+            "edit.select_word": self._id_select_word,
             "edit.select_line": self._id_select_line,
             "format.decrease_heading_level": self._id_decrease_heading_level,
             "format.increase_heading_level": self._id_increase_heading_level,
@@ -2537,6 +2595,12 @@ class CommandRegistryMixin:
             "format.bold": self._id_format_bold,
             "format.italic": self._id_format_italic,
             "format.underline": self._id_format_underline,
+            "format.justify": self._id_format_justify,
+            "format.grow_font": self._id_format_grow_font,
+            "format.shrink_font": self._id_format_shrink_font,
+            "format.line_spacing_single": self._id_format_spacing_single,
+            "format.line_spacing_one_and_a_half": self._id_format_spacing_one_and_a_half,
+            "format.line_spacing_double": self._id_format_spacing_double,
             "format.upper_case": self._id_upper_case,
             "format.lower_case": self._id_lower_case,
             "format.heading_1": self._id_heading_1,
@@ -2550,6 +2614,7 @@ class CommandRegistryMixin:
             "format.indent": self._id_indent,
             "format.outdent": self._id_outdent,
             "format.toggle_tab_insert_mode": self._id_toggle_tab_mode,
+            "format.describe_indent_depth": self._id_describe_indent_depth,
             "format.move_line_up": self._id_move_line_up,
             "format.move_line_down": self._id_move_line_down,
             # PR1 (EdSharp port): section-move command ids.

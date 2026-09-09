@@ -100,11 +100,19 @@ def test_load_keymap_preserves_unknown_command_id(
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
 
-    save_keymap({"a.sibling_app_command": "Ctrl+Alt+Z"})
+    # The chord must be one no default claims, and the test says so rather than
+    # assuming it: a stored binding that collides with a default is dropped on
+    # purpose (two commands cannot share a chord), so a hard-coded chord makes
+    # this test fail the day somebody binds it -- which is exactly what happened
+    # on 2026-09-08 when edit.restore_deletion took Ctrl+Alt+Z.
+    taken = set(DEFAULT_KEYMAP.values())
+    chord = next(c for c in ("Ctrl+Alt+Shift+F9", "Ctrl+Alt+F9", "Alt+Shift+F9") if c not in taken)
+
+    save_keymap({"a.sibling_app_command": chord})
 
     loaded = load_keymap()
 
-    assert loaded["a.sibling_app_command"] == "Ctrl+Alt+Z"
+    assert loaded["a.sibling_app_command"] == chord
 
 
 def test_load_keymap_persists_cleared_binding(

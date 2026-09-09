@@ -841,6 +841,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             return
         menu = wx.Menu()
         open_id = menu.Append(wx.ID_ANY, "&Open in Chapter Workbench")
+        tags_id = menu.Append(wx.ID_ANY, "Edit &Tags Only...")
         reveal_id = menu.Append(wx.ID_ANY, "&Reveal in Folder")
         menu.AppendSeparator()
         fav_label = "Remove from &Favorites" if entry.favorite else "Add to &Favorites"
@@ -863,6 +864,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
                 self.open_book(Path(entry.path)),
             ),
             id=open_id.GetId(),
+        )
+        menu.Bind(
+            wx.EVT_MENU,
+            lambda _e: self.open_tag_editor(Path(entry.path)),
+            id=tags_id.GetId(),
         )
         menu.Bind(
             wx.EVT_MENU,
@@ -926,6 +932,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         open_id, narrate_id, build_id, edit_id, open_book_id, job_id = (
             wx.NewIdRef() for _ in range(6)
         )
+        tags_id = wx.NewIdRef()
         prefs_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         narrate_translated_id = wx.NewIdRef()
         studio.Append(open_id, "&Open Audio Studio...\tCtrl+N", "Open the Studio wizard")
@@ -942,6 +949,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             build_id, "&Build From Recordings...\tCtrl+Shift+B", "Recordings to a chaptered book"
         )
         studio.Append(edit_id, "&Edit a Book...\tCtrl+E", "Open a book in the Chapter Workbench")
+        studio.Append(
+            tags_id,
+            "Edit &Tags Only...\tCtrl+Shift+E",
+            "Open a file in the Tag Editor, without the Chapter Workbench",
+        )
         studio.AppendSeparator()
         studio.Append(open_book_id, "Open Boo&k File...\tCtrl+O")
         studio.Append(job_id, "Open &Job File...\tCtrl+J", "Re-run a saved .quilljob")
@@ -1082,6 +1094,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
             (narrate_translated_id, self.export_translated_speech),
             (build_id, lambda: self.open_studio("audio")),
             (edit_id, self.open_book_picker),
+            (tags_id, self.open_tag_editor_picker),
             (open_book_id, self.open_book_picker),
             (job_id, self.open_job_file),
             (self._resume_menu_item_id, self._toggle_resume_on_launch),
@@ -1319,6 +1332,35 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
                 return
             path = Path(dialog.GetPath())
         self.open_book(path)
+
+    def open_tag_editor_picker(self) -> None:
+        """Edit Tags Only: a file picker, then the Tag Editor on its own.
+
+        The Workbench holds the same editor, but somebody whose chapters are
+        already right should not have to open a player and a chapter list to
+        fix a misspelt author.
+        """
+        default_dir = ""
+        books = self._recent_books()
+        if books and books[0].parent.is_dir():
+            default_dir = str(books[0].parent)
+        with wx.FileDialog(
+            self.frame,
+            "Open a file to tag",
+            defaultDir=default_dir,
+            wildcard=_BOOK_WILDCARD,
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+        ) as dialog:
+            if dialog.ShowModal() != wx.ID_OK:  # GATE-42-OK: native file picker
+                return
+            path = Path(dialog.GetPath())
+        self.open_tag_editor(path)
+
+    def open_tag_editor(self, path: Path) -> None:
+        """Open *path* in the Tag Editor alone."""
+        from quill.ui.audio_studio.tag_editor import open_tags_in_editor
+
+        open_tags_in_editor(self, path)
 
     def open_book(self, path: Path) -> None:
         from quill.ui.audio_studio.chapter_workbench import open_book_in_workbench

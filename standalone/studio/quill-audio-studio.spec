@@ -28,13 +28,25 @@ nacl_datas, nacl_binaries, nacl_hiddenimports = collect_all("nacl")
 # collected explicitly because yt-dlp loads its ~940 site extractors
 # through a lazy registry the import tracer cannot follow.
 ytdlp_datas, ytdlp_binaries, ytdlp_hiddenimports = collect_all("yt_dlp")
+# mutagen: every ID3/MP4 tag and chapter operation runs on it -- the
+# Chapter Workbench, the Tag Editor, and the chapter markers the batch
+# pipeline writes. Every one of its imports is lazy and inside a function
+# (so the modules load without the extra), which is precisely what the
+# import tracer cannot follow. Collect it explicitly or the Tag Editor
+# ships as a window that cannot save.
+mutagen_datas, mutagen_binaries, mutagen_hiddenimports = collect_all("mutagen")
 
 a = Analysis(
     ["launcher.py"],
     pathex=[],
-    binaries=quill_binaries + nacl_binaries + ytdlp_binaries,
-    datas=quill_datas + nacl_datas + ytdlp_datas,
-    hiddenimports=quill_hiddenimports + nacl_hiddenimports + ytdlp_hiddenimports,
+    binaries=quill_binaries + nacl_binaries + ytdlp_binaries + mutagen_binaries,
+    datas=quill_datas + nacl_datas + ytdlp_datas + mutagen_datas,
+    hiddenimports=(
+        quill_hiddenimports
+        + nacl_hiddenimports
+        + ytdlp_hiddenimports
+        + mutagen_hiddenimports
+    ),
     hookspath=[],
     runtime_hooks=[],
     excludes=[

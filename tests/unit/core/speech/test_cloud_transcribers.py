@@ -121,10 +121,45 @@ def test_dig_returns_empty_for_missing_path() -> None:
     assert ct._dig({}, ("missing",)) == ""
 
 
-def test_every_rest_spec_kind_is_a_known_provider_kind() -> None:
-    # The validator's allowlist must include every host-vetted REST kind.
+def test_every_rest_spec_kind_is_accounted_for() -> None:
+    """Every spec is either Quillin-declarable or explicitly host-only.
+
+    A kind that is in neither list is one nothing has decided about, which is
+    the state this test exists to make impossible.
+    """
+    known = set(TRANSCRIPTION_PROVIDER_KINDS) | set(ct.HOST_ONLY_PROVIDER_KINDS)
     for kind in ct.CLOUD_REST_SPECS:
-        assert kind in TRANSCRIPTION_PROVIDER_KINDS
-        spec = ct.CLOUD_REST_SPECS[kind]
+        assert kind in known, kind
+
+
+def test_the_two_kind_lists_do_not_overlap() -> None:
+    """Host-only means host-only. A kind in both would be neither."""
+    assert not (set(TRANSCRIPTION_PROVIDER_KINDS) & set(ct.HOST_ONLY_PROVIDER_KINDS))
+
+
+def test_a_declarable_kind_has_a_fixed_vetted_endpoint() -> None:
+    """This is what makes "a manifest may only name a known kind" a real
+    guarantee: the address comes with the kind, not with the manifest."""
+    for kind in TRANSCRIPTION_PROVIDER_KINDS:
+        spec = ct.CLOUD_REST_SPECS.get(kind)
+        if spec is None:
+            continue
         assert spec.endpoint.startswith("https://")
         assert spec.host in spec.endpoint
+        assert not spec.endpoint_from_caller, (
+            f"{kind} takes its address from configuration, so a manifest "
+            "could aim the host anywhere. It must be host-only."
+        )
+
+
+def test_a_kind_whose_address_is_configured_is_not_declarable() -> None:
+    """The rule stated the other way round, so neither half can drift."""
+    for kind, spec in ct.CLOUD_REST_SPECS.items():
+        if spec.endpoint_from_caller:
+            assert kind in ct.HOST_ONLY_PROVIDER_KINDS
+            assert kind not in TRANSCRIPTION_PROVIDER_KINDS
+
+
+def test_azure_mai_is_specifically_not_declarable() -> None:
+    assert "azure_mai" in ct.HOST_ONLY_PROVIDER_KINDS
+    assert "azure_mai" not in TRANSCRIPTION_PROVIDER_KINDS

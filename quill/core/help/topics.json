@@ -1406,6 +1406,42 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "format.justify",
+    "title": "Justify",
+    "body": "Spread the paragraph so both edges line up, in a rich text document. The fourth alignment, beside Align Left, Centre and Align Right. Markdown and HTML have no paragraph justification, so in those formats QUILL says where the command does work rather than doing nothing quietly.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.grow_font",
+    "title": "Grow Font",
+    "body": "Make the selected text one step larger, in a rich text document. The step is a ladder of real point sizes rather than one point at a time, so it lands on sizes people recognise -- and the ladder includes the heading sizes, so growing a heading stays on the heading ladder instead of becoming a paragraph that merely looks large. This changes the document; the View menu's text size changes only the view.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.shrink_font",
+    "title": "Shrink Font",
+    "body": "Make the selected text one step smaller, in a rich text document, down the same ladder Grow Font climbs.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.line_spacing_single",
+    "title": "Single Line Spacing",
+    "body": "Set the paragraphs under the cursor to single line spacing, in a rich text document. WordPad's own chord, so it is already in your hands if you have used it.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.line_spacing_one_and_a_half",
+    "title": "One and a Half Line Spacing",
+    "body": "Set the paragraphs under the cursor to one and a half line spacing, in a rich text document.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
+    "id": "format.line_spacing_double",
+    "title": "Double Line Spacing",
+    "body": "Set the paragraphs under the cursor to double line spacing, in a rich text document. Useful for a draft somebody is going to mark up.",
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "format.upper_case",
     "title": "Upper Case",
     "body": "Change the selected text to ALL UPPER CASE.",
@@ -3529,5 +3565,11 @@
       "Ctrl+Down - Volume down"
     ],
     "user_guide_section": "media"
+  },
+  {
+    "id": "edit.paste_plain_text",
+    "title": "Paste Text Only",
+    "body": "Paste what is on the clipboard with none of its formatting -- the words without the web page. In a rich text document an ordinary paste brings the fonts, colours and sizes of wherever the text came from; this brings the text and nothing else.",
+    "user_guide_section": "writing-and-editing"
   }
 ]

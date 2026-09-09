@@ -344,6 +344,10 @@ class AudioStudioWizard(wx.Dialog):
         """The audiobook chosen in the edit journey (None for the other journeys)."""
         return self.edit_source.chosen_path() if self.journey() == "edit" else None
 
+    def tags_only(self) -> bool:
+        """Whether the edit journey should open the Tag Editor, not the Workbench."""
+        return self.journey() == "edit" and self.edit_source.wants_tags_only()
+
     def _on_load_job(self) -> None:
         """Load a .quilljob and hand it to the caller to reopen pre-filled."""
         from quill.core.speech.job_file import JOB_EXTENSION, JobFileError, load_job

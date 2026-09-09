@@ -147,6 +147,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.beacon_help_audit"),
     ),
     Gate(
+        "lite-help",
+        "GATE-LITE-HELP: every QuillLite surface and control answers F1",
+        (sys.executable, "-m", "quill.tools.lite_help_audit"),
+    ),
+    Gate(
         "over-announce",
         "GATE-13: nothing announces what the screen reader already says",
         (sys.executable, "-m", "quill.tools.check_over_announce"),

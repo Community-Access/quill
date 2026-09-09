@@ -295,58 +295,37 @@ def parse_transcript_cues(raw_bytes: bytes, transcript_type: str) -> list[Transc
 
 
 def _parse_vtt_or_srt(text: str) -> str:
-    """WebVTT and SRT share the same shape closely enough for one parser:
-    drop the ``WEBVTT`` header, cue index numbers, and timing lines; keep
-    everything else, collapsing consecutive blank lines."""
-    lines: list[str] = []
-    for raw_line in text.splitlines():
-        line = raw_line.strip()
-        if not line or line == "WEBVTT":
-            continue
-        if _VTT_TIMING_RE.match(line) or _SRT_INDEX_RE.match(line):
-            continue
-        lines.append(line)
-    return "\n".join(lines)
+    """WebVTT and SRT into plain text. Shared with podHarvest.
+
+    The reader lives in :mod:`quill.core.speech.reuse_core`, vendored
+    byte-identical into podHarvest so both apps read the same files the same
+    way. Kept here as a name because this module's callers and tests know it.
+    """
+    from quill.core.speech.reuse_core import _parse_vtt_or_srt as _shared
+
+    return _shared(text)
 
 
 def _parse_podcast_json_transcript(data: object) -> str:
-    """Podcasting 2.0's JSON transcript shape: ``{"segments": [{"speaker":
-    ..., "body": "..."}, ...]}``. Falls back to an empty string for anything
-    unrecognized rather than raising -- a malformed transcript shouldn't
-    block playback or the rest of the episode view."""
-    if not isinstance(data, dict):
-        return ""
-    segments = data.get("segments")
-    if not isinstance(segments, list):
-        return ""
-    lines: list[str] = []
-    for entry in segments:
-        if not isinstance(entry, dict):
-            continue
-        body = str(entry.get("body", "")).strip()
-        if not body:
-            continue
-        speaker = str(entry.get("speaker", "")).strip()
-        lines.append(f"{speaker}: {body}" if speaker else body)
-    return "\n".join(lines)
+    """Podcasting 2.0's JSON transcript shape. Shared with podHarvest."""
+    from quill.core.speech.reuse_core import _parse_podcast_json_transcript as _shared
+
+    return _shared(data)
 
 
 def parse_transcript(raw_bytes: bytes, transcript_type: str) -> str:
-    """Parse already-fetched transcript bytes into plain text, based on the
-    feed-declared MIME type. Unrecognized types are decoded as best-effort
-    plain text rather than rejected -- most real-world transcript files are
-    readable as text regardless of the exact declared type."""
-    text = raw_bytes.decode("utf-8", errors="replace")
-    mime = transcript_type.strip().lower()
-    if mime == "application/json":
-        try:
-            data = json.loads(text)
-        except ValueError as error:
-            raise TranscriptError(f"That transcript file was not valid JSON: {error}") from error
-        return _parse_podcast_json_transcript(data)
-    if mime in ("text/vtt", "application/srt", "text/srt", "application/x-subrip"):
-        return _parse_vtt_or_srt(text)
-    return text.strip()
+    """Already-fetched transcript bytes into plain text, by declared type.
+
+    Delegates to the shared reader, retranslating its plain error into this
+    module's coded one so GATE-EC still holds for everything a caller sees.
+    """
+    from quill.core.speech.reuse_core import TranscriptParseError
+    from quill.core.speech.reuse_core import parse_transcript as _shared
+
+    try:
+        return _shared(raw_bytes, transcript_type)
+    except TranscriptParseError as error:
+        raise TranscriptError(str(error)) from error
 
 
 def fetch_and_parse_transcript(

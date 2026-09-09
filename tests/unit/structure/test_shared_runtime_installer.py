@@ -48,6 +48,7 @@ SHARED_RUNTIME_INSTALLERS = {
     "standalone/beacon/installer/quill-beacon-shared.iss",
     "standalone/cast/installer/quill-cast-shared.iss",
     "standalone/inkwell/installer/quill-inkwell.iss",
+    "standalone/quilllite/installer/quilllite.iss",
     "standalone/radio/installer/quill-radio.iss",
     "standalone/social/installer/quill-social-shared.iss",
     "standalone/studio/installer/quill-audio-studio.iss",

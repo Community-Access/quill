@@ -9,6 +9,42 @@ from quill.core.storage import read_json, write_json_atomic
 _VALID_MODES = {"appdata", "portable", "custom"}
 
 
+#: Every launcher basename a portable QuillVille bundle can have at its root.
+#:
+#: This list *is* portable mode. A bundle is only recognised as portable when
+#: one of these sits beside a ``data/`` folder, so an app whose name is missing
+#: here does not merely lose a feature -- it silently writes the user's
+#: settings, recovery files and history into ``%APPDATA%`` on the host machine,
+#: which is the one thing somebody running from a USB stick is relying on it not
+#: to do. It fails quietly and it fails on somebody else's computer.
+#:
+#: Five names were missing until 2026-09-09 -- QuillLite, Inkwell, Beacon,
+#: Social and Cast's registry spelling -- so five products' portable builds did
+#: exactly that. The list was hand-maintained in two places and the tests named
+#: four products explicitly, so adding a sixth app was always going to repeat
+#: it. ``tests/unit/core/test_storage_mode.py`` now cross-checks this against
+#: ``scripts/build_native_launcher.py::PRODUCTS``, which is the authority for
+#: what each build actually writes, so a new app fails the build instead.
+#:
+#: Both spellings of Cast are kept: Windows filenames are case-insensitive, so
+#: the older ``QUILLCast.exe`` never broke, but an exact match should not depend
+#: on that.
+PORTABLE_LAUNCHER_EXES: tuple[str, ...] = (
+    "quill.exe",
+    "QuillRadio.exe",
+    "QuillWeather.exe",
+    "QuillAudioStudio.exe",
+    "QuillCast.exe",
+    "QUILLCast.exe",
+    "QuillConverter.exe",
+    "QuillLite.exe",
+    "QuillInkwell.exe",
+    "QuillBeacon.exe",
+    "QuillSocial.exe",
+    "QuillMediaPlayer.exe",
+)
+
+
 def _has_portable_evidence(anchor: Path) -> bool:
     """Return True when *anchor* looks like a portable QUILL bundle.
 
@@ -26,24 +62,7 @@ def _has_portable_evidence(anchor: Path) -> bool:
     """
     if not anchor.is_dir():
         return False
-    # The per-product on-disk EXE names are the contract the native
-    # launcher (quill/native/launcher/) commits to: each per-product
-    # build_native_launcher.py build writes the launcher to that exact
-    # name in the onedir root. A name mismatch silently breaks portable
-    # mode -- the data writes to %APPDATA% instead of the bundle
-    # ``data/`` folder. Locked in by
-    # tests/unit/scripts/test_storage_mode.py::_test_portable_evidence_allowlist.
-    has_exe = any(
-        (anchor / name).is_file()
-        for name in (
-            "quill.exe",
-            "QuillRadio.exe",
-            "QuillWeather.exe",
-            "QuillAudioStudio.exe",
-            "QUILLCast.exe",
-            "QuillConverter.exe",
-        )
-    )
+    has_exe = any((anchor / name).is_file() for name in PORTABLE_LAUNCHER_EXES)
     has_data = (anchor / "data").is_dir()
     if has_exe and has_data:
         return True

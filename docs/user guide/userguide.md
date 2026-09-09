@@ -5047,6 +5047,26 @@ Use **F7** (Spelling Review) when you want to work through a whole document or
 selection systematically; use **Alt+F7** when you just want to check the one
 word you are looking at right now.
 
+#### Spell check as you type stays quiet in code files
+
+When **spell check as you type** is on, QUILL watches for a misspelling as you
+finish each word. It deliberately says nothing in source and configuration
+files — `.py`, `.json`, `.js`, `.css`, `.ps1`, `.log`, `.yml` and the rest of
+the coding extensions — because every identifier, key and flag in one of those
+is a word no dictionary has. A live checker there is a wall of alerts that are
+all wrong, and each one costs an earcon and a status line to read past.
+
+Markdown is prose, so `.md` **is** checked; the fenced code blocks, inline code
+spans, URLs and email addresses inside it are skipped instead, which is the
+right granularity for a file that is mostly writing.
+
+The setting is **`spellcheck_skip_code_files`**, on by default. Turn it off if
+you want the live check to run everywhere regardless of file type.
+
+**F7 is never affected by this.** The guided review checks whatever document you
+run it on, including a source file: skipping is a decision about what to do when
+you have not said anything, and pressing F7 is saying something.
+
 #### Ranked spelling (Ctrl+Shift+L) — misspellings sorted by frequency
 
 **Ctrl+Shift+L** opens the misspelling list in a different order than the regular
@@ -7311,6 +7331,8 @@ The Workbench is where a finished audiobook gets fixed by ear. The chapter list 
 - **Split at playhead** — listen for the spot where a chapter should begin, pause there, press the button: the chapter is cut in two exactly at the playhead. This is how you fix a book whose chapters landed in the wrong places.
 - **Set start to playhead** — retime an existing boundary: select the chapter, park the playhead where it should start, press. The previous chapter's end moves with it, so the timeline always stays contiguous.
 - **Merge into previous**, **Rename** (type and press Enter), and **Restore original** (one press undoes every edit) round out the surgery.
+- **Add chapter...**, **Delete chapter**, **Edit chapter...** and **Preview chapter** are the plain verbs. Add puts a marker at the playhead or at a time you type and asks what to call it; past the end of the last chapter it appends one instead of refusing. Delete removes a marker only — the audio joins its neighbour, and unlike Merge it works on the first and last chapters too. Edit opens a small window for the title and the exact start and end (and a chapter link and image, if you publish with Podcasting 2.0). Preview plays just that chapter and stops at its end instead of running on.
+- **Nudge a boundary until it sounds right.** **Nudge back** and **Nudge forward** move the selected chapter's start by one step; from the chapter list, **Alt+Left** and **Alt+Right** do the same, and adding **Shift** moves ten steps at once. The **Step** box offers 100 milliseconds up to 10 seconds and remembers what you picked for next time (`audio_studio_chapter_nudge_ms`, half a second to start with). **Hear boundary** plays three seconds before the marker and two after it, then stops — the fastest way to tell whether a boundary lands mid-sentence. Tick **Hear after each nudge** and that audition happens automatically after every press; it is off by default, because audio on every keypress is something to ask for rather than discover. Each nudge speaks only the new time ("0:00:09.500"), because a full sentence repeated at key-repeat speed is unusable; the whole sentence follows about half a second after you stop. Run a marker into its neighbour and it stops there and says "Cannot move further" once, rather than refusing on every press.
 - **Propose chapters from silences...** scans the recording with ffmpeg's `silencedetect`, with a small dialog asking for the **noise threshold** (dB, default -30) and **minimum silence** length (seconds, default 0.8), and proposes chapter boundaries at the silence midpoints. The proposal lands in the chapter list for review — never applied blind; press **Restore original** to undo. The one-long-recording story is complete: open a single 80-minute file (it opens as one chapter), press one button, review, save.
 - **Check against ACX** measures the file with fbmpeg's loudnorm and shows a verdict dialog with integrated loudness, true peak, and noise floor, plus a speakable recommendation for each failing criterion ("Integrated loudness is -14.2 LUFS, target -20 plus or minus 3; make the recording 5.8 dB quieter"). The verdict is announced when the measurement finishes, regardless of how the dialog is dismissed.
 - **Import chapters...** replaces the whole list from Audacity labels, a CUE sheet, timestamp lines, Podcasting 2.0 JSON, or CSV; **Export chapters...** writes the list in any of the same five formats.
@@ -7318,8 +7340,9 @@ The Workbench is where a finished audiobook gets fixed by ear. The chapter list 
 - **Propose AI titles...** names a folder of `track07`-style chapters by listening to them: the opening minute of each chapter is transcribed on this machine by the local speech model (the audio never leaves your computer), only that text goes to your configured AI (a local model keeps even the text on-device), and a short proposed title per chapter lands in the list for your review — **Restore original** undoes the lot. Needs a configured AI; unavailable in Safe Mode.
 - The player **remembers where you stopped** in each book and resumes there next time, offers a **playback speed** control (0.75x to 2x, pitch preserved), and answers **"Where am I?"** with the full audible glance: "Chapter 4 of 24: The Long Road. 3:12 into the chapter, 9:28 left in it. 1:02:03 of 7:41:00 in the book, 6:38:57 remaining."
 - Playback normally uses Windows' built-in media engine — nothing to install. For gapless audio, exact seeking, and instant chapter jumps even on 8-hour books, download the **mpv player engine** from **Help > Download Optional Components** (about 44 MB, checksum-verified; its licenses and a source offer ship inside the download) and the player switches to **libmpv** the next time it opens. Power users can instead drop a `libmpv-2.dll` into the data folder's `engine-packs\mpv` directory or point `QUILL_LIBMPV` at one. If the DLL is missing or broken, QUILL quietly stays on the built-in engine.
-- **Book details** (title, author, narrator, genre, year) are edited right in the dialog.
-- **Save** writes an MP3's edits **in place** — only the tags are rewritten; the audio is untouched. An M4B is saved with **Save As** instead: a lossless re-mux (no re-encode, no quality loss) into a new file. Long saves run in the background so QUILL stays responsive.
+- **Book details** (title, author, narrator, genre, year) are edited right in the dialog. **All tags...** opens the full **Tag Editor** for everything else: twenty-six fields over five pages — main, details, publishing, sort order and cover art — including track and disc numbers, composer, publisher, copyright, BPM, ISRC, language, grouping, the compilation flag, the four sort-order fields, and embedded cover art you can load, save out or remove. Control+Tab moves between pages. The five quick fields and the editor stay in step in both directions, so neither is ever showing something the other has forgotten. You can also open the Tag Editor on its own, without the Workbench: tick **Edit the tags only** on the Studio wizard's *Open a book* page.
+- **The same editor is in podHarvest.** QUILL and podHarvest share the tag and chapter code byte for byte, so a file edited in one reads back exactly as it was left in the other — same fields, same operations, same keys. If you use both, you only learn this once.
+- **Save** writes an MP3's edits **in place** — only the tags are rewritten; the audio is untouched. An M4B follows what you actually changed: tag edits alone also save in place and finish instantly, while a chapter change still needs **Save As**, which is a lossless re-mux (no re-encode, no quality loss) into a new file. Long saves run in the background so QUILL stays responsive.
 - **Publish...** opens three ways to get the finished book out into the world, each an explicit action:
   - **Podcast feed** — QUILL writes a complete `.rss` file next to the book (RSS 2.0 with iTunes and Podcasting 2.0 tags; chapter navigation rides the `chapters.json` sidecar). Upload the feed and audio anywhere; generation itself never touches the network.
   - **Folder feed (all episodes)** — run a whole show from one folder. Every MP3, M4B, or M4A master becomes an episode (oldest file = episode 1) with its title from its tags or your override, your per-episode description (edited in an accessible episode list), its real publication date, duration, and chapter link. The show settings persist in the folder, so after each new build, one press of **Write feed.rss now** regenerates the complete feed. **Write show notes page** produces an accessible `show-notes.html` beside it — headings per episode, descriptions, and chapter lists — ready to upload with the feed.
@@ -9097,6 +9120,12 @@ By default QUILL stores AI provider keys in the **Windows Credential Manager**, 
 **Activating portable mode.** The portable bundle ships with an empty `data\` folder next to `quill.exe`, and QUILL recognises that folder as the portable opt-in. No environment variable to set, no checkbox to tick — just run `quill.exe` from the bundle root. The Setup Wizard's **Data location** page detects the portable install and offers the portable radio button automatically. If you want to convert an installed build into a portable one, copy the install folder to a USB drive and create an empty `data\` folder at its root; QUILL will switch to portable mode the next time it starts from that folder.
 
 The previous activation mechanism (`QUILL_PORTABLE=1`) is no longer required and is ignored: portable mode is a property of the bundle, not of the running environment.
+
+**Nothing is written to the host computer.** A portable bundle is portable from the very first launch — you do not have to answer anything first. Extract the zip, run `quill.exe`, and your settings, keymap and everything else go straight into the `data\` folder beside it. No folder appears in `%APPDATA%` on the machine you happened to plug into, which is the entire point of carrying the app on a stick.
+
+Until version 1.0 this was not true: a freshly extracted portable copy used `%APPDATA%\Quill` on the host machine until you went to the Setup Wizard or Preferences and chose portable, and nothing said so. If you have been running a portable QUILL and your settings look like they have reset, they have not — they are in `%APPDATA%\Quill` on that computer, and you can copy that folder's contents into the bundle's `data\` folder to bring them across.
+
+You can still choose otherwise. Picking **Windows profile** in Preferences or the Setup Wizard is remembered and overrides the bundle, because an explicit choice always beats a default. The same applies to every Quill app that ships a portable build — Quill Radio, Cast, Weather, Audio Studio, Converter, Inkwell, Beacon, Media Player and QuillLite.
 
 When portable mode is on, keys are stored in a file called `keys.enc` inside the QUILL data directory. The file is encrypted with Windows DPAPI, so it is protected by your Windows user-account key.
 

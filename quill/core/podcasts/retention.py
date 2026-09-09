@@ -207,9 +207,19 @@ def per_show_usage(library: PodcastLibrary) -> list[tuple[PodcastShow, int, int]
 def is_protected(library: PodcastLibrary, show: PodcastShow, episode: PodcastEpisode) -> bool:
     """Whether this download is exempt from age limits and the storage cap.
 
-    Queued or in progress. Both mean the listener has committed to it, and
-    an automatic rule must never undo a deliberate choice.
+    Three ways in, and all three are the same statement: **the listener has
+    committed to this and an automatic rule must not undo a deliberate
+    choice.** It is queued; it is part-played; or its whole podcast is pinned.
+
+    The pin is the one somebody sets deliberately, and it exists because the
+    alternative was worse: without it, the only way to protect the one podcast
+    somebody genuinely archives was to switch the sweeps off for everything,
+    which is what most people did.
     """
+    from quill.core.podcasts.show_policy import is_pinned
+
+    if is_pinned(library, show):
+        return True
     if episode.position_ms > 0 and not episode.played:
         return True
     return any(

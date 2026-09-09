@@ -159,7 +159,111 @@ Selecting a playlist in the tree fills the episode list exactly like a pinned vi
 
 #### Filters and Search Everywhere
 
-Above the manager's tree: an **Episodes** filter (All, Unplayed, Played, Downloaded, Not downloaded), a **Shows** filter (All, Favorites only, Has unplayed), and **Search Everywhere...** — one search across every subscription, every episode, your episode notes, and every transcript you've already fetched (never a network call), grouped by type. Enter on a result jumps the manager straight to it.
+Above the manager's tree: an **Episodes** filter (All, Unplayed, In progress, Played, Downloaded, Not downloaded, **Filtered out**), a **Shows** filter (All, Favorites only, Has unplayed), and **Search Everywhere...** — one search across every subscription, every episode, your episode notes, and every transcript you've already fetched (never a network call), grouped by type. Enter on a result jumps the manager straight to it.
+
+**Filtered out** is the last entry in the Episodes filter and it belongs to the next section: it lists exactly what this podcast's own Episode Filter is holding back, so nothing a filter hides is ever out of reach.
+
+#### Settings for This Podcast
+
+Most of what QUILL Cast can be told is only meaningful one podcast at a time. "Keep the newest three ready" is right for a daily news show and wrong for a weekly three-hour interview. "Check hourly" is right for the news show and wasteful for a dormant archive. "Say the podcast's name in every row" is right for a mixed list and noise inside that podcast's own. A single shared value for any of those is a value nobody wants.
+
+**Settings for This Podcast...** (a podcast's right-click menu, or its Quick Actions) now covers around seventy settings rather than a dozen. It shows them one **category** at a time — Arrival, Playback, Storage, Announcements, Curation — because seventy controls in one scroll is not a window anybody can work through by ear.
+
+Three things are true of every control in it:
+
+- **It shows the value actually in force**, whether that came from this podcast, from its folder, or from your shared defaults. F1 on any control says which: *"Every 60 minutes, from the folder News."*
+- **Saving writes only what you changed.** Anything you leave alone keeps following its folder and the shared defaults, so changing a shared default later still reaches this podcast.
+- **Where this podcast has an answer of its own, a Follow button appears beside the control.** Pressing it drops that one answer, so the podcast goes back to inheriting — it does not write today's default over it.
+
+**What Have I Changed?** lists only the settings this podcast answers for itself, out of all of them. It is the question a window full of controls cannot answer, and it is the honest way to find out why one podcast is behaving differently from the rest.
+
+##### Settings now inherit through folders
+
+Settings resolve through four levels: your **shared defaults**, then any **folder** the podcast is in (outermost first), then the **podcast** itself. Nearest wins, and each level stores only the settings it has an opinion about.
+
+That last part is the change. Folder Settings used to copy its values into each member podcast and then forget them, which meant a podcast moved into the folder afterwards inherited nothing — and, worse, a podcast that had ever been touched by that dialog stopped following your shared defaults *for every setting*, because the copy it was given was the whole settings record rather than the one value you meant. QUILL Cast could not tell "I have no opinion" from "I want exactly this".
+
+Now it can. Set "check hourly" on your News folder and every podcast in it and beneath it checks hourly, including ones you file there next year. Move a podcast out and it stops. Nothing was copied, so nothing drifts.
+
+Your existing per-podcast settings are converted the first time this version opens your library: each frozen copy is compared against your shared defaults and only the values that actually differ are kept as that podcast's own. Anything that matched is read as "no opinion", which is almost always what was meant.
+
+##### What you can now set per podcast
+
+**Arrival** — how often this feed is checked (a daily news show hourly, a weekly show daily, an archive never); how much of the back catalogue to collect once when you subscribe; the hours of the day automatic downloads may start; whether a metered connection holds them; whether Auto-Queue takes the newest episode or the oldest unplayed one, which is how you start a series at the beginning; when transcripts are fetched; whether a permanently moved feed may update its own address; whether a re-published episode counts as new.
+
+**Playback** — speed, the three equaliser bands, the compressor, how hard the silence trimmer works, which ears the audio comes out of, both skip distances, the intro and outro skips, chapter policy and how long a chapter scan may take, chapter titles to jump over as it plays, and what the sleep timer offers while this podcast is playing.
+
+**Storage** — how many downloads to keep, how old is too old, how much disk this one podcast may use, whether its downloads are exempt from every automatic sweep, which version of an episode to fetch when the feed offers more than one, and the audio processing applied to finished downloads.
+
+**Announcements** — whether new episodes are urgent, normal or quiet; whether this one podcast may speak during quiet hours; a sound of its own when it publishes; how it is *pronounced*; patterns removed from its episode titles; whether to say the date, the length, the download state, the numbering, chapters and transcripts, or the description in each of its rows; and after how many failed checks, or how many quiet weeks, to say something.
+
+**Curation** — how its episodes are sorted, how many of them the list shows at once, a playlist its new episodes join, your own labels for it, and its own artwork.
+
+##### The ones worth calling out
+
+**Tidy episode titles.** A great many podcasts prefix every episode with the same thing: `Ep. 412 -`, `MyShow Presents:`, `[Bonus]`. Read by eye that is noise you skip. Read by ear it is the first thing said on every row, two hundred times, and it destroys first-letter navigation entirely — arrowing to "S" in a list where every row starts with "Ep." finds nothing. Patterns here are removed **when a title is shown and spoken**; the feed's own title is untouched and nothing is renamed. Preview shows exactly which of the 50 newest titles would change, and a rule can never empty a title.
+
+**Say this podcast's name as.** One spelling used only when the name is *spoken*, for a title your speech engine mangles. The podcast keeps its own name everywhere it is written.
+
+**New episodes of this podcast are urgent / normal / quiet.** Three positions where there used to be a switch, because "tell me by name", "count it in the summary" and "say nothing at all" are three different instructions. A quiet podcast still downloads, queues and files exactly as it would; it simply says nothing. And a single podcast can be allowed through quiet hours by name, for a live or news feed you asked to be told about.
+
+**Never delete this podcast's downloads.** Exempts one podcast from the storage cap, the age rule and delete-after-playing. It exists because the alternative was worse: without it, the only way to protect the one podcast you genuinely archive was to switch the sweeps off for everything, which is what most people did.
+
+**Show at most this many episodes.** A four-thousand-episode archive feed makes every list operation slower. This is a **view**, not a trim: nothing is deleted, search still finds everything, and raising the number brings it all back.
+
+**Sort by season and episode number.** Serial fiction is meant to be heard in order and its published dates are the least reliable thing about it — bulk-imported, or re-stamped whenever the feed is rebuilt. Where a publisher numbered their episodes, that numbering is now read from the feed and can be sorted and spoken. An episode the feed did not number is not episode zero: it sorts to the end and says nothing.
+
+**Labels.** Your own words for a podcast, as many as you like, usable as a Smart Playlist rule. A folder is one home; a label is not a home at all, so labelling never moves anything.
+
+**Tell me if this podcast goes quiet.** A podcast that ends does so silently. After the number of weeks you set, Cast says so — once, and again if it comes back and stops again. It never unsubscribes you and never stops checking. Its companion says something after a run of failed checks, and says plainly that Cast is still trying.
+
+##### What per-podcast settings do not do
+
+None of them deletes an episode, a file, a note or a bookmark. None marks anything played. The two that *hide* something — the catalogue view limit and Episode Filters — both say where the hidden episodes still are. And every setting that restricts fails open: a value QUILL Cast cannot read means "carry on as before", never "do less".
+
+#### Episode Filters: rules for one podcast's new episodes
+
+Some podcasts publish more than one thing. A show you follow also runs a daily two-minute segment, or trailers for its sister show, or a members-only feed mixed in with the public one. Until now every one of those arrived, was triaged by hand, and counted against an Inbox limit you set for a different reason.
+
+**Episode Filters** (a podcast's right-click menu, or the **Episode Filters...** button in Settings for This Podcast) is a per-podcast rule set that decides what happens to that show's episodes. It is **not a delete**, and that is the first thing to know: a filtered episode stays in the podcast's episode list, with its played mark, its resume position, its downloaded file, its notes and its bookmarks exactly as they were. What a filter changes is where an episode *shows up*.
+
+**Rules.** Each rule has your own name for it, its own on/off, and up to two tests:
+
+- **Title.** *Wildcard* is the everyday choice — `*` matches any text and `?` matches one character, and every other punctuation mark means itself, so `Q+A*` finds the segment actually called "Q+A". *Regular expression* is there for people who want one. A pattern has to describe the **whole** title, so put a star at each end to mean "contains". Matching ignores capital letters unless you tick **Capital letters have to match too**.
+- **Minimum length**, in minutes. An episode whose feed does not say how long it is never matches a length rule — a missing length is not a short episode.
+
+Both tests in one rule have to match. Several rules are combined with *or*: an episode need match only one of them. A rule that is switched off, or that asks nothing at all, never counts.
+
+**Two modes.** *Keep everything except episodes a rule matches* is the common one. *Keep only episodes a rule matches* is the sharp one — it is how you follow a single strand of a feed that carries several, and every safety rule below exists because of it.
+
+**Where this applies** is the part that makes one feature do the work of eight. Tick as many or as few as you like:
+
+| Ticked | What it means |
+| --- | --- |
+| Keep them out of the Inbox | They never appear in the Inbox |
+| Never add them to the Play Queue automatically | Auto-Queue skips them |
+| Never download them automatically | Auto-download skips them |
+| Don't announce them as new episodes | They are not counted or named when the feed is checked |
+| Hide them from this podcast's episode list | They leave the manager's episode list |
+| Hide them from New Episodes and Continue Listening | They leave the cross-show views |
+| Keep them out of smart playlists | A smart playlist never picks them up |
+| Leave them out of Search Everywhere | Search stops finding them |
+
+A new filter starts with the first four ticked and the last four clear. The first four decline to *route* an episode and are invisible when they are wrong; the last four *hide* it, which is a stronger thing to do to somebody's library, so they are opt-in one tick at a time. Saving with any of them ticked asks you once, and says where the hidden episodes still are.
+
+**Everything except the Play Queue takes effect the moment you save**, including on episodes you already had — the lists ask the filter as they are drawn, so unticking a scope later brings those episodes straight back. The Play Queue is the exception: it is the one list you built by hand, so saving offers, separately, to clear this podcast's matching episodes out of it. That never deletes anything, and the episode playing right now keeps its place.
+
+**Preview** tries the rules against the 50 newest episodes you already have and reports what each one would be — *Filtered* or *Kept* first, then the title and the length. It changes nothing, and it works **while the filter itself is switched off**, which is how you check a Keep-only rule before it is in force.
+
+**Saving is gated, not merely checked.** QUILL Cast refuses to save a filter that is switched on with no rule switched on, one whose regular expression cannot be read (it quotes the reason), one with nothing ticked under Where this applies, or a minimum-length rule against a feed where not one of the 50 newest episodes publishes a length. Where only *some* episodes publish a length, it says exactly how many and asks.
+
+**Two ways back, always.** Choose **Filtered out** in the Episodes filter to see everything a podcast's rules are catching — every episode action still works from there. And any single episode's menu offers **Always Keep This Episode (Ignore the Filter)**, which exempts that one episode everywhere the filter applies and is not undone by editing the rules afterwards.
+
+**Needs review.** If a *Keep only* filter rejects every single new episode of one refresh, QUILL Cast says so and remembers it — a background check that ran while you were away still has something waiting when you get back. Opening Episode Filters shows the notice; reviewing the rules and saving clears it.
+
+##### What Episode Filters does not do
+
+It never deletes an episode, a file, a note or a bookmark; it never marks anything played; it never changes a resume position. There is no bulk undo for the one-time Play Queue pass (individual episodes go back with Play Next or Add to End of Queue), no maximum-length rule, no "longest episode published that day" rule, and no filtering on show notes or description — titles and lengths only.
 
 #### Transcripts
 
@@ -813,6 +917,321 @@ but ``PodcastShow`` names the field ``id`` (``show_id`` is what a *download
 queue item* calls it), so Find Chapters answered "this episode cannot be
 identified" for every episode and had never run. ``chapter_sources.
 show_identity`` is now the one place that resolves either spelling.
+
+#### Phase 10 (shipped): Episode Filters -- per-podcast rules, with scopes
+
+**The gap.** Cast had a retention policy, an acquisition policy and a triage
+surface, and no way to say *"not this part of this podcast."* A feed that
+carries the show, its trailers and a daily segment gave the listener three
+things and one decision, taken forty times a month by hand. Every existing
+control was the wrong shape for it: an Inbox cap counts, it does not choose;
+Pause is per feed; unsubscribing is all or nothing.
+
+**The shape.** A per-podcast rule set, asked wherever the answer matters.
+
+* **Rules** (`core/podcasts/models_filters.py`). Each carries a name, its own
+  enabled flag, an optional title criterion (wildcard or regular expression,
+  case-insensitive by default) and an optional minimum duration. Within a rule
+  the criteria are **and**-ed; across a configuration the rules are **or**-ed,
+  which is what makes each independently switchable without changing what the
+  others mean. Wildcards translate to an anchored regular expression with
+  everything but `*` and `?` escaped, so a segment literally called `Q+A` is
+  matchable by typing it.
+* **Two modes.** *Filter matching* keeps everything a rule does not match;
+  *keep matching* keeps only what one does. The second is where every safety
+  rule below comes from.
+* **Scopes** -- the decision that separates this from the design it was ported
+  from. A rule set says *what* an episode is; the scopes say *where that means
+  anything*: the Inbox, Auto-Queue, auto-download, the new-episode
+  announcement, the podcast's own episode list, the cross-show views, smart
+  playlists, and Search Everywhere. Eight independent ticks, so one feature
+  answers "do not put it in front of me", "do not spend my bandwidth on it"
+  and "I never want to see it again" without any of them implying the others.
+  A new filter ships with the four **routing** scopes on and the four
+  **hiding** scopes off: declining to route is invisible and reversible;
+  hiding changes what a person can find, and is opt-in.
+
+**Asked, not stamped.** The verdict is computed at every point of use rather
+than written onto an episode at ingest. That is why unticking a scope takes
+effect on the next redraw with no sweep, no migration and nothing to undo --
+and it is the correction to the first cut, which stamped an Inbox dismissal at
+refresh time and could therefore only ever be undone episode by episode. Two
+things are still written down, because they are events rather than opinions: a
+Play Queue slot removed by the explicit apply-to-existing pass, and the Needs
+review warning.
+
+**Performance.** `episode_filter_maintenance.hide_predicate` returns `None`
+for a podcast with no active filter in that scope, so the hot loops -- the
+Inbox over a 1,300-show library, a smart playlist over every episode of every
+show -- skip the whole question with one branch. Only the shows somebody wrote
+a rule for pay for the rule.
+
+**Fail open, four times over.** An unusable rule never matches. A
+configuration with no usable enabled rule is not active. A configuration with
+no scope is not active. An unknown stored `version`, a malformed record or an
+unknown scope name reads as *no filter*, never as *filter everything*. The
+cost of failing open is an episode you did not want; the cost of failing
+closed is a podcast that silently stops arriving with no message anywhere
+saying why.
+
+**The save gate** (`episode_filters.assess_save`) refuses four saves and asks
+about two. Refused: on with no enabled rule; an enabled rule whose regular
+expression will not compile (the compiler's own message is quoted -- "invalid
+pattern" with no reason is a dead end); every enabled rule empty; on with no
+scope. Asked: a minimum-duration rule where only some of the newest 50
+episodes publish a duration (with the exact coverage count), and any hiding
+scope (with the two ways back named). A duration rule where **none** of the 50
+publish a duration -- the empty sample included -- is refused outright.
+
+**Preview** is a dry run over the newest 50 stored episodes that mutates
+nothing, and it **evaluates the draft while the top-level switch is off and
+while no scope is ticked**. Preview answers "what do these rules catch?",
+which is a question about the rules; a preview that agreed with you whenever
+the switch was off would agree right up until it mattered. This was the first
+defect device testing found in the design this ports, and both halves of it
+are pinned by name.
+
+**Nothing hidden is unreachable.** The episode list's state filter gains a
+seventh entry, **Filtered out**, present in every podcast's dropdown rather
+than appearing only for filtered ones -- a control that comes and goes is a
+control nobody learns. It answers from the *rules* rather than from the
+library scope, so a podcast that only filters its downloads still has an
+honest answer there. And a per-episode **exemption**
+(`episode_filter_exceptions`) is the listener being specific about one
+episode, which beats every rule in every scope and survives editing the rules.
+
+**The runtime warning.** A *keep matching* filter that rejects every new
+episode of one refresh is far more often a rule that means something other
+than what was intended, so it stores a per-podcast **Needs review** stamp and
+announces it forced. Stored as well as spoken because the refresh may have
+been a background check nobody heard; held back by quiet hours like every
+other refresh sentence, and still waiting in the morning. Reviewing *and
+saving* clears it -- opening the window proves somebody read the title bar.
+
+**Announcement discipline.** A refresh that says "2 new episodes" when the
+feed published five is quiet arithmetic that reads as a bug, so the filtered
+count is spoken, with *where* the filter applied (declining to download and
+hiding from every list are the same word and very different news) and with
+"nothing was deleted". The rules list, the preview rows and the apply result
+have reviewed word orders, all of them in `episode_filters.py` where a test
+can assert on them: **a rule is name, then enabled state, then criteria**; **a
+preview row leads with the decision**; the apply result gives an exact count
+and names the currently-playing exception when it applied.
+
+**Storage.** `PodcastLibrary.episode_filters` (show id -> configuration),
+`episode_filter_exceptions` (show id -> exempted guids) and
+`episode_filter_reviews` (show id -> when the warning was raised), all in the
+existing atomic library JSON. Keyed by show id rather than by feed URL because
+Cast's ids are stable and local; held on the library rather than on
+`PodcastShow` because this is *local curation* like the Inbox's own
+assignments -- there is no OPML equivalent in either direction, and a podcast
+unsubscribed and re-added is a new subscription that should not inherit
+somebody's forgotten rules. No schema version, no migration: a library written
+before the feature reads as "no podcast has a filter", which is the behaviour
+it had.
+
+**What did not port.** The design this came from capped how many items one
+refresh could insert, and split that cap into separate "kept" and "filtered"
+budgets so a filtered segment could not consume a wanted episode's slot. Cast
+merges the whole of what a feed offers and always has, so there is no ceiling
+to divide: everything the feed published is in the podcast's list either way,
+and the same guarantee falls out for free.
+
+**Deferred.** Durable filtered-event history, a bulk undo for the Play Queue
+pass, "mark as played" as a filtered outcome, a maximum duration, relative
+duration rules ("the longest one published that day"), and matching on show
+notes or description.
+
+**Code map.** `core/podcasts/models_filters.py` (the record and its scopes),
+`core/podcasts/episode_filters.py` (matching, preview, the save gate),
+`core/podcasts/episode_filter_speech.py` (every sentence the feature says --
+split under GATE-11, and worth being its own file because what a rule *decides*
+and how it *reads* are reviewed by different eyes),
+`core/podcasts/episode_filter_maintenance.py` (the library-facing half
+-- scopes, exemptions, the refresh verdict, the Play Queue pass, the warning),
+`ui/podcasts/episode_filters_dialog.py`,
+`ui/podcasts/episode_filter_rule_dialog.py`, and the consumers:
+`core/podcasts/inbox.py`, `acquisition.py`, `virtual_views.py`, `playlists.py`,
+`filtering.py`, `ui/podcasts/episode_search.py`,
+`ui/main_frame_podcast_acquisition.py`, `ui/podcasts/feed_refresh.py`.
+
+#### Phase 11 (shipped): the per-podcast settings proposal, and the level it needed
+
+**The gap.** Cast had a great deal of *global* policy and a thin layer of
+per-show override on top of it, and almost every complaint a podcast listener
+actually has is about **one podcast behaving differently from the rest**. The
+proposal that came out of that observation (25 items, three tiers) is shipped
+here in full, along with the two pieces of plumbing without which most of it
+could not have been reached.
+
+##### The rule every setting had to survive
+
+**A single shared value would be wrong for somebody, not merely imperfect.**
+"One badly-mastered show among forty" is the shape: a global control cannot fix
+it, because turning it up fixes one show and ruins thirty-nine. Two further
+tests: *is it worse by ear than by eye* (a numeric prefix on two hundred titles
+destroys first-letter navigation and no sighted user notices), and *can it be
+wrong safely* (anything that hides needs a way back before it needs a
+checkbox).
+
+##### Phase 0: four levels, one resolver
+
+The proposal's own first item, and the reason the rest is affordable.
+
+::
+
+    shared default  ->  folder (outermost first)  ->  podcast
+
+Cast had three of these and they did not compose. A folder was not a level:
+Folder Settings wrote its values into each member show's override and forgot
+them, so a show filed there later inherited nothing. Worse, that override was a
+**complete copy of the settings record**, which meant Cast could not tell *"I
+have no opinion"* from *"I want exactly this"* -- and once those are the same
+thing, changing a shared default silently stops reaching the podcasts most
+likely to need it.
+
+`settings_resolver.py` resolves through the chain, nearest wins, with every
+level storing **only the settings it has an opinion about**
+(`PodcastLibrary.scope_overrides`, keyed `folder:<id>` / `show:<id>`).
+Consequences worth stating:
+
+* `PodcastLibrary.effective_settings` keeps its signature, so every existing
+  caller gained the folder level without changing. Its **fast path returns the
+  shared record by identity** -- no copy, no dataclass construction -- because
+  it is called per show per refresh and on some paths per episode.
+* `apply_show_override` now writes exactly the fields named. It used to clone
+  the effective record, which is the bug above.
+* **Provenance is a first-class answer.** `describe_provenance` produces
+  "Every 60 minutes, from the folder News" -- and "60" is a reading of a box.
+* A folder cycle in a hand-edited or half-synced library is guarded rather than
+  hung on.
+
+**Migration.** `migrate_legacy_overrides` converts each stored whole-record
+override into a sparse one by diffing it against the shared default, keeping
+only what differs. A best-effort recovery, and deliberately the safer of the
+two readings: the worst outcome is a value that starts following a default the
+listener can change in one place.
+
+##### Phase 0b: the catalogue
+
+Ninety-three settings and no description of what a setting *is*. `SettingDef`
+(`settings_types.py`) carries the label, the house-rule help, the kind, the
+levels it may be set at, its choices, its aliases, and the words its value
+reads back as. The definitions live beside the families they describe
+(`settings_defs_playback`, `settings_defs_library`, `settings_defs_show`,
+`row_speech`) and `settings_catalog.py` assembles them.
+
+Three things fall out that were previously impossible:
+
+* **Search.** `search()` matches the label, the help, the choice labels **and**
+  a list of synonyms somebody would really type -- "wifi" finds the metered
+  guard. Ranked, because a search that puts *Volume Boost* twelfth when you
+  typed "volume" is a search nobody uses twice.
+* **"What have I changed?"** `changed()` walks the same catalogue and reports
+  every level's opinions, scoped to one podcast or to the whole library. It
+  answers the question support always asks, and it is the honest reset surface:
+  you cannot offer *put it all back* without first saying what *it all* is.
+* **Generated controls.** `show_settings_panel.py` builds a control from a
+  definition, so a setting added to the catalogue appears in the per-podcast
+  window with no UI code at all. Seventy hand-built controls would have been
+  seventy chances to forget a label, a help string or an inherited value.
+
+##### The settings themselves
+
+Grouped as the proposal grouped them; the parenthesised number is its item.
+
+**Arrival.** Per-podcast check cadence (7.1, surfacing work -- it was already
+overridable and reachable only globally), backfill depth on subscribe as a
+one-off distinct from the forward-looking download count (7.2), off-peak
+download windows that wrap midnight (7.6), Auto-Queue working from the oldest
+unplayed episode so a series can be started at the beginning (7.10), transcript
+policy including opt-in local transcription (7.7), permanent-redirect following
+(7.20), and re-publish handling for feeds that re-stamp their whole back
+catalogue on every rebuild (7.21).
+
+**Playback.** Chapter policy surfaced per podcast (7.8), chapter-title skip
+patterns -- exact where a seconds-based skip is a guess (7.13), silence-trim
+strength (7.18), a per-podcast sleep-timer default (7.24), and the session
+behaviour that was already overridable and unreachable (7.15).
+
+**Storage.** A per-podcast disk budget and a **never-evict pin** (7.11), a
+preferred audio variant using the `alternateEnclosure` tags Cast already parsed
+and never used (7.12), and a catalogue **view** limit for four-thousand-episode
+archive feeds (7.22) -- a view rather than a trim, because the obvious fix
+would have been the one thing in this feature set that destroys something.
+
+**Announcements.** Three-position notification priority replacing a boolean
+(7.5), a per-podcast quiet-hours exemption, a spoken-name override for titles
+TTS mangles (7.4), title cleanup rules with a preview (7.3), a per-podcast
+earcon (7.25), the gone-quiet and failed-check notices (7.19), the global
+announcement budget, and per-podcast **row speech** -- what each row of a list
+actually says.
+
+**Curation.** Season/episode sort read from `itunes:season` and
+`itunes:episode` (7.9), a default playlist new episodes join (7.16), free-text
+**labels** usable as a Smart Playlist rule (7.17), and an artwork override
+(7.23).
+
+##### Row speech, and why it is the most valuable of them
+
+A screen reader reads **every** row of **every** list out loud, in full. Cast's
+answer had been one boolean -- podcast name before episode title -- over a
+question with at least seven answers. `row_speech.py` is the composer: a named
+**order** (title, podcast or date first), and independent switches for the
+podcast's name, the date, the length or time remaining, the download state, the
+numbering, whether the episode has chapters or a transcript, and the
+description at off/brief/full. Per podcast as well as globally, because a daily
+show with the date in every title should not have the date read again.
+
+Two rules the composer keeps: **nothing is said twice** (the podcast's name is
+dropped inside its own episode list, whatever the switch says), and **every
+part is droppable and the row still parses**.
+
+##### Where the numbering came from
+
+`PodcastEpisode` moved to `models_episode.py` (GATE-11: extract, never
+rebaseline; `models.py` sat exactly on its budget, now ratcheted 344 -> 270) and
+gained `season`, `episode_number` and `episode_type`. All three were in the
+feed bytes all along and were being discarded. The numbering is the only
+dependable order a serial show has, because its published dates get re-stamped
+on a feed rebuild; the type is the publisher's own answer to the question
+Episode Filters otherwise has to guess from a title. A merge only ever takes
+them *upward*, so a partial feed cannot un-number episodes a sort is relying on.
+
+##### The safety properties, restated
+
+* **Nothing added here deletes anything.** Every setting changes where an
+  episode goes, how it reads, or when work starts.
+* **Everything fails open.** An unreadable stored value, an unknown choice, a
+  clock that cannot be read: all land on "carry on as before". These settings
+  restrict, and a restriction nobody chose is the worst kind.
+* **Both hiding settings name their way back**, in the setting's own help.
+* **Every catalogue entry says what it does not do**, enforced by
+  `test_show_settings.py` exactly as `test_settings_help.py` enforces it for
+  the older help tables.
+
+##### Code map
+
+`core/podcasts/settings_types.py` (what a setting is),
+`settings_resolver.py` (the four-level chain, provenance, migration),
+`settings_catalog.py` (assembly, search, the changed report),
+`settings_defs_playback.py` / `settings_defs_library.py` /
+`settings_defs_show.py` (the definitions), `row_speech.py`,
+`title_cleanup.py`, `show_policy.py` (one function per question the app asks),
+`check_state.py` (per-podcast cadence and the two notices),
+`models_episode.py`; and in the UI `show_settings_dialog.py` (rebuilt,
+catalogue-driven), `show_settings_panel.py`, `show_list_editor.py`.
+
+##### Deferred, deliberately
+
+The proposal's own Tier-3 items that needed a design conversation and did not
+get one: a learned publication cadence behind the gone-quiet notice (the typed
+value ships, the learning does not), a bandwidth ceiling distinct from the
+window, and the per-device versus synced settings split -- `SettingDef` carries
+a `device_local` flag and nothing yet reads it. A standalone *Find a Setting*
+window is not shipped either: the search exists in the catalogue and is used by
+the changed report, but the global settings IA it belongs to is not part of the
+per-podcast proposal.
 
 ## PRD 5.89e The Quill Cast standalone app
 

@@ -352,6 +352,68 @@ class ManagerActionsMixin:
             self._on_library_changed()
             self.refresh_tree()
 
+    def _on_episode_filters(self, show: PodcastShow) -> None:
+        """Episode Filters: the rules that decide where new episodes go.
+
+        Its own verb rather than a page inside Settings for This Podcast,
+        because it is the only per-show setting that is a *rule set* -- with a
+        list, a dry run and a gated save -- and folding it into a form of two
+        dozen controls would put it behind a lot of arrowing for somebody who
+        opened the menu already knowing what they wanted.
+        """
+        from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersDialog
+
+        dialog = EpisodeFiltersDialog(
+            self.dialog,
+            library=self._library,
+            show=show,
+            announce_cb=self._announce,
+            playing=self._currently_playing(),
+        )
+        if dialog.show():
+            self._on_library_changed()
+            self.refresh_tree()
+            self._fill_episodes(self._current_show)
+
+    def _on_toggle_filter_exempt(self, show: PodcastShow, episode: PodcastEpisode) -> None:
+        """Exempt one episode from its podcast's Episode Filter, or put it back.
+
+        The escape hatch that makes hiding safe to offer. A rule is a guess
+        about a pattern; this is somebody being specific about one episode, and
+        specific wins in every scope at once -- there is deliberately no
+        per-surface exemption, because "I want this episode" is one statement
+        and splitting it into eight would be a worse question than the one it
+        answers.
+        """
+        from quill.core.podcasts.episode_filter_maintenance import is_exempt, set_exempt
+
+        wanted = not is_exempt(self._library, show, episode)
+        if not set_exempt(self._library, show, episode, wanted):
+            return
+        self._on_library_changed()
+        self._fill_episodes(self._current_show)
+        self._announce(
+            f"{episode.title} is exempt from {show.title}'s Episode Filter, "
+            "everywhere the filter applies."
+            if wanted
+            else f"{episode.title} follows {show.title}'s Episode Filter again."
+        )
+
+    def _currently_playing(self) -> tuple[str, str] | None:
+        """``(show id, episode guid)`` of whatever is playing, or ``None``.
+
+        Asked so applying a filter to episodes you already have can leave the
+        episode under the playhead alone. Read defensively through the
+        transport host: the Podcast Manager can be opened in contexts (tests,
+        a standalone shell) where there is no controller at all, and "no
+        player" must read as "nothing playing", never as an error.
+        """
+        controller = getattr(self._transport_host, "_podcast_controller", None)
+        state = getattr(controller, "state", None)
+        show_id = str(getattr(state, "show_id", "") or "")
+        guid = str(getattr(state, "episode_guid", "") or "")
+        return (show_id, guid) if show_id and guid else None
+
     def _on_toggle_show_paused(self, show: PodcastShow) -> None:
         show.paused = not show.paused
         self._on_library_changed()

@@ -21,11 +21,29 @@ from quill.core.selection import (
     line_span,
     paragraph_span,
     selection_scope,
+    word_span,
+)
+from quill.core.selection import (
+    shrink_selection as shrink_selection_span,
 )
 from quill.ui.dialog_contract import apply_modal_ids
 
 
 class SelectionMarksMixin:
+    def select_word(self) -> None:
+        """Select the word the caret is in.
+
+        QUILL had select_line, select_paragraph and select_block and no
+        select_word, which left the innermost rung of its own expansion ladder
+        as the only one you could not ask for directly.
+        """
+        text = self.editor.GetValue()
+        cursor = self.editor.GetInsertionPoint()
+        start, end = word_span(text, cursor)
+        self.editor.SetFocus()
+        self.editor.SetSelection(start, end)
+        self._announce_selection_scope("word", text, start, end)
+
     def select_line(self) -> None:
         text = self.editor.GetValue()
         cursor = self.editor.GetInsertionPoint()
@@ -78,10 +96,27 @@ class SelectionMarksMixin:
         self._announce_selection_scope(scope, text, new_start, new_end)
 
     def shrink_selection(self) -> None:
-        """Shrink the selection to the previously expanded unit (SEL-2)."""
+        """Shrink the selection to the previously expanded unit (SEL-2).
+
+        With no expansion history, fall back to the computed inverse
+        (``quill.core.selection.shrink_selection``) rather than refusing. The
+        stack only knows about selections you reached *by expanding*: select a
+        paragraph outright and ask to shrink, and it has nothing to say, even
+        though "the line the caret is on" is an obvious answer. A listener
+        cannot tell that refusal apart from a broken command.
+        """
         stack = getattr(self, "_selection_expand_stack", None)
         if not stack:
-            self._set_status("No selection to shrink")
+            text = self.editor.GetValue()
+            start, end = self.editor.GetSelection()
+            smaller = shrink_selection_span(text, start, end)
+            if smaller is None:
+                self._set_status("No selection to shrink")
+                return
+            new_start, new_end, scope = smaller
+            self.editor.SetFocus()
+            self.editor.SetSelection(new_start, new_end)
+            self._announce_selection_scope(scope, text, new_start, new_end)
             return
         previous_start, previous_end = stack.pop()
         text = self.editor.GetValue()

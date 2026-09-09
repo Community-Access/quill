@@ -94,7 +94,9 @@ def _basic_auth_header(username: str, password: str) -> str:
     return f"Basic {token}"
 
 
-def _fetch_feed_bytes(url: str, *, username: str = "", password: str = "") -> bytes:
+def _fetch_feed_bytes(
+    url: str, *, username: str = "", password: str = "", redirected_to: list[str] | None = None
+) -> bytes:
     """One HTTPS GET returning raw feed bytes -- the reviewed egress site.
 
     Retried on a transient failure (:mod:`quill.core.net_retry`): a refresh
@@ -108,6 +110,7 @@ def _fetch_feed_bytes(url: str, *, username: str = "", password: str = "") -> by
     """
     if not url.startswith("https://"):
         raise FeedReaderError("Only https:// feeds can be subscribed to.")
+    redirected_to = redirected_to if redirected_to is not None else []
     headers = {"User-Agent": _USER_AGENT, "Accept": "application/rss+xml, application/xml, */*"}
     if username:
         # Sent preemptively rather than waiting for a 401 challenge: some
@@ -119,16 +122,29 @@ def _fetch_feed_bytes(url: str, *, username: str = "", password: str = "") -> by
     request = urllib.request.Request(url, headers=headers)
     context = ssl.create_default_context()
 
+    #: Where the server said this feed now lives, when it said so permanently.
+    #: Collected rather than acted on: rewriting a subscription's address is a
+    #: decision the listener makes per podcast (``follow_redirects``), not one
+    #: a fetch makes for them -- and a saved username and password are never
+    #: carried to a new host whatever they chose.
+    final_url: list[str] = []
+
     def _fetch_once() -> bytes:
         """One attempt. The reviewed egress site; the retry wraps it."""
         with feed_auth.urlopen_auth_safe(
             request, timeout=_TIMEOUT_SECONDS, context=context
         ) as resp:
+            landed = str(getattr(resp, "url", "") or "")
+            if landed and landed != url and landed.startswith("https://"):
+                final_url.append(landed)
             payload: bytes = resp.read(_MAX_BYTES)
             return payload
 
     try:
-        return retry_transient(_fetch_once)
+        payload = retry_transient(_fetch_once)
+        if final_url:
+            redirected_to.append(final_url[-1])
+        return payload
     except urllib.error.HTTPError as error:
         if error.code in (401, 403):
             raise FeedAuthError(
@@ -137,6 +153,20 @@ def _fetch_feed_bytes(url: str, *, username: str = "", password: str = "") -> by
         raise FeedReaderError(f"Could not reach that feed: {error}") from error
     except (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError) as error:
         raise FeedReaderError(f"Could not reach that feed: {error}") from error
+
+
+def _parse_number(raw: object) -> int:
+    """``itunes:season`` / ``itunes:episode`` as a count; 0 when unreadable.
+
+    Zero rather than a guess, and zero means *the feed did not say* rather
+    than *episode zero* -- an unnumbered episode must not sort as though it
+    were the first one.
+    """
+    try:
+        number = int(str(raw or "").strip())
+    except (TypeError, ValueError):
+        return 0
+    return number if number > 0 else 0
 
 
 def _parse_duration(raw: object) -> int:
@@ -207,6 +237,15 @@ def _entry_to_episode(entry: object, entry_xml: str) -> PodcastEpisode | None:
         audio_url=audio_url,
         published=published,
         duration_seconds=duration,
+        # The publisher's own numbering and their own answer to "is this the
+        # show, a trailer, or a bonus". Both were in these bytes all along and
+        # both were discarded: the numbering is the only reliable order a
+        # serial show has (published dates get re-stamped on a feed rebuild),
+        # and the type is the publisher saying, in their vocabulary, the thing
+        # an Episode Filter would otherwise have to guess from a title.
+        season=_parse_number(getattr(entry, "itunes_season", "")),
+        episode_number=_parse_number(getattr(entry, "itunes_episode", "")),
+        episode_type=str(getattr(entry, "itunes_episodetype", "") or "").strip().lower(),
         description=description,
         chapters_url=chapters_url,
         transcript_url=transcript_url,
@@ -264,8 +303,17 @@ def fetch_and_parse_feed(
     username: str = "",
     password: str = "",
     safe_mode: bool = False,
+    redirected_to: list[str] | None = None,
 ) -> FeedInfo:
-    """Fetch *url* and parse it in one step."""
+    """Fetch *url* and parse it in one step.
+
+    *redirected_to*, when given, collects the address this feed actually
+    landed on. Reported rather than followed: whether a subscription's stored
+    address is rewritten is a per-podcast decision (7.20), and the fetch is
+    not the place to make it.
+    """
     refuse_in_safe_mode(safe_mode)
-    raw_bytes = _fetch_feed_bytes(url, username=username, password=password)
+    raw_bytes = _fetch_feed_bytes(
+        url, username=username, password=password, redirected_to=redirected_to
+    )
     return parse_feed(raw_bytes)

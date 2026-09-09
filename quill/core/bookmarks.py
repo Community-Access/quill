@@ -119,9 +119,20 @@ class DocumentMemory:
 
     On-disk shape (``app_data_dir()/document_memory.json``)::
 
-        {"<doc-key>": {"bookmarks": {"intro": 0, ...}, "last_position": 1234}}
+        {"<doc-key>": {"bookmarks": {"intro": 0, ...},
+                       "numbered": [{"number": 1, "position": 0, "label": "..."}],
+                       "last_position": 1234}}
 
     Forgiving load (missing/malformed -> empty), atomic save via core.storage.
+
+    ``numbered`` is the second kind of bookmark
+    (:class:`~quill.core.numbered_bookmarks.BookmarkSet` -- nine slots addressed
+    by digit) and is stored alongside the named ones rather than in a store of
+    its own. QuillLite is its first user, and the ``path`` argument is what lets
+    it be: QuillLite keeps its own file under ``%LOCALAPPDATA%\\QuillLite`` and
+    shares no data with QUILL (its PRD 5.3, "not a thin client"), so what the
+    two products share here is the *format and the code*, never the file.
+    Absent from older files and written only when non-empty.
     """
 
     path: Path = field(default_factory=lambda: app_data_dir() / DOCUMENT_MEMORY_FILENAME)
@@ -155,6 +166,12 @@ class DocumentMemory:
                         marks[name.strip()] = max(0, pos)
                 last = entry.get("last_position")
                 clean: dict[str, object] = {"bookmarks": marks}
+                # Numbered bookmarks are validated on the way back out by
+                # BookmarkSet.from_records, so the raw list is kept as-is here
+                # rather than checked twice in two places that could disagree.
+                numbered = entry.get("numbered")
+                if isinstance(numbered, list):
+                    clean["numbered"] = numbered
                 if isinstance(last, int):
                     clean["last_position"] = max(0, last)
                 # Optional edit-surviving anchors, keyed by the same bookmark
@@ -191,6 +208,44 @@ class DocumentMemory:
         if not key:
             return
         self._entry(key)["bookmarks"] = {n: max(0, int(p)) for n, p in bookmarks.items()}
+        self.save()
+
+    def numbered_for(self, key: str | None) -> list:
+        """This document's numbered bookmarks, as records, or ``[]``.
+
+        Records rather than a ``BookmarkSet`` so this module keeps no import of
+        :mod:`quill.core.numbered_bookmarks`: the caller owns the model, this
+        owns the file. :meth:`BookmarkSet.from_records` turns them back.
+        """
+        if not key:
+            return []
+        raw = self.documents.get(key, {}).get("numbered", [])
+        return list(raw) if isinstance(raw, list) else []
+
+    def set_numbered(self, key: str | None, records: list) -> None:
+        """Store this document's numbered bookmarks, or forget them when empty.
+
+        Forgotten rather than written as ``[]``, and the document's whole row is
+        dropped if nothing else is left in it. Otherwise the store grows one row
+        for every file ever opened -- most of them recording that the user did
+        nothing -- and eventually somebody has to be told how to clean it out.
+        """
+        if not key:
+            return
+        if not records and key not in self.documents:
+            return  # nothing to remember and nothing remembered; write no row
+        entry = self._entry(key)
+        if records:
+            entry["numbered"] = list(records)
+        else:
+            entry.pop("numbered", None)
+            empty = (
+                not entry.get("bookmarks")
+                and not entry.get("anchors")
+                and "last_position" not in entry
+            )
+            if empty:
+                self.documents.pop(key, None)
         self.save()
 
     def anchors_for(self, key: str | None) -> dict[str, BookmarkAnchor]:

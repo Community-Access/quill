@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 import pytest
@@ -208,15 +209,45 @@ def test_arbitrary_quill_app_root_alone_does_not_redirect_data(
 # tests/unit/scripts/test_build_native_launcher.py.
 
 
-@pytest.mark.parametrize(
-    "exe_name",
-    [
-        "QuillRadio.exe",
-        "QuillWeather.exe",
-        "QuillAudioStudio.exe",
-        "QuillConverter.exe",
-    ],
-)
+def _shipped_launcher_exe_names() -> list[str]:
+    """Every launcher basename the build actually writes.
+
+    Read out of ``scripts/build_native_launcher.py`` by text rather than by
+    import, because that module is a build script that imports build-time
+    machinery and is not on the runtime path. ``name=`` in a ``Product(...)``
+    is authoritative: it becomes ``PRODUCT_NAME``, the CMake target, and
+    therefore the filename on disk.
+    """
+    script = Path(__file__).resolve().parents[3] / "scripts" / "build_native_launcher.py"
+    source = script.read_text(encoding="utf-8")
+    return sorted({f"{match}.exe" for match in re.findall(r'^\s*name="([^"]+)",', source, re.M)})
+
+
+def test_every_shipped_launcher_is_in_the_portable_allowlist() -> None:
+    """The gate that stops the sixth app repeating the first five.
+
+    Five products -- QuillLite, Inkwell, Beacon, Social and Cast under its
+    registry spelling -- were missing from this allowlist until 2026-09-09, so
+    their portable builds silently wrote the user's settings and recovery files
+    to ``%APPDATA%`` on the host machine instead of to the stick. Nothing failed
+    and nothing was announced; it just quietly stopped being portable, on
+    somebody else's computer.
+
+    Listing the products by hand in the test below is what let that happen, so
+    the list is derived here instead: a new app that builds a launcher and
+    forgets the allowlist fails this immediately.
+    """
+    shipped = _shipped_launcher_exe_names()
+    assert shipped, "no Product(name=...) entries found; has the build script moved?"
+    missing = [name for name in shipped if name not in storage_mode.PORTABLE_LAUNCHER_EXES]
+    assert missing == [], (
+        "These products build a native launcher but are not in "
+        "storage_mode.PORTABLE_LAUNCHER_EXES, so their portable bundles will "
+        f"write to %APPDATA% instead of the bundle's data/ folder: {missing}"
+    )
+
+
+@pytest.mark.parametrize("exe_name", _shipped_launcher_exe_names())
 def test_per_product_portable_bundle_recognized(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path, exe_name: str
 ) -> None:
@@ -276,3 +307,53 @@ def test_storage_mode_falls_back_when_portable_path_is_not_writable(
     stale_portable_path.parent.mkdir(parents=True, exist_ok=True)
     stale_portable_path.write_text('{"mode":"portable"}', encoding="utf-8")
     assert load_storage_mode() == "appdata"
+
+
+# ----------------------------------------------------------------------
+# A portable bundle is portable before anybody is asked
+# ----------------------------------------------------------------------
+
+
+def test_a_portable_bundle_defaults_to_the_stick_not_the_host_machine(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, isolated_profile: Path
+) -> None:
+    """Extract the zip, run it, and nothing is written to %APPDATA%.
+
+    Until 2026-09-09 an unanswered storage-mode question meant appdata, so a
+    freshly extracted portable QUILL created a folder on the host machine's
+    hard drive on first run -- exactly what somebody running from a USB stick
+    picked the portable build to avoid, and with nothing to tell them. The user
+    guide has said "portable mode is a property of the bundle, not of the
+    running environment" throughout; this is what makes that sentence true.
+    """
+    root = _make_portable_bundle(tmp_path)
+    monkeypatch.setenv("QUILL_APP_ROOT", str(root))
+    monkeypatch.delenv("QUILL_DATA_DIR", raising=False)
+    assert load_storage_mode() is None, "no choice has been made yet"
+
+    assert app_data_dir() == (root / "data").resolve()
+
+
+def test_an_explicit_appdata_choice_still_beats_the_portable_default(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Defaulting is not overriding. Somebody who asked for appdata gets it."""
+    root = _make_portable_bundle(tmp_path)
+    monkeypatch.setenv("QUILL_APP_ROOT", str(root))
+    monkeypatch.setenv("APPDATA", str(tmp_path / "appdata"))
+    monkeypatch.delenv("QUILL_DATA_DIR", raising=False)
+    save_storage_mode("appdata")
+
+    assert app_data_dir() == (tmp_path / "appdata" / "Quill").resolve()
+
+
+def test_a_normal_install_is_unaffected_by_the_portable_default(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """There is no portable root to default to, so nothing moves."""
+    _pin_executable_away_from_any_real_bundle(monkeypatch, tmp_path)
+    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
+    monkeypatch.setenv("APPDATA", str(tmp_path / "appdata"))
+    monkeypatch.delenv("QUILL_DATA_DIR", raising=False)
+
+    assert app_data_dir() == (tmp_path / "appdata" / "Quill").resolve()

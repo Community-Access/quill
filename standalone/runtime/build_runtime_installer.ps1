@@ -51,6 +51,19 @@ if (-not (Test-Path (Join-Path $dist "QuillVilleRuntime.exe")) -or -not (Test-Pa
     throw "No built runtime at $dist. Run build_runtime.ps1 first (and let its gates pass)."
 }
 
+# ...but "a runtime exists here" is not "this runtime is the current one". The
+# dist is a communal work area that survives between sessions, so the copy on
+# disk may have been frozen days ago from a different tree -- and this is the
+# script that PUBLISHES it, to a moving tag every Lite installer in the family
+# downloads from. On 2026-09-08 the runtime staged for publication was 28 files
+# behind the checkout and missing two QuillLite modules; the presence checks all
+# passed. Of everywhere this gate could run, here is where it matters most:
+# every other staleness ships to one app's users, this one ships to everyone's.
+& $Python (Join-Path $QuillRepo "scripts\check_runtime_freshness.py") $dist --source-root $QuillRepo
+if ($LASTEXITCODE -ne 0) {
+    throw "Refusing to package a runtime that is not built from this checkout (see above)."
+}
+
 # Version stamp: the python minor the runtime is built for plus the build
 # date from its own marker, e.g. "3.13.20260818". The install path and the
 # Lite installers' presence check key on the 3.13, so that leads.

@@ -221,6 +221,44 @@ def test_verify_assistant_connection_surfaces_unlock_failure(
     assert "Open AI Connection" in message
 
 
+def test_safe_mode_outranks_an_unlock_failure_on_every_ai_surface(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """H-SAFE-1 must hold even on a machine with an undecryptable saved key.
+
+    ``verify_assistant_connection`` checked the unlock failure first until
+    2026-09-08, so on a restored profile or a portable install moved between
+    Windows accounts it answered "the saved API key is encrypted for a
+    different Windows user" -- true, and useless, because re-entering the key
+    changes nothing while Safe Mode is on. It also made
+    ``tests/stability/test_stability.py`` pass or fail according to whether the
+    machine running it happened to carry such a key.
+    """
+    monkeypatch.setenv("QUILL_SAFE_MODE", "1")
+    monkeypatch.setattr(assistant_ai, "assistant_secret_unlock_failed", lambda: True)
+    settings = assistant_ai.AssistantConnectionSettings(
+        provider="openai",
+        host="https://api.openai.com",
+        model="gpt-4o-mini",
+    )
+
+    ok, message = assistant_ai.verify_assistant_connection(settings, api_key="x")
+    assert ok is False
+    assert "Safe Mode" in message
+
+    # The two surfaces that already ordered it this way, pinned alongside so
+    # the three cannot drift apart again.
+    models, list_error = assistant_ai.list_assistant_models(settings, api_key="x")
+    assert models == []
+    assert list_error is not None and "Safe Mode" in list_error
+
+    text, generate_error = assistant_ai.generate_assistant_response(
+        settings, api_key="x", prompt="hi"
+    )
+    assert text is None
+    assert generate_error is not None and "Safe Mode" in generate_error
+
+
 def test_list_assistant_models_surfaces_unlock_failure(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

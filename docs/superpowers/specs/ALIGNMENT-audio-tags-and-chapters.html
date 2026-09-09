@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>ALIGNMENT-audio-tags-and-chapters</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+</head>
+<body>
+<h1
+id="alignment-audio-tags-and-chapters-across-quill-audio-studio-and-podharvest">Alignment:
+audio tags and chapters across QUILL Audio Studio and podHarvest</h1>
+<p>Date: 2026-09-02 Status: implemented and verified in both repos
+(2026-09-02) Governs: <code>S:\quill</code> (QUILL Audio Studio) and
+<code>S:\code\pod</code> (podHarvest)</p>
+<p>This document is the contract between two separate repositories. A
+copy lives in each; they must stay identical. It exists because both
+apps now edit the same thing — an audio file's tags and chapter markers
+— and a user who moves between them should find the same fields, the
+same operations, the same keys and the same words, and should be able to
+edit a file in either app without the other noticing.</p>
+<h2 id="the-three-decisions">The three decisions</h2>
+<p><strong>Sharing.</strong> One pure-Python module, vendored
+byte-identical into both repos, with a drift gate in each. No new
+package, no cross-repo install, no version skew. QUILL already vendors
+ChapterForge logic this way; this follows the same pattern.</p>
+<p><strong>Accessibility.</strong> Both apps get both approaches.
+Neither loses anything.</p>
+<p><strong>Parity.</strong> Full: all 26 tag fields, cover art, and
+every chapter operation, in both apps.</p>
+<h2 id="the-shared-modules">The shared modules</h2>
+<p><strong>Two of them now</strong>, on the same terms: identical bytes
+in both repos, a SHA-256 drift test on each side, no import from either
+host package.</p>
+<p><code>reuse_core.py</code> came second (2026-09-03) and holds the
+<em>do we already have this?</em> rules: the transcript-format ranking,
+the WebVTT/SRT/JSON transcript readers, and the show-notes chapter
+parser. It went in when podHarvest needed them and QUILL Cast already
+had them, worked out against real feeds. Rather than copy, <strong>Cast
+now delegates</strong>: <code>show_note_chapters.py</code> went from 231
+lines to 109, <code>transcript_choice.py</code> from 90 to 76, and the
+text parsers moved out of <code>transcripts.py</code>. Cast's own 749
+tests passing against the shared code is the proof the move was
+faithful.</p>
+<p><code>audio_tags_core.py</code> — identical bytes at
+<code>quill/core/speech/audio_tags_core.py</code> and
+<code>podharvest/audio_tags_core.py</code>.</p>
+<p>Pure Python, wx-free, standard library only, with mutagen imported
+<strong>lazily inside functions</strong> so the module loads without it.
+It carries no import from either host package — that is what makes
+byte-identity possible.</p>
+<p>It owns:</p>
+<ul>
+<li><code>TagField</code>, <code>TAG_FIELDS</code> (26 entries),
+<code>GROUPS</code>, <code>fields_in</code>, <code>field_for</code></li>
+<li><code>AudioTags</code>, <code>CoverArt</code>,
+<code>MAX_COVER_BYTES</code>, <code>load_cover</code>,
+<code>cover_extension</code>, <code>describe_cover</code></li>
+<li><code>read_tags</code>, <code>write_tags</code>,
+<code>preferred_id3_version</code></li>
+<li><code>Chapter</code>, and every chapter operation:
+<code>add_chapter</code>, <code>delete_chapter</code>,
+<code>merge_chapter</code>, <code>split_chapter</code>,
+<code>set_chapter_start</code>, <code>set_chapter_bounds</code>,
+<code>nudge_chapter_start</code>, <code>clamp_chapters</code>,
+<code>NUDGE_STEPS_MS</code></li>
+<li><code>write_mp3_chapters</code>, <code>read_mp3_chapters</code></li>
+<li><code>format_time_precise</code>, <code>parse_time</code></li>
+<li>Plain exception classes: <code>AudioTagError</code>, and
+<code>TagReadError</code>, <code>TagWriteError</code>,
+<code>ChapterEditError</code> beneath it</li>
+</ul>
+<h3 id="errors-at-the-boundary">Errors at the boundary</h3>
+<p>QUILL requires every top-level exception in <code>quill/core</code>
+to subclass <code>CodedError</code> with a unique
+<code>QUILL-&lt;DOMAIN&gt;-&lt;SUBSYSTEM&gt;-&lt;REASON&gt;</code> code
+(GATE-EC), and forbids the <code>class X(Exception, CodedError)</code>
+MRO. The shared module cannot import <code>CodedError</code>, so it
+raises its own plain classes and <strong>QUILL retranslates at the
+adapter boundary</strong>:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> ChapterEditError(CodedError):</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    code <span class="op">=</span> <span class="st">&quot;QUILL-SPEECH-CHAPTER-EDIT&quot;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> merge_chapter(chapters: <span class="bu">list</span>[Chapter], index: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[Chapter]:</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">try</span>:</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> _core.merge_chapter(chapters, index)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">except</span> _core.ChapterEditError <span class="im">as</span> exc:</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> ChapterEditError(<span class="bu">str</span>(exc)) <span class="im">from</span> exc</span></code></pre></div>
+<p>podHarvest uses the shared classes directly — it has no coded-error
+scheme. The retranslation is one decorator in QUILL's adapter, not seven
+try blocks.</p>
+<h3 id="the-drift-gate">The drift gate</h3>
+<p>Each repo carries a test that hashes its copy and compares against a
+constant recorded in this document's companion,
+<code>audio_tags_core.sha256</code>, kept beside the module in both
+repos:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> test_shared_module_has_not_drifted() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">&quot;&quot;&quot;audio_tags_core.py is vendored; edit it in both repos or neither.&quot;&quot;&quot;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    digest <span class="op">=</span> hashlib.sha256(MODULE_PATH.read_bytes()).hexdigest()</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">assert</span> digest <span class="op">==</span> EXPECTED, (</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;audio_tags_core.py changed. Copy the new file into the other repo &quot;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;and update the digest in both, or the two apps have silently &quot;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">&quot;diverged.&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div>
+<p>Changing the shared module is therefore always a two-repo change.
+That is the point: the gate makes silent divergence impossible, and
+makes deliberate divergence loud.</p>
+<h2 id="what-identical-output-means">What "identical output" means</h2>
+<p>Both apps must write chapter frames a byte-comparison cannot tell
+apart. Before this work they did not, and the differences were small but
+real.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>podHarvest before</th>
+<th>QUILL before</th>
+<th>Aligned</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Writer</td>
+<td>ffmpeg re-mux</td>
+<td>mutagen, in place</td>
+<td>mutagen, in place</td>
+</tr>
+<tr>
+<td>Element ids</td>
+<td><code>ch0</code>, <code>ch1</code></td>
+<td><code>chp0000</code>, <code>chp0001</code></td>
+<td><code>ch0</code>, <code>ch1</code></td>
+</tr>
+<tr>
+<td>TOC id</td>
+<td><code>toc</code></td>
+<td><code>toc</code></td>
+<td><code>toc</code></td>
+</tr>
+<tr>
+<td>ID3 version</td>
+<td>2.4 always</td>
+<td>2.3 always</td>
+<td>adaptive: 2.3, or 2.4 once a v2.4-only field is set -- and a chapter
+write inherits it rather than forcing one</td>
+</tr>
+<tr>
+<td>Whole file rewritten</td>
+<td>yes</td>
+<td>no</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<p>Verified against real ffmpeg on 2026-09-02: podHarvest's existing
+writer does produce proper ID3v2.4 <code>CHAP</code> + <code>CTOC</code>
+frames that mutagen reads back correctly — it works, it is simply not
+identical to QUILL's.</p>
+<p><strong>Element ids become <code>ch&lt;N&gt;</code>.</strong> QUILL
+changes; podHarvest does not. Element ids are opaque handles, so no
+player is affected, but podHarvest already has libraries of harvested
+episodes carrying <code>ch0</code>-style ids and ffmpeg is the de-facto
+convention. Changing the app with no installed base is the cheaper side
+of the trade.</p>
+<p><strong>The chapter write follows the file's ID3 version.</strong>
+Found by running the two apps against one file rather than by reading
+the code: saving an ID3 block is all-or-nothing, so writing chapters at
+a fixed 2.3 onto a file whose tags had just been written at 2.4 quietly
+demoted the whole block and stranded the sort fields.
+<code>write_mp3_chapters</code> therefore takes
+<code>v2_version: int | None</code> and, left unset, reads what is on
+disk and asks <code>preferred_id3_version</code>. Callers no longer have
+to write tags and chapters in a particular order to keep what they wrote
+-- which is exactly the kind of thing neither app should have to
+remember.</p>
+<p><strong>podHarvest stops re-muxing MP3s to add chapters.</strong>
+This is the change that matters most to podHarvest on its own terms.
+<code>embed_chapters</code> currently copies the entire episode through
+ffmpeg to add a hundred bytes of chapter frames; the shared mutagen
+writer edits the tag block in place. A 60 MB episode goes from a full
+file copy to instant, and the temp-file dance that protects against a
+truncated write is no longer needed for MP3 at all. The ffmpeg re-mux
+stays for <code>.ogg</code>, <code>.opus</code> and the MP4 family,
+which mutagen cannot chapter in place.</p>
+<h2 id="accessibility-both-approaches-in-both-apps">Accessibility: both
+approaches, in both apps</h2>
+<p>The two codebases start from positions that look contradictory. They
+are not, once the reasons are read rather than the conclusions.</p>
+<p><strong>podHarvest</strong> avoids <code>&amp;</code> mnemonics,
+because <code>IsDialogMessage</code> scopes its mnemonic search to the
+enclosing <code>wx.StaticBox</code> — so a mnemonic is unreachable from
+a field in a different box — and because mnemonics match
+case-insensitively, so <code>&amp;Start</code> and
+<code>&amp;speakers</code> collide. It names controls with a
+<code>_Named</code> <code>wx.Accessible</code> subclass rather than
+<code>SetName</code>.</p>
+<p><strong>QUILL</strong> mandates a unique mnemonic per window
+(GATE-14) and names controls with <code>set_accessible_name</code>,
+which calls <code>SetName</code> and reaches a <code>SpinCtrl</code>'s
+inner edit.</p>
+<p>The synthesis, which costs neither app anything:</p>
+<ol type="1">
+<li><strong>The new dialogs use <code>FlexGridSizer</code> rows, not
+<code>wx.StaticBox</code> groups.</strong> podHarvest's mnemonic-scoping
+objection is a property of StaticBox containment; without the boxes it
+does not arise. Mnemonics work in both.</li>
+<li><strong>Mnemonics are unique case-insensitively within a
+page</strong>, which is already what GATE-14 enforces and exactly
+answers podHarvest's <code>&amp;Start</code>/<code>&amp;speakers</code>
+collision.</li>
+<li><strong>Both apps adopt podHarvest's <code>_Named</code>
+<code>wx.Accessible</code> helper</strong> in addition to
+<code>SetName</code>. It is the stronger of the two implementations: it
+sets a real accessible name rather than relying on the platform to
+derive one, and it costs one small class. QUILL keeps
+<code>set_accessible_name</code> as the call site so its accessible-name
+audit still classifies each site as <code>named</code>.</li>
+<li><strong>Both apps get an accelerator table</strong> for the chapter
+operations, so nudging and previewing are reachable without hunting for
+a button.</li>
+<li><strong>Both apps create the label before the control it
+labels.</strong> Both codebases already believe this; QUILL has a gate
+for it (<code>check_dialog_zorder.py</code>) and podHarvest states it in
+its GUI docstring. The shared dialog honours it by construction.</li>
+</ol>
+<h2 id="the-shared-keyboard">The shared keyboard</h2>
+<p>Identical in both apps. podHarvest binds them in its accelerator
+table; QUILL binds them on the chapter list and names them in help text,
+since the Workbench has no menu bar to advertise them.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alt+Left / Alt+Right</td>
+<td>Nudge the selected chapter's start by one step</td>
+</tr>
+<tr>
+<td>Alt+Shift+Left / Alt+Shift+Right</td>
+<td>Nudge by ten steps</td>
+</tr>
+<tr>
+<td>Enter (on the chapter list)</td>
+<td>Edit the selected chapter</td>
+</tr>
+<tr>
+<td>Ctrl+Tab / Ctrl+Shift+Tab</td>
+<td>Move between tag editor pages</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-shared-wording">The shared wording</h2>
+<p>The help sentence for each tag field lives in
+<code>TAG_FIELDS</code>, so both apps read the same words by
+construction. Announcements follow the same two rules in both:</p>
+<ul>
+<li>A nudge speaks the bare new time (<code>0:00:09.500</code>), never a
+sentence: it runs at key-repeat speed, and a sentence repeated ten times
+a second is noise. The full sentence follows once the run goes quiet for
+600 ms.</li>
+<li>Hitting the wall says "Cannot move further." once per run, not per
+press.</li>
+</ul>
+<h2 id="per-repo-work">Per-repo work</h2>
+<h3 id="quill-squill">QUILL (<code>S:\quill</code>)</h3>
+<p>Follows
+<code>docs/superpowers/plans/2026-09-02-audio-tag-editor.md</code>,
+amended:</p>
+<ul>
+<li>Tasks 1–7 build their logic <strong>in
+<code>audio_tags_core.py</code></strong>, not in
+<code>audio_tags.py</code>/<code>chapters.py</code> directly.
+<code>audio_tags.py</code> becomes the thin adapter (coded errors, the
+<code>AudioMetadata</code> bridge), and <code>chapters.py</code>
+re-exports the shared operations through the same adapter so all eleven
+existing importers keep working unchanged.</li>
+<li><code>write_mp3_chapters</code> changes its element-id format from
+<code>chp{index:04d}</code> to <code>ch{index}</code>. Existing files
+are unaffected — the reader sorts by start time and does not care about
+ids.</li>
+<li>The Tag Editor and the chapter-details dialog adopt the
+<code>_Named</code> <code>wx.Accessible</code> helper alongside
+<code>set_accessible_name</code>.</li>
+<li>A drift test for the vendored module.</li>
+</ul>
+<h3 id="podharvest-scodepod">podHarvest (<code>S:\code\pod</code>)</h3>
+<p>Follows <code>docs/plans/2026-09-02-tag-and-chapter-editor.md</code>
+in this repo. In outline:</p>
+<ul>
+<li>Vendor <code>audio_tags_core.py</code> and add the drift test.</li>
+<li>Add <code>mutagen</code> to the <strong><code>gui</code> extra
+only</strong>. podHarvest's stated promise is that its <em>CLI</em> runs
+on the standard library alone, with the desktop GUI as the one
+exception; tag editing is a GUI feature, so the promise is kept
+verbatim. The CLI never imports mutagen.</li>
+<li>Rewrite <code>chapters.embed_chapters</code> to use the shared
+mutagen writer for MP3 and keep the ffmpeg re-mux for the other
+containers, preserving its current signature and its never-raises
+contract so the harvest pipeline is unchanged.</li>
+<li>Add a Tag and Chapter Editor dialog, opened from the Episodes list,
+with the same five pages, the same fields, the same chapter operations
+and the same keys as QUILL's.</li>
+</ul>
+<h2 id="what-podharvest-took-from-cast-and-what-it-did-not">What
+podHarvest took from Cast, and what it did not</h2>
+<p>Cast is a subscription and listening app; podHarvest is an archiver.
+The line between them is the one worth holding, so what came across is
+what serves an archive:</p>
+<ul>
+<li>the transcript-format ranking and readers, and the show-notes
+chapter parser (shared, above);</li>
+<li>the <strong>media-health</strong> pattern — one boolean, derived
+text, silent when healthy, never silent when asked — because every
+FFmpeg feature in either app fails by producing a plausible result;</li>
+<li>the <strong>F1 help</strong> contract: window purpose, then the
+focused control, never empty, with an audit that fails the build on a
+control nobody wrote a sentence for.</li>
+</ul>
+<p>What deliberately did not: subscriptions, an inbox, a play queue,
+retention and expiry, listening statistics. Those make a podcatcher, and
+podHarvest is not one.</p>
+<h2 id="out-of-scope">Out of scope</h2>
+<p>QUILL Cast's inferred chapters
+(<code>quill/core/podcasts/chapter_edits.py</code>) carry a confidence
+and a source, where an edit means "this is no longer a guess" — a
+different domain with different invariants. FLAC, OGG and Opus tag
+editing. Batch tagging across a folder. Online tag lookup.</p>
+<h2 id="verified">Verified</h2>
+<p>Run on 2026-09-02, loading both copies of the module side by side as
+two distinct module objects and passing one file between them:</p>
+<ul>
+<li>QUILL writes all 26 fields plus cover art; podHarvest reads every
+one back unchanged.</li>
+<li>podHarvest nudges a chapter marker and rewrites the chapter frames;
+QUILL reads the new start, and every one of the 26 tag fields survives
+that rewrite.</li>
+<li>Element ids read back as <code>ch0</code>, <code>ch1</code> with a
+<code>toc</code>, from both sides.</li>
+<li>The file sits at ID3v2.4 because a sort field is set, and stays
+there through the other app's chapter write.</li>
+</ul>
+<p>The last of those is what caught the version-ordering bug above. It
+is worth re-running, by hand, after any change to the shared module.</p>
+</body>
+</html>

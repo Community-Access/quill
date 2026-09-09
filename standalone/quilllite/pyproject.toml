@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quill-lite"
+version = "1.0.0"
+description = "QuillLite -- a notepad-scale, screen-reader-first text and rich text editor, on QUILL's editor surface"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+authors = [
+  { name = "Blind Information Technology Solutions (BITS)" },
+  { name = "Community Access" },
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: Microsoft :: Windows",
+]
+# The whole app lives in the quill package (quill.apps.lite); this project is
+# the thin product wrapper: entry point, docs, installer. Nothing here imports
+# wx or comtypes directly -- both arrive with quill[ui].
+dependencies = ["quill[ui] @ git+https://github.com/Community-Access/quill.git"]
+
+[project.gui-scripts]
+quill-lite = "quill_lite:main"
+
+[project.urls]
+Homepage = "https://github.com/Community-Access/quill"
+Upstream = "https://github.com/Community-Access/quill"
+
+[tool.hatch.build.targets.wheel]
+packages = ["quill_lite"]

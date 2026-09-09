@@ -56,7 +56,10 @@ class ManagerRowViewMixin:
         if episode.position_ms and 0 < remaining_seconds < episode.duration_seconds:
             remaining = f"{remaining_seconds // 60} min left"
         return {
-            "title": episode.title,
+            # The podcast's own title-tidying rules, applied here rather than
+            # to the stored episode: the feed's title is the publisher's and is
+            # never rewritten, and this is the reading of it (title_cleanup.py).
+            "title": self._display_title(episode, show),
             "published": episode.published[:16],
             "duration": duration_text,
             "status": self._episode_status_text(episode),
@@ -64,6 +67,18 @@ class ManagerRowViewMixin:
             "remaining": remaining,
             "downloaded": "Downloaded" if episode.downloaded_path else "Streams",
         }
+
+    def _display_title(self, episode: PodcastEpisode, show: PodcastShow | None) -> str:
+        """This episode's title as it should be read.
+
+        A podcast with no cleanup rules gets its title back unchanged, which is
+        every podcast until somebody writes one.
+        """
+        if show is None:
+            return episode.title
+        from quill.core.podcasts.show_policy import display_title
+
+        return display_title(self._library, show, episode)
 
     def _episode_status_text(self, episode: PodcastEpisode) -> str:
         if episode.downloaded_path:
