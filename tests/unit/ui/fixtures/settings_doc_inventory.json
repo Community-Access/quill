@@ -258,6 +258,7 @@
   "spell_review_wrap_to_beginning": "documented",
   "spellcheck_as_you_type": "documented",
   "spellcheck_language": "documented",
+  "spellcheck_skip_code_files": "documented",
   "spoken_echo_on_double_press": "documented",
   "ssh_trust_first_use": "documented",
   "start_with_no_document_open": "documented",

@@ -122,6 +122,8 @@ class Settings:
     launch_at_windows_startup: bool = False
     persistent_undo: bool = False
     spellcheck_as_you_type: bool = False
+    # Live check stays quiet in code; see quill/core/spellcheck_filetypes.py.
+    spellcheck_skip_code_files: bool = True
     # When True, saving a document first opens the F7 spelling review so the user
     # can correct misspellings before the file is written. Off by default.
     spell_check_before_save: bool = False
@@ -741,6 +743,7 @@ class Settings:
         tray_enabled = bool(data.get("tray_enabled", False))
         persistent_undo = bool(data.get("persistent_undo", False))
         spellcheck_as_you_type = bool(data.get("spellcheck_as_you_type", False))
+        spellcheck_skip_code_files = bool(data.get("spellcheck_skip_code_files", True))
         spell_check_before_save = bool(data.get("spell_check_before_save", False))
         spellcheck_language = str(data.get("spellcheck_language", "en_US")).strip() or "en_US"
         reveal_codes_visible = bool(data.get("reveal_codes_visible", False))
@@ -1409,6 +1412,7 @@ class Settings:
             tray_enabled=tray_enabled,
             persistent_undo=persistent_undo,
             spellcheck_as_you_type=spellcheck_as_you_type,
+            spellcheck_skip_code_files=spellcheck_skip_code_files,
             spell_check_before_save=spell_check_before_save,
             spellcheck_language=spellcheck_language,
             reveal_codes_visible=reveal_codes_visible,

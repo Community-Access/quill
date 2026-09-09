@@ -37,6 +37,7 @@ from quill.core.spellcheck import (
 from quill.core.spellcheck import (
     previous_misspelling as find_previous_misspelling,
 )
+from quill.core.spellcheck_filetypes import is_code_filename
 from quill.core.spellcheck_live import live_alert_suppressed
 from quill.platform.sr_announce import (
     announce,
@@ -687,6 +688,18 @@ class SpellcheckCommandsMixin:
             self._last_live_misspelling_feedback = None
             return
         if live_alert_suppressed(text, item.start, item.end):
+            self._last_live_misspelling_feedback = None
+            return
+        # Quiet in code, by the file's name. live_alert_suppressed above rules
+        # out a *region* -- a URL, a code span, a fence -- which is the right
+        # answer inside prose. It cannot help in main.py, where the whole file
+        # is the region: every identifier is a word no dictionary has, and each
+        # one costs a screen-reader user an earcon and a status line. The
+        # explicit F7 review is deliberately not gated here; that one was asked
+        # for, and somebody who runs it on a source file means it.
+        if getattr(self.settings, "spellcheck_skip_code_files", True) and is_code_filename(
+            self.document.path
+        ):
             self._last_live_misspelling_feedback = None
             return
         key = (item.word.lower(), item.start, item.end)

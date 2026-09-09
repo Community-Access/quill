@@ -14688,8 +14688,12 @@ the user has opted in (manual <code>Check for Updates</code> is always
 available).</li>
 <li><strong>Footprint</strong>: realistic target is 180–220 MB installed
 with English Tesseract data and English/UK + Spanish/French/German
-Hunspell dictionaries. A <strong>Quill Lite</strong> option ships at ~90
-MB and downloads dictionaries and Tesseract on first use.</li>
+Hunspell dictionaries. A <strong>QuillLite</strong> option ships at ~90
+MB and downloads dictionaries and Tesseract on first use. (The
+editor-only sibling product of that name now exists —
+<code>quill.apps.lite</code>, <code>standalone/quilllite/</code> — and
+is always spelled <strong>QuillLite</strong>, one mixed-case word, so
+speech reads it as a name.)</li>
 <li><strong>Offline Edition</strong>
 (<code>scripts/build_windows_distribution.py --bundle-offline</code>,
 0.9.0 Beta 3): most optional components (Pandoc, DECtalk, eSpeak-NG,
@@ -23415,6 +23419,65 @@ transition prompt). Native Ctrl+B/I/U are intercepted in rich mode and
 routed through QUILL’s commands so formatting is announced,
 dirty-marked, and remappable. Describe Formatting at Cursor reads the
 live TOM in rich mode.</p>
+<p><strong>Paragraph formatting completed (2026-09-08, via
+QuillLite).</strong> The surface has always been able to justify a
+paragraph, set a list type and set a line-spacing rule; nothing in QUILL
+was bound to any of it, so the small editor-only sibling QuillLite
+(<code>standalone/quilllite/</code>) could do things the editor could
+not. That is backwards, and it is now closed.
+<code>quill/ui/main_frame_rich_paragraph.py</code> adds
+<strong>Justify</strong> (Ctrl+Alt+J), <strong>single / one-and-a-half /
+double line spacing</strong> (Ctrl+1 / Ctrl+5 / Ctrl+2), <strong>Grow
+Font</strong> and <strong>Shrink Font</strong> (Ctrl+Shift+&gt; and
+Ctrl+Shift+&lt;, stepping a ladder of real point sizes that includes the
+heading sizes, so growing a heading stays <em>on</em> the ladder rather
+than falling off it into a paragraph that merely looks large),
+<strong>rich-mode bullets</strong> (Ctrl+Alt+B now drives
+<code>ITextPara.ListType</code> in a Rich Text document instead of
+inserting a Markdown dash into one), and <strong>Paste Text
+Only</strong> (Ctrl+Alt+V), which neither product had.
+<code>create_richedit_rtf</code> builds <code>RichEditDocument</code>
+(<code>quill/ui/richedit_editing.py</code>) — a
+<code>QuillRichEdit</code> plus the paragraph and view capabilities — so
+every tab gains them by construction rather than through a second
+factory.</p>
+<p>QUILL takes Ctrl+Alt+J and Ctrl+Alt+V where QuillLite uses WordPad’s
+Ctrl+J and Ctrl+Shift+V, because Ctrl+J has been Set Temporary Bookmark
+and Ctrl+Shift+V has been Preview here for far longer: an existing
+binding somebody’s hands already know outranks a new command’s
+convention. The divergence is a comment in <code>keymap.py</code>, not
+folklore.</p>
+<p><strong>Two TOM bugs fixed in the same change</strong> (both isolated
+by Steven Scott in PR #1490, with a standalone reproduction that imports
+neither QUILL nor QuillLite —
+<code>standalone/quilllite/tests/repro_tom_true.py</code>):</p>
+<ul>
+<li><strong><code>_TOM_TRUE</code> was <code>tomUndefined</code>, so
+every rich-mode heading lost its bold.</strong> <code>tom.h</code>
+defines <code>tomTrue</code> as <code>-1</code>; QUILL used
+<code>-9999999</code>, which the same header defines as
+<code>tomUndefined</code> — “leave this property alone”. Assigning it to
+<code>ITextFont.Bold</code> asked the control to change nothing and
+<em>succeeded</em>, so <code>set_heading</code> applied the point size,
+silently never applied the bold, and raised nothing. Because
+<code>heading_level_for_font</code> requires bold before it will call a
+paragraph a heading, <strong>QUILL could not then find the headings
+QUILL had just made</strong>: heading navigation and Describe Formatting
+both went blind in rich mode. Measured on RICHEDIT50W / Riched20
+10.0.26100 — <code>Bold = -9999999</code> gives <code>Weight=400</code>;
+<code>Bold = -1</code> gives <code>Weight=700</code>.</li>
+<li><strong>A collapsed caret described the paragraph above it.</strong>
+A collapsed TOM range reports the formatting of the character
+<em>before</em> it, so standing at the head of a heading described the
+body text above. <code>caret_format_description</code> now reads through
+<code>_format_range()</code>, which probes the character <em>after</em>
+the caret — which is what a screen reader describes.</li>
+</ul>
+<p>Both are pinned by regression tests in
+<code>tests/unit/ui/test_richedit_rtf_surface.py</code>, against a fake
+TOM that models the real control’s behaviour: assigning
+<code>tomUndefined</code> is <em>accepted</em> and changes nothing,
+which is exactly why the bug was silent for as long as it was.</p>
 <p><strong>The Document Format switcher</strong>
 (<code>format.switch_document_format</code>, Ctrl+Shift+Grave, K):
 Format menu, command palette, keyboard chord, and the interactive

@@ -182,19 +182,19 @@ def verify_assistant_connection(
     if provider == "off":
         return True, "AI provider is Off."
 
-    # L-5: surface the portable-install symptom before the network call so
-    # the user does not see a misleading "unauthorized" error from the
-    # provider. A saved key that cannot be unlocked on this Windows
-    # account means the network will never succeed.
-    if assistant_secret_unlock_failed():
-        return False, ASSISTANT_KEY_UNLOCK_FAILED_MESSAGE
-
-    # H-SAFE-1: refuse to even probe the network in safe mode. The user
-    # explicitly asked for offline operation; the verify surface is a
-    # network call and would lie about its outcome if it answered
-    # "verified" without actually checking.
+    # H-SAFE-1: refuse to even probe the network in safe mode -- the verify
+    # surface is a network call and would lie if it answered "verified"
+    # without checking. Ahead of the unlock check below, matching the other
+    # two entry points: re-entering a key changes nothing while Safe Mode is
+    # on, so naming Safe Mode is the answer a user can act on.
     if _safe_mode_active():
         return False, _safe_mode_blocked_message("Connection verification")
+
+    # L-5: a saved key that cannot be unlocked on this Windows account means
+    # the network will never succeed, so say so rather than letting the
+    # provider answer with a misleading "unauthorized".
+    if assistant_secret_unlock_failed():
+        return False, ASSISTANT_KEY_UNLOCK_FAILED_MESSAGE
 
     # A provider that requires a key cannot be verified without one. Some
     # listing endpoints (for example ollama.com/api/tags) answer 200 without

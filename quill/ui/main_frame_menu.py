@@ -502,6 +502,7 @@ class MenuBuilderMixin:
         self._id_snippet_gallery = wx.NewIdRef()
         self._id_follow_link = wx.NewIdRef()
         self._id_word_prediction = wx.NewIdRef()
+        self._id_select_word = wx.NewIdRef()
         self._id_select_line = wx.NewIdRef()
         self._id_select_paragraph = wx.NewIdRef()
         self._id_select_block = wx.NewIdRef()
@@ -640,6 +641,10 @@ class MenuBuilderMixin:
             self._menu_label(_("&Go to Start of Selection"), "edit.go_to_start_of_selection"),
         )
         selection_menu.AppendSeparator()
+        selection_menu.Append(
+            self._id_select_word,
+            self._menu_label(_("Select &Word"), "edit.select_word"),
+        )
         selection_menu.Append(
             self._id_select_line,
             self._menu_label(_("Select &Line"), "edit.select_line"),
@@ -1036,6 +1041,12 @@ class MenuBuilderMixin:
         self._id_format_bold = wx.NewIdRef()
         self._id_format_italic = wx.NewIdRef()
         self._id_format_underline = wx.NewIdRef()
+        self._id_format_justify = wx.NewIdRef()
+        self._id_format_grow_font = wx.NewIdRef()
+        self._id_format_shrink_font = wx.NewIdRef()
+        self._id_format_spacing_single = wx.NewIdRef()
+        self._id_format_spacing_one_and_a_half = wx.NewIdRef()
+        self._id_format_spacing_double = wx.NewIdRef()
         self._id_heading_1 = wx.NewIdRef()
         self._id_heading_2 = wx.NewIdRef()
         self._id_heading_3 = wx.NewIdRef()
@@ -1100,6 +1111,30 @@ class MenuBuilderMixin:
         format_menu.Append(
             self._id_format_underline,
             self._menu_label(_("&Underline"), "format.underline"),
+        )
+        # Paragraph and run formatting the editor was missing until QuillLite
+        # needed it. Every label goes through _menu_label so it advertises
+        # whatever is actually bound, and follows a rebinding.
+        format_menu.Append(
+            self._id_format_justify, self._menu_label(_("&Justify"), "format.justify")
+        )
+        format_menu.Append(
+            self._id_format_grow_font, self._menu_label(_("Gro&w Font"), "format.grow_font")
+        )
+        format_menu.Append(
+            self._id_format_shrink_font, self._menu_label(_("Shrin&k Font"), "format.shrink_font")
+        )
+        format_menu.Append(
+            self._id_format_spacing_single,
+            self._menu_label(_("Sin&gle Spacing"), "format.line_spacing_single"),
+        )
+        format_menu.Append(
+            self._id_format_spacing_one_and_a_half,
+            self._menu_label(_("One and a &Half Spacing"), "format.line_spacing_one_and_a_half"),
+        )
+        format_menu.Append(
+            self._id_format_spacing_double,
+            self._menu_label(_("Double S&pacing"), "format.line_spacing_double"),
         )
 
         # Hidden-codes run/paragraph formatting (font, size, align, color,

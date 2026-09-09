@@ -1,0 +1,510 @@
+"""QuillLite's small windows: find, replace, go to line, headings, help, about.
+
+Six surfaces, each one screen, each built to QUILL's own dialog contract rather
+than to a private convention:
+
+* every modal goes through :func:`quill.ui.dialog_contract.show_modal_dialog`,
+  which installs F1 context help and infers the accessible names macOS
+  VoiceOver needs -- but **without** its optional announce hook: the screen
+  reader announces a dialog opening and closing by itself, and a spoken
+  "Entered/Exited <name> dialog" on top of that is the over-announcing GATE-13
+  exists to catch (reported: leaving Preferences talked twice);
+* :func:`~quill.ui.dialog_contract.apply_modal_ids` gives Enter and Escape their
+  jobs, and :func:`~quill.ui.dialog_contract.bind_close_button` makes a Close
+  button actually close -- a ``wx.Dialog`` answers ``ID_CANCEL`` for free but a
+  ``wx.Frame`` does not, and a button that looks like the way out and is not is
+  worse than no button;
+* every field is preceded, immediately, by a ``wx.StaticText`` carrying its
+  ``&`` mnemonic, which is where NVDA and JAWS take the field's name from;
+* **OK, Cancel and Close carry no mnemonic at all.** Enter and Escape already
+  serve them, and every letter they give up resolves a collision elsewhere in
+  the window (GATE-14);
+* every helpable control carries its own ``SetHelpText`` at the construction
+  site, which is what the F1 audit can verify (GATE-LITE-HELP).
+
+Nothing here knows anything about documents. Each surface takes what it needs
+and hands back a value or calls a callback, so the window owns the decisions and
+these own the screen.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Callable
+from typing import Any
+
+import wx
+
+from quill.core.lite.textfile import ENCODING_CHOICES, NEWLINE_CHOICES
+from quill.ui.dialog_contract import (
+    apply_listbox_activation,
+    apply_modal_ids,
+    bind_close_button,
+    set_accessible_name,
+    show_modal_dialog,
+)
+
+__all__ = [
+    "FindDialog",
+    "choose_bookmark",
+    "choose_from_rows",
+    "edit_file_format",
+    "ReplaceDialog",
+    "ask_line_number",
+    "choose_heading",
+    "show_text_window",
+]
+
+#: Uniform padding. One number, so nothing drifts by two pixels per dialog.
+_PAD = 8
+
+
+def _plain_label(label: str) -> str:
+    """A label as an accessible name: no mnemonic ampersand, no trailing colon.
+
+    ``&&`` is a literal ampersand rather than a mnemonic, so it collapses to one
+    rather than disappearing -- a field labelled "R&&D" is called "R&D", not "RD".
+    """
+    out: list[str] = []
+    index = 0
+    while index < len(label):
+        if label[index] == "&":
+            if label[index + 1 : index + 2] == "&":
+                out.append("&")
+                index += 2
+                continue
+            index += 1
+            continue
+        out.append(label[index])
+        index += 1
+    return "".join(out).rstrip(": ")
+
+
+def _labelled_text(
+    parent: wx.Window,
+    sizer: wx.Sizer,
+    label: str,
+    value: str = "",
+    *,
+    help_text: str = "",
+    multiline: bool = False,
+) -> wx.TextCtrl:
+    """A ``StaticText`` immediately followed by the field it names.
+
+    Immediately is the operative word: Windows screen readers take a field's
+    accessible name from the static text created directly before it, so the two
+    constructions have to stay adjacent even when a sizer would read more
+    naturally the other way round.
+    """
+    static = wx.StaticText(parent, label=label)
+    style = wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 if multiline else 0
+    field = wx.TextCtrl(parent, value=value, style=style)
+    # Named here rather than left to the modal show path's runtime walker: two
+    # of this helper's callers (Find and Replace) are *modeless*, so they never
+    # go through that path at all, and a field named only by adjacency is a
+    # field macOS VoiceOver announces as "edit" with no name.
+    set_accessible_name(field, _plain_label(label))
+    if help_text:
+        field.SetHelpText(help_text)
+    sizer.Add(static, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+    sizer.Add(field, 1 if multiline else 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+    return field
+
+
+class FindDialog(wx.Dialog):
+    """Modeless find. Enter finds next, Shift+Enter finds previous.
+
+    Modeless because finding is something you do *while* reading: a modal find
+    would make every other match a matter of reopening the dialog. The window
+    owns the search itself and is called back with the options, so Find Next
+    from the menu and Find Next from here run the identical code.
+    """
+
+    def __init__(
+        self,
+        parent: wx.Window,
+        initial: str,
+        on_find: Callable[[dict[str, Any], bool], object],
+    ) -> None:
+        super().__init__(parent, title="Find", style=wx.DEFAULT_DIALOG_STYLE)
+        self._on_find = on_find
+        root = wx.BoxSizer(wx.VERTICAL)
+        self.text = _labelled_text(
+            self,
+            root,
+            "Find &what:",
+            initial,
+            help_text="The text to look for. Enter finds the next one, Shift Enter the previous.",
+        )
+        self.match_case = wx.CheckBox(self, label="Match &case")
+        self.match_case.SetHelpText("When checked, Cat and cat are different words.")
+        self.whole_word = wx.CheckBox(self, label="Whole wor&d only")
+        self.whole_word.SetHelpText(
+            "When checked, cat does not match catalogue -- only the word on its own."
+        )
+        root.Add(self.match_case, 0, wx.LEFT | wx.RIGHT, _PAD)
+        root.Add(self.whole_word, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        self.next_btn = wx.Button(self, wx.ID_OK, "Find &next")
+        self.next_btn.SetHelpText("Find the next match after the cursor, wrapping at the end.")
+        self.prev_btn = wx.Button(self, label="Find &previous")
+        self.prev_btn.SetHelpText("Find the previous match, wrapping at the start.")
+        close_btn = wx.Button(self, wx.ID_CANCEL, "Close")
+        close_btn.SetHelpText("Close this window. The search you typed is remembered for F3.")
+        for button in (self.next_btn, self.prev_btn):
+            buttons.Add(button, 0, wx.RIGHT, _PAD)
+        buttons.Add(close_btn, 0)
+        root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
+
+        self.SetSizerAndFit(root)
+        apply_modal_ids(
+            self,
+            affirmative_id=wx.ID_OK,
+            affirmative_label="Find next",
+            cancel_id=wx.ID_CANCEL,
+            cancel_label="Close",
+        )
+        self.next_btn.Bind(wx.EVT_BUTTON, lambda _event: self._find(False))
+        self.prev_btn.Bind(wx.EVT_BUTTON, lambda _event: self._find(True))
+        bind_close_button(self, close_btn, modeless=True)
+        self.Bind(wx.EVT_CLOSE, lambda _event: self.Destroy())
+        self.text.Bind(wx.EVT_KEY_DOWN, self._on_key)
+        self.text.SetFocus()
+        self.text.SelectAll()
+
+    def _on_key(self, event: wx.KeyEvent) -> None:
+        if event.GetKeyCode() == wx.WXK_RETURN and event.ShiftDown():
+            self._find(True)
+            return
+        if event.GetKeyCode() == wx.WXK_ESCAPE:
+            self.Close()
+            return
+        event.Skip()
+
+    def options(self) -> dict[str, Any]:
+        return {
+            "needle": self.text.GetValue(),
+            "match_case": self.match_case.GetValue(),
+            "whole_word": self.whole_word.GetValue(),
+        }
+
+    def _find(self, reverse: bool) -> None:
+        self._on_find(self.options(), reverse)
+
+
+class ReplaceDialog(wx.Dialog):
+    """Modeless replace: find, replace one, or replace every one."""
+
+    def __init__(
+        self,
+        parent: wx.Window,
+        initial: str,
+        on_find: Callable[[dict[str, Any], bool], object],
+        on_replace: Callable[[dict[str, Any]], object],
+        on_replace_all: Callable[[dict[str, Any]], object],
+    ) -> None:
+        super().__init__(parent, title="Replace", style=wx.DEFAULT_DIALOG_STYLE)
+        root = wx.BoxSizer(wx.VERTICAL)
+        self.text = _labelled_text(
+            self, root, "Find &what:", initial, help_text="The text to look for."
+        )
+        self.replacement = _labelled_text(
+            self,
+            root,
+            "Replace w&ith:",
+            help_text="What each match becomes. Leave it empty to delete the matches.",
+        )
+        self.match_case = wx.CheckBox(self, label="Match &case")
+        self.match_case.SetHelpText("When checked, Cat and cat are different words.")
+        self.whole_word = wx.CheckBox(self, label="Whole wor&d only")
+        self.whole_word.SetHelpText(
+            "When checked, cat does not match catalogue -- only the word on its own."
+        )
+        root.Add(self.match_case, 0, wx.LEFT | wx.RIGHT, _PAD)
+        root.Add(self.whole_word, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+
+        buttons = wx.BoxSizer(wx.HORIZONTAL)
+        find_btn = wx.Button(self, wx.ID_OK, "Find &next")
+        find_btn.SetHelpText("Move to the next match without changing anything.")
+        replace_btn = wx.Button(self, label="&Replace")
+        replace_btn.SetHelpText("Replace the match you are on, then move to the next one.")
+        all_btn = wx.Button(self, label="Replace &all")
+        all_btn.SetHelpText("Replace every match in the document and say how many were changed.")
+        close_btn = wx.Button(self, wx.ID_CANCEL, "Close")
+        close_btn.SetHelpText("Close this window. Nothing you have already replaced is undone.")
+        for button in (find_btn, replace_btn, all_btn):
+            buttons.Add(button, 0, wx.RIGHT, _PAD)
+        buttons.Add(close_btn, 0)
+        root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
+
+        self.SetSizerAndFit(root)
+        apply_modal_ids(
+            self,
+            affirmative_id=wx.ID_OK,
+            affirmative_label="Find next",
+            cancel_id=wx.ID_CANCEL,
+            cancel_label="Close",
+        )
+        find_btn.Bind(wx.EVT_BUTTON, lambda _event: on_find(self.options(), False))
+        replace_btn.Bind(wx.EVT_BUTTON, lambda _event: on_replace(self.options()))
+        all_btn.Bind(wx.EVT_BUTTON, lambda _event: on_replace_all(self.options()))
+        bind_close_button(self, close_btn, modeless=True)
+        self.Bind(wx.EVT_CLOSE, lambda _event: self.Destroy())
+        self.text.SetFocus()
+        self.text.SelectAll()
+
+    def options(self) -> dict[str, Any]:
+        return {
+            "needle": self.text.GetValue(),
+            "replacement": self.replacement.GetValue(),
+            "match_case": self.match_case.GetValue(),
+            "whole_word": self.whole_word.GetValue(),
+        }
+
+
+def ask_line_number(parent: wx.Window, current: int, maximum: int) -> int | None:
+    """Ask for a line number. Returns the clamped line, or ``None`` if cancelled.
+
+    Clamped rather than refused: somebody who asks for line 900 of an 800-line
+    file wants the end of the file, and an error dialog would be a second thing
+    to dismiss on the way there.
+    """
+    dialog = wx.Dialog(parent, title="Go to line")
+    root = wx.BoxSizer(wx.VERTICAL)
+    field = _labelled_text(
+        dialog,
+        root,
+        f"&Line number (1 to {maximum}):",
+        str(current),
+        help_text="Type a line number and press Enter. Past the end takes you to the last line.",
+    )
+    buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
+    root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
+    dialog.SetSizerAndFit(root)
+    apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+    field.SetFocus()
+    field.SelectAll()
+    try:
+        if show_modal_dialog(dialog, "Go to line") != wx.ID_OK:
+            return None
+        try:
+            return max(1, min(maximum, int(field.GetValue().strip())))
+        except ValueError:
+            return None
+    finally:
+        dialog.Destroy()
+
+
+def _stack(sizer: wx.Sizer, label: wx.StaticText, control: wx.Window) -> None:
+    """Add a label and the control it names, in that order.
+
+    The ordering rule is not cosmetic and it is not about the sizer. Windows
+    screen readers infer a control's accessible name from the ``wx.StaticText``
+    **constructed immediately before it**, so the label has to be built first as
+    well as placed first. Getting that backwards is silent: the control still
+    appears, still takes focus, and is announced as "combo box" or "spin button"
+    with no name at all.
+    """
+    sizer.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+    sizer.Add(control, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+
+
+def choose_from_rows(
+    parent: wx.Window,
+    *,
+    title: str,
+    label: str,
+    help_text: str,
+    rows: list[tuple[object, str]],
+    extra_button: str = "",
+    size: tuple[int, int] = (560, 400),
+) -> tuple[object, str] | object | None:
+    """One list, one choice. Returns the chosen row's key, or ``None``.
+
+    A list rather than a tree, everywhere it is used -- headings, bookmarks,
+    copy-tray slots, kept clips. A flat list in a meaningful order is what a
+    listener can arrow through at speed, and the structure is already in each
+    row's own text ("Heading 2: Installing", "Slot 3: ...").
+
+    With *extra_button*, the answer is ``(key, "choose" | "<button>")`` so a
+    caller can offer a second verb -- Remove, on the bookmark list -- without a
+    second dialog. Without it, the answer is just the key.
+    """
+    dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+    root = wx.BoxSizer(wx.VERTICAL)
+    static = wx.StaticText(dialog, label=label)
+    listbox = wx.ListBox(dialog, choices=[text for _key, text in rows])
+    set_accessible_name(listbox, _plain_label(label))
+    listbox.SetHelpText(help_text)
+    root.Add(static, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+    root.Add(listbox, 1, wx.EXPAND | wx.ALL, _PAD)
+
+    extra: wx.Button | None = None
+    if extra_button:
+        extra = wx.Button(dialog, label=extra_button)
+        extra.SetHelpText(f"{extra_button.replace('&', '')} the row you are on.")
+        root.Add(extra, 0, wx.ALIGN_RIGHT | wx.LEFT | wx.RIGHT, _PAD)
+    buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
+    root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
+    dialog.SetSizerAndFit(root)
+    dialog.SetSize(size)
+    apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+    # Enter and double-click both accept: a wx.ListBox raises no activated event
+    # of its own, so without this the list is choose-with-the-mouse only.
+    apply_listbox_activation(listbox, lambda _event: dialog.EndModal(wx.ID_OK))
+    verb = {"value": "choose"}
+    if extra is not None:
+
+        def _extra(_event: wx.CommandEvent) -> None:
+            verb["value"] = "extra"
+            dialog.EndModal(wx.ID_OK)
+
+        extra.Bind(wx.EVT_BUTTON, _extra)
+    if rows:
+        listbox.SetSelection(0)
+    listbox.SetFocus()
+    try:
+        if show_modal_dialog(dialog, title) != wx.ID_OK:
+            return None
+        index = listbox.GetSelection()
+        if index == wx.NOT_FOUND:
+            return None
+        key = rows[int(index)][0]
+        return (key, verb["value"]) if extra is not None else key
+    finally:
+        dialog.Destroy()
+
+
+def choose_heading(parent: wx.Window, headings: list[tuple[int, int, str]]) -> int | None:
+    """Pick a heading from the document. Returns its start offset, or ``None``."""
+    chosen = choose_from_rows(
+        parent,
+        title="Headings",
+        label="&Headings in this document:",
+        help_text="Choose a heading and press Enter to put the cursor at the start of it.",
+        rows=[(offset, f"Heading {level}: {text}") for offset, level, text in headings],
+    )
+    return None if chosen is None else int(chosen)  # type: ignore[arg-type]
+
+
+def choose_bookmark(parent: wx.Window, marks: list[Any]) -> tuple[str, int] | None:
+    """Pick a bookmark. Returns ``("go" | "remove", number)``, or ``None``.
+
+    Two verbs in one window, because the second thing anyone does with a
+    bookmark list is tidy it, and sending them to a separate Remove dialog for
+    that is a window and a decision too many.
+    """
+    chosen = choose_from_rows(
+        parent,
+        title="Bookmarks",
+        label="&Bookmarks in this document, in order:",
+        help_text=(
+            "Choose a bookmark and press Enter to go there. Remove takes the one "
+            "you are on out of the list; the document is not changed."
+        ),
+        rows=[(mark.number, f"{mark.number}: {mark.label}") for mark in marks],
+        extra_button="&Remove",
+        size=(560, 360),
+    )
+    if chosen is None:
+        return None
+    number, verb = chosen  # type: ignore[misc]
+    return ("remove" if verb == "extra" else "go", int(number))
+
+
+def edit_file_format(parent: wx.Window, *, encoding: str, newline: str) -> tuple[str, str] | None:
+    """Choose the encoding and line endings this document saves with.
+
+    Nothing is written here. The choice takes effect at the next save, which is
+    the moment it means anything -- and which is why the dialog says so rather
+    than implying the file has already changed.
+    """
+    dialog = wx.Dialog(parent, title="File format", style=wx.DEFAULT_DIALOG_STYLE)
+    root = wx.BoxSizer(wx.VERTICAL)
+    root.Add(
+        wx.StaticText(
+            dialog,
+            label="These take effect the next time you save this document.",
+        ),
+        0,
+        wx.ALL,
+        _PAD,
+    )
+
+    encoding_label = wx.StaticText(dialog, label="&Encoding:")
+    encoding_choice = wx.Choice(dialog, choices=[name for _codec, name in ENCODING_CHOICES])
+    set_accessible_name(encoding_choice, "Encoding")
+    encoding_choice.SetHelpText(
+        "How characters are stored. UTF-8 is the right answer for anything new. "
+        "UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the "
+        "old Western European encoding a lot of existing .txt files are in."
+    )
+    encoding_choice.SetSelection(_index_of(ENCODING_CHOICES, encoding))
+    _stack(root, encoding_label, encoding_choice)
+
+    newline_label = wx.StaticText(dialog, label="&Line endings:")
+    newline_choice = wx.Choice(dialog, choices=[name for _value, name in NEWLINE_CHOICES])
+    set_accessible_name(newline_choice, "Line endings")
+    newline_choice.SetHelpText(
+        "CRLF is what Windows programs write. LF is what Unix, macOS and most "
+        "build tools expect. QuillLite writes back whichever the file arrived "
+        "with unless you change it here."
+    )
+    newline_choice.SetSelection(_index_of(NEWLINE_CHOICES, newline))
+    _stack(root, newline_label, newline_choice)
+
+    buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
+    root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
+    dialog.SetSizerAndFit(root)
+    apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+    encoding_choice.SetFocus()
+    try:
+        if show_modal_dialog(dialog, "File format") != wx.ID_OK:
+            return None
+        return (
+            ENCODING_CHOICES[max(0, encoding_choice.GetSelection())][0],
+            NEWLINE_CHOICES[max(0, newline_choice.GetSelection())][0],
+        )
+    finally:
+        dialog.Destroy()
+
+
+def _index_of(choices: tuple[tuple[str, str], ...], value: str) -> int:
+    """Where *value* sits in *choices*, or 0 for something unrecognised."""
+    for index, (candidate, _name) in enumerate(choices):
+        if candidate == value:
+            return index
+    return 0
+
+
+def show_text_window(parent: wx.Window, title: str, body: str) -> None:
+    """A read-only text window (the key list, the About box).
+
+    The body sits in a ``TE_RICH2`` read-only field rather than in a static
+    label, because a screen reader can only *read through* text it can put a
+    cursor in -- a long label is announced once, in one breath, and cannot be
+    reviewed line by line afterwards.
+    """
+    dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+    root = wx.BoxSizer(wx.VERTICAL)
+    field = _labelled_text(
+        dialog,
+        root,
+        "&Text:",
+        body,
+        help_text="Read with the arrow keys. Escape closes this window.",
+        multiline=True,
+    )
+    close_btn = wx.Button(dialog, wx.ID_CANCEL, "Close")
+    close_btn.SetHelpText("Close this window and go back to your document.")
+    root.Add(close_btn, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
+    dialog.SetSizerAndFit(root)
+    dialog.SetSize((640, 480))
+    apply_modal_ids(dialog, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
+    bind_close_button(dialog, close_btn, modeless=False)
+    field.SetFocus()
+    field.SetInsertionPoint(0)
+    try:
+        show_modal_dialog(dialog, title)
+    finally:
+        dialog.Destroy()

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 332.
+Editor commands with default bindings: 341.
 
 ## The QUILL editor
 
@@ -45,23 +45,26 @@ Editor commands with default bindings: 332.
 | --- | --- | --- |
 | (unbound by default) | Clear all tray slots | `edit.clear_all_tray_slots` |
 | (unbound by default) | Copy to Next Empty Tray Slot | `edit.copy_to_next_slot` |
-| (unbound by default) | Duplicate Selection | `edit.duplicate_selection` |
 | (unbound by default) | Jump to Named Mark | `edit.jump_to_named_mark` |
 | (unbound by default) | Magic Paste | `edit.magic_paste` |
 | (unbound by default) | Open Review Buffer | `edit.open_review_buffer` |
 | (unbound by default) | Say Selected | `edit.say_selected` |
 | (unbound by default) | Search Copy Tray Slots | `edit.search_tray_slots` |
-| (unbound by default) | Select Paragraph | `edit.select_paragraph` |
 | (unbound by default) | Set Named Mark | `edit.set_named_mark` |
-| (unbound by default) | Toggle Extend Selection Mode | `edit.toggle_extend_selection_mode` |
 | Alt+. | Insert Emoji... | `edit.insert_emoji` |
 | Alt+F8 | Read All | `edit.read_all` |
 | Alt+M | List Marks | `edit.list_marks` |
 | Alt+Shift+F8 | Go to Start of Selection | `edit.go_to_start_of_selection` |
 | Alt+Shift+Z | Reverse Lines | `edit.reverse_lines` |
 | Ctrl+. | Word Prediction... | `edit.word_prediction` |
+| Ctrl+Alt+E | Select Line | `edit.select_line` |
+| Ctrl+Alt+F8 | Toggle Extend Selection Mode | `edit.toggle_extend_selection_mode` |
 | Ctrl+Alt+K | Insert Link... | `edit.insert_link` |
 | Ctrl+Alt+Shift+F | Toggle Fold | `edit.toggle_fold` |
+| Ctrl+Alt+Shift+P | Select Paragraph | `edit.select_paragraph` |
+| Ctrl+Alt+Shift+Q | Duplicate Selection | `edit.duplicate_selection` |
+| Ctrl+Alt+V | Paste Text Only | `edit.paste_plain_text` |
+| Ctrl+Alt+W | Select Word | `edit.select_word` |
 | Ctrl+Enter | Follow Link | `edit.follow_link` |
 | Ctrl+F | Find... | `edit.find` |
 | Ctrl+F8 | Copy All | `edit.copy_all` |
@@ -131,6 +134,9 @@ Editor commands with default bindings: 332.
 | Alt+Shift+Right | Increase Heading Level | `format.increase_heading_level` |
 | Alt+Shift+Up | Move Section Up | `format.move_section_up` |
 | Ctrl+/ | Toggle Line Comment | `format.toggle_line_comment` |
+| Ctrl+1 | Single Line Spacing | `format.line_spacing_single` |
+| Ctrl+2 | Double Line Spacing | `format.line_spacing_double` |
+| Ctrl+5 | One and a Half Line Spacing | `format.line_spacing_one_and_a_half` |
 | Ctrl+Alt+1 | Insert Heading 1 | `format.heading_1` |
 | Ctrl+Alt+2 | Insert Heading 2 | `format.heading_2` |
 | Ctrl+Alt+3 | Insert Heading 3 | `format.heading_3` |
@@ -139,11 +145,14 @@ Editor commands with default bindings: 332.
 | Ctrl+Alt+6 | Insert Heading 6 | `format.heading_6` |
 | Ctrl+Alt+B | Toggle Bullet List | `format.toggle_bullet_list` |
 | Ctrl+Alt+H | Insert Horizontal Rule | `format.horizontal_rule` |
+| Ctrl+Alt+J | Justify | `format.justify` |
 | Ctrl+Alt+N | Toggle Numbered List | `format.toggle_numbered_list` |
 | Ctrl+Alt+Q | Insert Block Quote | `format.blockquote` |
 | Ctrl+Alt+T | Insert Table | `format.insert_table` |
 | Ctrl+B | Bold | `format.bold` |
 | Ctrl+I | Italic | `format.italic` |
+| Ctrl+Shift+, | Shrink Font | `format.shrink_font` |
+| Ctrl+Shift+. | Grow Font | `format.grow_font` |
 | Ctrl+Shift+D | Describe Formatting at Cursor | `format.describe_formatting` |
 | Ctrl+[ | Outdent | `format.outdent` |
 | Ctrl+] | Indent | `format.indent` |

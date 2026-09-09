@@ -2,6 +2,49 @@
 
 ## 1.0.0
 
+### Safe Mode now answers for itself when a saved key cannot be unlocked (2026-09-08)
+
+**Fixed: in Safe Mode, Verify Connection reported the wrong problem.** On a
+machine carrying an API key it could not decrypt -- a restored profile, or a
+portable install moved between Windows accounts -- **Verify Connection** in Safe
+Mode answered "The saved API key is encrypted for a different Windows user"
+instead of saying Safe Mode was on. Both statements were true; only one was
+useful, because re-entering the key changes nothing while Safe Mode is on. The
+Safe Mode check now runs first, matching what listing models and generating a
+response already did, so all three AI surfaces give the same answer to the same
+question. (`core/assistant_ai.py`)
+
+### QuillLite, and what building it gave the editor (2026-09-08)
+
+**QuillLite** joins the family: QUILL with everything removed except the
+editor, derived from PR #1490 by Steven Scott (`doubletaponair`). Numbered
+documents in one window, plain text or rich text, Notepad's and WordPad's
+keys, a ten-cell readable status bar, and files that come back byte-for-byte.
+It lives in the shared package (`quill.apps.lite`, `quill/core/lite/`), with
+`standalone/quilllite/` as the packaging shell; its own PRD, user guide,
+release notes and changelog live there. The name is always spelled
+**QuillLite** -- one mixed-case word, including in the download artifact names
+(`QuillLite-Setup-Shared-*`, never `Quill-Lite-*`) -- so a screen reader
+speaks it as a name instead of reading out hyphens.
+
+Because QuillLite may never be ahead of QUILL, the editor gained in the same
+change:
+
+- **Two Rich Edit fixes for every QUILL user.** `_TOM_TRUE` was `tomUndefined`
+  (`-9999999`), which silently broke every Rich Edit heading QUILL applies;
+  it is now `-1` (`tomTrue`). And describing formatting at the start of a
+  heading no longer reports the paragraph above it -- a collapsed caret now
+  probes the character after it. Both isolated by PR #1490 and pinned by
+  regression tests. (`quill/ui/richedit_rtf_surface.py`)
+- **Six commands QUILL had the capability for and no key bound to:**
+  Justify (Ctrl+Alt+J), single / one-and-a-half / double line spacing
+  (Ctrl+1 / Ctrl+5 / Ctrl+2), Grow Font and Shrink Font
+  (Ctrl+Shift+Period / Ctrl+Shift+Comma), and Paste Text Only (Ctrl+Alt+V). Where QUILL's keys differ from
+  QuillLite's WordPad defaults, an existing QUILL binding somebody's hands
+  already know kept its key, and the reason is a comment in `keymap.py`.
+- **Numbered bookmarks** moved to shared `quill/core/numbered_bookmarks.py`
+  so QUILL can adopt them (the QUILL-side UI is a named follow-up).
+
 ### Playback speed goes past 2x, and the control tells the truth (2026-09-03)
 
 Both players -- QUILL Cast's manager and Audio Studio's transport -- now offer

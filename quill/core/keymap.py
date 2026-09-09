@@ -262,7 +262,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "edit.copy_selection_for_email": "Ctrl+Shift+Grave, C",
     "edit.undo": "Ctrl+Z",
     "edit.redo": "Ctrl+Y",
-    "edit.toggle_extend_selection_mode": "",  # no default binding; assign via keymap editor
+    "edit.toggle_extend_selection_mode": "Ctrl+Alt+F8",  # §edsharp-ok — F8 family
     "edit.start_selection": "F8",
     "edit.complete_selection": "Shift+F8",
     "edit.reselect": "Ctrl+Shift+F8",
@@ -327,7 +327,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # support#67: bare Alt+M is a macOS Option deadkey -- disable on darwin
     # (see view.toggle_soft_wrap above). Reachable via the command palette.
     "edit.list_marks": "" if sys.platform == "darwin" else "Alt+M",
-    "edit.select_paragraph": "",  # Ctrl+Alt+P removed (§10.8 screen-reader-hostile)
+    # §10.8's Ctrl+Alt+P avoidance is reversed; QuillLite binds all three.
+    "edit.select_paragraph": "Ctrl+Alt+Shift+P",  # §edsharp-ok — authoring chord
+    "edit.select_word": "Ctrl+Alt+W",  # §edsharp-ok — authoring chord
+    "edit.select_line": "Ctrl+Alt+E",  # §edsharp-ok — authoring chord
     "edit.select_block": "Ctrl+Shift+B",
     # PR1 (EdSharp port): section move takes the Alt+Shift+Up/Down slot. The
     # previous expand/shrink selection pair migrates to the QUILL-key chord.
@@ -353,7 +356,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # rewrite the prior pair on load for users who saved them to disk.
     "edit.quote_lines": "Ctrl+Shift+Q",  # §4.22 advanced-editor parity; #608
     "edit.unquote_lines": "Ctrl+Shift+K",  # §4.22 advanced-editor parity; #608
-    "edit.duplicate_selection": "",  # §4.17; no default key to avoid Ctrl+D clash
+    "edit.duplicate_selection": "Ctrl+Alt+Shift+Q",  # §4.17 avoided Ctrl+D, not this
     "edit.reverse_lines": "Alt+Shift+Z",  # §4.22 advanced-editor parity
     "format.toggle_line_comment": "Ctrl+/",
     "format.toggle_block_comment": "Shift+Alt+A",
@@ -376,6 +379,23 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "format.decrease_heading_level": "Alt+Shift+Left",
     "format.increase_heading_level": "Alt+Shift+Right",
     "format.toggle_bullet_list": "Ctrl+Alt+B",  # §edsharp-ok — authoring chord (x.md)
+    # Rich-mode paragraph formatting, arrived at through QuillLite and wired
+    # here so the editor is never behind its own small sibling. WordPad's
+    # chords, deliberately: these are the ones already in people's hands.
+    # WordPad's own chord for justify is Ctrl+J, and QuillLite uses it. QUILL
+    # cannot: Ctrl+J has been Set Temporary Bookmark here for far longer, and a
+    # binding somebody's hands already know is not something a new command gets
+    # to take. Ctrl+Alt+J instead, and the divergence is recorded rather than
+    # hidden -- the two products differ here on purpose.
+    "format.justify": "Ctrl+Alt+J",  # §edsharp-ok — authoring chord (x.md)
+    "format.line_spacing_single": "Ctrl+1",
+    "format.line_spacing_one_and_a_half": "Ctrl+5",
+    "format.line_spacing_double": "Ctrl+2",
+    "format.grow_font": "Ctrl+Shift+.",
+    "format.shrink_font": "Ctrl+Shift+,",
+    # Ctrl+Shift+V is Preview here, so plain paste takes Ctrl+Alt+V. Same
+    # reasoning: an existing binding wins over a new command's convention.
+    "edit.paste_plain_text": "Ctrl+Alt+V",  # §edsharp-ok — authoring chord (x.md)
     "format.toggle_numbered_list": "Ctrl+Alt+N",  # §edsharp-ok — authoring chord (x.md)
     "format.insert_html_tag": "Ctrl+Shift+Grave, H",
     "format.insert_markdown_tag": "",  # M is reserved for paste-HTML-as-Markdown

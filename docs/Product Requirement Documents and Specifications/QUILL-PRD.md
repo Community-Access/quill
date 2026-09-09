@@ -8106,7 +8106,7 @@ All JSON files validate against schemas in `quill/core/schemas/`. All writes are
 - **Supply-chain scanning**: every PR runs `pip-audit` and `osv-scanner`; CRITICAL or HIGH vulnerabilities fail the build.
 - **Provenance**: GitHub Actions runs with OIDC; artefacts are signed with Sigstore `cosign` and the `cosign.bundle` is published next to each release artefact.
 - **Update channel**: a signed JSON manifest (Ed25519 signature; key pinned in the app) lists current stable, beta, and security-only releases with SHA-256s. Quill checks on launch only when the user has opted in (manual `Check for Updates` is always available).
-- **Footprint**: realistic target is 180–220 MB installed with English Tesseract data and English/UK + Spanish/French/German Hunspell dictionaries. A **Quill Lite** option ships at ~90 MB and downloads dictionaries and Tesseract on first use.
+- **Footprint**: realistic target is 180–220 MB installed with English Tesseract data and English/UK + Spanish/French/German Hunspell dictionaries. A **QuillLite** option ships at ~90 MB and downloads dictionaries and Tesseract on first use. (The editor-only sibling product of that name now exists — `quill.apps.lite`, `standalone/quilllite/` — and is always spelled **QuillLite**, one mixed-case word, so speech reads it as a name.)
 - **Offline Edition** (`scripts/build_windows_distribution.py --bundle-offline`, 0.9.0 Beta 3): most optional components (Pandoc, DECtalk, eSpeak-NG, whisper.cpp's binary, the braille pack) install on demand from a verified source by default, to keep the regular installer small; `--bundle-offline` instead lifts every one of them into the compiled `.exe`, and auto-stages Kokoro's model files and whisper.cpp's default GGML model with no `--*-dir` flag needed. As of Beta 3, `--bundle-offline` combined with `--bundle-python` also `pip download`s the full on-demand-package dependency tree (Kokoro, Faster Whisper, Vosk, MP3 chapter-marker support) into `{app}/wheels/<name>/`, using the exact embedded interpreter that will later install from it — so `install_kokoro_onnx`/`install_faster_whisper`/`install_vosk`/`install_mp3_support` (`quill/core/speech/engine_install.py`) resolve entirely from local disk (`pip install --no-index --find-links`) instead of PyPI when a bundled wheelhouse is present, and whisper.cpp (`quill/core/speech/providers/whispercpp.py::_bundled_whisper_model_path`) transcribes with its bundled model immediately, no download step at all. Piper is bundled too (`_stage_piper_offline`): engine zip (SHA-256-verified at build time and re-verified at install time) plus a starter voice (Lessac, US English, medium), so Piper's engine and first voice both work offline; additional voices still come from the pinned HuggingFace catalog when online. **Known gap, tracked, not yet closed:** Node.js-based Quillins have no bundling mechanism and still require network access on first use even under the Offline Edition. No CI workflow currently produces an Offline Edition build; it is a manual, ad hoc invocation of the build script today.
 - **Runtime self-awareness** (`quill.build_info.is_offline_edition()`): the running app can tell whether it IS the Offline Edition, not just whether a component happens to be present. `--bundle-offline` writes a gitignored `quill/_offline_edition.py` marker (`OFFLINE_EDITION = True`) into the build; `is_offline_edition()` imports it defensively (absent -> `False`, covering a dev checkout or a slim install built before the marker existed). `quill/core/optional_components.py::download_allowed()` uses it to gate the Download action: always `False` under the Offline Edition (every component is already bundled or was deliberately left out — the target machine is expected to have no internet to fetch anything with), and `not component.effective_ready` otherwise, preserving the pre-Offline-Edition behavior exactly for every normal install. `quill/ui/optional_components_dialog.py` labels each row **Bundled** or **Not included** instead of offering a Download button when `download_allowed()` is `False` under the Offline Edition. `quill/core/spellcheck.py::managed_spell_dir` prefers the Offline Edition's bundled `{app}/dictionaries/hunspell` over the user-writable app-data download location the same way.
 
@@ -13666,6 +13666,54 @@ plain text → a once-per-document transition prompt). Native Ctrl+B/I/U are
 intercepted in rich mode and routed through QUILL's commands so formatting is
 announced, dirty-marked, and remappable. Describe Formatting at Cursor reads
 the live TOM in rich mode.
+
+**Paragraph formatting completed (2026-09-08, via QuillLite).** The surface has
+always been able to justify a paragraph, set a list type and set a line-spacing
+rule; nothing in QUILL was bound to any of it, so the small editor-only sibling
+QuillLite (`standalone/quilllite/`) could do things the editor could not. That
+is backwards, and it is now closed. `quill/ui/main_frame_rich_paragraph.py`
+adds **Justify** (Ctrl+Alt+J), **single / one-and-a-half / double line spacing**
+(Ctrl+1 / Ctrl+5 / Ctrl+2), **Grow Font** and **Shrink Font** (Ctrl+Shift+> and
+Ctrl+Shift+<, stepping a ladder of real point sizes that includes the heading
+sizes, so growing a heading stays *on* the ladder rather than falling off it
+into a paragraph that merely looks large), **rich-mode bullets** (Ctrl+Alt+B now
+drives `ITextPara.ListType` in a Rich Text document instead of inserting a
+Markdown dash into one), and **Paste Text Only** (Ctrl+Alt+V), which neither
+product had. `create_richedit_rtf` builds `RichEditDocument`
+(`quill/ui/richedit_editing.py`) — a `QuillRichEdit` plus the paragraph and view
+capabilities — so every tab gains them by construction rather than through a
+second factory.
+
+QUILL takes Ctrl+Alt+J and Ctrl+Alt+V where QuillLite uses WordPad's Ctrl+J and
+Ctrl+Shift+V, because Ctrl+J has been Set Temporary Bookmark and Ctrl+Shift+V
+has been Preview here for far longer: an existing binding somebody's hands
+already know outranks a new command's convention. The divergence is a comment in
+`keymap.py`, not folklore.
+
+**Two TOM bugs fixed in the same change** (both isolated by Steven Scott in
+PR #1490, with a standalone reproduction that imports neither QUILL nor
+QuillLite — `standalone/quilllite/tests/repro_tom_true.py`):
+
+- **`_TOM_TRUE` was `tomUndefined`, so every rich-mode heading lost its bold.**
+  `tom.h` defines `tomTrue` as `-1`; QUILL used `-9999999`, which the same
+  header defines as `tomUndefined` — "leave this property alone". Assigning it
+  to `ITextFont.Bold` asked the control to change nothing and *succeeded*, so
+  `set_heading` applied the point size, silently never applied the bold, and
+  raised nothing. Because `heading_level_for_font` requires bold before it will
+  call a paragraph a heading, **QUILL could not then find the headings QUILL had
+  just made**: heading navigation and Describe Formatting both went blind in
+  rich mode. Measured on RICHEDIT50W / Riched20 10.0.26100 — `Bold = -9999999`
+  gives `Weight=400`; `Bold = -1` gives `Weight=700`.
+- **A collapsed caret described the paragraph above it.** A collapsed TOM range
+  reports the formatting of the character *before* it, so standing at the head
+  of a heading described the body text above. `caret_format_description` now
+  reads through `_format_range()`, which probes the character *after* the caret
+  — which is what a screen reader describes.
+
+Both are pinned by regression tests in
+`tests/unit/ui/test_richedit_rtf_surface.py`, against a fake TOM that models the
+real control's behaviour: assigning `tomUndefined` is *accepted* and changes
+nothing, which is exactly why the bug was silent for as long as it was.
 
 **The Document Format switcher** (`format.switch_document_format`,
 Ctrl+Shift+Grave, K): Format menu, command palette, keyboard chord, and the

@@ -67,6 +67,17 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/data_location.py::request_legacy_data_import": "framework",
     "core/storage_mode.py::save_storage_mode": "framework",
     "core/recovery.py::_save_state": "framework",
+    # QuillLite's own stores, in %LOCALAPPDATA%\QuillLite rather than QUILL's
+    # data folder -- see quill/core/lite/paths.py for why that separation is
+    # deliberate. The recovery slot is the same shape as QUILL's: aside-copy
+    # metadata that exists only between a crash and the next launch.
+    "core/lite/recovery.py::write_meta": "framework",
+    # A delta store by construction: only fields that differ from the code
+    # default are written, plus a schema stamp. That is what the versioned
+    # contract buys -- a later change of default reaches everybody who never
+    # expressed a preference -- taken directly rather than through the
+    # migration machinery, which has nothing to migrate from at 1.0.0.
+    "core/lite/settings.py::save": "versioned",
     "core/speech/dictation/recovery.py::save_metadata": "framework",
     # --- export / output (user picks the file) ---
     # "Move my setup to another machine" (11.10): the import writes each store

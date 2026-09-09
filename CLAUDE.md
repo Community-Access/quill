@@ -64,6 +64,19 @@ QUILL is a layered wxPython desktop application with strict import boundaries:
 - **`quill/stability`** — cross-cutting runtime safety: `safe_subprocess.py`, `crash_report.py` (diagnostic bundles), `redaction.py` (secret scrubbing), `task_manager.py`, `wx_heartbeat.py`, `safe_mode.py`.
 - **`quill/tools`** — internal CI gates: `check_banned_patterns.py`, `module_size_budget.py`, `network_egress_audit.py`, `dialog_inventory.py`, `dialog_button_contract.py`, `quillin_lint.py`, `error_code_audit.py`.
 - **`quill/plugins`** — plugin-facing API surfaces and Quillin (extension) manifest model.
+- **`quill/apps`** — the QuillVille apps, each an entry point plus its mixins: Radio, Cast, Studio, Weather, Inkwell, Converter, Player, Beacon and QuillLite. `standalone/<app>/` is only a packaging shell; **feature code never lives there**, because every repo-wide gate scopes to `quill/` and a surface no gate can see is one that rots.
+
+**QuillLite may never be ahead of QUILL.** `quill.apps.lite` is the editor-only
+sibling (`standalone/quilllite/`), and it exists on one condition: if it needs
+something the editor cannot do, the capability goes in the **shared** package and
+QUILL gets a way to reach it in the same change. A feature the small product has
+and the big one does not is backwards, and invisible — nobody opens QUILL and
+notices the absence of a thing they have only ever seen elsewhere. Applying that
+rule in 2026-09 moved numbered bookmarks to `quill/core/numbered_bookmarks.py`,
+deleted a duplicate of `format_ops`, made `create_richedit_rtf` build the
+extended `RichEditDocument`, and gave QUILL six commands it had the capability
+for and no binding to (`quill/ui/main_frame_rich_paragraph.py`). Where the two
+must diverge on a key, the reason is a comment in `keymap.py`.
 
 ### Key invariants
 
@@ -81,7 +94,7 @@ QUILL is a layered wxPython desktop application with strict import boundaries:
 
 **Access keys (GATE-14):** within one window, no two controls may claim the same `&` mnemonic. Windows cycles focus between duplicates instead of pressing, so one of the pair silently cannot be reached and nothing announces the loss (the first sweep found 128 collisions across 76 windows). `check_access_keys.py` scopes a `wx.Dialog`/`wx.Frame` subclass as one window and any other class per method. Three fixes, in order: **OK, Cancel and Close carry no access key at all** (Enter and Escape already serve them, and every letter they give up resolves a collision elsewhere); otherwise move the less important control to a free letter; and when a dense window genuinely runs out — an embedded radio surface is under a menu bar that owns thirteen of twenty-six letters — the loser gets **no** mnemonic rather than a duplicate, because a duplicate advertises a key that may not work while silence is merely silent and Tab still arrives.
 
-**F1 answers everywhere (GATE-<APP>-HELP):** every window in every app answers F1 with its authored purpose and then the focused control's own help. The engine is shared (`quill/ui/app_context_help.py` + `quill/core/control_help.py`); each app owns a `surface_help` catalogue and a help-audit gate over its own modules — radio, cast, player, studio, inkwell, weather, converter and beacon, all eight rostered in `platform_report`. Authored help must be **inline `SetHelpText` at the construction site**: that is what the audit can verify (`helped`); help set anywhere else is `help-elsewhere` and proves nothing. A new control snapshots as `missing` and fails the build until somebody writes a sentence or classifies it deliberately. One load-bearing detail: `SetHelpText` stores nothing without a `wx.HelpProvider`, so `ensure_help_provider()` runs at activation — without it every help string ever written is dead. The complete authored content renders to `docs/f1-help-reference.md` (`build_help_reference.py`, drift-gated).
+**F1 answers everywhere (GATE-<APP>-HELP):** every window in every app answers F1 with its authored purpose and then the focused control's own help. The engine is shared (`quill/ui/app_context_help.py` + `quill/core/control_help.py`); each app owns a `surface_help` catalogue and a help-audit gate over its own modules — radio, cast, player, studio, inkwell, weather, converter, beacon and QuillLite, all nine rostered in `platform_report`. Authored help must be **inline `SetHelpText` at the construction site**: that is what the audit can verify (`helped`); help set anywhere else is `help-elsewhere` and proves nothing. A new control snapshots as `missing` and fails the build until somebody writes a sentence or classifies it deliberately. One load-bearing detail: `SetHelpText` stores nothing without a `wx.HelpProvider`, so `ensure_help_provider()` runs at activation — without it every help string ever written is dead. The complete authored content renders to `docs/f1-help-reference.md` (`build_help_reference.py`, drift-gated).
 
 **Generated references (GATE-KEYREF, GATE-HELPREF, GATE-SETDOC):** three documents are generated from the code rather than written beside it, so they cannot drift — `docs/keyboard-reference.md` from `DEFAULT_KEYMAP`/`APP_KEYMAPS`, `docs/f1-help-reference.md` from the help catalogues, and the settings-documentation inventory from the `Settings` dataclass against the docs corpus. A new setting is `missing` until it is documented or classified `internal`; the `grandfathered` backlog (2026-08-27) may only shrink. Every default QUILL-key chord must also carry an authored Key Describer title (`_CHORD_COMMAND_TITLES`, GATE-DESCRIBE).
 

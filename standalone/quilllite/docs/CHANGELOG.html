@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QuillLite changelog</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quilllite-changelog">QuillLite changelog</h1>
+<h2 id="100--2026-09-08">1.0.0 – 2026-09-08</h2>
+<p>First release. QUILL with everything removed except the editor:
+numbered documents in one window, plain text or rich text, and nothing
+else.</p>
+<p>Contributed as <a
+href="https://github.com/Community-Access/quill/pull/1490">PR #1490</a>
+by Steven Scott (<code>doubletaponair</code>) under this repository’s
+MIT licence, and adopted into the QuillVille family here.</p>
+<h3 id="added">Added</h3>
+<ul>
+<li><p><strong>An application icon of its own.</strong> A white page
+with a folded corner and two amber lines of writing, on a forest-green
+tile. Every other glyph in the family is round, pointed, or built from
+bars, so this is the only one that blurs to a rectangle with a bite out
+of it – which is the test that matters, because the other one is 16x16
+in a taskbar. Generated by <code>scripts/build_app_icons.py</code> like
+every sibling, and gated so it cannot silently become a copy of another
+app’s face.</p></li>
+<li><p><strong>Numbered documents in one window.</strong> Documents open
+as numbered children of one QuillLite window, and a number never changes
+while that document is open – so “document 3” stays a name a person can
+hold rather than “the other Untitled”. Alt+1 to Alt+9 jump straight to
+one, Ctrl+Tab and Ctrl+F6 walk them, and the Window menu lists them all
+with a mark on the one you are in. The title carries the number, because
+that is the one string a screen reader reads on arrival.</p>
+<p>The cost is recorded rather than hidden: documents inside one window
+do not appear in Alt+Tab, so those four routes carry the whole job of
+moving between them, and all four are bound rather than one.</p></li>
+<li><p><strong>Notepad’s and WordPad’s keys, unchanged.</strong> Ctrl+N,
+Ctrl+O, Ctrl+S, Ctrl+Shift+S and Ctrl+P; Ctrl+F, F3, Shift+F3, Ctrl+H
+and Ctrl+G; F5 for the date and time; Ctrl+B, Ctrl+I and Ctrl+U; Ctrl+L,
+Ctrl+E, Ctrl+R and Ctrl+J for the four alignments; Ctrl+1, Ctrl+5 and
+Ctrl+2 for single, one-and-a-half and double spacing; Ctrl+Shift+L for
+bullets; Ctrl+Shift+&gt; and Ctrl+Shift+&lt; to grow and shrink; Ctrl+=,
+Ctrl+- and Ctrl+0 for zoom. Somebody moving from either should not have
+to learn anything.</p></li>
+<li><p><strong>A status bar that can be read.</strong> Ten focusable
+cells on QUILL’s own model: F6 lands in it, the arrow keys and Home/End
+move between them, Enter acts on the cell, and Escape returns to the
+document. The last message, the position, words, characters, the
+selection, the mode, the heading you are in, the encoding, the line
+endings, and whether anything is unsaved.</p>
+<p>Two of those are facts no editor most people have used shows at all –
+encoding and line endings – and they are exactly what decides whether a
+file survives a round trip. Refreshes are coalesced through a 90 ms
+timer (QUILL’s own window), because counting words is O(document) and
+doing it per keystroke is felt while typing.</p></li>
+<li><p><strong>Byte-honest files.</strong> Open, change nothing, save,
+and the bytes are the bytes you started with: the encoding is kept
+including a byte order mark, the line endings are kept, and a file that
+did not end in a newline does not grow one. UTF-8 is tried before
+Windows-1252 precisely because cp1252 cannot fail to decode, so trying
+it first would mean never detecting anything else.</p></li>
+<li><p><strong>Encoding and line endings on purpose</strong>
+(Ctrl+Alt+E). The round trip is the default and this is the deliberate
+exception, for the person who needs a UTF-8 copy of an old file or Unix
+line endings for a build server. It takes effect at the next save, which
+is the moment it means anything.</p></li>
+<li><p><strong>Nine numbered bookmarks</strong> that move with the text
+as you edit around them – a bookmark that is wrong is worse than one
+that does not exist, because it is trusted. Ctrl+Shift+B drops one,
+Ctrl+Shift+1 to 9 set a numbered one, F2 and Shift+F2 walk them,
+Alt+Shift+G lists them.</p></li>
+<li><p><strong>Structural selection.</strong> Select the word, the line
+or the paragraph, or press Ctrl+Shift+X to expand outwards – word, line,
+sentence, paragraph, block, document – with the scope announced each
+time. Shift+arrow selects by character, which is the right tool for two
+letters and the wrong one for a paragraph.</p></li>
+<li><p><strong>Describe Character</strong> (Ctrl+Shift+C). Exactly which
+character the cursor is on: its name, its code point, and the
+plain-language note for the invisibles that bite writers. A screen
+reader says “space” for four different characters, and this is the only
+way to tell which one broke the search.</p></li>
+<li><p><strong>Three answers to a clipboard that holds one
+thing.</strong> A twelve-slot copy tray that survives a restart; a
+collector that gathers several copies into one buffer; and a rolling
+clip library that remembers what was copied whether or not you decided
+at the time that it mattered. Plus Ctrl+Shift+V, which pastes text with
+none of its formatting.</p></li>
+<li><p><strong>Tools.</strong> Sort lines, remove blank lines, remove
+duplicates, trim trailing spaces, and UPPERCASE / lowercase / Title Case
+– each on the selection if there is one and the document if not, and
+each a single undo step, so Ctrl+Z takes back the whole sort rather than
+forty separate line moves.</p></li>
+<li><p><strong>Abbreviations.</strong> QUILL’s own engine and manager
+dialog, over QuillLite’s own library. A switch in Preferences – off by
+default – points it at the library QUILL and Quill Inkwell share
+instead. Off by default because a machine that has never had QUILL
+installed must not grow a Quill data folder because somebody opened a
+text file.</p></li>
+<li><p><strong>Spell check</strong>, which neither Notepad nor WordPad
+had when this editor’s keyboard was designed – WordPad never gained one
+at all, and Notepad only in 2024. QUILL’s dictionary, QUILL’s
+suggestions and QUILL’s guided review: F7 reviews the document, Shift+F7
+suggests for the word at the cursor, Ctrl+F7 and Ctrl+Shift+F7 move
+between misspellings and <em>select</em> them so the word is what the
+reader reads on arrival, and Alt+F7 teaches it.</p>
+<p>The load-bearing part is where it does <strong>not</strong> speak.
+Spell check while typing is off by extension in source and configuration
+files (<code>quill.core.spellcheck_filetypes</code>), because every
+identifier in one is a word no dictionary has and each false alert costs
+a status line to read past – the cost a sighted user pays for a red
+underline and a screen-reader user pays in full. Markdown is prose and
+is checked; its fenced blocks and code spans are suppressed by region
+instead. The state is per document, so a letter and a config file open
+together can honestly disagree, and Ctrl+Alt+F7 changes only the one you
+are in. Opening a skipped file says so once: a checker that is silently
+off is indistinguishable from one that is broken.</p>
+<p>Taught words live in QuillLite’s own folder unless Preferences says
+to share QUILL’s, for the same reason the abbreviation switch exists and
+defaults the same way. A document may also carry its own
+<code>.quill-dict.json</code> sidecar.</p></li>
+<li><p><strong>A Selection submenu under Edit</strong>, and it is three
+features rather than one. <em>Mark and extend</em> (F8 anchors, any
+navigation key extends, Shift+F8 completes, Ctrl+Shift+F8 reselects,
+Alt+Shift+F8 goes to the start) is the only way to take an arbitrary run
+without holding a modifier down the whole way. <em>Struct- ural</em>
+selection takes the word, line, paragraph, sentence or block in one
+keystroke, and Expand/Shrink walk the ladder in both directions.
+<em>Marks</em> are throwaway positions – deliberately not bookmarks,
+which are the ones you mean to keep – with set, pop, list and
+exchange-with-cursor.</p>
+<p>Every one of them announces <strong>how much</strong> it took. A
+selection that says nothing is one the user has to test by pressing
+something destructive, and the count is the whole difference between “I
+have it” and “I think I have it”.</p>
+<p>Select All keeps its place in the Edit menu on Ctrl+A, so switching
+this whole area off never removes it.</p></li>
+<li><p><strong>Printing</strong> (Ctrl+P) and Page Setup. Long lines
+wrap to the page whatever the Word Wrap setting says, because a printed
+line that runs off the paper is gone rather than scrolled to.</p></li>
+<li><p><strong>Unsaved-work recovery.</strong> A copy of every modified
+document written aside on a timer, beside your file and never over it,
+offered back on the next launch and deleted the moment you save or close
+cleanly.</p></li>
+<li><p><strong>Session restore.</strong> Reopen the documents that were
+open last time, in the same numbered order. Distinct from recovery,
+which is only ever about work that was never saved.</p></li>
+<li><p><strong>Customize Features</strong> (View menu). Whole areas can
+be switched off – rich text and the Format menu, headings, bookmarks,
+the Tools menu, the clipboard, printing, abbreviations, spell check, the
+Selection submenu – and switching one off removes its menu <em>and</em>
+its keys, because a key that still fires for a feature you turned off is
+the feature not being off. This is how QuillLite stays a small editor
+without being a poor one.</p>
+<p>Three areas ship switched off and are found in the same list rather
+than hidden: autocorrect (welcome in prose, actively wrong in a config
+file), timestamped backups (reassuring, and they fill a folder), and Go
+To Anything.</p></li>
+<li><p><strong>The Command Palette</strong> (Ctrl+Shift+P), which
+answers “how do I sort lines?” rather than “what is under Format?”, and
+shows each command’s key beside its name – which is how a key gets
+learned.</p></li>
+<li><p><strong>F1 everywhere.</strong> What this window is for, then
+what the control you are on does, through the family’s shared engine.
+Gated by GATE-LITE-HELP, plus a stricter QuillLite-only check that
+covers the two things the shared scanner cannot see: checkboxes, and the
+document control itself.</p></li>
+<li><p><strong>Dark mode by default,</strong> view-only and stripped
+back to automatic colour before every save, so a theme can never land in
+a document you send somebody.</p></li>
+<li><p><strong>Speech to NVDA and JAWS only.</strong> No self-voicing
+fallback: a second voice talking over a screen reader is worse than
+silence. Only outcomes are announced – a save, a wrapped search, a
+formatting change – because titles, focus moves, control names and
+selections are the reader’s to say. Everything spoken also lands in the
+status bar, so a missed message can be read again.</p></li>
+<li><p><strong>Its own data folder</strong>
+(<code>%LOCALAPPDATA%\QuillLite</code>), deliberately not
+<code>%APPDATA%\Quill</code>. Uninstalling does not remove it: recovered
+work is the one thing somebody may not have finished with, and an
+uninstaller is the worst moment to discover that.</p></li>
+<li><p><strong>A settings file that only records what you
+changed.</strong> A fresh profile’s <code>settings.json</code> is
+<code>{"schema": 1}</code> and nothing else. That is not tidiness: a
+file that spells out every field freezes today’s defaults into every
+user’s profile forever, so a later version that changes the default
+theme would leave behind exactly the people who never expressed a
+preference. Writing deltas is what QUILL’s versioned-store contract
+buys, taken directly.</p></li>
+<li><p><strong>A sign-off checklist</strong> (<a
+href="../../../docs/qa/quilllite-signoff.md"><code>docs/qa/quilllite-signoff.md</code></a>):
+89 numbered steps for a person at a keyboard with a screen reader, each
+saying what to press and what decides pass or fail, with a
+fifteen-minute subset named at the top. It exists because everything a
+machine can check here is already checked – and what somebody actually
+<em>hears</em> is not one of those things.</p></li>
+<li><p><strong>Four release artifacts</strong> on the family contract –
+full installer, thin installer, portable zip and companion zip – sharing
+the QuillVille Runtime, with neither ffmpeg nor libmpv staged because
+QuillLite has no media pipeline.</p></li>
+<li><p><strong>An optional file association.</strong> The full installer
+offers <em>Open with QuillLite</em> for <code>.txt</code> and
+<code>.rtf</code> as a component, never as the default handler. An
+editor that quietly takes over every <code>.txt</code> on a machine is
+an editor people uninstall.</p></li>
+</ul>
+<h3 id="fixed-in-quill-for-every-quill-user">Fixed (in QUILL, for every
+QUILL user)</h3>
+<p>Both were isolated in PR #1490 and left unapplied so that adding an
+app and changing the editor stayed separate decisions. Both decisions
+were taken.</p>
+<ul>
+<li><p><strong><code>_TOM_TRUE</code> was <code>tomUndefined</code>, so
+every rich-mode heading lost its bold.</strong> <code>tom.h</code>
+defines <code>tomTrue</code> as <code>-1</code>; QUILL used
+<code>-9999999</code>, which the same header defines as
+<code>tomUndefined</code> – “leave this property alone”. Assigning it to
+<code>ITextFont.Bold</code> asked the control to change nothing and
+<em>succeeded</em>, so <code>set_heading</code> applied the point size,
+silently never applied the bold, and raised nothing. Because
+<code>heading_level_for_font</code> requires bold before it will call a
+paragraph a heading, QUILL could not then find the headings QUILL had
+just made: heading navigation and Describe Formatting both went blind.
+Measured on RICHEDIT50W / Riched20 10.0.26100 –
+<code>Bold = -9999999</code> gives <code>Weight=400</code>,
+<code>Bold = -1</code> gives <code>Weight=700</code>. Reproduced
+standalone in <code>tests/repro_tom_true.py</code>, which imports
+neither QUILL nor QuillLite.</p></li>
+<li><p><strong>A collapsed cursor described the paragraph above
+it.</strong> A collapsed range in the Text Object Model reports the
+formatting of the character <em>before</em> it, so standing at the head
+of a heading and asking “what is this?” answered with the body text
+above. <code>caret_format_description</code> now probes the character
+after the cursor, which is what a screen reader describes.</p></li>
+</ul>
+<h3
+id="added-in-quill-so-the-editor-is-never-behind-its-own-small-sibling">Added
+(in QUILL, so the editor is never behind its own small sibling)</h3>
+<ul>
+<li><strong>Justify</strong> (Ctrl+Alt+J), completing the four
+alignments – the Rich Edit surface has always supported it and nothing
+was bound to it.</li>
+<li><strong>Line spacing</strong> – single, one-and-a-half and double
+(Ctrl+1, Ctrl+5, Ctrl+2).</li>
+<li><strong>Grow and Shrink Font</strong> (Ctrl+Shift+&gt; and
+Ctrl+Shift+&lt;), stepping a ladder of real point sizes that includes
+the heading sizes, so growing a heading stays on the heading ladder
+rather than falling off it.</li>
+<li><strong>Paste Text Only</strong> (Ctrl+Alt+V), which neither product
+had.</li>
+<li><strong>Bullets in rich mode</strong>, driving the real list type
+instead of inserting a Markdown dash into a Rich Text document.</li>
+<li><strong><code>edit.select_word</code> (Ctrl+Alt+W)</strong>, which
+did not exist. QUILL could select a line, a paragraph and a block, and
+the innermost rung of its own expansion ladder was the one thing it
+could not be asked for directly.</li>
+<li><strong>A key for <code>edit.select_line</code>
+(Ctrl+Alt+E)</strong>, which was registered, was in the Edit menu, and
+was in no keymap at all – so its label advertised no shortcut.</li>
+<li><strong>Keys for three commands that had none</strong>:
+<code>edit.select_paragraph</code> (Ctrl+Alt+Shift+P, unbound since
+Ctrl+Alt+P was dropped under §10.8, which the authored Ctrl+Alt set
+reverses), <code>edit.duplicate_selection</code> (Ctrl+Alt+Shift+Q;
+§4.17 avoided Ctrl+D, not the command) and
+<code>edit.toggle_extend_selection_mode</code> (Ctrl+Alt+F8, previously
+reachable only by opening the keymap editor to assign one).</li>
+<li><strong><code>quill.core.selection.shrink_selection</code></strong>,
+a computed inverse of <code>expand_selection</code>, and
+<code>MainFrame.shrink_selection</code> now falls back to it when there
+is no expansion history. The stack only knew about selections reached
+<em>by expanding</em>: selecting a paragraph outright and asking to
+shrink said “no selection to shrink”, which a listener cannot tell apart
+from a broken command.</li>
+<li><strong>A live spell check that stays quiet in code</strong>
+(<code>spellcheck_skip_code_files</code>, on by default).
+<code>spellcheck_live</code> already suppressed URLs, code spans and
+fenced blocks, which is the right granularity <em>inside</em> prose and
+no help whatever in <code>main.py</code>, where the whole file is the
+exception. QUILL now consults the shared file-type rule before every
+live alert. The F7 review is deliberately not gated: a default decides
+what happens when nobody has said anything, and running the review is
+saying something.</li>
+<li><strong><code>load_combined_dictionary</code> and friends take a
+<code>personal_dir</code></strong>, so a sibling app can keep its own
+taught words in its own folder instead of growing a
+<code>%APPDATA%\Quill</code> on a machine that has never had QUILL
+installed. QUILL passes nothing and gets exactly what it got
+before.</li>
+<li>Every QUILL editor tab is now built on the extended surface, so all
+of the above is available by construction rather than through a second
+code path.</li>
+</ul>
+<p>QUILL takes Ctrl+Alt+J and Ctrl+Alt+V where QuillLite uses WordPad’s
+Ctrl+J and Ctrl+Shift+V, because Ctrl+J has been Set Temporary Bookmark
+and Ctrl+Shift+V has been Preview in QUILL for far longer. An existing
+binding somebody’s hands already know outranks a new command’s
+convention; the divergence is recorded in the keymap rather than left to
+be discovered.</p>
+</main>
+</body>
+</html>

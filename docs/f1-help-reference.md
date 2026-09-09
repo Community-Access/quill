@@ -663,7 +663,7 @@ Control coverage: 159 audited sites (157 helped, 2 named-help).
 - `self._clear_btn`: Empties the whole queue. No audio files are touched.
 #### PlayerPanel (`quill/ui/audio_studio/player_panel.py`)
 
-- `self._rate`: How fast the book plays, 0.75x to 2x without changing pitch; 1x is as recorded. Listening only -- the file is not changed.
+- `self._rate`: How fast the book plays, 0.5x to 3x without changing pitch; 1x is as recorded. Faster gets you through a long book; slower makes a fast reader followable, and 0.75x is the one to use when you are listening for exactly where a sentence starts. Listening only -- the file is not changed.
 - `self._position`: The playhead's position in the whole book, in milliseconds; moving it seeks there. The arrow keys nudge it, and the status line below speaks the position in human time.
 - `self._volume`: This book's playback volume, 0 to 100 percent, remembered per book. Moving it also lifts mute, and it is this player's volume only -- the system volume is untouched.
 - `self._mute_btn`: Silences playback without stopping it; pressing again restores the volume that was set before the mute. The mute state is remembered per book.
@@ -1076,3 +1076,86 @@ Control coverage: 127 audited sites (127 helped).
 - `self.add_point_btn`: Save a time-point bookmark at the current position, tagged timepoint and filed under the current chapter when there is one. It appears in the main bookmarks list.
 - `self.chapter_list`: The episode's chapters with their start times, when the feed supplies them. Selecting a chapter jumps playback to its start.
 - `self.transcript`: The episode's transcript as read-only text, when one is available. Empty otherwise.
+
+## QuillLite
+
+Control coverage: 19 audited sites (19 helped).
+
+### Every window, and what it is for
+
+**About QuillLite.** What this copy is, and where it keeps your settings and your recovered work. QuillLite is a small companion to QUILL for All, not a replacement for it: anything to do with AI, dictation, conversion, comparison or publishing lives in QUILL.
+
+**Bookmarks.** The places you marked in this document, in the order they appear. Choose one and press Enter to go there; Remove takes one out of the list without touching the document. Bookmarks last for the session and move with the text as you edit around them.
+
+**Character at the cursor.** Exactly which character the cursor is on: its name, its code point, and what it does to a search. A screen reader says 'space' for four different characters, and this is how you tell which one you have.
+
+**Clip Library.** Everything you have copied recently, newest first, whether or not you decided at the time that it mattered. Choose one and press Enter to paste it back.
+
+**Command Palette.** Every command QuillLite has, searchable, with its key beside it. A menu answers 'what is under Format?'; this answers 'how do I sort lines?', which is the question you actually have.
+
+**Copy Tray.** Twelve numbered clipboard slots that outlive a restart. Copy into a slot, and paste from it an hour later -- the system clipboard holds one thing, and this is what to do when that is one fewer than you need.
+
+**Customize QuillLite Features.** Turn whole parts of QuillLite on or off. Unchecking an area removes its menu and its keys entirely, which is how this stays a small editor without being a poor one. Three areas start switched off and are found here rather than hidden: autocorrect, timestamped backups, and Go To Anything.
+
+**File format.** How this document will be written back to disk: which character encoding, and which line endings. QuillLite normally writes back exactly what it read, so these only change when you change them here -- and the change happens at the next save, not now.
+
+**Find.** Find text in this document. Enter finds the next match and Shift Enter the previous one; the search wraps around the end and says so when it does. The window stays open while you work, so F3 and Shift F3 keep moving through the matches after you have gone back to the text.
+
+**Go to Anything.** One box that searches commands, headings and bookmarks together. Type part of what you want; a hash sign at the front restricts the results to headings.
+
+**Go to line.** Jump straight to a line by number. The prompt says how many lines the document has, and a number past the end takes you to the last line rather than refusing.
+
+**Headings.** Every heading in this document, in the order they appear. Choose one and the cursor lands at the start of it. Headings exist in rich text only: they are the bold-plus-point-size ladder QUILL uses, so this list is also what Word will show in its navigation pane.
+
+**Keyboard shortcuts.** Every key QuillLite binds, menu by menu. It is generated from the same table that builds the menus, so it cannot drift from what is actually bound. Read it with the arrow keys; Escape closes it.
+
+**Manage Abbreviations.** Your abbreviations: type the short form and a space, and the long form appears. This is QuillLite's own list unless you asked it, in Preferences, to share the one QUILL and Quill Inkwell use.
+
+**Marks.** The places you have passed through, newest first, with the line each one is on. Choose one and press Enter to go there. A mark is not a bookmark: a bookmark is somewhere you meant to keep, a mark is where you were standing before you went to look something up.
+
+**Preferences.** Every setting QuillLite has, in one window. Two of them live only here: what Control N creates, and how often unsaved work is copied aside. The rest -- theme, word wrap, and the editor font -- are also on the View menu, where you will reach them faster.
+
+**QuillLite.** Your document. This is the whole editor: type, and Control S saves. The title bar leads with this document's number, then its name, whether it is plain text or rich text, and whether there is anything unsaved. Control N opens another document beside this one, numbered; Alt+1 to Alt+9 go straight to one, Control Tab and Control F6 move to the next, and the Window menu lists them all. Documents live inside one QuillLite window, so Alt+Tab will not step between them -- those four are how you move. Press F6 for the status bar, which carries the position, the word count, the encoding and the line endings.
+
+**Replace.** Find text and put something else in its place. Replace changes the match you are on and moves to the next; Replace All changes every one and tells you how many. In a rich text document Replace All asks first, because replaced text takes the formatting of the run it lands in.
+
+**Spelling Review.** Every word in this document that is not in the dictionary, one at a time, with suggestions you can arrow through. Change it, change every one like it, ignore it, or add it to your dictionary so it is never questioned again.
+
+**Spelling Suggestions.** Better spellings for the word the cursor was in, closest first. Choose one and press Enter to replace the word; press Escape to leave it as you wrote it. Alt F7 adds it to your dictionary instead, if it was right all along.
+
+**Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
+
+### Every authored control help sentence
+
+#### (module level) (`quill/apps/lite_dialogs.py`)
+
+- `encoding_choice`: How characters are stored. UTF-8 is the right answer for anything new. UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the old Western European encoding a lot of existing .txt files are in.
+- `newline_choice`: CRLF is what Windows programs write. LF is what Unix, macOS and most build tools expect. QuillLite writes back whichever the file arrived with unless you change it here.
+- `close_btn`: Close this window and go back to your document.
+#### FindDialog (`quill/apps/lite_dialogs.py`)
+
+- `self.match_case`: When checked, Cat and cat are different words.
+- `self.whole_word`: When checked, cat does not match catalogue -- only the word on its own.
+- `self.next_btn`: Find the next match after the cursor, wrapping at the end.
+- `self.prev_btn`: Find the previous match, wrapping at the start.
+- `close_btn`: Close this window. The search you typed is remembered for F3.
+#### ReplaceDialog (`quill/apps/lite_dialogs.py`)
+
+- `self.match_case`: When checked, Cat and cat are different words.
+- `self.whole_word`: When checked, cat does not match catalogue -- only the word on its own.
+- `find_btn`: Move to the next match without changing anything.
+- `replace_btn`: Replace the match you are on, then move to the next one.
+- `all_btn`: Replace every match in the document and say how many were changed.
+- `close_btn`: Close this window. Nothing you have already replaced is undone.
+#### (module level) (`quill/apps/lite_preferences.py`)
+
+- `mode_choice`: What Control N creates. New Plain Text and New Rich Text ignore this.
+- `theme_choice`: Dark is the default. It changes the view only and is never saved into your documents.
+- `restore`: Reopen last session's files, in the same numbered order. Different from recovering unsaved work, which happens whether this is on or not.
+- `share`: Off: abbreviations are QuillLite's own. On: read and write the same library QUILL and Quill Inkwell use, so an abbreviation added in any of them works in all of them. Turning this on creates a QUILL data folder if you do not already have one.
+- `share_dict`: Off: words you teach the spell checker are QuillLite's own. On: read and write the same dictionary QUILL uses, so a word taught in either is known to both. Turning this on creates a QUILL data folder if you do not already have one.
+- `spell_typing`: Report a misspelling in the status bar shortly after you finish a word. Never in a source or configuration file, whatever this says: every identifier in one would be a false alarm. F7 reviews the whole document either way.
+- `wrap`: When off, long lines run past the right edge and scroll instead.
+- `autosave`: How often a modified document is copied to the recovery folder. The copy is beside your file, never over it, and is removed when you save.
+- `font_field`: The face and size the editor uses. Choose changes it.
+- `choose_btn`: Open the font chooser and pick a face and size.

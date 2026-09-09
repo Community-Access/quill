@@ -452,6 +452,7 @@ from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_restore_points import RestorePointsMixin
 from quill.ui.main_frame_reveal_codes import RevealCodesMixin
 from quill.ui.main_frame_rich_mode import RichModeMixin
+from quill.ui.main_frame_rich_paragraph import RichParagraphMixin
 from quill.ui.main_frame_search import SearchCommandsMixin
 from quill.ui.main_frame_section_move import SectionMoveMixin
 from quill.ui.main_frame_selection import SelectionMarksMixin
@@ -816,6 +817,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    RichParagraphMixin,
     PersistentUndoMixin,
     AnnounceCommandsMixin,
     SrWatchdogMixin,

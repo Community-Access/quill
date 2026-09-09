@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QuillLite integration — design</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quilllite-integration--design">QuillLite integration —
+design</h1>
+<p><strong>Status: implemented, 2026-09-08.</strong> This document
+records what was decided and what actually shipped, including the four
+places the plan changed under contact with the code. Where the two
+differ, the “what shipped” note is the truth.</p>
+<h2 id="problem">Problem</h2>
+<p>PR #1490 (“Add QuillLite: a notepad-scale alternative editor”) by
+Steven Scott (<code>doubletaponair</code>) adds a small editor-only
+sibling to the QUILL family. The contributor self-contained the
+implementation — feature code, RTF scanner, dialogs, speech path,
+single-instance inbox, recovery — and explicitly did not apply one
+QUILL-side fix they isolated: <code>_TOM_TRUE = -9999999</code> in
+<code>quill/ui/richedit_rtf_surface.py</code>, which <code>tom.h</code>
+defines as <code>tomUndefined</code> rather than <code>tomTrue</code>,
+and which silently breaks every Rich Edit heading QUILL creates.</p>
+<p>Three decisions to make:</p>
+<ol type="1">
+<li><strong>How does the wrapper share code with the rest of the
+family?</strong> Every other QuillVille app puts feature code in the
+shared <code>quill</code> package (<code>quill.apps.&lt;name&gt;</code>)
+and keeps <code>standalone/&lt;app&gt;/</code> as a thin product shell.
+PR #1490 breaks that: it duplicates the TOM-based Rich Edit surface and
+the RTF safety scanner wholesale, even though both already live in
+<code>quill/</code>.</li>
+<li><strong>Do the QUILL-side fixes the contributor isolated land in the
+same PR?</strong> They affect every QUILL user today.</li>
+<li><strong>Does QuillLite ship as a full sibling (four artifacts, four
+docs, shared runtime) or as something smaller?</strong></li>
+</ol>
+<h2 id="decision-thin-shell--quillappslite-full-sibling-shape">Decision:
+thin shell + <code>quill.apps.lite</code>, full sibling shape</h2>
+<p>QuillLite becomes a full sibling of
+Radio/Cast/Weather/Studio/Inkwell. <strong>All</strong> wx and feature
+code moves into the shared package; the wrapper at
+<code>standalone/quilllite/</code> is an entry point, an icon,
+installers and docs, exactly like Inkwell’s. Both QUILL-side fixes ship
+in the same change.</p>
+<h3 id="what-shipped-differently-from-the-plan-and-why">What shipped
+differently from the plan, and why</h3>
+<p>Four deviations, each recorded because the plan said otherwise.</p>
+<ol type="1">
+<li><p><strong>Nothing feature-shaped stayed in the wrapper.</strong>
+The plan put dialogs, settings, recovery and the inbox under
+<code>standalone/quilllite/quill_lite/</code>. They are all in
+<code>quill/</code> instead, because the repository’s gates — GATE-11,
+GATE-13, GATE-14, the dialog registry, the F1 audit, GATE-REACH — scope
+to <code>_REPO_ROOT / "quill"</code>. A surface no gate can see is a
+surface that rots; Cast shipped an unreachable first-run dialog for two
+releases exactly that way. <code>standalone/quilllite/quill_lite/</code>
+is now two files, both shims.</p></li>
+<li><p><strong>Documents are MDI children of one window, not separate
+top-level windows</strong> (Jeff, mid-implementation). Numbering is the
+point: “document 3” is a name a person can hold. The cost — MDI children
+do not appear in Alt+Tab — is real, was raised before building, and is
+carried by binding all four routes (Ctrl+F6, Ctrl+Tab, Alt+1..9, the
+Window menu) and by leading every title with its number.</p></li>
+<li><p><strong>The scope grew, deliberately and on Jeff’s
+instruction</strong>, from “the editor and nothing else” to “the editor,
+with everything switchable”. Selection, numbered bookmarks, Describe
+Character, the copy tray, the collector, the clip library,
+abbreviations, the line and case tools, printing, the command palette,
+session restore and encoding conversion all landed, and
+<code>View &gt; Customize Features</code> is what keeps that from making
+the product big: turning an area off removes its menu
+<strong>and</strong> its keys.</p></li>
+<li><p><strong>QuillLite is never allowed to be ahead of QUILL</strong>
+(Jeff, twice, and it is now the governing rule — see below). Everything
+QuillLite needed that the editor could not do was added to the editor in
+the same change.</p></li>
+</ol>
+<h2 id="code-architecture-as-shipped">Code architecture, as shipped</h2>
+<h3 id="layer-a--shared-quill-package">Layer A — shared
+<code>quill/</code> package</h3>
+<p><strong>Fixes to
+<code>quill/ui/richedit_rtf_surface.py</code>:</strong></p>
+<ul>
+<li><code>_TOM_TRUE</code> <code>-9999999</code> → <code>-1</code>, with
+<code>_TOM_UNDEFINED</code> named so nobody re-derives the old value as
+“true”, and the measurement in a comment (<code>Bold=-9999999</code> →
+<code>Weight=400</code>; <code>Bold=-1</code> → <code>Weight=700</code>,
+on Riched20 10.0.26100).</li>
+<li><code>caret_format_description</code> now reads through a new
+<code>_format_range()</code>, which probes the character <em>after</em>
+a collapsed caret. A collapsed TOM range reports the formatting of the
+character <em>before</em> it, so standing at the head of a heading
+described the paragraph above it.</li>
+<li><code>create_richedit_rtf</code> builds
+<code>RichEditDocument</code> rather than
+<code>QuillRichEdit</code>.</li>
+</ul>
+<p><strong>New shared modules:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>What</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>quill/ui/richedit_editing.py</code></td>
+<td><code>RichEditDocument</code> — a <code>QuillRichEdit</code> plus
+text mode, wrap, zoom, background, whole-story recolour, bullets, line
+spacing, the point-size ladder, heading enumeration</td>
+</tr>
+<tr>
+<td><code>quill/ui/main_frame_rich_paragraph.py</code></td>
+<td>QUILL’s own Justify / line spacing / Grow / Shrink / Paste Text Only
+handlers</td>
+</tr>
+<tr>
+<td><code>quill/core/numbered_bookmarks.py</code></td>
+<td>Nine slots that move with the text. Shared, not under
+<code>lite/</code>, so QUILL can adopt it</td>
+</tr>
+<tr>
+<td><code>quill/core/lite_surface_help.py</code></td>
+<td>The F1 purpose catalogue</td>
+</tr>
+<tr>
+<td><code>quill/core/lite/</code></td>
+<td><code>paths</code>, <code>settings</code>, <code>recovery</code>,
+<code>commands</code>, <code>filetypes</code>, <code>textfile</code>,
+<code>inbox</code>, <code>backups</code>, <code>features</code> — all
+wx-free, all strict-typed</td>
+</tr>
+<tr>
+<td><code>quill/apps/lite*.py</code></td>
+<td>The shell, the window and its eight mixins, the dialogs,
+preferences, printing, services</td>
+</tr>
+<tr>
+<td><code>quill/tools/lite_help_audit.py</code></td>
+<td>GATE-LITE-HELP</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Deleted during implementation:</strong> a first draft of
+<code>quill/core/lite/texttools.py</code> duplicated
+<code>quill.core.format_ops</code> and
+<code>quill.core.transforms</code>. It was removed and the callers point
+at QUILL’s own — two implementations of “sort these lines” is two places
+for them to disagree about what a trailing newline means.</p>
+<h3 id="layer-b--standalonequilllite">Layer B —
+<code>standalone/quilllite/</code></h3>
+<p><code>quill_lite/__init__.py</code> (anchors
+<code>QUILL_APP_ROOT</code> for a portable build, hands off to
+<code>quill.apps.lite:main</code>), <code>quill_lite/__main__.py</code>,
+<code>launcher.py</code>, <code>run-quill-lite.bat</code>,
+<code>pyproject.toml</code>, <code>quill-lite.spec</code>, two
+<code>.iss</code> installers plus their edition markers, the generated
+icon, <code>scripts/build_release.ps1</code>,
+<code>scripts/render_docs.ps1</code>, four docs, <code>LICENSE</code>,
+<code>README.md</code>, and two probes.</p>
+<h3 id="cross-cutting-registrations">Cross-cutting registrations</h3>
+<ul>
+<li><code>standalone/runtime/app-profiles.json</code> — a
+<code>quilllite</code> row declaring no components and no layers, with a
+note on <em>why</em> an editor reaches neither the documents layer nor
+the spellcheck layer.</li>
+<li><code>scripts/build_native_launcher.py</code> — a
+<code>quilllite</code> product (<code>QuillLite.exe</code>).</li>
+<li><code>standalone/studio/scripts/build_portable.py</code> — a
+<code>quilllite</code> product,
+<code>dep_groups=("ui", "feedback")</code>, no engines, no ffmpeg, no
+mpv.</li>
+<li><code>scripts/build_app_icons.py</code> — the
+<code>_quilllite</code> glyph and its <code>APPS</code> entry.</li>
+<li><code>quill/tools/platform_report.py</code> — GATE-LITE-HELP joins
+the roster.</li>
+<li><code>tests/unit/ui/test_app_menu_accelerators.py</code> — both
+QuillLite menu files.</li>
+</ul>
+<h2 id="the-governing-rule-quilllite-may-never-be-ahead-of-quill">The
+governing rule: QuillLite may never be ahead of QUILL</h2>
+<p>Stated by Jeff during implementation and applied retroactively across
+the whole change. If QuillLite needs something the editor cannot do, the
+capability goes into the <strong>shared</strong> package and the editor
+gets a way to reach it in the same change. A feature the small product
+has and the big one does not is backwards, and worse, invisible — nobody
+opens QUILL and notices the absence of a thing they have only ever seen
+elsewhere.</p>
+<p>What that cost, concretely:</p>
+<ul>
+<li><code>create_richedit_rtf</code> builds the extended surface, so
+every QUILL tab gains the paragraph and view capabilities by
+construction.</li>
+<li>QUILL gained six commands whose capability was already in the
+surface with nothing bound to it: <strong>Justify</strong>,
+<strong>single / one-and-a-half / double line spacing</strong>,
+<strong>Grow Font</strong>, <strong>Shrink Font</strong>, plus
+<strong>Paste Text Only</strong>, which neither product had. Keymap,
+feature map, registrations, menu rows, bindings, the id map, and a
+regenerated <code>docs/keyboard-reference.md</code>.</li>
+<li>Numbered bookmarks live in
+<code>quill/core/numbered_bookmarks.py</code>.</li>
+<li>The duplicated text tools were deleted.</li>
+</ul>
+<p><strong>Where the two diverge, they diverge in writing.</strong>
+QUILL takes <code>Ctrl+Alt+J</code> and <code>Ctrl+Alt+V</code> where
+QuillLite uses WordPad’s <code>Ctrl+J</code> and
+<code>Ctrl+Shift+V</code>, because <code>Ctrl+J</code> has been Set
+Temporary Bookmark and <code>Ctrl+Shift+V</code> has been Preview in
+QUILL for far longer. An existing binding somebody’s hands already know
+outranks a new command’s convention; the reason is a comment in
+<code>keymap.py</code>.</p>
+<p>Still open, and named rather than implied: QUILL does
+<strong>not</strong> yet expose numbered bookmarks, the copy-tray-style
+clip chooser QuillLite uses, or the File Format dialog. The shared code
+is in place for all three; the QUILL-side UI is not, and that is a
+follow-up rather than a claim.</p>
+<h2 id="release-packaging">Release packaging</h2>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Built from</th>
+<th>Output</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full installer</td>
+<td><code>installer/quilllite.iss</code></td>
+<td><code>QuillLite-Setup-Shared-1.0.0.exe</code></td>
+</tr>
+<tr>
+<td>Lite thin installer</td>
+<td><code>installer/quilllite-lite.iss</code></td>
+<td><code>QuillLite-Lite-Setup-1.0.0.exe</code></td>
+</tr>
+<tr>
+<td>Full portable</td>
+<td><code>build_portable.py --product quilllite</code></td>
+<td><code>QuillLite-Portable-1.0.0.zip</code></td>
+</tr>
+<tr>
+<td>Companion zip</td>
+<td>the launcher without an interpreter</td>
+<td><code>QuillLite-Companion-1.0.0.zip</code></td>
+</tr>
+</tbody>
+</table>
+<p>The artifact names spell the product as one mixed-case word (Jeff,
+finalizing, 2026-09-08): <code>QuillLite</code> is spoken by a screen
+reader as a name, where <code>Quill-Lite</code> is read out punctuation
+and all — and the hyphenated thin installer would have been “Quill dash
+Lite dash Lite dash Setup”. The first build ran before the rename, so
+the measured sizes below carry the old names; nothing had been published
+under them.</p>
+<p>Shared QuillVille Runtime, reused. Neither ffmpeg nor libmpv staged,
+and the build strips any a sibling left in the communal work area so
+build order cannot change what ships. Code signing opt-in via
+<code>-Sign</code> / <code>QUILL_SIGN=1</code>.</p>
+<p>The full installer offers an <strong>optional</strong> file
+association: an <em>Open With</em> verb for <code>.txt</code> and
+<code>.rtf</code>, never a default handler.</p>
+<p>Releases publish to <code>Community-Access/quill</code> with a
+<code>QuillLite-*</code> asset prefix — a deviation from the siblings’
+per-app repos, recorded and revisitable.</p>
+<h2 id="verification">Verification</h2>
+<p>Run and passing at the time of writing:</p>
+<ul>
+<li><code>ruff check</code> / <code>ruff format --check</code> clean;
+<code>mypy quill/core/lite</code> clean.</li>
+<li>GATE-11, GATE-13, GATE-14, GATE-EC, GATE-REACH, the banned-pattern
+gate, the dialog registry, GATE-KEYREF, GATE-HELPREF and the new
+GATE-LITE-HELP.</li>
+<li>38 wx-free unit tests for the QuillLite cores, 19 for the F1
+catalogue and the stricter control-help check, and 3 new regression
+tests in <code>tests/unit/ui/test_richedit_rtf_surface.py</code> pinning
+both PR #1490 fixes against a fake TOM that models the real control’s
+behaviour (assigning <code>tomUndefined</code> is <em>accepted</em> and
+changes nothing, which is why the bug was silent).</li>
+<li><code>standalone/quilllite/tests/probe_live.py</code> — 24 live
+checks against a real <code>RICHEDIT50W</code>, all passing: the
+surface, both fixes, text mode, the theme never reaching the file,
+document numbering, bookmark tracking, feature switching, and five
+byte-exact round trips.</li>
+<li><code>standalone/quilllite/tests/repro_tom_true.py</code> — the
+contributor’s standalone reproduction, kept runnable, with a header
+noting the bug is now fixed.</li>
+<li><code>python -m quill.tools.platform_report</code> — every gate,
+including the <code>docs-artifacts</code> gate, which is why the four
+QuillLite docs and the four regenerated top-level references all ship
+with their HTML and EPUB.</li>
+<li><code>pytest tests/unit tests/stability -n 8 --dist loadgroup</code>
+— 17,551 passed, 34 skipped, 0 failed.</li>
+</ul>
+<p><strong>Built and measured</strong>, on this machine, 2026-09-08, and
+rebuilt the same day under the final names against a freshly built
+runtime:</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Size</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>QuillLite-Setup-Shared-1.0.0.exe</code></td>
+<td>113.9 MB</td>
+</tr>
+<tr>
+<td><code>QuillLite-Lite-Setup-1.0.0.exe</code></td>
+<td>2.8 MB</td>
+</tr>
+<tr>
+<td><code>QuillLite-Portable-1.0.0.zip</code></td>
+<td>92.2 MB</td>
+</tr>
+<tr>
+<td><code>QuillLite-Companion-1.0.0.zip</code></td>
+<td>0.2 MB</td>
+</tr>
+</tbody>
+</table>
+<p>The four pre-rename artifacts were deleted rather than left beside
+these: two sets of installers for one product, differing only in the
+punctuation of their names, is precisely the ambiguity the rename was
+meant to remove.</p>
+<p>The native launcher compiled (MSVC 14.44, 24 KB
+<code>QuillLite.exe</code>), the portable bundle’s own interpreter was
+run and reported
+<code>quill 1.0.0 | wx 4.3.1 | frames 1 | title "1: Untitled - QuillLite (plain text)" | native True</code>,
+both installers compiled under Inno 7, and
+<code>portable-inventory.json</code> was adopted from that build and
+re-verified against it.</p>
+<h3 id="one-defect-this-shipped-and-the-guard-added-for-it">One defect
+this shipped, and the guard added for it</h3>
+<p>The first full installer compiled, installed, and then failed on
+launch with
+<strong><code>No module named quill.apps.lite</code></strong>.</p>
+<p>The shared QuillVille Runtime is a PyInstaller onedir carrying its
+<strong>own frozen copy of the quill package</strong>, and the build
+reused an existing one (<code>-SkipSharedRuntime</code>) that had been
+built on 28 August – three weeks before <code>quill/apps/lite.py</code>
+existed. Nothing in the build noticed: ISCC compiled a perfectly valid
+installer around a runtime that did not contain the app it was an
+installer for.</p>
+<p>The lesson is the general one: <strong>compiling and installing are
+not evidence that the thing runs.</strong> So
+<code>scripts/BuildEnv.ps1</code> gained
+<code>Assert-QuillRuntimeHasModule</code>, which every sibling can call
+and QuillLite’s <code>build_release.ps1</code> now does. Two checks,
+cheapest first: the module’s source file is present in the frozen tree
+(universal, instant, and exactly what was missing), and – with
+<code>-ProbeArgs "--check"</code> – the runtime is asked to actually
+<em>run</em> the module and exit. Verified both ways: it passes on the
+rebuilt runtime and rejects a module that does not exist.</p>
+<p>The runtime was rebuilt, pruned, marker-stamped and re-gated
+(<code>check_runtime_imports</code>: 21 modules, all correct), and the
+full installer recompiled around it.
+<code>QuillVilleRuntime.exe -m quill.apps.lite --check</code> now
+reports <code>native rich edit: True</code>,
+<code>heading applied: True</code>, and
+<code>describe: Segoe UI, 20 point, heading 1, bold</code> – which is
+the tomTrue fix working inside the frozen runtime, not just in the
+checkout.</p>
+<h3
+id="closed-2026-09-08-the-runtime-is-published-and-the-guard-was-not-deep-enough">Closed
+2026-09-08: the runtime is published, and the guard was not deep
+enough</h3>
+<p>The thin installer downloads the runtime from the
+<code>runtime-latest</code> GitHub release. Two things turned out to be
+wrong with that, and both are now fixed.</p>
+<p><strong>The tag had never existed.</strong>
+<code>gh release view runtime-latest</code> answered “release not found”
+– not a stale asset, no asset at all, so the Lite edition of
+<em>every</em> app in the family (seven installers, not just QuillLite)
+downloaded a 404. <code>build_runtime_installer.ps1 -Publish</code>
+creates the release when it is absent, which is what published it: tag
+<code>runtime-latest</code>, <code>QuillVille-Runtime-Setup.exe</code>
+(114.0 MB, runtime <code>3.13.20260908</code>), marked
+<code>--latest=false</code> so it cannot hijack the editor’s release
+train (verified: the repository’s latest release is still
+<code>v0.6.0</code>). Confirmed live by the gate’s own opt-in check,
+<code>QUILL_CHECK_RELEASE_ASSETS=1 pytest tests/unit/structure/test_lite_installer_assets.py</code>
+– 4 passed, the fourth being the HEAD request that had nothing to answer
+it before.</p>
+<p><strong><code>Assert-QuillRuntimeHasModule</code> asks whether the
+module is present, not whether it is current.</strong> Before
+publishing, the frozen <code>quill</code> package in the built runtime
+was diffed against the working tree: 28 differences, including two
+QuillLite modules missing outright (<code>lite_check.py</code>,
+<code>lite_window_selection.py</code>) and changed <code>lite.py</code>,
+<code>lite_window.py</code>, <code>keymap.py</code> and
+<code>selection.py</code>. The guard passed on that runtime, because
+<code>quill/apps/lite.py</code> was there – an older copy of it. The
+same lesson one level down: <em>present</em> is not <em>current</em>,
+and a build that reuses a runtime with <code>-SkipSharedRuntime</code>
+inherits whatever that runtime last froze. A full rebuild was done
+instead, after which the frozen tree matches source exactly.</p>
+<p>That diff was run by hand, which is not a gate, so it became one:
+<strong><code>scripts/check_runtime_freshness.py</code></strong>
+compares the frozen <code>_internal/quill</code> tree against the
+checkout’s <code>quill/</code> and names every difference as
+<strong>stale</strong> (present, contents differ),
+<strong>missing</strong> (written after the runtime was built) or
+<strong>orphan</strong> (deleted after it was built, still shipping).
+Only <code>.py</code> files are compared – the question is whether the
+<em>code</em> is the code – and three things are excluded with their
+reasons stated in the source:
+<code>__pycache__</code>/<code>.mypy_cache</code>, the CMake
+<code>build</code> trees under <code>quill/native</code>, and
+<code>_feedback_token.py</code>, which the build itself writes into the
+checkout immediately before packaging.</p>
+<p>It is wired in twice. <code>Assert-QuillRuntimeHasModule</code> now
+runs it between the presence check and the probe – deliberately
+<em>before</em> the probe, because a stale runtime runs its stale module
+perfectly well, so <code>--check</code> passing proves nothing about
+currency. And <code>build_runtime_installer.ps1</code> runs it before
+ISCC, which is the placement that matters most: every other staleness
+ships to one app’s users, and that script publishes to the moving tag
+<em>every</em> Lite installer in the family downloads from. There is no
+rebaseline flag, because the answer is never “record this as expected” –
+it is always “rebuild the runtime”. Nine tests in
+<code>tests/unit/scripts/test_check_runtime_freshness.py</code> pin each
+finding kind, each exclusion, and both exit codes.</p>
+<p><strong>The <code>dateutil</code> inventory difference was the
+reverse of what this document recorded, and the fix was to put the entry
+back.</strong> The build machine had it removed from
+<code>runtime-inventory.json</code> as an uncommitted edit; the fresh
+build produced <code>dateutil</code> and the inventory gate failed it as
+undeclared. It arrives transitively and legitimately
+(<code>pip show python-dateutil</code> names arrow, celery, csvw,
+Mastodon.py and pandas as requiring it), and the <em>committed</em>
+inventory declares it – so the uncommitted deletion was the error.
+Restoring the line made the gate pass without weakening it, which
+rebaselining would have done.</p>
+<h2 id="not-yet-done-and-not-claimed">Not yet done, and not claimed</h2>
+<ul>
+<li><strong>A JAWS and NVDA pass by hand.</strong> The checklist is
+written – <code>docs/qa/quilllite-signoff.md</code>, 89 numbered steps
+in the house format, with a fifteen-minute subset named at the top – but
+it needs a person and a screen reader. Matching Studio (#839) and
+Inkwell, this is not required for the change to merge but
+<strong>is</strong> required for the release to publish. It is the only
+item here a machine cannot close.</li>
+<li><strong>The QuillLite artifacts themselves are built but not
+published.</strong> Only the shared runtime went to GitHub, because that
+one was already broken for the whole family; the four
+<code>QuillLite-*</code> files are sitting in
+<code>standalone/quilllite/dist/</code> waiting on the screen-reader
+pass above. That ordering is the same one Studio (#839) and Inkwell were
+held to, and it is the reason the artifacts are not simply pushed once
+they build cleanly.</li>
+<li><strong>The site sync, and why QuillLite is still not in
+it.</strong> The earlier note here said QuillLite would join
+<code>scripts/sync_site_radio_docs.py</code> “after its first real
+render”. The renders now exist, and it still has not, because the sync
+is not the obstacle: <code>docs/site/</code> has no QuillLite page and
+nothing linking to one, and the same is true of Cast, Weather, Studio
+and Inkwell – the site carries doc pages for Radio and the editor alone.
+Adding one app’s pages to a script named for another, with no page to
+land on, would be a new website section written sideways. The honest
+shape is a site pass over all the siblings at once and a sync script
+that is no longer Radio-only; that is a separate piece of work and it is
+not started.</li>
+</ul>
+<h2 id="documents-this-change-kept-current">Documents this change kept
+current</h2>
+<p>Named so a reader can check rather than trust:</p>
+<ul>
+<li><strong>Generated, regenerated:</strong>
+<code>docs/keyboard-reference.md</code> (GATE-KEYREF),
+<code>docs/f1-help-reference.md</code> (GATE-HELPREF),
+<code>docs/CONTROL_REFERENCE.md</code> (<code>build_docs.py</code>), and
+four fixture snapshots (dialog inventory, QuillLite help inventory,
+surface reachability, module-size budgets).</li>
+<li><strong><code>CLAUDE.md</code></strong> — the help-gate roster is
+nine, <code>quill/apps</code> is described, and the “QuillLite may never
+be ahead of QUILL” rule is written down where the next person will read
+it.</li>
+<li><strong><code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code></strong>
+— “One Editor, Every Format” now records the six commands QUILL gained,
+the two TOM bugs and their measurements, and the deliberate Ctrl+Alt+J /
+Ctrl+Alt+V divergence from QuillLite.</li>
+<li><strong><code>quill/core/help/topics.json</code></strong> — seven
+new F1 topics, so <code>check_help_coverage</code>’s
+<code>format:6</code> warning is gone.</li>
+<li><strong><code>standalone/README.md</code></strong> — QuillLite
+listed as a build shell.</li>
+<li><strong>QuillLite’s own four:</strong> <code>docs/prd.md</code>,
+<code>docs/userguide.md</code>, <code>docs/release-notes-1.0.md</code>,
+<code>docs/CHANGELOG.md</code>, plus <code>README.md</code> and
+<code>assets/README.md</code>.</li>
+</ul>
+<h2 id="provenance">Provenance</h2>
+<p>QuillLite is derived from PR #1490 by Steven Scott
+(<code>doubletaponair</code>), MIT, with the reasoning in the upstream
+files preserved in comments. The two QUILL-side fixes are attributed in
+the PRD, the changelog and the release notes so the contributor’s
+authorship stays intact.</p>
+</main>
+</body>
+</html>

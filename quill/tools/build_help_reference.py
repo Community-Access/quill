@@ -102,6 +102,13 @@ APPS: tuple[AppConfig, ...] = (
         (),
         "beacon_help_inventory.json",
     ),
+    AppConfig(
+        "QuillLite",
+        "quill.core.lite_surface_help",
+        (),
+        ("quill/apps/lite*.py",),
+        "lite_help_inventory.json",
+    ),
 )
 
 _FIXTURES = _REPO_ROOT / "tests" / "unit" / "ui" / "fixtures"

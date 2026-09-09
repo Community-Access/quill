@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QuillLite -- sign-off checklist</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quilllite--sign-off-checklist">QuillLite – sign-off
+checklist</h1>
+<p>One pass, top to bottom, ticking boxes. Every step says exactly what
+to press, exactly what to type, and the one thing that decides pass or
+fail.</p>
+<p>The narrative version of every feature below is <a
+href="../../standalone/quilllite/docs/userguide.md">the user guide</a>;
+the reasoning is in <a href="../../standalone/quilllite/docs/prd.md">the
+PRD</a> and <a
+href="../../standalone/quilllite/docs/release-notes-1.0.md">the release
+notes</a>.</p>
+<p><strong>Why this file exists.</strong> Everything an automated test
+can answer about QuillLite is already answered: 81 unit tests over the
+wx-free cores, the F1 audit, the access-key and over-announce gates, and
+24 live checks against a real <code>RICHEDIT50W</code>
+(<code>standalone/quilllite/tests/probe_live.py</code>). What none of
+them can answer is what a person actually <em>hears</em>. That is this
+list.</p>
+<h2 id="before-you-start-3-minutes">Before you start (3 minutes)</h2>
+<ul>
+<li>Install or launch the build under test. Note the version from
+<strong>Help &gt; About QuillLite</strong>:
+<code>____________</code></li>
+<li>Have a screen reader running and speaking (JAWS or NVDA). Note
+which, and its version: <code>____________</code></li>
+<li>QuillLite keeps everything in <code>%LOCALAPPDATA%\QuillLite</code>,
+separate from QUILL’s <code>%APPDATA%\Quill</code>. For a clean run,
+rename that folder first; to keep your real one, take a copy.</li>
+<li><strong>Fail means:</strong> it did not happen, or it happened
+silently, or what you heard differs from what this file quotes. Write
+down what you actually heard – “nothing” and “the wrong thing” are
+different bugs.</li>
+<li>Have three files to hand: a <code>.txt</code> saved with Windows
+line endings, a <code>.txt</code> saved with Unix line endings (any file
+from a git checkout will do), and any <code>.rtf</code>.</li>
+</ul>
+<h2 id="the-15-minute-pass">The 15-minute pass</h2>
+<p>No time for the whole thing? Run exactly these ten and stop:
+<strong>L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54,
+L-61.</strong></p>
+<p>They cover the four things most likely to be wrong and worst if they
+are: the document announces itself, F1 answers, the status bar is
+reachable, and a file comes back byte-for-byte.</p>
+<hr />
+<h2 id="block-a--opening-and-where-focus-lands-5-min">Block A – Opening,
+and where focus lands (5 min)</h2>
+<p><strong>L-01. The window announces itself as a document</strong></p>
+<ul>
+<li>Do: launch QuillLite with nothing open.</li>
+<li>Pass: you hear a window title containing <strong>“1: Untitled -
+QuillLite (plain text)”</strong>. The number leads.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-02. Focus starts in the document</strong></p>
+<ul>
+<li>Do: launch QuillLite, do not touch anything, type
+<code>hello</code>.</li>
+<li>Pass: the letters go into the document. You did not have to Tab
+first, and the reader announced the edit control, not a button.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-03. Typing is not narrated twice</strong></p>
+<ul>
+<li>Do: type a sentence at normal speed.</li>
+<li>Pass: you hear your own characters or words, exactly as your reader
+is configured to echo them – and <strong>nothing else</strong>. No
+status chatter per keystroke.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-04. Opening a second document numbers it</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+N</strong>.</li>
+<li>Pass: the title is <strong>“2: Untitled - …”</strong>. The first
+document is still open.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-05. Alt+Tab shows QuillLite once, and the Window menu shows
+both</strong></p>
+<ul>
+<li>Do: press <strong>Alt+Tab</strong>, then come back. Open the
+<strong>Window</strong> menu (Alt+W).</li>
+<li>Pass: Alt+Tab lists QuillLite <strong>once</strong> (this is
+expected – documents are inside one window). The Window menu lists
+<strong>1</strong> and <strong>2</strong>, each with its Alt+digit, and
+a mark on the one you are in.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<ul>
+<li>Note: if this surprises you, that is the trade the numbering buys,
+and it is written up in the user guide under “Documents are numbered”.
+Say so if it feels wrong in use – that is the feedback worth
+having.</li>
+</ul>
+<p><strong>L-06. Alt+2 goes straight to document 2</strong></p>
+<ul>
+<li>Do: from document 1, press <strong>Alt+2</strong>.</li>
+<li>Pass: focus is in document 2 and the reader announces its
+title.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-07. Ctrl+F6 and Ctrl+Tab both move</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+F6</strong>. Then <strong>Ctrl+Tab</strong>.
+Then <strong>Ctrl+Shift+Tab</strong>.</li>
+<li>Pass: each moves you to another document and announces it. Both keys
+work – neither is dead.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-08. Closing a document does not renumber the
+others</strong></p>
+<ul>
+<li>Do: with 1, 2 and 3 open, close document 2 (<strong>Ctrl+W</strong>
+in it).</li>
+<li>Pass: the Window menu still shows <strong>1</strong> and
+<strong>3</strong>. Document 3 did not become document 2.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-b--f1-everywhere-5-min">Block B – F1, everywhere (5
+min)</h2>
+<p><strong>L-09. F1 in the document says what the document is
+for</strong></p>
+<ul>
+<li>Do: put the cursor in the text and press <strong>F1</strong>.</li>
+<li>Pass: a help window opens, focus is in a text field you can arrow
+through, and it says both what <em>this window</em> is for and what the
+<em>document control</em> does – including that F6 reaches the status
+bar. <strong>Escape</strong> returns you to the text.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-10. F1 answers differently in the two modes</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Shift+M</strong> to switch to rich text
+(answer <strong>Yes</strong> if asked), then <strong>F1</strong> in the
+document.</li>
+<li>Pass: the answer now mentions bold, headings and Describe
+Formatting. It is not the plain-text answer.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-11. F1 on a control in a dialog</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+F</strong> to open Find. Tab to <strong>Match
+case</strong>. Press <strong>F1</strong>.</li>
+<li>Pass: you hear what the Find window is for <em>and</em> what that
+checkbox does.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-12. Every field in Preferences has a name</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+,</strong> then Tab through every control.</li>
+<li>Pass: each one announces a <strong>name</strong> – “New documents
+are”, “Theme”, “Copy unsaved work aside every, seconds”, “Editor font” –
+not just “combo box” or “edit”.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<ul>
+<li>This is the one that was broken in an early build. If any control
+announces only its type, that is a fail even if you can guess what it
+is.</li>
+</ul>
+<p><strong>L-13. Leaving Preferences says it once, or not at
+all</strong></p>
+<ul>
+<li>Do: from Preferences, press <strong>Escape</strong>. Then open it
+again and press <strong>Enter</strong>.</li>
+<li>Pass: on Escape you hear the document window again and
+<strong>no</strong> “exited Preferences dialog”. On Enter you hear
+<strong>“Preferences saved”</strong> once.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-c--the-status-bar-5-min">Block C – The status bar (5
+min)</h2>
+<p><strong>L-14. F6 lands in the status bar and names the
+region</strong></p>
+<ul>
+<li>Do: from the document, press <strong>F6</strong>.</li>
+<li>Pass: you hear <strong>“Status bar,”</strong> followed by a cell and
+its value.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-15. Arrows move between cells, and each announces
+itself</strong></p>
+<ul>
+<li>Do: press <strong>Right</strong> several times, then
+<strong>Left</strong>.</li>
+<li>Pass: each cell announces its name and its value – Position, Word
+Count, Character Count, Selection, Format, Heading, Encoding, Line
+Endings, Saved State. The region name is <strong>not</strong> repeated
+on every one.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-16. Home and End jump to the ends of the row</strong></p>
+<ul>
+<li>Do: press <strong>Home</strong>, then <strong>End</strong>.</li>
+<li>Pass: first cell, then last cell.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-17. Escape returns to the document</strong></p>
+<ul>
+<li>Do: press <strong>Escape</strong>.</li>
+<li>Pass: focus is back in the text, at the cursor you left.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-18. Enter on Position goes to a line</strong></p>
+<ul>
+<li>Do: <strong>F6</strong>, arrow to <strong>Position</strong>, press
+<strong>Enter</strong>.</li>
+<li>Pass: the Go to line window opens with the field focused and its
+number selected.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-19. The counts are right</strong></p>
+<ul>
+<li>Do: type exactly <code>one two three</code> in an empty document.
+<strong>F6</strong>, arrow to Word Count.</li>
+<li>Pass: <strong>3 words</strong>. Characters says
+<strong>13</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-20. The message cell brings back what was said</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+S</strong> and save somewhere. Then
+<strong>F6</strong> and read the first cell.</li>
+<li>Pass: it still says <strong>“Saved <filename>”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-d--files-come-back-unchanged-6-min">Block D – Files come
+back unchanged (6 min)</h2>
+<p>This block is the product. Take it slowly.</p>
+<p><strong>L-21. A Windows file stays a Windows file</strong></p>
+<ul>
+<li>Do: open your CRLF <code>.txt</code>. <strong>F6</strong>, read
+<strong>Line Endings</strong>. <strong>Escape</strong>,
+<strong>Ctrl+S</strong>, close, reopen.</li>
+<li>Pass: Line Endings says <strong>CRLF (Windows)</strong> both times,
+and the file’s size on disk is unchanged.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-22. A Unix file stays a Unix file</strong></p>
+<ul>
+<li>Do: the same with your LF <code>.txt</code>.</li>
+<li>Pass: <strong>LF (Unix…)</strong> both times, size unchanged. This
+is the one that matters – an editor that silently adds carriage returns
+will show up in somebody’s version control diff as “changed every
+line”.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-23. Encoding is reported and kept</strong></p>
+<ul>
+<li>Do: <strong>F6</strong>, read <strong>Encoding</strong> on a file
+you know is UTF-8.</li>
+<li>Pass: <strong>UTF-8</strong>, or <strong>UTF-8 with BOM</strong> if
+it has one. Not “Windows-1252”.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-24. Changing the line endings on purpose works</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+E</strong>. Tab to <strong>Line
+endings</strong>, choose the other one, <strong>Enter</strong>. Then
+<strong>Ctrl+S</strong>.</li>
+<li>Pass: you hear the change announced, the status bar cell updates,
+and the saved file really has the other line endings (check in another
+editor or with <code>file</code>).</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-25. Enter on the Encoding cell opens the same
+window</strong></p>
+<ul>
+<li>Do: <strong>F6</strong>, arrow to <strong>Encoding</strong>,
+<strong>Enter</strong>.</li>
+<li>Pass: the File format window opens.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-26. A file that does not end in a newline does not grow
+one</strong></p>
+<ul>
+<li>Do: open a file whose last line has no newline. Save it. Check the
+size.</li>
+<li>Pass: unchanged.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-e--rich-text-and-headings-8-min">Block E – Rich text and
+headings (8 min)</h2>
+<p><strong>L-27. Switching to rich text warns first</strong></p>
+<ul>
+<li>Do: in a plain document with text in it, press
+<strong>Ctrl+Shift+M</strong> twice (to rich, then back to plain).</li>
+<li>Pass: going <em>to plain</em> asks “Switching to plain text removes
+all formatting. Continue?” and the default button is <strong>No</strong>
+– pressing Enter does <strong>not</strong> discard the formatting.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-28. Bold announces its new state</strong></p>
+<ul>
+<li>Do: in rich text, select a word and press <strong>Ctrl+B</strong>,
+then <strong>Ctrl+B</strong> again.</li>
+<li>Pass: <strong>“Bold on”</strong> then <strong>“Bold off”</strong>.
+Not “Bold” both times.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-29. A heading is a heading</strong></p>
+<ul>
+<li>Do: type <code>Chapter One</code>, press
+<strong>Ctrl+Alt+1</strong>.</li>
+<li>Pass: you hear <strong>“Heading 1”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-30. Describe Formatting reports the heading, standing at
+its start</strong></p>
+<ul>
+<li>Do: press <strong>Home</strong> to go to the very start of that
+heading line, then <strong>Ctrl+Shift+D</strong>.</li>
+<li>Pass: you hear something like <strong>“Arial, 20 point, heading 1,
+bold”</strong>. It does <strong>not</strong> describe the paragraph
+above.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<ul>
+<li>This is the second bug PR #1490 found. If it describes the line
+above, the fix has regressed.</li>
+</ul>
+<p><strong>L-31. Headings can be navigated</strong></p>
+<ul>
+<li>Do: add a second heading further down (<strong>Ctrl+Alt+2</strong>).
+From the top, press <strong>Ctrl+Alt+H</strong>.</li>
+<li>Pass: the cursor moves and you hear <strong>“Heading 2: &lt;the
+heading’s text&gt;”</strong> – the level <em>and</em> the words.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-32. The headings list works from the keyboard</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+L</strong>.</li>
+<li>Pass: a list opens with both headings, focus is in the list,
+<strong>Enter</strong> goes to the chosen one, <strong>Escape</strong>
+cancels.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-33. A saved RTF reads as headings in Word</strong></p>
+<ul>
+<li>Do: save as <code>.rtf</code>. Open it in Word or WordPad.</li>
+<li>Pass: the headings are visibly bold and larger. (They are
+presentational, not Word styles – Word’s navigation pane may not list
+them. That is expected and is in the PRD.)</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-34. Bullets, justify and line spacing</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+L</strong>, then <strong>Ctrl+J</strong>,
+then <strong>Ctrl+2</strong>.</li>
+<li>Pass: each announces its outcome (“Bullets on”, “Justified”, “Double
+spacing”) and each visibly changes the paragraph.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-35. Grow and shrink step sensibly</strong></p>
+<ul>
+<li>Do: select a word, press <strong>Ctrl+Shift+&gt;</strong> three
+times, then <strong>Ctrl+Shift+&lt;</strong> three times.</li>
+<li>Pass: each press announces a point size, and the sizes are round
+numbers (12, 14, 16…), not 11.5 or 13.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-36. Dark mode never reaches the file</strong></p>
+<ul>
+<li>Do: with <strong>Dark Mode</strong> on (View menu), save an
+<code>.rtf</code>, then open it in WordPad.</li>
+<li>Pass: the text in WordPad is <strong>black on white</strong>, not
+light grey. If it is grey, the theme leaked into the document.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-f--selection-bookmarks-characters-6-min">Block F –
+Selection, bookmarks, characters (6 min)</h2>
+<p><strong>L-37. Select word, line, paragraph</strong></p>
+<ul>
+<li>Do: put the cursor mid-word. <strong>Ctrl+Shift+W</strong>, then
+<strong>Ctrl+Shift+E</strong>, then <strong>Ctrl+Shift+H</strong>.</li>
+<li>Pass: each selects the right thing and announces
+<strong>what</strong> it took and how many characters (“Selected word, 5
+characters”).</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-38. Expand grows outwards</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Shift+X</strong> four times in a row.</li>
+<li>Pass: the selection grows each time and the scope is named each time
+– word, line, sentence, paragraph… When it reaches the whole document it
+says so rather than going silent.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-39. A bookmark can be set and returned to</strong></p>
+<ul>
+<li>Do: partway down a long document press
+<strong>Ctrl+Shift+B</strong>. Move to the top
+(<strong>Ctrl+Home</strong>). Press <strong>F2</strong>.</li>
+<li>Pass: setting says <strong>“Bookmark 1 set: &lt;the line’s
+text&gt;”</strong>; F2 takes you back and says the same.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-40. Bookmarks move with the text</strong></p>
+<ul>
+<li>Do: with that bookmark set, go to the very top and type three lines
+of new text. Press <strong>F2</strong>.</li>
+<li>Pass: you land on the <strong>same line of text</strong> as before,
+not three lines above it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-41. The bookmark list can remove as well as go</strong></p>
+<ul>
+<li>Do: <strong>Alt+Shift+G</strong>. Arrow to a bookmark. Tab to
+<strong>Remove</strong>, press it.</li>
+<li>Pass: it is removed, you hear so, and the document is
+unchanged.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-42. Describe Character identifies an invisible</strong></p>
+<ul>
+<li>Do: type a normal space, put the cursor on it, press
+<strong>Ctrl+Shift+C</strong>. Then do the same on a letter.</li>
+<li>Pass: the space is named (“Space, U+0020…”), the letter is named.
+They are different answers.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-g--find-replace-tools-5-min">Block G – Find, replace,
+tools (5 min)</h2>
+<p><strong>L-43. Find wraps and says so</strong></p>
+<ul>
+<li>Do: in a document with one occurrence of a word, put the cursor
+after it and press <strong>Ctrl+F</strong>, type the word,
+<strong>Enter</strong>.</li>
+<li>Pass: it finds it <strong>and</strong> says <strong>“Wrapped to the
+start”</strong>. Without that, one match sounds identical to none.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-44. F3 keeps working after the Find window
+closes</strong></p>
+<ul>
+<li>Do: <strong>Escape</strong> out of Find, then press
+<strong>F3</strong> twice.</li>
+<li>Pass: it keeps moving between matches.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-45. Replace All counts</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+H</strong>, replace a common word, press
+<strong>Replace all</strong>.</li>
+<li>Pass: you hear <strong>“Replaced N occurrences”</strong> with a real
+number.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-46. Sorting is one undo step</strong></p>
+<ul>
+<li>Do: in a plain document with five unsorted lines, press
+<strong>Ctrl+Alt+S</strong>, then <strong>Ctrl+Z</strong> once.</li>
+<li>Pass: sorting announces how many lines; <strong>one</strong> Ctrl+Z
+puts them all back.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-47. Case conversion works on a selection</strong></p>
+<ul>
+<li>Do: select a sentence, press <strong>Ctrl+Shift+U</strong>, then
+<strong>Ctrl+Z</strong>, then <strong>Ctrl+Shift+G</strong>.</li>
+<li>Pass: uppercase, undone, then Title Case – and Title Case does
+<strong>not</strong> turn <code>don't</code> into
+<code>Don'T</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-h--the-clipboard-4-min">Block H – The clipboard (4
+min)</h2>
+<p><strong>L-48. Paste Text Only strips formatting</strong></p>
+<ul>
+<li>Do: copy some formatted text from a web page or Word. In a
+<strong>rich text</strong> QuillLite document press
+<strong>Ctrl+V</strong>, then undo, then
+<strong>Ctrl+Shift+V</strong>.</li>
+<li>Pass: Ctrl+V brings the formatting; Ctrl+Shift+V brings the words
+only, and says how many characters.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-49. The copy tray remembers across a restart</strong></p>
+<ul>
+<li>Do: select text, <strong>Ctrl+Alt+Y</strong>. Close QuillLite
+entirely. Reopen. Press <strong>Ctrl+Alt+V</strong>.</li>
+<li>Pass: the slot is still there, with a readable preview, and
+pastes.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-50. The collector gathers</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+G</strong> on three different selections, then
+<strong>Ctrl+Alt+Shift+G</strong>.</li>
+<li>Pass: each collect says how many pieces; the paste brings all three,
+in the order collected, with a divider between.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-51. The clip library fills by itself</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+Shift+M</strong>.</li>
+<li>Pass: things you copied earlier are listed, newest first, and one
+can be pasted with <strong>Enter</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2
+id="block-i--recovery-and-sessions-6-min-includes-a-deliberate-kill">Block
+I – Recovery and sessions (6 min, includes a deliberate kill)</h2>
+<p><strong>L-52. Unsaved work survives a kill</strong></p>
+<ul>
+<li>Do: type several paragraphs into a new document. Do
+<strong>not</strong> save. Wait 70 seconds (the copy is taken once a
+minute). Kill QuillLite from Task Manager. Reopen it.</li>
+<li>Pass: the text is back, in its own window, marked unsaved, and you
+hear <strong>“Recovered unsaved work from the last
+session”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-53. Saving clears the recovery copy</strong></p>
+<ul>
+<li>Do: save that recovered document, close QuillLite normally,
+reopen.</li>
+<li>Pass: nothing is offered back.
+<code>%LOCALAPPDATA%\QuillLite\recovery</code> is empty.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-54. Last session’s documents reopen</strong></p>
+<ul>
+<li>Do: open two saved files. Close QuillLite with
+<strong>Ctrl+Q</strong>. Reopen.</li>
+<li>Pass: both are back, numbered in the same order.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-55. Naming a file on the command line wins over the
+session</strong></p>
+<ul>
+<li>Do: close QuillLite. Open a <code>.txt</code> from Explorer.</li>
+<li>Pass: that file opens, and last session’s documents do
+<strong>not</strong> bury it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-56. Exit asks about each unsaved document and one Cancel
+stops the lot</strong></p>
+<ul>
+<li>Do: with two modified documents, press <strong>Ctrl+Q</strong> and
+<strong>Cancel</strong> the first prompt.</li>
+<li>Pass: nothing closes. Both documents are still there.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-j--turning-things-off-4-min">Block J – Turning things off
+(4 min)</h2>
+<p><strong>L-57. Unchecking rich text removes the whole Format
+menu</strong></p>
+<ul>
+<li>Do: <strong>View &gt; Customize Features</strong>, uncheck
+<strong>Rich text and the Format menu</strong>, Save.</li>
+<li>Pass: the Format menu is gone from the bar, and
+<strong>Ctrl+B</strong> now does nothing (rather than doing something
+invisible).</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-58. And it comes back</strong></p>
+<ul>
+<li>Do: check it again, Save.</li>
+<li>Pass: the Format menu returns and Ctrl+B works.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-59. Three things start switched off, and are
+findable</strong></p>
+<ul>
+<li>Do: open <strong>Customize Features</strong> on a fresh
+profile.</li>
+<li>Pass: <strong>Autocorrect while typing</strong>, <strong>Timestamped
+backups</strong> and <strong>Go To Anything</strong> are unchecked, each
+with a sentence saying why. Every checkbox announces its name and
+state.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-60. Autocorrect, once switched on, actually
+corrects</strong></p>
+<ul>
+<li>Do: switch on <strong>Autocorrect while typing</strong>, Save, then
+type <code>"quoted"</code> and <code>a--b</code>.</li>
+<li>Pass: curly quotes and an em dash.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-k--printing-and-the-palette-4-min">Block K – Printing and
+the palette (4 min)</h2>
+<p><strong>L-61. Ctrl+P reaches a printer</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+P</strong>.</li>
+<li>Pass: the Windows print dialog opens and is fully
+keyboard-navigable. Cancelling says nothing (cancelling is not a
+failure). Printing says <strong>“Printing <filename>”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-62. What comes out of the printer</strong></p>
+<ul>
+<li>Do: print a two-page plain document.</li>
+<li>Pass: the text is there, long lines are wrapped rather than cut off
+at the right edge, and each page has a footer with the filename and
+“Page N of M”.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<ul>
+<li>Rich formatting is <strong>expected</strong> not to print in 1.0 –
+headings come out marked <code>[H1]</code> rather than styled. That is
+documented, not a bug.</li>
+</ul>
+<p><strong>L-63. Page Setup is shared and sticks</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+U</strong>, change the paper size, OK. Open it
+again.</li>
+<li>Pass: it remembers, and so does a second document.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-64. The command palette finds a command by what it
+does</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Shift+P</strong>, type <code>sort</code>.</li>
+<li>Pass: the Sort Lines commands are listed <strong>with their keys
+beside them</strong>, each row announced as you arrow, and
+<strong>Enter</strong> runs the one you are on.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-65. Ctrl+F1 lists every key, and the list is
+readable</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+F1</strong>.</li>
+<li>Pass: focus is in a text field you can arrow through line by line,
+every menu is there with its keys, and <strong>Escape</strong> closes
+it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-l--the-things-that-must-never-happen-3-min">Block L – The
+things that must never happen (3 min)</h2>
+<p><strong>L-66. Nothing is announced twice</strong></p>
+<ul>
+<li>Do: use the app normally for two minutes – save, format, search,
+switch documents.</li>
+<li>Pass: you never hear the same sentence twice in a row, and you never
+hear QuillLite repeat a window title or control name your reader has
+just said.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-67. No key advertises something that does not
+happen</strong></p>
+<ul>
+<li>Do: open each menu and read the keys shown. Try five at random.</li>
+<li>Pass: every key shown does what its item says.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-68. Alt+letter reaches what it claims</strong></p>
+<ul>
+<li>Do: in each menu, press each item’s Alt letter.</li>
+<li>Pass: each <strong>presses</strong> the item. If a letter merely
+moves focus between two items, two items are claiming it – record which
+menu.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-69. Escape never traps you</strong></p>
+<ul>
+<li>Do: open every dialog in turn (Find, Replace, Go to line, Headings,
+Bookmarks, File format, Preferences, Customize Features, the palette,
+Keyboard Shortcuts, About) and press <strong>Escape</strong> in
+each.</li>
+<li>Pass: every one closes and returns focus to the document.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-70. QuillLite does not create a QUILL data
+folder</strong></p>
+<ul>
+<li>Do: on a machine (or profile) with no QUILL installed, run
+QuillLite, save a file, quit.</li>
+<li>Pass: <code>%APPDATA%\Quill</code> does <strong>not</strong> exist.
+Only <code>%LOCALAPPDATA%\QuillLite</code>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-71. Uninstalling leaves your work alone</strong></p>
+<ul>
+<li>Do: uninstall QuillLite.</li>
+<li>Pass: <code>%LOCALAPPDATA%\QuillLite</code> is still there, with
+settings and any recovery files.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-m--spelling-and-where-it-stays-quiet-6-min">Block M –
+Spelling, and where it stays quiet (6 min)</h2>
+<p>The last two steps are the ones this feature lives or dies by. A
+spell checker that talks in a config file gets switched off permanently,
+and a checker that is silently off cannot be told apart from a broken
+one.</p>
+<p><strong>L-72. F7 reviews the document</strong></p>
+<ul>
+<li>Do: type <code>This sentance has a mispelled word.</code> and press
+<strong>F7</strong>.</li>
+<li>Pass: the Spelling Review opens on <strong>sentance</strong>, offers
+suggestions you can arrow through, and the count reads two.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-73. Changing a word actually changes the
+document</strong></p>
+<ul>
+<li>Do: choose the correct spelling and activate
+<strong>Change</strong>.</li>
+<li>Pass: the review moves to <strong>mispelled</strong>, and Escape
+leaves the corrected word in the document.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-74. Shift+F7 handles the single word</strong></p>
+<ul>
+<li>Do: put the cursor inside a misspelled word and press
+<strong>Shift+F7</strong>.</li>
+<li>Pass: a suggestions list opens named for the word, Enter replaces
+it, and you hear <strong>“Replaced with …”</strong>.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-75. Ctrl+F7 selects the misspelling, not just the
+position</strong></p>
+<ul>
+<li>Do: from the top of the document, press
+<strong>Ctrl+F7</strong>.</li>
+<li>Pass: the reader reads the misspelled word because it is
+<em>selected</em>. Landing beside it silently is a fail – there would be
+nothing to hear.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-76. Alt+F7 teaches a word, and says where it
+went</strong></p>
+<ul>
+<li>Do: on a misspelling, press <strong>Alt+F7</strong>, then
+<strong>Ctrl+F7</strong> from the top again.</li>
+<li>Pass: you hear <strong>“Added … to your QuillLite
+dictionary”</strong> – naming <em>which</em> dictionary – and the taught
+word is no longer found.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-77. A code file is quiet, and says so once</strong></p>
+<ul>
+<li>Do: open or save a file as <strong>settings.json</strong>, type
+<code>{ "mispelled": 1 }</code> and pause.</li>
+<li>Pass: on opening you hear once that spell check while typing is off
+for this file type. Typing produces <strong>no</strong> misspelling
+messages at all. Any alert here is a fail.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-78. F7 still works in that same file</strong></p>
+<ul>
+<li>Do: with the JSON still open, press <strong>F7</strong>.</li>
+<li>Pass: the review runs normally. F7 is never gated by the file type –
+you asked for it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-79. The toggle is per document</strong></p>
+<ul>
+<li>Do: with a <code>.txt</code> and the <code>.json</code> both open,
+press <strong>Ctrl+Alt+F7</strong> in the JSON, then switch to the text
+document (<strong>Ctrl+F6</strong>) and open the
+<strong>Spelling</strong> menu.</li>
+<li>Pass: the JSON now checks; the text document’s <strong>Check While
+Typing</strong> mark is unchanged. One document’s answer must not move
+the other’s.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-80. A live misspelling does not interrupt your
+typing</strong></p>
+<ul>
+<li>Do: in a <code>.txt</code>, type a misspelled word and keep typing a
+full sentence.</li>
+<li>Pass: the misspelling appears in the <strong>Message</strong> cell
+(check with <strong>F6</strong>) and is <strong>not</strong> spoken over
+you. Speech here is a fail: you were mid-sentence.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-n--selecting-7-min">Block N – Selecting (7 min)</h2>
+<p>Every step here is about what you <em>hear</em>. A selection you
+cannot confirm is a selection you have to test by pressing something
+destructive.</p>
+<p><strong>L-81. F8 extends as you move</strong></p>
+<ul>
+<li>Do: put the cursor mid-paragraph, press <strong>F8</strong>, then
+press Right six times and Down twice.</li>
+<li>Pass: you hear that selection started, and the selection grows as
+you move.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-82. Shift+F8 finishes and says how much</strong></p>
+<ul>
+<li>Do: press <strong>Shift+F8</strong>.</li>
+<li>Pass: you hear a character count <strong>and</strong> a word count.
+A silent finish is a fail – the count is the only confirmation you
+get.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-83. Typing ends extend mode instead of
+extending</strong></p>
+<ul>
+<li>Do: press <strong>F8</strong>, move Right twice, then type a
+letter.</li>
+<li>Pass: the letter goes in and extend mode ends. It must not keep
+extending while you type.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-84. Ctrl+Shift+F8 gives a lost selection back</strong></p>
+<ul>
+<li>Do: select a paragraph (<strong>Ctrl+Shift+H</strong>), press Right
+to lose it, then press <strong>Ctrl+Shift+F8</strong>.</li>
+<li>Pass: the paragraph is selected again, and you hear the size.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-85. Expand and shrink walk both ways</strong></p>
+<ul>
+<li>Do: put the cursor in a word. Press <strong>Ctrl+Shift+X</strong>
+four times, then <strong>Ctrl+Alt+Shift+X</strong> four times.</li>
+<li>Pass: each press names the scope it took – word, line, sentence,
+paragraph – and shrinking walks back down. Shrink must
+<strong>not</strong> say “nothing to shrink” while something is plainly
+selected.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-86. Shrink works on a selection you did not expand
+into</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Shift+H</strong> to select the paragraph
+outright, then <strong>Ctrl+Alt+Shift+X</strong>.</li>
+<li>Pass: it shrinks to something smaller and names it. This is the case
+the old behaviour could not answer.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-87. Marks are not bookmarks</strong></p>
+<ul>
+<li>Do: press <strong>Ctrl+Alt+Shift+K</strong>, move to another line,
+press <strong>Ctrl+M</strong>.</li>
+<li>Pass: setting says which line and how many marks – <strong>“1
+mark”</strong>, not “1 marks” – and Ctrl+M returns you there.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-88. Say Selection reads back, and summarises when
+long</strong></p>
+<ul>
+<li>Do: select a short phrase and press <strong>Ctrl+Shift+Y</strong>.
+Then select several paragraphs and press it again.</li>
+<li>Pass: the short one is read out in full; the long one is summarised
+with a count and its beginning and end, not read out entirely.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-89. Turning the Select menu off leaves Select All
+alone</strong></p>
+<ul>
+<li>Do: <strong>View &gt; Customize Features</strong>, uncheck
+<strong>The Select menu</strong>, then check the Edit menu and press
+<strong>Ctrl+A</strong>.</li>
+<li>Pass: the Select menu is gone, F8 does nothing, and <strong>Ctrl+A
+still selects everything</strong>. Losing Select All here is a
+fail.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="sign-off">Sign-off</h2>
+<table>
+<tbody>
+<tr>
+<td>Build / version</td>
+<td></td>
+</tr>
+<tr>
+<td>Date</td>
+<td></td>
+</tr>
+<tr>
+<td>Screen reader and version</td>
+<td></td>
+</tr>
+<tr>
+<td>Windows version</td>
+<td></td>
+</tr>
+<tr>
+<td>Blocks run</td>
+<td></td>
+</tr>
+<tr>
+<td>Tests failed (numbers)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict:</strong> [ ] ship [ ] ship with findings [ ] do not
+ship</p>
+<p>Findings worth carrying into the release notes:</p>
+<pre><code></code></pre>
+</main>
+</body>
+</html>

@@ -5047,6 +5047,26 @@ Use **F7** (Spelling Review) when you want to work through a whole document or
 selection systematically; use **Alt+F7** when you just want to check the one
 word you are looking at right now.
 
+#### Spell check as you type stays quiet in code files
+
+When **spell check as you type** is on, QUILL watches for a misspelling as you
+finish each word. It deliberately says nothing in source and configuration
+files — `.py`, `.json`, `.js`, `.css`, `.ps1`, `.log`, `.yml` and the rest of
+the coding extensions — because every identifier, key and flag in one of those
+is a word no dictionary has. A live checker there is a wall of alerts that are
+all wrong, and each one costs an earcon and a status line to read past.
+
+Markdown is prose, so `.md` **is** checked; the fenced code blocks, inline code
+spans, URLs and email addresses inside it are skipped instead, which is the
+right granularity for a file that is mostly writing.
+
+The setting is **`spellcheck_skip_code_files`**, on by default. Turn it off if
+you want the live check to run everywhere regardless of file type.
+
+**F7 is never affected by this.** The guided review checks whatever document you
+run it on, including a source file: skipping is a decision about what to do when
+you have not said anything, and pressing F7 is saying something.
+
 #### Ranked spelling (Ctrl+Shift+L) — misspellings sorted by frequency
 
 **Ctrl+Shift+L** opens the misspelling list in a different order than the regular

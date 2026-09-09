@@ -1,0 +1,21 @@
+{
+  "quill/apps/lite_dialogs.py::FindDialog.__init__::wx.Button": "helped",
+  "quill/apps/lite_dialogs.py::FindDialog.__init__::wx.Button#2": "helped",
+  "quill/apps/lite_dialogs.py::FindDialog.__init__::wx.Button#3": "helped",
+  "quill/apps/lite_dialogs.py::ReplaceDialog.__init__::wx.Button": "helped",
+  "quill/apps/lite_dialogs.py::ReplaceDialog.__init__::wx.Button#2": "helped",
+  "quill/apps/lite_dialogs.py::ReplaceDialog.__init__::wx.Button#3": "helped",
+  "quill/apps/lite_dialogs.py::ReplaceDialog.__init__::wx.Button#4": "helped",
+  "quill/apps/lite_dialogs.py::_labelled_text::wx.TextCtrl": "helped",
+  "quill/apps/lite_dialogs.py::choose_from_rows::wx.Button": "helped",
+  "quill/apps/lite_dialogs.py::choose_from_rows::wx.ListBox": "helped",
+  "quill/apps/lite_dialogs.py::edit_file_format::wx.Choice": "helped",
+  "quill/apps/lite_dialogs.py::edit_file_format::wx.Choice#2": "helped",
+  "quill/apps/lite_dialogs.py::show_text_window::wx.Button": "helped",
+  "quill/apps/lite_preferences.py::edit_preferences::wx.Button": "helped",
+  "quill/apps/lite_preferences.py::edit_preferences::wx.Choice": "helped",
+  "quill/apps/lite_preferences.py::edit_preferences::wx.Choice#2": "helped",
+  "quill/apps/lite_preferences.py::edit_preferences::wx.SpinCtrl": "helped",
+  "quill/apps/lite_preferences.py::edit_preferences::wx.TextCtrl": "helped",
+  "quill/apps/lite_window_status.py::DocumentStatusMixin._init_status_bar::wx.Button": "helped"
+}

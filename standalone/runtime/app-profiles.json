@@ -171,6 +171,24 @@
         "Text expansion. No media, no documents."
       ]
     },
+    "quilllite": {
+      "name": "QuillLite",
+      "entry": "quill/apps/lite.py",
+      "standalone": "standalone/quilllite",
+      "components": [],
+      "optional_components": [],
+      "layers": [],
+      "notes": [
+        "The editor-only sibling: one document per window, plain text or rich",
+        "text, and nothing else. No media, so neither ffmpeg nor libmpv.",
+        "It declares no layers, and that is worth stating rather than assuming:",
+        "QuillLite reads .txt and .rtf only -- plain text is bytes, and RTF goes",
+        "straight to the native control through the Text Object Model -- so it",
+        "reaches neither the documents layer nor the spellcheck layer even",
+        "though it is an editor. That is the whole reason it can be a small",
+        "product while QUILL cannot."
+      ]
+    },
     "converter": {
       "name": "Quill Converter",
       "entry": "quill/apps/converter.py",

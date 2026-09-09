@@ -148,6 +148,18 @@ PRODUCTS: dict[str, Product] = {
         icon_dir="social",
         icon_name="quill-social",
     ),
+    # QuillLite: the editor-only sibling. Its module is quill.apps.lite and its
+    # version comes from quill/core/lite/__init__.py rather than a quill/apps
+    # module, so version_from is left empty and the version is passed by the
+    # build script -- see the note on version_from above.
+    "quilllite": Product(
+        key="quilllite",
+        name="QuillLite",
+        display="QuillLite",
+        module="quill.apps.lite",
+        icon_dir="quilllite",
+        icon_name="quill-lite",
+    ),
     # Main QUILL: the launcher sits at the portable bundle root as quill.exe,
     # which is also the name storage_mode's portable detection looks for.
     "quill": Product(

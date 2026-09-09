@@ -218,6 +218,7 @@ Selection that grows by structure rather than by character, marks you can return
    - You should hear: What is now selected, and how much of it.
 
 2. **Select exactly one paragraph or block.** Select Paragraph and Select Block take the unit you mean in one keystroke. Say Selected reads back what you have, which is the check worth making before a destructive edit.
+   - Keys: Ctrl+Alt+Shift+P
    - You should hear: The paragraph, then its size.
 
 3. **Drop a mark and come back to it.** Set Mark remembers where you are; Exchange Point and Mark jumps between the mark and the cursor, which is how you select across a long distance without holding anything down. Named marks survive for as long as you want them.

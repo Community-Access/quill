@@ -46,6 +46,17 @@ APP_MENU_FILES = (
     "weather.py",
     "converter.py",
     "beacon/app.py",
+    # QuillLite builds its bar by walking a table, so every label here is an
+    # f-string the source-level scan cannot read. The table itself is checked
+    # far more strictly instead (tests/unit/core/lite/test_lite_commands.py):
+    # every item has a key, no key or access key is claimed twice, and every
+    # key is one wx.AcceleratorEntry can actually parse. This entry exists so
+    # the coverage test below sees the file rather than reporting it as an app
+    # that escaped the gate.
+    "lite_window_menus.py",
+    # The MDI shell's own two-item bar, shown only when no document is open.
+    # Literal labels, so the scan reads these ones directly.
+    "lite_shell.py",
 )
 
 _APPEND_KINDS = ("Append", "AppendCheckItem", "AppendRadioItem")

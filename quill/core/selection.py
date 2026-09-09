@@ -137,6 +137,41 @@ def expand_selection(text: str, start: int, end: int) -> tuple[int, int, str] | 
     return None
 
 
+def shrink_selection(text: str, start: int, end: int) -> tuple[int, int, str] | None:
+    """Return the next-*smaller* structural span inside the current selection.
+
+    The computed inverse of :func:`expand_selection`: it walks the same ladder
+    from the outside in and returns the first level strictly smaller than what
+    is selected now, as ``(new_start, new_end, scope_label)``. ``None`` when the
+    selection is already a single word or is empty -- there is nothing smaller
+    to go to that is still a structure.
+
+    Computed rather than remembered, and that is the point. Undoing an
+    expansion from a stack works only if you arrived by expanding: select a
+    paragraph outright and ask to shrink, and a stack has nothing to say, even
+    though "the line the cursor is on" is an obvious and useful answer. A
+    listener who cannot see the highlight has no way to tell those two
+    situations apart, so "nothing to shrink" reads as a bug rather than as a
+    boundary.
+
+    Anchored on ``start`` so repeated shrinking converges on the beginning of
+    the selection rather than wandering.
+    """
+    length = len(text)
+    start = max(0, min(start, length))
+    end = max(0, min(end, length))
+    if start > end:
+        start, end = end, start
+    if end <= start:
+        return None
+    current = end - start
+    for label, span_fn in reversed(_EXPANSION_LEVELS):
+        span_start, span_end = span_fn(text, start)  # type: ignore[operator]
+        if (span_end - span_start) < current and span_end > span_start:
+            return span_start, span_end, label
+    return None
+
+
 def selection_scope(text: str, start: int, end: int) -> str:
     """Classify the current selection by its structural scope.
 

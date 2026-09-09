@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill User Guide</title>
   <style>
@@ -25204,6 +25204,29 @@ one and you are back to typing.</li>
 through a whole document or selection systematically; use
 <strong>Alt+F7</strong> when you just want to check the one word you are
 looking at right now.</p>
+<h4 id="spell-check-as-you-type-stays-quiet-in-code-files">Spell check
+as you type stays quiet in code files</h4>
+<p>When <strong>spell check as you type</strong> is on, QUILL watches
+for a misspelling as you finish each word. It deliberately says nothing
+in source and configuration files — <code>.py</code>,
+<code>.json</code>, <code>.js</code>, <code>.css</code>,
+<code>.ps1</code>, <code>.log</code>, <code>.yml</code> and the rest of
+the coding extensions — because every identifier, key and flag in one of
+those is a word no dictionary has. A live checker there is a wall of
+alerts that are all wrong, and each one costs an earcon and a status
+line to read past.</p>
+<p>Markdown is prose, so <code>.md</code> <strong>is</strong> checked;
+the fenced code blocks, inline code spans, URLs and email addresses
+inside it are skipped instead, which is the right granularity for a file
+that is mostly writing.</p>
+<p>The setting is
+<strong><code>spellcheck_skip_code_files</code></strong>, on by default.
+Turn it off if you want the live check to run everywhere regardless of
+file type.</p>
+<p><strong>F7 is never affected by this.</strong> The guided review
+checks whatever document you run it on, including a source file:
+skipping is a decision about what to do when you have not said anything,
+and pressing F7 is saying something.</p>
 <h4
 id="ranked-spelling-ctrlshiftl--misspellings-sorted-by-frequency">Ranked
 spelling (Ctrl+Shift+L) — misspellings sorted by frequency</h4>
