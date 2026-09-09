@@ -34,6 +34,7 @@ from datetime import UTC, datetime
 from quill.core.podcasts import settings_catalog
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.models_episode import PodcastEpisode
+from quill.core.podcasts.models_queue import coerce_int
 from quill.core.podcasts.settings_defs_show import (
     BACKFILL_ALL,
     BACKFILL_MONTHS,
@@ -48,6 +49,7 @@ from quill.core.podcasts.settings_defs_show import (
 )
 from quill.core.podcasts.settings_resolver import value_of
 from quill.core.podcasts.subscriptions import PodcastLibrary
+from quill.core.podcasts.title_cleanup import TitleRule
 
 
 def setting(library: PodcastLibrary, show: PodcastShow | None, setting_id: str) -> object:
@@ -96,7 +98,7 @@ def backfill_episodes(
     briefing and to a four-hundred-episode series are opposite acts.
     """
     mode = str(setting(library, show, "backfill_mode") or "")
-    count = int(setting(library, show, "backfill_count") or 0)  # type: ignore[arg-type]
+    count = coerce_int(setting(library, show, "backfill_count"), 0)
     if mode == BACKFILL_ALL:
         return list(episodes)
     ordered = sorted(episodes, key=lambda e: (e.published, e.title), reverse=True)
@@ -128,7 +130,7 @@ def _moment(published: str) -> datetime:
 # -- 7.3 / 7.4: how this podcast reads ---------------------------------------
 
 
-def title_rules(library: PodcastLibrary, show: PodcastShow):
+def title_rules(library: PodcastLibrary, show: PodcastShow) -> tuple[TitleRule, ...]:
     """This podcast's title-tidying rules, made safe."""
     from quill.core.podcasts.title_cleanup import rules_from_stored
 
@@ -201,17 +203,17 @@ def announce_budget(library: PodcastLibrary) -> int:
     into the shared summary rather than dropped -- nothing is lost, it is said
     once instead of twenty times.
     """
-    return int(setting(library, None, "announce_max_per_hour") or 0)  # type: ignore[arg-type]
+    return coerce_int(setting(library, None, "announce_max_per_hour"), 0)
 
 
 def quiet_feed_weeks(library: PodcastLibrary, show: PodcastShow) -> int:
     """Say something if this podcast publishes nothing for this many weeks."""
-    return int(setting(library, show, "quiet_feed_weeks") or 0)  # type: ignore[arg-type]
+    return coerce_int(setting(library, show, "quiet_feed_weeks"), 0)
 
 
 def failed_check_notice(library: PodcastLibrary, show: PodcastShow) -> int:
     """Say something after this many consecutive failed checks; 0 = never."""
-    return int(setting(library, show, "failed_check_notice") or 0)  # type: ignore[arg-type]
+    return coerce_int(setting(library, show, "failed_check_notice"), 0)
 
 
 def earcon(library: PodcastLibrary, show: PodcastShow) -> str:
@@ -226,8 +228,8 @@ def earcon(library: PodcastLibrary, show: PodcastShow) -> str:
 
 def download_window(library: PodcastLibrary, show: PodcastShow) -> tuple[int, int]:
     """``(start hour, end hour)``; equal hours mean there is no window."""
-    start = int(setting(library, show, "download_window_start") or 0)  # type: ignore[arg-type]
-    end = int(setting(library, show, "download_window_end") or 0)  # type: ignore[arg-type]
+    start = coerce_int(setting(library, show, "download_window_start"), 0)
+    end = coerce_int(setting(library, show, "download_window_end"), 0)
     return start, end
 
 
@@ -315,7 +317,7 @@ def is_pinned(library: PodcastLibrary, show: PodcastShow) -> bool:
 
 def storage_budget_mb(library: PodcastLibrary, show: PodcastShow) -> int:
     """How much disk this podcast's downloads may take; 0 = no budget."""
-    return int(setting(library, show, "storage_budget_mb") or 0)  # type: ignore[arg-type]
+    return coerce_int(setting(library, show, "storage_budget_mb"), 0)
 
 
 def preferred_variant(library: PodcastLibrary, show: PodcastShow) -> str:
@@ -366,7 +368,7 @@ def catalog_view_limit(library: PodcastLibrary, show: PodcastShow) -> int:
     feature set that destroys something. Raising the limit brings them all
     back, because they never went anywhere.
     """
-    return int(setting(library, show, "catalog_view_limit") or 0)  # type: ignore[arg-type]
+    return coerce_int(setting(library, show, "catalog_view_limit"), 0)
 
 
 def visible_episodes(
@@ -417,7 +419,7 @@ def smart_speed_level(library: PodcastLibrary, show: PodcastShow) -> str:
 
 def sleep_timer_minutes(library: PodcastLibrary, show: PodcastShow) -> int:
     """What the sleep timer offers while this podcast plays; 0 = the shared one."""
-    return int(setting(library, show, "sleep_timer_minutes") or 0)  # type: ignore[arg-type]
+    return coerce_int(setting(library, show, "sleep_timer_minutes"), 0)
 
 
 # -- 7.16 / 7.17: curation ---------------------------------------------------

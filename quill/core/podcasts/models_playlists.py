@@ -44,6 +44,19 @@ PLAYLIST_NOTE_MODES = ("any", "has_note", "no_note")
 PLAYLIST_PROGRESS_MODES = ("any", "unstarted", "started", "finished")
 
 
+def _string_list(value: object) -> list[str]:
+    """Stored labels, made safe: anything that is not a list reads as none.
+
+    Narrowed once here rather than tested inside the comprehension it used to
+    live in, where ``data.get("labels")`` was fetched twice -- once to iterate
+    and once to check it was a list -- and the iteration therefore happened
+    before the check that made it safe.
+    """
+    if not isinstance(value, list):
+        return []
+    return [str(name).strip() for name in value if str(name).strip()]
+
+
 def _one_of(value: object, allowed: tuple[str, ...], default: str) -> str:
     """A stored string, or the default when this build does not know it.
 
@@ -127,11 +140,7 @@ class PlaylistRules:
             text_contains=str(data.get("text_contains", "")),
             progress=_one_of(data.get("progress"), PLAYLIST_PROGRESS_MODES, "any"),
             item_limit=max(0, coerce_int(data.get("item_limit"), 0)),
-            labels=[
-                str(name).strip()
-                for name in (data.get("labels") or [])
-                if isinstance(data.get("labels"), list) and str(name).strip()
-            ],
+            labels=_string_list(data.get("labels")),
         )
 
 

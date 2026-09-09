@@ -21,6 +21,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.core.podcasts import settings_help
+from quill.core.podcasts.models_queue import coerce_int
 from quill.core.podcasts.settings_types import (
     CATEGORY_PLAYBACK,
     KIND_CHOICE,
@@ -44,7 +45,7 @@ def _seconds(noun: str) -> Callable[[object], str]:
     """ "Skip forward: 30 seconds", and "off" rather than "0 seconds"."""
 
     def describe(value: object) -> str:
-        count = int(value)  # type: ignore[arg-type]
+        count = coerce_int(value, 0)
         if count <= 0:
             return f"{noun}: off."
         return f"{noun}: {count} second{'' if count == 1 else 's'}."

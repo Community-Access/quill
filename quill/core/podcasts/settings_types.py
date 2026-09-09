@@ -186,16 +186,18 @@ class SettingDef:
             return bool(value)
         if self.kind == KIND_INT:
             try:
-                number = int(float(value))  # type: ignore[arg-type]
+                whole = int(float(value))  # type: ignore[arg-type]
             except (TypeError, ValueError):
                 return self.default
-            return self._clamp(number)
+            return self._clamp(whole)
         if self.kind == KIND_FLOAT:
+            # A separate name from the int branch above: one `number` bound to
+            # both an int and a float is a genuine conflict, not a nuisance.
             try:
-                number = float(value)  # type: ignore[arg-type]
+                fractional = float(value)  # type: ignore[arg-type]
             except (TypeError, ValueError):
                 return self.default
-            return self._clamp(number)
+            return self._clamp(fractional)
         if self.kind == KIND_CHOICE:
             allowed = {choice.value for choice in self.choices}
             return value if value in allowed else self.default

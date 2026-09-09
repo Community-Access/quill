@@ -22,7 +22,10 @@ wx-free, strict-typed, pure data.
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from quill.core.podcasts import settings_help
+from quill.core.podcasts.models_queue import coerce_int
 from quill.core.podcasts.settings_types import (
     CATEGORY_ANNOUNCEMENTS,
     CATEGORY_ARRIVAL,
@@ -41,17 +44,17 @@ from quill.core.podcasts.settings_types import (
 def _keep(value: object) -> str:
     from quill.core.podcasts.single_settings import describe_keep
 
-    return describe_keep(int(value))  # type: ignore[arg-type]
+    return describe_keep(coerce_int(value, 0))
 
 
 def _queue_age(value: object) -> str:
     from quill.core.podcasts.single_settings import describe_queue_age
 
-    return describe_queue_age(int(value))  # type: ignore[arg-type]
+    return describe_queue_age(coerce_int(value, 0))
 
 
 def _download_count(value: object) -> str:
-    count = int(value)  # type: ignore[arg-type]
+    count = coerce_int(value, 0)
     if count < 0:
         return "Downloading every episode the feed still offers."
     if count == 0:
@@ -59,9 +62,9 @@ def _download_count(value: object) -> str:
     return f"Downloading the {count} newest episode{'' if count == 1 else 's'} automatically."
 
 
-def _days(noun: str, never: str):
+def _days(noun: str, never: str) -> Callable[[object], str]:
     def describe(value: object) -> str:
-        days = int(value)  # type: ignore[arg-type]
+        days = coerce_int(value, 0)
         if days <= 0:
             return never
         return f"{noun} after {days} day{'' if days == 1 else 's'}."
@@ -136,8 +139,8 @@ SETTINGS: tuple[SettingDef, ...] = (
         aliases=("refresh", "cadence", "interval", "check", "poll"),
         describe=lambda value: (
             "Feeds are only checked when you ask."
-            if int(value) <= 0  # type: ignore[arg-type]
-            else f"Checking feeds every {int(value)} minutes."  # type: ignore[arg-type]
+            if coerce_int(value, 0) <= 0
+            else f"Checking feeds every {coerce_int(value, 0)} minutes."
         ),
     ),
     define(
@@ -494,11 +497,11 @@ SETTINGS: tuple[SettingDef, ...] = (
         aliases=("history", "privacy", "forget"),
         describe=lambda value: (
             "No listening history is kept at all."
-            if int(value) < 0  # type: ignore[arg-type]
+            if coerce_int(value, 0) < 0
             else (
                 "Listening history is kept forever."
-                if int(value) == 0  # type: ignore[arg-type]
-                else f"Listening history is kept for {int(value)} days."  # type: ignore[arg-type]
+                if coerce_int(value, 0) == 0
+                else f"Listening history is kept for {coerce_int(value, 0)} days."
             )
         ),
     ),

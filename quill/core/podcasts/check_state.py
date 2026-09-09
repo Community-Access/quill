@@ -35,6 +35,7 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 
 from quill.core.podcasts.models import PodcastShow
+from quill.core.podcasts.models_queue import coerce_int
 from quill.core.podcasts.subscriptions import PodcastLibrary
 
 _CHECKED = "checked"
@@ -107,19 +108,15 @@ def record_failure(
     """A check failed; returns the length of the run it is part of."""
     state = _state(library, show)
     state[_CHECKED] = (now or datetime.now(UTC)).isoformat()
-    try:
-        failures = int(state.get(_FAILURES, 0)) + 1  # type: ignore[arg-type]
-    except (TypeError, ValueError):
-        failures = 1
+    # coerce_int already answers 0 for a stored value that is not a number, so
+    # a hand-edited state file cannot stop a podcast being checked.
+    failures = coerce_int(state.get(_FAILURES, 0), 0) + 1
     state[_FAILURES] = failures
     return failures
 
 
 def failure_run(library: PodcastLibrary, show: PodcastShow) -> int:
-    try:
-        return max(0, int(_state(library, show).get(_FAILURES, 0)))  # type: ignore[arg-type]
-    except (TypeError, ValueError):
-        return 0
+    return max(0, coerce_int(_state(library, show).get(_FAILURES, 0), 0))
 
 
 def last_published(library: PodcastLibrary, show: PodcastShow) -> datetime | None:

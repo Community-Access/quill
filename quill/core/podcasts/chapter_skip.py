@@ -113,9 +113,13 @@ def patterned_skips(library: object, show: object, chapters: list[PodcastChapter
     machinery, the loop guard and the "your choices clear when you restart"
     promise are all unchanged, and nothing is removed from the episode.
     """
+    from quill.core.podcasts.models import PodcastShow
     from quill.core.podcasts.show_policy import skips_chapter
+    from quill.core.podcasts.subscriptions import PodcastLibrary
 
-    if library is None or show is None:
+    # `object` in the signature because a caller may hold neither; narrowed
+    # here so the None guard and the type guard are the same check.
+    if not isinstance(library, PodcastLibrary) or not isinstance(show, PodcastShow):
         return set()
     return {
         index
