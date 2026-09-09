@@ -1079,7 +1079,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QuillLite
 
-Control coverage: 19 audited sites (19 helped).
+Control coverage: 20 audited sites (20 helped).
 
 ### Every window, and what it is for
 
@@ -1132,14 +1132,17 @@ Control coverage: 19 audited sites (19 helped).
 - `encoding_choice`: How characters are stored. UTF-8 is the right answer for anything new. UTF-8 with BOM is what Windows tools often expect. Windows-1252 is the old Western European encoding a lot of existing .txt files are in.
 - `newline_choice`: CRLF is what Windows programs write. LF is what Unix, macOS and most build tools expect. QuillLite writes back whichever the file arrived with unless you change it here.
 - `close_btn`: Close this window and go back to your document.
-#### FindDialog (`quill/apps/lite_dialogs.py`)
+#### (module level) (`quill/apps/lite_find_dialogs.py`)
+
+- `choice`: How the text you typed is read: as itself, as backslash escapes, or as a regular expression.
+#### FindDialog (`quill/apps/lite_find_dialogs.py`)
 
 - `self.match_case`: When checked, Cat and cat are different words.
 - `self.whole_word`: When checked, cat does not match catalogue -- only the word on its own.
 - `self.next_btn`: Find the next match after the cursor, wrapping at the end.
 - `self.prev_btn`: Find the previous match, wrapping at the start.
 - `close_btn`: Close this window. The search you typed is remembered for F3.
-#### ReplaceDialog (`quill/apps/lite_dialogs.py`)
+#### ReplaceDialog (`quill/apps/lite_find_dialogs.py`)
 
 - `self.match_case`: When checked, Cat and cat are different words.
 - `self.whole_word`: When checked, cat does not match catalogue -- only the word on its own.

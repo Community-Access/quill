@@ -390,6 +390,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # (Windows reserves it as the secure attention sequence), and bare Ctrl+Alt+
     # is barred by §10.8 as screen-reader-hostile, so every chord here carries
     # Shift as well.
+    # How many, before you commit to a Replace All. Find All Matches already
+    # had Ctrl+Shift+F3; its cheaper sibling had no key, which left "is this
+    # search safe to replace?" answerable only by opening a list.
+    "power.count_occurrences": "Ctrl+Alt+Shift+F3",
     "power.delete_to_line_start": "Ctrl+Shift+Backspace",
     "power.delete_to_line_end": "Ctrl+Alt+Shift+Delete",
     "power.delete_paragraph": "Ctrl+Alt+Shift+Backspace",

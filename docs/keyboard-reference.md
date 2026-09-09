@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 351.
+Editor commands with default bindings: 352.
 
 ## The QUILL editor
 
@@ -382,6 +382,7 @@ Editor commands with default bindings: 351.
 | Ctrl+Alt+Shift+9 | Play favorite 9 | `radio.play_favorite_9` |
 | Ctrl+Alt+Shift+Backspace | Delete paragraph | `power.delete_paragraph` |
 | Ctrl+Alt+Shift+Delete | Delete to line end | `power.delete_to_line_end` |
+| Ctrl+Alt+Shift+F3 | Count occurrences | `power.count_occurrences` |
 | Ctrl+Alt+Up | Table: Cell Above | `table.cell_above` |
 | Ctrl+E | Sound Enhancements... | `media.sound_enhancements` |
 | Ctrl+Shift+Backspace | Delete to line start | `power.delete_to_line_start` |

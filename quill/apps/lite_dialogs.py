@@ -1,4 +1,4 @@
-"""QuillLite's small windows: find, replace, go to line, headings, help, about.
+"""QuillLite's small windows: go to line, headings, bookmarks, file format, about.
 
 Six surfaces, each one screen, each built to QUILL's own dialog contract rather
 than to a private convention:
@@ -29,7 +29,6 @@ these own the screen.
 
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import Any
 
 import wx
@@ -44,13 +43,11 @@ from quill.ui.dialog_contract import (
 )
 
 __all__ = [
-    "FindDialog",
+    "ask_line_number",
     "choose_bookmark",
     "choose_from_rows",
-    "edit_file_format",
-    "ReplaceDialog",
-    "ask_line_number",
     "choose_heading",
+    "edit_file_format",
     "show_text_window",
 ]
 
@@ -108,158 +105,6 @@ def _labelled_text(
     sizer.Add(static, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
     sizer.Add(field, 1 if multiline else 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
     return field
-
-
-class FindDialog(wx.Dialog):
-    """Modeless find. Enter finds next, Shift+Enter finds previous.
-
-    Modeless because finding is something you do *while* reading: a modal find
-    would make every other match a matter of reopening the dialog. The window
-    owns the search itself and is called back with the options, so Find Next
-    from the menu and Find Next from here run the identical code.
-    """
-
-    def __init__(
-        self,
-        parent: wx.Window,
-        initial: str,
-        on_find: Callable[[dict[str, Any], bool], object],
-    ) -> None:
-        super().__init__(parent, title="Find", style=wx.DEFAULT_DIALOG_STYLE)
-        self._on_find = on_find
-        root = wx.BoxSizer(wx.VERTICAL)
-        self.text = _labelled_text(
-            self,
-            root,
-            "Find &what:",
-            initial,
-            help_text="The text to look for. Enter finds the next one, Shift Enter the previous.",
-        )
-        self.match_case = wx.CheckBox(self, label="Match &case")
-        self.match_case.SetHelpText("When checked, Cat and cat are different words.")
-        self.whole_word = wx.CheckBox(self, label="Whole wor&d only")
-        self.whole_word.SetHelpText(
-            "When checked, cat does not match catalogue -- only the word on its own."
-        )
-        root.Add(self.match_case, 0, wx.LEFT | wx.RIGHT, _PAD)
-        root.Add(self.whole_word, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
-
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        self.next_btn = wx.Button(self, wx.ID_OK, "Find &next")
-        self.next_btn.SetHelpText("Find the next match after the cursor, wrapping at the end.")
-        self.prev_btn = wx.Button(self, label="Find &previous")
-        self.prev_btn.SetHelpText("Find the previous match, wrapping at the start.")
-        close_btn = wx.Button(self, wx.ID_CANCEL, "Close")
-        close_btn.SetHelpText("Close this window. The search you typed is remembered for F3.")
-        for button in (self.next_btn, self.prev_btn):
-            buttons.Add(button, 0, wx.RIGHT, _PAD)
-        buttons.Add(close_btn, 0)
-        root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
-
-        self.SetSizerAndFit(root)
-        apply_modal_ids(
-            self,
-            affirmative_id=wx.ID_OK,
-            affirmative_label="Find next",
-            cancel_id=wx.ID_CANCEL,
-            cancel_label="Close",
-        )
-        self.next_btn.Bind(wx.EVT_BUTTON, lambda _event: self._find(False))
-        self.prev_btn.Bind(wx.EVT_BUTTON, lambda _event: self._find(True))
-        bind_close_button(self, close_btn, modeless=True)
-        self.Bind(wx.EVT_CLOSE, lambda _event: self.Destroy())
-        self.text.Bind(wx.EVT_KEY_DOWN, self._on_key)
-        self.text.SetFocus()
-        self.text.SelectAll()
-
-    def _on_key(self, event: wx.KeyEvent) -> None:
-        if event.GetKeyCode() == wx.WXK_RETURN and event.ShiftDown():
-            self._find(True)
-            return
-        if event.GetKeyCode() == wx.WXK_ESCAPE:
-            self.Close()
-            return
-        event.Skip()
-
-    def options(self) -> dict[str, Any]:
-        return {
-            "needle": self.text.GetValue(),
-            "match_case": self.match_case.GetValue(),
-            "whole_word": self.whole_word.GetValue(),
-        }
-
-    def _find(self, reverse: bool) -> None:
-        self._on_find(self.options(), reverse)
-
-
-class ReplaceDialog(wx.Dialog):
-    """Modeless replace: find, replace one, or replace every one."""
-
-    def __init__(
-        self,
-        parent: wx.Window,
-        initial: str,
-        on_find: Callable[[dict[str, Any], bool], object],
-        on_replace: Callable[[dict[str, Any]], object],
-        on_replace_all: Callable[[dict[str, Any]], object],
-    ) -> None:
-        super().__init__(parent, title="Replace", style=wx.DEFAULT_DIALOG_STYLE)
-        root = wx.BoxSizer(wx.VERTICAL)
-        self.text = _labelled_text(
-            self, root, "Find &what:", initial, help_text="The text to look for."
-        )
-        self.replacement = _labelled_text(
-            self,
-            root,
-            "Replace w&ith:",
-            help_text="What each match becomes. Leave it empty to delete the matches.",
-        )
-        self.match_case = wx.CheckBox(self, label="Match &case")
-        self.match_case.SetHelpText("When checked, Cat and cat are different words.")
-        self.whole_word = wx.CheckBox(self, label="Whole wor&d only")
-        self.whole_word.SetHelpText(
-            "When checked, cat does not match catalogue -- only the word on its own."
-        )
-        root.Add(self.match_case, 0, wx.LEFT | wx.RIGHT, _PAD)
-        root.Add(self.whole_word, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
-
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        find_btn = wx.Button(self, wx.ID_OK, "Find &next")
-        find_btn.SetHelpText("Move to the next match without changing anything.")
-        replace_btn = wx.Button(self, label="&Replace")
-        replace_btn.SetHelpText("Replace the match you are on, then move to the next one.")
-        all_btn = wx.Button(self, label="Replace &all")
-        all_btn.SetHelpText("Replace every match in the document and say how many were changed.")
-        close_btn = wx.Button(self, wx.ID_CANCEL, "Close")
-        close_btn.SetHelpText("Close this window. Nothing you have already replaced is undone.")
-        for button in (find_btn, replace_btn, all_btn):
-            buttons.Add(button, 0, wx.RIGHT, _PAD)
-        buttons.Add(close_btn, 0)
-        root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
-
-        self.SetSizerAndFit(root)
-        apply_modal_ids(
-            self,
-            affirmative_id=wx.ID_OK,
-            affirmative_label="Find next",
-            cancel_id=wx.ID_CANCEL,
-            cancel_label="Close",
-        )
-        find_btn.Bind(wx.EVT_BUTTON, lambda _event: on_find(self.options(), False))
-        replace_btn.Bind(wx.EVT_BUTTON, lambda _event: on_replace(self.options()))
-        all_btn.Bind(wx.EVT_BUTTON, lambda _event: on_replace_all(self.options()))
-        bind_close_button(self, close_btn, modeless=True)
-        self.Bind(wx.EVT_CLOSE, lambda _event: self.Destroy())
-        self.text.SetFocus()
-        self.text.SelectAll()
-
-    def options(self) -> dict[str, Any]:
-        return {
-            "needle": self.text.GetValue(),
-            "replacement": self.replacement.GetValue(),
-            "match_case": self.match_case.GetValue(),
-            "whole_word": self.whole_word.GetValue(),
-        }
 
 
 def ask_line_number(parent: wx.Window, current: int, maximum: int) -> int | None:

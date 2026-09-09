@@ -2,6 +2,34 @@
 
 ## 1.0.0
 
+### Find learns three modes, a count, and a list of every match (2026-09-08)
+
+QuillLite's Find escaped what you typed and offered Match case and Whole word.
+It now runs on QUILL's own `find_model`, which brings the rest with it.
+
+**Search mode**, in both Find and Replace, with three settings. *Normal* is what
+it always was. *Escapes* lets you write the characters there is no key for --
+`	`, `
+`, `—`, ` ` -- which is the companion to
+Describe Formatting's sibling, Describe Character: that names the invisible
+character you are standing on, and this is how you then find every other one
+like it. *Regular expression* treats the text as a pattern, and an invalid one
+is refused with the reason and the character it went wrong at, rather than
+quietly finding nothing.
+
+**How many are there.** The Find window keeps a live count of what you have
+typed so far, as a label your reader speaks when it changes rather than an
+announcement over your typing. **Ctrl+Down** and **Ctrl+Up** step through the
+matches without leaving the search box, so the next one can be heard while the
+query can still be adjusted. **Ctrl+Alt+Shift+F3** counts anywhere, and
+**Ctrl+Shift+F3** opens **All Matches** -- every match with its line, its column
+and the words around it, which is the list you want *before* a Replace All
+rather than the surprise you get after one.
+
+**In QUILL too:** regular expressions now live in the shared `find_model`
+alongside normal and extended, so the two products search by one implementation;
+and Count Occurrences, which had no key, has one.
+
 ### Line surgery gets keys, and both palettes now teach them (2026-09-08)
 
 **Eleven commands QUILL had registered and never bound to anything.** Move Line

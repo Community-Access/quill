@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>The Quill family F1 help reference</title>
   <style>
@@ -2676,7 +2676,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quilllite">QuillLite</h2>
-<p>Control coverage: 19 audited sites (19 helped).</p>
+<p>Control coverage: 20 audited sites (20 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>About QuillLite.</strong> What this copy is, and where it
@@ -2787,8 +2787,14 @@ whichever the file arrived with unless you change it here.</li>
 <li><code>close_btn</code>: Close this window and go back to your
 document.</li>
 </ul>
-<h4 id="finddialog-quillappslite_dialogspy">FindDialog
-(<code>quill/apps/lite_dialogs.py</code>)</h4>
+<h4 id="module-level-quillappslite_find_dialogspy">(module level)
+(<code>quill/apps/lite_find_dialogs.py</code>)</h4>
+<ul>
+<li><code>choice</code>: How the text you typed is read: as itself, as
+backslash escapes, or as a regular expression.</li>
+</ul>
+<h4 id="finddialog-quillappslite_find_dialogspy">FindDialog
+(<code>quill/apps/lite_find_dialogs.py</code>)</h4>
 <ul>
 <li><code>self.match_case</code>: When checked, Cat and cat are
 different words.</li>
@@ -2801,8 +2807,8 @@ start.</li>
 <li><code>close_btn</code>: Close this window. The search you typed is
 remembered for F3.</li>
 </ul>
-<h4 id="replacedialog-quillappslite_dialogspy">ReplaceDialog
-(<code>quill/apps/lite_dialogs.py</code>)</h4>
+<h4 id="replacedialog-quillappslite_find_dialogspy">ReplaceDialog
+(<code>quill/apps/lite_find_dialogs.py</code>)</h4>
 <ul>
 <li><code>self.match_case</code>: When checked, Cat and cat are
 different words.</li>

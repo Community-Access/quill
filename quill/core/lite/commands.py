@@ -105,6 +105,18 @@ COMMANDS: list[CommandRow] = [
     ("&Edit", "Find Pre&vious", "Shift+F3", "cmd_find_previous", ""),
     ("&Edit", "R&eplace...", "Ctrl+H", "cmd_replace", ""),
     ("&Edit", "&Go to Line...", "Ctrl+G", "cmd_goto_line", ""),
+    # -- Edit > Matches ------------------------------------------------------
+    # Two questions Find Next cannot answer: how many are there, and what does
+    # each one sit in. Both matter most in the moment just before a Replace
+    # All, and both are otherwise reachable only by pressing F3 until it wraps
+    # and counting as you go -- which is a thing you can do by eye and cannot
+    # do by ear.
+    #
+    # A submenu of two, for the reason Selection is a submenu: the Edit menu
+    # has one free mnemonic letter left, and these need two. A submenu opens
+    # its own namespace instead of forcing a worse letter on a neighbour.
+    ("&Edit|&Matches", "&All Matches...", "Ctrl+Shift+F3", "cmd_find_all", ""),
+    ("&Edit|&Matches", "&Count Occurrences", "Ctrl+Alt+Shift+F3", "cmd_count_occurrences", ""),
     # -- Edit > Selection ----------------------------------------------------
     # A submenu of Edit, which is where Word and QUILL both keep it. Nineteen
     # items is too many to pour into Edit itself, and too coherent to scatter:

@@ -138,6 +138,48 @@ it tells you it has done so. That matters more than it sounds: without it, a
 document with one match sounds exactly like a document with none, every time you
 press F3.
 
+### How many are there?
+
+The Find window keeps a running count of what you have typed so far, before you
+press anything. Type three letters and it says how many matches there are; add a
+fourth and the number changes. Your screen reader reads it as it changes,
+because it is a label rather than an announcement -- a count spoken on every
+keystroke would talk over the typing it is describing.
+
+**Ctrl+Down** and **Ctrl+Up** step through the matches *without leaving the
+search box*, so you can hear the next one and still adjust what you typed.
+Enter is what commits and puts you in the document.
+
+Outside the window, **Ctrl+Alt+Shift+F3** counts the current search anywhere,
+and **Ctrl+Shift+F3** opens **All Matches**: every match in the document, in
+order, each with its line and column and the words around it. That is the list
+you want before a Replace All, because it is the only way to see what you are
+about to change rather than finding out afterwards.
+
+### Searching for things you cannot type
+
+The Find and Replace windows have a **Search mode** with three settings.
+
+**Normal** is the ordinary one: what you type is what is looked for,
+punctuation and all.
+
+**Escapes** lets you write the characters there is no key for. `\t` is a tab,
+`\n` a line break, `\u2014` an em dash, and `\N{NO-BREAK SPACE}` is exactly
+what it says. This is the companion to **Describe Character**: that tells you
+which invisible character you are standing on, and this is how you then find
+every other one like it, or replace them all with an ordinary space.
+
+**Regular expression** treats what you typed as a search pattern -- `.` matches
+any character, `*` repeats the thing before it, `[abc]` matches any one of
+those, `^` and `$` are the start and end of a line. If the pattern is not valid,
+QuillLite says which character is wrong rather than quietly finding nothing: a
+search that failed and a search that found nothing are different problems, and
+only one of them is fixed by retyping.
+
+Whole word works with all three. In regular expression mode it wraps the whole
+pattern, so `cat|dog` means "the word cat or the word dog", not "the word cat,
+or dog anywhere".
+
 ---
 
 ## Bookmarks
@@ -620,6 +662,13 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Shift+F3** | Find Previous |
 | **Ctrl+H** | Replace... |
 | **Ctrl+G** | Go to Line... |
+
+### Edit ▸ Matches
+
+| Key | Command |
+|---|---|
+| **Ctrl+Shift+F3** | All Matches... |
+| **Ctrl+Alt+Shift+F3** | Count Occurrences |
 
 ### Edit ▸ Selection
 

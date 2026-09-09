@@ -21,7 +21,6 @@ Two rules run through all of them:
 
 from __future__ import annotations
 
-import re
 import time
 from pathlib import Path
 from typing import Any
@@ -29,11 +28,24 @@ from typing import Any
 import wx
 
 from quill.apps.lite_dialogs import (
-    FindDialog,
-    ReplaceDialog,
     ask_line_number,
     choose_heading,
     show_text_window,
+)
+from quill.apps.lite_find_dialogs import (
+    FindDialog,
+    ReplaceDialog,
+    choose_match,
+)
+from quill.core.find_model import (
+    CompiledQuery,
+    FindModelError,
+    FindQuery,
+    all_matches,
+    compile_query,
+    context_sentence,
+    count_matches,
+    find_next,
 )
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite.commands import shortcut_text
@@ -244,7 +256,12 @@ class DocumentCommandsMixin:
                 return
             except RuntimeError:  # the wx object is gone; build a fresh one
                 self._find_dialog = None
-        self._find_dialog = FindDialog(self, self._selected_or_last_needle(), self._do_find)
+        self._find_dialog = FindDialog(
+            self,
+            self._selected_or_last_needle(),
+            self._do_find,
+            self.peek_match_count,
+        )
         self._find_dialog.Bind(wx.EVT_WINDOW_DESTROY, self._forget_find_dialog)
         self._find_dialog.Show()
 
@@ -265,46 +282,51 @@ class DocumentCommandsMixin:
             return
         self._do_find(self._find_options, reverse)
 
-    def _pattern(self, options: dict[str, Any]) -> re.Pattern[str] | None:
-        """The compiled search, or ``None`` when there is nothing to search for.
+    def _query(self, options: dict[str, Any]) -> CompiledQuery | None:
+        """The compiled search, or ``None`` when there is nothing to look for.
 
-        The needle is escaped: this is a text editor's Find, not a regular
-        expression console, and somebody searching for ``(a)`` means those three
-        characters.
+        QUILL's own :mod:`quill.core.find_model`, not a private regex: it is
+        what carries the three search modes, the 1-based line and column a
+        match is announced with, and the counting the peek and Count
+        Occurrences both read. A second implementation here would be a second
+        place for "what counts as a match" to drift.
+
+        A malformed regular expression is *reported*, not swallowed. A search
+        that found nothing and a search that could not run are different facts,
+        and only one of them is fixed by retyping the pattern.
         """
         needle = str(options.get("needle", ""))
         if not needle:
             return None
-        flags = 0 if options.get("match_case") else re.IGNORECASE
-        body = re.escape(needle)
-        if options.get("whole_word"):
-            body = rf"\b{body}\b"
-        return re.compile(body, flags)
+        query = FindQuery(
+            text=needle,
+            mode=str(options.get("mode", "normal")),  # type: ignore[arg-type]
+            case_sensitive=bool(options.get("match_case")),
+            whole_word=bool(options.get("whole_word")),
+        )
+        try:
+            return compile_query(query)
+        except FindModelError as error:
+            self._announce(str(error))
+            return None
 
     def _do_find(self, options: dict[str, Any], reverse: bool) -> bool:
         """Find and select the next (or previous) match, wrapping and saying so."""
-        pattern = self._pattern(options)
-        if pattern is None:
-            self._announce("Type something to find")
+        compiled = self._query(options)
+        if compiled is None:
+            if not str(options.get("needle", "")):
+                self._announce("Type something to find")
             return False
         self._find_options = dict(options)
         text = self.control.GetValue()
         start, end = self.control.GetSelection()
-        wrapped = False
-        if reverse:
-            matches = list(pattern.finditer(text[:start]))
-            if not matches:
-                matches, wrapped = list(pattern.finditer(text)), True
-            match = matches[-1] if matches else None
-        else:
-            match = pattern.search(text, end if end > start else start)
-            if match is None:
-                match, wrapped = pattern.search(text), True
+        from_pos = start if reverse else (end if end > start else start)
+        match, wrapped = find_next(compiled, text, from_pos=from_pos, backwards=reverse)
         if match is None:
             self._announce(f"Not found: {options.get('needle')}")
             return False
-        self.control.SetSelection(match.start(), match.end())
-        self.control.ShowPosition(match.start())
+        self.control.SetSelection(match.start, match.end)
+        self.control.ShowPosition(match.start)
         self.control.SetFocus()
         self._touch_status()
         if wrapped:
@@ -313,6 +335,78 @@ class DocumentCommandsMixin:
             # "nothing happened" every time F3 is pressed.
             self._announce("Wrapped to the end" if reverse else "Wrapped to the start")
         return True
+
+    def _match_count(self, options: dict[str, Any]) -> tuple[int, bool] | None:
+        """``(count, truncated)`` for *options*, or ``None`` if it cannot run."""
+        compiled = self._query(options)
+        if compiled is None:
+            return None
+        return count_matches(compiled, self.control.GetValue())
+
+    def peek_match_count(self, options: dict[str, Any]) -> str:
+        """A spoken summary of how many matches *options* has, for the dialog.
+
+        This is the half of searching a listener otherwise cannot get: one
+        match and no matches sound identical when you are pressing F3 in the
+        dark, and knowing the shape of the answer before committing to it is
+        the whole reason the count exists.
+        """
+        if not str(options.get("needle", "")):
+            return ""
+        counted = self._match_count(options)
+        if counted is None:
+            return ""
+        count, truncated = counted
+        if count == 0:
+            return "No matches"
+        more = " or more" if truncated else ""
+        return f"{count}{more} match{'es' if count != 1 else ''}"
+
+    def cmd_count_occurrences(self) -> None:
+        """Say how many times the last search appears in this document."""
+        options = dict(self._find_options)
+        if not options.get("needle"):
+            selected = self._selected_or_last_needle()
+            if not selected:
+                self._announce("Search for something first, then count it")
+                return
+            options["needle"] = selected
+        summary = self.peek_match_count(options)
+        needle = options.get("needle")
+        self._announce(f"{summary} for {needle}" if summary else f"Not found: {needle}")
+
+    def cmd_find_all(self) -> None:
+        """List every match, so the search's shape can be read rather than walked."""
+        options = dict(self._find_options)
+        if not options.get("needle"):
+            selected = self._selected_or_last_needle()
+            if not selected:
+                self._announce("Search for something first, then list the matches")
+                return
+            options["needle"] = selected
+        compiled = self._query(options)
+        if compiled is None:
+            return
+        text = self.control.GetValue()
+        matches, truncated = all_matches(compiled, text)
+        if not matches:
+            self._announce(f"Not found: {options.get('needle')}")
+            return
+        rows = [
+            (
+                f"Line {match.line}, column {match.column}: {context_sentence(text, match)}",
+                match.start,
+            )
+            for match in matches
+        ]
+        chosen = choose_match(self, rows, truncated=truncated)
+        if chosen is None:
+            self.control.SetFocus()
+            return
+        self.control.SetSelection(chosen, chosen + len(matches[0].text))
+        self.control.ShowPosition(chosen)
+        self.control.SetFocus()
+        self._touch_status()
 
     def cmd_replace(self) -> None:
         ReplaceDialog(
@@ -325,22 +419,28 @@ class DocumentCommandsMixin:
 
     def _do_replace(self, options: dict[str, Any]) -> None:
         """Replace the match the selection is on, then move to the next one."""
-        pattern = self._pattern(options)
-        if pattern is None:
-            self._announce("Type something to find")
+        compiled = self._query(options)
+        if compiled is None:
+            if not str(options.get("needle", "")):
+                self._announce("Type something to find")
             return
+        pattern = compiled.pattern
         start, end = self.control.GetSelection()
         selected = self.control.GetValue()[start:end]
-        if end > start and pattern.fullmatch(selected):
+        if pattern is not None and end > start and pattern.fullmatch(selected):
             self.control.Replace(start, end, str(options.get("replacement", "")))
             self._set_modified(True)
         self._do_find(options, False)
 
     def _do_replace_all(self, options: dict[str, Any]) -> None:
         """Replace every match, from the end backwards so offsets stay valid."""
-        pattern = self._pattern(options)
+        compiled = self._query(options)
+        if compiled is None:
+            if not str(options.get("needle", "")):
+                self._announce("Type something to find")
+            return
+        pattern = compiled.pattern
         if pattern is None:
-            self._announce("Type something to find")
             return
         if self.editor.mode == RICH:
             answer = show_message_box(

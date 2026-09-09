@@ -353,6 +353,47 @@ a folder.</p>
 top, and it tells you it has done so. That matters more than it sounds:
 without it, a document with one match sounds exactly like a document
 with none, every time you press F3.</p>
+<h3 id="how-many-are-there">How many are there?</h3>
+<p>The Find window keeps a running count of what you have typed so far,
+before you press anything. Type three letters and it says how many
+matches there are; add a fourth and the number changes. Your screen
+reader reads it as it changes, because it is a label rather than an
+announcement – a count spoken on every keystroke would talk over the
+typing it is describing.</p>
+<p><strong>Ctrl+Down</strong> and <strong>Ctrl+Up</strong> step through
+the matches <em>without leaving the search box</em>, so you can hear the
+next one and still adjust what you typed. Enter is what commits and puts
+you in the document.</p>
+<p>Outside the window, <strong>Ctrl+Alt+Shift+F3</strong> counts the
+current search anywhere, and <strong>Ctrl+Shift+F3</strong> opens
+<strong>All Matches</strong>: every match in the document, in order,
+each with its line and column and the words around it. That is the list
+you want before a Replace All, because it is the only way to see what
+you are about to change rather than finding out afterwards.</p>
+<h3 id="searching-for-things-you-cannot-type">Searching for things you
+cannot type</h3>
+<p>The Find and Replace windows have a <strong>Search mode</strong> with
+three settings.</p>
+<p><strong>Normal</strong> is the ordinary one: what you type is what is
+looked for, punctuation and all.</p>
+<p><strong>Escapes</strong> lets you write the characters there is no
+key for. <code>\t</code> is a tab, <code>\n</code> a line break,
+<code>\u2014</code> an em dash, and <code>\N{NO-BREAK SPACE}</code> is
+exactly what it says. This is the companion to <strong>Describe
+Character</strong>: that tells you which invisible character you are
+standing on, and this is how you then find every other one like it, or
+replace them all with an ordinary space.</p>
+<p><strong>Regular expression</strong> treats what you typed as a search
+pattern – <code>.</code> matches any character, <code>*</code> repeats
+the thing before it, <code>[abc]</code> matches any one of those,
+<code>^</code> and <code>$</code> are the start and end of a line. If
+the pattern is not valid, QuillLite says which character is wrong rather
+than quietly finding nothing: a search that failed and a search that
+found nothing are different problems, and only one of them is fixed by
+retyping.</p>
+<p>Whole word works with all three. In regular expression mode it wraps
+the whole pattern, so <code>cat|dog</code> means “the word cat or the
+word dog”, not “the word cat, or dog anywhere”.</p>
 <hr />
 <h2 id="bookmarks">Bookmarks</h2>
 <p>A bookmark is a place you meant to come back to.</p>
@@ -1136,6 +1177,25 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+G</strong></td>
 <td>Go to Line…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="edit--matches">Edit ▸ Matches</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Shift+F3</strong></td>
+<td>All Matches…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F3</strong></td>
+<td>Count Occurrences</td>
 </tr>
 </tbody>
 </table>
