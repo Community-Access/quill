@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 352.
+Editor commands with default bindings: 354.
 
 ## The QUILL editor
 
@@ -150,6 +150,8 @@ Editor commands with default bindings: 352.
 | Ctrl+Alt+N | Toggle Numbered List | `format.toggle_numbered_list` |
 | Ctrl+Alt+Q | Insert Block Quote | `format.blockquote` |
 | Ctrl+Alt+Shift+J | Join Lines | `format.join_lines` |
+| Ctrl+Alt+Shift+N | Toggle Case | `format.toggle_case` |
+| Ctrl+Alt+Shift+U | Sentence Case | `format.sentence_case` |
 | Ctrl+Alt+T | Insert Table | `format.insert_table` |
 | Ctrl+B | Bold | `format.bold` |
 | Ctrl+D | Duplicate Line | `format.duplicate_line` |

@@ -390,6 +390,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # (Windows reserves it as the secure attention sequence), and bare Ctrl+Alt+
     # is barred by §10.8 as screen-reader-hostile, so every chord here carries
     # Shift as well.
+    # The two case conversions QUILL registered and never bound, so Change Case
+    # offered five in the menu and three from the keyboard.
+    "format.sentence_case": "Ctrl+Alt+Shift+U",
+    "format.toggle_case": "Ctrl+Alt+Shift+N",
     # How many, before you commit to a Replace All. Find All Matches already
     # had Ctrl+Shift+F3; its cheaper sibling had no key, which left "is this
     # search safe to replace?" answerable only by opening a list.

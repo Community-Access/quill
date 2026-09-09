@@ -309,6 +309,12 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "&UPPERCASE", "Ctrl+Shift+U", "cmd_upper_case", ""),
     ("&Tools", "&lowercase", "Ctrl+Shift+K", "cmd_lower_case", ""),
     ("&Tools", "&Title Case", "Ctrl+Shift+G", "cmd_title_case", ""),
+    # The two QUILL registered and never bound, so its own Change Case offered
+    # five in the menu and three from the keyboard. "Invert" rather than
+    # "Toggle" because the Tools menu had no free T and because a person asked
+    # to describe it says "it swaps them".
+    ("&Tools", "Sentence &case", "Ctrl+Alt+Shift+U", "cmd_sentence_case", ""),
+    ("&Tools", "In&vert Case", "Ctrl+Alt+Shift+N", "cmd_toggle_case", ""),
     ("&Tools", "", "", "", "sep"),
     # Both are shown in the status bar and both used to be read-only: QuillLite
     # wrote back whatever it read, which is the right default and a dead end for
@@ -318,6 +324,26 @@ COMMANDS: list[CommandRow] = [
     # Type a short form and a space, get the long one. QUILL's engine, QUILL's
     # manager dialog, and QuillLite's own library unless Preferences says share.
     ("&Tools", "&Manage Abbreviations...", "Ctrl+Alt+A", "cmd_manage_abbreviations", ""),
+    # -- Tools > Indenting ---------------------------------------------------
+    # A submenu because the Tools menu has few free mnemonic letters left and
+    # these are one idea. QUILL's own chords, unchanged.
+    #
+    # Deliberately NOT a Describe Indent Depth command, though leading
+    # whitespace is exactly what a reader does not speak: QUILL has no such
+    # command, only an announce-as-you-move toggle, and QuillLite may never be
+    # ahead of the editor. It belongs in QUILL first.
+    ("&Tools|Indentin&g", "&Indent", "Ctrl+]", "cmd_indent", ""),
+    ("&Tools|Indentin&g", "&Outdent", "Ctrl+[", "cmd_outdent", ""),
+    # -- Tools > More Line Work ----------------------------------------------
+    ("&Tools|More Line &Work", "&Reverse Lines", "Alt+Shift+Z", "cmd_reverse_lines", ""),
+    (
+        "&Tools|More Line &Work",
+        "&Tidy Whitespace",
+        "Ctrl+Alt+Shift+T",
+        "cmd_normalize_whitespace",
+        "",
+    ),
+    ("&Tools|More Line &Work", "&Number Lines", "Alt+Shift+N", "cmd_number_lines", ""),
     # -- Spelling -----------------------------------------------------------
     # Its own menu rather than four items in Tools, for the reason the
     # Clipboard menu is its own: the whole idea has to be switchable in one

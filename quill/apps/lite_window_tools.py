@@ -35,7 +35,7 @@ from collections.abc import Callable
 import wx
 
 from quill.apps.lite_dialogs import edit_file_format
-from quill.core import format_ops, transforms
+from quill.core import format_ops, line_ops, transforms
 from quill.core.lite import APP_NAME
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import RICH
@@ -47,6 +47,9 @@ __all__ = ["DocumentToolsMixin"]
 #: by comparing -- which keeps this the only place that has to know that "how
 #: many changed" is a question about the *result*, not about the operation.
 _Tool = Callable[[str], str]
+
+#: ``(text, start, end) -> (text, start, end)`` -- the indent helpers' shape.
+_IndentOp = Callable[[str, int, int], tuple[str, int, int]]
 
 
 class DocumentToolsMixin:
@@ -133,6 +136,60 @@ class DocumentToolsMixin:
 
     def cmd_title_case(self) -> None:
         self._apply_tool(transforms.to_title, unit="character", verb="Changed")
+
+    def cmd_sentence_case(self) -> None:
+        """Capital at the start, the rest lowered -- for a heading typed shouting."""
+        self._apply_tool(transforms.to_sentence_case, unit="character", verb="Changed")
+
+    def cmd_toggle_case(self) -> None:
+        """Swap each letter's case, which is the cure for a stuck Caps Lock."""
+        self._apply_tool(transforms.to_toggle_case, unit="character", verb="Changed")
+
+    # ------------------------------------------------------------------ #
+    # More ways to reshape a list of lines
+    # ------------------------------------------------------------------ #
+
+    def cmd_reverse_lines(self) -> None:
+        self._apply_tool(format_ops.reverse_lines, unit="line", verb="Reversed")
+
+    def cmd_normalize_whitespace(self) -> None:
+        """Collapse runs of spaces and tabs -- the cure for pasted-in text."""
+        self._apply_tool(format_ops.normalize_whitespace, unit="line", verb="Tidied")
+
+    def cmd_number_lines(self) -> None:
+        self._apply_tool(line_ops.number_lines, unit="line", verb="Numbered")
+
+    # ------------------------------------------------------------------ #
+    # Indenting
+    # ------------------------------------------------------------------ #
+
+    def _shift_indent(self, shift: _IndentOp, *, verb: str) -> None:
+        """Indent or outdent the selected lines, or the caret's line.
+
+        Not ``_apply_tool``: indenting is defined by *where the lines are* in
+        the document rather than by the text of a selection, and
+        :mod:`quill.core.format_ops` already takes and returns offsets for
+        exactly that reason. Passing it a slice would indent the selection's
+        first line from wherever the selection happened to begin.
+        """
+        text = self.control.GetValue()
+        start, end = self.control.GetSelection()
+        changed, new_start, new_end = shift(text, start, end)
+        if changed == text:
+            self._announce("Nothing to outdent")
+            return
+        self.control.Replace(0, self.control.GetLastPosition(), changed)
+        self.control.SetSelection(new_start, new_end)
+        self._set_modified(True)
+        self._touch_status()
+        lines = max(1, changed[new_start:new_end].count("\n") or 1)
+        self._announce(f"{verb} {lines} line{'s' if lines != 1 else ''}")
+
+    def cmd_indent(self) -> None:
+        self._shift_indent(format_ops.indent_lines, verb="Indented")
+
+    def cmd_outdent(self) -> None:
+        self._shift_indent(format_ops.outdent_lines, verb="Outdented")
 
     # ------------------------------------------------------------------ #
     # How the file is written

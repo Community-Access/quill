@@ -845,6 +845,18 @@ remove duplicate lines, trim trailing spaces, and change text to
 UPPERCASE (<strong>Ctrl+Shift+U</strong>), lowercase
 (<strong>Ctrl+Shift+K</strong>) or Title Case
 (<strong>Ctrl+Shift+G</strong>).</p>
+<p>Two more case changes sit beside those. <strong>Sentence
+case</strong> (<strong>Ctrl+Alt+Shift+U</strong>) puts a capital at the
+start and lowers the rest, which is what a heading typed in shouting
+needs. <strong>Invert Case</strong> (<strong>Ctrl+Alt+Shift+N</strong>)
+swaps every letter, which is the cure for a sentence typed with Caps
+Lock on.</p>
+<p>Under <strong>Tools ▸ More Line Work</strong> there are three more:
+<strong>Reverse Lines</strong> (<strong>Alt+Shift+Z</strong>),
+<strong>Tidy Whitespace</strong> (<strong>Ctrl+Alt+Shift+T</strong>),
+which collapses the runs of spaces and tabs that arrive with pasted-in
+text, and <strong>Number Lines</strong>
+(<strong>Alt+Shift+N</strong>).</p>
 <p>Each one counts as a single undo, so <strong>Ctrl+Z</strong> takes
 back the whole sort rather than putting back one line at a time.</p>
 <h3 id="working-on-one-line-at-a-time">Working on one line at a
@@ -883,6 +895,17 @@ whatever you were already carrying on the clipboard is still there
 afterwards.</p>
 <p>It remembers your last three deletions, and only the deliberate ones:
 the delete commands above, not every character you backspaced over.</p>
+<h3 id="indenting">Indenting</h3>
+<p><strong>Tools ▸ Indenting</strong> has <strong>Indent</strong>
+(<strong>Ctrl+]</strong>) and <strong>Outdent</strong>
+(<strong>Ctrl+[</strong>). They work on every line the selection
+touches, or on the line the cursor is on if nothing is selected, and
+they say how many lines moved.</p>
+<p>These matter more here than they look. QuillLite already goes quiet
+about spelling in a <code>.json</code> or a <code>.py</code> file, which
+is an admission that people edit configuration and code in it – and for
+that person, moving a block in or out a level is the single most common
+thing to want and the most tedious to do by arrow key.</p>
 <h3 id="abbreviations">Abbreviations</h3>
 <p>Type a short form, press space, and get the long one. Useful for an
 address, a sign off, or anything you type often and would rather not
@@ -1640,12 +1663,62 @@ list inside the app.</p>
 <td>Title Case</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+Shift+U</strong></td>
+<td>Sentence case</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+N</strong></td>
+<td>Invert Case</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+E</strong></td>
 <td>File Encoding and Line Endings…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+A</strong></td>
 <td>Manage Abbreviations…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tools--indenting">Tools ▸ Indenting</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+]</strong></td>
+<td>Indent</td>
+</tr>
+<tr>
+<td><strong>Ctrl+[</strong></td>
+<td>Outdent</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tools--more-line-work">Tools ▸ More Line Work</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+Z</strong></td>
+<td>Reverse Lines</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+T</strong></td>
+<td>Tidy Whitespace</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+N</strong></td>
+<td>Number Lines</td>
 </tr>
 </tbody>
 </table>

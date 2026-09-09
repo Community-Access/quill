@@ -446,6 +446,17 @@ lines, remove duplicate lines, trim trailing spaces, and change text to
 UPPERCASE (**Ctrl+Shift+U**), lowercase (**Ctrl+Shift+K**) or Title Case
 (**Ctrl+Shift+G**).
 
+Two more case changes sit beside those. **Sentence case**
+(**Ctrl+Alt+Shift+U**) puts a capital at the start and lowers the rest, which is
+what a heading typed in shouting needs. **Invert Case**
+(**Ctrl+Alt+Shift+N**) swaps every letter, which is the cure for a sentence
+typed with Caps Lock on.
+
+Under **Tools ▸ More Line Work** there are three more: **Reverse Lines**
+(**Alt+Shift+Z**), **Tidy Whitespace** (**Ctrl+Alt+Shift+T**), which collapses
+the runs of spaces and tabs that arrive with pasted-in text, and **Number
+Lines** (**Alt+Shift+N**).
+
 Each one counts as a single undo, so **Ctrl+Z** takes back the whole sort rather
 than putting back one line at a time.
 
@@ -483,6 +494,18 @@ the clipboard is still there afterwards.
 
 It remembers your last three deletions, and only the deliberate ones: the delete
 commands above, not every character you backspaced over.
+
+### Indenting
+
+**Tools ▸ Indenting** has **Indent** (**Ctrl+]**) and **Outdent**
+(**Ctrl+[**). They work on every line the selection touches, or on the line the
+cursor is on if nothing is selected, and they say how many lines moved.
+
+These matter more here than they look. QuillLite already goes quiet about
+spelling in a `.json` or a `.py` file, which is an admission that people edit
+configuration and code in it -- and for that person, moving a block in or out a
+level is the single most common thing to want and the most tedious to do by
+arrow key.
 
 ### Abbreviations
 
@@ -793,8 +816,25 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+U** | UPPERCASE |
 | **Ctrl+Shift+K** | lowercase |
 | **Ctrl+Shift+G** | Title Case |
+| **Ctrl+Alt+Shift+U** | Sentence case |
+| **Ctrl+Alt+Shift+N** | Invert Case |
 | **Ctrl+Alt+E** | File Encoding and Line Endings... |
 | **Ctrl+Alt+A** | Manage Abbreviations... |
+
+### Tools ▸ Indenting
+
+| Key | Command |
+|---|---|
+| **Ctrl+]** | Indent |
+| **Ctrl+[** | Outdent |
+
+### Tools ▸ More Line Work
+
+| Key | Command |
+|---|---|
+| **Alt+Shift+Z** | Reverse Lines |
+| **Ctrl+Alt+Shift+T** | Tidy Whitespace |
+| **Alt+Shift+N** | Number Lines |
 
 ### Spelling
 

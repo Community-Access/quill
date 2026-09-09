@@ -2,6 +2,24 @@
 
 ## 1.0.0
 
+### Two more case changes, three more line tools, and indenting (2026-09-08)
+
+**Sentence case and Invert Case were registered in QUILL and bound to nothing**,
+so Change Case offered five conversions in the menu and three from the keyboard.
+Both now have keys, in both products. Sentence case is what a heading typed in
+shouting needs; Invert Case is the cure for a sentence typed with Caps Lock on.
+
+QuillLite also gains **Reverse Lines**, **Tidy Whitespace** (which collapses the
+runs of spaces and tabs that arrive with pasted-in text) and **Number Lines**,
+under Tools ▸ More Line Work; and **Indent** and **Outdent** on QUILL's own
+Ctrl+] and Ctrl+[, under Tools ▸ Indenting. All of them are QUILL's
+`format_ops`, `transforms` and `line_ops` rather than second implementations.
+
+Indenting is there for a specific person: QuillLite already goes quiet about
+spelling in a `.json` or a `.py` file, which is an admission that people edit
+configuration and code in it, and for them moving a block in or out a level is
+the most common thing to want and the most tedious to do by arrow key.
+
 ### Find learns three modes, a count, and a list of every match (2026-09-08)
 
 QuillLite's Find escaped what you typed and offered Match case and Whole word.
