@@ -497,14 +497,24 @@ def build_windows_distribution(
     # (see quill.core.storage_mode._has_portable_evidence). The keep-file makes
     # the folder non-empty so it survives zipping/unzipping -- many archivers
     # drop empty directories, which would silently break portable detection.
+    #
+    # No ``storage-mode.json`` is seeded here and none is needed: since
+    # 2026-09-09 a verified portable bundle *is* portable until the user says
+    # otherwise (quill/core/paths.py::app_data_dir). Before that an unanswered
+    # question meant %APPDATA%, so extracting this zip and running it put a
+    # folder on the host machine's hard drive -- the one thing somebody who
+    # chose the portable build was relying on it not to do.
     data_dir = portable_dir / "data"
     data_dir.mkdir(exist_ok=True)
     (data_dir / "README.txt").write_text(
-        "This folder holds your QUILL data when you choose portable mode on first\n"
-        "run (settings, keymap, and documents you keep here). It ships empty; QUILL\n"
-        "fills it the first time you opt into portable storage. Keeping this folder\n"
-        "next to quill.exe is what marks this bundle as portable -- do not delete\n"
-        "it.\n",
+        "This folder holds your QUILL data: settings, keymap, and anything you\n"
+        "keep here. It ships empty and QUILL fills it the first time you run the\n"
+        "app, so nothing is written to this computer's profile.\n"
+        "\n"
+        "Keeping this folder next to quill.exe is what marks the bundle as\n"
+        "portable -- do not delete it. If you would rather QUILL used your\n"
+        "Windows profile after all, choose that in Preferences; your choice is\n"
+        "remembered and overrides this folder.\n",
         encoding="utf-8",
     )
 

@@ -233,12 +233,15 @@ line endings, a <code>.txt</code> saved with Unix line endings (any file
 from a git checkout will do), and any <code>.rtf</code>.</li>
 </ul>
 <h2 id="the-15-minute-pass">The 15-minute pass</h2>
-<p>No time for the whole thing? Run exactly these ten and stop:
-<strong>L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54,
-L-61.</strong></p>
+<p>No time for the whole thing? Run exactly these eleven and stop:
+<strong>L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61,
+L-90.</strong></p>
 <p>They cover the four things most likely to be wrong and worst if they
 are: the document announces itself, F1 answers, the status bar is
-reachable, and a file comes back byte-for-byte.</p>
+reachable, and a file comes back byte-for-byte. L-90 is the eleventh
+because a status cell that misreports what typing is about to do is the
+one defect this product cannot ship, and it was shipped once
+already.</p>
 <hr />
 <h2 id="block-a--opening-and-where-focus-lands-5-min">Block A – Opening,
 and where focus lands (5 min)</h2>
@@ -411,9 +414,9 @@ itself</strong></p>
 <li>Do: press <strong>Right</strong> several times, then
 <strong>Left</strong>.</li>
 <li>Pass: each cell announces its name and its value – Position, Word
-Count, Character Count, Selection, Format, Heading, Encoding, Line
-Endings, Saved State. The region name is <strong>not</strong> repeated
-on every one.</li>
+Count, Character Count, Selection, Typing Mode, Tab Mode, Format,
+Heading, Encoding, Line Endings, Saved State. The region name is
+<strong>not</strong> repeated on every one.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
@@ -1233,6 +1236,144 @@ alone</strong></p>
 <li>Pass: the Select menu is gone, F8 does nothing, and <strong>Ctrl+A
 still selects everything</strong>. Losing Select All here is a
 fail.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-o--the-2026-09-09-additions-8-min">Block O – The
+2026-09-09 additions (8 min)</h2>
+<p>Everything in this block is new since the rest of this file was
+written, and none of it is covered above. Six of the nine steps are
+about a <em>mode</em> or a <em>refusal</em> – states and non-events –
+which is exactly the category no automated test can sign off, because
+the failure is not a wrong value but a silence you have to notice.</p>
+<p><strong>L-90. The Typing Mode cell tells the truth about
+overtype</strong></p>
+<ul>
+<li>Do: type <code>ABCDEF</code>, press <strong>Home</strong>. Press
+<strong>Ctrl+Alt+Shift+W</strong>. Type <code>x</code>. Then
+<strong>F6</strong> and arrow to <strong>Typing Mode</strong>.</li>
+<li>Pass: you heard <strong>“Overwrite mode on”</strong>; the line now
+reads <code>xBCDEF</code> (the <code>A</code> was replaced, not pushed
+along); and the cell says <strong>Overwrite</strong>.</li>
+<li>Fail if the cell and the typing disagree in either direction. That
+disagreement is the bug this feature was built to fix and it is
+invisible without checking both.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-91. The Insert key moves the cell too</strong></p>
+<ul>
+<li>Do: with your screen reader’s modifier <em>not</em> set to Insert
+(or using the laptop layout), press <strong>Insert</strong> once.
+<strong>F6</strong>, arrow to <strong>Typing Mode</strong>.</li>
+<li>Pass: the cell has changed. QuillLite does not claim the Insert key
+– the editing control answers it – but the cell must follow it.</li>
+<li>If your reader uses Insert as its modifier, skip and note “skipped”:
+that is the expected experience and not a failure.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______ [ ]
+skipped</label></li>
+</ul>
+<p><strong>L-92. Tab Mode, and Shift+Tab out of it</strong></p>
+<ul>
+<li>Do: on a line reading <code>hello</code>, press
+<strong>Tab</strong>. Then <strong>Ctrl+Alt+Shift+I</strong> and press
+<strong>Tab</strong> again. Then <strong>Shift+Tab</strong>.</li>
+<li>Pass: the first Tab typed a tab character. After the toggle you
+heard <strong>“Tab key indents the line”</strong>, and the second Tab
+spoke a <em>depth</em> – e.g. <strong>“1 tab, 4 spaces”</strong> – and
+said it <strong>once</strong>, not twice. Shift+Tab spoke a smaller
+depth.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-93. Describe Indent Depth answers on demand</strong></p>
+<ul>
+<li>Do: put the cursor on a line indented with four spaces. Press
+<strong>Ctrl+Alt+Shift+V</strong>. Then move to an unindented line and
+press it again.</li>
+<li>Pass: <strong>“4 spaces”</strong>, then <strong>“No
+indentation”</strong>. The second one matters most: a command that goes
+quiet when the answer is “none” is indistinguishable from a key that is
+not bound.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-94. Bookmarks and your place survive closing the
+file</strong></p>
+<ul>
+<li>Do: open a long saved file. Press <strong>Ctrl+Shift+3</strong>
+somewhere in the middle, move to a different place, then
+<strong>Ctrl+W</strong> and reopen the file.</li>
+<li>Pass: the cursor is roughly where you left it, and
+<strong>F2</strong> takes you to bookmark 3.</li>
+<li>Also check: no new file has appeared next to your document on
+disk.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-95. Go Back returns you from a jump</strong></p>
+<ul>
+<li>Do: from partway through a document, press <strong>Ctrl+G</strong>
+and go to line 1. Then press <strong>Alt+Left</strong>. Then
+<strong>Alt+Left</strong> again.</li>
+<li>Pass: the first takes you back where you were and says <strong>“Went
+back”</strong>; the second says <strong>“No earlier place”</strong>
+rather than going silent.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-96. Earlier Versions lists and restores</strong></p>
+<ul>
+<li>Do: switch <strong>Timestamped backups</strong> on in <strong>View
+&gt; Customize Features</strong>. Save a file three times, changing it
+each time. Press <strong>Ctrl+Alt+Shift+E</strong>.</li>
+<li>Pass: a list reading like <strong>“Today at 4:12 PM - 120
+words”</strong>, newest first, arrowable. Choose one and press
+<strong>Restore</strong>.</li>
+<li>Then: the text changes, you hear that nothing is written until you
+save and that Ctrl+Z undoes it – and <strong>Ctrl+Z</strong> does.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-97. Heading promote, demote, and section move</strong></p>
+<ul>
+<li>Do: in a <strong>plain text</strong> document type three Markdown
+headings with a line of body under each. On the second, press
+<strong>Alt+Shift+Right</strong>, then <strong>Alt+Shift+Left</strong>
+twice, then <strong>Alt+Shift+Up</strong>.</li>
+<li>Pass: <strong>“Heading 3”</strong>, <strong>“Heading 2”</strong>,
+<strong>“Already Heading 1”</strong> (not silence), and the section
+moved above the first one with something spoken.</li>
+<li>Then: in a <strong>rich text</strong> document press
+<strong>Alt+Shift+Up</strong>. Pass: it says section moves are for plain
+text documents rather than doing nothing.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-98. The portable copy leaves nothing behind</strong></p>
+<ul>
+<li>Do: this one needs the <strong>portable</strong> zip, not the
+installer. Extract it to a USB stick or any folder, run
+<code>QuillLite.exe</code>, change a setting, type something, and
+close.</li>
+<li>Pass: <code>data\QuillLite</code> inside the bundle now has a
+<code>settings.json</code>, and <strong>no</strong>
+<code>QuillLite</code> folder has appeared in
+<code>%LOCALAPPDATA%</code> on that machine.</li>
+<li>This is the one step worth running on a computer that has never had
+QuillLite on it, because that is the only place the old behaviour was
+visible.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>

@@ -2,6 +2,93 @@
 
 ## 1.0.0
 
+### A portable copy stops leaving itself on the host machine (2026-09-09)
+
+**A portable QUILL created a folder in `%APPDATA%` on whatever computer it was
+plugged into.** Extract the zip, run it, and the settings, keymap and everything
+else went to the machine's hard drive rather than to the stick -- which is the
+one thing somebody who chose the portable build was relying on it not to do, and
+nothing said it had happened. It stayed that way until the user found the Setup
+Wizard's data-location page or Preferences and chose portable; the user guide had
+meanwhile said "portable mode is a property of the bundle, not of the running
+environment" throughout.
+
+Two separate faults, both fixed:
+
+- **An unanswered question meant appdata.** In a *verified* portable bundle it
+  now means portable. An explicit "Windows profile" or a custom path still wins,
+  because a choice is not a default, and nothing changes for an installed copy
+  -- there is no portable root for it to default to.
+
+- **Five apps were not recognised as portable at all.** A bundle is only
+  portable when its launcher's name is on an allowlist, and **QuillLite,
+  Inkwell, Beacon, Social and Cast** were missing from it. So those five wrote
+  to the host machine's profile whatever the user chose -- their bundles even
+  ship a `data\storage-mode.json` saying `portable`, and it was never read,
+  because finding that file needs the bundle to be recognised first. For
+  QuillLite that included **recovery copies of documents that had never been
+  saved**, left behind on somebody else's computer.
+
+  The allowlist was hand-maintained in two places and the tests named four
+  products by hand, so a sixth app was always going to repeat it. It is now
+  `storage_mode.PORTABLE_LAUNCHER_EXES`, cross-checked against
+  `scripts/build_native_launcher.py::PRODUCTS` -- the authority for what each
+  build actually writes -- so a new app fails the build rather than the user.
+
+If you have been running a portable copy, anything that looks lost is in
+`%APPDATA%\Quill` (or `%LOCALAPPDATA%\QuillLite`) on that computer; copy it into
+the bundle's `data\` folder to bring it across, and delete what is left.
+
+### Overwrite mode stops lying about itself (2026-09-09)
+
+**QUILL's status bar could say "Overwrite" while typing still inserted.**
+`_overwrite_mode` was written in three places and read in exactly one -- the
+status cell -- and nothing in the codebase ever used it to change what typing
+did. Pressing **Insert** was honest by accident: it flips the flag and passes
+the key to the native control, which does the overtype itself. **Ctrl+Alt+Shift+W**
+flipped the flag and told the control nothing, so the two disagreed from then on,
+and the Insert key would afterwards toggle them further apart rather than back
+together.
+
+A status cell that misreports what typing is about to do, to somebody who cannot
+check by looking, is the same defect as the Cast playback-speed bug: a control
+that misreports what you are hearing. The command now moves the control through
+`RichEditDocument.toggle_overtype`, and **refuses rather than announces** when
+there is no native control to tell.
+
+Both typing modes -- overtype, and what the Tab key does -- moved out of
+`main_frame.py` into `quill/ui/main_frame_typing_modes.py` along with their two
+Format-menu items.
+
+### Describe Indent Depth (2026-09-09)
+
+**Ctrl+Alt+Shift+V** says how far the current line is indented: "4 spaces",
+"1 tab", "1 tab, 3 spaces", or "No indentation".
+
+Leading whitespace is the one part of a line a screen reader routinely does not
+read back, so in a YAML file, a Python module or a nested list the shape of the
+document -- which is most of its meaning -- is simply absent when you listen to
+it. QUILL has had the phrasing since `format_ops.describe_indent_depth` was
+written and never bound a command to it: only an announce-as-you-move toggle,
+which speaks while you are moving and goes quiet at the moment you stop and
+wonder. It also answers a question nothing else can -- whether *this* line is
+indented with the same kind of whitespace as its neighbours, which is invisible
+however carefully the text is read and which stops a Python file running.
+
+QuillLite has it on the same key, in the same change.
+
+### Heading levels share one implementation (2026-09-09)
+
+Promote and demote were two regexes and four branches inline in
+`main_frame.py` -- the shape that gets copied rather than called the second time
+somebody needs it, and QuillLite was the second time. The rule is now
+`quill/core/heading_levels.py`, which both products' Alt+Shift+Left and Right
+run, and which returns a *reason* rather than a bool: nothing about the
+operation makes a sound or moves the caret, so "not on a heading", "already at
+level one" and "that key does nothing" are the same event to a listener unless
+each is named. QUILL now says the new level ("Heading 2") instead of "Adjusted
+heading level", which did not say which way it went.
+
 ### Two more case changes, three more line tools, and indenting (2026-09-08)
 
 **Sentence case and Invert Case were registered in QUILL and bound to nothing**,

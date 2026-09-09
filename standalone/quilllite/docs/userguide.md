@@ -117,10 +117,34 @@ you the next time you start, in its own document.
 Save it, or close normally, and the copy is deleted. So there is never anything
 in there except work you actually need.
 
-There is also a separate **timestamped backups** option (**View ▸ Customize
+### Going back to an earlier version
+
+There is a separate **timestamped backups** option (**View ▸ Customize
 Features**), which keeps a dated copy every time you save. That is for the
 paragraph you deleted an hour ago rather than for a crash. It starts switched
 off, because it does fill up a folder.
+
+Turn it on and **File ▸ Earlier Versions...** (**Ctrl+Alt+Shift+E**) lists them,
+newest first, as "Today at 4:12 PM — 2,341 words". Up to twenty are kept per
+document; after that the oldest go.
+
+The word count is there to be compared rather than read. Two saves a minute
+apart are otherwise almost impossible to tell apart by ear, and the version that
+is suddenly two thousand words shorter is usually the one you are hunting for.
+
+There are two ways to take one:
+
+- **Restore** puts that version into the window you are in. It does **not** save,
+  so the file on disk is untouched until you decide, and **Ctrl+Z** undoes it. A
+  restore chosen by mistake costs you one keystroke.
+- **Open a Copy** puts the old version in a new untitled window and leaves the
+  document you are working on completely alone. Use this one when the question
+  is "what did this say yesterday" rather than "put yesterday back".
+
+Until version 1.0 QuillLite wrote these files and gave you no way to read one:
+they were there, correctly dated, and reachable only if you knew where the app
+kept them. If you have had backups switched on, everything from before this
+version is in the list too.
 
 ---
 
@@ -195,7 +219,56 @@ A bookmark is a place you meant to come back to.
 | **Ctrl+Alt+B** | Clear them all |
 
 Bookmarks follow the text as you edit around them, so they stay on the right
-words rather than drifting. They last for as long as the document is open.
+words rather than drifting.
+
+### They are still there tomorrow
+
+Close the document and open it again and your bookmarks are where you left them,
+along with the place the cursor was. You do not have to do anything to keep
+them.
+
+This matters more than it sounds. The reason to have bookmarks at all is that
+there is no scrollbar thumb to glance at and no way to see at a glance where you
+are in a long file -- and that does not stop being true when you close the
+window. Marking nine places and losing them on the way out is the same loss as
+never marking them, just later.
+
+Two details worth knowing:
+
+- **A document you have never saved is not remembered.** There is no filename to
+  remember it by. Save it once and its bookmarks are kept from then on.
+- **Nothing is written next to your file.** No stray sidecar file appears in your
+  folder; the list lives in QuillLite's own settings folder, keyed by the file's
+  location. If the file has been shortened by something else since you last had
+  it open, bookmarks past the new end are pulled back to the end rather than
+  sending you nowhere.
+
+You can turn all of this off with the rest of bookmarks in **View ▸ Customize
+Features**, and then nothing is written at all.
+
+### Going back where you came from
+
+| Key | What it does |
+|---|---|
+| **Alt+Left** | Go back to where you were before the last jump |
+| **Alt+Right** | Go forward again |
+
+They are in the **Edit** menu rather than under Navigate, and deliberately: the
+Navigate menu is headings and bookmarks, both of which you can switch off, and
+these two belong to neither. They are always there.
+
+Every jump QuillLite makes is remembered: going to a line, following a heading,
+picking something out of the heading list or the bookmark list, and landing on a
+search hit. **Alt+Left** takes you back to where you were standing before it.
+
+It is the undo for moving about, and the keys are the ones every web browser and
+file window has used for thirty years. Without it, pressing F3 to check a word
+somewhere else in the document is a one-way trip: you can find your way back
+only if you happened to know the line number you were on, which is exactly the
+thing you were never told.
+
+Unlike bookmarks, this is only remembered while the window is open. It is about
+where you have been in this sitting, not about the document.
 
 ---
 
@@ -312,6 +385,39 @@ formatted document raises and that nothing else can answer for you.
 | **Ctrl+Alt+H** / **Ctrl+Alt+Shift+H** | Next / previous heading |
 | **Ctrl+Alt+L** | The list of every heading |
 
+### Rearranging them — Format ▸ Structure
+
+| Key | What it does |
+|---|---|
+| **Alt+Shift+Left** | Promote heading — one level shallower |
+| **Alt+Shift+Right** | Demote heading — one level deeper |
+| **Alt+Shift+Up** | Move this whole section up, past the one before it |
+| **Alt+Shift+Down** | Move this whole section down, past the one after it |
+
+Until now QuillLite could make headings and walk between them but never move
+them about, which left cut-and-paste as the only way to reorganise a document —
+and that is the operation it is worst at. Moving a section by hand means
+selecting from one heading to exactly the start of the next: a boundary you
+cannot see, that you have to find by ear, and that takes your place in the
+document with it when you get it wrong. **Alt+Shift+Up** does the same thing in
+one keystroke and tells you it happened.
+
+"Section" means the heading you are in plus everything under it, down to the
+next heading at the same level or higher. Moving a Heading 2 takes its Heading 3s
+with it.
+
+Two things to know:
+
+- **Promoting a Heading 1 leaves it a Heading 1.** It does not turn into
+  ordinary text — losing a heading altogether is not what Alt+Shift+Left is for,
+  and it would quietly drop the paragraph out of your headings list.
+- **Moving sections works in plain text documents**, where headings are Markdown
+  `#` lines. In a rich text document a heading is a font size rather than
+  something written in the text, and there is nothing there to move; QuillLite
+  says so rather than doing nothing. Promoting and demoting work in both.
+
+These are QUILL for All's own four keys, so they behave the same in both.
+
 ---
 
 ## Spell check
@@ -393,13 +499,32 @@ document. Each part says its own name and value.
 | **Word Count** | How many words the document has | repeats it |
 | **Character Count** | How many characters, spaces included | repeats it |
 | **Selection** | How much is selected, or "No selection" | repeats it |
+| **Typing Mode** | Whether typing inserts or overwrites | switches between them |
+| **Tab Mode** | Whether the Tab key types a tab or indents the line | switches between them |
 | **Format** | Plain text or rich text | switches between them |
 | **Heading** | Which heading you are inside | lists every heading |
 | **Encoding** | How this file stores its letters and accents | change it |
 | **Line Endings** | How this file marks the end of a line | change it |
 | **Saved State** | Whether you have unsaved changes | saves |
 
-Three of these are worth pointing out.
+Five of these are worth pointing out.
+
+**Typing Mode** is the one you cannot find out any other way. Every Windows
+editor has an overwrite mode, where what you type replaces the letters already
+there instead of pushing them along, and none of them will tell you which mode
+you are in — you find out by typing over a sentence you meant to keep. Press
+**Ctrl+Alt+Shift+W** to switch, or **Enter** on this part of the status bar.
+
+The **Insert** key switches it too, because the editing control answers that key
+whether QuillLite asks it to or not. QuillLite does not claim the key — it is
+NVDA's and JAWS's own modifier and taking it would fight your screen reader —
+but it does watch for it, so this part of the status bar stays right either way.
+
+**Tab Mode** is the same idea. QuillLite starts where Notepad does: the **Tab**
+key types a tab character. Switch it with **Ctrl+Alt+Shift+I** and Tab indents
+the whole line instead, which is what QUILL does by default and what you
+probably want when the file is code. **Shift+Tab** outdents either way, so a tab
+you did not mean to type can always be taken back without switching modes first.
 
 **Encoding** and **Line Endings** are the two things that decide whether your
 file opens properly on somebody else's computer, and almost no other editor
@@ -506,6 +631,35 @@ spelling in a `.json` or a `.py` file, which is an admission that people edit
 configuration and code in it -- and for that person, moving a block in or out a
 level is the single most common thing to want and the most tedious to do by
 arrow key.
+
+#### Asking how deep a line is
+
+**Describe Indent Depth** (**Ctrl+Alt+Shift+V**) says how far the line you are on
+is indented: "4 spaces", "1 tab", "1 tab, 3 spaces", or "No indentation".
+
+This is the one question about a line that nothing else will answer. A screen
+reader reads a line's *words*; it does not read the spaces and tabs in front of
+them. So in a YAML file, a Python file or a deeply nested list, the shape of the
+document -- which is most of its meaning -- is simply not there when you listen
+to it, and there has never been a way to ask.
+
+It also tells you something the words cannot: whether this line is indented with
+the same *kind* of whitespace as its neighbours. A file where one line uses a tab
+and the rest use spaces looks identical however carefully you read it, and in a
+Python file it will not run.
+
+#### Making Tab indent instead
+
+By default the **Tab** key types a tab character, the way Notepad's does. **View
+▸ Tab Key Inserts a Tab Character** is ticked to say so. Clear that tick --
+**Ctrl+Alt+Shift+I** -- and Tab indents the whole line instead, announcing the
+new depth as it goes. Working on code, that is usually the one you want.
+
+**Shift+Tab** outdents in *either* mode. That is deliberate: it means a tab you
+typed by accident can always be undone with one keystroke, without first working
+out which mode you were in.
+
+The status bar's **Tab Mode** part always says which one is on.
 
 ### Abbreviations
 
@@ -628,6 +782,26 @@ Uninstalling QuillLite does not delete that folder. Recovered work is the one
 thing you might not have finished with, and an uninstaller is the worst possible
 moment to discover that.
 
+### The portable copy keeps everything on the stick
+
+If you are running the **portable** QuillLite -- the `.zip` you unpack rather
+than the installer -- then none of the above applies. Everything goes into the
+`data\QuillLite` folder inside the bundle, right next to `QuillLite.exe`, and
+nothing at all is written to the computer you are plugged into. That is what
+portable means, and QuillLite does it from the very first launch: there is no
+setting to find first.
+
+Until version 1.0 it did not. A portable QuillLite quietly used
+`%LOCALAPPDATA%\QuillLite` on the host machine instead, and said nothing about
+it -- so settings did not travel with the stick, and, worse, recovered copies of
+documents you had not saved were left behind on someone else's computer. If you
+have been carrying a portable QuillLite, that folder is where anything you seem
+to have lost will be, and it is worth deleting once you have what you want out
+of it.
+
+Delete the `data` folder from the bundle and QuillLite goes back to using this
+computer's own profile -- that folder is what marks the copy as portable.
+
 ---
 
 ## What QuillLite is not
@@ -660,6 +834,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+O** | Open... |
 | **Ctrl+S** | Save |
 | **Ctrl+Shift+S** | Save As... |
+| **Ctrl+Alt+Shift+E** | Earlier Versions... |
 | **Ctrl+Alt+U** | Page Setup... |
 | **Ctrl+P** | Print... |
 | **Ctrl+W** | Close Window |
@@ -685,6 +860,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Shift+F3** | Find Previous |
 | **Ctrl+H** | Replace... |
 | **Ctrl+G** | Go to Line... |
+| **Alt+Left** | Go Back |
+| **Alt+Right** | Go Forward |
 
 ### Edit ▸ Matches
 
@@ -723,6 +900,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 |---|---|
 | **Alt+Shift+D** | Dark Mode |
 | **Alt+Z** | Word Wrap |
+| **Ctrl+Alt+Shift+W** | Overwrite Mode |
+| **Ctrl+Alt+Shift+I** | Tab Key Inserts a Tab Character |
 | **Ctrl+=** | Increase Text Size |
 | **Ctrl+-** | Decrease Text Size |
 | **Ctrl+0** | Reset Text Size |
@@ -748,6 +927,20 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+3** | Heading 3 |
 | **Ctrl+Alt+4** | Heading 4 |
 | **Ctrl+Alt+0** | Body Text |
+
+### Format ▸ Structure
+
+| Key | Command |
+|---|---|
+| **Alt+Shift+Left** | Promote Heading |
+| **Alt+Shift+Right** | Demote Heading |
+| **Alt+Shift+Up** | Move Section Up |
+| **Alt+Shift+Down** | Move Section Down |
+
+### Format
+
+| Key | Command |
+|---|---|
 | **Ctrl+L** | Align Left |
 | **Ctrl+E** | Centre |
 | **Ctrl+R** | Align Right |
@@ -827,6 +1020,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 |---|---|
 | **Ctrl+]** | Indent |
 | **Ctrl+[** | Outdent |
+| **Ctrl+Alt+Shift+V** | Describe Indent Depth |
 
 ### Tools ▸ More Line Work
 

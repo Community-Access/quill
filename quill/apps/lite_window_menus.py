@@ -124,6 +124,10 @@ class DocumentMenuMixin:
             "cmd_toggle_live_spelling": getattr(self, "_live_spelling", False),
             # F8 extend mode: on while there is an anchor to extend from.
             "cmd_toggle_extend_mode": getattr(self, "_selection_anchor", None) is not None,
+            # Per document too: the control keeps overtype per control.
+            "cmd_toggle_overwrite": getattr(self, "_overwrite_mode", False),
+            # Checked means Tab types a tab, which is how QuillLite starts.
+            "cmd_toggle_tab_mode": getattr(self, "_tab_inserts_literal", True),
         }
         for handler, checked in marks.items():
             item = self._check_items.get(handler)

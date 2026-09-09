@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.10.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillLite — User Guide</title>
   <style>
@@ -316,11 +316,36 @@ copy of it aside, about once a minute. That copy sits
 offered back to you the next time you start, in its own document.</p>
 <p>Save it, or close normally, and the copy is deleted. So there is
 never anything in there except work you actually need.</p>
-<p>There is also a separate <strong>timestamped backups</strong> option
+<h3 id="going-back-to-an-earlier-version">Going back to an earlier
+version</h3>
+<p>There is a separate <strong>timestamped backups</strong> option
 (<strong>View ▸ Customize Features</strong>), which keeps a dated copy
 every time you save. That is for the paragraph you deleted an hour ago
 rather than for a crash. It starts switched off, because it does fill up
 a folder.</p>
+<p>Turn it on and <strong>File ▸ Earlier Versions…</strong>
+(<strong>Ctrl+Alt+Shift+E</strong>) lists them, newest first, as “Today
+at 4:12 PM — 2,341 words”. Up to twenty are kept per document; after
+that the oldest go.</p>
+<p>The word count is there to be compared rather than read. Two saves a
+minute apart are otherwise almost impossible to tell apart by ear, and
+the version that is suddenly two thousand words shorter is usually the
+one you are hunting for.</p>
+<p>There are two ways to take one:</p>
+<ul>
+<li><strong>Restore</strong> puts that version into the window you are
+in. It does <strong>not</strong> save, so the file on disk is untouched
+until you decide, and <strong>Ctrl+Z</strong> undoes it. A restore
+chosen by mistake costs you one keystroke.</li>
+<li><strong>Open a Copy</strong> puts the old version in a new untitled
+window and leaves the document you are working on completely alone. Use
+this one when the question is “what did this say yesterday” rather than
+“put yesterday back”.</li>
+</ul>
+<p>Until version 1.0 QuillLite wrote these files and gave you no way to
+read one: they were there, correctly dated, and reachable only if you
+knew where the app kept them. If you have had backups switched on,
+everything from before this version is in the list too.</p>
 <hr />
 <h2 id="finding-things">Finding things</h2>
 <table>
@@ -428,8 +453,68 @@ word dog”, not “the word cat, or dog anywhere”.</p>
 </tbody>
 </table>
 <p>Bookmarks follow the text as you edit around them, so they stay on
-the right words rather than drifting. They last for as long as the
-document is open.</p>
+the right words rather than drifting.</p>
+<h3 id="they-are-still-there-tomorrow">They are still there
+tomorrow</h3>
+<p>Close the document and open it again and your bookmarks are where you
+left them, along with the place the cursor was. You do not have to do
+anything to keep them.</p>
+<p>This matters more than it sounds. The reason to have bookmarks at all
+is that there is no scrollbar thumb to glance at and no way to see at a
+glance where you are in a long file – and that does not stop being true
+when you close the window. Marking nine places and losing them on the
+way out is the same loss as never marking them, just later.</p>
+<p>Two details worth knowing:</p>
+<ul>
+<li><strong>A document you have never saved is not remembered.</strong>
+There is no filename to remember it by. Save it once and its bookmarks
+are kept from then on.</li>
+<li><strong>Nothing is written next to your file.</strong> No stray
+sidecar file appears in your folder; the list lives in QuillLite’s own
+settings folder, keyed by the file’s location. If the file has been
+shortened by something else since you last had it open, bookmarks past
+the new end are pulled back to the end rather than sending you
+nowhere.</li>
+</ul>
+<p>You can turn all of this off with the rest of bookmarks in
+<strong>View ▸ Customize Features</strong>, and then nothing is written
+at all.</p>
+<h3 id="going-back-where-you-came-from">Going back where you came
+from</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Left</strong></td>
+<td>Go back to where you were before the last jump</td>
+</tr>
+<tr>
+<td><strong>Alt+Right</strong></td>
+<td>Go forward again</td>
+</tr>
+</tbody>
+</table>
+<p>They are in the <strong>Edit</strong> menu rather than under
+Navigate, and deliberately: the Navigate menu is headings and bookmarks,
+both of which you can switch off, and these two belong to neither. They
+are always there.</p>
+<p>Every jump QuillLite makes is remembered: going to a line, following
+a heading, picking something out of the heading list or the bookmark
+list, and landing on a search hit. <strong>Alt+Left</strong> takes you
+back to where you were standing before it.</p>
+<p>It is the undo for moving about, and the keys are the ones every web
+browser and file window has used for thirty years. Without it, pressing
+F3 to check a word somewhere else in the document is a one-way trip: you
+can find your way back only if you happened to know the line number you
+were on, which is exactly the thing you were never told.</p>
+<p>Unlike bookmarks, this is only remembered while the window is open.
+It is about where you have been in this sitting, not about the
+document.</p>
 <hr />
 <h2 id="selecting">Selecting</h2>
 <p>Holding Shift and tapping an arrow key selects one character at a
@@ -659,6 +744,59 @@ can answer for you.</p>
 </tr>
 </tbody>
 </table>
+<h3 id="rearranging-them--format--structure">Rearranging them — Format ▸
+Structure</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+Left</strong></td>
+<td>Promote heading — one level shallower</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Right</strong></td>
+<td>Demote heading — one level deeper</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Up</strong></td>
+<td>Move this whole section up, past the one before it</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Down</strong></td>
+<td>Move this whole section down, past the one after it</td>
+</tr>
+</tbody>
+</table>
+<p>Until now QuillLite could make headings and walk between them but
+never move them about, which left cut-and-paste as the only way to
+reorganise a document — and that is the operation it is worst at. Moving
+a section by hand means selecting from one heading to exactly the start
+of the next: a boundary you cannot see, that you have to find by ear,
+and that takes your place in the document with it when you get it wrong.
+<strong>Alt+Shift+Up</strong> does the same thing in one keystroke and
+tells you it happened.</p>
+<p>“Section” means the heading you are in plus everything under it, down
+to the next heading at the same level or higher. Moving a Heading 2
+takes its Heading 3s with it.</p>
+<p>Two things to know:</p>
+<ul>
+<li><strong>Promoting a Heading 1 leaves it a Heading 1.</strong> It
+does not turn into ordinary text — losing a heading altogether is not
+what Alt+Shift+Left is for, and it would quietly drop the paragraph out
+of your headings list.</li>
+<li><strong>Moving sections works in plain text documents</strong>,
+where headings are Markdown <code>#</code> lines. In a rich text
+document a heading is a font size rather than something written in the
+text, and there is nothing there to move; QuillLite says so rather than
+doing nothing. Promoting and demoting work in both.</li>
+</ul>
+<p>These are QUILL for All’s own four keys, so they behave the same in
+both.</p>
 <hr />
 <h2 id="spell-check">Spell check</h2>
 <p>WordPad never had a spell checker. Notepad only got one recently.
@@ -778,6 +916,16 @@ again</td>
 <td>repeats it</td>
 </tr>
 <tr>
+<td><strong>Typing Mode</strong></td>
+<td>Whether typing inserts or overwrites</td>
+<td>switches between them</td>
+</tr>
+<tr>
+<td><strong>Tab Mode</strong></td>
+<td>Whether the Tab key types a tab or indents the line</td>
+<td>switches between them</td>
+</tr>
+<tr>
 <td><strong>Format</strong></td>
 <td>Plain text or rich text</td>
 <td>switches between them</td>
@@ -804,7 +952,26 @@ again</td>
 </tr>
 </tbody>
 </table>
-<p>Three of these are worth pointing out.</p>
+<p>Five of these are worth pointing out.</p>
+<p><strong>Typing Mode</strong> is the one you cannot find out any other
+way. Every Windows editor has an overwrite mode, where what you type
+replaces the letters already there instead of pushing them along, and
+none of them will tell you which mode you are in — you find out by
+typing over a sentence you meant to keep. Press
+<strong>Ctrl+Alt+Shift+W</strong> to switch, or <strong>Enter</strong>
+on this part of the status bar.</p>
+<p>The <strong>Insert</strong> key switches it too, because the editing
+control answers that key whether QuillLite asks it to or not. QuillLite
+does not claim the key — it is NVDA’s and JAWS’s own modifier and taking
+it would fight your screen reader — but it does watch for it, so this
+part of the status bar stays right either way.</p>
+<p><strong>Tab Mode</strong> is the same idea. QuillLite starts where
+Notepad does: the <strong>Tab</strong> key types a tab character. Switch
+it with <strong>Ctrl+Alt+Shift+I</strong> and Tab indents the whole line
+instead, which is what QUILL does by default and what you probably want
+when the file is code. <strong>Shift+Tab</strong> outdents either way,
+so a tab you did not mean to type can always be taken back without
+switching modes first.</p>
 <p><strong>Encoding</strong> and <strong>Line Endings</strong> are the
 two things that decide whether your file opens properly on somebody
 else’s computer, and almost no other editor shows them at all. You will
@@ -906,6 +1073,34 @@ about spelling in a <code>.json</code> or a <code>.py</code> file, which
 is an admission that people edit configuration and code in it – and for
 that person, moving a block in or out a level is the single most common
 thing to want and the most tedious to do by arrow key.</p>
+<h4 id="asking-how-deep-a-line-is">Asking how deep a line is</h4>
+<p><strong>Describe Indent Depth</strong>
+(<strong>Ctrl+Alt+Shift+V</strong>) says how far the line you are on is
+indented: “4 spaces”, “1 tab”, “1 tab, 3 spaces”, or “No
+indentation”.</p>
+<p>This is the one question about a line that nothing else will answer.
+A screen reader reads a line’s <em>words</em>; it does not read the
+spaces and tabs in front of them. So in a YAML file, a Python file or a
+deeply nested list, the shape of the document – which is most of its
+meaning – is simply not there when you listen to it, and there has never
+been a way to ask.</p>
+<p>It also tells you something the words cannot: whether this line is
+indented with the same <em>kind</em> of whitespace as its neighbours. A
+file where one line uses a tab and the rest use spaces looks identical
+however carefully you read it, and in a Python file it will not run.</p>
+<h4 id="making-tab-indent-instead">Making Tab indent instead</h4>
+<p>By default the <strong>Tab</strong> key types a tab character, the
+way Notepad’s does. <strong>View ▸ Tab Key Inserts a Tab
+Character</strong> is ticked to say so. Clear that tick –
+<strong>Ctrl+Alt+Shift+I</strong> – and Tab indents the whole line
+instead, announcing the new depth as it goes. Working on code, that is
+usually the one you want.</p>
+<p><strong>Shift+Tab</strong> outdents in <em>either</em> mode. That is
+deliberate: it means a tab you typed by accident can always be undone
+with one keystroke, without first working out which mode you were
+in.</p>
+<p>The status bar’s <strong>Tab Mode</strong> part always says which one
+is on.</p>
 <h3 id="abbreviations">Abbreviations</h3>
 <p>Type a short form, press space, and get the long one. Useful for an
 address, a sign off, or anything you type often and would rather not
@@ -1061,6 +1256,25 @@ it, and installing or removing one should never affect the other.</p>
 <p>Uninstalling QuillLite does not delete that folder. Recovered work is
 the one thing you might not have finished with, and an uninstaller is
 the worst possible moment to discover that.</p>
+<h3 id="the-portable-copy-keeps-everything-on-the-stick">The portable
+copy keeps everything on the stick</h3>
+<p>If you are running the <strong>portable</strong> QuillLite – the
+<code>.zip</code> you unpack rather than the installer – then none of
+the above applies. Everything goes into the <code>data\QuillLite</code>
+folder inside the bundle, right next to <code>QuillLite.exe</code>, and
+nothing at all is written to the computer you are plugged into. That is
+what portable means, and QuillLite does it from the very first launch:
+there is no setting to find first.</p>
+<p>Until version 1.0 it did not. A portable QuillLite quietly used
+<code>%LOCALAPPDATA%\QuillLite</code> on the host machine instead, and
+said nothing about it – so settings did not travel with the stick, and,
+worse, recovered copies of documents you had not saved were left behind
+on someone else’s computer. If you have been carrying a portable
+QuillLite, that folder is where anything you seem to have lost will be,
+and it is worth deleting once you have what you want out of it.</p>
+<p>Delete the <code>data</code> folder from the bundle and QuillLite
+goes back to using this computer’s own profile – that folder is what
+marks the copy as portable.</p>
 <hr />
 <h2 id="what-quilllite-is-not">What QuillLite is not</h2>
 <p>QuillLite is a companion to <strong>QUILL for All</strong>, not a
@@ -1109,6 +1323,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Shift+S</strong></td>
 <td>Save As…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+E</strong></td>
+<td>Earlier Versions…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+U</strong></td>
@@ -1200,6 +1418,14 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+G</strong></td>
 <td>Go to Line…</td>
+</tr>
+<tr>
+<td><strong>Alt+Left</strong></td>
+<td>Go Back</td>
+</tr>
+<tr>
+<td><strong>Alt+Right</strong></td>
+<td>Go Forward</td>
 </tr>
 </tbody>
 </table>
@@ -1327,6 +1553,14 @@ list inside the app.</p>
 <td>Word Wrap</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+Shift+W</strong></td>
+<td>Overwrite Mode</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+I</strong></td>
+<td>Tab Key Inserts a Tab Character</td>
+</tr>
+<tr>
 <td><strong>Ctrl+=</strong></td>
 <td>Increase Text Size</td>
 </tr>
@@ -1417,6 +1651,44 @@ list inside the app.</p>
 <td><strong>Ctrl+Alt+0</strong></td>
 <td>Body Text</td>
 </tr>
+</tbody>
+</table>
+<h3 id="format--structure">Format ▸ Structure</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alt+Shift+Left</strong></td>
+<td>Promote Heading</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Right</strong></td>
+<td>Demote Heading</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Up</strong></td>
+<td>Move Section Up</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+Down</strong></td>
+<td>Move Section Down</td>
+</tr>
+</tbody>
+</table>
+<h3 id="format-1">Format</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td><strong>Ctrl+L</strong></td>
 <td>Align Left</td>
@@ -1696,6 +1968,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+[</strong></td>
 <td>Outdent</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+V</strong></td>
+<td>Describe Indent Depth</td>
 </tr>
 </tbody>
 </table>

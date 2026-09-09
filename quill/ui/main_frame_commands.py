@@ -1876,6 +1876,12 @@ class CommandRegistryMixin:
             self._binding_for("format.toggle_tab_insert_mode"),
         )
         self.commands.register(
+            "format.describe_indent_depth",
+            "Describe Indent Depth",
+            self.describe_indent_depth,
+            self._binding_for("format.describe_indent_depth"),
+        )
+        self.commands.register(
             "format.insert_markdown_tag",
             "Insert Markdown Tag...",
             self.insert_markdown_tag,
@@ -2608,6 +2614,7 @@ class CommandRegistryMixin:
             "format.indent": self._id_indent,
             "format.outdent": self._id_outdent,
             "format.toggle_tab_insert_mode": self._id_toggle_tab_mode,
+            "format.describe_indent_depth": self._id_describe_indent_depth,
             "format.move_line_up": self._id_move_line_up,
             "format.move_line_down": self._id_move_line_down,
             # PR1 (EdSharp port): section-move command ids.

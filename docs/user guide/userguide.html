@@ -33572,6 +33572,27 @@ mode the next time it starts from that folder.</p>
 <p>The previous activation mechanism (<code>QUILL_PORTABLE=1</code>) is
 no longer required and is ignored: portable mode is a property of the
 bundle, not of the running environment.</p>
+<p><strong>Nothing is written to the host computer.</strong> A portable
+bundle is portable from the very first launch — you do not have to
+answer anything first. Extract the zip, run <code>quill.exe</code>, and
+your settings, keymap and everything else go straight into the
+<code>data\</code> folder beside it. No folder appears in
+<code>%APPDATA%</code> on the machine you happened to plug into, which
+is the entire point of carrying the app on a stick.</p>
+<p>Until version 1.0 this was not true: a freshly extracted portable
+copy used <code>%APPDATA%\Quill</code> on the host machine until you
+went to the Setup Wizard or Preferences and chose portable, and nothing
+said so. If you have been running a portable QUILL and your settings
+look like they have reset, they have not — they are in
+<code>%APPDATA%\Quill</code> on that computer, and you can copy that
+folder’s contents into the bundle’s <code>data\</code> folder to bring
+them across.</p>
+<p>You can still choose otherwise. Picking <strong>Windows
+profile</strong> in Preferences or the Setup Wizard is remembered and
+overrides the bundle, because an explicit choice always beats a default.
+The same applies to every Quill app that ships a portable build — Quill
+Radio, Cast, Weather, Audio Studio, Converter, Inkwell, Beacon, Media
+Player and QuillLite.</p>
 <p>When portable mode is on, keys are stored in a file called
 <code>keys.enc</code> inside the QUILL data directory. The file is
 encrypted with Windows DPAPI, so it is protected by your Windows

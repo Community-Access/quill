@@ -9121,6 +9121,12 @@ By default QUILL stores AI provider keys in the **Windows Credential Manager**, 
 
 The previous activation mechanism (`QUILL_PORTABLE=1`) is no longer required and is ignored: portable mode is a property of the bundle, not of the running environment.
 
+**Nothing is written to the host computer.** A portable bundle is portable from the very first launch — you do not have to answer anything first. Extract the zip, run `quill.exe`, and your settings, keymap and everything else go straight into the `data\` folder beside it. No folder appears in `%APPDATA%` on the machine you happened to plug into, which is the entire point of carrying the app on a stick.
+
+Until version 1.0 this was not true: a freshly extracted portable copy used `%APPDATA%\Quill` on the host machine until you went to the Setup Wizard or Preferences and chose portable, and nothing said so. If you have been running a portable QUILL and your settings look like they have reset, they have not — they are in `%APPDATA%\Quill` on that computer, and you can copy that folder's contents into the bundle's `data\` folder to bring them across.
+
+You can still choose otherwise. Picking **Windows profile** in Preferences or the Setup Wizard is remembered and overrides the bundle, because an explicit choice always beats a default. The same applies to every Quill app that ships a portable build — Quill Radio, Cast, Weather, Audio Studio, Converter, Inkwell, Beacon, Media Player and QuillLite.
+
 When portable mode is on, keys are stored in a file called `keys.enc` inside the QUILL data directory. The file is encrypted with Windows DPAPI, so it is protected by your Windows user-account key.
 
 **Limitations.** The encrypted file is tied to the Windows account that created it. Moving it to a different machine or a different Windows account will fail to decrypt; you will need to re-enter your keys there. Portable mode gives you a self-contained folder on the same machine — it does not give you cross-machine portability.

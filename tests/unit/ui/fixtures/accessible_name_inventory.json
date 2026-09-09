@@ -61,6 +61,7 @@
   "quill/apps/lite_dialogs.py::choose_from_rows::wx.ListBox": "named",
   "quill/apps/lite_dialogs.py::edit_file_format::wx.Choice": "named",
   "quill/apps/lite_dialogs.py::edit_file_format::wx.Choice#2": "named",
+  "quill/apps/lite_find_dialogs.py::_add_mode_choice::wx.Choice": "named",
   "quill/apps/lite_preferences.py::edit_preferences::wx.Choice": "named",
   "quill/apps/lite_preferences.py::edit_preferences::wx.Choice#2": "named",
   "quill/apps/lite_preferences.py::edit_preferences::wx.SpinCtrl": "named",

@@ -1065,7 +1065,6 @@ class MenuBuilderMixin:
         self._id_toggle_block_comment = wx.NewIdRef()
         self._id_indent = wx.NewIdRef()
         self._id_outdent = wx.NewIdRef()
-        self._id_toggle_tab_mode = wx.NewIdRef()
         self._id_move_line_up = wx.NewIdRef()
         self._id_move_line_down = wx.NewIdRef()
         # PR1 (EdSharp port): section-move ids, distinct from move-line.
@@ -1152,11 +1151,7 @@ class MenuBuilderMixin:
             self._id_outdent,
             self._menu_label(_("O&utdent"), "format.outdent"),
         )
-        format_menu.AppendCheckItem(
-            self._id_toggle_tab_mode,
-            self._menu_label(_("Tab Key Inserts Tab &Character"), "format.toggle_tab_insert_mode"),
-        )
-        format_menu.Check(self._id_toggle_tab_mode, getattr(self, "_tab_inserts_literal", False))
+        self.build_indent_mode_items(format_menu)
         format_menu.AppendSeparator()
 
         # --- Case ---

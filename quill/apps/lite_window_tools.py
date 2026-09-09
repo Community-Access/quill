@@ -34,7 +34,7 @@ from collections.abc import Callable
 
 import wx
 
-from quill.apps.lite_dialogs import edit_file_format
+from quill.apps.lite_dialogs import choose_from_rows, edit_file_format
 from quill.core import format_ops, line_ops, transforms
 from quill.core.lite import APP_NAME
 from quill.ui.dialog_contract import show_message_box
@@ -163,7 +163,7 @@ class DocumentToolsMixin:
     # Indenting
     # ------------------------------------------------------------------ #
 
-    def _shift_indent(self, shift: _IndentOp, *, verb: str) -> None:
+    def _shift_indent(self, shift: _IndentOp, *, verb: str, announce: bool = True) -> None:
         """Indent or outdent the selected lines, or the caret's line.
 
         Not ``_apply_tool``: indenting is defined by *where the lines are* in
@@ -171,6 +171,13 @@ class DocumentToolsMixin:
         :mod:`quill.core.format_ops` already takes and returns offsets for
         exactly that reason. Passing it a slice would indent the selection's
         first line from wherever the selection happened to begin.
+
+        ``announce=False`` is for the Tab key, which says the resulting *depth*
+        instead. Two announcements for one keystroke is over-announcing -- the
+        second arrives over the first and is the only one heard anyway -- and of
+        the two, "4 spaces" carries the information a screen reader does not
+        otherwise give. Refusals are still spoken either way: "nothing to
+        outdent" is the one outcome where silence and success sound alike.
         """
         text = self.control.GetValue()
         start, end = self.control.GetSelection()
@@ -182,14 +189,147 @@ class DocumentToolsMixin:
         self.control.SetSelection(new_start, new_end)
         self._set_modified(True)
         self._touch_status()
+        if not announce:
+            return
         lines = max(1, changed[new_start:new_end].count("\n") or 1)
         self._announce(f"{verb} {lines} line{'s' if lines != 1 else ''}")
 
-    def cmd_indent(self) -> None:
-        self._shift_indent(format_ops.indent_lines, verb="Indented")
+    def cmd_indent(self, *, announce: bool = True) -> None:
+        self._shift_indent(format_ops.indent_lines, verb="Indented", announce=announce)
 
-    def cmd_outdent(self) -> None:
-        self._shift_indent(format_ops.outdent_lines, verb="Outdented")
+    def cmd_outdent(self, *, announce: bool = True) -> None:
+        self._shift_indent(format_ops.outdent_lines, verb="Outdented", announce=announce)
+
+    def describe_indent_at_cursor(self) -> str:
+        """How deeply the caret's line is indented, in words.
+
+        QUILL's own :func:`~quill.core.format_ops.describe_indent_depth`, so
+        "4 spaces" means the same thing in both products however it was reached.
+        """
+        return format_ops.describe_indent_depth(
+            self.control.GetValue(), self.control.GetInsertionPoint()
+        )
+
+    def cmd_describe_indent(self) -> None:
+        """Say the caret line's indentation, on demand.
+
+        The one question about a line that cannot otherwise be asked. A screen
+        reader reads a line's *text*; it does not read the spaces or tabs in
+        front of it, so in a YAML file, a Python module or a nested list the
+        structure of the document is invisible by ear. QuillLite already goes
+        quiet about spelling in those files, which is an admission that people
+        edit them here -- and for those people this is the fact the editor was
+        withholding.
+
+        QUILL had the phrasing and no way to ask for it, only an
+        announce-as-you-move toggle that speaks while you are moving and stays
+        silent when you stop to wonder. The command was added there first, on
+        this same key, because QuillLite may never be ahead of the editor.
+        """
+        self._announce(self.describe_indent_at_cursor())
+
+    # ------------------------------------------------------------------ #
+    # Earlier versions of this file
+    # ------------------------------------------------------------------ #
+
+    def cmd_browse_backups(self) -> None:
+        """List the dated copies kept on every save, and put one back.
+
+        QuillLite has written these since backups shipped and offered no way to
+        read one: the files were correct, correctly named, and reachable only by
+        knowing that ``%LOCALAPPDATA%\\QuillLite\\backups`` exists and which of
+        the hashed folders was yours. A safety net nobody can reach is not a
+        safety net, and this is the half that was missing.
+
+        Two verbs, because restoring in place and looking first are different
+        needs and only one of them is safe when you are not sure:
+
+        * **Restore** replaces this document's text. It is undoable with Ctrl+Z,
+          and it does not save -- so the file on disk is untouched until you
+          decide, which means a restore chosen by mistake costs one keystroke.
+        * **Open a Copy** puts the old version in a new untitled window and
+          leaves this one alone. That is the one to use when the question is
+          "what did this say yesterday" rather than "put yesterday back".
+
+        The rows are the shared phrasing
+        (:func:`quill.core.version_history.version_label`), so a version reads
+        the same here as in QUILL's own Restore Previous Version.
+        """
+        if not self.app.feature_enabled("backups"):
+            self._announce(
+                "Backups are switched off. Turn them on in View, Customize Features, "
+                "and QuillLite will keep a dated copy of this file on every save."
+            )
+            return
+        if self.path is None:
+            self._announce("Save this document once and its earlier versions are kept from then on")
+            return
+        from quill.core.lite.backups import backup_saved_at, list_backups, read_backup
+        from quill.core.metrics import compute_document_stats
+        from quill.core.version_history import version_label
+
+        rows: list[tuple[object, str]] = []
+        for backup in list_backups(self.path):
+            saved = backup_saved_at(backup)
+            text = read_backup(backup)
+            if saved is None or text is None:
+                continue  # not one of ours, or gone since the list was built
+            words = compute_document_stats(text).words
+            rows.append((backup, version_label(saved, words=words)))
+        if not rows:
+            self._announce(f"No earlier versions of {self.path.name} yet")
+            return
+        chosen = choose_from_rows(
+            self,
+            title="Earlier Versions",
+            label=f"&Earlier versions of {self.path.name}, newest first:",
+            help_text=(
+                "Dated copies of this file, one for each time you saved it. Restore "
+                "replaces the text in this window, which you can undo and which does "
+                "not write to the file until you save. Open a Copy puts the old "
+                "version in a new window and leaves this one alone."
+            ),
+            rows=rows,
+            extra_button="Open a &Copy",
+        )
+        if chosen is None:
+            self.control.SetFocus()
+            return
+        backup, action = chosen
+        text = read_backup(backup)
+        if text is None:
+            self._announce("That version could not be read; it may have been removed")
+            self.control.SetFocus()
+            return
+        if action == "copy":
+            self._open_backup_copy(text)
+            return
+        self._restore_backup(text)
+
+    def _open_backup_copy(self, text: str) -> None:
+        """Put an old version in a new untitled window; this document is untouched."""
+        window = self.app.new_window(self.editor.mode)
+        window.control.SetValue(text)
+        window._set_modified(True)
+        window._touch_status()
+        window._announce("Opened that version as a new untitled document")
+
+    def _restore_backup(self, text: str) -> None:
+        """Replace this document's text with an old version, undoably.
+
+        ``Replace`` over the whole range rather than ``SetValue`` on purpose:
+        it goes on the control's undo stack, so Ctrl+Z takes the restore back.
+        Nothing is written to disk, and the announcement says so -- somebody who
+        has just replaced their document needs to hear that they can still
+        change their mind.
+        """
+        self.control.Replace(0, self.control.GetLastPosition(), text)
+        self.control.SetInsertionPoint(0)
+        self._set_modified(True)
+        self._touch_status()
+        self._announce(
+            "Restored that version. Nothing is written until you save, and Control Z undoes it."
+        )
 
     # ------------------------------------------------------------------ #
     # How the file is written

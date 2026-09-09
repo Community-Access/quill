@@ -2618,3 +2618,98 @@ def test_offer_post_download_actions_offers_extract_for_zip_not_install() -> Non
     # The old behavior (zip treated as non-runnable, non-extractable, only
     # ever "Open folder"/"Close") must not have silently regressed back.
     assert 'runnable = target.suffix.lower() in {".exe", ".msi"}' in src
+
+
+def test_toggle_overwrite_mode_moves_the_control_not_just_the_status_cell() -> None:
+    """The command used to flip a flag and tell the control nothing.
+
+    ``_overwrite_mode`` is read in exactly one place -- the status bar -- so a
+    toggle that skipped the control left the cell claiming "Overwrite" while
+    typing still inserted, to somebody who cannot check by looking. The native
+    RICHEDIT50W owns overtype and honours VK_INSERT, so the fix is to hand it
+    the key. Assert on the messages sent, not only on the flag.
+    """
+    frame = _build_frame("hello", insertion_point=0)
+    guarded: list[bool] = []
+
+    class _RichEdit:
+        def toggle_overtype(self) -> bool:
+            guarded.append(frame._synthetic_insert_key)
+            return True
+
+    frame.editor.quill_richedit = _RichEdit()  # type: ignore[attr-defined]
+    frame._synthetic_insert_key = False
+
+    frame.toggle_overwrite_mode()
+
+    # The guard has to be up for the whole send, because the synthesised key
+    # comes back through this frame's own EVT_KEY_DOWN and would otherwise
+    # flip the flag straight back.
+    assert guarded == [True]
+    assert frame._synthetic_insert_key is False
+    assert frame._overwrite_mode is True
+    assert frame.statusbar.status[2] == "Overwrite"
+
+
+def test_toggle_overwrite_mode_refuses_when_the_control_cannot_be_told() -> None:
+    """A surface with no native control cannot overtype, so saying it did would lie."""
+    frame = _build_frame("hello", insertion_point=0)
+
+    frame.toggle_overwrite_mode()
+
+    assert frame._overwrite_mode is False
+    assert "not available" in frame._status_message
+
+
+def test_toggle_overwrite_mode_to_the_state_already_held_sends_nothing() -> None:
+    """Otherwise an explicit ``enabled=`` would toggle the control out of step."""
+    frame = _build_frame("hello", insertion_point=0)
+    frame._overwrite_mode = False
+
+    class _RichEdit:
+        def toggle_overtype(self) -> bool:
+            pytest.fail("the control must not be told")
+
+    frame.editor.quill_richedit = _RichEdit()  # type: ignore[attr-defined]
+
+    frame.toggle_overwrite_mode(enabled=False)
+
+    assert frame._overwrite_mode is False
+
+
+def test_synthesised_insert_key_does_not_double_toggle_the_flag() -> None:
+    frame = _build_frame("hello", insertion_point=0)
+    frame._wx = type("WX", (), {"WXK_INSERT": 45})()
+    frame._overwrite_mode = True
+    frame._synthetic_insert_key = True
+    event = _KeyEvent(45)
+
+    frame._on_editor_key_down(event)
+
+    assert frame._overwrite_mode is True
+    assert event.skipped is True
+
+
+def test_describe_indent_depth_answers_on_demand() -> None:
+    """QUILL had the phrasing for years and nothing bound to it.
+
+    ``format_ops.describe_indent_depth`` was reachable only through the
+    announce-as-you-move toggle and the Tab key -- both of which speak while you
+    are moving and go quiet at the moment you stop and wonder what the shape of
+    the file is. Leading whitespace is the one part of a line a screen reader
+    does not read back, so on demand is the only time the answer is any use.
+    """
+    frame = _build_frame("no indent\n\t   tabbed\n", insertion_point=len("no indent\n") + 5)
+
+    frame.describe_indent_depth()
+
+    assert frame._status_message == "1 tab, 3 spaces"
+
+
+def test_describe_indent_depth_says_so_when_there_is_none() -> None:
+    """Silence is indistinguishable by ear from a key that is not bound."""
+    frame = _build_frame("flush left", insertion_point=3)
+
+    frame.describe_indent_depth()
+
+    assert frame._status_message == "No indentation"

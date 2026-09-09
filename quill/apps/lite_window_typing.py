@@ -30,6 +30,25 @@ Neither runs in plain text mode by accident: both are keyed off ``EVT_CHAR``
 after the character has landed, and both leave the text alone when their area is
 off.
 
+**Overtype** is the fourth. The native control implements insert-versus-overwrite
+itself and toggles it on VK_INSERT, and it will not report which mode it is in --
+so QuillLite mirrors the mode, and every route that changes it comes through
+:meth:`~quill.ui.richedit_editing.RichEditDocument.toggle_overtype` (which is
+also what QUILL's own command calls). The Insert key is watched rather than
+bound: it is NVDA's and JAWS's modifier and must never be claimed, but the
+control answers it regardless, so the mirror has to see it go past or the Typing
+Mode cell would start lying the first time somebody pressed it.
+
+**Tab mode** is the fifth, and the only one that changes what an ordinary key
+*means*. QuillLite is a Notepad replacement, so its Tab types a tab character --
+that is the default, and it is the opposite of QUILL's, where Tab runs the smart
+line indent. The divergence is deliberate and is the only one on this page:
+QUILL is a document editor whose Tab is almost always about structure, while a
+file opened in QuillLite is as likely to be a configuration file where a tab is
+data. Both products ship the same toggle so either default can be left behind,
+and in both Shift+Tab outdents whatever the mode, so a stray indent can be
+undone without first switching back.
+
 **Spell check** is the third thing watching the keystroke, and the only one that
 never changes the text -- it schedules
 :meth:`~quill.apps.lite_window_spelling.DocumentSpellingMixin.schedule_live_spell_check`
@@ -55,6 +74,94 @@ _QUOTES = {'"', "'"}
 
 class DocumentTypingMixin:
     """Abbreviation expansion and autocorrect, on the way through EVT_CHAR."""
+
+    # -- overtype ------------------------------------------------------------ #
+
+    def _init_overwrite(self) -> None:
+        """Start in insert mode, which is where a freshly built control starts."""
+        #: Mirrors the control, which keeps the mode and will not report it.
+        self._overwrite_mode = False
+        #: Up only while :meth:`cmd_toggle_overwrite` is handing the control a
+        #: synthesised Insert; the watcher must not read that as the user.
+        self._synthetic_insert_key = False
+        #: True: Tab types a tab character (Notepad, and QuillLite's default).
+        #: False: Tab runs the smart line indent (QUILL's default). See the
+        #: module docstring for why the two products start on opposite sides.
+        self._tab_inserts_literal = True
+
+    def _on_key_down(self, event: wx.KeyEvent) -> None:
+        """Watch the Insert key go past, and keep the mirror true.
+
+        Never bound, only watched: Insert is the screen reader's modifier, and
+        ``Skip`` is what lets the control do the overtype it was always going
+        to do. All this adds is that the status cell knows.
+        """
+        code = event.GetKeyCode()
+        if code == wx.WXK_INSERT and not self._synthetic_insert_key:
+            self._overwrite_mode = not self._overwrite_mode
+            self._touch_status()
+            self._sync_check_items()
+            event.Skip()
+            return
+        if code == wx.WXK_TAB and self._handle_tab(event):
+            return
+        event.Skip()
+
+    def _handle_tab(self, event: wx.KeyEvent) -> bool:
+        """Indent or outdent instead of typing a tab. ``True`` if it was handled.
+
+        Shift+Tab outdents in *either* mode, so a stray indent can be undone
+        without first leaving literal-tab mode. Plain Tab is only intercepted
+        when the smart mode is on; otherwise it is left alone and the control --
+        built with ``TE_PROCESS_TAB`` -- types the character itself, which is
+        what a Notepad replacement is expected to do.
+
+        The outcome is spoken as the new depth ("4 spaces", "1 tab") rather than
+        "Indented 1 line", because leading whitespace is precisely what a screen
+        reader does not read back: the count is the only way to hear what the
+        keystroke actually did.
+        """
+        if event.ShiftDown():
+            self.cmd_outdent(announce=False)
+        elif self._tab_inserts_literal:
+            return False
+        else:
+            self.cmd_indent(announce=False)
+        self._announce(self.describe_indent_at_cursor())
+        return True
+
+    def cmd_toggle_tab_mode(self) -> None:
+        """Switch the Tab key between typing a tab and indenting the line."""
+        self._tab_inserts_literal = not self._tab_inserts_literal
+        self._touch_status()
+        self._sync_check_items()
+        self._announce(
+            "Tab key types a tab character"
+            if self._tab_inserts_literal
+            else "Tab key indents the line"
+        )
+
+    def cmd_toggle_overwrite(self) -> None:
+        """Switch between inserting and overwriting, in the control as well.
+
+        Refuses rather than lies when there is no native control to tell: a
+        status cell that misreports what typing is about to do, to somebody who
+        cannot check by looking, is the one failure this bar exists to prevent.
+        """
+        toggle = getattr(self.editor, "toggle_overtype", None)
+        self._synthetic_insert_key = True
+        try:
+            moved = bool(toggle()) if callable(toggle) else False
+        except Exception:  # noqa: BLE001 - the mirror stays honest either way
+            moved = False
+        finally:
+            self._synthetic_insert_key = False
+        if not moved:
+            self._announce("Overwrite mode is not available on this editing surface")
+            return
+        self._overwrite_mode = not self._overwrite_mode
+        self._sync_check_items()
+        self._announce("Overwrite mode on" if self._overwrite_mode else "Insert mode on")
 
     def _on_char(self, event: wx.KeyEvent) -> None:
         """Watch the keystroke. Almost always: let it through untouched.

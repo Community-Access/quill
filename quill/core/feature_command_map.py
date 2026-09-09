@@ -319,6 +319,7 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "format.heading_5": "core.format",
     "format.heading_6": "core.format",
     "format.describe_formatting": "core.format",
+    "format.describe_indent_depth": "core.format",
     "format.clear_formatting": "core.format",
     "format.insert_page_break": "core.format",
     "format.font_dialog": "core.format",

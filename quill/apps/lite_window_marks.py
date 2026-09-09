@@ -16,6 +16,15 @@ already existed and are already tested:
   to come back to, with a number you can hold. There is no scrollbar thumb to
   remember the position of and no glance that finds the place again, so a
   bookmark is not a convenience here.
+
+  **They survive closing the document, since 2026-09-09**, along with where
+  the cursor was. That was the missing half of the same argument: "no
+  scrollbar to remember the position of" does not stop being true when the
+  window closes, and reopening a long file to find the nine places you marked
+  gone is the same loss, merely deferred. The store is QUILL's own
+  :class:`~quill.core.bookmarks.DocumentMemory`, keyed by file path and kept in
+  QuillLite's data folder -- no sidecar file is written next to anybody's
+  document.
 * **Describe Character** -- :func:`quill.core.char_describe.describe_character`.
   What is actually under the cursor: its Unicode name, its code point, and a
   plain-language note for the invisibles that bite writers -- a non-breaking
@@ -35,7 +44,7 @@ import wx
 
 from quill.apps.lite_dialogs import choose_bookmark, show_text_window
 from quill.core.char_describe import describe_character
-from quill.core.numbered_bookmarks import MAX_BOOKMARKS, label_for
+from quill.core.numbered_bookmarks import MAX_BOOKMARKS, BookmarkSet, label_for
 from quill.core.selection import expand_selection, line_span, paragraph_span, word_span
 
 __all__ = ["DocumentMarksMixin"]
@@ -209,6 +218,72 @@ class DocumentMarksMixin:
             if count
             else "No bookmarks to clear"
         )
+
+    # ------------------------------------------------------------------ #
+    # What this document remembers between sessions
+    # ------------------------------------------------------------------ #
+
+    def _memory_key(self) -> str | None:
+        """This document's key in the store, or ``None`` when it has no file.
+
+        An unsaved document is deliberately never persisted: there is nothing
+        stable to key it by, and a scratch buffer that grew a row in a database
+        would be a promise the next session cannot keep.
+        """
+        store = getattr(self.app, "document_memory", None)
+        if store is None:
+            return None
+        return store.key_for(self.path)
+
+    def restore_document_memory(self) -> None:
+        """Put back this document's bookmarks and last cursor position.
+
+        Called after a load, when ``self.path`` is finally known. Nothing is
+        announced: the cursor moving is not an outcome the user asked for, and
+        the screen reader reads the line it lands on by itself. What *would* be
+        wrong is landing silently in the middle of a file with no explanation --
+        so the status bar's Position cell is refreshed, which is where somebody
+        checks.
+
+        Positions are clamped to the document's length, because the file can
+        have been changed by another program since the bookmarks were written
+        and a bookmark past the end would send the caret nowhere.
+        """
+        key = self._memory_key()
+        if key is None:
+            return
+        store = self.app.document_memory
+        length = self.control.GetLastPosition()
+        try:
+            self.bookmarks = BookmarkSet.from_records(store.numbered_for(key))
+            self.bookmarks.clamped_to(length)
+            last = store.last_position(key)
+        except Exception:  # noqa: BLE001 - a bad row costs the memory, not the file
+            return
+        if isinstance(last, int) and 0 < last <= length:
+            self.control.SetInsertionPoint(last)
+            self.control.ShowPosition(last)
+        self._tracked_length = length
+        self._touch_status()
+
+    def remember_document_memory(self) -> None:
+        """Write this document's bookmarks and cursor position back to the store.
+
+        Called when the window closes and after each save, not on every edit:
+        the caret moves on every keystroke and this writes a file. A crash
+        therefore costs the current cursor position and no bookmarks that were
+        set before the last save, which is the right side of that trade -- the
+        alternative is a JSON write per arrow key.
+        """
+        key = self._memory_key()
+        if key is None:
+            return
+        store = self.app.document_memory
+        try:
+            store.set_numbered(key, self.bookmarks.to_records())
+            store.set_last_position(key, self.control.GetInsertionPoint())
+        except Exception:  # noqa: BLE001 - never let the store fail a close
+            pass
 
     # ------------------------------------------------------------------ #
     # Keeping bookmarks honest

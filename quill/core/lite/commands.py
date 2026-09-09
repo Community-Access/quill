@@ -73,6 +73,16 @@ COMMANDS: list[CommandRow] = [
     ("&File", "", "", "", "sep"),
     ("&File", "&Save", "Ctrl+S", "cmd_save", ""),
     ("&File", "Save &As...", "Ctrl+Shift+S", "cmd_save_as", ""),
+    # The dated copies kept on every save. QuillLite has written these since
+    # backups shipped and offered no way to read one back: the files were
+    # correct, correctly named, and reachable only by knowing that
+    # %LOCALAPPDATA%\QuillLiteackups exists and which hashed folder was
+    # yours. A safety net nobody can reach is not a safety net.
+    #
+    # In File because that is where a version of *this file* belongs, and where
+    # QUILL keeps its own Restore Previous Version. Its own area rather than the
+    # File menu's, since backups are switchable and the rest of File is not.
+    ("&File", "Earlier &Versions...", "Ctrl+Alt+Shift+E", "cmd_browse_backups", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "Page Set&up...", "Ctrl+Alt+U", "cmd_page_setup", ""),
     ("&File", "&Print...", "Ctrl+P", "cmd_print", ""),
@@ -105,6 +115,22 @@ COMMANDS: list[CommandRow] = [
     ("&Edit", "Find Pre&vious", "Shift+F3", "cmd_find_previous", ""),
     ("&Edit", "R&eplace...", "Ctrl+H", "cmd_replace", ""),
     ("&Edit", "&Go to Line...", "Ctrl+G", "cmd_goto_line", ""),
+    # Back and Forward, on the pair every browser and file window has used for
+    # thirty years, and the pair QUILL binds. The undo for navigation: without
+    # it every jump is one-way, and somebody who followed a heading or landed on
+    # a search hit has no way back to the paragraph they were writing except to
+    # remember a line number they were never told.
+    #
+    # In Edit rather than in the Navigate menu, and the reason is the floor:
+    # Navigate is headings and bookmarks, both switchable areas, so a listener
+    # who turned both off would lose Back and Forward with them -- and these
+    # belong to neither. Edit is where QuillLite already keeps the navigation
+    # that is not optional, which is why Go to Line is directly above.
+    #
+    # QuillLite is Windows-only, so the macOS Cmd+[ / Cmd+] fallback QUILL
+    # carries for #609 has nothing to answer here.
+    ("&Edit", "Go Bac&k", "Alt+Left", "cmd_back_location", ""),
+    ("&Edit", "Go For&ward", "Alt+Right", "cmd_forward_location", ""),
     # -- Edit > Matches ------------------------------------------------------
     # Two questions Find Next cannot answer: how many are there, and what does
     # each one sit in. Both matter most in the moment just before a Replace
@@ -185,6 +211,26 @@ COMMANDS: list[CommandRow] = [
     # After Edit, where WordPad puts it.
     ("&View", "&Dark Mode", "Alt+Shift+D", "cmd_toggle_dark", "check"),
     ("&View", "&Word Wrap", "Alt+Z", "cmd_toggle_wrap", "check"),
+    # Overtype, on QUILL's own chord. **Not** the Insert key, which is NVDA's
+    # and JAWS's modifier -- binding it would fight the reader. The native
+    # control answers Insert itself whatever we do, so QuillLite mirrors that
+    # into the Typing Mode cell rather than claiming the key: a reader that is
+    # not using Insert as its modifier still gets the Windows behaviour, and
+    # the status cell stays true either way.
+    ("&View", "&Overwrite Mode", "Ctrl+Alt+Shift+W", "cmd_toggle_overwrite", "check"),
+    # What the Tab key does. Checked means Tab types a tab character, which is
+    # Notepad's behaviour and QuillLite's default; unchecked runs the smart line
+    # indent, which is QUILL's. The default differs on purpose -- a file opened
+    # here is as likely to be a configuration file where a tab is data -- and
+    # the key differs because it has to: QUILL binds this to the leader chord
+    # Ctrl+Shift+Grave, U and QuillLite has no leader key at all.
+    (
+        "&View",
+        "&Tab Key Inserts a Tab Character",
+        "Ctrl+Alt+Shift+I",
+        "cmd_toggle_tab_mode",
+        "check",
+    ),
     ("&View", "", "", "", "sep"),
     # Notepad's own zoom chords.
     ("&View", "&Increase Text Size", "Ctrl+=", "cmd_zoom_in", ""),
@@ -225,6 +271,23 @@ COMMANDS: list[CommandRow] = [
     ("F&ormat", "Heading &3", "Ctrl+Alt+3", "cmd_heading_3", ""),
     ("F&ormat", "Heading &4", "Ctrl+Alt+4", "cmd_heading_4", ""),
     ("F&ormat", "Body &Text", "Ctrl+Alt+0", "cmd_heading_0", ""),
+    # -- Format > Structure --------------------------------------------------
+    # Restructuring, on QUILL's own four keys. Until now QuillLite could create
+    # and navigate headings but never rearrange them, so reorganising a
+    # document fell back to cut and paste -- which means selecting from one
+    # heading to the start of the next, a boundary you cannot see and have to
+    # find by ear, and which loses your place when you get it wrong.
+    #
+    # A submenu because the Format menu is out of letters: Promote Heading
+    # wanted H (taken by One and a Half Spacing), Move Section Up wanted U
+    # (Underline) and Move Section Down wanted W (Grow Font). A submenu opens
+    # its own mnemonic namespace instead of forcing a worse letter on three
+    # neighbours -- the same answer Edit's Matches and Selection submenus are.
+    # Its own title takes E, which the Format menu itself does not use.
+    ("F&ormat|Structur&e", "Promote &Heading", "Alt+Shift+Left", "cmd_promote_heading", ""),
+    ("F&ormat|Structur&e", "D&emote Heading", "Alt+Shift+Right", "cmd_demote_heading", ""),
+    ("F&ormat|Structur&e", "Move Section &Up", "Alt+Shift+Up", "cmd_move_section_up", ""),
+    ("F&ormat|Structur&e", "Move Section Do&wn", "Alt+Shift+Down", "cmd_move_section_down", ""),
     ("F&ormat", "", "", "", "sep"),
     ("F&ormat", "Align &Left", "Ctrl+L", "cmd_align_left", ""),
     ("F&ormat", "&Centre", "Ctrl+E", "cmd_align_center", ""),
@@ -327,13 +390,17 @@ COMMANDS: list[CommandRow] = [
     # -- Tools > Indenting ---------------------------------------------------
     # A submenu because the Tools menu has few free mnemonic letters left and
     # these are one idea. QUILL's own chords, unchanged.
-    #
-    # Deliberately NOT a Describe Indent Depth command, though leading
-    # whitespace is exactly what a reader does not speak: QUILL has no such
-    # command, only an announce-as-you-move toggle, and QuillLite may never be
-    # ahead of the editor. It belongs in QUILL first.
     ("&Tools|Indentin&g", "&Indent", "Ctrl+]", "cmd_indent", ""),
     ("&Tools|Indentin&g", "&Outdent", "Ctrl+[", "cmd_outdent", ""),
+    # Describe Indent Depth landed in QUILL first (2026-09-09,
+    # ``format.describe_indent_depth``, the same chord), which is the order the
+    # house rule requires: QuillLite may never be ahead of the editor. Leading
+    # whitespace is the one part of a line a screen reader does not read back,
+    # so this is the only way to ask what shape the document is in -- and QUILL
+    # had the phrasing for two years with nothing bound to it, only an
+    # announce-as-you-move toggle that speaks while you move and goes quiet the
+    # moment you stop to wonder.
+    ("&Tools|Indentin&g", "&Describe Indent Depth", "Ctrl+Alt+Shift+V", "cmd_describe_indent", ""),
     # -- Tools > More Line Work ----------------------------------------------
     ("&Tools|More Line &Work", "&Reverse Lines", "Alt+Shift+Z", "cmd_reverse_lines", ""),
     (
@@ -497,6 +564,10 @@ COMMAND_AREA: dict[str, str] = {
     # expansion, or the other way round.
     "cmd_manage_abbreviations": "abbreviations",
     "cmd_go_to_anything": "go_to_anything",
+    # Reading a backup belongs to the same switch that writes them: an area that
+    # is off must own nothing, and a browser over a store nothing is writing to
+    # would only ever be able to say "no earlier versions".
+    "cmd_browse_backups": "backups",
 }
 COMMAND_AREA.update({f"cmd_set_bookmark_{n}": "bookmarks" for n in range(1, 10)})
 

@@ -20,11 +20,21 @@ is trying not to lose their place, and QUILL's own named marks
 (:class:`quill.core.marks.NamedMarks`) are the writing environment's answer to
 that, not a notepad's.
 
-Bookmarks live in memory for the session, deliberately. Persisting them would
-mean writing a sidecar file next to somebody's document or a database keyed by
-path -- both are decisions an editor should not make on a user's behalf, and
-both are wrong for the file you opened once out of a downloads folder. A host
-that *does* want them kept can serialise :meth:`BookmarkSet.all` itself.
+**Bookmarks persist, since 2026-09-09.** They did not at first, and the reason
+given was that keeping them would mean either a sidecar file next to somebody's
+document or a database keyed by path -- both decisions an editor should not make
+on a user's behalf. The first half of that still holds and no sidecar is
+written. The second half was wrong twice over: QUILL has kept exactly such a
+database in its own data folder since #300
+(:class:`~quill.core.bookmarks.DocumentMemory`), so the decision was already
+made and merely not shared; and the argument for numbered bookmarks -- there is
+no scrollbar to remember the position of -- does not stop when the document
+closes. It is *strongest* then. Reopening a long file and finding the nine
+places you marked gone is the same loss as never having marked them, deferred.
+
+:meth:`BookmarkSet.to_records` and :meth:`BookmarkSet.from_records` are the
+serialisation, here rather than in either host so both products keep the same
+on-disk shape. A caller that wants the old behaviour simply never calls them.
 
 **Positions move when the document does.** Text inserted before a bookmark
 pushes it along; text deleted around it collapses it. Without that a bookmark is
@@ -108,6 +118,58 @@ class BookmarkSet:
 
     def __len__(self) -> int:
         return len(self._slots)
+
+    # -- persistence ---------------------------------------------------------- #
+
+    def to_records(self) -> list[dict[str, object]]:
+        """The bookmarks as plain JSON-safe dicts, in slot order.
+
+        Slot order rather than :meth:`all`'s document order, because this is the
+        on-disk form and a file whose lines reorder themselves as the user edits
+        makes for a diff nobody can read.
+        """
+        return [
+            {"number": mark.number, "position": mark.position, "label": mark.label}
+            for mark in sorted(self._slots.values(), key=lambda mark: mark.number)
+        ]
+
+    @classmethod
+    def from_records(cls, records: object) -> BookmarkSet:
+        """Rebuild from :meth:`to_records`, ignoring anything malformed.
+
+        Forgiving on purpose, like every other store in this codebase: a
+        bookmark file that has been hand-edited, truncated by a power cut or
+        written by a newer version must cost the user the bookmarks it cannot
+        read and nothing else. Refusing to open the document would be a far
+        worse answer to "one of nine integers is a string".
+        """
+        marks = cls()
+        if not isinstance(records, list):
+            return marks
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            number = record.get("number")
+            position = record.get("position")
+            if not isinstance(number, int) or not isinstance(position, int):
+                continue
+            if not 1 <= number <= MAX_BOOKMARKS:
+                continue
+            label = record.get("label")
+            marks.set(number, position, label if isinstance(label, str) else "")
+        return marks
+
+    def clamped_to(self, length: int) -> None:
+        """Pull every bookmark inside a document of *length* characters.
+
+        The file on disk can have changed since the bookmarks were written --
+        by another program, or by this one with the save cancelled -- and a
+        bookmark past the end would send the caret nowhere.
+        """
+        limit = max(0, int(length))
+        for number, mark in list(self._slots.items()):
+            if mark.position > limit:
+                self._slots[number] = Bookmark(number, limit, mark.label)
 
     def next_after(self, position: int) -> Bookmark | None:
         """The first bookmark after *position*, wrapping to the first."""

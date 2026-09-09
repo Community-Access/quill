@@ -405,6 +405,12 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Bound to a QUILL-key chord: plain Ctrl+M / Ctrl+Shift+M are the mark ring,
     # and Ctrl+Alt+ chords are screen-reader-hostile (§10.8), so neither is usable.
     "format.toggle_tab_insert_mode": "Ctrl+Shift+Grave, U",
+    # Say the caret line's indentation on demand -- the one part of a line a
+    # screen reader does not read back, and until now askable in neither
+    # product. Ctrl+Alt+Shift+V carries no mnemonic and is not pretending to:
+    # it is the only chord free in both QUILL and QuillLite, and one key across
+    # the two is worth more than a better letter in one of them.
+    "format.describe_indent_depth": "Ctrl+Alt+Shift+V",
     "format.list_manager": "Ctrl+Shift+Grave, L",
     "format.bold": "Ctrl+B",
     "format.italic": "Ctrl+I",

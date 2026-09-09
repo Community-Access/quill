@@ -66,11 +66,33 @@ def test_every_enabled_item_advertises_a_key() -> None:
     assert keyless == [], f"menu items with no keyboard route: {keyless}"
 
 
+def _normalised_chord(key: str) -> str:
+    """A chord's identity, independent of how its modifiers were spelled.
+
+    ``Ctrl+Alt+Shift+H`` and ``Ctrl+Shift+Alt+H`` are one key to wx and to the
+    keyboard, and two different strings to a set. Comparing the raw strings let
+    a collision through review once, which is exactly the failure this file
+    exists to prevent: a key claimed twice means one of the pair silently never
+    fires, and nothing announces the loss.
+    """
+    parts = [part.strip().lower() for part in key.split("+") if part.strip()]
+    mods = sorted(part for part in parts if part in {"ctrl", "alt", "shift", "cmd", "win"})
+    rest = [part for part in parts if part not in {"ctrl", "alt", "shift", "cmd", "win"}]
+    return "+".join(mods + rest)
+
+
 def test_no_key_is_claimed_twice() -> None:
-    counts = collections.Counter(key for _m, _l, key, _h in _items())
-    duplicates = {key: count for key, count in counts.items() if count > 1}
-    assert duplicates == {}, (
-        f"these keys are claimed more than once, so one of each pair never fires: {duplicates}"
+    spellings: dict[str, str] = {}
+    duplicates: list[str] = []
+    for _menu, _label, key, _handler in _items():
+        chord = _normalised_chord(key)
+        if chord in spellings:
+            duplicates.append(f"{spellings[chord]!r} and {key!r}")
+        else:
+            spellings[chord] = key
+    assert duplicates == [], (
+        "these keys are claimed more than once, so one of each pair never fires "
+        f"(compared with modifier order ignored): {duplicates}"
     )
 
 
@@ -101,6 +123,40 @@ def test_every_handler_name_is_unique_and_looks_like_a_command() -> None:
     assert all(handler.startswith("cmd_") for handler in handlers), handlers
     duplicates = [h for h, n in collections.Counter(handlers).items() if n > 1]
     assert duplicates == [], f"one handler on two items: {duplicates}"
+
+
+def test_every_handler_actually_exists_on_the_document_window() -> None:
+    """A row naming a method nobody wrote is a menu item that crashes on use.
+
+    The table is data and the handlers are spread across fourteen mixins, so
+    nothing else connects the two: a typo, or a method that moved out during a
+    GATE-11 split and was not re-mixed in, shows up only when somebody presses
+    the key. There was a check like this for the Selection submenu alone
+    (``test_lite_selection.py``); this is the same check for all of it.
+
+    The status bar's Enter actions are checked here too. They are a second,
+    smaller table of handler names -- ``_CELL_ACTIONS`` -- and a cell whose
+    action does not exist is worse than a menu item, because the way you find
+    out is by pressing Enter on a status readout.
+    """
+    pytest.importorskip("wx", reason="the document window needs wx")
+    from quill.apps.lite_window import DocumentFrame
+    from quill.apps.lite_window_status import _CELL_ACTIONS
+
+    missing = sorted(
+        f"{menu} > {label}: {handler}"
+        for menu, label, _key, handler in _items()
+        if not hasattr(DocumentFrame, handler)
+    )
+    assert missing == [], "command rows naming methods that do not exist:\n  " + "\n  ".join(
+        missing
+    )
+    absent = sorted(
+        f"status cell {cell!r}: {handler}"
+        for cell, handler in _CELL_ACTIONS.items()
+        if not hasattr(DocumentFrame, handler)
+    )
+    assert absent == [], "status cells naming methods that do not exist: " + ", ".join(absent)
 
 
 def test_every_key_is_one_wx_can_actually_parse() -> None:

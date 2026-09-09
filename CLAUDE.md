@@ -18,8 +18,10 @@ python -m quill
 # Tests (standard)
 pytest -q
 
-# Tests, parallel (~5.5 min vs ~9; wx/UI tests stay on one worker — see
-# tests/conftest.py pytest_collection_modifyitems for why loadgroup)
+# Tests, parallel (~5 min vs ~9). NOTE: the wx/UI grouping this recipe exists
+# for is marked up but NOT in effect, and the one-word fix hangs the suite at
+# shutdown — read tests/conftest.py pytest_collection_modifyitems before
+# touching it. Occasional clipboard flakes under -n are that, not the test.
 pytest -q -n 8 --dist loadgroup
 
 # Fast smoke subset (high-signal core checks; seconds, not minutes)

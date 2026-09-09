@@ -157,6 +157,11 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
         self.copy_tray: Any = None
         self.clip_library: Any = None
         self.abbreviations: Any = None
+        #: What each document remembers about itself between sessions: its nine
+        #: numbered bookmarks and where the cursor was. One store for the whole
+        #: app, keyed by file path -- see LiteServicesMixin._load_document_memory
+        #: for why it cannot be one per window.
+        self.document_memory: Any = None
         #: The clipboard collector's growing buffer. One per session, shared by
         #: every document: gathering quotes out of three files into one place is
         #: exactly the case it exists for.

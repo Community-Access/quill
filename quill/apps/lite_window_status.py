@@ -10,13 +10,19 @@ calling ``SetStatusText`` four times.
 
 What is *not* copied is QUILL's configurability. The full editor lets you
 reorder and hide thirty-odd cells and has a dialog for doing it; QuillLite has
-:data:`CELLS`, ten of them, fixed. A notepad does not need a status-bar layout
+:data:`CELLS`, twelve of them, fixed. A notepad does not need a status-bar layout
 editor, and every cell here is a fact a text editor is actually asked for:
 
 * **Message** -- the last thing that was announced, so speech can be re-read.
 * **Position** -- line and column, of how many lines.
 * **Words** and **Characters** -- what the document is.
 * **Selection** -- how much is selected, the number wanted while selecting.
+* **Typing Mode** -- insert or overwrite. The whole reason the feature is
+  worth having here: a mode you cannot query is a mode you discover by typing
+  over your own work.
+* **Tab Mode** -- whether the Tab key types a tab character or indents the
+  line. The other invisible mode, and the other one you would otherwise
+  discover by pressing the key and listening to what happened.
 * **Format** -- plain text or rich text.
 * **Heading** -- which heading the caret is in (rich text only).
 * **Encoding** and **Line endings** -- the two facts that decide whether a file
@@ -98,6 +104,19 @@ CELLS: tuple[StatusCell, ...] = (
         "selection",
         "Selection",
         "How much text is selected. It reads 'No selection' when there is none.",
+    ),
+    StatusCell(
+        "typing_mode",
+        "Typing Mode",
+        "Whether typing inserts characters or overwrites the ones already there. "
+        "The native editing control keeps this mode and will not report it, so "
+        "this cell is the only way to ask. Press Enter to switch.",
+    ),
+    StatusCell(
+        "tab_mode",
+        "Tab Mode",
+        "What the Tab key does: type a tab character, or indent the whole line. "
+        "Shift+Tab outdents either way. Press Enter to switch.",
     ),
     StatusCell(
         "format",
@@ -221,6 +240,10 @@ class DocumentStatusMixin:
             "words": f"{stats.words:,} words",
             "characters": f"{stats.characters:,} characters",
             "selection": selection,
+            "typing_mode": "Overwrite" if getattr(self, "_overwrite_mode", False) else "Insert",
+            # QUILL's own wording for the same cell, so the two products do not
+            # describe one mode two ways.
+            "tab_mode": "Tab char" if getattr(self, "_tab_inserts_literal", True) else "Indent",
             "format": "Rich text" if self.editor.mode == RICH else "Plain text",
             "heading": self._heading_text(),
             "encoding": encoding_name(self.encoding),
@@ -340,6 +363,8 @@ class DocumentStatusMixin:
 #: What Enter does on each cell. Absent means "say it again".
 _CELL_ACTIONS: dict[str, str] = {
     "position": "cmd_goto_line",
+    "typing_mode": "cmd_toggle_overwrite",
+    "tab_mode": "cmd_toggle_tab_mode",
     "format": "cmd_switch_mode",
     "heading": "cmd_list_headings",
     "encoding": "cmd_file_format",

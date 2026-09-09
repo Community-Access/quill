@@ -1,5 +1,79 @@
 # QuillLite changelog
 
+## 1.0.0 -- 2026-09-09
+
+### Fixed
+
+- **The portable copy stopped leaving itself on the host machine.** A portable
+  QuillLite wrote its settings, recent files and -- worse -- its *recovery
+  copies of unsaved documents* into `%LOCALAPPDATA%\QuillLite` on whatever
+  computer it was plugged into, instead of into the `data` folder on the stick.
+  Nothing said so, and the bundle even shipped a file asking for portable mode
+  that was never read, because a bundle has to be recognised as portable before
+  that file can be found -- and `QuillLite.exe` was missing from the list of
+  names that counts as recognition. Inkwell, Beacon, Social and Cast were
+  missing from it too. If you have been carrying a portable QuillLite, that
+  folder is where anything you seem to have lost will be, and it is worth
+  deleting once you have what you want out of it.
+
+### Added
+
+- **Bookmarks and your place in the file survive closing the document.** The
+  reason to have numbered bookmarks at all is that there is no scrollbar thumb
+  to glance at in a long file -- and that does not stop being true when the
+  window closes. Marking nine places and losing them on the way out is the same
+  loss, deferred. Reopen a file and the bookmarks and the cursor are where you
+  left them; a document you have never saved is not remembered, because there is
+  nothing stable to key it by, and nothing is ever written next to your own
+  files. Switching bookmarks off in Customize Features stops it being written at
+  all.
+
+- **Go Back and Go Forward** -- **Alt+Left** and **Alt+Right**, in the Edit
+  menu. The undo for moving about. Every jump is remembered: going to a line,
+  following a heading, picking from the heading or bookmark list, landing on a
+  search hit. Without it, pressing F3 to check a word elsewhere is a one-way
+  trip, and finding your way back means knowing a line number you were never
+  told.
+
+- **Earlier Versions** (**Ctrl+Alt+Shift+E**, File menu). QuillLite has written
+  a dated copy of every save since backups shipped and gave you no way to read
+  one: the files were correct, correctly named, and reachable only by knowing
+  where the app keeps them. A safety net nobody can reach is a folder that fills
+  up. The list reads "Today at 4:12 PM -- 2,341 words"; **Restore** puts a
+  version into the window without saving, so Ctrl+Z takes it back and the file
+  on disk is untouched until you decide, and **Open a Copy** puts it in a new
+  window and leaves your document alone.
+
+- **Format ▸ Structure**: **Promote Heading** and **Demote Heading**
+  (**Alt+Shift+Left** / **Right**), **Move Section Up** and **Down**
+  (**Alt+Shift+Up** / **Down**). QuillLite could make headings and walk between
+  them but never move them, which left cut-and-paste as the only way to
+  reorganise -- the operation it is worst at, since moving a section by hand
+  means selecting to a boundary you cannot see and usually costs you your place.
+  QUILL's own four keys. Section moves work in plain text, where headings are
+  Markdown; promoting and demoting work in both modes.
+
+- **Overwrite mode**, with a **Typing Mode** cell in the status bar
+  (**Ctrl+Alt+Shift+W**). A mode you cannot ask about is one you discover by
+  typing over your own work. The **Insert** key still works, because the editing
+  control answers it whether QuillLite asks or not -- QuillLite watches for it
+  rather than claiming it, since Insert is NVDA's and JAWS's own modifier, so
+  the cell stays right either way.
+
+- **Tab Key Inserts a Tab Character** (**Ctrl+Alt+Shift+I**), with a **Tab
+  Mode** status cell. QuillLite starts where Notepad does -- Tab types a tab --
+  and clearing the tick makes Tab indent the line instead, announcing the new
+  depth. **Shift+Tab** outdents in either mode, so a tab typed by accident is
+  always one keystroke away from being undone.
+
+- **Describe Indent Depth** (**Ctrl+Alt+Shift+V**, Tools ▸ Indenting). How far
+  the current line is indented: "4 spaces", "1 tab", "1 tab, 3 spaces". A screen
+  reader reads a line's words and not the whitespace in front of them, so in a
+  YAML or Python file the structure of the document is not there when you listen
+  to it -- and it also tells you the thing nothing else will, that this line is
+  indented with a tab while its neighbours use spaces. Added to QUILL first, on
+  the same key, because QuillLite may never be ahead of the editor.
+
 ## 1.0.0 -- 2026-09-08
 
 First release. QUILL with everything removed except the editor: numbered

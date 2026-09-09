@@ -234,7 +234,15 @@ class DocumentCommandsMixin:
 
         Nothing is announced: the caret move is a focus/selection change, which
         the screen reader reads out of the control itself.
+
+        Every jump in QuillLite comes through here -- Go To Line, Go To
+        Anything, the heading commands, the heading list, the bookmarks -- which
+        is why this is where the location ring is fed. One seam rather than a
+        ``record`` call beside each caller, because the failure mode of the
+        second arrangement is a jump somebody forgot to record, and a Back key
+        that skips one of the places you have been is worse than no Back key.
         """
+        self._record_location()
         self.control.SetInsertionPoint(position)
         self.control.ShowPosition(position)
         self.control.SetFocus()
@@ -325,6 +333,9 @@ class DocumentCommandsMixin:
         if match is None:
             self._announce(f"Not found: {options.get('needle')}")
             return False
+        # A search hit is a jump like any other, and the one people most often
+        # want to come back from: F3 walks you away from what you were writing.
+        self._record_location()
         self.control.SetSelection(match.start, match.end)
         self.control.ShowPosition(match.start)
         self.control.SetFocus()
@@ -403,6 +414,7 @@ class DocumentCommandsMixin:
         if chosen is None:
             self.control.SetFocus()
             return
+        self._record_location()
         self.control.SetSelection(chosen, chosen + len(matches[0].text))
         self.control.ShowPosition(chosen)
         self.control.SetFocus()

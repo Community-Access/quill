@@ -26,6 +26,8 @@ from __future__ import annotations
 
 import wx
 
+from quill.core.heading_levels import LevelResult, adjust_heading_level
+from quill.core.markdown_sections import MoveResult, move_section
 from quill.ui.richedit_editing import (
     LINE_SPACING_DOUBLE,
     LINE_SPACING_ONE_AND_A_HALF,
@@ -87,6 +89,108 @@ class DocumentFormatCommandsMixin:
             return
         self._set_modified(True)
         self._announce(f"Heading {level}" if level else "Body text")
+
+    def _shift_heading(self, delta: int) -> None:
+        """Promote or demote the heading the cursor is in, in either mode.
+
+        Two documents, two mechanisms, one command, because "make this heading
+        one level shallower" is one idea to the person doing it:
+
+        * **Rich text** is QuillLite's own heading ladder -- bold plus a point
+          size -- so the level is read back off the caret and re-applied one
+          step along. Level 1 promoted stays 1 rather than becoming body text:
+          losing a heading entirely is not what Alt+Shift+Left means, and it
+          would silently take the paragraph out of the headings list.
+        * **Plain text** is Markdown, so it is the hashes, through the shared
+          :func:`~quill.core.heading_levels.adjust_heading_level` that QUILL's
+          own Alt+Shift+Left / Right run.
+
+        Every refusal is spoken separately. Nothing here moves the caret or
+        makes a sound of its own, so "not on a heading", "already at level one"
+        and "nothing happened because the key is not bound" are the same event
+        to a listener unless they are told apart.
+        """
+        if self.editor.mode == RICH:
+            level = self.editor.heading_level_at_caret()
+            if not level:
+                self._announce("Put the cursor in a heading to change its level")
+                return
+            new_level = min(4, max(1, level + delta))
+            if new_level == level:
+                self._announce(
+                    "Already Heading 1" if delta < 0 else "Already at the smallest heading"
+                )
+                return
+            self._heading(new_level)
+            return
+        text = self.control.GetValue()
+        change = adjust_heading_level(text, self.control.GetInsertionPoint(), delta)
+        if change.result is LevelResult.NOT_A_HEADING:
+            self._announce("Put the cursor on a heading line to change its level")
+            return
+        if change.result is LevelResult.AT_TOP:
+            self._announce("Already Heading 1")
+            return
+        if change.result is LevelResult.AT_BOTTOM:
+            self._announce("Already Heading 6")
+            return
+        caret = self.control.GetInsertionPoint()
+        self.control.Replace(change.start, change.end, change.replacement)
+        # Hold the caret's place in the line rather than in the document: the
+        # line just grew or shrank by one hash in front of it.
+        moved = len(change.replacement) - (change.end - change.start)
+        self.control.SetInsertionPoint(max(change.start, min(caret + moved, len(text) + moved)))
+        self._set_modified(True)
+        self._touch_status()
+        self._announce(f"Heading {change.new_level}")
+
+    def cmd_promote_heading(self) -> None:
+        """Alt+Shift+Left: one level shallower, towards Heading 1."""
+        self._shift_heading(-1)
+
+    def cmd_demote_heading(self) -> None:
+        """Alt+Shift+Right: one level deeper."""
+        self._shift_heading(1)
+
+    def _move_section(self, direction: str) -> None:
+        """Move the whole section the cursor is in, heading and body together.
+
+        QUILL's own :func:`~quill.core.markdown_sections.move_section`, over
+        Markdown, and therefore plain text only: rich-text headings are a font
+        size rather than markup, and moving formatted runs through the Text
+        Object Model is a different piece of work that QUILL has not done
+        either. Saying so is better than a key that quietly does nothing in
+        half the documents somebody opens.
+
+        This is the operation cut-and-paste is worst at. Reorganising by hand
+        means selecting from a heading to the start of the next one -- a
+        boundary you cannot see and have to find by ear -- and the usual result
+        of getting it wrong is losing your place in the document you were
+        halfway through reorganising.
+        """
+        if self.editor.mode == RICH:
+            self._announce(
+                "Moving sections works in plain text documents, where headings are Markdown"
+            )
+            return
+        text = self.control.GetValue()
+        caret = self.control.GetInsertionPoint()
+        new_text, new_caret, result, announce = move_section(text, caret, direction)
+        if result is not MoveResult.OK:
+            self._announce(announce)
+            return
+        self.control.Replace(0, self.control.GetLastPosition(), new_text)
+        self.control.SetInsertionPoint(min(new_caret, self.control.GetLastPosition()))
+        self.control.ShowPosition(self.control.GetInsertionPoint())
+        self._set_modified(True)
+        self._touch_status()
+        self._announce(announce)
+
+    def cmd_move_section_up(self) -> None:
+        self._move_section("up")
+
+    def cmd_move_section_down(self) -> None:
+        self._move_section("down")
 
     def cmd_heading_0(self) -> None:
         self._heading(0)

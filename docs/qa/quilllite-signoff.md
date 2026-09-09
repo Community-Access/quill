@@ -32,12 +32,14 @@ answer is what a person actually *hears*. That is this list.
 
 ## The 15-minute pass
 
-No time for the whole thing? Run exactly these ten and stop:
-**L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61.**
+No time for the whole thing? Run exactly these eleven and stop:
+**L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61, L-90.**
 
 They cover the four things most likely to be wrong and worst if they are: the
 document announces itself, F1 answers, the status bar is reachable, and a file
-comes back byte-for-byte.
+comes back byte-for-byte. L-90 is the eleventh because a status cell that
+misreports what typing is about to do is the one defect this product cannot
+ship, and it was shipped once already.
 
 ---
 
@@ -146,8 +148,8 @@ comes back byte-for-byte.
 **L-15. Arrows move between cells, and each announces itself**
 - Do: press **Right** several times, then **Left**.
 - Pass: each cell announces its name and its value -- Position, Word Count,
-  Character Count, Selection, Format, Heading, Encoding, Line Endings, Saved
-  State. The region name is **not** repeated on every one.
+  Character Count, Selection, Typing Mode, Tab Mode, Format, Heading, Encoding,
+  Line Endings, Saved State. The region name is **not** repeated on every one.
 - [ ] pass  [ ] fail: ______
 
 **L-16. Home and End jump to the ends of the row**
@@ -667,6 +669,96 @@ selection you have to test by pressing something destructive.
   Edit menu and press **Ctrl+A**.
 - Pass: the Select menu is gone, F8 does nothing, and **Ctrl+A still selects
   everything**. Losing Select All here is a fail.
+- [ ] pass  [ ] fail: ______
+
+---
+
+## Block O -- The 2026-09-09 additions (8 min)
+
+Everything in this block is new since the rest of this file was written, and
+none of it is covered above. Six of the nine steps are about a *mode* or a
+*refusal* -- states and non-events -- which is exactly the category no automated
+test can sign off, because the failure is not a wrong value but a silence you
+have to notice.
+
+**L-90. The Typing Mode cell tells the truth about overtype**
+- Do: type `ABCDEF`, press **Home**. Press **Ctrl+Alt+Shift+W**. Type `x`.
+  Then **F6** and arrow to **Typing Mode**.
+- Pass: you heard **"Overwrite mode on"**; the line now reads `xBCDEF` (the `A`
+  was replaced, not pushed along); and the cell says **Overwrite**.
+- Fail if the cell and the typing disagree in either direction. That
+  disagreement is the bug this feature was built to fix and it is invisible
+  without checking both.
+- [ ] pass  [ ] fail: ______
+
+**L-91. The Insert key moves the cell too**
+- Do: with your screen reader's modifier *not* set to Insert (or using the
+  laptop layout), press **Insert** once. **F6**, arrow to **Typing Mode**.
+- Pass: the cell has changed. QuillLite does not claim the Insert key -- the
+  editing control answers it -- but the cell must follow it.
+- If your reader uses Insert as its modifier, skip and note "skipped": that is
+  the expected experience and not a failure.
+- [ ] pass  [ ] fail: ______  [ ] skipped
+
+**L-92. Tab Mode, and Shift+Tab out of it**
+- Do: on a line reading `hello`, press **Tab**. Then **Ctrl+Alt+Shift+I** and
+  press **Tab** again. Then **Shift+Tab**.
+- Pass: the first Tab typed a tab character. After the toggle you heard
+  **"Tab key indents the line"**, and the second Tab spoke a *depth* -- e.g.
+  **"1 tab, 4 spaces"** -- and said it **once**, not twice. Shift+Tab spoke a
+  smaller depth.
+- [ ] pass  [ ] fail: ______
+
+**L-93. Describe Indent Depth answers on demand**
+- Do: put the cursor on a line indented with four spaces. Press
+  **Ctrl+Alt+Shift+V**. Then move to an unindented line and press it again.
+- Pass: **"4 spaces"**, then **"No indentation"**. The second one matters most:
+  a command that goes quiet when the answer is "none" is indistinguishable from
+  a key that is not bound.
+- [ ] pass  [ ] fail: ______
+
+**L-94. Bookmarks and your place survive closing the file**
+- Do: open a long saved file. Press **Ctrl+Shift+3** somewhere in the middle,
+  move to a different place, then **Ctrl+W** and reopen the file.
+- Pass: the cursor is roughly where you left it, and **F2** takes you to
+  bookmark 3.
+- Also check: no new file has appeared next to your document on disk.
+- [ ] pass  [ ] fail: ______
+
+**L-95. Go Back returns you from a jump**
+- Do: from partway through a document, press **Ctrl+G** and go to line 1. Then
+  press **Alt+Left**. Then **Alt+Left** again.
+- Pass: the first takes you back where you were and says **"Went back"**; the
+  second says **"No earlier place"** rather than going silent.
+- [ ] pass  [ ] fail: ______
+
+**L-96. Earlier Versions lists and restores**
+- Do: switch **Timestamped backups** on in **View > Customize Features**. Save a
+  file three times, changing it each time. Press **Ctrl+Alt+Shift+E**.
+- Pass: a list reading like **"Today at 4:12 PM - 120 words"**, newest first,
+  arrowable. Choose one and press **Restore**.
+- Then: the text changes, you hear that nothing is written until you save and
+  that Ctrl+Z undoes it -- and **Ctrl+Z** does.
+- [ ] pass  [ ] fail: ______
+
+**L-97. Heading promote, demote, and section move**
+- Do: in a **plain text** document type three Markdown headings with a line of
+  body under each. On the second, press **Alt+Shift+Right**, then
+  **Alt+Shift+Left** twice, then **Alt+Shift+Up**.
+- Pass: **"Heading 3"**, **"Heading 2"**, **"Already Heading 1"** (not silence),
+  and the section moved above the first one with something spoken.
+- Then: in a **rich text** document press **Alt+Shift+Up**. Pass: it says
+  section moves are for plain text documents rather than doing nothing.
+- [ ] pass  [ ] fail: ______
+
+**L-98. The portable copy leaves nothing behind**
+- Do: this one needs the **portable** zip, not the installer. Extract it to a
+  USB stick or any folder, run `QuillLite.exe`, change a setting, type
+  something, and close.
+- Pass: `data\QuillLite` inside the bundle now has a `settings.json`, and
+  **no** `QuillLite` folder has appeared in `%LOCALAPPDATA%` on that machine.
+- This is the one step worth running on a computer that has never had QuillLite
+  on it, because that is the only place the old behaviour was visible.
 - [ ] pass  [ ] fail: ______
 
 ---

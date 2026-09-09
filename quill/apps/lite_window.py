@@ -42,6 +42,7 @@ from quill.apps.lite_printing import DocumentPrintMixin
 from quill.apps.lite_window_clipboard import DocumentClipboardMixin
 from quill.apps.lite_window_commands import DocumentCommandsMixin
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
+from quill.apps.lite_window_history import DocumentHistoryMixin
 from quill.apps.lite_window_lines import DocumentLineMixin
 from quill.apps.lite_window_marks import DocumentMarksMixin
 from quill.apps.lite_window_menus import DocumentMenuMixin
@@ -56,6 +57,7 @@ from quill.core.lite import APP_NAME
 from quill.core.lite import recovery as recovery_mod
 from quill.core.lite.filetypes import is_rich_path
 from quill.core.lite.textfile import decode_text, encode_text, write_bytes_atomic
+from quill.core.locations import LocationRing
 from quill.core.numbered_bookmarks import BookmarkSet
 from quill.io.rtf_safety import scan_rtf_safety
 from quill.ui.dialog_contract import show_message_box
@@ -80,6 +82,7 @@ class DocumentFrame(
     DocumentPrintMixin,
     DocumentToolsMixin,
     DocumentLineMixin,
+    DocumentHistoryMixin,
     DocumentMarksMixin,
     DocumentSelectionMixin,
     DocumentClipboardMixin,
@@ -123,6 +126,12 @@ class DocumentFrame(
         #: This document's nine numbered places. Per window, in memory: a
         #: bookmark is about where you are in *this* document right now.
         self.bookmarks = BookmarkSet()
+        #: Where the caret has been, so a jump can be taken back. QUILL's own
+        #: ring (quill/core/locations.py), fed from the one seam every jump
+        #: goes through -- see DocumentCommandsMixin._go_to. Per window and in
+        #: memory: "where I was a moment ago" is a fact about this session,
+        #: unlike the bookmarks above, which are about the document.
+        self.locations = LocationRing()
         #: The length the bookmarks were last reconciled against, so an edit's
         #: size can be inferred without the control telling us where it changed.
         self._tracked_length = 0
@@ -132,6 +141,9 @@ class DocumentFrame(
         self._init_spelling()
         # Before the menu bar too: _sync_check_items reads the extend-mode flag.
         self._init_selection()
+        # And the overtype mirror, for the same reason: the Overwrite Mode mark
+        # is read while the bar is built.
+        self._init_overwrite()
 
         surface = create_richedit_document(
             wx, self, wx.TE_MULTILINE | wx.TE_PROCESS_TAB, mode or settings.default_mode
@@ -155,6 +167,10 @@ class DocumentFrame(
         self.control.Bind(wx.EVT_TEXT, self._on_text)
         self.control.Bind(wx.EVT_TEXT, self._track_bookmarks)
         self.control.Bind(wx.EVT_CHAR, self._on_char)
+        # Watching the Insert key go past to the control, which does the
+        # overtype itself. Never a binding: Insert is the screen reader's
+        # modifier. See DocumentTypingMixin._on_key_down.
+        self.control.Bind(wx.EVT_KEY_DOWN, self._on_key_down)
         # One handler for both, deliberately: it is caret *activity*, not focus,
         # so it is not the focus handler GATE-13 forbids announcing from -- and
         # it announces nothing, it only marks the status bar stale.
@@ -316,6 +332,12 @@ class DocumentFrame(
         self._init_spelling()
         self._sync_check_items()
         self._touch_status()
+        # After the path is set, for the same reason spelling is: the store is
+        # keyed by file path, and a window is built empty and only then told
+        # which file it holds. This can move the cursor, so it runs before the
+        # spelling announcement rather than after -- the last thing said should
+        # be about the document, not about a caret that has already moved.
+        self.restore_document_memory()
         self.announce_spelling_state_if_skipped()
         return True
 
@@ -401,6 +423,10 @@ class DocumentFrame(
         self._discard_slot()
         self._set_modified(False)
         self._update_title()
+        # Save As is the moment an untitled document first *has* a key, so this
+        # is also the moment bookmarks set while it was untitled become
+        # keepable. On a plain Save it is a checkpoint against a crash.
+        self.remember_document_memory()
         # Save As can change the extension, and the extension is what decides
         # whether this document is spell-checked. A .txt saved as .json should
         # go quiet; the taught-word cache is dropped for the same reason, since
@@ -502,6 +528,10 @@ class DocumentFrame(
         if event.CanVeto() and not self.confirm_discard():
             event.Veto()
             return
+        # After the veto check and before anything is torn down: a window the
+        # user backed out of closing must not have written its state away, and
+        # a destroyed control has no cursor position left to read.
+        self.remember_document_memory()
         self.stop_timers()
         self._discard_slot()
         self.app.forget_frame(self)

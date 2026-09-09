@@ -11,6 +11,13 @@ stores are built by area rather than always, so a listener who has turned the
 clipboard off does not find a ``copy_tray.json`` appearing in their data folder,
 and an "off" feature that still writes to disk is an off feature nobody believes.
 
+The document memory is here for a second reason as well: it must be **one
+object, not one per window.** Every open window writes its own document's row
+into the same file, and two stores loaded from the same path would each hold a
+snapshot from the moment it loaded -- so whichever window closed last would
+write its snapshot back over the other's bookmarks. A store keyed by path has
+to be shared by everything that keys into it.
+
 The command registry is built per call rather than kept, for the opposite
 reason: the commands never change, but which of them are *available* depends on
 the document in front of you, and a palette offering the Format menu for a plain
@@ -56,12 +63,39 @@ class LiteServicesMixin:
         from quill.core.clip_library import ClipLibrary
         from quill.core.copy_tray import CopyTray
 
+        self._load_document_memory()
         if self.feature_enabled("clipboard"):
             self.copy_tray = self.copy_tray or CopyTray(self.data_dir)
             self.clip_library = self.clip_library or ClipLibrary(self.data_dir)
         else:
             self.copy_tray = self.clip_library = None
         self.reload_abbreviations()
+
+    # -- what each document remembers about itself ------------------------ #
+
+    def _load_document_memory(self) -> None:
+        """Load the per-document bookmark and cursor store, once for the app.
+
+        QUILL's :class:`~quill.core.bookmarks.DocumentMemory`, pointed at
+        QuillLite's own folder. The *code* is shared; the *file* is not, because
+        QuillLite shares no data with QUILL (its PRD 5.3, "not a thin client")
+        and a machine that has never had QUILL installed must not grow a Quill
+        data folder because somebody opened a text file.
+
+        Tied to the ``bookmarks`` area, so switching bookmarks off stops the
+        file being written at all rather than merely hiding the menu -- the same
+        rule the copy tray follows above. Where the cursor was is part of the
+        same promise and rides along with it.
+        """
+        if not self.feature_enabled("bookmarks"):
+            self.document_memory = None
+            return
+        from quill.core.bookmarks import DOCUMENT_MEMORY_FILENAME, DocumentMemory
+
+        try:
+            self.document_memory = DocumentMemory.load(self.data_dir / DOCUMENT_MEMORY_FILENAME)
+        except Exception:  # noqa: BLE001 - a bad store must not stop the editor
+            self.document_memory = None
 
     # -- abbreviations ---------------------------------------------------- #
 

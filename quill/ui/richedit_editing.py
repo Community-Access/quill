@@ -132,6 +132,15 @@ def _send(hwnd: int, message: int, wparam: int = 0, lparam: int = 0) -> int:
         return 0
 
 
+#: Overtype. RICHEDIT50W implements insert-versus-overwrite itself and toggles
+#: it on VK_INSERT. There is no message to set the mode and none to read it
+#: back, so the only way to move the control is to hand it the key it already
+#: listens for, and the only way to *know* the mode is to mirror it.
+_WM_KEYDOWN = 0x0100
+_WM_KEYUP = 0x0101
+_VK_INSERT = 0x2D
+
+
 def _colorref(red: int, green: int, blue: int) -> int:
     """A Win32 ``COLORREF`` (0x00BBGGRR) from three 0-255 channels."""
     return (int(red) & 0xFF) | ((int(green) & 0xFF) << 8) | ((int(blue) & 0xFF) << 16)
@@ -145,6 +154,43 @@ class RichEditDocument(QuillRichEdit):
         #: The mode the *document* is in. :meth:`current_text_mode` reports what
         #: the control actually answers, which is how a probe tells them apart.
         self.mode = RICH if mode == RICH else PLAIN
+
+    # -- overtype ----------------------------------------------------------- #
+
+    def toggle_overtype(self) -> bool:
+        """Flip the control between inserting and overwriting, and say whether it took.
+
+        Here rather than in either product because neither may own it alone:
+        QUILL binds ``view.toggle_overwrite_mode``, QuillLite
+        ``cmd_toggle_overwrite``, and both render the mode in a status cell.
+        Until 2026-09-09 QUILL's command flipped a display flag and told the
+        control nothing at all, so the cell could read "Overwrite" while typing
+        still inserted -- the worst shape a bug can take in this product, a
+        status readout that misreports what typing is about to do to somebody
+        who cannot check by looking. One implementation, called by both, is what
+        keeps that from being re-invented differently twice.
+
+        Verified on the live RICHEDIT50W: typing after one call overwrites, and
+        a second call restores insert. The control will not report which mode it
+        is in, so every caller keeps a mirror -- and every other route that
+        reaches the control, notably the Insert key it answers on its own, has
+        to move that mirror too.
+
+        Returns ``False`` when there is no native control to tell -- off Windows,
+        or the plain ``wx.TextCtrl`` fallback -- so a caller can decline to
+        announce a change it did not make.
+        """
+        hwnd = self.hwnd()
+        if not (_TOM_AVAILABLE and hwnd):
+            return False
+        try:
+            from quill.ui.richedit_rtf_surface import _SendMessageW
+
+            _SendMessageW(hwnd, _WM_KEYDOWN, _VK_INSERT, 0)
+            _SendMessageW(hwnd, _WM_KEYUP, _VK_INSERT, 0)
+        except Exception:  # noqa: BLE001 - the caller's mirror stays honest
+            return False
+        return True
 
     # -- text mode ---------------------------------------------------------- #
 

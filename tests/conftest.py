@@ -91,6 +91,39 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
     (measured 2026-08-17: 8:58 serial -> 5:36, complete and zero-flake; the
     UI group's serial tail is the floor, accepted deliberately over the
     worker crashes that splitting it produced).
+
+    **KNOWN BROKEN, and deliberately left so for now (2026-09-09).** The
+    grouping above does not currently take effect, and the fix for it is worse
+    than the bug. Both halves are written down here because the next person will
+    otherwise rediscover one of them and re-break the other.
+
+    *Why it does not work.* xdist does not read the mark at scheduling time. Its
+    own ``pytest_collection_modifyitems`` in ``xdist/remote.py`` rewrites each
+    item's nodeid to ``<nodeid>@<group>`` and the scheduler splits on that
+    suffix -- so this hook must add the mark *before* xdist's hook runs, and by
+    default it does not. Measured on a full ``-n 8`` run: all eight workers were
+    running ``tests/unit/ui`` tests. The only visible symptom was
+    ``test_clip_library_dialog.py::test_copy_defaults_to_plain_text_format``
+    reading an empty clipboard under ``-n 8`` and passing on its own -- which
+    reads as a flaky test rather than as the scheduler ignoring the group.
+
+    *Why it is not fixed.* Adding ``@pytest.hookimpl(tryfirst=True)`` here does
+    make the grouping real -- verified, all 3,606 UI tests land on one worker --
+    and the full suite then **runs every test and never exits.** Reproduced
+    twice: 17,821 of 17,823 results, zero failures, every worker's queue empty,
+    and no summary printed; eight Python processes still alive. Concentrating
+    that many wx/COM objects in one worker appears to hang its shutdown, so the
+    controller waits for a ``workerfinished`` that never comes. A suite that
+    hangs with no summary is worse for a developer than one that occasionally
+    flakes, so the one-word fix is deliberately **not** applied.
+
+    *What to do about it.* Probably neither extreme: one group of 3,606 wx tests
+    is too many for one process, and eight workers sharing the clipboard is
+    unsafe. A middle path is to group only the tests that actually touch
+    machine-global resources (clipboard, ``RegisterHotKey``, the screen-reader
+    bridges) and let the rest of ``tests/unit/ui`` fan out. That needs somebody
+    to identify which those are -- probably a marker rather than a directory --
+    and it is the reason this is a note and not a patch.
     """
     for item in items:
         if item.get_closest_marker("xdist_group") is not None:

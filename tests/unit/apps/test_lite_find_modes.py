@@ -19,6 +19,8 @@ from __future__ import annotations
 from types import SimpleNamespace
 
 from quill.apps.lite_window_commands import DocumentCommandsMixin
+from quill.apps.lite_window_history import DocumentHistoryMixin
+from quill.core.locations import LocationRing
 from quill.ui.richedit_editing import PLAIN
 
 
@@ -34,6 +36,9 @@ class _Control:
 
     def GetSelection(self) -> tuple[int, int]:
         return self.selection
+
+    def GetInsertionPoint(self) -> int:
+        return self.selection[0]
 
     def SetSelection(self, start: int, end: int) -> None:
         self.selection = (start, end)
@@ -51,13 +56,16 @@ class _Control:
         self._text = self._text[:start] + text + self._text[end:]
 
 
-class _Window(DocumentCommandsMixin):
+class _Window(DocumentCommandsMixin, DocumentHistoryMixin):
     """Only the parts of the document window the search path touches."""
 
     def __init__(self, text: str) -> None:
         self.control = _Control(text)
         self.announcements: list[str] = []
         self._find_options: dict[str, object] = {}
+        # A search hit is a jump, and every jump feeds the location ring so
+        # Alt+Left can take it back.
+        self.locations = LocationRing()
         self.modified = False
         # Plain text: Replace All only asks for confirmation in rich mode,
         # where a replacement takes the formatting of where it lands.
