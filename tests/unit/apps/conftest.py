@@ -1042,6 +1042,19 @@ def lite_dialogs(monkeypatch):
 
 
 @pytest.fixture
+def page_data():
+    """The :class:`FakePageData` class, handed over rather than imported.
+
+    A test needing this must **not** write ``from conftest import FakePageData``:
+    with several ``conftest.py`` files and no ``__init__.py`` beside them, the
+    bare module name is ambiguous, and on CI it resolved to
+    ``tests/unit/ui/conftest.py`` -- an ImportError that no local run reproduced
+    because the local collection order happened to bind the other one first.
+    """
+    return FakePageData
+
+
+@pytest.fixture
 def fake_wx_dialog(monkeypatch):
     """Replace a ``wx`` dialog class (``FileDialog``, ``FontDialog``, ...).
 

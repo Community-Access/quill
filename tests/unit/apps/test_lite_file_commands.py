@@ -296,10 +296,10 @@ def test_page_setup_cancelled_keeps_the_existing_settings(
     assert win.announcements == []
 
 
-def test_page_setup_saves_what_the_dialog_returned(lite_window, fake_wx_dialog, stub_print_data):
-    from conftest import FakePageData
-
-    chosen = FakePageData("chosen")
+def test_page_setup_saves_what_the_dialog_returned(
+    lite_window, fake_wx_dialog, stub_print_data, page_data
+):
+    chosen = page_data("chosen")
     fake_wx_dialog("PageSetupDialog", wx.ID_OK, GetPageSetupData=chosen)
     win = lite_window("hello")
     win.cmd_page_setup()
