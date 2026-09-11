@@ -102,13 +102,21 @@ def test_a_new_command_fails_until_it_is_classified() -> None:
     assert any(removed in problem and "new command" in problem for problem in problems)
 
 
-def test_losing_a_test_fails_the_build() -> None:
-    """The half that makes it a ratchet rather than a checklist."""
+def test_losing_a_test_fails_the_build(tmp_path) -> None:
+    """The half that makes it a ratchet rather than a checklist.
+
+    Simulated by pointing the scan at a tree with no tests in it, rather than by
+    flipping a snapshot entry: with every handler covered there is no longer a
+    ``shape_only`` row to borrow, and a test that needed one would have quietly
+    stopped testing anything on the day the list reached zero.
+    """
+    (tmp_path / "tests" / "unit" / "apps").mkdir(parents=True)
     recorded = dict(load_snapshot())
-    shape_only = next(h for h, status in recorded.items() if status == "shape_only")
-    recorded[shape_only] = "covered"
-    problems = violations(recorded)
-    assert any(shape_only in problem and "no test calls it" in problem for problem in problems)
+    problems = violations(recorded, tmp_path)
+
+    assert problems, "a tree with no tests must not look fully covered"
+    assert all("no test calls it any more" in problem for problem in problems)
+    assert len(problems) == len(command_handlers())
 
 
 def test_gaining_a_test_asks_for_a_regenerate() -> None:
@@ -126,15 +134,21 @@ def test_a_stale_entry_is_reported() -> None:
     assert any("cmd_deleted_last_release" in problem for problem in problems)
 
 
-def test_the_debt_is_visible_rather_than_averaged() -> None:
-    """A count, asserted, so shrinking it is a deliberate act.
+def test_there_is_no_debt_left() -> None:
+    """Zero, as of 2026-09-11. Every QuillLite command has a behavioural test.
 
-    Not a percentage: a ratio moves when the denominator moves, so adding
+    Asserted as an absolute rather than a ceiling that happens to be zero,
+    because the two say different things to whoever reads a failure. A ceiling
+    says "you went over budget"; this says **a command shipped without a test**,
+    which is the sentence that gets the test written.
+
+    Not a percentage either: a ratio moves when the denominator moves, so adding
     commands could make the number look better while the untested list grew.
     """
     recorded = load_snapshot()
     shape_only = sorted(h for h, status in recorded.items() if status == "shape_only")
-    assert len(shape_only) <= 68, (
-        "the shape-only list may only shrink; if you removed a test, put it back, "
-        f"and if you added commands, cover them. Currently: {shape_only}"
+    assert shape_only == [], (
+        "every QuillLite command had a behavioural test on 2026-09-11 and one of "
+        "them no longer does. Write it rather than recording the loss -- the "
+        f"whole point of the gate is that this list stays empty. Uncovered: {shape_only}"
     )

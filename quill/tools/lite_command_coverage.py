@@ -15,10 +15,13 @@ and the classification is a committed snapshot rather than a computed number.
     A test in ``tests/unit/apps`` calls this handler. That is the artefact the
     scan can actually verify -- not a docstring, not a name, a call.
 ``shape_only``
-    Existence and arity only. Every one of these is a debt with a date on it,
-    and the list may only ever get shorter: a handler recorded as ``covered``
-    that stops being called by any test fails the build, because a deleted test
-    is exactly as invisible as a test that was never written.
+    Existence and arity only. **The list is empty as of 2026-09-11** -- all 161
+    handlers are covered -- and the gate's job is now to keep it that way: a
+    handler recorded as ``covered`` that stops being called by any test fails
+    the build, because a deleted test is exactly as invisible as a test that was
+    never written. The status is kept rather than removed because a future
+    command may legitimately arrive uncovered for a commit or two, and a
+    classification somebody has to write down is better than one they can skip.
 
 **The ratchet runs in both directions.** A new command with no test fails
 immediately (it is in the table and not in the snapshot). A handler whose test

@@ -12868,6 +12868,45 @@ test is exactly as invisible as one never written. A handler that
 snapshot left behind is a ratchet that has quietly stopped ratcheting.
 At introduction: 93 covered, 68 shape-only, the remainder being commands
 that open real wx dialogs.</p>
+<p><strong>Closed to zero on 2026-09-11</strong>: 161 of 161, and the
+gate now asserts an empty list rather than a shrinking one. The two say
+different things to whoever reads a failure – a ceiling says “you went
+over budget”, zero says <em>a command shipped without a test</em>, which
+is the sentence that gets the test written.</p>
+<p>Fourteen of the sixty-eight turned out to be <strong>already tested
+and invisible</strong>. They were driven as
+<code>getattr(win, name)()</code> over a parametrized string, which the
+AST scan correctly refuses to count – it cannot see a name that is only
+a string. Those were rewritten to parametrize over lambdas
+(<code>(lambda w: w.cmd_italic(), ...)</code>) rather than weakening the
+detection, because the weaker rule would have re-admitted exactly the
+inventory-shaped test the gate exists to distrust.</p>
+<p>The remaining fifty-four were reached by giving the harness a seam
+for modal dialogs: <code>DialogRecorder</code> replaces every dialog
+entry point with a stub that records how it was called and
+<strong>answers cancel unless a test says otherwise</strong>.
+Cancel-by-default is the substantive choice – it is the branch people
+forget to write, and a command that saves after Escape or reports
+success after a cancelled Save As is the class of bug this group hides.
+Two details are load-bearing and are documented in the recorder: a
+dialog imported at module scope has to be patched in the module that
+imported it (<code>lite_window_clipboard</code> holds its own binding of
+<code>choose_from_rows</code>, and patching only
+<code>lite_dialogs</code> left the tray opening a real
+<code>wx.Dialog</code> mid-test), and <code>fake_wx_dialog</code> covers
+the wx-owned classes (<code>FileDialog</code>, <code>FontDialog</code>,
+<code>PageSetupDialog</code>, <code>Printer</code>) that a command
+constructs itself.</p>
+<p>Three stand-in bugs surfaced on the way, each of which had made a
+command untestable rather than merely untested:
+<code>FakeEditor.next_heading</code> took <code>forward=</code> and
+returned <code>-1</code> where the real one takes <code>reverse=</code>
+and returns <code>None</code> or a pair, so
+<code>_navigate_heading</code> unpacked an int; the window stub carried
+<code>line_ending</code> where <code>DocumentFrame</code> and
+<code>cmd_file_format</code> read <code>newline</code>; and it had no
+<code>_find_dialog</code>, so the “raise the window already open” branch
+of Ctrl+F could not run.</p>
 <h3 id="815-the-page-status-bar-indicator-090-beta-2-872">8.15 The Page
 status bar indicator (0.9.0 Beta 2, #872)</h3>
 <p>Every document shows a <code>Page</code> status bar cell, on by

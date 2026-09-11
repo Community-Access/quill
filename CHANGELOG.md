@@ -2,6 +2,27 @@
 
 ## 1.0.0
 
+### Every QuillLite command now has a test that presses it (2026-09-11)
+
+Not "has a test that proves the method exists" -- one that presses the key and
+checks what a listener would get back. All **161** of them, up from 93, and the
+gate that counts them now insists on zero exceptions rather than a shrinking
+list.
+
+This matters because of how the F8 bug shipped: extend mode had a key, a menu
+label, a handler and a passing test, and had never once worked from the
+keyboard. Existence is not behaviour. The commands that had escaped until now
+were the ones behind a dialog -- Open, Save As, Print, Preferences, the Keyboard
+Manager, the spelling suggestions, the copy tray -- and those are exactly where
+the interesting failure lives: not in the window, but in **what happens when you
+press Escape**. A command that saves after a cancelled dialog, or announces
+success after you backed out, is worse than one that plainly fails.
+
+Fourteen commands turned out to have been tested all along and simply not
+counted, because of how the tests called them. Those were rewritten rather than
+letting the gate count them, since the looser rule would have re-admitted the
+kind of test that let F8 through in the first place.
+
 ### A tone or the words, and you choose which (2026-09-10)
 
 A copy, a paste, an undo, a started selection: things that change the document

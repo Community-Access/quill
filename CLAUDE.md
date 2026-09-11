@@ -108,8 +108,9 @@ must diverge on a key, the reason is a comment in `keymap.py`.
 
 **Behavioural coverage (GATE-LITE-COVER):** every handler in QuillLite's command
 table is classified `covered` or `shape_only` in
-`tests/unit/ui/fixtures/lite_command_coverage.json`, and the list of `shape_only`
-may only shrink. `covered` means a test in `tests/unit/apps` **calls** the
+`tests/unit/ui/fixtures/lite_command_coverage.json`, and **the `shape_only` list
+is empty** — all 161 handlers have a behavioural test as of 2026-09-11, and the
+gate now asserts zero rather than a ceiling. `covered` means a test in `tests/unit/apps` **calls** the
 handler -- detected by an AST walk, not a grep, because a test that lists handler
 names in a table is exactly the shape of test that let the F8 bug through
 (`cmd_start_extend_selection` had a key, a label, a handler and a passing test,
@@ -117,6 +118,17 @@ and extend mode had never once worked from the keyboard). A new command fails
 the build until it is classified; so does a handler that *lost* its test, and so
 does one that gained a test and was not re-snapshotted. Regenerate with
 `python -m quill.tools.lite_command_coverage --write`.
+
+Two things follow from how detection works, and both bite. **Parametrize over
+lambdas, not handler names**: `getattr(win, name)()` over a parametrized string
+is invisible to the scan, and it hid fourteen genuinely tested handlers until
+2026-09-11 — write `(lambda w: w.cmd_italic(), ...)` so the call is in the
+source. And **a dialog imported at module scope must be patched in the module
+that imported it**, not where it is defined; `tests/unit/apps/conftest.py`'s
+`DialogRecorder` names both ends of every entry point for that reason, and its
+`lite_dialogs` / `fake_wx_dialog` fixtures are how a command behind a modal is
+reached at all. They answer **cancel** by default, because cancel is the branch
+people forget to write.
 
 **Feedback channels (`quill/core/action_feedback.py`):** `action_feedback` and
 `find_not_found_feedback` are `sound` / `speech` / `both` / `silent`, and both
