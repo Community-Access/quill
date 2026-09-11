@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from inspect import getsource
 from pathlib import Path
 
@@ -198,8 +199,32 @@ def test_parse_cli_arguments_persona_defaults_to_none() -> None:
 # ---------------------------------------------------------------------------
 
 
+@pytest.fixture
+def portable_env(monkeypatch: pytest.MonkeyPatch):
+    """Both portable env vars absent for the test, and **gone afterwards**.
+
+    ``_propagate_portable_environment`` writes to ``os.environ`` directly, which
+    is the whole point of it -- and ``monkeypatch.delenv(name, raising=False)``
+    records *nothing* when the variable is already absent, so monkeypatch has no
+    entry to undo and the write outlives the test.
+
+    That leak cost four unrelated failures in ``tests/unit/core/test_paths.py``
+    on 2026-09-11: with ``QUILL_APP_ROOT`` still set, ``app_data_dir`` resolved a
+    portable root and every later test on that xdist worker got the wrong data
+    directory. It only appeared then because a new test file changed
+    ``--dist=loadfile``'s file-to-worker split and landed the two files
+    together; the bug had been latent for as long as the tests had existed, and
+    is exactly the kind that reads as "CI is flaky".
+    """
+    for name in ("QUILL_APP_ROOT", "QUILL_PORTABLE"):
+        monkeypatch.delenv(name, raising=False)
+    yield
+    for name in ("QUILL_APP_ROOT", "QUILL_PORTABLE"):
+        os.environ.pop(name, None)
+
+
 def test_propagate_portable_environment_sets_env_for_verified_bundle(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, portable_env: None
 ) -> None:
     """A bundle with quill.exe + data/ sets QUILL_APP_ROOT and QUILL_PORTABLE.
 
@@ -210,8 +235,6 @@ def test_propagate_portable_environment_sets_env_for_verified_bundle(
     """
     from quill.core import storage_mode
 
-    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
-    monkeypatch.delenv("QUILL_PORTABLE", raising=False)
     root = tmp_path / "QuillPortable"
     root.mkdir()
     (root / "quill.exe").write_bytes(b"MZ\x00\x00")
@@ -226,15 +249,13 @@ def test_propagate_portable_environment_sets_env_for_verified_bundle(
 
 
 def test_propagate_portable_environment_does_nothing_without_evidence(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, portable_env: None
 ) -> None:
     """No portable anchor means no env-var injection.
 
     A non-portable launch (system installer) does not have a data/ folder
     sibling; the helper must not invent a portable install.
     """
-    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
-    monkeypatch.delenv("QUILL_PORTABLE", raising=False)
     # No QUILL_APP_ROOT set, and the walk-up from sys.executable in this
     # test environment must not find a verified portable anchor either.
     entry._propagate_portable_environment()
@@ -243,16 +264,17 @@ def test_propagate_portable_environment_does_nothing_without_evidence(
 
 
 def test_propagate_portable_environment_respects_existing_quill_app_root(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, portable_env: None
 ) -> None:
     """If a caller already set QUILL_APP_ROOT, do not override it.
 
     The launcher or a test harness may have set the env var deliberately;
     a portable bundle is not the only legitimate source of the variable.
     """
-    # Clean up any leakage from prior tests' direct os.environ writes.
-    monkeypatch.delenv("QUILL_APP_ROOT", raising=False)
-    monkeypatch.delenv("QUILL_PORTABLE", raising=False)
+    # The "clean up any leakage from prior tests" that used to be here is now
+    # the portable_env fixture's job -- and it was a workaround rather than a
+    # fix: it protected this test from its neighbours' leak while leaving every
+    # test in every *other* file exposed to it.
     sentinel = tmp_path / "explicit-root"
     sentinel.mkdir()
     monkeypatch.setenv("QUILL_APP_ROOT", str(sentinel))

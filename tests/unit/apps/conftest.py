@@ -282,6 +282,8 @@ class FakeEditor:
         self.font_size = 11
         self.zoom = 100
         self.headings: dict[int, int] = {}
+        #: ``(offset, level, text)`` rows the heading list and Alt+Down report.
+        self.heading_rows: list[tuple[int, int, str]] = []
         self.bullets = False
 
     def rtf_available(self) -> bool:
@@ -342,12 +344,33 @@ class FakeEditor:
         return self.headings.get(self.control.GetInsertionPoint(), 0)
 
     def all_headings(self) -> list[tuple[int, int, str]]:
-        return []
+        """``(offset, level, text)`` rows, as the real editor reports them.
 
-    def next_heading(self, _position: int, *, forward: bool = True) -> int:
-        return -1
+        Settable by a test (``editor.heading_rows = [...]``) because the rich
+        heading ladder is a font size in a Rich Edit control, and there is
+        nothing for a stand-in to compute it from.
+        """
+        return list(self.heading_rows)
 
-    def paragraph_text_at(self, _position: int) -> str:
+    def next_heading(self, position: int, *, reverse: bool = False) -> tuple[int, int] | None:
+        """``(offset, level)`` for the next heading past *position*, or ``None``.
+
+        The signature matters. This used to take ``forward=`` and return ``-1``,
+        and the real editor takes ``reverse=`` and returns ``None`` -- so
+        ``_navigate_heading`` unpacked an int and the stand-in could never have
+        caught it. Match wx-side reality, including the shape of "nothing".
+        """
+        rows = sorted(self.heading_rows)
+        if reverse:
+            earlier = [row for row in rows if row[0] < position]
+            return (earlier[-1][0], earlier[-1][1]) if earlier else None
+        later = [row for row in rows if row[0] > position]
+        return (later[0][0], later[0][1]) if later else None
+
+    def paragraph_text_at(self, position: int) -> str:
+        for offset, _level, text in self.heading_rows:
+            if offset == position:
+                return text
         return ""
 
     def caret_format_description(self) -> str:
@@ -356,11 +379,74 @@ class FakeEditor:
     def set_document_color(self, colour: Any) -> None:
         self.calls.append(("set_document_color", colour))
 
+    def save_rtf(self, path: str) -> None:
+        """Write the document where the real TOM save would.
+
+        The bytes are the plain text rather than RTF, deliberately: what the
+        save path is being tested for is the temp-file-then-replace dance and
+        the colour being stripped and restored around it, not the markup. A
+        real file has to appear, though, or ``os.replace`` fails.
+        """
+        self.calls.append(("save_rtf", path))
+        from pathlib import Path as _Path
+
+        _Path(path).write_text(self.control.GetValue(), encoding="utf-8")
+
     def set_background_color(self, colour: Any) -> None:
         self.calls.append(("set_background_color", colour))
 
     def set_word_wrap(self, on: bool) -> None:
         self.calls.append(("set_word_wrap", on))
+
+
+class FakeTimer:
+    """``wx.Timer``, counted rather than run. Autosave in a test would put a
+    real file write on a real clock in the middle of an assertion."""
+
+    def __init__(self) -> None:
+        self.started: list[int] = []
+        self.stopped = 0
+
+    def Start(self, milliseconds: int) -> None:  # noqa: N802 - wx API shape
+        self.started.append(int(milliseconds))
+
+    def Stop(self) -> None:  # noqa: N802 - wx API shape
+        self.stopped += 1
+
+
+class FakePageData:
+    """Stands in for ``wx.PageSetupDialogData`` and ``wx.PrintData`` alike.
+
+    Both are opaque C++ value objects that only accept each other, so a bare
+    ``object()`` is rejected by the first real wx call the command makes. This
+    carries the two methods Page Setup uses and is otherwise an identity: what
+    the tests ask is whether an OK *replaced* the stored value and a cancel
+    *left it alone*.
+    """
+
+    def __init__(self, label: str = "") -> None:
+        self.label = label
+        self.print_data: Any = None
+
+    def SetPrintData(self, data: Any) -> None:  # noqa: N802 - wx API shape
+        self.print_data = data
+
+    def GetPrintData(self) -> Any:  # noqa: N802 - wx API shape
+        return self.print_data
+
+
+class FakePrintSettings:
+    """``app.print_settings``: page setup and printer data, shared app-wide.
+
+    The real objects are ``wx.PageSetupDialogData`` and ``wx.PrintData``, which
+    a test has no way to inspect meaningfully. What the commands actually do
+    with them is *replace* them after an OK and *leave them alone* after a
+    cancel, and that is what these placeholders let a test assert.
+    """
+
+    def __init__(self) -> None:
+        self.page_setup: Any = FakePageData("page setup")
+        self.print_data: Any = FakePageData("print data")
 
 
 class FakeVoice:
@@ -399,6 +485,22 @@ class FakeApp:
         self.features: dict[str, bool] = {}
         self.keymap: dict[str, str] = {}
         self.document_memory = None
+        self.saved_keymaps: list[Any] = []
+        self.saved_features = 0
+        self.reloaded_abbreviations = 0
+        #: Page setup and printer data, shared by every document in the real
+        #: app. Only identity matters here -- the commands read it, hand it to
+        #: wx and write it back -- so a bare object is the honest stand-in.
+        self.print_settings = FakePrintSettings()
+
+    def command_registry(self, _frame: Any) -> list[Any]:
+        """What the palette and Go To Anything are built from. Empty is fine:
+        both are being tested for *what they do with the answer*, not for the
+        contents of a list they are handed."""
+        return []
+
+    def save_keymap(self) -> None:
+        self.saved_keymaps.append(dict(self.keymap))
 
     def feature_enabled(self, _area: str) -> bool:
         return True
@@ -416,10 +518,10 @@ class FakeApp:
         self.rebuilt_menus += 1
 
     def save_features(self) -> None:
-        return None
+        self.saved_features += 1
 
     def reload_abbreviations(self) -> None:
-        return None
+        self.reloaded_abbreviations += 1
 
     def save_abbreviations(self) -> None:
         return None
@@ -445,6 +547,20 @@ class FakeApp:
         return ""
 
 
+@pytest.fixture(scope="session")
+def wx_app():
+    """One ``wx.App`` for the session.
+
+    Almost nothing here needs it -- the whole point of the harness is that the
+    commands run without wx -- but ``wx.Printout`` refuses to be constructed
+    without an App, and printing is worth reaching rather than stubbing past.
+    Session-scoped because a second App in one process is not supported.
+    """
+    app = wx.App()
+    yield app
+    app.Destroy()
+
+
 @pytest.fixture
 def lite_settings():
     """Real :class:`Settings`, so a test reads the same defaults the app does.
@@ -467,9 +583,12 @@ def lite_window(tmp_path, lite_settings):
 
     The mixins are the shipped ones. What is faked is everything below them.
     """
+    from quill.apps.lite_keymap_editor import DocumentKeymapMixin
+    from quill.apps.lite_printing import DocumentPrintMixin
     from quill.apps.lite_window_clipboard import DocumentClipboardMixin
     from quill.apps.lite_window_commands import DocumentCommandsMixin
     from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
+    from quill.apps.lite_window_file import DocumentFileMixin
     from quill.apps.lite_window_format import DocumentFormatCommandsMixin
     from quill.apps.lite_window_history import DocumentHistoryMixin
     from quill.apps.lite_window_lines import DocumentLineMixin
@@ -497,6 +616,12 @@ def lite_window(tmp_path, lite_settings):
         # spelling navigation consults on every hop.
         DocumentViewCommandsMixin,
         DocumentSpellingMixin,
+        DocumentFileMixin,
+        # Printing and the Keyboard Manager, added 2026-09-11. Both are one
+        # state change behind a wx dialog, which is the shape the dialog
+        # recorder (``lite_dialogs``) exists to make testable.
+        DocumentPrintMixin,
+        DocumentKeymapMixin,
         DocumentContextMenuMixin,
         DocumentCommandsMixin,
     ):
@@ -518,7 +643,22 @@ def lite_window(tmp_path, lite_settings):
             self.number = 1
             self.closed = 0
             self.encoding = "utf-8"
-            self.line_ending = chr(13) + chr(10)
+            # ``newline``, not ``line_ending``: that is the attribute name the
+            # real DocumentFrame uses and the one cmd_file_format reads. The
+            # stub carried the other spelling and nothing noticed, because no
+            # test had reached the command that reads it.
+            self.newline = chr(13) + chr(10)
+            self.line_ending = self.newline
+            self.failures: list[tuple[str, str]] = []
+            self.printed: list[str] = []
+            # The recovery slot and the autosave timer, set up in
+            # DocumentFrame.__init__ and read by save() on every write. A window
+            # that never had a slot is the ordinary case -- one is created the
+            # first time unsaved work is copied aside -- so None is the honest
+            # starting value rather than a stub object.
+            self._slot = None
+            self._autosave = FakeTimer()
+            self.colour_calls: list[Any] = []
             self.popped_menus: list[Any] = []
             # The same state ``DocumentFrame.__init__`` sets up, set up the same
             # way. Anything a command reads must exist before the command runs,
@@ -531,6 +671,9 @@ def lite_window(tmp_path, lite_settings):
             self._tracked_length = len(text)
             self._loading = False
             self._find_options: dict[str, Any] = {}
+            #: The modeless Find window, kept so a second Ctrl+F raises the one
+            #: already open instead of stacking another over the same document.
+            self._find_dialog = None
             self.status_bar_focused = 0
             self._init_selection()
             self._init_overwrite()
@@ -631,6 +774,45 @@ def lite_window(tmp_path, lite_settings):
         def describe_indent_at_cursor(self) -> str:
             return "no indent"
 
+        def _set_mode_internal(self, mode: str) -> None:
+            """Swap the editor surface without reloading the text.
+
+            The real one on DocumentAppearanceMixin destroys and rebuilds a wx
+            control; what callers depend on is only that ``editor.mode`` has
+            moved by the time it returns.
+            """
+            self.editor.set_text_mode(mode)
+
+        def apply_theme(self) -> None:
+            self.colour_calls.append("theme")
+
+        def _set_whole_document_colour(self, rgb: Any) -> None:
+            """Recorded. The real one lives on DocumentAppearanceMixin and needs
+            wx colours; what matters here is that a save strips the theme colour
+            and puts it back, so a dark-mode save cannot leak light grey text
+            into somebody's file."""
+            self.colour_calls.append(rgb)
+
+        def _apply_rich_theme_colour(self) -> None:
+            self.colour_calls.append("restored")
+
+        def _report_failure(self, caption: str, message: str) -> None:
+            """Recorded, not raised. A failed print or save is announced to the
+            user and must not take the command down with it."""
+            self.failures.append((caption, message))
+
+        def document_name(self) -> str:
+            return self.path.name if self.path else "Untitled 1"
+
+        # No ``_printable_lines`` / ``_heading_marks`` here on purpose: the real
+        # ones in DocumentPrintMixin work against these fakes, and shadowing
+        # them would test the stand-in instead of the heading marking that is
+        # the only interesting thing printing does to a document.
+
+        def _print_font(self) -> Any:
+            """The real one asks wx for a font. Printing itself is stubbed."""
+            return None
+
         def focus_status_bar(self) -> None:
             """Where F6 goes. Recorded rather than performed: the bar is wx.
 
@@ -674,3 +856,216 @@ def lite_window(tmp_path, lite_settings):
         return window
 
     return make
+
+
+# --------------------------------------------------------------------------- #
+# Dialogs
+# --------------------------------------------------------------------------- #
+
+
+class DialogRecorder:
+    """Every window QuillLite can open, replaced by a record-and-answer stub.
+
+    Twenty-odd commands are *one state change behind a modal dialog*: choose a
+    file, choose a font, choose a slot, then do the thing. Without a seam they
+    stay shape-only forever, and shape-only is what let F8 ship broken -- so the
+    seam is worth building rather than accepting the gap.
+
+    Two rules, and they are the same two the rest of this harness follows.
+
+    **Answer, do not simulate.** Nothing here draws a dialog or decides what a
+    user would pick. A test says what came back (``dialogs.answer("FileDialog",
+    path)``) and asserts what the command did with it. The default answer is
+    **cancel**, because cancel is the case that is forgotten: a command that
+    quietly acts on a cancelled dialog is the bug this catches.
+
+    **Patch where the name is looked up.** A dialog imported at module scope
+    has to be replaced in the module that imported it, not where it is defined
+    -- ``lite_window_commands.choose_heading`` is a different binding from
+    ``lite_dialogs.choose_heading``, and patching the second leaves the first
+    untouched. The table below names both ends for that reason.
+    """
+
+    #: ``(module path, attribute)`` for every dialog entry point, keyed by the
+    #: short name a test uses. Where a module imported the name at its own
+    #: scope, that module is the target -- see the docstring.
+    TARGETS: dict[str, tuple[str, str]] = {
+        # Imported inside the function that uses them: the defining module is
+        # the only binding, so patching it there covers every caller.
+        "choose_from_rows": ("quill.apps.lite_dialogs", "choose_from_rows"),
+        # Same window, second binding: lite_window_clipboard imports it at
+        # module scope, so patching only lite_dialogs left the tray and the clip
+        # library opening a real wx.Dialog in the middle of a test.
+        "choose_from_rows_clipboard": ("quill.apps.lite_window_clipboard", "choose_from_rows"),
+        "edit_spelling_voice": ("quill.apps.lite_spelling_voice_dialog", "edit_spelling_voice"),
+        "AppFeaturesDialog": ("quill.ui.app_features_dialog", "AppFeaturesDialog"),
+        "CommandPaletteDialog": ("quill.ui.palette", "CommandPaletteDialog"),
+        "GoToAnythingDialog": ("quill.ui.palette", "GoToAnythingDialog"),
+        "review_textctrl": ("quill.ui.spell_review", "review_textctrl"),
+        "show_help": ("quill.ui.app_context_help", "show_help"),
+        # Imported at module scope by their caller: patch the caller.
+        "show_text_window": ("quill.apps.lite_window_commands", "show_text_window"),
+        "show_text_window_marks": ("quill.apps.lite_window_marks", "show_text_window"),
+        "choose_heading": ("quill.apps.lite_window_commands", "choose_heading"),
+        "ask_line_number": ("quill.apps.lite_window_commands", "ask_line_number"),
+        "edit_file_format": ("quill.apps.lite_window_tools", "edit_file_format"),
+        "edit_preferences": ("quill.apps.lite_window_view", "edit_preferences"),
+        "FindDialog": ("quill.apps.lite_window_find", "FindDialog"),
+        "ReplaceDialog": ("quill.apps.lite_window_find", "ReplaceDialog"),
+        "KeymapEditorDialog": ("quill.apps.lite_keymap_editor", "KeymapEditorDialog"),
+    }
+
+    #: The sentinel meaning "no test set an answer, so answer cancel".
+    CANCELLED = object()
+
+    def __init__(self, monkeypatch: Any) -> None:
+        self._monkeypatch = monkeypatch
+        self.answers: dict[str, Any] = {}
+        #: ``(name, args, kwargs)`` in the order the commands opened them.
+        self.opened: list[tuple[str, tuple[Any, ...], dict[str, Any]]] = []
+        for name in self.TARGETS:
+            self._install(name)
+
+    # -- the seam --------------------------------------------------------- #
+
+    def _install(self, name: str) -> None:
+        import importlib
+
+        module_path, attribute = self.TARGETS[name]
+        module = importlib.import_module(module_path)
+        if not hasattr(module, attribute):  # pragma: no cover - a renamed dialog
+            raise AssertionError(
+                f"{module_path}.{attribute} does not exist. The recorder's table is "
+                "stale, which would leave a real dialog opening in a test run."
+            )
+        self._monkeypatch.setattr(module, attribute, self._stub(name))
+
+    def _stub(self, name: str) -> Any:
+        def opened(*args: Any, **kwargs: Any) -> Any:
+            self.opened.append((name, args, kwargs))
+            answer = self.answers.get(name, self.CANCELLED)
+            return None if answer is self.CANCELLED else answer
+
+        return opened
+
+    # -- what a test says -------------------------------------------------- #
+
+    #: Names that are two bindings on one window. A test says the short name and
+    #: gets both, because which module imported the dialog is the recorder's
+    #: problem rather than the test author's.
+    ALIASES: dict[str, tuple[str, ...]] = {
+        "choose_from_rows": ("choose_from_rows", "choose_from_rows_clipboard"),
+        "show_text_window": ("show_text_window", "show_text_window_marks"),
+    }
+
+    def answer(self, name: str, value: Any) -> None:
+        """Make *name* return *value* instead of cancelling."""
+        if name not in self.TARGETS:  # pragma: no cover - a typo in a test
+            raise AssertionError(f"{name!r} is not a dialog this recorder patches")
+        for alias in self.ALIASES.get(name, (name,)):
+            self.answers[alias] = value
+
+    def names(self) -> list[str]:
+        return [name for name, _args, _kwargs in self.opened]
+
+    def kwargs_for(self, name: str) -> dict[str, Any]:
+        """The keyword arguments the last opening of *name* was given."""
+        wanted = self.ALIASES.get(name, (name,))
+        for opened, _args, kwargs in reversed(self.opened):
+            if opened in wanted:
+                return kwargs
+        raise AssertionError(f"{name} was never opened; opened: {self.names()}")
+
+    def args_for(self, name: str) -> tuple[Any, ...]:
+        wanted = self.ALIASES.get(name, (name,))
+        for opened, args, _kwargs in reversed(self.opened):
+            if opened in wanted:
+                return args
+        raise AssertionError(f"{name} was never opened; opened: {self.names()}")
+
+
+class FakeModalDialog:
+    """A wx dialog class used as ``with wx.FileDialog(...) as d`` or plain.
+
+    Built by :func:`_fake_dialog_class` with the answers baked in, because the
+    commands construct these themselves -- there is no seam to hand an instance
+    through, only the class name on the ``wx`` module.
+    """
+
+    _answer_id: Any = None
+    _values: dict[str, Any] = {}
+    constructed: list[tuple[tuple[Any, ...], dict[str, Any]]] = []
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        type(self).constructed.append((args, kwargs))
+
+    def __enter__(self) -> FakeModalDialog:
+        return self
+
+    def __exit__(self, *_exc: Any) -> bool:
+        return False
+
+    def ShowModal(self) -> Any:  # noqa: N802 - wx API shape
+        return self._answer_id
+
+    def Destroy(self) -> None:  # noqa: N802 - wx API shape
+        return None
+
+    def __getattr__(self, name: str) -> Any:
+        """Answer GetPath / GetPaths / GetFontData / ... from the baked values.
+
+        A dialog method a test did not name raises rather than returning a
+        silent ``None``: a command reading a value nobody supplied should fail
+        loudly in the test rather than take the default branch by accident.
+        """
+        if name in self._values:
+            value = self._values[name]
+            return (lambda *_a, **_k: value) if not callable(value) else value
+        raise AttributeError(
+            f"{name} was not supplied to this fake dialog; add it to the values dict"
+        )
+
+
+def _fake_dialog_class(answer_id: Any, **values: Any) -> type[FakeModalDialog]:
+    """A one-off dialog class answering *answer_id* and the named getters."""
+    return type(
+        "FakeDialog",
+        (FakeModalDialog,),
+        {"_answer_id": answer_id, "_values": values, "constructed": []},
+    )
+
+
+@pytest.fixture
+def lite_dialogs(monkeypatch):
+    """Every QuillLite dialog, recorded and answered. See :class:`DialogRecorder`."""
+    return DialogRecorder(monkeypatch)
+
+
+@pytest.fixture
+def page_data():
+    """The :class:`FakePageData` class, handed over rather than imported.
+
+    A test needing this must **not** write ``from conftest import FakePageData``:
+    with several ``conftest.py`` files and no ``__init__.py`` beside them, the
+    bare module name is ambiguous, and on CI it resolved to
+    ``tests/unit/ui/conftest.py`` -- an ImportError that no local run reproduced
+    because the local collection order happened to bind the other one first.
+    """
+    return FakePageData
+
+
+@pytest.fixture
+def fake_wx_dialog(monkeypatch):
+    """Replace a ``wx`` dialog class (``FileDialog``, ``FontDialog``, ...).
+
+    Returns ``install(name, answer_id, **getters)`` and hands back the class, so
+    a test can assert on how it was constructed as well as what the command did
+    with the answer.
+    """
+
+    def install(name: str, answer_id: Any, **getters: Any) -> type[FakeModalDialog]:
+        cls = _fake_dialog_class(answer_id, **getters)
+        monkeypatch.setattr(wx, name, cls)
+        return cls
+
+    return install

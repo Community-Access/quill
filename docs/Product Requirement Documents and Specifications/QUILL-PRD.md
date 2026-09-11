@@ -7631,6 +7631,40 @@ for a regenerate, because a snapshot left behind is a ratchet that has quietly
 stopped ratcheting. At introduction: 93 covered, 68 shape-only, the remainder
 being commands that open real wx dialogs.
 
+**Closed to zero on 2026-09-11**: 161 of 161, and the gate now asserts an empty
+list rather than a shrinking one. The two say different things to whoever reads
+a failure -- a ceiling says "you went over budget", zero says *a command shipped
+without a test*, which is the sentence that gets the test written.
+
+Fourteen of the sixty-eight turned out to be **already tested and invisible**.
+They were driven as ``getattr(win, name)()`` over a parametrized string, which
+the AST scan correctly refuses to count -- it cannot see a name that is only a
+string. Those were rewritten to parametrize over lambdas
+(``(lambda w: w.cmd_italic(), ...)``) rather than weakening the detection,
+because the weaker rule would have re-admitted exactly the inventory-shaped test
+the gate exists to distrust.
+
+The remaining fifty-four were reached by giving the harness a seam for modal
+dialogs: ``DialogRecorder`` replaces every dialog entry point with a stub that
+records how it was called and **answers cancel unless a test says otherwise**.
+Cancel-by-default is the substantive choice -- it is the branch people forget to
+write, and a command that saves after Escape or reports success after a
+cancelled Save As is the class of bug this group hides. Two details are
+load-bearing and are documented in the recorder: a dialog imported at module
+scope has to be patched in the module that imported it (``lite_window_clipboard``
+holds its own binding of ``choose_from_rows``, and patching only ``lite_dialogs``
+left the tray opening a real ``wx.Dialog`` mid-test), and ``fake_wx_dialog``
+covers the wx-owned classes (``FileDialog``, ``FontDialog``, ``PageSetupDialog``,
+``Printer``) that a command constructs itself.
+
+Three stand-in bugs surfaced on the way, each of which had made a command
+untestable rather than merely untested: ``FakeEditor.next_heading`` took
+``forward=`` and returned ``-1`` where the real one takes ``reverse=`` and
+returns ``None`` or a pair, so ``_navigate_heading`` unpacked an int; the window
+stub carried ``line_ending`` where ``DocumentFrame`` and ``cmd_file_format``
+read ``newline``; and it had no ``_find_dialog``, so the "raise the window
+already open" branch of Ctrl+F could not run.
+
 ### 8.15 The Page status bar indicator (0.9.0 Beta 2, #872)
 
 Every document shows a `Page` status bar cell, on by default (unlike most cells, which are opt-in), positioned right after the line/column position cell rather than first. For PDFs, it reports an exact page count and current page, derived from page boundaries preserved as form-feed characters at import (`quill/io/pdf.py`), reusing `quill/core/navigation.py`'s previously-dormant `page_starts()`/`page_start_for_number()`. For every other format (plain text, Markdown, DOCX), it reports an **estimate** derived from word count (`page_estimate_words_per_page`, default 300, clamped 150-600, Preferences > Navigation and QUILL Key) — this is explicitly not an exact science, and the cell's text always says so: `"Page ~N of ~M (estimated)"`. The tilde and the word "estimated" always appear together, never one without the other, so an estimate is never mistaken for a fact.
