@@ -153,7 +153,7 @@ full-page read or to hand to someone else. Chord: **Ctrl+Shift+Grave** then **V*
 
 ---
 
-## VIEW-06 — Preview Side by Side (`view.split_preview`, Ctrl+Shift+Backslash)
+## VIEW-06 — Preview Side by Side (`view.split_preview`, Ctrl+Alt+\)
 
 *What & why.* Show a live preview pane to the **right** of the editor and keep it
 updating as you type — write and see the result at once.
@@ -162,9 +162,9 @@ updating as you type — write and see the result at once.
 - `formatting.md` open.
 
 **Do this**
-1. Press **Ctrl+Shift+Backslash**, or **View menu ▸ Preview Side by Side**.
+1. Press **Ctrl+Alt+\**, or **View menu ▸ Preview Side by Side**.
 2. Type a new heading line and watch/hear the pane update.
-3. Press **Ctrl+Shift+Backslash** again to hide it.
+3. Press **Ctrl+Alt+\** again to hide it.
 
 **You should see and hear**
 - The first press splits the window and announces **"Preview shown on the right"**;

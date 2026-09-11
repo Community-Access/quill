@@ -4433,6 +4433,17 @@ Everything that makes Quill fast still works on the same clean text: undo, searc
 
 The **Transform Lines** submenu gathers every line and text transform in one place: **Number Lines...**, **Number Lines (Advanced)...**, **Hard-Wrap Lines...**, **Sort Lines Ascending**, **Sort Lines Descending**, **Reverse Lines**, **Remove Duplicate Lines**, **Trim Trailing Whitespace**, **Normalize Whitespace**, **Convert Indentation to Spaces**, and **Convert Indentation to Tabs**. **Number Lines (Advanced)...** adds a starting number, increment, digit or Roman-numeral style, zero-padding width, a custom suffix, and left or right alignment, for cases the simple version doesn't cover.
 
+**Two blank-line commands, and the names say which is which.** The Format menu
+offers **Trim Blank Lines at the Ends**, which removes only the blank lines
+before the first line of text and after the last one, and **Remove Every Blank
+Line**, which removes all of them including the ones separating your paragraphs.
+Trimming the ends is what you want before pasting a fragment into something
+else; removing every one is what you want after copying text out of a web page
+that arrived double-spaced. A line of nothing but spaces counts as blank to both
+of them, because it is blank to everyone reading the document. They used to be
+called Trim Blank Lines and Remove Blank Lines, which are the same phrase read
+aloud, so the names now say *where* rather than leaving you to try them.
+
 The **Format** menu adds three more sorts for structured lists, each working on the selected lines or the whole document: **Sort Lines Numerically** (by the first number on each line), **Sort Lines by Length**, and **Sort Lines by Date**. **Sort Lines by Date** recognizes the common date styles — ISO (`2020-03-05`), slash and dot forms (`03/04/2020`, `5.1.2020`), and English month names (`Jan 5, 2020`, `5 January 2020`, `March 3rd, 1999`) — and works out day/month order for an ambiguous numeric date the way your region does: US English reads it month-first (`03/04` = March 4th), everywhere else day-first (`03/04` = 4 March), and an unambiguous value like `25/12` is always read correctly whichever region you use. Lines with no recognizable date stay together at the bottom in their original order, so nothing is lost. All three are unbound by default and can be given a shortcut from the Keymap Editor.
 
 ### Navigate
@@ -5118,9 +5129,135 @@ blocks do not alert — those regions are wall-to-wall "misspellings" that a
 sighted user filters out visually, so QUILL filters them for you. The F7 review
 still covers the whole document; only the ambient alert is filtered.
 
-You can turn the spelling sound on or off independently in **Sound Events**
-(look for "Possible misspelling"), and the whole live mode with the
-spell-check-as-you-type toggle.
+The alert fires on a word you have **finished** -- a space, a comma, a new line
+-- not on one you are still in the middle of typing. Without that rule the
+checker judges "recie" on the way to "receive" and cries wolf before every long
+word.
+
+You can turn the spelling sound on or off independently in **Tools → Sound
+Scheme** (look for "Possible misspelling as you type"), and the whole live mode
+with the spell-check-as-you-type toggle.
+
+#### How a misspelling is said
+
+A misspelling is the one thing in an editor that speech alone cannot convey.
+"receive" and "recieve" are the same sound: being told the word tells you
+nothing, and **the letters are the answer**. So when you land on a misspelling
+-- with Next or Previous Misspelling, or in the F7 review -- QUILL says the word
+and then, after a pause, spells it out.
+
+The pause is the whole mechanism. It is a *second* utterance, not one long one,
+so it can be interrupted: press the next key and the spelling is cancelled
+unheard. A fast reader pays nothing for a feature a careful reader needs.
+
+Twelve settings under **Spelling** in Settings control all of it, and QuillLite
+stores the same twelve under **Tools ▸ Spelling ▸ Announcements**, so tuning
+this once tunes both.
+
+**While you are typing.** **spelling_alert_sound** plays the falling blip when
+you finish a misspelled word; turn it off for silence. **spelling_alert_speech**
+also speaks the word, and is off by default -- an interruption while you are
+composing costs more than it tells you. **spelling_alert_repeat_ms** is the
+shortest gap before the same word is reported again, so one stubborn proper noun
+does not become a drum; zero means every time.
+
+**Spelling a word out.** **spell_aloud_enabled** is the master switch.
+**spell_aloud_style** chooses how the letters are said: plain **letters** are
+fastest, the **phonetic** alphabet (romeo, echo, charlie) is unambiguous where
+B, D, E, P, T and V are one sound with a rumour attached, and **both** is for
+learning a word rather than checking one. **spell_aloud_capitals** prefixes an
+upper-case letter with "cap", so MacDonald and Macdonald are told apart -- worth
+having, because letters are spoken in upper case whatever the word does (several
+voices read a lone lower-case letter as a word).
+
+**When the letters follow.** Three pauses, because the right pause is not the
+same in three places. **spell_aloud_delay_ms** is the one in the F7 review,
+where you are stopped and deciding -- 800 ms by default.
+**spell_aloud_on_navigation** and **spell_aloud_navigation_delay_ms** cover Next
+and Previous Misspelling, where you may be travelling rather than deciding, so
+the default is shorter. **spell_aloud_suggestions** and
+**spell_aloud_suggestion_delay_ms** spell whichever correction you arrow onto,
+because choosing between two spellings by ear is exactly as impossible in a list
+as it was in the document. **spell_aloud_first_suggestion** also spells the top
+suggestion when the review reaches a new word; it is off by default because it
+doubles the arrival announcement.
+
+#### Starting with a blank document, or not
+
+QUILL opens an empty **Untitled** document when nothing else is being opened,
+which is what most editors do and what most people expect. It is a setting --
+**open_blank_document_at_startup**, under **General** -- because "off" is a real
+preference that had no way to be expressed: somebody who always opens an
+existing file was handed a blank document to close on every single launch.
+
+Turning it off changes only that one case. A file you double-clicked, a file
+named on the command line, last session's documents and recovered unsaved work
+all still open, because every one of those is somebody asking for a document.
+QuillLite has the same setting, under the same name, in **Preferences**.
+
+#### Quiet mode
+
+**Alt+Shift+M** silences every sound at once; press it again to bring them back.
+One key, because "make it stop" is something you need *while* the noise is
+happening -- on a call, in a quiet room, or having had enough of an earcon
+today. A feature you have to go and find is one that does not help at the moment
+you need it. The setting is shared with QuillLite, so silencing one editor
+silences both.
+
+#### The Sound Scheme window
+
+**Tools → Sound Scheme** is every sound QUILL can make, in a list you can hear.
+
+Arrowing through the list plays each event as you land on it. That is what turns
+a list of a hundred and forty earcon names into a catalogue you can actually
+browse, and it is a checkbox under the list rather than a rule, because somebody
+hunting for one row should be able to pass forty in silence.
+
+Every row says everything about itself -- the group it belongs to, the event,
+whether it is switched on, which file it plays and how long that file is -- so a
+screen reader reads the whole state on arrival rather than making you Tab away
+to find it. The buttons underneath act on whichever row you are on:
+
+| Button | What it does |
+|---|---|
+| **Play** | Play this event now, even when the event is switched off |
+| **Switched on** | Silence this one event without changing which sound it has |
+| **Browse...** | Use a WAV file of your own |
+| **No Sound** | Remove the sound from this event entirely |
+| **Use Default** | Put this one event back to the sound the scheme ships |
+
+A file that is not a WAV, or is longer than ten seconds, or is bigger than two
+megabytes, is refused when you choose it and QUILL says why. That is deliberate:
+a sound that fails when it plays fails *silently*, and a silent event is
+impossible to tell from one nobody set.
+
+**Save As Scheme** saves the whole set under a name of your own, as an ordinary
+folder with the sounds copied into it -- so it survives you tidying your
+Downloads folder, and you can zip it and send it to somebody. **Delete Scheme**
+removes one of yours; the shipped ones cannot be deleted. **Restore All
+Defaults** puts every event back and switches them all on, and it cannot
+half-succeed, because the sounds QUILL ships are never overwritten in the first
+place.
+
+QuillLite opens the same window over the same schemes, so a scheme you build in
+one is offered in the other.
+
+#### The sounds themselves
+
+The bundled **Ink** pack now covers every event, including the ones every
+desktop suite has had since the nineties and QUILL did not: open, close, cut,
+copy, paste, delete, undo, redo, print, information, question and task finished.
+Those were the events most in need of a sound and the last to get one, because
+they are exactly the moments a screen reader says nothing about -- nothing is
+announced when a paste lands.
+
+Related sounds share a timbre and differ by direction, so a family is learned
+once rather than a cue at a time. **Undo and redo are the same figure played
+backwards from each other.** Open and close are one bell pair rising and
+falling; so are app start and app exit, one note longer. Cut, copy and paste are
+one dry wooden tick in three gestures, and delete is the same tick dropped an
+octave and a half with a breath of noise under it. Nothing-to-undo does not move
+in pitch at all, because the undo stack did not move either.
 
 #### Spell-check language
 
@@ -7653,6 +7790,21 @@ Quill can play short, non-speech audio cues — earcons — at meaningful editin
 - **The companion apps have their own voice.** Quill Radio and Quill Weather cue their own moments (connecting, a stall, a new weather alert) through the same Sound Events system, and each cue can be turned off individually from the same settings surface. Which moments each app marks, and how, is documented in that app's own user guide.
 - **Keep the sound device awake.** Some USB and Bluetooth audio devices power down after a few silent seconds and clip the start of the next sound. If the first moment of your earcons or speech gets cut off, turn on **Keep the sound device awake** (in Settings, search "keepalive"): QUILL plays a silent clip every 20 seconds so the device never sleeps. Off by default.
 - **Hear them all.** Run `python scripts/audition_ink_sounds.py` from a QUILL source checkout to audition the identity set family by family, or add `--all` for every sound in the pack.
+
+#### Choosing between a tone and words
+
+A few moments have both a sound and a sentence available, and which one you want depends entirely on how long you have been using Quill. A tone has to be learned before it means anything; being told "Copied" on every Ctrl+C is intolerable within a minute once you have learned it. Both reactions are right, so this is a setting rather than a decision made for you.
+
+- **Action feedback** (`action_feedback`) governs the moments where a key *did something* and your screen reader says nothing about it: cut, copy, paste, delete, undo, redo, and starting a selection with F8. Choose **Play a sound** (the default, and what Quill has always done), **Speak the action**, **Both a sound and speech**, or **Neither**. Where a moment carries a number worth hearing — "Pasted 1,234 characters as plain text", "Selected 412 characters, 68 words" — the number is always spoken: a tone cannot carry a count, and the count is usually the whole reason for asking. **Neither** silences the audio and still writes the status bar, so you can always go and read what happened.
+- **Find: nothing found** (`find_not_found_feedback`) offers the same four choices for the one failure a search can have, and it is a separate setting on purpose: F3 is pressed in runs, and "Not found" spoken on every press is the fastest way to make somebody turn speech off altogether. It also defaults to the tone alone.
+
+If you pick a sound for a moment your sound pack has no clip for, Quill speaks instead — the choice is between two kinds of feedback, never a route to none. Silencing an individual event under **Sound Events...** is different: that is you asking for quiet, and it stays quiet rather than turning into speech.
+
+#### Wrapping at the ends of a search
+
+**Wrap around when searching** (`wrap_find`) decides what happens when Find Next reaches the end of the document, or Find Previous reaches the start. With it on (the default) the search continues from the other end, and a distinct wrap cue tells you that it did — which is the one thing your screen reader cannot know. With it off the search stops and says which end it stopped at: *"No more matches. Reached the end of the document, and wrapping is off."*
+
+That wording matters, because the two situations need different fixes. "Not found" means change the pattern; running out of document means go to the other end and press again. The setting applies in both directions, and to Quill and QuillLite alike.
 
 Earcon events in the bundled Ink pack include: `quill_key_pressed` (QUILL key prefix armed), `abbreviation_expanded`, `abbreviation_deleted`, `snippet_inserted`, `autocomplete_accepted`, `document_saved`, `document_created`, `search_found`, `search_not_found`, `search_wrapped`, `heading_jumped`, `table_entered`, `browse_mode_on`, `browse_mode_off`, `ai_thinking_started`, `ai_response_received`, `ai_error`, `transcription_started`, `transcription_stopped`, `ssh_connected`, `ssh_disconnected`, `error`, `warning`, `sound_on`, `sound_off`, and the five compare events. Every scripted earcon in the bundled pack is a distinct sound, so two different events never sound identical. Pack authors can map any event ID to any WAV file; the full QSP format and event reference are documented in the product requirements document, under "Sound notifications and QSP sound packs."
 

@@ -32,6 +32,30 @@ Three things follow from that, and each is deliberate:
   anything; pressing F7 is saying something. Somebody who runs the review on a
   Python file meant to.
 
+**A misspelling is said in the one way speech can convey it: by its letters.**
+"receive" and "recieve" are the same sound, so telling a listener the word tells
+them nothing -- the letters are the answer. Landing on one with Ctrl+F7 spells
+it out after a pause, and the pause is the mechanism: press the next key and the
+pending spelling is cancelled unheard, so a fast reader pays nothing for a
+feature a careful one needs. The engine, the timings and the three ways of
+saying a letter are shared with QUILL
+(:mod:`quill.core.spelling.voicing`).
+
+**While you type, it is a sound and never a voice.** Speech there would
+interrupt the sentence it is commenting on. The earcon is short, quiet and
+distinct, it can be silenced, and its repeat interval is tunable so one stubborn
+proper noun does not become a drum.
+
+**Ignoring is honoured everywhere, and nowhere on disk.** The context menu
+(:mod:`quill.apps.lite_window_context_menu`) can say "not this one" and "not
+this word, not in this document", and the answer has to hold for every route
+into the checker or it is not an answer at all: the live check, Ctrl+F7 and
+Shift+F7 all consult the same in-memory
+:class:`~quill.core.spelling.context_menu.IgnoreList`, and it dies with the
+window. An ignore that outlived the session would be a dictionary entry nobody
+chose and nobody could find to remove -- teaching a word is the durable answer
+and it has its own menu item.
+
 Announcements follow GATE-13: the outcome of what the user did, and never a
 control's own name, role or text -- those are the reader's to say.
 """
@@ -41,6 +65,7 @@ from __future__ import annotations
 import wx
 
 from quill.core.lite import spelling as spelling_mod
+from quill.core.spelling.voicing import LiveAlertPolicy, SpellAloudPolicy, SpellAloudVoice
 
 __all__ = ["DocumentSpellingMixin"]
 
@@ -75,6 +100,26 @@ class DocumentSpellingMixin:
         self._spell_timer = None
         self._spell_dictionary_cache = None
         self._last_live_word = None
+        #: When the last live alert was made, so the repeat throttle has
+        #: something to measure against. Monotonic, because a clock that can go
+        #: backwards would silence the alert until it caught up again.
+        self._last_live_alert_at = 0.0
+        #: The one pending "and here is how it is spelled". Rebuilt whenever the
+        #: settings change, so a listener who shortens the pause hears the new
+        #: one on the next word rather than after a restart.
+        self._spell_voice = SpellAloudVoice(
+            self._announce, SpellAloudPolicy.from_settings(self.app.settings), wx.CallLater
+        )
+
+    def refresh_spelling_voice(self) -> None:
+        """Re-read the voicing preferences. Called after Preferences is saved."""
+        self._spell_voice.policy = SpellAloudPolicy.from_settings(self.app.settings)
+
+    def _live_alert_policy(self) -> LiveAlertPolicy:
+        """What the as-you-type alert should do. Read fresh, never cached: it is
+        consulted once per pause in typing, and a stale copy would ignore a
+        switch the user has just flipped."""
+        return LiveAlertPolicy.from_settings(self.app.settings)
 
     def _spelling_enabled(self) -> bool:
         """Is the whole area switched on in Customize Features?"""
@@ -135,19 +180,28 @@ class DocumentSpellingMixin:
             pass
 
     def _run_live_spell_check(self) -> None:
-        """Look at the word behind the caret, and say so if it is not a word.
+        """Look at the word you have just finished, and report it if it is wrong.
 
-        Bounded to the word the caret is in rather than scanning forward: an
-        unbounded search would walk a clean document to its end on every pause
-        in typing, for an answer this caller would then discard.
+        ``misspelling_behind``, not ``misspelling_at``. The latter matches only a
+        word *beginning exactly at the caret*, which typing left to right never
+        produces -- the caret is always at or past the end of the word just
+        finished -- so this whole feature was unreachable until 2026-09-10:
+        settings, earcon, status line and all, and never once fired. The new
+        helper asks the question the surface has, and requires a terminator, so
+        it never judges a word somebody is still in the middle of typing.
+
+        Bounded either way: it walks left over a handful of characters and
+        matches one word. Nothing here scans the document.
         """
-        from quill.core.spellcheck import misspelling_at
+        import time
+
+        from quill.core.spellcheck import misspelling_behind
         from quill.core.spellcheck_live import live_alert_suppressed
 
         text = self.control.GetValue()
         caret = self.control.GetInsertionPoint()
-        item = misspelling_at(text, caret, self._spell_dictionary())
-        if item is None:
+        item = misspelling_behind(text, caret, self._spell_dictionary())
+        if item is None or self.spell_ignores.skips(text, item):
             self._last_live_word = None
             return
         # URLs, code spans and fenced blocks are wall-to-wall false positives
@@ -156,15 +210,39 @@ class DocumentSpellingMixin:
         if live_alert_suppressed(text, item.start, item.end):
             self._last_live_word = None
             return
+        policy = self._live_alert_policy()
         key = (item.word.lower(), item.start)
-        if key == self._last_live_word:
-            return  # already said; do not repeat it on every pause
+        now = time.monotonic()
+        if key == self._last_live_word and (
+            policy.repeat_ms <= 0 or (now - self._last_live_alert_at) * 1000 < policy.repeat_ms
+        ):
+            return  # already said, and not long enough ago to say again
         self._last_live_word = key
-        # The status bar, not the voice. A misspelling is not the outcome of
-        # what the user just did -- they were typing -- so speaking it would
-        # interrupt the very thing it is commenting on. The Message cell holds
-        # it, F6 reads it, and the Spelling menu acts on it.
+        self._last_live_alert_at = now
+        # The status bar, not the voice -- unless the user has asked otherwise.
+        # A misspelling is not the outcome of what they just did (they were
+        # typing), so speaking it interrupts the very thing it is commenting on.
+        # The Message cell holds it, F6 reads it, the Spelling menu acts on it,
+        # and the earcon is what makes it noticeable without a word being said.
         self._set_status_message(f'Possible misspelling: "{item.word}"')
+        if policy.sound:
+            self._play_spelling_alert()
+        if policy.speech:
+            self._announce(f'Possible misspelling: "{item.word}"')
+
+    def _play_spelling_alert(self) -> None:
+        """The earcon, or nothing at all. Never a bell fallback.
+
+        QUILL falls back to ``wx.Bell`` when no pack is loaded, and that is
+        right there: QUILL always has a sound stack. QuillLite may be installed
+        on a machine that has never had one, and the system bell is a loud,
+        undismissable, wrong-sounding noise to attach to something this frequent.
+        A missing pack means silence, which is what the status bar is for.
+        """
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.companion_cues import post_cue
+
+        post_cue(SoundEvent.SPELLING_ALERT)
 
     # ------------------------------------------------------------------ #
     # Commands
@@ -218,13 +296,22 @@ class DocumentSpellingMixin:
         list can be arrowed through and reconsidered.
         """
         from quill.apps.lite_dialogs import choose_from_rows
-        from quill.core.spellcheck import misspelling_at, suggest_words
+        from quill.core.spellcheck import misspelling_at_position, suggest_words
 
         if not self._require_spelling():
             return
         text = self.control.GetValue()
-        item = misspelling_at(text, self.control.GetInsertionPoint(), self._spell_dictionary())
-        if item is None:
+        # The word the caret is *in*, not one starting exactly under it.
+        # ``misspelling_at`` is the as-you-type helper and answers only for a
+        # word beginning at the caret, so Shift+F7 in the middle of a misspelled
+        # word used to say there was no misspelling at the cursor -- which is
+        # every press that was not made in the instant after typing the space.
+        # QUILL has always used the walk-left form here; this is QuillLite
+        # catching up rather than a new idea.
+        item = misspelling_at_position(
+            text, self.control.GetInsertionPoint(), self._spell_dictionary()
+        )
+        if item is None or self.spell_ignores.skips(text, item):
             self._announce("No misspelling at the cursor")
             return
         suggestions = suggest_words(item.word, self._spell_dictionary(), limit=_MAX_SUGGESTIONS)
@@ -237,10 +324,18 @@ class DocumentSpellingMixin:
             label="Suggestions for " + item.word + ":",
             help_text=(
                 "Choose a spelling and press Enter to replace the word in the "
-                "document. Escape leaves the word as it is."
+                "document. Escape leaves the word as it is. Each suggestion is "
+                "spelled out after a short pause; arrow on to skip it."
             ),
             rows=[(word, word) for word in suggestions],
+            # Eight near-identical spellings is the exact place a listener
+            # cannot tell one row from the next: the reader says "receive" for
+            # the right one and "recieve" for the wrong one, and those are the
+            # same sound. So each row spells itself out after a pause, and
+            # arrowing on cancels it -- a fast pass down the list stays silent.
+            on_highlight=self._spell_suggestion,
         )
+        self._spell_voice.cancel()
         if not isinstance(chosen, str):
             self.control.SetFocus()
             return
@@ -267,7 +362,16 @@ class DocumentSpellingMixin:
         text = self.control.GetValue()
         caret = self.control.GetInsertionPoint()
         finder = next_misspelling if forward else previous_misspelling
-        item = finder(text, caret, self._spell_dictionary())
+        # Stepped rather than filtered: an ignored word is not a stop, so the
+        # search carries on from where that one was instead of announcing "no
+        # further misspellings" at the first word somebody chose to skip. Bounded
+        # by the search itself -- each hop starts past the last hit, so a
+        # document of nothing but ignored words ends rather than loops.
+        dictionary = self._spell_dictionary()
+        item = finder(text, caret, dictionary)
+        while item is not None and self.spell_ignores.skips(text, item):
+            caret = item.end if forward else item.start
+            item = finder(text, caret, dictionary)
         if item is None:
             self._announce("No further misspellings" if forward else "No earlier misspellings")
             return
@@ -276,6 +380,27 @@ class DocumentSpellingMixin:
         self.control.SetSelection(item.start, item.end)
         self._touch_status()
         self._announce("Misspelling: " + item.word)
+        # And then the letters, after a pause. The reader has just said the
+        # word, which for a misspelling is the one piece of information that
+        # does not help: "recieve" and "receive" are the same sound. The pause
+        # is what makes this free for somebody who does not need it -- the next
+        # press of Ctrl+F7 cancels it unheard.
+        self._spell_after_landing(item.word)
+
+    def _spell_suggestion(self, suggestion: object) -> None:
+        """Queue the letters of the suggestion the user has arrowed onto."""
+        policy = self._spell_voice.policy
+        if not policy.suggestions:
+            return
+        self._spell_voice.spell_later(str(suggestion), delay_ms=policy.suggestion_delay_ms)
+
+    def _spell_after_landing(self, word: str) -> None:
+        """Queue the letters of *word*, if the listener has asked for them."""
+        policy = self._spell_voice.policy
+        if not policy.navigation:
+            self._spell_voice.cancel()
+            return
+        self._spell_voice.spell_later(word, delay_ms=policy.navigation_delay_ms)
 
     def cmd_add_word_to_dictionary(self) -> None:
         """Alt+F7: teach the word at the caret, for good.
@@ -284,13 +409,18 @@ class DocumentSpellingMixin:
         QUILL's -- and it says which, because "added to dictionary" does not
         tell you where it went when there are two of them.
         """
-        from quill.core.spellcheck import misspelling_at
+        from quill.core.spellcheck import misspelling_at_position
 
         if not self._require_spelling():
             return
         text = self.control.GetValue()
-        item = misspelling_at(text, self.control.GetInsertionPoint(), self._spell_dictionary())
-        if item is None:
+        # The walk-left form, for the reason spelled out in
+        # cmd_spell_word_at_cursor: Alt+F7 has to teach the word the caret is
+        # in, not only one that happens to start under it.
+        item = misspelling_at_position(
+            text, self.control.GetInsertionPoint(), self._spell_dictionary()
+        )
+        if item is None or self.spell_ignores.skips(text, item):
             self._announce("No misspelling at the cursor")
             return
         written = spelling_mod.add_word(item.word, self.app.settings, self.app.data_dir, self.path)
@@ -302,6 +432,31 @@ class DocumentSpellingMixin:
         shared = bool(getattr(self.app.settings, "share_quill_dictionary", False))
         where = "QUILL's shared dictionary" if shared else "your QuillLite dictionary"
         self._announce("Added " + item.word + " to " + where)
+
+    def cmd_spelling_voice_settings(self) -> None:
+        """Ctrl+Alt+Shift+F7: how a misspelling is said, in one window.
+
+        Not gated behind :meth:`_require_spelling`, and that is deliberate: the
+        settings survive the area being switched off, and somebody who has just
+        turned spelling back on should be able to reach the window that decides
+        how loud it is going to be. Every other command here acts on a document
+        and is rightly refused; this one is a preference.
+        """
+        from quill.apps.lite_spelling_voice_dialog import edit_spelling_voice
+
+        changed = edit_spelling_voice(self, self.app.settings, announce=self._announce)
+        self.control.SetFocus()
+        if not changed:
+            return
+        self.app.save_settings()
+        # Every open document, not just this one: the voicing is a statement
+        # about how you want to be spoken to, and a pause that is 600 ms in
+        # document 2 and 900 ms in document 3 is a pause you cannot learn.
+        for frame in self.app.frames:
+            refresh = getattr(frame, "refresh_spelling_voice", None)
+            if callable(refresh):
+                refresh()
+        self._announce("Spelling announcements saved")
 
     # ------------------------------------------------------------------ #
     # Shared guard

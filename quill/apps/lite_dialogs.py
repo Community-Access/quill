@@ -29,6 +29,7 @@ these own the screen.
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 import wx
@@ -163,6 +164,7 @@ def choose_from_rows(
     rows: list[tuple[object, str]],
     extra_button: str = "",
     size: tuple[int, int] = (560, 400),
+    on_highlight: Callable[[object], None] | None = None,
 ) -> tuple[object, str] | object | None:
     """One list, one choice. Returns the chosen row's key, or ``None``.
 
@@ -174,6 +176,14 @@ def choose_from_rows(
     With *extra_button*, the answer is ``(key, "choose" | "<button>")`` so a
     caller can offer a second verb -- Remove, on the bookmark list -- without a
     second dialog. Without it, the answer is just the key.
+
+    *on_highlight* is called with a row's key each time the selection moves,
+    including the initial one. It exists for the spelling suggestions list,
+    where the row's *text* is not enough: choosing between "receive" and
+    "recieve" by ear is exactly as impossible in a list as it was in the
+    document, so the caller spells out whichever one you land on. Anything it
+    raises is swallowed -- a decoration on a list must never take the list down
+    -- and a caller that passes nothing gets a plain list, unchanged.
     """
     dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
     root = wx.BoxSizer(wx.VERTICAL)
@@ -205,8 +215,28 @@ def choose_from_rows(
             dialog.EndModal(wx.ID_OK)
 
         extra.Bind(wx.EVT_BUTTON, _extra)
+    if on_highlight is not None:
+
+        def _highlighted(_event: wx.CommandEvent) -> None:
+            index = listbox.GetSelection()
+            if index == wx.NOT_FOUND:
+                return
+            try:
+                on_highlight(rows[int(index)][0])
+            except Exception:  # noqa: BLE001 - a decoration must not break the list
+                return
+
+        listbox.Bind(wx.EVT_LISTBOX, _highlighted)
     if rows:
         listbox.SetSelection(0)
+        if on_highlight is not None:
+            # The first row too: it is selected without an event, and a listener
+            # who opens the list and waits should hear about the row they are on
+            # rather than only about the ones they arrow to.
+            try:
+                on_highlight(rows[0][0])
+            except Exception:  # noqa: BLE001 - see above
+                pass
     listbox.SetFocus()
     try:
         if show_modal_dialog(dialog, title) != wx.ID_OK:

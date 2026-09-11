@@ -195,18 +195,40 @@ class RichEditDocument(QuillRichEdit):
     # -- text mode ---------------------------------------------------------- #
 
     def set_text_mode(self, mode: str) -> None:
-        """Switch the control between plain and rich text.
+        """Record the document's mode; the *control* stays in rich text mode.
 
         ``EM_SETTEXTMODE`` is refused by the control unless the document is
         empty, so the caller saves the text, calls this, and puts the text back.
         Off Windows the control is a stock ``wx.TextCtrl`` with one mode, and
         this records the intent without changing anything.
+
+        **``TM_PLAINTEXT`` is never sent, and that is a bug fix rather than an
+        oversight.** In plain-text mode RICHEDIT50W does not treat the position
+        after a trailing line break as a line of its own: type "This is a
+        test.", press Enter, and the control answers ``EM_LINEFROMCHAR`` with
+        the *previous* line. A screen reader asks the control which line the
+        caret is on, so JAWS said "This is a test." where it should have said
+        "blank" -- on every empty line at the end of every plain text document,
+        which in a Notepad replacement is most of them. Measured on wxWidgets
+        3.3.3 / RICHEDIT50W: plain-text mode reports row 0, rich-text mode and
+        an untouched control both report row 1 and an empty line. There is
+        nothing to correct after the fact, either: the control puts the caret at
+        its own reported end of text and still calls that the line above.
+
+        Nothing is lost by staying in rich text mode. ``mode`` is the
+        *document's* kind and still decides everything that matters -- which
+        commands the Format menu allows, what a save writes, what the status bar
+        says -- and a plain document pastes as plain text
+        (:meth:`~quill.apps.lite_window_commands.DocumentCommandsMixin.cmd_paste`)
+        so it cannot pick up formatting it would then silently drop.
         """
         self.mode = RICH if mode == RICH else PLAIN
-        flags = (_TM_RICHTEXT if self.mode == RICH else _TM_PLAINTEXT) | (
-            _TM_MULTILEVELUNDO | _TM_MULTICODEPAGE
+        _send(
+            self.hwnd(),
+            _EM_SETTEXTMODE,
+            _TM_RICHTEXT | _TM_MULTILEVELUNDO | _TM_MULTICODEPAGE,
+            0,
         )
-        _send(self.hwnd(), _EM_SETTEXTMODE, flags, 0)
 
     def current_text_mode(self) -> str:
         """What the control says its mode is: ``plain``, ``rich`` or ``unknown``."""

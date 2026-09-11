@@ -569,7 +569,7 @@
 - [ ] W  [ ] S  [ ] A  `view.preview` — Preview  `Ctrl+Shift+V`
 - [ ] W  [ ] S  [ ] A  `view.reveal_codes_toggle` — Reveal Codes  `Alt+F3`
 - [ ] W  [ ] S  [ ] A  `view.send_to_tray` — Send to Tray  `Ctrl+Shift+Grave, T`
-- [ ] W  [ ] S  [ ] A  `view.split_preview` — Preview Side by Side  `Ctrl+Shift+Backslash`
+- [ ] W  [ ] S  [ ] A  `view.split_preview` — Preview Side by Side  `Ctrl+Alt+\`
 - [ ] W  [ ] S  [ ] A  `view.spoken_echo` — Show Spoken Echo  `Alt+Shift+E`
 - [ ] W  [ ] S  [ ] A  `view.toggle_dark_mode` — Toggle Dark Mode  `Alt+Shift+D`
 - [ ] W  [ ] S  [ ] A  `view.toggle_find_wrap` — Toggle Find Wrap

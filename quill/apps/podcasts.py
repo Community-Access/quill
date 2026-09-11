@@ -63,7 +63,7 @@ class PodcastsAppFrame(
     ListeningAppSupportMixin,
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
+        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360), app_id="cast")
         self._apply_app_keymap("cast")
         # Undo, Recent Problems, Quiet Hours and setup transfer: the shared
         # slots, claimed before any window can offer them.

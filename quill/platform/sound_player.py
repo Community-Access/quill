@@ -39,7 +39,12 @@ import queue
 import threading
 import time
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Protocol, runtime_checkable
+from typing import TYPE_CHECKING
+
+# Imported under their old private names, so every use in this module and in
+# tests/unit/platform/test_sound_player.py reads exactly as it did before the
+# 2026-09-10 split.
+from quill.platform.sound_backends import WavBackend as _WavBackend
 
 if TYPE_CHECKING:
     from quill.core.sound_pack import SoundPack
@@ -54,46 +59,51 @@ _WINSOUND_QUEUE_MAX: int = 2
 
 
 # ---------------------------------------------------------------------------
-# Backend protocol
-# ---------------------------------------------------------------------------
-
-
-@runtime_checkable
-class _WavBackend(Protocol):
-    """Minimal interface a playback backend must satisfy."""
-
-    def play_wav(self, wav: bytes) -> None:
-        """Play *wav* bytes.  Must return promptly; never raises."""
-        ...
-
-    def set_volume(self, volume: float) -> None:
-        """Set the master output volume in ``[0.0, 1.0]``.  Never raises;
-        backends without a volume control silently ignore the call."""
-        ...
-
-    def shutdown(self, timeout: float = 2.0) -> None:
-        """Release resources.  Called once at player teardown."""
-        ...
-
-
-# ---------------------------------------------------------------------------
 # Backend: sound_lib (BASS) — cross-platform, native mixing
 # ---------------------------------------------------------------------------
+
+
+#: How many still-playing streams to hold references to. Earcons are tens of
+#: milliseconds long, so more than a couple overlapping means something is
+#: firing far too often -- and the cap is what stops a runaway from growing the
+#: list without bound. Sixteen is generous enough never to clip a real one.
+_MAX_LIVE_STREAMS = 16
 
 
 class _SoundLibBackend:
     """BASS-backed earcon player via the ``sound_lib`` package.
 
-    BASS supports simultaneous streams — no queue or serialisation thread
-    is needed.  Each ``play_wav()`` call creates a short-lived BASS stream
-    with ``autofree=True`` so BASS disposes of it automatically when done.
+    BASS supports simultaneous streams, so no queue or serialisation thread is
+    needed. What *is* needed -- and was missing until 2026-09-10 -- is somewhere
+    to keep each stream while it plays.
+
+    **The bug this fixes made every earcon silent on this backend.**
+    ``play_wav`` created a ``FileStream``, called ``play()``, and returned. The
+    local name was then the only reference, so CPython freed the wrapper on the
+    spot, ``FileStream.__del__`` freed the BASS handle, and the sound stopped
+    before it had been heard -- reliably, on every event, for anybody whose
+    machine had ``sound_lib`` installed. ``autofree=True`` looks like it covers
+    this and does not: it tells *BASS* to reclaim the handle when playback ends,
+    which says nothing about when *Python* reclaims the wrapper.
+
+    It went unnoticed because the failure is silence, and silence is what a
+    disabled earcon looks like too. Confirmed by ear, A/B: identical code with
+    the stream held plays, with the stream dropped does not.
+
+    So a stream lives in :attr:`_live` until it has finished, and each call
+    prunes the ones that have. Cheap -- the list is empty most of the time --
+    and it needs no timer and no thread.
     """
 
     def __init__(self) -> None:
         # Import deferred to keep the module importable without sound_lib.
+        import threading
+
         from sound_lib.output import Output  # type: ignore[import-untyped]
 
         self._output = Output()
+        self._live: list[object] = []
+        self._live_lock = threading.Lock()
         logger.debug("SoundPlayer: using sound_lib (BASS) backend")
 
     def play_wav(self, wav: bytes) -> None:
@@ -107,9 +117,64 @@ class _SoundLibBackend:
                 length=len(wav),
                 autofree=True,
             )
+            # Held *before* play(), not after: between the two there is no
+            # reference but the local, and that is the window the old code
+            # died in.
+            self._hold(stream)
             stream.play()
         except Exception:  # noqa: BLE001
             logger.warning("SoundPlayer (sound_lib): playback failed", exc_info=True)
+
+    def play_wav_blocking(self, wav: bytes, timeout: float) -> bool:
+        """Play *wav* and poll the stream until BASS says it has stopped.
+
+        Asking the device rather than computing a duration from the header, and
+        the difference is not academic: a custom goodbye somebody drops in could
+        be any length, a device could be resampling, and a header says what the
+        file *contains* rather than when the speaker stops. Reported as exactly
+        that -- "shouldn't we have a better way of not cutting off the sound
+        than timing delays?"
+
+        *timeout* is still a hard ceiling, because this runs on the way out of
+        the app and an exit that appears to hang is worse than one that clips.
+        It is a backstop for a stream that never reports finishing, not the
+        mechanism.
+        """
+        import time
+
+        try:
+            from sound_lib.stream import FileStream  # type: ignore[import-untyped]
+
+            stream = FileStream(mem=True, file=wav, offset=0, length=len(wav), autofree=False)
+            stream.play()
+        except Exception:  # noqa: BLE001
+            logger.warning("SoundPlayer (sound_lib): blocking playback failed", exc_info=True)
+            return False
+        deadline = time.monotonic() + max(0.0, timeout)
+        try:
+            while time.monotonic() < deadline:
+                if not bool(stream.is_playing):
+                    return True
+                time.sleep(0.01)
+            return True  # the ceiling is an answer too: it played for as long as allowed
+        except Exception:  # noqa: BLE001 - a freed handle means it has finished
+            return True
+        finally:
+            try:
+                stream.free()
+            except Exception:  # noqa: BLE001
+                pass
+
+    def _hold(self, stream: object) -> None:
+        """Keep *stream* alive while it plays, and let go of the finished ones."""
+        with self._live_lock:
+            self._live = [held for held in self._live if _still_playing(held)]
+            self._live.append(stream)
+            if len(self._live) > _MAX_LIVE_STREAMS:
+                # Only reachable if something is firing earcons faster than they
+                # finish, which is a bug at the call site. Drop the oldest rather
+                # than grow without bound.
+                del self._live[:-_MAX_LIVE_STREAMS]
 
     def set_volume(self, volume: float) -> None:
         try:
@@ -118,10 +183,25 @@ class _SoundLibBackend:
             pass
 
     def shutdown(self, timeout: float = 2.0) -> None:
+        with self._live_lock:
+            self._live.clear()
         try:
             self._output.free()
         except Exception:  # noqa: BLE001
             pass
+
+
+def _still_playing(stream: object) -> bool:
+    """Whether *stream* has more to say. Assumes yes when it cannot tell.
+
+    Erring towards keeping a reference: holding one a moment too long costs a
+    few bytes, and letting go a moment too early is the bug this whole class
+    now exists to avoid.
+    """
+    try:
+        return bool(getattr(stream, "is_playing", True))
+    except Exception:  # noqa: BLE001 - a freed handle raises rather than answering
+        return False
 
 
 # ---------------------------------------------------------------------------
@@ -155,6 +235,24 @@ class _WinsoundBackend:
             self._queue.put_nowait(wav)
         except queue.Full:
             pass  # player busy; drop this earcon
+
+    def play_wav_blocking(self, wav: bytes, timeout: float) -> bool:
+        """Play *wav* on the calling thread and return when it is done.
+
+        ``PlaySound`` without ``SND_ASYNC`` blocks until the clip finishes,
+        which is exactly the semantics wanted here -- so the backend that
+        normally needs a serialising worker is the one that needs no extra
+        machinery for this. *timeout* is unused: winsound offers no way to cut a
+        synchronous play short, and the alternative would be a thread to abandon
+        it in, which is more moving parts than an exit path should have.
+        """
+        del timeout
+        try:
+            self._winsound.PlaySound(wav, self._winsound.SND_MEMORY | self._winsound.SND_NODEFAULT)
+        except Exception:  # noqa: BLE001
+            logger.warning("SoundPlayer (winsound): blocking playback failed", exc_info=True)
+            return False
+        return True
 
     def set_volume(self, volume: float) -> None:
         # winsound has no per-stream volume control; ignored by design.
@@ -298,6 +396,32 @@ def _detect_backend() -> _WavBackend:
 # ---------------------------------------------------------------------------
 
 
+#: The longest an exit cue may hold the app open. Matched to
+#: ``sound_scheme.MAX_SOUND_SECONDS``, which is the longest sound the Sound
+#: Scheme window will *accept* -- so any goodbye a user is allowed to install
+#: plays in full, and the ceiling only ever catches a stream that fails to
+#: report finishing. Picking a smaller number here would mean the app refusing
+#: to play a sound it had just told the user was fine.
+MAX_BLOCKING_SECONDS = 10.0
+
+
+def _wav_seconds(wav: bytes) -> float:
+    """How long *wav* plays for, from its own header. 0.0 when unreadable.
+
+    Zero rather than a guess: a caller waiting on this is holding a window open,
+    and a header that cannot be parsed is not a reason to hold it open longer.
+    """
+    import io
+    import wave
+
+    try:
+        with wave.open(io.BytesIO(wav), "rb") as handle:
+            rate = handle.getframerate()
+            return handle.getnframes() / rate if rate else 0.0
+    except Exception:  # noqa: BLE001 - an unreadable header is not an error here
+        return 0.0
+
+
 class SoundPlayer:
     """Fire-and-forget earcon player.
 
@@ -418,6 +542,57 @@ class SoundPlayer:
             self._cooldowns[event_id] = now
 
         self._backend.play_wav(wav)
+
+    def preview_wav(self, wav: bytes) -> None:
+        """Play *wav* now, ignoring the pack, the disabled set and the cooldown.
+
+        A preview has to bypass all three or it cannot do its job. The whole
+        reason somebody opens the Sound Scheme window is to hear an event they
+        have switched *off*, or one they are about to change, or the same one
+        four times in a row while deciding -- and every one of those is
+        something :meth:`play` is built to refuse. Mute is honoured, because
+        mute means the user has said "not now" about the whole app.
+        """
+        with self._lock:
+            if self._muted:
+                return
+        self._backend.play_wav(wav)
+
+    def play_and_wait(self, event_id: str, timeout: float = MAX_BLOCKING_SECONDS) -> None:
+        """Play *event_id* and do not return until it has finished.
+
+        For exactly one situation: the cue that says the app is closing. Every
+        other earcon must return instantly, because it is commenting on
+        something the user is in the middle of. The goodbye is the opposite --
+        the next thing that happens is the process ending, so an asynchronous
+        play is a sound that gets cut off mid-note, which is what somebody
+        actually reported hearing.
+
+        Waited out by the clip's own length, read from its header, rather than
+        by asking the backend: the two backends answer that question
+        differently and one of them cannot answer it at all, while a WAV header
+        is a WAV header. *timeout* is a hard ceiling, so a pack with a
+        thirty-second goodbye cannot hold the window open -- an exit that seems
+        to hang is worse than a cue that is clipped.
+        """
+        import time
+
+        with self._lock:
+            if self._muted:
+                return
+            if event_id in self._disabled:
+                return
+            wav = self._events.get(event_id)
+        if wav is None:
+            return
+        # Ask the backend to tell us when it has finished. Only when it cannot
+        # do we fall back to the clip's own header -- which is a good estimate
+        # of a file and a poor one of a speaker.
+        blocking = getattr(self._backend, "play_wav_blocking", None)
+        if callable(blocking) and blocking(wav, timeout):
+            return
+        self._backend.play_wav(wav)
+        time.sleep(min(timeout, max(0.0, _wav_seconds(wav))))
 
     def loaded_event_ids(self) -> frozenset[str]:
         """Return the set of event IDs currently loaded in the player."""

@@ -672,19 +672,53 @@ by the date each line contains, and by line length.
 
 ---
 
-## POW-33 — Trim Blank Lines (`power.trim_blank_lines`, Ctrl+Shift+Enter)
+## POW-33 — Trim Blank Lines at the Ends (`power.trim_blank_lines`, Ctrl+Shift+Enter)
 
-*What & why.* Collapse runs of blank lines so the document is tidy.
+*What & why.* Take the blank lines off the top and the bottom, and leave the
+ones in the middle alone. The step exists to prove the *middle* survives: the
+command's whole distinction from POW-33a is what it does **not** touch.
 
 **Before you start**
-- New document; type three lines with **two blank lines between** each pair.
+- New document; type three lines with **two blank lines between** each pair, and
+  **two blank lines above the first line and below the last**.
 
 **Do this**
-1. Press **Ctrl+Shift+Enter**, or **Format menu ▸ Trim Blank Lines**.
+1. Press **Ctrl+Shift+Enter**, or **Format menu ▸ Trim Blank Lines at the Ends**.
 
 **You should see and hear**
-- Excess blank lines are removed; the status reads **"Trimmed blank lines"**. The
-  three text lines survive.
+- The blank lines above the first line and below the last one are gone. The two
+  blank lines **between** each pair are still there — read the document with
+  Ctrl+Home and the down arrow to confirm it, because this is the half a glance
+  at the screen does not settle.
+
+**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
+`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
+
+---
+
+## POW-33a — Remove Every Blank Line (`power.remove_blank_lines`)
+
+*What & why.* The companion, and the opposite emphasis: every blank line goes,
+including the ones between paragraphs. Unbound by default, like every other
+power tool; reach it from the menu or give it a key in the Keymap Editor.
+
+The bug it was written for: QuillLite shipped a command with this name wired to
+the trimming one. On any document with blank lines in the middle it removed
+nothing, and then announced that it had removed a line — which is worse than
+doing nothing, because a listener cannot see that the text is unchanged.
+
+**Before you start**
+- The same document as POW-33: three lines of text, two blank lines between each
+  pair, two above and two below.
+
+**Do this**
+1. **Format menu ▸ Remove Every Blank Line**.
+
+**You should see and hear**
+- Every blank line is gone — the three text lines are now consecutive. The count
+  in the announcement matches the number of blank lines there actually were.
+- Repeat with a line containing **only spaces**: it is treated as blank and
+  removed too.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________

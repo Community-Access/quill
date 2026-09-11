@@ -7509,6 +7509,128 @@ The check is wired into `python -m quill.tools.menu_lint` and exposed via 12 new
 
 **Single source of truth for product name.** `tools/generate_build_info.py`, `scripts/generate_update_feed.py`, and `scripts/build_windows_distribution.py` import `APP_DISPLAY_NAME` and `APP_ORGANIZATION` from `quill.branding` so a rebrand touches one file. The TOML path still wins when `build/version.toml` provides a value (the installer and feed can be re-branded per release); the constant is the safety net for older checkouts and dev builds.
 
+### 8.14a Every menu item advertises a keyboard route — the Alt path (1.0.0, 2026-09-10)
+
+**The rule and why it could not be met.** CLAUDE.md's house rule is that every enabled menu item shows a keyboard route in its label, and no two items in one menu bar claim the same key. Quill Radio meets it with 115 items and a global chord each. QUILL's menu bar has **757 items**, and **560 of them advertised no route at all**. That is not a rule somebody forgot to apply; it is a rule that cannot be met that way at this size. There are not 560 chords to give out: the one-level QUILL-key namespace is exhausted (`keymap.py` says so in its own comment) and the plain-chord space went years ago.
+
+**What every item already had.** The **Alt path**: `Alt+F` opens File, `I` opens Import, `W` picks Word Document. It is as global as any chord, it needs no binding, it consumes no chord space, and it scales to any depth and any number of items. The only thing missing was somebody saying it out loud in the label. `quill/ui/menu_routes.py` computes each item's path from the live menu bar and writes it into the label, so it cannot drift and every menu item added after this lands is covered on the day it lands.
+
+**Advertised in parentheses, not after a tab.** `Word Document... (Alt+F, I, W)`. wx parses post-tab text as a native accelerator (`wxGetAccelFromString`) and `Alt+F, I, W` is not one; tab form would log "Unrecognized accel key" per item at every build and leave the label advertising an accelerator that does not exist. This is the same call §8.14 already recorded for QUILL-key chords, which is why 44 items were *already* complying in that form while the gate — which looked only for a tab — scored them as gaps.
+
+**Two preconditions, both fixed by the same pass.**
+
+*Mnemonics have to resolve, or the path goes nowhere.* There were **119 collisions across 30 popups** — the File menu alone had three items on N, three on R and three on S. Windows answers a duplicated mnemonic by cycling focus rather than pressing, so one of each pair silently cannot be reached and nothing announces the loss. GATE-14's access-key checker never saw any of them: it scopes a `wx.Dialog`/`wx.Frame` subclass as one window, and this menu bar is built across a dozen mixin methods, so every collision fell between the scopes.
+
+*166 items had no mnemonic at all* — the fonts, the point sizes, the colours, the 32 braille translation languages, the AI agents. Rows of data rather than commands, which is why nobody wrote a mnemonic for them, and a row you cannot type a letter at is a row you have to arrow to.
+
+**How seats are decided**, in this order, so a reviewer can check the pass rather than trust it:
+
+1. **An item holding a real accelerator keeps its mnemonic.** A command important enough for a global chord is important enough to keep its letter. This is what makes the pass safe to run unattended: Save keeps S from Snapshots, Print keeps P, Bold keeps B, Select All keeps A.
+2. **Submenus keep theirs next**, because a parent's letter is the first step of the path for its whole subtree — one unseated parent costs a subtree, not a row.
+3. **Earlier-in-menu wins** among the rest.
+4. **Whoever is left is seated by a maximum matching** (Kuhn's), not first-fit: greedy stranded nine File-menu items including the whole *Open from Remote* subtree, because it took a letter that was some later item's only one.
+
+A letter the title does not contain is appended in the Windows/CJK convention — `Print Studio... (&Z)` — and folds into the path rather than standing beside it: `Print Studio... (Alt+F, &Z)`, one parenthetical and not two. Where a popup genuinely runs out, the loser gets **no** mnemonic rather than a duplicate, which is GATE-14's rule: a duplicate advertises a key that may not work, while silence is merely silent and Tab still arrives.
+
+**Where it runs.** Once at the end of `_build_menu_bar`, **after** `_refresh_contextual_menu_items`, `_apply_ai_menu_enabled` and `_apply_feature_lock_menu_state` — the pass skips disabled items, so running it before those would route rows about to be dimmed and miss rows about to be enabled. Menus rebuilt outside that build (Open Recent, the contextual rows) re-apply it through `MainFrame._reapply_menu_routes`; the pass is idempotent by construction, so a call site never has to reason about which subtree its change could have reached. Open Recent was the live proof of why this is needed: its rows are file paths built outside the bar build, and they were the only rows in QUILL with no keyboard route at all.
+
+**The Format menu's overflow, and why it needed no product decision.** A mnemonic can only be a letter or a digit, so 36 is the hard ceiling, and the Format menu had **40 direct items**. The two groups over the line were already duplicated by a submenu sitting beside them: **Grow Font** and **Shrink Font** next to a **Font Size** submenu, and the three keyed line spacings (Ctrl+1, Ctrl+5, Ctrl+2) directly above a **Line Spacing** submenu offering the same three values without the keys. The keyed commands are the better half of each pair, so they moved *into* those submenus — keeping their accelerators and gaining the Alt path they could not have at the top level — and the unkeyed line-spacing preset rows are gone rather than repeated underneath, because a listener arrowing that submenu should not meet "Single Spacing" and then "Single". Thirty-five direct items, and nothing was demoted to make room.
+
+**Measured on the real menu bar, 2026-09-10:**
+
+| | before | after |
+| --- | --- | --- |
+| mnemonic collisions | 119 | **0** |
+| items with no mnemonic | 166 | **0** |
+| enabled items with no route | 539 | **0** |
+
+The pass is idempotent (a second run changes nothing), and wx can still bind every real accelerator afterwards — no new `Unrecognized accel key` noise.
+
+**Gated.** `tests/unit/ui/test_quill_menu_accelerators.py` now runs five assertions: every enabled item advertises a route (a parenthesised path counts, which is what had been mis-scoring the 44 QUILL-key items as gaps), every advertised accelerator is one wx can bind, no two items claim one key, **no popup claims one Alt letter twice** (the hole GATE-14's per-class scoping leaves), and every item has a mnemonic at all. `tests/unit/ui/test_menu_routes.py` tests the module's own rules — the seating order, the maximum matching, the appended-letter fallback, the fold, and idempotence.
+
+### 8.14b Two kinds of feedback, and the user picks (1.0.0, 2026-09-10)
+
+**The problem.** A copy, a paste, an undo and a started selection change the
+document and change nothing a screen reader announces: focus does not move, no
+control gains a name, no selection changes. To a listener they are
+indistinguishable from a key that did not work. QUILL's answer has been an
+earcon, and it is a good one -- instant, non-interrupting, and free to hear a
+hundred times an hour. It is not everyone's answer: a tone must be *learned*
+first, and somebody who has learned the pack finds "Copied" on every Ctrl+C
+intolerable within a minute. Neither position is wrong, so it becomes a setting
+rather than a decision.
+
+**`settings.action_feedback`** -- `sound` (default), `speech`, `both`,
+`silent`. **`settings.find_not_found_feedback`** -- the same four, same default,
+asked separately because F3 is pressed in runs and somebody may want every
+success spoken and every miss kept to a tone. Both live on QUILL's `Settings`
+and, with the same names and defaults, on QuillLite's (`quill/core/lite/settings.py`).
+
+**One rule, one module: `quill/core/action_feedback.py`.** `resolve(mode, *,
+has_sound) -> (play, speak)`, and both editors call it rather than each
+implementing the enum. Three properties it guarantees, each of which is a bug
+somebody would otherwise have shipped:
+
+1. **`sound` on a moment with no clip in the pack speaks instead.** Choosing the
+   mode QUILL has always been in must never make the app quieter than the day
+   before. `sound_manager.has_sound_for()` answers the question, and it
+   deliberately ignores the global mute and `sound_events_disabled` -- those are
+   the user asking for quiet, and answering a request for quiet with a voice
+   would be wrong. A pack with no clip is an absence; a silenced event is a
+   decision.
+2. **`silent` stays silent**, including through that fall-through.
+3. **Failures and counts are outside the setting entirely.** "Pasted 1,234
+   characters" and "Selected 412 characters, 68 words" are always spoken -- no
+   tone carries a number, and the number is usually the point of asking. A
+   command that could not do what was asked always says so in words. The status
+   bar is written in every mode, because it is the record and not the feedback;
+   QUILL's `_set_status` *speaks* what it is given, so the quiet modes route
+   through `_set_status_quiet`.
+
+**Call sites.** QUILL: `CueMixin.action()` / `action_channels()`
+(`main_frame_cues.py`) over the clipboard cues and undo/redo,
+`SelectionSpanMixin.start_selection`, and `SearchCommandsMixin._report_search_missed`.
+QuillLite: `DocumentFrame._action()` / `_has_sound_for()`, and
+`_report_not_found`. `action_channels` is public because a caller that owns its
+own status line has to make the "show it without saying it" call itself.
+
+**Two misses, two sentences.** Wrapping on gives `Not found: <needle>` -- change
+the pattern. Wrapping off gives `No more matches. Reached the end of the
+document, and wrapping is off.` -- go to the other end and press again. The
+fixes differ, so the sentences must. QuillLite now honours `wrap_find` in both
+directions, which it never had a way to express.
+
+**Surfaced, or it is not a setting.** Two `SettingSpec` entries in the
+Accessibility group (QUILL) and two `wx.Choice` rows plus a `wrap_find` checkbox
+in Preferences (QuillLite), both built from `ACTION_FEEDBACK_LABELS` rather than
+retyped, so the two panes cannot describe the same four modes under different
+names -- which reads as two settings and sends somebody looking for the other.
+
+### 8.14c GATE-LITE-COVER: existence is not behaviour (1.0.0, 2026-09-10)
+
+`cmd_start_extend_selection` shipped with a green build: the command table had
+gates for its key, its mnemonic and its label, and a test asserted the handler
+existed and could be called. Extend mode had never once worked from the
+keyboard. F8's accelerator set the anchor, F8's own **key-up** then reached the
+control, and the rule in `extend_selection_after_move` was "anything that is not
+a navigation key ends the mode" -- which F8 is not. The mode ended on the
+keystroke that started it, every time. No table gate can see that: it is an
+interaction between a command and an event hook.
+
+`quill/tools/lite_command_coverage.py` classifies every handler in
+`quill.core.lite.commands.COMMANDS` as `covered` (some test in
+`tests/unit/apps` actually *calls* it) or `shape_only`, against a committed
+snapshot. Detection is an AST walk for `<something>.cmd_x(...)`, not a grep: a
+test that lists handler names in a table -- the shape of test that let F8
+through -- must not read as coverage.
+
+The ratchet runs in both directions. A new command with no entry fails. A
+handler that *lost* its test fails, because a deleted test is exactly as
+invisible as one never written. A handler that *gained* one fails too, asking
+for a regenerate, because a snapshot left behind is a ratchet that has quietly
+stopped ratcheting. At introduction: 93 covered, 68 shape-only, the remainder
+being commands that open real wx dialogs.
+
 ### 8.15 The Page status bar indicator (0.9.0 Beta 2, #872)
 
 Every document shows a `Page` status bar cell, on by default (unlike most cells, which are opt-in), positioned right after the line/column position cell rather than first. For PDFs, it reports an exact page count and current page, derived from page boundaries preserved as form-feed characters at import (`quill/io/pdf.py`), reusing `quill/core/navigation.py`'s previously-dormant `page_starts()`/`page_start_for_number()`. For every other format (plain text, Markdown, DOCX), it reports an **estimate** derived from word count (`page_estimate_words_per_page`, default 300, clamped 150-600, Preferences > Navigation and QUILL Key) — this is explicitly not an exact science, and the cell's text always says so: `"Page ~N of ~M (estimated)"`. The tilde and the word "estimated" always appear together, never one without the other, so an estimate is never mistaken for a fact.
@@ -13639,6 +13761,52 @@ migration notice):
 - `braille_editor_hide_border` (default True) — the borderless frame; the
   border demonstrably breaks cell alignment, so unchecking warns specifically
   and re-checks unless confirmed.
+
+**The system edit fix no longer costs the blank line (2026-09-09).** Emulating a
+classic edit control made RICHEDIT50W misreport the caret's line at the very end
+of a document that ends in a paragraph mark, and that is the question a screen
+reader asks: type a line, press Enter, and JAWS read the line above instead of
+saying "blank" — on every empty final line, which in an editor is most
+documents. It was recorded as a trade (braille or blank lines, pick one) until
+the control was measured. Under the flag it stays right about everything it
+knows — the line count, the index of an explicit line, `EM_GETLINE` for the
+empty line, every *interior* empty line — and gets only the character-to-line
+mapping past the final line's start wrong, contradicting its own answers: line 1
+begins at character 16, and character 16 is reported as being on line 0.
+
+Because the right answer follows from facts the control itself supplies, QUILL
+supplies it. `quill/ui/richedit_line_fix.py` installs a `comctl32` window
+subclass that answers `EM_EXLINEFROMCHAR`, `EM_LINEFROMCHAR`, `EM_LINEINDEX(-1)`
+and `EM_LINELENGTH` for that position — a subclass because that is where a
+screen reader's **cross-process** `SendMessage` is dispatched, verified by
+asking from a second process. The rule it applies (every index at or after the
+last line's start is on the last line) holds for any document, so it never
+disagrees with a control that is answering correctly, and it is installed by
+`set_emulate_system_edit` itself so that setting the flag can never again mean
+taking the bug. Two findings from the same measurement rule out the simpler
+fixes: `SES_EMULATESYSEDIT` is **set-once** — `EM_SETEDITSTYLE` is ignored once
+the control holds text, in *both* directions, which is why the preference
+genuinely needs the editor rebuilt — and no caret position reports correctly, so
+nothing is fixable by moving the caret. Guarded by
+`tests/unit/ui/test_richedit_final_line_fix.py`; the measurement and the
+remaining braille A/B are in `scripts/jaws_blank_line_repro.md`. QuillLite had
+the same symptom from a different cause (`EM_SETTEXTMODE` / `TM_PLAINTEXT`),
+fixed separately in `quill/ui/richedit_editing.py`.
+
+**Braille A/B: System Edit Fix... (`app.braille_ab`, command palette).** Whether
+`SES_EMULATESYSEDIT` is needed at all is still open -- the fix is that flag plus
+the hidden border, and only the border was ever proved load-bearing -- and it is
+a question only a person with a braille display can close. It stayed open
+because it also required a restart *per reading*: the flag is set-once, so
+toggling the preference cannot change a live editor. This window builds both
+editors at once instead (`quill/ui/braille_ab_window.py`): editor A is exactly
+what QUILL ships, editor B differs by that one flag and nothing else, and the
+comparison is a Tab apart. **Select the Sample Word** puts the same selection in
+both so the two readings are of the same thing (#813); **Report Caret Line**
+speaks what each control says its caret's line is, for the blank-line half.
+Modeless, palette-only and keyless -- the same reach `app.report_editor_surface`
+has, because a diagnostic earns no menu row and no chord. If A and B read alike,
+the flag and `richedit_line_fix.py` are both deleted.
 
 **Two document modes, one control** (`quill/ui/main_frame_rich_mode.py`,
 `_DocumentTab.editor_mode`):

@@ -65,7 +65,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin, AdpMixin):
     """A tray-resident window whose job is to keep the alert watch running."""
 
     def __init__(self, *, safe_mode: bool = False) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 300))
+        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 300), app_id="weather")
         # F1 context help with Weather's authored purpose catalogue. The app
         # shell already activated the shared engine (provider + dialog-contract
         # hook + main-frame F1); this re-activation swaps in Weather's

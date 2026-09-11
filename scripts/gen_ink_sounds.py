@@ -243,17 +243,56 @@ def generate_all() -> None:
         vol=0.55,
     )
 
-    # -- spelling_alert: single muted low blip (ambient, never alarming) -----
-    # Fired on every completed misspelled word during spell-check-as-you-type,
-    # so it must be quiet, short, and nothing like error/warning: one soft low
-    # triangle tap with a fast decay.
-    def spelling_env(i: int, n: int) -> float:
-        return exp_decay(i, 14) * edge(i, n, 2)
+    # -- spelling_alert: "the slip" ------------------------------------------
+    # A note that starts in tune and slides flat. That is the whole design, and
+    # it is the sound of the thing it reports: a word that was almost right.
+    #
+    # It has to be unique in this pack, because it fires more often than any
+    # other earcon here -- every completed misspelled word while somebody is
+    # typing -- and an alert you cannot tell from four other alerts is one you
+    # learn to ignore. Every negative cue in Ink is either a *discrete* two-note
+    # descent (search_not_found, ai_error, conversation_error,
+    # radio_stream_error) or a buzz (error). Nothing else *glides*, so a
+    # continuous bend is recognisable before the first tenth of it has played
+    # and cannot be confused with any of them.
+    #
+    # Four properties it has to have, and each is why a number is what it is:
+    #
+    # * **Short.** 58 ms, tick included. It lands between two keystrokes, not
+    #   across them.
+    # * **Quiet.** vol 0.38, the lowest of any alert in the pack. It fires
+    #   during typing, which is the moment a listener can least afford volume.
+    # * **Legible anyway.** A 3 ms noise tick opens it, so it cuts through a
+    #   synthesiser mid-sentence on shape rather than on loudness -- which is
+    #   the trade every alert that fires this often has to make.
+    # * **Not alarming.** It falls, it decays, and it resolves nowhere. The
+    #   bend is 200 cents and it *accelerates* (t squared), so the ear hears a
+    #   note going flat rather than a musical interval being played. A whole
+    #   tone stated as two notes would be a tune; slid into, it is a slip.
+    def slip_env(i: int, n: int) -> float:
+        return exp_decay(i, 20) * edge(i, n, 3)
+
+    def _slip(f_from: float, f_to: float, dur_ms: float) -> list[float]:
+        """A triangle glide whose bend accelerates: in tune, then falling away."""
+        n = ms(dur_ms)
+        out = []
+        for i in range(n):
+            t = i / max(n - 1, 1)
+            freq = f_from * ((f_to / f_from) ** (t * t))
+            env = slip_env(i, n)
+            # A touch of the octave for body. Any more and the glide reads as a
+            # chord sliding rather than one note going wrong.
+            out.append((tri_at(freq, i) + 0.25 * sine_at(freq * 2, i)) * env)
+        peak = max((abs(x) for x in out), default=1.0) or 1.0
+        return [x / peak for x in out] if peak > 1.0 else out
 
     write_wav(
         "spelling.wav",
-        _tone(330, 55, tri_at, spelling_env),
-        vol=0.40,
+        _concat(
+            _noise(3, lambda i, n: exp_decay(i, 1.2) * 0.5),
+            _slip(523.25, 466.16, 55),
+        ),
+        vol=0.38,
     )
 
     # -- document_saved: very soft low tick with 2nd harmonic (settled) ------
@@ -759,6 +798,240 @@ def generate_all() -> None:
     )
 
     print("Done.")
+
+    # =====================================================================
+    # The desktop-parity family (2026-09-10)
+    # =====================================================================
+    # Every desktop suite since the nineties has had a sound scheme, and the
+    # events in it are the same everywhere because they are the moments a user
+    # actually has: open, save, close, cut, copy, paste, delete, undo, redo,
+    # print, and the four message tones. QUILL had earcons for its own clever
+    # features and none for those -- so the sounds fired for an abbreviation
+    # expanding and stayed silent for a paste.
+    #
+    # For a listener that ordering is exactly backwards. The clever features
+    # announce themselves in words; the ordinary ones are silent by design,
+    # because a screen reader says nothing when a paste lands. An earcon is the
+    # only feedback those moments can have without speech, which makes them the
+    # ones that most needed sounds.
+    #
+    # The family rule, so nineteen new cues do not become nineteen new things to
+    # learn: **related events share a timbre and differ by direction.** Undo and
+    # redo are one figure played backwards from each other. Open and close are
+    # one bell pair rising and falling. Cut, copy and paste are one clipboard
+    # timbre in three positions. You learn a family once and read its members.
+
+    # -- Clipboard: one timbre, three gestures -----------------------------
+    # A dry wooden tick, high and very short, because the clipboard is the
+    # fastest thing anybody does repeatedly and a tone with a tail would smear
+    # into the next keystroke.
+    def clip_env(i: int, n: int) -> float:
+        return exp_decay(i, 7) * edge(i, n, 1.5)
+
+    def _tick(freq: float, dur_ms: float = 26) -> list[float]:
+        return _mix(
+            _tone(freq, dur_ms, tri_at, clip_env),
+            _noise(dur_ms, lambda i, n: exp_decay(i, 2) * 0.30),
+        )
+
+    # cut: two ticks, very close -- the scissors gesture.
+    write_wav("text_cut.wav", _concat(_tick(1480), _silence(22), _tick(1245)), vol=0.42)
+    # copy: one tick and its quieter shadow -- there are two of it now.
+    write_wav(
+        "text_copied.wav",
+        _concat(_tick(1245), _silence(38), _mix([s * 0.45 for s in _tick(1245)])),
+        vol=0.42,
+    )
+    # paste: the tick lands, and something arrives under it. A falling fifth
+    # settling, so the gesture reads as "put down" rather than "picked up".
+    write_wav(
+        "text_pasted.wav",
+        _mix(
+            _concat(_tick(1245), _silence(60)),
+            _concat(_silence(18), _sweep(784, 523, 70, sine_at, lambda i, n: exp_decay(i, 24))),
+        ),
+        vol=0.46,
+    )
+    # delete: a dry low thud with a breath of noise -- something removed, not
+    # something moved. Deliberately the lowest of the four.
+    write_wav(
+        "text_deleted.wav",
+        _mix(
+            _tone(196, 70, tri_at, lambda i, n: exp_decay(i, 16) * edge(i, n, 2)),
+            _noise(28, lambda i, n: exp_decay(i, 5) * 0.22),
+        ),
+        vol=0.44,
+    )
+
+    # -- Undo and redo: one figure, played both ways -----------------------
+    # The pair has to be *mirror* images, not merely different: undo and redo
+    # are the only two commands in an editor whose entire meaning is direction,
+    # and a listener who has to think about which sound they just heard has
+    # lost the benefit. So redo is undo reversed, sample for sample.
+    def _swoop(f_from: float, f_to: float) -> list[float]:
+        return _mix(
+            _sweep(f_from, f_to, 95, tri_at, lambda i, n: adsr(i, n, ms(4), ms(30), 0.45, ms(40))),
+            _sweep(
+                f_from * 2,
+                f_to * 2,
+                95,
+                sine_at,
+                lambda i, n: adsr(i, n, ms(4), ms(30), 0.18, ms(40)),
+            ),
+        )
+
+    undo_swoop = _swoop(587.33, 440.00)  # D5 down to A4: taking something back
+    write_wav("undo_performed.wav", undo_swoop, vol=0.50)
+    write_wav("redo_performed.wav", list(reversed(undo_swoop)), vol=0.50)
+    # nothing to undo: a muted tap against a wall. No pitch movement at all,
+    # which is the point -- the stack did not move either.
+    write_wav(
+        "nothing_to_undo.wav",
+        _mix(
+            _tone(147, 55, tri_at, lambda i, n: exp_decay(i, 10) * edge(i, n, 2)),
+            _noise(20, lambda i, n: exp_decay(i, 4) * 0.18),
+        ),
+        vol=0.38,
+    )
+
+    # -- Documents and the app: one bell pair, four directions -------------
+    # Bells rather than the sine blips document_created uses, so the pair is
+    # audibly a different family from "a new empty document" -- opening a file
+    # and creating one are different events and used to sound alike.
+    write_wav("document_opened.wav", _bell_seq([523, 784], 100), vol=0.52)
+    write_wav("document_closed.wav", _bell_seq([784, 523], 100), vol=0.48)
+
+    # The app itself: three notes, so a launch is unmistakably not a document.
+    # Rising for hello, the same three falling for goodbye.
+    #
+    # A *warm triangle swell*, not a bell, and that is a correction rather than
+    # a preference. The first version of this was `_bell_seq([659, 523, 392])`,
+    # which is note for note what conversation_off already plays -- two
+    # different events making one sound, which is the one thing an earcon set
+    # cannot afford. Changing the notes alone would not have been enough
+    # either: the conversation cues own the bell timbre in this pack, so the
+    # app's own cue takes a different instrument and keeps the whole family
+    # clear of them. C-G-C, an opening fifth into the octave, so a launch reads
+    # as a door rather than as a chord.
+    def _breath(freq: float, dur_ms: float, peak: float = 1.0) -> list[float]:
+        return _mix(
+            _tone(freq, dur_ms, tri_at, lambda i, n: _swell_env(8, 22, 0.5, 30)(i, n) * peak),
+            _tone(
+                freq * 2,
+                dur_ms,
+                sine_at,
+                lambda i, n: _swell_env(8, 22, 0.5, 30)(i, n) * peak * 0.22,
+            ),
+        )
+
+    app_hello = _concat(
+        _breath(261.63, 95),
+        _silence(10),
+        _breath(392.00, 95),
+        _silence(10),
+        _breath(523.25, 150),
+    )
+    write_wav("app_started.wav", app_hello, vol=0.52)
+    write_wav(
+        "app_exiting.wav",
+        _concat(
+            _breath(523.25, 95),
+            _silence(10),
+            _breath(392.00, 95),
+            _silence(10),
+            _breath(261.63, 150),
+        ),
+        vol=0.46,
+    )
+
+    # -- Printing: a mechanism, then a resolution --------------------------
+    print_tick = _tone(880, 30, sqr_at, lambda i, n: exp_decay(i, 6) * edge(i, n, 2))
+    write_wav("print_started.wav", _concat(print_tick, _silence(45), print_tick), vol=0.34)
+    write_wav(
+        "print_complete.wav",
+        _concat(print_tick, _silence(45), print_tick, _silence(30), _bell(1047, 150)),
+        vol=0.46,
+    )
+
+    # -- The message tones -------------------------------------------------
+    # error and warning already exist. These are the other two every desktop
+    # has, and QUILL had neither: a neutral one for "here is a fact" and a
+    # rising one for "I need an answer". Rising, because a question rises --
+    # that is the one piece of prosody every listener already reads.
+    write_wav("information.wav", _bell(659, 170), vol=0.42)
+    # A bell, then a *bend upward* -- and the bend is the point. The first
+    # version was `_bell_seq([587, 880])`, which is note for note what
+    # conversation_wake plays: two events, one sound. Discrete notes were never
+    # going to work here anyway, because every other cue in the pack is made of
+    # discrete notes. A glide is the prosody of a spoken question, it is the
+    # only rising glide in the message family, and it cannot be mistaken for a
+    # two-note lift no matter which two notes that lift uses.
+    write_wav(
+        "question.wav",
+        _concat(
+            _bell(587, 95),
+            _sweep(659, 988, 130, tri_at, lambda i, n: _swell_env(6, 20, 0.5, 45)(i, n)),
+        ),
+        vol=0.44,
+    )
+    # task complete: two quick ticks and a bell landing on top of them. The
+    # first attempt was `_bell_seq([659, 880])`, which starts on the same note
+    # and runs to nearly the same length as conversation_review -- close enough
+    # that the two were one sound to the ear. Two *ticks* before the bell is a
+    # different shape, not merely different pitches, so it reads as "that
+    # finished" rather than as another bell in the conversation family. Also
+    # unlike ai_done, which is the assistant's own arpeggio: a background job
+    # ending is not an answer arriving.
+    complete_tick = _tone(784, 26, tri_at, lambda i, n: exp_decay(i, 6) * edge(i, n, 2))
+    write_wav(
+        "task_complete.wav",
+        _concat(complete_tick, _silence(26), complete_tick, _silence(20), _bell(1319, 190)),
+        vol=0.50,
+    )
+
+    # -- voice_preview_generating: its own sound at last -------------------
+    # It shared ai_start.wav with ai_thinking_started, which is two events
+    # making one sound -- and the two are not even the same kind of waiting.
+    # The assistant thinking is a question in flight; a voice preview is an
+    # engine warming up, which is what this is: a breath of noise opening into
+    # a tone, like a throat clearing before it speaks.
+    write_wav(
+        "voice_preview.wav",
+        _mix(
+            _noise(70, lambda i, n: min(1.0, i / max(1, ms(30))) * exp_decay(i, 40) * 0.16),
+            _concat(
+                _silence(18),
+                _sweep(330, 494, 90, tri_at, lambda i, n: _swell_env(6, 18, 0.45, 30)(i, n)),
+            ),
+        ),
+        vol=0.42,
+    )
+
+    # -- The four editor events that had no sound at all -------------------
+    # word_corrected: a fast flip up a semitone -- something was swapped for
+    # something better, and it happened *to* you rather than by you.
+    write_wav(
+        "word_corrected.wav",
+        _concat(
+            _tone(988, 32, tri_at, lambda i, n: exp_decay(i, 8) * edge(i, n, 2)),
+            _tone(1047, 42, tri_at, lambda i, n: exp_decay(i, 12) * edge(i, n, 2)),
+        ),
+        vol=0.40,
+    )
+    # list_entered: three tiny ticks, because a list is a number of things.
+    list_tick = _tone(1319, 20, sine_at, lambda i, n: exp_decay(i, 5) * edge(i, n, 1.5))
+    write_wav(
+        "list_entered.wav",
+        _concat(list_tick, _silence(28), list_tick, _silence(28), list_tick),
+        vol=0.32,
+    )
+    # transcription_word_inserted: the quietest cue in the pack, because it
+    # fires once per spoken word. Any louder and dictation becomes a woodpecker.
+    write_wav(
+        "transcription_word_inserted.wav",
+        _tone(1568, 16, sine_at, lambda i, n: exp_decay(i, 3) * edge(i, n, 1)),
+        vol=0.20,
+    )
 
 
 if __name__ == "__main__":

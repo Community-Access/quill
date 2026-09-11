@@ -37,6 +37,7 @@ class _StubPlayer:
         self.set_disabled_calls: list[frozenset[str]] = []
         self.set_muted_calls: list[bool] = []
         self.shutdown_called: bool = False
+        self.loaded_packs: list[object] = []
 
     def set_volume(self, volume: float) -> None:
         self.set_volume_calls.append(volume)
@@ -46,6 +47,20 @@ class _StubPlayer:
 
     def set_muted(self, muted: bool) -> None:
         self.set_muted_calls.append(muted)
+
+    def load_pack(self, pack: object, disabled: frozenset[str] | None = None) -> None:
+        """Replace the active pack.
+
+        The stub did not have this method, and did not need one: the manager
+        never called it, because it reloaded only when the pack path *changed*
+        and the default path equalled its own initial value. That was the bug
+        that made every earcon in the product silent, so a stub that works
+        without this method is a stub that only works against the bug.
+        """
+        self.loaded_packs.append(pack)
+        self.events = dict(getattr(pack, "events", {}) or {})
+        if disabled is not None:
+            self.set_disabled_calls.append(frozenset(disabled))
 
     def register_event(self, event_id: str, wav: bytes) -> None:
         self.events[event_id] = wav
@@ -160,7 +175,13 @@ def test_load_indent_tone_pack_unregisters_on_clear(player: _StubPlayer) -> None
     mgr.load_indent_tone_pack("")
     assert "indent_level_1_up" not in player.events
     assert "indent_level_1_down" not in player.events
-    assert mgr.get_loaded_events() == frozenset()
+    # The *overlay* is gone; the primary pack is not. This used to assert an
+    # empty set, and passed only because the primary pack was never loaded at
+    # all -- the bug that made every earcon in the product silent. What the
+    # overlay has to do is stop contributing its own events, which is what is
+    # checked here.
+    remaining = mgr.get_loaded_events()
+    assert not any(event.startswith("indent_") for event in remaining)
 
 
 def test_load_indent_tone_pack_missing_pack_still_unregisters_old(

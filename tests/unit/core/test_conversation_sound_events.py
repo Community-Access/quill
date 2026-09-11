@@ -37,7 +37,13 @@ def test_ink_pack_maps_and_ships_every_cue() -> None:
         assert (pack / events[cue]).is_file(), f"missing WAV for {cue}"
 
 
-def test_cues_are_labeled_in_the_sound_events_dialog() -> None:
-    src = (_ROOT / "quill" / "ui" / "sound_events_dialog.py").read_text(encoding="utf-8")
+def test_cues_are_labeled_and_grouped_for_the_scheme_window() -> None:
+    """The catalogue moved out of the dialog into ``sound_event_labels`` when
+    the checklist became the Sound Scheme window, so this asserts against the
+    data rather than against a file's text -- which also means it now checks
+    that the cue is *reachable* (in a group) rather than merely mentioned."""
+    from quill.ui.sound_event_labels import GROUP_FOR, LABELS
+
     for cue in _CUES:
-        assert f'"{cue}"' in src, f"{cue} not labeled/ordered in the dialog"
+        assert cue in LABELS, f"{cue} has no label"
+        assert cue in GROUP_FOR, f"{cue} is in no group, so the window cannot show it"

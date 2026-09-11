@@ -58,11 +58,25 @@ class AppShellFrame(
     """
 
     def _init_app_shell(
-        self, title: str, *, safe_mode: bool = False, size: tuple[int, int] = (480, 360)
+        self,
+        title: str,
+        *,
+        safe_mode: bool = False,
+        size: tuple[int, int] = (480, 360),
+        app_id: str = "",
     ) -> None:
         self._wx = wx
         self._safe_mode = safe_mode
         self.frame = wx.Frame(None, title=title, size=size)
+        # Maximized on a fresh machine, and the way you left it on one you have
+        # used. *size* stops being "the window" and becomes the fallback for a
+        # user who has un-maximized but never resized. An app that passes no
+        # app_id keeps the old fixed-size behaviour, so this cannot change a
+        # surface nobody has opted in.
+        if app_id:
+            from quill.ui.window_state import apply_window_geometry
+
+            apply_window_geometry(self.frame, app_id, default_size=size)
         # F1 context help, on every shell app from day one: install the wx
         # help provider (SetHelpText stores nothing without one) and register
         # the shared handler the dialog contract binds onto every window it

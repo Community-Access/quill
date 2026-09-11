@@ -24,7 +24,7 @@ dashes from a double hyphen, a capital at the start of a sentence. It ships
 **off** (:data:`quill.core.lite.features.DEFAULT_OFF`), because every one of
 those is welcome in prose and actively wrong in a configuration file, a code
 snippet or a CSV -- and QuillLite is used for all four. Turning it on is one
-checkbox in View > Customize Features.
+checkbox in Tools > Customize Features.
 
 Neither runs in plain text mode by accident: both are keyed off ``EVT_CHAR``
 after the character has landed, and both leave the text alone when their area is
@@ -64,6 +64,7 @@ import wx
 
 from quill.core.abbreviations import try_expand
 from quill.core.autoformat import is_dash_merge, smart_quote_for
+from quill.core.sound_events import SoundEvent
 
 __all__ = ["DocumentTypingMixin"]
 
@@ -203,6 +204,7 @@ class DocumentTypingMixin:
         if typed == "-" and is_dash_merge(preceding):
             # The second hyphen of "--" becomes an em dash, eating the first.
             self._insert_replacing("—", back=1)
+            self._cue(SoundEvent.WORD_CORRECTED)
             return True
         return False
 
@@ -238,6 +240,11 @@ class DocumentTypingMixin:
             return
         if match is None:
             return
+        # An expansion is the app typing several words on your behalf, which is
+        # the largest thing that happens in this editor without anybody pressing
+        # a key for it -- and a screen reader says nothing at all, because no
+        # focus moved and no control was named.
+        self._cue(SoundEvent.ABBREVIATION_EXPANDED)
         self.control.Replace(match.token_start, match.token_end, match.resolved_text)
         landing = match.token_start + (
             match.cursor_offset if match.has_cursor else len(match.resolved_text)
@@ -249,13 +256,38 @@ class DocumentTypingMixin:
         self._touch_status()
         self._announce(f"Expanded to {match.resolved_text.strip()[:60]}")
 
+    def cmd_toggle_abbreviations(self) -> None:
+        """Alt+Shift+A: expansion on or off, without opening a dialog.
+
+        The same switch Customize Features carries, on a key, because this is
+        the one feature that acts *while you type*: the moment you want it off
+        is the moment it has just expanded something you meant to keep, and
+        three keystrokes of dialog in that moment is three too many.
+
+        Everything the area owns follows -- the library is loaded or dropped and
+        the menus are rebuilt -- so turning it off here really does stop the
+        expansion rather than only stopping the menu item.
+        """
+        features = self.app.features
+        if features is None:  # pragma: no cover - only before the app has loaded
+            return
+        enabled = self.app.feature_enabled("abbreviations")
+        features.set_enabled("abbreviations", not enabled)
+        self.app.save_features()
+        self.app.reload_abbreviations()
+        # After this event, not during it: the menu bar being rebuilt is the one
+        # this command was just chosen from, and wxMSW does not survive having
+        # a menu deleted while it is still dispatching that menu's event.
+        wx.CallAfter(self.app.rebuild_all_menus)
+        self._announce("Abbreviations off" if enabled else "Abbreviations on")
+
     def cmd_manage_abbreviations(self) -> None:
         """QUILL's own abbreviation manager, over whichever library is in use."""
         from quill.ui.abbreviation_manager_dialog import AbbreviationManagerDialog
 
         library = self.app.abbreviations
         if library is None:
-            self._announce("Abbreviations are switched off in Customize Features")
+            self._announce("Abbreviations are switched off. Alt+Shift+A turns them back on")
             return
         from quill.ui.dialog_contract import show_modal_dialog
 

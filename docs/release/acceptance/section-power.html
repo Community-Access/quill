@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Section — Power-user commands (`power.*`, 75 commands)</title>
   <style>
@@ -1059,25 +1059,65 @@ reports <strong>“Invalid pattern: …”</strong>.</li>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
 <h2
-id="pow-33--trim-blank-lines-powertrim_blank_lines-ctrlshiftenter">POW-33
-— Trim Blank Lines (<code>power.trim_blank_lines</code>,
+id="pow-33--trim-blank-lines-at-the-ends-powertrim_blank_lines-ctrlshiftenter">POW-33
+— Trim Blank Lines at the Ends (<code>power.trim_blank_lines</code>,
 Ctrl+Shift+Enter)</h2>
-<p><em>What &amp; why.</em> Collapse runs of blank lines so the document
-is tidy.</p>
+<p><em>What &amp; why.</em> Take the blank lines off the top and the
+bottom, and leave the ones in the middle alone. The step exists to prove
+the <em>middle</em> survives: the command’s whole distinction from
+POW-33a is what it does <strong>not</strong> touch.</p>
 <p><strong>Before you start</strong></p>
 <ul>
 <li>New document; type three lines with <strong>two blank lines
-between</strong> each pair.</li>
+between</strong> each pair, and <strong>two blank lines above the first
+line and below the last</strong>.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
 <li>Press <strong>Ctrl+Shift+Enter</strong>, or <strong>Format menu ▸
-Trim Blank Lines</strong>.</li>
+Trim Blank Lines at the Ends</strong>.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li>Excess blank lines are removed; the status reads <strong>“Trimmed
-blank lines”</strong>. The three text lines survive.</li>
+<li>The blank lines above the first line and below the last one are
+gone. The two blank lines <strong>between</strong> each pair are still
+there — read the document with Ctrl+Home and the down arrow to confirm
+it, because this is the half a glance at the screen does not
+settle.</li>
+</ul>
+<p><strong>Sign off</strong> —
+<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
+<code>[ ] Works</code> <code>[ ] Surface-exact</code>
+<code>[ ] Accessible</code> · Notes: ____________________</p>
+<hr />
+<h2
+id="pow-33a--remove-every-blank-line-powerremove_blank_lines">POW-33a —
+Remove Every Blank Line (<code>power.remove_blank_lines</code>)</h2>
+<p><em>What &amp; why.</em> The companion, and the opposite emphasis:
+every blank line goes, including the ones between paragraphs. Unbound by
+default, like every other power tool; reach it from the menu or give it
+a key in the Keymap Editor.</p>
+<p>The bug it was written for: QuillLite shipped a command with this
+name wired to the trimming one. On any document with blank lines in the
+middle it removed nothing, and then announced that it had removed a line
+— which is worse than doing nothing, because a listener cannot see that
+the text is unchanged.</p>
+<p><strong>Before you start</strong></p>
+<ul>
+<li>The same document as POW-33: three lines of text, two blank lines
+between each pair, two above and two below.</li>
+</ul>
+<p><strong>Do this</strong></p>
+<ol type="1">
+<li><strong>Format menu ▸ Remove Every Blank Line</strong>.</li>
+</ol>
+<p><strong>You should see and hear</strong></p>
+<ul>
+<li>Every blank line is gone — the three text lines are now consecutive.
+The count in the announcement matches the number of blank lines there
+actually were.</li>
+<li>Repeat with a line containing <strong>only spaces</strong>: it is
+treated as blank and removed too.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>

@@ -17,7 +17,7 @@ from quill.core.keymap import DEFAULT_KEYMAP
 from quill.core.lite.commands import COMMANDS, plain_label, visible_commands
 from quill.core.lite.features import AREAS
 
-SELECT_MENU = "&Edit|Select&ion"
+SELECT_MENU = "&Edit|Selectio&n"
 
 
 def _rows(menu: str) -> list[tuple[str, str, str, str, str]]:
@@ -34,24 +34,30 @@ def test_selection_is_a_submenu_of_edit_not_a_menu_bar_entry() -> None:
 
     Poured into Edit itself they would swamp it; given a bar entry of their own
     they would push a tenth top-level menu onto a small editor's menu bar. A
-    submenu is one Alt+E, I away and carries its own mnemonic namespace.
+    submenu is one Alt+E, N away and carries its own mnemonic namespace.
     """
     from quill.core.lite.commands import menu_titles, split_menu
 
     parent, child = split_menu(SELECT_MENU)
-    assert (parent, child) == ("&Edit", "Select&ion")
+    assert (parent, child) == ("&Edit", "Selectio&n")
     assert SELECT_MENU not in menu_titles()
     assert parent in menu_titles()
 
 
-def test_the_submenus_own_mnemonic_is_free_in_the_edit_menu() -> None:
-    """Windows cycles between duplicate access keys instead of pressing one."""
-    edit_letters = {
-        label[label.index("&") + 1].upper()
-        for menu, label, _k, _h, kind in COMMANDS
-        if kind != "sep" and menu == "&Edit" and "&" in label
-    }
-    assert "I" not in edit_letters, sorted(edit_letters)
+def test_the_submenu_is_named_by_a_row_of_the_edit_menu() -> None:
+    """The title is a row, so the menu builder and the access-key check see it.
+
+    A submenu whose title is inferred rather than written down lands wherever
+    the builder happens to put it and claims a letter no check compares against
+    its neighbours. Written down, it is a row like any other -- which is what
+    ``test_no_access_key_is_claimed_twice_within_one_menu`` needs in order to
+    catch a title that collides with an item beside it.
+    """
+    _parent, child = SELECT_MENU.split("|", 1)
+    titles = [
+        (menu, label) for menu, label, _k, _h, kind in COMMANDS if kind == "sub" and menu == "&Edit"
+    ]
+    assert ("&Edit", child) in titles, titles
 
 
 @pytest.mark.parametrize(

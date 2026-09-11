@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 355.
+Editor commands with default bindings: 356.
 
 ## The QUILL editor
 
@@ -211,8 +211,8 @@ Editor commands with default bindings: 355.
 | Alt+Shift+E | Show Spoken Echo | `view.spoken_echo` |
 | Alt+Z | Toggle Soft Wrap | `view.toggle_soft_wrap` |
 | Ctrl+Alt+Shift+W | Toggle Overwrite Mode | `view.toggle_overwrite_mode` |
+| Ctrl+Alt+Shift+\ | Preview Side by Side | `view.split_preview` |
 | Ctrl+F6 | Focus Preview | `view.focus_preview` |
-| Ctrl+Shift+Backslash | Preview Side by Side | `view.split_preview` |
 | Ctrl+Shift+V | Preview | `view.preview` |
 | QUILL Key + Shift+C | Announce Contrast Ratio | `view.announce_contrast` |
 | QUILL Key + Shift+T | Toggle Tab Control | `view.toggle_tab_control` |
@@ -228,6 +228,7 @@ Editor commands with default bindings: 355.
 | Alt+Q | Ask Quill Chat | `tools.ask_quill_chat` |
 | Alt+Shift+F7 | Spell Check (Ranked by Frequency)... | `tools.spell_check_ranked` |
 | Alt+Shift+L | Misspelling List... | `tools.misspelling_list` |
+| Alt+Shift+M | Toggle Sound Notifications | `tools.sound_toggle` |
 | Ctrl+Alt+Shift+, | Previous Difference | `tools.compare_previous_difference` |
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
 | Ctrl+Alt+Shift+D | Announce Current Difference | `tools.compare_announce_difference` |

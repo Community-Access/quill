@@ -76,7 +76,7 @@
     "edit.select_chunk": "Ctrl+Space",
     "view.preview": "Ctrl+Shift+V",
     "view.browser_preview": "Ctrl+Shift+Grave, V",
-    "view.split_preview": "Ctrl+Shift+Backslash",
+    "view.split_preview": "Ctrl+Alt+\\",
     "view.focus_preview": "Ctrl+F6",
     "format.switch_document_format": "Ctrl+Shift+Grave, K",
     "edit.set_mark": "Ctrl+Shift+M",

@@ -1,8 +1,212 @@
 # QuillLite changelog
 
-## 1.0.0 -- 2026-09-09
+## Unreleased
+
+### Added
+
+- **Sound works at all.** Two bugs meant no earcon in either editor had ever
+  played: the sound pack was never loaded (the manager reloads only when the
+  pack path *changes*, and the default path equals its own initial value), and
+  the audio backend freed each sound before it could be heard. Both fixed.
+
+- **Earcons for the ordinary moments**: app start and exit, document new, open,
+  save and close, printing, cut, copy, paste, delete, undo, redo, nothing left
+  to undo, abbreviation expanded, autocorrect, search found, not found and
+  wrapped, and errors. These are the moments a screen reader says nothing about,
+  which is what makes a sound the only feedback they can have.
+
+- **The Sound Scheme window lists twenty-two events, not a hundred and forty-one
+  -- and every one of them fires.** It used to list the whole catalogue, most of
+  which QuillLite never posts.
+
+- **Tools ▸ Sound Scheme (Ctrl+Alt+Shift+O)**: every sound QuillLite can make,
+  in a list that plays each one as you arrow onto it. Per event: Play, switch it
+  off, Browse for a WAV of your own, No Sound, or Use Default. Save the set as a
+  scheme of your own -- an ordinary folder you can copy or send -- and Restore
+  All Defaults always works, because the shipped sounds are never overwritten.
+  The same window QUILL opens, over the same schemes.
+
+- **A sound when you type a misspelling.** QuillLite had none at all: the alert
+  was a line in the status bar, which on a bar nobody is watching is not an
+  alert.
+
+- **Tools ▸ Spelling ▸ Announcements (Ctrl+Alt+Shift+F7)**: twelve settings for
+  how a misspelling is said. Whether the sound plays, whether the word is spoken
+  too, how long before the same word is reported again, whether words are
+  spelled out and after how long, and whether the letters come plainly, in the
+  phonetic alphabet, or both. An example box says what your choices sound like.
+
+- **Ctrl+F7 now spells the misspelling it lands on**, after a pause. "receive"
+  and "recieve" are the same sound, so hearing the word tells you nothing; the
+  letters are the answer. Press the next key and the spelling is cancelled
+  unheard.
 
 ### Fixed
+
+- **Spell check as you type had never once fired.** It asked for a word
+  beginning exactly at the cursor, which typing left to right never produces --
+  the cursor is always at or past the end of the word you just finished. The
+  status line, the file-type exemptions and the setting all existed and none of
+  them had ever run.
+
+- **Ordinals are no longer misspellings.** "the 13th of May" reported "th" as a
+  misspelling, at a position inside a number, for a word you never typed. The
+  same fix covers 3D, 1080p, 500ml and 12pt.
+
+### Added
+
+- **The feature profile is in Preferences too**, at the top: the same four whole
+  answers (Recommended, Everything, WordPad, Notepad) with a read-only box that
+  says exactly what each would change. Customize Features is named after a
+  mechanism; "make this Notepad" is a preference.
+
+- **A spelling context menu.** With the caret in a misspelled word, the
+  Applications key opens with the corrections at the top -- then Ignore Once,
+  Ignore in This Document, Add to My Dictionary, Add to This Document Only, and
+  the way on to More Suggestions, Check Document and Next/Previous Misspelling
+  with their keys. Every row names the word. A correctly spelled word gets the
+  ordinary edit menu, and that menu keeps everything Windows put in it.
+
+### Fixed
+
+- **Choosing a profile in Customize Features now applies it.** It used to need a
+  second press of a **Use Profile** button that nothing mentioned, so choosing
+  Notepad and pressing Save kept every feature you had -- and the Format menu the
+  description had just promised would be gone. Choosing applies; Custom puts the
+  boxes back to how you found them; nothing is saved until Save.
+
+- **Each profile now shows what it would do**, computed from the feature list so
+  it cannot go stale, in a read-only box a screen reader can arrow through
+  rather than a caption it can only read all at once.
+
+- **Spelling for This Word (Shift+F7) and Add Word to Dictionary (Alt+F7) work
+  from anywhere in the word.** They used to answer only when the caret was on
+  its first character, and said "No misspelling at the cursor" everywhere else.
+
+## 1.0.0 -- 2026-09-09
+
+### Changed
+
+- **The menu bar is Notepad's and WordPad's again: File, Edit, View, Format,
+  Navigate, Tools, Window, Help.** Eight menus where there were ten. Clipboard
+  and Spelling were top-level menus of their own -- two more things to walk past
+  on every Alt press, for two features neither Notepad nor WordPad puts on the
+  bar at all. They are now **Edit ▸ Clipboard** and **Tools ▸ Spelling**.
+
+- **Line work moved from Tools to Edit ▸ Lines**, which is where editing
+  belongs: moving, duplicating, joining and deleting lines, sorting, reversing
+  and numbering them, and removing blanks, duplicates, trailing spaces and
+  stray whitespace -- all in one submenu, grouped by what they do, instead of
+  spread down a Tools menu with a *More Line Work* submenu hanging off it.
+  Change Case became **Tools ▸ Change Case**. **No shortcut changed**: every
+  key is exactly where your fingers left it.
+
+- **Navigate ▸ Bookmarks.** Set Bookmark 1 to 9 was nine of the fourteen rows in
+  Navigate and almost none of its use, so a listener arrowing down the menu
+  walked past all nine to reach anything else. They are a submenu now. Go Back
+  and Go Forward moved here from Edit, to the top, where the moving-about
+  commands are.
+
+- **Format ▸ Editor Font**, moved from View, because Notepad has kept Font under
+  Format since 1985 and because the editor font is not a rich-text feature. It
+  is the one row the Format menu keeps if you switch rich text off -- which
+  leaves you with Notepad's Format menu, exactly.
+
+- **Preferences and Customize Features moved to Tools**, where Windows
+  applications have kept their settings since Word 6.
+
+### Added
+
+- **View ▸ Status Bar (Alt+Shift+B)** hides and shows the status bar, the way
+  Notepad's has since Windows 95. Nothing is lost while it is away: Ctrl+Alt+W
+  speaks the counts and Ctrl+G asks for a line. Pressing **F6** with the bar
+  hidden says so rather than doing nothing -- and F6 itself is now listed in
+  **Navigate ▸ Status Bar**, because going there is a move, not a setting.
+
+- **Format ▸ Headings**, with **Heading 1 to 6** on Ctrl+Alt+1 to Ctrl+Alt+6 and
+  Body Text on Ctrl+Alt+0. Line spacing moved into **Format ▸ Line Spacing** in
+  the same tidy-up.
+
+- **Tools ▸ Expand Abbreviations (Alt+Shift+A)** turns expansion off and on
+  from the keyboard, with a tick showing which way it is set. Expansion is the
+  one feature that acts *while you type*, so the moment you want it off is
+  usually the moment it has just expanded something you meant to keep -- and a
+  dialog three keystrokes away is three too many. It is the same switch as the
+  Abbreviations box in Customize Features.
+
+### Fixed
+
+- **A screen reader read the line above the cursor on every empty line.** Type a
+  line, press Enter, and ask JAWS to read the current line: it said the line you
+  had just finished instead of "blank". Not a speech bug and not a JAWS bug --
+  the control was answering the question wrongly. QuillLite put the Rich Edit
+  into its own plain-text mode (`EM_SETTEXTMODE` / `TM_PLAINTEXT`), and in that
+  mode RICHEDIT50W does not count the position after a trailing line break as a
+  line of its own: asked which line the caret was on, it named the previous one,
+  and a screen reader read out what it was told. The control now stays in
+  rich-text mode whatever the document is, and the plain/rich distinction lives
+  where it belongs -- in the document, deciding what the Format menu allows and
+  what a save writes. One consequence, deliberately: **pasting into a plain text
+  document is always a plain paste**, because a plain document must not pick up
+  formatting it would silently drop at the next save.
+
+- **Page Setup and Customize Features did nothing.** Two menu items that opened
+  no window and said nothing: Page Setup used `with` on the one wx dialog that
+  is not a context manager, and Customize Features called a method by a name it
+  does not have. Both failed inside the menu handler, where wx swallows the
+  error, so there was nothing to see.
+
+- **Ampersands showed in the Find and Replace search-mode boxes.** The three
+  rows read "&Normal", "&Escapes" and "Re&gular expression" on screen and out
+  loud. An ampersand is an access key in a button or a menu item and a literal
+  character in a list row, and these were list rows. They are also better named
+  now: "Normal text", "Special characters (	, 
+)" and "Regular expression",
+  because "Escapes" names the mechanism rather than the job.
+
+- **"Entered Preferences dialog" / "Exited Preferences dialog".** QuillLite no
+  longer speaks either, for any dialog. A screen reader announces a dialog by
+  its title when it opens and says where focus lands when it closes; saying it
+  again is the app talking over the reader.
+
+- **The Preferences font button said only "Choose".** A button is announced on
+  its own, so "Choose button" named no noun and the only way to find out what it
+  chose was to press it. It is "Change Font..." now. Two access keys in that
+  window were also claimed twice, so one of each pair could not be pressed.
+
+- **Heading 5 and Heading 6 could be applied and never found again.** Both sat
+  at the 11-point body size, so the ladder could not tell either from an
+  ordinary paragraph: heading navigation and the headings list walked straight
+  past them. They have sizes of their own now (11.5 and 10.5), which is what
+  made it honest to offer all six in **Format ▸ Headings**, each on its own
+  digit — Alt+O, H, 3 and Ctrl+Alt+3 are the same three.
+
+- **Format ▸ Structure survived rich text being switched off**, offering to
+  promote and demote headings in a plain text document that cannot have any.
+
+- **All Matches and Count Occurrences refused instead of asking.** With nothing
+  searched for yet they said "Search for something first", which is true and a
+  dead end. They open Find now.
+
+- **Markdown is gone from the Save As type list.** A type in a Save As box is a
+  promise about what will be written, and there is no Markdown writer: picking
+  it saved the same plain text under a different extension. Opening a `.md` is
+  unchanged.
+
+- **The menu bar had a "Document" item before File, and two menus called
+  Window.** Both came from the MDI machinery rather than from QuillLite.
+  Windows adds a maximised child's system menu to the menu bar as an untitled
+  icon, which a screen reader announces as "Document", so pressing Alt landed
+  on "Document" instead of File; and wxWidgets builds a *Window* menu of its own
+  (Cascade, Tile, Arrange Icons) and inserted it beside the one QuillLite
+  builds, so the bar said "Window" twice with no way to tell which was which.
+  The system menu is gone -- along with the three unnamed minimise, restore and
+  close icons at the other end -- and wx's Window menu with it. QuillLite's own
+  Window menu, the one that lists your documents by number, is the one that
+  stayed.
+
+- **Format ▸ Structure survived rich text being switched off**, offering to
+  promote and demote headings in a plain text document that cannot have any.
 
 - **The portable copy stopped leaving itself on the host machine.** A portable
   QuillLite wrote its settings, recent files and -- worse -- its *recovery

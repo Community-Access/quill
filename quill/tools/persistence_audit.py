@@ -53,6 +53,10 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # --- versioned (the contract) ---
     "core/settings.py::save_settings": "versioned",
     "core/keymap.py::save_keymap": "versioned",
+    # QuillLite's own keys. Same contract and the same reason: a schema stamp
+    # and a delta of the user's overrides, never a snapshot, so a key improved
+    # in a later version still reaches somebody who launched the app once.
+    "core/lite/keymap.py::save_keymap": "versioned",
     "core/keymap.py::load_keymap": "versioned",
     "core/features.py::save": "versioned",
     "core/custom_profiles.py::save_custom_profiles": "versioned",
@@ -119,6 +123,13 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # row in a list, and it is deliberately never synced.
     "core/media/local_paths.py::remember": "cache",
     "core/media/local_paths.py::forget": "cache",
+    # Where each app's main window opens. A marker in the strict sense: three
+    # trivially-defaulted values per app, every one of them re-derived from the
+    # window the moment it is closed, and losing the file costs one launch at a
+    # different size. Deliberately not "versioned": the whole point of the
+    # default is that a build which changes its mind about it reaches everybody
+    # who never chose otherwise, which a migration contract would freeze.
+    "core/window_geometry.py::save_geometry": "marker",
     "core/radio/download_prefs.py::save": "content",
     "core/library/catalogs.py::save": "content",
     "core/publish/destinations.py::save_destinations": "content",

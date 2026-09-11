@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>userguide</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-converter-user-guide">Quill Converter User Guide</h1>
+<p>Version 1.0</p>
+<p>Quill Converter is one job done properly: changing audio from one
+format into another, on your own machine, without uploading anything to
+a website. It is a small window with a queue, a couple of choice
+controls, and a Convert button. Focus lands on the queue the instant it
+opens, every control has a name and an access key, and the whole thing
+runs from the keyboard.</p>
+<h2 id="getting-started">Getting started</h2>
+<p>Launch Quill Converter from the Start Menu, or
+<code>run-quill-converter.bat</code> from a source checkout, or
+<code>python -m quill.apps.converter</code> if you have the
+<code>quill</code> package installed.</p>
+<p>The window opens with keyboard focus on the <strong>Files to
+convert</strong> list. From there:</p>
+<ol type="1">
+<li>Press Alt+A (<strong>Add Files…</strong>) and pick one or more
+files, or Alt+O (<strong>Add Folder…</strong>) and pick a whole
+folder.</li>
+<li>Choose an output format in <strong>Convert to</strong> (Alt+V).</li>
+<li>Choose a <strong>Preset</strong> (Alt+P), or leave it on “Just
+convert (no processing)”.</li>
+<li>Optionally set an <strong>Output folder</strong>. Leave it blank and
+Quill Converter creates a <code>Converted</code> folder beside your
+source.</li>
+<li>Press Alt+C (<strong>Convert</strong>).</li>
+</ol>
+<p>Progress is spoken and written to the status bar as it goes, and the
+run ends with a summary that says how many files converted and names any
+that failed.</p>
+<p>Only one copy of Quill Converter runs at a time. Launching it again
+while it is already running does not open a second window.</p>
+<h2 id="what-it-converts">What it converts</h2>
+<p><strong>Input.</strong> Audio files: MP3, WAV, FLAC, OGG, OGA, Opus,
+M4A, M4B, AAC, WMA, AIFF, AIF, ALAC, APE, WV, MKA, AMR, 3GP, and CAF.
+Video files, from which the audio track is pulled out: MP4, M4V, MKV,
+MOV, WebM, AVI, FLV, and WMV.</p>
+<p><strong>Output.</strong> MP3, M4A, M4B, Opus, OGG, FLAC, WAV, AAC,
+AIFF, ALAC, WMA, and CAF.</p>
+<p>The <strong>Convert to</strong> list is not a fixed menu: at startup
+Quill Converter asks the bundled FFmpeg which encoders it actually has
+and lists only the formats it can really produce. That is deliberate – a
+batch should never die half way through because an encoder was missing.
+WAV, AIFF, and CAF are always available. If FFmpeg cannot be found at
+all, WAV is the only format offered, and starting a conversion tells you
+that FFmpeg is needed and points you at QUILL’s <strong>Help &gt;
+Download Optional Components</strong>.</p>
+<h2 id="the-five-ways-files-get-in">The five ways files get in</h2>
+<p>There is no drag and drop, by design – everything below is reachable
+from the keyboard.</p>
+<ol type="1">
+<li><strong>Add Files…</strong> (Alt+A, or File &gt; Add Files…,
+Ctrl+O). A standard multi-select file picker filtered to audio and video
+files, with an “All files” option if you need it.</li>
+<li><strong>Add Folder…</strong> (Alt+O, or File &gt; Add Folder…).
+Queues the whole folder. From the main window a folder is always scanned
+right through its sub-folders, and the output mirrors the source folder
+structure.</li>
+<li><strong>The command line.</strong> Pass file or folder paths when
+you launch the app and each one that exists is queued immediately:
+<code>python -m quill.apps.converter song.wav album\</code></li>
+<li><strong>The Windows Explorer right-click menu.</strong> Turn on the
+“Offer Convert with QUILL” setting in QUILL, and audio and video files
+gain a <strong>Convert with Quill</strong> entry that opens Quill
+Converter with your selection already queued. The verb is <strong>off by
+default</strong> – nothing is added to your context menu until you ask
+for it.</li>
+<li><strong>Convert from URL…</strong> (Alt+U, or File &gt; Convert from
+URL…). Described in its own section below; the downloaded audio arrives
+in the converter ready to go.</li>
+</ol>
+<p>Duplicate paths are ignored, so adding the same file twice queues it
+once.</p>
+<p>To take something out of the queue, select the row and press
+<strong>Delete</strong>, or use the <strong>Remove</strong> button
+(Alt+R).</p>
+<h2 id="the-main-window-control-by-control">The main window, control by
+control</h2>
+<p>Tab order, top to bottom:</p>
+<ul>
+<li><strong>Files to convert</strong> (Alt+F, a list box). One row per
+queued item; a folder reads as “name (folder)”. Delete removes the
+selected row.</li>
+<li><strong>Add Files…</strong> (Alt+A), <strong>Add Folder…</strong>
+(Alt+O), <strong>Remove</strong> (Alt+R).</li>
+<li><strong>Convert to</strong> (Alt+V, a combo box). The output format,
+in capitals.</li>
+<li><strong>Preset</strong> (Alt+P, a combo box). Each entry is spoken
+as its name plus a plain-language description of what it is good for, so
+you can choose by hearing rather than by guessing.</li>
+<li><strong>Output folder</strong> (a text field) and
+<strong>Browse…</strong> (Alt+B). Leave it blank to get a
+<code>Converted</code> folder beside the first thing in your queue.</li>
+<li><strong>Convert</strong> (Alt+C), <strong>Convert from URL…</strong>
+(Alt+U), <strong>Advanced…</strong>.</li>
+</ul>
+<p>Two access keys are shared on this window: Alt+O reaches both
+<strong>Add Folder…</strong> and the <strong>Output folder</strong>
+field, and Alt+V reaches both <strong>Convert to</strong> and
+<strong>Advanced…</strong>. Pressing the key repeatedly cycles between
+them, and Tab reaches everything in order, so nothing is unreachable –
+but Tab is the reliable route to Advanced.</p>
+<p>The status bar reports how many items are queued, then per-file
+progress during a run, then the summary.</p>
+<p>From the main window, conversions never overwrite an existing file:
+if the output name is already taken, the new file is auto-numbered
+instead. If you want Skip or Overwrite instead, use
+<strong>Advanced…</strong> (below), which exposes the conflict
+policy.</p>
+<h2 id="presets">Presets</h2>
+<ul>
+<li><strong>Just convert (no processing)</strong> – a pure format
+change. The default.</li>
+<li><strong>MP3 320 kbps (maximum quality)</strong>, <strong>MP3 192
+kbps</strong>, <strong>MP3 128 kbps (small)</strong>.</li>
+<li><strong>Podcast (MP3, spoken word)</strong> – mono MP3 with a
+rumble-removing high-pass.</li>
+<li><strong>Audiobook (M4B)</strong> – mono M4B at a compact
+bitrate.</li>
+<li><strong>Voice memo (small MP3)</strong> – mono, 22 kHz, tiny files
+for spoken notes.</li>
+<li><strong>Web voice (Opus)</strong> – mono Opus at a low bitrate, the
+smallest for the web.</li>
+<li><strong>Archival (FLAC, lossless)</strong> – keeps the original rate
+and channels.</li>
+<li><strong>Hearing-aid mono</strong> – downmix to a single
+channel.</li>
+</ul>
+<p>A preset sets the starting recipe; the <strong>Convert to</strong>
+choice always wins over the preset’s own format, so you can take the
+Podcast preset and still ask for Opus.</p>
+<h2 id="advanced">Advanced</h2>
+<p><strong>Advanced…</strong> (also File &gt; Advanced Options…) hands
+your current queue to the full <strong>Convert Audio</strong> dialog. It
+is the same dialog QUILL’s Audio Studio opens, so there is only one
+converter to learn.</p>
+<p>The dialog repeats the queue and the format/preset/output controls,
+and adds:</p>
+<ul>
+<li><strong>Include sub-folders</strong> (Alt+I, a check box, on by
+default) – whether a queued folder is scanned right through or only at
+its top level. Each folder row in the queue says which it will be.</li>
+<li><strong>On conflict</strong> (Alt+C, a combo box): “Rename
+(auto-number) – never overwrites” (the default), “Skip files that
+already exist”, or “Overwrite existing files”.</li>
+<li><strong>Advanced options</strong> (Alt+P, a check box). Ticking it
+reveals the panel below and moves focus to its first control, so the
+reveal is announced rather than being a silent resize. Unticking it puts
+focus back on the check box.</li>
+</ul>
+<p>The revealed panel, in order:</p>
+<ul>
+<li><strong>Bit rate</strong> (Alt+R): Auto (use preset), 96, 128, 192,
+256, or 320 kbps.</li>
+<li><strong>Sample rate</strong> (Alt+M): Keep source rate, 48 kHz, 44.1
+kHz, 22.05 kHz, 16 kHz.</li>
+<li><strong>Channels</strong> (Alt+H): Keep source channels, Mono,
+Stereo.</li>
+<li><strong>Bit depth</strong> (Alt+D): Keep source depth, 16-bit,
+24-bit, 32-bit float.</li>
+<li><strong>Loudness</strong> (Alt+L): No loudness normalization,
+Audiobook / ACX (-20 LUFS), or Podcast / streaming (-16 LUFS).</li>
+<li><strong>Gain (dB)</strong> (Alt+G): -30 to +30 in half-decibel
+steps. 0 means no change.</li>
+<li><strong>Speed (tempo)</strong> (Alt+S): 0.5x to 2.0x, no pitch
+shift. 1.0 is unchanged.</li>
+<li><strong>Fade in (seconds)</strong> (Alt+I) and <strong>Fade out
+(seconds)</strong> (Alt+O): 0 to 10.</li>
+<li><strong>Remove low-frequency rumble (high-pass)</strong>
+(Alt+U).</li>
+<li><strong>Trim leading and trailing silence</strong> (Alt+T).</li>
+<li><strong>Compress dynamics (even out loud/quiet)</strong>
+(Alt+C).</li>
+<li><strong>Level volume across the file</strong> (Alt+V).</li>
+</ul>
+<p>Every one of these starts on a neutral “leave the preset alone”
+value, so an Advanced panel you opened but did not touch changes
+nothing.</p>
+<p>The dialog’s affirmative button is labelled <strong>Convert</strong>;
+<strong>Cancel</strong> and Escape both back out without converting, and
+cancelling is announced.</p>
+<h2 id="convert-from-url">Convert from URL</h2>
+<p><strong>Convert from URL…</strong> (Alt+U, or File &gt; Convert from
+URL…) takes a web address, downloads the audio from it, and opens the
+Convert Audio dialog with that file already in the queue.</p>
+<p>What happens, in order:</p>
+<ol type="1">
+<li>A text box asks you to paste a link. Anything that is not a full
+<code>http://</code> or <code>https://</code> address is rejected with a
+plain explanation.</li>
+<li>The first time only, a consent dialog explains that this feature
+uses <strong>yt-dlp</strong> to download audio from a web address, that
+Quill Converter will download and install that component on demand
+(about 3 MB, from PyPI), that you should only download content you have
+the right to use, and that no account or credential of yours is sent to
+the site. Answer <strong>Yes</strong> to continue or <strong>No</strong>
+to stop; answering No is announced and nothing is installed.</li>
+<li>The download runs in the background with spoken progress, then the
+Convert Audio dialog opens on the downloaded file.</li>
+</ol>
+<p>yt-dlp is never bundled with Quill Converter. It is installed only if
+you say yes, and the whole feature is <strong>unavailable in Safe
+Mode</strong> – asking for it there says so and stops.</p>
+<h2 id="the-tray-and-staying-out-of-the-way">The tray, and staying out
+of the way</h2>
+<p>Quill Converter lives in the notification area while it works.</p>
+<ul>
+<li><strong>Minimize to Tray</strong> (Ctrl+W, or File &gt; Minimize to
+Tray) hides the window; the same command brings it back. Hiding and
+showing are both announced.</li>
+<li><strong>Ctrl+Alt+Shift+C</strong> does the same thing from anywhere
+in Windows, even when another program has focus. If another program
+already owns that chord, Quill Converter quietly leaves it alone rather
+than fighting for it.</li>
+<li>Right-click the tray icon (or double-click it to just restore the
+window) for <strong>Show Quill Converter</strong>, <strong>Open Quill
+Converter</strong>, and <strong>Exit Quill Converter</strong>.</li>
+<li>While a batch runs, the tray tooltip carries the same progress text
+as the status bar, so a minimized conversion is still reviewable.</li>
+<li>Starting the app with <code>--tray</code> opens it straight into the
+tray with no window.</li>
+</ul>
+<p><strong>Exit</strong> (File &gt; Exit, or the tray menu) really
+exits. Alt+F4 closes the window.</p>
+<h2 id="the-other-menus">The other menus</h2>
+<p><strong>QuillVille</strong> lists the sibling apps that have shipped
+a public release – Open QUILL, Open Quill Radio, Open Quill Weather – so
+the family is always one keystroke apart. Choosing one that is not
+installed offers to get it rather than failing silently.</p>
+<p><strong>Window</strong> carries the standard window switcher:
+Ctrl+Tab for the next window, Ctrl+Shift+Tab for the previous, and
+Ctrl+1 through Ctrl+9 to jump to one directly.</p>
+<p><strong>Help</strong> has <strong>Check for Updates…</strong> and
+<strong>About Quill Converter</strong>. Check for Updates looks at Quill
+Converter’s own releases, downloads the right one for how you installed
+(installer or portable), speaks progress milestones, and then offers to
+install it. Each app in the family updates independently.</p>
+<h2 id="using-it-with-a-screen-reader">Using it with a screen
+reader</h2>
+<ul>
+<li><strong>Focus at launch</strong> lands on the Files to convert list,
+never on a bare frame.</li>
+<li><strong>Everything is announced.</strong> Queue counts, progress,
+the end-of-run summary, “nothing to convert”, hiding and showing to the
+tray – all of it goes through the shared announcement engine, which
+speaks through your screen reader (JAWS, NVDA, Narrator) without
+stealing focus, and writes to your <strong>braille display</strong> as
+well as speaking.</li>
+<li><strong>The status bar is the visual floor</strong>, so nothing is
+spoken-only and nothing is colour-only.</li>
+<li><strong>Every control has an accessible name</strong>, including the
+ones whose visible label sits beside them.</li>
+<li><strong>Access keys</strong> are on every button and field (listed
+above). Menus are Alt+F for File, Alt+Q for QuillVille, Alt+W for
+Window, Alt+H for Help. On the File menu: Alt+A Add Files, Alt+O Add
+Folder, Alt+U Convert from URL, Alt+V Advanced Options, Alt+T Minimize
+to Tray, Alt+X Exit.</li>
+<li><strong>Delete</strong> removes the selected queue row; you never
+need a mouse to manage the queue.</li>
+<li><strong>No dialog traps.</strong> The Convert Audio dialog has a
+real Cancel that Escape reaches, and its Advanced reveal moves focus so
+you hear the change.</li>
+</ul>
+<h2 id="where-your-settings-live">Where your settings live</h2>
+<p>Quill Converter shares one settings store with QUILL and the rest of
+the family, so a preference set in one app is honoured in the
+others.</p>
+<ul>
+<li><strong>Installed:</strong> <code>%APPDATA%\Quill</code>.</li>
+<li><strong>Portable:</strong> if you run the portable build, the folder
+beside the program contains a <code>data</code> folder, and once you
+choose portable storage everything – settings, logs, keymap – lives
+there and travels with the stick instead of touching the machine you
+plug it into.</li>
+</ul>
+<p>Uninstalling Quill Converter never deletes that shared folder; QUILL
+or another family app may still be using it.</p>
+<h2 id="safe-mode">Safe Mode</h2>
+<p>Setting <code>QUILL_SAFE_MODE=1</code> before launching starts Quill
+Converter in Safe Mode: the default keymap is used instead of your saved
+one, unlocks are not persisted, and <strong>Convert from URL</strong> is
+refused outright. Ordinary conversion still works completely – it is all
+local.</p>
+<h2 id="for-scripts-quill-convert">For scripts:
+<code>quill convert</code></h2>
+<p>Everything above is also available without a window, over the same
+engine:</p>
+<pre><code>python -m quill convert INPUT... --to FORMAT [options]</code></pre>
+<p>Inputs can be files, folders, or glob patterns; folders mirror their
+tree. <code>--preset</code> picks a starting recipe
+(<code>--list-presets</code> prints them), <code>--out</code> sets the
+destination, <code>--recurse</code> descends into sub-folders, and
+<code>--dry-run</code> plans the batch and prints what it would do
+without converting anything.</p>
+</body>
+</html>

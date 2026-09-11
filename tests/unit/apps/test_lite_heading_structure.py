@@ -163,8 +163,15 @@ def test_promoting_a_heading_one_does_not_turn_it_into_body_text() -> None:
 
 
 def test_rich_text_stops_at_the_bottom_of_its_own_ladder() -> None:
-    """QuillLite's rich ladder is four levels, not Markdown's six."""
-    win = _Window("Deep", mode=RICH, level=4)
+    """Six levels in rich text as well as in Markdown, since 2026-09-09.
+
+    Five and six existed in the ladder and shared the 11-point body size, so the
+    editor could set them and then could not read them back: heading navigation
+    walked past a Heading 5 as if it were an ordinary paragraph. They have sizes
+    of their own now (11.5 and 10.5), which is what made it honest to offer them
+    in Format > Headings.
+    """
+    win = _Window("Deep", mode=RICH, level=6)
 
     win.cmd_demote_heading()
 

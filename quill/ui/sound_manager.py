@@ -94,6 +94,49 @@ def post_sound(event_id: str) -> None:
         _manager.play(event_id)
 
 
+def post_sound_and_wait(event_id: str, timeout: float | None = None) -> None:
+    """Play *event_id* and wait for it. Only for the app's goodbye.
+
+    Every other cue returns at once because it comments on something in
+    progress. This one is followed by the process ending, so returning
+    immediately means the sound is cut off -- reported by ear, closing
+    QuillLite.
+    """
+    if _manager is None or not _manager.enabled:
+        return
+    try:
+        from quill.platform.sound_player import MAX_BLOCKING_SECONDS
+
+        _manager.player.play_and_wait(
+            str(event_id), MAX_BLOCKING_SECONDS if timeout is None else timeout
+        )
+    except Exception:  # noqa: BLE001 - a goodbye must never delay or break an exit
+        return
+
+
+def preview_file(path: object) -> bool:
+    """Play a WAV file straight from disk. True when it actually played.
+
+    For the Sound Scheme window, which previews files that are not in any pack
+    yet -- the one the user has just browsed to, and the ones in a scheme they
+    are considering. Never raises: a preview that fails must not take the window
+    down with it, and the caller says so in words instead.
+    """
+    from pathlib import Path as _Path
+
+    if _manager is None:
+        return False
+    try:
+        data = _Path(str(path)).read_bytes()
+    except OSError:
+        return False
+    try:
+        _manager.player.preview_wav(data)
+    except Exception:  # noqa: BLE001 - a preview is never worth an exception
+        return False
+    return True
+
+
 def toggle_mute() -> bool:
     """Flip the mute state.  Returns the new state (True == muted)."""
     if _manager is not None:
@@ -109,13 +152,31 @@ def is_active() -> bool:
 def get_loaded_events() -> frozenset[str]:
     """Return the set of event IDs currently loaded across all active packs.
 
-    Used by :class:`~quill.ui.sound_events_dialog.SoundEventsDialog` to show
+    Used by :class:`~quill.ui.sound_scheme_dialog.SoundSchemeDialog` to show
     only toggles for sounds that actually exist in the loaded pack(s). Returns
     an empty frozenset when no manager is initialised.
     """
     if _manager is not None:
         return _manager.get_loaded_events()
     return frozenset()
+
+
+def has_sound_for(event_id: str) -> bool:
+    """True when *event_id* would actually make a noise if posted right now.
+
+    The question ``action_feedback`` has to ask before it decides a tone is
+    enough: does this moment have a clip of its own in the loaded pack? A mode
+    that chose "sound" for an event nothing can play would leave the user with no
+    feedback at all, so the answer routes it back to words.
+
+    Deliberately *not* consulted: the global mute and
+    ``settings.sound_events_disabled``. Those are the user saying "not this
+    noise", and turning them into speech would answer a request for quiet with a
+    voice. A pack with no clip is an absence; a silenced event is a decision.
+    """
+    if not event_id:
+        return False
+    return str(event_id) in get_loaded_events()
 
 
 def load_indent_tone_pack(scale: str) -> None:
@@ -164,7 +225,21 @@ class _SoundManager:
 
         self.player = SoundPlayer()
         self.enabled: bool = False
-        self._pack_path: str = ""
+        #: The pack path currently loaded, or None for "nothing loaded yet".
+        #:
+        #: None rather than "", and that is the whole of a bug that made the
+        #: entire earcon system silent for anybody on the **default** pack --
+        #: which is to say almost everybody. ``apply_settings`` reloads only
+        #: when the path has changed, this started life as "", and the default
+        #: ``sound_pack_path`` is *also* "". So on the very first call the
+        #: comparison was "" != "", the load was skipped, the player held zero
+        #: events, and every ``post_sound`` in the product quietly did nothing.
+        #: The one place it did not look broken was the spelling alert, which
+        #: falls back to ``wx.Bell`` when the pack has no sound for the event --
+        #: so it beeped instead, and the earcons were never missed loudly enough
+        #: to be reported. A sentinel that cannot collide with a real value is
+        #: the fix; ``test_sound_manager.py`` now asserts the first load happens.
+        self._pack_path: str | None = None
         self._indent_scale: str = ""
         # Tracks event IDs contributed by the indent tone overlay so they can
         # be included in get_loaded_events() without re-reading disk.

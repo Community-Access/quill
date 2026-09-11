@@ -32,6 +32,7 @@ from quill.core.line_ops import (
     move_lines_up,
     selected_line_bounds,
 )
+from quill.core.sound_events import SoundEvent
 
 
 class LineCommandsMixin:
@@ -94,7 +95,11 @@ class LineCommandsMixin:
         self._apply_line_operation(duplicate_line, "Duplicated line")
 
     def delete_line(self) -> None:
+        # Text going away is the one edit with no natural sound of its own: the
+        # reader says nothing, the caret stays put, and the only evidence is
+        # that something you could read a moment ago is not there.
         self._apply_line_operation(delete_line, "Deleted line")
+        self.cue(SoundEvent.TEXT_DELETED)
 
     def join_lines(self) -> None:
         # Selection-aware (issue #135): joins the whole selection, or the

@@ -200,10 +200,27 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
 #: silently never fired. The conflict was invisible until the Favorites
 #: submenu began advertising its real bindings and the menu-accelerator gate
 #: (now walking a profile WITH favorites) caught the double claim.
+#:
+#: **F7-F12, not F1-F3 (2026-09-09), and one per sibling.** The move to F-keys
+#: landed the third launcher on top of ``power.count_occurrences``
+#: (Ctrl+Alt+Shift+F3), so in QUILL the Search menu's Count Occurrences and the
+#: QuillVille menu's Open Quill Inkwell claimed one key and one of them never
+#: fired. The launchers move rather than Count Occurrences: an existing binding
+#: outranks a newcomer's convention, and that chord is QuillLite's too
+#: (``core/lite/commands.py``), so moving it would split a key across the two
+#: products for no reason. F4-F6 were already Quill Radio's Sort Favorites
+#: items, which is why the block starts at F7 -- and F7-F12 is exactly six, one
+#: for every row this menu can show (``QUILLVILLE_APP_ORDER`` is seven apps and
+#: an app never lists itself). Before this the tuple held three, so a QuillVille
+#: menu quietly shipped rows with no key at all while the builder's comment
+#: claimed the house rule was met.
 SIBLING_APP_ACCELERATORS: tuple[str, ...] = (
-    "Ctrl+Alt+Shift+F1",
-    "Ctrl+Alt+Shift+F2",
-    "Ctrl+Alt+Shift+F3",
+    "Ctrl+Alt+Shift+F7",
+    "Ctrl+Alt+Shift+F8",
+    "Ctrl+Alt+Shift+F9",
+    "Ctrl+Alt+Shift+F10",
+    "Ctrl+Alt+Shift+F11",
+    "Ctrl+Alt+Shift+F12",
 )
 
 

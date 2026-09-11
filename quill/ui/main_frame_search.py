@@ -7,33 +7,30 @@ search/replace flow (``_prompt_file_search`` / ``search_in_files`` /
 ``replace_in_files`` with its ``_FileSearchRequest`` model and background
 worker). Extracted verbatim from ``main_frame.py``; runs on ``MainFrame``
 (``self``).
+
+The **dialog** the last two open moved to
+:mod:`quill.ui.main_frame_file_search_prompt` on 2026-09-10 (GATE-11). It was a
+hundred and fifty lines of form building in a file of one-screen command
+handlers, and it is the only thing here that is a window rather than a search.
+``SearchCommandsMixin`` inherits it, so every caller and every composed frame is
+unchanged.
 """
 
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass
-from pathlib import Path
 
 from quill.core.search import SearchOptions, SearchPatternError, find_matches, replace_all
 from quill.core.search_history import add_search_term
-from quill.ui.dialog_contract import (
-    apply_modal_ids,
+from quill.ui.main_frame_file_search_prompt import (
+    FileSearchPromptMixin,
+)
+from quill.ui.main_frame_file_search_prompt import (
+    FileSearchRequest as _FileSearchRequest,
 )
 
 
-@dataclass(slots=True)
-class _FileSearchRequest:
-    root: Path
-    pattern: str
-    query: str
-    replacement: str | None
-    options: SearchOptions
-    output_mode: str
-    preview_before_replace: bool
-
-
-class SearchCommandsMixin:
+class SearchCommandsMixin(FileSearchPromptMixin):
     def _prompt_search(
         self, title: str, replacement: bool = False
     ) -> tuple[str, str | None, SearchOptions] | None:
@@ -265,11 +262,7 @@ class SearchCommandsMixin:
             self._set_status("Find error")
             return
         if not matches:
-            self._set_status("No matches found")
-            from quill.core.sound_events import SoundEvent
-            from quill.ui.sound_manager import post_sound
-
-            post_sound(SoundEvent.SEARCH_NOT_FOUND)
+            self._report_search_missed("No matches found")
             return
 
         cursor = self.editor.GetInsertionPoint()
@@ -297,11 +290,14 @@ class SearchCommandsMixin:
                 wrapped = True
 
         if chosen is None:
-            self._set_status("No matches found from the current position")
-            from quill.core.sound_events import SoundEvent
-            from quill.ui.sound_manager import post_sound
-
-            post_sound(SoundEvent.SEARCH_NOT_FOUND)
+            # Wrapping is off and the search has run out of document in the
+            # direction it was going. Not the same fact as "there is no such text":
+            # the fix is to go to the other end, not to change the pattern, so the
+            # sentence names the end it stopped at.
+            edge = "start" if reverse else "end"
+            self._report_search_missed(
+                f"No more matches. Reached the {edge} of the document, and wrapping is off."
+            )
             return
 
         start, end = chosen
@@ -322,6 +318,37 @@ class SearchCommandsMixin:
         from quill.ui.sound_manager import post_sound
 
         post_sound(SoundEvent.SEARCH_WRAPPED if wrapped else SoundEvent.SEARCH_FOUND)
+
+    def _report_search_missed(self, message: str) -> None:
+        """A search found nothing, reported in the channel the user chose.
+
+        ``settings.find_not_found_feedback`` -- sound (the default), speech, both
+        or neither -- resolved through the shared rule in
+        :mod:`quill.core.action_feedback` so QuillLite cannot answer this
+        differently. The tone alone by default because F3 is pressed in runs, and
+        "Not found" spoken on every press is what makes somebody switch speech off.
+
+        The status bar is set either way: ``_set_status`` speaks what it is given,
+        so the quiet path uses ``_set_status_quiet`` and the bar still carries the
+        record for anyone who goes and reads it.
+        """
+        from quill.core.action_feedback import resolve
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.sound_manager import has_sound_for, post_sound
+
+        try:
+            play, speak = resolve(
+                getattr(self.settings, "find_not_found_feedback", "sound"),
+                has_sound=has_sound_for(SoundEvent.SEARCH_NOT_FOUND),
+            )
+        except Exception:  # noqa: BLE001 - feedback must never break a search
+            play, speak = True, False
+        if play:
+            post_sound(SoundEvent.SEARCH_NOT_FOUND)
+        if speak:
+            self._set_status(message)
+        else:
+            self._set_status_quiet(message)
 
     def _ensure_extend_selection_anchor(self) -> None:
         if not self._extend_selection_mode or self._extend_selection_anchor is not None:
@@ -402,153 +429,6 @@ class SearchCommandsMixin:
     def replace_all_text(self) -> None:
         # The native Replace dialog has its own Replace All button.
         self._open_find_replace(replace=True)
-
-    def _prompt_file_search(self, *, replace: bool) -> _FileSearchRequest | None:
-        wx = self._wx
-        default_root = self.document.path.parent if self.document.path is not None else Path.cwd()
-        dialog_label = "Replace Across Files" if replace else "Search in Files"
-        dialog = wx.Dialog(
-            self.frame,
-            title=dialog_label,
-            size=(700, 0),
-        )
-        root = wx.BoxSizer(wx.VERTICAL)
-        form = wx.FlexGridSizer(0, 3, 8, 8)
-        form.AddGrowableCol(1, 1)
-
-        def add_row(label: str, make_ctrl, button: object | None = None) -> object:
-            form.Add(wx.StaticText(dialog, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
-            ctrl = make_ctrl()
-            form.Add(ctrl, 1, wx.EXPAND)
-            if button is None:
-                form.AddSpacer(1)
-            else:
-                form.Add(button, 0)
-            return ctrl
-
-        folder_picker = add_row(
-            "Starting folder", lambda: wx.DirPickerCtrl(dialog, path=str(default_root))
-        )
-        file_pattern_ctrl = add_row("File pattern", lambda: wx.TextCtrl(dialog, value="*"))
-        query_ctrl = add_row(
-            "Search text", lambda: wx.TextCtrl(dialog, value="", style=wx.TE_PROCESS_ENTER)
-        )
-
-        replacement_ctrl = None
-        if replace:
-            replacement_ctrl = add_row(
-                "Replacement",
-                lambda: wx.TextCtrl(dialog, value="", style=wx.TE_PROCESS_ENTER),
-            )
-
-        mode_choice = add_row(
-            "Match mode",
-            lambda: wx.Choice(dialog, choices=["Plain text", "Wildcard", "Regular expression"]),
-        )
-        mode_choice.SetSelection(0)
-
-        output_choice = add_row(
-            "Output format",
-            lambda: wx.Choice(
-                dialog,
-                choices=[
-                    "Filenames only",
-                    "Filenames with line numbers and counts",
-                    "Counts only",
-                    "Filename with line context",
-                ],
-            ),
-        )
-        output_choice.SetSelection(3)
-
-        case_sensitive = wx.CheckBox(dialog, label="Case sensitive")
-        whole_word = wx.CheckBox(dialog, label="Whole word")
-        root.Add(form, 0, wx.ALL | wx.EXPAND, 8)
-        root.Add(case_sensitive, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-        root.Add(whole_word, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-        preview_before_replace = None
-        if replace:
-            preview_before_replace = wx.CheckBox(dialog, label="Preview before replacing")
-            preview_before_replace.SetValue(True)
-            root.Add(preview_before_replace, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-        buttons = dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
-        if buttons is not None:
-            # Mirror the proven single-document search dialog (_prompt_search):
-            # a StdDialogButtonSizer must be added with wx.EXPAND, not
-            # wx.ALIGN_RIGHT. Adding it right-aligned left the OK/Cancel buttons
-            # unrealized on Windows, so the Cancel button could not be clicked
-            # and the dialog trapped the user (#84). EXPAND plus an explicit
-            # default button restores reliable, keyboard-accessible dismissal.
-            ok_button = dialog.FindWindowById(wx.ID_OK)
-            if ok_button is not None:
-                ok_button.SetDefault()
-        if buttons is not None:
-            root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        dialog.SetSizerAndFit(root)
-
-        def submit(_event: object) -> None:
-            dialog.EndModal(wx.ID_OK)
-
-        query_ctrl.Bind(wx.EVT_TEXT_ENTER, submit)
-        if replacement_ctrl is not None:
-            replacement_ctrl.Bind(wx.EVT_TEXT_ENTER, submit)
-
-        def focus_query() -> None:
-            query_ctrl.SetFocus()
-
-        if hasattr(wx, "CallAfter"):
-            wx.CallAfter(focus_query)
-        else:
-            focus_query()
-
-        try:
-            if self._show_modal_dialog(dialog, dialog_label) != wx.ID_OK:
-                return None
-            query = query_ctrl.GetValue().strip()
-            if not query:
-                self._show_message_box(
-                    "Search text cannot be blank.",
-                    dialog_label,
-                    wx.ICON_ERROR | wx.OK,
-                )
-                return None
-            mode = mode_choice.GetStringSelection()
-            options = SearchOptions(
-                case_sensitive=bool(case_sensitive.GetValue()),
-                whole_word=bool(whole_word.GetValue()),
-                use_regex=mode == "Regular expression",
-                wildcard=mode == "Wildcard",
-            )
-            replacement_value = (
-                replacement_ctrl.GetValue() if replacement_ctrl is not None else None
-            )
-            preview = (
-                bool(preview_before_replace.GetValue())
-                if preview_before_replace is not None
-                else False
-            )
-            output_modes = (
-                "filenames",
-                "filenames_lines_counts",
-                "counts",
-                "context",
-            )
-            return _FileSearchRequest(
-                root=Path(folder_picker.GetPath()),
-                pattern=file_pattern_ctrl.GetValue().strip() or "*",
-                query=query,
-                replacement=replacement_value,
-                options=options,
-                output_mode=output_modes[
-                    max(0, min(output_choice.GetSelection(), len(output_modes) - 1))
-                ],
-                preview_before_replace=preview,
-            )
-        finally:
-            dialog.Destroy()
 
     def search_in_files(self) -> None:
         from quill.core.file_search import FileSearchReport, render_search_report, search_files

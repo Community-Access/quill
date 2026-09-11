@@ -10,6 +10,11 @@ import wx
 
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
 
+#: Serialized onto one worker under ``-n --dist loadgroup``: this file uses
+#: the real Windows clipboard (wx.TheClipboard.Open/GetData).
+#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
+pytestmark = pytest.mark.machine_global
+
 
 class _Editor:
     def __init__(self, text: str, selection: tuple[int, int]) -> None:

@@ -58,7 +58,7 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
     """The manager window for a system-wide expander that runs in the tray."""
 
     def __init__(self, *, safe_mode: bool = False) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(560, 420))
+        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(560, 420), app_id="inkwell")
         from quill.core.paths import app_data_dir
         from quill.ui.window_menu import WindowManager
 

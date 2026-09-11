@@ -34,6 +34,16 @@ The counting is QUILL's too: :func:`~quill.core.metrics.compute_document_stats`
 and :func:`~quill.core.marks.line_column_for_position`, the same functions the
 editor's own bar uses, so the two products cannot disagree about what a word is.
 
+The row **wraps** rather than stretches. It used to be a horizontal box sizer in
+which Message was the only cell with a proportion -- so Message was the only cell
+that grew, and the only one squeezed when twelve cells did not fit a narrow
+window. wxMSW ellipsises a button label wider than its button, and JAWS's
+Insert+Page Down reads the bottom line of the window off the screen, so what was
+cut off on screen was what it read. A :class:`wx.WrapSizer` flows the row onto a
+second line instead: the bar gets taller on a narrow window and nothing clips at
+any width. The one text with no natural ceiling -- the message itself -- is
+capped in the label and read in full by Enter on the cell.
+
 The one performance rule is QUILL's as well. Counting words is O(document) and a
 refresh per keystroke is several full scans per keypress, so refreshes are
 **coalesced** through a restarting ``wx.CallLater``: a held arrow key costs one
@@ -60,8 +70,43 @@ __all__ = ["CELLS", "DocumentStatusMixin", "StatusCell", "encoding_name", "newli
 #: full-buffer scans per keystroke.
 _COALESCE_MS = 90
 
-#: The message cell stretches; the rest take only what they need.
+#: The message cell is the one whose text has no natural ceiling.
 _MESSAGE = "message"
+
+#: How many characters of a status message the *label* shows. The message cell
+#: is the only one whose text is unbounded -- a path, an OS error, a sentence --
+#: and a button label wider than its button is ellipsised by wxMSW, which is
+#: what JAWS's Insert+Page Down then reads off the screen. Capped here and read
+#: in full by Enter on the cell (and by the F6 landing announcement), which is
+#: the trade the fixed cells never have to make: Position and Encoding say two
+#: facts nothing else in the app will tell you, so they are never shortened.
+_MESSAGE_LABEL_CHARS = 90
+
+#: The margin each cell button is added with, and the slack left under the last
+#: row when the bar's height is measured.
+_CELL_GAP = 2
+
+#: A height no wrapped row can reach, used to lay the cells out at a known width
+#: so their real extent can be measured. ``wx.WrapSizer.CalcMin`` reports one
+#: row whatever it is told (``InformFirstDirection`` returns False and changes
+#: nothing), so the wrapped height has to come from an actual layout pass.
+_REFLOW_PROBE_HEIGHT = 10_000
+
+
+def _clip_message(message: str) -> str:
+    """*message* shortened to what a status button can show without ellipsising.
+
+    Cut at the last space inside the budget so a half-word is never left
+    dangling, and mark the cut so the label does not read as the whole message.
+    The full text is still one Enter away on the cell.
+    """
+    if len(message) <= _MESSAGE_LABEL_CHARS:
+        return message
+    head = message[:_MESSAGE_LABEL_CHARS].rstrip()
+    space = head.rfind(" ")
+    if space > _MESSAGE_LABEL_CHARS // 2:
+        head = head[:space]
+    return f"{head.rstrip()}..."
 
 
 @dataclass(frozen=True, slots=True)
@@ -188,7 +233,18 @@ class DocumentStatusMixin:
 
         self.status_panel = wx.Panel(self)
         self.status_panel.SetName("Status bar")
-        sizer = wx.BoxSizer(wx.HORIZONTAL)
+        # A wrapping row, not a stretching one. With a horizontal box sizer the
+        # Message cell was the only cell with a proportion, so it was the only
+        # cell that *grew* -- and the only one that got squeezed when twelve
+        # cells did not fit the window. wxMSW ellipsises a button label wider
+        # than its button, and JAWS's Insert+Page Down reads the bottom line of
+        # the window off the screen, so the text cut off on screen was the text
+        # it read. Wrapping costs a taller bar when the window is narrow and
+        # clips nothing at any width.
+        # No EXTEND_LAST_ON_EACH_LINE: a cell stretched to fill its row is
+        # a button whose width says nothing about its text, which is the
+        # habit that made Message the only cell that could be squeezed.
+        sizer = wx.WrapSizer(wx.HORIZONTAL, wx.REMOVE_LEADING_SPACES)
         self._status_buttons: dict[str, wx.Button] = {}
         for cell in CELLS:
             button = wx.Button(self.status_panel, label=cell.label, style=wx.BU_EXACTFIT)
@@ -197,9 +253,70 @@ class DocumentStatusMixin:
             button.Bind(wx.EVT_BUTTON, lambda _e, key=cell.key: self._activate_status_cell(key))
             button.Bind(wx.EVT_KEY_DOWN, lambda e, key=cell.key: self._on_status_key(e, key))
             button.Bind(wx.EVT_SET_FOCUS, lambda e, key=cell.key: self._on_status_focus(e, key))
-            sizer.Add(button, 1 if cell.key == _MESSAGE else 0, wx.EXPAND | wx.ALL, 2)
+            sizer.Add(button, 0, wx.ALL, _CELL_GAP)
             self._status_buttons[cell.key] = button
         self.status_panel.SetSizer(sizer)
+        self.status_panel.Bind(wx.EVT_SIZE, self._on_status_panel_size)
+
+    # -- height ------------------------------------------------------------- #
+
+    def _on_status_panel_size(self, event: wx.SizeEvent) -> None:
+        """Re-measure the wrapped row whenever the window's width changes."""
+        event.Skip()
+        self._reflow_status_bar()
+
+    def _reflow_status_bar(self) -> None:
+        """Give the panel the height its cells actually need at this width.
+
+        A ``wx.WrapSizer`` inside a panel cannot tell the frame's sizer how tall
+        it wants to be -- ``InformFirstDirection`` does not cross the window
+        boundary and ``CalcMin`` always answers one row -- so the height is
+        measured from a real layout at the current width and pushed back as the
+        panel's minimum. The frame is re-laid out only when that number moves,
+        which is what keeps this out of a size-event loop.
+        """
+        panel = getattr(self, "status_panel", None)
+        if panel is None or not panel.IsShown():
+            return
+        sizer = panel.GetSizer()
+        if sizer is None or not self._status_buttons:
+            return
+        width = panel.GetClientSize().width
+        if width <= 1:
+            return
+        try:
+            sizer.SetDimension(0, 0, width, _REFLOW_PROBE_HEIGHT)
+            height = (
+                max(
+                    button.GetPosition().y + button.GetSize().height
+                    for button in self._status_buttons.values()
+                )
+                + _CELL_GAP
+            )
+        except RuntimeError:
+            return  # a window mid-teardown
+        if panel.GetMinSize().height == height:
+            return
+        panel.SetMinSize((-1, height))
+        self.Layout()
+
+    def apply_status_bar_visibility(self) -> None:
+        """Show or hide the whole bar to match the setting.
+
+        Hidden means *gone*, not empty: the panel leaves the sizer's calculation
+        so the editor takes the rows back, and a hidden button is not in the tab
+        ring, so Shift+Tab out of the document cannot land in a bar nobody asked
+        for. Coming back marks the cells stale, because nothing was refreshing
+        them while they were away.
+        """
+        visible = bool(getattr(self.app.settings, "show_status_bar", True))
+        if self.status_panel.IsShown() == visible:
+            return
+        self.status_panel.Show(visible)
+        self.Layout()
+        if visible:
+            self._reflow_status_bar()
+            self._touch_status()
 
     # -- refreshing ---------------------------------------------------------- #
 
@@ -214,6 +331,11 @@ class DocumentStatusMixin:
         self._status_refresh_timer = None
         if not self._status_dirty:
             return
+        if not self.status_panel.IsShown():
+            # Counting words for a bar nobody can see is a full document scan
+            # per keystroke spent on nothing. The cells are marked stale again
+            # when the bar comes back.
+            return
         self._status_dirty = False
         try:
             values = self._cell_values()
@@ -222,6 +344,8 @@ class DocumentStatusMixin:
             self.status_panel.Layout()
         except (RuntimeError, KeyError):
             return  # a window mid-teardown; there is nothing left to update
+        # A label that grew can need a row the bar does not have yet.
+        self._reflow_status_bar()
 
     def _cell_values(self) -> dict[str, str]:
         """Every cell's text. One document scan, not one per cell."""
@@ -235,7 +359,7 @@ class DocumentStatusMixin:
         else:
             selection = "No selection"
         return {
-            _MESSAGE: self._status_message or "Ready",
+            _MESSAGE: _clip_message(self._status_message) or "Ready",
             "position": f"Line {line:,}, column {column:,} of {max(1, stats.lines):,}",
             "words": f"{stats.words:,} words",
             "characters": f"{stats.characters:,} characters",
@@ -308,6 +432,15 @@ class DocumentStatusMixin:
         event.Skip()
 
     def _cell_reading(self, key: str) -> str:
+        """What this cell *says*, which is not always what its label shows.
+
+        The Message cell's label is clipped to what fits a button; the reading
+        is the whole message, so Enter on the cell and the F6 landing both give
+        the full wording of an error rather than the first ninety characters of
+        it.
+        """
+        if key == _MESSAGE and self._status_message:
+            return self._status_message
         button = self._status_buttons.get(key)
         value = button.GetLabel() if button is not None else ""
         return str(value) or CELLS[self._cell_index(key)].label

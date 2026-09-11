@@ -74,6 +74,11 @@ class SpellingReviewDialog:
             spell_word=spell_word,
             spell_word_pause_ms=spell_pause,
             timer_factory=wx.CallLater,
+            # The shared voicing preferences: how letters are said, whether
+            # capitals are named, whether each suggestion spells itself as you
+            # arrow onto it. The two spell_review_* values above still win over
+            # their equivalents in here, because they are the review's own.
+            settings=settings,
         )
 
         self._current_issue: SpellingIssue | None = None

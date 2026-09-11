@@ -97,14 +97,36 @@ class DocumentViewCommandsMixin:
         self._announce(f"Editor font {settings.font_name}, {settings.font_size} point")
 
     def cmd_preferences(self) -> None:
-        """Every setting in one window, including the two with no menu item."""
-        changed = edit_preferences(self, self.app.settings, announce=self._announce)
+        """Every setting in one window, including the two with no menu item.
+
+        The feature profile is offered here as well as in Customize Features,
+        because "make this Notepad" is a preference in every sense of the word
+        and Customize Features is named after the mechanism rather than the
+        wish. The areas and the profiles go in for that; a changed profile is
+        reported separately, because it is written to a different file and
+        costs a rebuild of every open window's menu bar.
+        """
+        from quill.core.lite.features import AREAS, PROFILES
+
+        result = edit_preferences(
+            self,
+            self.app.settings,
+            features=self.app.features,
+            areas=AREAS,
+            profiles=PROFILES,
+            announce=self._announce,
+        )
         self.control.SetFocus()
-        if not changed:
+        if not result.changed:
             return
         self.app.save_settings()
         self.app.reapply_settings()
-        self._announce("Preferences saved")
+        if not result.features_changed:
+            self._announce("Preferences saved")
+            return
+        self.app.save_features()
+        self.app.rebuild_all_menus()
+        self._announce("Preferences saved. The menus have been rebuilt.")
 
     def cmd_statistics(self) -> None:
         """Speak the document's size. The same numbers the status bar carries,
@@ -116,7 +138,26 @@ class DocumentViewCommandsMixin:
 
     def cmd_focus_status_bar(self) -> None:
         """F6: move into the status bar. Escape there comes back here."""
+        if not getattr(self.app.settings, "show_status_bar", True):
+            # A key that does nothing is indistinguishable from a broken key,
+            # and a hidden bar is the one state where F6 has nowhere to go. Say
+            # what happened and how to undo it, in one sentence.
+            self._announce("The status bar is hidden. Alt+Shift+B shows it again.")
+            return
         self.focus_status_bar()
+
+    def cmd_toggle_status_bar(self) -> None:
+        """Notepad's View > Status Bar, for every open document at once.
+
+        An app-wide setting rather than a per-window one: it says how you want
+        to work, and a bar that is there in document 2 and gone in document 3 is
+        a bar you cannot rely on.
+        """
+        settings = self.app.settings
+        settings.show_status_bar = not settings.show_status_bar
+        self.app.save_settings()
+        self.app.reapply_settings()
+        self._announce("Status bar shown" if settings.show_status_bar else "Status bar hidden")
 
     # ------------------------------------------------------------------ #
     # Which features exist at all
@@ -130,8 +171,20 @@ class DocumentViewCommandsMixin:
         *entirely* rather than learn to ignore it. This is also where the three
         areas that ship switched off are found, which is the difference between
         "off by default" and "hidden".
+
+        The list is searchable and comes with profiles, because seventeen
+        checkboxes is a long way to Tab and "give me the small one" should not
+        require ticking most of them. Both live in the shared dialog; what is
+        QuillLite's is which areas exist and what the four profiles mean
+        (:mod:`quill.core.lite.features`).
+
+        The settings object goes in as well, because two of those profiles claim
+        one: Notepad and WordPad are named after products whose identity *is*
+        what Ctrl+N creates, and a Notepad profile that took the Format menu away
+        and still made rich text documents would be keeping the letter of its
+        name while breaking its promise.
         """
-        from quill.core.lite.features import AREAS
+        from quill.core.lite.features import AREAS, PROFILES
         from quill.ui.app_features_dialog import AppFeaturesDialog
 
         dialog = AppFeaturesDialog(
@@ -139,15 +192,123 @@ class DocumentViewCommandsMixin:
             app_title=APP_NAME,
             areas=AREAS,
             settings=self.app.features,
+            profiles=PROFILES,
+            app_settings=self.app.settings,
             announce_cb=self._announce,
         )
-        if not dialog.show_modal():
+        # `show`, not `show_modal`: the method is called show, and the wrong
+        # name raised AttributeError inside the menu handler, where wx swallows
+        # it -- so Customize Features was a menu item that did nothing.
+        if not dialog.show():
             self.control.SetFocus()
             return
         self.app.save_features()
+        # A profile may have changed a setting as well as a set of areas, and
+        # the dialog only ever writes to the object -- persisting it is the
+        # caller's, exactly as it is for the features.
+        self.app.save_settings()
         self.app.rebuild_all_menus()
         self.control.SetFocus()
         self._announce("Features saved. The menus have been rebuilt.")
+
+    def cmd_toggle_quiet_mode(self) -> None:
+        """Alt+Shift+M: silence every sound at once, and bring them back.
+
+        One key rather than a visit to a settings window, because "make it
+        stop" is a thing somebody needs *while* the noise is happening -- on a
+        call, in a quiet room, or simply having had enough of an earcon today.
+        A feature you have to go and find is one that does not help at the
+        moment you need it.
+
+        Sound-off rather than event-by-event: this is the blunt instrument on
+        purpose, and the fine-grained answer already exists one menu item away
+        in Sound Scheme. It writes the same shared setting QUILL's own toggle
+        writes, so silencing one editor silences the family -- which is what
+        somebody who wanted quiet meant.
+
+        The confirmation is spoken, never played. A cue saying "sounds are off"
+        would be the one sound that ignores the instruction, and a cue saying
+        "sounds are on" arrives before the user can know it was allowed to.
+        """
+        from quill.core.settings import load_settings, save_settings
+        from quill.ui import sound_manager
+
+        settings = load_settings()
+        quiet = bool(getattr(settings, "sound_enabled", True))
+        settings.sound_enabled = not quiet
+        save_settings(settings)
+        sound_manager.on_settings_changed(settings)
+        self._announce("Quiet mode on. All sounds silenced." if quiet else "Sounds on.")
+        self._sync_check_items()
+
+    def sound_is_quiet(self) -> bool:
+        """Whether sound is off right now, for the menu's check mark.
+
+        Read live rather than cached: the setting is shared with QUILL and with
+        every other window here, so a copy held on one frame would be stale the
+        moment somebody used the key in another.
+        """
+        try:
+            from quill.core.settings import load_settings
+
+            return not bool(getattr(load_settings(), "sound_enabled", True))
+        except Exception:  # noqa: BLE001 - a menu mark is never worth an error
+            return False
+
+    def cmd_sound_scheme(self) -> None:
+        """Every sound QuillLite can make, in one window you can hear.
+
+        The same window QUILL opens, over the same shared pack format, because
+        the sounds are the same sounds -- a listener who has built a scheme in
+        one editor should find it offered in the other rather than having to
+        build it twice. QuillLite writes its choice to the shared sound
+        settings, which is the one place the player reads from.
+
+        Not gated by Customize Features: somebody who has silenced everything
+        needs a way back, and a switch that can switch itself off is a door that
+        locks from the inside.
+        """
+        from pathlib import Path
+
+        from quill.core.paths import app_data_dir
+        from quill.core.settings import load_settings, save_settings
+        from quill.core.sound_pack import available_sound_packs
+        from quill.core.sound_scheme import user_schemes
+        from quill.ui import sound_manager
+        from quill.ui.sound_scheme_dialog import SoundSchemeDialog, draft_for_pack
+
+        sound_settings = load_settings()
+        current = str(getattr(sound_settings, "sound_pack_path", ""))
+        disabled_raw = str(getattr(sound_settings, "sound_events_disabled", ""))
+        data_dir = app_data_dir()
+        schemes: list[tuple[str, str]] = [
+            (pack.name, pack.setting_value) for pack in available_sound_packs()
+        ]
+        schemes.extend((scheme.name, scheme.setting_value) for scheme in user_schemes(data_dir))
+        dialog = SoundSchemeDialog(
+            self,
+            draft=draft_for_pack(current),
+            disabled=frozenset(e.strip() for e in disabled_raw.split(",") if e.strip()),
+            data_dir=data_dir,
+            available=schemes,
+            current_pack=current,
+            play=lambda path: sound_manager.preview_file(Path(path)),
+            announce=self._announce,
+            app_title=APP_NAME,
+            # So the list is only what QuillLite can actually play. Without it
+            # the window offered a hundred and forty rows, most of which this
+            # app never posts.
+            app_id="quilllite",
+        )
+        result = dialog.show()
+        self.control.SetFocus()
+        if not result.changed:
+            return
+        sound_settings.sound_events_disabled = result.disabled_csv
+        sound_settings.sound_pack_path = result.pack_path
+        save_settings(sound_settings)
+        sound_manager.on_settings_changed(sound_settings)
+        self._announce("Sound scheme saved")
 
     # ------------------------------------------------------------------ #
     # Finding a command without knowing its key

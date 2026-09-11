@@ -280,6 +280,7 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "app.repeat_last_announcement": "core.accessibility",
     "app.announcement_self_test": "core.accessibility",
     "app.report_editor_surface": "core.accessibility",
+    "app.braille_ab": "core.accessibility",
     "ai.suggest_metadata": "future.ai",
     "edit.follow_link": "core.links",
     "edit.select_word": "core.edit",

@@ -9,7 +9,7 @@ with either, because from its point of view nothing went wrong.
 
 Off by default (:data:`quill.core.lite.features.DEFAULT_OFF`), because it
 quietly fills a folder and most people editing a shopping list do not want a
-version history of it. Discoverable under View > Customize Features, which is
+version history of it. Discoverable under Tools > Customize Features, which is
 where somebody who *has* lost an hour of work will go looking.
 
 The layout is QUILL's own (``quill/core/backups.py``): one folder per document,

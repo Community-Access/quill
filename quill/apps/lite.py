@@ -48,6 +48,7 @@ from quill.apps.lite_window import DocumentFrame
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite import features as features_mod
 from quill.core.lite import inbox as inbox_mod
+from quill.core.lite import keymap as keymap_mod
 from quill.core.lite import recovery as recovery_mod
 from quill.core.lite import settings as settings_mod
 from quill.core.lite.paths import data_dir
@@ -186,8 +187,48 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
 
         app_context_help.activate(lite_surface_help.purpose_for_title)
 
+        # Never say "Entered Preferences dialog" / "Exited Preferences dialog".
+        # The shared modal contract offers those cues and QUILL makes them a
+        # setting; QuillLite answers no, once, for every dialog it will ever
+        # show. A screen reader already announces a dialog by its title when it
+        # opens and announces where focus lands when it closes, so the cue is a
+        # second telling of something the user was told a moment ago -- which is
+        # GATE-13's rule, and the reason a listener describes an app as chatty
+        # without ever being able to say which sentence was the wrong one.
+        from quill.ui.dialog_contract import set_transition_announcement_policy
+
+        set_transition_announcement_policy(lambda: False)
+
         self.print_settings = PrintSettings()
+        # The earcon player, so the as-you-type spelling alert has something to
+        # reach. QuillLite had no sound stack at all: the alert was a status-bar
+        # line and nothing else, which on an unwatched bar is not an alert. Never
+        # fatal -- a machine with no audio, or no pack, simply stays quiet, and
+        # the status bar carries the words either way.
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.companion_cues import init_app_sound, post_cue
+
+        init_app_sound()
+        # The one cue that says the app is *up*. A launch is the longest silence
+        # in the whole product -- a window appears, the reader announces a title,
+        # and nothing before that says the double-click worked.
+        post_cue(SoundEvent.APP_STARTED)
+        #: Suppresses the document cue for the windows that open *as part of*
+        #: starting. Reported: the launch sound and the new-document sound
+        #: arrived on top of each other and read as one muddled noise.
+        #:
+        #: A pause between them was the obvious fix and the wrong one. They are
+        #: not two events that need spacing -- they are one event announced
+        #: twice. Starting up *is* getting a document; nobody opened it, and a
+        #: cue is for something that happened, not for something that came with
+        #: the thing that happened. Cleared once the app is running, so the very
+        #: next Ctrl+N sounds exactly as it should.
+        self.starting_up = True
         self.features = features_mod.load_features(self.data_dir)
+        # The shipped keys with this user's overrides on top. One resolved
+        # answer, so the menu label, the accelerator and the Ctrl+F1 list
+        # cannot disagree about what a command's key is.
+        self.keymap = keymap_mod.load_keymap(self.data_dir)
         self._load_optional_stores()
         self.shell = QuillLiteShell(self, (self.settings.window_width, self.settings.window_height))
         if self.settings.window_maximized:
@@ -207,7 +248,13 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
         # question.
         if not self._initial_paths and self.settings.restore_session:
             opened = self._restore_session() or opened
-        if not opened or self._initial_mode is not None:
+        # A blank document unless the user has said they would rather not have
+        # one. An explicit --new/--plain/--rich on the command line still wins:
+        # that is somebody asking for a document, and a preference answers what
+        # happens when nobody asks.
+        if self._initial_mode is not None or (
+            not opened and self.settings.open_blank_document_at_startup
+        ):
             self.new_window(self._initial_mode or self.settings.default_mode)
         if recovered:
             # The one thing the screen reader cannot deduce from the windows
@@ -216,6 +263,8 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
         self._inbox_timer = wx.Timer(self)
         self.Bind(wx.EVT_TIMER, self._poll_inbox, self._inbox_timer)
         self._inbox_timer.Start(_INBOX_POLL_MS)
+        # Everything that opens from here on is somebody's doing, and says so.
+        self.starting_up = False
         return True
 
     def next_document_number(self) -> int:
@@ -431,6 +480,7 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
             frame.apply_theme()
             frame.editor.set_word_wrap(self.settings.word_wrap)
             frame.restart_autosave()
+            frame.apply_status_bar_visibility()
             frame._sync_check_items()
 
     def save_settings(self) -> None:

@@ -87,22 +87,32 @@ _MAX_HEADING_SCAN_PARAGRAPHS = 100000
 #: Rich-mode heading presentation: point size + bold per level, chosen to track
 #: Word's Heading 1-6 ladder closely enough that a saved RTF reads as headings
 #: in Word while staying legible in the editor. Body text is 11 pt.
-HEADING_POINT_SIZES: dict[int, float] = {1: 20.0, 2: 16.0, 3: 14.0, 4: 12.0, 5: 11.0, 6: 11.0}
+#:
+#: **Every level has a size of its own.** Levels 5 and 6 were both 11 pt, which
+#: is also the body size -- so the ladder could not tell a Heading 5 from an
+#: ordinary paragraph, ``heading_level_for_font`` refused to report either, and
+#: a document with them had headings that heading *navigation* could not find.
+#: A level you can apply and cannot then move to is worse than a level that does
+#: not exist, so the two were never offered in a menu. They are now 11.5 and
+#: 10.5: half a point either side of body text, far enough apart for the 0.25
+#: tolerance below to separate them, and Word's own ladder likewise runs its
+#: last heading level below body size.
+HEADING_POINT_SIZES: dict[int, float] = {1: 20.0, 2: 16.0, 3: 14.0, 4: 12.0, 5: 11.5, 6: 10.5}
 BODY_POINT_SIZE = 11.0
 
 
 def heading_level_for_font(size: float, bold: bool) -> int | None:
     """The rich-mode heading level a paragraph's font implies, or ``None``.
 
-    A heading is bold and matches one of the distinct heading point sizes.
-    Levels 1-4 have their own sizes (20/16/14/12); levels 5 and 6 share the
-    11-point body size, so they cannot be told apart from body text by the
-    ladder and are not reported as headings (matching Describe Formatting).
+    A heading is bold and matches one of the six heading point sizes. Body text
+    is 11 pt and is not one of them, so bold body text is still body text --
+    which is the one case this has to get right, because bolding a word is the
+    commonest thing anybody does to a paragraph.
     """
     if not bold:
         return None
     for level, points in HEADING_POINT_SIZES.items():
-        if level <= 4 and abs(float(size) - points) < 0.25:
+        if abs(float(size) - points) < 0.25:
             return level
     return None
 
@@ -320,6 +330,15 @@ class QuillRichEdit:
         keeps for its correct IAccessible value) shows the cell-2 offset and may
         drop the selection dots. Emulating a system edit control may give the best
         of both. Best-effort; **needs JAWS + a braille display to evaluate.**
+
+        The flag has one cost, and turning it on pays it in the same breath: an
+        emulated control answers the caret's line wrongly at the very end of a
+        document that ends in a paragraph mark, so a screen reader reads the line
+        above instead of saying "blank". :mod:`quill.ui.richedit_line_fix` puts
+        that answer back. It is installed here rather than at the call site
+        because the two belong together -- the flag is the only thing that
+        creates the need for it, and a future caller that sets the flag some
+        other way would otherwise reintroduce the bug silently.
         """
         hwnd = self.hwnd()
         if not (_TOM_AVAILABLE and hwnd):
@@ -329,6 +348,10 @@ class QuillRichEdit:
             _SendMessageW(hwnd, _EM_SETEDITSTYLE, style, _SES_EMULATESYSEDIT)
         except Exception:  # noqa: BLE001 - the lever is best-effort, never fatal
             pass
+        if enabled:
+            from quill.ui.richedit_line_fix import install_final_line_fix
+
+            install_final_line_fix(self._surface)
 
     def selection_diagnostic(self) -> str:
         """Report the selection as the control's TOM sees it vs wx -- localizes #813.

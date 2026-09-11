@@ -168,9 +168,9 @@ def test_today_and_yesterday_are_named_rather_than_dated() -> None:
 def test_the_row_leads_with_when_and_then_the_size() -> None:
     """Front-loaded: arrowing a list, the first syllable has to distinguish it."""
     now = datetime(2026, 9, 9, 18, 0).astimezone()
-    row = version_label(now.replace(hour=16, minute=12), words=2341)
+    row = version_label(now.replace(hour=16, minute=12), words=2341, now=now)
     assert row == "Today at 4:12 PM - 2,341 words"
-    assert version_label(now, words=1).endswith("1 word")
+    assert version_label(now, words=1, now=now).endswith("1 word")
 
 
 # --------------------------------------------------------------------------- #

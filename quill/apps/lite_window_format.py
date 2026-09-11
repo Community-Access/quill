@@ -35,9 +35,14 @@ from quill.ui.richedit_editing import (
     PLAIN,
     RICH,
 )
-from quill.ui.richedit_rtf_surface import RichEditRtfError
+from quill.ui.richedit_rtf_surface import HEADING_POINT_SIZES, RichEditRtfError
 
 __all__ = ["DocumentFormatCommandsMixin"]
+
+#: The deepest rich-text heading, read off the ladder rather than written twice:
+#: the menu, the demote ceiling and the sizes must not be able to disagree about
+#: how many levels there are.
+MAX_HEADING_LEVEL = max(HEADING_POINT_SIZES)
 
 
 class DocumentFormatCommandsMixin:
@@ -115,7 +120,10 @@ class DocumentFormatCommandsMixin:
             if not level:
                 self._announce("Put the cursor in a heading to change its level")
                 return
-            new_level = min(4, max(1, level + delta))
+            # Six, not four: the rich ladder gained levels 5 and 6 sizes of
+            # their own on 2026-09-09, so Alt+Shift+Right now walks all the way
+            # down instead of stopping two rungs short of the menu.
+            new_level = min(MAX_HEADING_LEVEL, max(1, level + delta))
             if new_level == level:
                 self._announce(
                     "Already Heading 1" if delta < 0 else "Already at the smallest heading"
@@ -206,6 +214,12 @@ class DocumentFormatCommandsMixin:
 
     def cmd_heading_4(self) -> None:
         self._heading(4)
+
+    def cmd_heading_5(self) -> None:
+        self._heading(5)
+
+    def cmd_heading_6(self) -> None:
+        self._heading(6)
 
     def _align(self, how: str, label: str) -> None:
         if not self._require_rich():

@@ -974,7 +974,7 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "tools.sound_events",
-            "Manage Sound Events",
+            "Sound Scheme",
             self.open_sound_events_dialog,
             self._binding_for("tools.sound_events"),
         )
@@ -1682,6 +1682,12 @@ class CommandRegistryMixin:
             "Report Editor Surface",
             self.report_editor_surface,
             self._binding_for("app.report_editor_surface"),
+        )
+        self.commands.register(
+            "app.braille_ab",
+            "Braille A/B: System Edit Fix...",
+            self.open_braille_ab,
+            self._binding_for("app.braille_ab"),
         )
         self.commands.register(
             "ai.suggest_metadata",

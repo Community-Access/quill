@@ -62,7 +62,7 @@ class QuillConverterFrame(AppShellFrame):
     """A standalone converter window (queue + convert), tray-resident."""
 
     def __init__(self, *, safe_mode: bool = False, initial_paths: list[Path] | None = None) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(560, 460))
+        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(560, 460), app_id="converter")
         # The shell already activated the shared F1 engine (help provider +
         # dialog-contract hook + main-frame binding); this re-activation swaps
         # in the Converter's own window-purpose resolver so the authored

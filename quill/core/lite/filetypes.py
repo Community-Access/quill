@@ -41,9 +41,15 @@ OPEN_WILDCARD = (
 )
 
 #: Save As offers the document's own kind first, so Enter does the obvious thing.
-SAVE_WILDCARD_PLAIN = (
-    "Text files (*.txt)|*.txt|Markdown (*.md)|*.md|Rich Text (*.rtf)|*.rtf|All files (*.*)|*.*"
-)
+#:
+#: **No Markdown row here, on purpose.** A "type" in a Save As box is a promise
+#: about what will be written, and QuillLite has no Markdown writer: picking it
+#: saved the same plain text under a different extension, which is a promise the
+#: app cannot keep and a conversion somebody could reasonably think had
+#: happened. Opening a `.md` is a different matter and still offered -- reading
+#: one as text is exactly right -- and `Save As` will still keep the extension
+#: of a `.md` you opened, because the name comes from the box, not this list.
+SAVE_WILDCARD_PLAIN = "Text files (*.txt)|*.txt|Rich Text (*.rtf)|*.rtf|All files (*.*)|*.*"
 SAVE_WILDCARD_RICH = "Rich Text (*.rtf)|*.rtf|Text files (*.txt)|*.txt|All files (*.*)|*.*"
 
 

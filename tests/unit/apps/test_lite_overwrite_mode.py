@@ -52,6 +52,10 @@ class _Window(DocumentTypingMixin):
     def _sync_check_items(self) -> None:
         self.synced += 1
 
+    def sound_is_quiet(self) -> bool:
+        """Read by _sync_check_items for the Quiet Mode mark."""
+        return False
+
 
 class _KeyEvent:
     def __init__(self, code: int) -> None:
@@ -151,8 +155,12 @@ def test_the_menu_mark_reads_the_same_flag_the_cell_does() -> None:
 
     item = _Item()
     win._check_items = {"cmd_toggle_overwrite": item}
-    settings = type("Settings", (), {"theme": "system", "word_wrap": True})()
-    win.app = type("App", (), {"settings": settings})()
+    settings = type(
+        "Settings", (), {"theme": "system", "word_wrap": True, "show_status_bar": True}
+    )()
+    win.app = type(
+        "App", (), {"settings": settings, "feature_enabled": staticmethod(lambda _area: True)}
+    )()
     DocumentMenuMixin._sync_check_items(win)
 
     assert item.checked is True

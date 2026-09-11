@@ -119,7 +119,7 @@ in there except work you actually need.
 
 ### Going back to an earlier version
 
-There is a separate **timestamped backups** option (**View ▸ Customize
+There is a separate **timestamped backups** option (**Tools ▸ Customize
 Features**), which keeps a dated copy every time you save. That is for the
 paragraph you deleted an hour ago rather than for a crash. It starts switched
 off, because it does fill up a folder.
@@ -184,10 +184,10 @@ about to change rather than finding out afterwards.
 
 The Find and Replace windows have a **Search mode** with three settings.
 
-**Normal** is the ordinary one: what you type is what is looked for,
+**Normal text** is the ordinary one: what you type is what is looked for,
 punctuation and all.
 
-**Escapes** lets you write the characters there is no key for. `\t` is a tab,
+**Special characters** lets you write the characters there is no key for. `\t` is a tab,
 `\n` a line break, `\u2014` an em dash, and `\N{NO-BREAK SPACE}` is exactly
 what it says. This is the companion to **Describe Character**: that tells you
 which invisible character you are standing on, and this is how you then find
@@ -243,7 +243,7 @@ Two details worth knowing:
   it open, bookmarks past the new end are pulled back to the end rather than
   sending you nowhere.
 
-You can turn all of this off with the rest of bookmarks in **View ▸ Customize
+You can turn all of this off with the rest of bookmarks in **Tools ▸ Customize
 Features**, and then nothing is written at all.
 
 ### Going back where you came from
@@ -253,9 +253,9 @@ Features**, and then nothing is written at all.
 | **Alt+Left** | Go back to where you were before the last jump |
 | **Alt+Right** | Go forward again |
 
-They are in the **Edit** menu rather than under Navigate, and deliberately: the
-Navigate menu is headings and bookmarks, both of which you can switch off, and
-these two belong to neither. They are always there.
+They are at the top of the **Navigate** menu, above the headings and the
+bookmarks, and they belong to neither of those — so switching both of those off
+does not take Back and Forward with them. They are always there.
 
 Every jump QuillLite makes is remembered: going to a line, following a heading,
 picking something out of the heading list or the bookmark list, and landing on a
@@ -365,14 +365,20 @@ documents.
 | **Ctrl+L**, **Ctrl+E**, **Ctrl+R**, **Ctrl+J** | Left, centre, right, justify |
 | **Ctrl+Shift+L** | Bullet points |
 | **Ctrl+1**, **Ctrl+5**, **Ctrl+2** | Single, one-and-a-half, double spacing |
-| **Ctrl+Alt+1** to **Ctrl+Alt+4** | Heading 1 to 4 |
+| **Ctrl+Alt+1** to **Ctrl+Alt+6** | Heading 1 to 6 |
 | **Ctrl+Alt+0** | Back to ordinary text |
 | **Ctrl+Shift+D** | Describe the formatting where the cursor is |
 
-A heading is bold text at a larger size — 20, 16, 14 and 12 point for levels 1
-to 4, with ordinary text at 11 point. These are the same sizes QUILL for All
-uses, chosen so that a document you save here still reads as having headings
-when somebody opens it in Word.
+They are gathered in **Format ▸ Headings**, where the digit in the menu is the
+digit in the shortcut.
+
+A heading is bold text at its own size — 20, 16, 14, 12, 11.5 and 10.5 point for
+levels 1 to 6, with ordinary text at 11 point. These are the same sizes QUILL
+for All uses, chosen so that a document you save here still reads as having
+headings when somebody opens it in Word. Every level has a size of its own on
+purpose: levels 5 and 6 used to share the 11-point body size, which meant
+QuillLite could apply them and then could not find them again — heading
+navigation and the headings list both walked straight past them.
 
 **Ctrl+Shift+D** is the one worth remembering. It tells you what you are
 standing in — "Arial, 16 point, heading 2, bold" — which is the question a
@@ -437,9 +443,83 @@ questioned again.
 | **Ctrl+F7** / **Ctrl+Shift+F7** | Go to the next / previous mistake |
 | **Alt+F7** | Add this word to your dictionary |
 | **Ctrl+Alt+F7** | Turn checking-as-you-type on or off here |
+| **Ctrl+Alt+Shift+F7** | Spelling Announcements: how a misspelling is said |
 
 **Ctrl+F7** selects the word it lands on, so your screen reader reads it to you
-when you get there.
+when you get there -- and then, after a short pause, **spells it out**. That is
+the part that matters: "receive" and "recieve" are the same sound, so hearing
+the word tells you nothing, and the letters are the answer. Press the next key
+and the spelling is cancelled unheard, so it costs you nothing when you did not
+need it.
+
+**Shift+F7** and **Alt+F7** work from anywhere in a word, not only from its
+first letter.
+
+### While you type
+
+When you finish a word that is not in the dictionary -- finish it, so a space or
+a comma or a new line, not while you are still in the middle of typing it -- you
+hear a **short falling blip** and the status bar says which word it was. It is a
+sound rather than speech on purpose: speech there would interrupt the sentence
+you are writing, which is the one moment you can least afford it.
+
+You can silence the sound, have the word spoken as well, or change how long it
+waits before repeating itself on the same word. All of that is in **Tools ▸
+Spelling ▸ Announcements** (**Ctrl+Alt+Shift+F7**).
+
+### Spelling Announcements
+
+Twelve settings, in one window, in three groups.
+
+**While you are typing.** Whether the sound plays at all, whether the word is
+spoken too (off by default), and the shortest gap before the same word is
+reported again -- zero means every time.
+
+**Spelling a word out.** Whether words are spelled at all, and how. Plain
+**letters** are fastest. The **phonetic alphabet** -- romeo, echo, charlie -- is
+unambiguous where B, D, E, P, T and V are one sound with a rumour attached: a
+fast voice, a poor speaker, a noisy room. **Both** is for learning a word rather
+than checking one. You can also have capitals named, so "cap M, A, C, cap D"
+tells MacDonald from Macdonald. An example box shows what your choices sound
+like and says it out loud as you change them.
+
+**When the letters follow.** Three pauses, because the right pause is not the
+same in three places: longer in the F7 review, where you are stopped and
+deciding; shorter when moving between misspellings, where you may be travelling;
+and shorter again in a list of suggestions, where you are arrowing. Each can be
+switched off on its own.
+
+QUILL has the same twelve settings under **Spelling** in its Settings window, so
+tuning this once tunes both.
+
+### The word you are on: the Applications key
+
+With the cursor in a word QuillLite thinks is misspelled, press the
+**Applications key** (or Shift+F10, or right-click) and the menu **opens with
+the corrections**. One **Down** arrow and you are on the first suggestion;
+**Enter** replaces the word. No dialog opens and the cursor does not move.
+
+Under the suggestions:
+
+| Row | What it does |
+|---|---|
+| **Ignore Once** | Skip this one place. Nothing is remembered after you close the window. |
+| **Ignore in This Document** | Stop reporting this word anywhere in this document, until you close it. |
+| **Add "word" to My Dictionary** | Keep it for good, in your own dictionary. |
+| **Add to This Document Only** | Keep it beside this file, so anyone who opens the file gets it too. |
+| **More Suggestions...** | The full list, in a window you can arrow through. |
+| **Check Document...** | The F7 review, from here. |
+| **Next / Previous Misspelling** | Move on without leaving the keyboard. |
+
+Every row names the word it is about, so a menu you reached by keyboard still
+tells you what it is going to do. Below them is the ordinary edit menu -- Undo,
+Redo, Cut, Copy, Paste, Delete, Select All -- which is what you get on a word
+that is spelled correctly.
+
+Ignoring is honoured everywhere: a word you have ignored stops being announced
+as you type, stops being a stop for **Ctrl+F7**, and stops being offered by
+**Shift+F7**. To keep a word for longer than the session, add it to a
+dictionary.
 
 ### When it stays quiet
 
@@ -454,7 +534,7 @@ never left wondering whether something is broken.
 
 If you want checking in one anyway, press **Ctrl+Alt+F7**. It changes only the
 document you are in — a letter and a settings file open at the same time can
-quite happily disagree about this. The **Spelling** menu shows a tick beside
+quite happily disagree about this. **Tools ▸ Spelling** shows a tick beside
 **Check While Typing** so you can always see which way it is set.
 
 **F7 always works, in every file.** Staying quiet is only about what happens
@@ -488,9 +568,16 @@ plainly see is there.
 
 ## The status bar
 
-**F6** takes you into it. The arrow keys and **Home**/**End** move along it,
-**Enter** acts on the part you are on, and **Escape** puts you back in your
+**F6** takes you into it — it is **Navigate ▸ Status Bar**, because going there
+is a move rather than a setting. The arrow keys and **Home**/**End** move along
+it, **Enter** acts on the part you are on, and **Escape** puts you back in your
 document. Each part says its own name and value.
+
+**View ▸ Status Bar** (**Alt+Shift+B**) takes the bar off the screen
+altogether, the way Notepad's does, and puts it back. Nothing is lost when it is
+away: **Ctrl+Alt+W** speaks the counts, and **Ctrl+G** asks for the line number
+the Position part would have shown you. F6 with the bar hidden says so rather
+than doing nothing.
 
 | Part | What it tells you | Enter does |
 |---|---|---|
@@ -539,7 +626,7 @@ missed something QuillLite said, this is where you go to read it again.
 ## Copying and pasting more than one thing
 
 The Windows clipboard holds one thing at a time. QuillLite gives you three ways
-around that, in the **Clipboard** menu.
+around that, in **Edit ▸ Clipboard**.
 
 **The copy tray** is twelve numbered slots that survive closing the app. Copy
 into a slot with **Ctrl+Alt+Y**, and paste from any of them an hour later with
@@ -560,35 +647,14 @@ colours.
 
 ---
 
-## Tools
+## Working on lines
 
-The **Tools** menu is for things you need to *do* to text. Each one works on
-what you have selected, or on the whole document if you have not selected
-anything.
+**Edit ▸ Lines** is everything that happens to whole lines. It is in Edit
+because line work *is* editing — it belongs beside Cut and Paste rather than
+three menus away from the text it changes.
 
-Sort lines (**Ctrl+Alt+S**, or **Ctrl+Alt+Shift+S** for Z to A), remove blank
-lines, remove duplicate lines, trim trailing spaces, and change text to
-UPPERCASE (**Ctrl+Shift+U**), lowercase (**Ctrl+Shift+K**) or Title Case
-(**Ctrl+Shift+G**).
-
-Two more case changes sit beside those. **Sentence case**
-(**Ctrl+Alt+Shift+U**) puts a capital at the start and lowers the rest, which is
-what a heading typed in shouting needs. **Invert Case**
-(**Ctrl+Alt+Shift+N**) swaps every letter, which is the cure for a sentence
-typed with Caps Lock on.
-
-Under **Tools ▸ More Line Work** there are three more: **Reverse Lines**
-(**Alt+Shift+Z**), **Tidy Whitespace** (**Ctrl+Alt+Shift+T**), which collapses
-the runs of spaces and tabs that arrive with pasted-in text, and **Number
-Lines** (**Alt+Shift+N**).
-
-Each one counts as a single undo, so **Ctrl+Z** takes back the whole sort rather
-than putting back one line at a time.
-
-### Working on one line at a time
-
-The tools above rewrite a whole selection. These work on the line the cursor is
-already on, which is usually the one you want.
+The first group works on the line the cursor is already on, which is usually the
+one you want.
 
 **Move Line Up** (**Ctrl+Shift+Up**) and **Move Line Down**
 (**Ctrl+Shift+Down**) move the current line past its neighbour. Reordering two
@@ -605,6 +671,39 @@ did not. **Duplicate Line** is **Ctrl+D**, and **Join Lines**
 Each of these tells you what it did, and tells you when it did nothing --
 "Already the first line" is a different fact from silence, and you should not
 have to press an arrow key to find out which one you got.
+
+### Putting lines in order, and tidying them up
+
+The rest of **Edit ▸ Lines** works on what you have selected, or on the whole
+document if you have not selected anything.
+
+Sort lines (**Ctrl+Alt+S**, or **Ctrl+Alt+Shift+S** for Z to A), **Reverse
+Lines** (**Alt+Shift+Z**) and **Number Lines** (**Alt+Shift+N**) change the
+order; **Remove Every Blank Line** (**Ctrl+Alt+K**), **Remove Duplicate Lines**
+(**Ctrl+Alt+D**), **Trim Trailing Spaces** (**Ctrl+Alt+T**) and **Tidy
+Whitespace** (**Ctrl+Alt+Shift+T**), which collapses the runs of spaces and tabs
+that arrive with pasted-in text, clean them up.
+
+**Remove Every Blank Line** means every one, including the blank lines between
+your paragraphs -- it is the cure for text copied out of a web page that arrives
+double-spaced, not a tidy-up you want on prose. A line of nothing but spaces
+counts as blank, because it is blank to everyone reading the document and to
+every tool that will ever open it. QUILL has this command under the same name,
+beside a second one called **Trim Blank Lines at the Ends**, which takes only
+the blank lines before the first line of text and after the last; QuillLite has
+just the one.
+
+Each one counts as a single undo, so **Ctrl+Z** takes back the whole sort rather
+than putting back one line at a time.
+
+### Changing case
+
+**Tools ▸ Change Case** has five. UPPERCASE (**Ctrl+Shift+U**), lowercase
+(**Ctrl+Shift+K**) and Title Case (**Ctrl+Shift+G**) are the ones you would
+expect. **Sentence case** (**Ctrl+Alt+Shift+U**) puts a capital at the start and
+lowers the rest, which is what a heading typed in shouting needs, and **Invert
+Case** (**Ctrl+Alt+Shift+N**) swaps every letter, which is the cure for a
+sentence typed with Caps Lock on.
 
 ### Getting deleted text back somewhere else
 
@@ -670,6 +769,13 @@ sign off, or anything you type often and would rather not spell out every time.
 you also use QUILL for All or Quill Inkwell, Preferences has a switch that makes
 all three share one list.
 
+**Alt+Shift+A** turns expansion off and on again, and **Tools ▸ Expand
+Abbreviations** shows a tick when it is on. This is the one feature that acts
+while you type, so the moment you want it off is usually the moment it has just
+expanded something you meant to keep — which is too late to go looking for a
+dialog. It is the same switch as the Abbreviations box in Customize Features,
+reached in one keystroke.
+
 ---
 
 ## Finding a command
@@ -683,27 +789,268 @@ to learn the keys over time.
 
 ---
 
+## The window
+
+QuillLite opens **maximized**, and after that it opens the way you left it. Make
+it smaller and that size comes back next time; put it back to full screen and so
+does that.
+
+Maximized is the default because a small window is where text gets cut off and
+where a list shows four rows on a screen with room for thirty -- and neither
+costs anything to the person who chose the size. It is one keystroke to change
+and QuillLite will not ask again.
+
+Every app in the family behaves the same way now: QUILL, Quill Radio, Cast,
+Weather, Audio Studio, Inkwell, the Converter, the Media Player and Beacon.
+
+---
+
+## Changing what a key does
+
+**Tools ▸ Keyboard Manager** (**Ctrl+Alt+Shift+R**) is where every key in
+QuillLite can be changed. The list has every command with the key it answers to;
+type part of a command's name to find it, and press **Enter** on a row to give it
+a different key.
+
+### Finding out what a key already does
+
+The other question is the harder one: *is this key free?* Press **Record a Key**,
+then press the combination you are thinking of. QuillLite says what it does today
+-- "Ctrl+S is File ▸ Save" -- or says it is free. That is faster and more
+reliable than reading a list of two hundred rows.
+
+### When a key is taken
+
+Assigning a key somebody else already has does not silently steal it and does not
+silently refuse. QuillLite names the command that owns it and asks. If you say
+yes, that command is left with **no key** until you give it one -- which is the
+honest outcome, because a key claimed twice means one of the pair never fires and
+nothing tells you which.
+
+### What cannot be changed
+
+**Insert is never bindable.** It is the key NVDA and JAWS use as their own
+modifier, and taking it would take away the key you would need to get it back.
+QuillLite watches it go past -- that is what the Typing Mode cell reads -- but
+never claims it. A key on its own with no Ctrl, Alt or Shift is refused too: it
+would type itself instead.
+
+### Putting things back
+
+**Reset to Default** puts the command you are on back to the key QuillLite ships
+with. **Reset Everything** does it for all of them, after asking. Nothing is
+saved until you press **Save**, so Escape leaves your keys exactly as they were.
+
+**Check for Problems** reports anything wrong with the set as a whole: a key
+claimed twice, a key QuillLite cannot read, and -- the one you would otherwise
+never find out about -- a key Windows will accept and then never actually send to
+a menu, so it is assigned and inert.
+
+Your changes live in your own settings folder and only what you changed is
+written down, so a key we improve in a later version still reaches you.
+
+---
+
 ## Making QuillLite smaller (or larger)
 
-**View ▸ Customize Features** (**Ctrl+Alt+Shift+F**) lets you switch whole parts
+## Sounds
+
+### Quiet mode
+
+**Alt+Shift+M** silences every sound at once, and pressing it again brings them
+back. One key, because "make it stop" is something you need *while* the noise is
+happening -- on a call, in a quiet room, or having simply had enough of an
+earcon today. A feature you have to go and find is one that does not help at the
+moment you need it.
+
+It is the blunt instrument on purpose; the per-event answer is one menu item
+away. It is shared with QUILL, so silencing one editor silences both -- which is
+what somebody who wanted quiet meant. **Tools ▸ Quiet Mode** carries a check
+mark that reads the true state.
+
+**Tools ▸ Sound Scheme** (**Ctrl+Alt+Shift+O**) is every sound QuillLite can
+make, in a list you can hear. Arrow through it and each event plays as you land
+on it -- that is what turns a list of names into a catalogue, and you can turn
+it off with the checkbox under the list if you would rather move in silence.
+
+Each row says everything about itself: the event, whether it is switched on,
+which file it plays and how long that file is. The buttons underneath act on
+whichever row you are on:
+
+| Button | What it does |
+|---|---|
+| **Play** | Play this event's sound now, even if the event is switched off |
+| **Switched on** | Silence this one event without changing which sound it has |
+| **Browse...** | Use a WAV file of your own |
+| **No Sound** | Remove the sound from this event entirely |
+| **Use Default** | Put this one event back to the sound the scheme ships |
+
+**Save As Scheme** saves the whole set under a name of your own. A scheme is an
+ordinary folder with the sounds in it, so you can copy it, back it up, or send
+it to somebody. **Restore All Defaults** puts every event back and switches them
+all on, and it cannot half-succeed -- the sounds QuillLite ships are never
+overwritten, so getting back to them is always one press.
+
+QUILL opens the same window over the same schemes, so a scheme you build in one
+is offered in the other.
+
+**Tools ▸ Customize Features** (**Ctrl+Alt+Shift+F**) lets you switch whole parts
 of QuillLite off. Turning something off removes it from the menus **and**
 unhooks its keys, so it is properly gone rather than just hidden.
 
 That is how QuillLite stays small without being poor: you take out what you do
-not want, rather than learning to ignore it. Uncheck the first box and QuillLite
-is essentially Notepad.
+not want, rather than learning to ignore it.
+
+### Profiles: four ways to say it in one word
+
+The **Profile** box at the top is the short way. **Choosing one sets every
+checkbox below, there and then** -- there is no second button to find. Nothing
+is saved until you press **Save**, so you can look at what a profile would do
+and change your mind.
+
+Under the box is a **read-only description you can read line by line**, and it
+answers two different questions. First, what the profile *is*, in its own words.
+Then what it would actually *do* to the app in front of you: how many of the
+seventeen areas it keeps and which, which ones it removes, and anything else it
+changes -- Notepad, for instance, also makes **Ctrl+N** create a plain text
+document. **F1** on the Profile box reads the same thing.
+
+What is spoken when you choose a profile is the short version -- "Notepad
+profile: 2 of 17 features on. New documents will be plain text." -- because your
+screen reader is already reading the name and the description is there to be
+read at your own pace.
+
+**Custom puts everything back.** Arrow onto a profile you did not mean and
+select **Custom**: every checkbox returns to how you found it when the window
+opened. Custom is also what the box reads back as soon as you tick or untick
+anything yourself, which is not a warning -- picking your own is what the list
+is for.
+
+Afterwards the boxes are just boxes again: change any one of them without having
+to leave the profile first. **Use Profile** is still there for when you have
+hand-edited a profile and want to start it over.
+
+**The same four profiles are in Preferences**, at the top, with the same
+description box. "Make this Notepad" is a preference like any other, and you
+should not have to know that a dialog called Customize Features is where it
+lives. Preferences offers the whole answers; the seventeen individual
+checkboxes stay in Customize Features.
+
+Here is what each one is, at a glance and then in full.
+
+| Profile | Areas on | Ctrl+N makes |
+|---|---|---|
+| **Recommended** | 14 of 17 | plain text (unchanged) |
+| **Everything** | 17 of 17 | plain text (unchanged) |
+| **WordPad** | 5 of 17 | **rich text** |
+| **Notepad** | 2 of 17 | **plain text** |
+
+#### Recommended
+
+**What a new install is.** Fourteen of the seventeen areas: rich text, headings,
+bookmarks, the line tools, the clipboard history, printing, abbreviations, the
+Selection submenu, spell check, Matches, Go Back and Go Forward, the Command
+Palette, Describe Character and text size.
+
+**Off:** autocorrect, timestamped backups, Go To Anything. Those three are not
+missing features; they are the ones that would be *wrong* on by default rather
+than merely unused. Autocorrect rewrites a configuration file's quotes. Backups
+quietly fill a folder. Go To Anything is a fourth way to jump when the command
+palette, the headings list and the bookmark list already cover it.
+
+**Choose this** to get back to the shipped answer after experimenting.
+
+#### Everything
+
+**All seventeen areas on**, including those three. Autocorrect will straighten
+your quotes and capitalise your sentences, every save keeps a dated copy under
+your data folder, and Go To Anything joins the palette and the two lists.
+
+**Choose this** if you would rather turn things off as they annoy you than find
+them one at a time.
+
+#### WordPad
+
+**What WordPad was.** Rich text you can format, print, and check the spelling
+of: bold, italic, underline, headings, alignment, bullets, indenting and line
+spacing, plus Find and Replace, printing and text size. Five of the seventeen
+areas.
+
+**Off:** the writing tools behind the formatting. No Edit ▸ Lines, no clipboard
+history or Copy Tray, no bookmarks, no abbreviations, no Selection submenu, no
+Matches list, no Back and Forward, no Command Palette, no Describe Character, no
+autocorrect and no backups.
+
+**Ctrl+N makes a rich text document.** That is the half of this name a list of
+menus cannot say, and it is why choosing WordPad changes a setting as well as a
+set of checkboxes.
+
+**Not in real WordPad:** the spell checker. It is kept because a word processor
+without one in 2026 is a surprise rather than a simplification.
+
+**Choose this** for letters, notes and anything you want to look like something.
+
+#### Notepad
+
+**The smallest QuillLite gets**, and the one most people arriving here are
+replacing something with. Two of the seventeen areas: **printing** and **text
+size**.
+
+**Off:** the Format menu and everything under it, headings, bookmarks, the line
+tools, Change Case, the clipboard history, abbreviations, the Selection submenu,
+spell check, Matches, Back and Forward, the Command Palette, Describe Character,
+autocorrect, backups and Go To Anything. Nothing Notepad does not have -- which
+is the point of choosing it.
+
+**Ctrl+N makes a plain text document**, and the Save As dialog stops offering
+you formats you have turned off.
+
+**What stays that you might not expect**, because Notepad has always had them:
+Find, Find Next, Replace, Go To Line, Select All, Insert Date and Time, Word
+Wrap, the font picker, the status bar and Undo. And **Tools ▸ File Encoding and
+Line Endings**, which Notepad only grew recently and which is most of what a
+Notepad replacement is *for*: getting a file to save back exactly as it arrived.
+
+**Choose this** for configuration files, logs, quick notes, and anything where a
+document that secretly carries formatting would be a problem.
+
+#### Moving between them
+
+Nothing is one-way. Choosing **Notepad** and then **Everything** puts it all
+back, including the Format menu and the keys that go with it. The one thing a
+profile does *not* put back is a setting you changed by hand afterwards --
+profiles only ever set what they claim.
+
+Two things are never switchable whatever you choose: **Tools ▸ Preferences** and
+**Customize Features** themselves, because switching off the menu that holds the
+switch is a door that locks from the inside.
+
+### Searching the list
+
+Seventeen checkboxes is a long way to Tab through, so the box below the profile
+row filters them as you type. It matches what an area **does** as well as what it
+is called, so typing "curly quotes" finds Autocorrect and typing "dictionary"
+finds Spell check. The line under the box says how many are left, and **Down**
+from the box moves straight into the list.
+
+### The seventeen areas
 
 | Area | What goes | Starts |
 |---|---|---|
 | **Rich text and the Format menu** | Bold, headings, alignment, bullets, spacing | on |
 | **Heading navigation** | Next and previous heading, the headings list | on |
 | **Bookmarks** | All nine, and the list | on |
-| **The Tools menu** | Sort, remove duplicates, trim, change case, file settings | on |
-| **Copy Tray and the clip library** | The Clipboard menu (Paste Text Only stays) | on |
+| **Line tools and change case** | Edit ▸ Lines, Tools ▸ Change Case | on |
+| **Copy Tray and the clip library** | Edit ▸ Clipboard (Cut, Copy and Paste stay) | on |
 | **Printing** | Print and Page Setup | on |
 | **Abbreviations** | Short forms, and the list that manages them | on |
-| **Spell check** | The Spelling menu, and checking as you type | on |
+| **Spell check** | Tools ▸ Spelling, and checking as you type | on |
 | **The Selection submenu** | F8 selecting, whole-structure selecting, marks | on |
+| **The Matches submenu** | All Matches and Count Occurrences (Find itself stays) | on |
+| **Go Back and Go Forward** | The trail of places you jumped from | on |
+| **The Command Palette** | Ctrl+Shift+P, the search box for commands | on |
+| **Describe Character** | What the character under the cursor actually is | on |
+| **Text size** | Bigger, smaller, and reset | on |
 | **Autocorrect while typing** | Curly quotes, long dashes, sentence capitals | **off** |
 | **Timestamped backups** | A dated copy kept every time you save | **off** |
 | **Go To Anything** | One box that searches everything at once | **off** |
@@ -716,19 +1063,33 @@ a settings file. Backups are off because they quietly fill a folder. Go To
 Anything is off because the command search, the headings list and the bookmark
 list already each do their own part of the job.
 
+Two things are never switchable, on purpose. **Tools ▸ Preferences** and
+**Customize Features** stay, because switching off the menu that holds the switch
+is a door that locks from the inside. And **File Encoding and Line Endings**
+stays, because getting a file to save back byte-for-byte the way it arrived is
+most of what a Notepad replacement is for.
+
 ---
 
 ## Settings
 
-**View ▸ Preferences** (**Ctrl+,**) has everything in one place.
+**Tools ▸ Preferences** (**Ctrl+,**) has everything in one place.
 
-Six settings live only there: what **Ctrl+N** creates, how often unsaved work is
-copied aside, whether last session's documents reopen, whether spelling is
-checked as you type, and whether your abbreviations and your taught words are
-shared with QUILL for All.
+Seven settings live only there: what **Ctrl+N** creates, whether you start with
+a blank document at all, how often unsaved work is copied aside, whether last
+session's documents reopen, whether spelling is checked as you type, and whether
+your abbreviations and your taught words are shared with QUILL for All.
 
-The rest — dark mode, word wrap, the editor font — are on the **View** menu too,
-where you will reach them faster.
+**Start with a blank document** is on, the way Notepad and WordPad do it. Turn
+it off if you always open an existing file: without it you are handed an empty
+Untitled to close on every launch. Files you open by double-clicking, last
+session's documents and recovered work all still appear either way. QUILL has
+the same setting under **General**.
+
+The rest are a keystroke away instead: dark mode and word wrap are on the
+**View** menu, and the editor font is **Format ▸ Editor Font** — which is where
+Notepad has always kept it, and which is the one row the Format menu keeps if
+you switch rich text off.
 
 **Dark mode is on by default.** It changes what you see and nothing else. The
 colours are never written into your files, so a dark theme can never leave grey
@@ -852,16 +1213,14 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+V** | Paste Text Only |
 | **Del** | Delete |
 | **Ctrl+A** | Select All |
-| **F5** | Insert Date and Time |
-| **Ctrl+Shift+C** | Describe Character |
-| **Ctrl+Alt+C** | Character Details... |
 | **Ctrl+F** | Find... |
 | **F3** | Find Next |
 | **Shift+F3** | Find Previous |
 | **Ctrl+H** | Replace... |
 | **Ctrl+G** | Go to Line... |
-| **Alt+Left** | Go Back |
-| **Alt+Right** | Go Forward |
+| **F5** | Insert Date and Time |
+| **Ctrl+Shift+C** | Describe Character |
+| **Ctrl+Alt+C** | Character Details... |
 
 ### Edit ▸ Matches
 
@@ -869,6 +1228,28 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 |---|---|
 | **Ctrl+Shift+F3** | All Matches... |
 | **Ctrl+Alt+Shift+F3** | Count Occurrences |
+
+### Edit ▸ Lines
+
+| Key | Command |
+|---|---|
+| **Ctrl+Shift+Up** | Move Line Up |
+| **Ctrl+Shift+Down** | Move Line Down |
+| **Ctrl+D** | Duplicate Line |
+| **Ctrl+Alt+Shift+J** | Join Lines |
+| **Ctrl+Shift+Delete** | Delete Line |
+| **Ctrl+Shift+Backspace** | Delete to Start of Line |
+| **Ctrl+Alt+Shift+Delete** | Delete to End of Line |
+| **Ctrl+Alt+Shift+Backspace** | Delete Paragraph |
+| **Ctrl+Alt+Shift+Z** | Restore Deleted Text |
+| **Ctrl+Alt+S** | Sort Lines A to Z |
+| **Ctrl+Alt+Shift+S** | Sort Lines Z to A |
+| **Alt+Shift+Z** | Reverse Lines |
+| **Alt+Shift+N** | Number Lines |
+| **Ctrl+Alt+K** | Remove Every Blank Line |
+| **Ctrl+Alt+D** | Remove Duplicate Lines |
+| **Ctrl+Alt+T** | Trim Trailing Spaces |
+| **Ctrl+Alt+Shift+T** | Tidy Whitespace |
 
 ### Edit ▸ Selection
 
@@ -894,66 +1275,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+Y** | Say Selection |
 | **Ctrl+Alt+Q** | Duplicate Selection |
 
-### View
-
-| Key | Command |
-|---|---|
-| **Alt+Shift+D** | Dark Mode |
-| **Alt+Z** | Word Wrap |
-| **Ctrl+Alt+Shift+W** | Overwrite Mode |
-| **Ctrl+Alt+Shift+I** | Tab Key Inserts a Tab Character |
-| **Ctrl+=** | Increase Text Size |
-| **Ctrl+-** | Decrease Text Size |
-| **Ctrl+0** | Reset Text Size |
-| **Ctrl+Alt+F** | Editor Font... |
-| **Ctrl+Alt+W** | Document Statistics |
-| **F6** | Status Bar |
-| **Ctrl+,** | Preferences... |
-| **Ctrl+Alt+Shift+F** | Customize Features... |
-| **Ctrl+Shift+P** | Command Palette... |
-| **Ctrl+Alt+Shift+A** | Go To Anything... |
-
-### Format
-
-| Key | Command |
-|---|---|
-| **Ctrl+B** | Bold |
-| **Ctrl+I** | Italic |
-| **Ctrl+U** | Underline |
-| **Ctrl+Shift+.** | Grow Font |
-| **Ctrl+Shift+,** | Shrink Font |
-| **Ctrl+Alt+1** | Heading 1 |
-| **Ctrl+Alt+2** | Heading 2 |
-| **Ctrl+Alt+3** | Heading 3 |
-| **Ctrl+Alt+4** | Heading 4 |
-| **Ctrl+Alt+0** | Body Text |
-
-### Format ▸ Structure
-
-| Key | Command |
-|---|---|
-| **Alt+Shift+Left** | Promote Heading |
-| **Alt+Shift+Right** | Demote Heading |
-| **Alt+Shift+Up** | Move Section Up |
-| **Alt+Shift+Down** | Move Section Down |
-
-### Format
-
-| Key | Command |
-|---|---|
-| **Ctrl+L** | Align Left |
-| **Ctrl+E** | Centre |
-| **Ctrl+R** | Align Right |
-| **Ctrl+J** | Justify |
-| **Ctrl+Shift+L** | Bullets |
-| **Ctrl+1** | Single Spacing |
-| **Ctrl+5** | One and a Half Spacing |
-| **Ctrl+2** | Double Spacing |
-| **Ctrl+Shift+F** | Font for Selection... |
-| **Ctrl+Shift+D** | Describe Formatting at Cursor |
-| **Ctrl+Shift+M** | Switch Document Mode |
-
-### Clipboard
+### Edit ▸ Clipboard
 
 | Key | Command |
 |---|---|
@@ -966,13 +1288,85 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+M** | Keep Clip |
 | **Ctrl+Alt+Shift+M** | Recent Clips... |
 
+### View
+
+| Key | Command |
+|---|---|
+| **Alt+Shift+D** | Dark Mode |
+| **Alt+Z** | Word Wrap |
+| **Ctrl+Alt+Shift+W** | Overwrite Mode |
+| **Ctrl+Alt+Shift+I** | Tab Key Inserts a Tab Character |
+| **Alt+Shift+B** | Status Bar |
+| **Ctrl+=** | Increase Text Size |
+| **Ctrl+-** | Decrease Text Size |
+| **Ctrl+0** | Reset Text Size |
+| **Ctrl+Alt+W** | Document Statistics |
+| **Ctrl+Shift+P** | Command Palette... |
+
+### Format
+
+| Key | Command |
+|---|---|
+| **Ctrl+B** | Bold |
+| **Ctrl+I** | Italic |
+| **Ctrl+U** | Underline |
+| **Ctrl+Shift+.** | Grow Font |
+| **Ctrl+Shift+,** | Shrink Font |
+| **Ctrl+L** | Align Left |
+| **Ctrl+E** | Centre |
+| **Ctrl+R** | Align Right |
+| **Ctrl+J** | Justify |
+| **Ctrl+Shift+L** | Bullets |
+| **Ctrl+Alt+F** | Editor Font... |
+| **Ctrl+Shift+F** | Font for Selection... |
+| **Ctrl+Shift+D** | Describe Formatting at Cursor |
+| **Ctrl+Shift+M** | Switch Document Mode |
+
+### Format ▸ Line Spacing
+
+| Key | Command |
+|---|---|
+| **Ctrl+1** | Single Spacing |
+| **Ctrl+5** | One and a Half Spacing |
+| **Ctrl+2** | Double Spacing |
+
+### Format ▸ Headings
+
+| Key | Command |
+|---|---|
+| **Ctrl+Alt+1** | Heading 1 |
+| **Ctrl+Alt+2** | Heading 2 |
+| **Ctrl+Alt+3** | Heading 3 |
+| **Ctrl+Alt+4** | Heading 4 |
+| **Ctrl+Alt+5** | Heading 5 |
+| **Ctrl+Alt+6** | Heading 6 |
+| **Ctrl+Alt+0** | Body Text |
+
+### Format ▸ Structure
+
+| Key | Command |
+|---|---|
+| **Alt+Shift+Left** | Promote Heading |
+| **Alt+Shift+Right** | Demote Heading |
+| **Alt+Shift+Up** | Move Section Up |
+| **Alt+Shift+Down** | Move Section Down |
+
 ### Navigate
 
 | Key | Command |
 |---|---|
+| **Alt+Left** | Go Back |
+| **Alt+Right** | Go Forward |
 | **Ctrl+Alt+H** | Next Heading |
 | **Ctrl+Alt+Shift+H** | Previous Heading |
 | **Ctrl+Alt+L** | List Headings... |
+| **F6** | Status Bar |
+| **Ctrl+Alt+Shift+A** | Go To Anything... |
+
+### Navigate ▸ Bookmarks
+
+| Key | Command |
+|---|---|
 | **Ctrl+Shift+B** | Set Bookmark |
 | **Alt+Shift+G** | Go to Bookmark... |
 | **F2** | Next Bookmark |
@@ -992,45 +1386,14 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 
 | Key | Command |
 |---|---|
-| **Ctrl+Alt+S** | Sort Lines A to Z |
-| **Ctrl+Alt+Shift+S** | Sort Lines Z to A |
-| **Ctrl+Alt+K** | Remove Blank Lines |
-| **Ctrl+Alt+D** | Remove Duplicate Lines |
-| **Ctrl+Alt+T** | Trim Trailing Spaces |
-| **Ctrl+Shift+Up** | Move Line Up |
-| **Ctrl+Shift+Down** | Move Line Down |
-| **Ctrl+D** | Duplicate Line |
-| **Ctrl+Alt+Shift+J** | Join Lines |
-| **Ctrl+Shift+Delete** | Delete Line |
-| **Ctrl+Shift+Backspace** | Delete to Start of Line |
-| **Ctrl+Alt+Shift+Delete** | Delete to End of Line |
-| **Ctrl+Alt+Shift+Backspace** | Delete Paragraph |
-| **Ctrl+Alt+Shift+Z** | Restore Deleted Text |
-| **Ctrl+Shift+U** | UPPERCASE |
-| **Ctrl+Shift+K** | lowercase |
-| **Ctrl+Shift+G** | Title Case |
-| **Ctrl+Alt+Shift+U** | Sentence case |
-| **Ctrl+Alt+Shift+N** | Invert Case |
 | **Ctrl+Alt+E** | File Encoding and Line Endings... |
 | **Ctrl+Alt+A** | Manage Abbreviations... |
+| **Alt+Shift+A** | Expand Abbreviations |
+| **Ctrl+,** | Preferences... |
+| **Ctrl+Alt+Shift+F** | Customize Features... |
+| **Ctrl+Alt+Shift+R** | Keyboard Manager... |
 
-### Tools ▸ Indenting
-
-| Key | Command |
-|---|---|
-| **Ctrl+]** | Indent |
-| **Ctrl+[** | Outdent |
-| **Ctrl+Alt+Shift+V** | Describe Indent Depth |
-
-### Tools ▸ More Line Work
-
-| Key | Command |
-|---|---|
-| **Alt+Shift+Z** | Reverse Lines |
-| **Ctrl+Alt+Shift+T** | Tidy Whitespace |
-| **Alt+Shift+N** | Number Lines |
-
-### Spelling
+### Tools ▸ Spelling
 
 | Key | Command |
 |---|---|
@@ -1040,6 +1403,32 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+F7** | Previous Misspelling |
 | **Alt+F7** | Add Word to Dictionary |
 | **Ctrl+Alt+F7** | Check While Typing |
+| **Ctrl+Alt+Shift+F7** | Announcements... |
+
+### Tools
+
+| Key | Command |
+|---|---|
+| **Alt+Shift+M** | Quiet Mode |
+| **Ctrl+Alt+Shift+O** | Sound Scheme... |
+
+### Tools ▸ Change Case
+
+| Key | Command |
+|---|---|
+| **Ctrl+Shift+U** | UPPERCASE |
+| **Ctrl+Shift+K** | lowercase |
+| **Ctrl+Shift+G** | Title Case |
+| **Ctrl+Alt+Shift+U** | Sentence case |
+| **Ctrl+Alt+Shift+N** | Invert Case |
+
+### Tools ▸ Indenting
+
+| Key | Command |
+|---|---|
+| **Ctrl+]** | Indent |
+| **Ctrl+[** | Outdent |
+| **Ctrl+Alt+Shift+V** | Describe Indent Depth |
 
 ### Window
 

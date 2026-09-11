@@ -38,6 +38,7 @@ _PACK_LABELS: dict[str, str] = {
     "app.repeat_last_announcement": "Repeat Last Announcement",
     "app.announcement_self_test": "Announcement Self-Test",
     "app.report_editor_surface": "Report Editor Surface",
+    "app.braille_ab": "Braille A/B: System Edit Fix",
     "ai.suggest_metadata": "Suggest Document Metadata",
     "edit.redo": "Redo",
     "edit.replace": "Replace",

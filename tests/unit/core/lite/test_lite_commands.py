@@ -29,14 +29,28 @@ import collections
 
 import pytest
 
-from quill.core.lite.commands import COMMANDS, menu_titles, shortcut_text
+from quill.core.lite.commands import COMMANDS, SUBMENU_SEP, menu_titles, shortcut_text
 
 
 def _items() -> list[tuple[str, str, str, str]]:
-    """``(menu, label, key, handler)`` for every real item -- separators out."""
+    """``(menu, label, key, handler)`` for every real command.
+
+    Separators are out, and so are the ``"sub"`` rows: a submenu's title names a
+    menu rather than a command, so it has no key and no handler and would fail
+    every check below. Its *mnemonic* is checked with the rest -- that is the
+    whole reason the title is a row rather than something inferred -- which
+    :func:`_labelled` is for.
+    """
     return [
-        (menu, label, key, handler) for menu, label, key, handler, kind in COMMANDS if kind != "sep"
+        (menu, label, key, handler)
+        for menu, label, key, handler, kind in COMMANDS
+        if kind not in {"sep", "sub"}
     ]
+
+
+def _labelled() -> list[tuple[str, str]]:
+    """``(menu, label)`` for everything that appears in a menu, titles included."""
+    return [(menu, label) for menu, label, _key, _handler, kind in COMMANDS if kind != "sep"]
 
 
 def _mnemonic(label: str) -> str:
@@ -54,8 +68,18 @@ def test_the_table_is_not_empty_and_every_row_is_well_formed() -> None:
     """A gate that inspects nothing passes everything."""
     assert len(_items()) > 40
     for menu, label, key, handler, kind in COMMANDS:
-        assert kind in {"", "check", "sep"}, (menu, label, kind)
+        assert kind in {"", "check", "sep", "sub"}, (menu, label, kind)
         if kind == "sep":
+            continue
+        if kind == "sub":
+            # A title row: no key, no handler, and the submenu it names has to
+            # exist. A title pointing at nothing is a menu item that opens an
+            # empty submenu, which reads as a broken app rather than an empty
+            # one.
+            assert (key, handler) == ("", ""), (menu, label, key, handler)
+            assert f"{menu}{SUBMENU_SEP}{label}" in {row[0] for row in COMMANDS}, (
+                f"{menu} offers a {label!r} submenu and no row is in it"
+            )
             continue
         assert menu.startswith("&") or "&" in menu, menu
         assert label and key and handler, (menu, label)
@@ -100,7 +124,7 @@ def test_no_access_key_is_claimed_twice_within_one_menu() -> None:
     """Windows cycles focus between duplicate mnemonics instead of pressing."""
     per_menu: dict[str, dict[str, str]] = collections.defaultdict(dict)
     collisions: list[str] = []
-    for menu, label, _key, _handler in _items():
+    for menu, label in _labelled():
         letter = _mnemonic(label)
         if not letter:
             continue
@@ -184,7 +208,7 @@ def test_the_shortcut_window_lists_what_is_actually_bound() -> None:
     assert "Alt+1 to Alt+9" in text
     assert "Alt+Shift+1 to Alt+Shift+9" in text
     # And the one fact about rich mode that saves a support email.
-    assert "20, 16, 14 and 12" in text
+    assert "20, 16, 14, 12, 11.5" in text
 
 
 def test_f1_is_the_context_help_key_and_the_key_list_moved_off_it() -> None:

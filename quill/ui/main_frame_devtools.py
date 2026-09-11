@@ -380,6 +380,18 @@ class DevToolsMixin:
         self._announce(message)
         self._set_status(message)
 
+    def open_braille_ab(self) -> None:
+        """Braille A/B: two editors that differ only by the system edit fix.
+
+        The spoken report above says what the *current* editor is; this answers
+        the question that report cannot -- whether the flag is worth having.
+        ``SES_EMULATESYSEDIT`` is set-once, so comparing used to mean restarting
+        QUILL between readings. Body in :mod:`quill.ui.braille_ab_window`.
+        """
+        from quill.ui.braille_ab_window import open_braille_ab
+
+        open_braille_ab(self)
+
     def _editor_surface_diagnostic_summary(self) -> str:
         try:
             diagnostic_summary = getattr(self.editor, "accessibility_diagnostic_summary", None)

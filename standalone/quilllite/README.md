@@ -24,8 +24,17 @@ Windows · MIT · part of the QuillVille family
 - **Every window answers F1** with what it is for and what you are on.
 - **Speech to NVDA and JAWS only**, saying only what your screen reader will
   not.
+- **Spelling that tells you what is wrong**, not just that something is: land on
+  a misspelling and it spells the word out, in letters or the phonetic alphabet,
+  after a pause you can outrun. The Applications key opens with the corrections.
+- **Earcons for the moments speech cannot cover** — cut, copy, paste, delete,
+  undo, save, close — every one of them replaceable with a sound of your own,
+  and **Alt+Shift+M** silences the lot.
 - **Switchable.** Turn rich text off and it is Notepad; turn everything on and it
-  is WordPad with tools.
+  is WordPad with tools. Four one-word profiles set every switch at once.
+
+New here? Start with [the announcement](docs/announcement.md) — it is the
+one-page version, written for somebody who has never opened it.
 
 Full detail is in [the user guide](docs/userguide.md); the reasoning is in
 [the product requirements](docs/prd.md); what changed and why is in

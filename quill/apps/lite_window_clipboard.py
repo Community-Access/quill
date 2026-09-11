@@ -37,6 +37,7 @@ import wx
 from quill.apps.lite_dialogs import choose_from_rows
 from quill.core.clipboard_collector import DEFAULT_DIVIDER, append_collected
 from quill.core.fragment import Fragment
+from quill.core.sound_events import SoundEvent
 
 __all__ = ["DocumentClipboardMixin"]
 
@@ -107,7 +108,45 @@ class DocumentClipboardMixin:
             self._announce("The clipboard has no text")
             return
         self._insert(text)
+        # The count is the informative half and is always spoken; the earcon is
+        # posted separately because this path never reaches the control's own
+        # Paste, so wx raises no clipboard event for bind_clipboard_cues to see.
+        self._cue(SoundEvent.TEXT_PASTED)
         self._announce(f"Pasted {len(text):,} characters as plain text")
+
+    # ------------------------------------------------------------------ #
+    # The cues for the three the control does itself
+    # ------------------------------------------------------------------ #
+
+    def bind_clipboard_cues(self) -> None:
+        """Report cut, copy and paste from wx's own events, not from the commands.
+
+        Cut, copy and paste arrive by four routes -- the accelerator, the Edit
+        menu, the context menu, and the control's own key handling -- and a cue
+        posted inside ``cmd_copy`` covers the ones that go through ``cmd_copy``
+        and no others. ``EVT_TEXT_CUT`` / ``COPY`` / ``PASTE`` fire once for all
+        four, after the edit has happened, because the control raises them from
+        the Windows messages it acts on. This is the shape QUILL already uses
+        (``quill/ui/main_frame_cues.py``); QuillLite reporting these moments a
+        different way was how it ended up reporting some of them not at all.
+
+        ``Skip()`` on every one: the event *is* how the control learns it has
+        been asked to cut, and a handler that swallows it stops Ctrl+X working
+        outright.
+        """
+        for event, cue, phrase in (
+            (wx.EVT_TEXT_CUT, SoundEvent.TEXT_CUT, "Cut"),
+            (wx.EVT_TEXT_COPY, SoundEvent.TEXT_COPIED, "Copied"),
+            (wx.EVT_TEXT_PASTE, SoundEvent.TEXT_PASTED, "Pasted"),
+        ):
+            self.control.Bind(event, self._clipboard_cue(cue, phrase))
+
+    def _clipboard_cue(self, cue: str, phrase: str) -> Any:
+        def handler(event: wx.CommandEvent) -> None:
+            self._action(cue, phrase)
+            event.Skip()
+
+        return handler
 
     # ------------------------------------------------------------------ #
     # Copy Tray
@@ -153,8 +192,23 @@ class DocumentClipboardMixin:
         self._announce(f"Pasted tray slot {chosen}")
 
     def cmd_clear_copy_tray(self) -> None:
-        self.app.copy_tray.clear_all()
-        self._announce("Copy tray cleared")
+        """Empty every slot, and say how many there were to empty.
+
+        The count is not decoration. "Copy tray cleared" is the same sentence
+        whether it wiped twelve slots of gathered work or an already-empty tray,
+        and those are the two outcomes a listener most needs told apart -- one of
+        them is the moment to reach for Ctrl+Z and the other is nothing at all.
+        The bookmarks and the line tools already answer this way.
+        """
+        tray = self.app.copy_tray
+        filled = sum(
+            1 for number in range(1, tray.SLOT_COUNT + 1) if not tray.slot(number).is_empty()
+        )
+        if not filled:
+            self._announce("The copy tray is already empty")
+            return
+        tray.clear_all()
+        self._announce(f"Cleared {filled} tray slot{'s' if filled != 1 else ''}")
 
     # ------------------------------------------------------------------ #
     # The collector
