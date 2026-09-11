@@ -53,7 +53,18 @@ from quill.core.storage import read_json, write_json_atomic
 
 logger = logging.getLogger(__name__)
 
-_WORD_PATTERN = re.compile(r"[A-Za-z][A-Za-z']*")
+# ``(?<![0-9])`` is the ordinal guard, and it is a bug fix rather than a
+# refinement. Without it "the 13th of May" reports **"th"** as a misspelling --
+# at an offset inside a number, for a word the user did not type -- because the
+# pattern starts at the first letter it finds and the digits before it are
+# invisible to it. "1st" and "23rd" escaped only by luck: "st" and "rd" happen
+# to be in the wordlist and "th" does not.
+#
+# The same guard covers every other letters-after-digits shape a document is
+# full of and no dictionary contains: 3D, 2x, MP3's siblings, 1080p, v2beta,
+# and the units in "500ml" and "12pt". Each was a spoken interruption for a
+# screen-reader user and none of them was ever a spelling mistake.
+_WORD_PATTERN = re.compile(r"(?<![0-9])[A-Za-z][A-Za-z']*")
 
 # Tiny last-resort corpus. Real validation comes from the bundled wordlist
 # or pyenchant; this only exists so the module never raises if data is
@@ -458,6 +469,59 @@ def misspelling_at(text: str, position: int, dictionary: set[str]) -> Misspellin
             return None
         return Misspelling(word=token, start=match.start(), end=match.end())
     return None
+
+
+def misspelling_behind(
+    text: str, cursor: int, dictionary: set[str], *, require_terminator: bool = True
+) -> Misspelling | None:
+    """The misspelled word you have just *finished*, or None.
+
+    The question spell-check-as-you-type actually has, and until 2026-09-10 no
+    function in this module answered it. Both editors asked
+    :func:`misspelling_at` instead, which by construction matches only a word
+    **beginning exactly at the caret** -- it is the bounded helper written for a
+    different question. Typing left to right the caret is always at or past the
+    *end* of the word just completed, so the condition was never true and the
+    whole as-you-type alert was unreachable: no earcon, no status line, nothing,
+    unless you happened to arrow back onto the first letter of a bad word. The
+    feature shipped, was documented, had settings, and had never once fired.
+
+    "Finished" means there is a terminator between the word and the caret -- a
+    space, a comma, a newline, anything that is not part of a word. That rule is
+    what stops the checker judging "recie" while somebody is still typing
+    "receive", which is the failure mode that makes a live checker intolerable:
+    it cries wolf on the way to every long word. *require_terminator* exists for
+    a caller that has some other reason to believe the word is complete.
+
+    Cheap by construction: it walks left over at most a handful of characters
+    and matches one word, so it can sit in the typing path. Nothing here scans
+    the document.
+    """
+    if cursor <= 0:
+        return None
+    end = min(cursor, len(text))
+    # Step back over whatever terminated the word -- usually one space, but a
+    # sentence can end ". " and a list item ", ".
+    while end > 0 and not _is_word_character(text[end - 1]):
+        end -= 1
+    if end == min(cursor, len(text)) and require_terminator:
+        return None  # the caret is still inside the word; it may be unfinished
+    if end <= 0:
+        return None
+    start = end
+    while start > 0 and _is_word_character(text[start - 1]):
+        start -= 1
+    match = _WORD_PATTERN.match(text, start)
+    if match is None or match.end() != end:
+        # The run of word characters is not a word this checker recognises as
+        # one -- a bare apostrophe, or letters immediately after digits, which
+        # the ordinal guard in _WORD_PATTERN deliberately refuses. Both are
+        # silence rather than a report.
+        return None
+    token = match.group(0)
+    if is_known_word(token, dictionary):
+        return None
+    return Misspelling(word=token, start=match.start(), end=match.end())
 
 
 def next_misspelling(text: str, cursor: int, dictionary: set[str]) -> Misspelling | None:

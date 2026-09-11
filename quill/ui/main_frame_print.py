@@ -288,6 +288,7 @@ class PrintMixin:
     def _run_print_job(self, printout: object) -> None:
         wx = self._wx
         printer = wx.Printer(wx.PrintDialogData(self._print_data))
+        self.cue_printing(finished=False)
         try:
             success = bool(printer.Print(self.frame, printout, True))
         except Exception as error:
@@ -308,4 +309,7 @@ class PrintMixin:
             return
         self._print_data = printer.GetPrintDialogData().GetPrintData()
         printout.Destroy()
+        # Handed to the spooler, which is as far as this app can see -- and it
+        # is the fact the user is waiting for.
+        self.cue_printing(finished=True)
         self._set_status("Printed document")

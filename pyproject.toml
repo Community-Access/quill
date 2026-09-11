@@ -537,6 +537,7 @@ markers = [
     "perf: wall-clock performance budgets; run with RUN_PERF=1 or exclude with -m 'not perf'",
     "smoke: fast, high-signal core checks; run the quick subset with -m smoke",
     "uia: Windows UI-automation regression tests (launch the real app via UIA); opt-in with QUILL_UIA_TESTS=1 and -m uia on a Windows desktop session",
+    "machine_global: touches a resource the machine owns rather than the process (the Windows clipboard, the system-wide RegisterHotKey table, the screen-reader COM bridges). Serialized onto one worker under -n --dist loadgroup; see tests/conftest.py.",
 ]
 
 [tool.ruff]

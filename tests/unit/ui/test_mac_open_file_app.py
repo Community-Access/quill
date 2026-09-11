@@ -25,6 +25,11 @@ pytest.importorskip("wx")
 
 from quill.ui.mac_open_file_app import MacOpenFileApp  # noqa: E402
 
+#: Serialized onto one worker under ``-n --dist loadgroup``: this file uses
+#: a real MainFrame: system-wide hotkeys and the screen-reader bridges.
+#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
+pytestmark = pytest.mark.machine_global
+
 
 @pytest.fixture
 def app():

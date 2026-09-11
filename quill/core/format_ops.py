@@ -356,6 +356,28 @@ def trim_blank_lines(text: str) -> str:
     return "\n".join(parts)
 
 
+def remove_blank_lines(text: str) -> str:
+    """Remove **every** blank line, not just the ones at the two ends.
+
+    Distinct from :func:`trim_blank_lines`, which only takes the leading and
+    trailing ones, and added because QuillLite offered a command called *Remove
+    Blank Lines* that was wired to the trimming one. On a document with blank
+    lines through the middle -- which is every document -- it removed nothing and
+    then announced that it had removed a line, which is worse than doing nothing:
+    a listener cannot see that the text is unchanged and has no reason to doubt
+    the sentence.
+
+    Whitespace-only lines count as blank. A line of three spaces is blank to
+    everyone reading the document and to every tool that consumes it, and leaving
+    it behind would make the command's answer depend on something invisible.
+
+    A terminal newline is preserved, so removing blank lines from a file that
+    ended in one does not silently join its last line to whatever is pasted next.
+    """
+    lines, terminal_newline = _split_body_lines(text)
+    return _join_body_lines([line for line in lines if line.strip()], terminal_newline)
+
+
 def quote_lines(text: str, prefix: str = "> ") -> str:
     """Prefix every non-empty line with prefix (default: email block-quote style)."""
     lines, terminal_newline = _split_body_lines(text)

@@ -18,10 +18,18 @@ python -m quill
 # Tests (standard)
 pytest -q
 
-# Tests, parallel (~5 min vs ~9). NOTE: the wx/UI grouping this recipe exists
-# for is marked up but NOT in effect, and the one-word fix hangs the suite at
-# shutdown — read tests/conftest.py pytest_collection_modifyitems before
-# touching it. Occasional clipboard flakes under -n are that, not the test.
+# Tests, parallel (~5 min vs ~9). Tests marked `machine_global` — the ones
+# that drive the real clipboard, the system-wide hotkey table or the
+# screen-reader bridges — share one worker; everything else fans out. Mark a
+# new test that reaches for one of those, or it will race the others. The
+# grouping was silently wrong twice (ignored, then too coarse to let the
+# suite exit); tests/conftest.py pytest_collection_modifyitems has both
+# stories and tests/unit/test_parallel_grouping.py asserts them.
+#
+# This is the FAST path, not the authoritative one: a worker can still die
+# ("node down"), which predates the grouping and is unrelated to it. Re-run any
+# failure it reports on its own before believing it -- every one so far passed
+# serially. `pytest -q` is the answer that counts.
 pytest -q -n 8 --dist loadgroup
 
 # Fast smoke subset (high-signal core checks; seconds, not minutes)
@@ -97,6 +105,28 @@ must diverge on a key, the reason is a comment in `keymap.py`.
 **Access keys (GATE-14):** within one window, no two controls may claim the same `&` mnemonic. Windows cycles focus between duplicates instead of pressing, so one of the pair silently cannot be reached and nothing announces the loss (the first sweep found 128 collisions across 76 windows). `check_access_keys.py` scopes a `wx.Dialog`/`wx.Frame` subclass as one window and any other class per method. Three fixes, in order: **OK, Cancel and Close carry no access key at all** (Enter and Escape already serve them, and every letter they give up resolves a collision elsewhere); otherwise move the less important control to a free letter; and when a dense window genuinely runs out — an embedded radio surface is under a menu bar that owns thirteen of twenty-six letters — the loser gets **no** mnemonic rather than a duplicate, because a duplicate advertises a key that may not work while silence is merely silent and Tab still arrives.
 
 **F1 answers everywhere (GATE-<APP>-HELP):** every window in every app answers F1 with its authored purpose and then the focused control's own help. The engine is shared (`quill/ui/app_context_help.py` + `quill/core/control_help.py`); each app owns a `surface_help` catalogue and a help-audit gate over its own modules — radio, cast, player, studio, inkwell, weather, converter, beacon and QuillLite, all nine rostered in `platform_report`. Authored help must be **inline `SetHelpText` at the construction site**: that is what the audit can verify (`helped`); help set anywhere else is `help-elsewhere` and proves nothing. A new control snapshots as `missing` and fails the build until somebody writes a sentence or classifies it deliberately. One load-bearing detail: `SetHelpText` stores nothing without a `wx.HelpProvider`, so `ensure_help_provider()` runs at activation — without it every help string ever written is dead. The complete authored content renders to `docs/f1-help-reference.md` (`build_help_reference.py`, drift-gated).
+
+**Behavioural coverage (GATE-LITE-COVER):** every handler in QuillLite's command
+table is classified `covered` or `shape_only` in
+`tests/unit/ui/fixtures/lite_command_coverage.json`, and the list of `shape_only`
+may only shrink. `covered` means a test in `tests/unit/apps` **calls** the
+handler -- detected by an AST walk, not a grep, because a test that lists handler
+names in a table is exactly the shape of test that let the F8 bug through
+(`cmd_start_extend_selection` had a key, a label, a handler and a passing test,
+and extend mode had never once worked from the keyboard). A new command fails
+the build until it is classified; so does a handler that *lost* its test, and so
+does one that gained a test and was not re-snapshotted. Regenerate with
+`python -m quill.tools.lite_command_coverage --write`.
+
+**Feedback channels (`quill/core/action_feedback.py`):** `action_feedback` and
+`find_not_found_feedback` are `sound` / `speech` / `both` / `silent`, and both
+editors resolve them through the one shared `resolve(mode, *, has_sound)` rather
+than implementing the enum twice. Three invariants: a `sound` moment with no clip
+in the pack **speaks** (the setting chooses between two kinds of feedback, never
+down to none); `silent` stays silent through that fall-through; and failures and
+counts are outside the setting entirely -- always spoken, because no tone carries
+a number and none has ever carried "it did not work". Wording for any chooser
+comes from `ACTION_FEEDBACK_LABELS`, never retyped.
 
 **Generated references (GATE-KEYREF, GATE-HELPREF, GATE-SETDOC):** three documents are generated from the code rather than written beside it, so they cannot drift — `docs/keyboard-reference.md` from `DEFAULT_KEYMAP`/`APP_KEYMAPS`, `docs/f1-help-reference.md` from the help catalogues, and the settings-documentation inventory from the `Settings` dataclass against the docs corpus. A new setting is `missing` until it is documented or classified `internal`; the `grandfathered` backlog (2026-08-27) may only shrink. Every default QUILL-key chord must also carry an authored Key Describer title (`_CHORD_COMMAND_TITLES`, GATE-DESCRIBE).
 

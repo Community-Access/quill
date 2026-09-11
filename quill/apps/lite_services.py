@@ -26,11 +26,16 @@ text document is a palette offering something it knows will refuse.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 
 from quill.core.lite import features as features_mod
-from quill.core.lite.commands import COMMANDS, plain_label, visible_commands
+from quill.core.lite import keymap as keymap_mod
+from quill.core.lite.commands import plain_label
+from quill.core.lite.keymap import binding_for, resolved_commands
+
+logger = logging.getLogger(__name__)
 
 __all__ = ["LiteServicesMixin"]
 
@@ -147,8 +152,10 @@ class LiteServicesMixin:
         from quill.core.commands import CommandRegistry
 
         registry = CommandRegistry()
-        for menu, label, key, handler, kind in visible_commands(self.feature_enabled):
-            if kind == "sep":
+        for menu, label, key, handler, kind in resolved_commands(self.feature_enabled, self.keymap):
+            # A submenu's title row names a menu, not a command: it has no
+            # handler to run and no key to show.
+            if kind in {"sep", "sub"}:
                 continue
             registry.try_register(
                 f"lite.{handler}",
@@ -159,17 +166,45 @@ class LiteServicesMixin:
         return registry
 
     def binding_for(self, command_id: str) -> str | None:
-        """The key a palette row should show, looked up by command id."""
-        handler = command_id.removeprefix("lite.")
-        for _menu, _label, key, name, _kind in COMMANDS:
-            if name == handler:
-                return key or None
-        return None
+        """The key a palette row should show, looked up by command id.
+
+        The resolved key, not the shipped one: a palette that shows the key a
+        command *used* to have is worse than one that shows none, because it is
+        how a wrong key gets learned.
+        """
+        return binding_for(self.keymap, command_id.removeprefix("lite.")) or None
+
+    # -- keys -------------------------------------------------------------- #
+
+    def save_keymap(self) -> None:
+        """Persist the user's rebindings and put them on every window at once.
+
+        Every window, not the one the editor was opened from: a menu bar showing
+        one key while its neighbour shows another is the same class of bug as a
+        stale key, and it would be the more confusing of the two.
+
+        A failed write is swallowed and reported, not raised. The bindings are
+        already live in memory; a read-only profile costs the user the *next*
+        session's keys, which is a smaller loss than an editor that cannot close.
+        """
+        # The menus first, and unconditionally: the bindings are already live
+        # in memory, so the windows must show them whether or not the disk
+        # co-operates.
+        self.rebuild_all_menus()
+        try:
+            keymap_mod.save_keymap(self.data_dir, self.keymap)
+        except OSError:
+            logger.warning("Could not write the keymap file", exc_info=True)
+
+    def reset_keymap(self) -> None:
+        """Put every key back to the one QuillLite ships with."""
+        self.keymap = keymap_mod.default_keymap()
+        self.save_keymap()
 
     # -- menus ------------------------------------------------------------ #
 
     def rebuild_all_menus(self) -> None:
-        """Rebuild every window's menu bar, after the feature set changed."""
+        """Rebuild every window's menu bar, after the feature set or the keys changed."""
         for frame in self.frames:
             try:
                 frame.rebuild_menus()

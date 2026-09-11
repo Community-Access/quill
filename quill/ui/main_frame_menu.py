@@ -14,6 +14,7 @@ import sys
 
 from quill.core.app_launcher import is_app_released, is_dev_build
 from quill.core.i18n import _
+from quill.ui.menu_routes import apply_menu_routes
 
 
 def _tray_slot_accel(n: int) -> str:
@@ -1117,25 +1118,10 @@ class MenuBuilderMixin:
         format_menu.Append(
             self._id_format_justify, self._menu_label(_("&Justify"), "format.justify")
         )
-        format_menu.Append(
-            self._id_format_grow_font, self._menu_label(_("Gro&w Font"), "format.grow_font")
-        )
-        format_menu.Append(
-            self._id_format_shrink_font, self._menu_label(_("Shrin&k Font"), "format.shrink_font")
-        )
-        format_menu.Append(
-            self._id_format_spacing_single,
-            self._menu_label(_("Sin&gle Spacing"), "format.line_spacing_single"),
-        )
-        format_menu.Append(
-            self._id_format_spacing_one_and_a_half,
-            self._menu_label(_("One and a &Half Spacing"), "format.line_spacing_one_and_a_half"),
-        )
-        format_menu.Append(
-            self._id_format_spacing_double,
-            self._menu_label(_("Double S&pacing"), "format.line_spacing_double"),
-        )
-
+        # Grow/Shrink Font and the three keyed line spacings used to sit here,
+        # flat, beside the submenus holding the same two concepts. They are now
+        # inside them (see build_format_codes_submenus and PRD 8.14a).
+        #
         # Hidden-codes run/paragraph formatting (font, size, align, color,
         # highlight) plus the describe-formatting interrogation item. Built by
         # FormatCodesMixin so the bulk stays out of this monolith (GATE-11).
@@ -2198,7 +2184,7 @@ class MenuBuilderMixin:
         )
         reading_menu.Append(
             self._id_sound_events,
-            self._menu_label(_("&Manage Sound Events..."), "tools.sound_events"),
+            self._menu_label(_("&Sound Scheme..."), "tools.sound_events"),
         )
         reading_menu.AppendSeparator()
         reading_menu.Append(
@@ -3468,5 +3454,10 @@ class MenuBuilderMixin:
         self._apply_ai_menu_enabled()
         # Kill switch: dim menu items whose feature a safety advisory has locked.
         self._apply_feature_lock_menu_state()
+        # Every item says how to reach it, last of all. The pass skips disabled
+        # rows on purpose, so it has to run *after* the three refreshes above --
+        # before them it would route rows that are about to be dimmed and miss
+        # rows that are about to be enabled.
+        apply_menu_routes(menu_bar)
 
         self._bind_menu_events()

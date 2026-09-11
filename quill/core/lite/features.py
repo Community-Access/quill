@@ -22,6 +22,18 @@ first run and are otherwise ordinary areas: one checkbox each, in the same
 dialog, discoverable rather than hidden. A feature nobody can find is a feature
 that does not exist, so the answer is a checklist, not a config file.
 
+**The areas stay coarse, and the dialog got a search box and profiles instead.**
+That was the open question and this is the answer. An area here is a whole menu
+or submenu that can be removed cleanly (``MENU_AREA`` in
+:mod:`quill.core.lite.commands`), so splitting one changes what an area *is*
+rather than how many there are -- and what a listener actually complained about
+was not the granularity but having to *walk* the list. So the list is filtered
+by typing (:class:`~quill.ui.app_features_dialog.AppFeaturesDialog`), and
+:data:`PROFILES` is there for somebody who wants to say "the small one" rather
+than tick seventeen boxes. Where the coarseness genuinely *hid* something --
+Matches, Back/Forward, the Command Palette, Describe Character and text size all
+belonged to no area at all -- the answer was more areas, not finer ones.
+
 wx-free. The areas are data; honouring them is the menu builder's job.
 """
 
@@ -32,6 +44,7 @@ from pathlib import Path
 from quill.core.app_features import (
     AppArea,
     AppFeatureSettings,
+    AppProfile,
     load_app_features,
     save_app_features,
 )
@@ -40,6 +53,7 @@ __all__ = [
     "AREAS",
     "APP_ID",
     "DEFAULT_OFF",
+    "PROFILES",
     "area_ids",
     "load_features",
     "save_features",
@@ -69,16 +83,21 @@ AREAS: tuple[AppArea, ...] = (
     ),
     AppArea(
         "tools",
-        "The Tools menu",
-        "Sort lines, remove blanks and duplicates, trim trailing spaces, change "
-        "case, and choose the encoding and line endings a file saves with.",
+        "Line tools and change case",
+        "Edit > Lines: move, duplicate, join and delete whole lines, sort and "
+        "reverse and number them, remove blanks and duplicates, trim trailing "
+        "spaces, and Tools > Change Case. Indenting stays either way -- an "
+        "editor that cannot indent is broken rather than small, and so is one "
+        "that cannot choose an encoding, which is why File Encoding and Line "
+        "Endings stays too.",
     ),
     AppArea(
         "clipboard",
         "Copy Tray and the clip library",
-        "Numbered clipboard slots, a collector that gathers several copies into "
-        "one, and a rolling history of everything you have copied. Paste as "
-        "plain text stays available either way.",
+        "Edit > Clipboard: numbered clipboard slots, a collector that gathers "
+        "several copies into one, and a rolling history of everything you have "
+        "copied. Cut, Copy, Paste and Paste Text Only stay available either "
+        "way.",
     ),
     AppArea(
         "printing",
@@ -89,7 +108,9 @@ AREAS: tuple[AppArea, ...] = (
         "abbreviations",
         "Abbreviations",
         "Type a short form and a space, and get the long one. Uses QuillLite's "
-        "own list unless you ask it to share QUILL's in Preferences.",
+        "own list unless you ask it to share QUILL's in Preferences. This is "
+        "the same switch as Tools > Expand Abbreviations (Alt+Shift+A), which "
+        "is the quick way to reach it while you are typing.",
     ),
     AppArea(
         "selection",
@@ -102,7 +123,8 @@ AREAS: tuple[AppArea, ...] = (
     AppArea(
         "spelling",
         "Spell check",
-        "Check spelling as you type, and review the whole document with F7. "
+        "Tools > Spelling: check as you type, and review the whole document "
+        "with F7. "
         "Uses QuillLite's own dictionary of taught words unless you ask it to "
         "share QUILL's in Preferences. Stays quiet in source and configuration "
         "files, where every identifier would be a false alarm.",
@@ -128,11 +150,157 @@ AREAS: tuple[AppArea, ...] = (
         "Command Palette, the headings list and the bookmark list each already "
         "do their own part of this, so it starts switched off.",
     ),
+    AppArea(
+        "matches",
+        "The Matches submenu",
+        "Edit > Matches: list every occurrence of what you searched for in one "
+        "window, and count them. Find, Find Next and Replace stay available "
+        "either way -- this is the part that answers 'how many' and 'where "
+        "else' rather than 'take me to the next one'.",
+    ),
+    AppArea(
+        "history",
+        "Go Back and Go Forward",
+        "A trail of the places you jumped from, so Go Back returns you after a "
+        "heading jump, a bookmark or a Go To Line. Notepad has no such thing; "
+        "it is here because a listener cannot glance back at where they were.",
+    ),
+    AppArea(
+        "command_palette",
+        "The Command Palette",
+        "Ctrl+Shift+P: type part of a command's name and run it without finding "
+        "it in a menu. Every command it lists is in a menu as well, so this is "
+        "a faster front door rather than the only one.",
+    ),
+    AppArea(
+        "character_info",
+        "Describe Character",
+        "Say what the character under the cursor is -- the difference between a "
+        "hyphen, an en dash and a minus sign, or which of the several spaces "
+        "this one is -- and a details window with its name and code point. A "
+        "screen reader reads most of these identically, which is why the "
+        "editor has to be able to tell you.",
+    ),
+    AppArea(
+        "zoom",
+        "Text size",
+        "Make the text bigger or smaller, and reset it. This is the on-screen "
+        "size only; it changes nothing about the file and nothing about what a "
+        "screen reader says.",
+    ),
 )
 
 #: Areas that start disabled. Everything else starts enabled, because
 #: AppFeatureSettings stores only explicit "off".
 DEFAULT_OFF: frozenset[str] = frozenset({"autoformat", "backups", "go_to_anything"})
+
+#: Named starting points, so somebody can ask for "the small one" without
+#: ticking seventeen boxes. Applying one sets every box and then the boxes are
+#: the truth again -- there is no mode to escape from, and the next change is an
+#: ordinary override. Written as what each profile takes *away*, so an area
+#: added later is on in all four until somebody says otherwise.
+#:
+#: The two named after other people's programs are named after them on purpose.
+#: "Notepad" and "WordPad" say in one word what a paragraph of feature names
+#: cannot, and they are the two products somebody arriving at QuillLite is most
+#: likely to be replacing.
+#:
+#: They are also the only two that carry a *setting*, and for the same reason:
+#: those names promise what the thing you type in **is**, not merely which menus
+#: exist. A Notepad profile that removed the Format menu and still made a rich
+#: text document on Ctrl+N would keep the letter of its name and break its
+#: promise, and the user would find out one document later -- at the Save As
+#: dialog, offering a format they thought they had turned off. Recommended and
+#: Everything claim nothing here, because they are statements about which areas
+#: exist and have no opinion about the rest.
+PROFILES: tuple[AppProfile, ...] = (
+    AppProfile(
+        "recommended",
+        "Recommended",
+        "What a new install is: fourteen of the seventeen areas on. The three "
+        "left off are the ones that would be wrong on by default rather than "
+        "merely unused -- autocorrect rewriting a configuration file's quotes, "
+        "backups quietly filling a folder, and a second 'go to' front door "
+        "before anyone asked for one. Everything else is here, including rich "
+        "text, spell check, the line tools and the clipboard. Choose this to "
+        "get back to the shipped answer after experimenting.",
+        frozenset(DEFAULT_OFF),
+    ),
+    AppProfile(
+        "everything",
+        "Everything",
+        "All seventeen areas on, including the three a new install leaves off. "
+        "Autocorrect will straighten your quotes and capitalise your sentences, "
+        "every save keeps a dated copy, and Go To Anything joins the command "
+        "palette and the two lists as a fourth way to jump. Choose this if you "
+        "would rather turn things off as they annoy you than find them one at a "
+        "time.",
+        frozenset(),
+    ),
+    AppProfile(
+        "wordpad",
+        "WordPad",
+        "What WordPad was: rich text you can format, print and check the "
+        "spelling of -- bold, italic, headings, alignment, bullets and line "
+        "spacing -- and none of the writing tools behind them. No line "
+        "operations, no clipboard history, no bookmarks, no abbreviations, no "
+        "command palette. Ctrl+N makes a rich text document, which is the half "
+        "of this name a list of menus cannot say. Five of the seventeen areas, "
+        "plus a spell checker WordPad never had.",
+        frozenset({
+            "abbreviations",
+            "autoformat",
+            "backups",
+            "bookmarks",
+            "character_info",
+            "clipboard",
+            "command_palette",
+            "go_to_anything",
+            "history",
+            "matches",
+            "selection",
+            "tools",
+        }),
+        # Rich text is what WordPad is, so Ctrl+N makes one.
+        settings=(("default_mode", "rich"),),
+    ),
+    AppProfile(
+        "notepad",
+        "Notepad",
+        "The smallest QuillLite gets, and the one most people are replacing "
+        "something with. Two of the seventeen areas: printing and text size. No "
+        "Format menu, no headings, no bookmarks, no line tools, no clipboard "
+        "history, no spell check -- nothing Notepad does not have, which is the "
+        "point of choosing it. Ctrl+N makes a plain text document. What stays "
+        "that Notepad users will not expect: File Encoding and Line Endings, "
+        "because getting a file to save back exactly as it arrived is most of "
+        "what a Notepad replacement is for, and Find, Replace and Go To Line, "
+        "which Notepad has had since 1985.",
+        frozenset({
+            "abbreviations",
+            "autoformat",
+            "backups",
+            "bookmarks",
+            "character_info",
+            "clipboard",
+            "command_palette",
+            "go_to_anything",
+            "headings",
+            "history",
+            "matches",
+            "rich_text",
+            "selection",
+            "spelling",
+            "tools",
+        }),
+        # Turning the Format menu off is only half of "Notepad": the other half
+        # is that what Ctrl+N makes is a plain text file. Without this the
+        # profile would remove every way to *apply* formatting and still create
+        # documents that carry it, and the Save As dialog would go on offering
+        # rich text formats to somebody who chose Notepad.
+        settings=(("default_mode", "plain"),),
+    ),
+)
 
 #: Written into the store the first time so the seeding happens exactly once. A
 #: user who turns autocorrect *on* must not have it turned off again next launch.

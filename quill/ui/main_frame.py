@@ -401,6 +401,7 @@ from quill.ui.main_frame_clip_library import ClipLibraryMixin
 from quill.ui.main_frame_commands import CommandRegistryMixin
 from quill.ui.main_frame_compare import CompareMixin
 from quill.ui.main_frame_copy_tray import CopyTrayMixin
+from quill.ui.main_frame_cues import CueMixin
 from quill.ui.main_frame_devtools import DevToolsMixin
 from quill.ui.main_frame_dictation_hotkeys import DictationHotkeysMixin
 from quill.ui.main_frame_docconvert import DocConvertMixin
@@ -457,11 +458,14 @@ from quill.ui.main_frame_rich_paragraph import RichParagraphMixin
 from quill.ui.main_frame_search import SearchCommandsMixin
 from quill.ui.main_frame_section_move import SectionMoveMixin
 from quill.ui.main_frame_selection import SelectionMarksMixin
+from quill.ui.main_frame_selection_span import SelectionSpanMixin
 from quill.ui.main_frame_sessions import SessionsMixin
 from quill.ui.main_frame_simple_open import SimpleOpenMixin
 from quill.ui.main_frame_speech import SpeechCommandsMixin
 from quill.ui.main_frame_speech_downloads import SpeechDownloadsMixin
 from quill.ui.main_frame_speech_voice import VoiceInteractionMixin
+from quill.ui.main_frame_spell_context import SpellContextMenuMixin
+from quill.ui.main_frame_spell_voice import SpellVoiceMixin
 from quill.ui.main_frame_spellcheck import SpellcheckCommandsMixin
 from quill.ui.main_frame_sr_watchdog import SrWatchdogMixin
 from quill.ui.main_frame_ssh import SshEditingMixin
@@ -819,6 +823,7 @@ _DIGIT_KEY_CODES: dict[int, int] = {ord(str(digit)): digit for digit in range(10
 
 
 class MainFrame(
+    SelectionSpanMixin,
     RichParagraphMixin,
     TypingModesMixin,
     PersistentUndoMixin,
@@ -903,6 +908,9 @@ class MainFrame(
     UpdatesMixin,
     CompareMixin,
     SearchCommandsMixin,
+    CueMixin,
+    SpellContextMenuMixin,
+    SpellVoiceMixin,
     SpellcheckCommandsMixin,
     BwSpeechMixin,
     PublishingCommandsMixin,
@@ -1351,6 +1359,15 @@ class MainFrame(
         # "Untitled" combined with any transient status-bar text. _refresh_title()
         # sets the real document-name title as soon as the editor is ready.
         self.frame = wx.Frame(None, title="Quill", size=(1000, 700))
+        # Maximized on a fresh machine, and the way you left it on one you have
+        # used. Until now QUILL opened at 1000x700 every launch and forgot
+        # whatever you did to the window -- which on a small window is where the
+        # clipped labels and four-row lists come from, and which nobody who
+        # picked the number would ever see. One store for the whole family
+        # (quill/core/window_geometry.py).
+        from quill.ui.window_state import apply_window_geometry
+
+        apply_window_geometry(self.frame, "quill", default_size=(1000, 700))
         # Radio/podcast player controllers parent themselves on self.frame, so
         # they must be built after the frame exists (AttributeError otherwise).
         self._init_radio()
@@ -1412,7 +1429,18 @@ class MainFrame(
         self.statusbar.SetSizer(self._statusbar_sizer)
         layout.Add(self.statusbar, 0, wx.EXPAND)
         self.frame.SetSizer(layout)
-        if not self._first_run_wizard_pending:
+        # True while the first windows are being built. The launch cue already
+        # announces this moment, so the document cue is suppressed for anything
+        # that opens as *part of* starting -- two sounds arriving together read
+        # as one muddled noise, and the fix is not a pause: they are one event
+        # announced twice. Nobody opened the document that comes with the app.
+        self.starting_up = True
+        # A blank document unless the user has said otherwise. Off is a real
+        # preference and had no way to be expressed: somebody who always opens
+        # an existing file was handed an Untitled to close on every launch. The
+        # same setting name and default QuillLite uses.
+        wants_blank = bool(getattr(self.settings, "open_blank_document_at_startup", True))
+        if not self._first_run_wizard_pending and wants_blank:
             # #606: skip the default tab when the wizard is about to run,
             # so the wizard modal opens on an empty notebook rather than
             # on top of an "Untitled" tab. _maybe_run_first_run_onboarding
@@ -1481,6 +1509,12 @@ class MainFrame(
 
     def show(self) -> None:
         self.frame.Show(True)
+        # The longest silence in the product is a launch: a window appears, the
+        # reader announces a title, and nothing before that says the
+        # double-click worked.
+        self.cue_app_started()
+        # Everything from here on is somebody's doing, and says so.
+        self.starting_up = False
         # Bring the window to the front and focus the editor, so it doesn't open
         # behind the launching console (screen-reader users land in the editor).
         # On Windows, Raise() is blocked by focus-stealing prevention when the
@@ -1992,6 +2026,10 @@ class MainFrame(
         editor.Bind(wx.EVT_SET_FOCUS, self._on_editor_caret_activity)
         editor.Bind(wx.EVT_CONTEXT_MENU, self._on_editor_context_menu)
         editor.Bind(wx.EVT_TEXT_COPY, self._on_editor_text_copy)
+        # Cut, copy and paste are stock commands the control handles
+        # itself, so there is no QUILL method to add a cue to -- and
+        # three routes reach them. These events fire for all three.
+        self.bind_clipboard_cues(editor)
 
     def _on_editor_char_hook(self, event: object) -> None:
         wx = self._wx
@@ -2053,6 +2091,7 @@ class MainFrame(
             replacement = smart_quote_for(preceding, typed)
             if replacement != typed:
                 editor.WriteText(replacement)
+                self.cue_typing_assist("autocorrect")
                 return True
             return False
         if typed == "-" and dashes:
@@ -2061,6 +2100,7 @@ class MainFrame(
             if is_dash_merge(preceding):
                 editor.Replace(position - 1, position, EM_DASH)
                 editor.SetInsertionPoint(position - 1 + len(EM_DASH))
+                self.cue_typing_assist("autocorrect")
                 return True
         return False
 
@@ -3358,7 +3398,25 @@ class MainFrame(
         has_selection = sel_end > sel_start
         link_target = find_link_at_cursor(text, caret) if text else None
 
-        # --- Link actions appear first when the caret sits on a link. ---
+        # --- Corrections come first when the caret is in a misspelled word. ---
+        # First, and not in a submenu, and the reason is the same one that makes
+        # this menu worth building at all: a sighted user finds a misspelling by
+        # looking for a red squiggle and right-clicks it, and a screen-reader
+        # user has no squiggle. The Applications key is their squiggle -- so the
+        # first Down arrow has to land on the correction itself, not on Undo and
+        # not on a "Spelling Suggestions" submenu that costs a Right arrow and a
+        # pause before anything is said.
+        spell_context = None
+        if spell_on:
+            from quill.core.spelling.context_menu import spelling_context
+
+            spell_context = spelling_context(
+                text, caret, self._spell_dictionary(), self.spell_ignores()
+            )
+        if spell_context is not None:
+            self._append_spelling_corrections(menu, spell_context)
+
+        # --- Link actions appear next when the caret sits on a link. ---
         if link_target:
             open_link_id = wx.NewIdRef()
             copy_link_id = wx.NewIdRef()
@@ -3541,58 +3599,6 @@ class MainFrame(
             menu.Bind(wx.EVT_MENU, lambda _e: self.open_spell_check_dialog(), id=spell_id)
             menu.Bind(wx.EVT_MENU, lambda _e: self.next_misspelling(), id=next_spell_id)
             menu.Bind(wx.EVT_MENU, lambda _e: self.previous_misspelling(), id=prev_spell_id)
-
-            dictionary = self._spell_dictionary()
-            misspelling = misspelling_at_position(text, caret, dictionary)
-            if misspelling is not None:
-                spelling_menu = wx.Menu()
-                suggestions = suggest_words(misspelling.word, dictionary)
-                if suggestions:
-                    for suggestion in suggestions:
-                        item_id = wx.NewIdRef()
-                        spelling_menu.Append(item_id, suggestion)
-
-                        def _apply_replacement(
-                            _event,
-                            replacement: str = suggestion,
-                            start: int = misspelling.start,
-                            end: int = misspelling.end,
-                            original: str = misspelling.word,
-                        ) -> None:
-                            self.editor.Replace(start, end, replacement)
-                            self.document.set_text(self.editor.GetValue())
-                            self._set_status(f'Replaced "{original}" with "{replacement}"')
-
-                        spelling_menu.Bind(wx.EVT_MENU, _apply_replacement, id=item_id)
-                else:
-                    empty_id = wx.NewIdRef()
-                    item = spelling_menu.Append(empty_id, "(No suggestions)")
-                    item.Enable(False)
-                spelling_menu.AppendSeparator()
-                add_menu = wx.Menu()
-                personal_id = wx.NewIdRef()
-                document_id = wx.NewIdRef()
-                project_id = wx.NewIdRef()
-                add_menu.Append(personal_id, "Personal dictionary")
-                add_menu.Append(document_id, "Document dictionary")
-                add_menu.Append(project_id, "Project dictionary")
-                add_menu.Bind(
-                    wx.EVT_MENU,
-                    lambda _e, word=misspelling.word: self._add_word_to_dictionary_scope(word, 0),
-                    id=personal_id,
-                )
-                add_menu.Bind(
-                    wx.EVT_MENU,
-                    lambda _e, word=misspelling.word: self._add_word_to_dictionary_scope(word, 1),
-                    id=document_id,
-                )
-                add_menu.Bind(
-                    wx.EVT_MENU,
-                    lambda _e, word=misspelling.word: self._add_word_to_dictionary_scope(word, 2),
-                    id=project_id,
-                )
-                spelling_menu.AppendSubMenu(add_menu, "Add to dictionary")
-                menu.AppendSubMenu(spelling_menu, "Spelling Suggestions")
 
         # --- Thesaurus (core.dictionary). ---
         if dict_on and thesaurus_engine.is_available():
@@ -3877,6 +3883,10 @@ class MainFrame(
         # Remember the active document's cursor position before we exit, so it is
         # restored next time that file is opened (last-position memory).
         self._remember_active_caret()
+        # Only on a real exit: in tray mode this path *hides* the window, and a
+        # goodbye for something that has not gone would be a lie told once a day.
+        if self._is_exiting or not getattr(self.settings, "tray_enabled", False):
+            self.cue_app_exiting()
         # Tray mode hides instead of closing -- but only for a plain close, and a
         # failure in the tray path must never trap the window open.
         if not self._is_exiting:
@@ -5205,6 +5215,7 @@ class MainFrame(
             item.Enable(False)
             self._recent_menu.AppendSeparator()
             self._recent_menu.Append(self._id_clear_recent, "C&lear Recent Files")
+            self._reapply_menu_routes()
             return
         for path in self.recent_files:
             menu_id = self._wx.NewIdRef()
@@ -5212,6 +5223,30 @@ class MainFrame(
             self._recent_menu_ids[int(menu_id)] = path
         self._recent_menu.AppendSeparator()
         self._recent_menu.Append(self._id_clear_recent, "C&lear Recent Files")
+        # A rebuilt submenu has no routes: these rows are file paths, built here
+        # rather than in the menu-bar build, so they never met the pass. Without
+        # this they are the only rows in QUILL with no keyboard route at all --
+        # which is exactly the silent gap the gate is meant to catch.
+        self._reapply_menu_routes()
+
+    def _reapply_menu_routes(self) -> None:
+        """Re-run the Alt-path pass over the current menu bar.
+
+        For the menus that are rebuilt or re-enabled *outside*
+        ``_build_menu_bar``: Open Recent, the podcast submenu, and the
+        contextual rows that come and go with the document's format. The pass
+        is idempotent, so this is safe to call as often as those change, and it
+        is cheap enough that no call site has to reason about which subtree its
+        change could have reached.
+        """
+        from quill.ui.menu_routes import reapply_menu_routes
+
+        try:
+            reapply_menu_routes(self.frame)
+        except (AttributeError, RuntimeError):
+            # A frame mid-teardown, or a test double with no menu bar. A missing
+            # route is a smaller failure than a menu refresh that raises.
+            pass
 
     def _on_open_recent(self, event: object) -> None:
         menu_id = event.GetId()
@@ -5429,6 +5464,11 @@ class MainFrame(
             if menu_item is not None:
                 menu_item.Enable(html_only)
         self._refresh_language_menu_radio(menu_bar)
+        # A row that was disabled when the pass last ran was skipped on purpose,
+        # so a row that has just been *enabled* has no route yet. Re-running the
+        # pass here is what keeps "every enabled item advertises a route" true
+        # of a document whose format has changed, not only of a fresh launch.
+        self._reapply_menu_routes()
 
     def _announce_result(self, message: str) -> None:
         """Set the status bar text and force-speak an explicit command result.
@@ -5812,6 +5852,10 @@ class MainFrame(
         # to raise TypeError and crash the error path trying to report a failure.
         if style is None:
             style = self._wx.OK | self._wx.ICON_INFORMATION
+        # Here rather than at forty call sites, which is the only reason the
+        # tones can be trusted to agree with the icons: the style flag is
+        # already correct by the time it reaches this wrapper.
+        self.cue_message(style)
         speak_transitions = getattr(
             getattr(self, "settings", None), "announce_dialog_transitions", False
         )
@@ -6661,6 +6705,7 @@ class MainFrame(
         self.notebook.DeletePage(index)
         del self._document_tabs[index]
         self._fire_quillin_event("document.after_close", close_context)
+        self.cue_document_closed()
         if not self._document_tabs:
             self._create_document_tab(Document(), select=True)
             self._refresh_sessions_menu()
@@ -7008,6 +7053,8 @@ class MainFrame(
             "title": loaded.name or selected_path.name,
         }
         self._fire_quillin_event("document.opened", open_context)
+        if not getattr(self, "starting_up", False):
+            self.cue_document_opened()
         fire_file_type = getattr(self, "fire_quillin_file_type_event", None)
         if callable(fire_file_type):
             try:
@@ -7442,65 +7489,6 @@ class MainFrame(
             else:
                 self._set_status("Extend selection mode off.")
 
-    def start_selection(self) -> None:
-        self._selection_anchor = self.editor.GetInsertionPoint()
-        post_sound(SoundEvent.SELECTION_STARTED)
-        text = self.editor.GetValue()
-        line, col = line_column_for_position(text, self._selection_anchor)
-        self._set_status(f"Selection started at line {line}, column {col}.")
-
-    def complete_selection(self) -> None:
-        if self._selection_anchor is None:
-            self._set_status("No selection anchor. Press F8 to set one.")
-            return
-        caret = self.editor.GetInsertionPoint()
-        start = min(self._selection_anchor, caret)
-        end = max(self._selection_anchor, caret)
-        self.editor.SetSelection(start, end)
-        if start != end:
-            self._last_selection = (start, end)
-            post_sound(SoundEvent.SELECTION_COMPLETED)
-        self._selection_anchor = None
-        text = self.editor.GetValue()
-        s_line, s_col = line_column_for_position(text, start)
-        e_line, e_col = line_column_for_position(text, end)
-        char_count = end - start
-        self._set_status(
-            f"Selected {char_count} character{'s' if char_count != 1 else ''},"
-            f" line {s_line} column {s_col} to line {e_line} column {e_col}."
-        )
-
-    def reselect(self) -> None:
-        if self._last_selection is None:
-            self._set_status("No previous selection to restore.")
-            return
-        start, end = self._last_selection
-        text_len = len(self.editor.GetValue())
-        start = min(start, text_len)
-        end = min(end, text_len)
-        if start == end:
-            self._set_status("Previous selection is no longer valid.")
-            return
-        self.editor.SetSelection(start, end)
-        text = self.editor.GetValue()
-        s_line, s_col = line_column_for_position(text, start)
-        e_line, e_col = line_column_for_position(text, end)
-        char_count = end - start
-        self._set_status(
-            f"Reselected {char_count} character{'s' if char_count != 1 else ''},"
-            f" line {s_line} column {s_col} to line {e_line} column {e_col}."
-        )
-
-    def go_to_start_of_selection(self) -> None:
-        start, end = self.editor.GetSelection()
-        if start == end:
-            self._set_status("No selection.")
-            return
-        self.editor.SetInsertionPoint(start)
-        text = self.editor.GetValue()
-        line, col = line_column_for_position(text, start)
-        self._set_status(f"Moved to start of selection: line {line}, column {col}.")
-
     def copy_all(self) -> None:
         text = self.editor.GetValue()
         if not text:
@@ -7607,8 +7595,10 @@ class MainFrame(
             return
         if hasattr(self.editor, "CanUndo") and self.editor.CanUndo():
             self.editor.Undo()
+            self.cue_undo(moved=True)
             self._set_status("Undo")
             return
+        self.cue_undo(moved=False)
         self._set_status("Nothing to undo")
 
     def redo(self) -> None:
@@ -7617,8 +7607,10 @@ class MainFrame(
             return
         if hasattr(self.editor, "CanRedo") and self.editor.CanRedo():
             self.editor.Redo()
+            self.cue_redo(moved=True)
             self._set_status("Redo")
             return
+        self.cue_redo(moved=False)
         self._set_status("Nothing to redo")
 
     def _apply_soft_wrap(self, enabled: bool) -> None:
@@ -8961,19 +8953,58 @@ class MainFrame(
         self._set_status(f"Sound notifications {state}")
 
     def open_sound_events_dialog(self) -> None:
+        """Tools > Sound Scheme: every event, what it plays, and whether it does.
+
+        One window rather than the two this replaced. There used to be a
+        checklist that could silence an event and a settings field that chose a
+        pack, and nothing anywhere that could play a sound or change one -- so
+        the only way to hear what an earcon was before switching it off was to
+        make the thing happen that fires it. A window about sound that you
+        cannot hear is most of a window.
+
+        The command id is unchanged (``tools.sound_events``) so anybody who has
+        bound a key to it keeps that key.
+        """
+        from pathlib import Path
+
+        from quill.core.paths import app_data_dir
         from quill.core.settings import save_settings
+        from quill.core.sound_pack import available_sound_packs
+        from quill.core.sound_scheme import user_schemes
         from quill.ui import sound_manager
-        from quill.ui.sound_events_dialog import SoundEventsDialog
+        from quill.ui.sound_scheme_dialog import SoundSchemeDialog, draft_for_pack
 
         disabled_str = str(getattr(self.settings, "sound_events_disabled", ""))
         disabled = frozenset(e.strip() for e in disabled_str.split(",") if e.strip())
-        loaded = sound_manager.get_loaded_events()
-        dialog = SoundEventsDialog(self.frame, disabled, loaded_events=loaded or None)
-        result = self._show_modal_dialog(dialog, "Sound Events")
-        if result == self._wx.ID_OK:
-            self.settings.sound_events_disabled = dialog.get_disabled()
-            save_settings(self.settings)
-            sound_manager.on_settings_changed(self.settings)
+        current = str(getattr(self.settings, "sound_pack_path", ""))
+        data_dir = app_data_dir()
+        schemes: list[tuple[str, str]] = [
+            (pack.name, pack.setting_value) for pack in available_sound_packs()
+        ]
+        schemes.extend((s.name, s.setting_value) for s in user_schemes(data_dir))
+        dialog = SoundSchemeDialog(
+            self.frame,
+            draft=draft_for_pack(current),
+            disabled=disabled,
+            data_dir=data_dir,
+            available=schemes,
+            current_pack=current,
+            play=lambda path: sound_manager.preview_file(Path(path)),
+            announce=self._announce_result,
+            app_title="QUILL",
+            # No roster: QUILL is the full editor and the intent is that it can
+            # fire everything, so it is offered everything. An event it declares
+            # and never posts is a gap in QUILL to close, not a row to hide.
+            app_id="quill",
+        )
+        result = dialog.show()
+        if not result.changed:
+            return
+        self.settings.sound_events_disabled = result.disabled_csv
+        self.settings.sound_pack_path = result.pack_path
+        save_settings(self.settings)
+        sound_manager.on_settings_changed(self.settings)
+        self._set_status("Sound scheme saved")
 
     def post_to_mastodon(self) -> None:
         """Compose and publish the selection (or the whole document) to Mastodon.

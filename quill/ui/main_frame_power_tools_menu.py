@@ -335,10 +335,30 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
     # Format > Whitespace (trim blank lines) ---------------------------
     add(
         id="power.trim_blank_lines",
-        title="Trim Blank Lines",
+        title="Trim Blank Lines at the Ends",
         top_level="Format",
         group="trim_blank",
-        label="Trim &Blank Lines",
+        label="Trim &Blank Lines at the Ends",
+        separator_before=False,
+    )
+    # Its companion, and deliberately a separate command: trimming the two ends
+    # is what you want before pasting a fragment, removing all of them is what
+    # you want after a copy out of a web page, and one item that did whichever
+    # would be an item nobody could predict. Added with the shared
+    # ``format_ops.remove_blank_lines`` that QuillLite needed -- see
+    # PowerToolsActionsMixin.remove_blank_lines for why it lands here too.
+    #
+    # The two names say where rather than how much (2026-09-10). "Trim" and
+    # "Remove" are near-synonyms read aloud one after the other, and two adjacent
+    # menu items whose difference is a verb choice is a menu you have to try to
+    # understand -- so the titles carry "at the Ends" and "Every", which is the
+    # actual difference between them.
+    add(
+        id="power.remove_blank_lines",
+        title="Remove Every Blank Line",
+        top_level="Format",
+        group="trim_blank",
+        label="Remove Every Blan&k Line",
         separator_before=False,
     )
 

@@ -255,7 +255,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         # spoken by a screen reader on focus -- otherwise the only sign of Safe
         # Mode was a feature silently refusing when the user tried to use it.
         title = f"{_TITLE} (Safe Mode)" if safe_mode else _TITLE
-        self._init_app_shell(title, safe_mode=safe_mode, size=(720, 540))
+        self._init_app_shell(title, safe_mode=safe_mode, size=(720, 540), app_id="studio")
         # F1 context help with the Studio's authored purpose catalogue. The app
         # shell already activated the shared engine (provider + dialog-contract
         # hook + main-frame F1); this re-activation swaps in the Studio's

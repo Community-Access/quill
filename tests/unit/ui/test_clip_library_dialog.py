@@ -11,6 +11,12 @@ from quill.core.clip_library import ClipLibrary
 from quill.core.fragment import Fragment, FragmentFormat
 from quill.ui.clip_library_dialog import ClipLibraryDialog
 
+#: Serialized onto one worker under ``-n --dist loadgroup``: this file uses
+#: the real Windows clipboard (wx.TheClipboard.Open/GetData), which the whole
+#: desktop shares -- this is the file whose worker died in 2026-08.
+#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
+pytestmark = pytest.mark.machine_global
+
 
 @pytest.fixture(scope="module")
 def wx_app():

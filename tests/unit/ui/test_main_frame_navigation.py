@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 
 import quill.ui.main_frame as main_frame_module
-import quill.ui.main_frame_spellcheck as main_frame_spellcheck_module
 from quill.core.a11y_regions import RegionTracker
 from quill.core.document import Document
 from quill.core.epub import EpubBook, EpubChapter, EpubHeading
@@ -15,6 +14,7 @@ from quill.core.features import FEATURE_DEFINITIONS, PROFILE_DEFINITIONS, featur
 from quill.core.locations import LocationRing
 from quill.core.search import SearchOptions
 from quill.core.spellcheck import Misspelling
+from quill.ui import main_frame_spell_voice
 from quill.ui.main_frame import MainFrame
 
 
@@ -1365,7 +1365,13 @@ def test_find_next_does_not_wrap_when_setting_disabled() -> None:
 
     frame.find_next()
 
-    assert frame._status_message == "No matches found from the current position"
+    # Reworded 2026-09-10: the old sentence named neither the end it stopped at
+    # nor the fix. Wrapping-off is not "there is no such text" -- the answer is
+    # to go to the other end and press again -- and a listener who is told the
+    # wrong one of those stops looking for a word that is in the document.
+    assert frame._status_message == (
+        "No more matches. Reached the end of the document, and wrapping is off."
+    )
 
 
 def test_find_next_wraps_when_setting_enabled() -> None:
@@ -1541,19 +1547,20 @@ def test_print_document_cancel_reports_cancelled() -> None:
 
 
 def test_spellcheck_hint_bell_debounces_same_word(monkeypatch: pytest.MonkeyPatch) -> None:
-    frame = _build_frame("alpha wrng", insertion_point=6)
+    # A *finished* word: the alert now asks "what word did you just complete?"
+    # rather than "is a word starting exactly at the caret misspelled?", which
+    # is a question typing left to right never produces -- and is why this
+    # feature had never once fired outside a test.
+    frame = _build_frame("alpha wrng ", insertion_point=11)
     bells: list[str] = []
     frame._wx = type("WX", (), {"Bell": staticmethod(lambda: bells.append("bell"))})()
     frame._last_live_misspelling_feedback = None
     frame._last_live_misspelling_feedback_at = 0.0
     frame._spell_dictionary = lambda: {"alpha"}  # type: ignore[method-assign]
-    monkeypatch.setattr(
-        main_frame_spellcheck_module,
-        "find_next_misspelling",
-        lambda *_args, **_kwargs: Misspelling("wrng", 6, 10),
-    )
     ticks = iter([10.0, 10.1, 11.2])
-    monkeypatch.setattr(main_frame_spellcheck_module.time, "monotonic", lambda: next(ticks))
+    # The hint moved to main_frame_spell_voice when "how a misspelling is
+    # voiced" became one subject in one module.
+    monkeypatch.setattr(main_frame_spell_voice.time, "monotonic", lambda: next(ticks))
 
     frame._announce_spellcheck_hint()
     frame._announce_spellcheck_hint()

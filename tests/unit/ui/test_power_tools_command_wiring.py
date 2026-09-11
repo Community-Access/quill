@@ -80,6 +80,10 @@ _POWER_TOOLS_COMMAND_IDS = [
     "power.copy_as_email_body",
     # §4.22/§4.23 TextMonkey/EdSharp-parity additions
     "power.trim_blank_lines",
+    # Its companion, added 2026-09-10 with the shared format_ops helper
+    # QuillLite needed. Two commands rather than one because trimming the ends
+    # and emptying the middle are different jobs -- see the manifest comment.
+    "power.remove_blank_lines",
     "power.strip_html_tags",
     "power.decode_html_entities",
     "power.encode_html_entities",
@@ -350,6 +354,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
         ],
         "trim_blank": [
             "power.trim_blank_lines",
+            "power.remove_blank_lines",
         ],
         "html_encoding": [
             "power.strip_html_tags",

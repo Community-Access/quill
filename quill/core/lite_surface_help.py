@@ -82,6 +82,14 @@ PURPOSES: dict[str, str] = {
         "rest -- theme, word wrap, and the editor font -- are also on the View "
         "menu, where you will reach them faster."
     ),
+    "Spelling Announcements": (
+        "How a misspelled word is reported to you. A misspelling is the one "
+        "thing an editor cannot convey by speech alone -- receive and recieve "
+        "sound identical -- so the letters are the answer, and this window "
+        "decides when you get them and how they are said. Three groups: what "
+        "happens while you type, how letters are spoken, and how long each "
+        "pause is before the spelling follows."
+    ),
     "File format": (
         "How this document will be written back to disk: which character "
         "encoding, and which line endings. QuillLite normally writes back "
@@ -135,9 +143,22 @@ PURPOSES: dict[str, str] = {
     "Customize QuillLite Features": (
         "Turn whole parts of QuillLite on or off. Unchecking an area removes its "
         "menu and its keys entirely, which is how this stays a small editor "
-        "without being a poor one. Three areas start switched off and are found "
-        "here rather than hidden: autocorrect, timestamped backups, and Go To "
+        "without being a poor one. Type in the search box to narrow the list, or "
+        "choose a profile -- Notepad, WordPad, Recommended, Everything -- to set "
+        "them all at once. Three areas start switched off and are found here "
+        "rather than hidden: autocorrect, timestamped backups, and Go To "
         "Anything."
+    ),
+    "Keyboard Manager": (
+        "Every command QuillLite has, with the key it answers to. Type part of a "
+        "command's name to find it, or press Record a Key and press a "
+        "combination to be told what that key already does. Assigning a key "
+        "somebody else has names them and asks before moving it. Insert is never "
+        "bindable: it is the key NVDA and JAWS use as their own modifier."
+    ),
+    "Key for": (
+        "Press the key combination you want, and it appears in the box. Pressing "
+        "another replaces it. Escape leaves the command on the key it has now."
     ),
     "Command Palette": (
         "Every command QuillLite has, searchable, with its key beside it. A menu "

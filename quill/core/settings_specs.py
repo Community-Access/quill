@@ -10,8 +10,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
+
 #: Bump when the exported document shape changes in a backward-incompatible way.
 SCHEMA_VERSION = 1
+
+#: The four feedback modes as a spec's ``choices`` tuple. Derived from the one
+#: list rather than retyped, so QUILL's Preferences page and QuillLite's cannot
+#: end up describing the same four modes in different words -- which reads as
+#: two settings rather than one, and sends somebody looking for the other.
+_FEEDBACK_CHOICES: tuple[tuple[str, str], ...] = tuple(
+    (str(mode), label) for mode, label in ACTION_FEEDBACK_LABELS
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -105,8 +115,8 @@ SETTING_GROUPS: tuple[SettingGroup, ...] = (
     ),
     SettingGroup(
         "spelling",
-        "Spelling Review",
-        "Behavior of the F7 guided spelling review dialog.",
+        "Spelling",
+        "How a misspelling is reported: the F7 review, the letters, and the alert while you type.",
     ),
     SettingGroup(
         "experimental",
@@ -1151,6 +1161,37 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "never power down and clip the start of the next sound. Turn this on if "
         "the first moment of earcons or speech is cut off after a quiet pause.",
         keywords=("sound", "keepalive", "usb", "bluetooth", "clipping", "audio"),
+    ),
+    SettingSpec(
+        "action_feedback",
+        "When a command does something, give me",
+        "accessibility",
+        "choice",
+        (
+            "How a copy, paste, undo or started selection reports back. A sound "
+            "is what QUILL has always done and stays the default. Speak the "
+            "action says the word instead, which is what you want before you "
+            "have learned the tones. A moment with no sound in the pack speaks "
+            "whichever you pick, and a command that could not do what you asked "
+            "always says so in words -- this chooses between two kinds of "
+            "feedback, never a way to end up with none."
+        ),
+        choices=_FEEDBACK_CHOICES,
+        keywords=("feedback", "earcon", "sound", "speech", "copy", "paste", "undo", "silent"),
+    ),
+    SettingSpec(
+        "find_not_found_feedback",
+        "When a search finds nothing, give me",
+        "accessibility",
+        "choice",
+        (
+            "Asked separately from the setting above because F3 is pressed in "
+            'runs: hearing "Not found" spoken on every press is the '
+            "fastest way to end up turning speech off altogether. The status "
+            "bar carries the words whichever you pick."
+        ),
+        choices=_FEEDBACK_CHOICES,
+        keywords=("find", "search", "not found", "feedback", "sound", "speech", "f3"),
     ),
     SettingSpec(
         "sound_events_disabled",
@@ -2306,6 +2347,158 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
             ("paragraph", "Full paragraph"),
         ),
         keywords=("spelling", "context", "review", "f7", "sentence", "paragraph"),
+    ),
+    SettingSpec(
+        "open_blank_document_at_startup",
+        "Open a blank document at startup",
+        "general",
+        "bool",
+        "Start with an empty Untitled document when nothing else is being opened. "
+        "Turn it off if you always open an existing file: without this you are "
+        "handed a blank document to close on every launch. Files named on the "
+        "command line, a restored session and recovered work all still open.",
+        keywords=("startup", "blank", "untitled", "new", "document", "launch"),
+    ),
+    # --- Spelling voicing: the letters, the timings, the alert -------------
+    # Why any of this is tunable: a misspelling is the one thing in an editor
+    # that speech alone cannot convey -- "receive" and "recieve" are the same
+    # sound -- so the letters are the answer, and how fast somebody wants that
+    # answer is a fact about them and their synthesiser rather than about the
+    # program. See quill/core/spelling/voicing.py.
+    SettingSpec(
+        "spell_aloud_enabled",
+        "Spell misspelled words out letter by letter",
+        "spelling",
+        "bool",
+        "After a misspelled word is announced, spell it out after a short pause. "
+        "Without this a listener is told a word they cannot tell from the correct "
+        "one, because the two sound identical. Turn it off if you would rather "
+        "read the word in braille or on screen.",
+        keywords=("spelling", "spell out", "letters", "speech", "announce"),
+    ),
+    SettingSpec(
+        "spell_aloud_delay_ms",
+        "Pause before spelling a word (milliseconds)",
+        "spelling",
+        "int",
+        "How long to wait after a word is announced before spelling it out (100 to "
+        "5000). The pause is what lets you move on before the spelling starts: "
+        "press the next key and it is cancelled unheard. Default is 800.",
+        minimum=100,
+        maximum=5000,
+        keywords=("spelling", "pause", "delay", "timing", "spell out"),
+    ),
+    SettingSpec(
+        "spell_aloud_on_navigation",
+        "Spell the word when you move to a misspelling",
+        "spelling",
+        "bool",
+        "Spell out each misspelling you reach with Next or Previous Misspelling. "
+        "Your screen reader reads the word itself because it is selected; this "
+        "adds the part it cannot know, which is which letters are wrong.",
+        keywords=("spelling", "navigate", "next misspelling", "spell out"),
+    ),
+    SettingSpec(
+        "spell_aloud_navigation_delay_ms",
+        "Pause before spelling when moving between misspellings (milliseconds)",
+        "spelling",
+        "int",
+        "A separate, shorter pause for Next and Previous Misspelling (100 to 5000), "
+        "because you may be travelling through a document rather than stopped and "
+        "deciding. Default is 600.",
+        minimum=100,
+        maximum=5000,
+        keywords=("spelling", "pause", "delay", "timing", "navigate"),
+    ),
+    SettingSpec(
+        "spell_aloud_suggestions",
+        "Spell each suggestion as you arrow through them",
+        "spelling",
+        "bool",
+        "In the spelling review and the suggestions window, spell out whichever "
+        "correction you land on. Choosing between two spellings by ear is exactly "
+        "as impossible in a list as it is in the document.",
+        keywords=("spelling", "suggestions", "spell out", "review"),
+    ),
+    SettingSpec(
+        "spell_aloud_suggestion_delay_ms",
+        "Pause before spelling a suggestion (milliseconds)",
+        "spelling",
+        "int",
+        "How long to wait after landing on a suggestion before spelling it out "
+        "(100 to 5000). Arrowing on cancels it. Default is 600.",
+        minimum=100,
+        maximum=5000,
+        keywords=("spelling", "suggestions", "pause", "delay", "timing"),
+    ),
+    SettingSpec(
+        "spell_aloud_first_suggestion",
+        "Spell the first suggestion on arrival",
+        "spelling",
+        "bool",
+        "When the review reaches a new misspelling, spell out the top suggestion as "
+        "well as the word. Off by default: it doubles the arrival announcement, "
+        "which is welcome when you are learning a word and noise when you are "
+        "checking one.",
+        keywords=("spelling", "suggestions", "review", "spell out"),
+    ),
+    SettingSpec(
+        "spell_aloud_style",
+        "How letters are spoken",
+        "spelling",
+        "choice",
+        "Plain letters are fastest. The phonetic alphabet is unambiguous where B, "
+        "D, E, P, T and V are one sound with a rumour attached -- a fast voice, a "
+        "poor speaker, a noisy room. Both is for learning a word rather than "
+        "checking one.",
+        choices=(
+            ("letters", "Letters (R, E, C)"),
+            ("phonetic", "Phonetic alphabet (romeo, echo, charlie)"),
+            ("both", "Letters, then the phonetic alphabet"),
+        ),
+        keywords=("spelling", "phonetic", "nato", "letters", "alphabet"),
+    ),
+    SettingSpec(
+        "spell_aloud_capitals",
+        "Say which letters are capitals",
+        "spelling",
+        "bool",
+        'Prefix an upper-case letter with "cap", so MacDonald and Macdonald are '
+        "told apart. Letters are spoken in upper case whatever the word does, "
+        "because several voices read a lone lower-case letter as a word.",
+        keywords=("spelling", "capitals", "case", "letters"),
+    ),
+    SettingSpec(
+        "spelling_alert_sound",
+        "Play a sound when you type a misspelling",
+        "spelling",
+        "bool",
+        "A short falling blip when a completed word is not in the dictionary. It is "
+        "a sound rather than speech on purpose: speaking it would interrupt the "
+        "sentence it is commenting on. Turn it off for silence; the status bar "
+        "still says so and F7 still finds everything.",
+        keywords=("spelling", "sound", "earcon", "alert", "typing", "silence"),
+    ),
+    SettingSpec(
+        "spelling_alert_speech",
+        "Also say the word when you type a misspelling",
+        "spelling",
+        "bool",
+        "Speak the misspelling as you type, as well as the sound. Off by default, "
+        "and deliberately: an interruption while you are composing costs more than "
+        "it tells you, and the same word is one keystroke away with Shift+F7.",
+        keywords=("spelling", "speech", "announce", "typing", "alert"),
+    ),
+    SettingSpec(
+        "spelling_alert_repeat_ms",
+        "Shortest gap between two alerts for the same word (milliseconds)",
+        "spelling",
+        "int",
+        "Stops one stubborn name becoming a drum while you edit around it (0 to "
+        "10000). Zero means alert every time. Default is 750.",
+        minimum=0,
+        maximum=10000,
+        keywords=("spelling", "alert", "throttle", "repeat", "timing"),
     ),
     # --- Administration: upgrade and migration behavior --------------------
     SettingSpec(

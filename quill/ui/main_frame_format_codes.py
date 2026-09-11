@@ -19,6 +19,15 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.format_presets import (
+    COLOR_PRESETS,
+    FONT_PRESETS,
+    HIGHLIGHT_PRESETS,
+    INDENT_PRESETS,
+    NAMED_STYLE_PRESETS,
+    SIZE_PRESETS,
+    SPACING_PRESETS,
+)
 from quill.core.format_speech import describe_format_transition, describe_inline_format
 from quill.core.i18n import _
 from quill.core.tagging import (
@@ -30,48 +39,6 @@ from quill.core.tagging import (
 )
 from quill.io.rtf_model import format_at_markdown_offset
 from quill.platform.sr_announce import announce
-
-# Menu presets. Leaf items use plain Append (no keymap command), so they stay
-# clear of the menu_lint binding/label gate while remaining keyboard-navigable.
-_FONT_PRESETS = ("Arial", "Calibri", "Times New Roman", "Courier New", "Verdana", "Georgia")
-_SIZE_PRESETS = (8, 9, 10, 11, 12, 14, 16, 18, 24, 36, 48, 72)
-_COLOR_PRESETS = (
-    ("Black", "#000000"),
-    ("Red", "#C00000"),
-    ("Green", "#008000"),
-    ("Blue", "#0000FF"),
-    ("Orange", "#FF8C00"),
-    ("Purple", "#800080"),
-)
-_HIGHLIGHT_PRESETS = (
-    ("Yellow", "yellow"),
-    ("Green", "green"),
-    ("Turquoise", "turquoise"),
-    ("Pink", "pink"),
-    ("Gray", "gray"),
-)
-_LINE_SPACING_PRESETS = (("Single", "1"), ("1.5 lines", "1.5"), ("Double", "2"))
-_NAMED_STYLE_PRESETS = (
-    ("Quote", "quote"),
-    ("Title", "title"),
-    ("Subtitle", "subtitle"),
-    ("Caption", "caption"),
-)
-# (label, kind, points) for the flattened Paragraph Spacing submenu.
-_SPACING_PRESETS = (
-    ("Space before: 6 points", "before", 6),
-    ("Space before: 12 points", "before", 12),
-    ("Space after: 6 points", "after", 6),
-    ("Space after: 12 points", "after", 12),
-)
-# (label, kind, points) for the flattened Indent submenu.
-_INDENT_PRESETS = (
-    ("Left indent: 18 points", "indent", 18),
-    ("Left indent: 36 points", "indent", 36),
-    ("Left indent: 54 points", "indent", 54),
-    ("First-line indent: 18 points", "first", 18),
-    ("First-line indent: 36 points", "first", 36),
-)
 
 
 class FormatCodesMixin:
@@ -108,10 +75,16 @@ class FormatCodesMixin:
         Called from the Format-menu builder (``main_frame_menu.py``) so the bulk of
         the wiring stays out of that monolith (GATE-11). Id maps are stored on
         ``self`` for :meth:`bind_format_codes` to bind.
+
+        Font Size and Line Spacing each lead with the keyed commands that used to
+        sit flat in the Format menu beside them. That duplication is what put the
+        menu over the thirty-six items an alphabet can seat, so four rows could
+        get no Alt path at all; the fix was removing it rather than demoting
+        anything. See PRD 8.14a.
         """
         self._font_menu_ids: dict[int, str] = {}
         font_menu = wx.Menu()
-        for family in _FONT_PRESETS:
+        for family in FONT_PRESETS:
             font_id = wx.NewIdRef()
             self._font_menu_ids[int(font_id)] = family
             font_menu.Append(font_id, family)
@@ -119,7 +92,14 @@ class FormatCodesMixin:
 
         self._size_menu_ids: dict[int, int] = {}
         size_menu = wx.Menu()
-        for points in _SIZE_PRESETS:
+        size_menu.Append(
+            self._id_format_grow_font, self._menu_label(_("Gro&w Font"), "format.grow_font")
+        )
+        size_menu.Append(
+            self._id_format_shrink_font, self._menu_label(_("Shrin&k Font"), "format.shrink_font")
+        )
+        size_menu.AppendSeparator()
+        for points in SIZE_PRESETS:
             size_id = wx.NewIdRef()
             self._size_menu_ids[int(size_id)] = points
             size_menu.Append(size_id, _("{n} point").format(n=points))
@@ -138,7 +118,7 @@ class FormatCodesMixin:
 
         self._color_menu_ids: dict[int, tuple[str, str]] = {}
         color_menu = wx.Menu()
-        for color_name, color_value in _COLOR_PRESETS:
+        for color_name, color_value in COLOR_PRESETS:
             color_id = wx.NewIdRef()
             self._color_menu_ids[int(color_id)] = (color_value, color_name)
             color_menu.Append(color_id, color_name)
@@ -146,7 +126,7 @@ class FormatCodesMixin:
 
         self._highlight_menu_ids: dict[int, tuple[str, str]] = {}
         highlight_menu = wx.Menu()
-        for hl_name, hl_value in _HIGHLIGHT_PRESETS:
+        for hl_name, hl_value in HIGHLIGHT_PRESETS:
             hl_id = wx.NewIdRef()
             self._highlight_menu_ids[int(hl_id)] = (hl_value, hl_name)
             highlight_menu.Append(hl_id, hl_name)
@@ -165,18 +145,27 @@ class FormatCodesMixin:
         format_menu.Append(self._id_subscript, _("Su&bscript"))
         format_menu.Append(self._id_clear_formatting, _("Clear &Formatting"))
 
-        # Paragraph (block) formatting.
+        # The id map stays even though these three are commands, not presets, so
+        # bind_format_codes has one loop to walk.
         self._line_spacing_ids: dict[int, str] = {}
         line_menu = wx.Menu()
-        for ls_label, ls_value in _LINE_SPACING_PRESETS:
-            ls_id = wx.NewIdRef()
-            self._line_spacing_ids[int(ls_id)] = ls_value
-            line_menu.Append(ls_id, ls_label)
+        line_menu.Append(
+            self._id_format_spacing_single,
+            self._menu_label(_("Sin&gle"), "format.line_spacing_single"),
+        )
+        line_menu.Append(
+            self._id_format_spacing_one_and_a_half,
+            self._menu_label(_("One and a &Half"), "format.line_spacing_one_and_a_half"),
+        )
+        line_menu.Append(
+            self._id_format_spacing_double,
+            self._menu_label(_("&Double"), "format.line_spacing_double"),
+        )
         format_menu.AppendSubMenu(line_menu, _("Line &Spacing"))
 
         self._spacing_ids: dict[int, tuple[str, int]] = {}
         spacing_menu = wx.Menu()
-        for sp_label, sp_kind, sp_pts in _SPACING_PRESETS:
+        for sp_label, sp_kind, sp_pts in SPACING_PRESETS:
             sp_id = wx.NewIdRef()
             self._spacing_ids[int(sp_id)] = (sp_kind, sp_pts)
             spacing_menu.Append(sp_id, sp_label)
@@ -184,7 +173,7 @@ class FormatCodesMixin:
 
         self._indent_ids: dict[int, tuple[str, int]] = {}
         indent_menu = wx.Menu()
-        for in_label, in_kind, in_pts in _INDENT_PRESETS:
+        for in_label, in_kind, in_pts in INDENT_PRESETS:
             in_id = wx.NewIdRef()
             self._indent_ids[int(in_id)] = (in_kind, in_pts)
             indent_menu.Append(in_id, in_label)
@@ -192,7 +181,7 @@ class FormatCodesMixin:
 
         self._named_style_ids: dict[int, str] = {}
         style_menu = wx.Menu()
-        for st_label, st_value in _NAMED_STYLE_PRESETS:
+        for st_label, st_value in NAMED_STYLE_PRESETS:
             st_id = wx.NewIdRef()
             self._named_style_ids[int(st_id)] = st_value
             style_menu.Append(st_id, st_label)

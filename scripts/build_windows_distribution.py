@@ -1610,7 +1610,8 @@ def compile_inno_setup_installer(
     compiler = iscc_path or find_inno_setup_compiler()
     if compiler is None:
         raise RuntimeError(
-            "Inno Setup compiler not found. Install Inno Setup 6 or pass --iscc-path."
+            "Inno Setup compiler not found. Install Inno Setup 7 (quill.iss "
+            "uses the v7 SetupArchitecture directive) or pass --iscc-path."
         )
     subprocess.run([str(compiler), *_inno_sign_args(), str(installer_script)], check=True)
     # The Offline Edition uses a distinct OutputBaseFilename (Quill-Offline-Setup)
@@ -1632,7 +1633,7 @@ def compile_inno_setup_installer(
 
 
 def inno_setup_search_roots() -> list[Path]:
-    """Directories that may contain an ``Inno Setup 6`` installation.
+    """Directories that may contain an Inno Setup installation.
 
     Environment-derived first (so a non-English Windows, a D: system drive, or a
     non-default Program Files location all work), then the usual literals as a
@@ -1663,15 +1664,34 @@ def inno_setup_search_roots() -> list[Path]:
     return unique
 
 
+#: Inno Setup versions to look for, newest first. **Order is load-bearing.**
+#: ``quill.iss`` uses ``SetupArchitecture``, which is a version 7 directive; a
+#: version 6 compiler rejects it outright with "Unrecognized [Setup] section
+#: directive". A machine with both installed -- this one -- built the whole
+#: QuillVille family fine and then failed on QUILL itself, because every app's
+#: ``build_release.ps1`` goes through ``scripts/BuildEnv.ps1``, which has
+#: preferred 7 since 2026-08-17, and this script had its own search that only
+#: ever knew about 6.
+_INNO_SETUP_DIRS = ("Inno Setup 7", "Inno Setup 6")
+
+
 def find_inno_setup_compiler() -> Path | None:
+    """The newest installed Inno Setup compiler, or None.
+
+    The versioned directories are checked *before* ``PATH``: whichever ISCC
+    happens to be on PATH is not necessarily the newest, and picking an older
+    one produces a failure ("Unrecognized [Setup] section directive") that reads
+    like a fault in the script rather than in the compiler choice.
+    """
+    for root in inno_setup_search_roots():
+        for version_dir in _INNO_SETUP_DIRS:
+            candidate = root / version_dir / "ISCC.exe"
+            if candidate.exists():
+                return candidate
     for candidate_name in ("ISCC.exe", "iscc"):
         discovered = shutil.which(candidate_name)
         if discovered:
             return Path(discovered)
-    for root in inno_setup_search_roots():
-        candidate = root / "Inno Setup 6" / "ISCC.exe"
-        if candidate.exists():
-            return candidate
     return None
 
 

@@ -32,9 +32,25 @@ from typing import Any
 import wx
 
 from quill.apps.lite_shell import MAX_NUMBERED
-from quill.core.lite.commands import split_menu, visible_commands
+from quill.core.lite.commands import SUBMENU_SEP, CommandRow, split_menu
+from quill.core.lite.keymap import resolved_commands
 
 __all__ = ["DocumentMenuMixin"]
+
+
+def _quiet_mark(frame: object) -> bool:
+    """Whether the Quiet Mode item should read as checked.
+
+    A module function rather than a method, and that is the whole point:
+    :meth:`DocumentMenuMixin._sync_check_items` is called unbound against stub
+    frames, so a *sibling method* would be exactly the same trap one step along.
+
+    Unchecked when the host cannot answer.
+    :meth:`~quill.apps.lite_window_view.DocumentViewCommandsMixin.sound_is_quiet`
+    already swallows its own failures; this covers the host not having it at all.
+    """
+    quiet = getattr(frame, "sound_is_quiet", None)
+    return bool(quiet()) if callable(quiet) else False
 
 
 class DocumentMenuMixin:
@@ -47,51 +63,80 @@ class DocumentMenuMixin:
         :func:`~quill.core.lite.commands.visible_commands` loses its menu row
         *and* its accelerator, because a key that still fires for a feature
         somebody has turned off is the feature not being off.
+
+        The key in the label is the *resolved* one
+        (:func:`~quill.core.lite.keymap.resolved_commands`), never the literal
+        in the table: what the menu advertises is what the accelerator binds,
+        whether or not the user has rebound it.
+
+        Two passes, and the reason is a wxMSW rule rather than a preference: a
+        ``wx.Menu`` must be **fully populated before** ``AppendSubMenu``
+        attaches it, or the rows added afterwards do not appear. So the rows are
+        grouped by menu first, and a submenu is built complete at the moment its
+        title row is reached in its parent -- which is what lets a submenu sit
+        where the table puts it (Matches under Find) rather than always at the
+        bottom of the menu.
         """
         menu_bar = wx.MenuBar()
-        menus: dict[str, wx.Menu] = {}
-        #: Submenus, built alongside their parent and attached at the end. A
-        #: wx.Menu must be fully populated before AppendSubMenu on wxMSW --
-        #: attach it early and the items added afterwards do not appear.
-        submenus: list[tuple[str, str, wx.Menu]] = []
         self._recent_menu = wx.Menu()
         self._check_items = {}
         self._window_menu_items = []
-        for menu_label, label, key, handler, kind in visible_commands(self.app.feature_enabled):
-            parent_label, child_label = split_menu(menu_label)
-            menu = menus.get(menu_label)
-            if menu is None:
-                menu = wx.Menu()
-                menus[menu_label] = menu
-                if child_label:
-                    # The parent may not exist yet if the submenu's rows come
-                    # first; build it now so the bar order still follows the
-                    # table rather than the order menus happened to be needed.
-                    if parent_label not in menus:
-                        menus[parent_label] = wx.Menu()
-                        menu_bar.Append(menus[parent_label], parent_label)
-                    submenus.append((parent_label, child_label, menu))
-                else:
-                    menu_bar.Append(menu, menu_label)
-            if kind == "sep":
-                menu.AppendSeparator()
+        rows: dict[str, list[CommandRow]] = {}
+        top_level: list[str] = []
+        for row in resolved_commands(self.app.feature_enabled, self.app.keymap):
+            rows.setdefault(row[0], []).append(row)
+            parent_label, _child = split_menu(row[0])
+            if parent_label not in top_level:
+                top_level.append(parent_label)
+        menus: dict[str, wx.Menu] = {}
+        for path in top_level:
+            menu = self._fill_menu(wx.Menu(), path, rows)
+            # A menu with nothing in it reads to a screen reader as a menu that
+            # is broken rather than one that is empty, so it does not go on the
+            # bar at all.
+            if not menu.GetMenuItemCount():
                 continue
-            item_kind = wx.ITEM_CHECK if kind == "check" else wx.ITEM_NORMAL
-            item = menu.Append(wx.ID_ANY, f"{label}	{key}", kind=item_kind)
-            self.Bind(wx.EVT_MENU, self._dispatch(handler), item)
-            if kind == "check":
-                self._check_items[handler] = item
-            if handler == "cmd_open":
-                menu.AppendSubMenu(self._recent_menu, "Open Recen&t")
-        # Now that every submenu is full, hang it off its parent.
-        for parent_label, child_label, child_menu in submenus:
-            menus[parent_label].AppendSubMenu(child_menu, child_label)
+            menus[path] = menu
+            menu_bar.Append(menu, path)
         self._window_menu = menus["&Window"]
         self._window_menu.AppendSeparator()
         self.SetMenuBar(menu_bar)
         self.refresh_recent_menu()
         self.refresh_window_menu()
         self._sync_check_items()
+
+    def _fill_menu(self, menu: wx.Menu, path: str, rows: dict[str, list[CommandRow]]) -> wx.Menu:
+        """Put *path*'s rows into *menu*, building its submenus as they arrive."""
+        for _menu_path, label, key, handler, kind in rows.get(path, []):
+            if kind == "sep":
+                menu.AppendSeparator()
+                continue
+            if kind == "sub":
+                child_path = f"{path}{SUBMENU_SEP}{label}"
+                # visible_commands drops a title whose submenu emptied, so a
+                # missing child here would be a table typo rather than a
+                # switched-off area. Skipped rather than raised: a mistyped
+                # title must not take the whole menu bar down with it.
+                if child_path in rows:
+                    menu.AppendSubMenu(self._fill_menu(wx.Menu(), child_path, rows), label)
+                continue
+            # The tab only when there is a key after it. Every row in the
+            # table ships one, but the Keyboard Manager can leave a command
+            # unbound -- moving a taken key frees the command that had it --
+            # and a label ending in a bare tab is a menu item advertising an
+            # accelerator that is not there, which is the exact regression
+            # class PRD 8.14's binding/label gate names.
+            item = menu.Append(
+                wx.ID_ANY,
+                f"{label}	{key}" if key else label,
+                kind=wx.ITEM_CHECK if kind == "check" else wx.ITEM_NORMAL,
+            )
+            self.Bind(wx.EVT_MENU, self._dispatch(handler), item)
+            if kind == "check":
+                self._check_items[handler] = item
+            if handler == "cmd_open":
+                menu.AppendSubMenu(self._recent_menu, "Open Recen&t")
+        return menu
 
     def rebuild_menus(self) -> None:
         """Build the bar again, after the feature set changed.
@@ -128,6 +173,23 @@ class DocumentMenuMixin:
             "cmd_toggle_overwrite": getattr(self, "_overwrite_mode", False),
             # Checked means Tab types a tab, which is how QuillLite starts.
             "cmd_toggle_tab_mode": getattr(self, "_tab_inserts_literal", True),
+            # Per app, both of them: the status bar is either on screen or not,
+            # and abbreviations either expand or do not, whichever document is
+            # in front of you.
+            "cmd_toggle_status_bar": getattr(self.app.settings, "show_status_bar", True),
+            "cmd_toggle_abbreviations": self.app.feature_enabled("abbreviations"),
+            # Quiet mode is *shared with QUILL*, so the mark cannot be cached on
+            # this frame: the key pressed in another window -- or in the other
+            # editor -- has already changed it by the time this menu opens.
+            #
+            # Reached for defensively, like every other row here. This mixin is
+            # composed onto a host it does not own, ``sound_is_quiet`` lives on a
+            # *different* mixin, and one missing method here does not leave the
+            # menu bar one item short -- it raises inside the build and takes the
+            # whole bar down, which is an app with no menus at all. It took out
+            # two test frames the day it was added, and a test frame is only the
+            # cheap version of that failure.
+            "cmd_toggle_quiet_mode": _quiet_mark(self),
         }
         for handler, checked in marks.items():
             item = self._check_items.get(handler)

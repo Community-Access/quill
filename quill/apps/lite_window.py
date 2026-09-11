@@ -32,15 +32,17 @@ the window itself: its document state, and its file I/O.
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from typing import Any
 
 import wx
 
+from quill.apps.lite_keymap_editor import DocumentKeymapMixin
 from quill.apps.lite_printing import DocumentPrintMixin
 from quill.apps.lite_window_clipboard import DocumentClipboardMixin
 from quill.apps.lite_window_commands import DocumentCommandsMixin
+from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
+from quill.apps.lite_window_file import DocumentFileMixin
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
 from quill.apps.lite_window_history import DocumentHistoryMixin
 from quill.apps.lite_window_lines import DocumentLineMixin
@@ -55,14 +57,11 @@ from quill.apps.lite_window_typing import DocumentTypingMixin
 from quill.apps.lite_window_view import DocumentViewCommandsMixin
 from quill.core.lite import APP_NAME
 from quill.core.lite import recovery as recovery_mod
-from quill.core.lite.filetypes import is_rich_path
-from quill.core.lite.textfile import decode_text, encode_text, write_bytes_atomic
 from quill.core.locations import LocationRing
 from quill.core.numbered_bookmarks import BookmarkSet
-from quill.io.rtf_safety import scan_rtf_safety
+from quill.core.sound_events import SoundEvent
 from quill.ui.dialog_contract import show_message_box
-from quill.ui.richedit_editing import PLAIN, RICH, create_richedit_document
-from quill.ui.richedit_rtf_surface import RichEditRtfError
+from quill.ui.richedit_editing import RICH, create_richedit_document
 
 __all__ = ["DocumentFrame"]
 
@@ -71,9 +70,6 @@ __all__ = ["DocumentFrame"]
 #: both this and the "<file> - QuillLite (<mode>)" form F1 sees at runtime.
 _TITLE = APP_NAME
 
-#: The temp-file suffix a rich save writes beside its target before replacing it.
-_TMP_SUFFIX = ".quilllite-tmp"
-
 
 class DocumentFrame(
     DocumentCommandsMixin,
@@ -81,6 +77,7 @@ class DocumentFrame(
     DocumentViewCommandsMixin,
     DocumentPrintMixin,
     DocumentToolsMixin,
+    DocumentKeymapMixin,
     DocumentLineMixin,
     DocumentHistoryMixin,
     DocumentMarksMixin,
@@ -88,6 +85,8 @@ class DocumentFrame(
     DocumentClipboardMixin,
     DocumentTypingMixin,
     DocumentSpellingMixin,
+    DocumentFileMixin,
+    DocumentContextMenuMixin,
     DocumentMenuMixin,
     DocumentAppearanceMixin,
     DocumentStatusMixin,
@@ -103,7 +102,23 @@ class DocumentFrame(
         recovery_slot: recovery_mod.RecoverySlot | None = None,
     ) -> None:
         settings = app.settings
-        super().__init__(app.shell, wx.ID_ANY, title=_TITLE)
+        # No system menu, and that single missing style is what keeps the menu
+        # bar readable. A *maximised* MDI child -- which is how every document
+        # here opens -- has Windows insert the child's system menu into the
+        # parent's menu bar as a bitmap at the far left, plus minimise, restore
+        # and close bitmaps at the far right. None of the four carries text, and
+        # a screen reader announces that leading one as **"Document"** -- so
+        # pressing Alt landed on "Document" instead of File, and Alt+F opened
+        # the File menu while the bar said something else entirely. Dropping
+        # WS_SYSMENU removes all four; the child still maximises (which
+        # dropping the maximise box would prevent), still has its caption, and
+        # is still closed with Ctrl+W, Alt+F4 or File > Close Window.
+        super().__init__(
+            app.shell,
+            wx.ID_ANY,
+            title=_TITLE,
+            style=wx.DEFAULT_FRAME_STYLE & ~wx.SYSTEM_MENU,
+        )
         self.app = app
         #: This document's number inside the shell. Stable for the life of the
         #: window, because a number that changes when a sibling closes is a
@@ -135,6 +150,9 @@ class DocumentFrame(
         #: The length the bookmarks were last reconciled against, so an edit's
         #: size can be inferred without the control telling us where it changed.
         self._tracked_length = 0
+        # Before _init_spelling, which is the first thing that asks whether a
+        # word is being ignored: the list has to exist before anything reads it.
+        self._init_context_menu()
         # Before the menu bar: _sync_check_items reads _live_spelling to set the
         # Check While Typing mark, and a menu built ahead of the state it
         # mirrors would advertise the wrong answer on the very first open.
@@ -176,6 +194,27 @@ class DocumentFrame(
         # it announces nothing, it only marks the status bar stale.
         self.control.Bind(wx.EVT_KEY_UP, self._on_caret_moved)
         self.control.Bind(wx.EVT_LEFT_UP, self._on_caret_moved)
+        # The Applications key and the right mouse button, one handler. Replaces
+        # the native TextCtrl menu, which cannot know anything about the word
+        # under the caret -- see DocumentContextMenuMixin.
+        self.control.Bind(wx.EVT_CONTEXT_MENU, self._on_editor_context_menu)
+        # Cut, copy and paste, from wx's own events rather than from the three
+        # commands -- so the control's own Ctrl+C is reported too, which a cue
+        # inside cmd_copy could never see. See bind_clipboard_cues.
+        self.bind_clipboard_cues()
+        # A document arriving and a document going are two of the four moments
+        # a desktop has always had a sound for, and a screen reader says
+        # nothing about either: the window title changes, which it reads on
+        # focus, long after the fact.
+        # Except during startup, where the launch cue has already announced this
+        # same moment. Two sounds arriving together read as one muddled noise --
+        # reported exactly that way -- and the fix is not a pause between them:
+        # they are one event announced twice. Starting up *is* getting a
+        # document. Nobody opened it.
+        if not getattr(app, "starting_up", False):
+            self._cue(
+                SoundEvent.DOCUMENT_OPENED if path is not None else SoundEvent.DOCUMENT_CREATED
+            )
         self.Bind(wx.EVT_CLOSE, self._on_close)
         self.Bind(wx.EVT_ACTIVATE, self._on_activate)
         self.Bind(wx.EVT_MENU_OPEN, self._on_menu_open)
@@ -231,6 +270,20 @@ class DocumentFrame(
     def _on_text(self, event: wx.CommandEvent) -> None:
         if not self._loading:
             self._set_modified(True)
+            # Every edit invalidates the counts, so every edit marks the bar
+            # stale -- and _set_modified cannot do it, because it returns early
+            # once the document is already dirty. That left the second edit
+            # onwards refreshing the bar only if a key-up happened to follow,
+            # which a menu command or a context-menu paste never provides: the
+            # word count and the Selection cell simply stopped moving. The touch
+            # is coalesced on a timer, so this costs nothing per keystroke.
+            self._touch_status()
+            # Typing into a selection you are still extending replaces it, so
+            # there is nothing left to extend and the anchor points into text
+            # that has shifted. Ended here rather than from a key code because
+            # a paste and a menu command change the text too, and only one of
+            # the three is a keystroke.
+            self.text_changed_while_extending()
         event.Skip()
 
     def _on_caret_moved(self, event: wx.Event) -> None:
@@ -256,6 +309,10 @@ class DocumentFrame(
         and a listener who was looking away would never know. The wrapper adds the
         screen-reader entry and exit cues a raw ``wx.MessageBox`` has none of.
         """
+        # The error tone, not merely the box. A modal is announced by the
+        # reader when it takes focus, but the *kind* of thing that has happened
+        # is exactly what a tone says faster than a title can.
+        self._cue(SoundEvent.ERROR)
         show_message_box(message, caption, wx.OK | wx.ICON_ERROR, self)
 
     def _apply_editor_help(self) -> None:
@@ -300,210 +357,47 @@ class DocumentFrame(
         self.app.voice.speak(message)
         self._set_status_message(message)
 
-    # ------------------------------------------------------------------ #
-    # Load
-    # ------------------------------------------------------------------ #
+    def _action(self, event: str, message: str) -> None:
+        """Report an action that landed, however the user asked to be told.
 
-    def load(self, path: Path) -> bool:
-        """Open *path* into this window. ``False`` when it could not be read."""
-        path = Path(path)
-        mode = RICH if is_rich_path(path.name) else PLAIN
-        self._loading = True
-        try:
-            if mode == RICH:
-                self._load_rich(path)
-            else:
-                self._load_plain(path)
-        except (OSError, RichEditRtfError) as exc:
-            self._loading = False
-            self._report_failure("Open failed", f"Could not open {path.name}.\n\n{exc}")
-            return False
-        finally:
-            self._loading = False
-        self.path = path
-        self._discard_slot()
-        self.modified = False
-        self._remember(path)
-        self.control.SetInsertionPoint(0)
-        self._update_title()
-        # The file's own name decides whether it is checked, so this has to run
-        # after the path is set and not at construction: a window is built
-        # empty and only then told which file it holds.
-        self._init_spelling()
-        self._sync_check_items()
-        self._touch_status()
-        # After the path is set, for the same reason spelling is: the store is
-        # keyed by file path, and a window is built empty and only then told
-        # which file it holds. This can move the cursor, so it runs before the
-        # spelling announcement rather than after -- the last thing said should
-        # be about the document, not about a caret that has already moved.
-        self.restore_document_memory()
-        self.announce_spelling_state_if_skipped()
-        return True
+        The pair of an earcon and a phrase for the *same* moment -- a copy, a
+        paste, a started selection. Which of them actually happens is
+        ``settings.action_feedback``, resolved in
+        :func:`quill.core.action_feedback.resolve` against whether this event has
+        a sound in the loaded pack at all: a mode that asked for a tone and found
+        none falls through to the words rather than to silence.
 
-    def _load_rich(self, path: Path) -> None:
-        """Scan the RTF for unsafe constructs, then hand the safe copy to the TOM."""
-        if not self.editor.rtf_available():
-            raise RichEditRtfError("Rich text needs the Windows Rich Edit control.")
-        report = scan_rtf_safety(path.read_text(encoding="utf-8", errors="replace"))
-        self._set_mode_internal(RICH)
-        self.editor.set_rtf(report.sanitized_rtf.encode("utf-8", errors="replace"))
-        self._apply_rich_theme_colour()
-        if report.blocked:
-            self._announce("Removed for safety: " + ", ".join(report.blocked))
-
-    def _load_plain(self, path: Path) -> None:
-        decoded = decode_text(path.read_bytes())
-        self.encoding, self.newline = decoded.encoding, decoded.newline
-        self._set_mode_internal(PLAIN)
-        self.control.ChangeValue(decoded.text)
-
-    def _load_recovery(self, slot: recovery_mod.RecoverySlot) -> None:
-        """Restore a slot into this window, leaving it modified and unsaved."""
-        self._loading = True
-        try:
-            if slot.mode == RICH and self.editor.rtf_available():
-                self._set_mode_internal(RICH)
-                self.editor.load_rtf(str(slot.content_path))
-                self._apply_rich_theme_colour()
-            else:
-                decoded = decode_text(slot.content_path.read_bytes())
-                self.encoding, self.newline = decoded.encoding, decoded.newline
-                self._set_mode_internal(PLAIN)
-                self.control.ChangeValue(decoded.text)
-        except (OSError, RichEditRtfError) as exc:
-            self._report_failure("Recovery failed", f"Could not restore {slot.title}.\n\n{exc}")
-        finally:
-            self._loading = False
-        if slot.original_path and Path(slot.original_path).exists():
-            self.path = Path(slot.original_path)
-        self._slot = slot
-        self.modified = True
-        self._update_title()
-        self._touch_status()
-
-    def _remember(self, path: Path) -> None:
-        """Put *path* at the head of the recent list, in every window."""
-        self.app.settings.remember_recent(str(path))
-        self.app.save_settings()
-        self.app.refresh_all_menus()
-
-    # ------------------------------------------------------------------ #
-    # Save
-    # ------------------------------------------------------------------ #
-
-    def save(self, target: Path | None = None) -> bool:
-        """Write the document. Falls through to Save As when it has no name yet."""
-        destination = target if target is not None else self.path
-        if destination is None:
-            return self.cmd_save_as()
-        destination = Path(destination)
-        try:
-            if self.editor.mode == RICH:
-                self._write_rtf(destination)
-            else:
-                write_bytes_atomic(
-                    destination,
-                    encode_text(
-                        self.control.GetValue(),
-                        encoding=self.encoding,
-                        newline=self.newline,
-                    ),
-                )
-        except (OSError, RichEditRtfError) as exc:
-            self._report_failure("Save failed", f"Could not save {destination.name}.\n\n{exc}")
-            return False
-        if self.app.feature_enabled("backups"):
-            # After the real write, never before: a backup that fails must not
-            # be able to fail the save it was taken alongside.
-            from quill.core.lite.backups import write_backup
-
-            write_backup(destination, self.control.GetValue())
-        self.path = destination
-        self._discard_slot()
-        self._set_modified(False)
-        self._update_title()
-        # Save As is the moment an untitled document first *has* a key, so this
-        # is also the moment bookmarks set while it was untitled become
-        # keepable. On a plain Save it is a checkpoint against a crash.
-        self.remember_document_memory()
-        # Save As can change the extension, and the extension is what decides
-        # whether this document is spell-checked. A .txt saved as .json should
-        # go quiet; the taught-word cache is dropped for the same reason, since
-        # the document's own sidecar dictionary moved with the name.
-        self._forget_spell_dictionary()
-        self._remember(destination)
-        self._announce(f"Saved {destination.name}")
-        return True
-
-    def _write_rtf(self, target: Path) -> None:
-        """Save through the TOM to a sibling temp file, then replace the target.
-
-        The theme colour is removed for the duration of the save, so dark mode
-        never leaks light grey text into somebody's file, and restored in a
-        ``finally`` so a failed save does not leave the window unreadable.
+        The status bar is written in every mode, silent included. It is not
+        feedback, it is the record -- the place somebody reads back with their
+        reader to find out what just happened, and a mode about *audio* has no
+        business emptying it.
         """
-        tmp = target.with_name(target.name + _TMP_SUFFIX)
-        self._set_whole_document_colour(None)
+        from quill.core.action_feedback import resolve
+
+        play, speak = resolve(
+            getattr(self.app.settings, "action_feedback", "sound"),
+            has_sound=self._has_sound_for(event),
+        )
+        if play:
+            self._cue(event)
+        if speak:
+            self.app.voice.speak(message)
+        self._set_status_message(message)
+
+    def _has_sound_for(self, event: str) -> bool:
+        """Whether the loaded pack could actually play *event*.
+
+        One method rather than an import at each site, because every feedback mode
+        has to ask the same question and answer it the same way: a mode that chose
+        a tone for a moment with no clip must fall through to words, never to
+        silence. Never raises -- a missing sound stack answers "no".
+        """
         try:
-            self.editor.save_rtf(str(tmp))
-            os.replace(tmp, target)
-        finally:
-            self._apply_rich_theme_colour()
-            try:
-                tmp.unlink(missing_ok=True)
-            except OSError:
-                pass
+            from quill.ui.sound_manager import has_sound_for
 
-    def _write_recovery_copy(self) -> None:
-        """The autosave tick: copy unsaved work aside. Never raises, never blocks."""
-        slot = self._slot
-        if slot is None or not self.modified:
-            return
-        try:
-            if self.editor.mode == RICH and slot.mode == RICH:
-                tmp = slot.content_path.with_name(slot.content_path.name + _TMP_SUFFIX)
-                self._set_whole_document_colour(None)
-                try:
-                    self.editor.save_rtf(str(tmp))
-                finally:
-                    self._apply_rich_theme_colour()
-                os.replace(tmp, slot.content_path)
-            else:
-                if slot.mode != self.editor.mode:
-                    # The document changed mode since the slot was made; a plain
-                    # copy in a .rtf slot would be restored by the RTF reader.
-                    recovery_mod.discard(slot)
-                    slot = self._slot = recovery_mod.new_slot(
-                        self.editor.mode, str(self.path) if self.path else ""
-                    )
-                write_bytes_atomic(
-                    slot.content_path, self.control.GetValue().encode("utf-8", errors="replace")
-                )
-            slot.original_path = str(self.path) if self.path else ""
-            recovery_mod.write_meta(slot)
-        except (OSError, RichEditRtfError):
-            pass  # the next tick tries again; a failed copy must not interrupt typing
-
-    def _discard_slot(self) -> None:
-        if self._slot is not None:
-            recovery_mod.discard(self._slot)
-            self._slot = None
-
-    def _on_autosave_tick(self, _event: wx.TimerEvent) -> None:
-        self._write_recovery_copy()
-
-    def stop_timers(self) -> None:
-        """Stop everything that fires on a clock. Safe to call more than once."""
-        try:
-            self._autosave.Stop()
-        except RuntimeError:
-            pass
-        self._stop_status_timer()
-
-    def restart_autosave(self) -> None:
-        """Re-arm the timer at the current interval, after Preferences changes it."""
-        self._autosave.Start(self.app.settings.autosave_seconds * 1000)
+            return has_sound_for(event)
+        except Exception:  # noqa: BLE001 - no sound stack is an answer, not an error
+            return False
 
     # ------------------------------------------------------------------ #
     # Closing
@@ -534,6 +428,9 @@ class DocumentFrame(
         self.remember_document_memory()
         self.stop_timers()
         self._discard_slot()
+        # Before Destroy, which takes the window and everything on it: a cue
+        # posted after that has no frame left to have come from.
+        self._cue(SoundEvent.DOCUMENT_CLOSED)
         self.app.forget_frame(self)
         self.Destroy()
 

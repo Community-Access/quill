@@ -57,12 +57,17 @@ def test_released_siblings_are_offered_and_self_is_excluded() -> None:
     assert "Open Quill Radio" not in names  # self excluded
     # ...and the keys are there, numbered in menu order. F-keys, not digits:
     # Ctrl+Alt+Shift+digits are Quill Radio's quick-play favorites, and these
-    # launcher rows silently fought them until 2026-08-17 (see
-    # SIBLING_APP_ACCELERATORS).
-    assert [label.split(chr(9))[1] for label in labels][:2] == [
-        "Ctrl+Alt+Shift+F1",
-        "Ctrl+Alt+Shift+F2",
-    ]
+    # launcher rows silently fought them until 2026-08-17. **From F7**, not F1:
+    # the first move landed the third launcher on power.count_occurrences
+    # (Ctrl+Alt+Shift+F3) and F4-F6 were already Quill Radio's Sort Favorites,
+    # so the block starts where six consecutive keys are actually free -- one
+    # for every row this menu can show. Read against the tuple rather than
+    # against a literal, so the next move is a one-line change there and not a
+    # test somebody has to notice is stale.
+    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS
+
+    assert [label.split(chr(9))[1] for label in labels][:2] == list(SIBLING_APP_ACCELERATORS[:2])
+    assert SIBLING_APP_ACCELERATORS[0] == "Ctrl+Alt+Shift+F7"
 
 
 def test_an_app_can_leave_a_sibling_off_its_own_menu(monkeypatch) -> None:

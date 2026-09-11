@@ -62,7 +62,9 @@ def render() -> str:
     lines: list[str] = [_PREAMBLE.strip(), ""]
     current = ""
     for menu, label, key, _handler, kind in COMMANDS:
-        if kind == "sep":
+        # "sub" rows are submenu titles: no key of their own, and the submenu
+        # they name gets its own heading from the rows that do carry keys.
+        if kind in {"sep", "sub"}:
             continue
         if menu != current:
             current = menu

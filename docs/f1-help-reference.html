@@ -2676,7 +2676,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quilllite">QuillLite</h2>
-<p>Control coverage: 20 audited sites (20 helped).</p>
+<p>Control coverage: 35 audited sites (35 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
 <p><strong>About QuillLite.</strong> What this copy is, and where it
@@ -2706,8 +2706,10 @@ is one fewer than you need.</p>
 <p><strong>Customize QuillLite Features.</strong> Turn whole parts of
 QuillLite on or off. Unchecking an area removes its menu and its keys
 entirely, which is how this stays a small editor without being a poor
-one. Three areas start switched off and are found here rather than
-hidden: autocorrect, timestamped backups, and Go To Anything.</p>
+one. Type in the search box to narrow the list, or choose a profile –
+Notepad, WordPad, Recommended, Everything – to set them all at once.
+Three areas start switched off and are found here rather than hidden:
+autocorrect, timestamped backups, and Go To Anything.</p>
 <p><strong>File format.</strong> How this document will be written back
 to disk: which character encoding, and which line endings. QuillLite
 normally writes back exactly what it read, so these only change when you
@@ -2728,6 +2730,15 @@ order they appear. Choose one and the cursor lands at the start of it.
 Headings exist in rich text only: they are the bold-plus-point-size
 ladder QUILL uses, so this list is also what Word will show in its
 navigation pane.</p>
+<p><strong>Key for.</strong> Press the key combination you want, and it
+appears in the box. Pressing another replaces it. Escape leaves the
+command on the key it has now.</p>
+<p><strong>Keyboard Manager.</strong> Every command QuillLite has, with
+the key it answers to. Type part of a command’s name to find it, or
+press Record a Key and press a combination to be told what that key
+already does. Assigning a key somebody else has names them and asks
+before moving it. Insert is never bindable: it is the key NVDA and JAWS
+use as their own modifier.</p>
 <p><strong>Keyboard shortcuts.</strong> Every key QuillLite binds, menu
 by menu. It is generated from the same table that builds the menus, so
 it cannot drift from what is actually bound. Read it with the arrow
@@ -2761,6 +2772,12 @@ place. Replace changes the match you are on and moves to the next;
 Replace All changes every one and tells you how many. In a rich text
 document Replace All asks first, because replaced text takes the
 formatting of the run it lands in.</p>
+<p><strong>Spelling Announcements.</strong> How a misspelled word is
+reported to you. A misspelling is the one thing an editor cannot convey
+by speech alone – receive and recieve sound identical – so the letters
+are the answer, and this window decides when you get them and how they
+are said. Three groups: what happens while you type, how letters are
+spoken, and how long each pause is before the spelling follows.</p>
 <p><strong>Spelling Review.</strong> Every word in this document that is
 not in the dictionary, one at a time, with suggestions you can arrow
 through. Change it, change every one like it, ignore it, or add it to
@@ -2823,6 +2840,24 @@ how many were changed.</li>
 <li><code>close_btn</code>: Close this window. Nothing you have already
 replaced is undone.</li>
 </ul>
+<h4 id="module-level-quillappslite_keymap_editorpy">(module level)
+(<code>quill/apps/lite_keymap_editor.py</code>)</h4>
+<ul>
+<li><code>field</code>: The key combination you last pressed. Press
+another to change it.</li>
+</ul>
+<h4
+id="keymapeditordialog-quillappslite_keymap_editorpy">KeymapEditorDialog
+(<code>quill/apps/lite_keymap_editor.py</code>)</h4>
+<ul>
+<li><code>self.listbox</code>: Every command QuillLite has, with the key
+it answers to. Press Enter on one to give it a different key.</li>
+<li><code>self.search</code>: Type part of a command’s name, or of the
+menu it is in. Press Down to move into the list.</li>
+<li><code>self.record</code>: Turn this on and press a key combination.
+QuillLite says what that key does today, so you can find a free one
+without reading the whole list.</li>
+</ul>
 <h4 id="module-level-quillappslite_preferencespy">(module level)
 (<code>quill/apps/lite_preferences.py</code>)</h4>
 <ul>
@@ -2833,6 +2868,12 @@ only and is never saved into your documents.</li>
 <li><code>restore</code>: Reopen last session’s files, in the same
 numbered order. Different from recovering unsaved work, which happens
 whether this is on or not.</li>
+<li><code>blank</code>: On: a new Untitled document is waiting when the
+app opens, the way Notepad and WordPad do it. Off: the app opens with
+nothing, and Control N or Open makes the first document – which is what
+you want if you always open an existing file and were closing an empty
+one every time. Files you open by double-clicking, last session’s
+documents and recovered work all still appear either way.</li>
 <li><code>share</code>: Off: abbreviations are QuillLite’s own. On: read
 and write the same library QUILL and Quill Inkwell use, so an
 abbreviation added in any of them works in all of them. Turning this on
@@ -2845,15 +2886,84 @@ data folder if you do not already have one.</li>
 shortly after you finish a word. Never in a source or configuration
 file, whatever this says: every identifier in one would be a false
 alarm. F7 reviews the whole document either way.</li>
+<li><code>action_choice</code>: How a copy, paste, undo or started
+selection reports back. Play a sound is what the app has always done.
+Speak the action says the word instead, which is what you want before
+you have learned the tones. A command that has no tone in the sound pack
+speaks either way, and a command that could not do what you asked always
+says so in words.</li>
+<li><code>miss_choice</code>: Asked separately from the setting above
+because F3 is pressed in runs: hearing Not found spoken on every press
+is the fastest way to end up turning speech off. The status bar carries
+the words whichever you pick, so nothing is lost by choosing the
+tone.</li>
+<li><code>wrap_find</code>: On: Find Next reaching the end of the
+document starts again at the top. Off: it stops and tells you which end
+you are at, so you know to go to the other one and press again rather
+than that the word is absent.</li>
 <li><code>wrap</code>: When off, long lines run past the right edge and
 scroll instead.</li>
 <li><code>autosave</code>: How often a modified document is copied to
 the recovery folder. The copy is beside your file, never over it, and is
 removed when you save.</li>
-<li><code>font_field</code>: The face and size the editor uses. Choose
-changes it.</li>
+<li><code>font_field</code>: The face and size the editor draws in.
+Change Font opens the chooser; this box reads back whatever you
+pick.</li>
 <li><code>choose_btn</code>: Open the font chooser and pick a face and
-size.</li>
+size for the editor.</li>
+</ul>
+<h4 id="_profilerow-quillappslite_preferencespy">_ProfileRow
+(<code>quill/apps/lite_preferences.py</code>)</h4>
+<ul>
+<li><code>self.impact</code>: What the profile above would change: which
+parts of the app it keeps, which it removes, and anything else it
+sets.</li>
+</ul>
+<h4 id="module-level-quillappslite_spelling_voice_dialogpy">(module
+level) (<code>quill/apps/lite_spelling_voice_dialog.py</code>)</h4>
+<ul>
+<li><code>sound</code>: A short falling blip when a completed word is
+not in the dictionary. A sound rather than speech on purpose: speech
+would interrupt the sentence it is commenting on. Turn it off for
+silence; the status bar still says so, and F7 still finds
+everything.</li>
+<li><code>speech</code>: Speak the misspelling as well as the sound. Off
+by default and deliberately: an interruption while you are composing
+costs more than it tells you, and the same word is one Shift+F7
+away.</li>
+<li><code>repeat</code>: Stops one stubborn name becoming a drum while
+you edit around it. Zero means alert every time.</li>
+<li><code>enabled</code>: After a misspelled word is announced, spell it
+out after a pause. Without this you are told a word you cannot tell from
+the correct one, because the two sound the same.</li>
+<li><code>style_choice</code>: Plain letters are fastest. The phonetic
+alphabet is unambiguous where B, D, E, P, T and V are one sound with a
+rumour attached. Both is for learning a word rather than checking
+one.</li>
+<li><code>capitals</code>: Prefix an upper-case letter with “cap”, so
+MacDonald and Macdonald are told apart. Letters are spoken in upper case
+whatever the word does, because several voices read a lone lower-case
+letter as a word.</li>
+<li><code>example</code>: What MacDonald would sound like with the
+choices above.</li>
+<li><code>review_delay</code>: How long after a word is announced before
+it is spelled out. The pause is what lets you move on before the
+spelling starts: press the next key and it is cancelled unheard.</li>
+<li><code>navigation</code>: Spell out each misspelling you reach with
+Next or Previous Misspelling. Your screen reader reads the word itself
+because it is selected; this adds the part it cannot know, which is
+which letters are wrong.</li>
+<li><code>nav_delay</code>: A separate, shorter pause, because you may
+be travelling through a document rather than stopped and deciding.</li>
+<li><code>suggestions</code>: Choosing between two spellings by ear is
+exactly as impossible in a list of corrections as it is in the document.
+Arrowing on cancels it.</li>
+<li><code>sug_delay</code>: How long to wait after landing on a
+suggestion before spelling it.</li>
+<li><code>first</code>: When the review reaches a new misspelling, spell
+the top suggestion as well as the word. Off by default: it doubles the
+arrival announcement, which is welcome when you are learning a word and
+noise when you are checking one.</li>
 </ul>
 </main>
 </body>

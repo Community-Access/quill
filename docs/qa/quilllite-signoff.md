@@ -32,14 +32,17 @@ answer is what a person actually *hears*. That is this list.
 
 ## The 15-minute pass
 
-No time for the whole thing? Run exactly these eleven and stop:
-**L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61, L-90.**
+No time for the whole thing? Run exactly these twelve and stop:
+**L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61, L-90, L-105.**
 
 They cover the four things most likely to be wrong and worst if they are: the
 document announces itself, F1 answers, the status bar is reachable, and a file
-comes back byte-for-byte. L-90 is the eleventh because a status cell that
-misreports what typing is about to do is the one defect this product cannot
-ship, and it was shipped once already.
+comes back byte-for-byte. L-90 is there because a status cell that misreports
+what typing is about to do is the one defect this product cannot ship, and it
+was shipped once already. **L-105** joined it on 2026-09-10 for the same reason
+in reverse: a status bar that reads its own text back truncated is a cell
+quietly lying about a fact, and the only place it shows is a narrow window on
+the machine it was reported from.
 
 ---
 
@@ -759,6 +762,96 @@ have to notice.
   **no** `QuillLite` folder has appeared in `%LOCALAPPDATA%` on that machine.
 - This is the one step worth running on a computer that has never had QuillLite
   on it, because that is the only place the old behaviour was visible.
+- [ ] pass  [ ] fail: ______
+
+---
+
+## Block P -- The 2026-09-10 additions (9 min)
+
+Three features and one fix, and every one of them is here for the same reason as
+Block O: what would be wrong is a *silence* or a *state*, not a wrong value.
+A machine can check that the Keyboard Manager stores what it was told; only a
+person can check that pressing the key afterwards does the thing.
+
+**L-99. The Keyboard Manager finds a command, and says what a key does**
+- Do: **Ctrl+Alt+Shift+R**. Type `sort lines`. Listen to the count line under
+  the box, then press **Down** into the list.
+- Pass: focus lands in the search box on opening; the count says how many
+  commands are shown; **Down** puts you on the first matching row, and the row
+  reads as the command *and* the key it answers to.
+- Fail if the count is silent, or if Down leaves you in the box.
+- [ ] pass  [ ] fail: ______
+
+**L-100. Record a Key answers "what does this key already do?"**
+- Do: press **Record a Key**. Press **Ctrl+S**. Then press
+  **Ctrl+Alt+Shift+Q**.
+- Pass: the first is announced as **File > Save**; the second is announced as
+  **free**. Both are spoken, not merely written to the line.
+- This is the question the list cannot answer by being read, which is the whole
+  reason the button exists.
+- [ ] pass  [ ] fail: ______
+
+**L-101. Insert is refused, out loud, with the reason**
+- Do: with Record a Key on, press **Insert**. (If your reader uses Insert as its
+  modifier, press it twice quickly or use the laptop layout.)
+- Pass: you hear that Insert is the key NVDA and JAWS use as their own modifier
+  and QuillLite never binds it. **Not** a beep, and **not** silence.
+- Fail if anything at all is assigned, or if nothing is said.
+- [ ] pass  [ ] fail: ______
+
+**L-102. A taken key names its owner and asks before moving**
+- Do: find **Edit > Lines > Sort Lines A to Z**, press **Enter**, and press
+  **Ctrl+S**. Answer the question that appears.
+- Pass: the prompt *names* File > Save rather than saying "that key is taken";
+  the default answer is **No**; saying yes leaves Sort Lines on Ctrl+S and File
+  > Save reading as **no key** in the list.
+- Then press **Reset Everything**, say yes, and **Save**. Confirm Ctrl+S saves
+  again.
+- Fail if the prompt does not name the command, if Enter alone moves the key, or
+  if the reset does not restore it.
+- [ ] pass  [ ] fail: ______
+
+**L-103. A rebound key reaches the menu, the F1 list and the palette**
+- Do: give **Tools > Change Case > UPPER CASE** the key **Ctrl+Alt+Shift+U** and
+  press **Save**. Then open that menu and listen to the item; press **Ctrl+F1**
+  and find the row; press **Ctrl+Shift+P** and find the command.
+- Pass: all three say **Ctrl+Alt+Shift+U**, and the key works.
+- Fail if any of the three still says the old key. Three readers of one list is
+  the property this whole layer exists to keep.
+- [ ] pass  [ ] fail: ______
+
+**L-104. Customize Features searches, and a profile sets everything**
+- Do: **Ctrl+Alt+Shift+F**. Type `curly quotes`. Then clear the box, choose the
+  **Notepad** profile, press **Use Profile**, and press **Save**.
+- Pass: typing narrows the list to Autocorrect (it matches what the feature
+  *does*, not only its name) and the count is announced; Use Profile announces
+  how many features are on and that nothing is saved yet; after Save the Format
+  menu is gone and **Tools > File Encoding and Line Endings** is still there.
+- Then re-open, choose **Recommended**, Use Profile, Save.
+- Fail if the encoding dialog disappeared with the Format menu -- that is the
+  trade this profile exists to avoid.
+- [ ] pass  [ ] fail: ______
+
+**L-105. The status bar does not cut itself off on a narrow window**
+- Do: make the window narrow -- narrow enough that twelve cells cannot fit on
+  one line. Read the bottom line of the window with **Insert+Page Down**.
+- Pass: nothing is cut off. The bar is two (or three) lines tall instead, and
+  every cell reads in full.
+- Then **F6** and arrow to **Status Message**: whatever was last announced reads
+  in full when you press **Enter** on that cell, even if the cell itself is
+  shortened on screen.
+- This is the one step that needs the machine the truncation was seen on. Fail
+  if any cell's text ends mid-word on screen.
+- [ ] pass  [ ] fail: ______
+
+**L-106. Five features that had no switch now have one**
+- Do: **Ctrl+Alt+Shift+F**, and untick **The Command Palette**. Save. Press
+  **Ctrl+Shift+P**.
+- Pass: nothing happens, and the palette is gone from the menus -- the key is
+  unhooked, not just the row hidden.
+- Turn it back on and confirm it returns.
+- Repeat for **Describe Character** if you have a moment; the other three
+  (Matches, Go Back and Go Forward, Text size) work the same way.
 - [ ] pass  [ ] fail: ______
 
 ---

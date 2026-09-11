@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>release-notes-1.0</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+</head>
+<body>
+<h1 id="quill-converter-1.0-release-notes">Quill Converter 1.0 – Release
+Notes</h1>
+<p>Somewhere between “I recorded this in the wrong format” and “this
+download is an M4A and my player wants MP3,” almost everybody hits the
+wall of audio conversion. The usual answer is a sketchy website that
+wants you to upload your file, sit through an advertisement, and trust a
+stranger with your recording.</p>
+<p>Quill Converter is a real one, and it runs entirely on your own
+machine.</p>
+<h2 id="what-it-is">What it is</h2>
+<p>A small window with one job. A list of the files you want changed, a
+box for what you want them changed into, a preset if you want the
+decisions made for you, and a Convert button. That is the whole app.</p>
+<p>Open it and your cursor is already in the file list – not floating in
+an empty window, not somewhere you have to go hunting for. Add a file,
+pick a format, press Convert. Every step is spoken, and the run ends by
+telling you what happened, including the name of anything that did not
+work. No conversion ever finishes by quietly claiming success.</p>
+<h2 id="nothing-leaves-your-computer">Nothing leaves your computer</h2>
+<p>There is no upload. There is no account. There is no “processing on
+our servers.” Your audio is converted by the FFmpeg that ships inside
+the app, on your own disk, and it works with the network unplugged.</p>
+<p>The one feature that does reach the internet – <strong>Convert from
+URL</strong>, which pulls the audio out of a web link – is honest about
+it. The component that does the downloading is not bundled. The first
+time you use it, the app asks you once, in plain language: here is what
+this does, here is what it will install, about how big it is, where it
+comes from, and please only download things you have the right to use.
+Say no and nothing is installed. It stays off entirely in Safe Mode.</p>
+<h2 id="what-it-converts">What it converts</h2>
+<p>Almost anything you are likely to have. MP3, WAV, FLAC, OGG, Opus,
+M4A, M4B, AAC, WMA, AIFF, ALAC, and more – and it will happily pull the
+audio track out of a video file (MP4, MKV, MOV, WebM, AVI, and the rest)
+on the way past.</p>
+<p>Coming out, you can have MP3, M4A, M4B, Opus, OGG, FLAC, WAV, AAC,
+AIFF, ALAC, WMA, or CAF. The list is not decoration: when the app
+starts, it asks FFmpeg what it can genuinely encode and only offers
+those. That is a deliberate kindness. Nothing is worse than starting a
+hundred-file batch and finding out half way through that the encoder was
+never there.</p>
+<h2
+id="presets-for-when-you-would-rather-not-think-about-bitrates">Presets,
+for when you would rather not think about bitrates</h2>
+<p>Pick one and go:</p>
+<ul>
+<li><strong>Just convert</strong> – change the format, change nothing
+else. This is the default, and it is the right answer surprisingly
+often.</li>
+<li><strong>Podcast</strong> – mono MP3 for talk, with the low rumble
+taken out.</li>
+<li><strong>Audiobook</strong> – a compact mono M4B.</li>
+<li><strong>Voice memo</strong> – tiny files for spoken notes.</li>
+<li><strong>Web voice</strong> – the smallest thing that still sounds
+like a person.</li>
+<li><strong>Archival</strong> – lossless FLAC, keeping your original
+rate and channels.</li>
+<li><strong>Hearing-aid mono</strong> – everything downmixed to one
+channel.</li>
+<li>Plus straightforward MP3 at 320, 192, and 128 kbps.</li>
+</ul>
+<p>Each one reads out with a sentence explaining what it is for, so you
+can choose by listening rather than by decoding jargon.</p>
+<h2 id="and-advanced-for-when-you-would">And Advanced, for when you
+would</h2>
+<p>Press <strong>Advanced</strong> and the full studio opens: exact bit
+rate, sample rate, channels and bit depth; loudness normalization to an
+audiobook or a podcast target; gain; a rumble-removing high-pass;
+silence trimming; a speed change that does not make anyone sound like a
+chipmunk; a compressor; a volume leveler; and fades in and out.</p>
+<p>Everything in there starts on “leave the preset alone,” so opening
+the panel to look around cannot accidentally change your output. And
+when you tick the box to reveal it, your focus moves into the panel – so
+you hear that it opened instead of wondering whether anything
+happened.</p>
+<h2 id="whole-folders-safely">Whole folders, safely</h2>
+<p>Point it at a folder and it works right through it, sub-folders and
+all, and rebuilds the same folder structure on the way out. It converts
+several files at once so a big batch is not an afternoon, and the window
+stays responsive throughout.</p>
+<p>It will not overwrite your originals. If a file of that name already
+exists, the new one is numbered instead. If you actually want Skip or
+Overwrite, they are there in Advanced – but you have to ask.</p>
+<h2 id="it-gets-out-of-the-way">It gets out of the way</h2>
+<p>Press Ctrl+W and it tucks into the notification area and keeps
+working. Press Ctrl+Alt+Shift+C from anywhere in Windows and it comes
+back. While a batch runs, the tray tooltip carries the same progress the
+status bar does, so a minimized conversion is still something you can
+check on.</p>
+<p>And it is one keystroke from the rest of the family: the QuillVille
+menu opens QUILL, Quill Radio, or Quill Weather without hunting through
+the Start Menu.</p>
+<h2 id="five-doors-one-converter">Five doors, one converter</h2>
+<p>You will meet the same converter wherever you happen to be:</p>
+<ul>
+<li><strong>Quill Converter</strong>, this app.</li>
+<li><strong>Audio Studio &gt; Voices &gt; Convert Audio…</strong>,
+inside QUILL.</li>
+<li><strong>Right-click a file in Windows Explorer</strong> and choose
+<strong>Convert with Quill</strong>. This one is off until you turn it
+on, so nothing appears in your context menu uninvited.</li>
+<li><strong>Convert from URL</strong>, for a link.</li>
+<li><strong><code>quill convert</code></strong> on the command line,
+with a dry-run planner, for scripts and for people who like it that
+way.</li>
+</ul>
+<p>They are not five copies. They are five doors onto one engine, so a
+thing fixed in one place is fixed in all of them.</p>
+<h2 id="built-for-a-screen-reader-from-the-first-line">Built for a
+screen reader from the first line</h2>
+<p>Not retrofitted. Focus starts where you need it. Every control has a
+name your screen reader can read. Every action says what it did –
+through speech and through your braille display – and writes the same
+words to the status bar, so nothing is spoken-only and nothing is
+colour-only. Every dialog has a real Cancel that Escape reaches. There
+is no drag and drop to be locked out of, because there is nothing that
+only a mouse can do.</p>
+<h2 id="your-settings-where-you-want-them">Your settings, where you want
+them</h2>
+<p>Quill Converter shares one settings store with QUILL and the rest of
+the family, so what you set once holds everywhere. Running the portable
+build from a stick? Everything lives in the <code>data</code> folder
+beside the program and travels with you, leaving the machine you plugged
+into exactly as you found it. And uninstalling Quill Converter never
+touches that shared folder – another app in the family may still be
+living there.</p>
+</body>
+</html>

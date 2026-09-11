@@ -326,19 +326,49 @@ def test_every_area_the_command_table_names_actually_exists() -> None:
     from quill.core.lite.commands import COMMAND_AREA, MENU_AREA
 
     known = features_mod.area_ids()
-    named = set(COMMAND_AREA.values()) | set(MENU_AREA.values())
+    # "" is the explicit always-on answer -- a handler saying "whatever menu I
+    # am in, I am not switchable" (Editor Font, in the rich-text Format menu).
+    named = {area for area in set(COMMAND_AREA.values()) | set(MENU_AREA.values()) if area}
     assert named <= known, f"unknown areas: {sorted(named - known)}"
 
 
 def test_switching_everything_off_still_leaves_a_usable_editor() -> None:
-    """The floor: File, Edit, View, Window and Help always survive."""
+    """The floor, with every switch off. Three of the eight menus survive thin.
+
+    Format is left holding Editor Font alone, which is Notepad's Format menu and
+    the point: the face the editor draws in is not a rich-text feature. Navigate
+    keeps Back, Forward and the F6 route to the status bar, none of which belong
+    to the headings or bookmarks areas. Tools keeps indenting -- an editor that
+    cannot indent is broken rather than small -- and the two rows that switch
+    everything else back on, which must never be switchable themselves.
+    """
     from quill.core.lite.commands import menu_titles, visible_commands
 
     rows = visible_commands(lambda _area: False)
     menus = [menu for menu in menu_titles() if any(row[0] == menu for row in rows)]
-    assert menus == ["&File", "&Edit", "&View", "&Window", "&Help"], menus
+    assert menus == [
+        "&File",
+        "&Edit",
+        "&View",
+        "F&ormat",
+        "&Navigate",
+        "&Tools",
+        "&Window",
+        "&Help",
+    ], menus
     handlers = {row[3] for row in rows}
-    for essential in ("cmd_new", "cmd_open", "cmd_save", "cmd_find", "cmd_context_help"):
+    for essential in (
+        "cmd_new",
+        "cmd_open",
+        "cmd_save",
+        "cmd_find",
+        "cmd_context_help",
+        "cmd_editor_font",
+        "cmd_preferences",
+        "cmd_customize_features",
+        # The way back from having switched abbreviations off with the key.
+        "cmd_toggle_abbreviations",
+    ):
         assert essential in handlers, essential
 
 

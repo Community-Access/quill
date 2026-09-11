@@ -1,0 +1,253 @@
+"""Opening a file, saving it, and copying unsaved work aside.
+
+Split out of :mod:`quill.apps.lite_window` on 2026-09-10 for GATE-11: the frame
+module was over the default cap and this is the largest thing in it that is not
+the frame -- two hundred lines about *files*, in a class otherwise made of
+window plumbing and event hooks.
+
+What holds it together is that all three are the same risk. Every path here can
+lose somebody's work, so every one of them:
+
+* **writes atomically** (``textfile.write_bytes_atomic``: temp file, then
+  ``os.replace``), so a power cut mid-save cannot leave a half-written document
+  where the finished one was;
+* **says what happened in words**, because a failed save is the one event where
+  silence is indistinguishable from success and the cost of believing the wrong
+  one is the document;
+* **keeps the recovery copy beside the file and never over it**, and removes it
+  only once the real save has succeeded.
+
+The methods run on ``DocumentFrame``, which supplies ``control``, ``editor``,
+``app``, ``path`` and the announcement and status hooks.
+"""
+
+from __future__ import annotations
+
+import os
+from pathlib import Path
+
+import wx
+
+from quill.core.lite import recovery as recovery_mod
+from quill.core.lite.filetypes import is_rich_path
+from quill.core.lite.textfile import decode_text, encode_text, write_bytes_atomic
+from quill.core.sound_events import SoundEvent
+from quill.io.rtf_safety import scan_rtf_safety
+from quill.ui.richedit_editing import PLAIN, RICH
+from quill.ui.richedit_rtf_surface import RichEditRtfError
+
+__all__ = ["DocumentFileMixin"]
+
+#: The temp-file suffix a rich save writes beside its target before replacing it.
+#: Moved here with the two writers that use it (2026-09-10); nothing else did.
+_TMP_SUFFIX = ".quilllite-tmp"
+
+
+class DocumentFileMixin:
+    """Load, save, and the autosave copy. Composed onto ``DocumentFrame``."""
+
+    # ------------------------------------------------------------------ #
+    # Load
+    # ------------------------------------------------------------------ #
+
+    def load(self, path: Path) -> bool:
+        """Open *path* into this window. ``False`` when it could not be read."""
+        path = Path(path)
+        mode = RICH if is_rich_path(path.name) else PLAIN
+        self._loading = True
+        try:
+            if mode == RICH:
+                self._load_rich(path)
+            else:
+                self._load_plain(path)
+        except (OSError, RichEditRtfError) as exc:
+            self._loading = False
+            self._report_failure("Open failed", f"Could not open {path.name}.\n\n{exc}")
+            return False
+        finally:
+            self._loading = False
+        self.path = path
+        self._discard_slot()
+        self.modified = False
+        self._remember(path)
+        self.control.SetInsertionPoint(0)
+        self._update_title()
+        # The file's own name decides whether it is checked, so this has to run
+        # after the path is set and not at construction: a window is built
+        # empty and only then told which file it holds.
+        self._init_spelling()
+        self._sync_check_items()
+        self._touch_status()
+        # After the path is set, for the same reason spelling is: the store is
+        # keyed by file path, and a window is built empty and only then told
+        # which file it holds. This can move the cursor, so it runs before the
+        # spelling announcement rather than after -- the last thing said should
+        # be about the document, not about a caret that has already moved.
+        self.restore_document_memory()
+        self.announce_spelling_state_if_skipped()
+        return True
+
+    def _load_rich(self, path: Path) -> None:
+        """Scan the RTF for unsafe constructs, then hand the safe copy to the TOM."""
+        if not self.editor.rtf_available():
+            raise RichEditRtfError("Rich text needs the Windows Rich Edit control.")
+        report = scan_rtf_safety(path.read_text(encoding="utf-8", errors="replace"))
+        self._set_mode_internal(RICH)
+        self.editor.set_rtf(report.sanitized_rtf.encode("utf-8", errors="replace"))
+        self._apply_rich_theme_colour()
+        if report.blocked:
+            self._announce("Removed for safety: " + ", ".join(report.blocked))
+
+    def _load_plain(self, path: Path) -> None:
+        decoded = decode_text(path.read_bytes())
+        self.encoding, self.newline = decoded.encoding, decoded.newline
+        self._set_mode_internal(PLAIN)
+        self.control.ChangeValue(decoded.text)
+
+    def _load_recovery(self, slot: recovery_mod.RecoverySlot) -> None:
+        """Restore a slot into this window, leaving it modified and unsaved."""
+        self._loading = True
+        try:
+            if slot.mode == RICH and self.editor.rtf_available():
+                self._set_mode_internal(RICH)
+                self.editor.load_rtf(str(slot.content_path))
+                self._apply_rich_theme_colour()
+            else:
+                decoded = decode_text(slot.content_path.read_bytes())
+                self.encoding, self.newline = decoded.encoding, decoded.newline
+                self._set_mode_internal(PLAIN)
+                self.control.ChangeValue(decoded.text)
+        except (OSError, RichEditRtfError) as exc:
+            self._report_failure("Recovery failed", f"Could not restore {slot.title}.\n\n{exc}")
+        finally:
+            self._loading = False
+        if slot.original_path and Path(slot.original_path).exists():
+            self.path = Path(slot.original_path)
+        self._slot = slot
+        self.modified = True
+        self._update_title()
+        self._touch_status()
+
+    def _remember(self, path: Path) -> None:
+        """Put *path* at the head of the recent list, in every window."""
+        self.app.settings.remember_recent(str(path))
+        self.app.save_settings()
+        self.app.refresh_all_menus()
+
+    # ------------------------------------------------------------------ #
+    # Save
+    # ------------------------------------------------------------------ #
+
+    def save(self, target: Path | None = None) -> bool:
+        """Write the document. Falls through to Save As when it has no name yet."""
+        destination = target if target is not None else self.path
+        if destination is None:
+            return self.cmd_save_as()
+        destination = Path(destination)
+        try:
+            if self.editor.mode == RICH:
+                self._write_rtf(destination)
+            else:
+                write_bytes_atomic(
+                    destination,
+                    encode_text(
+                        self.control.GetValue(),
+                        encoding=self.encoding,
+                        newline=self.newline,
+                    ),
+                )
+        except (OSError, RichEditRtfError) as exc:
+            self._report_failure("Save failed", f"Could not save {destination.name}.\n\n{exc}")
+            return False
+        if self.app.feature_enabled("backups"):
+            # After the real write, never before: a backup that fails must not
+            # be able to fail the save it was taken alongside.
+            from quill.core.lite.backups import write_backup
+
+            write_backup(destination, self.control.GetValue())
+        self.path = destination
+        self._discard_slot()
+        self._set_modified(False)
+        self._update_title()
+        # Save As is the moment an untitled document first *has* a key, so this
+        # is also the moment bookmarks set while it was untitled become
+        # keepable. On a plain Save it is a checkpoint against a crash.
+        self.remember_document_memory()
+        # Save As can change the extension, and the extension is what decides
+        # whether this document is spell-checked. A .txt saved as .json should
+        # go quiet; the taught-word cache is dropped for the same reason, since
+        # the document's own sidecar dictionary moved with the name.
+        self._forget_spell_dictionary()
+        self._remember(destination)
+        self._cue(SoundEvent.DOCUMENT_SAVED)
+        self._announce(f"Saved {destination.name}")
+        return True
+
+    def _write_rtf(self, target: Path) -> None:
+        """Save through the TOM to a sibling temp file, then replace the target.
+
+        The theme colour is removed for the duration of the save, so dark mode
+        never leaks light grey text into somebody's file, and restored in a
+        ``finally`` so a failed save does not leave the window unreadable.
+        """
+        tmp = target.with_name(target.name + _TMP_SUFFIX)
+        self._set_whole_document_colour(None)
+        try:
+            self.editor.save_rtf(str(tmp))
+            os.replace(tmp, target)
+        finally:
+            self._apply_rich_theme_colour()
+            try:
+                tmp.unlink(missing_ok=True)
+            except OSError:
+                pass
+
+    def _write_recovery_copy(self) -> None:
+        """The autosave tick: copy unsaved work aside. Never raises, never blocks."""
+        slot = self._slot
+        if slot is None or not self.modified:
+            return
+        try:
+            if self.editor.mode == RICH and slot.mode == RICH:
+                tmp = slot.content_path.with_name(slot.content_path.name + _TMP_SUFFIX)
+                self._set_whole_document_colour(None)
+                try:
+                    self.editor.save_rtf(str(tmp))
+                finally:
+                    self._apply_rich_theme_colour()
+                os.replace(tmp, slot.content_path)
+            else:
+                if slot.mode != self.editor.mode:
+                    # The document changed mode since the slot was made; a plain
+                    # copy in a .rtf slot would be restored by the RTF reader.
+                    recovery_mod.discard(slot)
+                    slot = self._slot = recovery_mod.new_slot(
+                        self.editor.mode, str(self.path) if self.path else ""
+                    )
+                write_bytes_atomic(
+                    slot.content_path, self.control.GetValue().encode("utf-8", errors="replace")
+                )
+            slot.original_path = str(self.path) if self.path else ""
+            recovery_mod.write_meta(slot)
+        except (OSError, RichEditRtfError):
+            pass  # the next tick tries again; a failed copy must not interrupt typing
+
+    def _discard_slot(self) -> None:
+        if self._slot is not None:
+            recovery_mod.discard(self._slot)
+            self._slot = None
+
+    def _on_autosave_tick(self, _event: wx.TimerEvent) -> None:
+        self._write_recovery_copy()
+
+    def stop_timers(self) -> None:
+        """Stop everything that fires on a clock. Safe to call more than once."""
+        try:
+            self._autosave.Stop()
+        except RuntimeError:
+            pass
+        self._stop_status_timer()
+
+    def restart_autosave(self) -> None:
+        """Re-arm the timer at the current interval, after Preferences changes it."""
+        self._autosave.Start(self.app.settings.autosave_seconds * 1000)

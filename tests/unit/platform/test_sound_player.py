@@ -78,6 +78,21 @@ def test_nssound_backend_satisfies_protocol() -> None:
     assert isinstance(_NSSoundBackend.__new__(_NSSoundBackend), _WavBackend)
 
 
+def test_the_blocking_protocol_is_the_optional_half() -> None:
+    """Three shipped backends do not implement it, and that is allowed.
+
+    ``play_wav_blocking`` was briefly a fourth method on ``_WavBackend``, which
+    made ``isinstance`` say no to ``_NullBackend``, ``_RecordingBackend`` and
+    ``_NSSoundBackend`` -- a protocol describing something other than the code.
+    ``play_and_wait`` checks for the method before calling it, so the two
+    protocols are the honest shape.
+    """
+    from quill.platform.sound_backends import BlockingWavBackend
+
+    assert not isinstance(_NullBackend(), BlockingWavBackend)
+    assert not isinstance(_RecordingBackend(), BlockingWavBackend)
+
+
 # ---------------------------------------------------------------------------
 # Basic playback
 # ---------------------------------------------------------------------------

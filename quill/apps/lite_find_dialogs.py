@@ -46,21 +46,35 @@ __all__ = [
 #: offered. Kept as data so Find and Replace cannot drift apart about either the
 #: labels or the order, and so the mode a row means is the string the shared
 #: :mod:`quill.core.find_model` already understands.
+#:
+#: **No ``&`` in these titles.** They are rows of a ``wx.Choice``, and a choice's
+#: rows are data rather than control labels: wx honours a mnemonic ampersand on
+#: a button, a checkbox or a menu item and prints it literally in a list. These
+#: read "&Normal" on screen, and out loud, until 2026-09-09. The Alt letter
+#: belongs to the "Search &mode:" label beside the control, which is the place
+#: wx will actually act on one.
+#:
+#: The names are meant to be readable by somebody who has never heard of an
+#: escape sequence. The middle row was called "Escapes", which names the
+#: mechanism rather than the job and told a user nothing; it now shows the two
+#: codes anybody actually reaches for. QUILL calls the same mode "Extended
+#: (special characters)" -- different words, same promise, and both say what
+#: they do rather than what they are.
 SEARCH_MODES: tuple[tuple[str, str, str], ...] = (
     (
         "normal",
-        "&Normal",
+        "Normal text",
         "What you type is what is looked for, punctuation and all.",
     ),
     (
         "extended",
-        "&Escapes",
+        "Special characters (\\t, \\n)",
         "Backslash escapes mean the characters you cannot type: \\t is a tab, "
         "\\n a line break, \\u2014 an em dash.",
     ),
     (
         "regex",
-        "Re&gular expression",
+        "Regular expression",
         "The text is a search pattern: . matches any character, * repeats, "
         "[abc] matches one of those. A pattern that is not valid is refused "
         "with the reason.",

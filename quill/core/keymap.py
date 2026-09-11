@@ -152,6 +152,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # support#67: bare Alt+Q is a macOS Option deadkey -- disable on darwin
     # (see view.toggle_soft_wrap above). Reachable via the command palette.
     "tools.ask_quill_chat": "" if sys.platform == "darwin" else "Alt+Q",
+    # Quiet mode. Alt+Shift+M for mute, and the same chord in QuillLite --
+    # one key for one idea, in both editors, because "make it stop" is the
+    # command somebody reaches for without wanting to think about which
+    # app they are in. Free in both keymaps, which is why it is this one.
+    "tools.sound_toggle": "Alt+Shift+M",
     "tools.word_count": "Ctrl+Shift+W",
     "tools.spell_check_dialog": "F7",
     "tools.spell_check_ranked": "Alt+Shift+F7",
@@ -314,7 +319,20 @@ DEFAULT_KEYMAP: dict[str, str] = {
     else "Ctrl+Space",  # §4.22 advanced-editor parity
     "view.preview": "Ctrl+Shift+V",
     "view.browser_preview": "Ctrl+Shift+Grave, V",  # §10.8.2: QUILL-key chord
-    "view.split_preview": "Ctrl+Shift+Backslash",
+    # Ctrl+Alt+backslash, written as itself (2026-09-09): two faults in one
+    # binding, the second hidden behind the first. wx has no name for this key,
+    # so it rejected "Ctrl+Shift+Backslash" outright ("Unrecognized accel key
+    # 'Backslash', accel string ignored") and the View menu advertised a chord
+    # that could never fire -- the only sign one line in the startup log. And
+    # once written as "\" it parsed and collided: Ctrl+Shift+\ has been
+    # navigate.match_bracket all along, and the two were at peace only because
+    # wx was throwing this one away. Split preview keeps the backslash (it is
+    # the divider you are asking for) and takes Ctrl+Alt+Shift -- not bare
+    # Ctrl+Alt, which menu_lint rejects and PRD 10.8 explains: on a great
+    # many keyboard layouts Ctrl+Alt is AltGr, so the chord types a
+    # character instead of firing and nothing tells the user which.
+    # tests/unit/ui/test_keymap_accelerators.py walks every chord for both.
+    "view.split_preview": "Ctrl+Alt+Shift+\\",
     "view.focus_preview": "Ctrl+F6",
     # The Document Format switcher (One Editor, Every Format): took over the
     # chord the retired Rich text lens command held.
@@ -900,6 +918,11 @@ def merge_keymaps(raw: object) -> dict[str, str]:
     if not isinstance(raw, dict):
         return DEFAULT_KEYMAP.copy()
     merged = DEFAULT_KEYMAP.copy()
+    #: Commands this user has explicitly bound, as they are read. What makes the
+    #: conflict rule below able to tell "your choice against a default" from
+    #: "your choice against your other choice" -- two situations with different
+    #: right answers and, until 2026-09-10, one behaviour.
+    chosen: set[str] = set()
     # A file stamped below the current epoch (or unstamped -- a legacy full
     # snapshot) gets the one-time clean-up: the curated old->new rebindings and
     # the leader-chord Find force. Files already on the current epoch are pure
@@ -1016,17 +1039,60 @@ def merge_keymaps(raw: object) -> dict[str, str]:
             if not normalized.strip():
                 if not is_pre_epoch and DEFAULT_KEYMAP.get(command_id, "").strip():
                     merged[command_id] = ""
+                    chosen.add(command_id)
                 continue
             conflict = find_keymap_conflict(merged, command_id, normalized)
             if conflict is None:
                 merged[command_id] = normalized
-            else:
-                logger.debug(
-                    "Dropping keymap entry for %r: chord %r already taken by %r",
+                chosen.add(command_id)
+                continue
+            # A conflict, and who wins depends on what the other side is.
+            #
+            # **A default loses to an explicit choice.** Bind Ctrl+Alt+Shift+J
+            # yourself, upgrade to a build where that chord became some other
+            # command's *default*, and the old behaviour dropped your binding
+            # on the floor -- silently, at a debug log level nobody reads, so
+            # the key you deliberately chose simply stopped working and the
+            # reason was invisible. An explicit choice is the more recent and
+            # the more specific of the two; the new default is the app's
+            # suggestion, and a suggestion does not outrank an instruction. The
+            # default holder is left *unbound* rather than given something else:
+            # inventing a replacement chord is how a second surprise happens,
+            # and the Keyboard Manager's audit reports an unbound command.
+            #
+            # **Only for a current-epoch file**, and that qualifier is the whole
+            # of the rule's safety. A pre-epoch file is a full *snapshot*, not a
+            # delta: every command in it is present whether or not the user ever
+            # touched it, so "they chose this" is false for almost all of it.
+            # Applying the rule there would let yesterday's default beat today's
+            # -- which is exactly the migration this loop exists to perform, run
+            # backwards. (Caught by
+            # test_legacy_preview_conflict_migrates_to_in_app_preview, where a
+            # legacy snapshot's stale Ctrl+Shift+P for view.preview would
+            # otherwise have taken the Command Palette's key.)
+            #
+            # **Two explicit choices are left as they are.** If the other side
+            # is also something this user set, there is nothing to choose
+            # between them from here, so the first one read keeps the chord and
+            # the second is dropped -- the older behaviour, now the only case it
+            # still applies to.
+            if is_pre_epoch or conflict in chosen:
+                logger.warning(
+                    "Dropping keymap entry for %r: %r is already %r's",
                     command_id,
                     normalized,
                     conflict,
                 )
+                continue
+            logger.info(
+                "Keeping your %r binding for %r; %r had it as a default and is now unbound",
+                normalized,
+                command_id,
+                conflict,
+            )
+            merged[conflict] = ""
+            merged[command_id] = normalized
+            chosen.add(command_id)
     return merged
 
 

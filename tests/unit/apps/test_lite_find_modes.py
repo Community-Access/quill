@@ -21,7 +21,16 @@ from types import SimpleNamespace
 from quill.apps.lite_window_commands import DocumentCommandsMixin
 from quill.apps.lite_window_history import DocumentHistoryMixin
 from quill.core.locations import LocationRing
+from quill.core.settings import Settings
 from quill.ui.richedit_editing import PLAIN
+
+
+class _Voice:
+    def __init__(self) -> None:
+        self.said: list[str] = []
+
+    def speak(self, message: str) -> None:
+        self.said.append(message)
 
 
 class _Control:
@@ -70,8 +79,24 @@ class _Window(DocumentCommandsMixin, DocumentHistoryMixin):
         # Plain text: Replace All only asks for confirmation in rich mode,
         # where a replacement takes the formatting of where it lands.
         self.editor = SimpleNamespace(mode=PLAIN)
+        # Real Settings, because the search path reads two of them now:
+        # ``wrap_find`` decides whether Find Next carries on from the other end,
+        # and ``find_not_found_feedback`` decides whether a miss is a tone, words,
+        # both or neither. Both default the way the shipped app defaults.
+        self.app = SimpleNamespace(settings=Settings(), voice=_Voice())
+        self.cues: list[str] = []
 
     def _announce(self, message: str) -> None:
+        self.announcements.append(message)
+
+    def _cue(self, event: str) -> None:
+        self.cues.append(str(event))
+
+    def _has_sound_for(self, _event: str) -> bool:
+        """The pack has a clip for every event these tests care about."""
+        return True
+
+    def _set_status_message(self, message: str) -> None:
         self.announcements.append(message)
 
     def _set_modified(self, value: bool) -> None:
@@ -169,10 +194,31 @@ def test_count_occurrences_reports_the_number_and_the_needle() -> None:
     assert win.announcements == ["2 matches for cat"]
 
 
-def test_count_occurrences_with_nothing_searched_yet_says_what_to_do() -> None:
+def test_count_occurrences_with_nothing_searched_yet_opens_find() -> None:
+    """It asks for the thing it needs rather than refusing.
+
+    It used to say "Search for something first, then count it", which is a
+    correct sentence and a dead end: the answer was to press a different key,
+    and the user had to know which. Opening Find *is* the next step. The row is
+    never greyed out instead, because a disabled menu item keeps advertising its
+    key and stops dispatching it -- so the key would go from saying something
+    unhelpful to doing nothing at all.
+    """
     win = _Window("cat")
+    opened: list[bool] = []
+    win.cmd_find = lambda: opened.append(True)  # type: ignore[method-assign]
     win.cmd_count_occurrences()
-    assert win.announcements == ["Search for something first, then count it"]
+    assert opened == [True]
+    assert win.announcements == []
+
+
+def test_find_all_with_nothing_searched_yet_opens_find() -> None:
+    win = _Window("cat")
+    opened: list[bool] = []
+    win.cmd_find = lambda: opened.append(True)  # type: ignore[method-assign]
+    win.cmd_find_all()
+    assert opened == [True]
+    assert win.announcements == []
 
 
 def test_whole_word_wraps_a_whole_regex_alternation() -> None:

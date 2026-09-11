@@ -41,6 +41,7 @@ from quill.core.selection import (
     sentence_span,
     shrink_selection,
 )
+from quill.core.sound_events import SoundEvent
 
 __all__ = ["DocumentSelectionMixin"]
 
@@ -48,9 +49,7 @@ __all__ = ["DocumentSelectionMixin"]
 #: small enough that the list stays something you can arrow through.
 _MAX_MARKS = 10
 
-#: The keys that mean "I have moved" while extend mode is on. Anything else --
-#: a letter, a delete -- ends the mode, because typing into a growing selection
-#: is not something anybody means to do.
+#: The keys that mean "I have moved" while extend mode is on.
 _NAVIGATION_KEYS = frozenset({
     wx.WXK_LEFT,
     wx.WXK_RIGHT,
@@ -63,6 +62,22 @@ _NAVIGATION_KEYS = frozenset({
     wx.WXK_CONTROL,
     wx.WXK_SHIFT,
 })
+
+#: The keys that end extend mode, as opposed to merely not extending it.
+#:
+#: This list is short on purpose, and it used to be its inverse: anything that
+#: was not navigation ended the mode. That reading looked reasonable and shipped
+#: F8 broken, because the key that *starts* the mode is not a navigation key
+#: either -- so F8's own key-up arrived a moment after F8's accelerator had set
+#: the anchor and threw it straight back away. Every press of F8 followed by
+#: Shift+F8 answered "No selection in progress", which is the report this list
+#: exists to make impossible. A key nobody thought about must leave the mode
+#: alone; only a key that means "stop" may end it.
+#:
+#: Typing still ends the mode -- see ``text_changed_while_extending``, which is
+#: the honest test for it, since the text changing is the thing that matters and
+#: it can arrive from a paste or a menu as easily as from a letter key.
+_CANCELS_EXTEND = frozenset({wx.WXK_ESCAPE})
 
 
 class DocumentSelectionMixin:
@@ -88,20 +103,39 @@ class DocumentSelectionMixin:
     def cmd_start_selection(self) -> None:
         """F8: anchor here, and let every navigation key extend the selection."""
         self._selection_anchor = self.control.GetInsertionPoint()
-        self._announce("Selection started. Move to extend it, Shift F8 to finish.")
+        self._action(
+            SoundEvent.SELECTION_STARTED,
+            "Selection started. Move to extend it, Shift F8 to finish.",
+        )
         self._sync_check_items()
 
     def cmd_complete_selection(self) -> None:
-        """Shift+F8: stop extending, and say what was taken."""
+        """Shift+F8: stop extending, and say what was taken.
+
+        What is selected wins, and the anchor is the fallback. Those agree
+        whenever live extension kept up, and when it did not, the two answers are
+        "what is on screen" and "what you asked for" -- so the selection goes
+        first, because it is what the next Ctrl+C would actually take. With no
+        selection at all the anchor is all there is, and it is better than
+        reporting nothing after the user watched the caret travel.
+        """
         if self._selection_anchor is None:
             self._announce("No selection in progress")
             return
-        self._selection_anchor = None
+        anchor, self._selection_anchor = self._selection_anchor, None
+        limit = self.control.GetLastPosition()
         start, end = self.control.GetSelection()
+        if end <= start:
+            start, end = sorted((min(anchor, limit), min(self.control.GetInsertionPoint(), limit)))
         if end <= start:
             self._announce("Selection cancelled, nothing selected")
         else:
+            self.control.SetSelection(start, end)
             self._last_selection = (start, end)
+            # The count is spoken whatever the feedback mode is: "how much did I
+            # just take" is a fact, not a cue, and a tone cannot carry it. The
+            # mode governs the earcon that comes with it.
+            self._cue(SoundEvent.SELECTION_COMPLETED)
             self._announce_span(start, end, "Selected")
         self._sync_check_items()
         self._touch_status()
@@ -161,20 +195,64 @@ class DocumentSelectionMixin:
         """Stretch the selection from the anchor to wherever the caret now is.
 
         Called from the window's existing caret hook, after the key has landed.
-        A key that is not navigation ends the mode rather than extending: typing
-        into a selection you are still building replaces it, which is never what
-        was meant.
+
+        Three answers, and the third is the one that was missing: a navigation
+        key extends, Escape cancels, and **anything else is left alone**. F8
+        itself arrives here -- its key-up reaches the control a moment after its
+        accelerator ran -- and so does every function key, every modifier and
+        every mouse release. A rule that ended the mode on all of them ended it
+        on the keystroke that had just started it, which is why F8 followed by
+        Shift+F8 answered "No selection in progress" and why the mode has never
+        worked from the keyboard.
+
+        A key-up that arrives with a selection already in place is left alone
+        too, and that is not an optimisation. An arrow key pressed while text is
+        selected collapses the selection and moves from its edge, so by key-up
+        there is nothing selected and the caret is the honest answer; a selection
+        still standing means either nothing moved (a modifier going up) or the
+        control extended it natively (Shift+arrow), and both are already right.
+        It also side-steps wxMSW answering ``GetInsertionPoint`` with the
+        selection's *start* -- which, mid-extension, is the anchor.
         """
         if self._selection_anchor is None:
             return
+        if key_code in _CANCELS_EXTEND:
+            self.cancel_extend_selection()
+            return
         if key_code not in _NAVIGATION_KEYS:
-            self._selection_anchor = None
-            self._sync_check_items()
+            return
+        start, end = self.control.GetSelection()
+        if end > start:
             return
         caret = self.control.GetInsertionPoint()
-        start, end = sorted((self._selection_anchor, caret))
-        if end > start:
-            self.control.SetSelection(start, end)
+        if caret != self._selection_anchor:
+            self.control.SetSelection(*sorted((self._selection_anchor, caret)))
+
+    def text_changed_while_extending(self) -> None:
+        """End extend mode because the document changed under it.
+
+        Typing into a selection you are still building replaces it, so there is
+        nothing left to extend and the anchor now points into text that has
+        moved. Called from the window's text hook rather than inferred from a key
+        code: a paste, a menu command and a letter key all change the text and
+        only one of them is a keystroke.
+        """
+        if self._selection_anchor is None:
+            return
+        self._selection_anchor = None
+        self._sync_check_items()
+
+    def cancel_extend_selection(self) -> None:
+        """Escape: stop extending, and say so rather than going quiet.
+
+        A mode that ends silently is one the user has to test for by pressing
+        something destructive.
+        """
+        if self._selection_anchor is None:
+            return
+        self._selection_anchor = None
+        self._announce("Selection stopped")
+        self._sync_check_items()
 
     # ------------------------------------------------------------------ #
     # Structure

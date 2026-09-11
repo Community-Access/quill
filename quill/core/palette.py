@@ -101,6 +101,7 @@ COMMAND_ALIASES: dict[str, str] = {
     "app.exit": "quit leave shut down",
     "app.announcement_self_test": "speech test braille test output check",
     "app.report_editor_surface": "braille diagnostic surface class emulation",
+    "app.braille_ab": "braille compare test display cell dots emulate system edit",
     "edit.undo": "revert back mistake",
     "edit.redo": "again restore change",
     "edit.replace_all": "search substitute swap",

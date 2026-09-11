@@ -167,39 +167,56 @@ def test_load_keymap_persists_cleaned_map(tmp_path: Path, monkeypatch: pytest.Mo
     """When the saved file contains entries that get cleaned, the surviving
     subset is written back to disk so the user sees the cleanup on next open.
 
-    Valid entries survive untouched; a whitespace-only binding and a
-    conflicting chord are removed. A binding for a command this build does not
-    ship is PRESERVED (it may be a newer sibling app's -- see
-    ``keymap.merge_keymaps``). The on-disk file keeps only the surviving delta
-    plus that carried-forward foreign binding, never the full DEFAULT_KEYMAP.
+    Valid entries survive untouched, and a binding for a command this build does
+    not ship is PRESERVED (it may be a newer sibling app's -- see
+    ``keymap.merge_keymaps``). The on-disk file keeps only the delta plus that
+    carried-forward foreign binding, never the full DEFAULT_KEYMAP.
+
+    **What "conflicting" means here changed on 2026-09-10.** Both entries below
+    are the user's own: they asked for Ctrl+Alt+Shift+Y on Save *and* Ctrl+S on
+    the Command Palette, which together are perfectly consistent -- Ctrl+S is
+    free once Save has moved off it. The old rule read the file one entry at a
+    time against a map still holding Save's *default*, saw Ctrl+S "taken", and
+    silently discarded the Palette's binding; the user got neither the key they
+    asked for nor any indication why. An explicit choice now outranks a default,
+    so both requests are honoured -- and the file is still rewritten as a delta,
+    which is the other half of what this test is for.
     """
     store_path = tmp_path / "keymap-store.json"
     monkeypatch.setattr(keymap_module, "keymap_path", lambda: store_path)
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
 
-    # Mix: one valid override, one foreign (sibling-app) command, one conflict.
+    # A move: Save leaves Ctrl+S, and the Palette takes it. Plus one foreign
+    # (sibling-app) command that this build knows nothing about.
     save_keymap({
         "file.save": "Ctrl+Alt+Shift+Y",  # valid override, must survive
         "a.sibling_app_command": "Ctrl+Alt+X",  # unknown id, now preserved
-        "app.command_palette": "Ctrl+S",  # collides with file.save default
+        "app.command_palette": "Ctrl+S",  # the key Save just vacated
     })
 
     loaded = load_keymap()
 
-    # Cleaned map in memory.
+    # Both of the user's requests, honoured. The default that stood on Ctrl+S
+    # is not what decides this: it is a suggestion, and the user gave an
+    # instruction.
     assert loaded["file.save"] == "Ctrl+Alt+Shift+Y"
     assert loaded["a.sibling_app_command"] == "Ctrl+Alt+X"  # preserved
-    assert loaded["app.command_palette"] == DEFAULT_KEYMAP["app.command_palette"]
+    assert loaded["app.command_palette"] == "Ctrl+S"
 
-    # Surviving user overrides plus the carried-forward foreign binding are
-    # persisted as a delta plus the epoch stamp -- never the full DEFAULT_KEYMAP.
+    # And nothing ended up on two commands at once, which is the property the
+    # old drop-on-conflict rule was protecting and this one still keeps.
+    claimed = [command for command, binding in loaded.items() if binding == "Ctrl+S"]
+    assert claimed == ["app.command_palette"], claimed
+
+    # The overrides plus the carried-forward foreign binding are persisted as a
+    # delta plus the epoch stamp -- never the full DEFAULT_KEYMAP.
     on_disk = keymap_module.read_json(store_path, default={})
     assert on_disk == {
         "file.save": "Ctrl+Alt+Shift+Y",
         "a.sibling_app_command": "Ctrl+Alt+X",
+        "app.command_palette": "Ctrl+S",
         "_defaults_epoch": keymap_module.KEYMAP_DEFAULTS_EPOCH,
     }
-    assert "app.command_palette" not in on_disk
 
 
 def test_load_keymap_leaves_clean_file_alone(

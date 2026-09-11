@@ -140,6 +140,50 @@ you ask for a check, you get one.
 Words you teach QuillLite are yours. If you also use QUILL for All, one setting
 in Preferences lets both share the same list.
 
+**And it spells the word out for you.** This is the part that matters most and
+the part no other editor does. "Receive" and "recieve" sound *identical* — being
+told the word is being told nothing. So when you land on a misspelling,
+QuillLite says the word and then, after a short pause, says the letters.
+
+The pause is deliberate. It is a separate thing it says, not one long
+announcement, so if you already knew what was wrong you press the next key and
+never hear it. You only wait if you want to.
+
+You decide how the letters come: plainly (R, E, C), in the **phonetic
+alphabet** (romeo, echo, charlie — which is the only way to tell B from D from E
+from P from T from V through a fast synthesiser), or both. You decide whether
+capitals are named, so MacDonald and Macdonald are told apart. You decide how
+long each pause is, and there are three of them, because moving quickly through
+a document and stopping to choose a correction are not the same activity.
+
+All of it is in **Tools ▸ Spelling ▸ Announcements** (**Ctrl+Alt+Shift+F7**),
+with an example box that says your choices out loud as you change them.
+
+### The Applications key, on a misspelled word
+
+Put the cursor in a word QuillLite thinks is wrong and press the **Applications
+key** (or Shift+F10, or right-click). The menu opens **with the corrections** —
+one press of Down and you are on the first one; Enter replaces the word. No
+dialog, no moving the cursor.
+
+Underneath: ignore it once, ignore it everywhere in this document, add it to
+your dictionary, or add it only for this file. Then the ways onward — more
+suggestions, check the whole document, next and previous misspelling — each
+showing its key, so the menu teaches you the shortcut instead of replacing it.
+
+Every row names the word it is about, because a menu you reached with the
+keyboard is a menu read out of context.
+
+### While you type
+
+Finish a word that is not in the dictionary and you hear a short, quiet falling
+blip, and the status bar says which word it was. A sound rather than speech, on
+purpose: speech there would interrupt the sentence you are in the middle of
+writing, which is the one moment you can least afford it.
+
+You can silence it, have the word spoken as well, or change how long before it
+mentions the same word again.
+
 ### Bookmarks, and finding your place again
 
 Press **Ctrl+Shift+B** to drop a bookmark where you are, and **F2** to come back
@@ -222,7 +266,7 @@ shows its keyboard shortcut beside it, which is a good way to pick the keys up.
 
 ### Make it smaller, or bigger
 
-**View ▸ Customize Features** lets you switch whole parts of QuillLite off.
+**Tools ▸ Customize Features** lets you switch whole parts of QuillLite off.
 Turning something off removes it from the menus *and* unhooks its keys, so it is
 properly gone rather than just hidden.
 
@@ -230,9 +274,9 @@ Uncheck the first one and QuillLite is essentially Notepad.
 
 These all start switched **on**:
 
-Rich text and the Format menu · Heading navigation · Bookmarks · The Tools menu ·
-Copy Tray and the clip library · Printing · Abbreviations · Spell check · The
-Selection submenu
+Rich text and the Format menu · Heading navigation · Bookmarks · Line tools and
+change case · Copy Tray and the clip library · Printing · Abbreviations · Spell
+check · The Selection submenu
 
 These three start switched **off**, and they sit in the same list rather than
 being hidden away, because something you cannot find might as well not exist:
@@ -243,10 +287,55 @@ being hidden away, because something you cannot find might as well not exist:
   does fill up a folder.
 - **Go To Anything** — one box that searches everything at once.
 
+### Sounds you can hear, change, and switch off
+
+QuillLite makes a short sound when something happens that your screen reader
+says nothing about: a cut, a copy, a paste, a delete, an undo, a document saved,
+a document closed, printing started and finished, the app opening and closing.
+These are exactly the moments where speech tells you nothing, because nothing
+moved and nothing gained focus — so silence has always meant guessing.
+
+They are designed as families, so you learn them once rather than one at a time.
+**Undo and redo are the same little sound played backwards from each other.**
+Open and close are one pair of bells, rising and falling. Cut, copy and paste are
+one dry tick in three shapes, and delete is that tick dropped low with a breath
+of noise under it.
+
+**Tools ▸ Sound Scheme** (**Ctrl+Alt+Shift+O**) is all of them in a list that
+**plays each one as you arrow onto it** — which is what turns a list of names
+into something you can actually browse. Every row tells you the whole story: what
+the event is, whether it is switched on, which file it plays and how long that
+file is.
+
+For whichever row you are on: **Play** it (even if it is switched off), switch it
+on or off, **Browse** for a WAV of your own, remove its sound entirely, or put it
+back to the one QuillLite ships. **Save As Scheme** keeps your whole set under a
+name — as an ordinary folder you can copy, back up or send to a friend. **Restore
+All Defaults** always works, because the sounds QuillLite ships are never
+overwritten.
+
+### Quiet mode
+
+**Alt+Shift+M** silences everything at once. Press it again and it all comes
+back.
+
+One key, because "make it stop" is something you need *while* the noise is
+happening — on a call, in a quiet room, or having simply had enough today. A
+setting you have to go and find is not much help at the moment you need it.
+
 ### Every window answers F1
 
 Press **F1** anywhere and QuillLite tells you what this window is for, and then
 what the thing you are focused on does. Every window. Every button.
+
+### Start with a blank document, or don't
+
+QuillLite opens with an empty Untitled document, the way Notepad and WordPad do.
+
+If you always open an existing file, that empty document is one more thing to
+close on every single launch — so there is a switch in **Preferences** to turn it
+off. Files you double-click, last session's documents and any recovered work all
+still open either way, because every one of those is you asking for a document.
 
 ### Dark by default
 

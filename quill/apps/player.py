@@ -56,7 +56,7 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
     _STATUS_LABELS = ("State", "Position", "Chapter", "Sleep", "Backend")
 
     def __init__(self, *, safe_mode: bool = False, initial_paths: list[Path] | None = None) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(620, 520))
+        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(620, 520), app_id="player")
         # F1 context help with the Media Player's authored purpose catalogue.
         # The app shell already activated the shared engine (provider +
         # dialog-contract hook + main-frame F1); this re-activation swaps in

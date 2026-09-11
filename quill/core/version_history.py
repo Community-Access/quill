@@ -50,12 +50,19 @@ def speakable_when(saved: datetime, now: datetime | None = None) -> str:
     return f"{saved.strftime('%B %d, %Y')} at {clock}"
 
 
-def version_label(saved: datetime, *, words: int, note: str = "") -> str:
+def version_label(
+    saved: datetime, *, words: int, note: str = "", now: datetime | None = None
+) -> str:
     """One row of a version list: when it was saved, and how big it was.
 
     The size is there to be *compared*, not read: it is usually the only thing
     that tells two saves a minute apart apart, and a version that is suddenly
     two thousand words shorter is the one somebody is hunting for.
+
+    *now* is passed through to :func:`speakable_when` for the same reason it
+    exists there: without it a test that names a date is a test that starts
+    failing the next morning, which is how this one spent a day claiming
+    "Yesterday" where it had asserted "Today".
     """
     counted = f"{words:,} word" + ("" if words == 1 else "s")
-    return f"{speakable_when(saved)} - {counted}{note}"
+    return f"{speakable_when(saved, now)} - {counted}{note}"

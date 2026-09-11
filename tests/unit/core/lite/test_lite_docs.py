@@ -69,6 +69,40 @@ def test_every_command_name_is_in_the_guide(guide: str) -> None:
     assert missing == [], "commands the guide never names: " + ", ".join(missing)
 
 
+def test_every_profile_has_its_own_section_in_the_guide(guide: str) -> None:
+    """A profile is a decision, and a decision needs more than a table row.
+
+    The dialog shows a paragraph and F1 reads it, but somebody choosing between
+    four of them is reading the guide -- so each one gets a heading of its own
+    saying what it keeps, what it removes and what Ctrl+N will make.
+    """
+    from quill.core.lite.features import PROFILES
+
+    missing = sorted(p.name for p in PROFILES if f"#### {p.name}" not in guide)
+    assert missing == [], "profiles with no section of their own: " + ", ".join(missing)
+
+
+def test_the_guide_says_how_many_areas_each_profile_keeps(guide: str) -> None:
+    """The number somebody comparing four profiles actually wants."""
+    from quill.core.lite.features import AREAS, PROFILES
+
+    for profile in PROFILES:
+        on = len(AREAS) - len(profile.disabled)
+        assert f"{on} of {len(AREAS)}" in guide, (
+            f"{profile.name} keeps {on} and the guide never says"
+        )
+
+
+def test_the_guide_says_what_a_profile_that_claims_a_format_creates(guide: str) -> None:
+    from quill.core.lite.features import PROFILES
+
+    for profile in PROFILES:
+        mode = dict(profile.settings).get("default_mode")
+        if mode is None:
+            continue
+        assert f"Ctrl+N makes a {mode} text document" in guide, profile.name
+
+
 def test_every_switchable_area_is_named_by_its_checkbox_label(guide: str) -> None:
     """Somebody reading the guide has to be able to find the box to untick."""
     missing = sorted(area.label for area in AREAS if area.label not in guide)

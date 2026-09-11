@@ -11,7 +11,6 @@ friends) stays initialized in ``MainFrame.__init__``.
 
 from __future__ import annotations
 
-import time
 from pathlib import Path
 
 from quill.core import thesaurus as thesaurus_engine
@@ -37,8 +36,6 @@ from quill.core.spellcheck import (
 from quill.core.spellcheck import (
     previous_misspelling as find_previous_misspelling,
 )
-from quill.core.spellcheck_filetypes import is_code_filename
-from quill.core.spellcheck_live import live_alert_suppressed
 from quill.platform.sr_announce import (
     announce,
 )
@@ -465,7 +462,7 @@ class SpellcheckCommandsMixin:
         dictionary = self._spell_dictionary()
         text = self.editor.GetValue()
         cursor = self.editor.GetInsertionPoint()
-        item = find_next_misspelling(text, cursor, dictionary)
+        item = self._first_unignored(text, cursor, dictionary, forward=True)
         if item is None:
             message = self._misspellings_behind_message(text, cursor, dictionary, ahead=True)
             self._announce_result(message)
@@ -478,12 +475,13 @@ class SpellcheckCommandsMixin:
             self.editor.SetSelection(item.start, item.end)
         self.editor.SetFocus()
         self._set_status(f'Next misspelling: "{item.word}"')
+        self._spell_after_landing(item.word)
 
     def previous_misspelling(self) -> None:
         dictionary = self._spell_dictionary()
         text = self.editor.GetValue()
         cursor = self.editor.GetInsertionPoint()
-        item = find_previous_misspelling(text, cursor, dictionary)
+        item = self._first_unignored(text, cursor, dictionary, forward=False)
         if item is None:
             message = self._misspellings_behind_message(text, cursor, dictionary, ahead=False)
             self._announce_result(message)
@@ -496,6 +494,7 @@ class SpellcheckCommandsMixin:
             self.editor.SetSelection(item.start, item.end)
         self.editor.SetFocus()
         self._set_status(f'Previous misspelling: "{item.word}"')
+        self._spell_after_landing(item.word)
 
     def spell_check_word_at_cursor(self) -> None:
         """Instantly check the word at (or nearest) the caret -- no full-document
@@ -668,67 +667,6 @@ class SpellcheckCommandsMixin:
             return True
         finally:
             clipboard.Close()
-
-    def _announce_spellcheck_hint(self, text: str | None = None) -> None:
-        if not getattr(self.settings, "announce_spelling", True):
-            self._last_live_misspelling_feedback = None
-            return
-        dictionary = self._spell_dictionary()
-        cursor = self.editor.GetInsertionPoint()
-        if text is None:  # #1346: reuse the typing path's single buffer read.
-            text = self.editor.GetValue()
-        # #1346 round 3: the bounded check. The unbounded next_misspelling kept
-        # scanning past every correctly-spelled word, so a clean document was
-        # spell-checked from the caret to the end on each pause in typing --
-        # for an answer this caller was about to discard (start != cursor).
-        from quill.core.spellcheck import misspelling_at
-
-        item = misspelling_at(text, cursor, dictionary)
-        if item is None:
-            self._last_live_misspelling_feedback = None
-            return
-        if live_alert_suppressed(text, item.start, item.end):
-            self._last_live_misspelling_feedback = None
-            return
-        # Quiet in code, by the file's name. live_alert_suppressed above rules
-        # out a *region* -- a URL, a code span, a fence -- which is the right
-        # answer inside prose. It cannot help in main.py, where the whole file
-        # is the region: every identifier is a word no dictionary has, and each
-        # one costs a screen-reader user an earcon and a status line. The
-        # explicit F7 review is deliberately not gated here; that one was asked
-        # for, and somebody who runs it on a source file means it.
-        if getattr(self.settings, "spellcheck_skip_code_files", True) and is_code_filename(
-            self.document.path
-        ):
-            self._last_live_misspelling_feedback = None
-            return
-        key = (item.word.lower(), item.start, item.end)
-        now = time.monotonic()
-        if (
-            self._last_live_misspelling_feedback == key
-            and now - self._last_live_misspelling_feedback_at < 0.75
-        ):
-            return
-        self._last_live_misspelling_feedback = key
-        self._last_live_misspelling_feedback_at = now
-        self._play_spelling_alert()
-        self._set_status(f'Possible misspelling: "{item.word}"')
-
-    def _play_spelling_alert(self) -> None:
-        # Prefer the pack earcon; fall back to the system bell only when the
-        # sound system is off or the active pack has no spelling_alert sound,
-        # so the alert is never silently lost.
-        from quill.core.sound_events import SoundEvent
-        from quill.ui import sound_manager
-
-        if sound_manager.is_active() and str(SoundEvent.SPELLING_ALERT) in (
-            sound_manager.get_loaded_events()
-        ):
-            sound_manager.post_sound(SoundEvent.SPELLING_ALERT)
-            return
-        bell = getattr(self._wx, "Bell", None)
-        if callable(bell):
-            bell()
 
     def _spell_dictionary(self) -> set[str]:
         # Cache the combined dictionary keyed by (document path, project root).

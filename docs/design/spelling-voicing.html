@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Spelling voicing: how a misspelling is reported, and
+why</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="spelling-voicing-how-a-misspelling-is-reported-and-why">Spelling
+voicing: how a misspelling is reported, and why</h1>
+<p>Applies to <strong>QUILL and QuillLite together</strong>. Every rule
+here lives in shared code – <code>quill/core/spelling/voicing.py</code>,
+<code>quill/core/spellcheck.py</code> – so neither editor can drift
+ahead of the other, and a listener who tunes this in one finds the other
+already tuned.</p>
+<h2 id="the-problem-this-solves">The problem this solves</h2>
+<p>A misspelling is the one thing in an editor that speech alone cannot
+convey. “receive” and “recieve” are the same sound. A sighted user gets
+a red squiggle under the wrong letters and knows instantly; a listener
+told “not in dictionary, recieve” has been handed a word they cannot
+tell from the correct one. That is a report, not an answer.</p>
+<p><strong>The letters are the answer.</strong> Everything below is
+about delivering them without becoming a nuisance – because the same
+feature that helps once an hour is intolerable forty times a minute, and
+the difference between those two is entirely a matter of timing,
+phrasing and restraint.</p>
+<p>Three surfaces report a misspelling, and each needs a different
+voice:</p>
+<table>
+<thead>
+<tr>
+<th>Surface</th>
+<th>What it must do</th>
+<th>What it must not do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>While you type</td>
+<td>Tell you something is wrong</td>
+<td>Interrupt the sentence you are writing</td>
+</tr>
+<tr>
+<td>When you land on one</td>
+<td>Tell you <em>which letters</em> are wrong</td>
+<td>Repeat what your screen reader just said</td>
+</tr>
+<tr>
+<td>In the review or suggestions list</td>
+<td>Let you tell two spellings apart</td>
+<td>Make you sit through eleven letters you did not need</td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-was-actually-broken">What was actually broken</h2>
+<p>Three defects, all found by reading the code against these three
+surfaces.</p>
+<p><strong>The as-you-type alert had never fired.</strong> Both editors
+called <code>misspelling_at(text, caret)</code>, which by construction
+matches only a word <em>beginning exactly at the caret</em> – it is the
+bounded helper written for a different question. While typing left to
+right the caret is always at or past the <em>end</em> of the word just
+finished, so the condition was never true. The earcon, the status line
+and the whole feature were unreachable except by arrowing back onto the
+first letter of a bad word. Fixed by <code>misspelling_behind()</code>,
+which asks the question the surface actually has: <em>what word did you
+just finish, and is it a word?</em></p>
+<p><strong>Landing on a misspelling never spelled it.</strong> Next and
+Previous Misspelling selected the word and set a status line. The screen
+reader read the selection – so a listener heard “recieve”, which is the
+sound of the word they meant, and learned nothing. Fixed by spelling it
+out after a pause.</p>
+<p><strong>Ordinals were misspellings, and one shape was worse than
+that.</strong> <code>"the 13th of May"</code> reported
+<strong><code>"th"</code></strong> as a misspelling, at an offset inside
+a number, for a word nobody typed: the pattern started at the first
+letter it found and the digits before it were invisible to it.
+<code>"1st"</code> and <code>"23rd"</code> escaped only because “st” and
+“rd” happen to be in the wordlist. One lookbehind fixed that and the
+whole family it belongs to – 3D, 1080p, 500ml, 12pt, v2beta – every one
+of which was a spoken interruption and none of which was ever a spelling
+mistake.</p>
+<h2 id="the-rules">The rules</h2>
+<h3 id="while-you-type-a-sound-and-not-a-voice">While you type: a sound,
+and not a voice</h3>
+<p>Speech here interrupts the very sentence it is commenting on, and
+somebody composing a paragraph is the person least able to afford it. So
+the alert is an earcon, the status bar carries the words, and F7 still
+finds everything.</p>
+<p><strong>The alert fires on a word you have finished</strong>, not on
+one you are in the middle of. “Finished” means there is a terminator – a
+space, a comma, a newline – between the word and the caret. Without that
+rule a checker judges “recie” while you are still typing “receive” and
+cries wolf on the way to every long word.</p>
+<p><strong>The earcon is “the slip”</strong>: a note that starts in tune
+and slides flat, 58 ms, the quietest cue in the pack. It is the sound of
+the thing it reports – a word that was almost right. It has to be unique
+because it fires more often than any other earcon, and an alert you
+cannot tell from four others is one you learn to ignore; every other
+negative cue in the pack is a discrete two-note descent or a buzz, and
+nothing else glides. A 3 ms noise tick opens it so it cuts through a
+synthesiser on shape rather than on volume, which is the trade any alert
+that fires this often has to make.</p>
+<p>It can be <strong>silenced outright</strong>
+(<code>spelling_alert_sound</code>), it can be <strong>spoken as
+well</strong> for somebody who wants that
+(<code>spelling_alert_speech</code>, off by default), and its
+<strong>repeat interval is tunable</strong>
+(<code>spelling_alert_repeat_ms</code>) so one stubborn proper noun does
+not become a drum. Zero means alert every time, because a throttle you
+cannot switch off is one that eventually hides something.</p>
+<h3 id="when-you-land-on-one-the-word-a-pause-then-the-letters">When you
+land on one: the word, a pause, then the letters</h3>
+<p>Two utterances, never one. A single utterance cannot be interrupted,
+so somebody who recognised the word from its first syllable would have
+to sit through eleven more letters. A pause and a separate utterance
+means a fast user never hears the spelling at all – they have already
+pressed the next key and the pending spell-aloud is cancelled – while
+somebody who waits gets it in full.</p>
+<p><strong>The pause is different per surface, and both are
+tunable.</strong> In the review dialog you are stopped and deciding, so
+the default is 800 ms. Moving through a document with Next Misspelling
+you may be travelling, so its default is 600 ms. A spell-aloud you
+always outrun is one more thing to cancel; one you always wait for is a
+metronome.</p>
+<h3 id="in-a-list-of-corrections-the-same-treatment">In a list of
+corrections: the same treatment</h3>
+<p>Choosing between “receive” and “recieve” by ear is exactly as
+impossible in a list of suggestions as it was in the document, so
+arrowing onto a suggestion spells it after a pause, and arrowing on
+cancels it. Spelling the <em>first</em> suggestion automatically on
+arrival is available and <strong>off by default</strong>: it doubles the
+arrival announcement, which is welcome when you are learning a word and
+noise when you are checking one.</p>
+<h3 id="letters-can-be-said-three-ways">Letters can be said three
+ways</h3>
+<p>Plain letters are fastest and are what most people want. The
+<strong>phonetic alphabet</strong> is unambiguous where B, D, E, P, T
+and V are one sound with a rumour attached – a fast voice, a poor
+speaker, a noisy room. <strong>Both</strong> is for learning a word
+rather than checking one.</p>
+<p>Letters are spoken in upper case whatever the word does, because
+several voices read a lone lower-case letter as a word (“a”, “i”) while
+every voice reads an upper-case one as a letter. That loses the fact
+that a letter <em>was</em> capitalised, so
+<code>spell_aloud_capitals</code> puts it back explicitly: “cap M, C,
+cap D” is how you hear that a surname is MacDonald and not Macdonald.
+Hyphens, apostrophes and underscores are named rather than paused over,
+because a pause is not a hyphen.</p>
+<h2 id="the-settings">The settings</h2>
+<p>Twelve names, identical in both editors. QUILL renders them from
+<code>settings_specs.py</code>; QuillLite has its own Spelling
+Announcements window.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>What it decides</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>spelling_alert_sound</code></td>
+<td>on</td>
+<td>Play the earcon when you finish a misspelled word</td>
+</tr>
+<tr>
+<td><code>spelling_alert_speech</code></td>
+<td>off</td>
+<td>Also say the word</td>
+</tr>
+<tr>
+<td><code>spelling_alert_repeat_ms</code></td>
+<td>750</td>
+<td>Shortest gap between two alerts for the same word; 0 means
+always</td>
+</tr>
+<tr>
+<td><code>spell_aloud_enabled</code></td>
+<td>on</td>
+<td>Spell misspelled words out at all</td>
+</tr>
+<tr>
+<td><code>spell_aloud_delay_ms</code></td>
+<td>800</td>
+<td>Pause before spelling, in the review</td>
+</tr>
+<tr>
+<td><code>spell_aloud_on_navigation</code></td>
+<td>on</td>
+<td>Spell the word you land on with Next/Previous Misspelling</td>
+</tr>
+<tr>
+<td><code>spell_aloud_navigation_delay_ms</code></td>
+<td>600</td>
+<td>The shorter pause for that</td>
+</tr>
+<tr>
+<td><code>spell_aloud_suggestions</code></td>
+<td>on</td>
+<td>Spell each suggestion as you arrow onto it</td>
+</tr>
+<tr>
+<td><code>spell_aloud_suggestion_delay_ms</code></td>
+<td>600</td>
+<td>Pause before that</td>
+</tr>
+<tr>
+<td><code>spell_aloud_first_suggestion</code></td>
+<td>off</td>
+<td>Also spell the top suggestion on arrival</td>
+</tr>
+<tr>
+<td><code>spell_aloud_style</code></td>
+<td>letters</td>
+<td>Letters, phonetic alphabet, or both</td>
+</tr>
+<tr>
+<td><code>spell_aloud_capitals</code></td>
+<td>on</td>
+<td>Say “cap” before an upper-case letter</td>
+</tr>
+</tbody>
+</table>
+<p>QUILL keeps <code>spell_review_spell_word</code> and
+<code>spell_review_spell_word_pause_ms</code> as the review dialog’s own
+switch and pause, and they win over the shared pair there: somebody who
+switched spelling off for the F7 dialog specifically meant the F7
+dialog.</p>
+<h2 id="where-the-code-is">Where the code is</h2>
+<ul>
+<li><code>quill/core/spelling/voicing.py</code> – the policies, the
+letter formatter, and the one-pending-utterance scheduler. wx-free; the
+timer arrives as a factory so every rule is testable without a
+display.</li>
+<li><code>quill/core/spellcheck.py</code> –
+<code>misspelling_behind()</code> (the as-you-type question) and the
+ordinal guard in <code>_WORD_PATTERN</code>.</li>
+<li><code>quill/core/spelling/announcements.py</code> – the review
+dialog’s verbosity, now spelling through the shared voice.</li>
+<li><code>scripts/gen_ink_sounds.py</code> – “the slip”, under
+<code>spelling.wav</code>.</li>
+</ul>
+<h2 id="deliberately-not-done">Deliberately not done</h2>
+<p><strong>One-utterance phrasing.</strong> “Misspelled word receive, r
+e c e i v e” as a single breath is how some tools do it. Two utterances
+are better: you can interrupt between them, and the pause is the whole
+mechanism by which a fast user pays nothing for a feature a careful user
+needs.</p>
+<p><strong>Line numbers in the misspelling list.</strong> Easy to add,
+and a line number is not something a listener navigates by. Worth asking
+a real user before building.</p>
+<p><strong>A “remove word from the dictionary” command.</strong>
+Teaching a word with one keystroke is permanent, and the only remedy
+today is hand-editing JSON. This is a real gap and the right shape for
+it is a <em>list</em> of the words you have taught, not a
+remove-at-cursor key – because removing a word only helps if you can
+find it again. Not built here; worth its own change.</p>
+</main>
+</body>
+</html>

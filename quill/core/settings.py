@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.ai.vision_prompts import BUILTIN_STYLE_IDS
 from quill.core.monitor_policy import (
     MONITOR_GITHUB,
@@ -579,6 +580,20 @@ class Settings:
     sound_pack_path: str = ""  # empty = bundled Ink pack
     sound_volume: int = 80  # 0-100; passed to sound_lib Output.set_volume()
     sound_events_disabled: str = ""  # comma-separated SoundEvent IDs to silence
+    # What a key that performed an action reports back with, where that moment
+    # has both an earcon and a phrase: "sound" (the default, and what QUILL has
+    # always done), "speech", "both", or "silent". See core/action_feedback.py --
+    # the resolution rule lives there because it has to be identical in both
+    # editors, and it deliberately never silences a moment that has only words.
+    action_feedback: str = "sound"
+    # And the same choice for the one failure a search can have: nothing found.
+    # Separate from action_feedback on purpose -- somebody who wants every
+    # successful action spoken may well want the *failure* to be a tone, and
+    # somebody who wants silence while they work still wants to know a search
+    # missed. Default "sound", which is the tone alone: F3 is pressed in runs, and
+    # "Not found" spoken on every press of it is the fastest way to make a person
+    # turn the speech off altogether.
+    find_not_found_feedback: str = "sound"
     # Play a silent clip every 20 s so USB/Bluetooth audio devices never power
     # down and clip the start of the next earcon. Off by default.
     sound_keepalive_enabled: bool = False
@@ -618,6 +633,29 @@ class Settings:
     spell_review_spell_word_pause_ms: int = 800
     spell_review_wrap_to_beginning: bool = True
     spell_review_context_mode: str = "sentence"
+    # How a misspelling is *said*, everywhere it is said (quill/core/spelling/
+    # voicing.py). The two spell_review_* fields above are the review dialog's
+    # own switch and pause and stay as they are; these govern the surfaces the
+    # review does not own -- landing on a word, arrowing the suggestions, and
+    # the alert while you type -- and QuillLite stores the same nine names, so
+    # somebody who tunes this in one editor finds the other already tuned.
+    spell_aloud_enabled: bool = True
+    spell_aloud_delay_ms: int = 800
+    spell_aloud_on_navigation: bool = True
+    spell_aloud_navigation_delay_ms: int = 600
+    spell_aloud_suggestions: bool = True
+    spell_aloud_suggestion_delay_ms: int = 600
+    spell_aloud_first_suggestion: bool = False
+    spell_aloud_style: str = "letters"
+    spell_aloud_capitals: bool = True
+    # The alert while you type: a sound, never a voice, unless asked.
+    spelling_alert_sound: bool = True
+    spelling_alert_speech: bool = False
+    spelling_alert_repeat_ms: int = 750
+    #: Open a blank document at launch when nothing else is being opened. The
+    #: same name and default QuillLite uses, so the two editors answer this the
+    #: same way and a listener who has set it once is not surprised by the other.
+    open_blank_document_at_startup: bool = True
     # Vision prompt library: image description style management.
     vision_default_prompt_style: str = "accessibility"
     vision_prompt_picker_enabled: bool = False
@@ -1216,6 +1254,10 @@ class Settings:
             sound_volume = 80
         sound_volume = max(0, min(100, sound_volume))
         sound_events_disabled = str(data.get("sound_events_disabled", ""))
+        action_feedback = str(_coerce_action_feedback(data.get("action_feedback", "sound")))
+        find_not_found_feedback = str(
+            _coerce_action_feedback(data.get("find_not_found_feedback", "sound"))
+        )
         voice_preview_announce_generating = bool(
             data.get("voice_preview_announce_generating", True)
         )
@@ -1268,6 +1310,34 @@ class Settings:
             data.get("spell_review_spell_word_pause_ms", 800), 800, 100, 3000
         )
         spell_review_wrap_to_beginning = bool(data.get("spell_review_wrap_to_beginning", True))
+        # Spelling voicing. The two delays are clamped wider than the review's
+        # 3000 ms ceiling: a listener on a slow synthesiser genuinely waits
+        # longer than three seconds to hear a word out, and the number that
+        # makes the feature usable for them should not be un-typeable.
+        spell_aloud_enabled = bool(data.get("spell_aloud_enabled", True))
+        spell_aloud_delay_ms = _clamp_int(data.get("spell_aloud_delay_ms", 800), 800, 100, 5000)
+        spell_aloud_on_navigation = bool(data.get("spell_aloud_on_navigation", True))
+        spell_aloud_navigation_delay_ms = _clamp_int(
+            data.get("spell_aloud_navigation_delay_ms", 600), 600, 100, 5000
+        )
+        spell_aloud_suggestions = bool(data.get("spell_aloud_suggestions", True))
+        spell_aloud_suggestion_delay_ms = _clamp_int(
+            data.get("spell_aloud_suggestion_delay_ms", 600), 600, 100, 5000
+        )
+        spell_aloud_first_suggestion = bool(data.get("spell_aloud_first_suggestion", False))
+        spell_aloud_style = str(data.get("spell_aloud_style", "letters")).strip().lower()
+        if spell_aloud_style not in {"letters", "phonetic", "both"}:
+            spell_aloud_style = "letters"
+        spell_aloud_capitals = bool(data.get("spell_aloud_capitals", True))
+        spelling_alert_sound = bool(data.get("spelling_alert_sound", True))
+        spelling_alert_speech = bool(data.get("spelling_alert_speech", False))
+        # Floor of 0, not 100: "every time" is a legitimate answer for somebody
+        # who wants the alert to track their typing exactly, and a throttle you
+        # cannot turn off is a throttle that eventually hides something.
+        spelling_alert_repeat_ms = _clamp_int(
+            data.get("spelling_alert_repeat_ms", 750), 750, 0, 10000
+        )
+        open_blank_document_at_startup = bool(data.get("open_blank_document_at_startup", True))
         spell_review_context_mode = (
             str(data.get("spell_review_context_mode", "sentence")).strip().lower()
         )
@@ -1644,6 +1714,8 @@ class Settings:
             sound_pack_path=sound_pack_path,
             sound_volume=sound_volume,
             sound_events_disabled=sound_events_disabled,
+            action_feedback=action_feedback,
+            find_not_found_feedback=find_not_found_feedback,
             voice_preview_announce_generating=voice_preview_announce_generating,
             indent_tone_scale=indent_tone_scale,
             abbreviation_backspace_behavior=abbreviation_backspace_behavior,
@@ -1665,6 +1737,19 @@ class Settings:
             spell_review_spell_word_pause_ms=spell_review_spell_word_pause_ms,
             spell_review_wrap_to_beginning=spell_review_wrap_to_beginning,
             spell_review_context_mode=spell_review_context_mode,
+            spell_aloud_enabled=spell_aloud_enabled,
+            spell_aloud_delay_ms=spell_aloud_delay_ms,
+            spell_aloud_on_navigation=spell_aloud_on_navigation,
+            spell_aloud_navigation_delay_ms=spell_aloud_navigation_delay_ms,
+            spell_aloud_suggestions=spell_aloud_suggestions,
+            spell_aloud_suggestion_delay_ms=spell_aloud_suggestion_delay_ms,
+            spell_aloud_first_suggestion=spell_aloud_first_suggestion,
+            spell_aloud_style=spell_aloud_style,
+            spell_aloud_capitals=spell_aloud_capitals,
+            spelling_alert_sound=spelling_alert_sound,
+            spelling_alert_speech=spelling_alert_speech,
+            spelling_alert_repeat_ms=spelling_alert_repeat_ms,
+            open_blank_document_at_startup=open_blank_document_at_startup,
             vision_default_prompt_style=vision_default_prompt_style,
             vision_prompt_picker_enabled=vision_prompt_picker_enabled,
             vision_disabled_builtin_styles=vision_disabled_builtin_styles,

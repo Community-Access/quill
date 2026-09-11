@@ -233,15 +233,18 @@ line endings, a <code>.txt</code> saved with Unix line endings (any file
 from a git checkout will do), and any <code>.rtf</code>.</li>
 </ul>
 <h2 id="the-15-minute-pass">The 15-minute pass</h2>
-<p>No time for the whole thing? Run exactly these eleven and stop:
+<p>No time for the whole thing? Run exactly these twelve and stop:
 <strong>L-02, L-05, L-09, L-14, L-21, L-30, L-38, L-46, L-54, L-61,
-L-90.</strong></p>
+L-90, L-105.</strong></p>
 <p>They cover the four things most likely to be wrong and worst if they
 are: the document announces itself, F1 answers, the status bar is
-reachable, and a file comes back byte-for-byte. L-90 is the eleventh
-because a status cell that misreports what typing is about to do is the
-one defect this product cannot ship, and it was shipped once
-already.</p>
+reachable, and a file comes back byte-for-byte. L-90 is there because a
+status cell that misreports what typing is about to do is the one defect
+this product cannot ship, and it was shipped once already.
+<strong>L-105</strong> joined it on 2026-09-10 for the same reason in
+reverse: a status bar that reads its own text back truncated is a cell
+quietly lying about a fact, and the only place it shows is a narrow
+window on the machine it was reported from.</p>
 <hr />
 <h2 id="block-a--opening-and-where-focus-lands-5-min">Block A – Opening,
 and where focus lands (5 min)</h2>
@@ -1374,6 +1377,148 @@ close.</li>
 <li>This is the one step worth running on a computer that has never had
 QuillLite on it, because that is the only place the old behaviour was
 visible.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<hr />
+<h2 id="block-p--the-2026-09-10-additions-9-min">Block P – The
+2026-09-10 additions (9 min)</h2>
+<p>Three features and one fix, and every one of them is here for the
+same reason as Block O: what would be wrong is a <em>silence</em> or a
+<em>state</em>, not a wrong value. A machine can check that the Keyboard
+Manager stores what it was told; only a person can check that pressing
+the key afterwards does the thing.</p>
+<p><strong>L-99. The Keyboard Manager finds a command, and says what a
+key does</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+Shift+R</strong>. Type <code>sort lines</code>.
+Listen to the count line under the box, then press <strong>Down</strong>
+into the list.</li>
+<li>Pass: focus lands in the search box on opening; the count says how
+many commands are shown; <strong>Down</strong> puts you on the first
+matching row, and the row reads as the command <em>and</em> the key it
+answers to.</li>
+<li>Fail if the count is silent, or if Down leaves you in the box.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-100. Record a Key answers “what does this key already
+do?”</strong></p>
+<ul>
+<li>Do: press <strong>Record a Key</strong>. Press
+<strong>Ctrl+S</strong>. Then press
+<strong>Ctrl+Alt+Shift+Q</strong>.</li>
+<li>Pass: the first is announced as <strong>File &gt; Save</strong>; the
+second is announced as <strong>free</strong>. Both are spoken, not
+merely written to the line.</li>
+<li>This is the question the list cannot answer by being read, which is
+the whole reason the button exists.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-101. Insert is refused, out loud, with the
+reason</strong></p>
+<ul>
+<li>Do: with Record a Key on, press <strong>Insert</strong>. (If your
+reader uses Insert as its modifier, press it twice quickly or use the
+laptop layout.)</li>
+<li>Pass: you hear that Insert is the key NVDA and JAWS use as their own
+modifier and QuillLite never binds it. <strong>Not</strong> a beep, and
+<strong>not</strong> silence.</li>
+<li>Fail if anything at all is assigned, or if nothing is said.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-102. A taken key names its owner and asks before
+moving</strong></p>
+<ul>
+<li>Do: find <strong>Edit &gt; Lines &gt; Sort Lines A to Z</strong>,
+press <strong>Enter</strong>, and press <strong>Ctrl+S</strong>. Answer
+the question that appears.</li>
+<li>Pass: the prompt <em>names</em> File &gt; Save rather than saying
+“that key is taken”; the default answer is <strong>No</strong>; saying
+yes leaves Sort Lines on Ctrl+S and File
+<blockquote>
+<p>Save reading as <strong>no key</strong> in the list.</p>
+</blockquote></li>
+<li>Then press <strong>Reset Everything</strong>, say yes, and
+<strong>Save</strong>. Confirm Ctrl+S saves again.</li>
+<li>Fail if the prompt does not name the command, if Enter alone moves
+the key, or if the reset does not restore it.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-103. A rebound key reaches the menu, the F1 list and the
+palette</strong></p>
+<ul>
+<li>Do: give <strong>Tools &gt; Change Case &gt; UPPER CASE</strong> the
+key <strong>Ctrl+Alt+Shift+U</strong> and press <strong>Save</strong>.
+Then open that menu and listen to the item; press
+<strong>Ctrl+F1</strong> and find the row; press
+<strong>Ctrl+Shift+P</strong> and find the command.</li>
+<li>Pass: all three say <strong>Ctrl+Alt+Shift+U</strong>, and the key
+works.</li>
+<li>Fail if any of the three still says the old key. Three readers of
+one list is the property this whole layer exists to keep.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-104. Customize Features searches, and a profile sets
+everything</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+Shift+F</strong>. Type
+<code>curly quotes</code>. Then clear the box, choose the
+<strong>Notepad</strong> profile, press <strong>Use Profile</strong>,
+and press <strong>Save</strong>.</li>
+<li>Pass: typing narrows the list to Autocorrect (it matches what the
+feature <em>does</em>, not only its name) and the count is announced;
+Use Profile announces how many features are on and that nothing is saved
+yet; after Save the Format menu is gone and <strong>Tools &gt; File
+Encoding and Line Endings</strong> is still there.</li>
+<li>Then re-open, choose <strong>Recommended</strong>, Use Profile,
+Save.</li>
+<li>Fail if the encoding dialog disappeared with the Format menu – that
+is the trade this profile exists to avoid.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-105. The status bar does not cut itself off on a narrow
+window</strong></p>
+<ul>
+<li>Do: make the window narrow – narrow enough that twelve cells cannot
+fit on one line. Read the bottom line of the window with
+<strong>Insert+Page Down</strong>.</li>
+<li>Pass: nothing is cut off. The bar is two (or three) lines tall
+instead, and every cell reads in full.</li>
+<li>Then <strong>F6</strong> and arrow to <strong>Status
+Message</strong>: whatever was last announced reads in full when you
+press <strong>Enter</strong> on that cell, even if the cell itself is
+shortened on screen.</li>
+<li>This is the one step that needs the machine the truncation was seen
+on. Fail if any cell’s text ends mid-word on screen.</li>
+</ul>
+<ul class="task-list">
+<li><label><input type="checkbox" />pass [ ] fail: ______</label></li>
+</ul>
+<p><strong>L-106. Five features that had no switch now have
+one</strong></p>
+<ul>
+<li>Do: <strong>Ctrl+Alt+Shift+F</strong>, and untick <strong>The
+Command Palette</strong>. Save. Press
+<strong>Ctrl+Shift+P</strong>.</li>
+<li>Pass: nothing happens, and the palette is gone from the menus – the
+key is unhooked, not just the row hidden.</li>
+<li>Turn it back on and confirm it returns.</li>
+<li>Repeat for <strong>Describe Character</strong> if you have a moment;
+the other three (Matches, Go Back and Go Forward, Text size) work the
+same way.</li>
 </ul>
 <ul class="task-list">
 <li><label><input type="checkbox" />pass [ ] fail: ______</label></li>

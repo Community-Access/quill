@@ -51,6 +51,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.check_banned_patterns"),
     ),
     Gate(
+        "sound-event-coverage",
+        "GATE-SOUND: every declared earcon has a call site somewhere",
+        (sys.executable, "-m", "quill.tools.sound_event_audit", "--own-only"),
+    ),
+    Gate(
         "module-size-budget",
         "GATE-11: module line-count ratchet",
         (sys.executable, "-m", "quill.tools.module_size_budget"),
@@ -150,6 +155,11 @@ GATES: tuple[Gate, ...] = (
         "lite-help",
         "GATE-LITE-HELP: every QuillLite surface and control answers F1",
         (sys.executable, "-m", "quill.tools.lite_help_audit"),
+    ),
+    Gate(
+        "lite-command-coverage",
+        "GATE-LITE-COVER: every QuillLite command has a behavioural test or a recorded debt",
+        (sys.executable, "-m", "quill.tools.lite_command_coverage"),
     ),
     Gate(
         "over-announce",

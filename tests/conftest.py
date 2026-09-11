@@ -69,68 +69,89 @@ def _session_basetemp() -> Path:
     return root / token
 
 
-def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
-    """Make ``-n auto --dist loadgroup`` safe: wx/UI tests share one worker.
+#: The one group every machine-global test shares, and therefore the one
+#: worker they all run on.
+MACHINE_GLOBAL_GROUP = "machine-global"
 
-    The suite parallelizes cleanly except for ``tests/unit/ui``: those tests
-    drive real wx widgets against per-machine global resources — the Windows
-    clipboard, ``RegisterHotKey``, the screen-reader COM bridges — and eight
-    workers doing that concurrently produced native worker crashes (observed
-    2026-08-17: a worker died around the clipboard-backed clip-library dialog
-    tests, taking its queued tests with it). Serializing only the UI tests onto
-    a single worker keeps them exactly as ordered and isolated as a serial run
-    while everything else fans out.
+
+@pytest.hookimpl(tryfirst=True)
+def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:
+    """Make ``-n auto --dist loadgroup`` safe: serialize what cannot be shared.
+
+    The suite parallelizes cleanly except where a test drives a resource the
+    *machine* owns rather than the process -- the Windows clipboard, the
+    system-wide ``RegisterHotKey`` table, the screen-reader COM bridges. Two
+    workers using one of those at the same time is not slow, it is wrong: the
+    clipboard read belongs to whoever wrote last, and a hotkey can only be
+    registered once on the whole desktop. In 2026-08 a worker died outright
+    around the clipboard-backed clip-library dialog tests, taking its queued
+    tests with it.
 
     Mechanics: with ``--dist loadgroup`` xdist schedules by ``xdist_group``
-    mark. Every non-UI test gets its *file* as its group (preserving loadfile's
-    file-affinity for module-scoped fixtures); every UI test gets the one
-    shared ``wx-ui`` group. Serial runs are unaffected — the marks are inert
-    without xdist.
+    mark. Tests marked ``machine_global`` all get the one shared
+    ``machine-global`` group and therefore one worker; every other test gets its
+    *file* as its group, preserving loadfile's file-affinity for module-scoped
+    fixtures while fanning out. Serial runs are unaffected -- the marks are
+    inert without xdist.
 
     The fast path is therefore:  ``pytest -q -n 8 --dist loadgroup``
-    (measured 2026-08-17: 8:58 serial -> 5:36, complete and zero-flake; the
-    UI group's serial tail is the floor, accepted deliberately over the
-    worker crashes that splitting it produced).
 
-    **KNOWN BROKEN, and deliberately left so for now (2026-09-09).** The
-    grouping above does not currently take effect, and the fix for it is worse
-    than the bug. Both halves are written down here because the next person will
-    otherwise rediscover one of them and re-break the other.
+    **The two ways this was wrong before, so neither is rediscovered.**
 
-    *Why it does not work.* xdist does not read the mark at scheduling time. Its
-    own ``pytest_collection_modifyitems`` in ``xdist/remote.py`` rewrites each
-    item's nodeid to ``<nodeid>@<group>`` and the scheduler splits on that
-    suffix -- so this hook must add the mark *before* xdist's hook runs, and by
-    default it does not. Measured on a full ``-n 8`` run: all eight workers were
-    running ``tests/unit/ui`` tests. The only visible symptom was
+    *It was marked up and had no effect* (2026-08 to 2026-09-10). xdist reads
+    the mark in **its own** ``pytest_collection_modifyitems``
+    (``xdist/remote.py`` rewrites each item's nodeid to ``<nodeid>@<group>`` and
+    the scheduler splits on that suffix), so this hook has to run first -- and
+    without ``tryfirst`` it did not. Measured on a full ``-n 8`` run: all eight
+    workers were running ``tests/unit/ui`` tests. The only visible symptom was
     ``test_clip_library_dialog.py::test_copy_defaults_to_plain_text_format``
     reading an empty clipboard under ``-n 8`` and passing on its own -- which
     reads as a flaky test rather than as the scheduler ignoring the group.
 
-    *Why it is not fixed.* Adding ``@pytest.hookimpl(tryfirst=True)`` here does
-    make the grouping real -- verified, all 3,606 UI tests land on one worker --
-    and the full suite then **runs every test and never exits.** Reproduced
-    twice: 17,821 of 17,823 results, zero failures, every worker's queue empty,
-    and no summary printed; eight Python processes still alive. Concentrating
-    that many wx/COM objects in one worker appears to hang its shutdown, so the
-    controller waits for a ``workerfinished`` that never comes. A suite that
-    hangs with no summary is worse for a developer than one that occasionally
-    flakes, so the one-word fix is deliberately **not** applied.
+    *Then it was too coarse to terminate.* Adding ``tryfirst`` while the group
+    was "everything under ``tests/unit/ui``" made the grouping real and put all
+    **3,606** wx tests on one worker, and the suite then ran every test and
+    never exited: 17,821 of 17,823 results, zero failures, no summary, eight
+    processes still alive. Concentrating that many wx/COM objects in one worker
+    hangs its shutdown, so the controller waits for a ``workerfinished`` that
+    never comes.
 
-    *What to do about it.* Probably neither extreme: one group of 3,606 wx tests
-    is too many for one process, and eight workers sharing the clipboard is
-    unsafe. A middle path is to group only the tests that actually touch
-    machine-global resources (clipboard, ``RegisterHotKey``, the screen-reader
-    bridges) and let the rest of ``tests/unit/ui`` fan out. That needs somebody
-    to identify which those are -- probably a marker rather than a directory --
-    and it is the reason this is a note and not a patch.
+    **The middle path, taken 2026-09-10.** Neither extreme: a directory is not
+    the unit, a *resource* is. The mark is applied per file by hand
+    (``pytestmark = pytest.mark.machine_global``) to the files that actually
+    touch one -- which turned out to be far fewer than the directory suggested,
+    because most of ``tests/unit/ui`` mocks ``wx.TheClipboard`` rather than using
+    it. A new test that reaches for one of these resources has to say so, which
+    is a line of code and a decision somebody made, rather than a directory it
+    happened to be filed under.
+
+    **What this fixed, and what it did not.** It fixed the hang it was aimed at:
+    with a small group the ``tryfirst`` ordering is safe and the suite prints a
+    summary, where the all-of-``tests/unit/ui`` version never did. Measured
+    2026-09-10 over three full runs: one clean (**18,054 passed, 0 failed,
+    4:41**), and two in which a worker died with ``node down: Not properly
+    terminated`` -- once completing anyway with that worker's queued test
+    reported failed, once leaving the controller waiting at 99%.
+
+    Those crashes are **not** what this hook is about and predate it: a run
+    before this change died the same way, with an extra
+    ``INTERNALERROR ... KeyError: <WorkerController gw8>`` from xdist's own
+    scheduler. They are a native crash somewhere in the wx/UI tests, they are
+    unrelated to the clipboard grouping, and nobody has chased them.
+
+    So: ``-n 8 --dist loadgroup`` is the **fast** path, not the authoritative
+    one. A failure it reports is worth re-running on its own before believing
+    it -- every one seen so far passed serially. The plain ``pytest -q`` run is
+    the answer that counts (**18,117 passed, 0 failed, 14:15**, same tree, same
+    day).
     """
     for item in items:
         if item.get_closest_marker("xdist_group") is not None:
             continue
-        path = str(item.fspath).replace("\\", "/")
-        group = "wx-ui" if "/tests/unit/ui/" in path else path
-        item.add_marker(pytest.mark.xdist_group(group))
+        if item.get_closest_marker("machine_global") is not None:
+            item.add_marker(pytest.mark.xdist_group(MACHINE_GLOBAL_GROUP))
+            continue
+        item.add_marker(pytest.mark.xdist_group(str(item.fspath).replace("\\", "/")))
 
 
 def _prune_stale_runs(root: Path, *, max_age_seconds: float = 6 * 60 * 60) -> None:

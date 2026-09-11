@@ -22,8 +22,45 @@ class SoundEvent(StrEnum):
 
     # Document lifecycle
     DOCUMENT_CREATED = "document_created"
+    DOCUMENT_OPENED = "document_opened"
     DOCUMENT_SAVED = "document_saved"
     DOCUMENT_CLOSED = "document_closed"
+
+    # The desktop-parity set (2026-09-10). Every desktop suite since the
+    # nineties has had a sound scheme, and the events in it are the same
+    # everywhere because they are the moments a user actually has: open, save,
+    # close, cut, copy, paste, delete, undo, redo, print, and the message tones.
+    # QUILL had earcons for its own clever features and none for those.
+    #
+    # For a listener that ordering is backwards. The clever features announce
+    # themselves in words; the ordinary ones are silent by design, because a
+    # screen reader says nothing when a paste lands -- which makes an earcon the
+    # only feedback those moments can have, and them the ones that needed it.
+    APP_STARTED = "app_started"
+    APP_EXITING = "app_exiting"
+    TEXT_CUT = "text_cut"
+    TEXT_COPIED = "text_copied"
+    TEXT_PASTED = "text_pasted"
+    TEXT_DELETED = "text_deleted"
+    #: Undo and redo are the only two commands whose entire meaning is
+    #: direction, so their cues are one figure played backwards from each other
+    #: -- a listener who has to think about which one they heard has lost the
+    #: benefit. NOTHING_TO_UNDO does not move in pitch at all, because the undo
+    #: stack did not move either.
+    UNDO_PERFORMED = "undo_performed"
+    REDO_PERFORMED = "redo_performed"
+    NOTHING_TO_UNDO = "nothing_to_undo"
+    PRINT_STARTED = "print_started"
+    PRINT_COMPLETE = "print_complete"
+    #: The two message tones every desktop has and QUILL did not: a neutral one
+    #: for "here is a fact" and a rising one for "I need an answer". Rising,
+    #: because a question rises -- the one piece of prosody every listener
+    #: already reads. ERROR and WARNING are below with the rest of System.
+    INFORMATION = "information"
+    QUESTION = "question"
+    #: A background job finishing. Distinct from AI_RESPONSE_RECEIVED, which is
+    #: the AI family's own arpeggio: a finished job is not an answer arriving.
+    TASK_COMPLETE = "task_complete"
 
     # Navigation
     QUILL_KEY_PRESSED = "quill_key_pressed"

@@ -59,13 +59,21 @@ class DocumentToolsMixin:
     # Running a tool
     # ------------------------------------------------------------------ #
 
-    def _apply_tool(self, tool: _Tool, *, unit: str, verb: str) -> None:
+    def _apply_tool(self, tool: _Tool, *, unit: str, verb: str, count: str = "changed") -> None:
         """Run *tool* over the selection, or the whole document if there is none.
 
         One ``Replace`` rather than a rewrite of the value: it keeps the change
         inside the control's own undo history, so Ctrl+Z takes back the sort as
         one step. Rewriting ``SetValue`` would clear the undo stack and quietly
         cost somebody everything they had typed before it.
+
+        *count* picks which number the announcement carries, and the two are not
+        interchangeable. ``"changed"`` -- how much differs -- is right for a tool
+        that removes or rewrites: "Removed 2 lines" is the fact. ``"scope"`` -- how
+        much the tool was given -- is right for a reordering, where nothing was
+        added or taken away and counting the lines that happened to land somewhere
+        else understates the work and sends the reader hunting for a line that was
+        never missed.
         """
         start, end = self.control.GetSelection()
         whole = end <= start
@@ -81,13 +89,17 @@ class DocumentToolsMixin:
         if changed_text == text:
             self._announce(f"No {unit} to change")
             return
-        count = _difference(text, changed_text, unit=unit)
+        counted = (
+            _scope_size(text, unit=unit)
+            if count == "scope"
+            else _difference(text, changed_text, unit=unit)
+        )
         self.control.Replace(start, end, changed_text)
         self.control.SetSelection(start, start + len(changed_text))
         self._set_modified(True)
         self._touch_status()
-        plural = "" if count == 1 else "s"
-        self._announce(f"{verb} {count} {unit}{plural}")
+        plural = "" if counted == 1 else "s"
+        self._announce(f"{verb} {counted} {unit}{plural}")
 
     def _confirm_rich_rewrite(self) -> bool:
         """Rich mode only: warn that replaced text takes the run's formatting."""
@@ -106,17 +118,31 @@ class DocumentToolsMixin:
     # ------------------------------------------------------------------ #
 
     def cmd_sort_lines(self) -> None:
-        self._apply_tool(format_ops.sort_lines, unit="line", verb="Sorted")
+        # Counted over the whole scope, not by how many lines ended up somewhere
+        # different: a sort of three lines that leaves the middle one where it was
+        # is still a sort of three lines, and "Sorted 2 lines" invites the reader
+        # to go looking for the one it missed.
+        self._apply_tool(format_ops.sort_lines, unit="line", verb="Sorted", count="scope")
 
     def cmd_sort_lines_descending(self) -> None:
         self._apply_tool(
             lambda text: format_ops.sort_lines(text, descending=True),
             unit="line",
             verb="Sorted",
+            count="scope",
         )
 
     def cmd_remove_blank_lines(self) -> None:
-        self._apply_tool(format_ops.trim_blank_lines, unit="line", verb="Removed")
+        """Remove every blank line, which is what the menu item says.
+
+        It used to call ``trim_blank_lines``, which removes only the leading and
+        trailing ones -- so on any document with blank lines through the middle
+        the command removed nothing and then announced "Removed 1 line" for the
+        terminal newline it had eaten. Two failures in one keystroke, and the
+        second is the worse: a listener cannot see that the text is unchanged and
+        has no reason to doubt the sentence.
+        """
+        self._apply_tool(format_ops.remove_blank_lines, unit="line", verb="Removed")
 
     def cmd_remove_duplicate_lines(self) -> None:
         self._apply_tool(format_ops.remove_duplicate_lines, unit="line", verb="Removed")
@@ -150,7 +176,7 @@ class DocumentToolsMixin:
     # ------------------------------------------------------------------ #
 
     def cmd_reverse_lines(self) -> None:
-        self._apply_tool(format_ops.reverse_lines, unit="line", verb="Reversed")
+        self._apply_tool(format_ops.reverse_lines, unit="line", verb="Reversed", count="scope")
 
     def cmd_normalize_whitespace(self) -> None:
         """Collapse runs of spaces and tabs -- the cure for pasted-in text."""
@@ -257,7 +283,7 @@ class DocumentToolsMixin:
         """
         if not self.app.feature_enabled("backups"):
             self._announce(
-                "Backups are switched off. Turn them on in View, Customize Features, "
+                "Backups are switched off. Turn them on in Tools, Customize Features, "
                 "and QuillLite will keep a dated copy of this file on every save."
             )
             return
@@ -358,6 +384,20 @@ class DocumentToolsMixin:
         self._touch_status()
         self.control.SetFocus()
         self._announce(f"Saving as {_encoding_name(encoding)}, {_newline_name(newline)}")
+
+
+def _scope_size(text: str, *, unit: str) -> int:
+    """How much the tool was handed, counted in *unit*.
+
+    A terminal newline is not a line. Counting it would make "Sorted 4 lines" the
+    answer for three lines in a file that ends the way files end.
+    """
+    if unit != "line":
+        return len(text)
+    lines = text.split("\n")
+    if lines and lines[-1] == "":
+        lines.pop()
+    return len(lines)
 
 
 def _difference(before: str, after: str, *, unit: str) -> int:

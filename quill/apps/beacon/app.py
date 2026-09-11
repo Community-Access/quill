@@ -97,6 +97,11 @@ def _data_dir() -> Path:
 class BeaconFrame(wx.Frame):
     def __init__(self) -> None:
         super().__init__(None, title=_TITLE, size=(1100, 720))
+        # Maximized by default, and remembered after that, like every other app
+        # in the family (quill/core/window_geometry.py).
+        from quill.ui.window_state import apply_window_geometry
+
+        apply_window_geometry(self, "beacon", default_size=(1100, 720))
         self.SetTitle(_TITLE)
         self.data_dir = _data_dir()
         self.store = db.BeaconStore(self.data_dir / "beacons.db")

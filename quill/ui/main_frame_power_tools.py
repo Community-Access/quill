@@ -1488,6 +1488,14 @@ class PowerToolsActionsMixin:
             _fmt.trim_blank_lines, "Trimmed blank lines"
         )
 
+    def remove_blank_lines(self) -> None:
+        # Every blank line, not only the two ends. Why it is a separate command
+        # from trim_blank_lines above, and why it landed here: see
+        # quill.core.format_ops.remove_blank_lines.
+        self._power_tools_transform_selection_or_document(
+            _fmt.remove_blank_lines, "Removed blank lines"
+        )
+
     def shuffle_lines(self) -> None:
         self._power_tools_transform_selection_or_document(_fmt.shuffle_lines, "Shuffled lines")
 

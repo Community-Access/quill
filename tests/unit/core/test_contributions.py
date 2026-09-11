@@ -159,9 +159,14 @@ def test_power_tools_manifest_is_consumed_and_conflict_free() -> None:
     # +2 AutoOutline commands (#894), +2 image alt-text commands (#899).
     # post-0.9.0: +1 Sort Lines by Date (power.sort_lines_by_date).
     # post-0.9.0: +1 Paste Markdown as HTML (power.paste_markdown_as_html).
+    # 1.0.0 (2026-09-10): +1 Remove Every Blank Line
+    # (power.remove_blank_lines), the companion to Trim Blank Lines at the Ends
+    # and a separate command rather than a fix to it -- QuillLite needed the
+    # shared format_ops helper and the house rule puts the capability in the
+    # shared package with a way for QUILL to reach it in the same change.
     registry = build_first_party_registry(POWER_TOOLS_COMMANDS)
-    assert len(POWER_TOOLS_COMMANDS) == 80
-    assert len(registry.commands) == 80
+    assert len(POWER_TOOLS_COMMANDS) == 81
+    assert len(registry.commands) == 81
     assert registry.conflicts == ()
     for menu in registry.menus:
         assert menu.parent in FIRST_PARTY_MENU_PARENTS

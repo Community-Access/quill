@@ -2,6 +2,516 @@
 
 ## 1.0.0
 
+### A tone or the words, and you choose which (2026-09-10)
+
+A copy, a paste, an undo, a started selection: things that change the document
+and change nothing a screen reader announces. No focus moves, no control gains a
+name, nothing is selected. To a listener they are indistinguishable from a key
+that did not work, and QUILL's answer has always been an earcon.
+
+It is a good answer and it is not everyone's. A tone has to be learned before it
+means anything, and somebody meeting the app this week would rather be told
+"Copied" than taught eleven chimes. Somebody else has the pack by heart and finds
+being told "Copied" on every Ctrl+C intolerable within a minute -- which is
+exactly why the words were left out to begin with. Both of those people are
+right, so it is now a setting: **a sound**, **the words**, **both**, or
+**neither**. The default is the sound alone, which is what QUILL has always
+done; a setting that changed behaviour for somebody who never opened it would be
+a regression wearing a feature's clothes.
+
+Two rules keep it from becoming a way to end up with nothing:
+
+- **A moment with no clip in the pack speaks instead.** Choosing "sound" must
+  never make the app quieter than it was.
+- **Counts are always spoken.** "Pasted 1,234 characters" and "Selected 412
+  characters, 68 words" -- no tone has ever carried a number, and the number is
+  usually the whole point of asking. So is a failure: a command that could not do
+  what you asked says so in words in every mode, silent included. The status bar
+  is written in every mode too, because it is the record rather than the
+  feedback.
+
+**A search that finds nothing is asked separately** (*When a search finds
+nothing, give me*), with the same four answers and the same default. F3 is
+pressed in runs, and "Not found" spoken on every press is the fastest way to end
+up turning speech off altogether -- while somebody who wants every success spoken
+may well want the failure kept to a tone. Both are in **Settings ▸ Accessibility
+and Announcements** in QUILL and in **Preferences** in QuillLite, worded from one
+shared list so the two panes cannot describe the same four modes differently.
+
+### Searching now stops at the end if you tell it to (QuillLite, 2026-09-10)
+
+QuillLite always wrapped around, with no way to say otherwise. It now honours
+the same **wrap_find** setting QUILL does, in both directions, with a checkbox in
+Preferences.
+
+The two kinds of miss are worded differently on purpose, because the fixes
+differ. With wrapping on you get **"Not found: <word>"** -- change what you are
+looking for. With wrapping off you get **"No more matches. Reached the end of the
+document, and wrapping is off."** -- go to the other end and press again. Hearing
+the first when the second is true sends somebody looking for a word that is in
+the document.
+
+### Trim Blank Lines and Remove Blank Lines now say which is which (2026-09-10)
+
+Two adjacent Format items whose only difference was a verb. Read aloud, "Trim
+Blank Lines" and "Remove Blank Lines" are the same phrase, and the only way to
+learn which was which was to try one. They are now **Trim Blank Lines at the
+Ends** and **Remove Every Blank Line**, which is the actual difference: the first
+takes the blank lines before the first line of text and after the last, the
+second takes all of them including the ones between your paragraphs. QuillLite's
+single command takes the second name, so the two editors read alike.
+
+### Every earcon in the product had been silent since it shipped (2026-09-10)
+
+Two bugs, either of which was enough on its own, and together they meant the
+sound system had **never made a noise** for anybody on the default pack -- which
+is everybody who never changed it.
+
+**The pack was never loaded.** The sound manager reloads only when the pack path
+*changes*. It initialised that path to `""` and the default setting is *also*
+`""`, so the very first comparison was `"" != ""`, the load was skipped, and the
+player held zero events. Every `post_sound` in QUILL and QuillLite quietly did
+nothing.
+
+**And the audio backend freed each sound before it could play.** On the BASS
+backend, `play_wav` created a stream, called `play()`, and returned -- leaving
+the local variable as the only reference, so Python collected the wrapper on the
+spot and its destructor freed the handle mid-sound. `autofree=True` looks like
+it covers this and does not: it tells *BASS* when to reclaim a handle, which
+says nothing about when *Python* reclaims the object. Streams are now held until
+they finish.
+
+Neither was ever reported, and the reason is instructive: the failure is
+silence, and silence is exactly what a switched-off earcon sounds like. The one
+cue that seemed to work was the spelling alert, because it falls back to the
+system bell when the pack has no sound for it -- so it beeped, and nobody
+wondered why it did not sound like the rest of the pack.
+
+### Nineteen new sounds, and every event now actually fires (2026-09-10)
+
+QUILL declared a hundred and forty-one sound events and **posted forty-five of
+them**. QuillLite posted three. The gap was not random: what had earcons were
+the clever features -- the assistant, conversation mode, indent tones -- and
+what had none were cut, copy, paste, delete, undo, redo, open, close, print,
+start and exit.
+
+**For a listener that is exactly backwards.** The clever features announce
+themselves in words. The ordinary ones are silent by design: nothing is spoken
+when a paste lands, no focus moves when you cut, and a screen reader has nothing
+to read out about an undo. An earcon is the *only* feedback those moments can
+carry, which makes them the ones that most needed sounds and the last to get
+them.
+
+So the bundled **Ink** pack gained nineteen sounds and both editors gained the
+call sites to fire them. Related cues share a timbre and differ by direction, so
+a family is learned once rather than a cue at a time: **undo and redo are one
+figure played backwards from each other**, sample for sample. Open and close are
+one bell pair rising and falling; app start and exit are the same idea a note
+longer, in a warmer voice so a launch is never mistaken for a document. Cut,
+copy and paste are one dry wooden tick in three gestures, and delete is that
+tick dropped an octave and a half with a breath of noise under it.
+Nothing-to-undo does not move in pitch at all, because the undo stack did not
+move either.
+
+**Every named event in the product now has a call site**, and
+`quill/tools/sound_event_audit.py` keeps it that way. It walks the syntax tree
+rather than the text, because three hand-rolled greps answered "which events
+actually fire?" three different ways and every one of them was wrong.
+
+**And nothing sounds like anything else.** Reported by ear -- *"shouldn't all
+sounds be unique, I think I heard one repeated"* -- and there were four
+collisions, none of them a copy-paste mistake. Each was a plausible design
+choice made twice, months apart, by somebody who had no way to hear the two side
+by side: app-closing was note for note conversation-off, the question tone was
+note for note the wake cue, task-finished sat on top of "caught what you said",
+and the voice-preview cue had no file at all and borrowed the assistant's. All
+four now differ in *shape* rather than merely in pitch, and a test measures every
+pair on a loudness-and-pitch contour so it cannot come back. The deliberate
+ladders -- progress steps, copy-tray slots, bookmark slots, indent depths -- are
+exempt, and a second test checks they are still ladders.
+
+### The Sound Scheme window lists only what the app can actually play (2026-09-10)
+
+Reported: *"there is 119 entries in that soundpack listing, really, wow! are all
+of them supported in both quill and quill lite?"* They were not. The window
+listed every event the catalogue **declares**, most of which the app in front of
+you never posts -- so you could pick a sound for "Radio buffering" in a text
+editor and wait a long time to hear it.
+
+**QuillLite now lists twenty-two rows instead of a hundred and forty-one**, and
+every one of them fires. QUILL lists all of them, because QUILL posts all of
+them. The rosters are held to that in both directions by a gate: an event listed
+and never posted is a row that does nothing, and an event posted and not listed
+is worse -- a sound nobody can switch off.
+
+### Spell check as you type has never once made a sound (2026-09-10)
+
+**It could not.** Both editors asked `misspelling_at(text, caret)`, which by
+construction matches only a word **beginning exactly at the caret** -- it is the
+bounded helper written for a different question. Typing left to right the caret
+is always at or past the *end* of the word you just finished, so the condition
+was never true. The earcon, the status line, the file-type exemptions and the
+settings all existed and shipped, and the whole feature was unreachable unless
+you happened to arrow back onto the first letter of a bad word.
+
+Fixed by asking the question the surface actually has: **what word did you just
+finish, and is it a word?** It requires a terminator -- a space, a comma, a new
+line -- so it never judges "recie" on the way to "receive", which is the failure
+that makes a live checker intolerable.
+
+**And QuillLite now has a sound at all.** It had none: the alert was a line in
+the status bar, which on a bar nobody is watching is not an alert.
+
+### A misspelling now tells you which letters are wrong (2026-09-10)
+
+A misspelling is the one thing in an editor that speech alone cannot convey.
+"receive" and "recieve" are the same sound. A sighted user gets a red squiggle
+under the wrong letters; a listener told "not in dictionary, recieve" has been
+handed a word they cannot tell from the correct one. That is a report, not an
+answer.
+
+**The letters are the answer**, so landing on a misspelling -- Next or Previous
+Misspelling, or the F7 review -- now says the word and then, after a pause,
+spells it out. Two utterances and never one: a single utterance cannot be
+interrupted, and somebody who recognised the word from its first syllable would
+have to sit through eleven more letters. Press the next key and the pending
+spelling is cancelled unheard, so a fast reader pays nothing for a feature a
+careful reader needs. Arrowing a list of suggestions spells them too, because
+choosing between two spellings by ear is exactly as impossible in a list as it
+was in the document.
+
+**Twelve settings**, identical in both editors, so tuning it once tunes both:
+whether the alert plays a sound, whether it also speaks, how long before it
+repeats itself on the same word, whether words are spelled at all, three
+separate pauses for three surfaces, whether capitals are named, and whether the
+letters are spoken plainly, in the phonetic alphabet, or both. QUILL renders
+them under **Spelling** in Settings; QuillLite has **Tools ▸ Spelling ▸
+Announcements** (Ctrl+Alt+Shift+F7), with an example box that says what your
+choices sound like.
+
+**Ordinals are no longer misspellings.** `"the 13th of May"` reported **"th"** --
+at an offset inside a number, for a word nobody typed. One lookbehind fixed that
+and the whole family it belongs to: 3D, 1080p, 500ml, 12pt, v2beta. Every one
+was a spoken interruption and none was ever a spelling mistake.
+
+### Tools ▸ Sound Scheme: every sound, in a list you can hear (2026-09-10)
+
+There used to be a checklist that could silence an event, a settings field that
+chose a pack, and **nothing anywhere that could play a sound or change one**.
+The only way to find out what an earcon was before switching it off was to make
+the thing happen that fires it. A window about sound that you cannot hear is
+most of a window.
+
+**It plays as you arrow through it.** That is what turns a list of a hundred and
+forty earcon names into a catalogue. Every row carries its whole state -- group,
+event, on or off, the file, its length -- so a screen reader reads it all on
+arrival rather than making you Tab away to find out.
+
+Per event: **Play** (even when the event is off), **Switched on**,
+**Browse...** for a WAV of your own, **No Sound**, and **Use Default**. A file
+that is not a WAV, or is too long, or too big, is refused when you choose it,
+with a sentence saying why -- because a sound that fails at playback fails
+silently, and a silent event cannot be told from one nobody set.
+
+**Save As Scheme** writes your set as an ordinary folder with the sounds copied
+into it, using the same manifest every shipped pack has. It survives you tidying
+your Downloads folder, you can zip it and send it to somebody, and you can read
+it in a text editor. **Restore All Defaults** puts everything back and cannot
+half-succeed: the shipped sounds are never overwritten, so getting back to them
+is the absence of a change rather than a recovery.
+
+Both editors open the same window over the same schemes.
+
+### Nineteen sounds that should always have existed (2026-09-10)
+
+The bundled **Ink** pack had earcons for QUILL's clever features and none for
+the ordinary ones. For a listener that is backwards: the clever features
+announce themselves in words, and the ordinary ones are silent by design,
+because a screen reader says nothing when a paste lands. An earcon is the only
+feedback those moments can have.
+
+So: **open, close, cut, copy, paste, delete, undo, redo, print started, print
+finished, information, a question, task finished, app started, app closing** --
+plus four events that had been declared for months with no sound at all
+(autocorrect changed a word, entered a list, a dictated word landed, close a
+document). Every event QUILL declares now has a sound.
+
+They are a family rather than nineteen new things to learn: **related sounds
+share a timbre and differ by direction.** Undo and redo are one figure played
+backwards from each other, sample for sample. Open and close are one bell pair
+rising and falling. Cut, copy and paste are one dry wooden tick in three
+gestures; delete is that tick an octave and a half down with a breath of noise
+under it. Nothing-to-undo does not move in pitch at all, because the undo stack
+did not move either.
+
+**The misspelling alert was redesigned too.** It is now "the slip": a note that
+starts in tune and slides flat, 58 milliseconds, the quietest cue in the pack --
+the sound of a word that was almost right. It had to be unique, because it fires
+more often than any other earcon and an alert you cannot tell from four others
+is one you learn to ignore. Every other negative cue in Ink is a discrete
+two-note descent or a buzz; nothing else glides.
+
+### Choosing a feature profile now does something (2026-09-10)
+
+**Picking Notepad in Customize Features changed nothing.** The Choice listed the
+four profiles, a description appeared under whichever one you landed on -- and
+the seventeen checkboxes below it stayed exactly as they were until you found
+and pressed a **Use Profile** button nothing had mentioned. So the usual thing
+happened: choose Notepad, hear what Notepad is, press Save, and get back every
+feature you had, including the Format menu the description had just told you
+would be gone.
+
+**The Choice applies as you move through it now.** Ticking and unticking
+seventeen boxes is what choosing a profile *means*, so that is what choosing one
+does. Nothing is written until Save, exactly as before, and **Custom** is a real
+destination rather than only a readback: select it and every box goes back to
+how you found it, which is the undo for an arrow press onto a profile you did
+not want. Use Profile is still there for starting a profile over after you have
+hand-edited it.
+
+**And every profile now shows what it would do, in a box you can read.** The
+paragraph each profile has always carried says what it *is*; under it now,
+worked out from the feature list itself so it cannot go stale, is what it
+*does* -- which areas it keeps, which it removes, and anything else it changes,
+such as Notepad making Ctrl+N create plain text. It is a **read-only text box**
+rather than a caption, because a caption is not in the Tab ring and cannot be
+arrowed through: a paragraph in one is a paragraph you can only hear all at
+once. What gets *spoken* when you choose a profile is the one-line version --
+"Notepad profile: 2 of 17 features on. New documents will be plain text." --
+because your screen reader is already saying the name and does not need help.
+
+**The same profile picker is in Preferences.** "Make this Notepad" is a
+preference in every sense of the word, and Customize Features is named after a
+mechanism rather than a wish -- somebody who wants the small editor does not
+know to go looking for a customization dialog. Preferences offers the four
+whole answers with the same impact box; the per-area checklist stays where it
+is.
+
+### A misspelled word now has a context menu worth opening (2026-09-10)
+
+Right-click a misspelling in Word and the corrections are the first thing you
+see. Do it in QUILL and you got a "Spelling Suggestions" submenu below Undo,
+Cut, Copy and Paste; do it in QuillLite and you got the plain Windows edit menu,
+which knows nothing about spelling at all.
+
+That is a convenience for somebody who can see a red squiggle and **the only
+word-anchored affordance in the app** for somebody who cannot. So in both
+editors, when the caret is in a misspelled word, the **Applications key now
+opens with the corrections themselves** -- named, at the top level, one Down
+arrow away -- followed by:
+
+- **Ignore Once** and **Ignore in This Document**, neither of which touches
+  disk. They last until the document is closed, and the announcement says so,
+  because that is the fact that decides whether to teach the word instead.
+- **Add to Dictionary**, which says *which* dictionary it wrote to. There are
+  two in QuillLite and three in QUILL, and "added to dictionary" does not say.
+- **More Suggestions**, **Check Document**, **Next** and **Previous
+  Misspelling**, each showing the key it is bound to, so the menu teaches the
+  shortcut rather than replacing it.
+
+Every label names the word -- `Add "Bhattacharya" to My Dictionary` -- because a
+menu reached by keyboard is read out of context, and a row that names the word
+is one you can act on where you stand. A correctly spelled word gets no spelling
+section at all rather than a disabled row to arrow past, and QuillLite's menu
+keeps Undo, Cut, Copy, Paste, Delete and Select All, because losing them to gain
+a spell checker would be a poor trade.
+
+Ignoring is honoured everywhere it should be: the as-you-type check, Next and
+Previous Misspelling, and the suggestions window all consult the same list.
+
+### QuillLite: Shift+F7 works in the middle of a word (2026-09-10)
+
+**"Spelling for This Word" and "Add Word to Dictionary" only answered when the
+caret was on the word's very first character.** Anywhere else in the word --
+which is almost everywhere, and certainly everywhere you land after arrowing
+onto one -- both said "No misspelling at the cursor". They were using the
+as-you-type helper, which by design only accepts a word beginning exactly at the
+caret. They now use the same walk-left lookup QUILL has always used.
+
+### Every app opens maximized, and remembers what you do to it (2026-09-10)
+
+**Every window in the family opened at a size somebody typed into its source and
+forgot whatever you did to it.** Quill Radio at 460 by 360. QUILL at 1000 by 700.
+Beacon at 1100 by 720. Resize QUILL to fill your screen, close it, open it
+again -- 1000 by 700, every time.
+
+They all open **maximized** now, and after that they open the way you left them.
+That is not a cosmetic choice. A small window is where two specific problems come
+from: text cut off because a control is narrower than its label, and a list
+showing four rows on a screen with room for thirty. Neither is visible to
+whoever picked the number -- they had a big monitor and a default font -- and
+both are paid for by somebody else on every launch.
+
+Un-maximize it and that is remembered too, including the size you chose. Only a
+size you actually picked is stored, so un-maximizing always gives back the window
+you had rather than a full-screen one.
+
+### QuillLite: the profiles now match what their names promise (2026-09-10)
+
+Choosing **Notepad** removed the Format menu and then went on creating rich text
+documents on Ctrl+N -- keeping the letter of the name and breaking its promise,
+which you would find out one document later at the Save As dialog, being offered
+a format you thought you had turned off.
+
+**Notepad now means plain text and WordPad means rich text**, and the change is
+announced when you apply the profile rather than left for you to discover. The
+other two are unchanged on purpose: Recommended and Everything are statements
+about which parts of the app exist, and have no opinion about what Ctrl+N makes.
+
+### Every menu item now says how to reach it (2026-09-10)
+
+**QUILL's menu bar has 757 items and 560 of them told you nothing about how to
+get there from the keyboard.** That is not a rule anybody forgot to apply -- it
+is a rule that cannot be applied at that size, because there are not 560
+shortcuts left to give out.
+
+But there was already a way in to every one of them, and nobody was saying it
+out loud: the **Alt path**. Alt+F opens File, I opens Import, W picks Word
+Document. Every menu item now shows its own path in its label -- *Word
+Document... (Alt+F, I, W)* -- computed from the menu bar itself, so it cannot
+drift and every item added from now on is covered on the day it lands.
+
+Two things had to be true first, and neither was:
+
+- **119 letters were claimed twice**, across 30 menus. The File menu alone had
+  three items on N, three on R and three on S. Windows answers a duplicated
+  letter by cycling between the items rather than pressing one, so those paths
+  went nowhere in particular -- and nothing announced the loss. All 119 are
+  resolved, by a rule you can check rather than trust: an item that holds a real
+  shortcut keeps its letter (so Save keeps S from Snapshots, Print keeps P, Bold
+  keeps B), then submenus keep theirs, then whoever was there first.
+
+- **166 items had no letter at all** -- the fonts, the point sizes, the colours,
+  the 32 braille translation languages, the AI agents. Rows of data rather than
+  commands, which is why nobody wrote one, and a row you cannot type a letter at
+  is a row you have to arrow to. They all have one now.
+
+The **Format menu** was two items over what an alphabet can hold, and the fix
+was removing duplication rather than demoting anything: Grow Font and Shrink
+Font have moved into the **Font Size** submenu they sat beside, and the three
+line spacings into **Line Spacing**, which was offering the same three values
+without the keys. Both keep their shortcuts and gain an Alt path.
+
+All of it is now checked automatically: every enabled item must advertise a
+route, and no two items in one menu may claim one letter.
+
+### QuillLite: change any key, and be told what it costs (2026-09-10)
+
+**Tools > Keyboard Manager (Ctrl+Alt+Shift+R)** is new, and it is the first time
+a QuillLite key could be changed at all.
+
+Every command is listed with the key it answers to. Type part of a name to find
+one. The harder question -- *is this key free?* -- has its own answer: press
+**Record a Key**, press the combination, and QuillLite says what it does today
+or that it is free. Assigning a key somebody else has **names them and asks**
+rather than stealing it silently or refusing silently; say yes and that command
+is left with no key until you give it one, which is the honest outcome.
+
+**Insert is never bindable.** It is the key NVDA and JAWS use as their own
+modifier, and taking it would take away the key you need to get it back.
+
+**Check for Problems** reports what nothing else can: a key claimed twice, a key
+QuillLite cannot read, and a key Windows will accept and then never actually send
+to a menu -- assigned, and inert.
+
+Only what you changed is written down, so a key improved in a later version
+still reaches you.
+
+### QuillLite: Customize Features searches, and has profiles (2026-09-10)
+
+The list had grown to a length you had to **walk**. It now filters as you type,
+and it matches what a feature *does* as well as what it is called -- type "curly
+quotes" and you find Autocorrect. Down moves from the box into the list, and the
+line underneath says how many are left.
+
+And there are **profiles**, for when the answer is "just give me the small one":
+
+- **Notepad** -- plain text, find, print and text size. Nothing Notepad lacks.
+- **WordPad** -- rich text, printing and spell check, without the writing tools.
+- **Recommended** -- what a new install is.
+- **Everything**.
+
+Choosing one sets every box; after that the boxes are just boxes again, so you
+can change any single one without leaving the profile behind.
+
+**Five features that had no switch at all now have one**: the Matches submenu,
+Go Back and Go Forward, the Command Palette, Describe Character, and text size.
+Twelve areas are seventeen. One thing went the other way on purpose: **File
+Encoding and Line Endings** is no longer switchable, because turning off the line
+tools was also taking away the dialog that decides whether a file saves back
+exactly as it arrived -- which is most of what a Notepad replacement is for.
+
+### QuillLite: the status bar stops cutting itself off (2026-09-10)
+
+On a narrow window, the **Status Message** cell was the only one that could be
+squeezed -- and a button label wider than its button is cut off by Windows, so a
+screen reader reading the bottom line of the window read the cut-off text. The
+row now **wraps onto a second line** instead of squeezing: the bar gets taller on
+a narrow window and nothing is clipped at any width. A very long message is
+shortened in the cell and read out in full when you press Enter on it. Position
+and Encoding are never shortened -- they are two facts nothing else in the app
+will tell you.
+
+### Two menu keys that never worked (2026-09-09)
+
+**A menu item that shows a key and does nothing is worse than one that shows
+nothing**, because you press it, hear nothing, and have no way to tell whether
+you missed the key or the app ignored it. QUILL's menu bar had two.
+
+- **View > Preview Side by Side** advertised Ctrl+Shift+Backslash. wx has no
+  name for that key, so it threw the whole shortcut away at startup and left
+  the label promising it. The key is now **Ctrl+Alt+backslash** -- not
+  Ctrl+Shift+backslash, because that one has always belonged to Match Bracket,
+  and the two were only ever at peace because the broken one was being
+  discarded.
+
+- **Search > Count Occurrences** and **QuillVille > Open Quill Inkwell** both
+  claimed Ctrl+Alt+Shift+F3, so one of them never fired. The QuillVille
+  launchers move to Ctrl+Alt+Shift+F7 and up -- and there are now enough of them
+  for **every** app in that menu, where before only the first three had a key at
+  all.
+
+Both are now checked automatically, for every app: every shortcut QUILL ships is
+parsed the way Windows will parse it, and no two commands may claim one key.
+
+### A bench for the braille system edit fix (2026-09-09)
+
+**Braille A/B: System Edit Fix...**, from the command palette (Ctrl+Shift+P).
+Two editors in one window that differ by exactly one setting -- the braille
+system edit fix -- so you can read the same line on your display in each and
+compare where the text starts and whether a selection shows dots 7 and 8.
+
+It exists because that comparison used to require restarting QUILL between every
+reading: the setting cannot be changed on an editor that already has text in it,
+in either direction. One button selects the same word in both editors so the two
+readings are of the same thing, and another speaks what each editor says the
+caret's line is.
+
+### The blank line at the end of a document says "blank" again (2026-09-09)
+
+**Type a line, press Enter, and your screen reader read the line you had just
+finished instead of saying "blank".** On every empty line at the end of every
+document -- which, in an editor, is most of them. It had two separate causes in
+the two products, and both are fixed.
+
+In **QuillLite** the cause was the editor being put into the Rich Edit control's
+plain-text mode, where the control does not treat the position after a trailing
+line break as a line of its own and answers "which line is the caret on" with
+the previous one. Nothing needed that mode: whether a document is plain or rich
+decides what the Format menu offers, what a save writes and what pastes in, and
+all of that lives in the document. The control stays in rich-text mode now.
+
+In **QUILL** the cause was the braille fix itself. Emulating a classic edit
+control is what puts braille output in cell 1 and the dots 7-8 on a selection,
+and it also made the control misreport the caret's line at the very end of a
+document ending in a paragraph mark. That was recorded as a trade -- braille or
+blank lines, pick one -- until the control was measured properly and turned out
+to be right about everything else: the line count, where the last line starts,
+what is on it. Only the mapping from character to line went wrong, contradicting
+the control's own answers. So QUILL now supplies the answer the control already
+had the facts for, and **nothing is given up**: the braille behaviour is
+unchanged and the empty line reads as blank.
+
 ### A portable copy stops leaving itself on the host machine (2026-09-09)
 
 **A portable QUILL created a folder in `%APPDATA%` on whatever computer it was

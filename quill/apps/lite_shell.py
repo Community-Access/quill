@@ -71,6 +71,16 @@ class QuillLiteShell(wx.MDIParentFrame):
         super().__init__(None, title=APP_NAME, size=size)
         self.app = app
         self._build_placeholder_menu()
+        # Before any document exists, because wxMSW hands each new MDI child a
+        # copy of the parent's window menu: **wx builds a "Window" menu of its
+        # own** (Cascade, Tile, Arrange Icons, and a list of children) and
+        # inserts it into every child's bar next to the one QuillLite builds.
+        # The result was two menus both called Window, one of them arranging
+        # icons in an editor that has none, and a listener pressing Alt and
+        # arrowing along the bar hearing "Window" twice with no way to tell
+        # which was which. QuillLite's own is the one that lists documents by
+        # number, so wx's goes.
+        self.SetWindowMenu(None)
         # F1 on the shell itself: no show path wraps a main window, so the
         # context-help engine has to be bound here directly. A child that is
         # active binds its own, and the child wins because it has focus.
@@ -126,4 +136,17 @@ class QuillLiteShell(wx.MDIParentFrame):
         # crash dialog on the way out of a session that went fine.
         for frame in list(self.app.frames):
             frame.stop_timers()
+        # The bookend to the launch cue, and the one moment where the sound is
+        # the *only* confirmation: after this the window is gone, the reader has
+        # nothing left to announce, and a listener who pressed Alt+F4 by mistake
+        # would otherwise learn about it from the silence.
+        from quill.core.sound_events import SoundEvent
+        from quill.ui.sound_manager import post_sound_and_wait
+
+        # Waited for, not merely posted. Everything after this line takes the
+        # window down and then the process, so an asynchronous play is a sound
+        # cut off part-way through -- which is what it did, and what somebody
+        # heard. Capped, so a pack with a long goodbye cannot make the app look
+        # like it has hung on the way out.
+        post_sound_and_wait(SoundEvent.APP_EXITING)
         self.Destroy()

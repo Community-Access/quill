@@ -151,7 +151,7 @@ class RadioAppFrame(
     ListeningAppSupportMixin,
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360))
+        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360), app_id="radio")
         self._init_app_support()  # the shared slots: undo, problems, quiet, setup
         # This app IS the radio: the editor's release gate on ``core.radio``
         # (#1340) must not apply here, or the recording scheduler, wake task,

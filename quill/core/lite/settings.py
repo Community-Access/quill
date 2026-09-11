@@ -36,6 +36,7 @@ from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 from typing import Any
 
+from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.lite.paths import settings_path
 from quill.core.storage import write_json_atomic
 
@@ -58,6 +59,19 @@ MAX_SESSION = 9
 #: file cannot put the editor into a mode it has no code for.
 _THEMES = frozenset({"dark", "system"})
 _MODES = frozenset({"plain", "rich"})
+
+#: How the letters of a word may be spoken. The same three QUILL offers; the
+#: labels live in :data:`quill.core.spelling.voicing.LETTER_STYLES` so the two
+#: apps put the same words on screen.
+_LETTER_STYLES = frozenset({"letters", "phonetic", "both"})
+
+#: Bounds for the spell-aloud pauses. The ceiling is deliberately generous: a
+#: listener on a slow synthesiser genuinely waits longer than three seconds to
+#: hear a word out, and the number that makes the feature usable for them should
+#: not be un-typeable.
+_MIN_SPELL_MS = 100
+_MAX_SPELL_MS = 5000
+_MAX_ALERT_REPEAT_MS = 10000
 
 #: Point sizes outside this range are either unreadable or a typo.
 _MIN_FONT_POINTS = 6
@@ -86,7 +100,16 @@ class Settings:
     default_mode: str = "plain"
     window_width: int = 900
     window_height: int = 650
-    window_maximized: bool = False
+    #: Maximized on a first launch, and whatever you left it as after that.
+    #: The default is True for the reason set out in
+    #: :mod:`quill.core.window_geometry`: a small window is where clipped labels
+    #: and four-row lists come from, and it costs a sighted user one keystroke
+    #: to undo while costing everybody else something on every launch. QuillLite
+    #: keeps its geometry here rather than in the shared store for the same
+    #: reason it keeps its abbreviations here -- a machine that has never had
+    #: QUILL installed must not grow a Quill data folder because somebody opened
+    #: a text file.
+    window_maximized: bool = True
     recent_files: list[str] = field(default_factory=list)
     autosave_seconds: int = 60
     #: Reopen the documents that were open when the app last closed. On by
@@ -109,12 +132,69 @@ class Settings:
     #: switch is: a machine that has never had QUILL installed must not grow a
     #: Quill data folder because somebody taught a text editor a word.
     share_quill_dictionary: bool = False
+    #: Whether the status bar is on screen at all. Notepad's View menu has had
+    #: this checkbox since Windows 95 and QuillLite had no answer to it: the bar
+    #: was always there. Per app rather than per document, because it is a
+    #: statement about how you want to work rather than about a file.
+    show_status_bar: bool = True
     #: Check spelling as you type. On, but never in a source or configuration
     #: file: the per-document default comes from the extension
     #: (quill.core.spellcheck_filetypes), and this is the answer for everything
     #: that rule says to check. Turning it off here silences the live check
     #: everywhere; F7 still reviews on demand, because that one is asked for.
     spell_check_while_typing: bool = True
+    #: Open a blank document when nothing else is being opened. On, because that
+    #: is what Notepad and WordPad do and what most people expect -- but off is a
+    #: real preference and it had no way to be expressed: somebody who always
+    #: opens an existing file was given an Untitled they then had to close, every
+    #: launch. With it off the shell opens with no document, and File > New,
+    #: Ctrl+N or Open makes the first one.
+    open_blank_document_at_startup: bool = True
+    # -- How a misspelling is said -----------------------------------------
+    # The same twelve names QUILL stores, with the same defaults, so somebody
+    # who tunes this in one editor finds the other already tuned -- and so the
+    # one engine that reads them (quill.core.spelling.voicing) needs to know
+    # nothing about which app handed it a settings object.
+    #
+    # Why they exist at all: a misspelling is the one thing in an editor that
+    # speech alone cannot convey. "receive" and "recieve" are the same sound, so
+    # being told the word is being told nothing; the letters are the answer, and
+    # how quickly somebody wants that answer is a fact about them and their
+    # synthesiser rather than about the editor.
+    spell_aloud_enabled: bool = True
+    spell_aloud_delay_ms: int = 800
+    spell_aloud_on_navigation: bool = True
+    spell_aloud_navigation_delay_ms: int = 600
+    spell_aloud_suggestions: bool = True
+    spell_aloud_suggestion_delay_ms: int = 600
+    spell_aloud_first_suggestion: bool = False
+    #: ``letters``, ``phonetic`` or ``both``.
+    spell_aloud_style: str = "letters"
+    spell_aloud_capitals: bool = True
+    #: The alert while you type is a sound, never a voice, unless asked. Speech
+    #: there interrupts the sentence it is commenting on, and somebody composing
+    #: a paragraph is the person least able to afford it.
+    spelling_alert_sound: bool = True
+    spelling_alert_speech: bool = False
+    #: Shortest gap between two alerts for the same word, so one stubborn proper
+    #: noun does not become a drum. 0 means alert every time.
+    spelling_alert_repeat_ms: int = 750
+    # -- How a key that *did something* reports back ------------------------
+    #: ``sound``, ``speech``, ``both`` or ``silent``, resolved for each moment
+    #: by :func:`quill.core.action_feedback.resolve`. Stored here as well as in
+    #: QUILL's settings, with the same name and the same default, so somebody
+    #: who chooses words in one editor is not surprised by silence in the other.
+    #: The rule itself is deliberately *not* duplicated -- both editors call the
+    #: shared resolver, which is what stops the two answering differently.
+    action_feedback: str = "sound"
+    #: And the same choice for a search that found nothing. Separate, because
+    #: wanting every success spoken and every miss kept to a tone is a coherent
+    #: preference and F3 is pressed in runs.
+    find_not_found_feedback: str = "sound"
+    #: Carry on from the other end when a search reaches the end of the
+    #: document. On, which is what QuillLite always did with no way to say
+    #: otherwise; off makes Find Next stop at the end and say so.
+    wrap_find: bool = True
 
     def remember_recent(self, path: str | Path) -> None:
         """Move *path* to the head of the recent list, without duplicating it."""
@@ -135,7 +215,35 @@ class Settings:
         self.window_height = max(240, int(self.window_height))
         self.recent_files = [str(entry) for entry in self.recent_files][:MAX_RECENT]
         self.session_files = [str(entry) for entry in self.session_files][:MAX_SESSION]
+        if self.spell_aloud_style not in _LETTER_STYLES:
+            self.spell_aloud_style = "letters"
+        # Clamped rather than validated-and-refused: a hand-edited settings file
+        # with a delay of 0 should give the shortest pause the feature works
+        # with, not an editor that will not start.
+        self.spell_aloud_delay_ms = _clamp_ms(self.spell_aloud_delay_ms, 800)
+        self.spell_aloud_navigation_delay_ms = _clamp_ms(self.spell_aloud_navigation_delay_ms, 600)
+        self.spell_aloud_suggestion_delay_ms = _clamp_ms(self.spell_aloud_suggestion_delay_ms, 600)
+        # Floor of 0 here, because "every time" is a real answer: a throttle you
+        # cannot switch off is one that eventually hides something.
+        self.spelling_alert_repeat_ms = _clamp_ms(
+            self.spelling_alert_repeat_ms, 750, low=0, high=_MAX_ALERT_REPEAT_MS
+        )
+        # Through the shared coercion rather than a local frozenset, so a mode
+        # added to the enum is understood here on the day it is added.
+        self.action_feedback = str(_coerce_action_feedback(self.action_feedback))
+        self.find_not_found_feedback = str(_coerce_action_feedback(self.find_not_found_feedback))
         return self
+
+
+def _clamp_ms(
+    value: Any, fallback: int, *, low: int = _MIN_SPELL_MS, high: int = _MAX_SPELL_MS
+) -> int:
+    """A millisecond field forced into range, falling back on nonsense."""
+    try:
+        number = int(value)
+    except (TypeError, ValueError):
+        return fallback
+    return max(low, min(high, number))
 
 
 def _coerce(current: Any, value: Any) -> Any | None:

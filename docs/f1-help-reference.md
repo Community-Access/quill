@@ -1079,7 +1079,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QuillLite
 
-Control coverage: 20 audited sites (20 helped).
+Control coverage: 35 audited sites (35 helped).
 
 ### Every window, and what it is for
 
@@ -1095,7 +1095,7 @@ Control coverage: 20 audited sites (20 helped).
 
 **Copy Tray.** Twelve numbered clipboard slots that outlive a restart. Copy into a slot, and paste from it an hour later -- the system clipboard holds one thing, and this is what to do when that is one fewer than you need.
 
-**Customize QuillLite Features.** Turn whole parts of QuillLite on or off. Unchecking an area removes its menu and its keys entirely, which is how this stays a small editor without being a poor one. Three areas start switched off and are found here rather than hidden: autocorrect, timestamped backups, and Go To Anything.
+**Customize QuillLite Features.** Turn whole parts of QuillLite on or off. Unchecking an area removes its menu and its keys entirely, which is how this stays a small editor without being a poor one. Type in the search box to narrow the list, or choose a profile -- Notepad, WordPad, Recommended, Everything -- to set them all at once. Three areas start switched off and are found here rather than hidden: autocorrect, timestamped backups, and Go To Anything.
 
 **File format.** How this document will be written back to disk: which character encoding, and which line endings. QuillLite normally writes back exactly what it read, so these only change when you change them here -- and the change happens at the next save, not now.
 
@@ -1106,6 +1106,10 @@ Control coverage: 20 audited sites (20 helped).
 **Go to line.** Jump straight to a line by number. The prompt says how many lines the document has, and a number past the end takes you to the last line rather than refusing.
 
 **Headings.** Every heading in this document, in the order they appear. Choose one and the cursor lands at the start of it. Headings exist in rich text only: they are the bold-plus-point-size ladder QUILL uses, so this list is also what Word will show in its navigation pane.
+
+**Key for.** Press the key combination you want, and it appears in the box. Pressing another replaces it. Escape leaves the command on the key it has now.
+
+**Keyboard Manager.** Every command QuillLite has, with the key it answers to. Type part of a command's name to find it, or press Record a Key and press a combination to be told what that key already does. Assigning a key somebody else has names them and asks before moving it. Insert is never bindable: it is the key NVDA and JAWS use as their own modifier.
 
 **Keyboard shortcuts.** Every key QuillLite binds, menu by menu. It is generated from the same table that builds the menus, so it cannot drift from what is actually bound. Read it with the arrow keys; Escape closes it.
 
@@ -1118,6 +1122,8 @@ Control coverage: 20 audited sites (20 helped).
 **QuillLite.** Your document. This is the whole editor: type, and Control S saves. The title bar leads with this document's number, then its name, whether it is plain text or rich text, and whether there is anything unsaved. Control N opens another document beside this one, numbered; Alt+1 to Alt+9 go straight to one, Control Tab and Control F6 move to the next, and the Window menu lists them all. Documents live inside one QuillLite window, so Alt+Tab will not step between them -- those four are how you move. Press F6 for the status bar, which carries the position, the word count, the encoding and the line endings.
 
 **Replace.** Find text and put something else in its place. Replace changes the match you are on and moves to the next; Replace All changes every one and tells you how many. In a rich text document Replace All asks first, because replaced text takes the formatting of the run it lands in.
+
+**Spelling Announcements.** How a misspelled word is reported to you. A misspelling is the one thing an editor cannot convey by speech alone -- receive and recieve sound identical -- so the letters are the answer, and this window decides when you get them and how they are said. Three groups: what happens while you type, how letters are spoken, and how long each pause is before the spelling follows.
 
 **Spelling Review.** Every word in this document that is not in the dictionary, one at a time, with suggestions you can arrow through. Change it, change every one like it, ignore it, or add it to your dictionary so it is never questioned again.
 
@@ -1150,15 +1156,45 @@ Control coverage: 20 audited sites (20 helped).
 - `replace_btn`: Replace the match you are on, then move to the next one.
 - `all_btn`: Replace every match in the document and say how many were changed.
 - `close_btn`: Close this window. Nothing you have already replaced is undone.
+#### (module level) (`quill/apps/lite_keymap_editor.py`)
+
+- `field`: The key combination you last pressed. Press another to change it.
+#### KeymapEditorDialog (`quill/apps/lite_keymap_editor.py`)
+
+- `self.listbox`: Every command QuillLite has, with the key it answers to. Press Enter on one to give it a different key.
+- `self.search`: Type part of a command's name, or of the menu it is in. Press Down to move into the list.
+- `self.record`: Turn this on and press a key combination. QuillLite says what that key does today, so you can find a free one without reading the whole list.
 #### (module level) (`quill/apps/lite_preferences.py`)
 
 - `mode_choice`: What Control N creates. New Plain Text and New Rich Text ignore this.
 - `theme_choice`: Dark is the default. It changes the view only and is never saved into your documents.
 - `restore`: Reopen last session's files, in the same numbered order. Different from recovering unsaved work, which happens whether this is on or not.
+- `blank`: On: a new Untitled document is waiting when the app opens, the way Notepad and WordPad do it. Off: the app opens with nothing, and Control N or Open makes the first document -- which is what you want if you always open an existing file and were closing an empty one every time. Files you open by double-clicking, last session's documents and recovered work all still appear either way.
 - `share`: Off: abbreviations are QuillLite's own. On: read and write the same library QUILL and Quill Inkwell use, so an abbreviation added in any of them works in all of them. Turning this on creates a QUILL data folder if you do not already have one.
 - `share_dict`: Off: words you teach the spell checker are QuillLite's own. On: read and write the same dictionary QUILL uses, so a word taught in either is known to both. Turning this on creates a QUILL data folder if you do not already have one.
 - `spell_typing`: Report a misspelling in the status bar shortly after you finish a word. Never in a source or configuration file, whatever this says: every identifier in one would be a false alarm. F7 reviews the whole document either way.
+- `action_choice`: How a copy, paste, undo or started selection reports back. Play a sound is what the app has always done. Speak the action says the word instead, which is what you want before you have learned the tones. A command that has no tone in the sound pack speaks either way, and a command that could not do what you asked always says so in words.
+- `miss_choice`: Asked separately from the setting above because F3 is pressed in runs: hearing Not found spoken on every press is the fastest way to end up turning speech off. The status bar carries the words whichever you pick, so nothing is lost by choosing the tone.
+- `wrap_find`: On: Find Next reaching the end of the document starts again at the top. Off: it stops and tells you which end you are at, so you know to go to the other one and press again rather than that the word is absent.
 - `wrap`: When off, long lines run past the right edge and scroll instead.
 - `autosave`: How often a modified document is copied to the recovery folder. The copy is beside your file, never over it, and is removed when you save.
-- `font_field`: The face and size the editor uses. Choose changes it.
-- `choose_btn`: Open the font chooser and pick a face and size.
+- `font_field`: The face and size the editor draws in. Change Font opens the chooser; this box reads back whatever you pick.
+- `choose_btn`: Open the font chooser and pick a face and size for the editor.
+#### _ProfileRow (`quill/apps/lite_preferences.py`)
+
+- `self.impact`: What the profile above would change: which parts of the app it keeps, which it removes, and anything else it sets.
+#### (module level) (`quill/apps/lite_spelling_voice_dialog.py`)
+
+- `sound`: A short falling blip when a completed word is not in the dictionary. A sound rather than speech on purpose: speech would interrupt the sentence it is commenting on. Turn it off for silence; the status bar still says so, and F7 still finds everything.
+- `speech`: Speak the misspelling as well as the sound. Off by default and deliberately: an interruption while you are composing costs more than it tells you, and the same word is one Shift+F7 away.
+- `repeat`: Stops one stubborn name becoming a drum while you edit around it. Zero means alert every time.
+- `enabled`: After a misspelled word is announced, spell it out after a pause. Without this you are told a word you cannot tell from the correct one, because the two sound the same.
+- `style_choice`: Plain letters are fastest. The phonetic alphabet is unambiguous where B, D, E, P, T and V are one sound with a rumour attached. Both is for learning a word rather than checking one.
+- `capitals`: Prefix an upper-case letter with "cap", so MacDonald and Macdonald are told apart. Letters are spoken in upper case whatever the word does, because several voices read a lone lower-case letter as a word.
+- `example`: What MacDonald would sound like with the choices above.
+- `review_delay`: How long after a word is announced before it is spelled out. The pause is what lets you move on before the spelling starts: press the next key and it is cancelled unheard.
+- `navigation`: Spell out each misspelling you reach with Next or Previous Misspelling. Your screen reader reads the word itself because it is selected; this adds the part it cannot know, which is which letters are wrong.
+- `nav_delay`: A separate, shorter pause, because you may be travelling through a document rather than stopped and deciding.
+- `suggestions`: Choosing between two spellings by ear is exactly as impossible in a list of corrections as it is in the document. Arrowing on cancels it.
+- `sug_delay`: How long to wait after landing on a suggestion before spelling it.
+- `first`: When the review reaches a new misspelling, spell the top suggestion as well as the word. Off by default: it doubles the arrival announcement, which is welcome when you are learning a word and noise when you are checking one.

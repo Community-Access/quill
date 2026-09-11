@@ -23,6 +23,12 @@ wx = pytest.importorskip("wx")
 from quill.core.hygiene.findings import HygieneFinding  # noqa: E402
 from quill.ui.hygiene_dialog import HygieneReviewDialog  # noqa: E402
 
+#: Serialized onto one worker under ``-n --dist loadgroup``: this file uses
+#: a real MainFrame, which registers system-wide hotkeys (RegisterHotKey is
+#: per-desktop, not per-process) and starts the screen-reader bridges.
+#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
+pytestmark = pytest.mark.machine_global
+
 
 @pytest.fixture(scope="module")
 def wx_app():

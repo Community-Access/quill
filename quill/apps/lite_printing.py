@@ -177,11 +177,18 @@ class DocumentPrintMixin:
         settings = self.app.print_settings
         data = wx.PageSetupDialogData(settings.page_setup)
         data.SetPrintData(settings.print_data)
-        with wx.PageSetupDialog(self, data) as dialog:
+        # Not a `with` block: wx.PageSetupDialog is one of the few Phoenix
+        # dialogs that is **not** a context manager, so `with` raised TypeError
+        # before the dialog was ever shown -- Page Setup did nothing at all, and
+        # nothing said why. try/finally does the same job with no assumption.
+        dialog = wx.PageSetupDialog(self, data)
+        try:
             if dialog.ShowModal() != wx.ID_OK:
                 return
             settings.page_setup = wx.PageSetupDialogData(dialog.GetPageSetupData())
             settings.print_data = wx.PrintData(settings.page_setup.GetPrintData())
+        finally:
+            dialog.Destroy()
         self._announce("Page setup saved")
 
     def cmd_print(self) -> None:
@@ -190,8 +197,14 @@ class DocumentPrintMixin:
         print_dialog_data = wx.PrintDialogData(settings.print_data)
         printer = wx.Printer(print_dialog_data)
         printout = _LitePrintout(self.document_name(), self._printable_lines(), self._print_font())
+        from quill.core.sound_events import SoundEvent
+
+        self._cue(SoundEvent.PRINT_STARTED)
         if printer.Print(self, printout, True):
             settings.print_data = wx.PrintData(printer.GetPrintDialogData().GetPrintData())
+            # Handed to the spooler, which is as far as this app can see. The
+            # cue says "it left here", which is the fact the user is waiting for.
+            self._cue(SoundEvent.PRINT_COMPLETE)
             self._announce(f"Printing {self.document_name()}")
         elif printer.GetLastError() == wx.PRINTER_ERROR:
             # Cancelled is the common case and needs no announcement; a real

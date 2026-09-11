@@ -66,9 +66,11 @@ QuillLite gets them by *using* QUILL's code, not by copying its conclusions:
 - **`scan_rtf_safety` before a byte reaches the control.** RTF can embed OLE
   objects, executables, binary blobs and fields that fetch remote resources.
   QuillLite runs the identical scanner QUILL runs, from `quill/io/rtf_safety.py`.
-- **The heading ladder.** Bold plus 20, 16, 14 and 12 point for levels 1 to 4,
-  and 11 point body text — close enough to Word's own ladder that a saved RTF
-  reads as headings in Word.
+- **The heading ladder.** Bold plus 20, 16, 14, 12, 11.5 and 10.5 point for
+  levels 1 to 6, and 11 point body text — close enough to Word's own ladder that
+  a saved RTF reads as headings in Word. Each level has a size of its own so the
+  ladder can be read *back*: a level the editor can set and heading navigation
+  cannot find is worse than a level that does not exist.
 - **The dialog contract.** Every modal goes through `show_modal_dialog`, which
   announces the transition, installs F1 help and infers the accessible names
   macOS VoiceOver needs.
@@ -208,7 +210,7 @@ on the app, so it carries it four ways -- `Ctrl+F6` (the Windows convention),
 one string a screen reader announces on arrival.
 
 **Switchable feature areas.** QuillLite stays small by being *switchable*, not
-by being poor. `View > Customize Features` turns whole areas off, and switching
+by being poor. `Tools > Customize Features` turns whole areas off, and switching
 one off removes its menu **and** its keys -- a key that still fires for a feature
 somebody turned off is the feature not being off. Somebody who wants Notepad
 unchecks rich text, and the Format menu is gone entirely.
@@ -219,6 +221,67 @@ autocorrect (welcome in prose, actively wrong in a config file), timestamped
 backups (reassuring, and they fill a folder), and Go To Anything (the palette,
 the headings list and the bookmark list each already answer their own part).
 
+**Seventeen areas, not twelve** (2026-09-10). Five features belonged to no area
+at all, which meant no switch in the dialog could reach them: the Matches
+submenu, Go Back and Go Forward, the Command Palette, Describe Character, and
+text size. That is a different failure from a feature being un-switchable on
+purpose -- there was nothing to find and nothing to complain about. Going the
+other way, **File Encoding and Line Endings stopped being switchable**: it
+belonged to the line-tools area, so turning off Sort Lines also took away the
+dialog that decides whether a file round-trips byte-for-byte, which for a
+Notepad replacement is most of the job.
+
+### 3.3a Profiles: a name is a promise, not a preset
+
+Seventeen checkboxes is the right way to change one thing and the wrong way to
+say "give me the small one". :data:`quill.core.lite.features.PROFILES` is four
+named starting points -- **Recommended**, **Everything**, **WordPad**,
+**Notepad** -- and the design rules behind them are worth stating, because each
+one has a cheaper wrong version.
+
+**A profile is a baseline, not a mode.** Applying one ticks and unticks every
+box, and then the boxes are the truth again. There is nothing to escape from:
+the very next change is an ordinary per-area override, and the Choice reads back
+**Custom** the moment the boxes stop matching. The alternative -- a mode that
+owns the dialog and reverts what you do -- makes the checklist a lie.
+
+**A profile is written as what it takes away.** `AppProfile.disabled` lists the
+areas switched off, never the ones kept, so an area added in a later version is
+*on* in all four profiles until somebody decides otherwise. A profile written
+before a feature existed must not silently remove it.
+
+**Two of them carry a setting, and only those two.** "Notepad" does not mean
+*these menus*; it means the thing you type in is plain text. A Notepad profile
+that removed the Format menu and went on creating rich text documents on Ctrl+N
+would keep the letter of its name and break its promise -- and the user would
+find out one document later, at a Save As dialog offering a format they thought
+they had turned off. So Notepad claims `default_mode = "plain"` and WordPad
+claims `"rich"`. **Recommended** and **Everything** claim nothing: they are
+statements about which areas exist and have no opinion about the rest, and a
+profile that quietly rewrote a setting the user chose would be the mode this
+design refuses to be.
+
+**A description you cannot read is not documentation.** Every profile has
+carried a paragraph since profiles existed and nothing displayed it -- the
+Choice listed four bare names. Every other profile system in the codebase shows
+its description; this was the one that did not. It is now under the Choice, it
+is the Choice's F1 answer, and it is spoken once when Use Profile is pressed.
+Not on every arrow of the Choice: the reader is already saying the name, and a
+paragraph over the top of that is what GATE-13 exists to stop.
+
+| Profile | Areas on | Ctrl+N | For |
+|---|---|---|---|
+| Recommended | 14 of 17 | unchanged | the shipped answer, and the way back from experimenting |
+| Everything | 17 of 17 | unchanged | turning things off as they annoy you rather than finding them one at a time |
+| WordPad | 5 of 17 | **rich** | letters and notes that should look like something |
+| Notepad | 2 of 17 | **plain** | config files, logs, and anything where hidden formatting would be a problem |
+
+Notepad keeps two areas and still has Find, Replace, Go To Line, Select All,
+Insert Date and Time, Word Wrap, the font picker, the status bar, Undo, printing
+and text size -- everything Notepad has had since 1985 -- because those live
+outside the switchable areas by design. It also keeps File Encoding and Line
+Endings, per the paragraph above.
+
 ### 3.4 Non-goals
 
 - **Not a feature destination.** If a proposal here would also make sense in
@@ -227,9 +290,14 @@ the headings list and the bookmark list each already answer their own part).
   module imports on every platform and rich features report as unavailable
   rather than failing, but there is no `nstextview` path here.
 - **Not a thin client.** It does not share data with QUILL — see §5.3.
-- **Not keymap-customisable.** QUILL's keymap system, its `APP_KEYMAPS`
-  overrides and its Key Describer are a writing environment's feature. QuillLite
-  has one fixed table (`quill/core/lite/commands.py`), and Ctrl+F1 lists it.
+- ~~**Not keymap-customisable.**~~ **Reversed 2026-09-10.** This said QuillLite
+  had one fixed table and that was that. The table is still the *defaults* --
+  it is what the uniqueness gates assert against -- but
+  `quill/core/lite/keymap.py` puts a resolution layer over it and
+  `Tools > Keyboard Manager` (Ctrl+Alt+Shift+R) edits it. What stays true is the
+  reason the non-goal was written: QUILL's chord grammar, its `APP_KEYMAPS`
+  overrides and its Key Describer are a writing environment's features and are
+  still not here. Rebinding a key is not.
 - **Not a second clipboard manager.** The tray, the collector and the library
   are QUILL's own stores, kept in QuillLite's folder. Nothing is reimplemented.
 
@@ -466,9 +534,9 @@ code regions are handled by `spellcheck_live`, at the granularity that fits.
 
 Edit > Selection is the largest single surface QuillLite adds, and it is worth
 saying why an editor this small carries one at all. It is a *submenu*: nineteen
-items poured into Edit would swamp it, and a tenth top-level menu on a small
+items poured into Edit would swamp it, and another top-level menu on a small
 editor's bar is a cost paid on every visit by everyone. A submenu is one
-Alt+E, I away, and gives the group its own mnemonic namespace.
+Alt+E, N away, and gives the group its own mnemonic namespace.
 
 Selecting text without sight is a different job from selecting it with a mouse,
 and the difference is not one of degree. There is no drag. There is no glance
