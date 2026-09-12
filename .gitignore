@@ -94,6 +94,12 @@ key_fix_*.md
 key_troubleshoot*.md
 zquill_*.md
 fix.md
+# The QuillLite 1.0.0 pre-release checklist (2026-09-12): the items only a
+# person on a real machine can answer -- installs, shortcuts, signatures, the
+# screen-reader pass. Untracked on purpose, same class as fixes.md: it is a
+# worklist for one release, not a document. The permanent regression sheet is
+# docs/qa/quilllite-signoff.md.
+/test.md
 # The running ledger of what is in the working tree and not yet committed
 # (2026-08-18). Untracked on purpose: it describes the uncommitted diff, so a
 # committed copy would be a description of nothing.

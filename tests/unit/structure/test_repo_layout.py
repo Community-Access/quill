@@ -41,20 +41,42 @@ def _gitignored_root_files(names: set[str]) -> set[str]:
 
     The layout gate governs the *committed* repository root, so a file the repo
     intentionally ignores (e.g. a local, untracked working note) is not a layout
-    regression. Dependency-free: matches a present root file against the exact,
-    non-glob ignore patterns in the top-level ``.gitignore`` (with or without a
-    leading slash), which is all the root-file ignores this gate needs.
+    regression. Dependency-free: matches a present root file against the ignore
+    patterns in the top-level ``.gitignore`` (with or without a leading slash).
+
+    Globs count. This used to skip any pattern containing ``*``, on the stated
+    assumption that exact names were "all the root-file ignores this gate
+    needs" -- and the assumption was already false when it was written:
+    ``zquill_*.md`` and ``key_fix_*.md`` are both root-note patterns. The result
+    was a gate that failed on a developer's machine over a file the repository
+    explicitly ignores, and passed in CI (which checks out a tree that has none
+    of them), so it read as flaky rather than as wrong.
     """
     gitignore = _REPO_ROOT / ".gitignore"
     if not gitignore.exists():
         return set()
-    patterns: set[str] = set()
+    exact: set[str] = set()
+    globs: list[str] = []
     for raw in gitignore.read_text(encoding="utf-8").splitlines():
         line = raw.strip()
-        if not line or line.startswith("#") or any(ch in line for ch in "*?[]"):
+        # A negation (!pattern) re-includes a file, so it is not an ignore.
+        if not line or line.startswith(("#", "!")) or line.endswith("/"):
             continue
-        patterns.add(line.lstrip("/"))
-    return {name for name in names if name in patterns}
+        pattern = line.lstrip("/")
+        # Only root-level patterns apply here; one with a slash inside names a
+        # path below the root, which this gate never looks at.
+        if "/" in pattern:
+            continue
+        (globs.append(pattern) if any(ch in pattern for ch in "*?[") else exact.add(pattern))
+    if not globs:
+        return {name for name in names if name in exact}
+    import fnmatch
+
+    return {
+        name
+        for name in names
+        if name in exact or any(fnmatch.fnmatch(name, pattern) for pattern in globs)
+    }
 
 
 def test_repository_root_has_no_loose_python_modules() -> None:
