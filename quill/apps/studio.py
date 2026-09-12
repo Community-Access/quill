@@ -1080,7 +1080,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, AdpMixin):
         help_menu.Append(palette_id, "&Command Palette...\tCtrl+Shift+P")
         help_menu.AppendSeparator()
         help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
-        help_menu.Append(bug_id, "Report a &Bug...\tCtrl+Alt+Shift+B")
+        help_menu.Append(bug_id, "Get Help from &Support...\tCtrl+Alt+F2")
         help_menu.Append(log_id, "View &Log...\tCtrl+Alt+L")
         help_menu.Append(diag_id, "Save &Diagnostics...\tCtrl+Alt+D")
         help_menu.AppendSeparator()

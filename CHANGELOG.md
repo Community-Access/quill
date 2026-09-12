@@ -2,6 +2,102 @@
 
 ## 1.0.0
 
+### One update dialog, and QuillLite can finally find its own updates (2026-09-12)
+
+**Every app now tells you what is in an update before it asks whether you want
+it.** QUILL always did -- its Check for Updates window opened on the release
+notes. The eight companion apps did not: they showed a Yes/No box that said a
+newer version existed and asked "Download it now?", which is a question nobody
+can answer, because the only honest reply is "what changed?" -- and the app had
+the release notes in its hand at that moment and threw them away.
+
+There is one window now, in all nine, and it always carries three things: a
+summary of **what is new**, read-only and arrowable like a document; an
+**Update** button, which is the default so Enter does the expected thing; and a
+**Close** button, which is the escape so Escape does too. Focus lands in the
+notes rather than on a button, so the first thing you hear is the release notes
+and not the word "Update". QUILL keeps one extra button, **Skip this version**,
+because QUILL is the only app with somewhere to remember that answer.
+
+**QuillLite can now check for updates at all.** It shipped without any -- the
+app most likely to be somebody's only Quill product, installed by a person who
+wanted Notepad, and there was no way for them to learn that a newer version
+existed. **Help > Check for Updates...** answers on **Ctrl+Alt+U**, the same key
+as everywhere else in the family, and QuillLite also looks once a day when it
+starts and says *nothing* unless there is something -- not while it checks, not
+when there is nothing, and not when the network is down. Only a real new version
+speaks, and even then it only offers; nothing downloads until you press Update.
+Turn the daily look off in Settings ("Look for updates when QuillLite starts").
+
+Page Setup moved from Ctrl+Alt+U to **Ctrl+Alt+P** to free that key. A
+chord that means Check for Updates in eight apps and Page Setup in the ninth is
+the kind of difference nobody discovers until it does the wrong thing, and P
+suits Page Setup better than U ever did.
+
+**Two older faults in the update path were fixed while we were in here**, and
+they were not QuillLite's -- every app in the family had both.
+
+**You were sometimes offered the wrong download.** Each app publishes four
+files: a full installer, a small one that fetches the shared parts on first
+launch, a portable zip and a launcher-only Companion zip. The updater chose
+between them by looking at the file extension, so of the two installers it took
+whichever GitHub happened to list last -- and somebody running the Companion zip
+was handed an installer that cannot update their copy at all. QUILL's own
+updater learned to ask which edition you are running back in August; the eight
+companion apps and QuillLite were on a different code path that never did. They
+ask now.
+
+**"Install and restart now" installed, and then the app did not come back.** The
+update applied perfectly; what failed was the last line. Since the apps moved to
+a shared runtime in August the program that gets restarted is the runtime
+itself, and starting it with no instructions makes it do nothing at all -- with
+no window and no error, because it has no console to print one to. Every symptom
+pointed at an update that had failed. The restart now names the app, the way
+your Start Menu shortcut does. The full installers' shortcuts go through each
+app's own launcher too, which is what tells the updater which edition you
+installed -- the thin installers always did this; the full ones were the odd
+ones out.
+
+### Get Help from Support, in every app (2026-09-11)
+
+**Report a Bug is now Get Help from Support...**, on Ctrl+Alt+F2, and it is on
+the Help menu of all ten surfaces rather than four. Quill Weather, Quill
+Converter, Quill Media Player, Quill Inkwell, QuillBeacon and QuillLite had no
+reporting item at all until now -- only an address printed in the About box for
+you to copy out by hand.
+
+What changed underneath is more than the name. The old item filed a **GitHub
+issue in a public repository**, using a token baked into every installer, and
+left the person who reported the problem with no way to be answered: a GitHub
+issue is not a conversation you can join without an account. Somebody
+describing a screen-reader failure may name their employer, their configuration,
+or the document they were working on, and all of it was published, permanently
+and searchably, the moment they pressed Submit.
+
+Now the form writes an **email to support@community-access.org**, where a person
+answers and the reply comes back to you. Fill in what kind of message it is, a
+subject, and what happened; what you expected and how to reproduce it are
+optional, and your email address is optional too -- you can report a problem
+without giving one, you simply will not be able to be replied to. Press Send and
+**your own mail program opens with the whole message already written**, with the
+app's own name and version, your Windows version and your screen reader filled
+in at the bottom. Nothing is sent until you send it there, which the app says
+out loud rather than claiming to have sent something it has not.
+
+A machine with no mail program set up -- webmail only -- gets the whole message
+on its clipboard along with the address, so nothing typed is ever lost. And
+writing to **support@community-access.org** yourself works exactly as well;
+there is no form you have to use. The address is now in every app's About box
+and in every user guide.
+
+One thing this fixes quietly: Report a Bug had not actually opened its form
+since the submission-server work landed. It passed a `server_url` to a
+feedback-hub that has no such parameter, raised `TypeError` inside the dialog
+constructor, and fell through to the browser fallback every single time. Nobody
+noticed, because the fallback worked. The transport is now read from the
+installed package's signature rather than assumed, and when the submission
+server can take it, reports go there instead -- with no change to what you do.
+
 ### Every QuillLite command now has a test that presses it (2026-09-11)
 
 Not "has a test that proves the method exists" -- one that presses the key and

@@ -10,8 +10,8 @@
 ;
 ; The same shape every QuillVille app has used since 2026-07-24: a per-app C
 ; launcher plus docs, with the program itself living in the shared QuillVille
-; Runtime and launched via `{code:RuntimeExe} -m quill.apps.lite`. See
-; standalone\radio\installer\quill-radio.iss for the full rationale.
+; Runtime and launched through `{app}\QuillLite.exe`, the native launcher.
+; See standalone\radio\installer\quill-radio.iss for the full rationale.
 ;
 ; QuillLite is the leanest app in the family after Weather -- one editor
 ; control, six small windows, no ffmpeg and no libmpv -- so the per-app payload
@@ -120,13 +120,21 @@ Source: "..\dist\QuillLite\docs\*"; DestDir: "{app}\docs"; Components: docs; Fla
 #include "..\..\..\installer\shared-runtime.iss"
 
 [Icons]
-; Every shortcut launches through the shared runtime. WorkingDir is the shared
-; runtime dir so `python -m quill.apps.lite` finds the quill package at the
-; shared location's sitecustomize path.
-Name: "{group}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.lite"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-lite.ico"; Components: main
+; Every shortcut launches through {app}\QuillLite.exe -- the native launcher,
+; which resolves the shared runtime itself and runs `-m quill.apps.lite` in it.
+;
+; It used to name {code:RuntimeExe} directly, which worked and cost the app its
+; identity: the launcher is the only thing that exports QUILL_APP_ROOT, and
+; without it quill.core.install_edition reads the SHARED RUNTIME's folder
+; instead of this one -- finds no quill-edition.txt there, no uninstaller and
+; no data folder, and concludes the user is running the Companion zip. Check
+; for Updates then offers them the wrong download. The thin installer
+; (quilllite-lite.iss) always launched this way; this is the full one catching
+; up, not a new idea.
+Name: "{group}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.html"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.lite"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-lite.ico"; Tasks: desktopicon; Components: main
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillLite.exe"; IconFilename: "{app}\quill-lite.ico"; Tasks: desktopicon; Components: main
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
@@ -136,14 +144,14 @@ Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "A
 ; the default handler. A text editor that quietly takes over every .txt on the
 ; machine is a text editor people uninstall; taking the verb rather than the
 ; association leaves Notepad, WordPad and QUILL exactly where they were.
-Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{code:RuntimeExe}"" -m quill.apps.lite ""%1"""; Flags: uninsdeletekey; Components: assoc
+Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\QuillLite.exe"" ""%1"""; Flags: uninsdeletekey; Components: assoc
 Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe"; ValueType: string; ValueName: "FriendlyAppName"; ValueData: "{#AppName}"; Flags: uninsdeletekey; Components: assoc
 Root: HKA; Subkey: "Software\Classes\Applications\QuillLite.exe\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\quill-lite.ico"; Flags: uninsdeletekey; Components: assoc
 Root: HKA; Subkey: "Software\Classes\.txt\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
 Root: HKA; Subkey: "Software\Classes\.rtf\OpenWithList\QuillLite.exe"; Flags: uninsdeletekey; Components: assoc
 
 [Run]
-Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.lite"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
+Filename: "{app}\QuillLite.exe"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
 
 [UninstallDelete]
 ; Remove only QuillLite's own {app} payload. The shared runtime is left to the

@@ -601,6 +601,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # §8.2 — explain why the focused item is unavailable ("Why don't I see…?").
     "help.why_unavailable": "Alt+F1",
     "help.tutorials": "Ctrl+Alt+F1",  # the family key: Radio, Cast, Weather too
+    # One key along from Tutorials, and the family key for the same reason:
+    # every app answers it with the same door to a person who can reply.
+    "help.report_bug": "Ctrl+Alt+F2",
     # §10.8 — magic paste moves to QUILL key, V (handled in QuillKeyMixin prefix
     # state machine).  Ctrl+Alt+V removed — screen readers eat Ctrl+Alt+ chords.
     "edit.magic_paste": "",

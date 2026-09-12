@@ -105,7 +105,9 @@ COMMANDS: list[CommandRow] = [
     # File menu's, since backups are switchable and the rest of File is not.
     ("&File", "Earlier &Versions...", "Ctrl+Alt+Shift+E", "cmd_browse_backups", ""),
     ("&File", "", "", "", "sep"),
-    ("&File", "Page Set&up...", "Ctrl+Alt+U", "cmd_page_setup", ""),
+    # Ctrl+Alt+P, not the Ctrl+Alt+U it used to hold: that key is Check
+    # for Updates in the eight other QuillVille apps, and P suits Page Setup.
+    ("&File", "Page Set&up...", "Ctrl+Alt+P", "cmd_page_setup", ""),
     ("&File", "&Print...", "Ctrl+P", "cmd_print", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "&Close Window", "Ctrl+W", "cmd_close", ""),
@@ -620,6 +622,12 @@ COMMANDS: list[CommandRow] = [
     # engine every other QuillVille app answers with.
     ("&Help", "&Help for This Window", "F1", "cmd_context_help", ""),
     ("&Help", "&Keyboard Shortcuts", "Ctrl+F1", "cmd_shortcuts", ""),
+    # The family item, on the family key: QuillLite is the app whose users
+    # are least likely to know where else to write.
+    ("&Help", "&Get Help from Support...", "Ctrl+Alt+F2", "cmd_get_help_from_support", ""),
+    # The family key. Before this QuillLite had no way at all to learn that a
+    # newer version existed -- see quill.apps.lite_updates.
+    ("&Help", "Check for &Updates...", "Ctrl+Alt+U", "cmd_check_updates", ""),
     ("&Help", "&About QuillLite", "Shift+F1", "cmd_about", ""),
 ]
 

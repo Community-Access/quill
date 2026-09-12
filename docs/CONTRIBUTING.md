@@ -180,7 +180,7 @@ Contributors who integrate third-party libraries from AccessibleApps or other op
 
 ## Reporting bugs and proposing features
 
-- For product/support issues, users can use in-app `Help -> Report a Bug`.
+- For product/support issues, users can use in-app `Help -> Get Help from Support...`, which reaches support@community-access.org rather than this public repository.
 - For repository work, open a GitHub issue with:
   - expected behavior
   - actual behavior

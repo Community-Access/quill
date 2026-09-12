@@ -126,3 +126,55 @@ def test_the_installers_ship_their_edition_marker() -> None:
         assert f'DestName: "{edition.MARKER_NAME}"' in source, name
         marker = repo / "standalone" / "radio" / "installer" / f"edition-{expected}.txt"
         assert marker.read_text(encoding="utf-8").strip() == expected
+
+
+#: QuillLite is the case the word-matching above cannot survive on its own: the
+#: product NAME contains "lite", so every one of its assets reads as the thin
+#: installer and ``INSTALLER_FULL`` matches nothing it ever publishes. The
+#: prefix is what restores the distinction.
+LITE_ASSETS = [
+    {"name": "QuillLite-Companion-1.0.0.zip", "browser_download_url": "u/companion"},
+    {"name": "QuillLite-Lite-Setup-1.0.0.exe", "browser_download_url": "u/lite"},
+    {"name": "QuillLite-Portable-1.0.0.zip", "browser_download_url": "u/portable"},
+    {"name": "QuillLite-Setup-Shared-1.0.0.exe", "browser_download_url": "u/full"},
+]
+
+
+@pytest.mark.parametrize(
+    ("edition_name", "expected"),
+    [
+        (edition.INSTALLER_FULL, "u/full"),
+        (edition.INSTALLER_LITE, "u/lite"),
+        (edition.PORTABLE, "u/portable"),
+        (edition.COMPANION, "u/companion"),
+    ],
+)
+def test_an_app_whose_name_contains_a_marker_word(edition_name: str, expected: str) -> None:
+    picked = [
+        asset["browser_download_url"]
+        for asset in LITE_ASSETS
+        if edition.matches_asset(edition_name, asset["name"], app_prefix="QuillLite")
+    ]
+    assert picked == [expected]
+
+
+def test_without_the_prefix_quilllite_cannot_be_told_apart() -> None:
+    """The bug the prefix exists to stop, pinned so it cannot come back
+    silently: every QuillLite .exe reads as the thin installer."""
+    unprefixed = [
+        asset["name"]
+        for asset in LITE_ASSETS
+        if edition.matches_asset(edition.INSTALLER_LITE, asset["name"])
+    ]
+    assert len(unprefixed) == 2
+    assert not [
+        asset["name"]
+        for asset in LITE_ASSETS
+        if edition.matches_asset(edition.INSTALLER_FULL, asset["name"])
+    ]
+
+
+def test_a_prefix_that_does_not_match_is_simply_ignored() -> None:
+    assert edition.matches_asset(
+        edition.PORTABLE, "Quill-Radio-Portable-3.0.0.zip", app_prefix="QuillLite"
+    )

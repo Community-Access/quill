@@ -585,6 +585,7 @@ def lite_window(tmp_path, lite_settings):
     """
     from quill.apps.lite_keymap_editor import DocumentKeymapMixin
     from quill.apps.lite_printing import DocumentPrintMixin
+    from quill.apps.lite_updates import DocumentUpdatesMixin
     from quill.apps.lite_window_clipboard import DocumentClipboardMixin
     from quill.apps.lite_window_commands import DocumentCommandsMixin
     from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
@@ -622,6 +623,10 @@ def lite_window(tmp_path, lite_settings):
         # recorder (``lite_dialogs``) exists to make testable.
         DocumentPrintMixin,
         DocumentKeymapMixin,
+        # Check for Updates, added 2026-09-12. The network call and both
+        # dialogs are patched in the test; what is being reached here is the
+        # handler the Help menu binds.
+        DocumentUpdatesMixin,
         DocumentContextMenuMixin,
         DocumentCommandsMixin,
     ):

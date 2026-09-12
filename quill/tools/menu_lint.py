@@ -65,6 +65,13 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     # neither -- no default JAWS or NVDA command uses Ctrl+Alt+F1, and AltGr
     # cannot produce a function key.
     "help.tutorials",  # Ctrl+Alt+F1
+    # Get Help from Support (2026-09-11), one key along from Tutorials and
+    # the family key for the same reason: every app answers it with the same
+    # door to a person who can reply, and a support key that differs per app
+    # is one nobody remembers on the day they need it. Same exemption as
+    # above -- a function key is neither an AltGr character nor a default
+    # JAWS or NVDA command.
+    "help.report_bug",  # Ctrl+Alt+F2
     "view.toggle_tab_control",  # legacy Ctrl+Alt+Shift+T allowance; now a QUILL-key chord
     # EdSharp port: heading shortcuts override NVDA switch-to-synth-N (Ctrl+Alt+1..6).
     "format.heading_1",

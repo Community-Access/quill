@@ -1099,7 +1099,7 @@ text in a document you send somebody.
 
 ## Printing
 
-**Ctrl+P** prints. **Ctrl+Alt+U** is Page Setup.
+**Ctrl+P** prints. **Ctrl+Alt+P** is Page Setup.
 
 Long lines are wrapped to fit the page whatever your Word Wrap setting says,
 because a printed line that runs off the edge of the paper is simply gone.
@@ -1165,6 +1165,34 @@ computer's own profile -- that folder is what marks the copy as portable.
 
 ---
 
+## Keeping QuillLite up to date
+
+**Help > Check for Updates...** (**Ctrl+Alt+U**) asks whether a newer QuillLite
+has been published. It is the same key, and the same window, in every app in the
+family.
+
+If there is nothing newer you are told so in a dialog, which is deliberate: a
+key that answers with silence is indistinguishable from a key that is not bound.
+
+If there **is** something newer, the window opens on **what changed** -- the
+release notes for that version, in a read-only box you can arrow through like a
+document. Tab from there reaches two buttons:
+
+- **Update** downloads the new version and then offers to install it and restart
+  for you. Your settings, your recent files and your recovered work are kept.
+- **Close** does nothing at all. Nothing is downloaded until you press Update.
+
+While the download runs you hear it reach a quarter, a half and three quarters,
+and then that it has finished.
+
+QuillLite also looks once a day when it starts, and says **nothing** unless
+there is something -- not while it checks, not when there is nothing, and not
+when the network is down. Only a genuine new version speaks, and even then it
+only offers. Turn the daily look off in **Settings** ("Look for updates when
+QuillLite starts"); Ctrl+Alt+U still works either way.
+
+---
+
 ## What QuillLite is not
 
 QuillLite is a companion to **QUILL for All**, not a replacement for it.
@@ -1196,7 +1224,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+S** | Save |
 | **Ctrl+Shift+S** | Save As... |
 | **Ctrl+Alt+Shift+E** | Earlier Versions... |
-| **Ctrl+Alt+U** | Page Setup... |
+| **Ctrl+Alt+P** | Page Setup... |
 | **Ctrl+P** | Print... |
 | **Ctrl+W** | Close Window |
 | **Ctrl+Q** | Exit QuillLite |
@@ -1444,6 +1472,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 |---|---|
 | **F1** | Help for This Window |
 | **Ctrl+F1** | Keyboard Shortcuts |
+| **Ctrl+Alt+F2** | Get Help from Support... |
+| **Ctrl+Alt+U** | Check for Updates... |
 | **Shift+F1** | About QuillLite |
 
 ### Built per window
@@ -1459,3 +1489,26 @@ as `Ctrl+Shift+.` and `Ctrl+Shift+,` because that is the same physical key and
 the spelling wx understands.
 
 <!-- keys:end -->
+
+## Getting help
+
+Support is run by **Community Access**, and the address is
+**support@community-access.org**. A person reads it, and replies come back by
+email.
+
+The quickest way there is **Help > Get Help from Support...** (Ctrl+Alt+F2),
+which every app in the family answers with the same form: what kind of message
+this is, a subject, what happened, and -- if you want an answer -- an email
+address to reply to. What you expected and how to reproduce it are optional,
+and worth more than anything else when you can give them.
+
+Press Send and your **own mail program opens with the whole message already
+written**, addressed to support, with QuillLite's name and version and your Windows
+version filled in at the bottom. Nothing is sent until you send it there, so you
+can read it over, add anything, or change your mind.
+
+If this machine has no mail program set up -- webmail only, say -- the app puts
+the whole message on your clipboard and tells you the address, so nothing you
+typed is lost. And writing to **support@community-access.org** yourself always
+works just as well: there is no form you have to use. Say which app you were
+using and what happened.

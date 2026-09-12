@@ -3362,7 +3362,7 @@ class MenuBuilderMixin:
         help_menu.AppendSubMenu(profiles_menu, _("Feature &Profiles"))
         help_menu.Append(
             self._id_report_bug,
-            self._menu_label(_("Report a &Bug..."), "help.report_bug"),
+            self._menu_label(_("Get Help from &Support..."), "help.report_bug"),
         )
         # "Check for Updates on Startup" lives in Settings now (removed the
         # duplicate Help-menu toggle).

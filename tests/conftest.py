@@ -10,6 +10,7 @@ to write to the real ``%APPDATA%\\Quill`` path and fail with stale state.
 from __future__ import annotations
 
 import os
+from collections.abc import Callable, Iterator
 from pathlib import Path
 
 import pytest
@@ -267,6 +268,110 @@ def _never_write_to_the_real_profile() -> None:
         yield
     finally:
         builtins.open = original_open
+
+
+#: Environment variables the leak guard ignores, and why. Everything else is a
+#: leak and fails the test that caused it -- see :func:`_no_environment_leaks`.
+#:
+#: ``PYTEST_CURRENT_TEST`` is pytest's own bookkeeping and legitimately differs
+#: between the setup and teardown phases the guard compares across.
+#:
+#: The other two are one-time *process* bootstrap performed by production code
+#: rather than by a test. ``quill.core.spellcheck`` sets ``ENCHANT_CONFIG_DIR``
+#: before the first Enchant broker is constructed -- the broker reads it at
+#: construction, so it cannot be set afterwards -- and importing Enchant puts
+#: its DLL directory on ``PATH``. Both are idempotent, both point inside the
+#: isolated test profile, and undoing them would only make the next test that
+#: spell-checks pay for the setup again.
+_ENV_LEAK_ALLOWED = frozenset({"PYTEST_CURRENT_TEST", "ENCHANT_CONFIG_DIR", "PATH"})
+
+#: Where the pre-test snapshot lives between the two hooks below.
+_ENV_BEFORE: pytest.StashKey[dict[str, str]] = pytest.StashKey()
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_protocol(item: pytest.Item, nextitem: pytest.Item | None):
+    """Snapshot ``os.environ`` before a test runs. Paired with the teardown hook."""
+    item.stash[_ENV_BEFORE] = dict(os.environ)
+    yield
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_teardown(item: pytest.Item, nextitem: pytest.Item | None):
+    """Fail a test that changes ``os.environ`` and does not change it back.
+
+    The footgun this exists for: ``monkeypatch.delenv(name, raising=False)``
+    records **nothing** when the variable is already absent, so there is no
+    entry to undo. If the code under test then writes that variable directly --
+    which several QUILL functions do, deliberately -- the write outlives the
+    test and every later test in the same process sees it.
+
+    It went unnoticed for as long as the tests existed and surfaced on
+    2026-09-11 as four failures in ``tests/unit/core/test_paths.py`` that had
+    nothing to do with paths: a leaked ``QUILL_APP_ROOT`` made ``app_data_dir``
+    resolve a portable root. It only appeared then because an unrelated new test
+    file changed ``--dist=loadfile``'s file-to-worker split and put the guilty
+    file and the victim file on one worker. That is the signature of the whole
+    class -- it presents as "CI is flaky on a machine I cannot reproduce", which
+    is why it needs a gate rather than vigilance.
+
+    **A teardown hookwrapper, not an autouse fixture**, and that is not a style
+    choice. A fixture finalizer cannot be made to run reliably last: the obvious
+    arrangement (declare it first, so it is set up first and finalized last) was
+    tried and does not hold -- ``monkeypatch`` undoes its work *after* such a
+    fixture, so every ordinary ``monkeypatch.setenv`` was reported as a leak.
+    The after-yield half of this hook runs once every finalizer for the item has
+    completed, which is the only point where the question can be asked honestly.
+    """
+    yield
+    before = item.stash.get(_ENV_BEFORE, None)
+    if before is None:  # pragma: no cover - defensive; protocol hook always runs
+        return
+    after = dict(os.environ)
+    names = set(before) ^ set(after)
+    names |= {name for name in set(before) & set(after) if before[name] != after[name]}
+    leaked = sorted(names - _ENV_LEAK_ALLOWED)
+    if not leaked:
+        return
+    detail = ", ".join(
+        f"{name}: {before.get(name, '<unset>')!r} -> {after.get(name, '<unset>')!r}"
+        for name in leaked
+    )
+    # Put it back, so one leak does not cascade into every later test on this
+    # worker and bury its own cause under a screenful of unrelated failures.
+    for name in leaked:
+        if name in before:
+            os.environ[name] = before[name]
+        else:
+            os.environ.pop(name, None)
+    raise AssertionError(
+        f"this test changed os.environ and left it changed: {detail}. "
+        "If the code under test writes the variable itself, note that "
+        "monkeypatch.delenv(name, raising=False) records nothing when the name "
+        "is already absent -- use the absent_env fixture, which guarantees "
+        "removal on teardown. If the change is deliberate process bootstrap, "
+        "add the name to _ENV_LEAK_ALLOWED in tests/conftest.py with the reason."
+    )
+
+
+@pytest.fixture
+def absent_env(monkeypatch: pytest.MonkeyPatch) -> Iterator[Callable[..., None]]:
+    """``absent_env("GH_TOKEN", ...)``: gone for the test, and gone afterwards.
+
+    What ``monkeypatch.delenv(name, raising=False)`` looks like it does. The
+    difference matters only when the code under test writes the variable itself,
+    and that is exactly when it matters most -- see :func:`_no_environment_leaks`.
+    """
+    removed: list[str] = []
+
+    def hide(*names: str) -> None:
+        for name in names:
+            monkeypatch.delenv(name, raising=False)
+            removed.append(name)
+
+    yield hide
+    for name in removed:
+        os.environ.pop(name, None)
 
 
 @pytest.fixture(autouse=True)

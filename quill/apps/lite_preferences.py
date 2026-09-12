@@ -204,6 +204,20 @@ def edit_preferences(
     share_dict.SetValue(bool(settings.share_quill_dictionary))
     root.Add(share_dict, 0, wx.LEFT | wx.RIGHT, _PAD)
 
+    # &U, because every other letter in "Look for updates" is spoken for in
+    # this window and Windows cycles focus between two controls with the same
+    # access key rather than pressing either (GATE-14).
+    updates = wx.CheckBox(dialog, label="Look for &updates when QuillLite starts")
+    updates.SetHelpText(
+        "Once a day, when the app opens, ask GitHub whether a newer QuillLite "
+        "has been published. Nothing is said unless there is one, and nothing "
+        "is downloaded or installed without being asked -- a new version shows "
+        "you what changed and offers it. Off means Check for Updates on the "
+        "Help menu is the only check that ever runs."
+    )
+    updates.SetValue(bool(getattr(settings, "check_updates_on_launch", True)))
+    root.Add(updates, 0, wx.LEFT | wx.RIGHT, _PAD)
+
     spell_typing = wx.CheckBox(dialog, label="Check &spelling as I type")
     spell_typing.SetHelpText(
         "Report a misspelling in the status bar shortly after you finish a "
@@ -338,6 +352,7 @@ def edit_preferences(
             settings.share_quill_dictionary,
             settings.spell_check_while_typing,
             settings.open_blank_document_at_startup,
+            getattr(settings, "check_updates_on_launch", True),
             getattr(settings, "action_feedback", "sound"),
             getattr(settings, "find_not_found_feedback", "sound"),
             getattr(settings, "wrap_find", True),
@@ -350,6 +365,7 @@ def edit_preferences(
         settings.share_quill_dictionary = bool(share_dict.GetValue())
         settings.spell_check_while_typing = bool(spell_typing.GetValue())
         settings.open_blank_document_at_startup = bool(blank.GetValue())
+        settings.check_updates_on_launch = bool(updates.GetValue())
         settings.autosave_seconds = int(autosave.GetValue())
         settings.action_feedback = str(feedback_values[action_choice.GetSelection()])
         settings.find_not_found_feedback = str(feedback_values[miss_choice.GetSelection()])
@@ -372,6 +388,7 @@ def edit_preferences(
                 settings.share_quill_dictionary,
                 settings.spell_check_while_typing,
                 settings.open_blank_document_at_startup,
+                settings.check_updates_on_launch,
                 settings.action_feedback,
                 settings.find_not_found_feedback,
                 settings.wrap_find,

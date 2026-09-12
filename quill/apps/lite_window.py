@@ -39,6 +39,7 @@ import wx
 
 from quill.apps.lite_keymap_editor import DocumentKeymapMixin
 from quill.apps.lite_printing import DocumentPrintMixin
+from quill.apps.lite_updates import DocumentUpdatesMixin
 from quill.apps.lite_window_clipboard import DocumentClipboardMixin
 from quill.apps.lite_window_commands import DocumentCommandsMixin
 from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
@@ -76,6 +77,7 @@ class DocumentFrame(
     DocumentFormatCommandsMixin,
     DocumentViewCommandsMixin,
     DocumentPrintMixin,
+    DocumentUpdatesMixin,
     DocumentToolsMixin,
     DocumentKeymapMixin,
     DocumentLineMixin,

@@ -4,7 +4,7 @@
 
 Inside QUILL, use:
 
-- `Help -> Report a Bug`
+- `Help -> Get Help from Support...` (Ctrl+Alt+F2)
 
 That flow gathers diagnostics and opens the support handoff path.
 

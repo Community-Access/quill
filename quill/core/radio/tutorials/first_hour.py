@@ -556,11 +556,12 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Report it rather than working around it",
                 body=(
                     "If something does not happen the way a lesson says it should, "
-                    "that is worth reporting. Report a Bug files an issue from "
-                    "inside the app, stamped with this app's version, with no "
-                    "account needed anywhere."
+                    "that is worth reporting. Get Help from Support writes to a "
+                    "person from inside the app, stamped with this app's "
+                    "version. Your own mail program opens with it ready; "
+                    "nothing is sent until you send it."
                 ),
-                keys=("Ctrl+Alt+B",),
+                keys=("Ctrl+Alt+F2",),
                 hear="A form with most of it already filled in.",
             ),
         ),

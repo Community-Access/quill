@@ -25,9 +25,12 @@ def test_config_uses_github_endpoints_and_env_client_id(monkeypatch: pytest.Monk
     assert config.scope == copilot_auth.GITHUB_SCOPE
 
 
-def test_apply_token_to_environment_bridges_to_sdk(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("GITHUB_TOKEN", raising=False)
-    monkeypatch.delenv("GH_TOKEN", raising=False)
+def test_apply_token_to_environment_bridges_to_sdk(absent_env) -> None:
+    # absent_env, not monkeypatch.delenv: the function under test *writes* these
+    # two, and delenv(raising=False) records nothing to undo when the name was
+    # already absent -- so the token stayed in os.environ for every later test
+    # on this worker. See _no_environment_leaks in tests/conftest.py.
+    absent_env("GITHUB_TOKEN", "GH_TOKEN")
     copilot_auth.apply_token_to_environment("gho_session")
     import os
 

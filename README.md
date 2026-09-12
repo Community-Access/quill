@@ -350,7 +350,8 @@ commit that changes a Markdown source without its regenerated siblings.
 
 ## Support and issue reporting
 
-Use **Help -> Report a Bug** inside any of the apps: it generates a
+Use **Help -> Get Help from Support...** (Ctrl+Alt+F2) inside any of the
+apps: it generates a
 diagnostics bundle (secrets scrubbed), previews the report, and submits
 it -- with a clipboard-and-browser fallback for users with no GitHub setup.
 On GitHub, use Discussions for questions and ideas, Issues for confirmed

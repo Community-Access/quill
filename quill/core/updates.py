@@ -395,13 +395,23 @@ def fetch_releases(
 
 
 def _app_asset_url(assets: object, app_prefix: str, *, prefer_portable: bool) -> str:
-    """The download URL of ``app_prefix``'s own asset in one release's asset list
-    (``Quill-Radio-Setup-*.exe`` for an installed build, ``-Portable-*.zip`` for a
-    portable one), or "" when this release carries no asset for that app."""
+    """The download URL of ``app_prefix``'s own asset in one release's asset list,
+    or "" when this release carries no asset for that app.
+
+    **The edition actually running decides**, as in :func:`_pick_asset`. Four
+    assets ship per release (full installer, thin installer, portable zip,
+    Companion zip) and they are not interchangeable. Choosing by extension alone
+    -- what this did until 2026-09-12 -- took whichever ``-setup-*.exe`` GitHub
+    listed last, and handed a Companion listener an ``.exe`` it cannot use: the
+    two failures ``core/install_edition.py`` was written to end, which outlived
+    the fix here because the fix only reached ``_pick_asset``. The extension
+    rules stay as the fall-through, for a release that published nothing for
+    this edition and for a source run with no edition at all.
+    """
     if not isinstance(assets, list):
         return ""
     low = app_prefix.lower()
-    installer = portable = ""
+    candidates: list[tuple[str, str]] = []
     for asset in assets:
         if not isinstance(asset, dict):
             continue
@@ -409,6 +419,16 @@ def _app_asset_url(assets: object, app_prefix: str, *, prefer_portable: bool) ->
         name = str(asset.get("name") or "").lower()
         if not url.lower().startswith("https://") or not name.startswith(low):
             continue
+        candidates.append((name, url))
+    from quill.core.install_edition import detect, matches_asset
+
+    edition = detect()
+    if edition:
+        for name, url in candidates:
+            if matches_asset(edition, name, app_prefix=app_prefix):
+                return url
+    installer = portable = ""
+    for name, url in candidates:
         if "-portable-" in name and name.endswith(".zip"):
             portable = url
         elif "-setup-" in name and name.endswith(".exe"):

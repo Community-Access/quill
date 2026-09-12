@@ -110,6 +110,35 @@ how you found them. The window tells you, in a box you can read line by line,
 exactly what each profile keeps, what it removes, and what else it changes —
 worked out from the actual feature list, so it can never be out of date.
 
+### If something goes wrong, you write to a person
+
+**Ctrl+Alt+F2** — Help > Get Help from Support... — opens a short form and then
+your own mail program, with the message already written and QuillLite's version,
+your Windows version and your screen reader filled in at the bottom. It goes to
+**support@community-access.org**, where a person reads it and replies to you by
+email.
+
+Not a bug tracker. Not a public issue thread you need an account to join, with
+your configuration and your document's name in it forever. An email, to somebody
+who answers. Your address is optional — you can report a problem without giving
+one, you just cannot then be replied to — and nothing is sent until you send it
+yourself.
+
+### And it tells you when there is a new version
+
+**Ctrl+Alt+U** asks. If there is nothing newer it says so, out loud and in a
+dialog, because a key that answers with silence might as well be broken.
+
+If there is, the window opens on **what changed** — the release notes, in a box
+you can arrow through — with **Update** and **Close** beside them. Your focus
+lands in the notes, so the first thing you hear is what is in the release rather
+than the word "Update". Update downloads it and offers to install and restart
+for you; everything you have set is kept. Nothing downloads until you say so.
+
+It also looks once a day when it starts and says nothing unless there is
+something — not while it checks, not when there is nothing, not when the network
+is down. One tick box in Settings turns even that off.
+
 ### The rest, briefly
 
 - **Numbered documents** in one window — Alt+1 through Alt+9, and a Window menu

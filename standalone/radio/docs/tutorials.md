@@ -242,8 +242,8 @@ The short list to reach for when something is not where you expected, you missed
    - You should hear: Undid, and what came back -- or Nothing to undo.
    - Worth knowing: Every action that can be undone ends its own announcement with Ctrl+Z undoes this, so you never have to remember whether this particular verb was one of them.
 
-7. **Report it rather than working around it.** If something does not happen the way a lesson says it should, that is worth reporting. Report a Bug files an issue from inside the app, stamped with this app's version, with no account needed anywhere.
-   - Keys: Ctrl+Alt+B
+7. **Report it rather than working around it.** If something does not happen the way a lesson says it should, that is worth reporting. Get Help from Support writes to a person from inside the app, stamped with this app's version. Your own mail program opens with it ready; nothing is sent until you send it.
+   - Keys: Ctrl+Alt+F2
    - You should hear: A form with most of it already filled in.
 
 That is the first hour. From here the tracks are independent: go to Finding something to listen to if you want more stations, or to Recording if you have a show to catch.
@@ -1381,8 +1381,8 @@ Take a copy of everything you have built, move it to another machine, stay up to
    - You should hear: Each check with its own verdict.
    - Worth knowing: mpv and FFmpeg ship inside every installer, so a missing one means a damaged installation -- antivirus quarantine and a half-finished update are the two usual causes. Get FFmpeg and Get mpv Playback Engine on the Help menu fetch them back.
 
-7. **Report it properly.** Report a Bug files from inside the app, stamped with this app's own version, with no account needed. Paste in Copy All from Recent Problems -- it carries addresses and error messages, never passwords.
-   - Keys: Ctrl+Alt+B, Ctrl+Alt+Shift+P
+7. **Report it properly.** Get Help from Support writes to a person from inside the app, stamped with this app's own version. Paste in Copy All from Recent Problems -- it carries addresses and error messages, never passwords.
+   - Keys: Ctrl+Alt+F2, Ctrl+Alt+Shift+P
    - You should hear: A form with most of it filled in already.
 
 8. **Know the one setting that turns everything off.** Safe Mode starts Quill Radio with every network feature disabled -- no directories, no catalog refresh, no YouTube, no Spotify, no Quillins. It is what to try when something is broken enough that you want to know whether the network is involved.

@@ -218,8 +218,8 @@ FEATURE_DEFINITIONS: dict[str, FeatureDefinition] = {
             "audit, fix, and engine updates: in-editor deterministic review for "
             "plain text, Markdown, and HTML, plus structured-document audit and "
             "fix (DOCX, PPTX, XLSX, PDF, EPUB) through the optional shared "
-            "engine. Report a Bug and diagnostics read the GLOW engine version "
-            "independently of this flag."
+            "engine. Support messages and diagnostics read the GLOW engine "
+            "version independently of this flag."
         ),
     ),
     "core.trust": FeatureDefinition(

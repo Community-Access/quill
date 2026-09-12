@@ -420,6 +420,39 @@ handler. A text editor that quietly takes over every `.txt` on the machine is a
 text editor people uninstall, and Notepad, WordPad and QUILL stay exactly where
 they were.
 
+### 5.5 Getting help, without an account and without an audience
+
+**Help > Get Help from Support...** (`Ctrl+Alt+F2`) writes an email to
+`support@community-access.org`, where a person reads it and the reply comes
+back to the person who wrote it.
+
+That is a correction, not a feature. The family's reporting item used to file a
+**GitHub issue in a public repository**, through a token baked into every
+installer, and it left the reporter with no way to be answered: a GitHub issue
+is not a conversation you can join without an account, which is precisely the
+account a screen-reader user reporting that an editor went silent is least
+likely to have. Worse, somebody describing a failure names their configuration,
+their employer, or the document they were working on — and every word of it was
+published, permanently and searchably, the moment they pressed Submit.
+
+QuillLite had neither half of that. It shipped with **no reporting item at
+all**, only an address printed in the About box to copy out by hand.
+
+The form is the same one every app in the family opens
+(`quill/ui/support_dialog.py` over `quill/core/support_message.py`): what kind
+of message this is, a subject, and what happened. What you expected and how to
+reproduce it are optional. **Your email address is optional too** — a problem
+can be reported without giving one; you simply cannot be replied to. Send opens
+**your own mail program with the message already written**, with QuillLite's
+name and version, your Windows version and your screen reader appended. Nothing
+leaves the machine until you send it there, and the app says so out loud rather
+than claiming to have sent something it has not. A machine with no mail program
+set up — webmail only — gets the whole message and the address on the
+clipboard, so nothing typed is ever lost.
+
+Writing to `support@community-access.org` directly works exactly as well. There
+is no form anybody is required to use.
+
 ## 6. Release packaging
 
 Four artifacts, the family contract:
@@ -460,6 +493,68 @@ Releases publish to `Community-Access/quill` rather than to a repo of their own,
 and are told apart by the `QuillLite-*` asset prefix. **Deviation from the
 siblings, noted deliberately:** Radio, Cast, Weather and Studio each have their
 own release repo. Revisit if it bites.
+
+### 6.1 Updating in place
+
+**Help > Check for Updates...** on `Ctrl+Alt+U`, the key eight sibling apps
+already answer, plus a silent once-a-day check at launch
+(`check_updates_on_launch`, on by default, one checkbox in Settings). Page Setup
+gave up `Ctrl+Alt+U` for it and took `Ctrl+Alt+P`, which is free in both editors
+and a better letter besides: a chord that means one thing in eight apps and
+something else in the ninth is the kind of difference nobody finds until it does
+the wrong thing.
+
+Before this, QuillLite could not tell its user that a newer version existed. It
+is the app most likely to be somebody's only Quill product — installed by a
+person who wanted Notepad — and therefore the app whose users are least likely
+to go looking on GitHub. They would have stayed on 1.0.0 forever with no way to
+know that was happening.
+
+**The dialog is shared, and it always shows what changed.** `quill/ui/
+update_notice.py` is the one "an update is available" surface for QUILL, the
+eight companion apps and QuillLite: the release notes flattened out of Markdown,
+capped and never empty, with **Update** as the affirmative and default and
+**Close** as the escape. Focus lands on the notes rather than on a button, so
+the first thing read is the release notes and not the word "Update". QUILL alone
+adds **Skip this version**, because QUILL alone has a settings field to remember
+the answer in. The download, its spoken 25/50/75 milestones, and the
+Install-and-restart dialog are `quill/ui/update_download.py`, shared the same
+way — QuillLite has no `TaskManager`, so it supplies a one-shot thread instead
+and gets the identical experience.
+
+Releases resolve from `RELEASE_REPO` and `RELEASE_ASSET_PREFIX` in
+`quill/core/lite/__init__.py`, deliberately **not** from
+`companion_install.ASSET_PREFIX`: that table is the set of QuillVille apps QUILL
+can offer to *install for you*, and QuillLite is a separate product rather than
+a sibling QUILL launches.
+
+The silent launch check says nothing in every direction but one: nothing while
+it runs, nothing when there is nothing, and nothing when the network is down.
+Only a genuine newer version speaks, and even then it only offers — nothing is
+downloaded until the user presses Update.
+
+**Two family-wide defects were fixed to make this honest** (2026-09-12), both
+older than QuillLite and both live in every companion app:
+
+* *The wrong edition was offered.* `updates._app_asset_url` — the path every
+  companion app takes — chose between the four assets by file extension alone,
+  so of the two `-setup-*.exe` files it took whichever GitHub listed **last**,
+  and a Companion listener was handed an `.exe` that cannot install their copy.
+  It now asks `install_edition.detect()` first, as QUILL's own `_pick_asset`
+  has since August. `matches_asset` gained an `app_prefix`, without which
+  QuillLite is unresolvable: the product **name** contains "lite", so every one
+  of its assets read as the thin installer.
+* *The app never came back.* The full installers' shortcuts named
+  `{code:RuntimeExe} -m quill.apps.<app>` directly, bypassing the per-app
+  launcher that is the only thing exporting `QUILL_APP_ROOT` — so edition
+  detection read the shared runtime's folder and concluded the user was running
+  the Companion zip. They now go through `{app}\<App>.exe`, exactly as the thin
+  installers always have. And `self_update` relaunched `sys.executable` bare;
+  since the runtime layering landed (2026-08-17) that is
+  `QuillVilleRuntime.exe`, which with no arguments writes a usage line and exits
+  2 — invisibly, from a windowed build. It now carries `-m <module>`, resolved
+  from `__main__.__spec__`, whenever the running executable is a generic
+  interpreter rather than the app's own exe.
 
 ## 7. The QUILL-side fixes this work produced
 

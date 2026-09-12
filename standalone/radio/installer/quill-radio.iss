@@ -150,16 +150,16 @@ Source: "..\dist\QuillRadio\docs\*"; DestDir: "{app}\docs"; Components: docs; Fl
 ; Every shortcut launches through the shared runtime. WorkingDir is the
 ; shared runtime dir so `python -m quill.apps.radio` finds the per-app
 ; quill package at the shared location's sitecustomize path.
-Name: "{group}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.radio"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-radio.ico"; Components: main
+Name: "{group}\{#AppName}"; Filename: "{app}\QuillRadio.exe"; IconFilename: "{app}\quill-radio.ico"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.radio"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-radio.ico"; Tasks: desktopicon; Components: main
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillRadio.exe"; IconFilename: "{app}\quill-radio.ico"; Tasks: desktopicon; Components: main
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
 
 [Run]
-Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.radio"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
+Filename: "{app}\QuillRadio.exe"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
 
 [UninstallDelete]
 ; Remove only Radio's own {app} payload. The shared runtime is left to

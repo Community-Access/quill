@@ -477,9 +477,32 @@ The Studio reads and writes the same data store as QUILL, Quill Radio, and QUILL
 
 Only the handful of window-behavior preferences above are app-local. Uninstalling the Studio never deletes the shared data.
 
+## Getting help
+
+Support is run by **Community Access**, and the address is
+**support@community-access.org**. A person reads it, and replies come back by
+email.
+
+The quickest way there is **Help > Get Help from Support...** (Ctrl+Alt+F2),
+which every app in the family answers with the same form: what kind of message
+this is, a subject, what happened, and -- if you want an answer -- an email
+address to reply to. What you expected and how to reproduce it are optional,
+and worth more than anything else when you can give them.
+
+Press Send and your **own mail program opens with the whole message already
+written**, addressed to support, with Quill Audio Studio's name and version and your Windows
+version filled in at the bottom. Nothing is sent until you send it there, so you
+can read it over, add anything, or change your mind.
+
+If this machine has no mail program set up -- webmail only, say -- the app puts
+the whole message on your clipboard and tells you the address, so nothing you
+typed is lost. And writing to **support@community-access.org** yourself always
+works just as well: there is no form you have to use. Say which app you were
+using and what happened.
+
 ## Troubleshooting
 
-Two Help items are worth knowing before anything else goes wrong. **Help > View Log...** opens the Studio's own log, so you can read what happened during a run instead of guessing. **Help > Save Diagnostics...** writes a small, redacted zip - the log plus what the Studio can tell about your machine and settings, with anything private scrubbed - which is exactly what to attach to a bug report. **Help > Report a Bug...** files one for you, already tagged with this app's name and version.
+Two Help items are worth knowing before anything else goes wrong. **Help > View Log...** opens the Studio's own log, so you can read what happened during a run instead of guessing. **Help > Save Diagnostics...** writes a small, redacted zip - the log plus what the Studio can tell about your machine and settings, with anything private scrubbed - which is exactly what to attach to a bug report. **Help > Get Help from Support...** (Ctrl+Alt+F2) writes to a person for you, already tagged with this app's name and version.
 
 - **"The ACX check measures loudness with FFmpeg, which looks missing."** Choose **Voices > Get FFmpeg...** The same applies if compressed output formats fall back to WAV, audiobook assembly fails, or silence detection cannot run - all of those are ffmpeg's jobs. The packaged installer and portable zip bundle ffmpeg; this mostly affects source checkouts.
 - **An engine shows "(not installed)" in the wizard.** Open **Voices > Speech Hub** and use the download button on that engine's tab, or **Voices > Download Optional Components...** DECtalk, Piper, eSpeak-NG, and the Kokoro models all install on demand.

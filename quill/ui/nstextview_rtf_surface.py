@@ -86,7 +86,7 @@ class _AppKitBridge:
                 "The macOS rich text bridge (PyObjC) is unavailable. The Mac "
                 "app ships it; on a source install add it with "
                 "pip install 'quill[mac]'. Documents stay fully editable as "
-                "converted text — please report this via Help > Report a Bug."
+                "converted text — please tell us via Help > Get Help from Support."
             )
         return self._appkit
 

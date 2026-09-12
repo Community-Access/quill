@@ -84,8 +84,6 @@ from quill.core.custom_profiles import (
 from quill.core.deletion_ring import DeletionRing, removed_span
 from quill.core.diagnostics import (
     build_diagnostics_review_text,
-    build_support_issue_url,
-    collect_environment_info,
     record_diagnostic_event,
     write_diagnostics_bundle,
 )
@@ -9609,77 +9607,19 @@ class MainFrame(
         self._set_status(f"Saved diagnostics bundle to {bundle_path.name}")
 
     def report_bug(self) -> None:
-        # feedback_hub ships with QUILL (the [feedback] extra / bundled
-        # runtime), so the direct-submission dialog is the one and only form
-        # (the old built-in browser form was removed once bundling landed).
-        from quill.core.feedback_token import can_submit_reports
+        """Help > Get Help from Support... -- QUILL's door to a human.
 
-        # No token at all (neither a user token nor a bundled one -- e.g. a build
-        # that shipped an empty bundled token): don't open a form that can only
-        # dead-end at submit. Offer the online form up front, and say how to fix
-        # it for good. This is the "No token in the field" P0 made non-fatal.
-        if not can_submit_reports():
-            self._report_bug_online_fallback(
-                "Direct bug reporting isn't set up in this build. You can still "
-                "file the report on the online support form, or add your own "
-                "GitHub token in Settings to enable in-app reporting."
-            )
-            return
-        # A failure must still not strand the user: fall back to the online form.
-        try:
-            self._report_bug_via_hub()
-        except Exception:  # noqa: BLE001 - never strand the user without a path
-            import logging
+        The name is the old one because the command id, the palette entry and
+        the feature map all carry it; what it does is the family flow in
+        :mod:`quill.ui.support_dialog`, which reaches a person who can answer
+        instead of filing the reporter's own words into a public repository.
+        """
+        from quill.ui.support_dialog import open_support_message
 
-            logging.getLogger(__name__).warning("feedback_hub bug report failed", exc_info=True)
-            self._report_bug_online_fallback(
-                "The issue form could not be submitted. You can file the report "
-                "on the online support form instead."
-            )
+        open_support_message(self, source_app="QUILL", app_version=__version__ or "0.0.0")
 
-    def _report_bug_online_fallback(self, reason: str) -> None:
-        """Open (and copy) the online support-form URL with an actionable, spoken
-        message, so a missing/failed token never leaves the user with no path."""
-        import webbrowser
-
-        issue_url = build_support_issue_url(
-            {"summary": f"Bug report: {self.document.name}", "body": ""},
-            source_app="Quill",
-            version=__version__ or "0.0.0",
-            platform_label=str(collect_environment_info()["platform"]),
-        )
-        opened = False
-        try:
-            opened = bool(webbrowser.open(issue_url))
-        except Exception:  # noqa: BLE001 - a browser failure falls back to the clipboard
-            opened = False
-        self._copy_to_clipboard(issue_url)
-        tail = (
-            "Your browser is opening it now; the link is also on your clipboard."
-            if opened
-            else "The link is on your clipboard -- paste it into your browser."
-        )
-        message = f"{reason}\n\n{tail}"
-        self._announce(message)
-        self._show_message_box(message, "Report a Bug", self._wx.OK | self._wx.ICON_INFORMATION)
-
-    def _report_bug_via_hub(self) -> None:
-        from feedback_hub import load_schema
-        from feedback_hub.wx_dialog import FeedbackDialog
-
-        from quill.core.feedback_token import submission_kwargs
-
-        schema_path = Path(__file__).parent.parent / "core" / "schemas" / "feedback.json"
-        dlg = FeedbackDialog(
-            self.frame,
-            schema=load_schema(schema_path),
-            app_version=__version__ or "0.0.0",
-            **submission_kwargs(),
-        )
-        result = self._show_modal_dialog(dlg, "Report an Issue")
-        dlg.Destroy()
-        if result == self._wx.ID_OK:
-            self._record_notification("Submitted feedback via feedback hub", "support")
+    #: The menu's name for it. One flow, two names, no second implementation.
+    get_help_from_support = report_bug
 
     def _review_diagnostics_export(self) -> bool | None:
         wx = self._wx

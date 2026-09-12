@@ -37,4 +37,14 @@ APP_NAME = "QuillLite"
 #: notes, exactly as Radio, Cast, Weather, Studio and Inkwell do.
 APP_VERSION = "1.0.0"
 
-__all__ = ["APP_NAME", "APP_VERSION"]
+#: Where QuillLite's own releases live, and the basename every one of its
+#: release assets starts with (``QuillLite-Setup-Shared-1.0.0.exe``,
+#: ``QuillLite-Portable-1.0.0.zip``). Deliberately *not* in
+#: :data:`quill.core.companion_install.ASSET_PREFIX`: that table is the set of
+#: QuillVille apps QUILL can offer to install for you, and QuillLite is a
+#: separate product rather than a sibling QUILL launches. Check for Updates
+#: (:mod:`quill.apps.lite_updates`) resolves its asset from these two.
+RELEASE_REPO = "Community-Access/quill"
+RELEASE_ASSET_PREFIX = "QuillLite"
+
+__all__ = ["APP_NAME", "APP_VERSION", "RELEASE_ASSET_PREFIX", "RELEASE_REPO"]

@@ -40,6 +40,7 @@ from quill.core.lite.filetypes import (
     SAVE_WILDCARD_RICH,
     is_rich_path,
 )
+from quill.core.support_message import SUPPORT_EMAIL
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import (
     PLAIN,
@@ -387,6 +388,12 @@ class DocumentCommandsMixin(DocumentFindMixin):
     def cmd_shortcuts(self) -> None:
         show_text_window(self, "Keyboard shortcuts", shortcut_text(self.app.keymap))
 
+    def cmd_get_help_from_support(self) -> None:
+        """Write to support, with QuillLite's own name on the message."""
+        from quill.ui.support_dialog import open_support_message
+
+        open_support_message(self, source_app=APP_NAME, app_version=APP_VERSION)
+
     def cmd_about(self) -> None:
         body = (
             f"{APP_NAME} {APP_VERSION}\n\n"
@@ -398,6 +405,7 @@ class DocumentCommandsMixin(DocumentFindMixin):
             "live in QUILL.\n\n"
             "Part of the QuillVille family by Community Access and BITS (MIT licence).\n"
             "https://github.com/Community-Access/quill\n\n"
-            f"Settings and recovered work: {self.app.data_dir}"
+            f"Settings and recovered work: {self.app.data_dir}\n\n"
+            f"Support: {SUPPORT_EMAIL}"
         )
         show_text_window(self, f"About {APP_NAME}", body)

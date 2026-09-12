@@ -485,7 +485,7 @@ This block is the product. Take it slowly.
   marked `[H1]` rather than styled. That is documented, not a bug.
 
 **L-63. Page Setup is shared and sticks**
-- Do: **Ctrl+Alt+U**, change the paper size, OK. Open it again.
+- Do: **Ctrl+Alt+P**, change the paper size, OK. Open it again.
 - Pass: it remembers, and so does a second document.
 - [ ] pass  [ ] fail: ______
 
@@ -852,6 +852,21 @@ person can check that pressing the key afterwards does the thing.
 - Turn it back on and confirm it returns.
 - Repeat for **Describe Character** if you have a moment; the other three
   (Matches, Go Back and Go Forward, Text size) work the same way.
+- [ ] pass  [ ] fail: ______
+
+**L-107. Check for Updates answers, either way**
+- Do: **Ctrl+Alt+U** (Help > Check for Updates...).
+- Pass: a dialog either says you are up to date, or opens on **what changed**
+  in the newer version with **Update** and **Close** beside it. Focus lands in
+  the notes, not on a button, so the first thing read is the release notes.
+- Pass: **Escape** closes it and downloads nothing.
+- [ ] pass  [ ] fail: ______
+
+**L-108. The daily look is silent**
+- Do: with "Look for updates when QuillLite starts" ticked in Settings, close
+  QuillLite and open it again. Then unplug the network and open it again.
+- Pass: nothing is said either time -- no "checking", no "up to date", no
+  network error. A launch is not the place to report that nothing happened.
 - [ ] pass  [ ] fail: ______
 
 ---

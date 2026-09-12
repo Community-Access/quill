@@ -1530,8 +1530,8 @@
   },
   {
     "id": "help.report_bug",
-    "title": "Report a Bug...",
-    "body": "Open a form to report a bug. QUILL gathers a redacted diagnostic summary you can review before it is copied or sent.",
+    "title": "Get Help from Support...",
+    "body": "Write to support about a problem, a question or an idea. Fill in the form and press Send: your own mail program opens with the whole message ready, addressed to support@community-access.org, with QUILL's version and your Windows version filled in. Nothing is sent until you send it there.",
     "user_guide_section": "help"
   },
   {
