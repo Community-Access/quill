@@ -292,7 +292,7 @@ math = ["latex2mathml>=3.81.0"]
 # backend used by Ask Quill on macOS.
 macos = [
     "py2app>=0.28.10; sys_platform == 'darwin'",
-    "setuptools<83; sys_platform == 'darwin'",
+    "setuptools<85; sys_platform == 'darwin'",
     "pyobjc>=12.2.2; sys_platform == 'darwin'",
     "apple-fm-sdk>=0.2.1; sys_platform == 'darwin'",
 ]
