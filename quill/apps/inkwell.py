@@ -213,6 +213,11 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
             ),
             id=updates_id,
         )
+        # Every app in the family answers the same question the same way:
+        # one item, one key, one form that reaches a person who can reply.
+        from quill.ui.support_menu import append_get_help_item
+
+        append_get_help_item(self, help_menu, wx, source_app=_TITLE, app_version=_VERSION)
         help_menu.Append(about_id, "&About Quill Inkwell\tCtrl+Alt+I")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
         menu_bar.Append(help_menu, "&Help")

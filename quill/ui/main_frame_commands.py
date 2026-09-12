@@ -1468,7 +1468,7 @@ class CommandRegistryMixin:
         )
         self.commands.register(
             "help.report_bug",
-            "Report a Bug...",
+            "Get Help from Support...",
             self.report_bug,
             None,
         )

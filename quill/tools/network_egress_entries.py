@@ -448,7 +448,14 @@ _REVIEWED_EGRESS: dict[str, str] = {
     # feedback_hub is an optional external library (not in quill/); its urlopen
     # call is not found by this AST scan but is documented here for auditability.
     # Two explicit-user-action call sites reach it:
-    #   report_bug() -> FeedbackDialog._on_submit -> create_issue -> urlopen
+    #   report_bug() -> ui.support_dialog.open_support_message -> the
+    #       feedback-hub dialog, and ONLY when a submission server is
+    #       configured and the installed package accepts server_url
+    #       (feedback_token.server_transport_available). Since 2026-09-11
+    #       the default path files nothing: it hands a mailto: URL to the
+    #       reader's own mail client, which is not egress by this app at
+    #       all -- nothing leaves the machine until the person presses Send
+    #       in their own mail program. Support messages never go to GitHub.
     #   _send_crash_report() -> core.issue_submit.submit_crash_issue -> submit
     #       -> create_issue -> urlopen
     # The crash-report path requires an explicit consent confirmation, sends

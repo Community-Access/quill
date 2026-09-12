@@ -6233,7 +6233,7 @@ These tools help review the editor experience itself, the current document's lin
 - **Show Notifications**
 - **Save Diagnostics...**
 - **Open Logs Folder** / **Open Diagnostics Folder**
-- **Report a Bug...**
+- **Get Help from Support...**
 - **Check for Updates**
 
 Customize & Support merges the former separate Support and Customize submenus. All configuration and support paths live in one place, which is where both users and support staff expect to find them.
@@ -6268,12 +6268,12 @@ The **Help** menu is where Quill becomes a guide.
 - **Why Don't I See a Feature?** explains profile-driven feature visibility.
 - **Feature Profiles** commands let you switch profile, run health checks, undo the last profile change, reset to Essential, and run onboarding.
 - **Personalise QUILL...** (the first-run setup wizard) can be rerun at any time to adjust your keyboard pack, feature profile, remote access, AI, reading and accessibility, writing tools, data location, and startup behaviour.
-- **Report a Bug...** opens the accessible issue form, which submits your report directly to the Community Access issue tracker — no browser round-trip.
+- **Get Help from Support...** (Ctrl+Alt+F2) opens the accessible support form and then hands the finished message to your own mail program, addressed to **support@community-access.org** — a help desk a person answers, not a public issue tracker you would need an account to read.
 - **Check for Updates...** verifies the signed update manifest, offers the download, and can close Quill so setup can run immediately. If you are running the **portable** build, QUILL recognises this and offers the portable `.zip` for the new version instead of pushing the installer at you — it downloads to your updates folder, and Quill offers an **Extract now** button to unzip it into a ready-to-run sibling folder for you. Either way, applying a portable update is always a manual step: Quill never replaces its own running files in place (they may be locked while it's open), so after extracting, copy your `data` folder into the new version's folder and launch from there. Installed copies keep receiving the installer, which does apply itself when run.
 - **About Quill** shows version, publisher details, and linked third-party dependency attribution with license and version metadata.
 - **Open Third-Party Notices** opens a full notices document with dependency tables and bundled license texts.
 
-If you only remember one thing about Help, remember this: it is a working surface, not a dead-end menu. The welcome guide teaches the basics, the keyboard reference reflects your live bindings, the user guide gives the full map, diagnostics package the current state, and the bug-report action turns that state into a support-ready starting point.
+If you only remember one thing about Help, remember this: it is a working surface, not a dead-end menu. The welcome guide teaches the basics, the keyboard reference reflects your live bindings, the user guide gives the full map, diagnostics package the current state, and and Get Help from Support turns that state into a message somebody can answer.
 
 Menu stability note: Quill now defers internal menu-state updates while native menus are open, then applies them after menu close. This prevents rapid-arrow navigation churn and keeps Help menu navigation stable.
 
@@ -6286,12 +6286,12 @@ Menu stability note: Quill now defers internal menu-state updates while native m
 
 Use this path when Quill is behaving unexpectedly or when you want to send the team a feature request.
 
-1. Open **Help -> Report a Bug...**. The issue form opens as a dialog; the fields are plain, labelled controls your screen reader reads by name.
-2. Optionally fill in your name and email so the team can follow up.
-3. Pick a category and describe the problem: what happened, what you expected, and the steps to reproduce it. Your QUILL version is filled in for you.
-4. Choose **Submit Issue**. The report is filed directly on the Community Access issue tracker — no browser, no copy-and-paste — and no account is required. Escape cancels without sending anything.
+1. Open **Help -> Get Help from Support...** (Ctrl+Alt+F2). The form opens as a dialog; the fields are plain, labelled controls your screen reader reads by name.
+2. Pick what kind of message it is, give it a subject, and describe what happened. What you expected and the steps to reproduce it are optional, and worth more than anything else when you can give them.
+3. Fill in **your email address** if you want an answer. It is optional on purpose — you can report a problem without giving one, you simply will not be able to be replied to.
+4. Choose **Send**. Your own mail program opens with the whole message already written, addressed to **support@community-access.org**, with QUILL's version, your Windows version and your screen reader filled in at the bottom. **Nothing is sent until you send it there**, so you can read it over or add anything first. Escape cancels without writing anything.
 
-If the form ever cannot be opened, QUILL copies a link to the online support form to your clipboard and tells you so, so you always have a path. Need to share more detail? **Help -> Save Diagnostics...** remains available as a standalone export you can attach to any issue.
+If this machine has no mail program set up — webmail only, say — QUILL puts the whole message on your clipboard and tells you the address, so nothing you typed is lost. Writing to **support@community-access.org** yourself always works just as well; there is no form you have to use. Need to share more detail? **Help -> Save Diagnostics...** remains available as a standalone export you can attach to your reply.
 
 The in-app submit works on every install, including right after an upgrade: every build (Windows and macOS, release or beta) now bundles the reporting token, with no opt-out, so the "no token" message some of you saw after upgrading an earlier beta cannot recur.
 
@@ -7844,7 +7844,7 @@ Quill runs on **macOS** as well as Windows, from one codebase, with feature pari
 - **Back / Forward Location on macOS** uses `Cmd+[` and `Cmd+]` so it does not collide with VoiceOver's word-by-word `Option+Left` / `Option+Right` reading (#609). Windows keeps `Alt+Left` / `Alt+Right`.
 - **Keymap profiles stay platform-aware.** The built-in keymap profiles no longer override the platform-aware defaults for quit, back/forward navigation, or document switching, so macOS users inherit the correct Cmd-based bindings instead of Windows-only overrides.
 - **Function keys and the Fn key.** Many of Quill's default shortcuts use the F-keys (F3 for Find Next, F7 for spell check, F8 for selection, F6 for region navigation). On a stock MacBook these keys default to system actions (brightness, Mission Control, media) unless you either hold **Fn** while pressing them, or enable **Use F1, F2, etc. keys as standard function keys** in **System Settings → Keyboard**. To spare you that, Find Next and Find Previous also bind to the macOS-standard **Cmd+G** and **Cmd+Shift+G**, which need no Fn key. You can reassign any binding in **Preferences → Keyboard → Keymap Editor**.
-- **macOS-specific shortcut defaults.** A few Windows defaults would have collided with macOS system shortcuts, so they have Mac-specific alternates: **Replace** is `Cmd+Alt+F` (not `Cmd+H`, which is Hide), **Pop Mark** is `Cmd+Alt+M` (not `Cmd+M`, which is Minimize), and **Select Chunk** is `Cmd+Alt+Space` (not `Cmd+Space`, which is Spotlight). These are provisional — if one collides with something on your setup, reassign it in the Keymap Editor and tell us via Help > Report a Bug.
+- **macOS-specific shortcut defaults.** A few Windows defaults would have collided with macOS system shortcuts, so they have Mac-specific alternates: **Replace** is `Cmd+Alt+F` (not `Cmd+H`, which is Hide), **Pop Mark** is `Cmd+Alt+M` (not `Cmd+M`, which is Minimize), and **Select Chunk** is `Cmd+Alt+Space` (not `Cmd+Space`, which is Spotlight). These are provisional — if one collides with something on your setup, reassign it in the Keymap Editor and tell us via Help > Get Help from Support.
 - **Read Aloud and earcons work on macOS.** Live Read Aloud plays through `afplay`, so Piper, Kokoro, ElevenLabs, and the system voices actually speak; the earcon volume slider also works on macOS (it was a silent no-op before).
 - **Signed and notarized.** Release Mac builds are code-signed with a Developer ID certificate and notarized by Apple, so Gatekeeper opens them without warnings. The app ships as a `.app` (and disk image).
 - **The accessible WebView** that powers the chat, the Markdown/HTML preview, the About box, and the update dialogs reads correctly under VoiceOver, just as it does under NVDA and JAWS on Windows.
@@ -8062,7 +8062,7 @@ Every document opens in the one QUILL editor — the same native control QUILL h
 
 **The Document Format switcher.** **Format > Document Format...** (also Ctrl+Shift+Grave, K; the command palette; or press Enter on the **Format** cell in the status bar, which always shows your current format) moves the current document between Plain text, Markdown, HTML, Rich Text (RTF), and Word (.docx) mid-session. Switching to a rich format turns your Markdown headings into real ones; leaving a rich format warns first, with the specific list of anything that will not survive. A switched document never silently overwrites its old file — the next save proposes the matching new name.
 
-**If rich mode is unavailable** (a system where the bundled macOS bridge or the Windows COM bridge cannot load), .rtf and .docx documents open converted to editable text exactly as in earlier releases, and save back through the same converters. Nothing is ever lost; you simply get the classic behavior — and QUILL says so in the status bar. The Mac app ships everything rich mode needs out of the box; only source installs add it themselves (`pip install "quill[mac]"`). If you ever see the converted fallback on a normal install, please tell us via **Help > Report a Bug**.
+**If rich mode is unavailable** (a system where the bundled macOS bridge or the Windows COM bridge cannot load), .rtf and .docx documents open converted to editable text exactly as in earlier releases, and save back through the same converters. Nothing is ever lost; you simply get the classic behavior — and QUILL says so in the status bar. The Mac app ships everything rich mode needs out of the box; only source installs add it themselves (`pip install "quill[mac]"`). If you ever see the converted fallback on a normal install, please tell us via **Help > Get Help from Support**.
 
 ### Table Studio (experimental)
 
@@ -8479,7 +8479,7 @@ GitHub's file API is limited to 1 MB. Files larger than that must be downloaded 
 - **Ask Copilot for a Command...** asks in plain language for what you want to do (for example, "undo my last commit") and shows GitHub Copilot's suggested command.
 - **Explain a Command...** asks for a git or `gh` command you don't recognize and shows Copilot's plain-language explanation of what it does.
 
-These four commands are new this release and have been tested with a simulated `gh` tool, but not yet against a real Codespaces-enabled repository or real Copilot CLI access on an actual device — if something looks wrong, please report it through **Help > Report a Bug**.
+These four commands are new this release and have been tested with a simulated `gh` tool, but not yet against a real Codespaces-enabled repository or real Copilot CLI access on an actual device — if something looks wrong, please report it through **Help > Get Help from Support**.
 
 **Enabling the feature**
 
@@ -11847,3 +11847,26 @@ QUILL's AI writing panel. The Writing Assistant accepts a goal described in plai
 
 **QUILL Key**
 The keyboard shortcut `Ctrl+Shift+Grave` (the backtick/grave key above Tab). Pressing it once arms a one-shot prefix; pressing it twice locks Quick Nav Mode on. The QUILL key is the entry point to most of QUILL's power features. Every chord is announced when pressed and is remappable in **Preferences → Keyboard**. The chord is shown to the user as `QUILL Key + <key>` everywhere in the editor (menus, Keyboard Reference, status bar, cheat sheet). The stored binding is `Ctrl+Shift+Grave, <key>` in `DEFAULT_KEYMAP` / `keymap.json` / the Keymap Editor; only the display layer rewrites the prefix, through `quill.core.keymap_format.format_binding_for_display`. The constant `QUILL_KEY_LABEL` in `quill/branding.py` is the single source of truth for the brand, so a future rebrand touches one file.
+
+## Getting help
+
+Support is run by **Community Access**, and the address is
+**support@community-access.org**. A person reads it, and replies come back by
+email.
+
+The quickest way there is **Help > Get Help from Support...** (Ctrl+Alt+F2),
+which every app in the family answers with the same form: what kind of message
+this is, a subject, what happened, and -- if you want an answer -- an email
+address to reply to. What you expected and how to reproduce it are optional,
+and worth more than anything else when you can give them.
+
+Press Send and your **own mail program opens with the whole message already
+written**, addressed to support, with QUILL's name and version and your Windows
+version filled in at the bottom. Nothing is sent until you send it there, so you
+can read it over, add anything, or change your mind.
+
+If this machine has no mail program set up -- webmail only, say -- the app puts
+the whole message on your clipboard and tells you the address, so nothing you
+typed is lost. And writing to **support@community-access.org** yourself always
+works just as well: there is no form you have to use. Say which app you were
+using and what happened.

@@ -195,6 +195,17 @@ class Settings:
     #: document. On, which is what QuillLite always did with no way to say
     #: otherwise; off makes Find Next stop at the end and say so.
     wrap_find: bool = True
+    # -- Updates -------------------------------------------------------------
+    #: Look for a new QuillLite once a day, at launch, and say nothing unless
+    #: there is one. On, because the alternative is what QuillLite shipped
+    #: with: a user who never opens GitHub staying on the version they
+    #: installed forever, with no way to know that was happening. Nothing is
+    #: downloaded or installed without being asked -- the check finds a
+    #: version number and shows what changed.
+    check_updates_on_launch: bool = True
+    #: ISO timestamp of the last *silent* launch check, so QuillLite does not
+    #: reach the network on every single launch. Ctrl+Alt+U always runs.
+    last_update_check: str = ""
 
     def remember_recent(self, path: str | Path) -> None:
         """Move *path* to the head of the recent list, without duplicating it."""

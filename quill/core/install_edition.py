@@ -114,14 +114,26 @@ def detect(root: Path | None = None) -> str:
     return COMPANION
 
 
-def matches_asset(edition: str, asset_name: str) -> bool:
+def matches_asset(edition: str, asset_name: str, *, app_prefix: str = "") -> bool:
     """Whether *asset_name* is the download for *edition* (pure).
 
     Names are matched on what the build scripts actually produce:
     ``Quill-Radio-Setup-Shared-3.0.0.exe``, ``Quill-Radio-Lite-Setup-3.0.0.exe``,
     ``Quill-Radio-Portable-3.0.0.zip``, ``Quill-Radio-Companion-3.0.0.zip``.
+
+    *app_prefix* is the app's own asset basename, stripped before matching, and
+    it is not optional in spirit: the markers below are words, and an app whose
+    **name** contains one of them cannot be told apart without it.
+    ``QuillLite-Setup-Shared-1.0.0.exe`` contains "lite", so without the prefix
+    the full installer reads as the thin one and ``INSTALLER_FULL`` matches
+    nothing this product ever publishes -- which is the whole family of wrong
+    answers this module exists to prevent, arriving through the product name
+    instead of through the file extension.
     """
     name = asset_name.lower()
+    prefix = app_prefix.lower()
+    if prefix and name.startswith(prefix):
+        name = name[len(prefix) :].lstrip("-_. ")
     if edition == PORTABLE:
         return name.endswith(".zip") and "portable" in name
     if edition == COMPANION:

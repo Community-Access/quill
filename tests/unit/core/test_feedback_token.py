@@ -143,14 +143,69 @@ def test_the_server_url_is_overridable(monkeypatch):
     assert module.feedback_server_url() == "https://example.test/submit/feedback"
 
 
-def test_submission_kwargs_offers_both_transports(monkeypatch):
-    """One place, so the two dialog call sites cannot drift. feedback-hub
-    prefers server_url when both are present."""
+def test_submission_kwargs_only_offers_what_the_hub_accepts(monkeypatch):
+    """One place, so the two dialog call sites cannot drift.
+
+    And filtered, which is the bug this pins: ``server_url`` went to a
+    feedback-hub 1.1.0 that has no such parameter, so every Report a Bug raised
+    TypeError inside the dialog constructor and fell through to the browser
+    fallback. Nobody noticed, because the fallback works.
+    """
     from quill.core import feedback_token as module
 
     monkeypatch.delenv("QUILL_FEEDBACK_SERVER_URL", raising=False)
     monkeypatch.setattr(module, "effective_github_token", lambda **_: "tok")
 
+    monkeypatch.setattr(module, "hub_accepts_server_url", lambda: True)
     kwargs = module.submission_kwargs()
     assert set(kwargs) == {"server_url", "github_token"}
     assert kwargs["server_url"].startswith("https://")
+
+    monkeypatch.setattr(module, "hub_accepts_server_url", lambda: False)
+    assert set(module.submission_kwargs()) == {"github_token"}
+
+
+def test_server_transport_needs_both_a_server_and_a_hub_that_can_post(monkeypatch):
+    """Either half missing means the mail client, never GitHub.
+
+    A support message is somebody's own words about their own machine, and
+    ``Community-Access/quill`` is public. There is no third fallback on
+    purpose.
+    """
+    from quill.core import feedback_token as module
+
+    monkeypatch.delenv("QUILL_FEEDBACK_SERVER_URL", raising=False)
+
+    monkeypatch.setattr(module, "hub_accepts_server_url", lambda: True)
+    assert module.server_transport_available() is True
+
+    monkeypatch.setattr(module, "hub_accepts_server_url", lambda: False)
+    assert module.server_transport_available() is False
+
+    monkeypatch.setenv("QUILL_FEEDBACK_SERVER_URL", "")
+    monkeypatch.setattr(module, "hub_accepts_server_url", lambda: True)
+    assert module.server_transport_available() is False
+
+
+def test_hub_support_is_read_from_the_installed_signature(monkeypatch):
+    """The signature is the truth: a package without the parameter says no."""
+    import sys
+    import types
+
+    from quill.core import feedback_token as module
+
+    class _OldDialog:
+        def __init__(self, parent, *, schema=None, github_token="", app_version=""):
+            pass
+
+    class _NewDialog:
+        def __init__(self, parent, *, schema=None, server_url="", app_version=""):
+            pass
+
+    fake = types.ModuleType("feedback_hub.wx_dialog")
+    fake.FeedbackDialog = _OldDialog
+    monkeypatch.setitem(sys.modules, "feedback_hub.wx_dialog", fake)
+    assert module.hub_accepts_server_url() is False
+
+    fake.FeedbackDialog = _NewDialog
+    assert module.hub_accepts_server_url() is True

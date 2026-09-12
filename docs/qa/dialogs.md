@@ -252,7 +252,7 @@ state and lists any installed Quillins read-only.
 - [ ] About Quill: via Help menu
 - [ ] What Can I Do Here?: via Help menu
 - [ ] Save Diagnostics: via Help menu
-- [ ] Report a Bug: via Help menu
+- [ ] Get Help from Support: via Help menu
 - [ ] BITS Whisperer About: via Help menu
 
 ## U. Selection and QUILL key

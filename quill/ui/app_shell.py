@@ -26,7 +26,6 @@ import wx.adv
 from quill.core.a11y_regions import RegionTracker
 from quill.core.commands import CommandRegistry
 from quill.core.features import FeatureManager
-from quill.core.file_manager import reveal_command
 from quill.core.keymap import DEFAULT_KEYMAP, load_keymap
 from quill.core.safety.feature_lock import load_feature_locks
 from quill.core.settings import load_settings
@@ -40,7 +39,6 @@ from quill.ui.app_shell_components import ComponentDownloadsMixin
 from quill.ui.companion_cues import init_app_sound
 from quill.ui.dialog_contract import (
     focus_primary_control,
-    set_accessible_name,
     show_modal_dialog,
 )
 from quill.ui.keybinding_parse import KeybindingParseMixin
@@ -674,69 +672,32 @@ class AppShellFrame(
         prefill_summary: str = "",
         prefill_body: str = "",
     ) -> None:
-        """Report a Bug, same shape as QUILL's: the in-app feedback-hub form
-        when a GitHub token is available, else the online support form
-        (opened in the browser and copied to the clipboard) -- a missing or
-        failing token never leaves the user with no path.
+        """Get Help from Support: the shared surface, carrying THIS app's name.
 
-        Reports carry THIS app's identity and version ("Quill Radio 1.0.0"),
-        not the underlying quill package version, so triage always knows
-        which product the user was actually running.
+        Reports carry the app's own identity and version ("Quill Radio 3.0.0"),
+        not the underlying quill package version, so whoever answers knows
+        which product the person was actually running.
 
         ``prefill_summary``/``prefill_body`` (used by Report Bad Station) go
-        straight into the online issue form. The in-app feedback-hub dialog
-        takes no per-call defaults, so when a body is supplied it is staged on
-        the clipboard and the user is told to paste it into the description."""
-        from quill.core.feedback_token import can_submit_reports
+        straight into the form's Subject and What Happened, so the station does
+        not have to be described by hand.
 
-        version = f"{source_app} {app_version}" if app_version else source_app
-        if not can_submit_reports():
-            self._report_app_bug_online(
-                source_app,
-                app_version,
-                "Direct bug reporting isn't set up in this build. You can still "
-                "file the report on the online support form.",
-                prefill_summary=prefill_summary,
-                prefill_body=prefill_body,
-            )
-            return
-        if prefill_body:
-            self._copy_to_clipboard(prefill_body)
-            self._announce(
-                "The station's details are on your clipboard. Paste them into the "
-                "description with Control V, then submit."
-            )
-        try:
-            from pathlib import Path
+        The old name is kept because Report Bad Station and the command tables
+        call it; :attr:`get_help_from_support` is the name the menu uses.
+        """
+        from quill.ui.support_dialog import open_support_message
 
-            from feedback_hub import load_schema
-            from feedback_hub.wx_dialog import FeedbackDialog
+        open_support_message(
+            self,
+            source_app=source_app,
+            app_version=app_version,
+            prefill_summary=prefill_summary,
+            prefill_body=prefill_body,
+        )
 
-            from quill.core.feedback_token import submission_kwargs
-
-            schema_path = Path(__file__).parent.parent / "core" / "schemas" / "feedback.json"
-            dialog = FeedbackDialog(
-                self.frame,
-                schema=load_schema(schema_path),
-                app_version=version,
-                **submission_kwargs(),
-            )
-            try:
-                result = self._show_modal_dialog(dialog, "Report an Issue")
-            finally:
-                dialog.Destroy()
-            if result == wx.ID_OK:
-                self._announce("Thanks -- your report was submitted.")
-        except Exception:  # noqa: BLE001 - never strand the user without a path
-            import logging
-
-            logging.getLogger(__name__).warning("feedback_hub bug report failed", exc_info=True)
-            self._report_app_bug_online(
-                source_app,
-                app_version,
-                "The issue form could not be submitted. You can file the report "
-                "on the online support form instead.",
-            )
+    #: Help > Get Help from Support... -- the same flow under the name the menu
+    #: item and the docs use. One method, two names, no second implementation.
+    get_help_from_support = report_app_bug
 
     def _copy_to_clipboard(self, text: str) -> bool:
         """Best-effort copy; a clipboard we can't open is never fatal.
@@ -757,40 +718,6 @@ class AppShellFrame(
         except Exception:  # noqa: BLE001 - clipboard failures must not strand the user
             pass
         return False
-
-    def _report_app_bug_online(
-        self,
-        source_app: str,
-        app_version: str,
-        reason: str,
-        *,
-        prefill_summary: str = "",
-        prefill_body: str = "",
-    ) -> None:
-        import webbrowser
-
-        from quill.core.diagnostics import build_support_issue_url, collect_environment_info
-
-        issue_url = build_support_issue_url(
-            {"summary": prefill_summary or f"Bug report: {source_app}", "body": prefill_body},
-            source_app=source_app,
-            version=app_version or "0.0.0",
-            platform_label=str(collect_environment_info()["platform"]),
-        )
-        opened = False
-        try:
-            opened = bool(webbrowser.open(issue_url))
-        except Exception:  # noqa: BLE001 - a browser failure falls back to the clipboard
-            opened = False
-        self._copy_to_clipboard(issue_url)
-        tail = (
-            "Your browser is opening it now; the link is also on your clipboard."
-            if opened
-            else "The link is on your clipboard -- paste it into your browser."
-        )
-        message = f"{reason}\n\n{tail}"
-        self._announce(message)
-        self._show_message_box(message, "Report a Bug", wx.OK | wx.ICON_INFORMATION)
 
     # -- command palette -------------------------------------------------------
 
@@ -883,14 +810,22 @@ class AppShellFrame(
                             wx.ICON_INFORMATION | wx.OK,
                         )
                     return
-                title = self.frame.GetTitle()
-                answer = self._show_message_box(
-                    f"{title} {newest.version} is available (you have "
-                    f"{current_version}).\n\nDownload it now?",
-                    "Update Available",
-                    wx.ICON_INFORMATION | wx.YES_NO,
+                # The same dialog QUILL shows, with the release notes in it.
+                # This used to be a Yes/No box asking "Download it now?" and
+                # saying nothing about what was in the release -- a question
+                # whose only honest answer is "what changed?", asked by the one
+                # party that already knew.
+                from quill.ui.update_notice import show_update_available
+
+                choice = show_update_available(
+                    self.frame,
+                    app_name=self._update_app_name(),
+                    current_version=current_version,
+                    release=newest,
+                    show_modal_dialog=self._show_modal_dialog,
+                    announce=self._announce,
                 )
-                if answer in (wx.YES, wx.ID_YES):
+                if choice == "update":
                     self._download_app_update(newest)
 
             wx.CallAfter(_show)
@@ -908,6 +843,15 @@ class AppShellFrame(
         self._task_manager.submit(
             "app-update-check", _fetch, on_success=_report, on_failure=_failed
         )
+
+    def _update_app_name(self) -> str:
+        """The app's own name for the update dialog's first line.
+
+        Several of these apps can be open at once, so a dialog that says only
+        "Update available: 2.1.0" makes the user guess which window it belongs
+        to. The window title is the app's own name for itself.
+        """
+        return str(self.frame.GetTitle() or "").strip()
 
     def _app_update_check_due(self, last_check: str, *, interval_hours: int = 24) -> bool:
         """True when enough time has passed since the last update check.
@@ -930,138 +874,41 @@ class AppShellFrame(
         return datetime.now(UTC) - previous >= timedelta(hours=interval_hours)
 
     def _download_app_update(self, release: object) -> None:
-        """Download the release asset off-thread to <app data>/updates with
-        coarse spoken progress (25/50/75 percent), then offer install actions.
-        A release with no downloadable asset falls back to its web page."""
+        """Download the release asset and offer the install actions.
+
+        The download, the spoken milestones and the post-download dialog all
+        live in :mod:`quill.ui.update_download`, shared with QuillLite -- which
+        is not an AppShell app and would otherwise need a second copy of every
+        line of it.
+        """
         from quill.core.paths import app_data_dir
-        from quill.core.updates import download_release_asset
+        from quill.ui.update_download import download_and_offer_install
 
-        url = str(getattr(release, "download_url", "") or "")
-        if "/releases/download/" not in url:
-            import webbrowser
-
-            if url and webbrowser.open(url):
-                self._announce(f"Opened download page for {release.version}")
-            else:
-                self._announce("No downloadable update asset found.")
-            return
-
-        target_dir = app_data_dir() / "updates"
-        target_dir.mkdir(parents=True, exist_ok=True)
-        target = target_dir / (url.rsplit("/", 1)[-1] or f"update-{release.version}")
-        self._announce(f"Downloading update {release.version}")
-        last_milestone = {"value": -1}
-
-        def _progress(done: int, total: int) -> None:
-            if total <= 0:
-                return
-            percent = int(done * 100 / total)
-            milestone = percent - (percent % 25)
-            if milestone > last_milestone["value"] and milestone in (25, 50, 75):
-                last_milestone["value"] = milestone
-                wx.CallAfter(self._announce, f"Update download {milestone} percent")
-
-        def _download(**_kw: object) -> None:
-            # Absorb the task manager's injected kwargs (cancellation_token, ...).
-            download_release_asset(
-                url,
-                target,
-                progress=_progress,
-                expected_sha256=str(getattr(release, "download_digest", "") or ""),
-            )
-
-        def _downloaded(_name: str, _result: object) -> None:
-            wx.CallAfter(self._offer_app_update_install, release, target)
-
-        def _failed(_name: str, error: BaseException) -> None:
-            wx.CallAfter(
-                self._show_message_box,
-                f"Update download failed: {error}",
-                "Check for Updates",
-                wx.ICON_ERROR | wx.OK,
-            )
-
-        self._task_manager.submit(
-            "app-update-download", _download, on_success=_downloaded, on_failure=_failed
+        download_and_offer_install(
+            self.frame,
+            release=release,
+            target_dir=app_data_dir() / "updates",
+            portable=self._running_portable_build(),
+            announce=self._announce,
+            show_message_box=self._show_message_box,
+            show_modal_dialog=self._show_modal_dialog,
+            submit=self._task_manager.submit,
+            close_app=self.frame.Close,
         )
-
-    def _offer_app_update_install(self, release: object, target: object) -> None:
-        """Post-download: Install now (closes this app and runs the installer),
-        Open folder, or Close -- the same shape as QUILL's own dialog."""
-        from quill.ui.dialog_contract import apply_modal_ids
-
-        self._announce(f"Update {release.version} downloaded")
-        applyable = str(target).lower().endswith((
-            ".exe",
-            ".msi",
-            ".zip",
-        )) and sys.platform.startswith("win")
-        if applyable:
-            action_line = (
-                "Select 'Install and restart now' to update and relaunch "
-                "automatically -- your settings and data are kept -- or "
-            )
-        else:
-            action_line = ""
-        dialog = wx.Dialog(
-            self.frame, title="Update downloaded", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
-        )
-        dialog.SetSize((500, 240))
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        body = wx.TextCtrl(
-            dialog,
-            value=(
-                f"Update {release.version} downloaded.\n\n"
-                f"Saved to: {target}\n\n"
-                f"{action_line}Select 'Open folder' to find it."
-            ),
-            style=wx.TE_MULTILINE | wx.TE_READONLY,
-            name="update_body",
-        )
-        set_accessible_name(body, "Update details, read-only")
-        sizer.Add(body, 1, wx.EXPAND | wx.ALL, 12)
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        buttons.AddStretchSpacer()
-        close_btn = wx.Button(dialog, wx.ID_CANCEL, label="Close")
-        folder_btn = wx.Button(dialog, wx.ID_OPEN, label="Open folder")
-        close_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_CANCEL))
-        folder_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OPEN))
-        buttons.Add(close_btn, 0, wx.RIGHT, 6)
-        buttons.Add(folder_btn, 0, wx.RIGHT, 6)
-        if applyable:
-            apply_btn = wx.Button(dialog, wx.ID_OK, label="Install and restart now")
-            apply_btn.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_OK))
-            apply_btn.SetDefault()
-            buttons.Add(apply_btn, 0)
-        else:
-            close_btn.SetDefault()
-        sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, 12)
-        dialog.SetSizer(sizer)
-        apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-        dialog.CentreOnParent()
-        result = self._show_modal_dialog(dialog, "Update downloaded")
-        dialog.Destroy()
-        if result == wx.ID_OPEN:
-            subprocess.Popen(reveal_command(target))  # noqa: S603 - shared, tested argv
-            return
-        if result == wx.ID_OK and applyable:
-            self._apply_update_and_restart(release, Path(str(target)))
 
     def _apply_update_and_restart(self, release: object, target: Path) -> None:
         """Apply the downloaded update and relaunch (one-click). On any failure
         the app stays open and the user can still Open folder to update by hand."""
-        from quill.core.paths import app_data_dir
-        from quill.ui.update_apply import apply_update_and_restart
+        from quill.ui.update_download import apply_and_restart
 
-        if apply_update_and_restart(
+        apply_and_restart(
+            release=release,
             target=target,
             portable=self._running_portable_build(),
-            version=str(getattr(release, "version", "")),
-            app_data_dir=app_data_dir(),
             announce=self._announce,
-            show_error=lambda msg: self._show_message_box(msg, "Update", wx.ICON_ERROR | wx.OK),
-        ):
-            self.frame.Close()
+            show_message_box=self._show_message_box,
+            close_app=self.frame.Close,
+        )
 
     # -- calling back into full QUILL ----------------------------------------
 

@@ -119,16 +119,16 @@ Source: "..\dist\QuillInkwell\docs\*"; DestDir: "{app}\docs"; Components: docs; 
 ; Every shortcut launches through the shared runtime. WorkingDir is the
 ; shared runtime dir so `python -m quill.apps.inkwell` finds the per-app
 ; quill package at the shared location's sitecustomize path.
-Name: "{group}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.inkwell"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-inkwell.ico"; Components: main
+Name: "{group}\{#AppName}"; Filename: "{app}\QuillInkwell.exe"; IconFilename: "{app}\quill-inkwell.ico"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.inkwell"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-inkwell.ico"; Tasks: desktopicon; Components: main
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillInkwell.exe"; IconFilename: "{app}\quill-inkwell.ico"; Tasks: desktopicon; Components: main
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
 
 [Run]
-Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.inkwell"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
+Filename: "{app}\QuillInkwell.exe"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
 
 [UninstallDelete]
 ; Remove only Inkwell's own {app} payload. The shared runtime is left

@@ -457,3 +457,26 @@ continuously generated weather channels, and choosing exactly which of your save
 places the alert watch covers. See the Product Requirements document
 (Help > Product Requirements) for the full roadmap.
 
+
+## Getting help
+
+Support is run by **Community Access**, and the address is
+**support@community-access.org**. A person reads it, and replies come back by
+email.
+
+The quickest way there is **Help > Get Help from Support...** (Ctrl+Alt+F2),
+which every app in the family answers with the same form: what kind of message
+this is, a subject, what happened, and -- if you want an answer -- an email
+address to reply to. What you expected and how to reproduce it are optional,
+and worth more than anything else when you can give them.
+
+Press Send and your **own mail program opens with the whole message already
+written**, addressed to support, with Quill Weather's name and version and your Windows
+version filled in at the bottom. Nothing is sent until you send it there, so you
+can read it over, add anything, or change your mind.
+
+If this machine has no mail program set up -- webmail only, say -- the app puts
+the whole message on your clipboard and tells you the address, so nothing you
+typed is lost. And writing to **support@community-access.org** yourself always
+works just as well: there is no form you have to use. Say which app you were
+using and what happened.

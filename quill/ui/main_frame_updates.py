@@ -31,9 +31,6 @@ from quill.core.browser_preview import (
 from quill.core.paths import app_data_dir
 from quill.core.settings import save_settings
 from quill.core.text_utils import strip_md_to_plain as _strip_md_to_plain
-from quill.ui.dialog_contract import (
-    apply_modal_ids,
-)
 
 
 class UpdatesMixin:
@@ -251,11 +248,11 @@ class UpdatesMixin:
                     # background. Surface a notification so the user chooses to
                     # reinstall via Check for Updates.
                     self._record_notification(
-                        "A build that restores the bug-report token is available. "
-                        "Use Check for Updates to install it.",
+                        "A build that restores the crash-report token is available."
+                        " Use Check for Updates to install it.",
                         "update",
                     )
-                    self._set_status("Update available (restores bug-report token)")
+                    self._set_status("Update available (restores crash-report token)")
                 return
             action = self._show_update_available_dialog(
                 current_version, target, self_heal=token_selfheal and not newer
@@ -460,46 +457,23 @@ class UpdatesMixin:
     ) -> int:
         """Show release notes in a read-only multi-line edit (help-text style).
 
-        ``header`` is a short label above the notes; ``notes_plain`` is the
-        flattened changelog section shown in a scrollable, screen-reader-friendly
-        ``TextCtrl``. Returns the id of the button the user pressed.
+        The dialog itself lives in :mod:`quill.ui.update_notice`, which is where
+        the eight companion apps and QuillLite get exactly the same one. This
+        stays as the name the rest of the mixin calls.
         """
-        wx = self._wx
-        dialog = wx.Dialog(
-            self.frame, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        from quill.ui.update_notice import present_release_notes
+
+        return present_release_notes(
+            self.frame,
+            title=title,
+            header=header,
+            notes_plain=notes_plain,
+            buttons=buttons,
+            affirmative_id=affirmative_id,
+            escape_id=escape_id,
+            show_modal_dialog=self._show_modal_dialog,
+            wx_module=self._wx,
         )
-        dialog.SetSize((560, 520))
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        if header:
-            heading = wx.StaticText(dialog, label=header)
-            sizer.Add(heading, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 12)
-        notes_label = wx.StaticText(dialog, label="Release &notes:")
-        sizer.Add(notes_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
-        body = wx.TextCtrl(
-            dialog,
-            value=notes_plain,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL | wx.TE_RICH2,
-            name="release_notes",
-        )
-        body.SetName("Release notes")
-        sizer.Add(body, 1, wx.EXPAND | wx.ALL, 12)
-        btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        btn_sizer.AddStretchSpacer()
-        for label, return_id in buttons:
-            button = wx.Button(dialog, return_id, label=label)
-            button.Bind(wx.EVT_BUTTON, lambda _e, r=return_id: dialog.EndModal(r))
-            if return_id == affirmative_id:
-                button.SetDefault()
-            btn_sizer.Add(button, 0, wx.RIGHT, 6)
-        sizer.Add(btn_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
-        dialog.SetSizer(sizer)
-        apply_modal_ids(dialog, affirmative_id=affirmative_id, escape_id=escape_id)
-        # Land focus on the notes so screen-reader users enter on the text.
-        wx.CallAfter(body.SetFocus)
-        try:
-            return self._show_modal_dialog(dialog, title)
-        finally:
-            dialog.Destroy()
 
     def _show_update_available_dialog(
         self, current_version: str, release: GitHubRelease, *, self_heal: bool = False
@@ -508,52 +482,53 @@ class UpdatesMixin:
         ``"skip"`` (don't offer this version again) or ``"later"``.
 
         When ``self_heal`` is set, the offered release is the *same* version the
-        user already runs, reinstalled to restore the bundled bug-report token
-        (#919). The dialog says so explicitly so "update to the version you
-        already have" is not confusing.
+        user already runs, reinstalled to restore the bundled token (#919) that
+        crash reports and suggestions still need (support messages do not). The
+        dialog says so, so "the version you already have" is not confusing.
         """
-        wx = self._wx
-        self._announce(f"Update available: {release.version}")
-        channel = "Beta / prerelease" if release.prerelease else "Stable"
-        raw = (release.notes or "").strip()
-        notes = (
-            _strip_md_to_plain(raw) if raw else "(No release notes were provided for this version.)"
-        )
-        published = f"Published: {release.published_at}\n" if release.published_at else ""
+        from quill.ui.update_notice import show_update_available, update_header
+
+        header = ""
+        notes_prefix = ""
         if self_heal:
+            channel = "Beta / prerelease" if release.prerelease else "Stable"
+            published = f"Published: {release.published_at}\n" if release.published_at else ""
             header = (
-                f"Restore the bug-report token: {release.version}\n"
+                f"Restore the crash-report token: {release.version}\n"
                 f"Channel: {channel}\n"
                 f"{published}"
                 f"Current version: {current_version}"
             )
-            notes = (
-                "Your build is missing its bundled bug-report token, so the in-app "
-                "Report a Bug dialog can't file issues. Installing this build (the "
-                "same version) restores the token.\n\n" + notes
+            notes_prefix = (
+                "Your build is missing its bundled token, so crash reports and "
+                "suggestions cannot be filed from the app; installing this build "
+                "(the same version) restores it. Support messages need no token."
             )
         else:
-            header = (
-                f"Update available: {release.version}\n"
-                f"Channel: {channel}\n"
-                f"{published}"
-                f"Current version: {current_version}"
+            header = update_header(
+                "QUILL",
+                current_version,
+                release.version,
+                prerelease=release.prerelease,
+                published_at=release.published_at,
             )
-        result = self._present_release_notes(
-            title="Check for Updates",
+        choice = show_update_available(
+            self.frame,
+            app_name="QUILL",
+            current_version=current_version,
+            release=release,
+            show_modal_dialog=self._show_modal_dialog,
+            announce=self._announce,
+            # QUILL is the only app with a settings field to remember a skipped
+            # version in, so it is the only one that offers the third button.
+            allow_skip=True,
             header=header,
-            notes_plain=notes,
-            buttons=[
-                ("Later", wx.ID_CANCEL),
-                ("Skip this version", wx.ID_IGNORE),
-                ("Download update", wx.ID_OK),
-            ],
-            affirmative_id=wx.ID_OK,
-            escape_id=wx.ID_CANCEL,
+            notes_prefix=notes_prefix,
+            wx_module=self._wx,
         )
-        if result == wx.ID_OK:
+        if choice == "update":
             return "download"
-        if result == wx.ID_IGNORE:
+        if choice == "skip":
             return "skip"
         return "later"
 

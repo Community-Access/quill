@@ -308,12 +308,12 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Report it properly",
                 body=(
-                    "Report a Bug files from inside the app, stamped with this app's "
-                    "own version, with no account needed. Paste in Copy All from "
-                    "Recent Problems -- it carries addresses and error messages, "
-                    "never passwords."
+                    "Get Help from Support writes to a person from inside the "
+                    "app, stamped with this app's own version. Paste in Copy All "
+                    "from Recent Problems -- it carries addresses and error "
+                    "messages, never passwords."
                 ),
-                keys=("Ctrl+Alt+B", "Ctrl+Alt+Shift+P"),
+                keys=("Ctrl+Alt+F2", "Ctrl+Alt+Shift+P"),
                 hear="A form with most of it filled in already.",
             ),
             Step(

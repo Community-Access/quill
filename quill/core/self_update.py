@@ -17,6 +17,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 
 from quill.core.error_codes import CodedError
@@ -44,6 +45,7 @@ def build_apply_update_script(
     source_dir: Path | None = None,
     setup_exe: Path | None = None,
     data_dirname: str = "data",
+    relaunch_args: Sequence[str] = (),
 ) -> str:
     """The Windows ``.bat`` that applies an update after this process exits (pure).
 
@@ -52,6 +54,16 @@ def build_apply_update_script(
     relaunch ``exe_path``. ``mode="installer"``: run ``setup_exe`` elevated and
     silent, then relaunch. Both wait for ``pid`` to exit first and tee every
     step to ``log_path``.
+
+    ``relaunch_args`` are appended to the relaunch, and without them the restart
+    half of "Install and restart now" silently stopped working the day the
+    shared runtime landed (2026-08-17). ``exe_path`` is ``sys.executable``, which
+    used to be the app's own frozen exe and is now a *generic interpreter*:
+    ``QuillVilleRuntime.exe`` for an installed QuillVille app, ``pythonw.exe``
+    inside a portable bundle. Started bare, the runtime prints a usage line and
+    exits 2 -- invisibly, since it is a windowed build -- and bare ``pythonw.exe``
+    opens an interpreter with no script. The update applied correctly and the
+    app simply never came back. See :func:`relaunch_command`.
     """
     if mode == "portable" and source_dir is None:
         raise SelfUpdateError("Portable apply needs a staged source directory.")
@@ -98,9 +110,13 @@ def build_apply_update_script(
             f'-Verb RunAs -Wait" >>"%LOG%" 2>&1',
             'echo [apply] installer done %ERRORLEVEL% >>"%LOG%" 2>&1',
         ]
+    # Quoted only when it needs to be: a module name never contains a space, and
+    # an unquoted "-m quill.apps.lite" is what the Start Menu shortcut passes and
+    # what the apply log should show.
+    relaunch = " ".join(f'"{arg}"' if (not arg or " " in arg) else arg for arg in relaunch_args)
     lines += [
-        f'echo [apply] relaunching "{exe_path}" >>"%LOG%" 2>&1',
-        f'start "" "{exe_path}"',
+        f'echo [apply] relaunching "{exe_path}" {relaunch} >>"%LOG%" 2>&1',
+        f'start "" "{exe_path}" {relaunch}'.rstrip(),
     ]
     if mode == "portable" and source_dir is not None:
         # Delete the staging *parent* (…/staging) so a re-run starts clean.
@@ -124,6 +140,48 @@ def install_root_and_exe() -> tuple[Path, Path] | None:
         return None
     exe = Path(sys.executable).resolve()
     return exe.parent, exe
+
+
+#: Executables that are an *interpreter*, not an app: started with no arguments
+#: they do nothing a user can see. The shared QuillVille runtime is one of these
+#: by design -- it exists to be handed ``-m <module>`` (see
+#: ``standalone/runtime/runtime_launcher.py``), and every installed QuillVille
+#: shortcut passes it one.
+_GENERIC_INTERPRETERS = frozenset({"quillvilleruntime", "pythonw", "python"})
+
+
+def main_module() -> str:
+    """The module this process was started as (``quill.apps.lite``), or "".
+
+    Read off ``__main__.__spec__``, which Python sets for ``-m`` and which
+    ``runpy.run_module(..., alter_sys=True)`` sets too -- so it answers the same
+    way whether the app was launched by the shared runtime or by a plain
+    interpreter in a portable bundle. A package entry point reports
+    ``<package>.__main__``; the suffix is trimmed so the answer is the module a
+    shortcut would name.
+    """
+    spec = getattr(sys.modules.get("__main__"), "__spec__", None)
+    name = str(getattr(spec, "name", "") or "")
+    return name[: -len(".__main__")] if name.endswith(".__main__") else name
+
+
+def relaunch_command(exe_path: Path) -> list[str]:
+    """The arguments needed to bring *exe_path* back up as this app.
+
+    Empty for an app whose own frozen exe is running (QUILL's ``quill.exe``):
+    starting it bare is right, and appending ``-m`` to it would hand the app an
+    argument it would read as a file to open. ``["-m", "<module>"]`` when the
+    running executable is a generic interpreter -- the shared runtime, or a
+    portable bundle's ``pythonw.exe`` -- because then the executable alone does
+    not identify the app, and that is exactly the pair the Start Menu shortcut
+    uses.
+    """
+    module = main_module()
+    if not module:
+        return []
+    if exe_path.stem.lower() not in _GENERIC_INTERPRETERS:
+        return []
+    return ["-m", module]
 
 
 def stage_portable_update(zip_path: Path, staging_root: Path, *, exe_name: str) -> Path:
@@ -208,6 +266,7 @@ def begin_self_update(
     updates_dir = app_data_dir / "updates"
     log_path = updates_dir / "apply-update.log"
     resolved_pid = os.getpid() if pid is None else pid
+    relaunch_args = relaunch_command(exe_path)
 
     if portable:
         staging = updates_dir / "staging"
@@ -219,6 +278,7 @@ def begin_self_update(
             exe_path=exe_path,
             log_path=log_path,
             source_dir=source,
+            relaunch_args=relaunch_args,
         )
     else:
         script = build_apply_update_script(
@@ -228,6 +288,7 @@ def begin_self_update(
             exe_path=exe_path,
             log_path=log_path,
             setup_exe=download_path,
+            relaunch_args=relaunch_args,
         )
     helper_dir = Path(tempfile.gettempdir()) / "quill-apply-update"
     write_and_launch_helper(script, helper_dir)
@@ -238,6 +299,8 @@ __all__ = [
     "begin_self_update",
     "build_apply_update_script",
     "install_root_and_exe",
+    "main_module",
+    "relaunch_command",
     "stage_portable_update",
     "write_and_launch_helper",
 ]

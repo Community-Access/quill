@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Section — Help menu (`help.*`, 21 commands)</title>
   <style>
@@ -553,39 +553,53 @@ touches the network.</li>
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="help-11--report-a-bug-helpreport_bug">HELP-11 — Report a Bug…
-(<code>help.report_bug</code>)</h2>
-<p><em>What &amp; why.</em> Files a bug without leaving QUILL.
-<strong>The behaviour depends on whether this build carries a feedback
-token</strong> — verify the path your build takes.</p>
+<h2 id="help-11--get-help-from-support-helpreport_bug">HELP-11 — Get
+Help from Support… (<code>help.report_bug</code>)</h2>
+<p><em>What &amp; why.</em> Writes to a person without leaving QUILL.
+The message goes to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>,
+never to a public GitHub issue: what somebody types here is their own
+words about their own machine.</p>
 <p><strong>Before you start</strong></p>
 <ul>
-<li>Network available (submission needs it). Note which build you are
-on: a normal <strong>public</strong> build ships a bundled, issues-only
-feedback token; a <strong>private or <code>-SkipToken</code></strong>
-build has none.</li>
-<li>Menu label: <strong>Report a Bug…</strong>.</li>
+<li>A mail program set up on this machine for the main path. Run it a
+second time on a machine with <strong>no</strong> mail handler (or with
+the association removed) for the clipboard path — both must end
+somewhere usable.</li>
+<li>Menu label: <strong>Get Help from Support…</strong>, key
+<strong>Ctrl+Alt+F2</strong>.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li><strong>Help menu ▸ Report a Bug…</strong>.</li>
-<li>If a form opens, fill the fields by keyboard and submit; if a
-browser opens instead, confirm the online form loads and the URL is on
-your clipboard.</li>
+<li><strong>Help menu ▸ Get Help from Support…</strong> — and again with
+Ctrl+Alt+F2, which must reach the same form.</li>
+<li>Press <strong>Send</strong> with the form empty.</li>
+<li>Fill in a subject and what happened, leave the email address empty,
+Send.</li>
+<li>Repeat with an email address filled in, and read the message your
+mail program opens.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
-<li><strong>Public build (token present):</strong> an in-app
-<strong>feedback form</strong> opens (labelled fields,
-keyboard-complete). Submitting files a GitHub issue directly and QUILL
-records <strong>“Submitted feedback”</strong>. If submission fails for
-any reason, it must not strand you — it falls back to the online
-form.</li>
-<li><strong>Private / <code>-SkipToken</code> build (no token):</strong>
-QUILL says direct reporting isn’t set up in this build, <strong>opens
-the online support form in your browser, copies the link to your
-clipboard</strong>, and speaks that it did so. Both paths end with a
-usable way to file the report — a dead-end at submit is a fail.</li>
+<li>A form with labelled, keyboard-complete fields: what kind of
+message, subject, what happened, what you expected, steps, your email
+address, screen reader. Tab reaches every one, and each answers
+<strong>F1</strong> with its own help.</li>
+<li><strong>Empty form:</strong> the first problem is spoken and the
+full list is shown. Nothing is opened and nothing is sent.</li>
+<li><strong>Valid form:</strong> your own mail program opens with the
+whole message already written, addressed to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>,
+the subject beginning <code>[QUILL &lt;version&gt;]</code>, and the app
+version, Windows version and screen reader at the bottom. QUILL says the
+message is <strong>ready and not yet sent</strong> — an announcement
+claiming it was sent is a fail.</li>
+<li><strong>An empty email address is accepted</strong>, and the form
+says a reply is not possible without one rather than refusing to
+send.</li>
+<li><strong>No mail program:</strong> QUILL says so, puts the
+<strong>whole message and the address</strong> on the clipboard, and
+shows the address. A dead end here is a fail.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>

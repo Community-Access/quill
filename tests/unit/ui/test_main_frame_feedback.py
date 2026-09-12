@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from urllib.error import URLError
 
@@ -55,97 +54,36 @@ def _build_frame() -> MainFrame:
     return frame
 
 
-@pytest.mark.skipif(
-    not os.getenv("CI"),
-    reason=(
-        "Local-only access violation when a screen reader hooks the process (#14); "
-        "runs in CI where the desktop session is clean. The failure-fallback path is "
-        "separately covered by the sibling test below; this one covers the success path."
-    ),
-)
-def test_report_bug_feedback_hub_path_goes_through_show_modal_dialog(monkeypatch) -> None:
-    import sys
+def test_report_bug_opens_the_shared_support_surface(monkeypatch) -> None:
+    """QUILL's Help item is the family flow, not a GitHub issue.
 
-    # report_bug() short-circuits to the online fallback (a real
-    # webbrowser.open) when no token is present, and CI has no bundled
-    # token -- so without this patch the test dead-ends in the fallback
-    # instead of exercising the feedback-hub success path it is meant to
-    # cover. Force a token present so report_bug() proceeds to the hub.
-    import quill.core.feedback_token as feedback_token_module
+    The old path filed the reporter's own words into a public repository and
+    gave them no way to be answered; the rule it broke is in
+    docs/design/2026-08-26-feedback-redesign-for-freescout.md. What is pinned
+    here is that ``report_bug`` reaches the shared surface at all, and that it
+    hands over QUILL's own name -- triage should never have to guess which of
+    nine products somebody was running.
+    """
+    import quill.ui.support_dialog as support_dialog
 
-    monkeypatch.setattr(feedback_token_module, "github_token_present", lambda: True)
-
-    frame = _build_frame()
-    frame._wx = type("Wx", (), {"version": staticmethod(lambda: "4.2-test"), "ID_OK": 5100})()
-
-    modal_calls: list[str] = []
-    frame._show_modal_dialog = lambda _dlg, label, **_kw: (
-        modal_calls.append(label) or frame._wx.ID_OK
+    calls: list[dict] = []
+    monkeypatch.setattr(
+        support_dialog,
+        "open_support_message",
+        lambda host, **kwargs: calls.append({"host": host, **kwargs}),
     )
 
-    class _FakeSchema:
-        pass
-
-    class _FakeDialog:
-        def __init__(self, *_args, **_kwargs) -> None:
-            pass
-
-        def ShowModal(self) -> int:
-            raise AssertionError("ShowModal must not be called directly on FeedbackDialog")
-
-        def Destroy(self) -> None:
-            pass
-
-    import types
-
-    fake_hub = types.ModuleType("feedback_hub")
-    fake_hub.load_schema = lambda _path: _FakeSchema()  # type: ignore[attr-defined]
-    fake_wx_dialog = types.ModuleType("feedback_hub.wx_dialog")
-    fake_wx_dialog.FeedbackDialog = _FakeDialog  # type: ignore[attr-defined]
-    monkeypatch.setitem(sys.modules, "feedback_hub", fake_hub)
-    monkeypatch.setitem(sys.modules, "feedback_hub.wx_dialog", fake_wx_dialog)
-
-    frame.report_bug()
-
-    assert modal_calls == ["Report an Issue"]
-    assert frame._notification == ("Submitted feedback via feedback hub", "support")
-
-
-def test_report_bug_failure_copies_support_url_and_reports_plainly(monkeypatch) -> None:
-    # The legacy built-in form is gone (feedback_hub ships with QUILL), so a
-    # hub failure must still leave the user a path: the online support-form
-    # URL lands on the clipboard and a message box says so out loud.
     frame = _build_frame()
-    copied: list[str] = []
-    boxes: list[tuple[str, str]] = []
-
-    def _boom() -> None:
-        raise RuntimeError("hub exploded")
-
-    monkeypatch.setattr(frame, "_report_bug_via_hub", _boom)
-    monkeypatch.setattr(frame, "_copy_to_clipboard", lambda text: copied.append(text) or True)
-    frame._show_message_box = lambda message, caption, _style: boxes.append((message, caption))
-    # Keep the test deterministic and side-effect-free: never actually launch a
-    # browser from a unit test. Returning False exercises the clipboard-only
-    # tail wording (the realistic headless/CI path).
-    monkeypatch.setattr("webbrowser.open", lambda _url: False)
-    frame._wx = type(
-        "Wx",
-        (),
-        {
-            "version": staticmethod(lambda: "4.2-test"),
-            "OK": 4,
-            "ICON_ERROR": 512,
-            "ICON_INFORMATION": 16,
-        },
-    )()
-
     frame.report_bug()
 
-    assert len(copied) == 1
-    assert copied[0].startswith("https://github.com/Community-Access/support/issues/new?")
-    assert boxes and boxes[0][1] == "Report a Bug"
-    assert "on your clipboard" in boxes[0][0]
+    assert len(calls) == 1
+    assert calls[0]["host"] is frame
+    assert calls[0]["source_app"] == "QUILL"
+
+
+def test_get_help_from_support_is_the_same_flow() -> None:
+    """Two names, one implementation: the menu's name and the command id's."""
+    assert MainFrame.get_help_from_support is MainFrame.report_bug
 
 
 def test_save_diagnostics_bundle_cancels_when_review_cancelled(monkeypatch) -> None:
@@ -475,5 +413,8 @@ def test_check_for_updates_silent_self_heal_does_not_auto_download(monkeypatch) 
 
     frame.check_for_updates(silent_no_update=True)
 
-    assert "bug-report token" in frame._notification[0]
-    assert frame._status_message == "Update available (restores bug-report token)"
+    # "crash-report", not "bug-report": since 2026-09-11 writing to support needs
+    # no token at all, so what a tokenless build actually costs is crash reports
+    # and community suggestions -- and the offer has to say the true thing.
+    assert "crash-report token" in frame._notification[0]
+    assert frame._status_message == "Update available (restores crash-report token)"

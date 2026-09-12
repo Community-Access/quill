@@ -47,6 +47,39 @@ def test_about_names_the_app_the_version_and_where_the_data_lives(lite_window, l
     assert str(win.app.data_dir) in body
 
 
+def test_about_gives_the_support_address(lite_window, lite_dialogs):
+    """Where to write is not guessable either, and About is where people look
+    for it first. Every app in the family prints it here."""
+    from quill.core.support_message import SUPPORT_EMAIL
+
+    win = lite_window("hello")
+    win.cmd_about()
+    assert SUPPORT_EMAIL in lite_dialogs.args_for("show_text_window")[2]
+
+
+def test_get_help_from_support_writes_as_quilllite(lite_window, monkeypatch):
+    """The small product has to name itself.
+
+    Whoever answers should never have to guess which of nine products somebody
+    was running, and QuillLite is the one most likely to be somebody's first --
+    and only -- Quill app.
+    """
+    import quill.ui.support_dialog as support_dialog
+    from quill.core.lite import APP_NAME, APP_VERSION
+
+    calls: list[dict] = []
+    monkeypatch.setattr(
+        support_dialog,
+        "open_support_message",
+        lambda host, **kwargs: calls.append(kwargs),
+    )
+
+    win = lite_window("hello")
+    win.cmd_get_help_from_support()
+
+    assert calls == [{"source_app": APP_NAME, "app_version": APP_VERSION}]
+
+
 def test_about_says_quilllite_is_a_companion_rather_than_a_replacement(lite_window, lite_dialogs):
     win = lite_window("hello")
     win.cmd_about()

@@ -59,6 +59,7 @@ from quill.apps.beacon.model import (
 from quill.apps.beacon.sync_ui import SyncController
 from quill.apps.beacon.undo import UndoManager, restore_beacons, snapshot_beacons
 from quill.core.sound_events import SoundEvent
+from quill.core.support_message import SUPPORT_EMAIL
 from quill.ui.companion_cues import init_app_sound
 from quill.ui.dialog_contract import show_message_box
 
@@ -673,6 +674,14 @@ class BeaconFrame(wx.Frame):
         mb.Append(m_assist, "&Assist")
 
         m_help = wx.Menu()
+        # The family item: every app answers "who can help me?" the same
+        # way, with the same key, wherever you happen to be standing.
+        self._add(
+            m_help,
+            "Get Help from &Support...\tCtrl+Alt+F2",
+            self._on_get_help,
+            "Write to support about a problem, a question or an idea",
+        )
         self._add(m_help, "&About", self._on_about, "About QuillBeacon")
         mb.Append(m_help, "&Help")
 
@@ -1553,12 +1562,18 @@ class BeaconFrame(wx.Frame):
         else:
             self.dest_list.SetFocus()
 
+    def _on_get_help(self, _e) -> None:
+        from quill.ui.support_dialog import open_support_message
+
+        open_support_message(self, source_app=_TITLE, app_version=_VERSION)
+
     def _on_about(self, _e) -> None:
         show_message_box(
             f"{_TITLE} {_VERSION}\nSchema v{SCHEMA_VERSION}\n"
             "Find your way back to anything.\n\n"
             "Local-first. No account required. Library: "
-            f"{self.data_dir / 'beacons.db'}",
+            f"{self.data_dir / 'beacons.db'}"
+            f"\n\nSupport: {SUPPORT_EMAIL}",
             "About QuillBeacon",
             wx.OK,
         )

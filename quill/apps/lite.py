@@ -44,6 +44,7 @@ import wx
 from quill.apps.lite_printing import PrintSettings
 from quill.apps.lite_services import LiteServicesMixin
 from quill.apps.lite_shell import QuillLiteShell
+from quill.apps.lite_updates import check_at_launch
 from quill.apps.lite_window import DocumentFrame
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite import features as features_mod
@@ -265,6 +266,8 @@ class QuillLiteApp(LiteServicesMixin, wx.App):
         self._inbox_timer.Start(_INBOX_POLL_MS)
         # Everything that opens from here on is somebody's doing, and says so.
         self.starting_up = False
+        # The quiet once-a-day update check; silent unless there is one.
+        check_at_launch(self)
         return True
 
     def next_document_number(self) -> int:

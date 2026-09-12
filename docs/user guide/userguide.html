@@ -26838,7 +26838,7 @@ Restore…</strong></li>
 <li><strong>Save Diagnostics…</strong></li>
 <li><strong>Open Logs Folder</strong> / <strong>Open Diagnostics
 Folder</strong></li>
-<li><strong>Report a Bug…</strong></li>
+<li><strong>Get Help from Support…</strong></li>
 <li><strong>Check for Updates</strong></li>
 </ul>
 <p>Customize &amp; Support merges the former separate Support and
@@ -26898,9 +26898,12 @@ run onboarding.</li>
 be rerun at any time to adjust your keyboard pack, feature profile,
 remote access, AI, reading and accessibility, writing tools, data
 location, and startup behaviour.</li>
-<li><strong>Report a Bug…</strong> opens the accessible issue form,
-which submits your report directly to the Community Access issue tracker
-— no browser round-trip.</li>
+<li><strong>Get Help from Support…</strong> (Ctrl+Alt+F2) opens the
+accessible support form and then hands the finished message to your own
+mail program, addressed to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>
+— a help desk a person answers, not a public issue tracker you would
+need an account to read.</li>
 <li><strong>Check for Updates…</strong> verifies the signed update
 manifest, offers the download, and can close Quill so setup can run
 immediately. If you are running the <strong>portable</strong> build,
@@ -26922,9 +26925,9 @@ document with dependency tables and bundled license texts.</li>
 <p>If you only remember one thing about Help, remember this: it is a
 working surface, not a dead-end menu. The welcome guide teaches the
 basics, the keyboard reference reflects your live bindings, the user
-guide gives the full map, diagnostics package the current state, and the
-bug-report action turns that state into a support-ready starting
-point.</p>
+guide gives the full map, diagnostics package the current state, and and
+Get Help from Support turns that state into a message somebody can
+answer.</p>
 <p>Menu stability note: Quill now defers internal menu-state updates
 while native menus are open, then applies them after menu close. This
 prevents rapid-arrow navigation churn and keeps Help menu navigation
@@ -26941,24 +26944,31 @@ problem from inside Quill</h3>
 <p>Use this path when Quill is behaving unexpectedly or when you want to
 send the team a feature request.</p>
 <ol type="1">
-<li>Open <strong>Help -&gt; Report a Bug…</strong>. The issue form opens
-as a dialog; the fields are plain, labelled controls your screen reader
-reads by name.</li>
-<li>Optionally fill in your name and email so the team can follow
-up.</li>
-<li>Pick a category and describe the problem: what happened, what you
-expected, and the steps to reproduce it. Your QUILL version is filled in
-for you.</li>
-<li>Choose <strong>Submit Issue</strong>. The report is filed directly
-on the Community Access issue tracker — no browser, no copy-and-paste —
-and no account is required. Escape cancels without sending
-anything.</li>
+<li>Open <strong>Help -&gt; Get Help from Support…</strong>
+(Ctrl+Alt+F2). The form opens as a dialog; the fields are plain,
+labelled controls your screen reader reads by name.</li>
+<li>Pick what kind of message it is, give it a subject, and describe
+what happened. What you expected and the steps to reproduce it are
+optional, and worth more than anything else when you can give them.</li>
+<li>Fill in <strong>your email address</strong> if you want an answer.
+It is optional on purpose — you can report a problem without giving one,
+you simply will not be able to be replied to.</li>
+<li>Choose <strong>Send</strong>. Your own mail program opens with the
+whole message already written, addressed to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>,
+with QUILL’s version, your Windows version and your screen reader filled
+in at the bottom. <strong>Nothing is sent until you send it
+there</strong>, so you can read it over or add anything first. Escape
+cancels without writing anything.</li>
 </ol>
-<p>If the form ever cannot be opened, QUILL copies a link to the online
-support form to your clipboard and tells you so, so you always have a
-path. Need to share more detail? <strong>Help -&gt; Save
-Diagnostics…</strong> remains available as a standalone export you can
-attach to any issue.</p>
+<p>If this machine has no mail program set up — webmail only, say —
+QUILL puts the whole message on your clipboard and tells you the
+address, so nothing you typed is lost. Writing to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>
+yourself always works just as well; there is no form you have to use.
+Need to share more detail? <strong>Help -&gt; Save Diagnostics…</strong>
+remains available as a standalone export you can attach to your
+reply.</p>
 <p>The in-app submit works on every install, including right after an
 upgrade: every build (Windows and macOS, release or beta) now bundles
 the reporting token, with no opt-out, so the “no token” message some of
@@ -30864,7 +30874,7 @@ Mac-specific alternates: <strong>Replace</strong> is
 Chunk</strong> is <code>Cmd+Alt+Space</code> (not
 <code>Cmd+Space</code>, which is Spotlight). These are provisional — if
 one collides with something on your setup, reassign it in the Keymap
-Editor and tell us via Help &gt; Report a Bug.</li>
+Editor and tell us via Help &gt; Get Help from Support.</li>
 <li><strong>Read Aloud and earcons work on macOS.</strong> Live Read
 Aloud plays through <code>afplay</code>, so Piper, Kokoro, ElevenLabs,
 and the system voices actually speak; the earcon volume slider also
@@ -31224,8 +31234,8 @@ lost; you simply get the classic behavior — and QUILL says so in the
 status bar. The Mac app ships everything rich mode needs out of the box;
 only source installs add it themselves
 (<code>pip install "quill[mac]"</code>). If you ever see the converted
-fallback on a normal install, please tell us via <strong>Help &gt;
-Report a Bug</strong>.</p>
+fallback on a normal install, please tell us via <strong>Help &gt; Get
+Help from Support</strong>.</p>
 <h3 id="table-studio-experimental">Table Studio (experimental)</h3>
 <p>Once you enable it on the Experimental tab, <strong>Tools &gt; Table
 Studio…</strong> opens a table in a fully keyboard-accessible grid — a
@@ -32256,7 +32266,7 @@ plain-language explanation of what it does.</li>
 simulated <code>gh</code> tool, but not yet against a real
 Codespaces-enabled repository or real Copilot CLI access on an actual
 device — if something looks wrong, please report it through <strong>Help
-&gt; Report a Bug</strong>.</p>
+&gt; Get Help from Support</strong>.</p>
 <p><strong>Enabling the feature</strong></p>
 <p>GitHub remote access is controlled by the feature flag
 <code>core.github_remote</code>. If it is not visible, open <strong>File
@@ -36898,6 +36908,28 @@ Editor; only the display layer rewrites the prefix, through
 constant <code>QUILL_KEY_LABEL</code> in <code>quill/branding.py</code>
 is the single source of truth for the brand, so a future rebrand touches
 one file.</p>
+<h2 id="getting-help">Getting help</h2>
+<p>Support is run by <strong>Community Access</strong>, and the address
+is <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>.
+A person reads it, and replies come back by email.</p>
+<p>The quickest way there is <strong>Help &gt; Get Help from
+Support…</strong> (Ctrl+Alt+F2), which every app in the family answers
+with the same form: what kind of message this is, a subject, what
+happened, and – if you want an answer – an email address to reply to.
+What you expected and how to reproduce it are optional, and worth more
+than anything else when you can give them.</p>
+<p>Press Send and your <strong>own mail program opens with the whole
+message already written</strong>, addressed to support, with QUILL’s
+name and version and your Windows version filled in at the bottom.
+Nothing is sent until you send it there, so you can read it over, add
+anything, or change your mind.</p>
+<p>If this machine has no mail program set up – webmail only, say – the
+app puts the whole message on your clipboard and tells you the address,
+so nothing you typed is lost. And writing to <strong><a
+href="mailto:support@community-access.org">support@community-access.org</a></strong>
+yourself always works just as well: there is no form you have to use.
+Say which app you were using and what happened.</p>
 </main>
 </body>
 </html>

@@ -6715,12 +6715,47 @@ uninstall cleanly.</li>
 <h3 id="533-diagnostics-and-bug-reporting">5.33 Diagnostics and bug
 reporting</h3>
 <ul>
-<li><code>Help → Report a Bug…</code> is the unified support flow. It
-opens an in-app review screen with the report summary and destination
-URL, supports optional diagnostics zip generation, copies the
-environment summary to the clipboard, and then opens a pre-filled
-Community Access support-hub issue form in the default browser with no
-logs; the user reviews and submits manually.</li>
+<li><strong><code>Help → Get Help from Support…</code> (Ctrl+Alt+F2) is
+the unified support flow, in every app in the family</strong>
+(2026-09-11; it was <code>Report a Bug…</code>, and it existed in four
+of ten surfaces). One shared form – category, subject, what happened,
+what you expected, steps, an optional reply address, screen reader –
+built once in <code>quill/ui/support_dialog.py</code> over the pure
+<code>quill/core/support_message.py</code>, and appended to every Help
+menu by <code>support_menu.append_get_help_item</code>.
+<ul>
+<li><strong>The destination is
+<code>support@community-access.org</code>, never a GitHub
+issue.</strong> <code>Community-Access/quill</code> is public and a
+support message is somebody’s own words about their own machine; the
+reasoning is
+<code>docs/design/2026-08-26-feedback-redesign-for-freescout.md</code>
+§2(a), and the absence of a GitHub fallback is the enforcement. The old
+path also gave the reporter no way to be answered – a GitHub issue is
+not a conversation you can join without an account.</li>
+<li><strong>Two transports, in order.</strong> The submission server
+when the build has one <em>and</em> the installed feedback-hub accepts
+<code>server_url</code>
+(<code>feedback_token.server_transport_available()</code>); otherwise
+the reader’s own mail client, via a <code>mailto:</code> URL capped at
+1,800 characters with the full text placed on the clipboard when it has
+to be shortened. The app holds no credential on either path.</li>
+<li><strong>Nothing is sent until the person sends it.</strong> The mail
+path opens their mail program with the message written out and says so
+in those words; a machine with no mail handler gets the whole message
+and the address on the clipboard rather than a dead end. The reply
+address is optional, and the form says a reply is impossible without one
+rather than refusing to send.</li>
+<li><strong>The live bug this replaced:</strong>
+<code>submission_kwargs()</code> passed <code>server_url</code> to a
+feedback-hub 1.1.0 that has no such parameter, so
+<code>FeedbackDialog(...)</code> raised <code>TypeError</code> and every
+Report a Bug fell through to the browser fallback. The transport is now
+read from the installed signature
+(<code>feedback_token.hub_accepts_server_url()</code>), the same
+technique <code>issue_submit._submit_parameters</code> already used for
+the crash reporter.</li>
+</ul></li>
 <li><code>Help → Save Diagnostics…</code> remains available for
 standalone diagnostics export and writes a zip with:
 <ul>
@@ -7916,10 +7951,36 @@ changelog and update transparency</h3>
 <li><code>Help → Release Notes</code> opens a Markdown document with one
 section per version. Auto-generated from <code>CHANGELOG.md</code> at
 build time.</li>
-<li>The manual update dialog (5.34, 10.12) links to the release notes
-for the version it is offering, shows the published date when the feed
-provides it, and lets the user <strong>Skip this version</strong>,
-<strong>Download</strong>, or decide <strong>Later</strong>.</li>
+<li>The manual update dialog (5.34, 10.12) shows the release notes for
+the version it is offering, shows the published date when the feed
+provides it, and lets the user <strong>Update</strong>, <strong>Skip
+this version</strong>, or <strong>Close</strong>.</li>
+<li><strong>One update dialog, every app (2026-09-12).</strong>
+<code>quill/ui/update_notice.py</code> is the single “an update is
+available” surface for QUILL, the eight companion apps and QuillLite;
+<code>quill/ui/update_download.py</code> is the single download,
+progress-milestone and Install-and-restart path behind it. The dialog
+always carries a summary of what is new (the release body, flattened out
+of Markdown, capped, never empty), an <strong>Update</strong> button as
+the affirmative and default, and a <strong>Close</strong> button as the
+escape; focus lands on the notes rather than on a button, so the first
+thing read is what changed. QUILL alone adds <strong>Skip this
+version</strong>, because QUILL alone has a settings field to remember
+the answer in. Before this the companion apps showed a bare Yes/No box
+(“Download it now?”) that said nothing about the release at all.</li>
+<li><strong>QuillLite checks for its own updates (2026-09-12).</strong>
+Help &gt; Check for Updates… on the family key
+<strong>Ctrl+Alt+U</strong> (Page Setup moved to Ctrl+Alt+P to free it),
+plus a silent once-a-day check at launch governed by
+<code>check_updates_on_launch</code> in QuillLite’s own settings. The
+launch check says nothing while it runs, nothing when there is nothing,
+and nothing when the network is down; only a genuine newer version
+speaks. Releases resolve from <code>RELEASE_REPO</code> /
+<code>RELEASE_ASSET_PREFIX</code> in
+<code>quill/core/lite/__init__.py</code> – deliberately not from
+<code>companion_install.ASSET_PREFIX</code>, which is the set of
+siblings QUILL can offer to install. See
+<code>quill/apps/lite_updates.py</code>.</li>
 <li>Past release notes remain reachable through the document’s own
 outline (5.16).</li>
 </ul>

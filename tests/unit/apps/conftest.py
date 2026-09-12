@@ -547,18 +547,35 @@ class FakeApp:
         return ""
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def wx_app():
-    """One ``wx.App`` for the session.
+    """A **live** ``wx.App``, whatever the rest of the worker has done to it.
 
-    Almost nothing here needs it -- the whole point of the harness is that the
+    Almost nothing here needs one -- the whole point of the harness is that the
     commands run without wx -- but ``wx.Printout`` refuses to be constructed
     without an App, and printing is worth reaching rather than stubbing past.
-    Session-scoped because a second App in one process is not supported.
+
+    This used to be session-scoped, holding one App and destroying it at the
+    end, on the stated grounds that "a second App in one process is not
+    supported". Ten test files under ``tests/unit/apps`` create a second one
+    anyway (``wx.App(False)``) and destroy it in teardown, and with
+    ``--dist=loadfile`` whether one of those shares a worker with the printing
+    tests is decided by the *file list*. So adding an unrelated test file could
+    -- and on 2026-09-12 did -- make printing fail in CI with "The wx.App object
+    must be created first!": the session fixture still handed back its App
+    object, whose C++ half another file had destroyed.
+
+    Asking wx what is alive, every time, is both the honest implementation of
+    "give me a usable App" and immune to that ordering. Nothing is destroyed
+    here, so this fixture never leaves a dangling object for anyone else.
     """
-    app = wx.App()
-    yield app
-    app.Destroy()
+    app = wx.GetApp()
+    if app is not None:
+        try:
+            app.GetAppName()  # cheap probe: raises once the C++ peer is gone
+        except Exception:  # noqa: BLE001 - any failure means "not usable"
+            app = None
+    return app if app is not None else wx.App()
 
 
 @pytest.fixture
@@ -585,6 +602,7 @@ def lite_window(tmp_path, lite_settings):
     """
     from quill.apps.lite_keymap_editor import DocumentKeymapMixin
     from quill.apps.lite_printing import DocumentPrintMixin
+    from quill.apps.lite_updates import DocumentUpdatesMixin
     from quill.apps.lite_window_clipboard import DocumentClipboardMixin
     from quill.apps.lite_window_commands import DocumentCommandsMixin
     from quill.apps.lite_window_context_menu import DocumentContextMenuMixin
@@ -622,6 +640,10 @@ def lite_window(tmp_path, lite_settings):
         # recorder (``lite_dialogs``) exists to make testable.
         DocumentPrintMixin,
         DocumentKeymapMixin,
+        # Check for Updates, added 2026-09-12. The network call and both
+        # dialogs are patched in the test; what is being reached here is the
+        # handler the Help menu binds.
+        DocumentUpdatesMixin,
         DocumentContextMenuMixin,
         DocumentCommandsMixin,
     ):

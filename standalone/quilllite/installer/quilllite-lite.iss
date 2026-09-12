@@ -35,6 +35,11 @@ AppPublisherURL={#AppURL}
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} (thin installer -- shared runtime downloaded on demand)
 DefaultDirName={autopf}\{#AppName}
+; Spelled out rather than left to Inno's default, which happens to be the
+; same: the Start Menu folder and every shortcut in it are read aloud, and
+; QuillLite is one mixed-case word so a screen reader speaks it as a name.
+; "Quill Lite" is read as two words and "QUILLLITE" letter by letter.
+DefaultGroupName={#AppName}
 DisableProgramGroupPage=auto
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog

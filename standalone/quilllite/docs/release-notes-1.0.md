@@ -347,6 +347,60 @@ file, so a document you send somebody will not arrive full of grey text.
 
 ---
 
+### When something goes wrong, there is a person at the other end
+
+**Help > Get Help from Support...** — **Ctrl+Alt+F2** — writes to
+**support@community-access.org**, where a person reads it and replies to you by
+email.
+
+Fill in what kind of message it is, a subject, and what happened. What you
+expected and how to reproduce it are optional and worth more than anything else
+when you can give them. **Your email address is optional too**: you can report a
+problem without giving one, you simply will not be able to be replied to.
+
+Press Send and **your own mail program opens with the whole message already
+written** — QuillLite's version, your Windows version and your screen reader
+filled in at the bottom, so you do not have to go and find any of it. Nothing is
+sent until you send it from there, and QuillLite says so out loud rather than
+claiming to have sent something it has not. If you use webmail and have no mail
+program set up, the whole message and the address go on your clipboard instead,
+so nothing you typed is ever lost.
+
+Writing to **support@community-access.org** yourself works exactly as well.
+There is no form you have to use.
+
+---
+
+### It tells you when there is a new version
+
+**Help > Check for Updates...** — **Ctrl+Alt+U**, the same key in every app in
+the family.
+
+If there is nothing newer, it says so in a dialog. That is on purpose: a key
+that answers with silence is indistinguishable from a key that does nothing.
+
+If there **is** something newer, the window opens on **what changed** — the
+release notes for that version, in a read-only box you can arrow through like a
+document. Your focus lands in the notes, not on a button, so the first thing you
+hear is what is in the release. Tab from there and there are two buttons:
+**Update**, which downloads it and then offers to install it and restart for you
+— your settings, your recent files and your recovered work are all kept — and
+**Close**, which does nothing at all. Nothing is downloaded until you press
+Update.
+
+QuillLite also looks once a day when it starts, and says **nothing** unless
+there is something. Not while it checks, not when there is nothing, and not when
+your network is down. Only a real new version speaks, and even then it only
+offers. If you would rather it never looked on its own, there is a tick box in
+Settings: *Look for updates when QuillLite starts*. Ctrl+Alt+U still works
+either way.
+
+One small consequence: **Page Setup moved to Ctrl+Alt+P**, because Ctrl+Alt+U
+means Check for Updates everywhere else in the family and a key that means two
+different things is a key you cannot trust.
+
+---
+
 ## Two things this fixed in QUILL for All
 
 Building QuillLite turned up two real faults in QUILL for All's editor. Both are

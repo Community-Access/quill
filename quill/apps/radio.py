@@ -1387,7 +1387,7 @@ class RadioAppFrame(
         help_menu.Append(sheet_id, "Keyboard Shortcuts S&heet...\tCtrl+Alt+Shift+K")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_keyboard_cheat_sheet(), id=sheet_id)
         bug_id = wx.NewIdRef()
-        help_menu.Append(bug_id, "Report a &Bug...\tCtrl+Alt+B")
+        help_menu.Append(bug_id, "Get Help from &Support...\tCtrl+Alt+F2")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.report_app_bug(source_app="Quill Radio", app_version=_VERSION),

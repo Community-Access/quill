@@ -280,31 +280,41 @@ a signed code. It performs **no network call**. It is a **tester-only** surface.
 
 ---
 
-## HELP-11 — Report a Bug… (`help.report_bug`)
+## HELP-11 — Get Help from Support… (`help.report_bug`)
 
-*What & why.* Files a bug without leaving QUILL. **The behaviour depends on
-whether this build carries a feedback token** — verify the path your build takes.
+*What & why.* Writes to a person without leaving QUILL. The message goes to
+**support@community-access.org**, never to a public GitHub issue: what somebody
+types here is their own words about their own machine.
 
 **Before you start**
-- Network available (submission needs it). Note which build you are on: a normal
-  **public** build ships a bundled, issues-only feedback token; a **private or
-  `-SkipToken`** build has none.
-- Menu label: **Report a Bug…**.
+- A mail program set up on this machine for the main path. Run it a second time
+  on a machine with **no** mail handler (or with the association removed) for
+  the clipboard path — both must end somewhere usable.
+- Menu label: **Get Help from Support…**, key **Ctrl+Alt+F2**.
 
 **Do this**
-1. **Help menu ▸ Report a Bug…**.
-2. If a form opens, fill the fields by keyboard and submit; if a browser opens
-   instead, confirm the online form loads and the URL is on your clipboard.
+1. **Help menu ▸ Get Help from Support…** — and again with Ctrl+Alt+F2, which
+   must reach the same form.
+2. Press **Send** with the form empty.
+3. Fill in a subject and what happened, leave the email address empty, Send.
+4. Repeat with an email address filled in, and read the message your mail
+   program opens.
 
 **You should see and hear**
-- **Public build (token present):** an in-app **feedback form** opens (labelled
-  fields, keyboard-complete). Submitting files a GitHub issue directly and QUILL
-  records **"Submitted feedback"**. If submission fails for any reason, it must not
-  strand you — it falls back to the online form.
-- **Private / `-SkipToken` build (no token):** QUILL says direct reporting isn't
-  set up in this build, **opens the online support form in your browser, copies
-  the link to your clipboard**, and speaks that it did so. Both paths end with a
-  usable way to file the report — a dead-end at submit is a fail.
+- A form with labelled, keyboard-complete fields: what kind of message, subject,
+  what happened, what you expected, steps, your email address, screen reader.
+  Tab reaches every one, and each answers **F1** with its own help.
+- **Empty form:** the first problem is spoken and the full list is shown.
+  Nothing is opened and nothing is sent.
+- **Valid form:** your own mail program opens with the whole message already
+  written, addressed to **support@community-access.org**, the subject beginning
+  `[QUILL <version>]`, and the app version, Windows version and screen reader
+  at the bottom. QUILL says the message is **ready and not yet sent** — an
+  announcement claiming it was sent is a fail.
+- **An empty email address is accepted**, and the form says a reply is not
+  possible without one rather than refusing to send.
+- **No mail program:** QUILL says so, puts the **whole message and the address**
+  on the clipboard, and shows the address. A dead end here is a fail.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________

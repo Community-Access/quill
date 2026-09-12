@@ -38,7 +38,12 @@ def _make_dialog(wx_app, monkeypatch, *, existing_key: str = ""):
     return dlg, frame, store
 
 
-def test_save_persists_applies_and_clears_the_field(wx_app, monkeypatch) -> None:
+def test_save_persists_applies_and_clears_the_field(wx_app, monkeypatch, absent_env) -> None:
+    # Saving a key applies it to os.environ for the SDK to pick up, which is the
+    # point of the dialog -- and means the test has to guarantee it is gone
+    # again. See _no_environment_leaks in tests/conftest.py for why
+    # monkeypatch.delenv(raising=False) would not.
+    absent_env("OPENAI_API_KEY")
     dlg, frame, store = _make_dialog(wx_app, monkeypatch)
 
     dlg.key_ctrl.SetValue("sk-abc123")

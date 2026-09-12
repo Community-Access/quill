@@ -342,7 +342,7 @@ class CastMenuBarMixin:
         # pinning, items shown only while the feature is on and Safe Mode is off.
         spotify_connect_id, spotify_browse_id = wx.NewIdRef(), wx.NewIdRef()
         if self.features.is_enabled("future.spotify") and not self._safe_mode:
-            help_menu.Append(spotify_connect_id, "Connect to &Spotify...\tCtrl+Alt+S")
+            help_menu.Append(spotify_connect_id, "Connect to Spotif&y...\tCtrl+Alt+S")
             help_menu.Append(spotify_browse_id, "&Browse Spotify Podcasts...\tCtrl+Alt+V")
             self.frame.Bind(
                 wx.EVT_MENU, lambda _e: self.open_spotify_connect(), id=spotify_connect_id
@@ -351,7 +351,7 @@ class CastMenuBarMixin:
                 wx.EVT_MENU, lambda _e: self.open_spotify_browse(), id=spotify_browse_id
             )
         bug_id = wx.NewIdRef()
-        help_menu.Append(bug_id, "Report a &Bug...\tCtrl+Alt+Shift+G")
+        help_menu.Append(bug_id, "Get Help from &Support...\tCtrl+Alt+F2")
         self.frame.Bind(
             wx.EVT_MENU,
             lambda _e: self.report_app_bug(source_app="QUILL Cast", app_version=_VERSION),

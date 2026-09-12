@@ -108,16 +108,16 @@ Source: "..\dist\QuillCast-shared\docs\*"; DestDir: "{app}\docs"; Components: do
 #include "..\..\..\installer\shared-runtime.iss"
 
 [Icons]
-Name: "{group}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.podcasts"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-cast.ico"; Components: main
+Name: "{group}\{#AppName}"; Filename: "{app}\QuillCast.exe"; IconFilename: "{app}\quill-cast.ico"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.podcasts"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-cast.ico"; Tasks: desktopicon; Components: main
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillCast.exe"; IconFilename: "{app}\quill-cast.ico"; Tasks: desktopicon; Components: main
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
 
 [Run]
-Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.podcasts"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
+Filename: "{app}\QuillCast.exe"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
 
 [UninstallDelete]
 ; Only Cast's own payload; the shared runtime is refcounted by the fragment.

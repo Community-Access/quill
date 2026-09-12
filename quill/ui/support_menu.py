@@ -31,6 +31,43 @@ from __future__ import annotations
 from typing import Any
 
 
+def append_get_help_item(
+    host: Any,
+    help_menu: Any,
+    wx: Any,
+    *,
+    source_app: str,
+    app_version: str = "",
+) -> Any:
+    """Append **Get Help from Support...** and bind it. Returns its id ref.
+
+    Every app in the family calls this, including the ones with no shell of
+    their own (QuillBeacon, QuillLite): the label, the key and the flow are
+    written once so that asking for help is the same act everywhere, and so
+    the six apps that had no reporting item at all -- only an address in the
+    About box -- stop being the odd ones out.
+
+    The id is pinned here when the host can pin it; a menu id ref that is
+    garbage-collected can be reissued to a different item, and the symptom is
+    a random menu entry firing the wrong command.
+    """
+    from quill.core.support_message import SUPPORT_MENU_KEY
+    from quill.ui.support_dialog import open_support_message
+
+    item_id = wx.NewIdRef()
+    help_menu.Append(item_id, f"Get Help from &Support...\t{SUPPORT_MENU_KEY}")
+    frame = getattr(host, "frame", host)
+    frame.Bind(
+        wx.EVT_MENU,
+        lambda _e: open_support_message(host, source_app=source_app, app_version=app_version),
+        id=item_id,
+    )
+    keep = getattr(host, "_keep_menu_ids", None)
+    if callable(keep):
+        keep(item_id)
+    return item_id
+
+
 def append_support_items(host: Any, help_menu: Any, wx: Any) -> tuple[Any, ...]:
     """Append the shared items to *help_menu*, bound to *host*.
 

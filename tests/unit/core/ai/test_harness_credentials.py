@@ -53,11 +53,13 @@ def test_persist_stored_apply_and_forget_round_trip(monkeypatch) -> None:
     assert "OPENAI_API_KEY" not in os.environ
 
 
-def test_apply_all_stored_keys_applies_every_supported_pack(monkeypatch) -> None:
+def test_apply_all_stored_keys_applies_every_supported_pack(monkeypatch, absent_env) -> None:
     store = {"openai_agents": "sk-a", "claude_agent_sdk": "sk-b"}
     monkeypatch.setattr("quill.core.assistant_ai.load_provider_api_key", lambda p: store.get(p, ""))
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    # absent_env, not monkeypatch.delenv: apply_all_stored_keys *writes* these,
+    # and a delenv of an already-absent name records nothing to undo -- so a
+    # fake API key survived into every later test. See tests/conftest.py.
+    absent_env("OPENAI_API_KEY", "ANTHROPIC_API_KEY")
 
     hc.apply_all_stored_keys()
 
@@ -67,10 +69,11 @@ def test_apply_all_stored_keys_applies_every_supported_pack(monkeypatch) -> None
     assert os.environ["ANTHROPIC_API_KEY"] == "sk-b"
 
 
-def test_apply_all_stored_keys_skips_packs_with_no_saved_key(monkeypatch) -> None:
+def test_apply_all_stored_keys_skips_packs_with_no_saved_key(monkeypatch, absent_env) -> None:
     monkeypatch.setattr("quill.core.assistant_ai.load_provider_api_key", lambda p: "")
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    # Nothing is written on this path, so nothing can leak -- but it is the
+    # same call under test, and the pair should not be read as differing.
+    absent_env("OPENAI_API_KEY", "ANTHROPIC_API_KEY")
 
     hc.apply_all_stored_keys()
 

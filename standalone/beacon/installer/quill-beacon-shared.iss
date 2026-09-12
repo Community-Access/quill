@@ -88,16 +88,16 @@ Source: "..\dist\QuillBeacon-shared\docs\*"; DestDir: "{app}\docs"; Components: 
 #include "..\..\..\installer\shared-runtime.iss"
 
 [Icons]
-Name: "{group}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.beacon"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-beacon.ico"; Components: main
+Name: "{group}\{#AppName}"; Filename: "{app}\QuillBeacon.exe"; IconFilename: "{app}\quill-beacon.ico"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\USER-GUIDE-QuillSync.md"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.beacon"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-beacon.ico"; Tasks: desktopicon; Components: main
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillBeacon.exe"; IconFilename: "{app}\quill-beacon.ico"; Tasks: desktopicon; Components: main
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
 
 [Run]
-Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.beacon"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
+Filename: "{app}\QuillBeacon.exe"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
 
 [UninstallDelete]
 ; Only Beacon's own payload; the shared runtime is refcounted by the

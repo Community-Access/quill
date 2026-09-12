@@ -139,16 +139,16 @@ Source: "..\dist\QuillAudioStudio\docs\*"; DestDir: "{app}\docs"; Components: do
 ; Every shortcut launches through the shared runtime. WorkingDir is the
 ; shared runtime dir so `python -m quill.apps.studio` finds the per-app
 ; quill package at the shared location's sitecustomize path.
-Name: "{group}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.studio"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-audio-studio.ico"; Components: main
+Name: "{group}\{#AppName}"; Filename: "{app}\QuillAudioStudio.exe"; IconFilename: "{app}\quill-audio-studio.ico"; Components: main
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.studio"; WorkingDir: "{code:RuntimeDir}"; IconFilename: "{app}\quill-audio-studio.ico"; Tasks: desktopicon; Components: main
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillAudioStudio.exe"; IconFilename: "{app}\quill-audio-studio.ico"; Tasks: desktopicon; Components: main
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
 
 [Run]
-Filename: "{code:RuntimeExe}"; Parameters: "-m quill.apps.studio"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
+Filename: "{app}\QuillAudioStudio.exe"; Description: "Launch {#AppName}"; Flags: postinstall nowait skipifsilent unchecked
 
 [UninstallDelete]
 ; Remove only Audio Studio's own {app} payload. The shared runtime is

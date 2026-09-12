@@ -245,6 +245,11 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
         help_menu = wx.Menu()
         updates_id, about_id = wx.NewIdRef(), wx.NewIdRef()
         help_menu.Append(updates_id, "Check for &Updates...\tCtrl+Alt+U")
+        # Every app in the family answers the same question the same way:
+        # one item, one key, one form that reaches a person who can reply.
+        from quill.ui.support_menu import append_get_help_item
+
+        append_get_help_item(self, help_menu, wx, source_app=_TITLE, app_version=_VERSION)
         help_menu.Append(about_id, "&About Quill Media Player\tCtrl+Alt+A")
         self.frame.Bind(
             wx.EVT_MENU,

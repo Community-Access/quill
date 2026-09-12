@@ -111,6 +111,42 @@ def feedback_server_url() -> str:
     return DEFAULT_FEEDBACK_SERVER
 
 
+def hub_accepts_server_url() -> bool:
+    """True when the installed feedback-hub can post to a server at all.
+
+    Asked of the *installed* package rather than assumed, and that is the whole
+    reason this function exists: ``submission_kwargs()`` shipped ``server_url``
+    to a feedback-hub 1.1.0 that has no such parameter, so every Report a Bug
+    raised ``TypeError`` inside the dialog constructor and fell through to the
+    "the issue form could not be submitted" browser fallback. Nobody noticed,
+    because the fallback works. The signature is the truth; ask it.
+    """
+    import inspect
+
+    try:
+        from feedback_hub.wx_dialog import FeedbackDialog
+    except Exception:  # noqa: BLE001 - a missing/broken feedback_hub is non-fatal
+        return False
+    try:
+        parameters = inspect.signature(FeedbackDialog.__init__).parameters
+    except (TypeError, ValueError):
+        return False
+    return "server_url" in parameters or any(
+        parameter.kind is parameter.VAR_KEYWORD for parameter in parameters.values()
+    )
+
+
+def server_transport_available() -> bool:
+    """True when a support message can be relayed by the submission server.
+
+    Both halves have to be true: a server to post to, and an installed
+    feedback-hub that knows how. When either is missing the app falls back to
+    the reader's own mail client -- never to GitHub, because a support message
+    must not land in a public repository.
+    """
+    return bool(feedback_server_url()) and hub_accepts_server_url()
+
+
 def submission_kwargs() -> dict[str, str]:
     """The transport arguments for ``FeedbackDialog`` and ``submit()``.
 
@@ -118,11 +154,17 @@ def submission_kwargs() -> dict[str, str]:
     order of preference. ``server_url`` wins inside feedback-hub when both are
     given, which is what makes a build shippable with no token at all: the
     token here is only the fallback for a build with no server configured.
+
+    Filtered to what the installed feedback-hub actually accepts, so an older
+    package degrades instead of raising.
     """
-    return {
+    kwargs = {
         "server_url": feedback_server_url(),
         "github_token": effective_github_token(),
     }
+    if not hub_accepts_server_url():
+        kwargs.pop("server_url")
+    return kwargs
 
 
 def can_submit_reports() -> bool:

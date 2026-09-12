@@ -197,9 +197,103 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content">
 <h1 id="quilllite-changelog">QuillLite changelog</h1>
-<h2 id="unreleased">Unreleased</h2>
+<h2 id="100--2026-09-12">1.0.0 – 2026-09-12</h2>
+<p>First release. QUILL with everything removed except the editor:
+numbered documents in one window, plain text or rich text, and nothing
+else.</p>
+<p>Contributed as <a
+href="https://github.com/Community-Access/quill/pull/1490">PR #1490</a>
+by Steven Scott (<code>doubletaponair</code>) under this repository’s
+MIT licence, and adopted into the QuillVille family here.</p>
+<h3 id="changed">Changed</h3>
+<ul>
+<li><p><strong>Page Setup moved to Ctrl+Alt+P.</strong> It had
+Ctrl+Alt+U, which is Check for Updates in every other app in the family
+– a chord that means one thing in eight apps and something else in the
+ninth is the kind of difference nobody finds until it does the wrong
+thing.</p></li>
+<li><p><strong>The menu bar is Notepad’s and WordPad’s again: File,
+Edit, View, Format, Navigate, Tools, Window, Help.</strong> Eight menus
+where there were ten. Clipboard and Spelling were top-level menus of
+their own – two more things to walk past on every Alt press, for two
+features neither Notepad nor WordPad puts on the bar at all. They are
+now <strong>Edit ▸ Clipboard</strong> and <strong>Tools ▸
+Spelling</strong>.</p></li>
+<li><p><strong>Line work moved from Tools to Edit ▸ Lines</strong>,
+which is where editing belongs: moving, duplicating, joining and
+deleting lines, sorting, reversing and numbering them, and removing
+blanks, duplicates, trailing spaces and stray whitespace – all in one
+submenu, grouped by what they do, instead of spread down a Tools menu
+with a <em>More Line Work</em> submenu hanging off it. Change Case
+became <strong>Tools ▸ Change Case</strong>. <strong>No shortcut
+changed</strong>: every key is exactly where your fingers left
+it.</p></li>
+<li><p><strong>Navigate ▸ Bookmarks.</strong> Set Bookmark 1 to 9 was
+nine of the fourteen rows in Navigate and almost none of its use, so a
+listener arrowing down the menu walked past all nine to reach anything
+else. They are a submenu now. Go Back and Go Forward moved here from
+Edit, to the top, where the moving-about commands are.</p></li>
+<li><p><strong>Format ▸ Editor Font</strong>, moved from View, because
+Notepad has kept Font under Format since 1985 and because the editor
+font is not a rich-text feature. It is the one row the Format menu keeps
+if you switch rich text off – which leaves you with Notepad’s Format
+menu, exactly.</p></li>
+<li><p><strong>Preferences and Customize Features moved to
+Tools</strong>, where Windows applications have kept their settings
+since Word 6.</p></li>
+</ul>
 <h3 id="added">Added</h3>
 <ul>
+<li><p><strong>Get Help from Support (Ctrl+Alt+F2).</strong> QuillLite
+shipped with no way to report anything: only an address printed in the
+About box to copy out by hand. Help &gt; Get Help from Support… now
+opens a short form – what kind of message this is, a subject, what
+happened, and optionally what you expected and how to reproduce it – and
+hands the finished message to <strong>your own mail program</strong>,
+addressed to <a
+href="mailto:support@community-access.org">support@community-access.org</a>,
+with QuillLite’s version, your Windows version and your screen reader
+already filled in.</p>
+<p>Your email address is optional: you can report a problem without
+giving one, you simply cannot be replied to. Nothing leaves the machine
+until you send it yourself, and QuillLite says so out loud rather than
+claiming to have sent something it has not. On a machine with no mail
+program set up – webmail only – the whole message and the address go to
+the clipboard instead, so nothing typed is lost. Writing to <a
+href="mailto:support@community-access.org">support@community-access.org</a>
+directly works exactly as well; there is no form anybody has to use.</p>
+<p>The family’s old reporting item filed a <strong>public GitHub
+issue</strong> through a token baked into every installer, which
+published whatever the reporter mentioned – their configuration, their
+employer, the document they were working on – permanently and
+searchably, and left them no way to be answered without a GitHub
+account. That transport is gone everywhere, not just here.</p></li>
+<li><p><strong>The feature profile is in Preferences too</strong>, at
+the top: the same four whole answers (Recommended, Everything, WordPad,
+Notepad) with a read-only box that says exactly what each would change.
+Customize Features is named after a mechanism; “make this Notepad” is a
+preference.</p></li>
+<li><p><strong>A spelling context menu.</strong> With the caret in a
+misspelled word, the Applications key opens with the corrections at the
+top – then Ignore Once, Ignore in This Document, Add to My Dictionary,
+Add to This Document Only, and the way on to More Suggestions, Check
+Document and Next/Previous Misspelling with their keys. Every row names
+the word. A correctly spelled word gets the ordinary edit menu, and that
+menu keeps everything Windows put in it.</p></li>
+<li><p><strong>Check for Updates (Ctrl+Alt+U).</strong> QuillLite
+shipped with no way at all to learn that a newer version existed – the
+app most likely to be somebody’s only Quill product, and the one whose
+users are least likely to go looking on GitHub. Help ▸ Check for
+Updates… now opens on <strong>what changed</strong> in the newer
+version, with <strong>Update</strong> and <strong>Close</strong> beside
+it, and offers to install and restart for you when the download
+finishes. Nothing downloads until you press Update. It is the same key
+and the same window every other app in the family uses.</p></li>
+<li><p><strong>A quiet daily look, off by one tick.</strong> QuillLite
+also checks once a day when it starts and says nothing unless there is
+something – not while it checks, not when there is nothing, and not when
+the network is down. Settings ▸ “Look for updates when QuillLite starts”
+turns it off; Ctrl+Alt+U still works.</p></li>
 <li><p><strong>Sound works at all.</strong> Two bugs meant no earcon in
 either editor had ever played: the sound pack was never loaded (the
 manager reloads only when the pack path <em>changes</em>, and the
@@ -235,87 +329,6 @@ like.</p></li>
 after a pause. “receive” and “recieve” are the same sound, so hearing
 the word tells you nothing; the letters are the answer. Press the next
 key and the spelling is cancelled unheard.</p></li>
-</ul>
-<h3 id="fixed">Fixed</h3>
-<ul>
-<li><p><strong>Spell check as you type had never once fired.</strong> It
-asked for a word beginning exactly at the cursor, which typing left to
-right never produces – the cursor is always at or past the end of the
-word you just finished. The status line, the file-type exemptions and
-the setting all existed and none of them had ever run.</p></li>
-<li><p><strong>Ordinals are no longer misspellings.</strong> “the 13th
-of May” reported “th” as a misspelling, at a position inside a number,
-for a word you never typed. The same fix covers 3D, 1080p, 500ml and
-12pt.</p></li>
-</ul>
-<h3 id="added-1">Added</h3>
-<ul>
-<li><p><strong>The feature profile is in Preferences too</strong>, at
-the top: the same four whole answers (Recommended, Everything, WordPad,
-Notepad) with a read-only box that says exactly what each would change.
-Customize Features is named after a mechanism; “make this Notepad” is a
-preference.</p></li>
-<li><p><strong>A spelling context menu.</strong> With the caret in a
-misspelled word, the Applications key opens with the corrections at the
-top – then Ignore Once, Ignore in This Document, Add to My Dictionary,
-Add to This Document Only, and the way on to More Suggestions, Check
-Document and Next/Previous Misspelling with their keys. Every row names
-the word. A correctly spelled word gets the ordinary edit menu, and that
-menu keeps everything Windows put in it.</p></li>
-</ul>
-<h3 id="fixed-1">Fixed</h3>
-<ul>
-<li><p><strong>Choosing a profile in Customize Features now applies
-it.</strong> It used to need a second press of a <strong>Use
-Profile</strong> button that nothing mentioned, so choosing Notepad and
-pressing Save kept every feature you had – and the Format menu the
-description had just promised would be gone. Choosing applies; Custom
-puts the boxes back to how you found them; nothing is saved until
-Save.</p></li>
-<li><p><strong>Each profile now shows what it would do</strong>,
-computed from the feature list so it cannot go stale, in a read-only box
-a screen reader can arrow through rather than a caption it can only read
-all at once.</p></li>
-<li><p><strong>Spelling for This Word (Shift+F7) and Add Word to
-Dictionary (Alt+F7) work from anywhere in the word.</strong> They used
-to answer only when the caret was on its first character, and said “No
-misspelling at the cursor” everywhere else.</p></li>
-</ul>
-<h2 id="100--2026-09-09">1.0.0 – 2026-09-09</h2>
-<h3 id="changed">Changed</h3>
-<ul>
-<li><p><strong>The menu bar is Notepad’s and WordPad’s again: File,
-Edit, View, Format, Navigate, Tools, Window, Help.</strong> Eight menus
-where there were ten. Clipboard and Spelling were top-level menus of
-their own – two more things to walk past on every Alt press, for two
-features neither Notepad nor WordPad puts on the bar at all. They are
-now <strong>Edit ▸ Clipboard</strong> and <strong>Tools ▸
-Spelling</strong>.</p></li>
-<li><p><strong>Line work moved from Tools to Edit ▸ Lines</strong>,
-which is where editing belongs: moving, duplicating, joining and
-deleting lines, sorting, reversing and numbering them, and removing
-blanks, duplicates, trailing spaces and stray whitespace – all in one
-submenu, grouped by what they do, instead of spread down a Tools menu
-with a <em>More Line Work</em> submenu hanging off it. Change Case
-became <strong>Tools ▸ Change Case</strong>. <strong>No shortcut
-changed</strong>: every key is exactly where your fingers left
-it.</p></li>
-<li><p><strong>Navigate ▸ Bookmarks.</strong> Set Bookmark 1 to 9 was
-nine of the fourteen rows in Navigate and almost none of its use, so a
-listener arrowing down the menu walked past all nine to reach anything
-else. They are a submenu now. Go Back and Go Forward moved here from
-Edit, to the top, where the moving-about commands are.</p></li>
-<li><p><strong>Format ▸ Editor Font</strong>, moved from View, because
-Notepad has kept Font under Format since 1985 and because the editor
-font is not a rich-text feature. It is the one row the Format menu keeps
-if you switch rich text off – which leaves you with Notepad’s Format
-menu, exactly.</p></li>
-<li><p><strong>Preferences and Customize Features moved to
-Tools</strong>, where Windows applications have kept their settings
-since Word 6.</p></li>
-</ul>
-<h3 id="added-2">Added</h3>
-<ul>
 <li><p><strong>View ▸ Status Bar (Alt+Shift+B)</strong> hides and shows
 the status bar, the way Notepad’s has since Windows 95. Nothing is lost
 while it is away: Ctrl+Alt+W speaks the counts and Ctrl+G asks for a
@@ -334,96 +347,6 @@ so the moment you want it off is usually the moment it has just expanded
 something you meant to keep – and a dialog three keystrokes away is
 three too many. It is the same switch as the Abbreviations box in
 Customize Features.</p></li>
-</ul>
-<h3 id="fixed-2">Fixed</h3>
-<ul>
-<li><p><strong>A screen reader read the line above the cursor on every
-empty line.</strong> Type a line, press Enter, and ask JAWS to read the
-current line: it said the line you had just finished instead of “blank”.
-Not a speech bug and not a JAWS bug – the control was answering the
-question wrongly. QuillLite put the Rich Edit into its own plain-text
-mode (<code>EM_SETTEXTMODE</code> / <code>TM_PLAINTEXT</code>), and in
-that mode RICHEDIT50W does not count the position after a trailing line
-break as a line of its own: asked which line the caret was on, it named
-the previous one, and a screen reader read out what it was told. The
-control now stays in rich-text mode whatever the document is, and the
-plain/rich distinction lives where it belongs – in the document,
-deciding what the Format menu allows and what a save writes. One
-consequence, deliberately: <strong>pasting into a plain text document is
-always a plain paste</strong>, because a plain document must not pick up
-formatting it would silently drop at the next save.</p></li>
-<li><p><strong>Page Setup and Customize Features did nothing.</strong>
-Two menu items that opened no window and said nothing: Page Setup used
-<code>with</code> on the one wx dialog that is not a context manager,
-and Customize Features called a method by a name it does not have. Both
-failed inside the menu handler, where wx swallows the error, so there
-was nothing to see.</p></li>
-<li><p><strong>Ampersands showed in the Find and Replace search-mode
-boxes.</strong> The three rows read “&amp;Normal”, “&amp;Escapes” and
-“Re&amp;gular expression” on screen and out loud. An ampersand is an
-access key in a button or a menu item and a literal character in a list
-row, and these were list rows. They are also better named now: “Normal
-text”, “Special characters ( , )” and “Regular expression”, because
-“Escapes” names the mechanism rather than the job.</p></li>
-<li><p><strong>“Entered Preferences dialog” / “Exited Preferences
-dialog”.</strong> QuillLite no longer speaks either, for any dialog. A
-screen reader announces a dialog by its title when it opens and says
-where focus lands when it closes; saying it again is the app talking
-over the reader.</p></li>
-<li><p><strong>The Preferences font button said only “Choose”.</strong>
-A button is announced on its own, so “Choose button” named no noun and
-the only way to find out what it chose was to press it. It is “Change
-Font…” now. Two access keys in that window were also claimed twice, so
-one of each pair could not be pressed.</p></li>
-<li><p><strong>Heading 5 and Heading 6 could be applied and never found
-again.</strong> Both sat at the 11-point body size, so the ladder could
-not tell either from an ordinary paragraph: heading navigation and the
-headings list walked straight past them. They have sizes of their own
-now (11.5 and 10.5), which is what made it honest to offer all six in
-<strong>Format ▸ Headings</strong>, each on its own digit — Alt+O, H, 3
-and Ctrl+Alt+3 are the same three.</p></li>
-<li><p><strong>Format ▸ Structure survived rich text being switched
-off</strong>, offering to promote and demote headings in a plain text
-document that cannot have any.</p></li>
-<li><p><strong>All Matches and Count Occurrences refused instead of
-asking.</strong> With nothing searched for yet they said “Search for
-something first”, which is true and a dead end. They open Find
-now.</p></li>
-<li><p><strong>Markdown is gone from the Save As type list.</strong> A
-type in a Save As box is a promise about what will be written, and there
-is no Markdown writer: picking it saved the same plain text under a
-different extension. Opening a <code>.md</code> is unchanged.</p></li>
-<li><p><strong>The menu bar had a “Document” item before File, and two
-menus called Window.</strong> Both came from the MDI machinery rather
-than from QuillLite. Windows adds a maximised child’s system menu to the
-menu bar as an untitled icon, which a screen reader announces as
-“Document”, so pressing Alt landed on “Document” instead of File; and
-wxWidgets builds a <em>Window</em> menu of its own (Cascade, Tile,
-Arrange Icons) and inserted it beside the one QuillLite builds, so the
-bar said “Window” twice with no way to tell which was which. The system
-menu is gone – along with the three unnamed minimise, restore and close
-icons at the other end – and wx’s Window menu with it. QuillLite’s own
-Window menu, the one that lists your documents by number, is the one
-that stayed.</p></li>
-<li><p><strong>Format ▸ Structure survived rich text being switched
-off</strong>, offering to promote and demote headings in a plain text
-document that cannot have any.</p></li>
-<li><p><strong>The portable copy stopped leaving itself on the host
-machine.</strong> A portable QuillLite wrote its settings, recent files
-and – worse – its <em>recovery copies of unsaved documents</em> into
-<code>%LOCALAPPDATA%\QuillLite</code> on whatever computer it was
-plugged into, instead of into the <code>data</code> folder on the stick.
-Nothing said so, and the bundle even shipped a file asking for portable
-mode that was never read, because a bundle has to be recognised as
-portable before that file can be found – and <code>QuillLite.exe</code>
-was missing from the list of names that counts as recognition. Inkwell,
-Beacon, Social and Cast were missing from it too. If you have been
-carrying a portable QuillLite, that folder is where anything you seem to
-have lost will be, and it is worth deleting once you have what you want
-out of it.</p></li>
-</ul>
-<h3 id="added-3">Added</h3>
-<ul>
 <li><p><strong>Bookmarks and your place in the file survive closing the
 document.</strong> The reason to have numbered bookmarks at all is that
 there is no scrollbar thumb to glance at in a long file – and that does
@@ -486,17 +409,6 @@ there when you listen to it – and it also tells you the thing nothing
 else will, that this line is indented with a tab while its neighbours
 use spaces. Added to QUILL first, on the same key, because QuillLite may
 never be ahead of the editor.</p></li>
-</ul>
-<h2 id="100--2026-09-08">1.0.0 – 2026-09-08</h2>
-<p>First release. QUILL with everything removed except the editor:
-numbered documents in one window, plain text or rich text, and nothing
-else.</p>
-<p>Contributed as <a
-href="https://github.com/Community-Access/quill/pull/1490">PR #1490</a>
-by Steven Scott (<code>doubletaponair</code>) under this repository’s
-MIT licence, and adopted into the QuillVille family here.</p>
-<h3 id="added-4">Added</h3>
-<ul>
 <li><p><strong>An application icon of its own.</strong> A white page
 with a folded corner and two amber lines of writing, on a forest-green
 tile. Every other glyph in the family is round, pointed, or built from
@@ -683,6 +595,117 @@ offers <em>Open with QuillLite</em> for <code>.txt</code> and
 <code>.rtf</code> as a component, never as the default handler. An
 editor that quietly takes over every <code>.txt</code> on a machine is
 an editor people uninstall.</p></li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li><p><strong>Choosing a profile in Customize Features now applies
+it.</strong> It used to need a second press of a <strong>Use
+Profile</strong> button that nothing mentioned, so choosing Notepad and
+pressing Save kept every feature you had – and the Format menu the
+description had just promised would be gone. Choosing applies; Custom
+puts the boxes back to how you found them; nothing is saved until
+Save.</p></li>
+<li><p><strong>Each profile now shows what it would do</strong>,
+computed from the feature list so it cannot go stale, in a read-only box
+a screen reader can arrow through rather than a caption it can only read
+all at once.</p></li>
+<li><p><strong>Spelling for This Word (Shift+F7) and Add Word to
+Dictionary (Alt+F7) work from anywhere in the word.</strong> They used
+to answer only when the caret was on its first character, and said “No
+misspelling at the cursor” everywhere else.</p></li>
+<li><p><strong>Spell check as you type had never once fired.</strong> It
+asked for a word beginning exactly at the cursor, which typing left to
+right never produces – the cursor is always at or past the end of the
+word you just finished. The status line, the file-type exemptions and
+the setting all existed and none of them had ever run.</p></li>
+<li><p><strong>Ordinals are no longer misspellings.</strong> “the 13th
+of May” reported “th” as a misspelling, at a position inside a number,
+for a word you never typed. The same fix covers 3D, 1080p, 500ml and
+12pt.</p></li>
+<li><p><strong>A screen reader read the line above the cursor on every
+empty line.</strong> Type a line, press Enter, and ask JAWS to read the
+current line: it said the line you had just finished instead of “blank”.
+Not a speech bug and not a JAWS bug – the control was answering the
+question wrongly. QuillLite put the Rich Edit into its own plain-text
+mode (<code>EM_SETTEXTMODE</code> / <code>TM_PLAINTEXT</code>), and in
+that mode RICHEDIT50W does not count the position after a trailing line
+break as a line of its own: asked which line the caret was on, it named
+the previous one, and a screen reader read out what it was told. The
+control now stays in rich-text mode whatever the document is, and the
+plain/rich distinction lives where it belongs – in the document,
+deciding what the Format menu allows and what a save writes. One
+consequence, deliberately: <strong>pasting into a plain text document is
+always a plain paste</strong>, because a plain document must not pick up
+formatting it would silently drop at the next save.</p></li>
+<li><p><strong>Page Setup and Customize Features did nothing.</strong>
+Two menu items that opened no window and said nothing: Page Setup used
+<code>with</code> on the one wx dialog that is not a context manager,
+and Customize Features called a method by a name it does not have. Both
+failed inside the menu handler, where wx swallows the error, so there
+was nothing to see.</p></li>
+<li><p><strong>Ampersands showed in the Find and Replace search-mode
+boxes.</strong> The three rows read “&amp;Normal”, “&amp;Escapes” and
+“Re&amp;gular expression” on screen and out loud. An ampersand is an
+access key in a button or a menu item and a literal character in a list
+row, and these were list rows. They are also better named now: “Normal
+text”, “Special characters ( , )” and “Regular expression”, because
+“Escapes” names the mechanism rather than the job.</p></li>
+<li><p><strong>“Entered Preferences dialog” / “Exited Preferences
+dialog”.</strong> QuillLite no longer speaks either, for any dialog. A
+screen reader announces a dialog by its title when it opens and says
+where focus lands when it closes; saying it again is the app talking
+over the reader.</p></li>
+<li><p><strong>The Preferences font button said only “Choose”.</strong>
+A button is announced on its own, so “Choose button” named no noun and
+the only way to find out what it chose was to press it. It is “Change
+Font…” now. Two access keys in that window were also claimed twice, so
+one of each pair could not be pressed.</p></li>
+<li><p><strong>Heading 5 and Heading 6 could be applied and never found
+again.</strong> Both sat at the 11-point body size, so the ladder could
+not tell either from an ordinary paragraph: heading navigation and the
+headings list walked straight past them. They have sizes of their own
+now (11.5 and 10.5), which is what made it honest to offer all six in
+<strong>Format ▸ Headings</strong>, each on its own digit — Alt+O, H, 3
+and Ctrl+Alt+3 are the same three.</p></li>
+<li><p><strong>Format ▸ Structure survived rich text being switched
+off</strong>, offering to promote and demote headings in a plain text
+document that cannot have any.</p></li>
+<li><p><strong>All Matches and Count Occurrences refused instead of
+asking.</strong> With nothing searched for yet they said “Search for
+something first”, which is true and a dead end. They open Find
+now.</p></li>
+<li><p><strong>Markdown is gone from the Save As type list.</strong> A
+type in a Save As box is a promise about what will be written, and there
+is no Markdown writer: picking it saved the same plain text under a
+different extension. Opening a <code>.md</code> is unchanged.</p></li>
+<li><p><strong>The menu bar had a “Document” item before File, and two
+menus called Window.</strong> Both came from the MDI machinery rather
+than from QuillLite. Windows adds a maximised child’s system menu to the
+menu bar as an untitled icon, which a screen reader announces as
+“Document”, so pressing Alt landed on “Document” instead of File; and
+wxWidgets builds a <em>Window</em> menu of its own (Cascade, Tile,
+Arrange Icons) and inserted it beside the one QuillLite builds, so the
+bar said “Window” twice with no way to tell which was which. The system
+menu is gone – along with the three unnamed minimise, restore and close
+icons at the other end – and wx’s Window menu with it. QuillLite’s own
+Window menu, the one that lists your documents by number, is the one
+that stayed.</p></li>
+<li><p><strong>Format ▸ Structure survived rich text being switched
+off</strong>, offering to promote and demote headings in a plain text
+document that cannot have any.</p></li>
+<li><p><strong>The portable copy stopped leaving itself on the host
+machine.</strong> A portable QuillLite wrote its settings, recent files
+and – worse – its <em>recovery copies of unsaved documents</em> into
+<code>%LOCALAPPDATA%\QuillLite</code> on whatever computer it was
+plugged into, instead of into the <code>data</code> folder on the stick.
+Nothing said so, and the bundle even shipped a file asking for portable
+mode that was never read, because a bundle has to be recognised as
+portable before that file can be found – and <code>QuillLite.exe</code>
+was missing from the list of names that counts as recognition. Inkwell,
+Beacon, Social and Cast were missing from it too. If you have been
+carrying a portable QuillLite, that folder is where anything you seem to
+have lost will be, and it is worth deleting once you have what you want
+out of it.</p></li>
 </ul>
 <h3 id="fixed-in-quill-for-every-quill-user">Fixed (in QUILL, for every
 QUILL user)</h3>

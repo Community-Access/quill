@@ -91,7 +91,7 @@ and you will finish with a station playing, a favorite saved, a recording made,
 and the six keys that matter in your fingers.
 
 If something does not happen as described, that is worth reporting rather than
-working around -- **Alt+H**, then **R** for **Report a Bug...**, fills most of
+working around -- **Ctrl+Alt+F2** for **Get Help from Support...**, fills most of
 the report in for you.
 
 Throughout: **Escape** always steps back out of wherever you are, and no step
@@ -708,7 +708,7 @@ Quill Radio picks the file type for you from the stream's own format: an MP3 str
 - **Check for Updates...** (Ctrl+Alt+U) -- compares your version with the newest release, downloads **the edition you are actually running** with spoken progress, then offers Install now or Open folder. A release publishes four downloads -- the full installer, the thin "Lite" installer, the portable zip, and the Companion zip -- and each installer records which one it laid down, so an update gives you the same kind back. (Before 3.0 the choice was made by file extension, and the "are you portable?" test looked for an uninstaller beside the running program -- which, on the shared runtime, lives in your AppData folder where no uninstaller sits. Nearly every installed listener was therefore offered the portable zip. If that happened to you, this is the fix; you do not need to reinstall by hand, though installing once over the top records your edition so future updates are exact.) Already up to date shows a dialog too, not just a spoken announcement. Quill Radio also runs this check quietly once a day when it launches -- silent unless it actually finds something, and Station > Preferences (Ctrl+,) turns it off if you'd rather check manually only.
 - **Get FFmpeg...** -- a safety net: FFmpeg ships inside Quill Radio, but if it ever goes missing this downloads the official build so recording works again.
 - **User Guide** (Ctrl+F1) / **Release Notes** (Shift+F1) / **Product Requirements...** (Alt+Shift+F1) -- this guide, the version history, and the product requirements document, each opened right in your browser. (F1 itself is context help now, matching QUILL's editor: F1 answers for the control you are on, Ctrl+F1 opens the guide.)
-- **Report a Bug...** -- files an issue directly from the app (no GitHub account needed), stamped "Quill Radio" with this app's own version so we know exactly what you were running; falls back to the online support form if anything goes wrong.
+- **Get Help from Support...** -- writes to support@community-access.org from inside the app, stamped "Quill Radio" with this app's own version so we know exactly what you were running. Your own mail program opens with the whole message ready; nothing is sent until you send it there, and a machine with no mail program gets the message on its clipboard instead.
 - **Repeat Last Announcement** and **Announcement Self-Test...** (Command Palette) -- speech disappears the moment it finishes, so Repeat Last Announcement says the last thing Quill Radio told you all over again. The Self-Test announces a test phrase and then reports which channels actually delivered it -- speech, braille, sound -- and which screen-reader connection served each. It is the quickest way to tell "braille is not working" apart from "no braille display is connected", which otherwise look identical.
 - **About Quill Radio** -- version, sync statement, project address.
 
@@ -1848,9 +1848,10 @@ These keys belong to Quill Radio's own menus and are kept separate from QUILL's 
 
 Support is run by **Community Access**. Write to
 **support@community-access.org** with questions, problems, or ideas -- a
-person reads it, and replies come back by email. Report a Bug (on the Help
-menu) still files directly from the app; the address is for everything that
-is not a bug report, and for anyone who simply prefers email.
+person reads it, and replies come back by email. **Get Help from Support...**
+(Ctrl+Alt+F2, on the Help menu) writes that email for you, with the app's
+name and version filled in; writing to the address yourself works exactly as
+well.
 
 ## Troubleshooting
 
@@ -1865,4 +1866,4 @@ is not a bug report, and for anyone who simply prefers email.
 - **The wake-up timer did not fire.** Quill Radio (or QUILL) must be running at the set time -- the tray counts, a closed app does not. It also never retro-fires: opening the app hours after the set time stays silent until the next occurrence.
 - **The tray icon is gone.** Check the taskbar overflow area, or set Quill Radio to "always show" in Windows taskbar settings.
 - **Rewind, Volume Boost, or the output device "needs the mpv playback engine."** Preferences (Ctrl+,) > Playback engine is set to Windows Media (classic), or the bundled engine is missing. Set it back to Automatic; these features live in the mpv engine.
-- **Playback sounds different since 1.1.0.** It shouldn't -- but if anything about the new engine bothers you, Preferences (Ctrl+,) > Playback engine > "Windows Media (classic)" is exactly the old behavior. Please report what you heard either way (Help > Report a Bug...).
+- **Playback sounds different since 1.1.0.** It shouldn't -- but if anything about the new engine bothers you, Preferences (Ctrl+,) > Playback engine > "Windows Media (classic)" is exactly the old behavior. Please report what you heard either way (Help > Get Help from Support...).
