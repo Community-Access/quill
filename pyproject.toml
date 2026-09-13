@@ -158,7 +158,7 @@ speech = ["sounddevice>=0.5.5"]
 # fetches its CTranslate2 model repositories. Users opt in via AI > Speech >
 # Manage Speech Models > Speech Engine; the bundled whisper.cpp engine remains
 # the default and needs none of this.
-fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.27.0"]
+fasterwhisper = ["faster-whisper>=1.2.1", "huggingface_hub>=1.30.0"]
 # Optional very-low-resource offline English engine: Vosk (Kaldi) (#669). Tiny
 # CPU-only models (~40 MB) for old/constrained machines. Models download from
 # alphacephei.com via Manage Speech Models; no GPU needed.
@@ -176,7 +176,7 @@ nemotron = ["sherpa-onnx>=1.13.0", "numpy>=2.5.2"]
 # behavioural contract and always present; this extra only makes the same
 # answers faster, which matters when batch transcription runs the corrector
 # over hour-long files. Small MIT wheel, no transitive deps, no torch.
-rapidfuzz = ["rapidfuzz>=3.14.0"]
+rapidfuzz = ["rapidfuzz>=3.14.6"]
 # MP3 chapter markers for batch document-to-speech (§4.8): mutagen writes the
 # ID3v2.3 CHAP/CTOC frames. Imported lazily in quill/core/speech/chapters.py.
 mp3 = ["mutagen>=1.48.1"]
@@ -196,7 +196,12 @@ docx = ["python-docx>=1.1.0"]
 # Optional: the ElevenLabs AI Voice provider is inert unless this is installed and
 # an "ElevenLabs API key" credential is configured. All calls go through the
 # host-owned gateway quill/core/ai/elevenlabs_tts.py (the only importer of the SDK).
-elevenlabs = ["elevenlabs>=2.64.0"]
+# Upper-bounded on purpose. [tool.uv] sets prerelease = "allow" globally (for
+# azure-ai-contentunderstanding's sake), so an unbounded floor let `uv lock`
+# quietly resolve elevenlabs 3.0.0a1 -- an alpha of a major version, chosen by
+# a lock refresh rather than by anybody. A major bump of a provider SDK is a
+# decision; raise the ceiling when it is made.
+elevenlabs = ["elevenlabs>=2.67.0,<3"]
 # Native Windows OCR (OCR-1): thin pip wheels projecting the Windows.Media.Ocr
 # WinRT APIs that ship inside Windows 10/11. The OCR engine itself is a built-in
 # OS component, so end users install nothing extra — bundling these wheels makes
@@ -243,7 +248,7 @@ pages = ["keynote-parser>=1.14.5.0"]
 pdf-ocr = [
     "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.7",
     "pdfplumber>=0.11.10",
-    "pypdf>=6.16.1",
+    "pypdf>=6.18.0",
 ]
 # The lean half of pdf-ocr, and the half that actually ships (#1279). MarkItDown
 # is the better reader, but its dependency chain is not lean: magika (its stream
@@ -257,7 +262,7 @@ pdf-ocr = [
 # one-click download for anyone who wants it (Help > Download Optional Components).
 office-text = [
     "pdfplumber>=0.11.10",
-    "pypdf>=6.16.1",
+    "pypdf>=6.18.0",
     "openpyxl>=3.1.5",
 ]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,
@@ -292,13 +297,13 @@ math = ["latex2mathml>=3.81.0"]
 # backend used by Ask Quill on macOS.
 macos = [
     "py2app>=0.28.10; sys_platform == 'darwin'",
-    "setuptools<83; sys_platform == 'darwin'",
+    "setuptools<85; sys_platform == 'darwin'",
     "pyobjc>=12.2.2; sys_platform == 'darwin'",
     "apple-fm-sdk>=0.2.1; sys_platform == 'darwin'",
 ]
 github = [
     # GitHub repository browser and remote file open/save (File > Open Remote > GitHub).
-    "PyGithub>=2.9.1",
+    "PyGithub>=2.10.0",
 ]
 # Optional agentic-AI harness packs (QUILL 2.0): OpenAI Agents, Claude Agent, and
 # GitHub Copilot. Each pulls one third-party agent SDK; the matching
@@ -308,7 +313,7 @@ github = [
 # same normalized events; none edits the buffer directly. The Native harness
 # always works without any of these.
 ai-copilot = ["github-copilot-sdk>=1.0.8"]  # PyPI package; imports as `copilot`
-ai-claude = ["claude-agent-sdk>=0.2.138"]
+ai-claude = ["claude-agent-sdk>=0.2.152"]
 ai-openai = ["openai-agents>=0.20.0"]
 # Build-time only: compile the optional Table Studio native UIA provider
 # (quill/native/table_uia -> _quill_table_uia.pyd). Also needs MSVC + the
@@ -361,7 +366,7 @@ youtube = [
   # blocks the default client. It ships in the current runtime and imports
   # cleanly there (probed 2026-08-18); undeclared, it only shipped because the
   # build machine happened to have it.
-  "curl-cffi>=0.16.0",
+  "curl-cffi>=0.16.3",
 ]
 runtime = [
   "quill[ui]",
