@@ -183,8 +183,32 @@ def test_a_command_never_conflicts_with_itself() -> None:
     assert conflicting_handlers(default_keymap(), "cmd_save", "Ctrl+S") == []
 
 
+def _a_genuinely_free_chord() -> str:
+    """A chord nothing is bound to, worked out rather than assumed.
+
+    This used to name ``Ctrl+Alt+Shift+Q`` outright, and the day a real command
+    claimed it (Back Up Settings, #1501) two tests failed for a reason that had
+    nothing to do with what they were testing. The property under test is "a key
+    nobody owns has no owner"; which key that is, is the keymap's business.
+
+    Asked of ``conflicting_handlers`` rather than of the values, because *that*
+    is what "free" means here: chords are compared with their modifiers
+    normalised, so a raw string that is absent from the table can still collide
+    with a binding spelled a different way round.
+    """
+    import string
+
+    keymap = default_keymap()
+    candidates = [f"Ctrl+Alt+Shift+{letter}" for letter in string.ascii_uppercase]
+    candidates += [f"Ctrl+Shift+F{number}" for number in range(1, 13)]
+    for chord in candidates:
+        if not conflicting_handlers(keymap, "cmd_new", chord):
+            return chord
+    raise AssertionError("the keymap has no free chord left to test with")
+
+
 def test_a_free_key_has_no_owner() -> None:
-    assert conflicting_handlers(default_keymap(), "cmd_new", "Ctrl+Alt+Shift+Q") == []
+    assert conflicting_handlers(default_keymap(), "cmd_new", _a_genuinely_free_chord()) == []
 
 
 # ---------------------------------------------------------------------------
@@ -206,7 +230,7 @@ def test_a_duplicate_is_reported_with_both_owners() -> None:
 
 def test_a_binding_for_a_command_that_is_gone_is_reported() -> None:
     keymap = default_keymap()
-    keymap["cmd_that_left"] = "Ctrl+Alt+Shift+Q"
+    keymap["cmd_that_left"] = _a_genuinely_free_chord()
     assert audit_keymap(keymap).unknown == ["cmd_that_left"]
 
 

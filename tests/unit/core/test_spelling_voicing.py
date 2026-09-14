@@ -52,45 +52,48 @@ class _Clock:
 # Spelling a word out
 
 
-def test_letters_are_upper_cased_and_comma_separated() -> None:
+def test_letters_are_upper_cased_and_separated_by_a_full_stop() -> None:
     """Upper case because several voices read a lone lower-case letter as a
-    word; commas because a comma is the one mark every synthesiser turns into a
-    pause, and the pause is what stops "E C" being heard as "easy"."""
-    assert spell_out("recieve") == "R, E, C, I, E, V, E"
+    word. A full stop rather than a comma because that is the longer of the two
+    pauses every synthesiser implements, and the speech rate itself belongs to
+    the listener's screen reader -- punctuation is the only pacing we have.
+    Asked for on 2026-09-12: a spelling read at conversational speed goes past
+    faster than it can be held, which is the one thing it must not do."""
+    assert spell_out("recieve") == "R. E. C. I. E. V. E"
 
 
 def test_capitals_are_named_when_asked() -> None:
     """MacDonald and Macdonald are a spelling question, and upper-casing every
     letter for clarity is exactly what throws the answer away."""
-    assert spell_out("MacDonald") == "cap M, A, C, cap D, O, N, A, L, D"
+    assert spell_out("MacDonald") == "cap M. A. C. cap D. O. N. A. L. D"
 
 
 def test_capitals_can_be_left_unnamed() -> None:
-    assert spell_out("MacDonald", capitals=False) == "M, A, C, D, O, N, A, L, D"
+    assert spell_out("MacDonald", capitals=False) == "M. A. C. D. O. N. A. L. D"
 
 
 def test_punctuation_inside_a_word_is_named_not_paused_over() -> None:
     """A pause is not a hyphen, and a listener cannot tell one from the other."""
-    assert spell_out("well-known") == "W, E, L, L, dash, K, N, O, W, N"
-    assert spell_out("don't") == "D, O, N, apostrophe, T"
+    assert spell_out("well-known") == "W. E. L. L. dash. K. N. O. W. N"
+    assert spell_out("don't") == "D. O. N. apostrophe. T"
 
 
 def test_the_phonetic_alphabet_is_offered_whole() -> None:
     """For a fast voice or a noisy room, where B, D, E, P, T and V are one
     sound with a rumour attached."""
-    assert spell_out("cat", style="phonetic") == "charlie, alpha, tango"
+    assert spell_out("cat", style="phonetic") == "charlie. alpha. tango"
 
 
 def test_phonetic_names_capitals_too() -> None:
-    assert spell_out("Cat", style="phonetic") == "cap charlie, alpha, tango"
+    assert spell_out("Cat", style="phonetic") == "cap charlie. alpha. tango"
 
 
 def test_both_gives_the_letters_first_then_the_phonetic() -> None:
-    assert spell_out("cat", style="both") == "C, A, T. charlie, alpha, tango"
+    assert spell_out("cat", style="both") == "C. A. T.. charlie. alpha. tango"
 
 
 def test_an_unknown_style_falls_back_to_letters_rather_than_failing() -> None:
-    assert spell_out("cat", style="nonsense") == "C, A, T"
+    assert spell_out("cat", style="nonsense") == "C. A. T"
 
 
 def test_an_empty_word_says_nothing() -> None:
@@ -156,7 +159,7 @@ def test_the_spelling_arrives_after_the_pause_and_not_before() -> None:
     assert voice.spell_later("recieve") is True
     assert said == []  # nothing yet: the reader is still saying the word
     clock.last.fire()
-    assert said == ["R, E, C, I, E, V, E"]
+    assert said == ["R. E. C. I. E. V. E"]
 
 
 def test_the_pause_is_the_one_the_caller_asked_for() -> None:
@@ -176,7 +179,7 @@ def test_scheduling_a_second_spelling_cancels_the_first() -> None:
     voice.spell_later("teh")
     clock.timers[0].fire()
     clock.timers[1].fire()
-    assert said == ["T, E, H"]
+    assert said == ["T. E. H"]
 
 
 def test_cancel_takes_back_a_pending_spelling() -> None:
@@ -213,7 +216,7 @@ def test_spelling_now_ignores_the_pause_and_the_master_switch() -> None:
     said: list[str] = []
     voice = SpellAloudVoice(said.append, SpellAloudPolicy(enabled=False), None)
     assert voice.spell_word_now("teh") is True
-    assert said == ["T, E, H"]
+    assert said == ["T. E. H"]
 
 
 # ---------------------------------------------------------------------------

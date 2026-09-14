@@ -40,6 +40,8 @@ from html.parser import HTMLParser
 
 from quill import __version__
 from quill.core.error_codes import CodedError
+from quill.core.radio import securenet
+from quill.core.radio.page_url import normalize_page_url
 from quill.stability.redaction import format_args_for_log
 
 logger = logging.getLogger(__name__)
@@ -152,6 +154,10 @@ class _StreamLinkParser(HTMLParser):
         #: "Listen Live"/"Play"-shaped <a href> URLs, followed one level deep
         #: by the caller when the page itself yielded no direct candidate.
         self.listen_urls: list[str] = []
+        #: Portal/player page URLs (iHeart, TuneIn, SecureNet Cirrus). These are
+        #: known *not* to be streams, so they are never offered as candidates
+        #: and the caller follows them unconditionally.
+        self.portal_urls: list[str] = []
         self._in_title = False
         self._in_script = False
         self._pending_href: str | None = None
@@ -208,13 +214,14 @@ class _StreamLinkParser(HTMLParser):
             if lowered.startswith(("mailto:", "javascript:", "#")):
                 return
             joined = urllib.parse.urljoin(self._base_url, href)
-            if joined.startswith(("https://", "http://")) and _is_portal_page_url(joined):
-                # issue #1087: a known portal/directory page (iHeart /live,
-                # TuneIn /radio) is a player landing page, never a direct
-                # stream. Follow it one level deep so the real embedded stream
-                # URL is pulled from its inline player, instead of offering the
-                # unplayable portal page URL as a candidate.
-                self.listen_urls.append(joined)
+            if joined.startswith(("https://", "http://")) and _is_player_page_url(joined):
+                # issues #1087 and #1491: a known portal/player page (iHeart
+                # /live, TuneIn /radio, a SecureNet Cirrus front-end) is a
+                # landing page, never a direct stream. Follow it one level deep
+                # so the real embedded stream URL is pulled from its inline
+                # player, instead of offering the unplayable page as a
+                # candidate.
+                self.portal_urls.append(joined)
                 return
             if lowered.endswith(_STREAM_EXTENSIONS):
                 url = urllib.parse.urljoin(self._base_url, href)
@@ -260,6 +267,17 @@ def _is_portal_page_url(url: str) -> bool:
         return False
     path = parsed.path.lower()
     return any(hint in path for hint in _PORTAL_PAGE_PATH_HINTS)
+
+
+def _is_player_page_url(url: str) -> bool:
+    """True when *url* is a page that hosts a player, not a stream to play.
+
+    The station-directory portals above, plus the SecureNet Cirrus front-ends
+    (:func:`quill.core.radio.securenet.is_player_page_url`). Both answer HTML,
+    so handing either to the engine sticks the player on "Connecting." for
+    good; both hide a real mount one fetch away.
+    """
+    return _is_portal_page_url(url) or securenet.is_player_page_url(url)
 
 
 _FETCH_ERRORS = (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError)
@@ -330,19 +348,6 @@ def _fetch_html(url: str) -> str:
         raise LinkFinderError(f"Could not reach that page: {first_error}") from first_error
 
 
-def normalize_page_url(text: str) -> str:
-    """Turn a loosely-typed site name/URL into an https:// URL, best effort."""
-    candidate = text.strip()
-    if not candidate:
-        return ""
-    if not re.match(r"^https?://", candidate, re.IGNORECASE):
-        candidate = f"https://{candidate}"
-    parsed = urllib.parse.urlsplit(candidate)
-    if parsed.scheme == "http":
-        parsed = parsed._replace(scheme="https")
-    return urllib.parse.urlunsplit(parsed)
-
-
 def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResult:
     """Fetch *url* and return every candidate stream link found on it.
 
@@ -380,6 +385,28 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
     all_candidates.extend(_triton_candidates(normalized, html_text, safe_mode=safe_mode))
     all_candidates.extend(_tunein_candidates(normalized, html_text, safe_mode=safe_mode))
 
+    # Also follow any player page that reached the candidate list some other
+    # way than an <a href> -- a front-end host quoted in the player's own
+    # inline JS, say (#1491: ``streamdb9web`` matches the "/stream" hint
+    # through its *host*). A bare host names no station, so skip a bare path.
+    # These are dropped from the results below, so following them can add no
+    # noise: unlike a "Listen Live" link, do it whatever else the page yielded.
+    portal_urls = list(parser.portal_urls)
+    portal_urls.extend(
+        c.url
+        for c in all_candidates
+        if _is_player_page_url(c.url) and urllib.parse.urlsplit(c.url).path.strip("/")
+    )
+    all_candidates.extend(
+        _follow_pages(
+            list(dict.fromkeys(portal_urls)),
+            _MAX_LISTEN_LINKS_TO_FOLLOW,
+            "player page",
+            normalized,
+            safe_mode=safe_mode,
+        )
+    )
+
     # Only chase "Listen Live"/"Play" links when the page and its iframes gave
     # us nothing directly -- following them otherwise just adds noise and extra
     # fetches when a stream was already in hand.
@@ -394,9 +421,13 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
             )
         )
 
-    # De-duplicate by URL, preserving first-seen order and reason.
+    # De-duplicate by URL, preserving first-seen order and reason, and drop
+    # every player/portal page -- including any a followed page introduced.
+    # Nothing that answers HTML is ever offered as something to play (#1491).
     seen: dict[str, PageStreamCandidate] = {}
     for candidate in all_candidates:
+        if _is_player_page_url(candidate.url):
+            continue
         seen.setdefault(candidate.url, candidate)
     # #5 observability: which links were kept, and why -- the argv-style
     # redaction masks any token a candidate URL might carry.

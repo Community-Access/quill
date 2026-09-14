@@ -165,6 +165,7 @@
   "list_studio_settings": "documented",
   "low_resource_mode": "grandfathered",
   "markdown_clipboard_format": "grandfathered",
+  "markdown_hard_break_style": "documented",
   "markdown_profile_id": "grandfathered",
   "migration_notice": "documented",
   "multi_press_window_ms": "documented",

@@ -36,6 +36,9 @@ from typing import Any
 from quill.core.crash_fingerprint import from_exception as crash_fingerprint
 from quill.stability.redaction import redact_command_arg, redact_text_for_bundle
 
+#: Spelled once so a scripted edit cannot turn it into a real line break.
+NEWLINE = chr(10)
+
 # ---------------------------------------------------------------------------
 # Public surface
 # ---------------------------------------------------------------------------
@@ -94,6 +97,44 @@ class CrashReportPayload:
 # ---------------------------------------------------------------------------
 # Builders
 # ---------------------------------------------------------------------------
+
+
+def build_session_context(
+    *,
+    app_version: str,
+    portable: bool,
+    screen_reader_name: str | None,
+    recent_commands: Sequence[str] | None,
+    platform_name: str = "",
+) -> str:
+    """The Environment and Recent-commands block, as filed reports carry it.
+
+    Factored out for the *unclean exit* path (#1464, #1466, #1480). A crash with
+    a traceback has always filed a report carrying the version, whether the
+    build is portable, the screen reader and the last ten commands -- and an
+    unclean exit, which by definition has no traceback, filed a log tail and
+    nothing else. Three such reports arrived and not one could be acted on:
+    no platform, no screen reader, no idea what the user had been doing.
+
+    The context is the only evidence an unclean exit *can* carry, so it has to
+    carry all of it. One builder rather than two, so the two kinds of report
+    cannot drift into describing the same session differently.
+    """
+    lines = ["Environment", f"  Quill version : {app_version or 'unknown'}"]
+    lines.append(f"  Portable      : {portable}")
+    if platform_name:
+        lines.append(f"  Platform      : {platform_name}")
+    if screen_reader_name:
+        lines.append(f"  Screen reader : {screen_reader_name}")
+    lines.append("")
+    lines.append("Recent commands (most recent first)")
+    cmds = list(recent_commands or [])[-_MAX_RECENT_COMMANDS:]
+    if not cmds:
+        lines.append("  (no recent command log available)")
+    else:
+        lines.extend(f"  - {cid}" for cid in reversed(cmds))
+    lines.append("")
+    return NEWLINE.join(lines)
 
 
 def build_crash_report_payload(

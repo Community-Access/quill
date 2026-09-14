@@ -56,6 +56,16 @@ def _build_power_tools_registrar() -> FirstPartyRegistrar:
         label="Special &Character...",
         separator_before=True,
     )
+    # A hard break is a marker at the end of a line and both of its spellings
+    # are impossible to type with confidence -- two invisible spaces, or a
+    # backslash nobody remembers. Shift+Enter is what Word uses (#1488).
+    add(
+        id="power.insert_line_break",
+        title="Insert Line Break",
+        top_level="Insert",
+        group="insert",
+        label="&Line Break",
+    )
     # NOTE: Power-tool date/time items (``power.insert_date_time`` and
     # ``power.calculate_and_insert_date``) used to live on the Insert menu next to
     # the bundled Quillin snippets of the same names. They were removed to

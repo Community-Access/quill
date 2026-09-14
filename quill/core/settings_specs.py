@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
+from quill.core.markdown_breaks import HARD_BREAK_LABELS, HARD_BREAK_STYLES
 
 #: Bump when the exported document shape changes in a backward-incompatible way.
 SCHEMA_VERSION = 1
@@ -645,6 +646,25 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         minimum=5,
         maximum=600,
         keywords=("autosave", "interval", "timing", "save"),
+    ),
+    # #1488. Both spellings are always *read*; this chooses what QUILL writes.
+    # The labels come from the one table in quill.core.markdown_breaks so
+    # Preferences, the settings documentation and anything that speaks the
+    # current value cannot describe the same two choices differently.
+    SettingSpec(
+        "markdown_hard_break_style",
+        "Markdown line break style",
+        "editing",
+        "choice",
+        (
+            "How a hard line break is written in Markdown: a backslash at the end "
+            "of the line, or the older two-space spelling. A hard break ends the "
+            "line without starting a new paragraph. Backslash is the default "
+            "because two trailing spaces are invisible on screen, silent to a "
+            "screen reader, and stripped by many tools on save."
+        ),
+        choices=tuple((style, HARD_BREAK_LABELS[style]) for style in HARD_BREAK_STYLES),
+        keywords=("markdown", "line break", "hard return", "backslash", "paragraph"),
     ),
     SettingSpec(
         "autoformat_smart_quotes",

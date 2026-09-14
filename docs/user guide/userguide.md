@@ -489,8 +489,38 @@ The **Insert** menu adds structured content at the cursor.
 - **Insert Code Block**, **Insert Footnote**, **Insert Table...**, **Insert Block Quote**, **Insert Horizontal Rule**, **Insert HTML Tag...**, and **Insert Markdown Tag...**.
 - **Format-aware inserts.** Block quote, horizontal rule, table, and image insert Markdown in a Markdown document and HTML in an HTML document. If the document's format isn't set yet (a brand-new or plain buffer), QUILL asks **"Markdown or HTML?"** the first time, then remembers your answer for that document and stops asking. These carry direct authoring shortcuts: **Insert Table** is `Ctrl+Alt+T`, **Insert Block Quote** is `Ctrl+Alt+Q`, and **Insert Horizontal Rule** is `Ctrl+Alt+H` — alongside the `Ctrl+Alt+1`–`6` heading chords and `Ctrl+Alt+7`/`8` list chords. All remain rebindable in the Keymap Editor.
 - **Insert Snippet...** and **Manage Snippets...** for reusable text with placeholders.
-- **Special Character...** (`Shift+F2`) opens a symbol picker. (This moved from F2,
-  which now opens the Structured List Studio; both keys are remappable.)
+- **Special Character...** (`Shift+F2`) opens a picker for the 357 characters a
+  keyboard has no key for. Search by name (`dash`, `euro`, `acute`, `arrow`) or
+  by a word Unicode does not use but people do (`gbp`, `copyright`, `eszett`),
+  or clear the box and browse one of fifteen groups: whitespace, dashes, quotes,
+  invisibles, typography, legal and reference marks, currency, maths and units,
+  fractions, superscripts and ordinals, arrows, accented letters (small and
+  capital), Greek, and punctuation from other languages. Each row shows the
+  character, its name and its code point, and a description pane updates as you
+  arrow. **The search box is also the code-point box** -- `2014`, `U+2014` and
+  `d8212` all find the em dash, and a code point in no group still resolves, so
+  the picker reaches every character Unicode has. That replaced the bare
+  code-point prompt this command used to be. QUILL says what it inserted, in
+  Describe Character's words, because most of the list is invisible on the page.
+  QuillLite has the same picker on **Edit > Insert > Special Character...**.
+  (This moved from F2, which now opens the Structured List Studio; both keys are
+  remappable.)
+- **Line Break** (`Shift+Enter`) ends the line **without starting a new
+  paragraph** — the same chord Word uses for the same thing. This is the
+  distinction a blank line cannot make: in Markdown, a blank line between two
+  lines makes them two paragraphs, while a hard break makes them two lines of
+  one. It is what you want for an address block, a verse, or a scene-break run
+  of lines that should sit tight against each other.
+
+  QUILL writes the break in whichever spelling **Preferences → Editing →
+  Markdown line break style** (`markdown_hard_break_style`) names, and says which one it used. The default is
+  a **backslash** at the end of the line, because the alternative — two trailing
+  spaces — is invisible on screen, silent to a screen reader, and stripped by
+  many tools when they save. QUILL always *reads* both, so a document written
+  elsewhere in the two-space style still renders correctly here.
+
+  QuillLite has the same command on **Edit > Insert > Line Break**, on the same
+  key.
 - **Date and Time** submenu inserts a date, time, or both at the cursor. The bundled `com.quill.bundled.insert-tools` Quillin owns this submenu; it is the canonical home for date and time snippets. See [Date and Time submenu](#date-and-time-submenu) below.
 - **Insert Emoji...** (`Alt+.`) opens the Accessible Emoji Picker: browse or search all 3,781 standard emoji by name, keyword, symbol, or a typed smiley like `:)`, each with a real spoken description of what it looks like. See [Insert Emoji: browse or search 3,781 emoji](#insert-emoji-browse-or-search-3781-emoji) below.
 - **File Content...** inserts the contents of another file at the cursor.

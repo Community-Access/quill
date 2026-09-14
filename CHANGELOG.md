@@ -2,6 +2,154 @@
 
 ## 1.0.0
 
+### Typing a station's web address now finds the station (2026-09-14)
+
+**Every search box in Quill Radio understands a website address.** One of them
+already did: type `oj991.com` into the Find Stations search box and it scans
+the site and hands you the stream. The browse tree's **Search All Sources** and
+**Find in this folder** did not, and they are the ones people reach first.
+
+What they did instead was worse than nothing. Search All Sources passed
+`oj991.com` to sixteen directories as though it were a station *name*. Radio
+Browser matched on the token "com" and the answer was **33 results** --
+Cruisin92.com, STAR1079.com, ACCRA24.COM, OLDSKOOL101.com, and twenty-five
+podcasts -- with OJ 99.1 nowhere among them. Find in this folder was quieter
+and no better: a web address is never a row label, so scoping it to the
+highlighted folder could only ever find nothing, and did.
+
+All three surfaces now ask the same question first. A query that is an address
+is scanned for streams; a query that is a name is searched for as a name. The
+same `oj991.com` that returned 33 wrong answers returns one right one, as a
+`Website` row that plays, favourites and opens its context menu exactly like a
+row you found by browsing -- because it is one.
+
+The recogniser that decides which kind of query you typed now lives in
+`quill/core/radio/page_url.py` instead of inside the one dialog that first
+needed it. That is the whole reason two of three search boxes were wrong: the
+knowledge existed and was not reachable from where it was needed.
+
+### Settings you can carry to another machine (2026-09-14)
+
+**A settings backup is now a configuration rather than a snapshot of one
+computer.** Export Settings wrote *every* field, which meant a `.qsf` carried
+`watch_folder_path`, `startup_folder`, `tesseract_path`, the sound pack, the
+model directories and half a dozen "last folder used" memories. Import that on a
+new laptop and you had an app pointing at folders that were not there.
+
+Those thirteen machine-local settings are left out now, and **named on the way
+out**, so you know what the file does not contain. They are also ignored if an
+older file still carries them, so restoring a backup cannot overwrite a good
+local path with a dead one.
+
+**Importing says what was different about the file.** A backup written against
+an older build knows nothing about settings added since, and silently applying
+defaults for them left you to discover the gap weeks later. The import now
+answers: how many settings came across, how many are new since the file was
+written, how many locations were left alone, and how many this version does not
+recognise.
+
+On the one worry the request raised: **API keys were never in the file.** They
+live in the operating system's credential store, not in the settings object, so
+a `.qsf` has never been able to carry one. There is now a test asserting that
+stays true.
+
+**Every app with settings got the same treatment**, over one shared
+implementation: QUILL, QuillLite, Quill Cast, Quill Weather and Quill Inkwell
+each declare which of their settings describe the machine rather than the
+person. QuillLite gains **Tools > Back Up Settings** and **Tools > Restore
+Settings**, which it had no equivalent of at all.
+
+### A hard line break, at last (2026-09-14)
+
+**QUILL's Markdown had no way to break a line.** Not two trailing spaces, not a
+backslash, not a literal `<br>` -- that last one was escaped and printed. Every
+line of a paragraph was joined with a space, so a run of lines that should sit
+tight against each other came out as one long line, and a run of paragraphs came
+out with gaps. Reported by a blind novelist whose scene breaks are exactly that
+shape, and who lost two days to it.
+
+Three separate defects sat behind one report:
+
+- **The renderer implemented no hard break at all.** It does now, and it reads
+  **both** CommonMark spellings, so a document written anywhere else renders
+  correctly here.
+- **Every line was stripped of trailing whitespace before anything looked at
+  it**, which destroyed the two-space spelling before it could be acted on. That
+  is why his own attempt to add two spaces did nothing; he was not doing it
+  wrong.
+- **The Word reader merged every paragraph into one.** Paragraphs were joined
+  with a single newline, which Markdown reads as a soft wrap, so an entire
+  chapter arrived as a single run-on paragraph -- and Word hard returns
+  (Shift+Enter) vanished completely on the way in. Both are fixed: paragraphs
+  arrive as paragraphs and hard returns arrive as hard breaks.
+
+**Insert > Line Break (Shift+Enter)**, the chord Word uses, is the affordance
+that was missing. QUILL says which spelling it wrote, because that is the one
+thing you cannot check for yourself.
+
+**Preferences > Editing > Markdown line break style** chooses between them. The
+default is a **backslash**, and that is an accessibility decision rather than a
+toss-up: two trailing spaces are invisible on screen, silent to a screen reader,
+and stripped by many tools on save. A backslash can be heard, can be found with
+Find, and survives every editor there has ever been.
+
+**QuillLite has the setting and the command on the same key.** It has no preview
+and cannot open Word files, so the other two halves do not apply to it.
+
+### Insert a character your keyboard has no key for, by name (2026-09-13)
+
+**Insert Special Character now opens on a searchable picker of 357
+characters.** It used to open on a prompt asking for a Unicode code point, which
+is the right escape hatch and the wrong front door: knowing that an em dash is
+2014 is a thing you look up.
+
+The first list it grew was the one QUILL's Find dialog has offered for years --
+and that turned out to be the wrong list, because it was chosen for *searching*:
+whitespace, dashes, quotes, invisibles and typography, which is what you need to
+hunt down a bad space in a search box. What a **writer** reaches for was not in
+it at all. There were no accented letters, no currency, no `©`, no `±`, no
+fractions, no arrows, no Greek -- and none of that was reachable from the emoji
+picker either, which carries only the emoji-presentation forms (its `©` is
+U+00A9 followed by a variation selector, which renders as a coloured emoji glyph
+rather than as the typographic sign). So QUILL could not type a plain copyright
+sign into prose, and it could not type *résumé*.
+
+It can now. Fifteen groups -- whitespace, dashes and hyphens, quotes, invisible
+and control, typography, legal and reference marks, currency, maths and units,
+fractions, superscripts and ordinals, arrows, accented letters small and
+capital, Greek letters, and punctuation from other languages -- browsable one at
+a time, or searchable across all of them at once. Search takes part of a name
+(`dash`, `euro`, `acute`, `arrow`) and also the words Unicode does not use but
+people do (`gbp`, `sterling`, `copyright`, `eszett`, `micro`), and a bare letter
+narrows to that letter's accented forms. Each row shows the character, its name
+and its code point, with a description pane that updates as you arrow -- the
+same words **Character Details** gives for a character already in the document.
+
+**The search box is also the code-point box.** `2014`, `U+2014` and `d8212` all
+put the em dash at the top, and a code point that is in no group at all still
+resolves to its character -- so the picker reaches everything Unicode has, and
+the old prompt is folded into the box rather than bolted on beside it.
+
+Find keeps its own forty, built from the same table under the same names, so the
+two lists cannot drift.
+
+**QuillLite gained the command in the same change**, on **Edit > Insert >
+Special Character...** (**Ctrl+Shift+F2** -- QUILL's Shift+F2 is Previous
+Bookmark there), and it is the same dialog over the same catalogue rather than a
+second one that could drift. It reads back what it inserted, in Describe
+Character's words: "Inserted -- U+2014 Em dash". Most of this list is invisible
+on the page, and a screen reader says nothing when an app writes text on its own
+behalf, so without the read-back the command is a keystroke after which
+something you cannot see may or may not have appeared.
+
+**QuillLite's spelling context menu is one submenu now.** The Applications key
+on a misspelled word used to add a dozen rows to the top of the popup -- the
+suggestions, both Ignores, both Add-to-dictionary rows, and four onward
+commands -- which put Undo and Cut a different distance down the menu depending
+on whether the word under the cursor happened to be spelled correctly. They are
+under one row named after the word, *Spelling: "wrold"*, whose first entry is
+still the first suggestion.
+
 ### One update dialog, and QuillLite can finally find its own updates (2026-09-12)
 
 **Every app now tells you what is in an update before it asks whether you want

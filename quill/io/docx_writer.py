@@ -15,17 +15,21 @@ back to the Pandoc path when it is not, so docx export never hard-fails.
 
 from __future__ import annotations
 
+import logging
 import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from quill.io.docx_math import omml_fragment_for_latex, split_math_segments
 from quill.io.rtf_model import RichDocument, RichParagraph, markdown_to_rich
+from quill.io.xml_text import count_xml_incompatible, strip_xml_incompatible
 
 if TYPE_CHECKING:
     from quill.core.document import Document
 
 __all__ = ["python_docx_available", "write_docx", "rich_to_docx_bytes"]
+
+_LOG = logging.getLogger(__name__)
 
 _NAMED_COLORS: dict[str, tuple[int, int, int]] = {
     "red": (255, 0, 0),
@@ -108,6 +112,13 @@ def rich_to_docx(document: RichDocument) -> Any:
 
     Raises ``ModuleNotFoundError`` (via the import) when python-docx is absent;
     callers should gate on :func:`python_docx_available` first.
+
+    Every piece of text goes in through :func:`_add_run`, which drops the
+    control characters XML cannot hold. Before that, one of them anywhere in a
+    document made Save raise out of lxml (#1500) -- a crash at the one moment an
+    editor must not have one. :func:`write_docx` counts them from the source
+    text and says how many went, rather than threading a counter through every
+    paragraph, table cell and run on the way down.
     """
     import docx
     from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_COLOR_INDEX
@@ -158,9 +169,9 @@ def rich_to_docx(document: RichDocument) -> Any:
                     delimited = (
                         f"$${segment.content}$$" if segment.display else f"\\({segment.content}\\)"
                     )
-                    run = para.add_run(delimited)
+                    run = _add_run(para, delimited)
                 else:
-                    run = para.add_run(segment.content)
+                    run = _add_run(para, segment.content)
                 span_runs.append(run)
                 run.bold = span.bold or None
                 run.italic = span.italic or None
@@ -206,6 +217,20 @@ def rich_to_docx(document: RichDocument) -> Any:
             continue
         add_paragraph(paragraph)
     return out
+
+
+def _add_run(paragraph: Any, text: str) -> Any:
+    """Add a run carrying *text*, minus anything XML cannot hold (#1500).
+
+    The one seam every piece of body text passes through. A single control
+    character anywhere -- pasted from a terminal, returned by a dictation
+    bridge, recovered off a damaged disk -- used to raise out of lxml at the
+    moment of saving, which is the moment an editor is least allowed to fail.
+    There is no way to keep such a character in a Word file, so the only
+    question was whether losing it costs the character or the whole save.
+    """
+    safe, _removed = strip_xml_incompatible(text)
+    return paragraph.add_run(safe)
 
 
 _SEPARATOR_CELL_RE = re.compile(r"^:?-+:?$")
@@ -297,7 +322,7 @@ def _emit_table(out: Any, block: list[RichParagraph]) -> None:
     def _fill(cells: Any, values: list[str], *, bold: bool) -> None:
         for col, value in enumerate(values[:columns]):
             paragraph = cells[col].paragraphs[0]
-            run = paragraph.add_run(value)
+            run = _add_run(paragraph, value)
             run.bold = bold or None
 
     header_row = table.rows[0]
@@ -354,6 +379,17 @@ def write_docx(document: Document, target: Path) -> Path:
 
     from quill.core.storage import write_bytes_atomic
 
+    # Counted here rather than threaded down through every run: one pass over
+    # the source text answers the only question a caller has, which is whether
+    # anything was lost and how much (#1500).
+    removed = count_xml_incompatible(document.text)
+    if removed:
+        _LOG.warning(
+            "Removed %d character(s) Word cannot store while writing %s "
+            "(control characters are not representable in .docx)",
+            removed,
+            target.name,
+        )
     rich = markdown_to_rich(document.text)
     built = rich_to_docx(rich)
     _maybe_apply_header_footer(built, document, target)

@@ -1145,9 +1145,25 @@ class PreferencesMixin:
                                 target = Path(file_dialog.GetPath())
                             if target.suffix.lower() != ".qsf":
                                 target = target.with_suffix(".qsf")
-                            payload = registry.export_settings(self.settings)
+                            # #1501: the file is a configuration you can carry
+                            # to another machine, so the folders and file
+                            # locations that describe *this* one are left out --
+                            # and said, because a backup that quietly differs
+                            # from its source is what the reporter was trying to
+                            # avoid.
+                            payload, report = registry.export_portable_settings_with_report(
+                                self.settings
+                            )
                             target.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-                            self._set_status(f"Exported settings to {target.name}")
+                            note = f"Exported {report.carried} settings to {target.name}"
+                            if report.local:
+                                count = len(report.local)
+                                noun = "location" if count == 1 else "locations"
+                                note += (
+                                    f"; {count} folder and file {noun} were left out,"
+                                    " because those belong to this computer"
+                                )
+                            self._set_status(note)
 
                         def _on_import(_event: object) -> None:
                             with wx.FileDialog(
@@ -1167,8 +1183,12 @@ class PreferencesMixin:
                             except (OSError, ValueError):
                                 self._set_status(f"Could not read settings from {source.name}")
                                 return
+                            imported, report = registry.import_portable_settings_with_report(raw)
                             action["mode"] = "import"
-                            action["imported"] = registry.import_settings(raw)
+                            action["imported"] = imported
+                            # What changed about the file, rather than a wizard
+                            # asking about three hundred settings one at a time.
+                            action["import_report"] = report.summary()
                             dialog.EndModal(wx.ID_CANCEL)
 
                         def _on_reset(_event: object) -> None:
@@ -1414,7 +1434,14 @@ class PreferencesMixin:
             imported = action["imported"]
             if isinstance(imported, Settings):
                 self.settings = imported
-                self._settings_dialog_apply_refresh("Imported settings")
+                # The report rather than a bare "Imported settings": a file
+                # written against an older build is missing settings added
+                # since, and being told how many beats finding out one at a
+                # time over the following weeks (#1501).
+                summary = action.get("import_report") or ""
+                self._settings_dialog_apply_refresh(
+                    f"Imported settings. {summary}".strip() if summary else "Imported settings"
+                )
             return
         if mode == "reset":
             self.settings = registry.reset_all()

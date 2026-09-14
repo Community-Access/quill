@@ -102,8 +102,13 @@ class CharacterDescription:
     detail: str
 
 
-def _display_glyph(char: str) -> str:
-    """A speakable stand-in for characters that should not be shown literally."""
+def display_glyph(char: str) -> str:
+    """A speakable stand-in for characters that should not be shown literally.
+
+    Public because the Insert Special Character picker shows a Character column,
+    and half of its catalogue has no glyph to put in one: a row for the
+    zero-width space would otherwise be a blank cell that reads as nothing.
+    """
     if char in _SPECIAL:
         return _SPECIAL[char][0]
     if unicodedata.category(char) in _NON_PRINTING:
@@ -132,7 +137,7 @@ def describe_character(text: str, position: int) -> CharacterDescription:
     name = special_name or unicode_name or "Unnamed character"
     category_code = unicodedata.category(char)
     category = _CATEGORY_LABELS.get(category_code, category_code)
-    glyph = _display_glyph(char)
+    glyph = display_glyph(char)
 
     summary = f"{glyph}  U+{codepoint:04X}  {name}"
 

@@ -9,8 +9,14 @@ Persisted with the usual atomic write, wx-free and strict-typed.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from pathlib import Path
+
+from quill.core.settings_portable import (
+    PortabilityReport,
+    portable_export,
+    portable_import,
+)
 
 _SETTINGS_FILE = "inkwell.json"
 
@@ -131,3 +137,24 @@ def save_settings(data_dir: Path, settings: InkwellSettings) -> None:
             "expand_now_hotkey": settings.expand_now_hotkey,
         },
     )
+
+
+#: Settings that describe *this machine* rather than how the app behaves, and so
+#: are left out of a portable backup. The two process lists name programs
+#: installed on this machine, so they do not travel; the hotkeys and the
+#: expansion behaviour do (#1501).
+LOCAL_SETTINGS: frozenset[str] = frozenset({
+    "excluded_processes",
+    "paste_processes",
+})
+
+
+def export_portable(settings: InkwellSettings) -> tuple[dict[str, object], PortabilityReport]:
+    """These settings as a portable file, and what was left behind."""
+    return portable_export(settings, app="inkwell", local_fields=LOCAL_SETTINGS)
+
+
+def import_portable(raw: object) -> tuple[dict[str, object], PortabilityReport]:
+    """The settings in *raw* this build can use, and what was different."""
+    known = frozenset(field.name for field in fields(InkwellSettings))
+    return portable_import(raw, known=known, local_fields=LOCAL_SETTINGS)

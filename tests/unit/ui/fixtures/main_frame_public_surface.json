@@ -314,6 +314,7 @@
   "insert_file_content",
   "insert_html_tag",
   "insert_image",
+  "insert_line_break",
   "insert_link",
   "insert_markdown_tag",
   "insert_note_template",

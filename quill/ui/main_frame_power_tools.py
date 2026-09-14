@@ -57,7 +57,8 @@ from quill.core.regex_ops import RegexError, count_matches, extract_matches
 from quill.core.run_target import classify_target, is_dangerous_executable, target_at_cursor
 from quill.core.set_ops import format_lines, lines_common_to_both, lines_in_first_not_second
 from quill.core.storage import read_json, write_json_atomic
-from quill.core.unicode_insert import CodepointError, parse_codepoint
+from quill.ui.main_frame_line_break import LineBreakMixin
+from quill.ui.main_frame_special_character import SpecialCharacterMixin
 
 
 def _clipboard_change_counter() -> int | None:
@@ -86,7 +87,7 @@ def _clipboard_change_counter() -> int | None:
     return None
 
 
-class PowerToolsActionsMixin:
+class PowerToolsActionsMixin(SpecialCharacterMixin, LineBreakMixin):
     """Editor power-tool conveniences mixed into :class:`MainFrame`."""
 
     # ------------------------------------------------------------------ shared
@@ -242,20 +243,10 @@ class PowerToolsActionsMixin:
             return
         self._power_tools_insert_at_cursor(fragment, "Pasted Markdown as HTML")
 
-    # ----------------------------------------------------------- EDS-1 unicode
-    def insert_special_character(self) -> None:
-        raw = self._power_tools_prompt_single(
-            "Insert Special Character",
-            "Unicode code point (hex, d-prefix for decimal, or U+):",
-        )
-        if raw is None:
-            return
-        try:
-            character = parse_codepoint(raw)
-        except CodepointError as error:
-            self._set_status(str(error))
-            return
-        self._power_tools_insert_at_cursor(character, f"Inserted U+{ord(character):04X}")
+    # EDS-1 (``insert_special_character``) lives on
+    # :class:`~quill.ui.main_frame_special_character.SpecialCharacterMixin`,
+    # inherited below. It moved out under GATE-11 when it grew a character list;
+    # the method name and the ``power.insert_special_character`` id are unchanged.
 
     # NOTE: EDS-2 (``insert_date_time``) and EDS-3 (``calculate_and_insert_date``)
     # were removed in the date/time consolidation that moved all Insert-menu

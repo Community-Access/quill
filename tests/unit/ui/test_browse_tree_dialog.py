@@ -807,3 +807,35 @@ def test_a_narrowed_search_is_never_remembered() -> None:
         assert browse_search_all._RECENT_RESULTS == {}
     finally:
         browse_feedback.start_search_notice = original
+
+
+# A website address in the Find box is never a row label, so scoping it to the
+# highlighted folder can only ever answer nothing. #1491: pasting "oj991.com"
+# into Find in this folder returned no results at all, from a station whose
+# stream the website scanner finds on the first try.
+
+
+def test_a_website_address_in_the_find_box_scans_it_wherever_you_stand() -> None:
+    from quill.ui.radio import browse_find, browse_search_all
+
+    d = _dialog()
+    d._find_ctrl = SimpleNamespace(GetValue=lambda: " oj991.com ")
+    d._node_data = lambda _n: {"node_id": "rbgenre", "label": "By Genre"}
+    d._tree.GetSelection = lambda: _Node()
+    d._tree.GetItemText = lambda _n: "By Genre"
+    d._safe_mode = False
+    submitted: list[str] = []
+    d._task_manager = SimpleNamespace(
+        submit=lambda name, work, on_success=None, on_failure=None: submitted.append(name)
+    )
+    asked: list[str] = []
+    original = browse_search_all.run
+    browse_search_all.run = lambda _host, **kw: asked.append(kw.get("query", ""))
+    try:
+        browse_find.on_find(d)
+    finally:
+        browse_search_all.run = original
+
+    assert asked == ["oj991.com"]
+    # The scoped crawl must not also run: one answer, not two.
+    assert submitted == []

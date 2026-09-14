@@ -218,3 +218,150 @@ def test_each_of_them_has_a_fast_route_rather_than_a_crawl() -> None:
 
     for kind in ("shoutcast", "live365", "radioparadise"):
         assert any(prefix == kind for prefix, _fn in branch_find._PREFIX_ROUTES)
+
+
+# -- a website address is scanned, not searched for (issue #1491) ------------
+#
+# Pasting "oj991.com" into Search All Sources used to hand that text to every
+# directory as a name query. Radio Browser matched the token "com" and the
+# answer was 33 rows -- Cruisin92.com, STAR1079.com, ACCRA24.COM -- none of
+# them the station, and the one thing that could have found it (the website
+# scanner, already wired into the Find Stations search box) was never asked.
+
+
+def _scan(monkeypatch: pytest.MonkeyPatch, candidates: list[tuple[str, str, str]]) -> list[str]:
+    """Stub the scanner; returns the list that records what it was asked to scan."""
+    from quill.core.radio import link_finder
+
+    scanned: list[str] = []
+
+    def fake_scan(url: str, *, safe_mode: bool = False) -> link_finder.PageScanResult:
+        scanned.append(url)
+        return link_finder.PageScanResult(
+            page_title="OJ 99.1 WWOJ",
+            favicon_url="",
+            candidates=[
+                link_finder.PageStreamCandidate(url=u, reason=r, label=lab)
+                for u, r, lab in candidates
+            ],
+        )
+
+    monkeypatch.setattr(link_finder, "scan_page_for_streams", fake_scan)
+    return scanned
+
+
+def test_a_url_is_scanned_for_streams_instead_of_searched_for(
+    _routes: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _routes["rbgenre"] = (
+        [leaf(_station("Cruisin92.com", "http://junk"))],
+        "searched Radio Browser",
+    )
+    scanned = _scan(
+        monkeypatch,
+        [("https://ice42.securenetsystems.net/WWOJ", "stream from the station's player", "WWOJ")],
+    )
+
+    found = federated_browse.search_everything("oj991.com")
+
+    assert scanned == ["oj991.com"]
+    assert [row.label for row in found.rows] == ["WWOJ"]
+    assert found.rows[0].station is not None
+    assert found.rows[0].station.stream_url == "https://ice42.securenetsystems.net/WWOJ"
+    # The directories are not asked at all: their answer to a hostname is noise.
+    assert "Cruisin92.com" not in [row.label for row in found.rows]
+
+
+def test_a_scanned_row_says_it_came_from_the_website(
+    _routes: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _scan(monkeypatch, [("https://ice42.securenetsystems.net/WWOJ", "player stream", "WWOJ")])
+
+    found = federated_browse.search_everything("oj991.com")
+
+    assert found.rows[0].note.startswith("Station, Website")
+    assert found.asked == ["Website"]
+    assert federated_browse.describe("oj991.com", found) == "1 found for oj991.com: 1 station."
+
+
+def test_a_candidate_with_no_label_still_names_itself(
+    _routes: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The scanner's label is the anchor text, which is often empty. Falling
+    # through to the page title beats a row called "" or the raw URL.
+    _scan(monkeypatch, [("https://ice42.securenetsystems.net/WWOJ", "player stream", "")])
+
+    found = federated_browse.search_everything("oj991.com")
+
+    assert found.rows[0].label == "OJ 99.1 WWOJ"
+
+
+def test_a_website_with_no_streams_says_so_rather_than_listing_the_directories(
+    _routes: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _routes["rbgenre"] = ([leaf(_station("STAR1079.com", "http://junk"))], "searched Radio Browser")
+    _scan(monkeypatch, [])
+
+    found = federated_browse.search_everything("example.com")
+
+    assert found.rows == []
+    assert federated_browse.describe("example.com", found) == "Nothing found for example.com."
+
+
+def test_an_unreachable_website_is_named_like_any_other_source(
+    _routes: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from quill.core.radio import link_finder
+
+    def boom(url: str, *, safe_mode: bool = False) -> object:
+        raise link_finder.LinkFinderError("That website could not be reached.")
+
+    monkeypatch.setattr(link_finder, "scan_page_for_streams", boom)
+
+    found = federated_browse.search_everything("oj991.com")
+
+    assert found.rows == []
+    # Named like any other unreachable source, carrying the error's own words.
+    assert len(found.failed) == 1
+    label, why = found.failed[0]
+    assert label == "Website"
+    assert "could not be reached" in why
+
+
+def test_safe_mode_does_not_scan_a_website(_routes: dict, monkeypatch: pytest.MonkeyPatch) -> None:
+    scanned = _scan(monkeypatch, [("http://s", "r", "S")])
+
+    found = federated_browse.search_everything("oj991.com", safe_mode=True)
+
+    assert scanned == []
+    assert found.rows == []
+    assert found.failed and found.failed[0][0] == "Website"
+
+
+def test_a_scoped_search_is_left_alone(_routes: dict, monkeypatch: pytest.MonkeyPatch) -> None:
+    # "Search for a Podcast..." passes its own targets. A URL there is still a
+    # podcast search: scanning for radio streams would answer a question the
+    # listener did not ask.
+    scanned = _scan(monkeypatch, [("http://s", "r", "S")])
+    _routes["apple"] = ([folder("appleshow:1", "A Show")], "searched Apple")
+
+    found = federated_browse.search_everything(
+        "oj991.com", targets=federated_browse.targets_of_type("Podcast")
+    )
+
+    assert scanned == []
+    assert [row.label for row in found.rows] == ["A Show"]
+
+
+def test_a_plain_name_query_is_never_scanned(
+    _routes: dict, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    scanned = _scan(monkeypatch, [("http://s", "r", "S")])
+    _routes["rbgenre"] = ([leaf(_station("Jazz FM", "http://a"))], "searched Radio Browser")
+
+    # catalog= anything non-None so the station route answers from the stub
+    # rather than reaching for the live directory.
+    found = federated_browse.search_everything("Jazz FM", catalog=object())
+
+    assert scanned == []
+    assert [row.label for row in found.rows] == ["Jazz FM"]

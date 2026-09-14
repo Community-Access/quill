@@ -38,6 +38,12 @@ from typing import Any
 
 from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.lite.paths import settings_path
+from quill.core.markdown_breaks import normalise_hard_break_style
+from quill.core.settings_portable import (
+    PortabilityReport,
+    portable_export,
+    portable_import,
+)
 from quill.core.storage import write_json_atomic
 
 __all__ = ["MAX_RECENT", "MAX_SESSION", "SCHEMA", "Settings", "load", "save"]
@@ -95,6 +101,9 @@ class Settings:
     font_name: str = ""
     font_size: int = 12
     word_wrap: bool = True
+    # How a hard line break is written in Markdown: "backslash" or "spaces".
+    # Shared with QUILL, which must never be behind QuillLite (#1488).
+    markdown_hard_break_style: str = "backslash"
     #: What a plain Ctrl+N creates. The explicit New Rich Text and New Plain
     #: Text commands ignore this.
     default_mode: str = "plain"
@@ -226,6 +235,7 @@ class Settings:
         self.window_height = max(240, int(self.window_height))
         self.recent_files = [str(entry) for entry in self.recent_files][:MAX_RECENT]
         self.session_files = [str(entry) for entry in self.session_files][:MAX_SESSION]
+        self.markdown_hard_break_style = normalise_hard_break_style(self.markdown_hard_break_style)
         if self.spell_aloud_style not in _LETTER_STYLES:
             self.spell_aloud_style = "letters"
         # Clamped rather than validated-and-refused: a hand-edited settings file
@@ -272,6 +282,41 @@ def _coerce(current: Any, value: Any) -> Any | None:
     if isinstance(current, list):
         return [str(item) for item in value] if isinstance(value, list) else None
     return None
+
+
+#: Settings that describe *this machine* rather than how QuillLite behaves, and
+#: so are left out of a portable backup (#1501). The same rule QUILL applies:
+#: a list of recent files, a restored session and an update timestamp are a
+#: record of one computer, not a configuration to carry to another.
+LOCAL_SETTINGS: frozenset[str] = frozenset({
+    "recent_files",
+    "session_files",
+    "last_update_check",
+    "window_width",
+    "window_height",
+    "window_maximized",
+})
+
+
+def export_portable(settings: Settings) -> tuple[dict[str, object], PortabilityReport]:
+    """QuillLite's settings as a portable file, and what was left behind."""
+    return portable_export(settings, app="quilllite", local_fields=LOCAL_SETTINGS)
+
+
+def import_portable(raw: object) -> tuple[Settings, PortabilityReport]:
+    """The settings in *raw* this build can use, and what was different.
+
+    Applied onto the defaults rather than onto the running settings, so an
+    import is a known state rather than a merge nobody can describe afterwards.
+    """
+    known = frozenset(spec.name for spec in fields(Settings))
+    values, report = portable_import(raw, known=known, local_fields=LOCAL_SETTINGS)
+    settings = Settings()
+    for name, value in values.items():
+        coerced = _coerce(getattr(settings, name), value)
+        if coerced is not None:
+            setattr(settings, name, coerced)
+    return settings.normalized(), report
 
 
 def load(path: Path | None = None) -> Settings:

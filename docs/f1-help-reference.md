@@ -1107,6 +1107,8 @@ Control coverage: 35 audited sites (35 helped).
 
 **Headings.** Every heading in this document, in the order they appear. Choose one and the cursor lands at the start of it. Headings exist in rich text only: they are the bold-plus-point-size ladder QUILL uses, so this list is also what Word will show in its navigation pane.
 
+**Insert Special Character.** Put in a character the keyboard has no key for. Search by name -- dash, quote, euro, acute, arrow -- or by Unicode code point, or clear the search box and browse one of the fifteen groups: whitespace, dashes, quotes, invisibles, typography, marks, currency, maths, fractions, superscripts, arrows, accented letters, Greek and punctuation from other languages. Arrow through the characters to hear each one described and press Enter to insert the one you are on. QuillLite reads back what it put in, because most of this list is invisible on the page. QUILL has the same picker on Shift+F2.
+
 **Key for.** Press the key combination you want, and it appears in the box. Pressing another replaces it. Escape leaves the command on the key it has now.
 
 **Keyboard Manager.** Every command QuillLite has, with the key it answers to. Type part of a command's name to find it, or press Record a Key and press a combination to be told what that key already does. Assigning a key somebody else has names them and asks before moving it. Insert is never bindable: it is the key NVDA and JAWS use as their own modifier.
