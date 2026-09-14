@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio -- Product Requirements</title>
   <style>
@@ -806,14 +806,16 @@ OPML directory (<code>opml.radiotime.com</code> search/browse/tune,
 <code>partnerId=RadioTime</code>, no key); the user-typed page for Find
 Streams (plus, for a Triton/StreamTheWorld player page or an
 iHeart/TuneIn page, one follow-on call to that provider’s public API to
-resolve the stream); the playing stream itself for ICY titles and, as a
-same-host last-resort for What’s Playing, that stream server’s own
-Icecast/SHOUTcast status endpoint; and this repository’s GitHub releases
-for the update check. Playback (mpv) and the metadata/status requests
-send a “Quill Radio” User-Agent. No telemetry of any kind. (Sound
-Enhancements’ local relay, §8, is loopback-only and never reaches the
-network itself – it filters the same stream this section already
-covers.)</li>
+resolve the stream); the same single fetch serves a web address typed
+into any search box (<code>federated_browse</code>‘s
+<code>WEBSITE</code> source), which contacts no directory at all; the
+playing stream itself for ICY titles and, as a same-host last-resort for
+What’s Playing, that stream server’s own Icecast/SHOUTcast status
+endpoint; and this repository’s GitHub releases for the update check.
+Playback (mpv) and the metadata/status requests send a “Quill Radio”
+User-Agent. No telemetry of any kind. (Sound Enhancements’ local relay,
+§8, is loopback-only and never reaches the network itself – it filters
+the same stream this section already covers.)</li>
 <li>N-2. Safe Mode disables the radio’s network surfaces along with the
 feature, <strong>per branch</strong> rather than as one app-wide switch:
 <code>browse_sources.LOCAL_SOURCES</code> names the branches that need
@@ -4064,6 +4066,37 @@ twelve-second deadline after which stragglers are <em>named</em> in
 deliberately repeating and deliberately shortens after its first
 sentence – a long sentence repeated every few seconds is noise a
 screen-reader user has to talk over.</p>
+<p><strong>A web address is not a station name, and two of three search
+boxes did not know it</strong> (#1491). Find Stations already folded in
+the website scanner: an entry that parsed as an address was scanned for
+streams instead of searched for. The browse tree’s <strong>Search All
+Sources</strong> and <strong>Find in this folder</strong> did not, and
+they are the boxes people reach first. Search All Sources passed
+<code>oj991.com</code> to sixteen directories as a <em>name</em>; Radio
+Browser matched the token “com” and answered with thirty-three rows of
+<code>Cruisin92.com</code> and <code>STAR1079.com</code>. Find in this
+folder answered nothing, necessarily – an address is never a row label,
+so scoping one to a folder cannot match.</p>
+<p>The cause was placement, not logic: <code>looks_like_url</code> lived
+inside <code>ui/radio/station_browser_dialog.py</code>, which the browse
+tree cannot import. It moves with <code>normalize_page_url</code> into a
+wx-free <code>core/radio/page_url.py</code>, and
+<code>federated_browse.search_everything</code> asks the question first:
+an address routes to a <code>WEBSITE</code> pseudo-source that scans the
+page and answers with ordinary playable leaves – same node ids, same
+context menu, same Add to Favorites as a browsed row – while the
+directories are not asked at all. A candidate with no anchor text takes
+the page title, because a row labelled by a bare mount URL cannot be
+picked out of a list by ear. Safe Mode and an unreachable site report
+through <code>failed</code> like any other source. Only the
+<em>unscoped</em> search does this; “Search for a Podcast…” passes its
+own targets and means podcasts whatever was typed.</p>
+<p>This is a bigger gap than one station. No directory carries
+everything – WWOJ (“OJ 99.1”, Avon Park FL) is in neither TuneIn nor
+Radio Browser, verified against TuneIn’s own API as well as the OPML one
+– so for a whole class of small and independent stations, the web
+address <em>is</em> the only route, and it was reachable from exactly
+one of three places a listener can type.</p>
 <h3 id="3-goals-and-non-goals">3. Goals and non-goals</h3>
 <h4 id="goals">Goals</h4>
 <ol type="1">

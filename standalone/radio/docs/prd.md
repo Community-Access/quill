@@ -94,7 +94,7 @@ Out of scope by decision: QUILL's editor, AI, speech transcription, braille, and
 
 ## 6. Network requirements
 
-- N-1. Every outbound surface is inventoried in QUILL's network-egress audit: RadioBrowser and SomaFM (search/tags/countries/click-votes/byuuid fallback); iHeart (`www.iheart.com` public sitemap index + on-demand station-page GETs to resolve a stream); TuneIn via RadioTime's OPML directory (`opml.radiotime.com` search/browse/tune, `partnerId=RadioTime`, no key); the user-typed page for Find Streams (plus, for a Triton/StreamTheWorld player page or an iHeart/TuneIn page, one follow-on call to that provider's public API to resolve the stream); the playing stream itself for ICY titles and, as a same-host last-resort for What's Playing, that stream server's own Icecast/SHOUTcast status endpoint; and this repository's GitHub releases for the update check. Playback (mpv) and the metadata/status requests send a "Quill Radio" User-Agent. No telemetry of any kind. (Sound Enhancements' local relay, §8, is loopback-only and never reaches the network itself -- it filters the same stream this section already covers.)
+- N-1. Every outbound surface is inventoried in QUILL's network-egress audit: RadioBrowser and SomaFM (search/tags/countries/click-votes/byuuid fallback); iHeart (`www.iheart.com` public sitemap index + on-demand station-page GETs to resolve a stream); TuneIn via RadioTime's OPML directory (`opml.radiotime.com` search/browse/tune, `partnerId=RadioTime`, no key); the user-typed page for Find Streams (plus, for a Triton/StreamTheWorld player page or an iHeart/TuneIn page, one follow-on call to that provider's public API to resolve the stream); the same single fetch serves a web address typed into any search box (`federated_browse`'s `WEBSITE` source), which contacts no directory at all; the playing stream itself for ICY titles and, as a same-host last-resort for What's Playing, that stream server's own Icecast/SHOUTcast status endpoint; and this repository's GitHub releases for the update check. Playback (mpv) and the metadata/status requests send a "Quill Radio" User-Agent. No telemetry of any kind. (Sound Enhancements' local relay, §8, is loopback-only and never reaches the network itself -- it filters the same stream this section already covers.)
 - N-2. Safe Mode disables the radio's network surfaces along with the feature, **per branch** rather than as one app-wide switch: `browse_sources.LOCAL_SOURCES` names the branches that need no network at all (Favorites, ACB Media, NFB Radio, the Networks catalogue), and every other branch refuses out loud with its own words rather than showing an empty folder.
 - N-3. **The cost rule.** No integration may create a recurring financial obligation -- no paid API subscription, per-request or per-stream charge, commercial SDK licence, required premium or paid developer account, revenue share, paid proxy, or paid metadata service -- for BITS, for Quill Radio, or for the listener, for anything a listener needs. Optional provider functionality that independently costs money must never be required for the core integration.
 - N-4. **The access rule, which is stricter than the cost rule and is what actually governed the 3.0 sources.** A source must need **no API key, no account, no developer registration, and no business relationship**. This is why Apple Podcasts is the podcast directory and Podcast Index is not (2026-08-13): Podcast Index's key is free, and a free key is still a key to configure, to support, and to explain to somebody at the worst possible moment.
@@ -1076,6 +1076,35 @@ targets) plus a twelve-second deadline after which stragglers are *named* in
 ``failed`` rather than dropped. The progress notice is deliberately repeating
 and deliberately shortens after its first sentence -- a long sentence repeated
 every few seconds is noise a screen-reader user has to talk over.
+
+**A web address is not a station name, and two of three search boxes did not
+know it** (#1491). Find Stations already folded in the website scanner: an
+entry that parsed as an address was scanned for streams instead of searched
+for. The browse tree's **Search All Sources** and **Find in this folder** did
+not, and they are the boxes people reach first. Search All Sources passed
+``oj991.com`` to sixteen directories as a *name*; Radio Browser matched the
+token "com" and answered with thirty-three rows of ``Cruisin92.com`` and
+``STAR1079.com``. Find in this folder answered nothing, necessarily -- an
+address is never a row label, so scoping one to a folder cannot match.
+
+The cause was placement, not logic: ``looks_like_url`` lived inside
+``ui/radio/station_browser_dialog.py``, which the browse tree cannot import. It
+moves with ``normalize_page_url`` into a wx-free ``core/radio/page_url.py``,
+and ``federated_browse.search_everything`` asks the question first: an address
+routes to a ``WEBSITE`` pseudo-source that scans the page and answers with
+ordinary playable leaves -- same node ids, same context menu, same Add to
+Favorites as a browsed row -- while the directories are not asked at all. A
+candidate with no anchor text takes the page title, because a row labelled by a
+bare mount URL cannot be picked out of a list by ear. Safe Mode and an
+unreachable site report through ``failed`` like any other source. Only the
+*unscoped* search does this; "Search for a Podcast..." passes its own targets
+and means podcasts whatever was typed.
+
+This is a bigger gap than one station. No directory carries everything -- WWOJ
+("OJ 99.1", Avon Park FL) is in neither TuneIn nor Radio Browser, verified
+against TuneIn's own API as well as the OPML one -- so for a whole class of
+small and independent stations, the web address *is* the only route, and it was
+reachable from exactly one of three places a listener can type.
 
 ### 3. Goals and non-goals
 
