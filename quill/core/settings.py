@@ -6,6 +6,7 @@ from typing import Any
 
 from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.ai.vision_prompts import BUILTIN_STYLE_IDS
+from quill.core.markdown_breaks import normalise_hard_break_style
 from quill.core.monitor_policy import (
     MONITOR_GITHUB,
     MONITOR_PODCASTS,
@@ -512,6 +513,10 @@ class Settings:
     confirm_destructive_actions: bool = True
     default_export_preset: str = "html"
     default_new_document_format: str = "markdown"
+    # How QUILL writes a hard line break in Markdown: "backslash" (audible,
+    # survives a trailing-whitespace strip) or "spaces" (the older two-space
+    # spelling). Both are always *read*; this chooses what is written (#1488).
+    markdown_hard_break_style: str = "backslash"
     autoformat_smart_quotes: bool = False
     autoformat_dashes: bool = False
     quick_nav_include_headings: bool = True
@@ -1191,6 +1196,9 @@ class Settings:
         )
         if default_new_document_format not in {"markdown", "text", "html"}:
             default_new_document_format = "markdown"
+        markdown_hard_break_style = normalise_hard_break_style(
+            data.get("markdown_hard_break_style", "backslash")
+        )
         autoformat_smart_quotes = bool(data.get("autoformat_smart_quotes", False))
         autoformat_dashes = bool(data.get("autoformat_dashes", False))
         quick_nav_include_headings = bool(data.get("quick_nav_include_headings", True))
@@ -1672,6 +1680,7 @@ class Settings:
             confirm_destructive_actions=confirm_destructive_actions,
             default_export_preset=default_export_preset,
             default_new_document_format=default_new_document_format,
+            markdown_hard_break_style=markdown_hard_break_style,
             autoformat_smart_quotes=autoformat_smart_quotes,
             autoformat_dashes=autoformat_dashes,
             quick_nav_include_headings=quick_nav_include_headings,

@@ -35,6 +35,7 @@ import urllib.parse
 
 __all__ = [
     "page_is_securenet_player",
+    "is_player_page_url",
     "callsign_from_page",
     "stream_urls_from_page",
 ]
@@ -47,6 +48,11 @@ _PLAYER_DOMAIN = "securenetsystems.net"
 #: ``/v5/<CALLSIGN>`` (also ``/v4/``, ``/v6/`` as the platform versions its
 #: player) is the player page path.
 _PLAYER_PATH_RE = re.compile(r"^/v\d+/([A-Za-z0-9_\-]{2,32})/?$")
+
+#: The one kind of ``securenetsystems.net`` host that serves audio rather than
+#: HTML: the Icecast mount (``ice42.securenetsystems.net/WWOJ``). Everything
+#: else on the domain -- ``radio.``, ``streamdb<N>web.`` -- is web content.
+_STREAM_HOST_RE = re.compile(r"^ice\d+\.securenetsystems\.net$", re.IGNORECASE)
 
 #: The playable mount as it appears in the page: an ``ice<N>`` host plus the
 #: callsign. The optional query carries a per-visit ``playSessionID`` used for
@@ -64,6 +70,26 @@ def page_is_securenet_player(url: str, html: str = "") -> bool:
     if host.endswith(_PLAYER_DOMAIN):
         return True
     return _PLAYER_DOMAIN in html.lower() and bool(_ICE_URL_RE.search(html))
+
+
+def is_player_page_url(url: str) -> bool:
+    """True when *url* is a Cirrus **page** -- something to read, not to play.
+
+    The platform's web front-ends (``radio.securenetsystems.net/v5/WWOJ``,
+    ``streamdb9web.securenetsystems.net/cirruscontent/WWOJ``) answer HTML, so
+    handing one to the audio engine leaves the player stuck on "Connecting."
+    forever -- issue #1491, where ``streamdb9web`` matched the generic
+    ``/stream`` path hint and WWOJ's homepage link was offered as a stream.
+
+    Discriminates by host rather than by enumerating player paths, because the
+    platform keeps adding them (``/v5/``, ``/cirruscontent/``,
+    ``/cirrusencore/``): the mount hosts are exactly ``ice<N>.``, so every
+    other host on the domain is a page. Pure; the caller does the fetching.
+    """
+    host = (urllib.parse.urlsplit(url).hostname or "").lower()
+    if host != _PLAYER_DOMAIN and not host.endswith("." + _PLAYER_DOMAIN):
+        return False
+    return not _STREAM_HOST_RE.match(host)
 
 
 def callsign_from_page(url: str, html: str = "") -> str:

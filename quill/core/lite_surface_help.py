@@ -65,6 +65,17 @@ PURPOSES: dict[str, str] = {
         "you how many. In a rich text document Replace All asks first, because "
         "replaced text takes the formatting of the run it lands in."
     ),
+    "Insert Special Character": (
+        "Put in a character the keyboard has no key for. Search by name -- dash, "
+        "quote, euro, acute, arrow -- or by Unicode code point, or clear the search "
+        "box and browse one of the fifteen groups: whitespace, dashes, quotes, "
+        "invisibles, typography, marks, currency, maths, fractions, superscripts, "
+        "arrows, accented letters, Greek and punctuation from other languages. "
+        "Arrow through the characters to hear each one described and press Enter to "
+        "insert the one you are on. QuillLite reads back what it put in, because "
+        "most of this list is invisible on the page. QUILL has the same picker on "
+        "Shift+F2."
+    ),
     "Go to line": (
         "Jump straight to a line by number. The prompt says how many lines the "
         "document has, and a number past the end takes you to the last line "

@@ -145,7 +145,16 @@ class NotebookUIMixin:
         self._active_notebook = nb
         if hasattr(self, "_entries_panel"):
             self._entries_panel.load(nb)
-        self._set_status(f'Notebook "{nb.name}" opened ({len(nb.entries)} entries).')
+        # A dropped entry is said, not hidden. The loader keeps a damaged
+        # notebook open rather than refusing it (#1499), and the difference
+        # between "this notebook has 39 chapters" and "one of your 40 could not
+        # be read" is one nobody can see in a list they have never counted.
+        dropped = getattr(nb, "unreadable_entries", 0)
+        message = f'Notebook "{nb.name}" opened ({len(nb.entries)} entries).'
+        if dropped:
+            noun = "entry" if dropped == 1 else "entries"
+            message += f" {dropped} {noun} could not be read and were left out."
+        self._set_status(message)
         self._refresh_statusbar()
 
     def notebook_save_snapshot(self) -> None:

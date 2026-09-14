@@ -23,11 +23,16 @@ wx-free, strict-typed, pure.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 
 from quill.core.audio.channel_mode import normalize as normalize_channel_mode
 from quill.core.audio_enhance import clamp_eq_gain
 from quill.core.podcasts.models_queue import coerce_int as _coerce_int
+from quill.core.settings_portable import (
+    PortabilityReport,
+    portable_export,
+    portable_import,
+)
 
 SPEED_MIN = 0.5
 SPEED_MAX = 5.0
@@ -512,3 +517,23 @@ class PodcastSettings:
         if self.always_sync_full_catalog:
             return -1
         return self.auto_download_count
+
+
+#: Settings that describe *this machine* rather than how the app behaves, and so
+#: are left out of a portable backup. Where episodes are downloaded is a folder
+#: on this computer. Everything else -- playback, the queue, folders, the
+#: directory source -- is a preference that travels (#1501).
+LOCAL_SETTINGS: frozenset[str] = frozenset({
+    "download_root",
+})
+
+
+def export_portable(settings: PodcastSettings) -> tuple[dict[str, object], PortabilityReport]:
+    """These settings as a portable file, and what was left behind."""
+    return portable_export(settings, app="cast", local_fields=LOCAL_SETTINGS)
+
+
+def import_portable(raw: object) -> tuple[dict[str, object], PortabilityReport]:
+    """The settings in *raw* this build can use, and what was different."""
+    known = frozenset(field.name for field in fields(PodcastSettings))
+    return portable_import(raw, known=known, local_fields=LOCAL_SETTINGS)

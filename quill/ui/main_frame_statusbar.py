@@ -640,7 +640,23 @@ class StatusBarMixin:
                 2,
             )
             self._statusbar_cells.append(_StatusBarCell(item=item, button=button))
-        self.statusbar.Layout()
+        self._relayout_statusbar()
+
+    def _relayout_statusbar(self) -> None:
+        """``statusbar.Layout()``, which is allowed to be impossible (#1483).
+
+        wxMSW batches child repositioning, and a ``Layout()`` landing inside
+        somebody else's batch asserts ``"m_hDWP" ... Shouldn't be called`` and
+        raises into Python -- which is how Ctrl+Tab crashed the editor. Nothing
+        is repaired because there is nothing to repair: the layout that could
+        not run runs on the next refresh, and refreshes are continuous.
+        ``wx.wxAssertionError`` subclasses ``AssertionError``; ``RuntimeError``
+        is the dead C++ wrapper the cell updates above already catch (#269).
+        """
+        try:
+            self.statusbar.Layout()
+        except (RuntimeError, AssertionError):
+            return
 
     def _apply_statusbar_layout(self) -> None:
         if not hasattr(self, "_wx") or not hasattr(self, "statusbar"):
@@ -705,7 +721,7 @@ class StatusBarMixin:
                     cell.button.SetMinSize((width, -1))
             except Exception:
                 pass
-        self.statusbar.Layout()
+        self._relayout_statusbar()
 
     def _refresh_legacy_statusbar(self) -> None:
         if not hasattr(self, "statusbar"):

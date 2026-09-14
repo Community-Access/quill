@@ -9,6 +9,7 @@ import webbrowser
 from dataclasses import dataclass
 from pathlib import Path
 
+from quill.core.markdown_breaks import line_ends_with_hard_break, strip_hard_break
 from quill.core.navigation import previous_heading_start
 
 
@@ -511,6 +512,13 @@ def _div_style_from_attrs(raw: str) -> str:
     return "; ".join(decl)
 
 
+#: Stands in for a hard line break while a paragraph is rendered as one string.
+#: ``chr(1)`` rather than a visible marker because ``html.escape`` leaves it alone
+#: and no document contains one -- the same trick ``_render_inline`` uses to
+#: stash styled spans behind ``chr(0)``.
+_BREAK_SENTINEL = chr(1)
+
+
 def _render_markdown(text: str, *, source_map: bool = False) -> str:
     lines = text.splitlines()
     blocks: list[str] = []
@@ -524,12 +532,35 @@ def _render_markdown(text: str, *, source_map: bool = False) -> str:
     in_code = False
 
     def flush_paragraph() -> None:
+        """One paragraph, with its hard line breaks kept (#1488).
+
+        The lines are joined and rendered as one string, exactly as before, so
+        emphasis that opens on one line and closes on the next still works. The
+        only change is what they are joined *with*: a space where the author
+        soft-wrapped, and a sentinel where they asked for a break. The sentinel
+        survives ``html.escape`` untouched -- it is the same private marker
+        ``_render_inline`` already uses to stash styled spans -- and becomes a
+        ``<br>`` at the end.
+
+        Before this, every line of a paragraph was joined with a space and there
+        was no way to write a line break in QUILL Markdown at all: not two
+        trailing spaces, not a backslash, not a literal ``<br>`` (which was
+        escaped and shown). A novelist lost two days to that.
+        """
         nonlocal paragraph
         if paragraph:
-            blocks.append(
-                f"<p{_src_attr(source_map, paragraph_start)}>"
-                f"{_render_inline(' '.join(paragraph))}</p>"
-            )
+            joined: list[str] = []
+            for index, line in enumerate(paragraph):
+                last = index == len(paragraph) - 1
+                if not last and line_ends_with_hard_break(line):
+                    joined.append(strip_hard_break(line))
+                    joined.append(_BREAK_SENTINEL)
+                else:
+                    joined.append(strip_hard_break(line) if last else line)
+                    if not last:
+                        joined.append(" ")
+            rendered = _render_inline("".join(joined)).replace(_BREAK_SENTINEL, "<br>")
+            blocks.append(f"<p{_src_attr(source_map, paragraph_start)}>{rendered}</p>")
             paragraph = []
 
     def flush_list() -> None:
@@ -687,7 +718,20 @@ def _render_markdown(text: str, *, source_map: bool = False) -> str:
             flush_list()
         if not paragraph:
             paragraph_start = index
-        paragraph.append(stripped)
+        # The raw line, not the rstripped one, decides whether this is a hard
+        # break: every line is rstripped at the top of the loop, which silently
+        # destroyed the two-space spelling before anything could act on it
+        # (#1488 -- the reporter tried exactly that, and nothing happened,
+        # because there was nothing left to find). The marker is re-attached so
+        # flush_paragraph sees it; the backslash spelling survives rstrip on its
+        # own, since a backslash is not whitespace.
+        if line_ends_with_hard_break(line):
+            # Normalised to one spelling here so flush_paragraph has a single
+            # shape to read: a backslash survives rstrip and two spaces do not,
+            # and leaving both in would print the backslash in the output.
+            paragraph.append(strip_hard_break(stripped) + "  ")
+        else:
+            paragraph.append(stripped)
         index += 1
 
     if in_code:

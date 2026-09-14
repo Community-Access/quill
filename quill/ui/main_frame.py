@@ -4168,6 +4168,54 @@ class MainFrame(
                     continue
         return removed
 
+    def _unclean_exit_context(self) -> str:
+        """The session facts an unclean-exit report has to carry (#1464/#1466/#1480).
+
+        Everything here is already gathered for a crash *with* a traceback --
+        version, portable flag, screen reader, the last commands. An unclean
+        exit has no traceback by definition, so this context is the only
+        evidence it can offer, and three reports arrived without any of it.
+        Built through the same builder the tracebacked path uses, so the two
+        kinds of report cannot describe one session two ways.
+
+        Every lookup is defensive: a report that raises while describing a
+        crash is a report nobody gets.
+        """
+        import platform as platform_module
+
+        from quill import __version__
+        from quill.stability.crash_submit import build_session_context
+
+        try:
+            from quill.core.diagnostics import load_diagnostic_events
+
+            recent = [event.name for event in load_diagnostic_events(limit=50)]
+        except Exception:  # noqa: BLE001 - a missing command log is not a reason to file nothing
+            recent = []
+        try:
+            from quill.core.storage_mode import portable_root_dir
+
+            portable = portable_root_dir() is not None
+        except Exception:  # noqa: BLE001 - see above
+            portable = False
+        reader = ""
+        if sys.platform == "win32":
+            try:
+                from quill.platform.windows.sr_detect import detect_screen_reader
+
+                detected = detect_screen_reader()
+                if detected is not None and getattr(detected, "detected", False):
+                    reader = str(getattr(detected, "name", "") or "")
+            except Exception:  # noqa: BLE001 - see above
+                reader = ""
+        return build_session_context(
+            app_version=__version__ or "",
+            portable=portable,
+            screen_reader_name=reader or None,
+            recent_commands=recent,
+            platform_name=platform_module.platform(),
+        )
+
     def _send_crash_report(self, offer: object, logs_path: Path) -> bool:
         """File a crash report from the recovery dialog. Returns True to close it.
 
@@ -4179,7 +4227,9 @@ class MainFrame(
         wx = self._wx
         from quill.core.feedback_token import effective_github_token
         from quill.core.issue_submit import (
+            NEWLINE,
             build_log_summary,
+            find_stall_evidence,
             fingerprint_for_traceback,
             submit_crash_issue,
         )
@@ -4234,9 +4284,24 @@ class MainFrame(
         crash_section = (
             f"Last local crash report (full traceback):\n{crash_report}\n\n" if crash_report else ""
         )
+        # #1464/#1466/#1480: three unclean-exit reports arrived that nobody
+        # could act on. A crash *with* a traceback has always filed the version,
+        # the portable flag, the screen reader and the last ten commands; an
+        # unclean exit filed a log tail and nothing else -- and a log tail is
+        # mostly five-minute idle sweeps. The context below is the only evidence
+        # this kind of report can carry, so it carries all of it, and the stall
+        # lines are lifted to the top, because a six-second UI freeze buried in
+        # the middle of a hundred routine lines is a signal nobody finds.
+        context_section = self._unclean_exit_context()
+        stall = find_stall_evidence(logs_path)
+        stall_section = (
+            "UI stalls recorded before the exit:" + NEWLINE + stall + NEWLINE * 2 if stall else ""
+        )
         body = (
             "Quill offered crash recovery after an unclean exit. Submitted "
             "automatically from the Crash Recovery dialog.\n\n"
+            + context_section
+            + stall_section
             + crash_section
             + evidence_section
             + build_log_summary(logs_path)

@@ -869,6 +869,43 @@ person can check that pressing the key afterwards does the thing.
   network error. A launch is not the place to report that nothing happened.
 - [ ] pass  [ ] fail: ______
 
+**L-109. The spelling context menu is one submenu, named after the word**
+- Do: type a misspelled word, leave the cursor in it and press the Applications
+  key (or Shift+F10). Arrow down once, then Right.
+- Pass: the first row reads as a submenu named for the word -- *Spelling:
+  "wrold"* -- and opening it lands on the first suggestion. Enter replaces the
+  word and says so. On a correctly spelled word there is no Spelling row at
+  all, and the popup starts at Undo either way.
+- [ ] pass  [ ] fail: ______
+
+**L-110. Insert Special Character reads back what it inserted**
+- Do: **Edit > Insert > Special Character...** (Ctrl+Shift+F2). Focus lands in
+  the search box. Type `em dash`, press Enter to move into the list, and press
+  Enter again on the first row.
+- Pass: the reader names the dialog, then the search box; Enter moves to the
+  list and the row reads as its character, its name and its code point; the
+  second Enter closes the dialog and QuillLite says "Inserted", the character,
+  U+2014 and "Em dash". Escape at any point says nothing and inserts nothing.
+- [ ] pass  [ ] fail: ______
+
+**L-111. The picker can be browsed as well as searched**
+- Do: open it again, leave the search box empty and Shift+Tab (or Alt+G) to
+  **Group**. Arrow down to "Accented letters, small", then Tab to
+  **Characters** and arrow through a few rows.
+- Pass: each group change refills the list; the Description pane below reads
+  out the full detail of whichever row you are on; and the status line says how
+  many characters are in view. Nothing is spoken over the top of the list.
+- [ ] pass  [ ] fail: ______
+
+**L-112. A code point typed into the search box finds its character**
+- Do: open it, type `2014`, then clear it and type `U+00A9`, then clear it and
+  type `1F600`.
+- Pass: the first result each time is the em dash, the copyright sign and the
+  grinning face -- the last one proving a code point outside every group still
+  resolves. Then type `zzzz`: the status line says nothing matched, and the
+  list is empty rather than stale.
+- [ ] pass  [ ] fail: ______
+
 ---
 
 ## Sign-off

@@ -244,28 +244,26 @@ class QuillInkwellFrame(AppShellFrame, InkwellExpansionMixin):
         )
 
     def _build_tray_menu(self, menu: wx.Menu) -> None:
-        show_id, quick_id, toggle_id, exit_id = (
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-        )
-        menu.Append(show_id, "Open Quill Inkwell")
-        menu.Append(quick_id, "Quick Insert...")
-        menu.AppendCheckItem(toggle_id, "Expand in other applications")
+        # Bound on the menu, not on the frame (#1465). A tray menu's commands
+        # are routed through the menu that TaskBarIcon.PopupMenu was handed --
+        # never through the app's frame -- so a handler bound on self.frame is a
+        # row that silently does nothing when it is pressed.
+        # Only what is Inkwell's own. The shared tray menu already opens with
+        # "Show Quill Inkwell" and closes with "Exit Quill Inkwell", and this
+        # method carried a second Show and a second Exit of its own -- four rows
+        # for two actions, in a menu that is read out one row at a time.
+        quick_id, toggle_id = wx.NewIdRef(), wx.NewIdRef()
+        menu.Append(quick_id, "&Quick Insert...")
+        menu.AppendCheckItem(toggle_id, "Expand in other &applications")
         menu.Check(toggle_id, self._settings.expansion_enabled)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._restore_from_tray(), id=show_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_quick_insert(), id=quick_id)
-        self.frame.Bind(
+        menu.Bind(wx.EVT_MENU, lambda _e: self.open_quick_insert(), id=quick_id)
+        menu.Bind(
             wx.EVT_MENU,
             lambda _e: self.set_expansion_enabled(not self._settings.expansion_enabled),
             id=toggle_id,
         )
         self._append_sibling_app_tray_items(menu, exclude="inkwell")
-        menu.AppendSeparator()
-        menu.Append(exit_id, "Exit")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._exit_application(), id=exit_id)
-        self._keep_menu_ids(show_id, quick_id, toggle_id, exit_id)
+        self._keep_menu_ids(quick_id, toggle_id)
 
     # -- main panel --------------------------------------------------------------
 

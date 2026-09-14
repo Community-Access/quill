@@ -297,6 +297,7 @@
   "quill.ui.sleep_timer_dialog": "reachable",
   "quill.ui.sound_enhance_dialog": "reachable",
   "quill.ui.sound_scheme_dialog": "reachable",
+  "quill.ui.special_character_dialog": "reachable",
   "quill.ui.speech_hub_dialog": "reachable",
   "quill.ui.speech_player_dialog": "reachable",
   "quill.ui.speech_setup_dialog": "reachable",

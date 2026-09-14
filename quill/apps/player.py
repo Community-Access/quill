@@ -278,9 +278,14 @@ class QuillMediaPlayerFrame(MediaListenMixin, NoteCuesMixin, MediaWinampKeysMixi
         )
 
     def _build_tray_menu(self, menu: wx.Menu) -> None:
-        show_id = wx.NewIdRef()
-        menu.Append(show_id, "Open Quill Media Player")
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._restore_from_tray(), id=show_id)
+        """Nothing of its own, and that is the whole entry (#1465).
+
+        The shared tray menu already opens with "Show <title>" and closes with
+        "Exit <title>". This used to add a second row that did the same thing as
+        the first -- and did not even do it, because it was bound on the frame,
+        which is not where a tray menu's commands are routed.
+        """
+        return
 
     # -- main panel ------------------------------------------------------------
 

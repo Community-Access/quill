@@ -930,6 +930,10 @@ class DialogRecorder:
         "show_text_window_marks": ("quill.apps.lite_window_marks", "show_text_window"),
         "choose_heading": ("quill.apps.lite_window_commands", "choose_heading"),
         "ask_line_number": ("quill.apps.lite_window_commands", "ask_line_number"),
+        "choose_special_character": (
+            "quill.apps.lite_window_special_character",
+            "choose_special_character",
+        ),
         "edit_file_format": ("quill.apps.lite_window_tools", "edit_file_format"),
         "edit_preferences": ("quill.apps.lite_window_view", "edit_preferences"),
         "FindDialog": ("quill.apps.lite_window_find", "FindDialog"),
@@ -976,7 +980,10 @@ class DialogRecorder:
     #: gets both, because which module imported the dialog is the recorder's
     #: problem rather than the test author's.
     ALIASES: dict[str, tuple[str, ...]] = {
-        "choose_from_rows": ("choose_from_rows", "choose_from_rows_clipboard"),
+        "choose_from_rows": (
+            "choose_from_rows",
+            "choose_from_rows_clipboard",
+        ),
         "show_text_window": ("show_text_window", "show_text_window_marks"),
     }
 

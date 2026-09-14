@@ -32,6 +32,8 @@ from quill.apps.lite_dialogs import (
     show_text_window,
 )
 from quill.apps.lite_window_find import DocumentFindMixin
+from quill.apps.lite_window_settings_backup import DocumentSettingsBackupMixin
+from quill.apps.lite_window_special_character import DocumentSpecialCharacterMixin
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite.commands import shortcut_text
 from quill.core.lite.filetypes import (
@@ -53,7 +55,9 @@ __all__ = ["DocumentCommandsMixin"]
 _DATETIME_FORMAT = "%H:%M %d/%m/%Y"
 
 
-class DocumentCommandsMixin(DocumentFindMixin):
+class DocumentCommandsMixin(
+    DocumentFindMixin, DocumentSpecialCharacterMixin, DocumentSettingsBackupMixin
+):
     """The ``cmd_*`` handlers the command table names.
 
     Mixed into :class:`~quill.apps.lite_window.DocumentFrame`, which supplies

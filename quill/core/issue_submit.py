@@ -16,6 +16,9 @@ from pathlib import Path
 
 from quill.core import crash_fingerprint as _crash_fingerprint
 
+#: Spelled once so a scripted edit cannot turn it into a real line break.
+NEWLINE = chr(10)
+
 logger = logging.getLogger(__name__)
 
 #: Re-exported so the crash-recovery caller has one obvious import; the
@@ -57,6 +60,48 @@ def build_log_summary(logs_path: Path, *, max_chars: int = _MAX_LOG_CHARS) -> st
         return ""
     redacted = redact_text_for_bundle(text[-max_chars:])
     return f"Newest log: {newest.name}\n\n{redacted}".strip()
+
+
+#: Log lines that mean the UI thread stopped answering. An unclean exit with one
+#: of these behind it is a hang; one without is something else entirely, and
+#: knowing which is the difference between a report that can be worked and a
+#: report that can only be closed (#1464, #1466, #1480).
+_STALL_MARKERS = (
+    "UI appears blocked",
+    "wx UI heartbeat",
+    "capturing stacks",
+    "hard-exit watchdog",
+)
+
+
+def find_stall_evidence(logs_path: Path, *, max_lines: int = 6) -> str:
+    """The last few UI-stall lines from the newest log, or "".
+
+    An unclean-exit report carries a log *tail*, and a tail is mostly
+    five-minute idle-sweep heartbeats -- three reports arrived where the only
+    real signal, a six-second UI stall, was buried in the middle of a hundred
+    lines of routine logging, and two where there was no signal at all. Pulling
+    the stall lines to the top of the report is the difference between "here is
+    a hang, with the moment it started" and "here is a log".
+
+    Redacted like every other quoted log line: this goes to a public tracker.
+    """
+    from quill.stability.redaction import redact_text_for_bundle
+
+    try:
+        logs = sorted(logs_path.glob("*.log"), key=lambda p: p.stat().st_mtime, reverse=True)
+    except OSError:
+        return ""
+    if not logs:
+        return ""
+    try:
+        text = logs[0].read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return ""
+    hits = [line for line in text.splitlines() if any(m in line for m in _STALL_MARKERS)]
+    if not hits:
+        return ""
+    return redact_text_for_bundle(NEWLINE.join(hits[-max_lines:]))
 
 
 def submit_crash_issue(

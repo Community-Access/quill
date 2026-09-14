@@ -152,7 +152,10 @@ COMMANDS: list[CommandRow] = [
     # just read out is typed in here.
     ("&Edit", "&Go to Line...", "Ctrl+G", "cmd_goto_line", ""),
     ("&Edit", "", "", "", "sep"),
-    ("&Edit", "&Insert Date and Time", "F5", "cmd_insert_datetime", ""),
+    # A submenu for two items, and the reason is the arithmetic above: Edit's
+    # top-level rows claim twenty of the twenty-six Alt letters, and the six
+    # left over appear in no honest spelling of "Insert Special Character".
+    ("&Edit", "&Insert", "", "", "sub"),
     # A screen reader says "space" for four different characters. This is the
     # only way to find out which one broke the search.
     ("&Edit", "Describe C&haracter", "Ctrl+Shift+C", "cmd_describe_character", ""),
@@ -161,6 +164,14 @@ COMMANDS: list[CommandRow] = [
     ("&Edit", "&Lines", "", "", "sub"),
     ("&Edit", "Selectio&n", "", "", "sub"),
     ("&Edit", "Clip&board", "", "", "sub"),
+    # -- Edit > Insert -------------------------------------------------------
+    # Ctrl+Shift+F2 rather than QUILL's Shift+F2: that is Previous Bookmark here.
+    ("&Edit|&Insert", "&Date and Time", "F5", "cmd_insert_datetime", ""),
+    ("&Edit|&Insert", "&Special Character...", "Ctrl+Shift+F2", "cmd_insert_special_character", ""),
+    # Shift+Enter is the chord Word uses for a hard return, so the fingers that
+    # need this already know it (#1488). A hard break ends the line without
+    # starting a paragraph, which is the distinction a blank line cannot make.
+    ("&Edit|&Insert", "&Line Break", "Shift+Enter", "cmd_insert_line_break", ""),
     # -- Edit > Matches ------------------------------------------------------
     ("&Edit|&Matches", "&All Matches...", "Ctrl+Shift+F3", "cmd_find_all", ""),
     ("&Edit|&Matches", "&Count Occurrences", "Ctrl+Alt+Shift+F3", "cmd_count_occurrences", ""),
@@ -527,6 +538,13 @@ COMMANDS: list[CommandRow] = [
     # changed at all. Ctrl+comma is where Windows has put preferences for a
     # decade.
     ("&Tools", "&Preferences...", "Ctrl+,", "cmd_preferences", ""),
+    # Back up the configuration, and put it back on the next machine (#1501).
+    # Beside Preferences because that is what it is a copy of. Neither carries
+    # anything that describes *this* computer -- no recent files, no window
+    # size, no update timestamp -- so the file is a configuration rather than a
+    # snapshot of one desk.
+    ("&Tools", "&Back Up Settings...", "Ctrl+Alt+Shift+Q", "cmd_backup_settings", ""),
+    ("&Tools", "Restore Sett&ings...", "Ctrl+Alt+Shift+D", "cmd_restore_settings", ""),
     # Turning a whole area off is QUILL's own idea, and it belongs here more
     # than anywhere: the way QuillLite stays small is that somebody who does not
     # want rich text can remove the Format menu entirely rather than learn to

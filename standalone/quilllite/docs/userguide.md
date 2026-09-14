@@ -180,6 +180,83 @@ order, each with its line and column and the words around it. That is the list
 you want before a Replace All, because it is the only way to see what you are
 about to change rather than finding out afterwards.
 
+### Typing things there is no key for
+
+**Edit ▸ Insert ▸ Special Character...** (**Ctrl+Shift+F2**) opens a picker for
+the 357 characters a keyboard has no key for. Two ways in, and the window opens
+on the first one:
+
+- **Type what you are after.** The search box takes part of a name -- `dash`,
+  `euro`, `acute`, `arrow`, `apostrophe` -- or one of the words Unicode does not
+  use but people do: `gbp`, `sterling`, `copyright`, `eszett`, `micro`. Press
+  **Enter** to move into the results.
+- **Or clear the box and browse a group.** Fifteen of them: Whitespace, Dashes
+  and hyphens, Quotes, Invisible and control, Typography, Legal and reference
+  marks, Currency, Maths and units, Fractions, Superscripts and ordinals,
+  Arrows, Accented letters (small and capital, listed separately), Greek
+  letters, and Punctuation from other languages.
+
+The results list has three columns -- the character, its name, and its code
+point -- and the **Description** pane below updates on every row you arrow onto,
+with the same detail **Character Details...** gives for a character already in
+the document. The code point column is what tells apart rows that sound the
+same: "Thin space" and "Hair space" are U+2009 and U+200A.
+
+**Enter inserts the character you are on**, and QuillLite **reads back what it
+put in** -- "Inserted — U+2014 Em dash". That is not a nicety: most of this list
+is invisible on the page, so without the read-back the command would be a
+keystroke after which something you cannot see may or may not have appeared.
+
+**The search box is also a code-point box.** Type `2014`, `U+2014` or `d8212`
+and the em dash is the first result. A code point that is in no group at all
+still finds its character, so the picker reaches everything Unicode has and not
+only the 357 that are grouped.
+
+QUILL has the same picker on **Shift+F2**, over the same list.
+
+### Moving your settings to another computer
+
+**Tools ▸ Back Up Settings...** (**Ctrl+Alt+Shift+Q**) writes your configuration
+to a `.qsf` file. **Tools ▸ Restore Settings...** (**Ctrl+Alt+Shift+D**) reads
+one back.
+
+The file holds preferences, not a picture of this computer. Your recent-files
+list, the session QuillLite restores at startup, the window size and the last
+time it looked for an update are all **left out on purpose** — carrying them to
+another machine would give you an editor pointing at files that are not there.
+The backup tells you how many locations it left behind.
+
+Restoring tells you what was different: how many settings came across, how many
+have been added to QuillLite since the file was written (those keep their
+defaults), and how many the file had that this version does not recognise. If
+the file has nothing QuillLite recognises at all, nothing is changed — a wrong
+file should not reset your editor.
+
+QUILL has the same thing, on buttons in its Preferences window. The two products
+use the same file extension but do not read each other's backups: they are
+different editors with different settings.
+
+### Ending a line without starting a paragraph
+
+**Edit ▸ Insert ▸ Line Break** (**Shift+Enter**, the same chord Word uses) ends
+the line you are on and starts the next one **without** starting a new
+paragraph.
+
+That distinction matters in Markdown and nowhere else is it visible. A blank
+line between two lines makes them two paragraphs, which most renderers show with
+a gap. A hard break makes them two lines of one paragraph, which is what you
+want for an address, a verse, or a run of scene-break lines that should sit
+tight against each other.
+
+QuillLite writes the break in whichever spelling **Markdown line break style**
+names in Settings, and **says which one it used** — the default is a backslash
+at the end of the line, because the alternative is two trailing spaces, which
+are invisible on screen, silent to a screen reader, and stripped by many tools
+when they save a file. If you have ever added two spaces to the end of a line
+and had nothing happen, that is why.
+
+QUILL has the same command on the same key.
+
 ### Searching for things you cannot type
 
 The Find and Replace windows have a **Search mode** with three settings.
@@ -495,11 +572,16 @@ tuning this once tunes both.
 ### The word you are on: the Applications key
 
 With the cursor in a word QuillLite thinks is misspelled, press the
-**Applications key** (or Shift+F10, or right-click) and the menu **opens with
-the corrections**. One **Down** arrow and you are on the first suggestion;
-**Enter** replaces the word. No dialog opens and the cursor does not move.
+**Applications key** (or Shift+F10, or right-click) and the menu grows a
+**Spelling** submenu at the top, named after the word: *Spelling: "wrold"*. One
+**Down** arrow, then **Right**, and you are on the first suggestion; **Enter**
+replaces the word. No dialog opens and the cursor does not move.
 
-Under the suggestions:
+Everything about the word is in that one submenu, so the ordinary rows below it
+-- Undo, Redo, Cut, Copy, Paste, Delete, Select All -- are in the same place
+whether the word is misspelled or not.
+
+Inside the submenu, under the suggestions:
 
 | Row | What it does |
 |---|---|
@@ -512,9 +594,8 @@ Under the suggestions:
 | **Next / Previous Misspelling** | Move on without leaving the keyboard. |
 
 Every row names the word it is about, so a menu you reached by keyboard still
-tells you what it is going to do. Below them is the ordinary edit menu -- Undo,
-Redo, Cut, Copy, Paste, Delete, Select All -- which is what you get on a word
-that is spelled correctly.
+tells you what it is going to do. On a word that is spelled correctly there is
+no Spelling submenu at all -- just the ordinary edit rows.
 
 Ignoring is honoured everywhere: a word you have ignored stops being announced
 as you type, stops being a stop for **Ctrl+F7**, and stops being offered by
@@ -1246,9 +1327,16 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Shift+F3** | Find Previous |
 | **Ctrl+H** | Replace... |
 | **Ctrl+G** | Go to Line... |
-| **F5** | Insert Date and Time |
 | **Ctrl+Shift+C** | Describe Character |
 | **Ctrl+Alt+C** | Character Details... |
+
+### Edit ▸ Insert
+
+| Key | Command |
+|---|---|
+| **F5** | Date and Time |
+| **Ctrl+Shift+F2** | Special Character... |
+| **Shift+Enter** | Line Break |
 
 ### Edit ▸ Matches
 
@@ -1414,6 +1502,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 
 | Key | Command |
 |---|---|
+| **Ctrl+Alt+Shift+Q** | Back Up Settings... |
+| **Ctrl+Alt+Shift+D** | Restore Settings... |
 | **Ctrl+Alt+E** | File Encoding and Line Endings... |
 | **Ctrl+Alt+A** | Manage Abbreviations... |
 | **Alt+Shift+A** | Expand Abbreviations |

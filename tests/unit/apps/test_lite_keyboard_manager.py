@@ -156,9 +156,25 @@ def test_recording_a_taken_key_names_the_command_that_has_it(manager) -> None:
 
 
 def test_recording_a_free_key_says_it_is_free(manager) -> None:
+    """The letter is worked out, not assumed.
+
+    This named Q outright, and the day a real command claimed Ctrl+Alt+Shift+Q
+    (Back Up Settings, #1501) the test failed for a reason that had nothing to
+    do with what it checks -- which is that an unclaimed chord reads as free.
+    """
+    import string
+
+    from quill.core.lite.keymap import conflicting_handlers, default_keymap
+
+    keymap = default_keymap()
+    letter = next(
+        candidate
+        for candidate in string.ascii_uppercase
+        if not conflicting_handlers(keymap, "cmd_new", f"Ctrl+Alt+Shift+{candidate}")
+    )
     manager.record.SetValue(True)
     manager._on_record_toggled()
-    manager._record_chord(_KeyEvent(ord("Q"), ctrl=True, shift=True, alt=True))
+    manager._record_chord(_KeyEvent(ord(letter), ctrl=True, shift=True, alt=True))
     assert manager.status.GetLabel().endswith("is free.")
 
 

@@ -118,12 +118,25 @@ _NAMED: dict[str, str] = {
 }
 
 
+#: What goes between two letters. A full stop, not a comma (2026-09-12, asked
+#: for by Jeff: "the spelling of the misspelled word should be slowed down").
+#:
+#: We cannot slow the voice down -- the speech rate belongs to the listener's
+#: screen reader and it would be rude to touch it even if we could reach it.
+#: What we can change is the punctuation, because that is the one lever a
+#: synthesiser gives us over pacing: a comma is a short pause and a full stop is
+#: the long one every engine implements. Spelled at the rate somebody reads
+#: prose at, eleven letters go past faster than they can be held, and the whole
+#: point of spelling a word is that it is the answer the listener has to *keep*.
+_LETTER_GAP = ". "
+
+
 def spell_out(word: str, *, style: str = "letters", capitals: bool = True) -> str:
     """*word*, one character at a time, ready to be spoken.
 
-    Comma-separated because a comma is the one piece of punctuation every
-    synthesiser turns into a short pause, and the pause is what stops "E C" being
-    heard as "easy".
+    Separated by full stops, because the pause is what stops "E C" being heard
+    as "easy" -- and because a spelling read at conversational speed is one the
+    listener cannot hold on to. See :data:`_LETTER_GAP`.
 
     Letters are upper-cased whatever the source says, because a lower-case
     letter alone is read as a word by several voices ("a", "i") and as a letter
@@ -139,12 +152,14 @@ def spell_out(word: str, *, style: str = "letters", capitals: bool = True) -> st
     if not word:
         return ""
     if style == "phonetic":
-        return ", ".join(_phonetic_pieces(word, capitals=capitals))
-    letters = ", ".join(_letter_pieces(word, capitals=capitals))
+        return _LETTER_GAP.join(_phonetic_pieces(word, capitals=capitals))
+    letters = _LETTER_GAP.join(_letter_pieces(word, capitals=capitals))
     if style != "both":
         return letters
-    phonetic = ", ".join(_phonetic_pieces(word, capitals=capitals))
-    return f"{letters}. {phonetic}" if phonetic else letters
+    phonetic = _LETTER_GAP.join(_phonetic_pieces(word, capitals=capitals))
+    # A blank line's worth of pause between the two readings, so the phonetic
+    # run is heard as the same word again rather than as more letters.
+    return f"{letters}.. {phonetic}" if phonetic else letters
 
 
 def _letter_pieces(word: str, *, capitals: bool) -> list[str]:

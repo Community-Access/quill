@@ -124,8 +124,11 @@ _MAX_HEIGHT = 640
 #: Pixels per scroll step in the area list.
 _SCROLL_STEP = 12
 
-#: Where a description wraps. Wide enough that most are one line, narrow enough
-#: that the dialog does not open wider than the window behind it.
+#: How wide the profile-impact box is. Wide enough that most lines do not wrap,
+#: narrow enough that the dialog does not open wider than the window behind it.
+#: It used to size the per-checkbox description hints too; those moved into F1
+#: on 2026-09-12, because a fixed wrap width inside a scrolling list is a
+#: sentence that gets cut off.
 _HINT_WRAP = 560
 
 #: How a profile's settings are said out loud. Keyed by attribute name, because
@@ -353,11 +356,18 @@ class AppFeaturesDialog:
             sizer.Add(box, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
             self._checks[area.id] = box
             self._rows[area.id] = [box]
-            if area.description:
-                hint = wx.StaticText(self.list_panel, label=area.description)
-                hint.Wrap(_HINT_WRAP)
-                sizer.Add(hint, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 28)
-                self._rows[area.id].append(hint)
+            # The description lives in **F1 only** (2026-09-12, reported by
+            # Jeff: "the descriptions are cut off"). It used to be a StaticText
+            # under each box as well, wrapped at a fixed width that the dialog
+            # does not honour once the list scrolls, so the sentence a user most
+            # needed was the one they could not finish reading.
+            #
+            # Help is the better home for it in any case. A screen-reader user
+            # arrowing the list heard every description whether or not they
+            # wanted it -- fourteen paragraphs to walk past to reach the
+            # fourteenth checkbox -- and now hears the box, and asks F1 when the
+            # label is not enough. The text itself is unchanged and still
+            # searchable: matching_areas() reads the AppArea, not the widget.
         self.list_panel.SetSizer(sizer)
         return self.list_panel
 

@@ -429,11 +429,27 @@ class AppShellFrame(
         self.frame.Close()
 
     def _remove_tray_icon(self) -> None:
-        if self._tray_icon is None:
+        """Take the icon out of the notification area, and let go of it.
+
+        Both calls are guarded and the reference is dropped either way (#1465).
+        ``RemoveIcon`` is the one that matters -- it is the NIM_DELETE that makes
+        the icon actually disappear -- so a failure in ``Destroy`` must not stop
+        it having happened, and neither may stop the app from closing. An icon
+        left behind is the failure a user sees; an exception on the way out is
+        one they cannot act on.
+        """
+        icon = self._tray_icon
+        if icon is None:
             return
-        self._tray_icon.RemoveIcon()
-        self._tray_icon.Destroy()
         self._tray_icon = None
+        try:
+            icon.RemoveIcon()
+        except Exception:  # noqa: BLE001 - shutdown must never block exit
+            pass
+        try:
+            icon.Destroy()
+        except Exception:  # noqa: BLE001 - shutdown must never block exit
+            pass
 
     def _restore_from_tray(self) -> None:
         self.frame.Show()
@@ -460,18 +476,39 @@ class AppShellFrame(
         try_open_or_offer(self, key)
 
     def _on_tray_right_click(self, build_menu: Callable[[wx.Menu], None]) -> None:
+        """The tray menu: Show, whatever the app adds, and Exit.
+
+        Two things here are not style (#1465, "the systray icon does not exit
+        the app").
+
+        **Exit runs after the menu has gone, not inside it.** A tray menu
+        command is dispatched from inside ``TaskBarIcon.PopupMenu``, so calling
+        it directly meant the close path ran while that modal loop was still on
+        the stack -- and the close path's last act is to destroy the
+        ``TaskBarIcon`` whose menu is still open. Destroying a window from
+        inside its own event loop is how the NIM_DELETE goes missing: the
+        process ends and the icon stays in the notification area until
+        something makes Windows re-poll it. ``CallAfter`` lets the menu close
+        first, which is the same reason ``handle_app_close`` defers its confirm
+        dialog rather than showing one from inside EVT_CLOSE.
+
+        **Both rows carry the access key they are named after.** Windows
+        first-letter matching in a popup depends on what the app inserted in
+        between; an explicit mnemonic does not. The reporter pressed E for Exit,
+        which is now the letter Exit claims.
+        """
         if self._tray_icon is None:
             return
         title = self.frame.GetTitle()
         menu = wx.Menu()
         show_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
-        menu.Append(show_id, f"Show {title}")
-        menu.Bind(wx.EVT_MENU, lambda _e: self._restore_from_tray(), id=show_id)
+        menu.Append(show_id, f"&Show {title}")
+        menu.Bind(wx.EVT_MENU, lambda _e: wx.CallAfter(self._restore_from_tray), id=show_id)
         menu.AppendSeparator()
         build_menu(menu)
         menu.AppendSeparator()
-        menu.Append(exit_id, f"Exit {title}")
-        menu.Bind(wx.EVT_MENU, lambda _e: self._exit_application(), id=exit_id)
+        menu.Append(exit_id, f"&Exit {title}")
+        menu.Bind(wx.EVT_MENU, lambda _e: wx.CallAfter(self._exit_application), id=exit_id)
         self._tray_icon.PopupMenu(menu)
         menu.Destroy()
 

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 357.
+Editor commands with default bindings: 358.
 
 ## The QUILL editor
 
@@ -416,6 +416,7 @@ Editor commands with default bindings: 357.
 | QUILL Key + Shift+V | GitHub: Change Repository Visibility... | `github.change_repository_visibility` |
 | QUILL Key + Shift+X | GitHub: Delete Branch... | `github.delete_branch` |
 | S | QUILL Quick Nav: Sentence | `quill.quick_nav.sentence` |
+| Shift+Enter | Insert line break | `power.insert_line_break` |
 | Shift+F2 | Insert special character | `power.insert_special_character` |
 | T | QUILL Quick Nav: Table | `quill.quick_nav.table` |
 | TAB | QUILL Quick Nav: Block | `quill.quick_nav.block` |

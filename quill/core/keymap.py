@@ -563,6 +563,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "localgit.rebase_abort": "",
     "vault.publish_note": "",
     "power.insert_special_character": "Shift+F2",  # §4.22 parity; F2 -> List Studio
+    # The chord Word uses for the same thing, so nobody has to learn one (#1488).
+    "power.insert_line_break": "Shift+Enter",
     "edit.insert_emoji": "Alt+.",  # Accessible Emoji Picker
     "power.number_lines": "Alt+Shift+N",  # §4.22 Number Items parity
     "power.trim_blank_lines": "Ctrl+Shift+Enter",  # §4.22 Trim Blanks parity

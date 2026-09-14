@@ -22,6 +22,20 @@ import re
 from pathlib import Path
 from typing import Any
 
+from quill.core.markdown_breaks import hard_break_suffix
+
+#: Spelled as chr() so a scripted edit cannot turn them into real breaks.
+NEWLINE = chr(10)
+RETURN = chr(13)
+
+#: How a Word hard return is written into Markdown. A backslash rather than two
+#: trailing spaces because this app is written for people who cannot see the
+#: screen: a reader says nothing for two spaces, no editor shows them, and most
+#: tools strip trailing whitespace on save -- destroying the break silently.
+#: Both spellings are read back (quill.core.markdown_breaks); only one is
+#: written. Callers with a user preference to honour pass ``hard_break``.
+_DEFAULT_BREAK = hard_break_suffix("backslash")
+
 _HEADING_STYLE = re.compile(r"^heading (\d)$", re.IGNORECASE)
 
 #: Word's built-in list styles. Numbering beyond "is this a list" is not
@@ -51,8 +65,20 @@ def read_docx_text(path: Path) -> str | None:
     return "\n".join(lines).strip("\n") + "\n"
 
 
-def _render_body(document: Any) -> list[str]:
-    """Render paragraphs and tables in document order."""
+def _is_list_line(line: str) -> bool:
+    return line.startswith("- ") or line.startswith("1. ")
+
+
+def _render_body(document: Any, *, hard_break: str = _DEFAULT_BREAK) -> list[str]:
+    """Render paragraphs and tables in document order.
+
+    Paragraphs are separated by a **blank line**, which is what makes them
+    paragraphs. They used to be joined with a single newline, and Markdown reads
+    consecutive lines as one soft-wrapped paragraph -- so a whole Word chapter
+    arrived in QUILL as a single run-on paragraph (#1488). Consecutive list
+    items are the exception: a blank line between them makes the list loose,
+    which is a different document.
+    """
     from docx.table import Table  # type: ignore[import-untyped]
     from docx.text.paragraph import Paragraph  # type: ignore[import-untyped]
 
@@ -61,8 +87,14 @@ def _render_body(document: Any) -> list[str]:
     for child in body.iterchildren():
         tag = str(child.tag)
         if tag.endswith("}p"):
-            rendered = _render_paragraph(Paragraph(child, document))
+            rendered = _render_paragraph(Paragraph(child, document), hard_break=hard_break)
             if rendered is not None:
+                if (
+                    lines
+                    and lines[-1] != ""
+                    and not (_is_list_line(rendered) and _is_list_line(lines[-1]))
+                ):
+                    lines.append("")
                 lines.append(rendered)
         elif tag.endswith("}tbl"):
             table_lines = _render_table(Table(child, document))
@@ -74,11 +106,22 @@ def _render_body(document: Any) -> list[str]:
     return lines
 
 
-def _render_paragraph(paragraph: Any) -> str | None:
-    """One body paragraph as text, or ``None`` when it is empty."""
+def _render_paragraph(paragraph: Any, *, hard_break: str = _DEFAULT_BREAK) -> str | None:
+    """One body paragraph as text, or ``None`` when it is empty.
+
+    A Word **hard return** (Shift+Enter, ``w:br``) reaches us as a newline
+    inside the paragraph's text, and a bare newline in Markdown is a soft wrap
+    that renders as a space -- so a scene break written as three lines in one
+    paragraph came out as one run-on line (#1488). Each interior newline becomes
+    a real Markdown hard break instead, which is the same thing the author
+    typed.
+    """
     text = (paragraph.text or "").strip()
     if not text:
         return None
+    if NEWLINE in text or RETURN in text:
+        pieces = [piece.rstrip() for piece in text.replace(RETURN, NEWLINE).split(NEWLINE)]
+        text = (hard_break + NEWLINE).join(piece for piece in pieces if piece)
     style = _style_name(paragraph)
     heading = _HEADING_STYLE.match(style)
     if heading:

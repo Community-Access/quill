@@ -1,5 +1,52 @@
 # QuillLite changelog
 
+## Unreleased
+
+### Added
+
+- **Tools > Back Up Settings... (Ctrl+Alt+Shift+Q)** and **Tools > Restore
+  Settings... (Ctrl+Alt+Shift+D).** Write your configuration to a `.qsf` file
+  and put it back on another machine. What describes *this* computer -- the
+  recent-files list, the restored session, the window size, the update
+  timestamp -- is deliberately left out, so a restore cannot point QuillLite at
+  files that are not there. Restoring says what came across, what has been added
+  since the file was written, and what was left alone.
+
+- **Edit > Insert > Line Break (Shift+Enter).** Ends the line without starting
+  a new paragraph -- the distinction a blank line cannot make, and the chord
+  Word uses for the same thing. QuillLite says which spelling it wrote, because
+  the older one (two trailing spaces) is invisible on screen and silent to a
+  screen reader. **Markdown line break style** in Settings chooses; the default
+  is a backslash.
+
+- **Edit > Insert > Special Character... (Ctrl+Shift+F2).** A searchable picker
+  for the 357 characters a keyboard has no key for. Type part of a name
+  (`dash`, `euro`, `acute`, `arrow`) or a word Unicode does not use but people
+  do (`gbp`, `copyright`, `eszett`), or clear the box and browse one of fifteen
+  groups: whitespace, dashes and hyphens, quotes, invisible and control,
+  typography, legal and reference marks, currency, maths and units, fractions,
+  superscripts and ordinals, arrows, accented letters small and capital, Greek
+  letters, and punctuation from other languages. Each row shows the character,
+  its name and its code point, with a description pane that updates as you
+  arrow. Enter inserts, and QuillLite reads back what it put in -- "Inserted --
+  U+2014 Em dash" -- because most of the list is invisible on the page and the
+  reader says nothing when an app writes text on its own behalf. The search box
+  is also a code-point box: `2014`, `U+2014` and `d8212` all find the em dash,
+  and a code point in no group still resolves, so the picker reaches every
+  character Unicode has. QUILL has the same picker on Shift+F2.
+
+  **Insert Date and Time moved with it**, from Edit to **Edit > Insert > Date
+  and Time**. Its key is still **F5**.
+
+### Changed
+
+- **The spelling context menu is one submenu.** The Applications key on a
+  misspelled word used to add a dozen rows to the top of the popup, which put
+  Undo and Cut a different distance down the menu depending on whether the word
+  under the cursor happened to be misspelled. Everything about the word is now
+  under one row named after it -- *Spelling: "wrold"* -- and the first thing
+  inside it is still the first suggestion. One extra press: Down, then Right.
+
 ## 1.0.0 -- 2026-09-12
 
 First release. QUILL with everything removed except the editor: numbered
