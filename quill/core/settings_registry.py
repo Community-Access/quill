@@ -14,6 +14,11 @@ from __future__ import annotations
 from dataclasses import asdict, fields
 
 from quill.core.settings import Settings
+from quill.core.settings_portable import (
+    PortabilityReport,
+    portable_export,
+    portable_import,
+)
 from quill.core.settings_specs import (
     SCHEMA_VERSION,
     SETTING_GROUPS,
@@ -38,7 +43,11 @@ __all__ = [
     "set_value",
     "reset_setting",
     "reset_all",
+    "LOCAL_SETTINGS",
+    "export_portable_settings",
+    "export_portable_settings_with_report",
     "export_settings",
+    "import_portable_settings_with_report",
     "import_settings",
 ]
 
@@ -126,17 +135,69 @@ def reset_all() -> Settings:
     return Settings()
 
 
+#: Settings that describe *this machine* rather than how QUILL should behave:
+#: folders, file locations, and the "last used" memories that point at them.
+#: They are left out of a portable export, because the whole point of one is to
+#: land on a different machine -- where a path to somebody else's Downloads
+#: folder is not a preference, it is a broken setting (#1501). Left out rather
+#: than blanked, so importing an old file cannot wipe a good local value either.
+#:
+#: API keys are deliberately absent from this list because they are absent from
+#: Settings entirely: they live in the OS credential store, so a .qsf has never
+#: been able to carry one. The reporter was right to ask; the answer is that it
+#: was already safe.
+LOCAL_SETTINGS: frozenset[str] = frozenset({
+    "abbreviation_expansion_sound_file",
+    "batch_speech_temp_folder",
+    "convert_file_last_output_dir",
+    "git_sync_last_folder",
+    "import_export_last_folder",
+    "last_update_check",
+    "read_aloud_piper_model_dir",
+    "sound_pack_path",
+    "startup_folder",
+    "tesseract_path",
+    "vault_root",
+    "vault_templates_folder",
+    "watch_folder_path",
+})
+
+
 def export_settings(settings: Settings) -> dict[str, object]:
-    """Return a documented, versioned export of the full configuration.
+    """Every setting, for a **backup** of this machine.
 
     Shape::
 
         {"schema_version": 1, "settings": {<field>: <value>, ...}}
 
-    Every :class:`Settings` field is included so the export is a complete,
-    portable snapshot (SET-7).
+    Complete on purpose, including the machine-local paths. A backup restores
+    the computer it came from, so a watch folder or a Tesseract path is part of
+    what it is restoring -- ``share_package``'s backup kind is built on this and
+    its contract says so in as many words ("a backup preserves per-device
+    settings fields"). The *portable* export is a different product with a
+    different answer; see :func:`export_portable_settings`.
     """
     return {"schema_version": SCHEMA_VERSION, "settings": asdict(settings)}
+
+
+def export_portable_settings(settings: Settings) -> dict[str, object]:
+    """Every setting **except the machine-local ones**, for another computer.
+
+    The distinction this and :func:`export_settings` draw is the whole of #1501.
+    A *backup* restores one machine and wants its paths; a configuration you
+    carry to a new laptop wants everything but. Exporting the paths into the
+    second case is what left people with an app pointing at folders that were
+    never there.
+    """
+    payload, _report = export_portable_settings_with_report(settings)
+    return payload
+
+
+def export_portable_settings_with_report(
+    settings: Settings,
+) -> tuple[dict[str, object], PortabilityReport]:
+    """:func:`export_portable_settings`, and what it had to leave behind."""
+    return portable_export(settings, app="quill", local_fields=LOCAL_SETTINGS)
 
 
 def import_settings(raw: object) -> Settings:
@@ -147,12 +208,24 @@ def import_settings(raw: object) -> Settings:
     normalized through :meth:`Settings.from_dict`, so a malformed or partial
     import never produces an invalid configuration.
     """
-    if not isinstance(raw, dict):
-        return Settings()
-    payload = raw.get("settings", raw)
-    if not isinstance(payload, dict):
-        return Settings()
-    filtered = {
-        str(key): value for key, value in payload.items() if str(key) in _SETTINGS_FIELD_NAMES
-    }
-    return Settings.from_dict(filtered)
+    values, _report = portable_import(raw, known=_SETTINGS_FIELD_NAMES)
+    return Settings.from_dict(values)
+
+
+def import_portable_settings_with_report(raw: object) -> tuple[Settings, PortabilityReport]:
+    """Read a *portable* export, and say what was different about the file.
+
+    Unlike :func:`import_settings`, which restores a backup verbatim, this one
+    ignores any machine-local setting the file still carries -- an older file
+    made before the split, or one written by hand -- so restoring somebody
+    else's configuration cannot point this computer at their folders.
+
+    The report is the honest half of the reporter's "intelligent wizard" ask
+    (#1501): rather than interrogating the user about every setting added since
+    their file was written, say how many there are and which, and let them go
+    and look. Machine-local settings in an older file are ignored rather than
+    applied, so importing a backup made on another computer cannot point this
+    one at folders that are not there.
+    """
+    values, report = portable_import(raw, known=_SETTINGS_FIELD_NAMES, local_fields=LOCAL_SETTINGS)
+    return Settings.from_dict(values), report

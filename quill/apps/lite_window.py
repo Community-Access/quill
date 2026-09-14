@@ -297,6 +297,11 @@ class DocumentFrame(
         # selection needs stretching to meet it.
         key_code = event.GetKeyCode() if hasattr(event, "GetKeyCode") else 0
         self.extend_selection_after_move(key_code)
+        # And the word the caret has just landed on, if it is misspelled. Rides
+        # the same hook for the same reason: by EVT_KEY_UP the caret is where
+        # the user asked for it to be. The check ignores anything that is not a
+        # navigation key, so typing still goes through the as-you-type path.
+        self.check_spelling_at_caret(key_code)
         event.Skip()
 
     def _on_activate(self, event: wx.ActivateEvent) -> None:

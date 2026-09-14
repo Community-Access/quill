@@ -26,6 +26,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from quill.core.header_footer import HeaderFooterSpec, PageNumberStyle
+from quill.io.xml_text import strip_xml_incompatible
 
 if TYPE_CHECKING:  # pragma: no cover - typing only
     pass
@@ -101,7 +102,7 @@ def _docx_fill_paragraph(paragraph: Any, text: str, *, roman: bool) -> None:
         if index:
             paragraph._p.append(parse_xml(_PAGE_FIELD_XML.format(fmt=fmt)))
         if segment:
-            paragraph.add_run(segment)
+            paragraph.add_run(strip_xml_incompatible(segment)[0])
 
 
 def _docx_zone_line(

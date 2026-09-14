@@ -12,8 +12,14 @@ wx-free, strict-typed, JSON-persisted atomically.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from pathlib import Path
+
+from quill.core.settings_portable import (
+    PortabilityReport,
+    portable_export,
+    portable_import,
+)
 
 _STORE_NAME = "weather_settings.json"
 
@@ -245,3 +251,23 @@ def save_settings(data_dir: Path, settings: WeatherSettings) -> None:
             "quick_include_data_age": settings.quick_include_data_age,
         },
     )
+
+
+#: Settings that describe *this machine* rather than how the app behaves, and so
+#: are left out of a portable backup. The alert sound is a file on this
+#: computer; every other Weather setting -- units, which panels show, refresh
+#: rate, the alert floor -- is a preference that travels (#1501).
+LOCAL_SETTINGS: frozenset[str] = frozenset({
+    "alert_sound_path",
+})
+
+
+def export_portable(settings: WeatherSettings) -> tuple[dict[str, object], PortabilityReport]:
+    """These settings as a portable file, and what was left behind."""
+    return portable_export(settings, app="weather", local_fields=LOCAL_SETTINGS)
+
+
+def import_portable(raw: object) -> tuple[dict[str, object], PortabilityReport]:
+    """The settings in *raw* this build can use, and what was different."""
+    known = frozenset(field.name for field in fields(WeatherSettings))
+    return portable_import(raw, known=known, local_fields=LOCAL_SETTINGS)

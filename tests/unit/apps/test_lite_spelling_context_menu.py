@@ -6,10 +6,12 @@ the reason the line-command tests give: what is being tested is the *decision*
 does to the document and to the spoken outcome. None of that is wx's, and a real
 menu needs a display to build.
 
-The one thing asserted about order is that **the corrections come first**. That
-is the whole point of the feature: a listener has no red squiggle, so the
-Applications key is the squiggle, and the first Down arrow has to land on the
-answer rather than on Undo.
+Two things are asserted about shape. **Everything about the word is under one
+"Spelling" submenu**, so the top-level menu is the same menu whether or not the
+caret happens to be in a misspelling -- Undo and Cut do not move. And **the
+corrections are the first rows inside it**: a listener has no red squiggle, so
+the Applications key is the squiggle, and the answer has to be the first thing
+in the submenu rather than something below four kinds of housekeeping.
 """
 
 from __future__ import annotations
@@ -40,6 +42,7 @@ class _Menu:
         self.rows: list[str] = []
         self.items: list[_Item] = []
         self.handlers: dict[str, Any] = {}
+        self.submenus: dict[str, _Menu] = {}
         self._pending: _Item | None = None
 
     def Append(self, _id: Any, label: str, **_kwargs: Any) -> _Item:
@@ -51,6 +54,19 @@ class _Menu:
 
     def AppendSeparator(self) -> None:
         self.rows.append("---")
+
+    def AppendSubMenu(self, submenu: _Menu, label: str) -> _Item:
+        item = _Item(label)
+        self.rows.append(label)
+        self.items.append(item)
+        self.submenus[label] = submenu
+        # One popup, one handler table. wxMSW routes every command from a popup
+        # -- submenu rows included -- through the menu that was handed to
+        # PopupMenu, so the builder binds submenu rows on the parent, and a test
+        # holding either object has to see the same handlers.
+        submenu.handlers = self.handlers
+        self._pending = item
+        return item
 
     def Bind(self, _event: Any, handler: Any, item: Any = None, **kwargs: Any) -> None:
         target = item if isinstance(item, _Item) else self._pending
@@ -132,6 +148,11 @@ class _Window(DocumentContextMenuMixin):
 
     # -- the surrounding window, stubbed ---------------------------------- #
 
+    @staticmethod
+    def _new_menu() -> _Menu:
+        """The submenu comes from here, so it is a stand-in like the popup."""
+        return _Menu()
+
     def _announce(self, message: str) -> None:
         self.announcements.append(message)
 
@@ -151,7 +172,8 @@ class _Window(DocumentContextMenuMixin):
         pass
 
 
-def _menu_for(text: str, cursor: int, **kwargs: Any) -> tuple[_Window, _Menu]:
+def _build(text: str, cursor: int, **kwargs: Any) -> tuple[_Window, _Menu]:
+    """The whole popup: the Spelling submenu row, then the edit rows."""
     window = _Window(text, cursor, **kwargs)
     menu = _Menu()
     context = window._context_spelling(cursor)
@@ -160,12 +182,26 @@ def _menu_for(text: str, cursor: int, **kwargs: Any) -> tuple[_Window, _Menu]:
     return window, menu
 
 
+def _menu_for(text: str, cursor: int, **kwargs: Any) -> tuple[_Window, _Menu]:
+    """The *Spelling submenu* -- or the empty popup, when there is no misspelling.
+
+    Almost every question below is about what the submenu offers and what its
+    rows do, and returning it directly keeps those tests reading as they did
+    when the rows were at the top level. The two tests about where the submenu
+    sits use :func:`_build` instead.
+    """
+    window, menu = _build(text, cursor, **kwargs)
+    if menu.submenus:
+        return window, next(iter(menu.submenus.values()))
+    return window, menu
+
+
 # ---------------------------------------------------------------------------
 # What the menu offers
 
 
-def test_the_corrections_are_the_first_thing_on_the_menu() -> None:
-    """The first Down arrow has to land on the answer, not on Undo."""
+def test_the_corrections_are_the_first_thing_in_the_spelling_submenu() -> None:
+    """Opening Spelling has to land on the answer, not on Ignore Once."""
     text = "the wrold is round"
     _window, menu = _menu_for(text, text.index("wrold") + 2)
     assert menu.rows
@@ -173,11 +209,31 @@ def test_the_corrections_are_the_first_thing_on_the_menu() -> None:
     assert "wrold" not in menu.rows[0]  # a suggestion, not the word itself
 
 
+def test_the_whole_spelling_half_is_one_row_on_the_popup_itself() -> None:
+    """So Undo and Cut are in the same place whether the word is misspelled or
+    not, instead of a dozen unpredictable rows further down."""
+    text = "the wrold is round"
+    _window, menu = _build(text, text.index("wrold"))
+    assert len(menu.submenus) == 1
+    assert menu.rows == [next(iter(menu.submenus)), "---"]
+
+
+def test_the_submenu_title_names_the_word_it_is_about() -> None:
+    """A submenu is one row read on the way past, and "Spelling" alone does not
+    say which word -- the same reason every row inside it names the word."""
+    text = "the wrold is round"
+    _window, menu = _build(text, text.index("wrold"))
+    title = next(iter(menu.submenus))
+    assert title.startswith("&Spelling")
+    assert "wrold" in title
+
+
 def test_a_correctly_spelled_word_gets_no_spelling_rows_at_all() -> None:
     """Not a disabled "no misspelling here" row: that is a row every
     right-click in a clean document makes somebody arrow past."""
-    _window, menu = _menu_for("the world is round", 7)
+    _window, menu = _build("the world is round", 7)
     assert menu.rows == []
+    assert menu.submenus == {}
 
 
 def test_the_caret_inside_the_word_is_enough() -> None:
@@ -193,8 +249,9 @@ def test_the_spelling_area_switched_off_takes_the_whole_section() -> None:
     """A feature somebody removed must own nothing -- half a menu left behind is
     a Customize Features checkbox that does not mean what it says."""
     text = "the wrold is round"
-    _window, menu = _menu_for(text, text.index("wrold"), spelling=False)
+    _window, menu = _build(text, text.index("wrold"), spelling=False)
     assert menu.rows == []
+    assert menu.submenus == {}
 
 
 def test_every_teaching_row_names_the_word() -> None:
@@ -329,21 +386,21 @@ def test_no_two_rows_in_the_popup_claim_the_same_access_key() -> None:
     spelling rows sit in the same menu as Undo, Cut, Copy, Paste and Select All.
     """
     text = "the wrold is round"
-    window = _Window(text, text.index("wrold"))
-    menu = _Menu()
-    context = window._context_spelling(text.index("wrold"))
-    assert context is not None
-    window._append_spelling_section(menu, context)
+    window, menu = _build(text, text.index("wrold"))
     window._append_edit_section(menu)
-    claimed: dict[str, str] = {}
-    for row in menu.rows:
-        if row == "---":
-            continue
-        letter = _mnemonic(row)
-        if not letter:
-            continue
-        assert letter not in claimed, f"{row!r} and {claimed[letter]!r} both claim Alt+{letter}"
-        claimed[letter] = row
+    # Each menu is its own namespace -- the submenu's rows only have to miss
+    # each other and the popup's rows only have to miss each other -- so both
+    # levels are checked, separately, which is what Windows does.
+    for level in (menu, *menu.submenus.values()):
+        claimed: dict[str, str] = {}
+        for row in level.rows:
+            if row == "---":
+                continue
+            letter = _mnemonic(row)
+            if not letter:
+                continue
+            assert letter not in claimed, f"{row!r} and {claimed[letter]!r} both claim Alt+{letter}"
+            claimed[letter] = row
 
 
 def _mnemonic(label: str) -> str:

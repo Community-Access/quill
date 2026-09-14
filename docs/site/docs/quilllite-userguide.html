@@ -395,6 +395,84 @@ current search anywhere, and <strong>Ctrl+Shift+F3</strong> opens
 each with its line and column and the words around it. That is the list
 you want before a Replace All, because it is the only way to see what
 you are about to change rather than finding out afterwards.</p>
+<h3 id="typing-things-there-is-no-key-for">Typing things there is no key
+for</h3>
+<p><strong>Edit ▸ Insert ▸ Special Character…</strong>
+(<strong>Ctrl+Shift+F2</strong>) opens a picker for the 357 characters a
+keyboard has no key for. Two ways in, and the window opens on the first
+one:</p>
+<ul>
+<li><strong>Type what you are after.</strong> The search box takes part
+of a name – <code>dash</code>, <code>euro</code>, <code>acute</code>,
+<code>arrow</code>, <code>apostrophe</code> – or one of the words
+Unicode does not use but people do: <code>gbp</code>,
+<code>sterling</code>, <code>copyright</code>, <code>eszett</code>,
+<code>micro</code>. Press <strong>Enter</strong> to move into the
+results.</li>
+<li><strong>Or clear the box and browse a group.</strong> Fifteen of
+them: Whitespace, Dashes and hyphens, Quotes, Invisible and control,
+Typography, Legal and reference marks, Currency, Maths and units,
+Fractions, Superscripts and ordinals, Arrows, Accented letters (small
+and capital, listed separately), Greek letters, and Punctuation from
+other languages.</li>
+</ul>
+<p>The results list has three columns – the character, its name, and its
+code point – and the <strong>Description</strong> pane below updates on
+every row you arrow onto, with the same detail <strong>Character
+Details…</strong> gives for a character already in the document. The
+code point column is what tells apart rows that sound the same: “Thin
+space” and “Hair space” are U+2009 and U+200A.</p>
+<p><strong>Enter inserts the character you are on</strong>, and
+QuillLite <strong>reads back what it put in</strong> – “Inserted —
+U+2014 Em dash”. That is not a nicety: most of this list is invisible on
+the page, so without the read-back the command would be a keystroke
+after which something you cannot see may or may not have appeared.</p>
+<p><strong>The search box is also a code-point box.</strong> Type
+<code>2014</code>, <code>U+2014</code> or <code>d8212</code> and the em
+dash is the first result. A code point that is in no group at all still
+finds its character, so the picker reaches everything Unicode has and
+not only the 357 that are grouped.</p>
+<p>QUILL has the same picker on <strong>Shift+F2</strong>, over the same
+list.</p>
+<h3 id="moving-your-settings-to-another-computer">Moving your settings
+to another computer</h3>
+<p><strong>Tools ▸ Back Up Settings…</strong>
+(<strong>Ctrl+Alt+Shift+Q</strong>) writes your configuration to a
+<code>.qsf</code> file. <strong>Tools ▸ Restore Settings…</strong>
+(<strong>Ctrl+Alt+Shift+D</strong>) reads one back.</p>
+<p>The file holds preferences, not a picture of this computer. Your
+recent-files list, the session QuillLite restores at startup, the window
+size and the last time it looked for an update are all <strong>left out
+on purpose</strong> — carrying them to another machine would give you an
+editor pointing at files that are not there. The backup tells you how
+many locations it left behind.</p>
+<p>Restoring tells you what was different: how many settings came
+across, how many have been added to QuillLite since the file was written
+(those keep their defaults), and how many the file had that this version
+does not recognise. If the file has nothing QuillLite recognises at all,
+nothing is changed — a wrong file should not reset your editor.</p>
+<p>QUILL has the same thing, on buttons in its Preferences window. The
+two products use the same file extension but do not read each other’s
+backups: they are different editors with different settings.</p>
+<h3 id="ending-a-line-without-starting-a-paragraph">Ending a line
+without starting a paragraph</h3>
+<p><strong>Edit ▸ Insert ▸ Line Break</strong>
+(<strong>Shift+Enter</strong>, the same chord Word uses) ends the line
+you are on and starts the next one <strong>without</strong> starting a
+new paragraph.</p>
+<p>That distinction matters in Markdown and nowhere else is it visible.
+A blank line between two lines makes them two paragraphs, which most
+renderers show with a gap. A hard break makes them two lines of one
+paragraph, which is what you want for an address, a verse, or a run of
+scene-break lines that should sit tight against each other.</p>
+<p>QuillLite writes the break in whichever spelling <strong>Markdown
+line break style</strong> names in Settings, and <strong>says which one
+it used</strong> — the default is a backslash at the end of the line,
+because the alternative is two trailing spaces, which are invisible on
+screen, silent to a screen reader, and stripped by many tools when they
+save a file. If you have ever added two spaces to the end of a line and
+had nothing happen, that is why.</p>
+<p>QUILL has the same command on the same key.</p>
 <h3 id="searching-for-things-you-cannot-type">Searching for things you
 cannot type</h3>
 <p>The Find and Replace windows have a <strong>Search mode</strong> with
@@ -891,11 +969,15 @@ its Settings window, so tuning this once tunes both.</p>
 the Applications key</h3>
 <p>With the cursor in a word QuillLite thinks is misspelled, press the
 <strong>Applications key</strong> (or Shift+F10, or right-click) and the
-menu <strong>opens with the corrections</strong>. One
-<strong>Down</strong> arrow and you are on the first suggestion;
+menu grows a <strong>Spelling</strong> submenu at the top, named after
+the word: <em>Spelling: “wrold”</em>. One <strong>Down</strong> arrow,
+then <strong>Right</strong>, and you are on the first suggestion;
 <strong>Enter</strong> replaces the word. No dialog opens and the cursor
 does not move.</p>
-<p>Under the suggestions:</p>
+<p>Everything about the word is in that one submenu, so the ordinary
+rows below it – Undo, Redo, Cut, Copy, Paste, Delete, Select All – are
+in the same place whether the word is misspelled or not.</p>
+<p>Inside the submenu, under the suggestions:</p>
 <table>
 <thead>
 <tr>
@@ -938,9 +1020,9 @@ too.</td>
 </tbody>
 </table>
 <p>Every row names the word it is about, so a menu you reached by
-keyboard still tells you what it is going to do. Below them is the
-ordinary edit menu – Undo, Redo, Cut, Copy, Paste, Delete, Select All –
-which is what you get on a word that is spelled correctly.</p>
+keyboard still tells you what it is going to do. On a word that is
+spelled correctly there is no Spelling submenu at all – just the
+ordinary edit rows.</p>
 <p>Ignoring is honoured everywhere: a word you have ignored stops being
 announced as you type, stops being a stop for <strong>Ctrl+F7</strong>,
 and stops being offered by <strong>Shift+F7</strong>. To keep a word for
@@ -1874,16 +1956,35 @@ list inside the app.</p>
 <td>Go to Line…</td>
 </tr>
 <tr>
-<td><strong>F5</strong></td>
-<td>Insert Date and Time</td>
-</tr>
-<tr>
 <td><strong>Ctrl+Shift+C</strong></td>
 <td>Describe Character</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+C</strong></td>
 <td>Character Details…</td>
+</tr>
+</tbody>
+</table>
+<h3 id="edit--insert">Edit ▸ Insert</h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>F5</strong></td>
+<td>Date and Time</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+F2</strong></td>
+<td>Special Character…</td>
+</tr>
+<tr>
+<td><strong>Shift+Enter</strong></td>
+<td>Line Break</td>
 </tr>
 </tbody>
 </table>
@@ -2437,6 +2538,14 @@ list inside the app.</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td><strong>Ctrl+Alt+Shift+Q</strong></td>
+<td>Back Up Settings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+D</strong></td>
+<td>Restore Settings…</td>
+</tr>
 <tr>
 <td><strong>Ctrl+Alt+E</strong></td>
 <td>File Encoding and Line Endings…</td>

@@ -106,7 +106,35 @@ class DocumentTypingMixin:
             return
         if code == wx.WXK_TAB and self._handle_tab(event):
             return
+        # Shift+F10 and the Applications key, opened here rather than left to
+        # wx. Reported 2026-09-12: "I misspelled a word and arrow to it and
+        # pressed shift+f10 and got no spelling information." The menu is built
+        # by EVT_CONTEXT_MENU, which wxMSW raises from WM_CONTEXTMENU -- and the
+        # editor is a native RichEdit that wx subclasses, so whether the
+        # keyboard form of that message ever arrives is not ours to rely on. A
+        # right-click always worked, which is exactly the shape of bug that
+        # looks like "the feature is missing" to somebody who never uses a
+        # mouse. Opening it from the key that was pressed needs no such luck.
+        if self._is_context_menu_key(event):
+            self.open_context_menu_at_caret()
+            return
         event.Skip()
+
+    @staticmethod
+    def _is_context_menu_key(event: wx.KeyEvent) -> bool:
+        """Shift+F10 or the Applications key, and nothing else.
+
+        Plain F10 is the menu bar and must be left alone; Ctrl+Shift+F10 is not
+        this either, so the modifiers are checked rather than assumed.
+        """
+        code = event.GetKeyCode()
+        if code == wx.WXK_WINDOWS_MENU:
+            return not (event.ControlDown() or event.AltDown())
+        return (
+            code == wx.WXK_F10
+            and event.ShiftDown()
+            and not (event.ControlDown() or event.AltDown())
+        )
 
     def _handle_tab(self, event: wx.KeyEvent) -> bool:
         """Indent or outdent instead of typing a tab. ``True`` if it was handled.

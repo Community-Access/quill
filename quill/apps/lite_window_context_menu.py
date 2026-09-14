@@ -4,7 +4,8 @@ A ``wx.TextCtrl`` on Windows already has a context menu -- Undo, Cut, Copy,
 Paste, Delete, Select All -- and it is the native one, so it is announced
 properly and nobody had to write it. What it cannot do is know anything about
 the word under the caret, and that is the one thing this menu is worth building
-for: **when the caret is in a misspelled word, the corrections come first.**
+for: **when the caret is in a misspelled word, the menu grows a Spelling
+submenu whose first row is a correction.**
 
 Why that matters more here than in most editors: a sighted user finds a
 misspelling by looking for a red squiggle and right-clicks it. There is no
@@ -12,15 +13,21 @@ squiggle in a screen reader. QuillLite says "possible misspelling" in the status
 bar once and then stays out of the way (GATE-13 -- speaking it would interrupt
 the typing it is commenting on), so until now acting on it meant remembering
 Shift+F7 or walking Tools > Spelling. The Applications key is the affordance
-everybody already has, on the word they are already in, and pressing it now
-lands the first Down arrow on the correction itself.
+everybody already has, on the word they are already in, and it now opens onto
+the corrections for that word.
 
 The shape, and the reasons:
 
-* **Suggestions at the top level, named, one press down.** Not in a "Spelling
-  Suggestions" submenu -- that is a Right arrow and a pause before anything is
-  said, which is most of what the menu saves. QUILL's own editor menu had them
-  nested and now does not, for the same reason.
+* **Everything about the word is under one "Spelling" submenu**, and that is a
+  deliberate reversal (2026-09-13, asked for directly). The first build put the
+  corrections at the top level so the first Down arrow landed on one; the cost
+  was a context menu whose length changed depending on where the caret was, with
+  Undo and Cut a dozen unpredictable rows further down every time the word
+  happened to be misspelled. One row named "Spelling" is a Right arrow and a
+  short pause, and in exchange the menu is the same menu every time and the
+  spelling half is announced as what it is rather than as a list of bare words.
+  The corrections are still the *first* thing inside it, so the sequence is
+  Applications, Down, Right, Down.
 * **The word is in every spelling label.** "Add "Bhattacharya" to My
   Dictionary", not "Add to Dictionary". A context menu is read out of context by
   a listener who arrived by keyboard, and a label that names the word is one
@@ -96,6 +103,32 @@ class DocumentContextMenuMixin:
         been before they reached for the mouse.
         """
         position = self._context_caret_position(event)
+        self._show_context_menu(position, event)
+
+    def open_context_menu_at_caret(self) -> None:
+        """The same menu, from the key that asked for it.
+
+        Called by the Shift+F10 / Applications-key path in
+        :class:`~quill.apps.lite_window_typing.DocumentTypingMixin`, which does
+        not wait to find out whether wxMSW turns the keystroke into an
+        ``EVT_CONTEXT_MENU`` on a subclassed native RichEdit. The caret is
+        already where the user put it, so there is nothing to hit-test.
+        """
+        self._show_context_menu(int(self.control.GetInsertionPoint()), None)
+
+    @staticmethod
+    def _new_menu() -> wx.Menu:
+        """A fresh, empty menu.
+
+        A seam and nothing more. ``wx.Menu()`` needs a live ``wx.App``, and the
+        menu tests build the whole thing against a stand-in so they can assert
+        on rows and labels without a display; the submenu has to come from
+        somewhere they can substitute.
+        """
+        return wx.Menu()
+
+    def _show_context_menu(self, position: int, event: wx.ContextMenuEvent | None) -> None:
+        """Build the menu for *position* and pop it. One body, two entry points."""
         menu = wx.Menu()
         context = self._context_spelling(position)
         if context is not None:
@@ -151,20 +184,31 @@ class DocumentContextMenuMixin:
             return None
 
     def _append_spelling_section(self, menu: wx.Menu, context: SpellingContext) -> None:
-        """The corrections, then the durable answers, then the way onward.
+        """Hang a "Spelling" submenu, filled with everything about the word.
 
-        Every mnemonic in this section is chosen to miss the edit rows below
-        (U, R, T, C, P, L, A), because Windows *cycles* focus between two
-        controls claiming one letter instead of pressing either -- so a letter
-        used twice in one popup is a row that silently cannot be reached, and
-        nothing announces the loss. That is GATE-14's rule; the gate scans
-        controls rather than menus, so this one is kept by hand and by the test
-        that walks the built menu.
+        Built complete and only then attached, which is a wxMSW rule rather
+        than a style: rows added to a ``wx.Menu`` *after* ``AppendSubMenu`` has
+        taken it do not appear, silently. The same trap is written up in
+        :mod:`quill.apps.lite_window_menus`, which builds the menu bar.
+
+        Its rows bind on the **parent popup**, even though they live in the
+        submenu, and that is not an oversight. wxMSW routes a popup menu's
+        WM_COMMAND through ``wxCurrentPopupMenu`` -- the menu that was handed to
+        ``PopupMenu`` -- so a handler bound on a submenu is a handler nothing
+        ever reaches. ``Bind`` matches on the item's id, so binding on the
+        parent works for a row at either level.
+
+        Mnemonics inside a submenu are their own namespace, so these no longer
+        have to dodge the edit rows below (U, R, T, C, P, L, A) -- only each
+        other, and "&Spelling" has to miss them, which S does. That is GATE-14's
+        rule; the gate scans controls rather than menus, so this one is kept by
+        hand and by the test that walks the built menu.
         """
         word = context.word
+        spelling = self._new_menu()
         if context.suggestions:
             for suggestion in context.suggestions:
-                item = menu.Append(wx.ID_ANY, self._escape_menu_text(suggestion))
+                item = spelling.Append(wx.ID_ANY, self._escape_menu_text(suggestion))
                 menu.Bind(
                     wx.EVT_MENU,
                     lambda _e, replacement=suggestion, ctx=context: self._replace_from_context(
@@ -177,20 +221,22 @@ class DocumentContextMenuMixin:
             # that is right: the user asked about *this word* and "there is
             # nothing I can suggest" is the answer to their question. The rows
             # below still act on it.
-            empty = menu.Append(wx.ID_ANY, f'No suggestions for "{self._escape_menu_text(word)}"')
+            empty = spelling.Append(
+                wx.ID_ANY, f'No suggestions for "{self._escape_menu_text(word)}"'
+            )
             empty.Enable(False)
-        menu.AppendSeparator()
+        spelling.AppendSeparator()
 
-        ignore_once = menu.Append(wx.ID_ANY, "&Ignore Once")
+        ignore_once = spelling.Append(wx.ID_ANY, "&Ignore Once")
         menu.Bind(
             wx.EVT_MENU, lambda _e, ctx=context: self._ignore_once_from_context(ctx), ignore_once
         )
-        ignore_all = menu.Append(wx.ID_ANY, "I&gnore in This Document")
+        ignore_all = spelling.Append(wx.ID_ANY, "I&gnore in This Document")
         menu.Bind(
             wx.EVT_MENU, lambda _e, ctx=context: self._ignore_word_from_context(ctx), ignore_all
         )
 
-        add_personal = menu.Append(
+        add_personal = spelling.Append(
             wx.ID_ANY, f'Add "{self._escape_menu_text(word)}" to My &Dictionary'
         )
         menu.Bind(
@@ -202,30 +248,35 @@ class DocumentContextMenuMixin:
         # surname belongs in the personal dictionary and a project's product
         # name belongs beside the file, where somebody else opening it gets it
         # too and nobody's personal list fills up with a job they left.
-        add_document = menu.Append(wx.ID_ANY, "Add to This Document &Only")
+        add_document = spelling.Append(wx.ID_ANY, "Add to This Document &Only")
         menu.Bind(
             wx.EVT_MENU,
             lambda _e, ctx=context: self._teach_from_context(ctx, "document"),
             add_document,
         )
-        menu.AppendSeparator()
+        spelling.AppendSeparator()
 
-        more = menu.Append(
+        more = spelling.Append(
             wx.ID_ANY, self._context_label("&More Suggestions...", "cmd_spell_word_at_cursor")
         )
         menu.Bind(wx.EVT_MENU, lambda _e: self.cmd_spell_word_at_cursor(), more)
-        review = menu.Append(
+        review = spelling.Append(
             wx.ID_ANY, self._context_label("Chec&k Document...", "cmd_spell_review")
         )
         menu.Bind(wx.EVT_MENU, lambda _e: self.cmd_spell_review(), review)
-        nxt = menu.Append(
+        nxt = spelling.Append(
             wx.ID_ANY, self._context_label("&Next Misspelling", "cmd_next_misspelling")
         )
         menu.Bind(wx.EVT_MENU, lambda _e: self.cmd_next_misspelling(), nxt)
-        previous = menu.Append(
+        previous = spelling.Append(
             wx.ID_ANY, self._context_label("Pre&vious Misspelling", "cmd_previous_misspelling")
         )
         menu.Bind(wx.EVT_MENU, lambda _e: self.cmd_previous_misspelling(), previous)
+
+        # The word is in the title too. A submenu is read as one row on the way
+        # past, and "Spelling" alone does not say which word it is about --
+        # which is the same reason every row inside it names the word.
+        menu.AppendSubMenu(spelling, f'&Spelling: "{self._escape_menu_text(word)}"')
         menu.AppendSeparator()
 
     def _append_edit_section(self, menu: wx.Menu) -> None:
@@ -364,8 +415,11 @@ class DocumentContextMenuMixin:
         """
         return text.replace("&", "&&")
 
-    def _popup_at(self, menu: wx.Menu, event: wx.ContextMenuEvent) -> None:
+    def _popup_at(self, menu: wx.Menu, event: wx.ContextMenuEvent | None) -> None:
         """Pop *menu* where the event asked, or at the caret for the keyboard."""
+        if event is None:
+            self.control.PopupMenu(menu)
+            return
         point = event.GetPosition()
         if point == wx.DefaultPosition or (point.x == -1 and point.y == -1):
             self.control.PopupMenu(menu)

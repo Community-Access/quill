@@ -10739,10 +10739,12 @@ or none) is still treated as usable and falls back to the release's `html_url`
 
 ### §34.1 Overview
 
-QUILL already ships **Insert Special Character** for "I know the code point,
-insert this exact character." Emoji need the opposite workflow: "I don't
-know the code point, I might not even know the name, help me find and
-understand one." **Insert > Emoji...** (`Alt+.`) is that workflow — browse
+QUILL already ships **Insert Special Character** for the punctuation and
+whitespace of prose -- forty named characters (2026-09-13; it was a bare
+code-point prompt before that), plus a code-point row for anything outside the
+list. Emoji need a different workflow again: thousands of characters where you
+might not know the name either, so browsing and searching by description is the
+whole feature. **Insert > Emoji...** (`Alt+.`) is that workflow — browse
 by Unicode's own category tree or search across every field a catalog entry
 carries (the symbol itself, a legacy ASCII emoticon like `:)` or `<3`, the
 official name, a CLDR keyword, or a phrase that only appears in the entry's

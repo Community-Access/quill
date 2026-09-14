@@ -36,6 +36,9 @@ _MENU_SOURCE = Path(eds_menu_module.__file__).read_text(encoding="utf-8")
 # Every power-tool command id that must be both registered and menu-wired.
 _POWER_TOOLS_COMMAND_IDS = [
     "power.insert_special_character",
+    # #1488: a hard break is a marker at the end of a line and both of its
+    # spellings are impossible to type with confidence, so it needs a command.
+    "power.insert_line_break",
     "power.insert_file_content",
     "power.insert_table_of_contents",
     "power.insert_image",
@@ -311,6 +314,7 @@ def test_menu_recirculation_preserves_shipped_group_order() -> None:
     expected = {
         "insert": [
             "power.insert_special_character",
+            "power.insert_line_break",
             "power.insert_file_content",
             "power.insert_table_of_contents",
             "power.insert_image",

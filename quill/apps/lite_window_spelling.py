@@ -193,7 +193,6 @@ class DocumentSpellingMixin:
         Bounded either way: it walks left over a handful of characters and
         matches one word. Nothing here scans the document.
         """
-        import time
 
         from quill.core.spellcheck import misspelling_behind
         from quill.core.spellcheck_live import live_alert_suppressed
@@ -210,8 +209,23 @@ class DocumentSpellingMixin:
         if live_alert_suppressed(text, item.start, item.end):
             self._last_live_word = None
             return
+        self._report_misspelling(text, item)
+
+    def _report_misspelling(self, _text: str, item: object) -> None:
+        """Say a misspelling once: status bar, earcon, and speech if asked.
+
+        One implementation for both paths -- the as-you-type check and the
+        caret-move check (:meth:`check_spelling_at_caret`) -- because the two
+        differ only in *which* word they found. Sharing the throttle state is
+        the point: typing a word and then arrowing back onto it is one word, and
+        a listener should hear about it once.
+        """
+        import time
+
+        word = str(getattr(item, "word", ""))
+        start = int(getattr(item, "start", 0))
         policy = self._live_alert_policy()
-        key = (item.word.lower(), item.start)
+        key = (word.lower(), start)
         now = time.monotonic()
         if key == self._last_live_word and (
             policy.repeat_ms <= 0 or (now - self._last_live_alert_at) * 1000 < policy.repeat_ms
@@ -221,14 +235,80 @@ class DocumentSpellingMixin:
         self._last_live_alert_at = now
         # The status bar, not the voice -- unless the user has asked otherwise.
         # A misspelling is not the outcome of what they just did (they were
-        # typing), so speaking it interrupts the very thing it is commenting on.
-        # The Message cell holds it, F6 reads it, the Spelling menu acts on it,
-        # and the earcon is what makes it noticeable without a word being said.
-        self._set_status_message(f'Possible misspelling: "{item.word}"')
+        # typing, or moving), so speaking it interrupts the very thing it is
+        # commenting on. The Message cell holds it, F6 reads it, the Spelling
+        # menu acts on it, and the earcon is what makes it noticeable without a
+        # word being said.
+        self._set_status_message(f'Possible misspelling: "{word}"')
         if policy.sound:
             self._play_spelling_alert()
         if policy.speech:
-            self._announce(f'Possible misspelling: "{item.word}"')
+            self._announce(f'Possible misspelling: "{word}"')
+
+    #: The keys that move the caret without changing the text. A caret that
+    #: arrived on one of these is *navigating*, and the word it landed on is the
+    #: one to report; a caret that arrived any other way is typing, and the word
+    #: behind it is. 0 is the mouse (EVT_LEFT_UP carries no key code), which is
+    #: navigation by any reading.
+    _NAVIGATION_KEYS = frozenset({
+        0,
+        wx.WXK_LEFT,
+        wx.WXK_RIGHT,
+        wx.WXK_UP,
+        wx.WXK_DOWN,
+        wx.WXK_HOME,
+        wx.WXK_END,
+        wx.WXK_PAGEUP,
+        wx.WXK_PAGEDOWN,
+        wx.WXK_NUMPAD_LEFT,
+        wx.WXK_NUMPAD_RIGHT,
+        wx.WXK_NUMPAD_UP,
+        wx.WXK_NUMPAD_DOWN,
+        wx.WXK_NUMPAD_HOME,
+        wx.WXK_NUMPAD_END,
+        wx.WXK_NUMPAD_PAGEUP,
+        wx.WXK_NUMPAD_PAGEDOWN,
+    })
+
+    def check_spelling_at_caret(self, key_code: int = 0) -> None:
+        """Report the misspelling the caret just landed **on**.
+
+        Reported 2026-09-12: "if I arrow to the word it does not make a sound
+        either by moving with the arrow keys or moving by word", while moving to
+        the *line* did make one. Both halves of that were this function's
+        absence. The only spelling check QuillLite ran was the as-you-type one,
+        which asks ``misspelling_behind`` -- the word you have just *finished* --
+        and every key including an arrow restarted it. Arrow down onto a line and
+        the word behind the caret is often the misspelled one, so it fired;
+        arrow right into that same word and there is no finished word behind the
+        caret at all, so it did not. The word the caret is standing in was never
+        the question being asked.
+
+        It is now, on a caret move: ``misspelling_at_position``, the "which word
+        am I on" helper. Navigation keys only -- during typing this would judge
+        every word on its way to being right, which is exactly what
+        ``misspelling_behind`` exists to avoid.
+
+        The alert itself is shared with the typing path, including its repeat
+        throttle, so arrowing back and forth over one word does not drum and
+        typing a word then arrowing onto it does not say it twice.
+        """
+        if key_code not in self._NAVIGATION_KEYS:
+            return
+        if not (self._spelling_enabled() and self._live_spelling):
+            return
+        try:
+            from quill.core.spellcheck import misspelling_at_position
+
+            text = self.control.GetValue()
+            item = misspelling_at_position(
+                text, int(self.control.GetInsertionPoint()), self._spell_dictionary()
+            )
+            if item is None:
+                return
+            self._report_misspelling(text, item)
+        except Exception:  # noqa: BLE001 - a spell check must never break the caret
+            pass
 
     def _play_spelling_alert(self) -> None:
         """The earcon, or nothing at all. Never a bell fallback.

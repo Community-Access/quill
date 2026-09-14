@@ -32,6 +32,14 @@ _FILE_SUFFIX = ".quillnotebook"
 # ---------------------------------------------------------------------------
 
 
+def _as_int(value: Any, default: int = 0) -> int:
+    """*value* as an int, or *default*. A caret position is never worth a crash."""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
 @dataclass
 class NotebookEntry:
     """A single document tracked by the Notebook."""
@@ -61,12 +69,30 @@ class NotebookEntry:
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> NotebookEntry:
+        """Rebuild an entry, or raise :class:`NotebookFormatError` naming what is
+        missing.
+
+        Written defensively because of #1499, where a notebook whose entries had
+        no ``path`` raised a bare ``KeyError`` out of ``load_notebook`` -- past
+        the caller's ``except NotebookFormatError`` and into the crash handler,
+        so a single malformed file meant the app could not be opened at all. The
+        two rules here are what separates a file that is *damaged* from one that
+        is merely *old*: an entry with no path names no document and cannot be
+        repaired, while an entry with no id is repairable, because an id is only
+        ever compared with other ids in the same file.
+        """
+        if not isinstance(data, dict):
+            raise NotebookFormatError(f"Expected an entry object, found {type(data).__name__}")
+        path = data.get("path")
+        if not isinstance(path, str) or not path.strip():
+            raise NotebookFormatError("A notebook entry has no file path")
+        entry_id = data.get("id")
         return cls(
-            id=data["id"],
-            path=data["path"],
+            id=str(entry_id) if entry_id else str(uuid4()),
+            path=path,
             title=data.get("title"),
-            tags=list(data.get("tags", [])),
-            last_caret_pos=int(data.get("last_caret_pos", 0)),
+            tags=[str(tag) for tag in data.get("tags", []) or []],
+            last_caret_pos=_as_int(data.get("last_caret_pos")),
             last_opened=data.get("last_opened"),
             word_count=data.get("word_count"),
         )
@@ -211,6 +237,12 @@ class Notebook:
     # Path this Notebook was loaded from / will be saved to.  Set by the store.
     _path: Path | None = field(default=None, init=False, repr=False, compare=False)
 
+    #: How many entries the last load had to drop because they were unreadable
+    #: (#1499). Runtime only -- never serialised, because it describes the file
+    #: that was read rather than the notebook that will be written. The window
+    #: says the number rather than showing a silently shorter list.
+    unreadable_entries: int = field(default=0, init=False, repr=False, compare=False)
+
     @property
     def path(self) -> Path | None:
         return self._path
@@ -297,7 +329,16 @@ class Notebook:
             created=data.get("created", datetime.now(UTC).isoformat()),
             last_opened=data.get("last_opened"),
         )
-        nb.entries = [NotebookEntry.from_dict(e) for e in data.get("entries", [])]
+        # One unreadable entry loses that entry, not the notebook. A writer with
+        # forty chapters and one damaged row wants the thirty-nine, and the
+        # count is carried out so the window can say what it dropped rather than
+        # quietly showing a shorter list (#1499).
+        nb.entries = []
+        for raw_entry in data.get("entries", []) or []:
+            try:
+                nb.entries.append(NotebookEntry.from_dict(raw_entry))
+            except NotebookFormatError:
+                nb.unreadable_entries += 1
         nb.snapshots = [NotebookSnapshot.from_dict(s) for s in data.get("snapshots", [])]
         goal_data = data.get("goal")
         nb.goal = NotebookGoal.from_dict(goal_data) if goal_data else NotebookGoal()
@@ -339,7 +380,19 @@ def load_notebook(path: Path) -> Notebook:
         raise NotebookFormatError(f"Invalid JSON in {path}: {exc}") from exc
     if not isinstance(data, dict):
         raise NotebookFormatError(f"Expected a JSON object in {path}")
-    nb = Notebook.from_dict(data)
+    try:
+        nb = Notebook.from_dict(data)
+    except NotebookFormatError:
+        raise
+    except Exception as exc:  # noqa: BLE001 - see below
+        # The belt behind the braces (#1499). Every ``from_dict`` below this one
+        # reads its own required keys, and any one of them raising a KeyError, a
+        # TypeError or a ValueError would travel straight past the caller's
+        # ``except NotebookFormatError`` and end the process -- which is how a
+        # single damaged file stopped QUILL from opening. A damaged notebook is
+        # a damaged notebook whatever shape the damage takes, so it is reported
+        # as one, with the file named.
+        raise NotebookFormatError(f"{path.name} is not a readable notebook: {exc}") from exc
     nb._path = path  # type: ignore[attr-defined]
     return nb
 

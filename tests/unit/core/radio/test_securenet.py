@@ -111,3 +111,38 @@ def test_scanner_offers_the_real_stream_with_a_readable_reason() -> None:
 
 def test_scanner_ignores_pages_from_other_platforms() -> None:
     assert _securenet_candidates("https://example.com/", "<html>nothing here</html>") == []
+
+
+# -- player pages are pages, not streams (issue #1491) -----------------------
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://streamdb3web.securenetsystems.net/v5/ROM",
+        "https://radio.securenetsystems.net/v5/warl",
+        "https://streamdb9web.securenetsystems.net/cirruscontent/WWOJ",
+        "https://streamdb9web.securenetsystems.net/cirrusencore/WWLL",
+        "https://streamdb9web.securenetsystems.net/cirruscontent/index.cfm?stationCallSign=WWOJ",
+        "https://streamdb9web.securenetsystems.net",
+    ],
+)
+def test_player_page_urls_are_recognised(url: str) -> None:
+    """Every Cirrus web front-end is a page to follow, never a stream to play."""
+    assert securenet.is_player_page_url(url)
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        # The mount itself: the one securenetsystems.net URL that IS playable.
+        "https://ice42.securenetsystems.net/WWOJ",
+        "https://ice66.securenetsystems.net/ROM",
+        "http://ice25.securenetsystems.net/WARL?playSessionID=abc",
+        # Unrelated hosts, including a look-alike suffix.
+        "https://example.com/v5/ROM",
+        "https://notsecurenetsystems.net.evil.com/v5/ROM",
+    ],
+)
+def test_stream_mounts_and_other_hosts_are_not_player_pages(url: str) -> None:
+    assert not securenet.is_player_page_url(url)
