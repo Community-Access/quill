@@ -1151,7 +1151,9 @@ class PreferencesMixin:
                             # and said, because a backup that quietly differs
                             # from its source is what the reporter was trying to
                             # avoid.
-                            payload, report = registry.export_settings_with_report(self.settings)
+                            payload, report = registry.export_portable_settings_with_report(
+                                self.settings
+                            )
                             target.write_text(json.dumps(payload, indent=2), encoding="utf-8")
                             note = f"Exported {report.carried} settings to {target.name}"
                             if report.local:
@@ -1181,7 +1183,7 @@ class PreferencesMixin:
                             except (OSError, ValueError):
                                 self._set_status(f"Could not read settings from {source.name}")
                                 return
-                            imported, report = registry.import_settings_with_report(raw)
+                            imported, report = registry.import_portable_settings_with_report(raw)
                             action["mode"] = "import"
                             action["imported"] = imported
                             # What changed about the file, rather than a wizard

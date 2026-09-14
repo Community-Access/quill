@@ -165,8 +165,9 @@ def test_power_tools_manifest_is_consumed_and_conflict_free() -> None:
     # shared format_ops helper and the house rule puts the capability in the
     # shared package with a way for QUILL to reach it in the same change.
     registry = build_first_party_registry(POWER_TOOLS_COMMANDS)
-    assert len(POWER_TOOLS_COMMANDS) == 81
-    assert len(registry.commands) == 81
+    # 82 since #1488 added power.insert_line_break to the Insert menu.
+    assert len(POWER_TOOLS_COMMANDS) == 82
+    assert len(registry.commands) == 82
     assert registry.conflicts == ()
     for menu in registry.menus:
         assert menu.parent in FIRST_PARTY_MENU_PARENTS

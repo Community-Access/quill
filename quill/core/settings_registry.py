@@ -44,10 +44,11 @@ __all__ = [
     "reset_setting",
     "reset_all",
     "LOCAL_SETTINGS",
+    "export_portable_settings",
+    "export_portable_settings_with_report",
     "export_settings",
-    "export_settings_with_report",
+    "import_portable_settings_with_report",
     "import_settings",
-    "import_settings_with_report",
 ]
 
 
@@ -163,26 +164,39 @@ LOCAL_SETTINGS: frozenset[str] = frozenset({
 
 
 def export_settings(settings: Settings) -> dict[str, object]:
-    """Return a documented, versioned export of the configuration.
+    """Every setting, for a **backup** of this machine.
 
     Shape::
 
-        {"schema_version": 1, "app": "quill", "settings": {<field>: <value>, ...}}
+        {"schema_version": 1, "settings": {<field>: <value>, ...}}
 
-    Every :class:`Settings` field **except the machine-local ones**
-    (:data:`LOCAL_SETTINGS`) is included. It used to be every field, which made
-    the file a snapshot of one computer rather than a portable configuration
-    (#1501). :func:`export_settings_with_report` returns the same payload plus
-    what was left out, for a caller that wants to say so.
+    Complete on purpose, including the machine-local paths. A backup restores
+    the computer it came from, so a watch folder or a Tesseract path is part of
+    what it is restoring -- ``share_package``'s backup kind is built on this and
+    its contract says so in as many words ("a backup preserves per-device
+    settings fields"). The *portable* export is a different product with a
+    different answer; see :func:`export_portable_settings`.
     """
-    payload, _report = export_settings_with_report(settings)
+    return {"schema_version": SCHEMA_VERSION, "settings": asdict(settings)}
+
+
+def export_portable_settings(settings: Settings) -> dict[str, object]:
+    """Every setting **except the machine-local ones**, for another computer.
+
+    The distinction this and :func:`export_settings` draw is the whole of #1501.
+    A *backup* restores one machine and wants its paths; a configuration you
+    carry to a new laptop wants everything but. Exporting the paths into the
+    second case is what left people with an app pointing at folders that were
+    never there.
+    """
+    payload, _report = export_portable_settings_with_report(settings)
     return payload
 
 
-def export_settings_with_report(
+def export_portable_settings_with_report(
     settings: Settings,
 ) -> tuple[dict[str, object], PortabilityReport]:
-    """:func:`export_settings`, and what it had to leave behind."""
+    """:func:`export_portable_settings`, and what it had to leave behind."""
     return portable_export(settings, app="quill", local_fields=LOCAL_SETTINGS)
 
 
@@ -194,12 +208,17 @@ def import_settings(raw: object) -> Settings:
     normalized through :meth:`Settings.from_dict`, so a malformed or partial
     import never produces an invalid configuration.
     """
-    settings, _report = import_settings_with_report(raw)
-    return settings
+    values, _report = portable_import(raw, known=_SETTINGS_FIELD_NAMES)
+    return Settings.from_dict(values)
 
 
-def import_settings_with_report(raw: object) -> tuple[Settings, PortabilityReport]:
-    """:func:`import_settings`, and what was different about the file.
+def import_portable_settings_with_report(raw: object) -> tuple[Settings, PortabilityReport]:
+    """Read a *portable* export, and say what was different about the file.
+
+    Unlike :func:`import_settings`, which restores a backup verbatim, this one
+    ignores any machine-local setting the file still carries -- an older file
+    made before the split, or one written by hand -- so restoring somebody
+    else's configuration cannot point this computer at their folders.
 
     The report is the honest half of the reporter's "intelligent wizard" ask
     (#1501): rather than interrogating the user about every setting added since

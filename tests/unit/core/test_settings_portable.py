@@ -163,30 +163,53 @@ def test_quill_exports_no_api_key_because_it_has_none_to_export() -> None:
     all -- they live in the OS credential store -- so the honest answer is that
     the file was already safe. Asserted so it stays that way."""
     from quill.core.settings import Settings
-    from quill.core.settings_registry import export_settings
+    from quill.core.settings_registry import export_portable_settings, export_settings
 
-    payload = export_settings(Settings())["settings"]
-    assert isinstance(payload, dict)
-    secretish = re.compile(r"api_key|apikey|secret|password|token|credential", re.I)
-    assert [name for name in payload if secretish.search(name)] == []
+    # Both kinds of file, because the promise is about Settings having no key
+    # to leak rather than about one exporter being careful.
+    for payload in (
+        export_portable_settings(Settings())["settings"],
+        export_settings(Settings())["settings"],
+    ):
+        assert isinstance(payload, dict)
+        secretish = re.compile(r"api_key|apikey|secret|password|token|credential", re.I)
+        assert [name for name in payload if secretish.search(name)] == []
 
 
-def test_quill_leaves_its_folders_behind() -> None:
+def test_the_portable_export_leaves_quills_folders_behind() -> None:
     from quill.core.settings import Settings
-    from quill.core.settings_registry import LOCAL_SETTINGS, export_settings
+    from quill.core.settings_registry import LOCAL_SETTINGS, export_portable_settings
 
-    payload = export_settings(Settings())["settings"]
+    payload = export_portable_settings(Settings())["settings"]
     assert isinstance(payload, dict)
     assert not (set(payload) & LOCAL_SETTINGS)
     assert "watch_folder_path" in LOCAL_SETTINGS
 
 
-def test_quill_still_carries_the_settings_that_are_preferences() -> None:
-    """The exclusion must not have quietly gutted the export."""
+def test_a_backup_still_keeps_them() -> None:
+    """The two are different products and this is the line between them.
+
+    A *backup* restores the computer it came from, so its watch folder and its
+    Tesseract path are part of what is being restored -- ``share_package``'s
+    backup contract says so outright. A *portable* export is for a different
+    machine, where those same values are the bug. Excluding them from both was
+    the mistake CI caught; this test is the record of the distinction.
+    """
     from quill.core.settings import Settings
     from quill.core.settings_registry import export_settings
 
     payload = export_settings(Settings())["settings"]
+    assert isinstance(payload, dict)
+    assert "watch_folder_path" in payload
+    assert "startup_folder" in payload
+
+
+def test_quill_still_carries_the_settings_that_are_preferences() -> None:
+    """The exclusion must not have quietly gutted the export."""
+    from quill.core.settings import Settings
+    from quill.core.settings_registry import export_portable_settings
+
+    payload = export_portable_settings(Settings())["settings"]
     assert isinstance(payload, dict)
     assert len(payload) > 300
 
