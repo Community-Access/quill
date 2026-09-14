@@ -2,6 +2,36 @@
 
 ## 1.0.0
 
+### A station's own website can reach its stream again (2026-09-14)
+
+**Find Streams from a Website no longer hands you a web page and calls it a
+stream.** A listener reported that OJ 99.1 (WWOJ, Avon Park, Florida) would not
+play -- the player simply sat on "Connecting." forever (#1491). It was not the
+station: it was us offering the wrong URL.
+
+Hundreds of American broadcasters run their web player on SecureNet Systems
+(Cirrus), and QUILL already knew how to read one -- `securenet.py` has pulled
+the real Icecast mount out of those pages since August. The scan never got that
+far. The player lives on a host called `streamdb9web.securenetsystems.net`, and
+the scanner's "does this look like a stream?" heuristic matched the `/stream`
+in that *hostname*, so the homepage's Listen Live link was offered as a playable
+stream. It answers HTML, which is exactly what "Connecting." forever looks like.
+Worse, having produced a candidate, the scan then skipped the step that would
+have followed the link and found the real mount, because that step only ran when
+nothing at all had been found.
+
+Both halves are fixed. A SecureNet page is now recognised as a page -- by host,
+so the platform can keep inventing player paths without breaking it, and without
+ever catching the `ice<N>` mount hosts that genuinely do play. And a page we
+have *removed* from the results is now followed unconditionally: it can add no
+noise to a list it is not in, so there is no reason to make it wait for the list
+to be empty. That second half was quietly costing the iHeart and TuneIn landing
+pages too -- one stream-shaped podcast link on a homepage was enough to suppress
+the only link that reached the station.
+
+Scanning `oj991.com` now returns exactly one candidate, the station's real
+stream, with the station's own name already filled in.
+
 ### One update dialog, and QuillLite can finally find its own updates (2026-09-12)
 
 **Every app now tells you what is in an update before it asks whether you want

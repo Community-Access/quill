@@ -478,3 +478,98 @@ def test_is_portal_page_url_matches_hosts_and_paths() -> None:
     assert not lf._is_portal_page_url("https://station.example.com/live/stream.mp3")
     # An iHeart URL that isn't a station page path is not a portal page.
     assert not lf._is_portal_page_url("https://www.iheart.com/news/")
+
+
+# -- SecureNet player pages: follow, don't offer the page URL (issue #1491) --
+
+
+def test_securenet_listen_link_is_followed_not_offered_as_a_stream(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # #1491: oj991.com (WWOJ, "OJ 99.1") links to its SecureNet Cirrus player.
+    # The player URL's own host -- streamdb9web -- contains the "/stream" path
+    # hint, so the scanner offered that *page* as a stream (it answers HTML, so
+    # the engine sits on "Connecting." forever) and, because a candidate now
+    # existed, never followed the link to the real mount.
+    home = (
+        "<html><head><title>OJ 99.1 WWOJ</title></head><body>"
+        '<a href="https://streamdb9web.securenetsystems.net/cirruscontent/WWOJ">'
+        "Listen Live</a>"
+        "</body></html>"
+    )
+    player = (
+        "<html><body>"
+        '<audio src="https://ice42.securenetsystems.net/WWOJ?playSessionID=45954A9E"></audio>'
+        "</body></html>"
+    )
+    pages = {
+        "https://oj991.com": home,
+        "https://streamdb9web.securenetsystems.net/cirruscontent/WWOJ": player,
+    }
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: pages[url])
+    result = scan_page_for_streams("oj991.com")
+    urls = [c.url for c in result.candidates]
+    assert "https://ice42.securenetsystems.net/WWOJ" in urls
+    # The player page itself must never be offered as something to play.
+    assert not any("cirruscontent" in u for u in urls)
+
+
+def test_securenet_player_page_is_followed_even_when_the_page_has_candidates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # A known-unplayable player page is removed from the candidate list, so it
+    # must be followed unconditionally -- not only when nothing else was found.
+    # Otherwise any unrelated stream-shaped link on the homepage suppresses the
+    # one link that actually reaches the station.
+    home = (
+        "<html><body>"
+        '<a href="https://oj991.com/podcast/morning-sports.mp3">Yesterday\'s show</a>'
+        '<a href="https://radio.securenetsystems.net/v5/WWOJ">Listen Live</a>'
+        "</body></html>"
+    )
+    player = "<html><body>https://ice42.securenetsystems.net/WWOJ</body></html>"
+    pages = {
+        "https://oj991.com": home,
+        "https://radio.securenetsystems.net/v5/WWOJ": player,
+    }
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: pages[url])
+    urls = [c.url for c in scan_page_for_streams("oj991.com").candidates]
+    assert "https://ice42.securenetsystems.net/WWOJ" in urls
+    assert "https://oj991.com/podcast/morning-sports.mp3" in urls
+    assert not any("/v5/WWOJ" in u for u in urls)
+
+
+def test_securenet_player_url_in_inline_script_is_not_offered_as_a_stream(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # The Cirrus player page names its own front-end host in inline JS. Those
+    # strings match the "/stream" hint too, and are pages, not streams.
+    player = (
+        "<html><body><script>"
+        'var base = "https://streamdb9web.securenetsystems.net";'
+        'var hist = "https://streamdb9web.securenetsystems.net/player_status_update/WWOJ.xml";'
+        "</script>https://ice42.securenetsystems.net/WWOJ</body></html>"
+    )
+    monkeypatch.setattr(lf, "_fetch_html", lambda url: player)
+    urls = [
+        c.url
+        for c in scan_page_for_streams(
+            "https://streamdb9web.securenetsystems.net/cirruscontent/WWOJ"
+        ).candidates
+    ]
+    assert urls == ["https://ice42.securenetsystems.net/WWOJ"]
+
+
+def test_portal_follow_is_capped(monkeypatch: pytest.MonkeyPatch) -> None:
+    links = "".join(
+        f'<a href="https://radio.securenetsystems.net/v5/W{n}">Listen</a>' for n in range(6)
+    )
+    fetched: list[str] = []
+
+    def fake_fetch(url: str) -> str:
+        fetched.append(url)
+        return f"<html><body>{links}</body></html>" if url == "https://station.example.com" else ""
+
+    monkeypatch.setattr(lf, "_fetch_html", fake_fetch)
+    scan_page_for_streams("station.example.com")
+    assert len(fetched) == 1 + lf._MAX_LISTEN_LINKS_TO_FOLLOW
