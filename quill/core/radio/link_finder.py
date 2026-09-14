@@ -41,6 +41,7 @@ from html.parser import HTMLParser
 from quill import __version__
 from quill.core.error_codes import CodedError
 from quill.core.radio import securenet
+from quill.core.radio.page_url import normalize_page_url
 from quill.stability.redaction import format_args_for_log
 
 logger = logging.getLogger(__name__)
@@ -345,19 +346,6 @@ def _fetch_html(url: str) -> str:
         return _http_get_text(fallback)
     except _FETCH_ERRORS:
         raise LinkFinderError(f"Could not reach that page: {first_error}") from first_error
-
-
-def normalize_page_url(text: str) -> str:
-    """Turn a loosely-typed site name/URL into an https:// URL, best effort."""
-    candidate = text.strip()
-    if not candidate:
-        return ""
-    if not re.match(r"^https?://", candidate, re.IGNORECASE):
-        candidate = f"https://{candidate}"
-    parsed = urllib.parse.urlsplit(candidate)
-    if parsed.scheme == "http":
-        parsed = parsed._replace(scheme="https")
-    return urllib.parse.urlunsplit(parsed)
 
 
 def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResult:

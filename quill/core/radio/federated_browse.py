@@ -40,6 +40,8 @@ from typing import Any
 
 from quill.core.radio import branch_find
 from quill.core.radio.browse_nodes import BrowseNode, leaf
+from quill.core.radio.models import RadioStation
+from quill.core.radio.page_url import looks_like_url
 
 #: What a row IS, in the order the merged list groups them: the thing most
 #: people are looking for first, and the long tail of niche catalogues last.
@@ -105,6 +107,11 @@ TARGETS: tuple[SearchTarget, ...] = (
 #: The station directory, asked from the local catalog when there is one (and
 #: in Safe Mode, where it is the only thing that can answer at all).
 STATIONS = SearchTarget("rbgenre", "Radio Browser", "Station")
+
+#: Not a directory at all: the station's own website, scanned for the stream it
+#: advertises. It answers *instead of* the directories when the query is an
+#: address rather than a name -- see :func:`_website`.
+WEBSITE = SearchTarget("website", "Website", "Station")
 
 
 #: The sources that answer from something already on this machine: the station
@@ -188,6 +195,42 @@ def _stations(query: str, *, safe_mode: bool, catalog: Any) -> tuple[list[Browse
     return [leaf(station) for station in rows], "searched Radio Browser"
 
 
+def _website(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
+    """Scan the website at *query* and answer with its streams as browse rows.
+
+    The rows are ordinary playable leaves, so a stream found by typing an
+    address gets the same context menu, the same Add to Favorites and the same
+    everything as one found by browsing -- the rule the rest of this module
+    keeps.
+
+    A candidate's label is the anchor text the scanner read, which is very
+    often empty; the page title stands in, because a row called "" or called
+    ``https://ice42.securenetsystems.net/WWOJ`` is a row nobody can pick out of
+    a list by ear.
+    """
+    from quill.core.radio import link_finder
+
+    if safe_mode:
+        return [], "scanning a website needs the network"
+    try:
+        found = link_finder.scan_page_for_streams(query, safe_mode=safe_mode)
+    except link_finder.LinkFinderError as error:
+        return [], str(error) or "could not be reached"
+    rows = [
+        leaf(
+            RadioStation(
+                name=candidate.label or found.page_title or candidate.url,
+                stream_url=candidate.url,
+                homepage=query,
+                source="Website",
+            ),
+            note=candidate.reason,
+        )
+        for candidate in found.candidates
+    ]
+    return rows, ""
+
+
 def _ask(
     target: SearchTarget, query: str, *, safe_mode: bool, catalog: Any
 ) -> tuple[list[BrowseNode], str]:
@@ -257,6 +300,22 @@ def search_everything(
     text = query.strip()
     if not text:
         return result
+    # An address is not a name. Handing "oj991.com" to sixteen directories asks
+    # each of them to guess, and Radio Browser's guess -- everything with "com"
+    # in its name -- buries the one answer that exists. Scan the site instead,
+    # exactly as the Find Stations search box already did (#1491). Only the
+    # unscoped search does this: "Search for a Podcast..." passes its own
+    # targets and means podcasts whatever was typed.
+    if targets is None and looks_like_url(text):
+        rows, why = _website(text, safe_mode=safe_mode)
+        result.asked.append(WEBSITE.label)
+        if why:
+            result.failed.append((WEBSITE.label, why))
+        result.rows = [_annotate(row, WEBSITE) for row in rows]
+        if result.rows:
+            result.counts[WEBSITE.type_label] = len(result.rows)
+        return result
+
     wanted = targets if targets is not None else (STATIONS, *TARGETS)
     by_target: dict[str, list[BrowseNode]] = {}
 
