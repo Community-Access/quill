@@ -136,7 +136,21 @@ class SpecialCharacterDialog:
         set_accessible_name(self._status, "Status")
         root.Add(self._status, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
 
-        buttons = self.dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
+        # Built by hand rather than with ``CreateStdDialogButtonSizer``, because
+        # that makes the buttons children of the *dialog* while every other
+        # control here is a child of the panel -- and a sizer set on the panel
+        # holding a window parented elsewhere is a wx assertion, not a layout
+        # quirk. It fired during construction, so the picker never appeared at
+        # all: Insert Special Character was a keystroke that did nothing in both
+        # editors. ``apply_modal_ids`` still finds these by id, since
+        # ``FindWindowById`` walks the whole window tree.
+        ok_button = wx.Button(panel, wx.ID_OK)
+        cancel_button = wx.Button(panel, wx.ID_CANCEL)
+        buttons = wx.StdDialogButtonSizer()
+        buttons.AddButton(ok_button)
+        buttons.AddButton(cancel_button)
+        buttons.Realize()
+        ok_button.SetDefault()
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
 
         panel.SetSizer(root)
