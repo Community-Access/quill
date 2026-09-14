@@ -1493,6 +1493,50 @@ Browse Stations now fills them in the background before you have typed
 anything. A source you switched off is never contacted -- not even by the
 warm-up -- and Safe Mode skips it entirely.
 
+### Search, the fifth pass: the station somebody meant
+
+Three people, five stations, three of them unfindable. That was the report, and
+none of the three was a bug in the ordinary sense -- the search worked exactly
+as designed, and the design assumed something that is not true: that what a
+listener types is a station's *name*, spelled the way its directory spells it.
+
+It is four facts, not one. A brand, a frequency, a callsign, a place. The
+directories index two of them. So a query is now taken apart before it is sent,
+and each directory is asked several narrower questions instead of one wide one.
+
+What that changes, in the words people actually typed:
+
+- **"Sunny 105.7 Gulf Shores Alabama" found nothing at all.** Radio Browser
+  files that station as "WCSN 105.7 FM Orange Beach" -- it shares not one word
+  with what everybody who listens to it calls it, so no spelling of "Sunny"
+  could ever have reached it. But the search now also asks for `105.7`
+  **narrowed to Alabama**, and that has exactly one answer. It comes back
+  first. Misspelling the city ("Galf Shores") does not change that, because the
+  city was never the part being searched for.
+- **"WDAN 14.90 AM" put two podcast episodes above the station.** A frequency
+  written the way a person says it is now repaired to the way a directory
+  stores it -- `14.90 AM` is 1490, `1009` is 100.9, `105-9` is 105.9, `105,7`
+  is 105.7 -- and TuneIn's search, which answers with programmes and episodes
+  as well as stations, is no longer believed when it calls an episode a
+  station.
+- **"rock 105 fm" lost the station that "rock 105" finds.** The trailing band
+  word was being matched against every "105 FM" on earth. It comes off in one
+  of the variants now.
+- **"Sunny105.7", "1490AM", "play wbgl", "gulf shores al"** are all understood
+  as what they plainly mean.
+
+And the answers are ordered by which one you probably wanted. Four directories
+each ranked their own rows against the query *they* were sent; the merged list
+is ranked here, against what you actually typed. A station matching the name
+and the frequency comes above one matching only the frequency. A station in the
+place you named comes above one that merely shares a word with it. Between two
+equally good matches, the one whose stream is known to play comes first, and
+then the one more people listen to.
+
+One rule governs all of it: **what you typed is always the first question
+asked**. Every row the old search returned is still there, still first. The
+extra questions only add.
+
 ### Sources with opinions of their own
 
 Two of the new directories took an option, and the way they took it matters

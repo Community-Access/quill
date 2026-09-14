@@ -61,6 +61,10 @@ SYNC_MAP: dict[str, dict[str, str]] = {
         "userguide": "userguide.html",
         "prd": "prd.html",
         "release-notes": "release-notes-3.0.html",
+        # The 3.0 announcement. Unlike ``radio-pr.html`` (the 1.0 press release,
+        # deliberately left as a historical page) this one is generated from the
+        # repo, so it cannot drift from the release it announces.
+        "announcement": "announcement-3.0.html",
     },
     "cast": {
         "userguide": "userguide.html",

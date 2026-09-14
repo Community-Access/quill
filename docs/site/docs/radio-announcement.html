@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Radio 3.0</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content">
+<h1 id="quill-radio-30">Quill Radio 3.0</h1>
+<p><strong>A radio that answers the questions people actually arrive
+with.</strong></p>
+<p>Community Access Technologies has released <strong>Quill Radio
+3.0</strong> for Windows. It is free, it is part of the QuillVille
+family, and it is built for people who listen to their computer rather
+than look at it.</p>
+<p>Quill Radio plays internet radio, podcasts, audiobooks and archive
+recordings, records what is on, and schedules what is coming. Everything
+it does, it does from the keyboard, and it says what it did.</p>
+<hr />
+<h2 id="what-30-is-about">What 3.0 is about</h2>
+<p>Version 2.1 opened on an empty favorites tree. That is an accurate
+picture of having no favorites, and an answer to none of the questions
+anybody actually opens a radio app with. Almost everything in 3.0
+follows from taking those questions seriously.</p>
+<h3 id="you-are-somewhere-from-the-first-second">You are somewhere, from
+the first second</h3>
+<p>The first run asks three questions, not seven, and then the app opens
+on something to listen to. The main window shows whichever surface you
+choose – favorites, the browse tree, search, recordings or the player –
+rather than opening a second window on top of the one you were in.</p>
+<h3
+id="thirty-branches-you-can-wander-without-searching-for-anything">Thirty
+branches you can wander without searching for anything</h3>
+<p>The station directory by country, by language, by what is trending
+today. Podcasts by country and genre, with no account anywhere. Whole
+libraries – the Internet Archive, LibriVox, Project Gutenberg, Audius,
+Mixcloud, ccMixter. NOAA Weather Radio by state, county or SAME code.
+Radio reading services. Television from the iptv.org catalogue. None of
+it needs a key or a sign-in.</p>
+<h3 id="it-works-before-the-internet-does">It works before the internet
+does</h3>
+<p>A catalogue of stations lives on your own computer, so a search
+answers the instant you press Enter – and still answers when the
+connection does not. The live directories layer in behind the local
+answers rather than holding them up.</p>
+<h3 id="search-now-finds-the-station-you-meant">Search now finds the
+station you meant</h3>
+<p>This is the newest thing in 3.0, and it came from three listeners who
+could not find five stations between them. A query is not a string:
+“Sunny 105.7 Gulf Shores Alabama” is a brand, a frequency, a city and a
+state, and the directories index two of those.</p>
+<p>So the query is taken apart and each directory is asked several
+narrower questions instead of one wide one. <code>14.90 AM</code> finds
+1490 and <code>1009</code> finds 100.9. A trailing <code>FM</code> no
+longer loses the station. And naming the state does real work: Radio
+Browser knows Sunny 105.7 only as “WCSN 105.7 FM Orange Beach”, so no
+spelling of “Sunny” could reach it – but <code>105.7</code> inside
+Alabama has exactly one answer, and now it arrives first, misspelled
+city and all.</p>
+<p>The merged results are then ordered by which one you most likely
+wanted: name <em>and</em> frequency above frequency alone, the station
+in the place you named above one that merely shares a word, and –
+between two equally good matches – the one whose stream is known to
+play, then the one more people listen to.</p>
+<p>Typing a station’s <strong>web address</strong> works too, in every
+search box. A site is scanned for its stream, which is how you reach the
+stations no directory carries at all – and there are more of those than
+people expect.</p>
+<h3 id="recording-that-behaves-like-a-recorder">Recording that behaves
+like a recorder</h3>
+<p>Record what is playing, or schedule it. A scheduled recording wakes
+the computer for itself rather than silently missing the show. A
+recording that is interrupted resumes. The Recordings player answers
+Winamp’s keys.</p>
+<h3 id="every-window-can-reach-the-player">Every window can reach the
+player</h3>
+<p>The player, browse, search, recordings, favorites and scheduling are
+<strong>windows</strong> – peers, not overlays – with one menu bar each,
+one now-playing line, and a status bar whose cells are actions rather
+than decoration.</p>
+<h3 id="the-app-teaches-itself">The app teaches itself</h3>
+<p><strong>Help &gt; Tutorials…</strong> (Ctrl+Alt+F1) opens 36 guided
+tutorials, 251 steps, in six tracks. A lesson runs one step at a time,
+tells you what you should <em>hear</em> when it worked, and can run the
+step for you. Tick <strong>Follow me</strong> and it watches the app and
+moves on when you have done the thing. The keys a tutorial shows are
+read from your own keymap, so they cannot go stale – and if you rebind a
+command, every lesson that mentions it says your key from then on.</p>
+<h3 id="f1-answers-everywhere">F1 answers, everywhere</h3>
+<p>Every window states its purpose and then describes the control you
+are standing on. Every menu item shows its keyboard route, and no two
+items in a menu bar claim the same key – a rule now enforced by an
+automated gate rather than by anybody remembering.</p>
+<hr />
+<h2 id="accessibility-is-the-design-not-a-feature-of-it">Accessibility
+is the design, not a feature of it</h2>
+<p>Quill Radio is built by and for screen-reader users. Some of what
+that means in practice:</p>
+<ul>
+<li><strong>It says what the screen reader will not.</strong> Window
+titles, control names and focus moves are the reader’s job; a background
+result, a state change on a control you are not standing on, and the
+outcome of an action are the app’s. Saying both is how an app becomes
+something people turn the speech off for.</li>
+<li><strong>Sizes are measured in characters, not pixels</strong>, so a
+readout grows with the system font instead of shrinking against it.</li>
+<li><strong>Nothing is discovered by looking.</strong> Every list says
+how many rows it has, every long operation says it is running, and a
+source having a bad day says so rather than posing as “no matches”.</li>
+</ul>
+<hr />
+<h2 id="availability">Availability</h2>
+<p>Quill Radio 3.0 is a free download for Windows 10 and 11, as an
+installer or a portable build, from the QuillVille site. It shares its
+engine with <strong>QUILL</strong>, the full accessible word processor,
+and sits beside <strong>QUILL Cast</strong> (podcasts), <strong>Quill
+Weather</strong>, <strong>Quill Audio Studio</strong>, <strong>Quill
+Media Player</strong>, <strong>Quill Inkwell</strong>, <strong>Quill
+Converter</strong>, <strong>Quill Beacon</strong> and
+<strong>QuillLite</strong> – one family, one set of keys, one way of
+speaking.</p>
+<p>Upgrading from 2.x keeps your favorites, your settings and your
+keymap.</p>
+<hr />
+<h2 id="about-community-access-technologies">About Community Access
+Technologies</h2>
+<p>Community Access Technologies builds software for blind and
+low-vision users that does not ask them to work around it. Everything in
+the QuillVille family is free, keyboard-first, and designed with a
+screen reader running.</p>
+<p>Support: <a
+href="mailto:support@community-access.org">support@community-access.org</a></p>
+</main>
+</body>
+</html>

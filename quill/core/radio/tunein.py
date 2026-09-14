@@ -150,14 +150,19 @@ def _iter_outline(node: object) -> list[dict]:
     return items
 
 
+#: A resolvable station id: the letter s and then digits ("s28145").
+_STATION_ID = re.compile(r"s\d+", re.IGNORECASE)
+
+
 def parse_directory_results(json_text: str) -> list[TuneInResult]:
     """Parse a RadioTime ``Search.ashx``/``Browse.ashx`` JSON body (pure).
 
     Returns one :class:`TuneInResult` per outline item that carries a title and
-    a guide id. An ``item``/``type`` of ``audio`` (a station) is marked
-    ``is_station``; ``link``/category items are returned as browseable rows.
-    Tolerant: a malformed document or an item missing a title/id is skipped,
-    never fatal.
+    a guide id. A row is marked ``is_station`` only when its guide id is a real
+    station id (``s`` and digits); ``link``/category items and the episodes and
+    programmes a search also answers with are returned unmarked, so a caller
+    resolving streams never tries to tune a podcast. Tolerant: a malformed
+    document or an item missing a title/id is skipped, never fatal.
     """
     try:
         data = json.loads(json_text)
@@ -172,7 +177,14 @@ def parse_directory_results(json_text: str) -> list[TuneInResult]:
         if not guide_id or not title:
             continue
         kind = str(item.get("type") or item.get("item") or "").strip().lower()
-        is_station = kind == "audio" or guide_id[:1].lower() == "s"
+        # A station id is ``s`` followed by digits, and nothing else is a
+        # station. ``type=audio`` alone is not enough: a podcast episode
+        # ("t565963654") and a programme ("p1956915") are both audio, and a
+        # search for WDAN answered with two episodes of a talk show that
+        # mentions a man called Dan above the Danville station itself. A word
+        # key like "sports" is not a station either, which is why the digits
+        # matter as much as the letter.
+        is_station = bool(_STATION_ID.fullmatch(guide_id)) and kind in ("", "audio", "station")
         results.append(
             TuneInResult(
                 guide_id=guide_id,

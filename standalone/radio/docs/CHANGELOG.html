@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Changelog</title>
   <style>
@@ -205,124 +205,7 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
-<h2 id="unreleased">[Unreleased]</h2>
-<h3 id="fixed">Fixed</h3>
-<ul>
-<li><p><strong>Alt+S finally opens the Station menu – the real cause,
-found and fenced.</strong> It was never the menu: a control label beside
-the tree (“&amp;Stations …”) claimed the same letter, and on Windows a
-control mnemonic silently beats a menu mnemonic, so Alt+S moved focus to
-the tree instead. Seventeen labels across the browse tree, Find
-Stations, Recordings, Schedule, Song History, Downloads and the
-Favorites Manager were quietly disarming the very menus their windows
-carry (Recordings’ own list label ate its &amp;Recordings menu). Every
-one has moved to a free letter – the browse tree is now
-<strong>Alt+T</strong>, a fair trade: Alt+T jumps to the tree, Alt+S
-opens Station – and a new gate keeps any label from ever claiming a
-letter its window’s menu bar owns.</p></li>
-<li><p><strong>Every menu item in every QuillVille app now shows its
-keyboard route.</strong> The rule Quill Radio has enforced since 3.0
-turned out to be radio-only in practice: a family-wide sweep found
-<strong>116 menu-bar items with no accelerator at all</strong> – 46 in
-QUILL Cast, 30 in Audio Studio, 18 in Media Player, ten each in Inkwell
-and Weather, six in Converter. All 116 now carry a unique key, and a
-family-wide gate (source-level, popup and tray menus exempt where
-accelerators do nothing) holds the line for every future app.</p></li>
-<li><p><strong>The ACB Media schedule would not re-read itself, and
-could not tell you it had.</strong> Three faults with one symptom. The
-stored copy stayed fresh for an hour and the window honoured that on
-open – and the store outlives the process, so somebody who saw ACB move
-a programme, closed Quill Radio and opened it again got the same old
-listings back. Opening the window now goes and asks ACB, every time; it
-is still off the main thread, so nothing waits, and with no connection
-it still opens from the stored copy and says how old that is.
-<strong>What Is On Now</strong> still prefers the stored copy, because a
-key that spends four seconds on a feed before speaking is a key nobody
-presses twice.</p></li>
-<li><p><strong>A Refresh that worked looked exactly like one that did
-nothing.</strong> The line above the list only mentioned age when the
-listings came from the store, so a <em>successful</em> fetch rewrote the
-sentence to a sentence identical to the one already there – same words,
-same length, the same thing spoken back. It now always ends “Pulled from
-ACB just now, at 9:47 AM”, clock time included, so a second press is
-answerable. When a refresh fails, the line says what the rows below are
-still a copy of instead of only “could not be read”.</p></li>
-<li><p><strong>A refresh you asked for now says so to whatever is
-between you and ACB.</strong> Bypassing this computer’s store never
-stopped a CDN or a company proxy answering from an hour-old copy of its
-own. A listener-asked fetch sends <code>Cache-Control: no-cache</code>
-and <code>Pragma: no-cache</code>; an unattended read does not, where a
-cached hop is a saving rather than a lie.</p></li>
-</ul>
-<h3 id="fixed-1">Fixed</h3>
-<ul>
-<li><strong>Two menus on the same bar claimed the same Alt key, so one
-never opened.</strong> In Quill Radio, <strong>Quillins</strong> and
-<strong>QuillVille</strong> both asked for Alt+Q; in QUILL Audio Studio,
-<strong>Voices</strong> and <strong>View</strong> both asked for Alt+V.
-Quillins is now <strong>Alt+N</strong> and Voices is
-<strong>Alt+I</strong>. A new gate checks every menu bar in the family
-for both faults – a title with no Alt key at all, and two titles
-claiming one – so this cannot come back. It is the same rule the menu
-<em>items</em> have been held to since 3.0, finally applied to the menus
-themselves.</li>
-<li><strong>Search All Sources was still slow after the first pass, and
-this is why.</strong> TuneIn and iHeart each need a network round trip
-<em>per result</em> to turn a directory entry into a playable address,
-and both did them one after another – ten trips end to end for a TuneIn
-search. They now go out at the same time, so the wait is the slowest one
-rather than the sum of ten. The SHOUTcast search inside the tree
-resolves nothing at all now (its rows resolve when you play them), which
-makes it a single request. With the slow shapes gone the overall ceiling
-came down from twelve seconds to eight.</li>
-<li><strong>Most SHOUTcast stations would not play.</strong> A SHOUTcast
-station’s published address is a <em>playlist</em> – a one-line
-<code>.pls</code> holding the real stream address – and a player is
-given a stream, not a playlist of one. Reported on a station with 293
-listeners that was plainly on the air. Stations from that directory are
-now resolved the moment you press Enter, which is one request on the
-station you actually chose rather than five hundred for a genre page you
-are only reading; search results, which are handed straight to the
-player and cannot be resolved later, are resolved as they are found. A
-station that will not resolve is left out rather than offered and then
-failing.</li>
-<li><strong>A source you switched on did not appear until you
-restarted.</strong> Choose Browse Sources wrote your choice, saved it,
-and left the open Browse Stations window showing the list it had been
-built with – two surfaces, one setting, and no way for the second to
-hear about the first. The tree now rebuilds the moment the chooser
-closes, and says so: “Browse Stations has been updated.”</li>
-<li><strong>A source added in a new version never reached anybody who
-had ever opened the chooser.</strong> A stored “these are my sources”
-list can only name sources that existed when it was saved, and anything
-it does not name is dropped – so the three new directories were switched
-on in the settings list and still absent from the tree. The browse list
-already had the machinery to hand newcomers to an existing profile once
-and remember that it had; it now names the new branches, and <strong>the
-search list, which had the identical hole, has the same machinery for
-the first time</strong>. Either way: a source you switched <em>off</em>
-stays off, and turning everything off stays a choice that is
-respected.</li>
-<li><strong>Lists sorted 1, 10, 2 instead of 1, 2, 10.</strong> “ACB
-Media 1, ACB Media 10, then 2 through 9” – what sorting text does, and
-wrong for every list of names a person wrote. Numbers inside a name are
-now compared as numbers, in the browse tree, the A-Z groups, the Live365
-directory and the favorites list. <strong>No name was changed to make
-this work</strong>: renaming the stations “ACB Media 01” would have been
-wrong in the details panel, wrong read aloud, wrong in an export and
-wrong when you searched for the name you actually know.</li>
-<li><strong>Search All Sources was very slow, and silent while it
-ran.</strong> Two causes, both fixed. It asked sixteen directories
-through six workers, so a search took three waves of the slowest service
-back to back; every source is now asked at the same moment. And it had
-no deadline, so one service having a bad afternoon set the pace for the
-whole search; there is now a twelve-second ceiling, after which the
-stragglers are <strong>named</strong> (“Internet Archive did not answer
-within 12 seconds”) rather than quietly left out. While it runs it now
-says so, after four seconds and then periodically – a cross-source
-search is as slow as the slowest service in it, and nothing on screen
-changes while it happens.</li>
-</ul>
+<h2 id="300---2026-08-25">[3.0.0] - 2026-08-25</h2>
 <h3 id="added">Added</h3>
 <ul>
 <li><p><strong>A person you can write to.</strong> Every app’s Help &gt;
@@ -522,14 +405,10 @@ re-read it and exactly when there is no row to right-click. And
 window open it reloads the window, with it shut it fetches quietly and
 speaks the result, and in Safe Mode it says that it will not reach out
 rather than doing nothing silently.</p></li>
-</ul>
-<h2 id="300---2026-08-25">[3.0.0] - 2026-08-25</h2>
-<h3 id="added-1">Added</h3>
-<ul>
-<li><strong>Help &gt; Tutorials… (Ctrl+Alt+F1): 36 guided tutorials, 251
-steps.</strong> Six tracks, from “you have never opened this app” to
+<li><p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1): 36 guided tutorials,
+251 steps.</strong> Six tracks, from “you have never opened this app” to
 “you have relied on it for a month”, covering every feature Quill Radio
-has. They are not a second copy of the user guide:
+has. They are not a second copy of the user guide:</p>
 <ul>
 <li><strong>A step names a command, not a key</strong>, so the key you
 read is the key you actually have – rebind something and the tutorial
@@ -561,15 +440,91 @@ window teaches from so the two cannot drift.</li>
 <code>docs/release-notes-3.0.md</code>, Part Five, with the reasoning in
 <code>docs/release-notes-3.0-in-depth.md</code>, section 24.</li>
 </ul></li>
+<li><p><strong>A feed offering several transcripts now gets read
+properly.</strong> Some podcasts publish the same episode’s transcript
+as JSON, WebVTT, SRT <em>and</em> HTML. Quill Radio took whichever the
+publisher happened to list first – and only the structured formats carry
+the timings the transcript reader follows along with, so a show that
+listed HTML first silently lost them on every episode. The choice is now
+made by what a format can do rather than by feed order.</p></li>
+<li><p><strong>Skip Silence never moves your place, and that is now
+written down.</strong> Compressing the silences changes what you hear,
+not where you are: a saved position stays in the original recording’s
+timeline, so resuming an episode you part-listened to with it on lands
+exactly where you left. (It is the same filter QUILL Cast calls Smart
+Speed – one behaviour, and the two apps are now tested to agree about
+it.)</p></li>
+<li><p><strong>A reminder on anything, not just a programme.</strong>
+Every station, recording and saved row now offers <strong>Set a
+Reminder…</strong> on its context menu, and the same row offers
+<strong>Remove Reminder</strong> once it has one – a menu that cannot
+tell you what you already did is a menu you have to remember for, which
+is the job a reminder exists to take off you. A row has no start time of
+its own, so the question changes from “how long before?” to “when?”,
+which is the same control reading differently rather than a second
+dialog to learn.</p></li>
+<li><p><strong>Reminders carry a note and a priority.</strong> The note
+is free text – a number to call in on, a reason, a message to yourself –
+and is spoken with the reminder. <strong>High priority</strong> is the
+one thing that comes through quiet hours on its own, without your having
+to turn on “let reminders through” for everything. It changes nothing
+else: a high-priority reminder is not louder, sooner or
+repeated.</p></li>
+<li><p><strong>Reminders have their own sound.</strong> Three rising
+bell tones, unlike anything else in the app, played just before the
+words – so a listener who recognises it has already turned their
+attention by the time the sentence starts. It has its own switch in
+Preferences, separate from the general per-event sound list, because
+somebody who has turned most earcons off has probably not meant to
+silence the one thing they asked to be interrupted by.</p></li>
+<li><p><strong>A reminder now arrives as a desktop notice too, with a Go
+There button.</strong> Spoken <em>and</em> shown: the speech is the
+reminder, and the notice is what is still there thirty seconds later for
+somebody who was mid-sentence with a screen reader when it came. Its
+button opens whatever the reminder was about, where before the only
+route was to open Upcoming and find the row.</p></li>
+<li><p><strong>Preferences: a default lead time, and the reminder
+sound.</strong> Every reminder still asks how much warning you want;
+this decides what that control opens on, so the usual answer is one
+keystroke shorter.</p></li>
+<li><p><strong>Preferences groups.</strong> Both apps’ Preferences had
+grown into one flat run of twenty-odd controls, which reads as twenty
+unrelated facts – especially to somebody arrowing through with a screen
+reader, who has no visual proximity to infer from. Related settings now
+sit in named, announced groups.</p></li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
-<li><strong>Product Requirements… moved from Ctrl+Alt+F1 to
+<li><p><strong>Find Stations asks several narrower questions instead of
+one wide one.</strong> Two ACB members between them named five stations;
+three of the five could not be found by any spelling. A query is now
+taken apart – brand, frequency, callsign, place – and each directory is
+asked for the spellings it might actually hold. <code>14.90 AM</code>
+finds 1490 and <code>1009</code> finds 100.9; <code>105-9</code> and
+<code>105,7</code> are understood; <code>Sunny105.7</code> and
+<code>1490AM</code> come apart; a leading “play” or “listen to” is
+ignored; and a trailing <strong>FM</strong> no longer loses the station
+(<code>rock 105 fm</code> and <code>rock 105</code> now find the same
+one). Naming the <strong>state</strong> does real work: Radio Browser
+knows Sunny 105.7 only as “WCSN 105.7 FM Orange Beach”, so no spelling
+of “Sunny” could reach it – but <code>105.7</code> narrowed to Alabama
+has exactly one answer, and it now arrives first, even with the city
+misspelled. What you typed is always asked first, so nothing that worked
+before stops working.</p></li>
+<li><p><strong>Results are ordered by what you most likely
+want.</strong> Each directory ranked its own rows against the query
+<em>it</em> was sent, and a search now sends several, so the merged list
+is ranked against what you actually typed: name <em>and</em> frequency
+above frequency alone, a station in the place you named above one that
+merely shares a word, and – between two equally good matches – the one
+whose stream is known to play, then the one more people listen
+to.</p></li>
+<li><p><strong>Product Requirements… moved from Ctrl+Alt+F1 to
 Alt+Shift+F1</strong>, to make room for Tutorials. The F1 family is
 ordered by how often somebody reaches for a door, and a new listener
 reaches for a tutorial far more often than anybody reaches for the PRD.
 (Ctrl+Alt+Shift+F1 was not available: it is a QuillVille launcher
-key.)</li>
+key.)</p></li>
 </ul>
 <p>Major: Browse Stations becomes a browsable directory rather than a
 list of sources, the whole station directory now ships inside the app
@@ -577,61 +532,237 @@ and answers locally (the Station Catalog), podcasts arrive keylessly,
 transcripts gain timings, Quill Radio gains a first run and learns to
 say when a media tool has gone missing, and several long-standing silent
 faults are fixed. See <code>docs/release-notes-3.0.md</code>.</p>
-<h3 id="added-2">Added</h3>
 <ul>
-<li><strong>A feed offering several transcripts now gets read
-properly.</strong> Some podcasts publish the same episode’s transcript
-as JSON, WebVTT, SRT <em>and</em> HTML. Quill Radio took whichever the
-publisher happened to list first – and only the structured formats carry
-the timings the transcript reader follows along with, so a show that
-listed HTML first silently lost them on every episode. The choice is now
-made by what a format can do rather than by feed order.</li>
-<li><strong>Skip Silence never moves your place, and that is now written
-down.</strong> Compressing the silences changes what you hear, not where
-you are: a saved position stays in the original recording’s timeline, so
-resuming an episode you part-listened to with it on lands exactly where
-you left. (It is the same filter QUILL Cast calls Smart Speed – one
-behaviour, and the two apps are now tested to agree about it.)</li>
-<li><strong>A reminder on anything, not just a programme.</strong> Every
-station, recording and saved row now offers <strong>Set a
-Reminder…</strong> on its context menu, and the same row offers
-<strong>Remove Reminder</strong> once it has one – a menu that cannot
-tell you what you already did is a menu you have to remember for, which
-is the job a reminder exists to take off you. A row has no start time of
-its own, so the question changes from “how long before?” to “when?”,
-which is the same control reading differently rather than a second
-dialog to learn.</li>
-<li><strong>Reminders carry a note and a priority.</strong> The note is
-free text – a number to call in on, a reason, a message to yourself –
-and is spoken with the reminder. <strong>High priority</strong> is the
-one thing that comes through quiet hours on its own, without your having
-to turn on “let reminders through” for everything. It changes nothing
-else: a high-priority reminder is not louder, sooner or repeated.</li>
-<li><strong>Reminders have their own sound.</strong> Three rising bell
-tones, unlike anything else in the app, played just before the words –
-so a listener who recognises it has already turned their attention by
-the time the sentence starts. It has its own switch in Preferences,
-separate from the general per-event sound list, because somebody who has
-turned most earcons off has probably not meant to silence the one thing
-they asked to be interrupted by.</li>
-<li><strong>A reminder now arrives as a desktop notice too, with a Go
-There button.</strong> Spoken <em>and</em> shown: the speech is the
-reminder, and the notice is what is still there thirty seconds later for
-somebody who was mid-sentence with a screen reader when it came. Its
-button opens whatever the reminder was about, where before the only
-route was to open Upcoming and find the row.</li>
-<li><strong>Preferences: a default lead time, and the reminder
-sound.</strong> Every reminder still asks how much warning you want;
-this decides what that control opens on, so the usual answer is one
-keystroke shorter.</li>
-<li><strong>Preferences groups.</strong> Both apps’ Preferences had
-grown into one flat run of twenty-odd controls, which reads as twenty
-unrelated facts – especially to somebody arrowing through with a screen
-reader, who has no visual proximity to infer from. Related settings now
-sit in named, announced groups.</li>
+<li><p><strong>Buffering is now a state, not just a word.</strong> A
+stalled stream said “Buffering…” while the status bar and the tray
+tooltip both went on saying “playing” through the silence. The status
+line now reads “Radio: buffering WQXR…” for as long as the stall lasts,
+and returns to playing when the audio does – without a second earcon
+each time, so a stuttering stream does not chime ten times.</p></li>
+<li><p><strong>A reconnect says it is reconnecting, not
+connecting.</strong> “Connecting” is what a station you just chose does.
+A stream that dropped on its own now reads and speaks as “Reconnecting
+to KFI AM 640. Attempt 2 of 3.” – a different word for a different
+event, and one you did not cause.</p></li>
+<li><p><strong>Continue Listening moved to Ctrl+Alt+Shift+L.</strong> It
+had Ctrl+Shift+Alt+C, which looks like a different key from Choose
+Columns’ Ctrl+Alt+Shift+C and is not one – the order the modifiers are
+written in makes no difference, so two menu items claimed one chord and
+one of them silently never fired. Choose Columns keeps the C, because
+QUILL Cast uses it for the same command and a family key that changes
+per app is worse than an unfamiliar one.</p></li>
+<li><p><strong>Speed and chapters moved off Ctrl+Alt+arrow.</strong>
+That block is JAWS’s and NVDA’s table navigation, so those verbs worked
+everywhere except while somebody was reading a table. Play Faster /
+Slower / Normal Speed are now <strong>Ctrl+Shift+Up / Ctrl+Shift+Down /
+Ctrl+Shift+0</strong>, Next / Previous Chapter are
+<strong>Ctrl+Shift+period / Ctrl+Shift+comma</strong>, and Where Am I is
+<strong>Ctrl+Shift+W</strong>. A build check fails if a transport verb
+lands back on that block.</p></li>
+<li><p><strong>One volume: one distance, one sentence.</strong> Volume
+moved 10 through the menus and 5 through the shared keyboard, and
+reported itself three different ways – “Radio volume 45”, “Volume 45”
+(no unit at all, in the Recordings list) and “Volume 45 percent.” It is
+now the player’s own step everywhere, and one sentence: “Volume 60
+percent.”, “Volume off.”, “Muted.”</p></li>
+<li><p><strong>Every announcement ends as a sentence.</strong>
+Seventy-one of them did not, which costs the sentence-final prosody a
+screen reader applies on a full stop – so “Playing WNYC” ran into the
+next announcement as one run-on. A build check now reads every Radio
+module so it cannot drift back.</p></li>
+<li><p><strong>Subscriptions counts itself, and its shows say what is
+waiting.</strong> The node under Podcasts read “Subscriptions (shows you
+follow, shared with Quill Cast)” — a sentence glued to the name, paid on
+every visit. It now reads <strong>“Subscriptions (3)”</strong>: the
+badge is your follow count. Each show beneath it wears <strong>“(2
+unheard)”</strong>, read from the shared library’s own episode state —
+the same count Quill Cast shows.</p></li>
+<li><p><strong>An emptied search field empties its results.</strong> In
+the station browser — and on every search surface across the family: the
+book library, weather locations, Spotify, the GitHub browser — deleting
+your query used to leave the old results sitting there looking current.
+Clearing the fields now clears the list at once, exactly as a blank
+search would; the station browser waits until the name, tag <em>and</em>
+country are all empty, because a country facet alone is still a live
+query.</p></li>
+<li><p><strong>The Weather menu is gone.</strong> Weather stands alone
+in the <strong>Quill Weather</strong> app (one keystroke away on the
+QuillVille menu); Quill Radio no longer carries the forecast menu or
+resumes background alert monitoring at launch. The radio part stays: the
+<strong>Weather / NOAA</strong> transmitter branch of Browse Stations is
+untouched.</p></li>
+<li><p><strong>Folder context menus tell the truth.</strong> An expanded
+folder’s first item now reads <strong>Close</strong> rather than a
+second, do-nothing “Open”; and “Add All … to Favorites” appears only
+when episodes are actually loaded under the row, instead of offering to
+add nothing.</p></li>
+<li><p><strong>Browse sources moved behind one contract</strong>
+(<code>quill/core/radio/browse_sources.py</code>). The Browse window no
+longer knows the shape of any source; it renders folders and leaves.
+Adding a source is one registry entry and one handler, not a node kind
+plus edits in six places. <code>browse_tree_dialog.py</code> is 199
+lines smaller while the tree it serves grew from thirteen root branches
+to thirty, and its GATE-11 budget was <strong>ratcheted down</strong> to
+match.</p></li>
+<li><p><strong>An empty branch distinguishes “nothing here” from “could
+not be reached”</strong>, and Safe Mode says so per branch rather than
+showing an empty folder.</p></li>
+<li><p><strong>A folder announces its child count before it is
+opened</strong> where the source supplies one cheaply.</p></li>
+<li><p><strong>Xiph genres are offered in the directory’s own use
+order</strong> (most-used first), filtered to plausible genres, and
+bounded to the top 120 rather than ~3,400 free-text strings.</p></li>
+<li><p><strong><code>browse_tree_helpers</code> moved from
+<code>quill/ui/radio/</code> to <code>quill/core/radio/</code></strong>
+as <code>browse_helpers</code>, since the (core) browse registry needs
+it and core must not import from the UI layer.</p></li>
+<li><p><strong>The NOAA Weather Radio user agent is derived from the
+package version</strong> instead of a hard-coded <code>2.1.1</code> that
+had been stale for two releases.</p></li>
+<li><p><strong>The status strip’s Recording cell counts time, not
+rows.</strong> It counts down to a length you chose and up when you did
+not; the job snapshot records which of the two it was, so a reconnect
+inherits that answer rather than re-deriving it from the minutes it is
+handed.</p></li>
+<li><p><strong>The Recordings window’s status line leads with what
+happens next</strong> – what is recording and how long is left, then the
+next scheduled recording and when it starts, then the shelf and the
+folder. Schedules that exist but cannot fire say so rather than reading
+as cover.</p></li>
+<li><p><strong>What’s Playing names where a track title came
+from</strong> – the ICY block carried with the audio, the player’s own
+metadata, or the station’s status page – and shows the original text
+where what is displayed is a reading of what arrived.</p></li>
+<li><p><strong>Rows the listing directory could not play carry “may not
+be playable”</strong>, from Radio Browser’s own published verdict; rows
+that resolve at play time (TuneIn, YouTube) say that instead. Nothing
+here scores or estimates.</p></li>
 </ul>
-<h3 id="fixed-2">Fixed</h3>
+<h3 id="fixed">Fixed</h3>
 <ul>
+<li><p><strong>The Station details and Now Playing boxes are wide enough
+to read.</strong> Both sat in windows sized by their buttons, so in a
+small window they wrapped a single word onto a line of its own. Both now
+ask for a readable width measured in characters rather than pixels – so
+it grows with the system font instead of shrinking against it – and the
+window that holds them cannot be narrower than they are.</p></li>
+<li><p><strong>A podcast episode is no longer mistaken for a
+station.</strong> TuneIn answers a search with episodes and programmes
+as well as stations, and Quill Radio treated anything marked “audio” as
+a station – so a search for <strong>WDAN</strong> returned two episodes
+of a talk show that mentions a man called Dan above the Danville station
+itself. Only a real station id counts now.</p></li>
+<li><p><strong>Alt+S finally opens the Station menu – the real cause,
+found and fenced.</strong> It was never the menu: a control label beside
+the tree (“&amp;Stations …”) claimed the same letter, and on Windows a
+control mnemonic silently beats a menu mnemonic, so Alt+S moved focus to
+the tree instead. Seventeen labels across the browse tree, Find
+Stations, Recordings, Schedule, Song History, Downloads and the
+Favorites Manager were quietly disarming the very menus their windows
+carry (Recordings’ own list label ate its &amp;Recordings menu). Every
+one has moved to a free letter – the browse tree is now
+<strong>Alt+T</strong>, a fair trade: Alt+T jumps to the tree, Alt+S
+opens Station – and a new gate keeps any label from ever claiming a
+letter its window’s menu bar owns.</p></li>
+<li><p><strong>Every menu item in every QuillVille app now shows its
+keyboard route.</strong> The rule Quill Radio has enforced since 3.0
+turned out to be radio-only in practice: a family-wide sweep found
+<strong>116 menu-bar items with no accelerator at all</strong> – 46 in
+QUILL Cast, 30 in Audio Studio, 18 in Media Player, ten each in Inkwell
+and Weather, six in Converter. All 116 now carry a unique key, and a
+family-wide gate (source-level, popup and tray menus exempt where
+accelerators do nothing) holds the line for every future app.</p></li>
+<li><p><strong>The ACB Media schedule would not re-read itself, and
+could not tell you it had.</strong> Three faults with one symptom. The
+stored copy stayed fresh for an hour and the window honoured that on
+open – and the store outlives the process, so somebody who saw ACB move
+a programme, closed Quill Radio and opened it again got the same old
+listings back. Opening the window now goes and asks ACB, every time; it
+is still off the main thread, so nothing waits, and with no connection
+it still opens from the stored copy and says how old that is.
+<strong>What Is On Now</strong> still prefers the stored copy, because a
+key that spends four seconds on a feed before speaking is a key nobody
+presses twice.</p></li>
+<li><p><strong>A Refresh that worked looked exactly like one that did
+nothing.</strong> The line above the list only mentioned age when the
+listings came from the store, so a <em>successful</em> fetch rewrote the
+sentence to a sentence identical to the one already there – same words,
+same length, the same thing spoken back. It now always ends “Pulled from
+ACB just now, at 9:47 AM”, clock time included, so a second press is
+answerable. When a refresh fails, the line says what the rows below are
+still a copy of instead of only “could not be read”.</p></li>
+<li><p><strong>A refresh you asked for now says so to whatever is
+between you and ACB.</strong> Bypassing this computer’s store never
+stopped a CDN or a company proxy answering from an hour-old copy of its
+own. A listener-asked fetch sends <code>Cache-Control: no-cache</code>
+and <code>Pragma: no-cache</code>; an unattended read does not, where a
+cached hop is a saving rather than a lie.</p></li>
+<li><p><strong>Two menus on the same bar claimed the same Alt key, so
+one never opened.</strong> In Quill Radio, <strong>Quillins</strong> and
+<strong>QuillVille</strong> both asked for Alt+Q; in QUILL Audio Studio,
+<strong>Voices</strong> and <strong>View</strong> both asked for Alt+V.
+Quillins is now <strong>Alt+N</strong> and Voices is
+<strong>Alt+I</strong>. A new gate checks every menu bar in the family
+for both faults – a title with no Alt key at all, and two titles
+claiming one – so this cannot come back. It is the same rule the menu
+<em>items</em> have been held to since 3.0, finally applied to the menus
+themselves.</p></li>
+<li><p><strong>Search All Sources was still slow after the first pass,
+and this is why.</strong> TuneIn and iHeart each need a network round
+trip <em>per result</em> to turn a directory entry into a playable
+address, and both did them one after another – ten trips end to end for
+a TuneIn search. They now go out at the same time, so the wait is the
+slowest one rather than the sum of ten. The SHOUTcast search inside the
+tree resolves nothing at all now (its rows resolve when you play them),
+which makes it a single request. With the slow shapes gone the overall
+ceiling came down from twelve seconds to eight.</p></li>
+<li><p><strong>Most SHOUTcast stations would not play.</strong> A
+SHOUTcast station’s published address is a <em>playlist</em> – a
+one-line <code>.pls</code> holding the real stream address – and a
+player is given a stream, not a playlist of one. Reported on a station
+with 293 listeners that was plainly on the air. Stations from that
+directory are now resolved the moment you press Enter, which is one
+request on the station you actually chose rather than five hundred for a
+genre page you are only reading; search results, which are handed
+straight to the player and cannot be resolved later, are resolved as
+they are found. A station that will not resolve is left out rather than
+offered and then failing.</p></li>
+<li><p><strong>A source you switched on did not appear until you
+restarted.</strong> Choose Browse Sources wrote your choice, saved it,
+and left the open Browse Stations window showing the list it had been
+built with – two surfaces, one setting, and no way for the second to
+hear about the first. The tree now rebuilds the moment the chooser
+closes, and says so: “Browse Stations has been updated.”</p></li>
+<li><p><strong>A source added in a new version never reached anybody who
+had ever opened the chooser.</strong> A stored “these are my sources”
+list can only name sources that existed when it was saved, and anything
+it does not name is dropped – so the three new directories were switched
+on in the settings list and still absent from the tree. The browse list
+already had the machinery to hand newcomers to an existing profile once
+and remember that it had; it now names the new branches, and <strong>the
+search list, which had the identical hole, has the same machinery for
+the first time</strong>. Either way: a source you switched <em>off</em>
+stays off, and turning everything off stays a choice that is
+respected.</p></li>
+<li><p><strong>Lists sorted 1, 10, 2 instead of 1, 2, 10.</strong> “ACB
+Media 1, ACB Media 10, then 2 through 9” – what sorting text does, and
+wrong for every list of names a person wrote. Numbers inside a name are
+now compared as numbers, in the browse tree, the A-Z groups, the Live365
+directory and the favorites list. <strong>No name was changed to make
+this work</strong>: renaming the stations “ACB Media 01” would have been
+wrong in the details panel, wrong read aloud, wrong in an export and
+wrong when you searched for the name you actually know.</p></li>
+<li><p><strong>Search All Sources was very slow, and silent while it
+ran.</strong> Two causes, both fixed. It asked sixteen directories
+through six workers, so a search took three waves of the slowest service
+back to back; every source is now asked at the same moment. And it had
+no deadline, so one service having a bad afternoon set the pace for the
+whole search; there is now a twelve-second ceiling, after which the
+stragglers are <strong>named</strong> (“Internet Archive did not answer
+within 12 seconds”) rather than quietly left out. While it runs it now
+says so, after four seconds and then periodically – a cross-source
+search is as slow as the slowest service in it, and nothing on screen
+changes while it happens.</p></li>
 <li><p><strong>The ACB Media schedule showed every programme at the
 wrong time.</strong> Every event in ACB’s feed is written in US Central
 time and says so; Quill Radio read those times as UTC and then converted
@@ -1378,116 +1509,6 @@ pinned so a row can always say what it is; and a live preview reads out
 the sentence a row will speak before you press OK. Find Stations also
 offers Language, Genres, Popularity and Bitrate; Recordings also offers
 Length.</p></li>
-</ul>
-<h3 id="changed-1">Changed</h3>
-<ul>
-<li><p><strong>Buffering is now a state, not just a word.</strong> A
-stalled stream said “Buffering…” while the status bar and the tray
-tooltip both went on saying “playing” through the silence. The status
-line now reads “Radio: buffering WQXR…” for as long as the stall lasts,
-and returns to playing when the audio does – without a second earcon
-each time, so a stuttering stream does not chime ten times.</p></li>
-<li><p><strong>A reconnect says it is reconnecting, not
-connecting.</strong> “Connecting” is what a station you just chose does.
-A stream that dropped on its own now reads and speaks as “Reconnecting
-to KFI AM 640. Attempt 2 of 3.” – a different word for a different
-event, and one you did not cause.</p></li>
-<li><p><strong>Continue Listening moved to Ctrl+Alt+Shift+L.</strong> It
-had Ctrl+Shift+Alt+C, which looks like a different key from Choose
-Columns’ Ctrl+Alt+Shift+C and is not one – the order the modifiers are
-written in makes no difference, so two menu items claimed one chord and
-one of them silently never fired. Choose Columns keeps the C, because
-QUILL Cast uses it for the same command and a family key that changes
-per app is worse than an unfamiliar one.</p></li>
-<li><p><strong>Speed and chapters moved off Ctrl+Alt+arrow.</strong>
-That block is JAWS’s and NVDA’s table navigation, so those verbs worked
-everywhere except while somebody was reading a table. Play Faster /
-Slower / Normal Speed are now <strong>Ctrl+Shift+Up / Ctrl+Shift+Down /
-Ctrl+Shift+0</strong>, Next / Previous Chapter are
-<strong>Ctrl+Shift+period / Ctrl+Shift+comma</strong>, and Where Am I is
-<strong>Ctrl+Shift+W</strong>. A build check fails if a transport verb
-lands back on that block.</p></li>
-<li><p><strong>One volume: one distance, one sentence.</strong> Volume
-moved 10 through the menus and 5 through the shared keyboard, and
-reported itself three different ways – “Radio volume 45”, “Volume 45”
-(no unit at all, in the Recordings list) and “Volume 45 percent.” It is
-now the player’s own step everywhere, and one sentence: “Volume 60
-percent.”, “Volume off.”, “Muted.”</p></li>
-<li><p><strong>Every announcement ends as a sentence.</strong>
-Seventy-one of them did not, which costs the sentence-final prosody a
-screen reader applies on a full stop – so “Playing WNYC” ran into the
-next announcement as one run-on. A build check now reads every Radio
-module so it cannot drift back.</p></li>
-<li><p><strong>Subscriptions counts itself, and its shows say what is
-waiting.</strong> The node under Podcasts read “Subscriptions (shows you
-follow, shared with Quill Cast)” — a sentence glued to the name, paid on
-every visit. It now reads <strong>“Subscriptions (3)”</strong>: the
-badge is your follow count. Each show beneath it wears <strong>“(2
-unheard)”</strong>, read from the shared library’s own episode state —
-the same count Quill Cast shows.</p></li>
-<li><p><strong>An emptied search field empties its results.</strong> In
-the station browser — and on every search surface across the family: the
-book library, weather locations, Spotify, the GitHub browser — deleting
-your query used to leave the old results sitting there looking current.
-Clearing the fields now clears the list at once, exactly as a blank
-search would; the station browser waits until the name, tag <em>and</em>
-country are all empty, because a country facet alone is still a live
-query.</p></li>
-<li><p><strong>The Weather menu is gone.</strong> Weather stands alone
-in the <strong>Quill Weather</strong> app (one keystroke away on the
-QuillVille menu); Quill Radio no longer carries the forecast menu or
-resumes background alert monitoring at launch. The radio part stays: the
-<strong>Weather / NOAA</strong> transmitter branch of Browse Stations is
-untouched.</p></li>
-<li><p><strong>Folder context menus tell the truth.</strong> An expanded
-folder’s first item now reads <strong>Close</strong> rather than a
-second, do-nothing “Open”; and “Add All … to Favorites” appears only
-when episodes are actually loaded under the row, instead of offering to
-add nothing.</p></li>
-<li><p><strong>Browse sources moved behind one contract</strong>
-(<code>quill/core/radio/browse_sources.py</code>). The Browse window no
-longer knows the shape of any source; it renders folders and leaves.
-Adding a source is one registry entry and one handler, not a node kind
-plus edits in six places. <code>browse_tree_dialog.py</code> is 199
-lines smaller while the tree it serves grew from thirteen root branches
-to thirty, and its GATE-11 budget was <strong>ratcheted down</strong> to
-match.</p></li>
-<li><p><strong>An empty branch distinguishes “nothing here” from “could
-not be reached”</strong>, and Safe Mode says so per branch rather than
-showing an empty folder.</p></li>
-<li><p><strong>A folder announces its child count before it is
-opened</strong> where the source supplies one cheaply.</p></li>
-<li><p><strong>Xiph genres are offered in the directory’s own use
-order</strong> (most-used first), filtered to plausible genres, and
-bounded to the top 120 rather than ~3,400 free-text strings.</p></li>
-<li><p><strong><code>browse_tree_helpers</code> moved from
-<code>quill/ui/radio/</code> to <code>quill/core/radio/</code></strong>
-as <code>browse_helpers</code>, since the (core) browse registry needs
-it and core must not import from the UI layer.</p></li>
-<li><p><strong>The NOAA Weather Radio user agent is derived from the
-package version</strong> instead of a hard-coded <code>2.1.1</code> that
-had been stale for two releases.</p></li>
-<li><p><strong>The status strip’s Recording cell counts time, not
-rows.</strong> It counts down to a length you chose and up when you did
-not; the job snapshot records which of the two it was, so a reconnect
-inherits that answer rather than re-deriving it from the minutes it is
-handed.</p></li>
-<li><p><strong>The Recordings window’s status line leads with what
-happens next</strong> – what is recording and how long is left, then the
-next scheduled recording and when it starts, then the shelf and the
-folder. Schedules that exist but cannot fire say so rather than reading
-as cover.</p></li>
-<li><p><strong>What’s Playing names where a track title came
-from</strong> – the ICY block carried with the audio, the player’s own
-metadata, or the station’s status page – and shows the original text
-where what is displayed is a reading of what arrived.</p></li>
-<li><p><strong>Rows the listing directory could not play carry “may not
-be playable”</strong>, from Radio Browser’s own published verdict; rows
-that resolve at play time (TuneIn, YouTube) say that instead. Nothing
-here scores or estimates.</p></li>
-</ul>
-<h3 id="fixed-3">Fixed</h3>
-<ul>
 <li><p><strong>Reconnect attempts were never actually
 announced.</strong> The sentence naming the station and counting the
 attempt was composed correctly and written to a field nothing read, so
@@ -1811,7 +1832,7 @@ downloads), it learns two whole new kinds of station – YouTube and
 Live365 – it remembers the songs each station played, your volume
 finally stays where you put it, and every message the app speaks now
 also reaches a braille display.</p>
-<h4 id="added-3">Added</h4>
+<h4 id="added-1">Added</h4>
 <ul>
 <li><p><strong>A play queue for the Recordings list, which unlocks the
 last three Winamp keys.</strong> <strong>R</strong> (shuffle),
@@ -2167,7 +2188,7 @@ deliberately absent: all three describe a play queue the recordings list
 does not have yet, and a key that only looks like it worked is worse
 than no key. (#1344)</p></li>
 </ul>
-<h4 id="changed-2">Changed</h4>
+<h4 id="changed-1">Changed</h4>
 <ul>
 <li><strong>Announcements now reach your braille display.</strong>
 Everything Quill Radio speaks – What’s Playing, a finished refresh, a
@@ -2187,7 +2208,7 @@ entered them, and each row shows the stream’s host in brackets so two
 similar entries – or a duplicate still pointing at the original station
 – are easy to tell apart. (#1220)</li>
 </ul>
-<h4 id="fixed-4">Fixed</h4>
+<h4 id="fixed-1">Fixed</h4>
 <ul>
 <li><p><strong>Seeking a finished YouTube video no longer reports a live
 edge that does not exist.</strong> <strong>Rewind / Forward 30
@@ -2269,7 +2290,7 @@ an accessible runtime download, and a native launcher that no longer
 looks like repackaged Python to antivirus tools. It also gains a family
 switcher, a way to trim the app to just what you use, and a weather
 watch that speaks warnings as they are issued.</p>
-<h4 id="added-4">Added</h4>
+<h4 id="added-2">Added</h4>
 <ul>
 <li><strong>The QuillVille Runtime – shared,
 install-once-per-user.</strong> Quill Radio, QUILL, Quill Weather, and
@@ -2353,7 +2374,7 @@ Keep-the-computer-awake while playing or recording. Schedule Recording
 duration as hours plus minutes. A Volume slider in the main-window Tab
 order.</li>
 </ul>
-<h4 id="changed-3">Changed</h4>
+<h4 id="changed-2">Changed</h4>
 <ul>
 <li><strong>Native launcher replaces the stamped
 <code>pythonw.exe</code>.</strong> <code>QuillRadio.exe</code> is now a
@@ -2376,7 +2397,7 @@ button, so pressing Enter reflexively destroyed the thing. Enter is now
 always the safe answer and you choose Yes deliberately. A build check
 keeps it that way.</li>
 </ul>
-<h4 id="fixed-5">Fixed</h4>
+<h4 id="fixed-2">Fixed</h4>
 <ul>
 <li><strong>Launching Quill Radio no longer crashes on a stray
 keystroke.</strong> A key pressed at the wrong moment during launch
@@ -2421,7 +2442,7 @@ Releases are not yet code-signed (SmartScreen may caution on first run);
 signing is planned.</li>
 </ul>
 <h2 id="212">[2.1.2]</h2>
-<h3 id="fixed-6">Fixed</h3>
+<h3 id="fixed-3">Fixed</h3>
 <ul>
 <li>One-click updating works again (the update installer no longer
 rejects a legitimately app-sized download as a “decompression
@@ -2432,7 +2453,7 @@ file is read as Unsorted rather than snapped to A-Z.</li>
 regression-locked.</li>
 </ul>
 <h2 id="211">[2.1.1]</h2>
-<h3 id="added-5">Added</h3>
+<h3 id="added-3">Added</h3>
 <ul>
 <li>NOAA Weather Radio from the authoritative WeatherIndex directory: a
 State-to-Station browse tree, SAME code / call sign / “County, ST”
@@ -2452,13 +2473,13 @@ searching every directory. Type a name, press Enter, and matches appear
 as a flat list under that folder; <strong>Clear</strong> puts you back
 where you started.</li>
 </ul>
-<h3 id="fixed-7">Fixed</h3>
+<h3 id="fixed-4">Fixed</h3>
 <ul>
 <li>The Source filter no longer hides a station carried by more than one
 directory.</li>
 </ul>
 <h2 id="210">[2.1.0]</h2>
-<h3 id="added-6">Added</h3>
+<h3 id="added-4">Added</h3>
 <ul>
 <li>A top-level Weather menu (National Weather Service, Open-Meteo,
 OpenStreetMap) reading current conditions, forecast, alerts, and an
@@ -2471,7 +2492,7 @@ favorites, recordings, and settings.</li>
 <li>Reorder favorites from the keyboard (Alt+Shift+Up / Alt+Shift+Down)
 in manual order.</li>
 </ul>
-<h3 id="fixed-8">Fixed</h3>
+<h3 id="fixed-5">Fixed</h3>
 <ul>
 <li>Quill Radio no longer opens a second copy of itself. The Record
 button reads Stop Recording while recording. Volume changes are quiet
@@ -2479,7 +2500,7 @@ with a screen reader. The Country and Tag lists stay put while
 arrowing.</li>
 </ul>
 <h2 id="202">[2.0.2]</h2>
-<h3 id="added-7">Added</h3>
+<h3 id="added-5">Added</h3>
 <ul>
 <li>Record as many stations at once as you want, with an optional
 Maximum simultaneous recordings cap; overlapping scheduled shows all
@@ -2492,25 +2513,25 @@ Limiter), adapted with credit from OptiLab Core by dgl1984
 <li>Favorites sort order (Ascending, Descending, Unsorted) with
 per-folder overrides. M3U/M3U8 playlist import.</li>
 </ul>
-<h3 id="fixed-9">Fixed</h3>
+<h3 id="fixed-6">Fixed</h3>
 <ul>
 <li>Channel mode Left/Right now plays in one ear only.</li>
 </ul>
 <h2 id="201">[2.0.1]</h2>
-<h3 id="fixed-10">Fixed</h3>
+<h3 id="fixed-7">Fixed</h3>
 <ul>
 <li>A recording no longer stops after a minute on a transient hiccup;
 only a genuinely terminal failure (full disk, HTTP 404/410/451) stops a
 recording.</li>
 </ul>
-<h3 id="added-8">Added</h3>
+<h3 id="added-6">Added</h3>
 <ul>
 <li>A clear “Recording started” announcement. Review-and-copy What’s
 Playing. Channel mode (Stereo, Mono, Left only, Right only). Adjust a
 recording’s playback volume with Ctrl+Up / Ctrl+Down.</li>
 </ul>
 <h2 id="200">[2.0.0]</h2>
-<h3 id="added-9">Added</h3>
+<h3 id="added-7">Added</h3>
 <ul>
 <li>Recordings you can trust: a recording in progress survives a restart
 and Quill Radio asks before resuming; scheduled recordings fire reliably
@@ -2562,7 +2583,7 @@ Windows High Contrast) instead of a default that could render
 near-invisibly.</li>
 </ul>
 <h2 id="110">[1.1.0]</h2>
-<h3 id="added-10">Added</h3>
+<h3 id="added-8">Added</h3>
 <ul>
 <li>The mpv playback engine, used automatically, with the classic
 Windows Media engine one Preferences setting away.</li>
@@ -2577,13 +2598,13 @@ website, JavaScript-player (Triton/StreamTheWorld) resolution, and paged
 station search (up to 200 results).</li>
 </ul>
 <h2 id="102">[1.0.2]</h2>
-<h3 id="added-11">Added</h3>
+<h3 id="added-9">Added</h3>
 <ul>
 <li>A real three-band equalizer and per-station Sound Enhancements. A
 second station directory (SomaFM). Automatic Check for Updates. A
 Preferences dialog. In-app documentation in the Help menu.</li>
 </ul>
-<h3 id="fixed-11">Fixed</h3>
+<h3 id="fixed-8">Fixed</h3>
 <ul>
 <li>Volume keys work from the Favorites tree, and volume stays put
 across play/pause.</li>

@@ -104,3 +104,25 @@ def test_closing_the_modeless_player_unregisters_it(wx_app) -> None:
 
 def test_refresh_open_is_safe_with_nothing_open(wx_app) -> None:
     player_panel.refresh_open()  # must never raise
+
+
+def test_the_now_playing_readout_is_wide_enough_to_read(wx_app) -> None:
+    """Reported 2026-09-14: "one word is appearing on lines frequently".
+
+    The readout had no minimum worth the name, so in a small window it wrapped
+    a station name and a song title one word to a line. It now asks for a
+    readable measure in *characters* -- which also makes the window that holds
+    it at least that wide.
+    """
+    from quill.ui.dialog_contract import READABLE_COLUMNS
+
+    frame = wx.Frame(None)
+    try:
+        panel = player_panel.PlayerPanel(frame, _Host())
+        try:
+            char_width, _height = panel.dialog.GetTextExtent("M")
+            assert panel._status.GetMinSize()[0] >= char_width * READABLE_COLUMNS
+        finally:
+            panel.dialog.Destroy()
+    finally:
+        frame.Destroy()

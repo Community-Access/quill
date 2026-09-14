@@ -399,3 +399,32 @@ def test_set_accessible_name_ignores_controls_without_setname() -> None:
         pass
 
     set_accessible_name(_Bare(), "Label")  # must not raise
+
+
+class _WindowWithFont:
+    """Just a text-extent: what ``readable_min_size`` actually asks a window."""
+
+    def __init__(self, char_width: int, char_height: int) -> None:
+        self._extent = (char_width, char_height)
+
+    def GetTextExtent(self, _text: str) -> tuple[int, int]:
+        return self._extent
+
+
+def test_readable_min_size_is_measured_in_characters() -> None:
+    from quill.ui.dialog_contract import READABLE_COLUMNS, readable_min_size
+
+    width, _height = readable_min_size(_WindowWithFont(10, 16))
+    assert width == 10 * READABLE_COLUMNS
+
+
+def test_readable_min_size_grows_with_the_font() -> None:
+    """The listener who turned the system font up is the one reading this box,
+    so a bigger font must mean a bigger box -- not the same box with less in it.
+    """
+    from quill.ui.dialog_contract import readable_min_size
+
+    small = readable_min_size(_WindowWithFont(8, 14))
+    large = readable_min_size(_WindowWithFont(16, 28))
+    assert large[0] > small[0]
+    assert large[1] > small[1]

@@ -1035,6 +1035,51 @@ answers ("kiss" → Kiss 108, KIIS FM), faster, and the more compliant shape:
 the terms reading that bars bulk-copying the directory is exactly why a search
 should ask the service. The sitemap path remains for what it was built for.
 
+### A search is not a string (2026-09-14)
+
+Two ACB members named five stations. Three could not be found by any spelling,
+and each failure was a different way the same assumption breaks: that what a
+listener types is a station *name*, in the spelling the directory chose.
+
+It is four facts -- brand, frequency, callsign, place -- and the directories
+index two of them. So `quill/core/radio/station_query.py` takes a query apart
+(pure, wx-free) and the fan-out asks several narrower questions instead of one
+wide one:
+
+- **`variants()`** -- the spellings to send, best first, and the first is always
+  what the user typed. Aggression is strictly additive: every row the single
+  search returned is still there, still first. Repairs on the way through:
+  `14.90 AM` → 1490 and `1009` → 100.9 (a decimal point in an AM number is
+  somebody reading the dial; four digits in the FM band is the point left out),
+  `105-9` and `105,7` (a billboard hyphen, a European comma), `Sunny105.7` and
+  `1490AM` (a letter/digit run-together), a leading "play"/"listen to", and a
+  trailing band word -- which was losing `rock 105 fm` the station that
+  `rock 105` finds.
+- **`narrowed_searches()`** -- the same query sent again with Radio Browser's
+  `state`/`country` filter. This is the one that earns its round trip. Radio
+  Browser files Sunny 105.7 as "WCSN 105.7 FM Orange Beach": the name shares not
+  one word with what anybody calls the station, and no name search can ever
+  reach it. `105.7` inside Alabama returns it and nothing else.
+- **`rank()`** -- applied to the *merged* list in `merge_and_rank`, replacing
+  the exact-name float. Each directory ranked its own rows against the query it
+  was sent, and we now send four; only this side of the wire knows what was
+  asked. Ordering: exact name, then callsign, then frequency, then brand words,
+  with place as a tie-break -- and below that, a stream the directory's own
+  checker could play ahead of one it could not, then vote count.
+
+Two details that are load-bearing. **Matching is on tokens, never substrings**:
+"wdan" is inside "NewDanceRadio". And **provenance is evidence**: a row returned
+by a place-narrowed search carries `RadioStation.place_confirmed`, which ranks
+above any word its name happens to share, because for WCSN it is the only thing
+that says so. The cost is three name searches plus two narrowed ones per
+directory that can filter, and two spellings for the two directories that must
+resolve each result.
+
+Found in the same pass: TuneIn answers a search with episodes and programmes as
+well as stations, and `type=audio` marked all three as stations -- so **WDAN**
+returned two episodes of a talk show mentioning a man called Dan above the
+Danville station. Only a real station id (`s` and digits) counts now.
+
 ### The five reports from running it, same day (2026-08-26)
 
 Jeff ran the new sources out of the source tree the hour they landed. Every one

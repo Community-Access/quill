@@ -6,106 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
 
-## [Unreleased]
-
-### Fixed
-
-- **Alt+S finally opens the Station menu -- the real cause, found and fenced.**
-  It was never the menu: a control label beside the tree ("&Stations ...")
-  claimed the same letter, and on Windows a control mnemonic silently beats a
-  menu mnemonic, so Alt+S moved focus to the tree instead. Seventeen labels
-  across the browse tree, Find Stations, Recordings, Schedule, Song History,
-  Downloads and the Favorites Manager were quietly disarming the very menus
-  their windows carry (Recordings' own list label ate its &Recordings menu).
-  Every one has moved to a free letter -- the browse tree is now **Alt+T**, a
-  fair trade: Alt+T jumps to the tree, Alt+S opens Station -- and a new gate
-  keeps any label from ever claiming a letter its window's menu bar owns.
-- **Every menu item in every QuillVille app now shows its keyboard route.**
-  The rule Quill Radio has enforced since 3.0 turned out to be radio-only in
-  practice: a family-wide sweep found **116 menu-bar items with no accelerator
-  at all** -- 46 in QUILL Cast, 30 in Audio Studio, 18 in Media Player, ten
-  each in Inkwell and Weather, six in Converter. All 116 now carry a unique
-  key, and a family-wide gate (source-level, popup and tray menus exempt where
-  accelerators do nothing) holds the line for every future app.
-
-- **The ACB Media schedule would not re-read itself, and could not tell you it
-  had.** Three faults with one symptom. The stored copy stayed fresh for an
-  hour and the window honoured that on open -- and the store outlives the
-  process, so somebody who saw ACB move a programme, closed Quill Radio and
-  opened it again got the same old listings back. Opening the window now goes
-  and asks ACB, every time; it is still off the main thread, so nothing waits,
-  and with no connection it still opens from the stored copy and says how old
-  that is. **What Is On Now** still prefers the stored copy, because a key that
-  spends four seconds on a feed before speaking is a key nobody presses twice.
-- **A Refresh that worked looked exactly like one that did nothing.** The line
-  above the list only mentioned age when the listings came from the store, so a
-  *successful* fetch rewrote the sentence to a sentence identical to the one
-  already there -- same words, same length, the same thing spoken back. It now
-  always ends "Pulled from ACB just now, at 9:47 AM", clock time included, so a
-  second press is answerable. When a refresh fails, the line says what the rows
-  below are still a copy of instead of only "could not be read".
-- **A refresh you asked for now says so to whatever is between you and ACB.**
-  Bypassing this computer's store never stopped a CDN or a company proxy
-  answering from an hour-old copy of its own. A listener-asked fetch sends
-  `Cache-Control: no-cache` and `Pragma: no-cache`; an unattended read does not,
-  where a cached hop is a saving rather than a lie.
-
-### Fixed
-
-- **Two menus on the same bar claimed the same Alt key, so one never opened.**
-  In Quill Radio, **Quillins** and **QuillVille** both asked for Alt+Q; in QUILL
-  Audio Studio, **Voices** and **View** both asked for Alt+V. Quillins is now
-  **Alt+N** and Voices is **Alt+I**. A new gate checks every menu bar in the
-  family for both faults -- a title with no Alt key at all, and two titles
-  claiming one -- so this cannot come back. It is the same rule the menu *items*
-  have been held to since 3.0, finally applied to the menus themselves.
-- **Search All Sources was still slow after the first pass, and this is why.**
-  TuneIn and iHeart each need a network round trip *per result* to turn a
-  directory entry into a playable address, and both did them one after another
-  -- ten trips end to end for a TuneIn search. They now go out at the same time,
-  so the wait is the slowest one rather than the sum of ten. The SHOUTcast
-  search inside the tree resolves nothing at all now (its rows resolve when you
-  play them), which makes it a single request. With the slow shapes gone the
-  overall ceiling came down from twelve seconds to eight.
-- **Most SHOUTcast stations would not play.** A SHOUTcast station's published
-  address is a *playlist* -- a one-line `.pls` holding the real stream address --
-  and a player is given a stream, not a playlist of one. Reported on a station
-  with 293 listeners that was plainly on the air. Stations from that directory
-  are now resolved the moment you press Enter, which is one request on the
-  station you actually chose rather than five hundred for a genre page you are
-  only reading; search results, which are handed straight to the player and
-  cannot be resolved later, are resolved as they are found. A station that will
-  not resolve is left out rather than offered and then failing.
-- **A source you switched on did not appear until you restarted.** Choose
-  Browse Sources wrote your choice, saved it, and left the open Browse Stations
-  window showing the list it had been built with -- two surfaces, one setting,
-  and no way for the second to hear about the first. The tree now rebuilds the
-  moment the chooser closes, and says so: "Browse Stations has been updated."
-- **A source added in a new version never reached anybody who had ever opened
-  the chooser.** A stored "these are my sources" list can only name sources
-  that existed when it was saved, and anything it does not name is dropped -- so
-  the three new directories were switched on in the settings list and still
-  absent from the tree. The browse list already had the machinery to hand
-  newcomers to an existing profile once and remember that it had; it now names
-  the new branches, and **the search list, which had the identical hole, has the
-  same machinery for the first time**. Either way: a source you switched *off*
-  stays off, and turning everything off stays a choice that is respected.
-- **Lists sorted 1, 10, 2 instead of 1, 2, 10.** "ACB Media 1, ACB Media 10,
-  then 2 through 9" -- what sorting text does, and wrong for every list of names
-  a person wrote. Numbers inside a name are now compared as numbers, in the
-  browse tree, the A-Z groups, the Live365 directory and the favorites list.
-  **No name was changed to make this work**: renaming the stations "ACB Media
-  01" would have been wrong in the details panel, wrong read aloud, wrong in an
-  export and wrong when you searched for the name you actually know.
-- **Search All Sources was very slow, and silent while it ran.** Two causes,
-  both fixed. It asked sixteen directories through six workers, so a search took
-  three waves of the slowest service back to back; every source is now asked at
-  the same moment. And it had no deadline, so one service having a bad afternoon
-  set the pace for the whole search; there is now a twelve-second ceiling, after
-  which the stragglers are **named** ("Internet Archive did not answer within 12
-  seconds") rather than quietly left out. While it runs it now says so, after
-  four seconds and then periodically -- a cross-source search is as slow as the
-  slowest service in it, and nothing on screen changes while it happens.
+## [3.0.0] - 2026-08-25
 
 ### Added
 
@@ -278,9 +179,6 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
   quietly and speaks the result, and in Safe Mode it says that it will not
   reach out rather than doing nothing silently.
 
-## [3.0.0] - 2026-08-25
-
-### Added
 
 - **Help > Tutorials... (Ctrl+Alt+F1): 36 guided tutorials, 251 steps.** Six
   tracks, from "you have never opened this app" to "you have relied on it for a
@@ -310,22 +208,6 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
     Part Five, with the reasoning in `docs/release-notes-3.0-in-depth.md`,
     section 24.
 
-### Changed
-
-- **Product Requirements... moved from Ctrl+Alt+F1 to Alt+Shift+F1**, to make
-  room for Tutorials. The F1 family is ordered by how often somebody reaches for
-  a door, and a new listener reaches for a tutorial far more often than anybody
-  reaches for the PRD. (Ctrl+Alt+Shift+F1 was not available: it is a QuillVille
-  launcher key.)
-
-Major: Browse Stations becomes a browsable directory rather than a list of
-sources, the whole station directory now ships inside the app and answers
-locally (the Station Catalog), podcasts arrive keylessly, transcripts gain
-timings, Quill Radio gains a first run and learns to say when a media tool has
-gone missing, and several long-standing silent faults are fixed. See
-`docs/release-notes-3.0.md`.
-
-### Added
 
 - **A feed offering several transcripts now gets read properly.** Some podcasts
   publish the same episode's transcript as JSON, WebVTT, SRT *and* HTML. Quill
@@ -371,7 +253,245 @@ gone missing, and several long-standing silent faults are fixed. See
   somebody arrowing through with a screen reader, who has no visual proximity to
   infer from. Related settings now sit in named, announced groups.
 
+
+### Changed
+
+- **Find Stations asks several narrower questions instead of one wide one.**
+  Two ACB members between them named five stations; three of the five could not
+  be found by any spelling. A query is now taken apart -- brand, frequency,
+  callsign, place -- and each directory is asked for the spellings it might
+  actually hold. `14.90 AM` finds 1490 and `1009` finds 100.9; `105-9` and
+  `105,7` are understood; `Sunny105.7` and `1490AM` come apart; a leading
+  "play" or "listen to" is ignored; and a trailing **FM** no longer loses the
+  station (`rock 105 fm` and `rock 105` now find the same one). Naming the
+  **state** does real work: Radio Browser knows Sunny 105.7 only as "WCSN 105.7
+  FM Orange Beach", so no spelling of "Sunny" could reach it -- but `105.7`
+  narrowed to Alabama has exactly one answer, and it now arrives first, even
+  with the city misspelled. What you typed is always asked first, so nothing
+  that worked before stops working.
+- **Results are ordered by what you most likely want.** Each directory ranked
+  its own rows against the query *it* was sent, and a search now sends several,
+  so the merged list is ranked against what you actually typed: name *and*
+  frequency above frequency alone, a station in the place you named above one
+  that merely shares a word, and -- between two equally good matches -- the one
+  whose stream is known to play, then the one more people listen to.
+
+
+- **Product Requirements... moved from Ctrl+Alt+F1 to Alt+Shift+F1**, to make
+  room for Tutorials. The F1 family is ordered by how often somebody reaches for
+  a door, and a new listener reaches for a tutorial far more often than anybody
+  reaches for the PRD. (Ctrl+Alt+Shift+F1 was not available: it is a QuillVille
+  launcher key.)
+
+Major: Browse Stations becomes a browsable directory rather than a list of
+sources, the whole station directory now ships inside the app and answers
+locally (the Station Catalog), podcasts arrive keylessly, transcripts gain
+timings, Quill Radio gains a first run and learns to say when a media tool has
+gone missing, and several long-standing silent faults are fixed. See
+`docs/release-notes-3.0.md`.
+
+
+- **Buffering is now a state, not just a word.** A stalled stream said
+  "Buffering..." while the status bar and the tray tooltip both went on saying
+  "playing" through the silence. The status line now reads "Radio: buffering
+  WQXR..." for as long as the stall lasts, and returns to playing when the audio
+  does -- without a second earcon each time, so a stuttering stream does not
+  chime ten times.
+- **A reconnect says it is reconnecting, not connecting.** "Connecting" is what
+  a station you just chose does. A stream that dropped on its own now reads and
+  speaks as "Reconnecting to KFI AM 640. Attempt 2 of 3." -- a different word for
+  a different event, and one you did not cause.
+- **Continue Listening moved to Ctrl+Alt+Shift+L.** It had Ctrl+Shift+Alt+C,
+  which looks like a different key from Choose Columns' Ctrl+Alt+Shift+C and is
+  not one -- the order the modifiers are written in makes no difference, so two
+  menu items claimed one chord and one of them silently never fired. Choose
+  Columns keeps the C, because QUILL Cast uses it for the same command and a
+  family key that changes per app is worse than an unfamiliar one.
+- **Speed and chapters moved off Ctrl+Alt+arrow.** That block is JAWS's and
+  NVDA's table navigation, so those verbs worked everywhere except while
+  somebody was reading a table. Play Faster / Slower / Normal Speed are now
+  **Ctrl+Shift+Up / Ctrl+Shift+Down / Ctrl+Shift+0**, Next / Previous Chapter
+  are **Ctrl+Shift+period / Ctrl+Shift+comma**, and Where Am I is
+  **Ctrl+Shift+W**. A build check fails if a transport verb lands back on
+  that block.
+- **One volume: one distance, one sentence.** Volume moved 10 through the
+  menus and 5 through the shared keyboard, and reported itself three
+  different ways -- "Radio volume 45", "Volume 45" (no unit at all, in the
+  Recordings list) and "Volume 45 percent." It is now the player's own step
+  everywhere, and one sentence: "Volume 60 percent.", "Volume off.",
+  "Muted."
+- **Every announcement ends as a sentence.** Seventy-one of them did not,
+  which costs the sentence-final prosody a screen reader applies on a full
+  stop -- so "Playing WNYC" ran into the next announcement as one run-on.
+  A build check now reads every Radio module so it cannot drift back.
+
+- **Subscriptions counts itself, and its shows say what is waiting.** The
+  node under Podcasts read "Subscriptions (shows you follow, shared with
+  Quill Cast)" — a sentence glued to the name, paid on every visit. It now
+  reads **"Subscriptions (3)"**: the badge is your follow count. Each show
+  beneath it wears **"(2 unheard)"**, read from the shared library's own
+  episode state — the same count Quill Cast shows.
+- **An emptied search field empties its results.** In the station browser —
+  and on every search surface across the family: the book library, weather
+  locations, Spotify, the GitHub browser — deleting your query used to leave
+  the old results sitting there looking current. Clearing the fields now
+  clears the list at once, exactly as a blank search would; the station
+  browser waits until the name, tag *and* country are all empty, because a
+  country facet alone is still a live query.
+- **The Weather menu is gone.** Weather stands alone in the **Quill Weather**
+  app (one keystroke away on the QuillVille menu); Quill Radio no longer
+  carries the forecast menu or resumes background alert monitoring at launch.
+  The radio part stays: the **Weather / NOAA** transmitter branch of Browse
+  Stations is untouched.
+- **Folder context menus tell the truth.** An expanded folder's first item
+  now reads **Close** rather than a second, do-nothing "Open"; and "Add All
+  … to Favorites" appears only when episodes are actually loaded under the
+  row, instead of offering to add nothing.
+- **Browse sources moved behind one contract**
+  (`quill/core/radio/browse_sources.py`). The Browse window no longer knows the
+  shape of any source; it renders folders and leaves. Adding a source is one
+  registry entry and one handler, not a node kind plus edits in six places.
+  `browse_tree_dialog.py` is 199 lines smaller while the tree it serves grew
+  from thirteen root branches to thirty, and its GATE-11 budget was
+  **ratcheted down** to match.
+- **An empty branch distinguishes "nothing here" from "could not be reached"**,
+  and Safe Mode says so per branch rather than showing an empty folder.
+- **A folder announces its child count before it is opened** where the source
+  supplies one cheaply.
+- **Xiph genres are offered in the directory's own use order** (most-used first),
+  filtered to plausible genres, and bounded to the top 120 rather than ~3,400
+  free-text strings.
+- **`browse_tree_helpers` moved from `quill/ui/radio/` to `quill/core/radio/`**
+  as `browse_helpers`, since the (core) browse registry needs it and core must
+  not import from the UI layer.
+- **The NOAA Weather Radio user agent is derived from the package version**
+  instead of a hard-coded `2.1.1` that had been stale for two releases.
+- **The status strip's Recording cell counts time, not rows.** It counts down
+  to a length you chose and up when you did not; the job snapshot records which
+  of the two it was, so a reconnect inherits that answer rather than
+  re-deriving it from the minutes it is handed.
+- **The Recordings window's status line leads with what happens next** -- what
+  is recording and how long is left, then the next scheduled recording and when
+  it starts, then the shelf and the folder. Schedules that exist but cannot
+  fire say so rather than reading as cover.
+- **What's Playing names where a track title came from** -- the ICY block
+  carried with the audio, the player's own metadata, or the station's status
+  page -- and shows the original text where what is displayed is a reading of
+  what arrived.
+- **Rows the listing directory could not play carry "may not be playable"**,
+  from Radio Browser's own published verdict; rows that resolve at play time
+  (TuneIn, YouTube) say that instead. Nothing here scores or estimates.
+
+
 ### Fixed
+
+- **The Station details and Now Playing boxes are wide enough to read.** Both
+  sat in windows sized by their buttons, so in a small window they wrapped a
+  single word onto a line of its own. Both now ask for a readable width
+  measured in characters rather than pixels -- so it grows with the system font
+  instead of shrinking against it -- and the window that holds them cannot be
+  narrower than they are.
+- **A podcast episode is no longer mistaken for a station.** TuneIn answers a
+  search with episodes and programmes as well as stations, and Quill Radio
+  treated anything marked "audio" as a station -- so a search for **WDAN**
+  returned two episodes of a talk show that mentions a man called Dan above the
+  Danville station itself. Only a real station id counts now.
+- **Alt+S finally opens the Station menu -- the real cause, found and fenced.**
+  It was never the menu: a control label beside the tree ("&Stations ...")
+  claimed the same letter, and on Windows a control mnemonic silently beats a
+  menu mnemonic, so Alt+S moved focus to the tree instead. Seventeen labels
+  across the browse tree, Find Stations, Recordings, Schedule, Song History,
+  Downloads and the Favorites Manager were quietly disarming the very menus
+  their windows carry (Recordings' own list label ate its &Recordings menu).
+  Every one has moved to a free letter -- the browse tree is now **Alt+T**, a
+  fair trade: Alt+T jumps to the tree, Alt+S opens Station -- and a new gate
+  keeps any label from ever claiming a letter its window's menu bar owns.
+- **Every menu item in every QuillVille app now shows its keyboard route.**
+  The rule Quill Radio has enforced since 3.0 turned out to be radio-only in
+  practice: a family-wide sweep found **116 menu-bar items with no accelerator
+  at all** -- 46 in QUILL Cast, 30 in Audio Studio, 18 in Media Player, ten
+  each in Inkwell and Weather, six in Converter. All 116 now carry a unique
+  key, and a family-wide gate (source-level, popup and tray menus exempt where
+  accelerators do nothing) holds the line for every future app.
+
+- **The ACB Media schedule would not re-read itself, and could not tell you it
+  had.** Three faults with one symptom. The stored copy stayed fresh for an
+  hour and the window honoured that on open -- and the store outlives the
+  process, so somebody who saw ACB move a programme, closed Quill Radio and
+  opened it again got the same old listings back. Opening the window now goes
+  and asks ACB, every time; it is still off the main thread, so nothing waits,
+  and with no connection it still opens from the stored copy and says how old
+  that is. **What Is On Now** still prefers the stored copy, because a key that
+  spends four seconds on a feed before speaking is a key nobody presses twice.
+- **A Refresh that worked looked exactly like one that did nothing.** The line
+  above the list only mentioned age when the listings came from the store, so a
+  *successful* fetch rewrote the sentence to a sentence identical to the one
+  already there -- same words, same length, the same thing spoken back. It now
+  always ends "Pulled from ACB just now, at 9:47 AM", clock time included, so a
+  second press is answerable. When a refresh fails, the line says what the rows
+  below are still a copy of instead of only "could not be read".
+- **A refresh you asked for now says so to whatever is between you and ACB.**
+  Bypassing this computer's store never stopped a CDN or a company proxy
+  answering from an hour-old copy of its own. A listener-asked fetch sends
+  `Cache-Control: no-cache` and `Pragma: no-cache`; an unattended read does not,
+  where a cached hop is a saving rather than a lie.
+
+
+- **Two menus on the same bar claimed the same Alt key, so one never opened.**
+  In Quill Radio, **Quillins** and **QuillVille** both asked for Alt+Q; in QUILL
+  Audio Studio, **Voices** and **View** both asked for Alt+V. Quillins is now
+  **Alt+N** and Voices is **Alt+I**. A new gate checks every menu bar in the
+  family for both faults -- a title with no Alt key at all, and two titles
+  claiming one -- so this cannot come back. It is the same rule the menu *items*
+  have been held to since 3.0, finally applied to the menus themselves.
+- **Search All Sources was still slow after the first pass, and this is why.**
+  TuneIn and iHeart each need a network round trip *per result* to turn a
+  directory entry into a playable address, and both did them one after another
+  -- ten trips end to end for a TuneIn search. They now go out at the same time,
+  so the wait is the slowest one rather than the sum of ten. The SHOUTcast
+  search inside the tree resolves nothing at all now (its rows resolve when you
+  play them), which makes it a single request. With the slow shapes gone the
+  overall ceiling came down from twelve seconds to eight.
+- **Most SHOUTcast stations would not play.** A SHOUTcast station's published
+  address is a *playlist* -- a one-line `.pls` holding the real stream address --
+  and a player is given a stream, not a playlist of one. Reported on a station
+  with 293 listeners that was plainly on the air. Stations from that directory
+  are now resolved the moment you press Enter, which is one request on the
+  station you actually chose rather than five hundred for a genre page you are
+  only reading; search results, which are handed straight to the player and
+  cannot be resolved later, are resolved as they are found. A station that will
+  not resolve is left out rather than offered and then failing.
+- **A source you switched on did not appear until you restarted.** Choose
+  Browse Sources wrote your choice, saved it, and left the open Browse Stations
+  window showing the list it had been built with -- two surfaces, one setting,
+  and no way for the second to hear about the first. The tree now rebuilds the
+  moment the chooser closes, and says so: "Browse Stations has been updated."
+- **A source added in a new version never reached anybody who had ever opened
+  the chooser.** A stored "these are my sources" list can only name sources
+  that existed when it was saved, and anything it does not name is dropped -- so
+  the three new directories were switched on in the settings list and still
+  absent from the tree. The browse list already had the machinery to hand
+  newcomers to an existing profile once and remember that it had; it now names
+  the new branches, and **the search list, which had the identical hole, has the
+  same machinery for the first time**. Either way: a source you switched *off*
+  stays off, and turning everything off stays a choice that is respected.
+- **Lists sorted 1, 10, 2 instead of 1, 2, 10.** "ACB Media 1, ACB Media 10,
+  then 2 through 9" -- what sorting text does, and wrong for every list of names
+  a person wrote. Numbers inside a name are now compared as numbers, in the
+  browse tree, the A-Z groups, the Live365 directory and the favorites list.
+  **No name was changed to make this work**: renaming the stations "ACB Media
+  01" would have been wrong in the details panel, wrong read aloud, wrong in an
+  export and wrong when you searched for the name you actually know.
+- **Search All Sources was very slow, and silent while it ran.** Two causes,
+  both fixed. It asked sixteen directories through six workers, so a search took
+  three waves of the slowest service back to back; every source is now asked at
+  the same moment. And it had no deadline, so one service having a bad afternoon
+  set the pace for the whole search; there is now a twelve-second ceiling, after
+  which the stragglers are **named** ("Internet Archive did not answer within 12
+  seconds") rather than quietly left out. While it runs it now says so, after
+  four seconds and then periodically -- a cross-source search is as slow as the
+  slowest service in it, and nothing on screen changes while it happens.
+
 
 - **The ACB Media schedule showed every programme at the wrong time.** Every
   event in ACB's feed is written in US Central time and says so; Quill Radio
@@ -1004,100 +1124,6 @@ gone missing, and several long-standing silent faults are fixed. See
   will speak before you press OK. Find Stations also offers Language, Genres,
   Popularity and Bitrate; Recordings also offers Length.
 
-### Changed
-
-- **Buffering is now a state, not just a word.** A stalled stream said
-  "Buffering..." while the status bar and the tray tooltip both went on saying
-  "playing" through the silence. The status line now reads "Radio: buffering
-  WQXR..." for as long as the stall lasts, and returns to playing when the audio
-  does -- without a second earcon each time, so a stuttering stream does not
-  chime ten times.
-- **A reconnect says it is reconnecting, not connecting.** "Connecting" is what
-  a station you just chose does. A stream that dropped on its own now reads and
-  speaks as "Reconnecting to KFI AM 640. Attempt 2 of 3." -- a different word for
-  a different event, and one you did not cause.
-- **Continue Listening moved to Ctrl+Alt+Shift+L.** It had Ctrl+Shift+Alt+C,
-  which looks like a different key from Choose Columns' Ctrl+Alt+Shift+C and is
-  not one -- the order the modifiers are written in makes no difference, so two
-  menu items claimed one chord and one of them silently never fired. Choose
-  Columns keeps the C, because QUILL Cast uses it for the same command and a
-  family key that changes per app is worse than an unfamiliar one.
-- **Speed and chapters moved off Ctrl+Alt+arrow.** That block is JAWS's and
-  NVDA's table navigation, so those verbs worked everywhere except while
-  somebody was reading a table. Play Faster / Slower / Normal Speed are now
-  **Ctrl+Shift+Up / Ctrl+Shift+Down / Ctrl+Shift+0**, Next / Previous Chapter
-  are **Ctrl+Shift+period / Ctrl+Shift+comma**, and Where Am I is
-  **Ctrl+Shift+W**. A build check fails if a transport verb lands back on
-  that block.
-- **One volume: one distance, one sentence.** Volume moved 10 through the
-  menus and 5 through the shared keyboard, and reported itself three
-  different ways -- "Radio volume 45", "Volume 45" (no unit at all, in the
-  Recordings list) and "Volume 45 percent." It is now the player's own step
-  everywhere, and one sentence: "Volume 60 percent.", "Volume off.",
-  "Muted."
-- **Every announcement ends as a sentence.** Seventy-one of them did not,
-  which costs the sentence-final prosody a screen reader applies on a full
-  stop -- so "Playing WNYC" ran into the next announcement as one run-on.
-  A build check now reads every Radio module so it cannot drift back.
-
-- **Subscriptions counts itself, and its shows say what is waiting.** The
-  node under Podcasts read "Subscriptions (shows you follow, shared with
-  Quill Cast)" — a sentence glued to the name, paid on every visit. It now
-  reads **"Subscriptions (3)"**: the badge is your follow count. Each show
-  beneath it wears **"(2 unheard)"**, read from the shared library's own
-  episode state — the same count Quill Cast shows.
-- **An emptied search field empties its results.** In the station browser —
-  and on every search surface across the family: the book library, weather
-  locations, Spotify, the GitHub browser — deleting your query used to leave
-  the old results sitting there looking current. Clearing the fields now
-  clears the list at once, exactly as a blank search would; the station
-  browser waits until the name, tag *and* country are all empty, because a
-  country facet alone is still a live query.
-- **The Weather menu is gone.** Weather stands alone in the **Quill Weather**
-  app (one keystroke away on the QuillVille menu); Quill Radio no longer
-  carries the forecast menu or resumes background alert monitoring at launch.
-  The radio part stays: the **Weather / NOAA** transmitter branch of Browse
-  Stations is untouched.
-- **Folder context menus tell the truth.** An expanded folder's first item
-  now reads **Close** rather than a second, do-nothing "Open"; and "Add All
-  … to Favorites" appears only when episodes are actually loaded under the
-  row, instead of offering to add nothing.
-- **Browse sources moved behind one contract**
-  (`quill/core/radio/browse_sources.py`). The Browse window no longer knows the
-  shape of any source; it renders folders and leaves. Adding a source is one
-  registry entry and one handler, not a node kind plus edits in six places.
-  `browse_tree_dialog.py` is 199 lines smaller while the tree it serves grew
-  from thirteen root branches to thirty, and its GATE-11 budget was
-  **ratcheted down** to match.
-- **An empty branch distinguishes "nothing here" from "could not be reached"**,
-  and Safe Mode says so per branch rather than showing an empty folder.
-- **A folder announces its child count before it is opened** where the source
-  supplies one cheaply.
-- **Xiph genres are offered in the directory's own use order** (most-used first),
-  filtered to plausible genres, and bounded to the top 120 rather than ~3,400
-  free-text strings.
-- **`browse_tree_helpers` moved from `quill/ui/radio/` to `quill/core/radio/`**
-  as `browse_helpers`, since the (core) browse registry needs it and core must
-  not import from the UI layer.
-- **The NOAA Weather Radio user agent is derived from the package version**
-  instead of a hard-coded `2.1.1` that had been stale for two releases.
-- **The status strip's Recording cell counts time, not rows.** It counts down
-  to a length you chose and up when you did not; the job snapshot records which
-  of the two it was, so a reconnect inherits that answer rather than
-  re-deriving it from the minutes it is handed.
-- **The Recordings window's status line leads with what happens next** -- what
-  is recording and how long is left, then the next scheduled recording and when
-  it starts, then the shelf and the folder. Schedules that exist but cannot
-  fire say so rather than reading as cover.
-- **What's Playing names where a track title came from** -- the ICY block
-  carried with the audio, the player's own metadata, or the station's status
-  page -- and shows the original text where what is displayed is a reading of
-  what arrived.
-- **Rows the listing directory could not play carry "may not be playable"**,
-  from Radio Browser's own published verdict; rows that resolve at play time
-  (TuneIn, YouTube) say that instead. Nothing here scores or estimates.
-
-### Fixed
 
 - **Reconnect attempts were never actually announced.** The sentence naming the
   station and counting the attempt was composed correctly and written to a field
@@ -1301,6 +1327,7 @@ gone missing, and several long-standing silent faults are fixed. See
   a top-level genre matched nothing until the filter was widened to the genre's
   whole subtree.
 
+
 ### Removed
 
 - **Explore's By Owner axis is gone** (2026-08-17). It was the only remaining
@@ -1316,12 +1343,14 @@ gone missing, and several long-standing silent faults are fixed. See
   custom station or recording is touched -- every stream always came from Radio
   Browser.
 
+
 ### Security
 
 - **XSPF and ASX playlists are parsed with entity expansion disabled**, so a
   crafted playlist cannot be used for a billion-laughs expansion.
 - **Quill Radio's icon is its own again.** Quill Inkwell, Quill Audio Studio and Quill Weather were all shipping byte-identical copies of Quill Radio's broadcast-wave icon, so four products shared one face in the taskbar, in Alt+Tab and in the tray. Every app in the family now has a purpose-drawn icon: one shared tile shape and one shared amber accent, but a distinct silhouette and a distinct colour each. Radio keeps its waves, redrawn to survive tray size -- at 16x16 the old three thin arcs merged into a smear, so there are now two, thicker and further apart.
 - **Exact OptiLab processing.** Quill Radio's broadcast-polish modes have always been a faithful *adaptation* of **OptiLab Core by Lanes Audio / dgl1984** (https://github.com/dgl1984/optilab), rebuilt as ffmpeg filter chains so they work everywhere -- live, relayed and recorded -- and preview the moment you move a control. That adaptation has one honest limit: OptiLab eases its lift and pulls back bass help *while* its final limiter is working hard, and a filter chain cannot do that, because no stage in it can see how hard a later stage is working. Quill Radio can now run the real OptiLab engine instead, when the optional component is included in your build. One setting, three states, both off by default: **off** (the built-in chain everywhere), **when saving** (recordings and converted files -- the recommended one, and it costs nothing, because a recording is processed after it finishes and the original is replaced only once a good copy exists), or **when saving and while listening** (which relays the stream through the engine, so the station starts slower, uses more CPU, and needs a brief reconnect on every settings change -- stated in the option rather than discovered afterwards). The built-in filters always leave the graph when the real engine runs, so nothing is processed twice; if the component is absent the option says so and nothing else changes. With thanks to dgl1984; licensed Apache-2.0 with the Commons Clause.
+
 
 ### Known incomplete
 
@@ -1334,6 +1363,7 @@ built" look identical from the outside.
   has no source of PI codes. Wiring it would have meant a form asking a listener
   for a value nobody has, which is the same failure as an axis that quietly
   finds nothing. `dnspython` went with it, since nothing else needed it.
+
 
 ### Also in 3.0.0: everything from 2.2.0 (landed 2026-07-24, never published)
 

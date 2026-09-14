@@ -1459,6 +1459,32 @@ LibriVox book plays its <strong>first section</strong>; each is
 announced by name, and an Internet Archive collection says plainly that
 it opens on its own site.</p>
 <ul>
+<li><p><strong>You do not have to type it the way the directory spells
+it.</strong> A station search is taken apart before it is sent: the
+brand, the frequency, the callsign and the place are all separate facts,
+and each directory is asked several narrower questions instead of one
+wide one. So <code>14.90 AM</code> finds 1490, <code>1009</code> finds
+100.9, <code>105-9</code> and <code>105,7</code> find 105.9 and 105.7,
+<code>Sunny105.7</code> and <code>1490AM</code> come apart, and a
+leading “play” or “listen to” is ignored. A trailing <strong>FM</strong>
+or <strong>AM</strong> no longer throws the search off –
+<code>rock 105 fm</code> and <code>rock 105</code> find the same
+station. And naming the <strong>state</strong> does real work rather
+than adding noise: Radio Browser knows Sunny 105.7 only as “WCSN 105.7
+FM Orange Beach”, so no spelling of “Sunny” can reach it, but
+<code>105.7</code> <em>inside Alabama</em> has exactly one answer, and
+typing <code>Sunny 105.7 Gulf Shores Alabama</code> now brings it back
+first. Misspelling the city does not matter, because the city was never
+the part being searched for. What you typed is always the first question
+asked, so nothing that used to work stops working.</p></li>
+<li><p><strong>The list is ordered by what you most likely
+want.</strong> Each directory ranks its own rows against the query it
+was sent, and a search sends several – so the merged list is ranked
+here, against what you actually typed. A station matching the name
+<em>and</em> the frequency comes above one matching only the frequency;
+one in the place you named comes above one that merely shares a word;
+and between two equally good matches, the one whose stream is known to
+play comes first, then the one more people listen to.</p></li>
 <li><p><strong>The libraries are searched too.</strong> Beside the radio
 directories, a search also asks <strong>LibriVox</strong>, the
 <strong>Internet Archive</strong>, <strong>Project Gutenberg</strong>

@@ -501,3 +501,39 @@ def bind_close_button(window: object, button: object, *, modeless: bool) -> None
             window.Close()  # type: ignore[attr-defined]
 
     button.Bind(wx.EVT_BUTTON, _close)  # type: ignore[attr-defined]
+
+
+#: How wide a read-only prose box has to be before it reads as prose. Sixty-four
+#: characters is about the width of a line of a book; below roughly forty, a
+#: long word and a proportional font start putting one word on a line of its
+#: own.
+READABLE_COLUMNS = 64
+
+#: How tall the same box starts out. Four lines is the shortest thing that
+#: still looks like a paragraph rather than a field.
+READABLE_LINES = 4
+
+
+def readable_min_size(
+    window: object, *, columns: int = READABLE_COLUMNS, lines: int = READABLE_LINES
+) -> tuple[int, int]:
+    """A minimum size, in characters, for a read-only box that holds prose.
+
+    Measured from *window*'s own font rather than fixed in pixels: a listener
+    who has turned the system font up is exactly the person reading this box
+    rather than hearing it, and a pixel size shrinks for them at the moment it
+    should grow. ``GetTextExtent("M")`` is the widest glyph, so the answer is
+    generous on purpose.
+
+    It exists because a box with no minimum is only as wide as whatever else
+    the window happens to contain. Quill Radio's Station Details and Now
+    Playing readouts both sat in windows sized by their buttons, and at a small
+    window size they wrapped a word to a line -- reported 2026-09-14 as "one
+    word is appearing on lines frequently". A minimum size fixes it at the
+    source: the box asks for a readable width, and the window it is in cannot
+    be smaller than its contents.
+    """
+    import wx  # noqa: F401 - imported for symmetry with the rest of this module
+
+    char_width, char_height = window.GetTextExtent("M")  # type: ignore[attr-defined]
+    return (char_width * columns, char_height * lines + 8)

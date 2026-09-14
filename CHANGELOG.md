@@ -2,6 +2,58 @@
 
 ## 1.0.0
 
+### Find Stations now finds the station you meant (2026-09-14)
+
+**A search is no longer one query.** Two ACB members between them asked for five
+stations; three were unreachable by any spelling. Quill Radio now takes the
+query apart and asks each directory several narrower questions instead of one
+wide one.
+
+What that fixes, in the words people actually type:
+
+- **"Sunny 105.7 Gulf Shores Alabama"** found nothing at all. Radio Browser
+  files that station as "WCSN 105.7 FM Orange Beach" -- it shares not one word
+  with what anybody calls it. But the search now *also* asks for `105.7`
+  **narrowed to Alabama**, which has exactly one answer, and it arrives first.
+  A misspelled city ("Galf Shores") does not change that, because the city was
+  never the part being searched for.
+- **"WDAN 14.90 AM"** put two episodes of a talk show above the station. A
+  frequency written the way a person says it is now repaired to the way a
+  directory stores it (`14.90 AM` is 1490, `1009` is 100.9, `105-9` is 105.9),
+  and a podcast episode is no longer mistaken for a station.
+- **"rock 105 fm"** lost the station that "rock 105" found -- the trailing band
+  word was matched against every "105 FM" on earth. The band word now comes off
+  in one of the variants.
+- **"Sunny105.7"**, **"1490AM"**, **"play wbgl"**, **"105,7"** and a lower-case
+  state at the end ("gulf shores al") are all understood as what they plainly
+  mean.
+
+**And the results are sorted by what you probably want.** Four directories each
+ranked their own rows against the query *they* were sent; the merged list is now
+ranked against what you actually typed -- a station matching both the name and
+the frequency above one matching only the frequency, a station in the place you
+named above one that merely shares a word, and, between two equally good
+matches, the one whose stream is known to play and the one more people listen
+to. Nothing that worked before stops working: what you typed is always the
+first question asked, so every row the old search returned is still there.
+
+### Insert Special Character never opened, in either editor (2026-09-14)
+
+Ctrl+Shift+F2 in QuillLite and Shift+F2 in QUILL did nothing at all. The picker
+raised a wx assertion while it was being built -- its OK and Cancel buttons were
+parented on the dialog while every other control sat on a panel -- so it never
+reached the screen. The buttons moved onto the panel, and a new test builds the
+real dialog rather than answering it with a stand-in, which is why a picker that
+could not be constructed had been passing its tests.
+
+### The read-only readouts in Quill Radio are wide enough to read (2026-09-14)
+
+**Station details** and **Now Playing** both sat in windows sized by their
+buttons, so in a small window they wrapped a single word to a line. Both now ask
+for a readable width measured in **characters** rather than pixels -- so it
+grows with the system font rather than shrinking against it -- and the window
+that holds them cannot be narrower than they are.
+
 ### Typing a station's web address now finds the station (2026-09-14)
 
 **Every search box in Quill Radio understands a website address.** One of them

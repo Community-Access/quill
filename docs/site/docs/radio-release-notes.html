@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio 3.0 Release Notes</title>
   <style>
@@ -1739,6 +1739,51 @@ of a run used to pay to fill the very caches it answers from; opening
 Browse Stations now fills them in the background before you have typed
 anything. A source you switched off is never contacted – not even by the
 warm-up – and Safe Mode skips it entirely.</p>
+<h3 id="search-the-fifth-pass-the-station-somebody-meant">Search, the
+fifth pass: the station somebody meant</h3>
+<p>Three people, five stations, three of them unfindable. That was the
+report, and none of the three was a bug in the ordinary sense – the
+search worked exactly as designed, and the design assumed something that
+is not true: that what a listener types is a station’s <em>name</em>,
+spelled the way its directory spells it.</p>
+<p>It is four facts, not one. A brand, a frequency, a callsign, a place.
+The directories index two of them. So a query is now taken apart before
+it is sent, and each directory is asked several narrower questions
+instead of one wide one.</p>
+<p>What that changes, in the words people actually typed:</p>
+<ul>
+<li><strong>“Sunny 105.7 Gulf Shores Alabama” found nothing at
+all.</strong> Radio Browser files that station as “WCSN 105.7 FM Orange
+Beach” – it shares not one word with what everybody who listens to it
+calls it, so no spelling of “Sunny” could ever have reached it. But the
+search now also asks for <code>105.7</code> <strong>narrowed to
+Alabama</strong>, and that has exactly one answer. It comes back first.
+Misspelling the city (“Galf Shores”) does not change that, because the
+city was never the part being searched for.</li>
+<li><strong>“WDAN 14.90 AM” put two podcast episodes above the
+station.</strong> A frequency written the way a person says it is now
+repaired to the way a directory stores it – <code>14.90 AM</code> is
+1490, <code>1009</code> is 100.9, <code>105-9</code> is 105.9,
+<code>105,7</code> is 105.7 – and TuneIn’s search, which answers with
+programmes and episodes as well as stations, is no longer believed when
+it calls an episode a station.</li>
+<li><strong>“rock 105 fm” lost the station that “rock 105”
+finds.</strong> The trailing band word was being matched against every
+“105 FM” on earth. It comes off in one of the variants now.</li>
+<li><strong>“Sunny105.7”, “1490AM”, “play wbgl”, “gulf shores
+al”</strong> are all understood as what they plainly mean.</li>
+</ul>
+<p>And the answers are ordered by which one you probably wanted. Four
+directories each ranked their own rows against the query <em>they</em>
+were sent; the merged list is ranked here, against what you actually
+typed. A station matching the name and the frequency comes above one
+matching only the frequency. A station in the place you named comes
+above one that merely shares a word with it. Between two equally good
+matches, the one whose stream is known to play comes first, and then the
+one more people listen to.</p>
+<p>One rule governs all of it: <strong>what you typed is always the
+first question asked</strong>. Every row the old search returned is
+still there, still first. The extra questions only add.</p>
 <h3 id="sources-with-opinions-of-their-own">Sources with opinions of
 their own</h3>
 <p>Two of the new directories took an option, and the way they took it

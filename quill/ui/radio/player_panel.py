@@ -38,7 +38,12 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import transport_commands as tc
-from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
+from quill.ui.dialog_contract import (
+    announce_surface_exit,
+    apply_modal_ids,
+    bind_close_button,
+    readable_min_size,
+)
 
 #: The buttons, in reaching order, as ``(command id, label)``. The labels are
 #: this panel's own: the table's are written for a Playback menu, and here they
@@ -260,16 +265,18 @@ class PlayerPanel:
         # The readout first, and read-only: what is playing, where, how fast.
         # A panel that offers twelve verbs and never says what they act on is a
         # panel somebody has to guess at.
-        # Sized in characters, not pixels. A fixed (420, 80) box is 420 pixels
-        # at every font size, so the listener who has turned the system font up
-        # -- the listener most likely to be reading this box rather than hearing
-        # it -- is the one whose text clips.
-        char_width, char_height = self._win.GetTextExtent("M")
+        # Sized in characters, not pixels (see ``readable_min_size``): a fixed
+        # (420, 80) box is 420 pixels at every font size, so the listener who
+        # has turned the system font up -- the listener most likely to be
+        # reading this box rather than hearing it -- is the one whose text
+        # clips. Forty-six characters was still too narrow to read a station
+        # name and a song title in: at a small window size it put single words
+        # on lines of their own (reported 2026-09-14).
         self._status = wx.TextCtrl(
             self._surface,
             value=self.status_text(),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
-            size=(char_width * 46, char_height * 4 + 8),
+            size=readable_min_size(self._win),
         )
         self._status.SetName("Now playing")
         root.Add(self._status, 0, wx.EXPAND | wx.ALL, 10)

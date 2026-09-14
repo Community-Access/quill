@@ -25,9 +25,9 @@ Safe Mode instead of refusing outright (see ``wxindex.search_stations``).
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 
-from quill.core.radio import iheart, reading_services, tunein, wxindex
+from quill.core.radio import iheart, radio_browser, reading_services, station_query, tunein, wxindex
 from quill.core.radio.iheart import IHeartStation
 from quill.core.radio.models import RadioStation
 from quill.core.radio.wxindex_models import to_radio_station as _wx_to_radio_station
@@ -66,6 +66,128 @@ TUNEIN_RESOLVE_CAP = 10
 IHEART_RESOLVE_CAP = 5
 
 
+#: How many of a query's variants (:func:`station_query.variants`) are actually
+#: sent. Each one is a live round trip, so this is the whole cost of the
+#: aggressive search: three name searches instead of one. Beyond three the
+#: variants are the desperate ones (a bare frequency, a bare brand word), which
+#: cost as much as the good ones and answer with noise.
+VARIANT_CAP = 3
+
+#: How many state-narrowed searches follow them. Two, because the useful ones
+#: are the frequency and the brand -- and they are the searches that find a
+#: station whose brand the directory never recorded.
+NARROWED_CAP = 2
+
+
+def _each[Q](work: Callable[[Q], list[RadioStation]], items: Iterable[Q]) -> list[RadioStation]:
+    """Run *work* over each item, concurrently, swallowing every failure.
+
+    Order is preserved, so the caller's variant order is the merge order and
+    what the user typed stays in front of what we guessed.
+    """
+
+    def _one(item: Q) -> list[RadioStation]:
+        try:
+            return work(item)
+        except Exception:  # noqa: BLE001 - one dead variant must not lose the others
+            return []
+
+    rows: list[RadioStation] = []
+    for result in _in_parallel(_one, list(items)):
+        rows.extend(result)
+    return rows
+
+
+def search_variants(
+    work: Callable[[str], list[RadioStation]], text: str, *, cap: int = VARIANT_CAP
+) -> list[RadioStation]:
+    """*work*, run over the best *cap* spellings of *text*.
+
+    The first is always what the user typed (see
+    :func:`~quill.core.radio.station_query.variants`), so the aggressive search
+    is strictly additive: every row the old single search returned is still in
+    here, still first.
+    """
+    return _each(work, station_query.variants(station_query.parse(text))[:cap])
+
+
+#: How many spellings the two directories that must *resolve* each result are
+#: asked for. Two rather than three: a TuneIn variant costs a search plus a
+#: stream resolve per station, and the second spelling is where the band word
+#: and the city come off, which is the one that matters.
+RESOLVING_VARIANT_CAP = 2
+
+
+def tunein_variants(
+    text: str, *, safe_mode: bool = False, cap: int = RESOLVING_VARIANT_CAP
+) -> list[RadioStation]:
+    """TuneIn, asked for the best *cap* spellings of *text*."""
+    return search_variants(
+        lambda query: tunein_search_stations(query, safe_mode=safe_mode), text, cap=cap
+    )
+
+
+def iheart_variants(
+    text: str, *, safe_mode: bool = False, cap: int = RESOLVING_VARIANT_CAP
+) -> list[RadioStation]:
+    """iHeart, asked for the best *cap* spellings of *text*."""
+    return search_variants(
+        lambda query: iheart.search_stations(query, safe_mode=safe_mode), text, cap=cap
+    )
+
+
+def radio_browser_variants(
+    text: str,
+    *,
+    tag: str = "",
+    country: str = "",
+    limit: int = 50,
+    safe_mode: bool = False,
+) -> list[RadioStation]:
+    """Radio Browser, asked every way *text* can be spelled -- and asked again
+    narrowed to the state or country the query named.
+
+    The narrowed pass is the one that earns its round trip. Radio Browser files
+    Sunny 105.7 as "WCSN 105.7 FM Orange Beach", so no spelling of "Sunny"
+    reaches it; ``105.7`` inside Alabama returns it and nothing else.
+    """
+    parsed = station_query.parse(text)
+
+    def _plain(query: str) -> list[RadioStation]:
+        return radio_browser.search_stations(
+            query, tag=tag, country=country, limit=limit, safe_mode=safe_mode
+        )
+
+    # A tag- or country-only search has no name to take apart, so it stays the
+    # single query it always was -- and it must still be *made*, or filtering by
+    # country with an empty name would return nothing at all.
+    if not parsed.raw:
+        return _plain("")
+
+    rows = _each(_plain, station_query.variants(parsed)[:VARIANT_CAP])
+
+    def _narrowed(triple: tuple[str, str, str]) -> list[RadioStation]:
+        name, state, in_country = triple
+        rows = radio_browser.search_stations(
+            name,
+            tag=tag,
+            country=in_country or country,
+            state=state,
+            limit=limit,
+            safe_mode=safe_mode,
+        )
+        # Every row here is, by construction, in the place the listener named.
+        # That is the whole evidence for a station whose name shares no word
+        # with the query, so it is recorded on the row rather than inferred
+        # again later (see ``RadioStation.place_confirmed``).
+        for row in rows:
+            row.place_confirmed = True
+        return rows
+
+    rows.extend(_each(_narrowed, station_query.narrowed_searches(parsed)[:NARROWED_CAP]))
+    return rows
+
+
 def merge_and_rank(
     result_lists: Iterable[list[RadioStation]], query: str = ""
 ) -> list[RadioStation]:
@@ -77,10 +199,14 @@ def merge_and_rank(
     De-dup, first occurrence wins (so the caller controls source priority by
     the order it passes the lists): by ``stream_url`` first (the same stream on
     two directories is one entry), then by ``(name, country)`` (the same station
-    with a different mount URL is still one entry). Ranking then floats
-    exact-name matches for *query* to the top; everything else keeps its
-    merged order, so each source's own relevance ordering is preserved beneath
-    the exact hits. An empty *query* just de-dups without re-ordering.
+    with a different mount URL is still one entry).
+
+    Ranking is then :func:`quill.core.radio.station_query.rank` over the whole
+    merged list -- the most likely answer first, not merely the exact name
+    first. Each source ranked its own rows against the query *it* was sent, and
+    the aggressive search sends several; only this side of the wire knows what
+    the person actually typed, so only this side can order the union of four
+    directories' answers. An empty *query* just de-dups without re-ordering.
     """
     survivor_by_url: dict[str, RadioStation] = {}
     survivor_by_name_country: dict[tuple[str, str], RadioStation] = {}
@@ -103,12 +229,9 @@ def merge_and_rank(
                 survivor_by_url[url_key] = station
             survivor_by_name_country[name_country] = station
             merged.append(station)
-    normalized_query = query.strip().lower()
-    if not normalized_query:
+    if not query.strip():
         return merged
-    exact = [s for s in merged if (s.name or "").strip().lower() == normalized_query]
-    rest = [s for s in merged if (s.name or "").strip().lower() != normalized_query]
-    return exact + rest
+    return station_query.rank(merged, query)
 
 
 def _absorb_source(survivor: RadioStation, dropped_source: str) -> None:

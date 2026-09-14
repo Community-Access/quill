@@ -94,6 +94,15 @@ class RadioStation:
     #: and an audience that changes between two refreshes must not thereby make
     #: it a different station to the favorites de-duplicator.
     listeners: int = field(default=0, compare=False)
+    #: True when this row came back from a search **narrowed to the place the
+    #: listener named** -- Radio Browser's ``state``/``country`` filter, rather
+    #: than a name match. It is the only evidence that
+    #: "WCSN 105.7 FM Orange Beach" is the station somebody called
+    #: "Sunny 105.7 Gulf Shores Alabama": the name shares not one word with the
+    #: query, and the frequency is unique only inside Alabama. Search-only and
+    #: transient, excluded from equality exactly like ``alt_sources``: it
+    #: records how a row was found, not which station it is.
+    place_confirmed: bool = field(default=False, compare=False)
 
     @property
     def display_name(self) -> str:

@@ -18,14 +18,9 @@ from typing import Any
 
 from quill.core.radio import (
     acb_media,
-    iheart,
-    iptv,
-    live365,
     m3u_catalog,
     radio_browser,
-    radio_paradise,
     search_sources,
-    shoutcast,
     soma_fm,
     station_confidence,
     tunein,
@@ -33,9 +28,6 @@ from quill.core.radio import (
 )
 from quill.core.radio.directory_search import (
     merge_and_rank,
-    reading_services_search_stations,
-    tunein_search_stations,
-    wxindex_search_stations,
 )
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
@@ -47,14 +39,18 @@ from quill.core.radio.spotify_search import (
 from quill.core.radio.spotify_search import (
     is_spotify_station,
     open_link_label,
-    spotify_search_stations,
-    youtube_search_stations,
 )
-from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
+from quill.ui.dialog_contract import (
+    announce_surface_exit,
+    apply_modal_ids,
+    bind_close_button,
+    readable_min_size,
+)
 from quill.ui.media.list_columns_view import build_columns
 from quill.ui.radio import library_search, transport_keys
 from quill.ui.radio.results_view import ALL_SOURCES as _ALL_SOURCES
 from quill.ui.radio.results_view import ResultsViewMixin
+from quill.ui.radio.search_fanout import run_search
 from quill.ui.radio.search_recents import RecentSearchesMixin
 
 _FAVORITES = "Favorites"
@@ -413,7 +409,9 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         details_label = wx.StaticText(self._surface, label="Station details")
         root.Add(details_label, 0, wx.LEFT | wx.TOP, 10)
         self._details = wx.TextCtrl(
-            self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
+            self._surface,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
+            size=readable_min_size(self._surface),
         )
         self._details.SetName("Read-only details of the selected station")
         root.Add(self._details, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
@@ -1120,89 +1118,14 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
             self._remember_search(name, tag, country)
 
         def _do_search(**_kwargs: Any) -> tuple[list[RadioStation], list[RadioStation]]:
-            # The catalog lane (quill/ui/radio/catalog_search.py): local FTS
-            # answers in ~1 ms, so an outage costs live rows, not the search.
-            from quill.ui.radio.catalog_search import catalog_search_rows
-
-            catalog_rows = catalog_search_rows(
-                getattr(self, "_catalog", None), name, limit=_SEARCH_LIMIT
+            return run_search(
+                self,
+                name=name,
+                tag=tag,
+                country=country,
+                limit=_SEARCH_LIMIT,
+                safe_mode=self._safe_mode,
             )
-            try:
-                radio = (
-                    radio_browser.search_stations(
-                        name,
-                        tag=tag,
-                        country=country,
-                        limit=_SEARCH_LIMIT,
-                        safe_mode=self._safe_mode,
-                    )
-                    if self._source_on("radio_browser")
-                    else []
-                )
-            except Exception:
-                if not catalog_rows:
-                    raise
-                radio = []  # offline: the catalog carries the search
-            radio = catalog_rows + radio
-            # Blended in after the RadioBrowser page, each failure-tolerant so
-            # one down source never blanks the list. Name/tag searches only:
-            # these directories have no country field of their own, so a
-            # country-only query skips them rather than returning noise. They
-            # ride along with the first RadioBrowser page; "More Stations" pages
-            # RadioBrowser alone.
-            extras: list[RadioStation] = []
-            query = name or tag
-            if query:
-                if self._source_on("somafm"):
-                    try:
-                        extras += soma_fm.search_stations(query, safe_mode=self._safe_mode)
-                    except soma_fm.SomaFmError:
-                        pass
-                if self._source_on("tunein"):
-                    extras += tunein_search_stations(query, safe_mode=self._safe_mode)
-                # SHOUTcast, Live365 and Radio Paradise each swallow their own
-                # errors and return [], so they ride along without a try block
-                # -- the same contract tunein_search_stations honours above.
-                if self._source_on("shoutcast"):
-                    extras += shoutcast.search_stations(query, safe_mode=self._safe_mode)
-                if self._source_on("live365"):
-                    extras += live365.search_stations(query, safe_mode=self._safe_mode)
-                if self._source_on("radioparadise"):
-                    extras += radio_paradise.search_stations(query, safe_mode=self._safe_mode)
-                if self._source_on("tv"):
-                    extras += iptv.search_stations(query, safe_mode=self._safe_mode)
-                # NOAA Weather Radio: a SAME code, callsign, or "County, ST"/state
-                # query resolves to authoritative stations; anything else just
-                # comes back empty, so this rides along unconditionally.
-                if self._source_on("wxindex"):
-                    extras += wxindex_search_stations(query, safe_mode=self._safe_mode)
-                # Radio Reading Services: a name/tag/state match against the
-                # curated ~20-service list; empty for anything else, so this
-                # rides along unconditionally too.
-                if self._source_on("reading_services"):
-                    extras += reading_services_search_stations(query, safe_mode=self._safe_mode)
-                # Spotify: search is open to every account tier, so these rows
-                # ride along whenever the user has connected Spotify. They stay
-                # useful on a free account -- Enter needs Premium, but "Open
-                # Website" opens the track in Spotify's own app, where a free
-                # account plays it normally.
-                if self._source_on("spotify"):
-                    extras += spotify_search_stations(
-                        query,
-                        client=self._spotify_client(),
-                        safe_mode=self._safe_mode,
-                    )
-                # YouTube: yt-dlp's keyless ytsearch, the same extraction route
-                # FreeTube/NewPipe/Invidious use. Each row is a page URL, so it
-                # becomes an ordinary station you can play, favorite and record.
-                if self._source_on("youtube"):
-                    extras += youtube_search_stations(query, safe_mode=self._safe_mode)
-            if name and self._source_on("iheart"):
-                # iHeart's own relevance search (two GETs, ranked, streams
-                # embedded); the sitemap-index route this replaced is retired
-                # in directory_search's history.
-                extras += iheart.search_stations(name, safe_mode=self._safe_mode)
-            return radio, extras
 
         self._task_manager.submit(
             "radio-search",
