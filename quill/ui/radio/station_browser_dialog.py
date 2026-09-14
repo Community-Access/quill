@@ -39,6 +39,7 @@ from quill.core.radio.directory_search import (
 )
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
+from quill.core.radio.page_url import looks_like_url as page_url_looks_like_url
 from quill.core.radio.search_history import SearchQuery
 from quill.core.radio.spotify_search import (
     SOURCE as _SPOTIFY_SOURCE,
@@ -169,20 +170,10 @@ def country_query(choice_label: str) -> str:
     return "" if label in ("", _ANY_COUNTRY) else label
 
 
-def looks_like_url(text: str) -> bool:
-    """True when *text* is a website address, not a station-name query (pure).
-
-    Lets the one search box fold in "Find Streams from a Website": an entry
-    that is a URL (explicit scheme, or a bare ``host.tld/...`` with no spaces)
-    is scanned for streams instead of run as a directory name search.
-    """
-    value = text.strip()
-    if not value or " " in value:
-        return False
-    if value.lower().startswith(("http://", "https://")):
-        return True
-    host = value.split("/", 1)[0]
-    return "." in host and " " not in host and not host.endswith(".")
+#: Re-exported: the definition moved to :mod:`quill.core.radio.link_finder`
+#: when Search All Sources needed to ask the same question (#1491). Kept
+#: importable from here because this dialog is where it was first used.
+looks_like_url = page_url_looks_like_url
 
 
 class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):

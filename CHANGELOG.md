@@ -2,6 +2,32 @@
 
 ## 1.0.0
 
+### Typing a station's web address now finds the station (2026-09-14)
+
+**Every search box in Quill Radio understands a website address.** One of them
+already did: type `oj991.com` into the Find Stations search box and it scans
+the site and hands you the stream. The browse tree's **Search All Sources** and
+**Find in this folder** did not, and they are the ones people reach first.
+
+What they did instead was worse than nothing. Search All Sources passed
+`oj991.com` to sixteen directories as though it were a station *name*. Radio
+Browser matched on the token "com" and the answer was **33 results** --
+Cruisin92.com, STAR1079.com, ACCRA24.COM, OLDSKOOL101.com, and twenty-five
+podcasts -- with OJ 99.1 nowhere among them. Find in this folder was quieter
+and no better: a web address is never a row label, so scoping it to the
+highlighted folder could only ever find nothing, and did.
+
+All three surfaces now ask the same question first. A query that is an address
+is scanned for streams; a query that is a name is searched for as a name. The
+same `oj991.com` that returned 33 wrong answers returns one right one, as a
+`Website` row that plays, favourites and opens its context menu exactly like a
+row you found by browsing -- because it is one.
+
+The recogniser that decides which kind of query you typed now lives in
+`quill/core/radio/page_url.py` instead of inside the one dialog that first
+needed it. That is the whole reason two of three search boxes were wrong: the
+knowledge existed and was not reachable from where it was needed.
+
 ### Settings you can carry to another machine (2026-09-14)
 
 **A settings backup is now a configuration rather than a snapshot of one

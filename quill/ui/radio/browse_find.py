@@ -22,6 +22,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.radio.page_url import looks_like_url
+
 #: How deep to recurse, the most results to collect, and the most folder
 #: fetches to spend before saying "search a smaller folder for the rest".
 FIND_MAX_DEPTH = 6
@@ -127,6 +129,15 @@ def on_find(host: Any) -> None:
     # first" about the one row that needs neither (reported 2026-08-26, second
     # pass). Reading the selection first is also what makes standing anywhere
     # inside the results start a new search rather than filter them.
+    if looks_like_url(query):
+        # A website address is not a row label, so scoping it to the highlighted
+        # folder answers nothing, always -- which is exactly what it did (#1491,
+        # "oj991.com"). Standing anywhere, it means "find this website's
+        # streams", and Search All Sources is where that is answered.
+        from quill.ui.radio import browse_search_all
+
+        browse_search_all.run(host, query=query)
+        return
     selected = _selected_node_id(host)
     if selected in _SEARCH_EVERYTHING_ROWS:
         from quill.ui.radio import browse_search_all
