@@ -4730,6 +4730,67 @@ blind preference could play a different broadcaster entirely. Where the hosts
 differ, the reconnect layer covers the dropout instead. `_is_hls` matches the
 path only, since TuneIn URLs carry heavy tracking query strings.
 
+**A web address is a scan, not a query — in every search box (#1491;
+`core/radio/page_url.py`, `core/radio/federated_browse.py`).** Find Stations
+already folded in the website scanner: an entry that parsed as an address was
+scanned for streams rather than searched for by name. The browse tree's **Search
+All Sources** and **Find in this folder** did not, and those are the surfaces a
+listener reaches first. Search All Sources handed `oj991.com` to sixteen
+directories as a station *name*; Radio Browser matched the token "com" and the
+answer was thirty-three rows of `Cruisin92.com` and `STAR1079.com` with the
+station in none of them. Find in this folder answered nothing at all, and could
+not have done otherwise — an address is never a row label, so scoping one to a
+folder cannot match.
+
+The cause was placement, not logic. `looks_like_url` lived inside
+`ui/radio/station_browser_dialog.py`, a UI module the browse tree cannot import,
+so the knowledge existed and was unreachable from the two places that needed it.
+It moves with `normalize_page_url` into a wx-free `core/radio/page_url.py`, and
+`federated_browse.search_everything` asks the question **first**: an address
+routes to a `WEBSITE` pseudo-source that scans the page and answers with
+ordinary playable leaves — the same node ids, the same context menu, the same
+Add to Favorites as a browsed row, because it *is* one — and the directories are
+not asked at all. A candidate with no anchor text takes the page title, since a
+row labelled by a bare mount URL cannot be picked out of a list by ear. Safe
+Mode and an unreachable site report through `failed` exactly as any other source
+does. Only the **unscoped** search does this: "Search for a Podcast..." passes
+its own targets and means podcasts whatever was typed. `browse_find.on_find`
+routes an address to the same place from wherever the cursor is standing,
+mirroring what it already did for the Search All Sources row — read a clear
+instruction rather than refuse it.
+
+The gap was wider than one station. No directory carries everything: WWOJ
+("OJ 99.1", Avon Park FL) is absent from TuneIn — verified against
+`api.tunein.com/profiles`, the service tunein.com's own site uses, as well as
+the OPML directory QUILL queries — and absent from Radio Browser, so no spelling
+of its name could ever have found it, while its own home page gives up the
+stream on the first fetch. For a whole class of small and independent stations
+the web address *is* the only route, and it was reachable from one of three
+places a listener can type. No new egress: the scan is `link_finder`'s existing
+reviewed fetch of the one page the listener typed.
+
+**A player page is a page, not a stream (#1491; `core/radio/securenet.py`,
+`core/radio/link_finder.py`).** SecureNet Systems' Cirrus player — used by
+hundreds of US broadcasters — is served from hosts named
+`streamdb9web.securenetsystems.net` and `radio.securenetsystems.net`, and the
+`/stream` inside that *hostname* satisfied `_STREAM_PATH_HINTS`, which matches
+against the whole URL. So a station homepage's "Listen Live" link was offered as
+a playable candidate; it answers HTML, which is precisely what an endless
+"Connecting." looks like. Worse, having produced a candidate the scan then
+skipped the follow-the-link step, which only ran when nothing at all had been
+found — so the real mount was never reached. `securenet.is_player_page_url`
+decides by **host** rather than by enumerating player paths (`/v5/`,
+`/cirruscontent/`, `/cirrusencore/` — the platform keeps adding them), and never
+catches the `ice<N>.` mount hosts that genuinely do play.
+`link_finder._is_player_page_url` unions that with the existing iHeart/TuneIn
+portal test; such links go to a `portal_urls` bucket followed
+**unconditionally**, and player pages are stripped from the final candidate list
+however they arrived — anchor, inline script, or a followed page. A page removed
+from the results can add no noise to a list it is not in, so there is no reason
+to make it wait for the list to be empty; that gate had been quietly costing the
+iHeart/TuneIn follow too, where one stream-shaped podcast link on a homepage was
+enough to suppress the only link that reached the station.
+
 **A capture that recorded nothing is a failure, not a recording (Quill Radio
 3.0; `core/radio/recording_outcome.py`).** ffmpeg writes the output container the
 instant it opens the file, so file existence was never evidence that audio

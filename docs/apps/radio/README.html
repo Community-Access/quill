@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.10.2" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Radio material relocated from QUILL's
 documentation</title>
@@ -260,14 +260,14 @@ station</h3>
 <p><strong>Browse Stations…</strong> opens a search-and-browse
 dialog:</p>
 <ul>
-<li>A <strong>Category</strong> list on the left offers two instantly
+<li><p>A <strong>Category</strong> list on the left offers two instantly
 available options that need no network call to show:
 <strong>Favorites</strong> (stations you’ve saved) and <strong>ACB
 Media</strong> (the American Council of the Blind’s ten Live365
 stations, bundled directly into QUILL). Choosing either fills the
-results list immediately.</li>
-<li>The <strong>search</strong> row above searches every station source
-at once — type a station name, optionally narrow it, and press
+results list immediately.</p></li>
+<li><p>The <strong>search</strong> row above searches every station
+source at once — type a station name, optionally narrow it, and press
 <strong>Search</strong>. <strong>Country</strong> is a dropdown (with an
 <strong>Any country</strong> default) and <strong>Tag/genre</strong> is
 an editable combo box, both filled once per session from <a
@@ -280,26 +280,46 @@ and blends the matches into <strong>one merged, de-duplicated
 list</strong> (the same stream on two directories, or the same station
 name and country twice, collapses to a single row; exact name matches
 sort to the top). Each source is failure-tolerant — one directory being
-down never blanks the list — and all of them are off in Safe Mode.</li>
-<li>Arrow through the results list and a read-only <strong>Station
+down never blanks the list — and all of them are off in Safe
+Mode.</p></li>
+<li><p>Arrow through the results list and a read-only <strong>Station
 details</strong> pane reports everything QUILL knows about the selected
 station: country, language, tags, codec and bitrate, community vote
 count, homepage, and the stream URL itself. Each row also shows a
 <strong>Source</strong> column (RadioBrowser, iHeart, TuneIn, SomaFM,
 ACB Media, or Website), and a <strong>Source</strong> dropdown above the
-list filters it to just one source without re-searching.</li>
-<li><strong>Type or paste a website address</strong> into the search box
-and Browse Stations scans that page for streams and lists what it finds,
-badged <strong>Website</strong> — the “Find Streams from a Website”
-capability, right in the same search box (the dedicated <strong>Find
-Streams from a Website…</strong> button below stays as a shortcut).</li>
-<li><strong>Refresh Directory</strong> re-fetches iHeart’s station
+list filters it to just one source without re-searching.</p></li>
+<li><p><strong>Type or paste a website address</strong> into
+<em>any</em> search box and QUILL scans that page for streams and lists
+what it finds, badged <strong>Website</strong> — the “Find Streams from
+a Website” capability, wherever you happen to be typing. That means the
+Browse Stations search row, the browse tree’s <strong>Find</strong> box
+(whatever folder you are standing in), and <strong>Search All
+Sources…</strong>; the dedicated <strong>Find Streams from a
+Website…</strong> button stays as a shortcut. A bare
+<code>oj991.com</code> is understood — no <code>https://</code> needed —
+and a query that is <em>not</em> an address searches the directories
+exactly as before.</p>
+<p>This is how you reach a station no directory carries, which is more
+of them than people expect: OJ 99.1 (WWOJ, Avon Park FL) is in neither
+TuneIn nor RadioBrowser, so no spelling of its name could ever find it,
+while its own home page gives up the stream on the first try. Before
+this, typing that address into Search All Sources handed it to sixteen
+directories as a station <em>name</em>, RadioBrowser matched the token
+“com”, and the answer was 33 rows of <code>Cruisin92.com</code> and
+<code>STAR1079.com</code> with the station nowhere in it; typing it into
+the tree’s Find box returned nothing at all, because a web address is
+never a row label. The recogniser that tells an address from a name
+lives in <code>quill/core/radio/page_url.py</code> precisely so that
+every surface can reach it.</p></li>
+<li><p><strong>Refresh Directory</strong> re-fetches iHeart’s station
 directory on demand — useful if its catalog has grown since you opened
 the dialog. RadioBrowser and TuneIn are always live, so only iHeart is
-cached per session.</li>
-<li><strong>Play</strong> starts the selected station. <strong>Add to
+cached per session.</p></li>
+<li><p><strong>Play</strong> starts the selected station. <strong>Add to
 Favorites</strong> (relabels to <strong>Remove from Favorites</strong>
-once it’s saved) keeps it in your Favorites category for next time.</li>
+once it’s saved) keeps it in your Favorites category for next
+time.</p></li>
 </ul>
 <p>Closing the Browse Stations dialog does not stop playback — the
 station keeps playing in the background exactly like it would if you’d
@@ -362,7 +382,17 @@ so the scan used to file it with the page’s ordinary links and discard
 it, returning junk or nothing at all. QUILL now recognizes the player
 itself and lists the real stream first, whether you point it at the
 player page or at a station’s own site with the player embedded. A
-station saved from such a page also repairs itself on the first failed
+related trap is closed with it: those player pages are served from hosts
+named like <code>streamdb9web.securenetsystems.net</code>, and the
+<code>/stream</code> inside that <em>hostname</em> used to satisfy the
+generic “looks like a stream” heuristic, so the scan offered the player
+<strong>page</strong> as a playable candidate — a page answers HTML,
+which is exactly what an endless “Connecting.” is. A player page is now
+identified as a page (by host, so new player paths need no maintenance,
+and never catching the <code>ice&lt;N&gt;</code> mount hosts that do
+play), followed one level to the real audio, and never offered as
+something to play; the same applies to iHeart and TuneIn landing pages.
+A station saved from such a page also repairs itself on the first failed
 play.</li>
 </ul>
 <h3 id="whats-playing">What’s playing</h3>
