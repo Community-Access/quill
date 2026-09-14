@@ -23,7 +23,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
         summary=(
             "Four routes to a station that is not in any directory: paste its "
             "stream, scan its website, add the whole server it lives on, or "
-            "import a playlist file somebody sent you."
+            "import a playlist file somebody sent you. Try typing its web "
+            "address into a search box first -- that is quicker, and it has its "
+            "own lesson."
         ),
         steps=(
             Step(
@@ -45,12 +47,21 @@ TUTORIALS: tuple[Tutorial, ...] = (
             Step(
                 title="Understand why the website is not the station",
                 body=(
-                    "Pasting a station's home page will not play. Quill Radio "
-                    "needs the audio feed, and many stations build their player in "
-                    "JavaScript, so the feed is nowhere in the page for anything "
-                    "to find. That is what the next step is for."
+                    "A station's home page is not its audio feed, and saving one "
+                    "as a stream address will not play. You no longer have to "
+                    "find the feed yourself, though: type the web address into "
+                    "any search box and Quill Radio reads the page and hands back "
+                    "the feed. What it cannot do is run JavaScript, so a player "
+                    "that builds its address in code writes it nowhere -- which "
+                    "is what the next step is for."
                 ),
                 hear="Nothing: this step is the fact that saves the next twenty minutes.",
+                note=(
+                    "Typing an address into a search box is the short route and "
+                    "has a lesson of its own, Find a station by its web address. "
+                    "The rest of this lesson is what to do when that is not "
+                    "enough."
+                ),
             ),
             Step(
                 title="Scan a station's page for its stream",
