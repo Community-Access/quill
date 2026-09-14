@@ -3,8 +3,10 @@
 Wandering and searching are different jobs and Quill Radio keeps them in
 different windows on purpose, so these are two lessons rather than one. The
 tree is for "show me what there is"; Find Stations is for "I know roughly what
-I want". The third lesson here is the one that ties them together: a search
-across every directory at once, run from inside the tree.
+I want". The third lesson ties them together -- a search across every directory
+at once, run from inside the tree -- and the fourth is the one for when every
+directory is the wrong place to look, because the station is in none of them
+and only its own website has it.
 """
 
 from __future__ import annotations
@@ -193,7 +195,9 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "results it left, Ctrl+F puts you in the Find box; type and "
                     "press Enter and that runs the cross-source search for what "
                     "you typed, with no second prompt. Anywhere else in the tree, "
-                    "the same box filters the branch you are standing in."
+                    "the same box filters the branch you are standing in -- "
+                    "unless what you typed is a web address, which is scanned "
+                    "wherever you are standing."
                 ),
                 keys=("Ctrl+F", "Enter"),
                 hear="The new results replacing the old ones.",
@@ -218,9 +222,95 @@ TUTORIALS: tuple[Tutorial, ...] = (
         closing=(
             "One search, every directory, one branch of results. If you would "
             "rather search by fields -- name and country and tag together -- the "
-            "next lesson is the window for that."
+            "next lesson is the window for that. And if every directory comes "
+            "back empty for a station you know exists, the lesson after it is "
+            "the one you want."
         ),
-        then=("find-stations-by-field",),
+        then=("find-stations-by-field", "find-a-station-by-its-address"),
+    ),
+    Tutorial(
+        slug="find-a-station-by-its-address",
+        title="Find a station by its web address",
+        track="finding",
+        minutes=4,
+        surfaces=("Browse Stations", "Search Stations", "Internet Radio"),
+        summary=(
+            "The route to a station no directory carries: type the station's own "
+            "web address into any search box and let Quill Radio read the page "
+            "for you. Four minutes, and it is the answer to 'I know this station "
+            "exists and nothing can find it'."
+        ),
+        steps=(
+            Step(
+                title="Know when to reach for this",
+                body=(
+                    "No directory carries every station. A station that is in "
+                    "none of them cannot be found by name, however you spell it "
+                    "-- and from inside the app that looks exactly like a station "
+                    "that does not exist. If you know one is real and searching "
+                    "keeps failing, stop searching for its name and find its "
+                    "website instead."
+                ),
+                hear="Nothing: this step is the one that stops you spelling a name twenty ways.",
+            ),
+            Step(
+                title="Type the address instead of the name",
+                body=(
+                    "In any search box, type the station's home page the way you "
+                    "would type it into a browser -- oj991.com -- and press "
+                    "Enter. Quill Radio recognises that it is an address, fetches "
+                    "that one page, finds the stream the station's player uses, "
+                    "and hands it back as a row. No https:// needed."
+                ),
+                command="radio.browse",
+                hear=(
+                    "One stream found on the website, and a row named for the station "
+                    "rather than for a web address."
+                ),
+                note=(
+                    "It works from all three places you can search: the browse "
+                    "tree's Find box wherever you are standing, Search All "
+                    "Sources, and the Search Stations window. You do not have to "
+                    "be anywhere in particular first."
+                ),
+            ),
+            Step(
+                title="Play it, and keep it",
+                body=(
+                    "The result is an ordinary station row, not a special case. "
+                    "Press Enter to play it, and add it to your favorites from "
+                    "the row's own menu -- the same keys, the same menu, the same "
+                    "everything as a row you found by browsing."
+                ),
+                keys=("Enter", "Shift+F10"),
+                hear="Connecting, then Playing; then Added, and the station's name.",
+                check="favorite-added",
+            ),
+            Step(
+                title="Know what it is not",
+                body=(
+                    "This reads one page. It is not a web search, and it does not "
+                    "ask any directory -- so a name still searches the "
+                    "directories exactly as before, and an address you invented "
+                    "gets you 'nothing found' rather than a guess. It also never "
+                    "runs JavaScript, though the common players -- Triton, "
+                    "StreamTheWorld, SecureNet, iHeart, TuneIn -- are recognised "
+                    "by name and looked up properly."
+                ),
+                hear="Nothing found on that website, when the page genuinely has no stream.",
+                note=(
+                    "If a home page finds nothing, try the page behind its Listen "
+                    "Live link instead -- that is usually where the player lives."
+                ),
+            ),
+        ),
+        closing=(
+            "One address, one row, one station that was unreachable five minutes "
+            "ago. If the station has no usable player page either, the next "
+            "lesson has the other four routes -- a pasted stream address, a whole "
+            "server, or a playlist file somebody sent you."
+        ),
+        then=("addresses-of-your-own",),
     ),
     Tutorial(
         slug="find-stations-by-field",
@@ -319,6 +409,6 @@ TUTORIALS: tuple[Tutorial, ...] = (
             "when you do. What remains is the stations no directory lists -- and "
             "that is the next lesson."
         ),
-        then=("addresses-of-your-own",),
+        then=("find-a-station-by-its-address", "addresses-of-your-own"),
     ),
 )

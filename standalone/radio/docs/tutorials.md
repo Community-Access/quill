@@ -1,6 +1,6 @@
 # Quill Radio Tutorials
 
-36 guided tutorials, 251 steps, about 220 minutes of material in all.
+37 guided tutorials, 255 steps, about 224 minutes of material in all.
 
 This document is generated from the tutorials inside Quill Radio, so it says exactly what the app teaches. To work through one with the app watching -- running a step for you, and moving you on once it can see you have done it -- open **Help > Tutorials...** instead.
 
@@ -17,6 +17,7 @@ The keys below are the ones Quill Radio ships with. If you have rebound somethin
 - **Finding something to listen to** -- Several ways in: the tree, the search across every directory at once, addresses of your own, and the catalog on your own disk that answers when the internet does not.
   - Wander the browse tree (8 minutes)
   - Search every directory at once (5 minutes)
+  - Find a station by its web address (4 minutes)
   - Find stations by name, tag and country (6 minutes)
   - Add a station nobody lists (8 minutes)
   - The catalog on your own disk (5 minutes)
@@ -313,7 +314,7 @@ Run one search across every source you have switched on, understand what the ans
    - Keys: Down arrow
    - You should hear: The results, and any source that timed out, named.
 
-4. **Search again from the Find box.** Standing on Search All Sources, or anywhere inside the results it left, Ctrl+F puts you in the Find box; type and press Enter and that runs the cross-source search for what you typed, with no second prompt. Anywhere else in the tree, the same box filters the branch you are standing in.
+4. **Search again from the Find box.** Standing on Search All Sources, or anywhere inside the results it left, Ctrl+F puts you in the Find box; type and press Enter and that runs the cross-source search for what you typed, with no second prompt. Anywhere else in the tree, the same box filters the branch you are standing in -- unless what you typed is a web address, which is scanned wherever you are standing.
    - Keys: Ctrl+F, Enter
    - You should hear: The new results replacing the old ones.
    - Worth knowing: This session's finished answers are remembered for ten minutes, so repeating a search shows the full answer immediately while a fresh one runs behind it.
@@ -322,9 +323,35 @@ Run one search across every source you have switched on, understand what the ans
    - Keys: Delete
    - You should hear: The branch gone, and the tree as it was.
 
-One search, every directory, one branch of results. If you would rather search by fields -- name and country and tag together -- the next lesson is the window for that.
+One search, every directory, one branch of results. If you would rather search by fields -- name and country and tag together -- the next lesson is the window for that. And if every directory comes back empty for a station you know exists, the lesson after it is the one you want.
 
-Next: Find stations by name, tag and country.
+Next: Find stations by name, tag and country; Find a station by its web address.
+
+### Find a station by its web address
+
+The route to a station no directory carries: type the station's own web address into any search box and let Quill Radio read the page for you. Four minutes, and it is the answer to 'I know this station exists and nothing can find it'.
+
+*4 steps, about 4 minutes.*
+
+1. **Know when to reach for this.** No directory carries every station. A station that is in none of them cannot be found by name, however you spell it -- and from inside the app that looks exactly like a station that does not exist. If you know one is real and searching keeps failing, stop searching for its name and find its website instead.
+   - You should hear: Nothing: this step is the one that stops you spelling a name twenty ways.
+
+2. **Type the address instead of the name.** In any search box, type the station's home page the way you would type it into a browser -- oj991.com -- and press Enter. Quill Radio recognises that it is an address, fetches that one page, finds the stream the station's player uses, and hands it back as a row. No https:// needed.
+   - Keys: Ctrl+B
+   - You should hear: One stream found on the website, and a row named for the station rather than for a web address.
+   - Worth knowing: It works from all three places you can search: the browse tree's Find box wherever you are standing, Search All Sources, and the Search Stations window. You do not have to be anywhere in particular first.
+
+3. **Play it, and keep it.** The result is an ordinary station row, not a special case. Press Enter to play it, and add it to your favorites from the row's own menu -- the same keys, the same menu, the same everything as a row you found by browsing.
+   - Keys: Enter, Shift+F10
+   - You should hear: Connecting, then Playing; then Added, and the station's name.
+
+4. **Know what it is not.** This reads one page. It is not a web search, and it does not ask any directory -- so a name still searches the directories exactly as before, and an address you invented gets you 'nothing found' rather than a guess. It also never runs JavaScript, though the common players -- Triton, StreamTheWorld, SecureNet, iHeart, TuneIn -- are recognised by name and looked up properly.
+   - You should hear: Nothing found on that website, when the page genuinely has no stream.
+   - Worth knowing: If a home page finds nothing, try the page behind its Listen Live link instead -- that is usually where the player lives.
+
+One address, one row, one station that was unreachable five minutes ago. If the station has no usable player page either, the next lesson has the other four routes -- a pasted stream address, a whole server, or a playlist file somebody sent you.
+
+Next: Add a station nobody lists.
 
 ### Find stations by name, tag and country
 
@@ -360,11 +387,11 @@ Use the field-based search window, get back to a search you ran before in one ke
 
 You now have both halves: wandering when you do not know, fields when you do. What remains is the stations no directory lists -- and that is the next lesson.
 
-Next: Add a station nobody lists.
+Next: Find a station by its web address; Add a station nobody lists.
 
 ### Add a station nobody lists
 
-Four routes to a station that is not in any directory: paste its stream, scan its website, add the whole server it lives on, or import a playlist file somebody sent you.
+Four routes to a station that is not in any directory: paste its stream, scan its website, add the whole server it lives on, or import a playlist file somebody sent you. Try typing its web address into a search box first -- that is quicker, and it has its own lesson.
 
 *6 steps, about 8 minutes.*
 
@@ -373,8 +400,9 @@ Four routes to a station that is not in any directory: paste its stream, scan it
    - You should hear: A dialog with an address field and a name field.
    - Worth knowing: A Live365 station page or player link is rewritten to the real stream for you, and the dialog says it did. A YouTube link is saved as the page address, never a stream address, so a recording you schedule today still works next week.
 
-2. **Understand why the website is not the station.** Pasting a station's home page will not play. Quill Radio needs the audio feed, and many stations build their player in JavaScript, so the feed is nowhere in the page for anything to find. That is what the next step is for.
+2. **Understand why the website is not the station.** A station's home page is not its audio feed, and saving one as a stream address will not play. You no longer have to find the feed yourself, though: type the web address into any search box and Quill Radio reads the page and hands back the feed. What it cannot do is run JavaScript, so a player that builds its address in code writes it nowhere -- which is what the next step is for.
    - You should hear: Nothing: this step is the fact that saves the next twenty minutes.
+   - Worth knowing: Typing an address into a search box is the short route and has a lesson of its own, Find a station by its web address. The rest of this lesson is what to do when that is not enough.
 
 3. **Scan a station's page for its stream.** Find Streams from a Website reads the one page you give it and offers what it found, with a Test button that plays a candidate so you can hear which is right. It follows a Listen Live link one level, and recognises Triton, StreamTheWorld, SecureNet, iHeart and TuneIn players by name rather than guessing.
    - Keys: Ctrl+Alt+S
