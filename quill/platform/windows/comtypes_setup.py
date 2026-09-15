@@ -39,9 +39,14 @@ def ensure_comtypes_gen_dir_redirected() -> None:
         return
     _redirected = True
     try:
-        from quill.core.paths import app_data_dir
+        # The RUNNING app's folder, not QUILL's: this cache is a private
+        # side-effect of touching COM, and QuillLite reaches it through the
+        # native Rich Edit surface on its very first window. Pointed at
+        # app_data_dir() it created %APPDATA%\Quill on a machine that had
+        # never had QUILL installed.
+        from quill.core.paths import running_app_data_dir
 
-        gen_dir = app_data_dir() / "comtypes_gen"
+        gen_dir = running_app_data_dir() / "comtypes_gen"
         gen_dir.mkdir(parents=True, exist_ok=True)
         _cc.gen_dir = str(gen_dir)
     except Exception:  # noqa: BLE001 - never let cache setup break a caller

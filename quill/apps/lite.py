@@ -507,6 +507,21 @@ _USAGE = f"""{APP_NAME} {APP_VERSION} -- a notepad-scale editor built for screen
 
 def main() -> int:
     from quill.core.data_location import apply_pending_at_launch
+    from quill.core.paths import use_running_app_data_dir
+
+    # QuillLite keeps its own store, and the shared core has two caches that
+    # have to land in it rather than in QUILL's folder: the comtypes
+    # generated-wrapper cache (reached by the native Rich Edit surface, so on
+    # the very first window) and the managed Hunspell dir. Both used to resolve
+    # to %APPDATA%\Quill, which created that folder on machines that had never
+    # had QUILL installed -- the one thing core/lite/paths.py opens by saying
+    # QuillLite does not do. Declared here, before anything can ask.
+    #
+    # Narrow on purpose: this does NOT redirect app_data_dir(), because
+    # QuillLite reaches QUILL's folder deliberately in three places (share
+    # QUILL's dictionary, share QUILL's abbreviations, list QUILL's sound
+    # schemes) and those must keep meaning QUILL's.
+    use_running_app_data_dir(data_dir)
 
     # Every app in the family applies a queued Data Folder move before reading
     # anything, so a move queued from one app happens at whichever app launches

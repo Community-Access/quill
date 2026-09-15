@@ -15,7 +15,7 @@ import logging
 import os
 from pathlib import Path
 
-from quill.core.paths import app_data_dir
+from quill.core.paths import running_app_data_dir
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +40,11 @@ def managed_spell_dir() -> Path:
         bundled = Path(app_root) / "dictionaries"
         if (bundled / "hunspell").is_dir():
             return bundled
-    return app_data_dir() / "spell"
+    # The RUNNING app's folder. QuillLite has its own spell store and its own
+    # data directory; resolving this to QUILL's put downloaded dictionaries --
+    # and, on first launch, the whole %APPDATA%\Quill folder -- on a machine
+    # that may never have had QUILL on it.
+    return running_app_data_dir() / "spell"
 
 
 def managed_hunspell_dir() -> Path:

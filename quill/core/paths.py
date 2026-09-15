@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import sys
+from collections.abc import Callable
 from pathlib import Path
 
 from quill.core import storage_mode
@@ -64,6 +65,55 @@ def safe_dialog_filename(name: str, *, suffix: str = "", fallback: str = "Untitl
     if not result:
         result = fallback
     return f"{result}{suffix}"
+
+
+#: Set by an app whose own data does NOT live in QUILL's folder -- QuillLite is
+#: the only one today. ``None`` means "this app is QUILL, or shares its store".
+_RUNNING_APP_DATA_DIR: Callable[[], Path] | None = None
+
+
+def use_running_app_data_dir(provider: Callable[[], Path] | None) -> None:
+    """Declare where the *running* app keeps its data. Called once, at startup.
+
+    See :func:`running_app_data_dir` for what this is for and why it is not
+    simply an override of :func:`app_data_dir`.
+    """
+    global _RUNNING_APP_DATA_DIR
+    _RUNNING_APP_DATA_DIR = provider
+
+
+def running_app_data_dir() -> Path:
+    r"""Where the app that is running keeps its own files.
+
+    **Not the same question as** :func:`app_data_dir`, which answers "where is
+    QUILL's data folder" -- the shared store QUILL, Inkwell and the QuillVille
+    apps all use, and which QuillLite reaches on purpose in exactly three
+    places (share QUILL's dictionary, share QUILL's abbreviations, list QUILL's
+    sound schemes). Those say "QUILL's data directory" in their docstrings and
+    must keep meaning it.
+
+    This one is for a *cache or private store the running app needs somewhere*
+    -- the comtypes generated-wrapper cache and the managed Hunspell folder.
+    Both used :func:`app_data_dir`, and for QuillLite that was the wrong folder:
+    one ``--check`` on a machine that had never seen QUILL created
+    ``%APPDATA%\Quill\comtypes_gen`` and ``%APPDATA%\Quill\spell``, because
+    the native Rich Edit surface goes through comtypes and the spell checker
+    goes through the managed dir. ``quill/core/lite/paths.py`` opens by saying
+    QuillLite is "deliberately **not** ``%APPDATA%\Quill``", and
+    ``core/lite/settings.py`` that "a machine that has never had QUILL
+    installed must not grow a Quill data folder because somebody opened a text
+    file". It grew one on first launch (verified 2026-09-15).
+
+    Defaults to :func:`app_data_dir`, so every app that has not declared
+    otherwise is unaffected.
+    """
+    provider = _RUNNING_APP_DATA_DIR
+    if provider is not None:
+        try:
+            return provider()
+        except Exception:  # noqa: BLE001 - a bad provider must not lose the cache
+            pass
+    return app_data_dir()
 
 
 def app_data_dir() -> Path:
