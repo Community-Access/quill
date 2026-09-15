@@ -146,6 +146,28 @@ deliberately change them from **Tools ▸ File Encoding and Line Endings**
 copy of an old file in a newer format. The change takes effect the next time you
 save.
 
+### Saving an HTML page as Markdown
+
+**Ctrl+Shift+S** offers **Markdown (*.md)** in its list of types, and in one
+case that is a real conversion rather than a new name: if the document you are
+saving is **HTML**, the tags are turned into Markdown as it saves. A heading
+becomes `#`, bold becomes `**bold**`, a list becomes `-` lines, and links keep
+both their text and their address. QuillLite says **"Converted HTML to
+Markdown"** when it happens, and the document in front of you changes to match
+the file -- the window and the file never disagree about what you just saved.
+
+Tags Markdown has no way to write are dropped and their text kept, so nothing
+you typed disappears. If the conversion would produce nothing at all -- a page
+that is only a comment, say -- QuillLite keeps your text exactly as it was and
+tells you so, rather than writing an empty file.
+
+Saving a plain text or Markdown document as `.md` changes nothing at all: plain
+text is already what it claims to be, and Markdown already is Markdown. A
+**rich text** document is not offered Markdown, because turning real formatting
+back into `#` and `**` means guessing which bold lines were meant as headings.
+Save it as plain text first -- QuillLite asks before it drops the formatting --
+and the Markdown row is waiting.
+
 ### If something goes wrong
 
 While a document has changes you have not saved, QuillLite keeps a copy of it

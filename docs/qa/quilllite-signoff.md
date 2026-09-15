@@ -1371,6 +1371,51 @@ here is "read the markup back and check a pair of values match".
   confirm the shipped catalogue is not a release behind.
 - [ ] pass  [ ] fail: ______
 
+### Saving HTML as Markdown (2026-09-15)
+
+The **Markdown** row in Save As was taken out once because it did not convert
+anything -- it wrote the same text under a different name. It is back because
+it converts now, so what these three check is that the promise the type list
+makes is kept.
+
+**L-170. An HTML document saved as .md really becomes Markdown**
+- Do: open `page.html` and put a heading, a bold word and a two-item list in it
+  as HTML (`<h1>Title</h1>`, `<p>Some <strong>bold</strong> text.</p>`,
+  `<ul><li>one</li><li>two</li></ul>`). Press **Ctrl+Shift+S**, choose
+  **Markdown (*.md)** in the type list, and save as `page.md`.
+- Pass: you hear **"Converted HTML to Markdown"**. The document in front of you
+  now reads `# Title`, `Some **bold** text.` and `- one` / `- two`; there is no
+  `<h1>` anywhere. Open `page.md` in Notepad and it matches what you are
+  looking at.
+- Fail if the file contains any HTML tag, or if the window still shows tags
+  while the file does not -- a `.md` whose window holds HTML is the same lie in
+  the other direction.
+- [ ] pass  [ ] fail: ______
+
+**L-171. The Format cell follows the new name**
+- Do: straight after L-170, press **F6** and arrow to the **Format** cell.
+- Pass: it reads **Markdown**. The document was pinned to HTML a moment ago, and
+  the file name is what decides from here.
+- [ ] pass  [ ] fail: ______
+
+**L-172. Plain text saved as .md is left exactly alone**
+- Do: in a **plain text** document type `2 < 3 and 4 > 1`, then **Ctrl+Shift+S**
+  and save as `notes-plain.md`.
+- Pass: nothing is announced about converting, and the file contains
+  `2 < 3 and 4 > 1` character for character -- the `<` and `>` are untouched.
+- Fail if the angle brackets have been escaped, swallowed or turned into an
+  entity: plain text saved as Markdown is already what it claims to be, and
+  running it through an HTML converter can only lose something.
+- [ ] pass  [ ] fail: ______
+
+**L-173. Rich text does not offer Markdown**
+- Do: in a **rich text** document press **Ctrl+Shift+S** and read the type list.
+- Pass: it offers **Rich Text**, **Text files** and **All files** -- and no
+  Markdown row. Rich to Markdown would mean guessing which bold runs were meant
+  as headings; flatten to plain text first (the dialog asks) and the Markdown
+  row is there.
+- [ ] pass  [ ] fail: ______
+
 ---
 
 ## Sign-off

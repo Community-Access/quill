@@ -159,6 +159,62 @@ def test_save_as_to_an_rtf_name_switches_the_document_to_rich(
     assert win.editor.mode == RICH
 
 
+def test_save_as_to_md_converts_an_html_document(lite_window, fake_wx_dialog, tmp_path):
+    """The Markdown row in the Save As box promises a conversion, so it converts.
+
+    The row was removed once precisely because it did not: it wrote the same
+    text under a different extension. What makes it honest is this -- an HTML
+    document saved as .md reaches the disk as Markdown, and the buffer agrees
+    with the file.
+    """
+    target = tmp_path / "page.md"
+    fake_wx_dialog("FileDialog", wx.ID_OK, GetPath=str(target))
+    win = lite_window("<h1>Title</h1><p>Some <strong>bold</strong> text.</p>", mode="plain")
+    win.set_document_language("html", announce=False)
+
+    assert win.cmd_save_as() is True
+
+    written = target.read_text(encoding="utf-8")
+    assert "# Title" in written
+    assert "**bold**" in written
+    assert "<h1>" not in written
+    # The buffer was rewritten too: a .md file whose window still holds HTML is
+    # the same lie in the other direction.
+    assert "<h1>" not in win.control.GetValue()
+    # And the file name decides the language from here, rather than the override
+    # that was pinned to HTML.
+    assert win.document_language() == "markdown"
+
+
+def test_save_as_to_md_leaves_a_plain_document_alone(lite_window, fake_wx_dialog, tmp_path):
+    """Plain text saved as .md is already what it claims to be.
+
+    Running it through the HTML converter would be a round trip that can only
+    lose something -- a line beginning with a < , say.
+    """
+    target = tmp_path / "notes.md"
+    fake_wx_dialog("FileDialog", wx.ID_OK, GetPath=str(target))
+    win = lite_window("just some notes\n2 < 3 and 4 > 1\n", mode="plain")
+
+    assert win.cmd_save_as() is True
+    assert target.read_text(encoding="utf-8") == "just some notes\n2 < 3 and 4 > 1\n"
+
+
+def test_save_as_to_md_keeps_html_that_converts_to_nothing(lite_window, fake_wx_dialog, tmp_path):
+    """Converting to nothing is not a conversion.
+
+    Writing an empty .md and calling it a success would lose the document --
+    the one outcome worse than not converting at all.
+    """
+    target = tmp_path / "empty.md"
+    fake_wx_dialog("FileDialog", wx.ID_OK, GetPath=str(target))
+    win = lite_window("<!-- just a comment -->", mode="plain")
+    win.set_document_language("html", announce=False)
+
+    assert win.cmd_save_as() is True
+    assert target.read_text(encoding="utf-8") == "<!-- just a comment -->"
+
+
 def test_save_as_to_a_txt_name_from_rich_asks_before_flattening(
     lite_window, fake_wx_dialog, tmp_path, monkeypatch
 ):

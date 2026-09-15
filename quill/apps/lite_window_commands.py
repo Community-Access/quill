@@ -128,6 +128,12 @@ class DocumentCommandsMixin(
             self.switch_mode(RICH)
         elif not wants_rich and rich and not self._confirm_flatten_to_plain():
             return False
+        # A .md target converts an HTML document rather than renaming it, which
+        # is what the Markdown row in the type list promises. Runs after the
+        # flatten above on purpose: rich text has to become plain before there
+        # is any markup to convert.
+        if not self.convert_for_markdown_target(target):
+            return False
         return self.save(target)
 
     def _confirm_flatten_to_plain(self) -> bool:

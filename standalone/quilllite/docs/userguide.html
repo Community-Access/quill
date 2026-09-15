@@ -378,6 +378,30 @@ did not, it will not suddenly start.</li>
 (<strong>Ctrl+Alt+E</strong>) when you actually want to — for instance
 when somebody needs a copy of an old file in a newer format. The change
 takes effect the next time you save.</p>
+<h3 id="saving-an-html-page-as-markdown">Saving an HTML page as
+Markdown</h3>
+<p><strong>Ctrl+Shift+S</strong> offers <strong>Markdown (*.md)</strong>
+in its list of types, and in one case that is a real conversion rather
+than a new name: if the document you are saving is
+<strong>HTML</strong>, the tags are turned into Markdown as it saves. A
+heading becomes <code>#</code>, bold becomes <code>**bold**</code>, a
+list becomes <code>-</code> lines, and links keep both their text and
+their address. QuillLite says <strong>“Converted HTML to
+Markdown”</strong> when it happens, and the document in front of you
+changes to match the file – the window and the file never disagree about
+what you just saved.</p>
+<p>Tags Markdown has no way to write are dropped and their text kept, so
+nothing you typed disappears. If the conversion would produce nothing at
+all – a page that is only a comment, say – QuillLite keeps your text
+exactly as it was and tells you so, rather than writing an empty
+file.</p>
+<p>Saving a plain text or Markdown document as <code>.md</code> changes
+nothing at all: plain text is already what it claims to be, and Markdown
+already is Markdown. A <strong>rich text</strong> document is not
+offered Markdown, because turning real formatting back into
+<code>#</code> and <code>**</code> means guessing which bold lines were
+meant as headings. Save it as plain text first – QuillLite asks before
+it drops the formatting – and the Markdown row is waiting.</p>
 <h3 id="if-something-goes-wrong">If something goes wrong</h3>
 <p>While a document has changes you have not saved, QuillLite keeps a
 copy of it aside, about once a minute. That copy sits

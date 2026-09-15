@@ -4,6 +4,16 @@
 
 ### Added
 
+- **Save an HTML page as Markdown.** The Save As box offers **Markdown
+  (*.md)** again, and this time it converts: an HTML document saved as `.md`
+  has its tags turned into Markdown as it saves -- `#` headings, `**bold**`,
+  `-` lists, links that keep their text and address -- and QuillLite says
+  "Converted HTML to Markdown". The document on screen changes with the file,
+  so the window and the file never disagree. Tags Markdown cannot write are
+  dropped and their text kept; a page that would convert to nothing is left
+  exactly as it was and says so. Plain text and Markdown documents saved as
+  `.md` are untouched. Rich text is not offered the row -- flatten to plain
+  text first, which the dialog already asks about.
 - **Lists announce themselves.** Arrow into a list and QuillLite says "Bulleted
   list, 5 items"; a level deeper, "Level 2, 3 items"; on the way out, "Out of
   list". This is the one cue a screen reader gives you everywhere else -- a

@@ -69,14 +69,25 @@ OPEN_WILDCARD = (
 
 #: Save As offers the document's own kind first, so Enter does the obvious thing.
 #:
-#: **No Markdown row here, on purpose.** A "type" in a Save As box is a promise
-#: about what will be written, and QuillLite has no Markdown writer: picking it
-#: saved the same plain text under a different extension, which is a promise the
-#: app cannot keep and a conversion somebody could reasonably think had
-#: happened. Opening a `.md` is a different matter and still offered -- reading
-#: one as text is exactly right -- and `Save As` will still keep the extension
-#: of a `.md` you opened, because the name comes from the box, not this list.
-SAVE_WILDCARD_PLAIN = "Text files (*.txt)|*.txt|Rich Text (*.rtf)|*.rtf|All files (*.*)|*.*"
+#: **Markdown is back (2026-09-15), and only because it now converts.** The row
+#: was removed on the argument that a "type" in a Save As box is a promise about
+#: what will be written, and picking Markdown wrote the same plain text under a
+#: different extension -- a promise the app could not keep. That argument was
+#: right, and the answer to it is the writer, not the missing row: saving an
+#: **HTML** document as ``.md`` now runs it through
+#: :func:`quill.core.html_to_markdown.html_to_markdown`, so the tags really do
+#: become Markdown. Saving a plain or Markdown document as ``.md`` writes the
+#: text unchanged, which is the honest answer for those: plain text is already
+#: what it is, and Markdown is already Markdown.
+#:
+#: Still **not** in :data:`SAVE_WILDCARD_RICH`. Rich text to Markdown would mean
+#: reading formatting back out of the native control and guessing which runs
+#: were meant as headings -- a different feature, and a worse one to get wrong.
+#: Flatten to plain text first (the Save As dialog already asks) and the
+#: Markdown row is there.
+SAVE_WILDCARD_PLAIN = (
+    "Text files (*.txt)|*.txt|Markdown (*.md)|*.md|Rich Text (*.rtf)|*.rtf|All files (*.*)|*.*"
+)
 SAVE_WILDCARD_RICH = "Rich Text (*.rtf)|*.rtf|Text files (*.txt)|*.txt|All files (*.*)|*.*"
 
 
